@@ -250,6 +250,8 @@ export const useCompositeContainer = createHook<
     onClick,
   };
 
+  // useToolbarContainer computes item defaults after this hook. Remove
+  // sentinels before they can overwrite those later defaults.
   return removeUndefinedValues(props);
 });
 

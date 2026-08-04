@@ -79,6 +79,54 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(checkbox).not.toBeChecked();
   });
 
+  // https://github.com/ariakit/ariakit/issues/7037
+  test("a composed hook preserves a later computed default", async ({
+    page,
+    q,
+  }) => {
+    const combobox = q.combobox("Direct hook");
+    await combobox.click();
+    await page.keyboard.type("a");
+    const listbox = q.listbox();
+    await test.expect(listbox).toBeVisible();
+    // Placement is the observable prerequisite for the auto-focus effect.
+    await test.expect(listbox).not.toHaveAttribute("data-placing");
+    // Focus must stay on the combobox, so no positive state can prove that the
+    // auto-focus effect has had a chance to run after placement.
+    await flushFrames(page);
+    await test.expect(combobox).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7037
+  test("a dialog hook preserves its computed disabled state", async ({ q }) => {
+    await test
+      .expect(q.dialog("Hook dialog"))
+      .toHaveAttribute("aria-disabled", "true");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7037
+  test("a toolbar container hook preserves its computed disabled state", async ({
+    q,
+  }) => {
+    await test
+      .expect(q.group("Hook toolbar container"))
+      .toHaveAttribute("aria-disabled", "true");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7037
+  test("a form checkbox preserves its field name and external label", async ({
+    q,
+  }) => {
+    await test
+      .expect(q.checkbox("Newsletter"))
+      .toHaveAttribute("name", "newsletter");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7037
+  test("a composed form radio preserves its field name", async ({ q }) => {
+    await test.expect(q.radio("Basic plan")).toHaveAttribute("name", "plan");
+  });
+
   // https://github.com/ariakit/ariakit/issues/7028
   test("a hook's own undefined sentinel still suppresses a later computed value", async ({
     q,

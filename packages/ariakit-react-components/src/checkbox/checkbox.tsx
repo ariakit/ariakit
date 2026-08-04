@@ -176,6 +176,8 @@ export const useCheckbox = createHook<TagName, CheckboxOptions>(
 
     props = useCommand<TagName>({ clickOnEnter: !nativeCheckbox, ...props });
 
+    // useFormCheckbox computes the field name after this hook. Remove the
+    // native-only sentinels before they can overwrite that later default.
     return removeUndefinedValues({
       name: nativeCheckbox ? name : undefined,
       value: nativeCheckbox ? valueProp : undefined,

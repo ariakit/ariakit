@@ -186,6 +186,8 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     ...props,
   });
 
+  // useFormRadio computes the field name after this hook. Remove the
+  // native-only sentinels before they can overwrite that later default.
   return removeUndefinedValues({
     name: nativeRadio ? name : undefined,
     value: nativeRadio ? value : undefined,

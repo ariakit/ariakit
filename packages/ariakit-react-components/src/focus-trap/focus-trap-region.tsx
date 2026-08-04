@@ -6,7 +6,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { getAllTabbableIn, removeUndefinedValues } from "@ariakit/utils";
+import { getAllTabbableIn } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useRef } from "react";
 import { FocusTrap } from "./focus-trap.tsx";
@@ -71,7 +71,7 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
       ref: useMergeRefs(ref, props.ref),
     };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 

@@ -205,6 +205,8 @@ export const useCompositeTypeahead = createHook<
     onKeyDownCapture,
   };
 
+  // Component props are filtered in forwardRef, but useComboboxPopover calls
+  // this hook before computing defaults. Keep direct hook calls protected too.
   return removeUndefinedValues(props);
 });
 

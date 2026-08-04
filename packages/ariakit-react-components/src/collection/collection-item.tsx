@@ -7,7 +7,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { identity, removeUndefinedValues } from "@ariakit/utils";
+import { identity } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useEffect, useRef } from "react";
 import { useCollectionContext } from "./collection-context.tsx";
@@ -59,7 +59,7 @@ export const useCollectionItem = createHook<TagName, CollectionItemOptions>(
       ref: useMergeRefs(ref, props.ref),
     };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 

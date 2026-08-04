@@ -1,7 +1,7 @@
 import { useStoreState } from "@ariakit/react-store";
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo } from "react";
 import { getBasePlacement } from "./__utils.ts";
@@ -83,7 +83,7 @@ export const usePopoverDisclosureArrow = createHook<
     },
   };
 
-  return removeUndefinedValues(props);
+  return props;
 });
 
 /**

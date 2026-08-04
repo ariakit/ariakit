@@ -1,6 +1,5 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useContext } from "react";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.tsx";
@@ -60,7 +59,7 @@ export const useCheckboxCheck = createHook<TagName, CheckboxCheckOptions>(
       },
     };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 

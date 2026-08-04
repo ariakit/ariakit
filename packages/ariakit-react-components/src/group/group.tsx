@@ -5,7 +5,6 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useState } from "react";
 import { GroupLabelContext } from "./group-label-context.tsx";
@@ -42,7 +41,7 @@ export const useGroup = createHook<TagName, GroupOptions>(
       ...props,
     };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 
