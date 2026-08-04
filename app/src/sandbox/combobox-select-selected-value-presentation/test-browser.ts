@@ -82,6 +82,37 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toPass();
   });
 
+  // https://github.com/ariakit/ariakit/issues/7011
+  test("lets navigation override centering during placement", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Centered delayed fruit");
+    const mango = q.option("Mango");
+    const watermelon = q.option("Watermelon");
+
+    await select.click();
+    await test.expect(q.listbox()).toHaveAttribute("data-placing");
+    await page.keyboard.press("w");
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+
+    await q.button("Finish Centered delayed fruit positioning").click();
+
+    const listbox = q.listbox();
+    await test.expect(listbox).not.toHaveAttribute("data-placing");
+    await test
+      .expect(async () => {
+        const listboxBox = await listbox.boundingBox();
+        const mangoBox = await mango.boundingBox();
+        test.expect(listboxBox).not.toBeNull();
+        test.expect(mangoBox).not.toBeNull();
+        const listboxCenter = listboxBox!.y + listboxBox!.height / 2;
+        const mangoCenter = mangoBox!.y + mangoBox!.height / 2;
+        test.expect(Math.abs(mangoCenter - listboxCenter)).toBeGreaterThan(1);
+      })
+      .toPass();
+  });
+
   // https://github.com/ariakit/ariakit/pull/6832
   test("presents a far selected item with real focus", async ({ page, q }) => {
     const select = q.combobox("Filterable fruit");

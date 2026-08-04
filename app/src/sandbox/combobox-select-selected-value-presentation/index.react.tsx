@@ -1,5 +1,11 @@
 import * as Ariakit from "@ariakit/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 const fruits = [
   "Apple",
@@ -133,6 +139,7 @@ interface FixtureProps {
    * presentation as the only thing that can bring an item into view.
    */
   autoFocusOnShow?: boolean;
+  centerSelectedOnOpen?: boolean;
   defaultSelectedValue: string | string[];
   focusTarget?: boolean;
   focusTrapTarget?: boolean;
@@ -173,6 +180,7 @@ interface FixtureProps {
 
 function Fixture({
   autoFocusOnShow,
+  centerSelectedOnOpen,
   defaultSelectedValue,
   focusTarget,
   focusTrapTarget,
@@ -245,6 +253,7 @@ function Fixture({
           ...(pageScrollport ? null : { maxHeight: 120, overflow: "auto" }),
         }}
       >
+        {centerSelectedOnOpen && <CenterSelectedItemOnOpen />}
         {input && (
           <Ariakit.ComboboxInput
             aria-label={`Search ${label}`}
@@ -314,6 +323,55 @@ function Fixture({
       )}
     </Ariakit.ComboboxProvider>
   );
+}
+
+function CenterSelectedItemOnOpen() {
+  const store = Ariakit.useComboboxContext();
+  const open = Ariakit.useStoreState(store, "open");
+  const popup = Ariakit.useStoreState(store, "contentElement");
+  const activeId = Ariakit.useStoreState(store, "activeId");
+  const cancelledRef = useRef(false);
+
+  useLayoutEffect(() => {
+    if (!open) {
+      cancelledRef.current = false;
+      return;
+    }
+    if (!popup) return;
+    const Observer = popup.ownerDocument.defaultView?.MutationObserver;
+    if (!Observer) return;
+    const centerSelectedItem = () => {
+      const item = popup.querySelector<HTMLElement>("[data-autofocus]");
+      if (!item) return;
+      const currentActiveId = store?.getState().activeId;
+      if (currentActiveId && currentActiveId !== item.id) {
+        cancelledRef.current = true;
+        observer.disconnect();
+        return;
+      }
+      if (cancelledRef.current) return;
+      if (popup.hasAttribute("data-placing")) return;
+      const popupRect = popup.getBoundingClientRect();
+      const itemRect = item.getBoundingClientRect();
+      popup.scrollTop +=
+        itemRect.top -
+        popupRect.top -
+        popup.clientTop -
+        (popup.clientHeight - itemRect.height) / 2;
+      observer.disconnect();
+    };
+    const observer = new Observer(centerSelectedItem);
+    observer.observe(popup, {
+      attributes: true,
+      attributeFilter: ["data-placing", "data-autofocus"],
+      childList: true,
+      subtree: true,
+    });
+    centerSelectedItem();
+    return () => observer.disconnect();
+  }, [store, open, popup, activeId]);
+
+  return null;
 }
 
 function NativeAutoFocusFixture() {
@@ -642,7 +700,20 @@ export default function Example() {
       <Fixture defaultSelectedValue={["Apple"]} label="Selected fruit" />
       <Fixture defaultSelectedValue="Apple" label="Single selected fruit" />
       <div style={{ marginTop: 200 }}>
-        <Fixture defaultSelectedValue="Mango" label="Centered fruit" />
+        <Fixture
+          centerSelectedOnOpen
+          defaultSelectedValue="Mango"
+          label="Centered fruit"
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          centerSelectedOnOpen
+          defaultSelectedValue="Mango"
+          holdPlacement
+          keepOpen
+          label="Centered delayed fruit"
+        />
       </div>
       <div style={{ marginTop: 200 }}>
         <Fixture
