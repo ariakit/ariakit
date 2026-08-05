@@ -53,6 +53,8 @@ function centerItemInScrollport(element: HTMLElement, scrollport: HTMLElement) {
   const scrollportWidth = scrollport.clientWidth * scaleX;
   const elementLeftOutside = elementRect.left < scrollportLeft;
   const elementRightOutside = elementRect.right > scrollportRight;
+  // Mirror CSSOM View's inline `nearest` rules with physical edges so the
+  // start/end behavior remains correct for oversized RTL items.
   const alignLeft =
     (elementLeftOutside &&
       !elementRightOutside &&
