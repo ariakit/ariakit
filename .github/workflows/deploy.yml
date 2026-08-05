@@ -14,9 +14,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          # `app...` already selects `nextjs` through `app`'s `workspace:*`
+          # devDependency, so a separate `nextjs...` entry is redundant.
+          filters: app...
 
       - name: Build app
         run: pnpm run build-app

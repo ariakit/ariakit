@@ -65,6 +65,7 @@ export function mergeProps<T extends HTMLAttributes<any>>(
 
   for (const key in overrides) {
     if (!hasOwnProperty(overrides, key)) continue;
+    if (key === "__proto__") continue;
 
     if (key === "className") {
       const prop = "className";
@@ -87,6 +88,7 @@ export function mergeProps<T extends HTMLAttributes<any>>(
     }
 
     const overrideValue = overrides[key];
+    if (overrideValue === undefined) continue;
 
     if (key.startsWith("on")) {
       if (typeof overrideValue !== "function") {

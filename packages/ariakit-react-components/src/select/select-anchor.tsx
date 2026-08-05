@@ -11,6 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectAnchor` component.
+ * @deprecated Use `useComboboxAnchor` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -32,6 +33,8 @@ export const useSelectAnchor = createHook<TagName, SelectAnchorOptions>(
 /**
  * Renders an element that acts as the anchor for the
  * [`SelectPopover`](https://ariakit.com/reference/select-popover) component.
+ * @deprecated Use
+ * [`ComboboxAnchor`](https://ariakit.com/reference/combobox-anchor) instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {3}
@@ -49,6 +52,7 @@ export const SelectAnchor = forwardRef(function SelectAnchor(
   return createElement(TagName, htmlProps);
 });
 
+/** @deprecated Use `ComboboxAnchorOptions` instead. */
 export interface SelectAnchorOptions<
   T extends ElementType = TagName,
 > extends PopoverAnchorOptions<T> {
@@ -62,6 +66,7 @@ export interface SelectAnchorOptions<
   store?: SelectStore;
 }
 
+/** @deprecated Use `ComboboxAnchorProps` instead. */
 export type SelectAnchorProps<T extends ElementType = TagName> = Props<
   T,
   SelectAnchorOptions<T>

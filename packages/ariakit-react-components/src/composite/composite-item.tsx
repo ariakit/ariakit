@@ -24,8 +24,6 @@ import {
   isPortalEvent,
   isSelfTarget,
   disabledFromProps,
-  removeUndefinedValues,
-  isSafari,
   warnOnce,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
@@ -51,8 +49,10 @@ import {
   focusSilently,
   getEnabledItem,
   isItem,
+  markItemMounted,
+  markItemUnmounting,
   selectTextField,
-  withDocumentScrollPreserved,
+  usePresentItem,
 } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -160,6 +160,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     typeaheadText,
     "aria-setsize": ariaSetSizeProp,
     "aria-posinset": ariaPosInSetProp,
+    unstable_scrollIntoView: scrollIntoView,
     ...props
   }) {
     const context = useCompositeScopedContext();
@@ -167,6 +168,13 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
+    const mountedElementRef = useRef<HTMLType>(null);
+    const markUnmountingRef = useCallback((element: HTMLType | null) => {
+      const mountedElement = mountedElementRef.current;
+      if (!element && mountedElement) markItemUnmounting(mountedElement);
+      if (element) markItemMounted(element);
+      mountedElementRef.current = element;
+    }, []);
     const row = useContext(CompositeRowContext);
     const disabled = disabledFromProps(props);
     const trulyDisabled = disabled && !props.accessibleWhenDisabled;
@@ -178,32 +186,34 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     // render. They can't read the destructured rowId const since it's declared
     // by the same statement they're arguments to, which would hit the temporal
     // dead zone. See https://github.com/ariakit/ariakit/issues/6334
-    const getRowId = (state?: Pick<CompositeStoreState, "baseElement">) => {
+    const getRowId = (
+      state?: Pick<CompositeStoreState, "compositeElement">,
+    ) => {
       if (rowIdProp) return rowIdProp;
       if (!state) return;
-      if (!row?.baseElement) return;
-      if (row.baseElement !== state.baseElement) return;
+      if (!row?.compositeElement) return;
+      if (row.compositeElement !== state.compositeElement) return;
       return row.id;
     };
 
-    const { rowId, baseElement, ariaSetSize, ariaPosInSet } =
-      useStoreStateObject(store, ["baseElement", "renderedItems"], {
+    const { rowId, compositeElement, ariaSetSize, ariaPosInSet } =
+      useStoreStateObject(store, ["compositeElement", "renderedItems"], {
         rowId: getRowId,
-        baseElement(state) {
-          return state?.baseElement || undefined;
+        compositeElement(state) {
+          return state?.compositeElement || undefined;
         },
         ariaSetSize(state) {
           if (ariaSetSizeProp != null) return ariaSetSizeProp;
           if (!state) return;
           if (!row?.ariaSetSize) return;
-          if (row.baseElement !== state.baseElement) return;
+          if (row.compositeElement !== state.compositeElement) return;
           return row.ariaSetSize;
         },
         ariaPosInSet(state) {
           if (ariaPosInSetProp != null) return ariaPosInSetProp;
           if (!state) return;
           if (!row?.ariaPosInSet) return;
-          if (row.baseElement !== state.baseElement) return;
+          if (row.compositeElement !== state.compositeElement) return;
           const rowId = getRowId(state);
           const itemsInRow = state.renderedItems.filter(
             (item) => item.rowId === rowId,
@@ -216,7 +226,13 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 
     const { isActiveItem, isTabbable } = useStoreStateObject(
       store,
-      ["activeId", "baseElement", "renderedItems", "virtualFocus", "items"],
+      [
+        "activeId",
+        "compositeElement",
+        "renderedItems",
+        "virtualFocus",
+        "items",
+      ],
       {
         isActiveItem(state) {
           return !!state && state.activeId === id;
@@ -229,7 +245,9 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           // the first commit, which is when items must keep their native tab
           // order. Both conditions are necessary: a composite store may never
           // get a composite element, and its items must still roam.
-          if (!state.baseElement && !state.renderedItems.length) return true;
+          if (!state.compositeElement && !state.renderedItems.length) {
+            return true;
+          }
           if (state.virtualFocus) return false;
           if (!state.renderedItems.length) return true;
           if (tabbable) return true;
@@ -268,16 +286,17 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     const onFocusProp = props.onFocus;
     const hasFocusedComposite = useRef(false);
     // Holds the unsubscribe function of a pending focus redirect scheduled in
-    // the onFocus handler below when the base element isn't available yet. We
-    // don't cancel it on unmount: the subscription is created by a focus
+    // the onFocus handler below when the composite element isn't available
+    // yet. We don't cancel it on unmount: the subscription is created by a focus
     // event, not an effect, so an unmount cleanup would permanently cancel it
     // during strict mode's simulated unmount. The listener is self-cleaning
     // instead: it unsubscribes on the next store update once this item no
     // longer has DOM focus. That also covers unmounted items, since
     // unmounting an item that registers itself in the store produces an
-    // update by unregistering it, even when the base element never arrives.
-    // Redirects are only scheduled for such items.
+    // update by unregistering it, even when the composite element never
+    // arrives. Redirects are only scheduled for such items.
     const cancelScheduledFocusRedirectRef = useRef<(() => void) | null>(null);
+    const present = usePresentItem(store);
 
     const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusProp?.(event);
@@ -290,7 +309,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       // elements. In this case, we just ignore the focus event on this parent
       // item.
       if (targetIsAnotherItem(event, store)) return;
-      const { virtualFocus, baseElement } = store.getState();
+      const { virtualFocus, compositeElement } = store.getState();
       store.setActiveId(id);
       // If the composite item is a text field, we'll select its content when
       // focused. This guarantees that pressing arrow keys will move to the
@@ -301,49 +320,60 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       }
       // When using aria-activedescendant, we want to make sure that the
       // composite container receives focus, not the composite item.
-      if (!virtualFocus) return;
+      if (!virtualFocus) {
+        // DOM focus moved with preventScroll, so a marked item still needs the
+        // widget's presentation even without the virtual-focus handoff below.
+        if (isSelfTarget(event) && store.item(id)) {
+          present({
+            id,
+            markedOnly: true,
+            requireFocus: true,
+            scrollIntoView,
+          });
+        }
+        return;
+      }
       // But we'll only do this if the focused element is the composite item
       // itself
       if (!isSelfTarget(event)) return;
       // and the composite item is not a text field or contenteditable element.
       if (isEditableElement(event.currentTarget)) return;
 
-      const redirectFocusToBaseElement = (
-        currentTarget: HTMLType,
+      const redirectFocusToCompositeElement = (
         relatedTarget: Element | null,
-        baseElement: HTMLElement,
+        compositeElement: HTMLElement,
       ) => {
-        if (!isFocusable(baseElement)) {
+        if (!isFocusable(compositeElement)) {
           if (process.env.NODE_ENV !== "production") {
             warnOnce(
               "A composite widget with `virtualFocus` enabled requires a " +
                 "focusable composite element. Set the `focusable` prop to " +
                 "`true` or the `virtualFocus` option to `false`.",
-              baseElement,
+              compositeElement,
             );
           }
           return;
         }
         const fromComposite =
-          relatedTarget === baseElement || isItem(store, relatedTarget);
-        // Safari doesn't scroll the element into view when another element is
-        // immediately focused. So we have to do it manually here.
-        if (isSafari() && currentTarget.hasAttribute("data-autofocus")) {
-          // Virtual focus immediately returns to an already focused composite.
-          // Keep the fallback scoped to nested scrollers in that case.
-          if (fromComposite) {
-            withDocumentScrollPreserved(currentTarget, () => {
-              currentTarget.scrollIntoView({
-                block: "nearest",
-                inline: "nearest",
-              });
-            });
-          } else {
-            currentTarget.scrollIntoView({
-              block: "nearest",
-              inline: "nearest",
-            });
-          }
+          relatedTarget === compositeElement || isItem(store, relatedTarget);
+        // This item is about to hand DOM focus back to the composite element,
+        // so the browser will not bring it into view. Present it explicitly,
+        // once its popup, if it's in one, has been positioned. Only if it's
+        // marked as a presentation target: an item that merely happened to
+        // receive focus, such as one under a resting pointer, should stay
+        // where it is.
+        // An item that opts out of registering itself can't be resolved from
+        // the store, so there would be nothing to wait for.
+        // The handoff below moves focus a second time, from this item to the
+        // composite element, but both are inside the composite, so the request
+        // survives it and only focus leaving the composite abandons it.
+        if (store.item(id)) {
+          present({
+            id,
+            markedOnly: true,
+            requireFocus: true,
+            scrollIntoView,
+          });
         }
         hasFocusedComposite.current = true;
         // If the previously focused element is a composite or composite item
@@ -352,34 +382,32 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         // element was likely already focused, so we're just immediately
         // returning focus to it when navigating through the items.
         if (fromComposite) {
-          focusSilently(baseElement);
+          focusSilently(compositeElement);
         }
 
         // Otherwise, the composite element is likely not focused, so we need
         // this focus event to propagate so consumers can use the onFocus prop
-        // on <Composite>.
+        // on <Composite>. Scrolling is left to whoever is presenting this item:
+        // the composite element can be inside a popup that hasn't been
+        // positioned yet, and letting the browser scroll to it moves the page.
         else {
-          baseElement.focus();
+          compositeElement.focus({ preventScroll: true });
         }
       };
 
-      if (baseElement?.isConnected) {
-        redirectFocusToBaseElement(
-          event.currentTarget,
-          event.relatedTarget,
-          baseElement,
-        );
+      if (compositeElement?.isConnected) {
+        redirectFocusToCompositeElement(event.relatedTarget, compositeElement);
         return;
       }
 
-      // The base element isn't available at this point: it's stored in a
+      // The composite element isn't available at this point: it's stored in a
       // later commit than the one that mounts it, so focusing an item during
       // the mount commit lands here before the store has it. It may also be
       // disconnected from the DOM, such as when it's removed just before this
       // focus event (focusing it then would cause a scroll jump on Safari).
       // Instead of dropping the focus redirect, we wait until a connected
-      // base element is available in the store, then redirect focus to it if
-      // this item still has DOM focus.
+      // composite element is available in the store, then redirect focus to it
+      // if this item still has DOM focus.
       // See https://github.com/ariakit/ariakit/issues/6623
 
       // Items that opt out of registering themselves in the store never
@@ -393,9 +421,9 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         cancelScheduledFocusRedirectRef.current = null;
       };
       cancelScheduledFocusRedirect();
-      // Subscribe to every store update, not just baseElement changes, so the
-      // pending redirect is also discarded when the item unmounts without a
-      // base element ever arriving.
+      // Subscribe to every store update, not just compositeElement changes, so
+      // the pending redirect is also discarded when the item unmounts without
+      // a composite element ever arriving.
       cancelScheduledFocusRedirectRef.current = subscribe(store, null, () => {
         // The redirect is no longer relevant if the item lost DOM focus in
         // the meantime, including when it was unmounted.
@@ -404,16 +432,12 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           return;
         }
         const state = store.getState();
-        const nextBaseElement = state.baseElement;
-        // Keep waiting until a connected base element is stored.
-        if (!nextBaseElement?.isConnected) return;
+        const nextCompositeElement = state.compositeElement;
+        // Keep waiting until a connected composite element is stored.
+        if (!nextCompositeElement?.isConnected) return;
         cancelScheduledFocusRedirect();
         if (!state.virtualFocus) return;
-        redirectFocusToBaseElement(
-          currentTarget,
-          relatedTarget,
-          nextBaseElement,
-        );
+        redirectFocusToCompositeElement(relatedTarget, nextCompositeElement);
       });
     });
 
@@ -448,14 +472,14 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       const isGrid = !!item?.rowId;
       const isVertical = state.orientation !== "horizontal";
       const isHorizontal = state.orientation !== "vertical";
-      // If the base element is a text field, the Home and End keys should be
-      // performed on the text field, not the composite item, unless the
+      // If the composite element is a text field, the Home and End keys should
+      // be performed on the text field, not the composite item, unless the
       // composite is a grid or has a horizontal orientation.
       const canHomeEnd = () => {
         if (isGrid) return true;
         if (isHorizontal) return true;
-        if (!state.baseElement) return true;
-        if (!isTextField(state.baseElement)) return true;
+        if (!state.compositeElement) return true;
+        if (!isTextField(state.compositeElement)) return true;
         return false;
       };
       const keyMap = {
@@ -511,8 +535,8 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     });
 
     const providerValue = useMemo(
-      () => ({ id, baseElement }),
-      [id, baseElement],
+      () => ({ id, compositeElement }),
+      [id, compositeElement],
     );
 
     props = useWrapElement(
@@ -529,7 +553,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       "data-active-item": isActiveItem || undefined,
       ...props,
       id,
-      ref: useMergeRefs(ref, props.ref),
+      ref: useMergeRefs(ref, markUnmountingRef, props.ref),
       tabIndex: isTabbable ? props.tabIndex : -1,
       onFocus,
       onBlurCapture,
@@ -544,11 +568,11 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       shouldRegisterItem: id ? shouldRegisterItem : false,
     });
 
-    return removeUndefinedValues({
+    return {
       ...props,
       "aria-setsize": ariaSetSize,
       "aria-posinset": ariaPosInSet,
-    });
+    };
   },
 );
 
@@ -594,6 +618,11 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    * components' context will be used.
    */
   store?: CompositeStore;
+  /**
+   * Determines how the item is scrolled into view when it's presented.
+   * @private
+   */
+  unstable_scrollIntoView?: (element: HTMLElement) => void;
   /**
    * Determines if the item should be registered as part of the collection. If
    * this is set to `false`, the item won't be accessible via arrow keys.

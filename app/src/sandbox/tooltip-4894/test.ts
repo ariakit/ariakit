@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 
 // See https://github.com/ariakit/ariakit/issues/4894
 // In happy-dom, this documents the stable forced-open state. The mixed test below
-// fails without the re-entrant loop guard, and test-browser.ts covers the pure
+// fails without the re-entrant loop guard, and test-chrome.ts covers the pure
 // forced-open flow in a real browser.
 test("keeps multiple forced tooltips visible", async () => {
   await click(q.button("Show forced tooltips"));

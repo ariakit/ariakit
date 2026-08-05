@@ -61,7 +61,7 @@ export async function Header() {
           <span className="sr-only">Ariakit</span>
           <HeaderLogo />
         </Link>
-        <div className="flex items-center gap-1 overflow-x-clip px-1">
+        <div className="flex min-w-0 items-center gap-1 overflow-x-clip px-1">
           <HeaderVersionSelect versions={versions} />
           <HeaderNav />
         </div>

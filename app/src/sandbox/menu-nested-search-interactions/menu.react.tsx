@@ -85,7 +85,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
     return (
       <Ariakit.ComboboxProvider
         resetValueOnHide
-        includesBaseElement={false}
+        compositeElementInFocusOrder={false}
         value={searchValue}
         setValue={onSearch}
       >

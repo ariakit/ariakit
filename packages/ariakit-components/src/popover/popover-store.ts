@@ -38,6 +38,8 @@ export function createPopoverStore({
       "contentElement",
       "popoverElement",
       "disclosureElement",
+      // Two popovers sharing a store are still positioned independently.
+      "unstable_placing",
     ]),
   );
 
@@ -61,6 +63,7 @@ export function createPopoverStore({
     popoverElement: defaultValue(syncState?.popoverElement, null),
     arrowElement: defaultValue(syncState?.arrowElement, null),
     rendered: Symbol("rendered"),
+    unstable_placing: false,
   };
   const popover = createStore(initialState, dialog, store);
   let syncedAnchorElement =
@@ -140,6 +143,23 @@ export interface PopoverStoreState extends DialogStoreState {
    * is called.
    */
   rendered: symbol;
+  /**
+   * Whether the popover is showing and hasn't settled at the position its
+   * current positioning pass will leave it at. Every pass a commit starts
+   * asserts it, not just the one that follows the popover being shown: showing
+   * publishes it as soon as the store changes, while every other commit-started
+   * pass publishes it with its commit, so code that re-anchors and reads this
+   * in the same turn still sees the previous value. The `autoUpdate` runs that
+   * follow a scroll or a resize reposition an already placed popover without
+   * asserting it again.
+   *
+   * Components that move focus or scroll into the popup wait for this to become
+   * `false`, otherwise they act on an element that's still at its
+   * pre-placement origin, or at a position it's about to leave, and drag the
+   * page along with it.
+   * @private
+   */
+  unstable_placing: boolean;
 }
 
 export interface PopoverStoreFunctions extends DialogStoreFunctions {

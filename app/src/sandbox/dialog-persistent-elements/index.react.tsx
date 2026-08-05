@@ -1,6 +1,39 @@
 import * as Ariakit from "@ariakit/react";
 import { useCallback, useRef, useState } from "react";
 
+const comboboxValues = ["Apple", "Banana", "Grape"];
+
+function ComboboxPersistentElement() {
+  const [actions, setActions] = useState(0);
+  const persistentRef = useRef<HTMLButtonElement>(null);
+
+  return (
+    <div className="flex flex-col items-start gap-3">
+      <Ariakit.ComboboxProvider>
+        <Ariakit.ComboboxLabel>Fruit</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover
+          modal={false}
+          getPersistentElements={() =>
+            persistentRef.current ? [persistentRef.current] : []
+          }
+        >
+          {comboboxValues.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+      <button
+        ref={persistentRef}
+        onClick={() => setActions((count) => count + 1)}
+      >
+        Persistent combobox action
+      </button>
+      <div role="status">Combobox actions: {actions}</div>
+    </div>
+  );
+}
+
 // Reproduces a non-modal dialog with getPersistentElements closing when the
 // user interacts with a persistent element before the dialog has been focused.
 // To see the bug:
@@ -15,6 +48,7 @@ import { useCallback, useRef, useState } from "react";
 export default function Example() {
   const [open, setOpen] = useState(false);
   const [asSection, setAsSection] = useState(false);
+  const [showLateOutside, setShowLateOutside] = useState(false);
   const [showShadowDialog, setShowShadowDialog] = useState(false);
   const [shadowDialogPortal, setShadowDialogPortal] =
     useState<HTMLElement | null>(null);
@@ -173,6 +207,13 @@ export default function Example() {
         >
           Dismiss notification
         </button>
+        <button
+          type="button"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => setShowLateOutside(true)}
+        >
+          Add late outside field
+        </button>
       </div>
 
       {/* happy-dom proxies forms for named access. Their descendants must still
@@ -192,8 +233,17 @@ export default function Example() {
         placeholder="Outside field"
         className="rounded border border-gray-300 px-3 py-1"
       />
+      {showLateOutside && (
+        <input
+          aria-label="Late outside field"
+          placeholder="Late outside field"
+          className="rounded border border-gray-300 px-3 py-1"
+        />
+      )}
 
       <div ref={setShadowHost} data-testid="shadow-host" />
+
+      <ComboboxPersistentElement />
 
       {shadowDialogPortal && showShadowDialog && (
         <Ariakit.Portal portalElement={shadowDialogPortal}>

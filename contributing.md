@@ -213,7 +213,7 @@ adding sandbox preview metadata only to provide a humanized title.
 
 ## Styling the example
 
-When necessary, you can apply styles to the example. We're using [Tailwind](https://tailwindcss.com/) to keep the styles consistent throughout the project. You will find the theme configuration in the [`tailwind.config.cjs`](tailwind.config.cjs) file.
+When necessary, you can apply styles to the example. We're using [Tailwind](https://tailwindcss.com/) to keep the styles consistent throughout the project. You will find the theme configuration in the [`website/tailwind.config.cjs`](website/tailwind.config.cjs) file.
 
 > To use Tailwind in a CSS file rather than applying classes directly to the HTML elements, we're using the [`@apply`](https://tailwindcss.com/docs/functions-and-directives#apply) directive.
 >
@@ -281,7 +281,7 @@ test("my component", () => {
 Now run the following command in your terminal to watch the test results:
 
 ```bash
-pnpm test-react watch my-component
+pnpm test watch my-component
 ```
 
 <div align="right">

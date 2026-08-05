@@ -9,6 +9,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
+import { sync } from "@ariakit/store";
 import { invariant } from "@ariakit/utils";
 import {
   arrow,
@@ -21,7 +22,7 @@ import {
   size,
 } from "@floating-ui/dom";
 import type { ElementType, HTMLAttributes } from "react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import type { DialogOptions } from "../dialog/dialog.tsx";
 import { createDialogComponent, useDialog } from "../dialog/dialog.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
@@ -35,6 +36,14 @@ import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
+
+/**
+ * How many mounted popovers are currently asserting `unstable_placing` on each
+ * store. The state belongs to the store, so a StrictMode pair, a remount, a
+ * keyed replacement and a store swap are all answered by the same question:
+ * does anyone still own it once the deferred reset runs?
+ */
+const placingWriters = new WeakMap<PopoverStore, number>();
 
 interface AnchorRect {
   x?: number;
@@ -278,6 +287,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       (state) => (shouldPreserveTabOrder ? state.disclosureElement : null),
     );
     const popoverElement = useStoreState(store, "popoverElement");
+    const placing = useStoreState(store, "unstable_placing");
     const contentElement = useStoreState(store, "contentElement");
     const placement = useStoreState(store, "placement");
     const mounted = useStoreState(store, "mounted");
@@ -285,10 +295,11 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
     const defaultArrowElementRef = useRef<HTMLElement | null>(null);
 
-    // We have to wait for the popover to be positioned for the first time
-    // before we can move focus, otherwise there may be scroll jumps. See
-    // popover-standalone example test-browser file.
-    const [positioned, setPositioned] = useState(false);
+    // Focus can only move into the popover once it has been positioned,
+    // otherwise there may be scroll jumps. See the menu-placing-pass sandbox.
+    // That's the question `unstable_placing` already answers, so it's read from
+    // there rather than tracked a second time.
+    const positioned = !placing;
 
     const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
 
@@ -320,6 +331,16 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       !mounted && isHidden(mounted, props.hidden, props.alwaysVisible);
 
     useSafeLayoutEffect(() => {
+      // Every pass starts unplaced, not just the one that follows the popup
+      // being shown, so a popup that is re-anchored while open stops counting
+      // as placed until the new position has been written. Asserted before the
+      // guards below, because a pass that can't start hasn't placed anything
+      // either. Only while mounted: a popup with nothing to position, such as
+      // an `alwaysVisible` menu that is closed, must never be left waiting.
+      if (mounted) {
+        store?.setState("unstable_placing", true);
+      }
+
       if (!popoverElement?.isConnected) return;
 
       const positioningPadding = {
@@ -350,6 +371,9 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       // Each effect run owns this flag. Cleanup marks stale runs so in-flight
       // async positioning work can skip state and style writes.
       let canceled = false;
+      // Whether this effect run has written a position, which is what makes the
+      // popover somewhere real rather than at its pre-placement origin.
+      let placed = false;
 
       const shouldCancelUpdate = () => {
         if (canceled) return true;
@@ -403,7 +427,6 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         if (shouldCancelUpdate()) return;
 
         store?.setState("currentPlacement", pos.placement);
-        setPositioned(true);
 
         const x = roundByDPR(pos.x);
         const y = roundByDPR(pos.y);
@@ -414,6 +437,8 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           left: "0",
           transform: `translate3d(${x}px,${y}px,0)`,
         });
+
+        placed = true;
 
         // https://floating-ui.com/docs/arrow#usage
         if (arrow && pos.middlewareData.arrow) {
@@ -456,15 +481,34 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       const update = async () => {
         if (shouldCancelUpdate()) return;
 
-        if (hasCustomUpdatePosition) {
-          await updatePositionProp({ updatePosition });
-          // User callbacks may keep awaiting after updatePosition has run, so
-          // make sure this effect is still current before marking it ready.
-          if (shouldCancelUpdate()) return;
-          setPositioned(true);
-        } else {
-          await updatePosition();
+        try {
+          if (hasCustomUpdatePosition) {
+            await updatePositionProp({ updatePosition });
+          } else {
+            await updatePosition();
+          }
+        } catch (error) {
+          // A pass that throws has still ended. Publish the popover as placed
+          // if this run wrote a position before failing, so a custom
+          // updatePosition that positions the popover and then fails doesn't
+          // strand everything waiting on it. A pass that failed before writing
+          // anything keeps waiting, because there's still nothing to move focus
+          // or scroll to. Rethrowing keeps the failure visible to the app.
+          if (placed && !shouldCancelUpdate()) {
+            store?.setState("unstable_placing", false);
+          }
+          throw error;
         }
+
+        // The pass owns the popover until it returns, so this is the only place
+        // that publishes it as placed on the success path. A custom
+        // updatePosition that calls the supplied default and then keeps working
+        // would otherwise hand readiness over as soon as that inner pass wrote
+        // its transform, and anything waiting to move focus or scroll into the
+        // popover would act on a position the callback is still about to
+        // change.
+        if (shouldCancelUpdate()) return;
+        store?.setState("unstable_placing", false);
       };
 
       // https://floating-ui.com/docs/autoUpdate
@@ -475,7 +519,6 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
       return () => {
         canceled = true;
-        setPositioned(false);
         cancelAutoUpdate();
       };
     }, [
@@ -526,6 +569,54 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       return () => cancelAnimationFrame(raf);
     }, [mounted, domReady, popoverElement, contentElement]);
 
+    // The positioning effect above asserts this at the start of every pass, but
+    // it can't be what publishes the show transition. Layout effects run
+    // children before parents, so the popover's own descendants would observe
+    // the previous value on the commit that opens the popup. Subscribing to the
+    // store instead means the transition is seen synchronously, wherever it
+    // comes from. Only a mounted Popover asserts this, so a popup with nothing
+    // to position, such as a combobox inside a plain dialog, is never left
+    // waiting.
+    // This state must never outlive its writer: it's asserted here and cleared
+    // by the positioning effect, both owned by this component, while the store
+    // it lives on can be owned by an ancestor. A Popover that unmounts, or that
+    // is pointed at another store, while its popup is mounted and not yet
+    // placed would otherwise leave "placing" set with nobody left to clear it,
+    // and everything waiting on it waits forever.
+    // Resetting straight from the teardown isn't enough either. Under React
+    // StrictMode effects are set up, torn down and set up again, and a reset
+    // would publish "placed" in between, which descendants remounting in that
+    // window would believe. Teardown and setup run in the same commit, so the
+    // reset is deferred by a microtask and skipped if anyone is still writing
+    // by the time it runs.
+    // Ownership is counted per store rather than per component, because the
+    // state is the store's. Tracking it on the instance gets both directions
+    // wrong: a keyed replacement can't cancel the outgoing instance's reset,
+    // and an instance whose `store` prop changes would cancel the reset queued
+    // for the store it just left, stranding that one forever.
+    useSafeLayoutEffect(() => {
+      if (!store) return;
+      const currentStore = store;
+      placingWriters.set(
+        currentStore,
+        (placingWriters.get(currentStore) ?? 0) + 1,
+      );
+      const desync = sync(currentStore, ["mounted"], (state) => {
+        currentStore.setState("unstable_placing", state.mounted);
+      });
+      return () => {
+        desync();
+        placingWriters.set(
+          currentStore,
+          (placingWriters.get(currentStore) ?? 1) - 1,
+        );
+        queueMicrotask(() => {
+          if (placingWriters.get(currentStore)) return;
+          currentStore.setState("unstable_placing", false);
+        });
+      };
+    }, [store]);
+
     const position = fixed ? "fixed" : "absolute";
 
     // Wrap our element in a div that will be used to position the popover.
@@ -563,11 +654,9 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     );
 
     props = {
-      // data-placing is not part of the public API. We're setting this here so
-      // we can wait for the popover to be positioned before other components
-      // move focus into it. For example, this attribute is observed by the
-      // Combobox component with the autoSelect behavior.
-      "data-placing": !positioned || undefined,
+      // data-placing is not part of the public API. It mirrors the store state
+      // of the same name so the two can't disagree.
+      "data-placing": placing || undefined,
       ...props,
       style: {
         position: "relative",

@@ -27,6 +27,7 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
+import { getScrollItemIntoView } from "./__utils.ts";
 import {
   ComboboxItemCheckedContext,
   ComboboxItemValueContext,
@@ -54,7 +55,7 @@ function isSelected(
 /**
  * Returns the role for a combobox item based on the popup role.
  */
-export function getItemRole(popupRole?: string) {
+function getItemRole(popupRole?: string) {
   return getItemRoleByPopupRole(popupRole) ?? "option";
 }
 
@@ -160,7 +161,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       if (value != null) {
         if (selectValueOnClickProp(event)) {
           if (resetValueOnSelectProp(event)) {
-            store?.resetValue();
+            store?.resetInputValue();
           }
           store?.setSelectedValue((prevValue) => {
             if (!Array.isArray(prevValue)) return value;
@@ -171,7 +172,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
           });
         }
         if (setValueOnClickProp(event)) {
-          store?.setValue(value);
+          store?.setInputValue(value);
         }
       }
       if (hideOnClickProp(event)) {
@@ -184,9 +185,9 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
-      const baseElement = store?.getState().baseElement;
-      if (!baseElement) return;
-      if (hasFocus(baseElement)) return;
+      const compositeElement = store?.getState().compositeElement;
+      if (!compositeElement) return;
+      if (hasFocus(compositeElement)) return;
       // When the combobox is not working with virtual focus, the items will
       // receive DOM focus. Therefore, pressing printable keys will not fill
       // the text field. So we need to programmatically focus on the text
@@ -200,21 +201,25 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       const paste = modifier && event.key.toLowerCase() === "v";
       const deleteKey = event.key === "Backspace" || event.key === "Delete";
       if (printable || paste || deleteKey) {
-        // In select mode, the base element is the select button rather than a
-        // text field, so focusing it would move focus out of the open list.
-        if (baseElement === selectElement) return;
-        if (isTextField(baseElement)) {
-          queueMicrotask(() => baseElement.focus());
-          store?.setValue(baseElement.value);
+        // In select mode, the composite element is the select button rather
+        // than a text field, so focusing it would move focus out of the open
+        // list.
+        if (compositeElement === selectElement) return;
+        if (isTextField(compositeElement)) {
+          queueMicrotask(() => compositeElement.focus());
+          store?.setInputValue(compositeElement.value);
           return;
         }
-        baseElement.focus();
-        if ("value" in baseElement && typeof baseElement.value === "string") {
+        compositeElement.focus();
+        if (
+          "value" in compositeElement &&
+          typeof compositeElement.value === "string"
+        ) {
           // Update the store value with the current element's value. This is
           // necessary because the value may temporarily change based on the
           // currently selected item, but it'll be reset to the original value
           // when the combobox input is focused.
-          store?.setValue(baseElement.value);
+          store?.setInputValue(compositeElement.value);
         }
       }
     });
@@ -258,9 +263,11 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     }
 
     const moveOnKeyPressProp = useBooleanEvent(moveOnKeyPress);
+    const scrollItemIntoView = getScrollItemIntoView(store);
 
     props = useCompositeItem<TagName>({
       store,
+      unstable_scrollIntoView: scrollItemIntoView,
       ...props,
       getItem,
       preventScrollOnKeyDown,
@@ -270,8 +277,8 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       moveOnKeyPress: (event) => {
         if (!moveOnKeyPressProp(event)) return false;
         const moveEvent = new Event("combobox-item-move");
-        const baseElement = store?.getState().baseElement;
-        baseElement?.dispatchEvent(moveEvent);
+        const compositeElement = store?.getState().compositeElement;
+        compositeElement?.dispatchEvent(moveEvent);
         return true;
       },
     });
@@ -380,8 +387,8 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
    * Whether to set the combobox
-   * [`value`](https://ariakit.com/reference/combobox-provider#value) state
-   * using this item's
+   * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
+   * state using this item's
    * [`value`](https://ariakit.com/reference/combobox-item#value) when the item
    * is clicked. The default is `true`, unless
    * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is

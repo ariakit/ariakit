@@ -48,6 +48,7 @@ function isSelected(
 
 /**
  * Returns props to create a `SelectItem` component.
+ * @deprecated Use `useComboboxItem` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -211,6 +212,8 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
  * By default, the [`value`](https://ariakit.com/reference/select-item#value)
  * prop will be rendered as the children, but this can be overriden if a custom
  * children is provided.
+ * @deprecated Use
+ * [`ComboboxItem`](https://ariakit.com/reference/combobox-item) instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4-5}
@@ -230,6 +233,7 @@ export const SelectItem = memo(
   }),
 );
 
+/** @deprecated Use `ComboboxItemOptions` instead. */
 export interface SelectItemOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T>, CompositeHoverOptions<T> {
   /**
@@ -275,6 +279,7 @@ export interface SelectItemOptions<T extends ElementType = TagName>
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }
 
+/** @deprecated Use `ComboboxItemProps` instead. */
 export type SelectItemProps<T extends ElementType = TagName> = Props<
   T,
   SelectItemOptions<T>

@@ -24,6 +24,7 @@ test("keeps each checkbox implementation in the tab order", async () => {
     "Dynamic 1",
     "Dynamic 2",
     "Button checkbox: Unchecked",
+    "Forwarded undefined",
     "Custom",
     "Apple",
     "Orange",
@@ -135,6 +136,18 @@ test("supports a checkbox rendered as a button", async () => {
 
   await press.Enter();
   expect(q.checkbox("Button checkbox: Checked")).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+});
+
+// https://github.com/ariakit/ariakit/issues/7036
+test("preserves checkbox semantics when an optional render prop is undefined", async () => {
+  const checkbox = q.checkbox("Forwarded undefined");
+  expect(checkbox).toHaveAttribute("aria-checked", "false");
+
+  await click(checkbox);
+  expect(q.checkbox("Forwarded undefined")).toHaveAttribute(
     "aria-checked",
     "true",
   );

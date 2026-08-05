@@ -1,6 +1,16 @@
 import { click, dispatch, mouseDown, q, rightClick } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+// https://github.com/ariakit/ariakit/issues/6863
+test("keeps a ComboboxPopover open when interacting with a persistent element", async () => {
+  await click(q.combobox("Fruit"));
+  expect(q.option("Apple")).toBeVisible();
+
+  await click(q.button("Persistent combobox action"));
+  expect(q.status()).toHaveTextContent("Combobox actions: 1");
+  expect(q.option("Apple")).toBeVisible();
+});
+
 // Reproduces https://github.com/ariakit/ariakit/issues/6344
 test("stays open when interacting with a persistent element before the dialog is focused", async () => {
   await click(q.button("Open dialog"));
@@ -59,6 +69,18 @@ test("keeps persistent elements after replacing an open dialog node", async () =
   await click(q.textbox("Notification field"));
   expect(q.textbox("Notification field")).toHaveFocus();
   expect(q.dialog("Dialog")).toBeVisible();
+});
+
+// https://github.com/ariakit/ariakit/issues/7033
+test("closes on a newly inserted outside element after replacing the dialog", async () => {
+  await click(q.button("Open dialog"));
+  await click(q.button("Replace dialog element"));
+  expect(q.dialog("Dialog")?.tagName).toBe("SECTION");
+
+  await click(q.button("Add late outside field"));
+  await click(q.textbox("Late outside field"));
+
+  await expect.poll(q.dialog.hidden.lazy("Dialog")).not.toBeVisible();
 });
 
 test("stays open when interacting with a persistent shadow element", async () => {

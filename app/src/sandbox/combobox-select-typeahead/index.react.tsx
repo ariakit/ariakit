@@ -1,8 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import { ComboboxItem as OffscreenComboboxItem } from "@ariakit/react-components/combobox/combobox-item-offscreen";
 import { ComboboxRenderer } from "@ariakit/react-components/combobox/combobox-renderer";
 import type { ComboboxStoreItem } from "@ariakit/react-components/combobox/combobox-store";
-import { SelectItem as OffscreenSelectItem } from "@ariakit/react-components/select/select-item-offscreen";
 import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
 import type { SelectStoreItem } from "@ariakit/react-components/select/select-store";
 import { useRef, useState } from "react";
@@ -13,15 +11,6 @@ const countries = [
   { value: "Canada", flag: "🇨🇦" },
   { value: "Japan", flag: "🇯🇵" },
   { value: "Mexico", flag: "🇲🇽" },
-];
-
-const offscreenCountries = [
-  { value: "Brazil", flag: "🇧🇷" },
-  ...Array.from({ length: 25 }, (_, index) => ({
-    value: `Item ${index + 1}`,
-    flag: "🏳️",
-  })),
-  { value: "Canada", flag: "🇨🇦" },
 ];
 
 const fruits = [
@@ -75,66 +64,6 @@ function SelectCountryFixture({ label, useAliases }: CountryFixtureProps) {
           >
             <span aria-hidden>{country.flag}</span> {country.value}
           </Ariakit.SelectItem>
-        ))}
-      </Ariakit.SelectPopover>
-    </Ariakit.SelectProvider>
-  );
-}
-
-interface OffscreenCountryFixtureProps {
-  label: string;
-}
-
-function ComboboxOffscreenCountryFixture({
-  label,
-}: OffscreenCountryFixtureProps) {
-  return (
-    <Ariakit.ComboboxProvider defaultSelectedValue="Brazil">
-      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
-      <Ariakit.ComboboxSelect />
-      <Ariakit.ComboboxPopover
-        gutter={4}
-        sameWidth
-        style={{ maxHeight: 80, overflow: "auto" }}
-      >
-        {offscreenCountries.map((country) => (
-          <OffscreenComboboxItem
-            key={country.value}
-            offscreenMode="passive"
-            typeaheadText={country.value}
-            value={country.value}
-            style={{ display: "block" }}
-          >
-            <span aria-hidden>{country.flag}</span> {country.value}
-          </OffscreenComboboxItem>
-        ))}
-      </Ariakit.ComboboxPopover>
-    </Ariakit.ComboboxProvider>
-  );
-}
-
-function SelectOffscreenCountryFixture({
-  label,
-}: OffscreenCountryFixtureProps) {
-  return (
-    <Ariakit.SelectProvider defaultValue="Brazil">
-      <Ariakit.SelectLabel>{label}</Ariakit.SelectLabel>
-      <Ariakit.Select />
-      <Ariakit.SelectPopover
-        gutter={4}
-        sameWidth
-        style={{ maxHeight: 80, overflow: "auto" }}
-      >
-        {offscreenCountries.map((country) => (
-          <OffscreenSelectItem
-            key={country.value}
-            offscreenMode="passive"
-            typeaheadText={country.value}
-            value={country.value}
-            style={{ display: "block" }}
-          >
-            <span aria-hidden>{country.flag}</span> {country.value}
-          </OffscreenSelectItem>
         ))}
       </Ariakit.SelectPopover>
     </Ariakit.SelectProvider>
@@ -253,14 +182,12 @@ export default function Example() {
       <button type="button" onClick={() => setUseAliases(true)}>
         Use country aliases
       </button>
-      <ComboboxOffscreenCountryFixture label="Virtualized country" />
       <ComboboxLateItemsFixture label="Fruit" />
       <ComboboxLateItemsFixture label="Rendered fruit" renderer />
       <SelectCountryFixture
         label="Legacy Select country"
         useAliases={useAliases}
       />
-      <SelectOffscreenCountryFixture label="Legacy Select virtualized country" />
       <SelectLateItemsFixture label="Legacy Select fruit" />
       <SelectLateItemsFixture label="Legacy Select rendered fruit" renderer />
     </>

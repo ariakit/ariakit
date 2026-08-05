@@ -10,6 +10,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.menu()).toBeVisible();
     await test.expect(q.menuitem("Edit")).toBeVisible();
 
+    // Opening can finish one-time focus work on the next frames. The stable
+    // render count has no separate observable completion state to await.
     await flushFrames(page);
 
     const menuRenders = q.status("Menu renders");

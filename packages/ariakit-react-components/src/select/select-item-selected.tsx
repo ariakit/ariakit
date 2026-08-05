@@ -9,6 +9,9 @@ import { SelectItemCheckedContext } from "./select-context.tsx";
  *
  * As a value component, it doesn't render any DOM elements and therefore
  * doesn't accept HTML props.
+ * @deprecated Use
+ * [`ComboboxItemSelected`](https://ariakit.com/reference/combobox-item-selected)
+ * instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5-7}
@@ -30,6 +33,7 @@ export function SelectItemSelected({ children }: SelectItemSelectedProps) {
   return children(selected);
 }
 
+/** @deprecated Use `ComboboxItemSelectedProps` instead. */
 export interface SelectItemSelectedProps {
   /**
    * A function that gets called with the closest

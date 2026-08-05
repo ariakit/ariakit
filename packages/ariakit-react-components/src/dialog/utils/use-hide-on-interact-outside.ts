@@ -162,12 +162,21 @@ function shouldHideOnInteractOutside(
   return !!hideOnInteractOutside;
 }
 
-export function useHideOnInteractOutside(
-  store: DialogStore,
-  hideOnInteractOutside: DialogOptions["hideOnInteractOutside"],
-  domReady?: boolean | HTMLElement | null,
-  interactedOutsideRef?: MutableRefObject<boolean>,
-) {
+interface UseHideOnInteractOutsideOptions {
+  store: DialogStore;
+  hideOnInteractOutside: DialogOptions["hideOnInteractOutside"];
+  domReady: boolean | HTMLElement | null | undefined;
+  interactedOutsideRef: MutableRefObject<boolean>;
+  focusedStoreRef: MutableRefObject<DialogStore | null>;
+}
+
+export function useHideOnInteractOutside({
+  store,
+  hideOnInteractOutside,
+  domReady,
+  interactedOutsideRef,
+  focusedStoreRef,
+}: UseHideOnInteractOutsideOptions) {
   const open = useStoreState(store, "open");
   const contentElement = useStoreState(store, "contentElement");
   const eventWindow = contentElement
@@ -179,7 +188,6 @@ export function useHideOnInteractOutside(
     contentElement,
   );
   const focusedRef = useRef(false);
-
   // Tracks whether the content element has been focused at least once since
   // the dialog opened. The event listeners below use this to decide whether
   // the marked-tree check applies. Shared by all event types.
@@ -190,12 +198,19 @@ export function useHideOnInteractOutside(
     focusedRef.current = false;
     const onFocus = () => {
       focusedRef.current = true;
+      focusedStoreRef.current = store;
     };
     contentElement.addEventListener("focusin", onFocus, true);
     return () => contentElement.removeEventListener("focusin", onFocus, true);
-  }, [open, domReady, contentElement]);
+  }, [open, domReady, contentElement, store]);
 
-  const props = { store, capture: true, open, contentElement, focusedRef };
+  const props = {
+    store,
+    capture: true,
+    open,
+    contentElement,
+    focusedRef,
+  };
 
   useEventOutside({
     ...props,
@@ -232,9 +247,7 @@ export function useHideOnInteractOutside(
         return;
       }
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
-      if (interactedOutsideRef) {
-        interactedOutsideRef.current = true;
-      }
+      interactedOutsideRef.current = true;
       store.hide();
     },
   });
@@ -250,7 +263,6 @@ export function useHideOnInteractOutside(
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
       const target = event.target;
       if (
-        interactedOutsideRef &&
         isElement(target) &&
         getDocument(target) !== getDocument(contentElement)
       ) {
@@ -265,9 +277,7 @@ export function useHideOnInteractOutside(
     type: "contextmenu",
     listener: (event) => {
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
-      if (interactedOutsideRef) {
-        interactedOutsideRef.current = true;
-      }
+      interactedOutsideRef.current = true;
       store.hide();
     },
   });

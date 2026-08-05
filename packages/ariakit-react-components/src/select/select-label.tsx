@@ -8,7 +8,7 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useSelectProviderContext } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
@@ -22,6 +22,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * select element, we can't use the native label element. The `SelectLabel`
  * component will move focus to the `Select` component when the user clicks on
  * the label.
+ * @deprecated Use `useComboboxSelectLabel` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -69,7 +70,7 @@ export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
       },
     };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 
@@ -78,6 +79,9 @@ export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
  * component. Since it's not a native select element, we can't use the native
  * label element. This component will move focus to the
  * [`Select`](https://ariakit.com/reference/select) component when clicked.
+ * @deprecated Use
+ * [`ComboboxSelectLabel`](https://ariakit.com/reference/combobox-select-label)
+ * instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {2}
@@ -98,6 +102,7 @@ export const SelectLabel = memo(
   }),
 );
 
+/** @deprecated Use `ComboboxSelectLabelOptions` instead. */
 export interface SelectLabelOptions<
   _T extends ElementType = TagName,
 > extends Options {
@@ -111,6 +116,7 @@ export interface SelectLabelOptions<
   store?: SelectStore;
 }
 
+/** @deprecated Use `ComboboxSelectLabelProps` instead. */
 export type SelectLabelProps<T extends ElementType = TagName> = Props<
   T,
   SelectLabelOptions<T>

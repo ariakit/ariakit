@@ -20,7 +20,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     // The list renders and measures items to begin with. Anchor the pattern so
     // it doesn't also match the "Refresh items" control.
-    await test.expect(q.button(/^item /).first()).toBeVisible();
+    const firstItem = q.button(/^item /).first();
+    await test.expect(firstItem).toBeVisible();
+    const itemHeight = await firstItem.evaluate(
+      (element) => element.getBoundingClientRect().height,
+    );
 
     // Scroll through the whole list so many item nodes mount and unmount.
     const maxScroll = await scroller.evaluate(
@@ -30,15 +34,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await scroller.evaluate((element, y) => {
         element.scrollTop = y;
       }, top);
-      await flushFrames(page);
+      const visibleItemIndex = Math.floor(top / itemHeight);
+      await test.expect(q.button(`item ${visibleItemIndex}`)).toBeVisible();
     }
     await scroller.evaluate((element) => {
       element.scrollTop = element.scrollHeight;
     });
-    await flushFrames(page);
+    await test.expect(q.button("item 198")).toBeVisible();
     await scroller.evaluate((element) => {
       element.scrollTop = 0;
     });
+    await test.expect(q.button("item 1")).toBeVisible();
+    // The leak counter samples detached nodes on its own frame loop. Its
+    // expected zero is not a positive completion state, so cross that loop
+    // after the rendered item confirms the final scroll has completed.
     await flushFrames(page);
 
     // Scrolled-out items must have been unobserved — no detached node retained.
@@ -46,11 +55,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     // Re-rendering items to new nodes (same id) must unobserve the old nodes.
     await q.button("Refresh items").click();
+    // Refreshing preserves every visible label, and the expected leak count is
+    // still zero, so neither exposes a positive completion state to await.
     await flushFrames(page);
     await test.expect(detachedCount).toHaveText("0");
 
     // Unmounting the list must disconnect the observer — still nothing retained.
     await q.button("Unmount the list").click();
+    await test.expect(q.button(/^item /)).toHaveCount(0);
+    // The list removal is observable above, but the negative leak counter is
+    // sampled on the following frames and could otherwise pass while stale.
     await flushFrames(page);
     await test.expect(detachedCount).toHaveText("0");
   });

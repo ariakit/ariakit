@@ -15,7 +15,7 @@ type Value = ComboboxStoreSelectedValue;
  * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
- * <ComboboxProvider defaultValue="">
+ * <ComboboxProvider defaultInputValue="">
  *   <Combobox />
  *   <ComboboxPopover>
  *     <ComboboxItem value="Apple" />

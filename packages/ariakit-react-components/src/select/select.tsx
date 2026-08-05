@@ -12,6 +12,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import {
   toArray,
+  disabledFromProps,
   getPopupRole,
   queueBeforeEvent,
   invariant,
@@ -73,6 +74,7 @@ function nextWithValue(store: SelectStore, next: SelectStore["next"]) {
 
 /**
  * Returns props to create a `Select` component.
+ * @deprecated Use `useComboboxSelect` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -102,6 +104,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   );
 
   const onKeyDownProp = props.onKeyDown;
+  const disabledProp = disabledFromProps(props);
   const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
   const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
   const placement = useStoreState(store, "placement");
@@ -208,7 +211,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
             name={name}
             form={form}
             required={required}
-            disabled={props.disabled}
+            disabled={disabledProp}
             value={value}
             multiple={multiSelectable}
             // Even though this element is visually hidden and is not
@@ -256,7 +259,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
       value,
       multiSelectable,
       values,
-      props.disabled,
+      disabledProp,
     ],
   );
 
@@ -298,6 +301,8 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
  * rendered as the children, followed by a
  * [`SelectArrow`](https://ariakit.com/reference/select-arrow) component. This
  * can be customized by passing different children to the component.
+ * @deprecated Use
+ * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {2}
@@ -315,6 +320,7 @@ export const Select = forwardRef(function Select(props: SelectProps) {
   return createElement(TagName, htmlProps);
 });
 
+/** @deprecated Use `ComboboxSelectOptions` instead. */
 export interface SelectOptions<T extends ElementType = TagName>
   extends
     PopoverDisclosureOptions<T>,
@@ -363,6 +369,7 @@ export interface SelectOptions<T extends ElementType = TagName>
   >;
 }
 
+/** @deprecated Use `ComboboxSelectProps` instead. */
 export type SelectProps<T extends ElementType = TagName> = Props<
   T,
   SelectOptions<T>

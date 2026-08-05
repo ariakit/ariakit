@@ -10,7 +10,7 @@ function MenuWithCombobox() {
   return (
     <Ariakit.ComboboxProvider
       resetValueOnHide
-      includesBaseElement={false}
+      compositeElementInFocusOrder={false}
       value={value}
       setValue={setValue}
     >
@@ -44,7 +44,7 @@ function MenuWithComboboxSubmenu() {
         <Ariakit.MenuItem>Copy</Ariakit.MenuItem>
         <Ariakit.ComboboxProvider
           resetValueOnHide
-          includesBaseElement={false}
+          compositeElementInFocusOrder={false}
           value={value}
           setValue={setValue}
         >

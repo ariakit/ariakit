@@ -50,8 +50,15 @@ export function createComboboxStore({
   ...props
 }: ComboboxStoreProps = {}): ComboboxStore {
   const store = mergeStore(props.store, pick(tag, ["value", "rtl"]));
+  const defaultInputValue = defaultValue(
+    props.defaultInputValue,
+    props.defaultValue,
+  );
 
-  throwOnConflictingProps(props, store);
+  throwOnConflictingProps(
+    { ...props, defaultInputValue, defaultValue: defaultInputValue },
+    store,
+  );
 
   const tagState = tag?.getState();
   const syncState = store?.getState();
@@ -66,8 +73,10 @@ export function createComboboxStore({
   const composite = createCompositeStore({
     ...props,
     activeId,
-    includesBaseElement: defaultValue(
+    compositeElementInFocusOrder: defaultValue(
+      props.compositeElementInFocusOrder,
       props.includesBaseElement,
+      syncState?.compositeElementInFocusOrder,
       syncState?.includesBaseElement,
       true,
     ),
@@ -94,10 +103,12 @@ export function createComboboxStore({
     ),
   });
 
-  const value = defaultValue(
+  const inputValue = defaultValue(
+    props.inputValue,
     props.value,
+    syncState?.inputValue,
     syncState?.value,
-    props.defaultValue,
+    defaultInputValue,
     "",
   );
 
@@ -120,7 +131,8 @@ export function createComboboxStore({
   const initialState: ComboboxStoreState = {
     ...composite.getState(),
     ...popover.getState(),
-    value,
+    inputValue,
+    value: inputValue,
     selectedValue,
     resetValueOnSelect: defaultValue(
       props.resetValueOnSelect,
@@ -145,6 +157,16 @@ export function createComboboxStore({
   };
 
   const combobox = createStore(initialState, composite, popover, store);
+  setup(combobox, () =>
+    chain(
+      sync(combobox, ["inputValue"], (state) => {
+        combobox.setState("value", state.inputValue);
+      }),
+      sync(combobox, ["value"], (state) => {
+        combobox.setState("inputValue", state.value);
+      }),
+    ),
+  );
   let resolveSelectedItemOnOpen = false;
   const selectDefaultOptions = new Set<keyof ComboboxStoreState>();
   if (props.focusLoop === undefined && syncState?.focusLoop === undefined) {
@@ -154,10 +176,12 @@ export function createComboboxStore({
     selectDefaultOptions.add("focusWrap");
   }
   if (
+    props.compositeElementInFocusOrder === undefined &&
     props.includesBaseElement === undefined &&
+    syncState?.compositeElementInFocusOrder === undefined &&
     syncState?.includesBaseElement === undefined
   ) {
-    selectDefaultOptions.add("includesBaseElement");
+    selectDefaultOptions.add("compositeElementInFocusOrder");
   }
   if (
     props.resetValueOnSelect === undefined &&
@@ -166,34 +190,40 @@ export function createComboboxStore({
     selectDefaultOptions.add("resetValueOnSelect");
   }
   let syncedSelectElement =
-    initialState.baseElement === initialState.selectElement
+    initialState.compositeElement === initialState.selectElement
       ? initialState.selectElement
       : null;
   const initialFallback =
     initialState.selectElement ||
-    initialState.baseElement ||
+    initialState.compositeElement ||
     initialState.disclosureElement;
   let syncedAnchorElement =
     initialState.anchorElement === initialFallback
       ? initialState.anchorElement
       : null;
 
-  // Use the select as the composite base until an input or explicit base
-  // element takes ownership. The input may mount after the select, so this must
-  // stay in sync rather than being decided by the select ref alone.
+  // Use the select as the composite element until an input or explicit
+  // composite element takes ownership. The input may mount after the select,
+  // so this must stay in sync rather than being decided by the select ref alone.
   setup(combobox, () =>
-    sync(combobox, ["baseElement", "selectElement"], (state) => {
+    sync(combobox, ["compositeElement", "selectElement"], (state) => {
       if (!state.selectElement && !syncedSelectElement) return;
-      if (state.baseElement && state.baseElement === state.selectElement) {
+      if (
+        state.compositeElement &&
+        state.compositeElement === state.selectElement
+      ) {
         syncedSelectElement = state.selectElement;
         return;
       }
-      if (state.baseElement && state.baseElement !== syncedSelectElement) {
+      if (
+        state.compositeElement &&
+        state.compositeElement !== syncedSelectElement
+      ) {
         syncedSelectElement = null;
         return;
       }
       syncedSelectElement = state.selectElement;
-      combobox.setState("baseElement", syncedSelectElement);
+      combobox.setState("compositeElement", syncedSelectElement);
     }),
   );
 
@@ -204,16 +234,20 @@ export function createComboboxStore({
   setup(combobox, () =>
     sync(combobox, ["selectElement"], (state) => {
       if (!state.selectElement) return;
-      const { focusLoop, focusWrap, includesBaseElement, resetValueOnSelect } =
-        combobox.getState();
+      const {
+        focusLoop,
+        focusWrap,
+        compositeElementInFocusOrder,
+        resetValueOnSelect,
+      } = combobox.getState();
       if (selectDefaultOptions.has("focusLoop")) {
         composite.setState("focusLoop", false);
       }
       if (selectDefaultOptions.has("focusWrap")) {
         composite.setState("focusWrap", false);
       }
-      if (selectDefaultOptions.has("includesBaseElement")) {
-        composite.setState("includesBaseElement", false);
+      if (selectDefaultOptions.has("compositeElementInFocusOrder")) {
+        composite.setState("compositeElementInFocusOrder", false);
       }
       if (selectDefaultOptions.has("resetValueOnSelect")) {
         combobox.setState("resetValueOnSelect", true);
@@ -227,10 +261,13 @@ export function createComboboxStore({
           composite.setState("focusWrap", focusWrap);
         }
         if (
-          selectDefaultOptions.has("includesBaseElement") &&
-          !current.includesBaseElement
+          selectDefaultOptions.has("compositeElementInFocusOrder") &&
+          !current.compositeElementInFocusOrder
         ) {
-          composite.setState("includesBaseElement", includesBaseElement);
+          composite.setState(
+            "compositeElementInFocusOrder",
+            compositeElementInFocusOrder,
+          );
         }
         if (
           selectDefaultOptions.has("resetValueOnSelect") &&
@@ -242,13 +279,18 @@ export function createComboboxStore({
     }),
   );
 
-  // Prefer the select as the popover anchor, then the composite base, then the
-  // disclosure. Track only the fallback assigned here so an explicit anchor
-  // keeps ownership.
+  // Prefer the select as the popover anchor, then the composite element, then
+  // the disclosure. Track only the fallback assigned here so an explicit
+  // anchor keeps ownership.
   setup(combobox, () =>
     sync(
       combobox,
-      ["anchorElement", "baseElement", "disclosureElement", "selectElement"],
+      [
+        "anchorElement",
+        "compositeElement",
+        "disclosureElement",
+        "selectElement",
+      ],
       (state) => {
         if (
           state.anchorElement &&
@@ -258,7 +300,9 @@ export function createComboboxStore({
           return;
         }
         const fallback =
-          state.selectElement || state.baseElement || state.disclosureElement;
+          state.selectElement ||
+          state.compositeElement ||
+          state.disclosureElement;
         syncedAnchorElement = fallback;
         combobox.setState("anchorElement", syncedAnchorElement);
       },
@@ -325,7 +369,7 @@ export function createComboboxStore({
     sync(combobox, ["resetValueOnHide", "mounted"], (state) => {
       if (!state.resetValueOnHide) return;
       if (state.mounted) return;
-      combobox.setState("value", value);
+      combobox.setState("inputValue", inputValue);
     }),
   );
 
@@ -414,8 +458,17 @@ export function createComboboxStore({
     }),
   );
 
+  const setInputValue: ComboboxStore["setInputValue"] = (value) => {
+    combobox.setState("inputValue", value);
+  };
+
+  const resetInputValue = () => setInputValue(initialState.inputValue);
+
   const setState: ComboboxStore["setState"] = (key, value) => {
     selectDefaultOptions.delete(key);
+    if (key === "includesBaseElement") {
+      selectDefaultOptions.delete("compositeElementInFocusOrder");
+    }
     if (key === "selectedValue") {
       shouldSetDefaultSelectedValue = false;
     }
@@ -428,8 +481,10 @@ export function createComboboxStore({
     ...combobox,
     setState,
     tag,
-    setValue: (value) => combobox.setState("value", value),
-    resetValue: () => combobox.setState("value", initialState.value),
+    setInputValue,
+    resetInputValue,
+    setValue: setInputValue,
+    resetValue: resetInputValue,
     setSelectedValue: (selectedValue) =>
       setState("selectedValue", selectedValue),
     setInputElement: (element) => combobox.setState("inputElement", element),
@@ -454,6 +509,12 @@ export interface ComboboxStoreState<
    * Defaults to `true`, or `false` when a
    * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
    * rendered.
+   */
+  compositeElementInFocusOrder: CompositeStoreState<ComboboxStoreItem>["compositeElementInFocusOrder"];
+  /**
+   * @deprecated Use
+   * [`compositeElementInFocusOrder`](https://ariakit.com/reference/combobox-provider#compositeelementinfocusorder)
+   * instead.
    */
   includesBaseElement: CompositeStoreState<ComboboxStoreItem>["includesBaseElement"];
   /**
@@ -486,6 +547,13 @@ export interface ComboboxStoreState<
    *   Combobox](https://ariakit.com/examples/combobox-textarea)
    * - [Command Menu with
    *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
+   */
+  inputValue: string;
+  /**
+   * The combobox input value.
+   * @deprecated Use
+   * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
+   * instead.
    */
   value: string;
   /**
@@ -595,20 +663,39 @@ export interface ComboboxStoreFunctions<
     CompositeStoreFunctions<ComboboxStoreItem>,
     PopoverStoreFunctions {
   /**
-   * Sets the [`value`](https://ariakit.com/reference/combobox-provider#value)
+   * Sets the
+   * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
    * state.
    *
    * Live examples:
    * - [Textarea with inline
    *   Combobox](https://ariakit.com/examples/combobox-textarea)
    * @example
-   * store.setValue("Hello world");
-   * store.setValue((value) => value + "!");
+   * store.setInputValue("Hello world");
+   * store.setInputValue((value) => value + "!");
+   */
+  setInputValue: SetState<ComboboxStoreState<T>["inputValue"]>;
+  /**
+   * Resets the
+   * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
+   * state to its initial value.
+   */
+  resetInputValue: () => void;
+  /**
+   * Sets the
+   * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
+   * state.
+   * @deprecated Use [`setInputValue`](https://ariakit.com/reference/combobox-provider#setinputvalue)
+   * instead.
    */
   setValue: SetState<ComboboxStoreState<T>["value"]>;
   /**
-   * Resets the [`value`](https://ariakit.com/reference/combobox-provider#value)
+   * Resets the
+   * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
    * state to its initial value.
+   * @deprecated Use
+   * [`resetInputValue`](https://ariakit.com/reference/use-combobox-store#resetinputvalue)
+   * instead.
    */
   resetValue: () => void;
   /**
@@ -641,11 +728,12 @@ export interface ComboboxStoreOptions<
   extends
     StoreOptions<
       ComboboxStoreState<T>,
-      | "includesBaseElement"
+      | "compositeElementInFocusOrder"
       | "focusLoop"
       | "focusWrap"
       | "orientation"
       | "virtualFocus"
+      | "inputValue"
       | "value"
       | "selectedValue"
       | "selectOnMove"
@@ -658,6 +746,14 @@ export interface ComboboxStoreOptions<
   defaultActiveId?: CompositeStoreOptions<ComboboxStoreItem>["activeId"];
   /**
    * The initial value of the combobox input.
+   * @default ""
+   */
+  defaultInputValue?: ComboboxStoreState<T>["inputValue"];
+  /**
+   * The initial value of the combobox input.
+   * @deprecated Use
+   * [`defaultInputValue`](https://ariakit.com/reference/combobox-provider#defaultinputvalue)
+   * instead.
    * @default ""
    */
   defaultValue?: ComboboxStoreState<T>["value"];

@@ -6,9 +6,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
 import {
-  getDocument,
   isTextField,
-  sortBasedOnDOMPosition,
   isSelfTarget,
   invariant,
   normalizeString,
@@ -162,34 +160,13 @@ export const useCompositeTypeahead = createHook<
     if (!isValidTypeaheadEvent(event, typeaheadState)) {
       return clearChars(typeaheadState);
     }
-    const { renderedItems, items, activeId, id } = store.getState();
+    const { renderedItems, items, activeId } = store.getState();
     // We typically want to use the rendered items, as they're already sorted.
     // However, the composite list might be unmounted or virtualized, in which
     // case we'll use the original items.
     let enabledItems = getEnabledItems(
       items.length > renderedItems.length ? items : renderedItems,
     );
-    // When the composite widget contains items with the `offscreenMode`
-    // prop, we need to consider them as well.
-    const document = getDocument(event.currentTarget);
-    const selector = `[data-offscreen-id="${id}"]`;
-    const offscreenItems = document.querySelectorAll<HTMLElement>(selector);
-    // Push the offscreen items to the enabled items list.
-    for (const element of offscreenItems) {
-      if (element.hasAttribute("data-disabled")) continue;
-      if ("disabled" in element && !!element.disabled) continue;
-      enabledItems.push({
-        id: element.id,
-        element,
-        typeaheadText: element.dataset.typeaheadText,
-      });
-    }
-    // If there are offscreen items, we need to sort the enabled items based on
-    // their DOM position so offscreen elements above the viewport are correctly
-    // considered.
-    if (offscreenItems.length) {
-      enabledItems = sortBasedOnDOMPosition(enabledItems, (i) => i.element);
-    }
     if (!isSelfTargetOrItem(event, enabledItems)) {
       return clearChars(typeaheadState);
     }
@@ -228,6 +205,8 @@ export const useCompositeTypeahead = createHook<
     onKeyDownCapture,
   };
 
+  // Component props are filtered in forwardRef, but useComboboxPopover calls
+  // this hook before computing defaults. Keep direct hook calls protected too.
   return removeUndefinedValues(props);
 });
 

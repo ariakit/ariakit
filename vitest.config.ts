@@ -1,91 +1,131 @@
 import { dirname, join } from "node:path";
 import reactPlugin from "@vitejs/plugin-react";
 import { globSync } from "glob";
-import type { PluginOption } from "vite";
 import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./app/src/lib/source-plugin.ts";
-import { getTestLoader } from "./test-loader.ts";
-import type { AllowedTestLoader } from "./test-loader.ts";
 
 const rootDir = process.cwd();
 
-const testLoader = getTestLoader();
+const testIncludes = ["**/*test.{ts,tsx}"];
 
-const defaultTestIncludes = ["**/*test.{ts,tsx}"];
+const frameworks = ["react", "solid"] as const;
 
-const defaultTestExcludes = [
-  "packages/ariakit-react*/src/**/*test.{ts,tsx}",
-  "packages/ariakit-solid*/src/**/*test.{ts,tsx}",
-  // Loader-specific tests (`*react.test.*`/`*solid.test.*`) run via test-react
-  // and test-solid. Their names also match the generic `*test.*` include above,
-  // so keep them out of the default (no-loader) suite explicitly.
-  "**/*react.test.{ts,tsx}",
-  "**/*solid.test.{ts,tsx}",
-  "app/src/{examples,sandbox}/**/test.{ts,tsx}",
+type Framework = (typeof frameworks)[number];
+
+const nonDomPackages = [
+  "scripts",
+  ...frameworks.map((framework) => `${framework}*`),
 ];
 
-function getFrameworkTestIncludes(loader: AllowedTestLoader) {
+function getFrameworkTestIncludes(framework: Framework) {
   const entryFiles = globSync(
-    `app/src/{examples,sandbox}/**/index.${loader}.tsx`,
+    `app/src/{examples,sandbox}/**/index.${framework}.tsx`,
     { cwd: rootDir },
   );
   const exampleTests = entryFiles.flatMap((file) => {
     const dir = dirname(file);
-    return [`${dir}/test.{ts,tsx}`, `${dir}/${loader}.test.{ts,tsx}`];
+    return [`${dir}/test.{ts,tsx}`, `${dir}/${framework}.test.{ts,tsx}`];
   });
-  // The first glob covers the ariakit-${loader}* packages, whose tests are
-  // all loader-specific. The second picks up loader-marked
-  // `*${loader}.test.{ts,tsx}` files in any other package, like ariakit-test.
+  // The first glob covers framework packages except explicit DOM overrides.
+  // The second picks up framework-marked test files in any other package,
+  // like ariakit-test.
   return [
-    `packages/ariakit-${loader}*/src/**/*test.{ts,tsx}`,
-    `packages/*/src/**/*${loader}.test.{ts,tsx}`,
+    `packages/ariakit-${framework}*/src/**/{test,!(*.dom).test}.{ts,tsx}`,
+    `packages/*/src/**/*${framework}.test.{ts,tsx}`,
     ...exampleTests,
   ];
 }
 
-const testIncludes = testLoader
-  ? getFrameworkTestIncludes(testLoader)
-  : defaultTestIncludes;
+const domTestOverrides = ["**/*.dom.test.{ts,tsx}"];
 
-const testExcludes = [
-  ...configDefaults.exclude,
-  ".claude/**",
-  ...(testLoader ? [] : defaultTestExcludes),
-];
+const projectTestClaims = {
+  dom: [
+    ...domTestOverrides,
+    `packages/ariakit-!(${nonDomPackages.join("|")})/src/**/*test.{ts,tsx}`,
+  ],
+  react: getFrameworkTestIncludes("react"),
+  solid: getFrameworkTestIncludes("solid"),
+};
 
-const sourcePluginInstance = sourcePlugin(join(rootDir, "app/src/examples/"));
+type TestProject = "node" | keyof typeof projectTestClaims;
 
-const plugins: PluginOption[] = [sourcePluginInstance];
-if (testLoader === "react") {
-  plugins.unshift(reactPlugin());
-} else if (testLoader === "solid") {
-  plugins.unshift(solidPlugin());
+function getProjectTestExcludes(project: TestProject) {
+  if (project === "node") {
+    return Object.values(projectTestClaims).flat();
+  }
+  if (project === "dom") {
+    return frameworks.flatMap((framework) => projectTestClaims[framework]);
+  }
+  return domTestOverrides;
 }
+
+function getProjectTestPatterns(project: TestProject) {
+  const include =
+    project === "node" ? testIncludes : projectTestClaims[project];
+  const exclude = getProjectTestExcludes(project);
+  return { exclude, include };
+}
+
+const testExcludes = [...configDefaults.exclude, ".claude/**"];
 
 export default defineConfig({
   root: rootDir,
-  plugins,
   test: {
     watch: false,
     testTimeout: 10_000,
-    // Every suite runs on happy-dom — it's ~2x faster than jsdom for the
-    // @ariakit/test simulation layer and provides the DOM every suite needs,
-    // including the React 18 suite (`test-react18`). happy-dom's spec
-    // divergences from jsdom and real browsers are normalized by the shims in
-    // `@ariakit/test` (see `packages/ariakit-test/src/shims.ts` and the
-    // `window.event` shim in `dispatch.ts`, which restores React 18's
-    // discrete-event priority). Individual tests can still opt into another
-    // installed environment with a `// @vitest-environment <name>` comment.
-    environment: "happy-dom",
     setupFiles: [join(rootDir, "vitest.setup.ts")],
     exclude: testExcludes,
-    include: testIncludes,
     sequence: {
       hooks: "parallel",
     },
     coverage: {
       include: ["packages"],
     },
+    // The DOM projects run on happy-dom because it is ~2x faster than jsdom
+    // for the @ariakit/test simulation layer. The shims in @ariakit/test
+    // normalize its spec divergences, including React 18 event priority (see
+    // packages/ariakit-test/src/shims.ts and the window.event shim in
+    // dispatch.ts). Individual tests can still opt into another installed
+    // environment with a `// @vitest-environment <name>` file comment.
+    projects: [
+      {
+        extends: true,
+        plugins: [sourcePlugin(join(rootDir, "app/src/examples/"))],
+        test: {
+          name: "node",
+          environment: "node",
+          ...getProjectTestPatterns("node"),
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "dom",
+          environment: "happy-dom",
+          ...getProjectTestPatterns("dom"),
+        },
+      },
+      {
+        extends: true,
+        plugins: [reactPlugin()],
+        test: {
+          name: "react",
+          environment: "happy-dom",
+          ...getProjectTestPatterns("react"),
+          setupFiles: [join(rootDir, "vitest.setup.react.ts")],
+        },
+      },
+      {
+        extends: true,
+        plugins: [solidPlugin()],
+        test: {
+          name: "solid",
+          environment: "happy-dom",
+          ...getProjectTestPatterns("solid"),
+          setupFiles: [join(rootDir, "vitest.setup.solid.ts")],
+        },
+      },
+    ],
   },
 });

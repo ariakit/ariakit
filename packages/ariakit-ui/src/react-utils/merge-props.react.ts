@@ -34,6 +34,7 @@ export function mergeProps<T extends React.HTMLAttributes<any>>(
     }
 
     const overrideValue = overrides[key];
+    if (overrideValue === undefined) continue;
 
     if (key.startsWith("on")) {
       // A non-function on* override (an optional handler spread as an

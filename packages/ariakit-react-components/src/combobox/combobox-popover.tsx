@@ -10,18 +10,12 @@ import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
   getActiveElement,
-  isFocusable,
-  isSelfTarget,
   getDocument,
   invariant,
   isFalsyBooleanCallback,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
-import type {
-  ElementType,
-  FocusEvent,
-  KeyboardEvent as ReactKeyboardEvent,
-} from "react";
+import type { ElementType, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useEffect, useRef } from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
@@ -34,7 +28,6 @@ import { useComboboxList } from "./combobox-list.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
-type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isController(
   target: EventTarget | Element | null,
@@ -86,7 +79,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         "ComboboxPopover must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
-    const baseElement = useStoreState(store, "baseElement");
+    const compositeElement = useStoreState(store, "compositeElement");
     const inputElement = useStoreState(store, "inputElement");
     const selectElement = useStoreState(store, "selectElement");
     const hiddenByClickOutsideRef = useRef(false);
@@ -145,27 +138,6 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       );
     }, [store]);
 
-    // Virtual focus keeps DOM focus on the combobox input or select, so the
-    // popup itself must never hold it. Otherwise arrow keys stop working until
-    // the user tabs back out.
-    const onFocusProp = props.onFocus;
-
-    const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
-      onFocusProp?.(event);
-      if (event.defaultPrevented) return;
-      if (!isSelfTarget(event)) return;
-      const baseElement = store?.getState().baseElement;
-      if (!baseElement) return;
-      // A modal popover may render the base element inert, in which case
-      // moving focus there would fight the dialog's focus containment.
-      if (!isFocusable(baseElement)) return;
-      const popover = event.currentTarget;
-      queueMicrotask(() => {
-        if (getDocument(popover).activeElement !== popover) return;
-        baseElement.focus();
-      });
-    });
-
     // Moving through items only changes the selected value when selectOnMove is
     // enabled, so that's the only case where there's something to restore.
     const resetOnEscapeProp = useBooleanEvent(resetOnEscape ?? selectOnMove);
@@ -184,7 +156,6 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       store,
       alwaysVisible,
       ...props,
-      onFocus,
     });
     props = useCompositeTypeahead({
       store,
@@ -194,6 +165,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
 
     const hideOnEscapeProp = useBooleanEvent(props.hideOnEscape ?? true);
     const onCloseProp = props.onClose;
+    const getPersistentElementsProp = props.getPersistentElements;
 
     const hideOnEscape = useEvent((event: KeyboardEvent) => {
       const accepted = hideOnEscapeProp(event);
@@ -252,7 +224,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       // Without an input, only take focus when the select initiated the open.
       autoFocusOnShow: hasSelect && (!!inputElement || selectOwnsFocus),
       initialFocus: hasSelect ? inputElement : undefined,
-      finalFocus: selectElement || baseElement,
+      finalFocus: selectElement || compositeElement,
       preserveTabOrderAnchor: null,
       unstable_treeSnapshotKey: treeSnapshotKey,
       ...props,
@@ -263,13 +235,18 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       // are rendered outside of it in the list of persistent elements, so they
       // make part of the modal context and users can tab through them.
       getPersistentElements() {
-        const elements = props.getPersistentElements?.() || [];
+        const elements = getPersistentElementsProp?.() || [];
         if (!modal) return elements;
         if (!store) return elements;
-        const { baseElement, contentElement, inputElement, selectElement } =
-          store.getState();
-        const controls = [baseElement, inputElement, selectElement];
-        const persistentElement = selectElement || inputElement || baseElement;
+        const {
+          compositeElement,
+          contentElement,
+          inputElement,
+          selectElement,
+        } = store.getState();
+        const controls = [compositeElement, inputElement, selectElement];
+        const persistentElement =
+          selectElement || inputElement || compositeElement;
         if (!persistentElement) return elements;
         const persistentElements = new Set(elements);
         // Elements inside the popup are already part of the modal context.
@@ -312,8 +289,8 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       hideOnInteractOutside(event: Event) {
         const state = store?.getState();
         const contentId = state?.contentElement?.id;
-        const baseId = state?.baseElement?.id;
-        if (isController(event.target, contentId, baseId)) return false;
+        const compositeId = state?.compositeElement?.id;
+        if (isController(event.target, contentId, compositeId)) return false;
         const result =
           typeof hideOnInteractOutside === "function"
             ? hideOnInteractOutside(event)
@@ -366,12 +343,15 @@ export interface ComboboxPopoverOptions<T extends ElementType = TagName>
    */
   typeahead?: CompositeTypeaheadOptions<T>["typeahead"];
   /**
-   * Whether the combobox
+   * Whether the combobox's
    * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
-   * should be restored to the value it had before the popover was shown when
+   * should be restored to what it was before the first item movement when
    * the popover accepts Escape and the cancelable close event isn't prevented.
-   * A descendant that handles Escape itself leaves the value alone. Defaults
-   * to the store's
+   * Selection changes made before any item movement become part of the selected
+   * value Escape restores.
+   *
+   * A descendant that handles Escape itself leaves the selected value alone.
+   * Defaults to the store's
    * [`selectOnMove`](https://ariakit.com/reference/combobox-provider#selectonmove)
    * value, since moving through items is what changes the selected value while
    * the popover is open. This has no effect when the combobox supports multiple

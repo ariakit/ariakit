@@ -75,6 +75,10 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          # `app...` already selects `nextjs` through `app`'s `workspace:*`
+          # devDependency, so a separate `nextjs...` entry is redundant.
+          filters: app...
 
       - name: Download Next.js app artifact
         id: download-nextjs-artifact

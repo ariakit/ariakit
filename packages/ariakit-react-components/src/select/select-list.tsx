@@ -39,6 +39,7 @@ const SelectListContext = createContext<
 
 /**
  * Returns props to create a `SelectList` component.
+ * @deprecated Use `useComboboxList` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -183,6 +184,8 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
  *
  * The `aria-labelledby` prop is set to the
  * [`Select`](https://ariakit.com/reference/select) element's `id` by default.
+ * @deprecated Use
+ * [`ComboboxList`](https://ariakit.com/reference/combobox-list) instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5-8}
@@ -205,6 +208,7 @@ export const SelectList = forwardRef(function SelectList(
   return createElement(TagName, htmlProps);
 });
 
+/** @deprecated Use `ComboboxListOptions` instead. */
 export interface SelectListOptions<T extends ElementType = TagName>
   extends
     CompositeOptions<T>,
@@ -236,6 +240,7 @@ export interface SelectListOptions<T extends ElementType = TagName>
   hideOnEnter?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
 }
 
+/** @deprecated Use `ComboboxListProps` instead. */
 export type SelectListProps<T extends ElementType = TagName> = Props<
   T,
   SelectListOptions<T>

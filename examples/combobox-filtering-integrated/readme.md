@@ -48,18 +48,21 @@ However, the filtering logic can't change the order of the items. That is, the f
 
 ## Exposing `value` and `onChange` props
 
-In this `Combobox` implementation, we're exposing custom `value` and `onChange` props so that the component can be used as a controlled input. This is done by passing the [`value`](/reference/use-combobox-store#value) and [`setValue`](/reference/use-combobox-store#setvalue) props to the lower-level [`useComboboxStore`](/reference/use-combobox-store) hook:
+In this `Combobox` implementation, we're exposing custom `value` and `onChange` props so that the component can be used as a controlled input. This is done by passing the [`inputValue`](/reference/use-combobox-store#inputvalue) and [`setInputValue`](/reference/use-combobox-store#setinputvalue) props to the lower-level [`useComboboxStore`](/reference/use-combobox-store) hook:
 
-```js "value"1 "setValue:"
+```js "inputValue:"1 "setInputValue:"
 function Combobox({ value, onChange }) {
-  const combobox = useComboboxStore({ value, setValue: onChange });
+  const combobox = useComboboxStore({
+    inputValue: value,
+    setInputValue: onChange,
+  });
 }
 ```
 
 We can use the custom [`useStoreState`](/reference/use-store-state) hook provided by Ariakit to access the current value, regardless if it's controlled or uncontrolled:
 
 ```js
-const searchValue = useStoreState(combobox, "value");
+const searchValue = useStoreState(combobox, "inputValue");
 ```
 
 You can learn more about these functions on the [Component stores](/guide/component-stores) guide.

@@ -36,19 +36,19 @@ type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
 function menuHasFocus(
-  baseElement?: MenuStoreState["baseElement"],
+  compositeElement?: MenuStoreState["compositeElement"],
   items?: MenuStoreState["items"],
   currentTarget?: Element,
 ) {
-  if (!baseElement) return false;
-  if (hasFocusWithin(baseElement)) return true;
+  if (!compositeElement) return false;
+  if (hasFocusWithin(compositeElement)) return true;
   const expandedItem = items?.find((item) => {
     if (item.element === currentTarget) return false;
     return item.element?.getAttribute("aria-expanded") === "true";
   });
   const expandedMenuId = expandedItem?.element?.getAttribute("aria-controls");
   if (!expandedMenuId) return false;
-  const doc = getDocument(baseElement);
+  const doc = getDocument(compositeElement);
   const expandedMenu = doc.getElementById(expandedMenuId);
   if (!expandedMenu) return false;
   if (hasFocusWithin(expandedMenu)) return true;
@@ -153,21 +153,24 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
         };
         if (!store) return false;
         if (!getFocusOnHover()) return false;
-        const { baseElement, items } = store.getState();
+        const { compositeElement, items } = store.getState();
+        // Hovering is not a request to move the page or menu; the pointer is
+        // already on what the user cares about. Keyboard navigation presents
+        // items through the composite's own scroll step.
         // If the menu item is also a submenu button, we should move actual DOM
         // focus to it so that the submenu will not close when the user moves
         // the cursor back to the menu button.
         if (isWithinMenu) {
           if (event.currentTarget.hasAttribute("aria-expanded")) {
-            event.currentTarget.focus();
+            event.currentTarget.focus({ preventScroll: true });
           }
           return true;
         }
         // If the menu item is inside a menu bar, we should move DOM focus to
         // the menu item if focus is somewhere on the widget. Without this, the
         // open menus in the menu bar wouldn't close.
-        if (menuHasFocus(baseElement, items, event.currentTarget)) {
-          event.currentTarget.focus();
+        if (menuHasFocus(compositeElement, items, event.currentTarget)) {
+          event.currentTarget.focus({ preventScroll: true });
           return true;
         }
         return false;

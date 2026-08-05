@@ -292,6 +292,8 @@ export const useDisclosureContent = createHook<
     style,
   };
 
+  // useDialog computes focusable defaults after this hook. Remove sentinels
+  // before they can overwrite those later defaults.
   return removeUndefinedValues(props);
 });
 

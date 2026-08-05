@@ -130,3 +130,66 @@ export function LegacyPublicSelectDefaultOpenCase() {
     </Ariakit.SelectProvider>
   );
 }
+
+export function LegacyPublicSelectValuelessItemsCase() {
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const fruit = Ariakit.useSelectStore({ defaultValue: "Cherry" });
+  const color = Ariakit.useSelectStore({ defaultValue: "Green" });
+  const shape = Ariakit.useSelectStore({
+    defaultValue: "Triangle",
+    focusLoop: true,
+  });
+  return (
+    <>
+      <div>
+        <Ariakit.SelectLabel store={fruit}>
+          Valueless favorite fruit
+        </Ariakit.SelectLabel>
+        <Ariakit.Select store={fruit} />
+        <Ariakit.SelectPopover store={fruit}>
+          <Ariakit.SelectItem value="Apple" />
+          <Ariakit.SelectItem value="Banana" />
+          <Ariakit.SelectItem value="Cherry" />
+          <Ariakit.SelectItem hideOnClick onClick={() => fruit.setValue("")}>
+            Clear selection
+          </Ariakit.SelectItem>
+          <Ariakit.SelectItem
+            hideOnClick
+            onClick={() => setShowCustomInput(true)}
+          >
+            Other fruit…
+          </Ariakit.SelectItem>
+        </Ariakit.SelectPopover>
+        {showCustomInput && <input aria-label="Other fruit" />}
+      </div>
+      <div>
+        <Ariakit.SelectLabel store={color}>
+          Valueless favorite color
+        </Ariakit.SelectLabel>
+        <Ariakit.Select store={color} showOnKeyDown={false} />
+        <Ariakit.SelectPopover store={color}>
+          <Ariakit.SelectItem value="Red" />
+          <Ariakit.SelectItem value="Green" />
+          <Ariakit.SelectItem value="Blue" />
+          <Ariakit.SelectItem hideOnClick onClick={() => color.setValue("")}>
+            Clear selection
+          </Ariakit.SelectItem>
+        </Ariakit.SelectPopover>
+      </div>
+      <div>
+        <Ariakit.SelectLabel store={shape}>
+          Valueless favorite shape
+        </Ariakit.SelectLabel>
+        <Ariakit.Select store={shape} showOnKeyDown={false} />
+        <Ariakit.SelectPopover store={shape}>
+          <Ariakit.SelectItem value="Square" />
+          <Ariakit.SelectItem value="Circle" />
+          <Ariakit.SelectItem value="Triangle" />
+          <Ariakit.SelectItem hideOnClick onClick={() => shape.setValue("")}>
+            Clear selection
+          </Ariakit.SelectItem>
+        </Ariakit.SelectPopover>
+      </div>
+    </>
+  );
+}

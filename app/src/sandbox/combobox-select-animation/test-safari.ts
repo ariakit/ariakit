@@ -20,6 +20,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("Enter");
 
     await test.expect(q.listbox("Favorite fruit")).toBeVisible();
+    // A prevented scroll has no positive completion state, so wait through the
+    // pending presentation callback and Safari's smooth-scroll checkpoint.
     await flushFrames(page, 2);
     test
       .expect(

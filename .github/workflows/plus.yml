@@ -23,21 +23,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: website...
 
       - name: Install playwright
         uses: ./.github/workflows/install-playwright
         with:
-          engine: chromium
-
-      - name: Cache Next.js
-        uses: actions/cache@v6
-        with:
-          path: website/.next
-          key: nextjs-${{ github.run_id }}
-          restore-keys: nextjs-
+          engines: chromium
+          workspace: website
 
       - name: Build website
         run: pnpm run build-website-lite

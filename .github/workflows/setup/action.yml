@@ -1,19 +1,45 @@
 name: setup
 description: Set up environment
 
+inputs:
+  filters:
+    description: Newline-separated pnpm package filters
+    required: false
+  install:
+    description: Whether to install dependencies
+    default: "true"
+
 runs:
   using: "composite"
   steps:
     - name: Install pnpm
       uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
-      with:
-        cache: ${{ runner.os != 'macOS' }}
 
     - name: Set up Node
       uses: actions/setup-node@v7
       with:
         node-version-file: package.json
 
-    - name: Install dependencies
+    - name: Allow partial install
+      if: inputs.filters != '' || inputs.install != 'true'
       shell: bash
-      run: pnpm install --frozen-lockfile
+      # pnpm otherwise repairs the intentionally partial workspace with an
+      # unfiltered install before the next run or exec command.
+      run: echo "pnpm_config_verify_deps_before_run=false" >> "$GITHUB_ENV"
+
+    - name: Install dependencies
+      if: inputs.install == 'true'
+      shell: bash
+      env:
+        FILTERS: ${{ inputs.filters }}
+      run: |
+        args=(--frozen-lockfile --no-runtime)
+        while IFS= read -r filter; do
+          if [ -n "$filter" ]; then
+            args+=(--filter "$filter")
+          fi
+        done <<< "$FILTERS"
+        if ! pnpm install --fail-if-no-match "${args[@]}"; then
+          echo "::warning::pnpm install failed; retrying once"
+          pnpm install --fail-if-no-match "${args[@]}"
+        fi

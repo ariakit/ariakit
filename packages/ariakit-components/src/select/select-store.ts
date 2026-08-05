@@ -28,12 +28,14 @@ import { createPopoverStore } from "../popover/popover-store.ts";
 type MutableValue<T extends SelectStoreValue = SelectStoreValue> =
   T extends string ? string : T;
 
+/** @deprecated Use `createComboboxStore` instead. */
 export function createSelectStore<
   T extends SelectStoreValue = SelectStoreValue,
 >(
   props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">,
 ): SelectStore<T>;
 
+/** @deprecated Use `createComboboxStore` instead. */
 export function createSelectStore(props?: SelectStoreProps): SelectStore;
 
 export function createSelectStore({
@@ -46,6 +48,7 @@ export function createSelectStore({
       "value",
       "items",
       "renderedItems",
+      "compositeElement",
       "baseElement",
       "arrowElement",
       "anchorElement",
@@ -71,8 +74,10 @@ export function createSelectStore({
       syncState.virtualFocus,
       true,
     ),
-    includesBaseElement: defaultValue(
+    compositeElementInFocusOrder: defaultValue(
+      props.compositeElementInFocusOrder,
       props.includesBaseElement,
+      syncState.compositeElementInFocusOrder,
       syncState.includesBaseElement,
       false,
     ),
@@ -196,12 +201,15 @@ export function createSelectStore({
   };
 }
 
+/** @deprecated Use `ComboboxStoreSelectedValue` instead. */
 export type SelectStoreValue = string | readonly string[];
 
+/** @deprecated Use `ComboboxStoreItem` instead. */
 export interface SelectStoreItem extends CompositeStoreItem {
   value?: string;
 }
 
+/** @deprecated Use `ComboboxStoreState` instead. */
 export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
   extends CompositeStoreState<SelectStoreItem>, PopoverStoreState {
   /** @default true */
@@ -238,6 +246,7 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
   listElement: HTMLElement | null;
 }
 
+/** @deprecated Use `ComboboxStoreFunctions` instead. */
 export interface SelectStoreFunctions<
   T extends SelectStoreValue = SelectStoreValue,
 >
@@ -268,6 +277,7 @@ export interface SelectStoreFunctions<
   setListElement: SetState<SelectStoreState<T>["listElement"]>;
 }
 
+/** @deprecated Use `ComboboxStoreOptions` instead. */
 export interface SelectStoreOptions<
   T extends SelectStoreValue = SelectStoreValue,
 >
@@ -295,8 +305,10 @@ export interface SelectStoreOptions<
   defaultValue?: SelectStoreState<T>["value"];
 }
 
+/** @deprecated Use `ComboboxStoreProps` instead. */
 export interface SelectStoreProps<T extends SelectStoreValue = SelectStoreValue>
   extends SelectStoreOptions<T>, StoreProps<SelectStoreState<T>> {}
 
+/** @deprecated Use `ComboboxStore` instead. */
 export interface SelectStore<T extends SelectStoreValue = SelectStoreValue>
   extends SelectStoreFunctions<T>, Store<SelectStoreState<T>> {}

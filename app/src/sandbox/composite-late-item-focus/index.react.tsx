@@ -11,8 +11,13 @@ export default function Example() {
     defaultActiveId: "autofocus-scroll",
     virtualFocus: true,
   });
+  const virtualStore = Ariakit.useCompositeStore({
+    defaultActiveId: "virtual-late",
+    virtualFocus: true,
+  });
   const [showLateItem, setShowLateItem] = useState(false);
   const [showLateScrollItem, setShowLateScrollItem] = useState(false);
+  const [showVirtualLateItem, setShowVirtualLateItem] = useState(false);
 
   return (
     <>
@@ -71,6 +76,28 @@ export default function Example() {
           Autofocus scroll item
         </Ariakit.CompositeItem>
       </Ariakit.Composite>
+      {/* Focusing a virtual focus composite schedules focus on its active item.
+      When that item hasn't registered yet, the schedule outlives the focus that
+      created it, so it has to be discarded once the user moves on. */}
+      <Ariakit.Composite
+        aria-label="Virtual actions"
+        role="listbox"
+        store={virtualStore}
+        tabIndex={0}
+      >
+        {showVirtualLateItem && (
+          <Ariakit.CompositeItem id="virtual-late" role="option">
+            Virtual late item
+          </Ariakit.CompositeItem>
+        )}
+      </Ariakit.Composite>
+      <button
+        type="button"
+        tabIndex={0}
+        onClick={() => setShowVirtualLateItem(true)}
+      >
+        Mount virtual late item
+      </button>
     </>
   );
 }

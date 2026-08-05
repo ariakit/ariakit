@@ -13,7 +13,11 @@ export interface ComboboxProps extends Omit<ak.ComboboxProps, "onChange"> {
 export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   function Combobox({ value, onChange, children, ...props }, ref) {
     return (
-      <ak.ComboboxProvider value={value} setValue={onChange} placement="bottom">
+      <ak.ComboboxProvider
+        inputValue={value}
+        setInputValue={onChange}
+        placement="bottom"
+      >
         <ak.Combobox
           ref={ref}
           {...props}

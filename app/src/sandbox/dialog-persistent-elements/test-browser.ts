@@ -8,6 +8,20 @@ async function moveMouseTo(page: Page, locator: Locator) {
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  // https://github.com/ariakit/ariakit/issues/6863
+  test("keeps a ComboboxPopover open when interacting with a persistent element", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox("Fruit").click();
+    await test.expect(q.option("Apple")).toBeVisible();
+
+    await q.button("Persistent combobox action").click();
+    await test.expect(q.status()).toHaveText("Combobox actions: 1");
+    await page.waitForTimeout(250);
+    await test.expect(q.option("Apple")).toBeVisible();
+  });
+
   // https://github.com/ariakit/ariakit/issues/6344
   test("stays open when interacting with a persistent element before the dialog is focused", async ({
     page,
@@ -90,6 +104,17 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.textbox("Notification field")).toBeFocused();
     await page.waitForTimeout(250);
     await test.expect(q.dialog("Dialog")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7033
+  test("closes on a newly inserted outside element after replacing the dialog", async ({
+    q,
+  }) => {
+    await q.button("Open dialog").click();
+    await q.button("Replace dialog element").click();
+    await q.button("Add late outside field").click();
+    await q.textbox("Late outside field").click();
+    await test.expect(q.dialog("Dialog")).not.toBeVisible();
   });
 
   test("stays open when interacting with a persistent shadow element", async ({

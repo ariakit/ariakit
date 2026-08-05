@@ -1,8 +1,5 @@
-import { useStoreState } from "@ariakit/react-store";
-import { invariant } from "@ariakit/utils";
-import type { ReactNode } from "react";
-import { useComboboxContext } from "./combobox-context.tsx";
-import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.ts";
+import type { ComboboxInputValueProps } from "./combobox-input-value.tsx";
+import { ComboboxInputValue } from "./combobox-input-value.tsx";
 
 /**
  * Renders the current
@@ -16,6 +13,9 @@ import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.ts";
  * [`children`](https://ariakit.com/reference/combobox-value#children) function
  * that gets called with the current value as an argument. This can be used as
  * an uncontrolled API to render the combobox value in a custom way.
+ * @deprecated Use
+ * [`ComboboxInputValue`](https://ariakit.com/reference/combobox-input-value)
+ * instead.
  * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {3-5}
@@ -27,37 +27,13 @@ import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.ts";
  * </ComboboxProvider>
  * ```
  */
-export function ComboboxValue({ store, children }: ComboboxValueProps = {}) {
-  const context = useComboboxContext();
-  store = store || context;
-
-  invariant(
-    store,
-    process.env.NODE_ENV !== "production" &&
-      "ComboboxValue must receive a `store` prop or be wrapped in a ComboboxProvider component.",
-  );
-
-  const value = useStoreState(store, "value");
-
-  if (children) {
-    return children(value);
-  }
-
-  return value;
+export function ComboboxValue(props: ComboboxValueProps = {}) {
+  return <ComboboxInputValue {...props} />;
 }
 
-export interface ComboboxValueProps {
-  /**
-   * Object returned by the
-   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
-   * hook. If not provided, the closest
-   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
-   * component's context will be used.
-   */
-  store?: ComboboxStore;
-  /**
-   * A function that gets called with the current value as an argument. It can
-   * be used to render the combobox value in a custom way.
-   */
-  children?: (value: ComboboxStoreState["value"]) => ReactNode;
-}
+/**
+ * @deprecated Use
+ * [`ComboboxInputValueProps`](https://ariakit.com/reference/combobox-input-value)
+ * instead.
+ */
+export interface ComboboxValueProps extends ComboboxInputValueProps {}

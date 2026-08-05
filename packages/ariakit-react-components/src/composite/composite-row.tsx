@@ -7,7 +7,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo } from "react";
 import {
@@ -55,11 +55,12 @@ export const useCompositeRow = createHook<TagName, CompositeRowOptions>(
 
     const id = useId(props.id);
 
-    const baseElement = useStoreState(store, "baseElement") || undefined;
+    const compositeElement =
+      useStoreState(store, "compositeElement") || undefined;
 
     const providerValue = useMemo(
-      () => ({ id, baseElement, ariaSetSize, ariaPosInSet }),
-      [id, baseElement, ariaSetSize, ariaPosInSet],
+      () => ({ id, compositeElement, ariaSetSize, ariaPosInSet }),
+      [id, compositeElement, ariaSetSize, ariaPosInSet],
     );
 
     props = useWrapElement(
@@ -74,7 +75,7 @@ export const useCompositeRow = createHook<TagName, CompositeRowOptions>(
 
     props = { ...props, id };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 

@@ -9,7 +9,7 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { getWindow, invariant, removeUndefinedValues } from "@ariakit/utils";
+import { getWindow, invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo, useState } from "react";
 import { getBasePlacement } from "./__utils.ts";
@@ -249,7 +249,7 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
       },
     };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 

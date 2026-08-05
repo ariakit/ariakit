@@ -63,6 +63,22 @@ function ButtonCheckbox() {
   );
 }
 
+function ForwardedUndefinedCheckbox(props: Ariakit.CheckboxProps) {
+  const { role, ...rest } = props;
+  return <Ariakit.Checkbox {...rest} render={<div role={role} />} />;
+}
+
+function RenderPropCheckbox() {
+  return (
+    <section>
+      <h2>Render prop checkbox</h2>
+      <ForwardedUndefinedCheckbox aria-label="Forwarded undefined">
+        Forwarded undefined
+      </ForwardedUndefinedCheckbox>
+    </section>
+  );
+}
+
 function CustomCheckbox() {
   const [checked, setChecked] = useState(true);
   return (
@@ -110,6 +126,7 @@ export default function Example() {
       <BasicCheckboxes />
       <DynamicCheckboxes />
       <ButtonCheckbox />
+      <RenderPropCheckbox />
       <CustomCheckbox />
       <CheckboxGroup />
     </main>

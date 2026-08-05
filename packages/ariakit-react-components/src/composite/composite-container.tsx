@@ -117,10 +117,10 @@ export const useCompositeContainer = createHook<
       // the DOM. We get all containers in the current composite element and
       // disable all tabbable elements inside them.
       isOpenRef.current = false;
-      const { baseElement } = store.getState();
-      const composite = baseElement;
+      const { compositeElement } = store.getState();
       const selector = "[data-composite-container]";
-      const containers = composite?.querySelectorAll<HTMLElement>(selector);
+      const containers =
+        compositeElement?.querySelectorAll<HTMLElement>(selector);
       if (containers) {
         for (const container of containers) {
           disableFocusIn(container);
@@ -250,6 +250,8 @@ export const useCompositeContainer = createHook<
     onClick,
   };
 
+  // useToolbarContainer computes item defaults after this hook. Remove
+  // sentinels before they can overwrite those later defaults.
   return removeUndefinedValues(props);
 });
 

@@ -6,12 +6,7 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import {
-  getDocument,
-  getTextboxSelection,
-  isTextField,
-  removeUndefinedValues,
-} from "@ariakit/utils";
+import { getDocument, getTextboxSelection, isTextField } from "@ariakit/utils";
 import type { ElementType, FocusEvent, KeyboardEvent } from "react";
 import { useEffect } from "react";
 import type { CompositeStore } from "./composite-store.ts";
@@ -100,7 +95,7 @@ export const useCompositeInput = createHook<TagName, CompositeInputOptions>(
       onFocus,
     };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 

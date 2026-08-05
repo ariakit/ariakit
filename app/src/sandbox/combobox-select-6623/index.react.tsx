@@ -8,6 +8,9 @@ import { useLayoutEffect, useRef, useState } from "react";
 // listbox and mark the option as active. The explicit tabIndex makes the
 // option focusable on its very first render, which is required for the
 // mount-time focus() call to work.
+//
+// The combobox-select-open-page-scroll sandbox has the same self-focusing
+// option and does reproduce a page jump from it.
 function RecommendedSelectItem(props: Ariakit.ComboboxItemProps) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {

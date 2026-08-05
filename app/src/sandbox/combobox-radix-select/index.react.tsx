@@ -78,7 +78,7 @@ export default function Example() {
         open={open}
         setOpen={setOpen}
         resetValueOnHide
-        includesBaseElement={false}
+        compositeElementInFocusOrder={false}
         setValue={(value) => {
           startTransition(() => {
             setSearchValue(value);

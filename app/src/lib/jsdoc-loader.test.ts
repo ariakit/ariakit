@@ -157,6 +157,22 @@ function getParamProp(reference: Reference, name: string) {
   return prop;
 }
 
+function getReturnProp(reference: Reference, name: string) {
+  const prop = reference.returnValue?.props?.find((prop) => prop.name === name);
+  if (!prop) {
+    throw new Error(`Missing return prop: ${name}`);
+  }
+  return prop;
+}
+
+function getStateProp(reference: Reference, name: string) {
+  const prop = reference.state.find((prop) => prop.name === name);
+  if (!prop) {
+    throw new Error(`Missing state prop: ${name}`);
+  }
+  return prop;
+}
+
 test("prefers the nearest prop description in base hierarchies", async () => {
   const { corePath, packagePath } = await createReferenceFixture();
   const { context, entries } = getLoaderContext();
@@ -243,5 +259,117 @@ test("loads Combobox Select prop metadata", async () => {
     expect(store.description).toContain(
       "https://ariakit.com/reference/combobox-provider",
     );
+  }
+});
+
+test("loads Combobox input value metadata", async () => {
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({
+    corePath: join(process.cwd(), "packages/ariakit-react-components"),
+    framework: "react",
+    packagePath: join(process.cwd(), "packages/ariakit-react"),
+  });
+
+  await loader.load(context);
+
+  const provider = getReference(entries, "react/combobox/combobox-provider");
+  getParamProp(provider, "inputValue");
+  getParamProp(provider, "defaultInputValue");
+  getParamProp(provider, "setInputValue");
+
+  const replacements = {
+    value: "inputValue",
+    defaultValue: "defaultInputValue",
+    setValue: "setInputValue",
+  };
+
+  for (const [name, replacement] of Object.entries(replacements)) {
+    const prop = getParamProp(provider, name);
+    expect(prop.deprecated).toEqual(expect.stringContaining(replacement));
+  }
+
+  const inputValue = getReference(
+    entries,
+    "react/combobox/combobox-input-value",
+  );
+  getParamProp(inputValue, "children");
+
+  const value = getReference(entries, "react/combobox/combobox-value");
+  getParamProp(value, "store");
+  getParamProp(value, "children");
+  expect(value.description).toContain("Renders the current");
+  expect(value.deprecated).toEqual(
+    expect.stringContaining("ComboboxInputValue"),
+  );
+});
+
+test("loads Composite element alias metadata", async () => {
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({
+    corePath: join(process.cwd(), "packages/ariakit-react-components"),
+    framework: "react",
+    packagePath: join(process.cwd(), "packages/ariakit-react"),
+  });
+
+  await loader.load(context);
+
+  const provider = getReference(entries, "react/composite/composite-provider");
+  const includesBaseElement = getParamProp(provider, "includesBaseElement");
+  expect(includesBaseElement.deprecated).toEqual(
+    expect.stringContaining("compositeElementInFocusOrder"),
+  );
+
+  const store = getReference(entries, "react/composite/use-composite-store");
+  const stateReplacements = {
+    baseElement: "compositeElement",
+    includesBaseElement: "compositeElementInFocusOrder",
+  };
+
+  for (const [name, replacement] of Object.entries(stateReplacements)) {
+    const prop = getStateProp(store, name);
+    expect(prop.deprecated).toEqual(expect.stringContaining(replacement));
+  }
+
+  const setBaseElement = getReturnProp(store, "setBaseElement");
+  expect(setBaseElement.deprecated).toEqual(
+    expect.stringContaining("setCompositeElement"),
+  );
+});
+
+test("loads Select deprecation metadata", async () => {
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({
+    corePath: join(process.cwd(), "packages/ariakit-react-components"),
+    framework: "react",
+    packagePath: join(process.cwd(), "packages/ariakit-react"),
+  });
+
+  await loader.load(context);
+
+  const replacements = {
+    select: "ComboboxSelect",
+    "select-anchor": "ComboboxAnchor",
+    "select-arrow": "ComboboxSelectArrow",
+    "select-dismiss": "ComboboxDismiss",
+    "select-group": "ComboboxGroup",
+    "select-group-label": "ComboboxGroupLabel",
+    "select-heading": "ComboboxHeading",
+    "select-item": "ComboboxItem",
+    "select-item-check": "ComboboxItemCheck",
+    "select-item-selected": "ComboboxItemSelected",
+    "select-label": "ComboboxSelectLabel",
+    "select-list": "ComboboxList",
+    "select-popover": "ComboboxPopover",
+    "select-provider": "ComboboxProvider",
+    "select-row": "ComboboxRow",
+    "select-separator": "ComboboxGroup",
+    "select-value": "ComboboxSelectedValue",
+    "use-select-context": "useComboboxContext",
+    "use-select-store": "useComboboxStore",
+  };
+
+  for (const [slug, replacement] of Object.entries(replacements)) {
+    const reference = getReference(entries, `react/select/${slug}`);
+    expect(reference.deprecated).toEqual(expect.stringContaining(replacement));
   }
 });

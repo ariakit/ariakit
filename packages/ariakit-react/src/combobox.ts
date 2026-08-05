@@ -8,6 +8,8 @@ export type {
   ComboboxInputProps,
 } from "@ariakit/react-components/combobox/combobox-input";
 export { ComboboxInput } from "@ariakit/react-components/combobox/combobox-input";
+export type { ComboboxInputValueProps } from "@ariakit/react-components/combobox/combobox-input-value";
+export { ComboboxInputValue } from "@ariakit/react-components/combobox/combobox-input-value";
 export type {
   ComboboxAnchorOptions,
   ComboboxAnchorProps,

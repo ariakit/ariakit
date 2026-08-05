@@ -9,7 +9,7 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import {
   useComboboxProviderContext,
@@ -55,7 +55,7 @@ export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
       ref: useMergeRefs(store.setLabelElement, props.ref),
     };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 

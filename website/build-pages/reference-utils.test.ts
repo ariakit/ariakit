@@ -8,9 +8,17 @@ const comboboxFilename = join(
   process.cwd(),
   "packages/ariakit-react/src/combobox.ts",
 );
+const compositeFilename = join(
+  process.cwd(),
+  "packages/ariakit-react/src/composite.ts",
+);
 const headingFilename = join(
   process.cwd(),
   "packages/ariakit-react/src/heading.ts",
+);
+const selectFilename = join(
+  process.cwd(),
+  "packages/ariakit-react/src/select.ts",
 );
 
 function getReference(filename: string, name: string) {
@@ -27,6 +35,14 @@ function getProp(reference: Reference, name: string) {
   const prop = reference.props.find((prop) => prop.name === name);
   if (!prop) {
     throw new Error(`Missing ${name} prop on ${reference.name}`);
+  }
+  return prop;
+}
+
+function getReturnProp(reference: Reference, name: string) {
+  const prop = reference.returnProps?.find((prop) => prop.name === name);
+  if (!prop) {
+    throw new Error(`Missing ${name} return prop on ${reference.name}`);
   }
   return prop;
 }
@@ -48,7 +64,7 @@ test("uses props parameters as reference props", () => {
 test("uses typed destructured props parameters as reference props", () => {
   const comboboxProps = getReference(
     comboboxFilename,
-    "ComboboxValue",
+    "ComboboxInputValue",
   ).props.map((prop) => {
     return prop.name;
   });
@@ -91,5 +107,85 @@ test("loads Combobox Select prop metadata", () => {
     expect(store.description).toContain(
       "https://ariakit.com/reference/combobox-provider",
     );
+  }
+});
+
+test("loads Combobox input value metadata", () => {
+  const provider = getReference(comboboxFilename, "ComboboxProvider");
+  getProp(provider, "inputValue");
+  getProp(provider, "defaultInputValue");
+  getProp(provider, "setInputValue");
+
+  const replacements = {
+    value: "inputValue",
+    defaultValue: "defaultInputValue",
+    setValue: "setInputValue",
+  };
+
+  for (const [name, replacement] of Object.entries(replacements)) {
+    const prop = getProp(provider, name);
+    expect(prop.deprecated).toEqual(expect.stringContaining(replacement));
+  }
+
+  const inputValue = getReference(comboboxFilename, "ComboboxInputValue");
+  getProp(inputValue, "children");
+
+  const value = getReference(comboboxFilename, "ComboboxValue");
+  getProp(value, "store");
+  getProp(value, "children");
+  expect(value.description).toContain("Renders the current");
+  expect(value.deprecated).toEqual(
+    expect.stringContaining("ComboboxInputValue"),
+  );
+});
+
+test("loads Composite element alias metadata", () => {
+  const provider = getReference(compositeFilename, "CompositeProvider");
+  const includesBaseElement = getProp(provider, "includesBaseElement");
+  expect(includesBaseElement.deprecated).toEqual(
+    expect.stringContaining("compositeElementInFocusOrder"),
+  );
+
+  const store = getReference(compositeFilename, "useCompositeStore");
+  for (const reference of [provider, store]) {
+    const names = reference.props.map((prop) => prop.name);
+    const compositeElementIndex = names.indexOf("compositeElementInFocusOrder");
+    const includesBaseElementIndex = names.indexOf("includesBaseElement");
+    expect(compositeElementIndex).toBeGreaterThanOrEqual(0);
+    expect(includesBaseElementIndex).toBeGreaterThan(compositeElementIndex);
+  }
+
+  const setBaseElement = getReturnProp(store, "setBaseElement");
+  expect(setBaseElement.deprecated).toEqual(
+    expect.stringContaining("setCompositeElement"),
+  );
+});
+
+test("loads Select deprecation metadata", () => {
+  const replacements = {
+    Select: "ComboboxSelect",
+    SelectAnchor: "ComboboxAnchor",
+    SelectArrow: "ComboboxSelectArrow",
+    SelectDismiss: "ComboboxDismiss",
+    SelectGroup: "ComboboxGroup",
+    SelectGroupLabel: "ComboboxGroupLabel",
+    SelectHeading: "ComboboxHeading",
+    SelectItem: "ComboboxItem",
+    SelectItemCheck: "ComboboxItemCheck",
+    SelectItemSelected: "ComboboxItemSelected",
+    SelectLabel: "ComboboxSelectLabel",
+    SelectList: "ComboboxList",
+    SelectPopover: "ComboboxPopover",
+    SelectProvider: "ComboboxProvider",
+    SelectRow: "ComboboxRow",
+    SelectSeparator: "ComboboxGroup",
+    SelectValue: "ComboboxSelectedValue",
+    useSelectContext: "useComboboxContext",
+    useSelectStore: "useComboboxStore",
+  };
+
+  for (const [name, replacement] of Object.entries(replacements)) {
+    const reference = getReference(selectFilename, name);
+    expect(reference.deprecated).toEqual(expect.stringContaining(replacement));
   }
 });

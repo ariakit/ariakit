@@ -51,6 +51,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBe(0);
   });
 
+  // https://github.com/ariakit/ariakit/issues/6986
+  test("does not refocus a late item after focus leaves a virtual focus composite", async ({
+    q,
+  }) => {
+    const composite = q.listbox("Virtual actions");
+    await composite.focus();
+    await test.expect(composite).toBeFocused();
+
+    const mount = q.button("Mount virtual late item");
+    await mount.click();
+
+    await test.expect(q.option("Virtual late item")).toBeVisible();
+    await test.expect(mount).toBeFocused();
+    await test.expect(q.listbox("Virtual actions")).not.toBeFocused();
+  });
+
   // https://github.com/ariakit/ariakit/pull/6832
   test("presents a rendered generic autofocus item", async ({ q }) => {
     const composite = q.listbox("Autofocus scroll actions");

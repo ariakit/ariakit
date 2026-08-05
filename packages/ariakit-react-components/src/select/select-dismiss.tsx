@@ -12,6 +12,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectDismiss` component.
+ * @deprecated Use `useComboboxDismiss` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -38,6 +39,8 @@ export const useSelectDismiss = createHook<TagName, SelectDismissOptions>(
  * [`SelectItem`](https://ariakit.com/reference/select-item) elements must be
  * rendered within a [`SelectList`](https://ariakit.com/reference/select-list)
  * instead of directly within the popover.
+ * @deprecated Use
+ * [`ComboboxDismiss`](https://ariakit.com/reference/combobox-dismiss) instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4}
@@ -60,6 +63,7 @@ export const SelectDismiss = forwardRef(function SelectDismiss(
   return createElement(TagName, htmlProps);
 });
 
+/** @deprecated Use `ComboboxDismissOptions` instead. */
 export interface SelectDismissOptions<
   T extends ElementType = TagName,
 > extends PopoverDismissOptions<T> {
@@ -74,6 +78,7 @@ export interface SelectDismissOptions<
   store?: SelectStore;
 }
 
+/** @deprecated Use `ComboboxDismissProps` instead. */
 export type SelectDismissProps<T extends ElementType = TagName> = Props<
   T,
   SelectDismissOptions<T>

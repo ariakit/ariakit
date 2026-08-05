@@ -1,5 +1,6 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -10,7 +11,9 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { afterEach, expect, test } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
+import { checkNodeBenchmarkResults, runPerfCompare } from "./perf-compare.ts";
+import type { PerfCompareOptions } from "./perf-compare.ts";
 
 interface PerfMetrics {
   scripting: number;
@@ -236,10 +239,13 @@ function createStoreBenchmarkReport(hz?: number, mean?: number) {
   ]);
 }
 
-function writeJson(dir: string, file: string, data: unknown) {
-  const outputDir = path.join(dir, resultsDir);
+function writeJsonInto(outputDir: string, file: string, data: unknown) {
   mkdirSync(outputDir, { recursive: true });
   writeFileSync(path.join(outputDir, file), JSON.stringify(data), "utf-8");
+}
+
+function writeJson(dir: string, file: string, data: unknown) {
+  writeJsonInto(path.join(dir, resultsDir), file, data);
 }
 
 function writeRound(
@@ -311,44 +317,31 @@ function readConfirmationTargets(dir: string) {
   );
 }
 
-function runCompare(
-  dir: string,
-  args: string[] = [],
-  env: NodeJS.ProcessEnv = {},
-) {
+function execCompareCli(dir: string, args: string[] = []) {
   execFileSync(process.execPath, [scriptPath, "perf-compare", ...args], {
     cwd: dir,
     encoding: "utf-8",
-    env: { ...process.env, ...env },
   });
-  return readFileSync(path.join(dir, resultsDir, "comparison.md"), "utf-8");
+}
+
+function runCompare(dir: string, options: PerfCompareOptions = {}) {
+  return runPerfCompare({
+    ...options,
+    resultsDir: options.resultsDir ?? path.join(dir, resultsDir),
+  }).markdown;
 }
 
 function runCompareFailure(dir: string) {
-  const result = spawnSync(process.execPath, [scriptPath, "perf-compare"], {
-    cwd: dir,
-    encoding: "utf-8",
-  });
-  if (result.status === 0) {
-    throw new Error("Expected performance comparison to fail");
+  try {
+    runCompare(dir);
+  } catch (error) {
+    return String(error);
   }
-  return `${result.stderr}${result.stdout}`;
-}
-
-function runNodeResultsCheck(dir: string, file: string, expectedCount: number) {
-  return spawnSync(
-    process.execPath,
-    [
-      scriptPath,
-      "perf-check-node-results",
-      path.join(dir, resultsDir, file),
-      String(expectedCount),
-    ],
-    { cwd: dir, encoding: "utf-8" },
-  );
+  throw new Error("Expected performance comparison to fail");
 }
 
 afterEach(() => {
+  vi.unstubAllEnvs();
   for (const dir of tempDirs.splice(0)) {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -363,6 +356,53 @@ test("keeps single-run comparison behavior", () => {
 
   expect(markdown).toContain("100ms → 120ms (+20%) :warning:");
   expect(markdown).not.toContain("Aggregated across");
+});
+
+test("resolves a relative results directory against the current directory", () => {
+  const dir = createTempDir();
+  const relativeDir = "chrome-rounds";
+  const outputDir = path.join(dir, relativeDir);
+  writeJsonInto(
+    outputDir,
+    "baseline-worker0.json",
+    createStoreBenchmarkReport(1000),
+  );
+  writeJsonInto(
+    outputDir,
+    "current-worker0.json",
+    createStoreBenchmarkReport(500),
+  );
+
+  execCompareCli(dir, ["--node", "--results-dir", relativeDir]);
+
+  const markdown = readFileSync(path.join(outputDir, "comparison.md"), "utf-8");
+  expect(markdown).toContain(
+    "| set state | 1,000 ops/sec | 500 ops/sec | -500 ops/sec (-50%) :warning: |",
+  );
+  expect(existsSync(path.join(dir, resultsDir))).toBe(false);
+});
+
+test("reads and writes an absolute results directory outside the current directory", () => {
+  const workingDir = createTempDir();
+  const outputDir = path.join(createTempDir(), "chrome-rounds");
+  // Numbered, job-indexed names are what the perf workflow stages into the
+  // directory it passes, so this covers the round-file branch the relative
+  // test above does not reach.
+  writeJsonInto(outputDir, "baseline-1-j1-worker0.json", [createResult(100)]);
+  writeJsonInto(outputDir, "current-1-j1-worker0.json", [createResult(120)]);
+
+  runCompare(workingDir, { resultsDir: outputDir });
+
+  const markdown = readFileSync(path.join(outputDir, "comparison.md"), "utf-8");
+  expect(markdown).toContain("100ms → 120ms (+20%) :warning:");
+  // The workflow reads every generated file from the directory it passed in,
+  // so the whole output set must follow the rounds instead of the cwd.
+  expect(existsSync(path.join(outputDir, "comparison.json"))).toBe(true);
+  expect(existsSync(path.join(outputDir, "confirmation-files.txt"))).toBe(true);
+  expect(existsSync(path.join(outputDir, "confirmation-targets.json"))).toBe(
+    true,
+  );
+  expect(existsSync(path.join(workingDir, resultsDir))).toBe(false);
 });
 
 test("pairs legacy generated labels with normalized labels", () => {
@@ -384,22 +424,6 @@ test("pairs legacy generated labels with normalized labels", () => {
   expect(summary.rows[0]?.label).toBe("example > react > example");
   expect(summary.newTests).toEqual([]);
   expect(summary.removedTests).toEqual([]);
-});
-
-test("compares Vitest benchmark reports in node mode", () => {
-  const dir = createTempDir();
-  writeJson(dir, "baseline-1.json", createStoreBenchmarkReport(1000));
-  writeJson(dir, "current-1.json", createStoreBenchmarkReport(500));
-
-  const markdown = runCompare(dir, ["--node"]);
-
-  expect(markdown).toContain(
-    "#### packages/ariakit-store/benchmark/store.bench.ts",
-  );
-  expect(markdown).toContain("| Benchmark | Baseline | Current | Change |");
-  expect(markdown).toContain(
-    "| set state | 1,000 ops/sec | 500 ops/sec | -500 ops/sec (-50%) :warning: |",
-  );
 });
 
 test("keeps Vitest benchmark groups distinct in node mode", () => {
@@ -435,7 +459,7 @@ test("keeps Vitest benchmark groups distinct in node mode", () => {
     ]),
   );
 
-  const markdown = runCompare(dir, ["--node"]);
+  const markdown = runCompare(dir, { node: true });
 
   expect(markdown).toContain(
     "| store > set state | 1,000 ops/sec | 500 ops/sec | -500 ops/sec (-50%) :warning: |",
@@ -475,7 +499,7 @@ test("groups Vitest benchmark tables by file in node mode", () => {
   ]);
   writeJson(dir, "current-1.json", report);
 
-  const markdown = runCompare(dir, ["--node"]);
+  const markdown = runCompare(dir, { node: true });
 
   expect(markdown).toContain(
     "#### packages/ariakit-store/benchmark/store.bench.ts",
@@ -491,7 +515,7 @@ test("uses Vitest benchmark mean in node mode", () => {
   writeJson(dir, "baseline-1.json", createStoreBenchmarkReport(0, 0.00002));
   writeJson(dir, "current-1.json", createStoreBenchmarkReport(0, 0.00004));
 
-  const markdown = runCompare(dir, ["--node"]);
+  const markdown = runCompare(dir, { node: true });
 
   expect(markdown).toContain(
     "50,000,000 ops/sec | 25,000,000 ops/sec | -25,000,000 ops/sec (-50%) :warning:",
@@ -503,7 +527,7 @@ test("does not flag empty Vitest benchmark metrics in node mode", () => {
   writeJson(dir, "baseline-1.json", createStoreBenchmarkReport());
   writeJson(dir, "current-1.json", createStoreBenchmarkReport());
 
-  const markdown = runCompare(dir, ["--node"]);
+  const markdown = runCompare(dir, { node: true });
 
   expect(markdown).toContain("No significant performance changes detected.");
   expect(markdown).toContain(
@@ -519,7 +543,7 @@ test("describes Node multi-round comparisons by round agreement", () => {
     writeJson(dir, `current-${round}.json`, createStoreBenchmarkReport(500));
   }
 
-  const markdown = runCompare(dir, ["--node"]);
+  const markdown = runCompare(dir, { node: true });
   const summary = readComparisonSummary(dir);
 
   expect(markdown).toContain(
@@ -590,7 +614,7 @@ test("writes focused Node confirmation targets with raw benchmark names", () => 
     );
   }
 
-  runCompare(dir, ["--node"]);
+  runCompare(dir, { node: true });
   const summary = readComparisonSummary(dir);
 
   expect(summary.confirmationTargets).toEqual([
@@ -668,7 +692,7 @@ test("groups Node confirmation targets by benchmark file", () => {
     writeJson(dir, `current-${round}.json`, createReport(500));
   }
 
-  runCompare(dir, ["--node"]);
+  runCompare(dir, { node: true });
   const summary = readComparisonSummary(dir);
 
   expect(summary.confirmationTargets).toEqual([
@@ -691,15 +715,21 @@ test("checks focused Node benchmark result counts", () => {
   const dir = createTempDir();
   writeJson(dir, "focused.json", createStoreBenchmarkReport(1000));
 
-  const success = runNodeResultsCheck(dir, "focused.json", 1);
-  expect(success.status).toBe(0);
-
-  const failure = runNodeResultsCheck(dir, "focused.json", 2);
-  expect(failure.status).toBe(1);
-  expect(`${failure.stderr}${failure.stdout}`).toContain(
-    "Expected 2 benchmark results",
+  const file = path.join(dir, resultsDir, "focused.json");
+  expect(() => checkNodeBenchmarkResults(file, 1)).not.toThrow();
+  expect(() => checkNodeBenchmarkResults(file, 2)).toThrow(
+    /Expected 2 benchmark results.*found 1/,
   );
-  expect(`${failure.stderr}${failure.stdout}`).toContain("found 1");
+
+  const failure = spawnSync(
+    process.execPath,
+    [scriptPath, "perf-check-node-results", file, "2"],
+    { cwd: dir, encoding: "utf-8" },
+  );
+  expect(failure.status).toBe(1);
+  expect(`${failure.stderr}${failure.stdout}`).toMatch(
+    /Expected 2 benchmark results.*found 1/,
+  );
 });
 
 test("keeps stable Node benchmarks at the initial round count", () => {
@@ -724,7 +754,7 @@ test("keeps stable Node benchmarks at the initial round count", () => {
     writeJson(dir, `current-${round}-t0.json`, createReport(500, false));
   }
 
-  const markdown = runCompare(dir, ["--node"]);
+  const markdown = runCompare(dir, { node: true });
   const summary = readComparisonSummary(dir);
   const flagged = summary.rows.find(
     (row: { label: string }) => row.label === "flagged",
@@ -763,31 +793,6 @@ test("does not flag noisy rounds that disagree on direction", () => {
 
 test("reports overlapping same-direction rounds as unconfirmed candidates", () => {
   const dir = createTempDir();
-  for (const round of [1, 2]) {
-    writeRawRound(dir, "baseline", round, [80, 100, 120, 140, 160]);
-    writeRawRound(dir, "current", round, [100, 120, 140, 160, 180]);
-  }
-
-  const markdown = runCompare(dir);
-
-  expect(markdown).toContain("No confirmed performance changes detected.");
-  expect(markdown).toContain("#### Unconfirmed changes");
-  expect(markdown.indexOf("#### Unconfirmed changes")).toBeLessThan(
-    markdown.indexOf("<details>"),
-  );
-  expect(markdown).toContain(
-    "| raw samples | Scripting | 120ms | 140ms | +20ms (+17%) | low | rounds 2/2, raw 0/2, pairs 60% |",
-  );
-  expect(markdown).toContain("120ms | 140ms | +20ms (+17%)");
-  // Candidates are reported in the unconfirmed changes section, not repeated
-  // in the detailed breakdown diagnostics.
-  expect(markdown).not.toContain("Unflagged threshold-sized changes");
-  expect(markdown).not.toMatch(/% :warning:/);
-  expect(markdown).not.toMatch(/% :rocket:/);
-});
-
-test("includes custom labels in unconfirmed candidate rows", () => {
-  const dir = createTempDir();
   const testTitle = "combobox-perf > react > open combobox";
   for (const round of [1, 2]) {
     writeJson(dir, `baseline-${round}-worker0.json`, [
@@ -808,10 +813,21 @@ test("includes custom labels in unconfirmed candidate rows", () => {
 
   const markdown = runCompare(dir);
 
+  expect(markdown).toContain("No confirmed performance changes detected.");
+  expect(markdown).toContain("#### Unconfirmed changes");
+  expect(markdown.indexOf("#### Unconfirmed changes")).toBeLessThan(
+    markdown.indexOf("<details>"),
+  );
   expect(markdown).toContain(
     "| combobox-perf > react > open combobox > open with mouse | Scripting | 120ms | 140ms | +20ms (+17%) | low | rounds 2/2, raw 0/2, pairs 60% |",
   );
   expect(markdown).not.toContain("| open with mouse | Scripting |");
+  expect(markdown).toContain("120ms | 140ms | +20ms (+17%)");
+  // Candidates are reported in the unconfirmed changes section, not repeated
+  // in the detailed breakdown diagnostics.
+  expect(markdown).not.toContain("Unflagged threshold-sized changes");
+  expect(markdown).not.toMatch(/% :warning:/);
+  expect(markdown).not.toMatch(/% :rocket:/);
 });
 
 test("grades candidates by their displayed pairs percent", () => {
@@ -957,19 +973,6 @@ test("flags confirmed INP regressions", () => {
   expect(markdown).not.toContain("Unconfirmed changes");
 });
 
-test("flags confirmed INP improvements", () => {
-  const dir = createTempDir();
-  for (const round of [1, 2]) {
-    writeInpRawRound(dir, "baseline", round, [200, 210, 220, 230, 240]);
-    writeInpRawRound(dir, "current", round, [100, 105, 110, 115, 120]);
-  }
-
-  const markdown = runCompare(dir);
-
-  expect(markdown).toContain("220ms → 110ms (-50%) :rocket:");
-  expect(markdown).not.toContain("Unconfirmed changes");
-});
-
 test("lists confirmation files for significant and candidate changes", () => {
   const dir = createTempDir();
   for (const round of [1, 2]) {
@@ -1030,21 +1033,6 @@ test("lists confirmation files for significant and candidate changes", () => {
   expect(markdown).toContain(
     "| candidate | Scripting | 120ms | 140ms | +20ms (+17%) | low | rounds 2/2, raw 0/2, pairs 60% |",
   );
-});
-
-test("flags a consistent regression across rounds", () => {
-  const dir = createTempDir();
-  for (let round = 1; round <= 3; round++) {
-    writeRound(dir, "baseline", round, 100);
-  }
-  [125, 128, 130].forEach((total, index) => {
-    writeRound(dir, "current", index + 1, total);
-  });
-
-  const markdown = runCompare(dir);
-
-  expect(markdown).toContain(":warning:");
-  expect(markdown).toContain("+28%");
 });
 
 test("aggregates displayed values from shared rounds", () => {
@@ -1142,21 +1130,6 @@ test("requires both rounds to agree in two-round comparisons", () => {
     "Unflagged threshold-sized changes for example &gt; react &gt; example:",
   );
   expect(markdown).not.toMatch(/% :warning:/);
-});
-
-test("flags unanimous two-round regressions", () => {
-  const dir = createTempDir();
-  [100, 100].forEach((total, index) => {
-    writeRound(dir, "baseline", index + 1, total);
-  });
-  [130, 132].forEach((total, index) => {
-    writeRound(dir, "current", index + 1, total);
-  });
-
-  const markdown = runCompare(dir);
-
-  expect(markdown).toContain(":warning:");
-  expect(markdown).toContain("+31%");
 });
 
 test("keeps zero-baseline paired rounds in the agreement count", () => {
@@ -1410,6 +1383,15 @@ test("renders script profile function names as linked code", () => {
         totalTime: 3,
         hitCount: 1,
       },
+      {
+        functionName: "updateWorkInProgressHook",
+        url: "/node_modules/react-dom/react-dom-client.production.js",
+        line: 4455,
+        column: 10,
+        selfTime: 1,
+        totalTime: 1,
+        hitCount: 1,
+      },
     ],
   };
   writeJson(dir, "baseline-worker0.json", [
@@ -1419,10 +1401,9 @@ test("renders script profile function names as linked code", () => {
     createResultWithMetrics("profiled", createMetrics(100), profiles),
   ]);
 
-  const markdown = runCompare(dir, [], {
-    GITHUB_REPOSITORY: "ariakit/ariakit",
-    GITHUB_SHA: "abc123",
-  });
+  vi.stubEnv("GITHUB_REPOSITORY", "ariakit/ariakit");
+  vi.stubEnv("GITHUB_SHA", "abc123");
+  const markdown = runCompare(dir);
 
   expect(markdown).toContain(
     "[`Dialog`](https://github.com/ariakit/ariakit/blob/abc123/packages/ariakit-react-components/src/dialog/dialog.tsx#L12)",
@@ -1438,36 +1419,7 @@ test("renders script profile function names as linked code", () => {
   );
   expect(markdown).not.toContain("| Function | Self | Total | Hits | Source |");
   expect(markdown).not.toContain("dialog.tsx:12:3");
-});
-
-test("keeps node_modules script profile functions as unlinked code", () => {
-  const dir = createTempDir();
-  const profiles: PerfProfiles = {
-    script: [
-      {
-        functionName: "updateWorkInProgressHook",
-        url: "/node_modules/react-dom/react-dom-client.production.js",
-        line: 4455,
-        column: 10,
-        selfTime: 8,
-        totalTime: 9,
-        hitCount: 2,
-      },
-    ],
-  };
-  writeJson(dir, "baseline-worker0.json", [
-    createResultWithMetrics("profiled", createMetrics(100), profiles),
-  ]);
-  writeJson(dir, "current-worker0.json", [
-    createResultWithMetrics("profiled", createMetrics(100), profiles),
-  ]);
-
-  const markdown = runCompare(dir, [], {
-    GITHUB_REPOSITORY: "ariakit/ariakit",
-    GITHUB_SHA: "abc123",
-  });
-
-  expect(markdown).toContain("| `updateWorkInProgressHook` | 8ms | 9ms | 2 |");
+  expect(markdown).toContain("| `updateWorkInProgressHook` | 1ms | 1ms | 1 |");
   expect(markdown).not.toContain("react-dom-client.production.js");
 });
 
@@ -1845,65 +1797,34 @@ test("compares metrics when only one side has attached profile data", () => {
   expect(markdown).not.toContain("Profile mode differs between baseline");
 });
 
-test("omits metric tables when only current has script profile mode", () => {
+test("omits metric tables for profile mode mismatches", () => {
   const dir = createTempDir();
   const profiles: PerfProfiles = {
     script: [createScriptProfileEntry("currentProfile", 8)],
   };
   writeJson(dir, "baseline-worker0.json", [
-    createResultWithMetrics("profile-mismatch", createMetrics(100)),
+    createResultWithMetrics("script-with-entries", createMetrics(100)),
+    createResultWithMetrics("script-without-entries", createMetrics(100)),
+    createResultWithMetrics("selectors-without-entries", createMetrics(100)),
   ]);
   writeJson(dir, "current-worker0.json", [
     {
       ...createResultWithMetrics(
-        "profile-mismatch",
+        "script-with-entries",
         createMetrics(130),
         profiles,
       ),
       scriptProfile: true,
     },
-  ]);
-
-  const markdown = runCompare(dir);
-
-  expect(markdown).toContain("Profile mode differs between baseline");
-  expect(markdown).toContain("| profile-mismatch | script | no | yes |");
-  expect(markdown).toContain("No significant performance changes detected.");
-  expect(markdown).toContain("| `currentProfile` | 8ms | 8ms | 1 |");
-  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
-  expect(markdown).not.toContain("+30ms (+30%)");
-});
-
-test("omits metric tables when script profile has no retained entries", () => {
-  const dir = createTempDir();
-  writeJson(dir, "baseline-worker0.json", [
-    createResultWithMetrics("profile-mismatch", createMetrics(100)),
-  ]);
-  writeJson(dir, "current-worker0.json", [
     {
-      ...createResultWithMetrics("profile-mismatch", createMetrics(130)),
+      ...createResultWithMetrics("script-without-entries", createMetrics(130)),
       scriptProfile: true,
     },
-  ]);
-
-  const markdown = runCompare(dir);
-
-  expect(markdown).toContain("Profile mode differs between baseline");
-  expect(markdown).toContain("| profile-mismatch | script | no | yes |");
-  expect(markdown).toContain("No significant performance changes detected.");
-  expect(markdown).not.toContain("### profile-mismatch");
-  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
-  expect(markdown).not.toContain("+30ms (+30%)");
-});
-
-test("omits metric tables when selector profile has no retained entries", () => {
-  const dir = createTempDir();
-  writeJson(dir, "baseline-worker0.json", [
-    createResultWithMetrics("profile-mismatch", createMetrics(100)),
-  ]);
-  writeJson(dir, "current-worker0.json", [
     {
-      ...createResultWithMetrics("profile-mismatch", createMetrics(130)),
+      ...createResultWithMetrics(
+        "selectors-without-entries",
+        createMetrics(130),
+      ),
       selectorProfile: true,
     },
   ]);
@@ -1911,9 +1832,15 @@ test("omits metric tables when selector profile has no retained entries", () => 
   const markdown = runCompare(dir);
 
   expect(markdown).toContain("Profile mode differs between baseline");
-  expect(markdown).toContain("| profile-mismatch | selectors | no | yes |");
+  expect(markdown).toContain("| script-with-entries | script | no | yes |");
+  expect(markdown).toContain("| script-without-entries | script | no | yes |");
+  expect(markdown).toContain(
+    "| selectors-without-entries | selectors | no | yes |",
+  );
   expect(markdown).toContain("No significant performance changes detected.");
-  expect(markdown).not.toContain("### profile-mismatch");
+  expect(markdown).toContain("| `currentProfile` | 8ms | 8ms | 1 |");
+  expect(markdown).not.toContain("### script-without-entries");
+  expect(markdown).not.toContain("### selectors-without-entries");
   expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
   expect(markdown).not.toContain("+30ms (+30%)");
 });

@@ -1,4 +1,4 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/6858
@@ -34,13 +34,47 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // https://github.com/ariakit/ariakit/issues/6858
   test("presents the selection when its item registers late", async ({ q }) => {
-    await q.combobox("Late items").click();
+    const select = q.combobox("Late items");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
 
     const selected = q.option("Item 24");
     await test.expect(selected).toHaveCount(0);
     await test.expect(selected).toBeVisible({ timeout: 2_000 });
     await test.expect(selected).toHaveAttribute("data-active-item");
     await test.expect(selected).toBeInViewport();
+  });
+
+  // The counterpart of the test above: the selection is only allowed to claim
+  // the list while the user has not moved yet.
+  // https://github.com/ariakit/ariakit/pull/6832
+  test("keeps the keyboard position when the selection registers late", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Late items");
+    const listbox = q.listbox("Late items options");
+    const activeItem = listbox.locator("[data-active-item]");
+    const selected = q.option("Item 24");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+
+    // Moving before the selection registers hands the list to the user. The
+    // absence is asserted after the move so it also proves the move won the
+    // race against the fixture's late registration.
+    await page.keyboard.press("ArrowDown");
+    await test.expect(selected).toHaveCount(0);
+    await test.expect(activeItem).toHaveText("Item 1");
+
+    await test.expect(selected).toBeVisible({ timeout: 2_000 });
+    // A scroll would land on the frame after the next paint, so wait one frame
+    // past that checkpoint instead of reading the position while it is still
+    // pending.
+    await flushFrames(page, 3);
+
+    await test.expect(activeItem).toHaveText("Item 1");
+    await test.expect(selected).not.toBeInViewport();
+    test.expect(await listbox.evaluate((element) => element.scrollTop)).toBe(0);
   });
 
   test("auto-selects the first filtered option and restores it on reopen", async ({

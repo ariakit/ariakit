@@ -13,6 +13,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectRow` component.
+ * @deprecated Use `useComboboxRow` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -54,6 +55,8 @@ export const useSelectRow = createHook<TagName, SelectRowOptions>(
  * [`SelectItem`](https://ariakit.com/reference/select-item) elements wrapped
  * within this component will automatically receive a
  * [`rowId`](https://ariakit.com/reference/select-item#rowid) prop.
+ * @deprecated Use
+ * [`ComboboxRow`](https://ariakit.com/reference/combobox-row) instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4-11}
@@ -77,6 +80,7 @@ export const SelectRow = forwardRef(function SelectRow(props: SelectRowProps) {
   return createElement(TagName, htmlProps);
 });
 
+/** @deprecated Use `ComboboxRowOptions` instead. */
 export interface SelectRowOptions<
   T extends ElementType = TagName,
 > extends CompositeRowOptions<T> {
@@ -91,6 +95,7 @@ export interface SelectRowOptions<
   store?: SelectStore;
 }
 
+/** @deprecated Use `ComboboxRowProps` instead. */
 export type SelectRowProps<T extends ElementType = TagName> = Props<
   T,
   SelectRowOptions<T>

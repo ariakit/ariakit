@@ -1,6 +1,7 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
   useAttribute,
+  useEvent,
   useId,
   useMergeRefs,
   useSafeLayoutEffect,
@@ -10,8 +11,13 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { invariant, removeUndefinedValues } from "@ariakit/utils";
-import type { ElementType } from "react";
+import {
+  getDocument,
+  invariant,
+  isFocusable,
+  isSelfTarget,
+} from "@ariakit/utils";
+import type { ElementType, FocusEvent } from "react";
 import { useContext, useMemo, useRef, useState } from "react";
 import { DialogHeadingContext } from "../dialog/dialog-context.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
@@ -55,6 +61,27 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       process.env.NODE_ENV !== "production" &&
         "ComboboxList must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
+
+    // Virtual focus keeps DOM focus on the combobox input or select, so the
+    // list itself must never hold it. Otherwise arrow keys stop working until
+    // the user tabs back out.
+    const onFocusProp = props.onFocus;
+
+    const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
+      onFocusProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!isSelfTarget(event)) return;
+      const compositeElement = store.getState().compositeElement;
+      if (!compositeElement) return;
+      // A modal popover may render the composite element inert, in which case
+      // moving focus there would fight the dialog's focus containment.
+      if (!isFocusable(compositeElement)) return;
+      const list = event.currentTarget;
+      queueMicrotask(() => {
+        if (getDocument(list).activeElement !== list) return;
+        compositeElement.focus();
+      });
+    });
 
     const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
@@ -154,11 +181,15 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       hidden,
       ...props,
       id,
+      onFocus,
       ref: useMergeRefs(setContentElement, ref, props.ref),
       style,
+      // Keep DOM focus on the combobox control. Making the list a Tab stop
+      // would cause its focus redirect to restart sequential navigation.
+      tabIndex: -1,
     };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 

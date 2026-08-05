@@ -1,11 +1,19 @@
 import { expect, test } from "vitest";
-import { getVisualProject } from "./ci-visual.js";
+import { getVisualPlatform } from "./ci-visual.js";
 
-test("gets the browser project from direct and reusable workflow job names", () => {
-  expect(getVisualProject("Test Chrome")).toBe("chrome");
-  expect(getVisualProject("App / Test Firefox")).toBe("firefox");
+test("gets the runner platform from screenshot upload steps", () => {
+  expect(getVisualPlatform("Upload screenshots (ubuntu-latest)")).toBe(
+    "ubuntu-latest",
+  );
+  expect(getVisualPlatform("Upload screenshots (macos-latest)")).toBe(
+    "macos-latest",
+  );
+  expect(getVisualPlatform("Upload screenshots (macOS-latest)")).toBe(
+    "macOS-latest",
+  );
 });
 
-test("ignores unrelated workflow jobs", () => {
-  expect(getVisualProject("App / Build app")).toBeUndefined();
+test("ignores unrelated workflow steps", () => {
+  expect(getVisualPlatform("Upload test results to GitHub")).toBeUndefined();
+  expect(getVisualPlatform("Upload screenshots ()")).toBeUndefined();
 });

@@ -24,7 +24,11 @@ export function useCompositeStoreProps<T extends Core.CompositeStore>(
 ) {
   store = useCollectionStoreProps(store, update, props);
   useStoreProps(store, props, "activeId", "setActiveId");
-  useStoreProps(store, props, "includesBaseElement");
+  const focusOrderProps = {
+    compositeElementInFocusOrder:
+      props.compositeElementInFocusOrder ?? props.includesBaseElement,
+  };
+  useStoreProps(store, focusOrderProps, "compositeElementInFocusOrder");
   useStoreProps(store, props, "virtualFocus");
   useStoreProps(store, props, "orientation");
   useStoreProps(store, props, "rtl");

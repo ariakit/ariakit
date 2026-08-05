@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-components",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "Ariakit React components",
   "keywords": [
     "ariakit",
@@ -36,7 +36,8 @@
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "vitest": "4.1.10"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
@@ -55,7 +56,6 @@
     "./collection/collection": "./src/collection/collection.tsx",
     "./collection/collection-context": "./src/collection/collection-context.tsx",
     "./collection/collection-item": "./src/collection/collection-item.tsx",
-    "./collection/collection-item-offscreen": "./src/collection/collection-item-offscreen.tsx",
     "./collection/collection-provider": "./src/collection/collection-provider.tsx",
     "./collection/collection-renderer": "./src/collection/collection-renderer.tsx",
     "./collection/collection-store": "./src/collection/collection-store.ts",
@@ -69,9 +69,9 @@
     "./combobox/combobox-group-label": "./src/combobox/combobox-group-label.tsx",
     "./combobox/combobox-heading": "./src/combobox/combobox-heading.tsx",
     "./combobox/combobox-input": "./src/combobox/combobox-input.tsx",
+    "./combobox/combobox-input-value": "./src/combobox/combobox-input-value.tsx",
     "./combobox/combobox-item": "./src/combobox/combobox-item.tsx",
     "./combobox/combobox-item-check": "./src/combobox/combobox-item-check.tsx",
-    "./combobox/combobox-item-offscreen": "./src/combobox/combobox-item-offscreen.tsx",
     "./combobox/combobox-item-selected": "./src/combobox/combobox-item-selected.tsx",
     "./combobox/combobox-item-value": "./src/combobox/combobox-item-value.tsx",
     "./combobox/combobox-label": "./src/combobox/combobox-label.tsx",
@@ -96,7 +96,6 @@
     "./composite/composite-hover": "./src/composite/composite-hover.tsx",
     "./composite/composite-input": "./src/composite/composite-input.tsx",
     "./composite/composite-item": "./src/composite/composite-item.tsx",
-    "./composite/composite-item-offscreen": "./src/composite/composite-item-offscreen.tsx",
     "./composite/composite-overflow": "./src/composite/composite-overflow.tsx",
     "./composite/composite-overflow-disclosure": "./src/composite/composite-overflow-disclosure.ts",
     "./composite/composite-overflow-store": "./src/composite/composite-overflow-store.ts",
@@ -236,7 +235,6 @@
     "./select/select-heading": "./src/select/select-heading.tsx",
     "./select/select-item": "./src/select/select-item.tsx",
     "./select/select-item-check": "./src/select/select-item-check.tsx",
-    "./select/select-item-offscreen": "./src/select/select-item-offscreen.tsx",
     "./select/select-item-selected": "./src/select/select-item-selected.tsx",
     "./select/select-label": "./src/select/select-label.tsx",
     "./select/select-list": "./src/select/select-list.tsx",

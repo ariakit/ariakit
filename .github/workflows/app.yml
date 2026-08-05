@@ -15,9 +15,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       - name: Build app
         env:
@@ -40,9 +44,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       - name: Type check Next.js app
         run: pnpm -F nextjs run tsc
@@ -59,7 +67,7 @@ jobs:
           include-hidden-files: true
 
   test:
-    name: Test ${{ matrix.name }}
+    name: Test ${{ matrix.name }}${{ matrix.shard && format(' ({0})', join(matrix.shard, '/')) || '' }}
     needs: [build, build-nextjs]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -71,42 +79,49 @@ jobs:
             engine: chromium
             project: chrome
             test: xvfb-run pnpm -F app run test
-            visual: xvfb-run pnpm -F app run test-visual
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
             test: xvfb-run pnpm -F app run test
-            visual: xvfb-run pnpm -F app run test-visual
           - os: ubuntu-latest
             name: Android
             engine: chromium
             project: android
             test: xvfb-run pnpm -F app run test
-            visual: ""
           - os: macos-latest
             name: Safari
             engine: webkit
             project: safari
             test: pnpm -F app run test
-            visual: pnpm -F app run test-visual
+            shard: [1, 2]
+          - os: macos-latest
+            name: Safari
+            engine: webkit
+            project: safari
+            test: pnpm -F app run test
+            shard: [2, 2]
           - os: macos-latest
             name: iOS
             engine: webkit
             project: ios
             test: pnpm -F app run test
-            visual: ""
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
         with:
-          engine: ${{ matrix.engine }}
+          engines: ${{ matrix.engine }}
+          workspace: app
 
       - name: Download app artifact
         uses: actions/download-artifact@v8
@@ -122,13 +137,69 @@ jobs:
 
       - name: Test
         id: test
-        run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual
+        run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual ${{ matrix.shard && format('--shard={0}', join(matrix.shard, '/')) || '' }}
+
+      - name: Upload test results to GitHub
+        if: failure() && steps.test.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-${{ matrix.project }}${{ matrix.shard && format('-{0}', join(matrix.shard, '-')) || '' }}-test-results
+          path: app/test-results
+          retention-days: 7
+
+  visual:
+    name: ${{ matrix.name }}
+    needs: [build, build-nextjs]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: Visual
+            engines: chromium firefox
+            projects: chrome firefox
+            test: xvfb-run pnpm -F app run test-visual
+          - os: macos-latest
+            name: Visual (Safari)
+            engines: webkit
+            projects: safari
+            test: pnpm -F app run test-visual
+    env:
+      VISUAL_PROJECTS: ${{ matrix.projects }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
+        with:
+          filters: app...
+
+      - name: Install Playwright
+        uses: ./.github/workflows/install-playwright
+        with:
+          engines: ${{ matrix.engines }}
+          workspace: app
+
+      - name: Download app artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: app-build
+          path: app
+
+      - name: Download Next.js artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
 
       - name: Test visual
         id: test-visual
-        if: matrix.visual != ''
         # -x stops after the first failing test so we can rerun once with -u below.
-        run: ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests -x
+        run: ${{ matrix.test }} --project ${{ matrix.projects }} --grep @visual --pass-with-no-tests -x
 
       - name: Update screenshots
         id: update-screenshots
@@ -137,66 +208,76 @@ jobs:
         # that are no longer regenerated by this rerun.
         run: |
           touch -t "$(date -u -d '-1 second' '+%Y%m%d%H%M.%S' 2>/dev/null || date -u -v-1S '+%Y%m%d%H%M.%S')" "${{ runner.temp }}/pre-update-marker"
-          ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual -u
+          ${{ matrix.test }} --project ${{ matrix.projects }} --grep @visual -u
 
       - name: Remove stale screenshots
-        if: matrix.visual != '' && always() && steps.update-screenshots.outcome == 'success'
-        # The update run only touches files that still exist, so remove any
-        # older screenshots for this browser that were left behind.
-        run: find app/src -path "*/__screenshots__/*-${{ matrix.project }}.png" ! -newer "${{ runner.temp }}/pre-update-marker" -delete
+        if: always() && steps.update-screenshots.outcome == 'success'
+        # The update run re-stamps every screenshot still asserted through
+        # visual() in app/src/test-utils/visual.ts, so remove any older
+        # screenshots for these browsers that were left behind.
+        run: |
+          for project in $VISUAL_PROJECTS; do
+            find app/src -path "*/__screenshots__/*-${project}.webp" ! -newer "${{ runner.temp }}/pre-update-marker" -delete
+          done
 
       - name: Pack screenshots
-        if: matrix.visual != '' && always()
+        id: pack-screenshots
+        if: >
+          always() &&
+          (steps.test-visual.outcome == 'success' ||
+          steps.update-screenshots.outcome == 'success')
         # The follow-up job applies screenshots from artifacts instead of
         # mutating the branch directly from each matrix shard.
         run: |
           mkdir -p "${{ runner.temp }}/artifacts"
-          python <<'PY'
-          import sys
+          python3 <<'PY'
+          import os
           import tarfile
           from pathlib import Path
 
-          project = "${{ matrix.project }}"
+          projects = os.environ["VISUAL_PROJECTS"].split()
           root = Path("app/src")
-          archive_path = Path("${{ runner.temp }}/artifacts") / f"app-visual-{project}.tar.gz"
-          screenshots = sorted(root.glob(f"**/__screenshots__/*-{project}.png"))
-          if not screenshots:
-              sys.exit(0)
-          with tarfile.open(archive_path, "w:gz") as tar:
-              for screenshot in screenshots:
-                  tar.add(screenshot, arcname=screenshot.as_posix())
+          artifacts = Path(os.environ["RUNNER_TEMP"]) / "artifacts"
+          for project in projects:
+              archive_path = artifacts / f"app-visual-{project}.tar.gz"
+              screenshots = sorted(root.glob(f"**/__screenshots__/*-{project}.webp"))
+              if not screenshots:
+                  raise RuntimeError(f"No screenshots found for {project}")
+              with tarfile.open(archive_path, "w:gz") as tar:
+                  for screenshot in screenshots:
+                      tar.add(screenshot, arcname=screenshot.as_posix())
           PY
 
-      - name: Upload screenshots
-        if: matrix.visual != '' && always()
+      - name: Upload screenshots (${{ matrix.os }})
+        if: always() && steps.pack-screenshots.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
-          name: app-visual-${{ matrix.project }}
-          path: ${{ runner.temp }}/artifacts/app-visual-${{ matrix.project }}.tar.gz
+          name: app-visual-${{ matrix.os }}
+          path: ${{ runner.temp }}/artifacts/app-visual-*.tar.gz
           if-no-files-found: ignore
           retention-days: 1
 
       - name: Upload test results to GitHub
-        if: failure() && (steps.test.outcome == 'failure' || steps.test-visual.outcome == 'failure' || steps.update-screenshots.outcome == 'failure')
+        if: failure() && (steps.test-visual.outcome == 'failure' || steps.update-screenshots.outcome == 'failure')
         uses: actions/upload-artifact@v7
         with:
-          name: app-${{ matrix.project }}-test-results
+          name: app-test-results-${{ matrix.os }}
           path: app/test-results
           retention-days: 7
 
-  test-finalize:
+  visual-finalize:
     # This job intentionally assumes PRs come from branches on this repository.
     # Fork-safe write-back logic was removed with the member-only PR model.
-    name: Visual
-    needs: test
-    if: always() && needs.test.result != 'cancelled'
+    name: Update screenshots
+    needs: [test, visual]
+    if: always() && needs.test.result != 'cancelled' && needs.visual.result != 'cancelled'
     permissions:
       actions: read
       contents: read
     uses: ./.github/workflows/visual.yml
     with:
       event: ${{ github.event_name }}
-      test-result: ${{ needs.test.result }}
+      visual-result: ${{ needs.visual.result }}
     secrets: inherit
 
   deploy-preview:

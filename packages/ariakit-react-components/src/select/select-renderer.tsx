@@ -112,6 +112,7 @@ function useSelectRenderer<T extends Item = any>({
   });
 }
 
+/** @deprecated Use `ComboboxRenderer` instead. */
 export const SelectRenderer = forwardRef(function SelectRenderer<
   T extends Item = any,
 >(props: SelectRendererProps<T>) {
@@ -119,19 +120,27 @@ export const SelectRenderer = forwardRef(function SelectRenderer<
   return createElement(TagName, htmlProps);
 });
 
-export {
-  getCompositeRendererItem as getSelectRendererItem,
-  getCompositeRendererItemId as getSelectRendererItemId,
-};
+/** @deprecated Use `getComboboxRendererItem` instead. */
+export const getSelectRendererItem: typeof getCompositeRendererItem =
+  getCompositeRendererItem;
 
+/** @deprecated Use `getComboboxRendererItemId` instead. */
+export const getSelectRendererItemId: typeof getCompositeRendererItemId =
+  getCompositeRendererItemId;
+
+/** @deprecated Use `ComboboxRendererItemObject` instead. */
 export type SelectRendererItemObject = ItemObject;
+/** @deprecated Use `ComboboxRendererItem` instead. */
 export type SelectRendererItem = Item;
+/** @deprecated Use `ComboboxRendererBaseItemProps` instead. */
 export type SelectRendererBaseItemProps = BaseItemProps;
+/** @deprecated Use `ComboboxRendererItemProps` instead. */
 export type SelectRendererItemProps<
   T extends Item,
   P extends BaseItemProps = BaseItemProps,
 > = ItemProps<T, P>;
 
+/** @deprecated Use `ComboboxRendererOptions` instead. */
 export interface SelectRendererOptions<T extends Item = any> extends Omit<
   CompositeRendererOptions<T>,
   "store"
@@ -157,6 +166,7 @@ export interface SelectRendererOptions<T extends Item = any> extends Omit<
   value?: SelectStoreValue;
 }
 
+/** @deprecated Use `ComboboxRendererProps` instead. */
 export interface SelectRendererProps<T extends Item = any> extends Props<
   TagName,
   SelectRendererOptions<T>

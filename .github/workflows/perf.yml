@@ -22,6 +22,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       - name: Build app
         env:
@@ -50,6 +52,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       - name: Build Next.js app
         run: pnpm -F nextjs run build-worker
@@ -74,6 +78,15 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           persist-credentials: false
+
+      # Keep the current setup action in a separate checkout while the
+      # workspace root contains the source used to build the baseline.
+      - name: Checkout workflow repository
+        uses: actions/checkout@v7
+        with:
+          path: .perf-workflow
+          persist-credentials: false
+          sparse-checkout: .github/workflows/setup
 
       - name: Find base app artifact
         id: find-base-artifact
@@ -174,23 +187,13 @@ jobs:
         if: steps.baseline-rebuild.outputs.nextjs == 'true'
         run: rm -rf nextjs/.open-next
 
-      - name: Install pnpm
+      - name: Set up baseline environment
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
-        with:
-          cache: true
-
-      - name: Set up Node
-        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: package.json
-
-      - name: Install dependencies
-        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
+        uses: ./.perf-workflow/.github/workflows/setup
         env:
           HUSKY: 0
-        run: pnpm install --frozen-lockfile
+        with:
+          filters: app...
 
       - name: Build base app
         if: steps.baseline-rebuild.outputs.app == 'true'
@@ -241,24 +244,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Set up environment
-        uses: ./.github/workflows/setup
-
       - name: Set up baseline worktree
         run: |
           BASELINE_DIR="$RUNNER_TEMP/perf-node-baseline"
           echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"
           git worktree add --detach "$BASELINE_DIR" \
             ${{ github.event.pull_request.base.sha }}
-
-      - name: Install dependencies (baseline)
-        working-directory: ${{ runner.temp }}/perf-node-baseline
-        env:
-          # The baseline worktree shares `.git/config` with the main checkout,
-          # so husky's prepare step would otherwise rewrite `core.hooksPath`
-          # to a relative path under a temporary worktree.
-          HUSKY: 0
-        run: pnpm install --frozen-lockfile
 
       - name: Copy benchmark files to baseline
         run: |
@@ -416,11 +407,14 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
         with:
-          engine: chromium
+          engines: chromium
+          workspace: app
 
       - name: Set up baseline worktree
         env:
@@ -439,11 +433,24 @@ jobs:
           # so husky's prepare step would otherwise rewrite `core.hooksPath`
           # to a relative path under a temporary worktree.
           HUSKY: 0
-        run: pnpm install --frozen-lockfile --prefer-offline
+        run: pnpm --filter 'app...' --fail-if-no-match install --frozen-lockfile --no-runtime --prefer-offline
 
       - name: Install Playwright (baseline)
         working-directory: ${{ runner.temp }}/perf-baseline
-        run: pnpm exec playwright install --with-deps chromium
+        # No `--with-deps` here. The runner image already provides every library
+        # Chromium needs, and the current-branch step above skips its own
+        # `--with-deps` whenever the browser cache hits, so the rest of CI
+        # already launches browsers without it. The only packages it added were
+        # ~21 MB of optional fonts, re-fetched from the Ubuntu mirror on every
+        # job; when that mirror degrades the step has stalled for ~10 minutes.
+        # Dropping them keeps baseline and current on the same fonts, because
+        # both sides run on this runner after this step.
+        #
+        # The install stays unconditional so a baseline pinned to a different
+        # Playwright version still downloads its own browser build. It is a
+        # no-op when the version matches the current branch, since both
+        # checkouts share `~/.cache/ms-playwright` through `$HOME`.
+        run: pnpm --filter app exec playwright install chromium
 
       - name: Download baseline artifacts
         uses: actions/download-artifact@v8
@@ -733,6 +740,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: ./packages/*...
 
       - name: Set up baseline worktree
         env:
@@ -751,7 +760,7 @@ jobs:
           # so husky's prepare step would otherwise rewrite `core.hooksPath`
           # to a relative path under a temporary worktree.
           HUSKY: 0
-        run: pnpm install --frozen-lockfile --prefer-offline
+        run: pnpm --filter './packages/*...' --fail-if-no-match install --frozen-lockfile --no-runtime --prefer-offline
 
       - name: Download baseline artifacts
         uses: actions/download-artifact@v8
@@ -943,6 +952,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: ./packages/ariakit-scripts...
 
       # Download both engines' artifacts before comparing, so a Chrome-side
       # problem can never prevent the Node section from being posted.
@@ -1113,15 +1124,19 @@ jobs:
             write_chrome_inconclusive "no Chrome job rounds found."
             exit 0
           fi
-          rm -rf app/.perf-results
-          mkdir -p app/.perf-results
-          cp "${rounds[@]}" app/.perf-results/
-          if ! pnpm -F app run perf-compare; then
+          # Stage the rounds outside the workspace and point the comparison at
+          # that directory, so this job only needs `@ariakit/scripts` instead
+          # of the whole `app` dependency graph.
+          compare_dir="$RUNNER_TEMP/perf-chrome-compare"
+          rm -rf "$compare_dir"
+          mkdir -p "$compare_dir"
+          cp "${rounds[@]}" "$compare_dir/"
+          if ! pnpm exec ariakit perf-compare --results-dir "$compare_dir"; then
             write_chrome_inconclusive "comparison failed."
             exit 0
           fi
           mkdir -p "$output_dir"
-          cp app/.perf-results/comparison.md "$output_dir/"
+          cp "$compare_dir/comparison.md" "$output_dir/"
           printf 'Chrome\n' > "$output_dir/title.txt"
 
       - name: Create GitHub App token

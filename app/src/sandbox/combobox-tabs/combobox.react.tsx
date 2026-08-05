@@ -12,7 +12,7 @@ export interface ComboboxProviderProps extends Ariakit.ComboboxProviderProps {
   tabId?: Ariakit.TabProviderProps["selectedId"];
   setTabId?: (id: string) => void;
   defaultTabId?: Ariakit.TabProviderProps["defaultSelectedId"];
-  onSearch?: Ariakit.ComboboxProviderProps["setValue"];
+  onSearch?: Ariakit.ComboboxProviderProps["setInputValue"];
   onTabChange?: (id: string) => void;
 }
 
@@ -24,14 +24,16 @@ export function ComboboxProvider({
   onTabChange,
   ...props
 }: ComboboxProviderProps) {
+  const setInputValue = props.setInputValue ?? props.setValue;
   return (
     <Ariakit.ComboboxProvider
       {...props}
-      // If consumers want to control the state, they should use `setValue`. If
-      // a search operation is needed, `onSearch` should be used to ensure the
-      // input remains responsive to user input, thanks to startTransition.
-      setValue={(value) => {
-        props.setValue?.(value);
+      // If consumers want to control the state, they should use
+      // `setInputValue`. If a search operation is needed, `onSearch` should be
+      // used to ensure the input remains responsive to user input, thanks to
+      // startTransition.
+      setInputValue={(value) => {
+        setInputValue?.(value);
         React.startTransition(() => {
           onSearch?.(value);
         });

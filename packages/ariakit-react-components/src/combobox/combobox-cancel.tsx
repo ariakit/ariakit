@@ -68,18 +68,18 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      store?.setValue("");
       // Move focus to the combobox input.
       store?.move(null);
+      store?.setInputValue("");
     });
 
-    const baseElement = useStoreState(store, "baseElement");
-    useAttribute(baseElement, "id");
-    const comboboxId = baseElement?.id;
+    const compositeElement = useStoreState(store, "compositeElement");
+    useAttribute(compositeElement, "id");
+    const comboboxId = compositeElement?.id;
     const empty = useStoreState(
       store,
-      ["value"],
-      (state) => state.value === "",
+      ["inputValue"],
+      (state) => state.inputValue === "",
     );
 
     props = useWrapElement(

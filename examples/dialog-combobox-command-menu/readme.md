@@ -90,10 +90,10 @@ To achieve this, we use the [`autoSelect`](/reference/combobox#autoselect) prop 
 
 In this example, we've decided to maintain the highlight state on the currently active item, even if the user moves the mouse cursor away or interacts with the combobox input.
 
-1. First, to ensure the active item doesn't lose focus when the user clicks or presses arrow keys to move focus to the combobox input, we set the [`includesBaseElement`](/reference/combobox-provider#includesbaseelement) state to `false` on the [`ComboboxProvider`](/reference/combobox-provider) component:
+1. First, to ensure the active item doesn't lose focus when the user clicks or presses arrow keys to move focus to the combobox input, we set the [`compositeElementInFocusOrder`](/reference/combobox-provider#compositeelementinfocusorder) state to `false` on the [`ComboboxProvider`](/reference/combobox-provider) component:
 
    ```jsx
-   <ComboboxProvider includesBaseElement={false}>
+   <ComboboxProvider compositeElementInFocusOrder={false}>
    ```
 
 2. Then, to avoid blurring the active item when the user moves the mouse cursor away, we set the [`blurOnHoverEnd`](/reference/combobox-item#bluronhoverend) prop of the [`ComboboxItem`](/reference/combobox-item) component to `false`. Coupled with [`focusOnHover`](/reference/combobox-item#focusonhover), this ensures the item stays focused when the user hovers over it and until they hover over another item:

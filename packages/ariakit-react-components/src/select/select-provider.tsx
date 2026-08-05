@@ -9,6 +9,9 @@ type Value = SelectStoreValue;
 /**
  * Provides a select store to [Select](https://ariakit.com/components/select)
  * components.
+ * @deprecated Use
+ * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
+ * instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -27,6 +30,7 @@ export function SelectProvider<T extends Value = Value>(
   props: PickRequired<SelectProviderProps<T>, "value" | "defaultValue">,
 ): ReactElement;
 
+/** @deprecated Use `ComboboxProvider` instead. */
 export function SelectProvider(props?: SelectProviderProps): ReactElement;
 
 export function SelectProvider(props: SelectProviderProps = {}) {
@@ -38,6 +42,7 @@ export function SelectProvider(props: SelectProviderProps = {}) {
   );
 }
 
+/** @deprecated Use `ComboboxProviderProps` instead. */
 export interface SelectProviderProps<
   T extends Value = Value,
 > extends SelectStoreProps<T> {

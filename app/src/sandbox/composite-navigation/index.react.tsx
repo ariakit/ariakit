@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import type { ElementRef } from "react";
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 
 interface GridProps extends Ariakit.CompositeProps {
   focusShift?: boolean;
@@ -69,6 +69,51 @@ function FocusShiftGrid({
   );
 }
 
+function LegacyFocusOrderComposite() {
+  const [includesCompositeElement, setIncludesCompositeElement] =
+    useState(false);
+  return (
+    <section>
+      <label>
+        <input
+          type="checkbox"
+          checked={includesCompositeElement}
+          onChange={(event) => {
+            setIncludesCompositeElement(event.currentTarget.checked);
+          }}
+          tabIndex={0}
+        />
+        Include composite element in focus order
+      </label>
+      <Ariakit.CompositeProvider
+        focusLoop
+        includesBaseElement={includesCompositeElement}
+      >
+        <Ariakit.Composite role="toolbar" aria-label="Legacy focus order">
+          <Ariakit.CompositeItem>Legacy one</Ariakit.CompositeItem>
+          <Ariakit.CompositeItem>Legacy two</Ariakit.CompositeItem>
+        </Ariakit.Composite>
+      </Ariakit.CompositeProvider>
+    </section>
+  );
+}
+
+/**
+ * Items far enough apart that reaching one with the keyboard can only be seen
+ * by the page scrolling to reveal it.
+ */
+function DistantComposite() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite aria-label="Distant fruits">
+        <Ariakit.CompositeItem>Near fruit</Ariakit.CompositeItem>
+        <div style={{ height: 900 }} />
+        <Ariakit.CompositeItem>Distant fruit</Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
 export default function Example() {
   return (
     <main>
@@ -76,6 +121,10 @@ export default function Example() {
       <BasicComposite />
       <FocusShiftGrid prefix="0" />
       <FocusShiftGrid prefix="1" focusShift />
+      <LegacyFocusOrderComposite />
+      {/* Kept last so the first tab stop on the page stays in the basic
+      composite, which the existing navigation tests rely on. */}
+      <DistantComposite />
     </main>
   );
 }

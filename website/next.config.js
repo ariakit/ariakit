@@ -34,6 +34,18 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   webpack(config, context) {
+    // Vercel restores `.next/cache` from the previous deployment, and webpack's
+    // persistent filesystem cache can come back with a context entry whose
+    // `hash` is undefined, crashing the build in
+    // `FileSystemInfo._resolveContextTsh`. A crashed build never uploads a new
+    // cache, so every later build restores the same broken one and fails the
+    // same way until someone clears it by hand. Keeping the cache in memory for
+    // builds persists nothing for the next build to restore. `next dev` still
+    // gets the filesystem cache, since it is never restored across machines.
+    if (!context.dev) {
+      config.cache = { type: "memory" };
+    }
+
     if (context.isServer) {
       config.plugins.push(
         new context.webpack.DefinePlugin({

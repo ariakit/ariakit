@@ -12,6 +12,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import {
   toArray,
+  disabledFromProps,
   getActiveElement,
   getPopupRole,
   queueBeforeEvent,
@@ -28,6 +29,10 @@ import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import { getVisuallyHiddenStyle } from "../visually-hidden/visually-hidden.tsx";
+import {
+  getScrollItemIntoView,
+  useTrackComboboxSelectPresentation,
+} from "./__utils.ts";
 import {
   ComboboxScopedContextProvider,
   useComboboxProviderContext,
@@ -111,7 +116,10 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
         "ComboboxSelect must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
+    useTrackComboboxSelectPresentation(store);
+
     const onKeyDownProp = props.onKeyDown;
+    const disabledProp = disabledFromProps(props);
     const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
     const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
     const placement = useStoreState(store, "placement");
@@ -218,7 +226,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
               name={name}
               form={form}
               required={required}
-              disabled={props.disabled}
+              disabled={disabledProp}
               value={selectedValue}
               multiple={multiSelectable}
               // Although visually hidden and not tabbable, this element remains
@@ -264,7 +272,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
         selectedValue,
         multiSelectable,
         values,
-        props.disabled,
+        disabledProp,
       ],
     );
 
@@ -298,16 +306,18 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       focusable,
       ...props,
     });
+    const scrollItemIntoView = getScrollItemIntoView(store);
     props = useCompositeTypeahead<TagName>({ store, ...props });
     const onKeyDownCaptureProp = props.onKeyDownCapture;
     const onKeyUpCaptureProp = props.onKeyUpCapture;
     props = useComposite<TagName>({
       store,
+      unstable_scrollIntoView: scrollItemIntoView,
       composite: !inputElement,
       focusable,
       // The select handler owns closed navigation so it can skip value-less
       // items. Once open, Composite owns navigation and can also finish moves
-      // whose offscreen target has no element yet.
+      // whose target has no element yet.
       moveOnKeyPress: () => store.getState().open,
       ...props,
     });

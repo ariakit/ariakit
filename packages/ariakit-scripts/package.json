@@ -13,14 +13,15 @@
     "@jridgewell/trace-mapping": "0.3.31",
     "chokidar": "5.0.0",
     "commander": "15.0.0",
-    "rolldown": "1.2.0",
-    "rolldown-plugin-dts": "0.27.14",
+    "rolldown": "1.2.1",
+    "rolldown-plugin-dts": "0.28.0",
     "ts-morph": "28.0.0",
     "typescript": "npm:@typescript/typescript6@6.0.2",
-    "vite-plugin-solid": "2.11.13"
+    "vite-plugin-solid": "2.11.14"
   },
   "devDependencies": {
-    "@playwright/test": "1.62.0",
+    "@playwright/test": "1.62.1",
+    "react": "19.2.8",
     "vitest": "4.1.10"
   }
 }

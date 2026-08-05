@@ -1,42 +1,40 @@
+import type { Locator } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
+
+type Box = NonNullable<Awaited<ReturnType<Locator["boundingBox"]>>>;
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test("falls back from right to top and bottom", async ({ page, q }) => {
     const disclosure = q.button("Accept invite");
     const popover = q.dialog("Team meeting");
+
+    // Placement settles asynchronously after viewport and scroll changes, so
+    // poll the geometry instead of sampling it once.
+    const expectGap = (getGap: (anchor: Box, popover: Box) => number) =>
+      test.expect
+        .poll(async () => {
+          const anchorBox = await disclosure.boundingBox();
+          const popoverBox = await popover.boundingBox();
+          if (!anchorBox || !popoverBox) return -Infinity;
+          return getGap(anchorBox, popoverBox);
+        })
+        .toBeGreaterThanOrEqual(0);
+
     await disclosure.click();
     await test.expect(popover).toBeVisible();
 
-    let anchorBox = await disclosure.boundingBox();
-    let popoverBox = await popover.boundingBox();
-    test.expect(anchorBox).not.toBeNull();
-    test.expect(popoverBox).not.toBeNull();
-    if (!anchorBox) return;
-    if (!popoverBox) return;
-    test
-      .expect(popoverBox.x)
-      .toBeGreaterThanOrEqual(anchorBox.x + anchorBox.width - 1);
+    await expectGap(
+      (anchor, popover) => popover.x - (anchor.x + anchor.width - 1),
+    );
 
     await page.setViewportSize({ width: 480, height: 1024 });
-    anchorBox = await disclosure.boundingBox();
-    popoverBox = await popover.boundingBox();
-    test.expect(anchorBox).not.toBeNull();
-    test.expect(popoverBox).not.toBeNull();
-    if (!anchorBox) return;
-    if (!popoverBox) return;
-    test
-      .expect(popoverBox.y + popoverBox.height)
-      .toBeLessThanOrEqual(anchorBox.y);
+    await expectGap(
+      (anchor, popover) => anchor.y - (popover.y + popover.height),
+    );
 
     await page.evaluate(() => window.scrollTo(0, 400));
-    anchorBox = await disclosure.boundingBox();
-    popoverBox = await popover.boundingBox();
-    test.expect(anchorBox).not.toBeNull();
-    test.expect(popoverBox).not.toBeNull();
-    if (!anchorBox) return;
-    if (!popoverBox) return;
-    test
-      .expect(popoverBox.y)
-      .toBeGreaterThanOrEqual(anchorBox.y + anchorBox.height);
+    await expectGap(
+      (anchor, popover) => popover.y - (anchor.y + anchor.height),
+    );
   });
 });

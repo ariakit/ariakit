@@ -5,6 +5,7 @@
 
 import type { Store } from "@ariakit/store";
 import type { AnyObject, EmptyObject } from "@ariakit/utils";
+import { removeUndefinedValues } from "@ariakit/utils";
 import * as React from "react";
 import { useMergeRefs } from "./hooks.ts";
 import { getRefProperty, mergeProps } from "./misc.ts";
@@ -13,11 +14,18 @@ import type { Hook, HTMLProps, Options, Props } from "./types.ts";
 /**
  * The same as `React.forwardRef` but passes the `ref` as a prop and returns a
  * component with the same generic type.
+ *
+ * Props holding `undefined` are dropped, so passing one behaves the same as
+ * omitting it and the component keeps the value it computes for itself.
  */
 export function forwardRef<T extends React.FC<any>>(render: T) {
   const Role = React.forwardRef(
+    // Component hooks routinely compute a value for a prop they don't
+    // destructure, then spread the remaining props over it. An own key holding
+    // `undefined` would win that spread and force the next hook's own default,
+    // so drop it here and let a prop the caller never set behave as omitted.
     // @ts-ignore Incompatible with React 19 types. Ignore for now.
-    (props, ref) => render({ ...props, ref }),
+    (props, ref) => render(removeUndefinedValues({ ...props, ref })),
   );
   Role.displayName = render.displayName || render.name;
   return Role as unknown as T;

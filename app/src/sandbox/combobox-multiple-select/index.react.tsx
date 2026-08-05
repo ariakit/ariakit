@@ -1,3 +1,4 @@
+import { Button } from "@ariakit/react";
 import { matchSorter } from "match-sorter";
 import { useDeferredValue, useMemo, useState } from "react";
 import list from "../combobox-multiple/list.ts";
@@ -14,18 +15,21 @@ export default function Example() {
   );
 
   return (
-    <Combobox
-      label="Your favorite food"
-      placeholder="e.g., Apple, Burger"
-      value={value}
-      onChange={setValue}
-      values={values}
-      onValuesChange={setValues}
-    >
-      {matches.map((value) => (
-        <ComboboxItem key={value} value={value} />
-      ))}
-      {!matches.length && <div className="no-results">No results found</div>}
-    </Combobox>
+    <>
+      <Combobox
+        label="Your favorite food"
+        placeholder="e.g., Apple, Burger"
+        value={value}
+        onChange={setValue}
+        values={values}
+        onValuesChange={setValues}
+      >
+        {matches.map((value) => (
+          <ComboboxItem key={value} value={value} />
+        ))}
+        {!matches.length && <div className="no-results">No results found</div>}
+      </Combobox>
+      <Button>After combobox</Button>
+    </>
   );
 }

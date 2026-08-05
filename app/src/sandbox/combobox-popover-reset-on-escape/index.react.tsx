@@ -163,6 +163,7 @@ function DescendantClose() {
         ))}
         <button
           type="button"
+          tabIndex={0}
           onKeyDown={(event) => {
             if (event.key !== "Escape") return;
             event.preventDefault();
@@ -307,6 +308,7 @@ export default function Example() {
       <Select label="Propagation" unmount={false}>
         <button
           type="button"
+          tabIndex={0}
           onKeyDown={(event) => {
             if (event.key !== "Escape") return;
             event.stopPropagation();
@@ -343,6 +345,7 @@ export default function Example() {
         escape key, so the previewed selection has to survive it. */}
         <button
           type="button"
+          tabIndex={0}
           onKeyDown={(event) => {
             if (event.key !== "Escape") return;
             event.preventDefault();

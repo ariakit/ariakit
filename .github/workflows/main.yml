@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
@@ -33,6 +35,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
@@ -47,48 +51,48 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: ./packages/*...
 
       - name: Build
         run: pnpm run build
 
   test:
-    name: "Test${{ matrix.name && format(' {0}', matrix.name) || '' }}${{ matrix.shard && format(' ({0})', matrix.shard) || '' }}"
+    name: Test
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - script: test
-          - name: React
-            script: test-react
-          # Runs unsharded on happy-dom (fast). The Test step still honors a
-          # `shard:` key, so split it again by re-adding `shard: "1/2"` and
-          # `shard: "2/2"` entries here if it ever slows down.
-          - name: React 18
-            script: test-react18
-          - name: Solid
-            script: test-solid
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
 
       - name: Test
-        env:
-          TEST_SCRIPT: ${{ matrix.script }}
-          TEST_SHARD: ${{ matrix.shard }}
-        run: |
-          if [ -n "$TEST_SHARD" ]; then
-            pnpm "$TEST_SCRIPT" --shard "$TEST_SHARD"
-          else
-            pnpm "$TEST_SCRIPT"
-          fi
+        run: pnpm test
+
+  test-react18:
+    name: Test React 18
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
+
+      - name: Test
+        run: pnpm test-react18
 
   website:
     name: Build website
@@ -97,9 +101,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: website...
 
       - name: Build website
         run: pnpm run build-website-lite

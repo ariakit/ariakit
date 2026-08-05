@@ -31,6 +31,18 @@ test("hide on escape", async () => {
   expect(q.link()).toHaveFocus();
 });
 
+// https://github.com/ariakit/ariakit/issues/7036
+test("hide on escape with a persistent nested hovercard", async () => {
+  await click(q.checkbox("Include preview"));
+  await click(q.link());
+  expect(q.text("Feature preview")).toBeVisible();
+
+  await press.Escape();
+
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.text("Feature preview")).not.toBeInTheDocument();
+});
+
 test("hide on click outside", async () => {
   await click(q.link());
   expect(q.dialog()).toBeVisible();
