@@ -165,7 +165,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
       focus: true,
       scrollIntoView,
     });
-  }, [store, moves, focusOnMove, present, scrollIntoView]);
+  }, [store, moves, focusOnMove, compositeElement, present, scrollIntoView]);
 
   // If composite.move(null) has been called, the composite container should
   // receive focus.
