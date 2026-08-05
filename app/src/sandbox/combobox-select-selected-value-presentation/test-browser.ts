@@ -364,55 +364,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7011
-  test("centers the selected item when mounted already open", async ({ q }) => {
-    await q.button("Mount default-open centered fruit").click();
-
-    const mango = q.option("Mango");
-    await test.expect(mango).toHaveAttribute("data-active-item");
-    await expectVerticallyCentered(q.listbox(), mango);
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7011
-  test("waits for selected items rendered after a default-open popup", async ({
-    q,
-  }) => {
-    await q.button("Mount delayed default-open centered fruit").click();
-
-    const watermelon = q.option("Watermelon");
-    await test.expect(watermelon).toHaveAttribute("data-active-item");
-    await expectVerticallyCentered(q.listbox(), watermelon);
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7011
-  test("abandons a delayed default-open presentation when focus leaves", async ({
-    page,
-    q,
-  }) => {
-    await q.button("Mount delayed default-open focus escape fruit").click();
-
-    const focusTarget = q.button(
-      "Delayed default-open focus escape fruit focus target",
-    );
-    await focusTarget.focus();
-    await q
-      .button("Render delayed default-open focus escape fruit items")
-      .dispatchEvent("click");
-    await test.expect(q.option("Watermelon")).toBeAttached();
-    // The pending presentation has no completion marker, so cross its frame
-    // checkpoint before asserting that focus and scroll remained unchanged.
-    await flushFrames(page);
-
-    await test.expect(focusTarget).toBeFocused();
-    test
-      .expect(
-        await q
-          .listbox("Delayed default-open focus escape fruit")
-          .evaluate((element) => element.scrollTop),
-      )
-      .toBe(0);
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7011
   test("centers the selected item in a scaled popup", async ({ q }) => {
     await q.combobox("Scaled centered fruit").click();
 

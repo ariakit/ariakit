@@ -39,11 +39,7 @@ import {
   CompositeScopedContextProvider,
   useCompositeProviderContext,
 } from "./composite-context.tsx";
-import type {
-  CompositeStore,
-  CompositeStoreItem,
-  CompositeStoreState,
-} from "./composite-store.ts";
+import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 import {
   findFirstEnabledItem,
   getEnabledItem,
@@ -57,12 +53,6 @@ import {
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-
-function popupStateKeys(...keys: string[]) {
-  return keys as Array<keyof CompositeStoreState>;
-}
-
-const openKeys = popupStateKeys("open");
 
 function isGrid(items: CompositeStoreItem[]) {
   return items.some((item) => !!item.rowId);
@@ -150,9 +140,6 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   scrollIntoView,
 }: CompositeFocusOnMoveProps) {
   const moves = useStoreState(store, "moves");
-  const open = useStoreState(store, openKeys, (state) =>
-    "open" in state ? !!state.open : false,
-  );
   // The composite element is also tracked so the move-to-container effect
   // below can run once it becomes available. It's published to the store
   // through a ref callback and a transaction effect on the parent composite
@@ -164,28 +151,6 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   const compositeElement = useStoreState(store, "compositeElement");
 
   // Present the active item.
-  useEffect(() => {
-    if (moves) return;
-    // Focus handlers present the item on interactive opens. A default-open
-    // composite can mount without moving focus, so start an unpinned request
-    // here while no external element owns focus. It can wait for async items.
-    if (!scrollIntoView) return;
-    if (!open) return;
-    if (!compositeElement) return;
-    if (ownsFocus(store)) return;
-    const activeElement = getActiveElement(compositeElement);
-    if (activeElement && activeElement !== activeElement.ownerDocument.body) {
-      return;
-    }
-    return present({
-      markedOnly: true,
-      requireFocus: true,
-      scrollIntoView,
-    });
-  }, [store, moves, open, compositeElement, present, scrollIntoView]);
-
-  // Opening and closing an open-capable composite must not replay an earlier
-  // move: that could focus or scroll an item after the user has moved on.
   useEffect(() => {
     if (!moves) return;
     if (!focusOnMove) return;

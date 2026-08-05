@@ -98,16 +98,6 @@ function RemountingFruitItems({ idPrefix }: FruitItemsProps) {
   return <FruitItems key={generation} idPrefix={idPrefix} />;
 }
 
-function DelayedFruitItems() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    const timeout = setTimeout(() => setMounted(true), 100);
-    return () => clearTimeout(timeout);
-  }, []);
-  if (!mounted) return null;
-  return <FruitItems />;
-}
-
 interface RefreshListButtonProps {
   /** The item the refreshed list highlights. */
   activeId: string;
@@ -154,11 +144,7 @@ interface FixtureProps {
    * presentation as the only thing that can bring an item into view.
    */
   autoFocusOnShow?: boolean;
-  /** Holds the fruit options until an external control renders them. */
-  controlledItems?: boolean;
-  defaultOpen?: boolean;
   defaultSelectedValue: string | string[];
-  delayedItems?: boolean;
   focusTarget?: boolean;
   focusTrapTarget?: boolean;
   /**
@@ -201,10 +187,7 @@ interface FixtureProps {
 
 function Fixture({
   autoFocusOnShow,
-  controlledItems,
-  defaultOpen,
   defaultSelectedValue,
-  delayedItems,
   focusTarget,
   focusTrapTarget,
   holdPlacement,
@@ -235,7 +218,6 @@ function Fixture({
   };
   const releaseRef = useRef<(() => void) | null>(null);
   const [generation, setGeneration] = useState(0);
-  const [showControlledItems, setShowControlledItems] = useState(false);
   const updatePosition = () =>
     new Promise<void>((resolve) => {
       releaseRef.current = resolve;
@@ -251,9 +233,7 @@ function Fixture({
       )}
       {remountItemsOnOpen ? (
         <RemountingFruitItems idPrefix={itemIdPrefix} />
-      ) : delayedItems ? (
-        <DelayedFruitItems />
-      ) : controlledItems && !showControlledItems ? null : (
+      ) : (
         <FruitItems key={generation} idPrefix={itemIdPrefix} />
       )}
       {/* An item rendered without a value, at the end of the list so it's
@@ -265,7 +245,6 @@ function Fixture({
   );
   return (
     <Ariakit.ComboboxProvider
-      defaultOpen={defaultOpen}
       defaultSelectedValue={defaultSelectedValue}
       virtualFocus={virtualFocus}
     >
@@ -352,11 +331,6 @@ function Fixture({
           {`${label} focus target`}
         </button>
       )}
-      {controlledItems && (
-        <button type="button" onClick={() => setShowControlledItems(true)}>
-          {`Render ${label.toLowerCase()} items`}
-        </button>
-      )}
       {refreshListActiveId && (
         <RefreshListButton
           activeId={refreshListActiveId}
@@ -378,68 +352,6 @@ function Fixture({
         </button>
       )}
     </Ariakit.ComboboxProvider>
-  );
-}
-
-function MountingDefaultOpenFixture() {
-  const [mounted, setMounted] = useState(false);
-  if (mounted) {
-    return (
-      <Fixture
-        autoFocusOnShow={false}
-        defaultOpen
-        defaultSelectedValue="Mango"
-        label="Default-open centered fruit"
-      />
-    );
-  }
-  return (
-    <button type="button" onClick={() => setMounted(true)}>
-      Mount default-open centered fruit
-    </button>
-  );
-}
-
-function MountingDelayedDefaultOpenFixture() {
-  const [mounted, setMounted] = useState(false);
-  if (mounted) {
-    return (
-      <Fixture
-        autoFocusOnShow={false}
-        defaultOpen
-        defaultSelectedValue="Watermelon"
-        delayedItems
-        label="Delayed default-open centered fruit"
-      />
-    );
-  }
-  return (
-    <button type="button" onClick={() => setMounted(true)}>
-      Mount delayed default-open centered fruit
-    </button>
-  );
-}
-
-function MountingDelayedDefaultOpenFocusEscapeFixture() {
-  const [mounted, setMounted] = useState(false);
-  if (mounted) {
-    return (
-      <Fixture
-        autoFocusOnShow={false}
-        controlledItems
-        defaultOpen
-        defaultSelectedValue="Watermelon"
-        focusTarget
-        keepOpen
-        label="Delayed default-open focus escape fruit"
-        outsideFocusTarget
-      />
-    );
-  }
-  return (
-    <button type="button" onClick={() => setMounted(true)}>
-      Mount delayed default-open focus escape fruit
-    </button>
   );
 }
 
@@ -1028,9 +940,6 @@ export default function Example() {
         />
       </div>
       <div style={{ marginTop: 200 }}>
-        <MountingDefaultOpenFixture />
-      </div>
-      <div style={{ marginTop: 200 }}>
         <Fixture
           defaultSelectedValue="Mango"
           label="Scaled centered fruit"
@@ -1211,12 +1120,6 @@ export default function Example() {
           label="Roving centered fruit"
           virtualFocus={false}
         />
-      </div>
-      <div style={{ marginTop: 200 }}>
-        <MountingDelayedDefaultOpenFixture />
-      </div>
-      <div style={{ marginTop: 200 }}>
-        <MountingDelayedDefaultOpenFocusEscapeFixture />
       </div>
       <div style={{ marginTop: 200 }}>
         <ItemRenderCountFixture />
