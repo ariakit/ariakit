@@ -98,6 +98,11 @@ export interface PresentItemParams {
   markedOnly?: boolean;
   /** Whether to abandon the presentation if the composite loses DOM focus. */
   requireFocus?: boolean;
+  /**
+   * Determines how the item is scrolled into view when it's presented.
+   * @private
+   */
+  scrollIntoView?: (element: HTMLElement) => void;
 }
 
 /**
@@ -117,6 +122,7 @@ function presentItem({
   focus,
   markedOnly,
   requireFocus,
+  scrollIntoView,
 }: PresentItemParams) {
   let element: HTMLElement | null = null;
   let resolvedId: string | undefined;
@@ -292,6 +298,10 @@ function presentItem({
     if (!isVisible(element)) return;
     if ("unstable_placing" in state && state.unstable_placing) return;
     cancel();
+    if (scrollIntoView) {
+      scrollIntoView(element);
+      return;
+    }
     element.scrollIntoView({ block: "nearest", inline: "nearest" });
   };
   // `mounted` and `unstable_placing` live on the merged popup store, which the

@@ -1,4 +1,7 @@
 import * as Ariakit from "@ariakit/react";
+import { useComboboxItem } from "@ariakit/react-components/combobox/combobox-item";
+import { ComboboxRenderer } from "@ariakit/react-components/combobox/combobox-renderer";
+import type { CSSProperties } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const fruits = [
@@ -40,6 +43,11 @@ const fruits = [
   "Watermelon",
 ];
 
+const rendererItems = fruits.map((value) => ({
+  id: `renderer-${value.toLowerCase().replace(/\s+/g, "-")}`,
+  value,
+}));
+
 function slugify(value: string) {
   return value.toLowerCase().replace(/\s+/g, "-");
 }
@@ -61,7 +69,10 @@ function FruitItems({ idPrefix }: FruitItemsProps) {
           key={fruit}
           id={idPrefix ? `${idPrefix}-${slugify(fruit)}` : undefined}
           value={fruit}
-          style={{ display: "block", padding: "4px 8px" }}
+          style={{
+            display: "block",
+            padding: "4px 8px",
+          }}
         />
       ))}
     </>
@@ -149,6 +160,8 @@ interface FixtureProps {
   /** Keeps the popup open while focus leaves it. */
   keepOpen?: boolean;
   label: string;
+  listScrollport?: boolean;
+  nestedScrollports?: boolean;
   moveFocusOnOpen?: boolean;
   /** Puts the element focus moves to outside the popup instead of inside it. */
   outsideFocusTarget?: boolean;
@@ -158,6 +171,7 @@ interface FixtureProps {
    * than the popup's list.
    */
   pageScrollport?: boolean;
+  popupStyle?: CSSProperties;
   /**
    * Adds a control that highlights this item and replaces every item node under
    * a stable id. Its replacement half is ignored alongside
@@ -181,9 +195,12 @@ function Fixture({
   itemIdPrefix,
   keepOpen,
   label,
+  listScrollport,
+  nestedScrollports,
   moveFocusOnOpen,
   outsideFocusTarget,
   pageScrollport,
+  popupStyle,
   refreshListActiveId,
   remountItemsOnOpen,
   showFocusHistory,
@@ -205,6 +222,27 @@ function Fixture({
     new Promise<void>((resolve) => {
       releaseRef.current = resolve;
     });
+  const items = (
+    <>
+      {focusTarget && !outsideFocusTarget && (
+        <Ariakit.ComboboxItem
+          ref={setFocusTarget}
+          style={{ display: "block", padding: "4px 8px" }}
+          value="Focus target"
+        />
+      )}
+      {remountItemsOnOpen ? (
+        <RemountingFruitItems idPrefix={itemIdPrefix} />
+      ) : (
+        <FruitItems key={generation} idPrefix={itemIdPrefix} />
+      )}
+      {/* An item rendered without a value, at the end of the list so it's
+      always out of view. */}
+      <Ariakit.ComboboxItem style={{ display: "block", padding: "4px 8px" }}>
+        {`No ${label.toLowerCase()}`}
+      </Ariakit.ComboboxItem>
+    </>
+  );
   return (
     <Ariakit.ComboboxProvider
       defaultSelectedValue={defaultSelectedValue}
@@ -242,7 +280,13 @@ function Fixture({
         style={{
           background: "white",
           border: "1px solid gray",
-          ...(pageScrollport ? null : { maxHeight: 120, overflow: "auto" }),
+          ...(pageScrollport || listScrollport
+            ? null
+            : {
+                maxHeight: nestedScrollports ? 160 : 120,
+                overflow: "auto",
+              }),
+          ...popupStyle,
         }}
       >
         {input && (
@@ -263,23 +307,18 @@ function Fixture({
             }}
           />
         )}
-        {focusTarget && !outsideFocusTarget && (
-          <Ariakit.ComboboxItem
-            ref={setFocusTarget}
-            style={{ display: "block", padding: "4px 8px" }}
-            value="Focus target"
-          />
-        )}
-        {remountItemsOnOpen ? (
-          <RemountingFruitItems idPrefix={itemIdPrefix} />
+        {listScrollport || nestedScrollports ? (
+          <>
+            {nestedScrollports && (
+              <p style={{ height: 200, margin: 0 }}>Available fruit</p>
+            )}
+            <Ariakit.ComboboxList style={{ maxHeight: 120, overflow: "auto" }}>
+              {items}
+            </Ariakit.ComboboxList>
+          </>
         ) : (
-          <FruitItems key={generation} idPrefix={itemIdPrefix} />
+          items
         )}
-        {/* An item rendered without a value, at the end of the list so it's
-        always out of view. */}
-        <Ariakit.ComboboxItem style={{ display: "block", padding: "4px 8px" }}>
-          {`No ${label.toLowerCase()}`}
-        </Ariakit.ComboboxItem>
       </Ariakit.ComboboxPopover>
       {focusTarget && outsideFocusTarget && (
         <button
@@ -313,6 +352,240 @@ function Fixture({
         </button>
       )}
     </Ariakit.ComboboxProvider>
+  );
+}
+
+function RenderCountedComboboxItem() {
+  const renderCount = useRef(0);
+  renderCount.current += 1;
+  const props = useComboboxItem({
+    value: "Apple",
+    children: "Apple",
+    style: { display: "block", padding: "4px 8px" },
+  });
+  return <Ariakit.Role {...props} data-render-count={renderCount.current} />;
+}
+
+function ItemRenderCountFixture() {
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Mango">
+      <Ariakit.ComboboxSelectLabel>
+        Render-counted fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxPopover autoFocusOnShow={false} unmountOnHide={false}>
+        <RenderCountedComboboxItem />
+        <Ariakit.ComboboxItem value="Mango">Mango</Ariakit.ComboboxItem>
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
+function VirtualizedSelectFixture() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultItems: rendererItems,
+    defaultSelectedValue: "Apple",
+    selectOnMove: true,
+  });
+  return (
+    <>
+      <Ariakit.ComboboxSelectLabel store={combobox}>
+        Virtualized fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={combobox} />
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          maxHeight: 120,
+          overflow: "auto",
+        }}
+      >
+        <ComboboxRenderer
+          store={combobox}
+          items={rendererItems}
+          itemSize={32}
+          overscan={0}
+        >
+          {({ value, ...item }) => (
+            <Ariakit.ComboboxItem
+              key={item.id}
+              {...item}
+              value={value}
+              style={{
+                ...item.style,
+                boxSizing: "border-box",
+                display: "block",
+                height: 32,
+                padding: "4px 8px",
+              }}
+            />
+          )}
+        </ComboboxRenderer>
+      </Ariakit.ComboboxPopover>
+    </>
+  );
+}
+
+function ProgrammaticOpenAfterMoveFixture() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Mango",
+  });
+  return (
+    <>
+      <Ariakit.ComboboxSelectLabel store={combobox}>
+        Programmatic fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={combobox} />
+      <button
+        type="button"
+        tabIndex={0}
+        onClick={() => combobox.move("programmatic-mango")}
+      >
+        Move programmatic fruit
+      </button>
+      <button type="button" tabIndex={0} onClick={combobox.show}>
+        Open programmatic fruit
+      </button>
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        autoFocusOnShow={false}
+        hideOnInteractOutside={false}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          maxHeight: 120,
+          overflow: "auto",
+        }}
+      >
+        <FruitItems idPrefix="programmatic" />
+      </Ariakit.ComboboxPopover>
+    </>
+  );
+}
+
+function TwoAxisOverflowFixture() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Mango",
+  });
+  return (
+    <>
+      <Ariakit.ComboboxSelectLabel store={combobox}>
+        Two-axis fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={combobox} />
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        autoFocusOnShow={false}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          maxHeight: 120,
+          overflow: "auto",
+          scrollBehavior: "smooth",
+          width: 120,
+        }}
+      >
+        {fruits.map((fruit) => (
+          <Ariakit.ComboboxItem
+            key={fruit}
+            value={fruit}
+            style={{
+              display: "block",
+              marginLeft: 200,
+              padding: "4px 8px",
+              width: 100,
+            }}
+          />
+        ))}
+      </Ariakit.ComboboxPopover>
+    </>
+  );
+}
+
+function NestedInlineScrollportFixture() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Mango",
+  });
+  return (
+    <>
+      <Ariakit.ComboboxSelectLabel store={combobox}>
+        Nested-inline fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={combobox} />
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        autoFocusOnShow={false}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          overflow: "auto",
+          width: 120,
+        }}
+      >
+        <Ariakit.ComboboxList
+          style={{ maxHeight: 120, overflowY: "auto", width: 300 }}
+        >
+          {fruits.map((fruit) => (
+            <Ariakit.ComboboxItem
+              key={fruit}
+              value={fruit}
+              style={{
+                display: "block",
+                marginLeft: 200,
+                padding: "4px 8px",
+                width: 100,
+              }}
+            />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxPopover>
+    </>
+  );
+}
+
+function OversizedInlineOverflowFixture({
+  direction,
+}: {
+  direction: "ltr" | "rtl";
+}) {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Mango",
+  });
+  const label = `Oversized ${direction.toUpperCase()} fruit`;
+  return (
+    <>
+      <Ariakit.ComboboxSelectLabel store={combobox}>
+        {label}
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={combobox} />
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        autoFocusOnShow={false}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          direction,
+          maxHeight: 120,
+          overflow: "auto",
+          width: 120,
+        }}
+      >
+        {fruits.map((fruit) => (
+          <Ariakit.ComboboxItem
+            key={fruit}
+            value={fruit}
+            style={{
+              display: "block",
+              marginInlineStart: 60,
+              padding: "4px 8px",
+              width: 200,
+            }}
+          />
+        ))}
+      </Ariakit.ComboboxPopover>
+    </>
   );
 }
 
@@ -642,6 +915,38 @@ export default function Example() {
       <Fixture defaultSelectedValue={["Apple"]} label="Selected fruit" />
       <Fixture defaultSelectedValue="Apple" label="Single selected fruit" />
       <div style={{ marginTop: 200 }}>
+        <Fixture defaultSelectedValue="Mango" label="Centered fruit" />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Mango"
+          label="Nested-list centered fruit"
+          listScrollport
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Mango"
+          input
+          label="Centered filterable fruit"
+          virtualFocus={false}
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Mango"
+          label="Centered unmounted fruit"
+          unmountOnHide
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Mango"
+          label="Scaled centered fruit"
+          popupStyle={{ scale: "0.8" }}
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
         <Fixture
           defaultSelectedValue="Watermelon"
           input
@@ -792,6 +1097,50 @@ export default function Example() {
       </div>
       <div style={{ marginTop: 200 }}>
         <DisclosureSwapFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          autoFocusOnShow={false}
+          defaultSelectedValue="Mango"
+          label="Nested-scrollports fruit"
+          nestedScrollports
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          autoFocusOnShow={false}
+          defaultSelectedValue="Watermelon"
+          label="Page-scroll fruit"
+          pageScrollport
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Mango"
+          label="Roving centered fruit"
+          virtualFocus={false}
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <ItemRenderCountFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <VirtualizedSelectFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <ProgrammaticOpenAfterMoveFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <TwoAxisOverflowFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <NestedInlineScrollportFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <OversizedInlineOverflowFixture direction="ltr" />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <OversizedInlineOverflowFixture direction="rtl" />
       </div>
     </>
   );

@@ -30,6 +30,10 @@ import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import { getVisuallyHiddenStyle } from "../visually-hidden/visually-hidden.tsx";
 import {
+  getScrollItemIntoView,
+  useTrackComboboxSelectPresentation,
+} from "./__utils.ts";
+import {
   ComboboxScopedContextProvider,
   useComboboxProviderContext,
 } from "./combobox-context.tsx";
@@ -111,6 +115,8 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       process.env.NODE_ENV !== "production" &&
         "ComboboxSelect must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
+
+    useTrackComboboxSelectPresentation(store);
 
     const onKeyDownProp = props.onKeyDown;
     const disabledProp = disabledFromProps(props);
@@ -300,11 +306,13 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       focusable,
       ...props,
     });
+    const scrollItemIntoView = getScrollItemIntoView(store);
     props = useCompositeTypeahead<TagName>({ store, ...props });
     const onKeyDownCaptureProp = props.onKeyDownCapture;
     const onKeyUpCaptureProp = props.onKeyUpCapture;
     props = useComposite<TagName>({
       store,
+      unstable_scrollIntoView: scrollItemIntoView,
       composite: !inputElement,
       focusable,
       // The select handler owns closed navigation so it can skip value-less

@@ -160,6 +160,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     typeaheadText,
     "aria-setsize": ariaSetSizeProp,
     "aria-posinset": ariaPosInSetProp,
+    unstable_scrollIntoView: scrollIntoView,
     ...props
   }) {
     const context = useCompositeScopedContext();
@@ -319,7 +320,19 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       }
       // When using aria-activedescendant, we want to make sure that the
       // composite container receives focus, not the composite item.
-      if (!virtualFocus) return;
+      if (!virtualFocus) {
+        // DOM focus moved with preventScroll, so a marked item still needs the
+        // widget's presentation even without the virtual-focus handoff below.
+        if (isSelfTarget(event) && store.item(id)) {
+          present({
+            id,
+            markedOnly: true,
+            requireFocus: true,
+            scrollIntoView,
+          });
+        }
+        return;
+      }
       // But we'll only do this if the focused element is the composite item
       // itself
       if (!isSelfTarget(event)) return;
@@ -355,7 +368,12 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         // composite element, but both are inside the composite, so the request
         // survives it and only focus leaving the composite abandons it.
         if (store.item(id)) {
-          present({ id, markedOnly: true, requireFocus: true });
+          present({
+            id,
+            markedOnly: true,
+            requireFocus: true,
+            scrollIntoView,
+          });
         }
         hasFocusedComposite.current = true;
         // If the previously focused element is a composite or composite item
@@ -600,6 +618,11 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    * components' context will be used.
    */
   store?: CompositeStore;
+  /**
+   * Determines how the item is scrolled into view when it's presented.
+   * @private
+   */
+  unstable_scrollIntoView?: (element: HTMLElement) => void;
   /**
    * Determines if the item should be registered as part of the collection. If
    * this is set to `false`, the item won't be accessible via arrow keys.
