@@ -219,6 +219,8 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       modal,
       alwaysVisible,
       backdrop: false,
+      // A callback would always be truthy, defeating the dialog's early-out and
+      // forcing a tabbable scan of the whole popup on every open.
       // Without an input, only take focus when the select initiated the open.
       autoFocusOnShow: hasSelect && (!!inputElement || selectOwnsFocus),
       initialFocus: hasSelect ? inputElement : undefined,
