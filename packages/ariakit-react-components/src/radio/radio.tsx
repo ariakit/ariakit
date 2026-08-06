@@ -81,6 +81,7 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   const storeId = useStoreState(store, "id");
   const name = nameProp ?? storeId;
 
+  // TODO: Consider moving this synchronization into the radio store.
   // Keep the checked radio active; otherwise the first item becomes active.
   useEffect(() => {
     if (!id) return;

@@ -168,6 +168,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
 
   // Anchor preserved tab order to the parent content so `aria-owns` is emitted
   // as a sibling when that parent's role cannot contain this menu role.
+  // TODO: Add coverage for the aria-owns sibling path.
   const preserveTabOrderAnchor = useMemo(() => {
     if (!parentContentElement) return;
     if (!contentElement) return;

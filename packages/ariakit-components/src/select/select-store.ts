@@ -155,6 +155,9 @@ export function createSelectStore({
   // Keep the selected item active while the popover is closed.
   setup(select, () =>
     sync(select, ["mounted", "items", "value"], (state) => {
+      // TODO: Revisit with the "open with keyboard, then try to open
+      // again" test when deprecating ComboboxProvider as a
+      // SelectProvider parent.
       // A composed Combobox owns active-item synchronization.
       if (combobox) return;
       if (state.mounted) return;

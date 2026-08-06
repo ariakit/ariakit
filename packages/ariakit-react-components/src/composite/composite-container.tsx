@@ -1,3 +1,5 @@
+// TODO: Expose whether the container is expanded through a data attribute.
+
 import { useStoreState } from "@ariakit/react-store";
 import {
   useEvent,

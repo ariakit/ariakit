@@ -39,6 +39,7 @@ export const useHeading = createHook<TagName, HeadingOptions>(
 
     props = mergeProps(
       {
+        // TODO: Replace with LazyDynamic.
         render: Element(),
         get role() {
           return !isNativeHeading() ? "heading" : undefined;

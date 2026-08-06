@@ -102,6 +102,7 @@ test("autocomplete on focus on hover", async () => {
 });
 
 test("composition text", async () => {
+  // TODO: Add a composition helper to @ariakit/test.
   await dispatch.compositionStart(q.combobox());
   await type("'", q.combobox(), { isComposing: true });
   expect(q.option("Apple")).not.toBeInTheDocument();

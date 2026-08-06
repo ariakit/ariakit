@@ -66,6 +66,7 @@ export default defineConfig({
   },
 
   vite: {
+    // TODO: Remove this workaround once Astro isolates optimizer cache writes.
     // Isolate check/dev optimizer writes so a concurrent check cannot
     // invalidate the dev server's SSR modules.
     // https://github.com/ariakit/ariakit/pull/6418
@@ -78,6 +79,7 @@ export default defineConfig({
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
+    // TODO: Remove this workaround once withastro/astro#17166 is fixed.
     // Pre-optimize bare SSR imports so the Cloudflare adapter cannot reload
     // React mid-request.
     // https://github.com/withastro/astro/issues/17166

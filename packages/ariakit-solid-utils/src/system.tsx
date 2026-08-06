@@ -34,6 +34,7 @@ export function createInstance(
   // https://github.com/ariakit/ariakit/issues/4117
   const [features, rest] = splitProps(props, ["render", "wrapInstance"]);
   const withRender = () => (
+    // TODO: Replace with LazyDynamic.
     <Dynamic
       {...rest}
       component={(features.render as ValidComponent) ?? Component}
@@ -44,6 +45,7 @@ export function createInstance(
     for (const element of features.wrapInstance) {
       const children = tree;
       tree = () => (
+        // TODO: Replace with LazyDynamic.
         <Dynamic component={element as ValidComponent}>{children()}</Dynamic>
       );
     }

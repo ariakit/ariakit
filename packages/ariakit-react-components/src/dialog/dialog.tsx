@@ -344,6 +344,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     return prependHiddenDismiss(dialog, store.hide);
   }, [store, modal, mounted, domReady]);
 
+  // TODO: Move this behavior into DisclosureContent.
   // Keep closing animated content inert until its mounted state ends.
   useSafeLayoutEffect(() => {
     if (!supportsInert()) return;
@@ -513,9 +514,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       ) {
         return;
       }
-      // Safari may drop focus scrolling when virtual focus redirects it. Scroll
-      // first, then re-check focusability so stale state cannot move the page
-      // toward an element that no longer accepts focus.
+      // Safari may drop the browser's focus scroll when virtual focus redirects
+      // it, so scroll explicitly before focusing. Re-read focusability here
+      // because only scrolling is conditional; a stale `true` would move the
+      // page toward an element that no longer accepts focus.
+      // https://github.com/ariakit/ariakit/pull/7072#discussion_r3730034764
       if (isFocusable(element)) {
         element.scrollIntoView({ block: "nearest", inline: "nearest" });
       }

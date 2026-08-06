@@ -419,6 +419,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
           fireBlurEvent(activeElement, event);
         }
 
+        // TODO: Add coverage for composed-store keyboard blur.
         // Composed stores can move by keyboard before state updates; use the
         // previous element for the blur event.
         else if (previousElement) {

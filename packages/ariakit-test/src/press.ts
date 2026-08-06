@@ -379,6 +379,9 @@ function isPressable(element: Element) {
   return isFocusable(element) || element.tagName === "BODY";
 }
 
+// Fires `keydown` and applies the key's default behavior (focus for `Tab`, the
+// caret for arrows). Returns whether the default was allowed, which gates the
+// matching keyup behavior.
 async function pressKeyDown(
   element: Element,
   key: string,
@@ -478,6 +481,7 @@ export function press(
     // Flush focus updates before dispatching the key event.
     await settle();
 
+    // TODO: Implement repeated keydown simulation.
     const defaultAllowed = await pressKeyDown(element, key, options);
 
     await settle();
@@ -536,6 +540,7 @@ function pressDown(
     // Flush focus updates before dispatching the key event.
     await settle();
 
+    // TODO: Implement repeated keydown simulation.
     await pressKeyDown(element, key, options);
 
     await sleep();

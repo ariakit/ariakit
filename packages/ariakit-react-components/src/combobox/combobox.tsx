@@ -179,6 +179,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     // control this state here.
     const [canInline, setCanInline] = useState(inline);
 
+    // TODO: Try deriving canInline instead of updating it in an effect.
     // Re-enable inline completion when the prop changes.
     useUpdateLayoutEffect(() => {
       if (!inline) return;
@@ -291,6 +292,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         const nextEnd = inlineActiveValue.length;
         setSelectionRange(element, nextStart, nextEnd);
         cleanup = () => {
+          // TODO: Add coverage for async item and transition updates.
           // Async item updates may rerun this after completion is highlighted.
           // Restore the previous range only if the selection is still ours.
           if (!hasFocus(element)) return;
@@ -429,6 +431,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
             ? userAutoSelectId
             : (getDefaultAutoSelectId(items) ?? store.first());
         autoSelectIdRef.current = autoSelectId;
+        // TODO: Add coverage for async items with no enabled result.
         // Move to the input when no enabled item exists so async results do not
         // retain a stale active value.
         const nextActiveId = autoSelectId ?? null;
