@@ -342,6 +342,7 @@ test("loops within the active item's row on grids", () => {
 
   expect(store.next({ activeId: "a2", focusLoop: true })).toBe("a1");
   expect(store.previous({ activeId: "b1", focusLoop: true })).toBe("b2");
+  // Skip the disabled item when looping backward.
   expect(store.previous({ activeId: "a1", focusLoop: true })).toBe("a2");
 });
 
@@ -369,6 +370,7 @@ test("moves vertically in one-dimensional composites", () => {
 });
 
 test("handles falsy item ids and row ids", () => {
+  // An item with an empty string id must not return itself when looping.
   const single = createComposite([{ id: "" }]);
   expect(single.next({ activeId: "", focusLoop: true })).toBeUndefined();
 
@@ -376,6 +378,7 @@ test("handles falsy item ids and row ids", () => {
   expect(items.next({ activeId: "" })).toBe("next");
   expect(items.previous({ activeId: "next" })).toBe("");
 
+  // Empty string row ids behave like undefined row ids when moving vertically.
   const store = createComposite([{ id: "b", rowId: "" }, { id: "a" }]);
   expect(store.down({ activeId: "b" })).toBe("a");
   expect(store.up({ activeId: "a" })).toBe("b");
