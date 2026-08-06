@@ -172,8 +172,6 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       }
     });
 
-    // Mirror the custom select with a native control so browser autofill can
-    // update the combobox store.
     props = useWrapElement(
       props,
       (element) => (
@@ -210,6 +208,8 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       return [...new Set(itemValues)];
     }, [items]);
 
+    // Mirror the custom select with a native control so browser autofill can
+    // update the combobox store.
     props = useWrapElement(
       props,
       (element) => {
