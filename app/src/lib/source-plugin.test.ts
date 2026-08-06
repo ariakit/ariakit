@@ -123,9 +123,9 @@ test("disclosure actions flattens _lib data files", () => {
   );
 });
 
-test("formats rewritten imports with the app Tailwind config", () => {
+test("keeps class names in source order", () => {
   expect(checkboxCardForm.files["index.tsx"]?.content).toContain(
-    'className="ak-frame flex w-120 max-w-[100cqi] flex-col gap-6 ak-layer ak-frame-card/8 ak-layer-lighten-6 ak-dark:ak-frame-border ak-light:ring"',
+    'className="w-120 max-w-[100cqi] flex flex-col gap-6 ak-frame ak-frame-card/8 ak-layer ak-layer-lighten-6 ak-light:ring ak-dark:ak-frame-border"',
   );
 });
 
