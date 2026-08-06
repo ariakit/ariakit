@@ -1405,7 +1405,13 @@ async function measureIteration(
   }
 }
 
-/** Returns whether a retryable navigation—not interaction—timed out. */
+/**
+ * Returns whether `error` is a Playwright navigation timeout. Interaction and
+ * verification timeouts are not retried; page-load measurements are the
+ * exception because navigation is their measured interaction. Failed attempts
+ * record nothing, so retrying them produces an independent sample.
+ * https://github.com/ariakit/ariakit/pull/7072#discussion_r3730036563
+ */
 export function isNavigationTimeoutError(error: unknown) {
   if (!(error instanceof errors.TimeoutError)) return false;
   return error.message.includes("page.goto");
