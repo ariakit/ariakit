@@ -35,21 +35,19 @@ import { resolveStyles } from "./styles.ts";
 const APP_LIB_PATH = join(import.meta.dirname, "../examples/_lib");
 const NEXTJS_LIB_PATH = join(import.meta.dirname, "../../../nextjs/components");
 
-// Cache for package information to avoid repeated lookups
 const packageCache = new Map<
   string,
   NonNullable<ReturnType<typeof readPackageUpSync>> | null
 >();
 
-// TypeScript compiler host for resolving modules
 const host = ts.createCompilerHost({});
 
-// Cache processed source files (original content + local deps) keyed by abs id
 interface CachedFileData {
   file: SourceFile;
   localDeps: string[];
 }
 
+// Cache parsed source content and local dependencies by absolute id.
 const fileProcessCache = new Map<string, CachedFileData>();
 
 // Cache generated flattened file contents keyed by abs id + content hash. The
@@ -515,34 +513,31 @@ export function sourcePlugin(root?: string): Plugin {
         files: {},
       };
 
-      // Process the entry file first
       await processFile(this, source, realId);
 
-      // If this is a Next.js convention file, auto-include siblings and nested
-      // routes
+      // Next.js convention entries need sibling and nested route files.
       const entryFilename = basename(realId);
       if (isNextjsConventionFile(entryFilename)) {
         const entryDir = dirname(realId);
 
-        // Find and process sibling convention files
         const siblingFiles = await findSiblingConventionFiles(realId);
         for (const siblingPath of siblingFiles) {
           await processFile(this, source, siblingPath);
         }
 
-        // Find and process nested route files
         const nestedFiles = await findNestedRouteFiles(entryDir);
         for (const nestedPath of nestedFiles) {
           await processFile(this, source, nestedPath);
         }
       }
 
-      // Determine utils to merge (only those actually imported / present)
+      // Merge only utility modules reachable from this source.
       const utilsIds = Object.keys(source.sources).filter((abs) =>
         isUtilsPath(abs),
       );
 
-      // Pre-resolve alias (#...) imports to relative specifiers for merge phase
+      // Rewrite aliases before merging so internal imports resolve to source
+      // files.
       const preMerge = await rewriteAliasesToRelativeForMerge(
         this,
         source.sources,
@@ -550,7 +545,7 @@ export function sourcePlugin(root?: string): Plugin {
 
       let merged: Record<string, SourceFile> = preMerge;
       if (utilsIds.length > 0) {
-        // Compute common ancestor directory for all utils members
+        // Place merged utility modules at their common ancestor.
         const commonDir = getCommonAncestorDir(utilsIds);
         const target = resolve(commonDir, "utils.ts");
 
@@ -560,21 +555,17 @@ export function sourcePlugin(root?: string): Plugin {
         });
       }
 
-      // Build files by normalizing paths
       const baseDir = dirname(realId);
       const files = await buildFlattenedFiles(baseDir, merged);
 
-      // Move merged utils.ts to the end if present
       moveUtilsToEnd(files);
 
-      // Compute top-level dependencies/devDependencies from files
       const { deps: topDeps, devDeps: topDevDeps } =
         computeTopLevelDependencies(files);
       source.files = files;
       source.dependencies = topDeps;
       source.devDependencies = topDevDeps;
 
-      // Resolve styles used by this source based on ak-* tokens found in original sources
       source.styles = computeSourceStylesFromSources(source.sources);
 
       return `export default ${JSON.stringify(source, null, 2)}`;

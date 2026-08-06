@@ -85,8 +85,6 @@
 
 :root {
   @variant dark {
-    /* --color-canvas: oklch(16.52% 0.0062 285.7); */
-    /* --color-canvas: theme(--color-slate-950); */
     --color-canvas: oklch(16.34% 0.0091 264.28);
   }
 }

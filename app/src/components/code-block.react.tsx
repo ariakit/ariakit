@@ -30,27 +30,17 @@ import { useCollapsible } from "./collapsible.react.tsx";
 import { CopyCode } from "./copy-code.react.tsx";
 import { Tooltip } from "./tooltip.react.tsx";
 
-/**
- * Generates a unique tab ID by combining a prefix with an optional filename
- */
 function getTabId(prefix: string, filename?: string) {
   if (!filename) return prefix;
   return `${prefix}/${filename}`;
 }
 
-/**
- * Extracts the filename from a tab ID
- */
 function getFilename(id?: string | null) {
   if (!id) return;
   const [, filename] = id.split(/\/(.*)/);
   return filename;
 }
 
-/**
- * Determines if preview should be shown based on framework, example, and
- * preview settings
- */
 function getPreviewValue(
   framework?: string,
   example?: string,
@@ -59,9 +49,6 @@ function getPreviewValue(
   return !!framework && !!example ? (preview ?? true) : false;
 }
 
-/**
- * Generates the preview URL based on framework, example, and preview settings
- */
 function getPreviewUrl(
   framework?: string,
   example?: string,
@@ -72,9 +59,6 @@ function getPreviewUrl(
     : null;
 }
 
-/**
- * A wrapper component for TabPanel that handles tab selection state
- */
 function SingleTabPanel(props: ak.TabPanelProps) {
   const store = ak.useTabContext();
   const tabId = ak.useStoreState(
@@ -92,10 +76,7 @@ export interface CodeBlockProps
   renderContent?: (content: React.ReactElement) => React.ReactNode;
 }
 
-/**
- * The main component for displaying code blocks with various features like line
- * numbers, highlighting, and collapsible content
- */
+/** Renders highlighted code with optional diffs and collapsing. */
 export function CodeBlock({
   code,
   previousCode,
@@ -148,7 +129,6 @@ export function CodeBlock({
         {...scrollableProps}
         className={clsx(
           "whitespace-normal text-sm/(--line-height) ak-frame ak-frame-cover ak-frame-p-0 outline-none",
-          // "transition-[max-height] duration-300 transition-discrete [interpolate-size:allow-keywords]",
           "[font-size-adjust:0.55]",
           expanded &&
             "overflow-auto overscroll-x-contain max-h-[min(calc(100svh-14rem),60rem)]",
@@ -209,9 +189,6 @@ interface CodeBlockTabProps extends ak.TabProps {
   isPreviewSelected?: boolean;
 }
 
-/**
- * A component for rendering individual tabs in the code block interface
- */
 function CodeBlockTab({
   isPreviewSelected,
   children,
@@ -248,8 +225,8 @@ export interface CodeBlockPreviewIframeProps {
 }
 
 /**
- * A component for rendering preview iframes with loading states and interaction
- * handling
+ * Renders an isolated preview and can wait for its trigger and popup to hydrate
+ * before revealing and positioning it.
  */
 export function CodeBlockPreviewIframe({
   previewUrl,
@@ -306,7 +283,7 @@ export function CodeBlockPreviewIframe({
       const iframeHeight = iframe.contentWindow?.innerHeight;
       if (top == null || bottom == null || iframeHeight == null) return;
       const currentScrollTop = doc.documentElement.scrollTop || 0;
-      // Scroll the iframe to center the combined element
+      // Scroll the iframe to center the trigger and popup.
       doc.documentElement.scrollTo({
         top: currentScrollTop - (iframeHeight - bottom - top) / 2,
       });
@@ -374,7 +351,7 @@ export function CodeBlockPreviewIframe({
         button.dispatchEvent(new MouseEvent("mouseup", eventInit));
         button.dispatchEvent(new MouseEvent("click", eventInit));
 
-        // Wait for the popup to be visible
+        // Wait for the popup to become visible.
         timeout = window.setTimeout(() => {
           const popup = currentDoc.querySelector<HTMLElement>("[data-dialog]");
           if (!popup || popup.hasAttribute("hidden")) {
@@ -391,7 +368,7 @@ export function CodeBlockPreviewIframe({
           raf = requestAnimationFrame(() => {
             setLoaded(true);
             scroll(currentDoc, button, popup);
-            // Reset the transition
+            // Restore the transition after measuring its position.
             popup.style.removeProperty("transition");
             // Toggle the iframe visibility to trigger the transition when it's
             // visible in the viewport
@@ -517,9 +494,6 @@ export interface CodeBlockPreviewProps extends React.ComponentProps<"div"> {
   anchorId?: string;
 }
 
-/**
- * A component for rendering preview content with consistent styling
- */
 export function CodeBlockPreview({
   minHeight,
   children,
@@ -616,8 +590,8 @@ export interface CodeBlockTabsProps
 }
 
 /**
- * The top-level component that handles the layout of code blocks and previews
- * in a responsive grid
+ * Coordinates code and preview tabs, responsive layout, persistence, and
+ * editing.
  */
 export function CodeBlockTabs({
   tabs,

@@ -36,7 +36,6 @@ test("data-active is cleared when focus leaves while Space is held", async () =>
   await focus(command);
   expect(command).toHaveFocus();
 
-  // Pressing Space sets the active ("pressed") state on a non-native command.
   await press.down.Space();
   expect(command).toHaveAttribute("data-active");
 
@@ -57,7 +56,6 @@ test("Space keyup bubbling from a child does not click the command", async () =>
   await focus(card);
   expect(card).toHaveFocus();
 
-  // Pressing Space sets the active state on the focused card.
   await press.down.Space();
   expect(card).toHaveAttribute("data-active");
 
@@ -82,7 +80,6 @@ test("data-active is cleared when a consumer onKeyUp prevents the default", asyn
   await focus(command);
   expect(command).toHaveFocus();
 
-  // Pressing Space sets the active state on the focused command.
   await press.down.Space();
   expect(command).toHaveAttribute("data-active");
 

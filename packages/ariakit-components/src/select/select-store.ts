@@ -127,7 +127,7 @@ export function createSelectStore({
 
   const select = createStore(initialState, composite, popover, store);
 
-  // Automatically sets the default value if it's not set.
+  // Initialize an unset value from the first enabled item.
   setup(select, () =>
     sync(select, ["value", "items"], (state) => {
       if (state.value !== initialValue) return;
@@ -152,12 +152,10 @@ export function createSelectStore({
     }),
   );
 
-  // Sets the active id when the value changes and the popover is hidden.
+  // Keep the selected item active while the popover is closed.
   setup(select, () =>
     sync(select, ["mounted", "items", "value"], (state) => {
-      // TODO: Revisit this. See test "open with keyboard, then try to open
-      // again". Probably deprecate together with using ComboboxProvider as a
-      // parent of SelectProvider.
+      // A composed Combobox owns active-item synchronization.
       if (combobox) return;
       if (state.mounted) return;
       const values = toArray(state.value);
@@ -171,8 +169,7 @@ export function createSelectStore({
     }),
   );
 
-  // Sets the select value when the active item changes by moving (which usually
-  // happens when moving to an item using the keyboard).
+  // Update the value after composite movement when configured.
   setup(select, () =>
     batch(select, ["setValueOnMove", "moves"], (state) => {
       const { mounted, value, activeId } = select.getState();

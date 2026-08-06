@@ -465,12 +465,8 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           Object.assign(arrow.style, {
             left: arrowX != null ? `${arrowX}px` : "",
             top: arrowY != null ? `${arrowY}px` : "",
-            // Reset the static side written for a previous placement before
-            // writing the current one. Otherwise a stale `right`/`bottom`
-            // lingers after a placement change and, in RTL contexts,
-            // over-constrained absolute positioning lets the stale `right`
-            // win over the freshly written `left`, detaching the arrow from
-            // the anchor.
+            // Clear a previous static side. In RTL, a stale `right` can
+            // override the new `left` and detach the arrow.
             right: "",
             bottom: "",
             [side]: "100%",
@@ -488,25 +484,17 @@ export const usePopover = createHook<TagName, PopoverOptions>(
             await updatePosition();
           }
         } catch (error) {
-          // A pass that throws has still ended. Publish the popover as placed
-          // if this run wrote a position before failing, so a custom
-          // updatePosition that positions the popover and then fails doesn't
-          // strand everything waiting on it. A pass that failed before writing
-          // anything keeps waiting, because there's still nothing to move focus
-          // or scroll to. Rethrowing keeps the failure visible to the app.
+          // A failed positioning pass releases waiters if it wrote a position;
+          // otherwise there is nowhere safe to focus or scroll.
+          // https://github.com/ariakit/ariakit/pull/7032#discussion_r3703343800
           if (placed && !shouldCancelUpdate()) {
             store?.setState("unstable_placing", false);
           }
           throw error;
         }
 
-        // The pass owns the popover until it returns, so this is the only place
-        // that publishes it as placed on the success path. A custom
-        // updatePosition that calls the supplied default and then keeps working
-        // would otherwise hand readiness over as soon as that inner pass wrote
-        // its transform, and anything waiting to move focus or scroll into the
-        // popover would act on a position the callback is still about to
-        // change.
+        // Keep readiness with the outer pass: a custom callback may call the
+        // default positioner and then continue changing the result.
         if (shouldCancelUpdate()) return;
         store?.setState("unstable_placing", false);
       };
@@ -569,31 +557,14 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       return () => cancelAnimationFrame(raf);
     }, [mounted, domReady, popoverElement, contentElement]);
 
-    // The positioning effect above asserts this at the start of every pass, but
-    // it can't be what publishes the show transition. Layout effects run
-    // children before parents, so the popover's own descendants would observe
-    // the previous value on the commit that opens the popup. Subscribing to the
-    // store instead means the transition is seen synchronously, wherever it
-    // comes from. Only a mounted Popover asserts this, so a popup with nothing
-    // to position, such as a combobox inside a plain dialog, is never left
-    // waiting.
-    // This state must never outlive its writer: it's asserted here and cleared
-    // by the positioning effect, both owned by this component, while the store
-    // it lives on can be owned by an ancestor. A Popover that unmounts, or that
-    // is pointed at another store, while its popup is mounted and not yet
-    // placed would otherwise leave "placing" set with nobody left to clear it,
-    // and everything waiting on it waits forever.
-    // Resetting straight from the teardown isn't enough either. Under React
-    // StrictMode effects are set up, torn down and set up again, and a reset
-    // would publish "placed" in between, which descendants remounting in that
-    // window would believe. Teardown and setup run in the same commit, so the
-    // reset is deferred by a microtask and skipped if anyone is still writing
-    // by the time it runs.
-    // Ownership is counted per store rather than per component, because the
-    // state is the store's. Tracking it on the instance gets both directions
-    // wrong: a keyed replacement can't cancel the outgoing instance's reset,
-    // and an instance whose `store` prop changes would cancel the reset queued
-    // for the store it just left, stranding that one forever.
+    // Subscribe to `mounted` so the show transition publishes `placing` before
+    // descendant layout effects observe it; the positioning effect is too late
+    // because layout effects run child-first. Only a mounted Popover asserts
+    // this, so popups with nothing to position never wait.
+    // Count writers per store and defer the final reset by a microtask so
+    // StrictMode replay, keyed replacement, and store swaps cannot briefly
+    // clear or strand ancestor-owned state.
+    // https://github.com/ariakit/ariakit/pull/7009#discussion_r3699800772
     useSafeLayoutEffect(() => {
       if (!store) return;
       const currentStore = store;

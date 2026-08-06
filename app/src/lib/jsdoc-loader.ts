@@ -225,7 +225,7 @@ function getComponentSourceFilePaths(
   const content = readFileSync(publicModulePath, "utf-8");
   const componentDir = join(corePath, "src", component);
 
-  // Seed the walk with directly re-exported core source files
+  // Seed dependency traversal from public re-exports.
   const queue: string[] = [];
 
   for (const { fromPath } of getReExportStatements(content)) {
@@ -282,7 +282,7 @@ function getSharedSourceFiles(
 
   for (const entry of readdirSync(srcDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
-    // Skip component directories — those are tracked per-component
+    // Component directories are tracked separately per component.
     if (componentSet.has(entry.name)) continue;
     collectFiles(join(srcDir, entry.name));
   }
@@ -446,7 +446,7 @@ function propagateChanges(
   deps: Record<string, string[]>,
   allComponents: string[],
 ): Set<string> {
-  // Build reverse dependency map: component → components that depend on it
+  // Reverse edges so changed dependencies point to their consumers.
   const reverseDeps: Record<string, Set<string>> = {};
   for (const comp of allComponents) {
     reverseDeps[comp] = new Set();
@@ -457,7 +457,7 @@ function propagateChanges(
     }
   }
 
-  // BFS from changed components through reverse dependencies
+  // Traverse consumers transitively from each changed component.
   const affected = new Set(directlyChanged);
   const queue = [...directlyChanged];
   while (queue.length > 0) {
@@ -502,7 +502,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
 
         const componentModules = getComponentModules(packagePath);
 
-        // Collect source files and mtimes per component in a single pass
+        // Snapshot source files and mtimes for each component.
         const sourceFilesByComponent: Record<string, string[]> = {};
         const currentFileState: Record<string, Record<string, number>> = {};
         for (const comp of componentModules) {
@@ -522,7 +522,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
         const sharedFiles = getSharedSourceFiles(corePath, componentModules);
         const sharedMtimes = getFileMtimes(sharedFiles);
 
-        // Load cached state from meta
+        // Compare the snapshot with the persisted framework cache.
         const cacheKey = `cache:${framework}`;
         const cachedState = parseFrameworkCache(context.meta.get(cacheKey));
 
@@ -531,7 +531,6 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           cachedState?.sharedFiles,
         );
 
-        // Find directly changed components by comparing mtimes
         const directlyChanged = new Set<string>();
         if (sharedFilesChanged) {
           // Shared files affect all components
@@ -590,13 +589,12 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           changedComponents = directlyChanged;
         }
 
-        // Skip entirely if nothing changed
         if (changedComponents.size === 0) {
           info(`Skipped references for ${framework} (no changes)`);
           continue;
         }
 
-        // Delete old store entries for changed components before re-parsing
+        // Remove stale entries for affected components before reparsing.
         for (const comp of changedComponents) {
           const cached = cachedState?.components[comp];
           if (!cached) continue;
@@ -605,7 +603,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           }
         }
 
-        // Build new cache, starting from unchanged components
+        // Seed the next cache with unchanged components.
         const newCache: FrameworkCache = { components: {} };
         for (const comp of componentModules) {
           if (changedComponents.has(comp)) continue;
@@ -614,7 +612,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           newCache.components[comp] = cached;
         }
 
-        // Parse only changed components
+        // Reparse affected components and record their mtimes and entry IDs.
         let totalReferences = 0;
         const project = getProject();
         prepareProjectSourceFiles({
@@ -643,7 +641,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           totalReferences += references.length;
         }
 
-        // Persist cache for next run
+        // Persist the completed cache for the next load.
         newCache.sharedFiles = sharedMtimes;
         context.meta.set(cacheKey, JSON.stringify(newCache));
 
@@ -666,7 +664,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
 
       if (!context.watcher) return;
 
-      // Set up file watching for frameworks that have watch enabled
+      // Register package and core roots for watch-enabled frameworks.
       const watchedPaths = new Set<string>();
 
       for (const options of frameworkOptions) {
@@ -693,7 +691,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
         const { info } = logger.start();
         const { framework, packagePath, corePath } = options;
 
-        // Clear all entries for this framework
+        // Replace cached store entries for the affected framework.
         const cacheKey = `cache:${framework}`;
         const cachedState = parseFrameworkCache(context.meta.get(cacheKey));
         if (cachedState) {
@@ -704,14 +702,13 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           }
         }
 
-        // Reload all references for this framework
         const references = loadReferences({
           packagePath,
           corePath,
           framework,
         });
 
-        // Rebuild cache
+        // Rebuild component mtimes and entry IDs for future cold starts.
         const componentModules = getComponentModules(packagePath);
         const newCache: FrameworkCache = { components: {} };
         const referencesByComponent = new Map<string, Reference[]>();
@@ -825,17 +822,14 @@ function prepareProjectSourceFiles({
  * Returns null for types that should be skipped
  */
 function getExportKind(name: string, node: Node) {
-  // Skip type declarations entirely
   if (Node.isInterfaceDeclaration(node) || Node.isTypeAliasDeclaration(node)) {
     return null;
   }
-  // Check for store hooks first (before generic type checks)
   if (name.startsWith("use") && name.endsWith("Store")) {
     return "store";
   }
-  // Check if it's a component by looking for ComponentOptions or ComponentProps
-  // types This must come BEFORE the function check since components can also be
-  // functions
+  // Classify components before functions because component exports are
+  // callable.
   const sourceFile = node.getSourceFile();
   const hasComponentOptions =
     hasSourceDeclaration(sourceFile, `${name}Options`) ||
@@ -843,7 +837,6 @@ function getExportKind(name: string, node: Node) {
   if (hasComponentOptions) {
     return "component";
   }
-  // Check if it's a function (including context hooks)
   if (
     name.startsWith("use") ||
     Node.isFunctionLikeDeclaration(node) ||
@@ -851,7 +844,6 @@ function getExportKind(name: string, node: Node) {
   ) {
     return "function";
   }
-  // Skip everything else (types that don't have Options/Props)
   return null;
 }
 
@@ -860,19 +852,15 @@ function getExportKind(name: string, node: Node) {
  */
 function extractLiveExamples(text: string) {
   if (!text) return { description: "", liveExamples: [] };
-  // First normalize single line breaks to spaces (but preserve double line
-  // breaks for paragraphs) This handles cases where live examples span multiple
-  // lines with single breaks
+  // Preserve paragraph breaks while joining wrapped live-example lines.
   const normalizedText = text.replace(/(?<!\n)\n(?!\n)/g, " ");
-  // Look for "Live examples:" section in the normalized text
+  // Match the normalized "Live examples:" Markdown list.
   const liveExamplesMatch = normalizedText.match(
     /Live examples:\s*((?:\s*-\s*\[.*?\]\(.*?\).*?)+)/i,
   );
   if (!liveExamplesMatch) {
-    // Return the original text (not normalized) if no live examples found
     return { description: text.trim(), liveExamples: [] };
   }
-  // Extract URLs from markdown links in the live examples section
   const liveExamplesSection = liveExamplesMatch[1];
   if (!liveExamplesSection) {
     return { description: text.trim(), liveExamples: [] };
@@ -970,7 +958,7 @@ function getExamples(node: Node) {
     if (tag.getTagName() !== "example") continue;
     const text = tag.getCommentText();
     if (!text) continue;
-    // Parse example with optional description and code block
+    // Parse an optional description followed by a fenced code block.
     const match = text.match(
       /^(?<description>(.|\n)*)```(?<language>\S+)(?<modifiers>[^\n]*)\n(?<code>(.|\n)+)\n```$/m,
     );
@@ -1083,11 +1071,11 @@ function getProps(node: Node) {
       ? decl.getName() || prop.getEscapedName()
       : prop.getEscapedName();
 
-    // Build candidate declarations with local-first precedence
+    // Search the local declaration before inherited versions.
     const decls = [decl];
     decls.push(...findPropDeclsInBaseHierarchy(node, propName));
 
-    // Description/liveExamples come from the first visible declaration that has a description
+    // Use description and live examples from the nearest visible declaration.
     let description = "";
     let liveExamples: string[] = [];
     for (const decl of decls) {
@@ -1103,9 +1091,8 @@ function getProps(node: Node) {
     if (!primaryDecl) continue;
     const type = getTypeText(primaryDecl);
 
-    // Tags merging: treat all tags as a unit. If the local (nearest visible)
-    // declaration has any tags, those override all base tags. Otherwise, use
-    // the first base declaration that has tags.
+    // Treat tags as a unit: the nearest visible tagged declaration overrides
+    // all base tags.
     const localHasTags = !!getTags(primaryDecl).length;
     const tagsDecl = localHasTags
       ? primaryDecl
@@ -1118,9 +1105,7 @@ function getProps(node: Node) {
     const defaultValue = tagsDecl ? getDefaultValue(tagsDecl) : undefined;
     const examples = tagsDecl ? getExamples(tagsDecl) : [];
 
-    // Get nested props if this prop is an object type
     const nestedProps = getProps(primaryDecl);
-    // Extract only serializable data
     props.push({
       name: prop.getEscapedName(),
       type,
@@ -1177,7 +1162,6 @@ function getFunctionParams(
     const defaultValue = getDefaultValue(param);
     const examples = getExamples(param);
     const nestedProps = getProps(param);
-    // Get the proper parameter name from the identifier
     const nameNode = param.getNameNode();
     const paramName = Node.isIdentifier(nameNode)
       ? nameNode.getText()
@@ -1238,11 +1222,10 @@ function getFinalFunctionImplementation(node: Node) {
   const sourceFile = node.getSourceFile();
   const declarations = getSourceDeclaration(sourceFile, name);
 
-  // Find function declarations with bodies (implementations)
   const implementations: FunctionLikeDeclaration[] = [];
   for (const decl of declarations) {
     if (Node.isFunctionLikeDeclaration(decl)) {
-      // Implementation has a body, overloads don't
+      // Function declarations without bodies are overload signatures.
       if (Node.isFunctionDeclaration(decl) && decl.getBody()) {
         implementations.push(decl);
       } else if (!Node.isFunctionDeclaration(decl)) {
@@ -1251,7 +1234,6 @@ function getFinalFunctionImplementation(node: Node) {
     }
   }
 
-  // Return the last implementation (consolidates all overrides)
   return implementations.at(-1);
 }
 
@@ -1289,12 +1271,9 @@ function createReference({
     ? node.getVariableStatementOrThrow()
     : node;
   const kind = getExportKind(name, node);
-  // This should never happen as we filter out null kinds before calling
-  // createReference
   if (kind === null) {
     throw new Error(`Unexpected null kind for ${name}`);
   }
-  // Get function declaration for analysis
   const fn =
     getFinalFunctionImplementation(node) || getFunctionDeclaration(docNode);
 
@@ -1303,8 +1282,7 @@ function createReference({
   let returnValue: Reference["returnValue"];
 
   if (kind === "component") {
-    // For components, use ComponentNameOptions or ComponentNameProps type for
-    // params
+    // Represent ComponentNameOptions/Props as the component's props parameter.
     const sourceFile = node.getSourceFile();
     const optionsDecl =
       propsNode ||
@@ -1313,13 +1291,9 @@ function createReference({
       fn?.getParameters()?.at(0);
 
     if (optionsDecl) {
-      // For components, the options/props type becomes the first (and usually
-      // only) param
       const optionsProps = getProps(optionsDecl);
       const { description: propsDescription, liveExamples: propsLiveExamples } =
         getDescriptionAndLiveExamples(optionsDecl);
-      // Always include the props parameter for components, even if no
-      // individual props are documented
       params = [
         {
           name: "props",
@@ -1335,22 +1309,19 @@ function createReference({
       ];
     }
   } else if (kind === "function") {
-    // For functions, get parameters
     if (fn) {
       params = getFunctionParams(fn);
       returnValue = getReturnValue(fn, kind);
     }
   } else if (kind === "store") {
-    // For stores, get params from function parameters (include undocumented
-    // params)
+    // Store hooks expose undocumented parameters and their StoreState shape.
     if (fn) {
       params = getFunctionParams(fn, true);
       returnValue = getReturnValue(fn, kind);
     }
-    // Get state from XStoreState type
     state = getStoreState(name, node);
   }
-  // Extract all data as primitives to ensure serializability
+  // Extract serializable reference data after kind-specific analysis.
   const { description, liveExamples } = getDescriptionAndLiveExamples(docNode);
   const deprecated = getDeprecated(docNode);
   const examples = getExamples(docNode);
@@ -1387,7 +1358,7 @@ function getPublicExports({
   }
   const content = readFileSync(publicModulePath, "utf-8");
   const exports = new Set<string>();
-  // Match various export patterns
+  // Match the export forms used by package entry modules.
   const patterns = [
     // export { Name } from "path"
     /export\s*{\s*([^}]+)\s*}\s*from/g,
@@ -1405,11 +1376,10 @@ function getPublicExports({
     while ((match = pattern.exec(content)) !== null) {
       const exportList = match[1];
       if (!exportList) continue;
-      // Handle multiple exports in braces: { Name1, Name2, Name3 }
-      const names = exportList.split(",").map(
-        // Remove "as alias" parts
-        (name) => name.trim().replace(/\s+as\s+\w+/, ""),
-      );
+      // Split brace lists and keep the local name before any export alias.
+      const names = exportList
+        .split(",")
+        .map((name) => name.trim().replace(/\s+as\s+\w+/, ""));
       names.forEach((name) => {
         if (name) {
           exports.add(name.trim());
@@ -1500,36 +1470,27 @@ function parseSourceFileExports({
   }
 
   const references: Reference[] = [];
-  // Prevent duplicate declarations
   const processedNames = new Set<string>();
 
-  // Parse the exported names from the export list
+  // Normalize the re-export list before resolving declarations.
   const names = exportList
     .split(",")
-    // Remove "as alias" parts
     .map((name) => name.trim().replace(/\s+as\s+\w+/, ""))
-    // Include all exports
     .filter((name) => name);
 
   for (const name of names) {
-    // Only include exports that are re-exported publicly
     if (!publicExports.has(name)) continue;
 
-    // Prevent duplicate declarations
     if (processedNames.has(name)) continue;
     processedNames.add(name);
 
     const decl = getSourceDeclaration(sourceFile, name).at(0);
     if (!decl) continue;
 
-    // Skip private exports
     if (isPrivate(decl)) continue;
 
-    // Get the kind to determine what to include
     const kind = getExportKind(name, decl);
 
-    // Skip types (when kind is null) - only include functions, components, and
-    // stores
     if (kind !== null) {
       const optionsType = getLocalSourceDeclaration(
         sourceFile,
@@ -1568,7 +1529,6 @@ function parseComponentReferences({
   corePath,
   framework,
 }: ParseComponentReferencesParams) {
-  // Get the list of publicly exported names from the ariakit package module
   const publicExports = getPublicExports({ component, packagePath });
   if (publicExports.size === 0) {
     console.warn(`No public exports found for component: ${component}`);

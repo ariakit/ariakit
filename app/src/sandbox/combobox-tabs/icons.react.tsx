@@ -19,7 +19,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-/** ReturnIcon */
 export function ReturnIcon() {
   return (
     <svg
@@ -38,7 +37,6 @@ export function ReturnIcon() {
   );
 }
 
-/** ArrowIcon */
 export function ArrowIcon(props: {
   direction: "up" | "right" | "down" | "left";
 }) {

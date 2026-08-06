@@ -419,10 +419,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
           fireBlurEvent(activeElement, event);
         }
 
-        // Finally, if we still have a previousElement, this means that the
-        // store is being composed with another composite store and we're moving
-        // with keyboard. In this case, the state won't be updated before the
-        // blur event. TODO: Test this.
+        // Composed stores can move by keyboard before state updates; use the
+        // previous element for the blur event.
         else if (previousElement) {
           fireBlurEvent(previousElement, event);
         }

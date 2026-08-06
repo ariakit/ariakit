@@ -40,7 +40,6 @@
   }
 }
 
-/* ak-list configuration */
 @utility ak-list-gap-* {
   --_ak-list-gap: --spacing(--value(number));
   --_ak-list-gap: --value(--spacing, [*]);
@@ -63,7 +62,6 @@
   --ak-list-border-width: calc(--value(number) * 1px);
 }
 
-/* ak-list variants */
 @utility ak-list-blocks {
   --ak-list-gap: calc(var(--_ak-list-gap) * 0.75 - var(--ak-list-item-padding));
   --ak-list-blocks: 1;
@@ -90,7 +88,6 @@
   --ak-list-ul: 1;
 }
 
-/* ak-list */
 @utility ak-list {
   @apply ak-list-gap-4 ak-list-leading-normal ak-list-counter-reset ak-list-item-padding-1;
   @apply gap-(--ak-list-gap) grid;
@@ -116,7 +113,6 @@
   }
 }
 
-/* ak-list-counter */
 @utility ak-list-counter-reset {
   counter-reset: ak-list;
 }
@@ -142,7 +138,6 @@
   margin: var(--_ak-list-counter-margin);
 }
 
-/* ak-list-item elements and variants */
 @utility ak-list-item-ul-marker {
   @apply ak-layer ak-edge-40;
   @apply absolute border-b;
@@ -173,7 +168,6 @@
   --ak-list-border-top: calc(
     var(--ak-list-leading) + var(--ak-list-border-gap) + var(--ak-frame-padding)
   );
-  /* Border segment */
   &::after {
     @apply ak-layer ak-layer-12;
     @apply z-2 pointer-events-none absolute h-full;
@@ -230,7 +224,6 @@
   );
 }
 
-/* ak-list-item */
 @utility ak-list-item {
   &:not(:has(> details)) {
     @apply ak-list-item_base;
@@ -281,7 +274,6 @@
   padding-block-start: calc(var(--ak-list-item-gap) - var(--ak-frame-padding));
 }
 
-/* ak-list-item-check */
 @utility ak-list-item-check-base {
   @apply ak-list-item-ol-marker ak-layer ak-layer-6 ak-edge-25;
   @apply ring ring-inset;

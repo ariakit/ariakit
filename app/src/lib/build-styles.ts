@@ -27,13 +27,11 @@ import type {
 
 type Dependency = StyleDependency;
 
-// Files and discovery
 const ROOT_DIR = path.resolve(import.meta.dirname, "../../../");
 const STYLES_DIR = path.resolve(ROOT_DIR, "app/src/styles");
 const ARIAKIT_CSS = path.join(STYLES_DIR, "ariakit.css");
 const OUTPUT_JSON = path.join(STYLES_DIR, "styles.json");
 
-// Utility helpers
 function toPosix(p: string) {
   return p.split(path.sep).join("/");
 }
@@ -59,12 +57,9 @@ function uniqPreserveOrder<T>(arr: T[]) {
   return out;
 }
 
-/**
- * Minimal CSS block extraction for our custom DSL
- */
 interface ExtractedBlock {
   kind: "utility" | "custom-variant" | "property";
-  // utility/variant name or variable name for @property
+  // Utility/variant name, or variable name for @property.
   name: string;
   body: string;
 }
@@ -126,6 +121,7 @@ function findMatchingBrace(text: string, openIndex: number) {
   return -1;
 }
 
+/** Scans the custom CSS DSL for supported top-level blocks. */
 function extractTopLevelBlocks(
   _filePath: string,
   rawCss: string,
@@ -168,7 +164,7 @@ function extractTopLevelBlocks(
       i++;
       continue;
     }
-    // detect at-rule starts
+    // Parse supported top-level at-rules.
     if (ch === "@") {
       const slice = rawCss.slice(i);
       let kind: ExtractedBlock["kind"] | null = null;
@@ -190,12 +186,12 @@ function extractTopLevelBlocks(
           continue;
         }
         const name = nameCaptured;
-        // advance to first '{' after skipping whitespace/comments
         const prefix = nameMatch[0];
         if (!prefix) {
           i++;
           continue;
         }
+        // Skip whitespace and comments between the at-rule header and body.
         let j = i + prefix.length;
         while (j < n) {
           const cj = rawCss.charAt(j);
@@ -205,13 +201,11 @@ function extractTopLevelBlocks(
             continue;
           }
           if (cj === "/" && nj === "*") {
-            // skip comment
             const end = rawCss.indexOf("*/", j + 2);
             j = end === -1 ? n : end + 2;
             continue;
           }
           if (cj === "{") break;
-          // unexpected token, abort this at-rule parse
           break;
         }
         if (rawCss[j] !== "{") {
@@ -241,8 +235,7 @@ function extractTopLevelBlocks(
  * - nested blocks headed by "<header>{...}"
  */
 interface SplitBodyResult {
-  // raw statements without trailing semicolon (include comments as separate
-  // items)
+  // Semicolons are omitted; standalone comments remain ordered declarations.
   declarations: string[];
   blocks: { header: string; body: string }[];
   items: (
@@ -277,7 +270,7 @@ function splitBody(content: string): SplitBodyResult {
       i++;
       continue;
     }
-    // capture standalone comments at depth 0 as individual declarations
+    // Preserve depth-zero comments as ordered declarations.
     if (ch === "/" && next === "*" && depth === 0) {
       const end = content.indexOf("*/", i + 2);
       const commentEnd = end === -1 ? n - 2 : end;
@@ -300,9 +293,9 @@ function splitBody(content: string): SplitBodyResult {
       i++;
       continue;
     }
+    // A depth-zero opening brace starts a nested block.
     if (ch === "{") {
       if (depth === 0) {
-        // Header is content[tokenStart..i)
         const header = content.slice(tokenStart, i).trim();
         const braceOpen = i;
         const braceClose = findMatchingBrace(content, braceOpen);
@@ -310,7 +303,6 @@ function splitBody(content: string): SplitBodyResult {
         const body = content.slice(braceOpen + 1, braceClose);
         blocks.push({ header, body });
         items.push({ kind: "block", header, body });
-        // Move after closing brace
         i = braceClose + 1;
         tokenStart = i;
         continue;
@@ -336,7 +328,7 @@ function splitBody(content: string): SplitBodyResult {
     }
     i++;
   }
-  // Trailing declaration without semicolon
+  // Preserve a final declaration without a trailing semicolon.
   const tail = content.slice(tokenStart).trim();
   if (tail) {
     declarations.push(tail);
@@ -351,6 +343,8 @@ function splitBody(content: string): SplitBodyResult {
 export function parsePropertyDecls(body: string): PropertyDecl[] {
   const { items } = splitBody(body);
   const decls: PropertyDecl[] = [];
+  // Carry comments forward so they stay beside the next normalized
+  // declaration.
   let pendingApplyComments: string[] = [];
 
   const flushPendingComments = () => {
@@ -370,7 +364,6 @@ export function parsePropertyDecls(body: string): PropertyDecl[] {
         continue;
       }
       if (s.startsWith("@apply ")) {
-        // Attach any pending comments immediately before @apply
         flushPendingComments();
         const raw = s.replace(/^@apply\s+/, "");
         // Store @apply as a valueless declaration with the full header on name
@@ -379,7 +372,6 @@ export function parsePropertyDecls(body: string): PropertyDecl[] {
         decls.push({ name: `@apply ${raw}`, value: {} });
         continue;
       }
-      // Any non-apply declaration flushes pending comments
       if (s === "@slot") {
         flushPendingComments();
         decls.push({ name: "@slot", value: {} });
@@ -393,8 +385,9 @@ export function parsePropertyDecls(body: string): PropertyDecl[] {
         decls.push({ name: prop, value });
         continue;
       }
-      // Fallback: keep raw as a named empty declaration
       flushPendingComments();
+      // Preserve unknown valueless declarations instead of dropping DSL
+      // syntax.
       decls.push({ name: s, value: {} });
       continue;
     }
@@ -405,7 +398,7 @@ export function parsePropertyDecls(body: string): PropertyDecl[] {
       decls.push({ name: hdr, value: children });
     }
   }
-  // Flush any trailing comments
+  // Preserve comments that trail the final declaration.
   flushPendingComments();
   return decls;
 }
@@ -588,7 +581,6 @@ function getIndexedEntry(
 }
 
 function extractAkTokensFromApplyLine(line: string) {
-  // Split by whitespace, keep original tokens
   const tokens = line.trim().split(/\s+/);
   const akTokens: string[] = [];
   for (const tok of tokens) {
@@ -600,15 +592,12 @@ function extractAkTokensFromApplyLine(line: string) {
       if (!seg) {
         continue;
       }
-      // Handle direct ak-* tokens
       if (seg.startsWith("ak-")) {
         akTokens.push(seg);
         continue;
       }
-      // Tailwind not-* prefix support: normalize not-ak-* to ak-*
-      // This may appear at the beginning of the segment or after another
-      // hyphenated variant (e.g., "peer-not-ak-disabled"). We only care about
-      // extracting the underlying ak-* token for dependency resolution.
+      // Normalize `not-ak-*`, including after hyphenated variants, so its
+      // underlying token participates in dependency resolution.
       if (seg.startsWith("not-ak-")) {
         akTokens.push(seg.slice(4));
         continue;
@@ -654,19 +643,18 @@ function collectAllValuesFromPropertyDecls(decls?: PropertyDecl[]): string[] {
       out.push(...collectAllValuesFromPropertyDecls(d.value));
       continue;
     }
-    // Valueless declarations (value is an empty object)
+    // Valueless declarations encode source in `name`; ignore metadata while
+    // keeping `@apply` and unknown DSL forms available for dependency scans.
     const name = d.name;
     if (!name) {
       continue;
     }
-    // Skip comments and @slot declarations
     if (name.startsWith("/*") && name.endsWith("*/")) {
       continue;
     }
     if (name === "@slot") {
       continue;
     }
-    // Extract tokens from @apply declarations stored on name
     if (name.startsWith("@apply")) {
       const raw = name.slice("@apply".length).trim();
       if (raw) {
@@ -674,7 +662,6 @@ function collectAllValuesFromPropertyDecls(decls?: PropertyDecl[]): string[] {
       }
       continue;
     }
-    // For other valueless declarations, include the name for token scanning
     out.push(name);
   }
   return out;
@@ -758,6 +745,7 @@ function getDependencyScanValue(value: string) {
   return output;
 }
 
+/** Resolves utility and variant dependencies across all parsed modules. */
 export function resolveDependencies(modules: ModuleJson[]): void {
   const index = buildGlobalIndex(modules);
   const externalImport = "@ariakit/tailwind";
@@ -808,18 +796,16 @@ export function resolveDependencies(modules: ModuleJson[]): void {
   };
 
   for (const mod of modules) {
+    // Utilities may reference utilities, variants, and registered properties.
     for (const util of Object.values(mod.utilities)) {
       const deps: Dependency[] = [];
       const nestedValues = collectAllValuesFromPropertyDecls(util.properties);
       for (const v of nestedValues) {
-        // Any nested apply lines are stored as entire lines in val.apply;
-        // others are declarations We still scan all strings for ak-* tokens
         const scanValue = getDependencyScanValue(v);
         const akTokens = extractAkTokensFromApplyLine(scanValue);
         for (const t of akTokens) {
           addAkTokenDep(deps, t);
         }
-        // Also scan for var(--prop)
         for (const varName of findVarNamesInString(scanValue)) {
           const propModule = index.atPropToModule.get(varName);
           if (propModule) {
@@ -854,8 +840,7 @@ export function resolveDependencies(modules: ModuleJson[]): void {
       }
       util.dependencies = deps;
     }
-    // Variants typically have no deps; leave empty unless their rules reference
-    // var() or ak-* tokens
+    // Variants may reference utilities, variants, and registered properties.
     for (const variant of Object.values(mod.variants)) {
       const deps: Dependency[] = [];
       const values = collectAllValuesFromPropertyDecls(variant.properties);
@@ -902,9 +887,6 @@ function buildIndexSection(modules: ModuleJson[]): StylesJson["index"] {
   return { utilities, variants, atProperties };
 }
 
-/**
- * Entry point
- */
 export async function buildAkStylesIndex(outputPath: string = OUTPUT_JSON) {
   const modulePaths = await discoverModulePaths();
   const modules: ModuleJson[] = [];
@@ -912,7 +894,7 @@ export async function buildAkStylesIndex(outputPath: string = OUTPUT_JSON) {
     const mod = await parseStyleModule(p);
     modules.push(mod);
   }
-  // Resolve dependencies after all modules are parsed
+  // Resolve cross-module dependencies only after every module is parsed.
   resolveDependencies(modules);
 
   const json: StylesJson = {
@@ -936,7 +918,7 @@ async function main() {
     try {
       expected = await fs.readFile(OUTPUT_JSON, "utf8");
     } catch {
-      // missing expected file counts as mismatch
+      // A missing expected file counts as a mismatch.
     }
     const actual = await fs.readFile(out, "utf8");
     if (expected !== actual) {

@@ -131,7 +131,6 @@ function useAutoFocusOnHide({
     setAutoFocusOnHide(true);
   });
 
-  // TODO: Maybe use state.anchorElement directly?
   const finalFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {

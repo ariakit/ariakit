@@ -119,7 +119,7 @@ export default function Example() {
         <DialogHeading>Dialog</DialogHeading>
         <DialogDismiss>Close</DialogDismiss>
 
-        {/* Nested buttons */}
+        {/* Nested dialog triggers */}
         <Button onClick={() => setNested(true)}>nested</Button>
 
         <Button onClick={() => setNestedParentBackdrop(true)}>
@@ -154,7 +154,7 @@ export default function Example() {
           nested dismiss animated
         </DialogDismiss>
 
-        {/* Sibling buttons */}
+        {/* Sibling dialog triggers */}
         <Button onClick={() => setSibling(true)}>sibling</Button>
 
         <Button onClick={() => setSiblingParentBackdrop(true)}>
@@ -191,7 +191,7 @@ export default function Example() {
           sibling dismiss animated unmount
         </DialogDismiss>
 
-        {/* Nested default */}
+        {/* Nested dialog variants */}
         <Dialog open={nested} onClose={() => setNested(false)}>
           <DialogHeading>nested</DialogHeading>
           <DialogDismiss>Close</DialogDismiss>
@@ -204,7 +204,6 @@ export default function Example() {
           </Dialog>
         </Dialog>
 
-        {/* Nested parent backdrop */}
         <Dialog
           open={nestedParentBackdrop}
           onClose={() => setNestedParentBackdrop(false)}
@@ -243,7 +242,6 @@ export default function Example() {
           </Dialog>
         </Dialog>
 
-        {/* Nested unmount */}
         <Dialog
           open={nestedUnmount}
           onClose={() => setNestedUnmount(false)}
@@ -266,7 +264,6 @@ export default function Example() {
           </Dialog>
         </Dialog>
 
-        {/* Nested no portal */}
         <Dialog
           open={nestedNoPortal}
           onClose={() => setNestedNoPortal(false)}
@@ -289,7 +286,6 @@ export default function Example() {
           </Dialog>
         </Dialog>
 
-        {/* Nested no backdrop */}
         <Dialog
           open={nestedNoBackdrop}
           onClose={() => setNestedNoBackdrop(false)}
@@ -312,7 +308,6 @@ export default function Example() {
           </Dialog>
         </Dialog>
 
-        {/* Nested no portal portal */}
         <Dialog
           open={nestedNoPortalPortal}
           onClose={() => setNestedNoPortalPortal(false)}
@@ -334,7 +329,6 @@ export default function Example() {
           </Dialog>
         </Dialog>
 
-        {/* Nested dismiss */}
         <Dialog open={nestedDismiss} onClose={() => setNestedDismiss(false)}>
           <DialogHeading>nested dismiss</DialogHeading>
           <DialogDismiss>Close</DialogDismiss>
@@ -356,7 +350,6 @@ export default function Example() {
           </Dialog>
         </Dialog>
 
-        {/* Nested dismiss animated */}
         <Dialog
           animated
           open={nestedDismissAnimated}
@@ -384,7 +377,7 @@ export default function Example() {
         </Dialog>
       </Dialog>
 
-      {/* Sibling */}
+      {/* Sibling dialog variants */}
       <Dialog
         id={siblingId}
         open={sibling}
@@ -399,7 +392,6 @@ export default function Example() {
         <Button onClick={() => setSiblingSibling(true)}>sibling sibling</Button>
       </Dialog>
 
-      {/* SiblingSibling */}
       <Dialog
         id={siblingSiblingId}
         open={siblingSibling}
@@ -410,7 +402,6 @@ export default function Example() {
         <DialogDismiss>Close</DialogDismiss>
       </Dialog>
 
-      {/* Sibling parent backdrop */}
       <Dialog
         id={siblingParentBackdropId}
         open={siblingParentBackdrop}
@@ -436,7 +427,6 @@ export default function Example() {
         </Button>
       </Dialog>
 
-      {/* Sibling parent backdrop sibling */}
       <Dialog
         id={siblingParentBackdropSiblingId}
         open={siblingParentBackdropSibling}
@@ -456,7 +446,6 @@ export default function Example() {
         <DialogDismiss>Close</DialogDismiss>
       </Dialog>
 
-      {/* Sibling unmount */}
       <Dialog
         open={siblingUnmount}
         onClose={() => setSiblingUnmount(false)}
@@ -469,7 +458,6 @@ export default function Example() {
         </Button>
       </Dialog>
 
-      {/* Sibling unmount sibling */}
       <Dialog
         open={siblingUnmountSibling}
         onClose={() => setSiblingUnmountSibling(false)}
@@ -479,7 +467,6 @@ export default function Example() {
         <DialogDismiss>Close</DialogDismiss>
       </Dialog>
 
-      {/* Sibling no portal */}
       <Dialog
         id={siblingNoPortalId}
         open={siblingNoPortal}
@@ -497,7 +484,6 @@ export default function Example() {
         </Button>
       </Dialog>
 
-      {/* Sibling no portal sibling */}
       <Dialog
         id={siblingNoPortalSiblingId}
         open={siblingNoPortalSibling}
@@ -509,7 +495,6 @@ export default function Example() {
         <DialogDismiss>Close</DialogDismiss>
       </Dialog>
 
-      {/* Sibling no portal portal */}
       <Dialog
         id={siblingNoPortalPortalId}
         open={siblingNoPortalPortal}
@@ -527,7 +512,6 @@ export default function Example() {
         </Button>
       </Dialog>
 
-      {/* Sibling no portal portal sibling */}
       <Dialog
         id={siblingNoPortalPortalSiblingId}
         open={siblingNoPortalPortalSibling}
@@ -538,7 +522,6 @@ export default function Example() {
         <DialogDismiss>Close</DialogDismiss>
       </Dialog>
 
-      {/* Sibling no backdrop */}
       <Dialog
         id={siblingNoBackdropId}
         open={siblingNoBackdrop}
@@ -556,7 +539,6 @@ export default function Example() {
         </Button>
       </Dialog>
 
-      {/* Sibling no backdrop sibling */}
       <Dialog
         id={siblingNoBackdropSiblingId}
         open={siblingNoBackdropSibling}
@@ -568,7 +550,6 @@ export default function Example() {
         <DialogDismiss>Close</DialogDismiss>
       </Dialog>
 
-      {/* Sibling dismiss */}
       <Dialog
         open={siblingDismiss}
         onClose={() => setSiblingDismiss(false)}
@@ -581,7 +562,6 @@ export default function Example() {
         </DialogDismiss>
       </Dialog>
 
-      {/* Sibling dismiss sibling */}
       <Dialog
         open={siblingDismissSibling}
         onClose={() => setSiblingDismissSibling(false)}
@@ -591,7 +571,6 @@ export default function Example() {
         <DialogDismiss>Close</DialogDismiss>
       </Dialog>
 
-      {/* Sibling dismiss unmount */}
       <Dialog
         unmountOnHide
         open={siblingDismissUnmount}
@@ -605,7 +584,6 @@ export default function Example() {
         </DialogDismiss>
       </Dialog>
 
-      {/* Sibling dismiss unmount sibling */}
       <Dialog
         unmountOnHide
         open={siblingDismissUnmountSibling}
@@ -616,7 +594,6 @@ export default function Example() {
         <DialogDismiss>Close</DialogDismiss>
       </Dialog>
 
-      {/* Sibling dismiss animated */}
       <Dialog
         animated
         open={siblingDismissAnimated}
@@ -630,7 +607,6 @@ export default function Example() {
         </DialogDismiss>
       </Dialog>
 
-      {/* Sibling dismiss animated sibling */}
       <Dialog
         animated
         open={siblingDismissAnimatedSibling}
@@ -641,7 +617,6 @@ export default function Example() {
         <DialogDismiss>Close</DialogDismiss>
       </Dialog>
 
-      {/* Sibling dismiss animated unmount */}
       <Dialog
         unmountOnHide
         animated
@@ -658,7 +633,6 @@ export default function Example() {
         </DialogDismiss>
       </Dialog>
 
-      {/* Sibling dismiss animated unmount sibling */}
       <Dialog
         unmountOnHide
         animated

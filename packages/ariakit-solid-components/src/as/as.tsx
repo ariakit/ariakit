@@ -33,7 +33,6 @@ const cache = new Map<string, Component<any>>();
 export const As = new Proxy(
   function As(props: any) {
     return ((parentProps: unknown) => (
-      // TODO: replace with LazyDynamic
       <Dynamic
         {...mergeProps(parentProps, props)}
         component={props.component}
@@ -46,7 +45,6 @@ export const As = new Proxy(
       if (!component) {
         component = function AsElement(props: any): JSX.Element {
           return ((parentProps: unknown) => (
-            // TODO: replace with LazyDynamic
             <Dynamic {...mergeProps(parentProps, props)} component={key} />
           )) as unknown as JSX.Element;
         };

@@ -10,14 +10,9 @@ const slowMo = HEADED ? 150 : undefined;
 const PERF = process.env.PERF_TEST === "true";
 const port = Number(process.env.APP_PORT) || 4321;
 const nextjsPort = Number(process.env.NEXTJS_PORT) || 3000;
-// Pin the workerd inspector ports outside the OS ephemeral range in CI.
-// When unset, the preview server preselects a random free high port and workerd binds
-// it later, so another process (such as a browser connection claiming it as
-// an outbound source port) can take it in between, which kills the server
-// with a fatal "Address already in use" on startup. Only pin by default in
-// CI, where each job owns the runner: fixed local defaults would make
-// concurrent sessions (such as per-worktree servers on overridden app ports)
-// collide deterministically. Zero means "let the preview server pick".
+// In CI, pin workerd inspectors outside the ephemeral port range so another
+// process cannot claim a preselected port before workerd binds it. Keep local
+// ports dynamic so concurrent worktrees do not collide.
 const inspectorPort = Number(process.env.APP_INSPECTOR_PORT) || (CI ? 9339 : 0);
 const nextjsInspectorPort =
   Number(process.env.NEXTJS_INSPECTOR_PORT) || (CI ? 9340 : 0);
@@ -96,13 +91,8 @@ export default defineConfig({
             // measurement and distort its metrics.
             trace: "off",
           },
-          // Failed attempts record no results (the perf fixture only
-          // appends results for passing attempts) and results land in
-          // per-worker files, so retrying in a fresh worker (new browser)
-          // cannot double-count. It recovers the run when the previous
-          // worker's browser wedged mid-file. Same value as this config's
-          // default retries, but kept explicit: perf previously opted out
-          // and the retry safety argument lives here.
+          // One fresh-worker retry recovers a wedged browser. Failed attempts
+          // write no results, so partial measurements cannot be double-counted.
           retries: 1,
           // Script-profile tests do over 100s of real work on slow runners.
           // This is headroom over observed durations, not a hang allowance:

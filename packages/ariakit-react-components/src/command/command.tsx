@@ -86,14 +86,9 @@ export const useCommand = createHook<TagName, CommandOptions>(
     const disabled = disabledFromProps(props);
     const [isDuplicate, metadataProps] = useMetadataProps(props, symbol, true);
 
-    // When the element becomes disabled while it's in the active ("pressed")
-    // state — for example, it disables itself on the Space keydown — the keyup
-    // that clears the state in `onKeyUp` below may never reach it: a non-native
-    // element that turns disabled loses its focusability, so the browser moves
-    // focus to the body and delivers the keyup there instead. Clear the state
-    // here too so the element doesn't stay stuck looking pressed. This runs as a
-    // layout effect so the active state is gone before paint, avoiding a frame
-    // where the element renders as both pressed and disabled.
+    // A self-disabling non-native control can lose focus before keyup arrives.
+    // Clear pressed state in layout so it cannot remain active or flash before
+    // paint.
     useSafeLayoutEffect(() => {
       if (!disabled) return;
       activeRef.current = false;
@@ -163,12 +158,9 @@ export const useCommand = createHook<TagName, CommandOptions>(
 
       const nativeClick = isNativeClick(event);
 
-      // Clear the active state as soon as Space is released, before all the
-      // guards below (defaultPrevented, self-target, disabled, metaKey), so a
-      // short-circuited keyup (a consumer calling preventDefault, Meta still
-      // held on release, or the element becoming disabled between keydown and
-      // keyup) can't leave the element stuck in a visually "pressed" state.
-      // Firing the synthetic click is still gated by those guards.
+      // Clear pressed state before keyup guards; prevented, disabled, or
+      // modified keyups must not leave the control stuck active. Click
+      // synthesis remains gated.
       activeRef.current = false;
       if (!nativeClick) {
         setActive(false);
@@ -191,12 +183,8 @@ export const useCommand = createHook<TagName, CommandOptions>(
 
     const onBlurProp = props.onBlur;
 
-    // If focus moves away while Space is held, the keyup is delivered to the
-    // new focus target and `onKeyUp` above never runs. Clear the pressed state
-    // so the element doesn't stay stuck looking pressed, mirroring how native
-    // buttons cancel the Space activation when they lose focus before the
-    // keyup. Focus moving into a descendant also cancels the press, so a keyup
-    // bubbling up from a child can't reinstate it.
+    // Losing focus before Space keyup cancels native activation. Mirror that
+    // and prevent a later descendant keyup from reviving the press.
     const onBlur = useEvent((event: FocusEvent<HTMLType>) => {
       onBlurProp?.(event);
       if (!activeRef.current) return;

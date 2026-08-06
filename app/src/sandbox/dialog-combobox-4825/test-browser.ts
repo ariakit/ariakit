@@ -14,7 +14,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // focus dance that resets scrollLeft.
     await page.keyboard.type("                  b", { delay: 20 });
 
-    // Verify items are rendered
     await test.expect(q.option("Banana")).toBeVisible();
     await test.expect(q.option("Blueberry")).toBeVisible();
 
@@ -31,7 +30,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(q.option("Blueberry")).toBeHidden();
 
-    // scrollLeft should be preserved (not reset to 0)
     await test.expect
       .poll(() =>
         combobox.evaluate((el) => (el as HTMLInputElement).scrollLeft),

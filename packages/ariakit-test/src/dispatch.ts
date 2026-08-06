@@ -238,16 +238,10 @@ const pointerEvents = [
   "click",
 ];
 
-// happy-dom drops a `click` dispatched on a disabled `<button>`/`<input>`: their
-// per-class `dispatchEvent` returns `false` before invoking any listener or
-// running the control's activation behavior (capricorn86/happy-dom#2190). The
-// HTML spec only bars clicks queued from user interaction on a disabled control,
-// not a scripted `dispatchEvent` — so jsdom and real browsers still run the
-// listeners *and* the activation behavior (a disabled checkbox/radio toggles).
-// Reinstate both for the events `@ariakit/test` dispatches. Scoping it here means
-// happy-dom's own internal click re-dispatches (e.g. a label forwarding to its
-// control) still drop on a disabled control — `click` relies on that to avoid a
-// double click.
+// happy-dom drops scripted clicks on disabled buttons and inputs, although the
+// spec, jsdom, and browsers still run listeners and activation. Restore that
+// behavior only here so label forwarding can still suppress its duplicate.
+// https://github.com/capricorn86/happy-dom/issues/2190
 function fireEventAllowingDisabledClick(
   element: NonNullable<Target>,
   event: Event,
@@ -265,15 +259,9 @@ function fireEventAllowingDisabledClick(
   return fireEvent(element, event);
 }
 
-// Collect the radios whose checked state to snapshot before selecting `radio`, so
-// the activation's effect can be detected and reverted. Selecting a radio unchecks
-// a same-name peer through happy-dom's `checked` setter, scoped to the control's
-// form or, lacking one, the root node. Snapshotting every same-name radio in the
-// root node is a superset of whatever that setter unchecks, so the post-selection
-// diff captures exactly the peer that changed regardless of how happy-dom scopes
-// the group — including radios linked to a form by the `form` attribute, where
-// happy-dom's scope diverges from `radio.form`. `getRootNode()` returns a
-// `ParentNode` (the document, a shadow root, or a detached tree root).
+// Snapshot same-name radios from the root: happy-dom may group form-associated
+// radios by root rather than `radio.form`. Diffing that superset identifies the
+// peer changed by activation.
 function getRadioGroup(radio: HTMLInputElement) {
   if (!radio.name) return [radio];
   const root = radio.getRootNode() as ParentNode;
@@ -283,18 +271,9 @@ function getRadioGroup(radio: HTMLInputElement) {
   return radios.includes(radio) ? radios : [radio, ...radios];
 }
 
-// Run the listeners and reinstate the checkbox/radio activation happy-dom skips
-// for a click on a disabled control, mirroring the spec ordering real browsers
-// follow. The listeners run through the base `EventTarget` dispatch, which skips
-// happy-dom's disabled short-circuit and keeps `disabled` reading `true`
-// throughout. A checkbox is toggled (and a radio selected) *before* the click is
-// dispatched so listeners observe the new `checked` value; `preventDefault()`
-// reverts it. Selecting a radio also unchecks a peer, so the controls the
-// activation actually changed are captured and only those are reverted — leaving
-// any control a listener changes during the click untouched, as in a browser.
-// When not prevented, `input`/`change` fire for the value that changed.
-// Submit/reset controls have no such activation (and real browsers don't
-// submit/reset a disabled control), so they only run their listeners.
+// Bypass happy-dom's disabled-control short circuit, applying checkbox/radio
+// activation before listeners. Revert only activation-owned changes when
+// prevented, and emit input/change only for a committed value change.
 function dispatchDisabledControlClick(
   element: HTMLButtonElement | HTMLInputElement,
   event: Event,

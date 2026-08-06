@@ -10,13 +10,10 @@ test("applies the browser shims at import, for the whole environment", () => {
   document.body.append(connected);
   const disconnected = document.createElement("button");
   try {
-    // The getClientRects shim reports a 1x1 rect for connected, visible
-    // elements even outside a simulated interaction (`wrapAsync`)...
     expect(connected.getClientRects()[0]).toMatchObject({
       width: 1,
       height: 1,
     });
-    // ...and an empty list for elements that aren't visible.
     expect(disconnected.getClientRects()).toHaveLength(0);
   } finally {
     connected.remove();
@@ -29,8 +26,6 @@ test("keeps the browser shims applied after an interaction settles", async () =>
   document.body.append(element);
   try {
     await wrapAsync(async () => {});
-    // The shims are no longer torn down between interactions, so they're still
-    // in place once `wrapAsync` returns.
     expect(element.getClientRects()[0]).toMatchObject({ width: 1, height: 1 });
   } finally {
     element.remove();
@@ -80,8 +75,6 @@ test("exposes the dispatched event on window.event while listeners run", async (
     // dispatch to match jsdom and real browsers.
     await dispatch.click(button);
     expect(eventTypeDuringDispatch).toBe("click");
-    // It's exposed only while listeners run, then removed (happy-dom has no
-    // such property to begin with, so the shim deletes it again).
     expect("event" in window).toBe(false);
   } finally {
     button.remove();
@@ -96,8 +89,6 @@ test("restores window.event around a nested dispatch", async () => {
   const seen: Array<string | undefined> = [];
   outer.addEventListener("click", () => {
     seen.push((window as { event?: Event }).event?.type);
-    // A nested dispatch fires its event synchronously, so `window.event` is the
-    // inner event while the inner listener runs, then restored to the outer one.
     void dispatch.mouseDown(inner);
     seen.push((window as { event?: Event }).event?.type);
   });
@@ -107,7 +98,6 @@ test("restores window.event around a nested dispatch", async () => {
   try {
     await dispatch.click(outer);
     expect(seen).toEqual(["click", "mousedown", "click"]);
-    // Removed again once the outermost dispatch finishes.
     expect("event" in window).toBe(false);
   } finally {
     outer.remove();
@@ -131,8 +121,6 @@ test("cancels a not-yet-run animation frame callback within the same frame", asy
       ran.push("b");
     });
   });
-  // "a" cancels "b" before "b" runs, so "b" must be skipped even though both
-  // were requested for the same frame.
   expect(ran).toEqual(["a"]);
 });
 
@@ -156,8 +144,6 @@ test("runs the listener for a click dispatched on a disabled button", async () =
   try {
     const defaultAllowed = await dispatch.click(button);
     expect(buttonClicks).toBe(1);
-    // The button stays disabled throughout, and nothing cancels the click, so the
-    // default action is allowed — as in a browser.
     expect(disabledDuringClick).toBe(true);
     expect(defaultAllowed).toBe(true);
   } finally {
@@ -201,14 +187,11 @@ test("toggles a disabled checkbox in either direction for a scripted click", asy
     try {
       const defaultAllowed = await dispatch.click(checkbox);
       expect(defaultAllowed).toBe(true);
-      // Toggled before the listener runs, while still disabled.
       expect(checkedDuringClick).toBe(!initiallyChecked);
       expect(disabledDuringClick).toBe(true);
       expect(checkbox.checked).toBe(!initiallyChecked);
       expect(inputEvents).toBe(1);
       expect(changeEvents).toBe(1);
-      // Each activation event exposes itself on window.event while its listener
-      // runs, like jsdom/browsers — not the outer click event.
       expect(eventTypeDuringInput).toBe("input");
       expect(eventTypeDuringChange).toBe("change");
     } finally {
@@ -241,9 +224,7 @@ test("reverts a disabled checkbox toggle in either direction when a click listen
     try {
       const defaultAllowed = await dispatch.click(checkbox);
       expect(defaultAllowed).toBe(false);
-      // Toggled to the flipped value while the listener runs...
       expect(checkedDuringClick).toBe(!initiallyChecked);
-      // ...then restored to the original value once prevented.
       expect(checkbox.checked).toBe(initiallyChecked);
       expect(inputEvents).toBe(0);
       expect(changeEvents).toBe(0);
@@ -277,11 +258,9 @@ test("clears and restores a disabled checkbox's indeterminate state on a scripte
     document.body.append(checkbox);
     try {
       const defaultAllowed = await dispatch.click(checkbox);
-      // Cleared and toggled before the listener runs, regardless of prevention.
       expect(indeterminateDuringClick).toBe(false);
       expect(checkedDuringClick).toBe(true);
       if (prevent) {
-        // preventDefault restores both the checked and indeterminate state.
         expect(defaultAllowed).toBe(false);
         expect(checkbox.checked).toBe(false);
         expect(checkbox.indeterminate).toBe(true);
@@ -321,7 +300,6 @@ test("selects a disabled radio on click and fires events only when it changes", 
     expect(defaultAllowed).toBe(true);
     expect(radioClicks).toBe(1);
     expect(radio.checked).toBe(true);
-    // The radio is selected before the click listener runs, like a browser.
     expect(checkedDuringClick).toBe(true);
     expect(inputEvents).toBe(1);
     expect(changeEvents).toBe(1);
@@ -364,7 +342,6 @@ test("restores a disabled radio group when a click listener prevents the selecti
   clicked.addEventListener("change", () => clickedChange++);
   clicked.addEventListener("input", () => clickedInput++);
   clicked.addEventListener("click", (event) => {
-    // The clicked radio is selected and its peer unchecked before the listener.
     selectedDuringClick = selected.checked;
     clickedDuringClick = clicked.checked;
     event.preventDefault();
@@ -374,7 +351,6 @@ test("restores a disabled radio group when a click listener prevents the selecti
     expect(defaultAllowed).toBe(false);
     expect(selectedDuringClick).toBe(false);
     expect(clickedDuringClick).toBe(true);
-    // preventDefault restores the original group selection.
     expect(selected.checked).toBe(true);
     expect(clicked.checked).toBe(false);
     expect(selectedChange).toBe(0);
@@ -439,16 +415,13 @@ test("reverts only the activation's changes, preserving listener changes to othe
   outside.checked = true;
   selected.checked = true;
   clicked.addEventListener("click", (event) => {
-    // A listener change to a radio outside the clicked radio's group.
     outside.checked = false;
     event.preventDefault();
   });
   try {
     await dispatch.click(clicked);
-    // The clicked radio's own group is reverted...
     expect(selected.checked).toBe(true);
     expect(clicked.checked).toBe(false);
-    // ...but the listener's change to the out-of-scope radio is preserved.
     expect(outside.checked).toBe(false);
   } finally {
     form.remove();
@@ -492,9 +465,7 @@ test("doesn't submit or reset a form from a click on a disabled submit/reset con
     for (const control of controls) {
       await dispatch.click(control);
     }
-    // The clicks reach the disabled controls, so their listeners run...
     expect(controlClicks).toBe(controls.length);
-    // ...but none of them activates the form.
     expect(submitEvents).toBe(0);
     expect(resetEvents).toBe(0);
   } finally {
@@ -545,14 +516,11 @@ test("preserves form and select proxy identity across ancestor APIs", () => {
       expect(parent.contains(child)).toBe(true);
       expect(parent.contains(grandchild)).toBe(true);
       expect(parent.contains(late)).toBe(true);
-      // Elements outside the parent are still reported as outside.
       expect(parent.contains(outside)).toBe(false);
       expect(parent.contains(container)).toBe(false);
       expect(parent.contains(null)).toBe(false);
-      // The other direction never regressed, but it must keep working.
       expect(container.contains(parent)).toBe(true);
       expect(container.contains(grandchild)).toBe(true);
-      // The divergence outlives the subtree's removal from the document.
       container.remove();
       expect(parent.contains(grandchild)).toBe(true);
     } finally {

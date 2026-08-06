@@ -106,15 +106,9 @@ export interface PresentItemParams {
 }
 
 /**
- * Presents a composite item: moves DOM focus to it without letting the browser
- * scroll, then brings it into view once its popup, if it's in one, has been
- * positioned. Returns a function that abandons a presentation that hasn't run
- * yet.
- *
- * Focus and scroll are separated on purpose. Moving focus is bookkeeping and
- * must never move anything, so it can happen right away; bringing the item into
- * view is the only part that can move the page, so it's the only part that has
- * to wait for the popup to be placed.
+ * Focuses a composite item without scrolling, then brings it into view after
+ * any containing popup has been positioned.
+ * Returns a function that cancels a pending presentation.
  */
 function presentItem({
   store,
@@ -139,32 +133,17 @@ function presentItem({
     const activeElement = getActiveElement(owner);
     // Whoever asked for this still has focus.
     if (activeElement === owner) return true;
-    // Focus moving inside the composite is the presentation's own doing, not
-    // the user moving on. A request that moves focus hands it to the item and
-    // the item hands it back, and the composite element it comes back to isn't
-    // always the one that asked, because that element can change identity while
-    // a popup opens. The item's handoff request is the same shape seen from the
-    // other side: it doesn't move focus itself, but it's created midway through
-    // a handoff that does. So the question is whether the composite still has
-    // focus, not whether the element that asked still does.
-    // How wide "the composite" should be is still open: `ownsFocus` counts any
-    // popup descendant, which can't tell a mid-flight handoff apart from the
-    // user moving to another control in the popup.
-    // See https://github.com/ariakit/ariakit/issues/7018
+    // Item/container handoffs still belong to the composite; only focus leaving
+    // it abandons the request. Popup descendants remain a known gray area:
+    // https://github.com/ariakit/ariakit/issues/7018
     if (activeElement === target) return true;
     return ownsFocus(store);
   };
-  /**
-   * Whether the request has stopped being relevant, judged from state alone.
-   * Runs on every pass, including the ones that are still waiting for the item
-   * to render, so a popup that opens and closes again while an item never
-   * arrives doesn't leave the request behind.
-   */
+  // Check state even before the item renders so closed popups cannot leave a
+  // pending request behind.
   const abandonedByState = (state: ReturnType<typeof store.getState>) => {
-    // The popup opened and closed again. Closing content is never presented
-    // into. Both are latched so that "never opened" stays distinguishable from
-    // "was open, now closing": a popup that is permanently closed, such as an
-    // `alwaysVisible` menu, still presents its items.
+    // Latching distinguishes a popup that closed from one that never opened,
+    // such as an `alwaysVisible` menu.
     if ("mounted" in state) {
       if (state.mounted) {
         wasMounted = true;
@@ -187,18 +166,8 @@ function presentItem({
     return id != null && state.activeId != null && state.activeId !== id;
   };
 
-  /**
-   * The element the request's item is currently rendered as, or `null` when it
-   * isn't rendered. Resolved from the store every time, because the element an
-   * id points at is not stable.
-   *
-   * The id itself is pinned once an element is found. A request without an `id`
-   * follows the active item only while it is still looking for one, which is
-   * what lets an item that hasn't registered yet resolve later. After that it
-   * has adopted a logical item, and `abandonedByState` deliberately doesn't end
-   * it when the active item changes, so re-reading the active id here would let
-   * it silently present a different item instead.
-   */
+  // Follow the active item only until one resolves, then pin its logical id so
+  // a replacement node can be found without presenting a different item.
   const resolveElement = (state: ReturnType<typeof store.getState>) => {
     const targetId = resolvedId ?? (id === undefined ? state.activeId : id);
     const item = getEnabledItem(store, targetId);
@@ -227,33 +196,17 @@ function presentItem({
         focused &&
         !focusLeftElement &&
         getActiveElement(element) === getDocument(element).body;
-      // The element left the DOM, but React can replace an item's node while
-      // keeping its id, so the logical item can still be there and still be
-      // worth presenting. Resolve it again here rather than going back to
-      // waiting, which is what keeps the request terminal without counting
-      // retries.
-      //
-      // The replacement is only guaranteed to be there when this pass was woken
-      // by the collection's own batched `items` propagation, which carries a
-      // commit's unregister and register together. A pass woken earlier in that
-      // same commit still sees the old element, because items register from a
-      // passive effect while a controlled `items` or `activeId` prop is
-      // published from a layout effect. Such a pass gives up on the
-      // replacement, which is what already happened to every replacement before
-      // this.
+      // Re-resolve once so a same-id React replacement can be presented without
+      // keeping a permanently removed item pending. An earlier layout-effect
+      // wake may still beat passive item registration.
+      // https://github.com/ariakit/ariakit/pull/7030#discussion_r3703432937
       element = resolveElement(state);
       if (!element) return cancel();
     }
-    // Whether the request has stopped being relevant, judged from the resolved
-    // item. This can only be answered once the item exists: before that there
-    // is nothing to compare focus against, and an option that has just focused
-    // itself isn't even recognizable as an item yet.
-    //
-    // Removing the focused node parks focus on the document body. Restore
-    // focus only when the item's ref cleanup marked that blur as removal. An
-    // explicit blur is latched below until the same item takes focus again, so
-    // replacing an item the user left does not turn a real focus escape into a
-    // new focus request, while an item they came back to is still restored.
+    // Removing the focused node parks focus on `body`; restore only when ref
+    // cleanup identified removal. Explicit blur stays latched until this
+    // logical item regains focus.
+    // https://github.com/ariakit/ariakit/pull/7030#discussion_r3703432809
     if (restoreFocus) {
       focused = false;
     } else if (!stillOwnsFocus(element)) {
@@ -283,14 +236,8 @@ function presentItem({
       // a nested pass may have given up in the meantime.
       if (done) return;
     }
-    // Everything above moves nothing beyond DOM focus, so it runs as soon as
-    // it can. Everything below moves the page.
-    //
-    // Arriving at the composite is not by itself a request to move anything:
-    // the item under a resting pointer, or the one a stale active id points at,
-    // should be focused but stay where it is. Only an item the widget marked as
-    // its presentation target is worth bringing into view. This deliberately
-    // isn't an abandon reason, so that the focus above still happens.
+    // Focus may move immediately, but scrolling is reserved for an explicit
+    // presentation target; hover and stale active ids must not move the page.
     if (markedOnly && !element.hasAttribute("data-autofocus")) return cancel();
     // The item can't be shown yet: a popup that is still hidden while closed,
     // or one that hasn't been positioned yet, would be scrolled to no visible
@@ -321,28 +268,14 @@ function presentItem({
 }
 
 /**
- * Gives a component a single owner for the presentations it asks for, so no
- * call site has to track them itself. Keeps at most one pending presentation
- * per component, so the newest request wins: that's what lets a later move take
- * over from the presentation an open scheduled, while an activity that only
- * changes the active item without asking for a new presentation, such as hover,
- * leaves the pending one alone.
+ * Owns at most one pending presentation for the component's current store.
+ * Layout-effect ownership prevents store swaps or unmounts from stranding a
+ * request, while newer requests replace older ones.
+ * Layout setup runs before child passive effects can request presentation;
+ * cleanup clears ownership during unmount before later handlers or microtasks
+ * can enqueue work. The initial ref covers the first render before setup.
  *
- * The owner is the store the component is currently rendering with, recorded in
- * a layout effect. Two things follow from that. Cancellation is scoped to the
- * store the request was made against, so a component that swaps its `store`
- * prop can't cancel the incoming store's request or strand the outgoing one.
- * And a request asked for once the owner is gone is refused rather than
- * created, which for some requests is the only thing that can stop them.
- * `presentItem` retires a parked request through the popup state it watches or
- * the item id it was given, so one with neither, on a store that outlives the
- * component, would stay there for good.
- *
- * Layout is what makes the second part work in both directions. Its cleanup
- * runs while the unmount is still being committed, before any event handler or
- * microtask that follows it, and its setup runs before every passive setup in
- * the commit, including those of children that ask for a presentation of their
- * own. The initial value covers the render before the first setup.
+ * See https://github.com/ariakit/ariakit/pull/7029
  */
 export function usePresentItem(store?: CompositeStore) {
   const cancelRef = useRef<(() => void) | null>(null);

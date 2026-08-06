@@ -1,4 +1,3 @@
-// TODO: Add data-attribute to indicate whether it's expanded?
 import { useStoreState } from "@ariakit/react-store";
 import {
   useEvent,
@@ -163,10 +162,9 @@ export const useCompositeContainer = createHook<
     if (event.metaKey) return;
     if (event.shiftKey) return;
     const container = event.currentTarget;
+    // Non-space printable and deletion keys enter the editable descendant.
+    // Escape returns from any descendant; Enter returns from editable targets.
     if (isSelfTarget(event)) {
-      // Alphanumeric key on container: focus the first tabbable element in
-      // the container if it's a text field or contenteditable element. This
-      // will automatically replace the text field value with the pressed key.
       if (event.key.length === 1 && event.key !== " ") {
         const tabbable = getFirstTabbable(container);
         if (!tabbable) return;
@@ -174,12 +172,7 @@ export const useCompositeContainer = createHook<
           event.stopPropagation();
           open();
         }
-      }
-
-      // Delete/Backspace on container: focus on the first tabbable element in
-      // the container if it's a text field or contenteditable element. This
-      // will automatically clear the text field value.
-      else if (event.key === "Delete" || event.key === "Backspace") {
+      } else if (event.key === "Delete" || event.key === "Backspace") {
         const tabbable = getFirstTabbable(container);
         if (!tabbable) return;
         if (isTextField(tabbable) || tabbable.isContentEditable) {
@@ -206,17 +199,9 @@ export const useCompositeContainer = createHook<
           setTimeout(cleanup, 0);
         }
       }
-    }
-
-    // Escape on tabbable element inside container: move focus back to the
-    // container.
-    else if (event.key === "Escape") {
+    } else if (event.key === "Escape") {
       queueMicrotask(() => container.focus());
-    }
-
-    // Enter on tabbable element inside container: move focus back to the
-    // container only if it's an input or contenteditable element.
-    else if (event.key === "Enter") {
+    } else if (event.key === "Enter") {
       const target = event.target as HTMLElement;
       const isInput =
         (target.tagName === "INPUT" && !isButton(target)) ||
@@ -234,8 +219,8 @@ export const useCompositeContainer = createHook<
     onClickProp?.(event);
     if (event.defaultPrevented) return;
     if (isSelfTarget(event) && !event.detail) {
-      // Move focus to the first tabbable element in the container and place
-      // at the end.
+      // A zero-detail click focuses the first tabbable descendant and, when
+      // editable, places its caret at the end.
       open(true);
     }
   });

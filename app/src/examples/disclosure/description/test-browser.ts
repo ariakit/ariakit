@@ -5,7 +5,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("open @visual", async ({ page, q, visual }) => {
     await q.button("Visa •••• •••• •••• 3421").click();
     await test.expect(q.heading("Recent charges")).toBeVisible();
-    // Avoid hover state
+    // Move the pointer away so the snapshot excludes the hover state.
     await page.mouse.move(0, 0);
     await visual({ viewports });
   });

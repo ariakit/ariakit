@@ -68,7 +68,6 @@ test("auto select with inline autocomplete on typing + clearing", async () => {
 
 test("text selection with shift+arrow keys and replacement", async () => {
   await press.Tab();
-  // Navigate to an item using arrow keys (no auto-completion highlighting)
   await press.ArrowDown();
   await press.ArrowDown();
   await press.ArrowDown();
@@ -76,13 +75,11 @@ test("text selection with shift+arrow keys and replacement", async () => {
   expect(q.option("Emma Johnson")).toHaveFocus();
   expect(getSelectionValue(q.combobox())).toBe("");
 
-  // Test ArrowLeft + shiftKey for text selection
   for (const _ of "Emma Johnson") {
     await press.ArrowLeft(null, { shiftKey: true });
   }
   expect(getSelectionValue(q.combobox())).toBe("Emma Johnson");
 
-  // Type after selection to replace selected text
   await type("m");
   expect(q.combobox()).toHaveValue("michael Brown");
   expect(q.option("Michael Brown")).toHaveFocus();
@@ -109,7 +106,6 @@ test("autocomplete on focus on hover", async () => {
 });
 
 test("composition text", async () => {
-  // TODO: Add composition util to @ariakit/test
   await dispatch.compositionStart(q.combobox());
   await type("'", q.combobox(), { isComposing: true });
   expect(q.option("John Smith")).not.toBeInTheDocument();

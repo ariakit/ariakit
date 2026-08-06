@@ -40,22 +40,18 @@
     rounded-lg
     bg-white
     dark:bg-gray-700
-    /* transition setup */
     transition-[opacity,translate]
     duration-300
-    /* prefers-reduced-motion */
     motion-reduce:[transition:none]
-    /* initial transition state, ignores initial render */
+    /* Apply hidden state only after a panel has previously opened. */
     [:has(>[data-was-open])>&]:opacity-0
     [:has(>[data-was-open])>&]:[translate:-100%]
-    /* entering from/to right */
+    /* Place the next panel to the right before it enters. */
     [:is([data-was-open],[data-open])~&]:[translate:100%]
-    /* non-transition leave state */
+    /* Remove hidden panels from document flow. */
     [&:not([data-open])]:absolute
     [&:not([data-open])]:top-0
-    /* enter state */
     data-[enter]:![translate:0]
     data-[enter]:!opacity-100
   ;
 }
-

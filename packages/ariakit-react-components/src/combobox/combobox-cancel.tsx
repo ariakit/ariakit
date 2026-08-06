@@ -68,7 +68,6 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      // Move focus to the combobox input.
       store?.move(null);
       store?.setInputValue("");
     });

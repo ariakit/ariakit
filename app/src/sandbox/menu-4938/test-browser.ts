@@ -9,7 +9,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(menuButton).toBeVisible();
 
-    // Scroll so the menu button is barely visible at the bottom edge.
+    // Put the trigger at the viewport edge so closing-scroll behavior is
+    // observable.
     const { x, y, scrollY } = await menuButton.evaluate((element) => {
       const rect = element.getBoundingClientRect();
       const scrollY = window.scrollY + rect.bottom - 10;
@@ -29,7 +30,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.menu()).not.toBeVisible();
     await test.expect(menuButton).toBeFocused();
 
-    // The page should scroll up so the menu button is visible.
     await test.expect
       .poll(() => page.evaluate(() => window.scrollY))
       .toBeLessThan(scrollY);
@@ -43,7 +43,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(menuButton).toBeVisible();
 
-    // Scroll so the menu button is barely visible at the bottom edge.
+    // Put the trigger at the viewport edge so closing-scroll behavior is
+    // observable.
     const { x, y, scrollY } = await menuButton.evaluate((element) => {
       const rect = element.getBoundingClientRect();
       const scrollY = window.scrollY + rect.bottom - 10;
@@ -62,7 +63,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.mouse.click(10, 5);
     await test.expect(q.menu()).not.toBeVisible();
 
-    // The scroll position should not change.
     await test.expect
       .poll(() => page.evaluate(() => window.scrollY))
       .toBe(scrollY);

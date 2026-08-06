@@ -169,14 +169,9 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
         <span className="label">{props.children}</span>
         <Ariakit.MenuItemCheck checked={checked} />
         {searchable && (
-          // When an item is displayed in a search menu as a role=option
-          // element instead of a role=menuitemradio, we can't depend on the
-          // aria-checked attribute. Although NVDA and JAWS announce it
-          // accurately, VoiceOver doesn't. TalkBack does announce the checked
-          // state, but misleadingly implies that a double tap will change the
-          // state, which isn't the case. Therefore, we use a visually hidden
-          // element to indicate whether the item is checked or not, ensuring
-          // cross-browser/AT compatibility.
+          // In the listbox view, expose checked state as text: VoiceOver
+          // ignores `aria-checked` on options, while TalkBack announces it as
+          // actionable.
           <Ariakit.VisuallyHidden>
             {checked ? " checked" : " not checked"}
           </Ariakit.VisuallyHidden>

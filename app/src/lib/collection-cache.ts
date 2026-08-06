@@ -17,15 +17,11 @@ const collectionCache = new Map<
 >();
 
 /**
- * Returns a content collection, cached for the lifetime of the process
- * during production builds. `getCollection` materializes fresh entry objects
- * on every call, and components such as code blocks, content links, and page
- * cards read collections on every render — thousands of times across
- * reference partial pages. Reusing one promise also keeps entry object
- * identities stable, which lets downstream WeakMap-based memoization hit
- * across pages. In dev, the collection is re-read on every call so content
- * updates are picked up. Callers must not mutate the returned array; use
- * `array.filter()` and friends to derive filtered views.
+ * Caches production collection reads so repeated reference renders share entry
+ * identities and downstream WeakMap caches. Development reads stay uncached.
+ * Treat the returned array as read-only.
+ *
+ * See https://github.com/ariakit/ariakit/pull/6289
  */
 export function getCachedCollection<C extends CollectionKey>(
   collection: C,

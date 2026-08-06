@@ -131,7 +131,6 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
       return;
     }
     const portalEl = getPortalElement(element, portalElement);
-    // TODO: Warn about portals as the document.body element.
     if (!portalEl) {
       setPortalNode(null);
       return;

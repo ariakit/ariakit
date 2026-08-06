@@ -55,31 +55,26 @@ test("show on arrow up", async () => {
 });
 
 test("hide on escape", async () => {
-  // Click
   await click(q.button("Actions"));
   expect(q.menu()).toBeVisible();
   await press.Escape();
   expect(q.menu()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
-  // Enter
   await press.Enter();
   expect(q.menu()).toBeVisible();
   await press.Escape();
   expect(q.menu()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
-  // Space
   await press.Space();
   expect(q.menu()).toBeVisible();
   await press.Escape();
   expect(q.menu()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
-  // ArrowDown
   await press.ArrowDown();
   expect(q.menu()).toBeVisible();
   await press.Escape();
   expect(q.menu()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
-  // ArrowUp
   await press.ArrowUp();
   expect(q.menu()).toBeVisible();
   await press.Escape();
@@ -132,7 +127,6 @@ test("tab back to menu button", async () => {
   await press.Tab();
   expect(q.menu()).toHaveFocus();
   expect(q.menu()).toBeVisible();
-  // Close and open with enter
   await press.ShiftTab();
   await press.Enter();
   await press.Enter();

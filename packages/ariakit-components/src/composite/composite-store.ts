@@ -348,8 +348,7 @@ export function createCompositeStore<
     ),
   );
 
-  // When the activeId is undefined, we need to find the first enabled item and
-  // set it as the activeId.
+  // Select the first enabled item when activeId is unset.
   setup(composite, () =>
     sync(composite, ["renderedItems", "activeId"], (state) => {
       composite.setState("activeId", (activeId) => {
@@ -459,13 +458,11 @@ export function createCompositeStore<
     items = isVerticalDirection ? verticalizeItems(items) : items;
 
     if (activeId == null) {
-      // If there's no item focused, we just move the first one.
       return findFirstEnabledItem(items)?.id;
     }
 
     const activeItem = items.find((item) => item.id === activeId);
     if (!activeItem) {
-      // If there's no item focused, we just move to the first one.
       return findFirstEnabledItem(items)?.id;
     }
 
@@ -475,11 +472,10 @@ export function createCompositeStore<
     const nextItemsInRow = getItemsInRow(nextItems, activeItem.rowId);
 
     if (skip) {
-      // Home, End, PageUp, PageDown
       const nextEnabledItemsInRow = getEnabledItems(nextItemsInRow, activeId);
+      // Skip within the active row, clamping to its last enabled item.
       const nextItem =
         nextEnabledItemsInRow.slice(skip)[0] ||
-        // If we can't find an item, just return the last one.
         nextEnabledItemsInRow[nextEnabledItemsInRow.length - 1];
       return nextItem?.id;
     }
@@ -563,7 +559,6 @@ export function createCompositeStore<
     setActiveId: (id) => composite.setState("activeId", id),
 
     move: (id) => {
-      // move() does nothing
       if (id === undefined) return;
       composite.setState("activeId", id);
       composite.setState("moves", (moves) => moves + 1);

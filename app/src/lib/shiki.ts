@@ -95,11 +95,10 @@ export interface CodeToTokensParams {
 }
 
 /**
- * Tokenizes code with the shared highlighter, memoizing results.
- * Reference pages repeat the same short type signatures thousands of times
- * across partial pages, so caching collapses most tokenization work into a
- * handful of unique runs. Callers must treat the returned tokens as
- * read-only.
+ * Memoizes tokenization because reference partials repeat the same signatures.
+ * Treat the returned tokens as read-only.
+ *
+ * See https://github.com/ariakit/ariakit/pull/6289
  */
 export function codeToTokens({
   code,

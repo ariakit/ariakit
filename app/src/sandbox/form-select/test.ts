@@ -65,6 +65,5 @@ test("submit succeed", async () => {
       fruit: "Banana",
     }),
   );
-  // Reset on submit
   expect(q.combobox()).toHaveTextContent("Select an item");
 });

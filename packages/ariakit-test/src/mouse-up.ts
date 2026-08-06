@@ -32,7 +32,8 @@ export function mouseUp(element: Element | null, options?: PointerEventInit) {
     const preventMouseEvents = getPreventMouseEvents(document);
     setPreventMouseEvents(document, false);
 
-    // mouseup is not called on disabled elements
+    // Disabled controls and canceled pointerdown suppress compatibility
+    // mouseup.
     if (disabled) return;
 
     if (preventMouseEvents) return;

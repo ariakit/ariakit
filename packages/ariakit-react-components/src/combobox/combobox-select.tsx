@@ -172,6 +172,8 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       }
     });
 
+    // Mirror the custom select with a native control so browser autofill can
+    // update the combobox store.
     props = useWrapElement(
       props,
       (element) => (
@@ -204,13 +206,10 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       return state.items;
     });
     const values = useMemo(() => {
-      // Filter out items without value and duplicate values.
       const itemValues = items?.flatMap((item) => item.value ?? []);
       return [...new Set(itemValues)];
     }, [items]);
 
-    // Renders a native select element with the same value as the custom select
-    // so browser autofill can update the combobox store.
     props = useWrapElement(
       props,
       (element) => {

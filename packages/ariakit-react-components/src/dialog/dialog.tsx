@@ -344,11 +344,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     return prependHiddenDismiss(dialog, store.hide);
   }, [store, modal, mounted, domReady]);
 
-  // When the dialog is animated, the open state will be false and the mounted
-  // state will be true. The dialog will still be visible until the animation is
-  // complete. We need to disable the dialog tree completely in this case. TODO:
-  // We should probably do this in a more generic way in the DisclosureContent
-  // component.
+  // Keep closing animated content inert until its mounted state ends.
   useSafeLayoutEffect(() => {
     if (!supportsInert()) return;
     if (open) return;
@@ -420,12 +416,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       ...(openingCohortRef.current?.peers || []),
       ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
     ];
-    // Positively mark the elements the dialog knows about as "inside" so the
-    // outside event listeners can recognize them even before the dialog has
-    // been focused. The disclosure is excluded because it can change while
-    // the dialog is open (hovercards and tooltips set it to the focus
-    // source), so the listeners re-check it against the current state on
-    // every event instead. See https://github.com/ariakit/ariakit/issues/6344
+    // Mark known dialog elements before first focus. Re-check disclosure live
+    // because hovercards and tooltips may replace it while open.
+    // https://github.com/ariakit/ariakit/issues/6344
     const restoreInsideMarks = markTreeInside(dialog, allElements);
     if (modal) {
       return chain(
@@ -496,13 +489,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // element could steal focus from the disclosure that focusOnHide already
       // restored.
       if (!open) return;
-      // Once the dialog has received focus, focus may move to another
-      // focusable element outside while the dialog is waiting to be
-      // positioned. Preserve that user choice, but allow a dialog that hasn't
-      // received focus yet to perform its initial focus move.
-      // `getActiveElement` follows same-origin frames into another document.
-      // Ownership must stay in the dialog's document, where focus in a frame is
-      // represented by the frame element inside the dialog.
+      // Preserve focus that escaped while placement was pending. Decide
+      // ownership in the dialog's document, where iframe focus is represented
+      // by its frame element.
+      // https://github.com/ariakit/ariakit/pull/7048#discussion_r3712331088
       const documentActiveElement = getDocument(contentElement).activeElement;
       const activeElement = isElement(documentActiveElement)
         ? documentActiveElement
@@ -523,15 +513,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       ) {
         return;
       }
-      // The browser's own focus scroll is unreliable here: Safari drops it
-      // when a focus handler immediately moves focus elsewhere, which is what
-      // virtual focus does. Scroll explicitly instead, so every engine behaves
-      // the same whether or not focus stayed put. It happens before the focus
-      // so a focus handler that presents something else scrolls last and wins.
-      // Re-read focusability here rather than trusting the snapshot taken in
-      // the effect body: the scroll is conditional on it while the focus below
-      // is not, so a stale `true` would scroll to an element that can no
-      // longer be focused.
+      // Safari may drop focus scrolling when virtual focus redirects it. Scroll
+      // first, then re-check focusability so stale state cannot move the page
+      // toward an element that no longer accepts focus.
       if (isFocusable(element)) {
         element.scrollIntoView({ block: "nearest", inline: "nearest" });
       }

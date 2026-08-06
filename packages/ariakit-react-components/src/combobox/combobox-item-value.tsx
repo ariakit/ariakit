@@ -54,14 +54,9 @@ function mergeOverlappingOffsets(offsets: Array<[number, number]>) {
 }
 
 function getNormalizedIndexes(itemValue: string) {
-  // Maps each index of the normalized item value to original character
-  // boundaries, plus a final entry for the end boundary. Positions inside a
-  // character (such as part of a decomposed Hangul syllable) round up to the
-  // next boundary in `starts` and down to the previous one in `ends`, so a
-  // partially matched character is never highlighted. Iterating code points
-  // keeps surrogate pairs intact, and characters removed by normalization
-  // contribute no entries, so combining marks stay attached to the preceding
-  // character when slicing.
+  // Map normalized offsets to original code-point boundaries. Starts round
+  // forward and ends backward so partial characters and combining marks are
+  // never split.
   const starts: number[] = [];
   const ends: number[] = [];
   let index = 0;
@@ -136,7 +131,6 @@ function splitValue(itemValue?: string | null, userValue?: string | string[]) {
   const offsets = toOriginalOffsets(
     itemValue,
     mergeOverlappingOffsets(
-      // Convert userValues into a set to avoid duplicates
       getOffsets(normalizeValue(itemValue), new Set(userValues)),
     ),
   );

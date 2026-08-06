@@ -166,9 +166,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       compositionEndFrameRef.current = null;
     };
 
-    // We can only allow auto select when the combobox focus is handled via the
-    // aria-activedescendant attribute. Othwerwise, the focus would move to the
-    // first item on every keypress.
+    // Auto-select requires virtual focus; otherwise every keypress would move
+    // DOM focus to the first item.
     const autoSelect = useStoreState(
       store,
       ["virtualFocus"],
@@ -180,8 +179,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     // control this state here.
     const [canInline, setCanInline] = useState(inline);
 
-    // If the inline autocomplete is enabled in a update, we need to update the
-    // canInline state to reflect this. TODO: Try derived state.
+    // Re-enable inline completion when the prop changes.
     useUpdateLayoutEffect(() => {
       if (!inline) return;
       setCanInline(true);
@@ -195,11 +193,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     });
     const multiSelectable = Array.isArray(selectedValue);
 
-    // Keep track of the previous selected values so we can set the
-    // inlineActiveValue below only when the current activeValue isn't already
-    // selected and isn't one of the previously selected values. See
-    // tag-combobox test named "deselecting a tag should not highlight the input
-    // text if it is not the first combobox item".
+    // Track deselected values so inline completion does not immediately offer
+    // to add them again.
     const prevSelectedValueRef = useRef<ComboboxStoreSelectedValue>(undefined);
     useEffect(() => {
       return sync(store, ["selectedValue", "activeId"], (_, prev) => {
@@ -213,14 +208,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       (state) => {
         if (!inline) return;
         if (!canInline) return;
-        // It doesn't make sense to inline the active value if it's already
-        // selected or just got deselected. Inlining the value typically implies
-        // an addition, but if the value is already selected, the action actually
-        // becomes a deletion. If the value was just deselected, pressing Enter
-        // again would reselect it, but it's not the usual path, so we also take
-        // into account the previously selected values. See tag-combobox test
-        // named "deselecting a tag should not highlight the input text if it is
-        // not the first combobox item".
+        // Inline completion implies adding a value; skip values already
+        // selected or just deselected so Enter does not invert the user's last
+        // action.
         if (state.activeValue && Array.isArray(state.selectedValue)) {
           if (state.selectedValue.includes(state.activeValue)) return;
           if (prevSelectedValueRef.current?.includes(state.activeValue)) return;
@@ -301,11 +291,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         const nextEnd = inlineActiveValue.length;
         setSelectionRange(element, nextStart, nextEnd);
         cleanup = () => {
-          // This effect may run after the value is updated and the completion
-          // string is highlighted, for example, when the items are updated
-          // asynchronously or in a React transition in a multi-selectable
-          // combobox. In this case, we must restore the previous selection
-          // range if it hasn't changed. TODO: Test this.
+          // Async item updates may rerun this after completion is highlighted.
+          // Restore the previous range only if the selection is still ours.
           if (!hasFocus(element)) return;
           const { start, end } = getTextboxSelection(element);
           if (start !== nextStart) return;
@@ -442,24 +429,15 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
             ? userAutoSelectId
             : (getDefaultAutoSelectId(items) ?? store.first());
         autoSelectIdRef.current = autoSelectId;
-        // If there's no first item (that is, there are no items or all items
-        // are disabled), we should move the focus to the input (null),
-        // otherwise, with async items, the activeValue won't be reset. TODO:
-        // Test this.
+        // Move to the input when no enabled item exists so async results do not
+        // retain a stale active value.
         const nextActiveId = autoSelectId ?? null;
         const nextActiveValue = store.item(nextActiveId)?.value;
         const moved = autoSelectMovedRef.current;
-        // Move when the auto-select target changes: a different active item, a
-        // different target id, or the same id now holding a different value
-        // (for example, a list keyed by index whose first item's value changes
-        // after filtering, or asynchronously loaded items). We avoid re-moving
-        // to the exact item we already moved to, because store.move() always
-        // increments the `moves` counter, which makes the Composite component
-        // re-focus the active item. Re-focusing when only the rendered items
-        // changed (for example, a virtualized list resizing because a mobile
-        // keyboard's autocomplete bar changed the available height) would bounce
-        // focus off the input and back and drop characters as the user types.
-        // See https://github.com/ariakit/ariakit/issues/3837
+        // Move when the logical target changes, including a new value under the
+        // same id, but never re-move the identical item: `move()` refocuses it
+        // and can drop typed characters when virtualization resizes.
+        // https://github.com/ariakit/ariakit/issues/3837
         if (
           nextActiveId !== activeId ||
           moved?.id !== nextActiveId ||
@@ -573,14 +551,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
           setSelectionRange(currentTarget, selectionStart, selectionEnd);
         });
         if (inline && autoSelect && isSameValue) {
-          // The store.setInputValue(event.target.value) above may not trigger a
-          // state update. For example, say the first item starts with "t". The
-          // user starts typing "t", then the first item is auto selected and
-          // the inline completion string is appended and highlited. The user
-          // then selects all the text and type "t" again. This change will
-          // produce the same value as the store value, and therefore the state
-          // update will not trigger a re-render. We need to force a re-render
-          // here so the inline completion effect will be fired.
+          // The DOM may contain inline completion even when typed text equals
+          // store state. Re-render so the completion effect runs again.
           forceValueUpdate();
         }
       }
@@ -657,7 +629,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (!event.repeat) {
-        // Run combobox-tabs and combobox-group (browser) tests.
         canAutoSelectRef.current = false;
       }
       if (event.defaultPrevented) return;
