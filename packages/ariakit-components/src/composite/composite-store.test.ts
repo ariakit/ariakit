@@ -321,9 +321,13 @@ test("scans within the active item's row on grids", () => {
     { id: "b1", rowId: "b" },
   ]);
 
+  // Skip the disabled item in the same row.
   expect(store.next({ activeId: "a1" })).toBe("a3");
+  // Stop at the row boundary.
   expect(store.next({ activeId: "a3" })).toBeUndefined();
+  // Move backward within the row.
   expect(store.previous({ activeId: "a3" })).toBe("a1");
+  // Do not enter the previous row.
   expect(store.previous({ activeId: "b1" })).toBeUndefined();
 });
 

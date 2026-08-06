@@ -10,10 +10,12 @@ test("applies the browser shims at import, for the whole environment", () => {
   document.body.append(connected);
   const disconnected = document.createElement("button");
   try {
+    // Connected visible elements receive a synthetic 1x1 client rect.
     expect(connected.getClientRects()[0]).toMatchObject({
       width: 1,
       height: 1,
     });
+    // Disconnected elements have no client rects.
     expect(disconnected.getClientRects()).toHaveLength(0);
   } finally {
     connected.remove();
@@ -519,8 +521,10 @@ test("preserves form and select proxy identity across ancestor APIs", () => {
       expect(parent.contains(outside)).toBe(false);
       expect(parent.contains(container)).toBe(false);
       expect(parent.contains(null)).toBe(false);
+      // The unaffected containment direction must keep working.
       expect(container.contains(parent)).toBe(true);
       expect(container.contains(grandchild)).toBe(true);
+      // The repaired relationship must survive detachment.
       container.remove();
       expect(parent.contains(grandchild)).toBe(true);
     } finally {
