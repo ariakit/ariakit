@@ -329,7 +329,7 @@ test("react-nextjs project syncs shared template and Next dev versions", () => {
   );
 });
 
-test("react-nextjs project generates styles and query provider", () => {
+test("react-nextjs project generates layout and query provider", () => {
   const props: AppStackblitzProps = {
     id: "dialog-styled",
     framework: "react-nextjs",
@@ -340,7 +340,6 @@ test("react-nextjs project generates styles and query provider", () => {
     dependencies: {
       "@tanstack/react-query": "latest",
     },
-    styles: [{ type: "utility", name: "ak-badge" }],
   };
 
   const { project, sourceFiles } = getProject(props);
@@ -387,7 +386,7 @@ test("react-nextjs project generates styles and query provider", () => {
   expect(Object.keys(themed)).toEqual(["app/styles.css", "app/layout.tsx"]);
 });
 
-test("solid-vite project emits generated utilities", () => {
+test("solid-vite project emits base styles and solid entry", () => {
   const props: AppStackblitzProps = {
     id: "separator-solid",
     framework: "solid-vite",
@@ -395,74 +394,13 @@ test("solid-vite project emits generated utilities", () => {
       "index.tsx":
         'export default function Example() { return <div class="ak-badge-primary">Solid</div>; }\n',
     },
-    styles: [{ type: "utility", name: "ak-badge-*" }],
   };
 
   const { project } = getProject(props);
 
-  expect(project.files["styles.css"]).toMatchInlineSnapshot(`
-    "@import "tailwindcss";
-    @import "@ariakit/tailwind";
-
-    @theme {
-      --color-canvas: oklch(99.33% 0.0011 197.14);
-      --color-primary: oklch(56.7% 0.1546 248.5156);
-      --color-secondary: oklch(65.59% 0.2118 354.31);
-
-      --radius-container: var(--radius-xl);
-      --spacing-container: --spacing(1);
-
-      --radius-tooltip: var(--radius-lg);
-      --spacing-tooltip: --spacing(1);
-
-      --radius-dialog: var(--radius-2xl);
-      --spacing-dialog: --spacing(4);
-
-      --radius-playground: calc(var(--radius) * 3.5);
-      --spacing-playground: --spacing(0);
-
-      --radius-field: var(--radius-lg);
-      --spacing-field: 0.75em;
-
-      --radius-card: var(--radius-xl);
-      --spacing-card: --spacing(4);
-
-      --radius-badge: var(--radius-full);
-      --spacing-badge: --spacing(1.5);
-
-      --font-sans:
-        "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    :root {
-      @variant dark {
-        --color-canvas: oklch(16.34% 0.0091 264.28);
-      }
-    }
-
-    body {
-      @apply ak-layer ak-layer-canvas;
-    }
-
-    @utility ak-badge-* {
-      --ak-badge-color: --value(--color, [*]);
-      @apply ak-badge_base;
-      @apply ak-layer ak-layer-color-(--ak-badge-color) ak-layer-mix-15 ak-dark:ak-edge-color-(--ak-badge-color) ak-edge-20 ak-light:ak-edge-color-(--ak-badge-color);
-      &::before,
-      &::after,
-      :where(& > *) {
-        @apply ak-text ak-text-color-(--ak-badge-color) ak-text-25;
-      }
-    }
-
-    @utility ak-badge_base {
-      @apply ak-frame ak-frame-badge/badge;
-      @apply flex items-center gap-1 text-xs font-medium leading-[1em];
-      padding-inline: calc(var(--spacing-badge) * 1.5);
-    }
-    "
-  `);
+  // The full base css is snapshotted in the react-vite test; here we only
+  // prove Solid projects get the same Tailwind + plugin setup.
+  expect(project.files["styles.css"]).toContain('@import "@ariakit/tailwind"');
   expect(project.files["index.tsx"]).toMatchInlineSnapshot(`
     "import "./styles.css";
     import { render } from "solid-js/web";

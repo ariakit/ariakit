@@ -1,12 +1,24 @@
-import { useState } from "react";
-import type { ListDisclosureProps } from "#app/examples/_lib/ariakit/list.react.tsx";
+import type { ListDisclosureProps } from "@ariakit/ui/ariakit/list.react.tsx";
 import {
   List,
   ListDisclosure,
   ListDisclosureButton,
   ListItem,
-} from "#app/examples/_lib/ariakit/list.react.tsx";
-import { Progress } from "#app/examples/_lib/ariakit/progress.react.tsx";
+} from "@ariakit/ui/ariakit/list.react.tsx";
+import { Progress } from "@ariakit/ui/ariakit/progress.react.tsx";
+import { button } from "@ariakit/ui/styles/button.ts";
+import { useState } from "react";
+
+// Legacy composed ak-list-item with ak-button: the button cv is layered onto
+// the item through its class/style props. The geometry variants restate the
+// item's own frame values so the two systems agree, and plain ak-button
+// paints no idle layer offset.
+const itemButton = button.jsx({
+  $p: "var(--list-item-padding)",
+  $rounded: "xl",
+  $lightnessOffset: false,
+  className: "justify-start text-wrap font-normal",
+});
 
 const tasks = [
   {
@@ -71,7 +83,7 @@ export default function Example() {
 
   return (
     <div className="w-90 max-w-[100cqi] grid gap-4">
-      <div className="ak-frame ak-frame-card/1 ak-layer ak-layer-lighten-6 ak-frame-bordering ak-list-counter-reset grid gap-(--ak-frame-padding)">
+      <div className="ak-frame ak-frame-card/1 ak-layer ak-layer-lighten-6 ak-frame-bordering grid gap-(--ak-frame-padding)">
         <div className="ak-frame ak-frame-field/field grid gap-4">
           <h2 className="font-semibold">Setup guide</h2>
           <Progress
@@ -104,13 +116,17 @@ export default function Example() {
                     </ListDisclosureButton>
                   }
                 >
-                  <List className="ak-list-gap-0 ak-list-item-padding-1 ak-frame ak-frame-cover ak-frame-p-1 mt-0! pt-0">
+                  <List
+                    $gap={0}
+                    $itemPadding={1}
+                    className="ak-frame ak-frame-cover ak-frame-p-1 mt-0! pt-0"
+                  >
                     {task.tasks.map((task) => (
                       <li key={task.title}>
                         <ListItem
                           render={<a href="" />}
                           checked={task.checked}
-                          className="ak-button justify-start text-wrap font-normal"
+                          {...itemButton}
                         >
                           {task.title}
                         </ListItem>

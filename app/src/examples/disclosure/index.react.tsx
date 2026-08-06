@@ -2,7 +2,7 @@ import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
-} from "#app/examples/_lib/ariakit/disclosure.react.tsx";
+} from "@ariakit/ui/ariakit/disclosure.react.tsx";
 
 export default function Example() {
   return (

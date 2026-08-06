@@ -28,6 +28,9 @@ import { getFramework } from "#app/lib/frameworks.ts";
 import { capitalize } from "#app/lib/string.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import Layout from "#app/pages/_layout.astro";
+import { button } from "@ariakit/ui/styles/button.ts";
+import { container } from "@ariakit/ui/styles/container.ts";
+import { input, inputPlaceholder } from "@ariakit/ui/styles/input.ts";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 import pluralize from "pluralize";
@@ -110,12 +113,36 @@ const guides = (
   await getCollection("guides", filterGuidesByGroup(groupPath))
 ).map(getGuideDetail);
 const hasGuides = guides.length > 0;
+
+// Legacy composed ak-button with ak-badge-primary: a brand-tinted pill. The
+// button style has no items-center; legacy relied on it to center the icon.
+// The children carry the badge text color through the ak-text classes in the
+// markup below, like the legacy ak-badge-* child rule.
+const getStartedButton = button.html({
+  $layer: "brand",
+  $mix: 15,
+  // Legacy plain ak-button paints no idle layer offset.
+  $lightnessOffset: false,
+  $rounded: "full",
+  class: "text-sm items-center",
+});
+
+// The tags panel only acts as a container when there is no sidebar menu;
+// --p is defined on the #tags element that wraps it.
+const tagsPanel = container.html({
+  $size: "calc(var(--container-default) + var(--p) * 2)",
+  $p: "none",
+  class: "@default:border-x",
+});
 ---
 
 <Layout {title}>
   <Meta slot="meta" type={type} title={title} framework={framework} />
   <div
-    class="ak-container-size-default py-24 ak-container flex flex-col items-center gap-8"
+    {...container.html({
+      $size: "default",
+      class: "py-24 flex flex-col items-center gap-8",
+    })}
   >
     <div class="flex flex-col items-center gap-4">
       {
@@ -124,10 +151,15 @@ const hasGuides = guides.length > 0;
             as="a"
             name="sidebar-menu"
             href={guides[0].path}
-            class="ak-button rounded-full ak-badge-primary text-sm"
+            {...getStartedButton}
           >
-            <span>Get Started with {typeTitle}</span>
-            <Icon name="arrowRight" className="flex-none" />
+            <span class="ak-text ak-text-brand ak-text-25">
+              Get Started with {typeTitle}
+            </span>
+            <Icon
+              name="arrowRight"
+              className="ak-text ak-text-brand ak-text-25 flex-none"
+            />
           </TimelineAnchor>
         )
       }
@@ -151,13 +183,13 @@ const hasGuides = guides.length > 0;
     </div>
     <div class="flex flex-col gap-4 items-center">
       <button
-        class="ak-input ak-frame ak-frame-field/1 flex items-center gap-2 text-start"
+        {...input.html({ $p: 1, class: "flex items-center gap-2 text-start" })}
       >
         <div
           class="flex items-center gap-2 ak-frame ak-frame-field/2 flex-grow min-w-0"
         >
           <Icon name="search" className="flex-none" />
-          <div class="ak-input-placeholder truncate">
+          <div {...inputPlaceholder.html({ class: "truncate" })}>
             Search {frameworkData.label}{" "}
             {pluralize(typeTitle, frameworkLength)}
           </div>
@@ -179,9 +211,9 @@ const hasGuides = guides.length > 0;
     id="tags"
     class:list={[
       "ak-layer ring scroll-mt-[calc(var(--header-height)-1px)] content-start",
-      "[--p:var(--ak-container-p)]",
-      "[--sidebar-menu-width:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)]",
-      "grid-cols-[var(--sidebar-menu-width)_min(calc(100%-var(--sidebar-menu-width)),var(--container-default)+var(--ak-container-p)*2)]",
+      "[--p:var(--_container-padding,0px)]",
+      "[--sidebar-menu-width:max(14rem,calc(100%-min(100%,var(--container-default)+var(--p)*2))/2)]",
+      "grid-cols-[var(--sidebar-menu-width)_min(calc(100%-var(--sidebar-menu-width)),var(--container-default)+var(--p)*2)]",
       "@max-overlap:grid-cols-[var(--sidebar-menu-width)_1fr]",
       hasGuides && "@5xl:grid",
     ]}
@@ -209,10 +241,9 @@ const hasGuides = guides.length > 0;
     <div
       class:list={[
         "flex flex-col ak-layer z-1 min-h-[100dvh]",
-        hasGuides
-          ? "@5xl:border-e"
-          : "@default:border-x ak-container-size-[calc(var(--container-default)+var(--p)*2)]/0 ak-container",
+        hasGuides ? "@5xl:border-e" : tagsPanel.class,
       ]}
+      style={hasGuides ? undefined : tagsPanel.style}
     >
       <HorizontalScroll
         id="tags-scroll"

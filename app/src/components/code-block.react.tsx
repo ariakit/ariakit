@@ -8,6 +8,16 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as ak from "@ariakit/react";
+import { Link } from "@ariakit/ui/ariakit/link.react.tsx";
+import type { TabProps } from "@ariakit/ui/ariakit/tabs.react.tsx";
+import { Tab, TabList } from "@ariakit/ui/ariakit/tabs.react.tsx";
+import { button as buttonStyle } from "@ariakit/ui/styles/button.ts";
+import {
+  tab as tabStyle,
+  tabList as tabListStyle,
+  tabPanels as tabPanelsStyle,
+  tabs as tabsStyle,
+} from "@ariakit/ui/styles/tabs.ts";
 import { invariant } from "@ariakit/utils";
 import { clsx } from "clsx";
 import { SquareSplitHorizontal } from "lucide-react";
@@ -127,16 +137,25 @@ export function CodeBlock({
 
   const defaultContent = (
     <div
+      {...tabPanelsStyle.jsx({
+        // The legacy panel painted the tabs root color with no lightness
+        // offset and kept square top corners under the opaque tab strip.
+        $lightnessOffset: false,
+        $roundedTop: false,
+        $p: "none",
+        class: clsx(
+          "grid",
+          "has-[pre:focus-visible]:after:outline-2 after:ak-outline after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
+        ),
+      })}
+      // None of the panel variants above emit inline style, so this doesn't
+      // clobber the spread.
       style={
         {
           "--max-lines": maxLines,
           "--line-height": "1.75em",
         } as React.CSSProperties
       }
-      className={clsx(
-        "ak-tab-panel ak-frame ak-frame-cover ak-frame-p-0 relative grid overflow-hidden",
-        "has-[pre:focus-visible]:after:outline-2 after:ak-outline after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
-      )}
     >
       <div className="absolute top-0 inset-e-0 ak-frame ak-frame-cover ak-frame-p-1.5 z-3 pointer-events-none size-max">
         <CopyCode
@@ -177,11 +196,16 @@ export function CodeBlock({
       className={clsx("flex flex-col isolate scroll-my-2", props.className)}
     >
       <div
-        className={clsx(
-          "ak-layer ak-dark:ak-layer-lighten-3 ak-light:ak-layer-lighten-6 group peer ak-light:ak-edge-15 ak-frame-border ak-frame ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
-          collapsed && "has-[[data-expand]:hover]:ak-state-3",
-          collapsibleClassName,
-        )}
+        {...tabsStyle.jsx({
+          // The legacy root drew a plain border rather than the adaptive
+          // border/ring the tabs style defaults to.
+          $borderType: "border",
+          class: clsx(
+            "ak-dark:ak-layer-lighten-3 ak-light:ak-layer-lighten-6 group peer ak-light:ak-edge-15 ak-frame-container/0 relative overflow-clip flex flex-col scroll-my-2",
+            collapsed && "has-[[data-expand]:hover]:ak-state-3",
+            collapsibleClassName,
+          ),
+        })}
         data-collapsible={collapsible || undefined}
         data-collapsed={collapsed || undefined}
       >
@@ -189,12 +213,35 @@ export function CodeBlock({
           ? topbar
           : showFilename &&
             filename && (
-              <div className="ak-tab-list ak-layer ak-dark:ak-layer-darken-4 ak-light:ak-layer-darken-3 text-sm">
-                <div className="base:ak-tab-folder_idle ak-tab-folder_selected select-auto cursor-auto">
-                  <div>
-                    {filenameIcon && <Icon name={filenameIcon} />}
-                    {filename}
-                  </div>
+              <div
+                {...tabListStyle.jsx({
+                  // The strip paints its own darkened layer, so the layer
+                  // classes must beat the tab list's base bg-transparent.
+                  // --tab-bg captures the root color (the parent layer at
+                  // this point) so the selected tab can match the panel.
+                  class:
+                    "ak-layer! ak-dark:ak-layer-darken-4 ak-light:ak-layer-darken-3 [--tab-bg:var(--ak-layer-parent)]",
+                })}
+              >
+                <div
+                  {...tabStyle.jsx({
+                    $size: "sm",
+                    // Match the panel color exactly (see --tab-bg above);
+                    // the automatic offset would shift it away from it.
+                    $layer: "var(--tab-bg)",
+                    $lightnessOffset: false,
+                    // The strip is a static stand-in, not a control: keep the
+                    // press scale, hover, and focus variants off.
+                    $active: false,
+                    $focus: false,
+                    $hoverOffset: false,
+                    // The selected class forces the ui-selected styles on
+                    // this static, non-interactive stand-in tab.
+                    class: "selected items-center select-auto cursor-auto",
+                  })}
+                >
+                  {filenameIcon && <Icon name={filenameIcon} />}
+                  {filename}
                 </div>
               </div>
             )}
@@ -205,33 +252,20 @@ export function CodeBlock({
   );
 }
 
-interface CodeBlockTabProps extends ak.TabProps {
-  isPreviewSelected?: boolean;
-}
-
 /**
  * A component for rendering individual tabs in the code block interface
  */
-function CodeBlockTab({
-  isPreviewSelected,
-  children,
-  ...props
-}: CodeBlockTabProps) {
+function CodeBlockTab(props: TabProps) {
   return (
-    <ak.Tab
+    <Tab
+      $size="sm"
+      // Match the panel color exactly (see --tab-bg in CodeBlock); the
+      // automatic offset would shift the selected tab away from it.
+      $layer="var(--tab-bg)"
+      $lightnessOffset={false}
       {...props}
-      className={clsx(
-        isPreviewSelected
-          ? [
-              "ak-segmented-button aria-selected:ak-edge-0 aria-selected:ak-layer aria-selected:ak-layer-6 aria-selected:shadow-none",
-              "not-aria-selected:px-2.5 not-aria-selected:sm:px-3 px-[calc(var(--spacing-field)---spacing(1.5))] sm:px-[calc(var(--spacing-field)---spacing(1))]",
-            ]
-          : "ak-tab-folder data-focus-visible:ak-tab-folder_focus h-full text-sm",
-        props.className,
-      )}
-    >
-      {isPreviewSelected ? children : <div>{children}</div>}
-    </ak.Tab>
+      className={clsx("h-full items-center", props.className)}
+    />
   );
 }
 
@@ -349,7 +383,9 @@ export function CodeBlockPreviewIframe({
       );
       html.classList.add(
         "not-data-focus:overflow-hidden",
-        "not-data-focus:[&_.ak-popover-scroll]:overflow-hidden",
+        // Popover scroll areas (the popoverScroll style) are the only
+        // elements that use the plain overscroll-contain utility.
+        "not-data-focus:[&_.overscroll-contain]:overflow-hidden",
       );
 
       const win = iframe.contentWindow;
@@ -697,6 +733,32 @@ export function CodeBlockTabs({
     showControlsOnHover &&
       "transition-[opacity,width] transition-discrete [interpolate-size:allow-keywords] supports-hover:w-0 group-hocus-within/code-block-tabs:w-auto supports-hover:opacity-0 group-hocus-within/code-block-tabs:opacity-100",
   );
+  // The view switcher can't be a single style variant: it renders as a
+  // segmented control at @lg and as bare square icon buttons below that, so
+  // each responsive half is spelled out with plugin utilities over a ghost
+  // button base. The layer classes take ! to beat the ghost bg-transparent.
+  const viewTabProps = buttonStyle.jsx({
+    $layer: "ghost",
+    // The explicit hover classes below replace the offset so the two don't
+    // fight over the same state utility.
+    $hoverOffset: false,
+    // Reduced padding like the legacy segmented button, which multiplied
+    // the button block padding by 0.75. Both axes derive from this token,
+    // so the inline padding trims by the same 0.125em, landing nearer the
+    // legacy inline value than the button default did.
+    $p: "0.375em",
+    class: clsx(
+      "items-center",
+      "ui-hover:ak-layer! ui-hover:ak-state-6",
+      "ui-selected:ak-layer!",
+      // Segmented look on the @lg pill track: the selected tab raises like
+      // the legacy anchor-positioned indicator.
+      "@lg:not-ui-selected:ak-ink-70",
+      "@lg:ui-selected:ak-layer-lighten-12 @lg:ui-selected:ak-frame-bordering @lg:ui-selected:ak-edge-10 @lg:ui-selected:ak-dark:ak-edge-0 @lg:ui-selected:shadow-sm",
+      // Square icon buttons below @lg.
+      "@max-lg:size-10 @max-lg:px-0 @max-lg:py-0",
+    ),
+  });
   const hasCodeToolbar = edit && !preview;
   const exampleId = title ? `example-${slugify(title)}` : undefined;
 
@@ -709,30 +771,27 @@ export function CodeBlockTabs({
         {preview && (
           <div className="grid grid-cols-[auto_max-content_max-content] @lg:grid-cols-[1fr_auto_1fr] items-center @lg:gap-4 gap-1 @lg:text-sm">
             {exampleId ? (
-              <a
+              <Link
                 href={`#${exampleId}`}
-                className="ak-link not-hover:no-underline hover:decoration-1 @lg:row-1 @lg:col-2 @max-lg:px-4 ak-ink-60 font-medium truncate transition-[color] group-hocus-within/code-block-tabs:ak-ink-100"
+                // The ink classes color this link, not the brand text the
+                // link style defaults to.
+                $text={false}
+                className="not-hover:no-underline hover:decoration-1! @lg:row-1 @lg:col-2 @max-lg:px-4 ak-ink-60 truncate transition-[color] group-hocus-within/code-block-tabs:ak-ink-100"
               >
                 {title}
-              </a>
+              </Link>
             ) : (
               <div className="@lg:row-1 @lg:col-2" />
             )}
             <div
               className={clsx("flex justify-start gap-[inherit]", className)}
             >
-              <ak.TabList className="flex @lg:ak-segmented @lg:ak-frame @lg:ak-frame-full/1 @max-lg:gap-[inherit]">
-                <ak.Tab
-                  id={getTabId(storeId, "preview")}
-                  className="@lg:ak-segmented-button @max-lg:ak-button @max-lg:ak-segmented-button-selected:ak-layer @max-lg:ak-segmented-button-selected:ak-state-6 @max-lg:ak-button-square-10"
-                >
+              <ak.TabList className="flex @max-lg:gap-[inherit] @lg:ak-layer @lg:ak-layer-darken-3 @lg:ak-frame @lg:ak-frame-full/1 @lg:ak-frame-bordering @lg:gap-(--ak-frame-padding) @lg:overflow-clip">
+                <ak.Tab id={getTabId(storeId, "preview")} {...viewTabProps}>
                   <Icon name="preview" className="@max-lg:text-lg" />
                   <span className="@max-lg:sr-only">Preview</span>
                 </ak.Tab>
-                <ak.Tab
-                  id={getTabId(storeId, "code")}
-                  className="@lg:ak-segmented-button @max-lg:ak-button @max-lg:ak-segmented-button-selected:ak-layer @max-lg:ak-segmented-button-selected:ak-state-6 @max-lg:ak-button-square-10"
-                >
+                <ak.Tab id={getTabId(storeId, "code")} {...viewTabProps}>
                   <span
                     className={clsx(
                       "flex items-center gap-2",
@@ -786,7 +845,14 @@ export function CodeBlockTabs({
                       href={previewUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ak-button ak-button-square-10"
+                      // The style spread keeps the plain anchor semantics.
+                      // Square icon button like the legacy square utility.
+                      {...buttonStyle.jsx({
+                        $p: "none",
+                        // Legacy plain ak-button paints no idle layer offset.
+                        $lightnessOffset: false,
+                        class: "size-10 items-center",
+                      })}
                     >
                       <Icon name="newWindow" className="text-lg" />
                       <span className="sr-only">Open preview in new tab</span>
@@ -819,13 +885,18 @@ export function CodeBlockTabs({
                     className={clsx(
                       hasToolbar && "[--height:--spacing(12)]",
                       "ak-layer ak-dark:ak-layer-darken-4 ak-light:ak-layer-darken-3 grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)",
+                      // Capture the root color (the parent layer at this
+                      // point) so the selected tab can match the panel.
+                      "[--tab-bg:var(--ak-layer-parent)]",
                     )}
                   >
-                    <ak.TabList
-                      className={clsx(
-                        "ak-tab-list ak-layer ak-layer-color-(--ak-layer-parent) ak-layer-darken-0 rounded-b-none!",
-                        hasToolbar && "sm:ak-frame-p-1",
-                      )}
+                    <TabList
+                      // The cv's default negative margin overlays the tabs
+                      // root's border, but this list is nested inside the
+                      // fixed-height topbar, where it would leak 1px past
+                      // the strip and double the panel divider.
+                      $m="none"
+                      className={clsx(hasToolbar && "sm:ak-frame-p-1")}
                     >
                       {tabs.map((tab) => (
                         <CodeBlockTab
@@ -841,7 +912,7 @@ export function CodeBlockTabs({
                           {tab.filename || tab.lang}
                         </CodeBlockTab>
                       ))}
-                    </ak.TabList>
+                    </TabList>
                     {hasCodeToolbar && (
                       <div className="ms-auto ak-frame ak-frame-cover ak-frame-p-1 ak-frame-start ak-frame-end h-(--height) flex gap-1">
                         {edit && (
@@ -851,7 +922,10 @@ export function CodeBlockTabs({
                               framework={framework}
                               example={example}
                               stackblitzFramework={stackblitzFramework}
-                              className="ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-ink-80"
+                              // Fill the toolbar height; w-auto frees the
+                              // width so aspect-square can square it again
+                              // from the stretched height.
+                              className="w-auto aspect-square h-full ak-ink-80 @xl:text-sm"
                             />
                           </Tooltip>
                         )}

@@ -7,7 +7,22 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { button } from "@ariakit/ui/styles/button.ts";
 import { Icon } from "#app/icons/icon.react.tsx";
+
+/**
+ * Decorative button lookalikes: they keep the resting button style but
+ * disable the interactive state variants so the boxes stay hover-inert like
+ * the legacy ak-button_idle utility.
+ */
+function fakeButton(props?: Parameters<typeof button.jsx>[0]) {
+  return button.jsx({
+    $hoverOffset: false,
+    $focus: false,
+    $active: false,
+    ...props,
+  });
+}
 
 export function BoxPatternsRight() {
   const top = (
@@ -293,7 +308,13 @@ export function BoxPatternsFull() {
               </span>
               |
             </div>
-            <div className="ak-layer ak-layer-12 ak-button_idle ak-button-square-7 ms-auto" />
+            <div
+              {...fakeButton({
+                $p: "none",
+                $lightnessOffset: false,
+                class: "ak-layer-12 aspect-square h-7 ms-auto",
+              })}
+            />
           </div>
         </div>
       </div>
@@ -310,7 +331,12 @@ export function BoxPatternsFull() {
     <div className="absolute start-full ms-4 top-0 flex gap-4">
       <div className="flex flex-col gap-2 w-max">
         <div className="flex gap-2">
-          <div className="ak-layer ak-frame-border ak-button_idle text-[70%]">
+          <div
+            {...fakeButton({
+              $lightnessOffset: false,
+              class: "ak-frame-border items-center text-[70%]",
+            })}
+          >
             <div>
               Pick{" "}
               <span className="font-semibold ak-text ak-text-primary">
@@ -319,7 +345,7 @@ export function BoxPatternsFull() {
             </div>
             <Icon name="chevronDown" />
           </div>
-          <div className="ak-layer ak-layer-6 ak-button_idle w-40"></div>
+          <div {...fakeButton({ class: "w-40" })}></div>
         </div>
         <div className="ak-frame ak-frame-2xl/2 ak-layer ak-frame-border w-64 grid grid-cols-2 gap-(--ak-frame-padding)">
           <div className="ak-layer ak-layer-6 ak-frame-border ak-frame ak-frame-p-1">

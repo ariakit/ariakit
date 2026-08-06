@@ -1,19 +1,20 @@
-import * as icons from "lucide-react";
 import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
-} from "#app/examples/_lib/ariakit/disclosure.react.tsx";
+} from "@ariakit/ui/ariakit/disclosure.react.tsx";
+import * as icons from "lucide-react";
 
 export default function Example() {
   return (
     <div className="w-100 max-w-[100cqi]">
       <Disclosure
         defaultOpen
-        className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering ak-disclosure-icon-5"
+        $iconSize={5}
+        className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering"
       >
         <DisclosureButton
-          icon={<icons.Rocket className="ak-text ak-text-primary" />}
+          icon={<icons.Rocket className="ak-text ak-text-brand" />}
         >
           How do I get started?
         </DisclosureButton>

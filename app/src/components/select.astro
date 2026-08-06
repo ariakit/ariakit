@@ -8,6 +8,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { select } from "@ariakit/ui/styles/select.ts";
 import type { ComponentProps, HTMLAttributes } from "astro/types";
 import SelectOption from "./select-option.astro";
 
@@ -16,14 +17,21 @@ interface Props extends HTMLAttributes<"select"> {
   submitOnChange?: boolean;
 }
 
-const { options, submitOnChange, ...props } = Astro.props;
+const { options, submitOnChange, class: className, style, ...props } = Astro.props;
 ---
 
+{/* The cv is spread onto the native element to keep the zero-JS behavior;
+    its default lightness offset covers the legacy ak-layer ak-layer-6. */}
 <select
   data-select
   data-submit-on-change={submitOnChange || undefined}
-  class:list={["ak-select ak-layer ak-layer-6", props.class]}
   {...props}
+  {...select.html({
+    class: className,
+    // Astro doesn't merge duplicate style attributes, so the caller style
+    // goes through the cv, which merges it.
+    style,
+  })}
 >
   <slot />
   {options?.map((option) => <SelectOption {...option} />)}

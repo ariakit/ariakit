@@ -1,18 +1,39 @@
-import { clsx } from "clsx";
-import * as icons from "lucide-react";
-import { useSyncExternalStore } from "react";
 import {
   Nav,
   NavDisclosure,
   NavDisclosureButton,
+  NavIcon,
   NavLink,
   NavList,
-} from "#app/examples/_lib/ariakit/nav.react.tsx";
+} from "@ariakit/ui/ariakit/nav.react.tsx";
 import {
   Sidebar,
   SidebarBody,
   SidebarHeader,
-} from "#app/examples/_lib/ariakit/sidebar.react.tsx";
+} from "@ariakit/ui/ariakit/sidebar.react.tsx";
+import { button } from "@ariakit/ui/styles/button.ts";
+import { navButton, navButtonContent } from "@ariakit/ui/styles/nav.ts";
+import { clsx } from "clsx";
+import * as icons from "lucide-react";
+import type { CSSProperties } from "react";
+import { useSyncExternalStore } from "react";
+
+// Legacy ak-nav-button on a plain link: the nav row additions are layered
+// onto the button cv. The row gap is restated because the ui-nav-gated gap
+// rules only fire under a Nav root, and plain ak-button paints no idle layer
+// offset.
+const brandLink = button.jsx({
+  // Legacy ak-nav-button rows sit on the field radius.
+  $rounded: "lg",
+  $lightnessOffset: false,
+  className: clsx(navButton.jsx({}).className, "gap-[calc(0.75em+1px)]"),
+});
+
+// Legacy ak-nav-icon-6: the icon-size channel the NavIcon child reads.
+const brandLinkStyle = {
+  ...brandLink.style,
+  "--nav-icon-size": "calc(var(--spacing) * 6)",
+} as CSSProperties;
 
 const links = [
   {
@@ -110,18 +131,18 @@ export default function Example() {
       )}
     >
       <div />
-      <Sidebar className="ak-nav-icon-4">
+      <Sidebar>
         <SidebarHeader>
-          <a href="" className="ak-nav-button ak-nav-icon-6">
-            <span className="ak-nav-icon rounded p-1 flex-none ak-layer ak-layer-primary ak-layer-contrast block">
+          <a href="" {...brandLink} style={brandLinkStyle}>
+            <NavIcon className="rounded p-1 ak-layer ak-layer-brand ak-layer-contrast block">
               <icons.Triangle size={20} strokeWidth={2} />
-            </span>
-            <span className="ak-nav-button-content">Acme Corp</span>
+            </NavIcon>
+            <span {...navButtonContent.jsx({})}>Acme Corp</span>
           </a>
         </SidebarHeader>
 
         <SidebarBody>
-          <Nav>
+          <Nav $iconSize={4}>
             {links.map((link) => (
               <NavDisclosure
                 key={link.label}

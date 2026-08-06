@@ -1,3 +1,4 @@
+import { List, ListItem } from "@ariakit/ui/ariakit/list.react.tsx";
 import { Reasoning } from "./reasoning.react.tsx";
 
 export default function Example() {
@@ -14,8 +15,8 @@ export default function Example() {
             The user's prompt contains three key concepts that I need to
             synthesize:
           </p>
-          <ol>
-            <li>
+          <List ordered>
+            <ListItem>
               <p>
                 <strong>The UI Pattern: Dropdown</strong>
               </p>
@@ -24,8 +25,8 @@ export default function Example() {
                 toggled into view by a user action, typically a click on a
                 button or icon. It will contain a list of actions.
               </p>
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               <p>
                 <strong>The Context: User Management</strong>
               </p>
@@ -36,8 +37,8 @@ export default function Example() {
                 row in a user table. Actions will likely include things like
                 "Edit User," "Change Role," or "Delete User."
               </p>
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               <p>
                 <strong>The Implementation Goal: Component</strong>
               </p>
@@ -47,8 +48,8 @@ export default function Example() {
                 framework. I will assume a React-like environment for my
                 reasoning process.
               </p>
-            </li>
-          </ol>
+            </ListItem>
+          </List>
         </Reasoning>
         <Reasoning button="State and Structural Planning">
           <p>
@@ -62,27 +63,27 @@ export default function Example() {
             this state.
           </p>
           <p>The component's structure will consist of:</p>
-          <ul>
-            <li>
+          <List>
+            <ListItem>
               A container element to hold everything and establish a positional
               context.
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               The trigger button that the user interacts with. Its{" "}
               <code>onClick</code> handler will manage the <code>isOpen</code>{" "}
               state.
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               The menu panel, which will be rendered conditionally based on the{" "}
               <code>isOpen</code> state. It will be positioned absolutely
               relative to the container.
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               Inside the menu, a list of action items. These items should not be
               hardcoded; they should be generated based on props passed into the
               component to make it reusable.
-            </li>
-          </ul>
+            </ListItem>
+          </List>
           <p>
             The component's props interface will therefore need to accept
             handlers for these actions, such as an <code>onEdit</code> function
@@ -99,8 +100,8 @@ export default function Example() {
             To improve usability, the dropdown must close automatically in
             response to certain events. I'll need to manage these side effects.
           </p>
-          <ol>
-            <li>
+          <List ordered>
+            <ListItem>
               <p>
                 <strong>Clicking Outside</strong>
               </p>
@@ -111,8 +112,8 @@ export default function Example() {
                 <code>false</code>. This requires a way to reference the
                 component's main DOM element to perform this check.
               </p>
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               <p>
                 <strong>Pressing the Escape Key</strong>
               </p>
@@ -122,8 +123,8 @@ export default function Example() {
                 close. This is a standard and expected behavior for modal-like
                 elements.
               </p>
-            </li>
-          </ol>
+            </ListItem>
+          </List>
           <p>
             It's critical that these global event listeners are only active when
             the dropdown is open. They must be added when <code>isOpen</code>{" "}
@@ -138,26 +139,26 @@ export default function Example() {
             incorporate ARIA attributes to provide semantic meaning for screen
             readers and other assistive technologies.
           </p>
-          <ul>
-            <li>
+          <List>
+            <ListItem>
               The trigger button needs <code>aria-haspopup="true"</code> to
               indicate it controls a menu.
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               The button also needs <code>aria-expanded</code>, which will be
               dynamically set to match the <code>isOpen</code> state. This tells
               assistive tech whether the menu it controls is currently visible.
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               The list of actions should be wrapped in an element with{" "}
               <code>role="menu"</code>.
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               Each individual, clickable action within the list should have a{" "}
               <code>role="menuitem"</code>. Using a <code>&lt;button&gt;</code>{" "}
               for each is semantically correct.
-            </li>
-          </ul>
+            </ListItem>
+          </List>
           <p>
             This semantic structure ensures the component can be understood and
             navigated by all users, not just those who can see its visual

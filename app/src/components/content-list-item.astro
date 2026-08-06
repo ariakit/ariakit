@@ -8,45 +8,74 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { listItem, listItemCheck } from "@ariakit/ui/styles/list.ts";
+import { progressCircularFill } from "@ariakit/ui/styles/progress.ts";
 import type { Polymorphic } from "astro/types";
 
 type Props = Polymorphic<{ as: "li" }>;
 
-const { as: Tag = "li", ...props } = Astro.props;
+const { as: Tag = "li", class: className, style, ...props } = Astro.props;
 
-// Extract the first child to check if it's a disabled checkbox
+// Extract the slot html to check if it starts with a disabled checkbox
 const children = await Astro.slots.render("default");
-
-// Check if the content starts with a disabled checkbox using regex
-let isChecked = false;
-let hasDisabledCheckbox = false;
-let finalHtml = children;
 
 // Check for disabled checkbox (at root level or inside paragraph)
 const checkboxRegex = /<input\s+[^>]*type=["']checkbox["'][^>]*disabled[^>]*>/i;
 const match = children.match(checkboxRegex);
 
+// The lucide check icon markup ListItemCheck renders. It must be inlined
+// here because the check replaces the checkbox inside the slot html string.
+// Keep it in sync with @ariakit/ui/html/list.react.tsx.
+const checkIconHtml =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"' +
+  ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"' +
+  ' stroke-linecap="round" stroke-linejoin="round"' +
+  ' class="lucide lucide-check" aria-hidden="true">' +
+  '<path d="M20 6 9 17l-5-5"></path></svg>';
+
+function getStyleAttribute(style: string) {
+  if (!style) return "";
+  return ` style="${style}"`;
+}
+
+// Builds the html string equivalent of the ListItemCheck component from
+// @ariakit/ui/html/list.react.tsx, including its role/aria-label parity.
+function getCheckHtml(checked: boolean) {
+  const check = listItemCheck.html(
+    checked ? { $checked: true } : { $progress: 0.5 },
+  );
+  const fill = progressCircularFill.html({});
+  const content = checked
+    ? checkIconHtml
+    : `<span aria-hidden="true" class="${fill.class}"` +
+      `${getStyleAttribute(fill.style)}></span>`;
+  return (
+    `<span role="img" aria-label="${checked ? "Checked" : "Unchecked"}"` +
+    ` class="${check.class}"${getStyleAttribute(check.style)}>` +
+    `${content}</span>`
+  );
+}
+
+let finalHtml = children;
+
 if (match) {
-  hasDisabledCheckbox = true;
-  // Check if the checkbox is checked
-  isChecked = match[0].includes("checked");
-
-  // Create the check span
-  const checkClass = isChecked
-    ? "ak-list-item-check ak-list-item-check_checked"
-    : "ak-list-item-check ak-list-item-check-progress-50";
-  const checkSpan = `<span class="${checkClass}"></span>`;
-
-  // Remove only the input element from the children
-  const contentWithoutCheckbox = children.replace(checkboxRegex, checkSpan);
-
-  // Prepend the check span to the entire content
-  finalHtml = contentWithoutCheckbox;
+  // Replace only the input element within the children, keeping the check
+  // where the checkbox was (at root level or inside a paragraph)
+  finalHtml = children.replace(
+    checkboxRegex,
+    getCheckHtml(match[0].includes("checked")),
+  );
 }
 ---
 
 <Tag
-  class:list={["ak-list-item", props.class]}
+  {...listItem.html({
+    $check: !!match,
+    class: className,
+    // Astro doesn't merge duplicate style attributes, so the caller style
+    // goes through the cv, which merges it.
+    style,
+  })}
   {...props}
   set:html={finalHtml}
 />

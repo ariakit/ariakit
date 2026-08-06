@@ -17,11 +17,6 @@ declare module "*?source" {
   export default source;
 }
 
-declare module "#app/styles/styles.json" {
-  const styles: import("./src/lib/styles-json-types.ts").StylesJson;
-  export default styles;
-}
-
 type PlusType = import("./src/lib/schemas.ts").PlusType;
 type Framework = import("./src/lib/schemas.ts").Framework;
 type User = import("@clerk/astro/server").User;

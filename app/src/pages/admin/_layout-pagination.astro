@@ -10,6 +10,9 @@
  */
 import { Icon } from "#app/icons/icon.react.tsx";
 import Select from "#app/components/select.astro";
+import { button } from "@ariakit/ui/styles/button.ts";
+import { container } from "@ariakit/ui/styles/container.ts";
+import { input } from "@ariakit/ui/styles/input.ts";
 import Layout from "./_layout.astro";
 import { getPaginationDisplayData } from "./_utils.ts";
 
@@ -41,10 +44,17 @@ function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
 <Layout>
   <div class="flex flex-col">
     <div class="sticky top-0 z-1 ak-layer ring">
-      <div class="flex gap-2 ak-container py-2 text-sm ak-layer">
+      <div
+        {...container.html({ class: "flex gap-2 py-2 text-sm ak-layer" })}
+      >
         <div class="flex items-center gap-2">
           <div
-            class="ak-input ak-frame ak-frame-field/0 ps-2 ak-dark:scheme-dark"
+            {...input.html({
+              // The legacy ak-frame-field/0 override zeroed the field
+              // padding; the nested search button provides the height.
+              $p: "none",
+              class: "ps-2 ak-dark:scheme-dark",
+            })}
             onclick="this.querySelector('input[name=q]').focus()"
           >
             <form class="flex gap-2 items-center">
@@ -56,7 +66,16 @@ function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
                 placeholder="Search users"
                 autofocus={!!query}
               />
-              <button class="ak-button ak-button-square size-8">
+              <button
+                {...button.html({
+                  // Legacy plain ak-button paints no idle layer offset. The
+                  // pinned square size replaces ak-button-square, with
+                  // items-center restoring the legacy icon centering.
+                  $p: "none",
+                  $lightnessOffset: false,
+                  class: "size-8 items-center",
+                })}
+              >
                 <Icon name="search" strokeWidth={2} />
                 <span class="sr-only">Search</span>
               </button>
@@ -64,7 +83,9 @@ function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
           </div>
           <form>
             {getDefaultInputs(["query"]).map((input) => <input {...input} />)}
-            <button class="ak-button ak-layer ak-layer-6">Reset</button>
+            {/* The button's default idle offset stands in for the legacy
+                ak-layer-6 (step 5 vs 6 is the accepted tolerance). */}
+            <button {...button.html()}>Reset</button>
           </form>
         </div>
         <div class="flex gap-2 items-center ak-ink-80 ms-auto">
@@ -92,7 +113,7 @@ function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
             role="link"
             href={previousUrl}
             aria-disabled={!previousUrl}
-            class="ak-button ak-layer ak-layer-6"
+            {...button.html({ $disabled: !previousUrl, class: "items-center" })}
           >
             <Icon name="chevronLeft" aria-label="Previous" />
           </a>
@@ -103,7 +124,7 @@ function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
             role="link"
             href={nextUrl}
             aria-disabled={!nextUrl}
-            class="ak-button ak-layer ak-layer-6"
+            {...button.html({ $disabled: !nextUrl, class: "items-center" })}
           >
             <Icon name="chevronRight" aria-label="Next" />
           </a>
@@ -111,7 +132,7 @@ function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
       </div>
     </div>
     <div class="ak-layer ak-layer-darken-6 min-h-[90vh]">
-      <div class="ak-container">
+      <div {...container.html()}>
         <slot />
       </div>
     </div>
