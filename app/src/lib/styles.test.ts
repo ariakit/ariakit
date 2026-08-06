@@ -114,7 +114,6 @@ test("styleDefToCss renders ak-list-item-ol-border utility fully", () => {
       --ak-list-border-top: calc(
         var(--ak-list-leading) + var(--ak-list-border-gap) + var(--ak-frame-padding)
       );
-      /* Border segment */
       &::after {
         @apply ak-layer ak-layer-12;
         @apply z-2 pointer-events-none absolute h-full;
