@@ -112,7 +112,7 @@ export type ImportPathType =
   | "export-type"
   | "export-all";
 
-// Text and module-specifier helpers
+// Import pattern classification
 
 const PATTERNS: Array<[RegExp, ImportPathType]> = [
   [IMPORT_TYPE_NAMED, "import-type"],
@@ -124,6 +124,8 @@ const PATTERNS: Array<[RegExp, ImportPathType]> = [
   [EXPORT_TYPE_NAMED, "export-type"],
   [EXPORT_FROM_ALL, "export-all"],
 ];
+
+// Text and module-specifier helpers
 
 /** Sorts an iterable of strings lexicographically. */
 function sortStrings<T extends string>(values: Iterable<T>): T[] {
