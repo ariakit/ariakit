@@ -38,10 +38,11 @@ export default function Example() {
     // A block wrapper, because the preview lays its children out in a row and a
     // spacer would otherwise push the picker sideways instead of below the fold.
     <div>
-      {/* Starts the picker outside the viewport, so the scroll that taking
-      focus performs is observable. */}
-      <div style={{ height: 1500 }} />
       <p>Press F2 to open the vegetable picker.</p>
+      {/* Starts the picker outside the viewport, so the scroll that taking
+      focus performs is observable. The shortcut stays above it, since a preview
+      that opens on the blank region gives no hint of how to drive it. */}
+      <div style={{ height: 1500 }} />
       <label>
         Note
         <input type="text" />
