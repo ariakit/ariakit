@@ -339,10 +339,12 @@ export interface ComboboxPopoverOptions<T extends ElementType = TagName>
    */
   typeahead?: CompositeTypeaheadOptions<T>["typeahead"];
   /**
-   * Determines whether an element inside the popover will receive focus when it
-   * opens. The
+   * Determines whether the popup takes focus when it opens. Where that focus
+   * lands depends on the popup's contents and on
+   * [`virtualFocus`](https://ariakit.com/reference/combobox-provider#virtualfocus);
+   * the
    * [`initialFocus`](https://ariakit.com/reference/combobox-popover#initialfocus)
-   * prop can be used to set a different element to receive focus.
+   * prop can be used to set a specific element to receive it.
    *
    * Defaults to `true` when a
    * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
