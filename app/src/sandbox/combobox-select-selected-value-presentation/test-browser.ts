@@ -1,22 +1,11 @@
 import type { Locator } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
-import { recordScrollEvents } from "#app/test-utils/scroll.ts";
+import {
+  expectVerticallyCentered,
+  recordScrollEvents,
+} from "#app/test-utils/scroll.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
-  const expectVerticallyCentered = async (listbox: Locator, item: Locator) => {
-    await test
-      .expect(async () => {
-        const listboxBox = await listbox.boundingBox();
-        const itemBox = await item.boundingBox();
-        test.expect(listboxBox).not.toBeNull();
-        test.expect(itemBox).not.toBeNull();
-        const listboxCenter = listboxBox!.y + listboxBox!.height / 2;
-        const itemCenter = itemBox!.y + itemBox!.height / 2;
-        test.expect(itemCenter).toBeCloseTo(listboxCenter, 0);
-      })
-      .toPass();
-  };
-
   const expectInScrollport = async (listbox: Locator, item: Locator) => {
     await test
       .expect(async () => {
