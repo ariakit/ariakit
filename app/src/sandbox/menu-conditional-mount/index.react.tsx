@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface NewItemActionsProps {
   modal?: boolean;
@@ -12,16 +12,27 @@ function NewItemActions({
   autoFocusOnShow,
   onClose,
 }: NewItemActionsProps) {
+  const menu = Ariakit.useMenuStore({
+    defaultOpen: true,
+    // Unmounting on close lets the preview be replayed by hand without
+    // reloading the page.
+    setOpen: (open) => {
+      if (open) return;
+      onClose();
+    },
+  });
+
+  useEffect(() => {
+    // Menu inherits Hovercard's `autoFocusOnShow: false`, and only a MenuButton
+    // gesture flips it, so a menu that mounts already open never focuses its
+    // container.
+    // TODO: Remove this, and the store hoist it needs, once
+    // https://github.com/ariakit/ariakit/issues/2946 is fixed.
+    menu.setAutoFocusOnShow(true);
+  }, [menu]);
+
   return (
-    <Ariakit.MenuProvider
-      defaultOpen
-      // Unmounting on close lets the preview be replayed by hand without
-      // reloading the page.
-      setOpen={(open) => {
-        if (open) return;
-        onClose();
-      }}
-    >
+    <Ariakit.MenuProvider store={menu}>
       <Ariakit.MenuButton className="button">Actions</Ariakit.MenuButton>
       <Ariakit.Menu
         modal={modal}
