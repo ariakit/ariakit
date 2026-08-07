@@ -14,7 +14,6 @@ import {
   toArray,
   disabledFromProps,
   getActiveElement,
-  getPopupRole,
   queueBeforeEvent,
   invariant,
 } from "@ariakit/utils";
@@ -24,15 +23,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
-import { useComposite } from "../composite/composite.tsx";
 import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import { getVisuallyHiddenStyle } from "../visually-hidden/visually-hidden.tsx";
 import {
-  getScrollItemIntoView,
-  useTrackComboboxSelectPresentation,
-} from "./__utils.ts";
+  getComboboxControlProps,
+  useComboboxControl,
+} from "./__combobox-control.tsx";
+import { useTrackComboboxSelectPresentation } from "./__utils.ts";
 import {
   ComboboxScopedContextProvider,
   useComboboxProviderContext,
@@ -287,10 +286,9 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     useAttribute(contentElement, "role");
 
     props = {
-      role: "combobox",
+      ...getComboboxControlProps(contentElement),
       "aria-autocomplete": "none",
       "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
-      "aria-haspopup": getPopupRole(contentElement, "listbox"),
       "data-autofill": autofill || undefined,
       "data-name": name,
       children,
@@ -305,13 +303,11 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       focusable,
       ...props,
     });
-    const scrollItemIntoView = getScrollItemIntoView(store);
     props = useCompositeTypeahead<TagName>({ store, ...props });
     const onKeyDownCaptureProp = props.onKeyDownCapture;
     const onKeyUpCaptureProp = props.onKeyUpCapture;
-    props = useComposite<TagName>({
+    props = useComboboxControl<TagName>({
       store,
-      unstable_scrollIntoView: scrollItemIntoView,
       composite: !inputElement,
       focusable,
       // The select handler owns closed navigation so it can skip value-less

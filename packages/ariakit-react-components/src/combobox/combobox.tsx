@@ -18,7 +18,6 @@ import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
   disabledFromProps,
-  getPopupRole,
   getScrollingElement,
   getTextboxSelection,
   setSelectionRange,
@@ -44,8 +43,10 @@ import type {
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
-import { useComposite } from "../composite/composite.tsx";
-import { getScrollItemIntoView } from "./__utils.ts";
+import {
+  getComboboxControlProps,
+  useComboboxControl,
+} from "./__combobox-control.tsx";
 import {
   useComboboxProviderContext,
   useComboboxScopedContext,
@@ -124,7 +125,6 @@ function getDefaultAutoSelectId(items: ComboboxStoreState["items"]) {
 export const useCombobox = createHook<TagName, ComboboxOptions>(
   function useCombobox({
     store,
-    focusable = true,
     autoSelect: autoSelectProp = false,
     getAutoSelectId,
     setValueOnChange,
@@ -728,9 +728,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     );
 
     const htmlProps = {
-      role: "combobox",
+      ...getComboboxControlProps(contentElement),
       "aria-autocomplete": ariaAutoComplete,
-      "aria-haspopup": getPopupRole(contentElement, "listbox"),
       "aria-expanded": open,
       "aria-controls": contentElement?.id,
       "data-active-item": isActiveItem || undefined,
@@ -754,12 +753,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       onBlur,
     };
     props = htmlProps;
-    const scrollItemIntoView = getScrollItemIntoView(store);
 
-    props = useComposite<TagName>({
+    props = useComboboxControl<TagName>({
       store,
-      unstable_scrollIntoView: scrollItemIntoView,
-      focusable,
       ...props,
       // Enable inline autocomplete when the user moves from the combobox input
       // to an item.
