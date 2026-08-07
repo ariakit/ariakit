@@ -35,7 +35,12 @@ export default function Example() {
   const loadRemainingOptions = () => setOptions(vegetables);
 
   return (
-    <>
+    // A block wrapper, because the preview lays its children out in a row and a
+    // spacer would otherwise push the picker sideways instead of below the fold.
+    <div>
+      {/* Starts the picker outside the viewport, so the scroll that taking
+      focus performs is observable. */}
+      <div style={{ height: 1500 }} />
       <p>Press F2 to open the vegetable picker.</p>
       <label>
         Note
@@ -79,6 +84,6 @@ export default function Example() {
           ))}
         </Ariakit.ComboboxList>
       </Ariakit.ComboboxPopover>
-    </>
+    </div>
   );
 }

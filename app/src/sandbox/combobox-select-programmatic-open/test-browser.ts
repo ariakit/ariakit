@@ -31,6 +31,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.combobox("Vegetable")).toBeFocused();
   });
 
+  // Taking focus is what moves the page, so a picker that opens outside the
+  // viewport is scrolled into view rather than left where the user cannot see
+  // the listbox they are now navigating.
+  // https://github.com/ariakit/ariakit/issues/7068
+  test("scrolls the picker into view when it opens outside the viewport", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Vegetable");
+    test.expect(await page.evaluate(() => window.scrollY)).toBe(0);
+    await test.expect(select).not.toBeInViewport();
+
+    await page.keyboard.press("F2");
+
+    await test.expect(q.listbox()).toBeVisible();
+    await test.expect(select).toBeInViewport();
+    test.expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+    await test.expect(select).toBeFocused();
+  });
+
   // A programmatic open is the app deciding to show the popup, so it takes
   // focus like an interactive one instead of deferring to whoever held it.
   // https://github.com/ariakit/ariakit/issues/7068
