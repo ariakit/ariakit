@@ -56,10 +56,6 @@ export default function Example() {
       </button>
       <Ariakit.ComboboxPopover
         store={store}
-        // TODO: Remove once a programmatic open takes focus on its own. Opts
-        // the popup into the focus it already takes when the select opens it.
-        // https://github.com/ariakit/ariakit/issues/7068
-        autoFocusOnShow
         // Clicking the note field must abandon the pending presentation rather
         // than close the popup, so the list position stays observable.
         hideOnInteractOutside={false}

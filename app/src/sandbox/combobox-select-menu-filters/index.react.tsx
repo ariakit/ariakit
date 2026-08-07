@@ -93,7 +93,6 @@ function FilterSelect({
       <Ariakit.ComboboxPopover
         store={select}
         aria-labelledby={labelId}
-        autoFocusOnShow
         gutter={4}
         className="max-h-48 overflow-auto rounded border bg-white p-1"
       >
