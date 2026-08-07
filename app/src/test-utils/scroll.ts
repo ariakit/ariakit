@@ -1,5 +1,26 @@
-import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { flushFrames } from "./preview.ts";
+
+/**
+ * Asserts that `item` sits at the vertical center of `scrollport`. Retries,
+ * because the presentation that centers an item can land after the state the
+ * test waited on.
+ */
+export async function expectVerticallyCentered(
+  scrollport: Locator,
+  item: Locator,
+) {
+  await expect(async () => {
+    const scrollportBox = await scrollport.boundingBox();
+    const itemBox = await item.boundingBox();
+    if (!scrollportBox) throw new Error("The scrollport has no bounding box.");
+    if (!itemBox) throw new Error("The item has no bounding box.");
+    const scrollportCenter = scrollportBox.y + scrollportBox.height / 2;
+    const itemCenter = itemBox.y + itemBox.height / 2;
+    expect(itemCenter).toBeCloseTo(scrollportCenter, 0);
+  }).toPass();
+}
 
 declare global {
   interface Window {

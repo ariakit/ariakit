@@ -1,0 +1,78 @@
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import { expectVerticallyCentered } from "#app/test-utils/scroll.ts";
+
+withFramework(import.meta.dirname, async ({ test }) => {
+  // https://github.com/ariakit/ariakit/issues/7068
+  test("takes focus when opened without focus", async ({ page, q }) => {
+    await test.expect(page.locator("body")).toBeFocused();
+
+    await page.keyboard.press("F2");
+
+    await test.expect(q.listbox()).toBeVisible();
+    await test.expect(q.combobox("Vegetable")).toBeFocused();
+  });
+
+  // Focus is asserted only at the end, so the presentation assertion above it
+  // still runs against the unfixed behavior instead of being skipped by an
+  // earlier failure.
+  // https://github.com/ariakit/ariakit/issues/7068
+  test("presents options that arrive after the open", async ({ page, q }) => {
+    await page.keyboard.press("F2");
+    await test.expect(q.listbox()).toBeVisible();
+    // Pins that Onion registers after the open instead of being there all
+    // along, which is the whole point of this test.
+    await test.expect(q.option("Onion")).toHaveCount(0);
+
+    await q.button("Load all vegetables").click();
+
+    const onion = q.option("Onion");
+    await test.expect(onion).toHaveAttribute("data-active-item");
+    await expectVerticallyCentered(q.listbox(), onion);
+    await test.expect(q.combobox("Vegetable")).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7068
+  test("leaves focus alone when another element owns it", async ({
+    page,
+    q,
+  }) => {
+    const note = q.textbox("Note");
+    await note.click();
+
+    await page.keyboard.press("F2");
+    await test.expect(q.listbox()).toBeVisible();
+
+    await q.button("Load all vegetables").click();
+    await test.expect(q.option("Onion")).toHaveAttribute("data-active-item");
+
+    // A popup that never took focus has no positive state for not taking it,
+    // so cross the registration's frame checkpoint before sampling the owner.
+    await flushFrames(page);
+    await test.expect(note).toBeFocused();
+    await test.expect(q.listbox()).toHaveJSProperty("scrollTop", 0);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7068
+  test("abandons the presentation when focus leaves before the options arrive", async ({
+    page,
+    q,
+  }) => {
+    await page.keyboard.press("F2");
+    await test.expect(q.combobox("Vegetable")).toBeFocused();
+    // The presentation is still waiting for its target, which is what makes
+    // the focus move below an abandonment rather than a no-op.
+    await test.expect(q.option("Onion")).toHaveCount(0);
+
+    await q.textbox("Note").click();
+    await q.button("Load all vegetables").click();
+
+    await test.expect(q.option("Onion")).toHaveAttribute("data-active-item");
+    await test.expect(q.listbox()).toBeVisible();
+
+    // An abandoned presentation has no positive state for its cancellation, so
+    // cross the registration's frame checkpoint before sampling.
+    await flushFrames(page);
+    await test.expect(q.textbox("Note")).toBeFocused();
+    await test.expect(q.listbox()).toHaveJSProperty("scrollTop", 0);
+  });
+});
