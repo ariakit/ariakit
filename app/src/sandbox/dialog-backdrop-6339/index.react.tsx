@@ -1,23 +1,9 @@
 import * as Ariakit from "@ariakit/react";
 
-// See https://github.com/ariakit/ariakit/issues/6339
-//
-// The backdrop has an opacity transition: it should fade in when the dialog
-// opens and fade out when it closes. There are two dialogs:
-//
-// - "Show dialog": the panel has no transition at all, so it snaps in place
-//   while the backdrop fades. Before the fix, the enter fade works, but on
-//   close the dialog hides instantly: the backdrop never receives
-//   `data-leave` and the exit fade is skipped.
-// - "Show fast dialog": the panel has a shorter 150ms transition and the
-//   backdrop uses a 2s exit transition to leave enough timing headroom for the
-//   browser test. Before the fix, the panel's own timeout stopped the shared
-//   animation state early, hiding the backdrop at 150ms.
-//
-// The styles are inlined in a <style> tag (rather than a style.css import) on
-// purpose: CSS imports are only processed in vitest for the allowlist in the
-// root vitest.config.ts, which doesn't include this sandbox, so a style.css
-// refactor would strip the backdrop transition from the happy-dom test.
+// Regression fixture for https://github.com/ariakit/ariakit/issues/6339.
+// The backdrop must finish its own leave transition even when the panel has no
+// transition or a shorter one. Keep these styles inline because Vitest does not
+// process this sandbox's CSS imports in happy-dom.
 const css = `
   .backdrop {
     background: rgb(0 0 0 / 0.4);

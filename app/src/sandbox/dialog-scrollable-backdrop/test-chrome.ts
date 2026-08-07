@@ -29,7 +29,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(getDialog(page)).not.toBeVisible();
     await getButton(page, "View recipe").click();
     await expect(getDialog(page)).toBeVisible();
-    // Show scrollbar
+    // Reveal the scrollbar before dragging it.
     await page.mouse.wheel(0, 10);
     await waitForBackdropScrollTop(page, 10);
     // Drag the backdrop's own scrollbar. With classic scrollbars, the backdrop
@@ -44,7 +44,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const scrollTop = await getBackdropScrollTop(page);
     expect(scrollTop).toBeGreaterThan(200);
     await expect(getDialog(page)).toBeVisible();
-    // Hide dialog by clicking on backdrop
     await getBackdrop(page).click({ position: { x: 10, y: 10 } });
     await expect(getDialog(page)).not.toBeVisible();
   });

@@ -19,7 +19,8 @@ export interface Order {
     name: string;
     email: string;
   };
-  createdAt: string; // ISO string
+  // ISO 8601 timestamp.
+  createdAt: string;
   status: OrderStatus;
   items: OrderItem[];
   shippingAddress: string;

@@ -154,7 +154,7 @@ export function createTabStore({
   let pendingRestore = false;
   let restoredSelectedId: TabStoreState["selectedId"];
 
-  // Keep activeId in sync with selectedId.
+  // Keep the active and selected tabs in sync.
   setup(tab, () => {
     // A restore armed right before the store was destroyed (for example, when
     // the popover unmounted) must not leak into this init. Reset before
@@ -186,26 +186,22 @@ export function createTabStore({
     });
   });
 
-  // Automatically set selectedId if it's undefined.
+  // Initialize selection from the active or first enabled tab.
   setup(tab, () =>
     sync(tab, ["selectedId", "renderedItems"], (state) => {
       if (state.selectedId !== undefined) return;
-      // First, we try to set selectedId based on the current active tab.
       const { activeId, renderedItems } = tab.getState();
       const tabItem = composite.item(activeId);
       if (isEnabledTab(tabItem)) {
         tab.setState("selectedId", tabItem.id);
-      }
-      // If there's no active tab or the active tab is dimmed, we get the
-      // first enabled tab instead.
-      else {
+      } else {
         const tabItem = renderedItems.find(isEnabledTab);
         tab.setState("selectedId", tabItem?.id);
       }
     }),
   );
 
-  // Keep panels tabIds in sync with the current tabs.
+  // Pair orphan panels with tabs by index.
   setup(tab, () =>
     sync(tab, ["renderedItems"], (state) => {
       const tabs = state.renderedItems;

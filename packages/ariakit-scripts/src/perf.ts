@@ -29,14 +29,9 @@ const DEFAULT_PERF_ITERATIONS = 10;
 const DEFAULT_PERF_WARMUP = 1;
 const DEFAULT_SCRIPT_PROFILE_ITERATIONS = 3;
 const DEFAULT_SCRIPT_PROFILE_WARMUP = 0;
-// Upper bound for a single iteration navigation. Healthy CI page loads finish
-// in a few seconds even on contended runners; a navigation that runs this
-// long means the browser wedged (the server keeps serving a fresh browser
-// right away), so fail it fast and retry in a new context instead of letting
-// the pending navigation consume the remaining test budget.
+// Fail wedged iteration navigation quickly so a fresh context can retry without
+// consuming the test budget. Bound close for the same reason.
 const ITERATION_NAVIGATION_TIMEOUT = 30_000;
-// Upper bound for closing an iteration context on a wedged browser; see the
-// close handling in measureIteration.
 const CONTEXT_CLOSE_TIMEOUT = 10_000;
 const initializedResultFiles = new Set<string>();
 
@@ -1037,16 +1032,10 @@ async function collectInpValues(page: Page): Promise<number[]> {
 }
 
 /**
- * Navigates to `url` and waits for it to be ready for a browser test. Waits for
- * the bounded `load` event rather than `networkidle`: under CI contention,
- * networkidle's unbounded "no requests for 500ms" wait can stall past the test
- * timeout. After `load`, still wait for network idle so late work (such as
- * `client:load` island hydration) settles, but cap it so a stalled or chatty
- * request degrades to a short wait instead of consuming the test budget. Only
- * the bounded settle timing out is expected; rethrow real failures such as the
- * page or context closing.
+ * Waits for bounded load, then bounded network idle so late hydration settles
+ * without letting chatty requests exhaust CI's timeout.
  *
- * Kept in sync with the copy in `app/src/test-utils/preview.ts`.
+ * Keep in sync with `app/src/test-utils/preview.ts`.
  */
 async function gotoAndSettle(page: Page, url: string) {
   await page.goto(url, { waitUntil: "load" });
@@ -1087,12 +1076,8 @@ function getTrackedWork(
 }
 
 /**
- * Lets the work triggered by an interaction settle before the closing metrics
- * snapshot. A fixed post-paint wait undercounts deferred work that lands late
- * on contended CI runners (such as a dialog inert-marking the page after it
- * opens), which made per-iteration metrics bimodal. Instead, flush the pending
- * frame, then poll CDP metrics until the tracked main-thread work stops
- * increasing for `quietPolls` consecutive polls, within the `maxWait` cap.
+ * Flushes a frame, then polls CDP work until it stays quiet. This captures
+ * deferred work that made fixed post-paint waits undercount on loaded CI.
  */
 export async function settleQuiescent(
   page: Page,
@@ -1323,12 +1308,8 @@ async function attachFailureScreenshot(testInfo: TestInfo, page: Page) {
 }
 
 /**
- * Runs one measurement iteration in a dedicated browser context. A fresh
- * context gets a fresh renderer process, so no browser state accumulated by
- * previous iterations leaks into this measurement. Re-navigating the same tab
- * is not enough: renderer state accumulated across same-URL navigations makes
- * some interactions cost over 2x more scripting time from roughly the fourth
- * navigation onward, which made per-iteration metrics bimodal.
+ * Runs one iteration in a fresh context so renderer state from repeated
+ * same-URL navigation cannot make later samples bimodal.
  */
 async function measureIteration(
   params: MeasureIterationParams,
@@ -1403,13 +1384,8 @@ async function measureIteration(
     }
     throw error;
   } finally {
-    // Swallow close failures: by this point the result is already computed or
-    // a more informative error is in flight. Still log them: a context that
-    // fails to close stays open in the shared browser, and accumulated leaks
-    // precede wedged navigations in later iterations. `close()` has no
-    // timeout of its own and can also hang on a wedged browser, which would
-    // eat the budget the bounded navigation just saved, so give it a bounded
-    // window and abandon it otherwise.
+    // Preserve the result or original error, but log and bound close: leaked
+    // contexts precede later navigation wedges, and close itself can hang.
     const closed = context.close().then(
       () => true,
       (error) => {
@@ -1430,13 +1406,11 @@ async function measureIteration(
 }
 
 /**
- * Whether `error` is a Playwright timeout thrown by a navigation. Only
- * navigations are retried: other timeouts, such as interaction or verify
- * steps, can reflect real behavior of the code under measurement. Page-load
- * measures are the one case where the measured interaction is itself a
- * navigation, so a page load that legitimately exceeds the navigation bound
- * is retried too; that stays safe because the failed attempt records nothing
- * and the retry fails the same way.
+ * Returns whether `error` is a Playwright navigation timeout. Interaction and
+ * verification timeouts are not retried; page-load measurements are the
+ * exception because navigation is their measured interaction. Failed attempts
+ * record nothing, so retrying them produces an independent sample.
+ * https://github.com/ariakit/ariakit/pull/7072#discussion_r3730036563
  */
 export function isNavigationTimeoutError(error: unknown) {
   if (!(error instanceof errors.TimeoutError)) return false;
@@ -1444,12 +1418,8 @@ export function isNavigationTimeoutError(error: unknown) {
 }
 
 /**
- * Runs `measureIteration`, retrying once in a brand-new context when the
- * iteration's navigation times out. A browser under repeated context churn
- * occasionally wedges so that a new context's navigation never resolves even
- * though the server stays healthy (a replacement browser passes against the
- * same server immediately). The failed attempt recorded nothing, so the
- * retried iteration is an independent, equally valid sample.
+ * Retries one navigation timeout in a fresh context. Failed attempts record
+ * nothing, so the replacement remains an independent sample.
  */
 async function measureIterationWithRetry(
   params: MeasureIterationParams,
@@ -1644,12 +1614,8 @@ interface RemoveStaleAttemptResultsParams {
 }
 
 /**
- * Drops the tests in `results` from the run's other worker files. A test can
- * only appear in two worker files of one run when an earlier attempt recorded
- * results and the test was retried anyway (for example a pass whose later
- * fixture teardown failed, flipping the attempt's final status after the perf
- * fixture already appended). Keeping both attempts would double-count the
- * test in the run's collected results.
+ * Removes earlier-worker results for retried tests so an attempt that passed
+ * before teardown failed cannot be counted twice.
  */
 function removeStaleAttemptResults({
   resultsDir,
@@ -1688,11 +1654,8 @@ function removeStaleAttemptResults({
 }
 
 /**
- * Appends collected results to a worker-specific JSON file inside the results
- * directory. Using per-worker files avoids write conflicts when Playwright runs
- * tests in parallel. A retried test runs in a fresh worker with a new worker
- * index, so any results an earlier attempt left in another worker file are
- * pruned first; see `removeStaleAttemptResults`.
+ * Appends worker-local results to avoid parallel writes, pruning the same test
+ * from earlier retry workers first.
  */
 export function appendResults(results: PerfResult[], testInfo: TestInfo) {
   // Resolved at call time (not module load) so tests can point it at a

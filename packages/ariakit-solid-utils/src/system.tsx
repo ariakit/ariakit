@@ -29,12 +29,12 @@ export function createInstance(
   Component: ValidComponent,
   props: Props<ValidComponent, Options>,
 ) {
-  // TODO: consider adding a dev-only runtime check to clarify that
-  // the JSX.Element type is only accepted through `As`, so that
-  // the error is not a vague "value is not a function" error.
+  // TODO: Add a dev-only error when JSX.Element is passed directly. It is
+  // supported only through As and otherwise fails as "value is not a function".
+  // https://github.com/ariakit/ariakit/issues/4117
   const [features, rest] = splitProps(props, ["render", "wrapInstance"]);
   const withRender = () => (
-    // TODO: replace with LazyDynamic
+    // TODO: Replace with LazyDynamic.
     <Dynamic
       {...rest}
       component={(features.render as ValidComponent) ?? Component}
@@ -45,7 +45,7 @@ export function createInstance(
     for (const element of features.wrapInstance) {
       const children = tree;
       tree = () => (
-        // TODO: replace with LazyDynamic
+        // TODO: Replace with LazyDynamic.
         <Dynamic component={element as ValidComponent}>{children()}</Dynamic>
       );
     }

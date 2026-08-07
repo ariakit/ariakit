@@ -515,13 +515,8 @@ export function createStore<S extends State>(
   // active frame for the listener group before re-keying mutates its bucket.
   const fastPathFrames: Array<FastPathFrame<S>> = [];
 
-  // Registers `listener` in `group` and returns its unsubscribe. Three jobs:
-  // (1) snapshot `keys` as a defensive copy (or null for an all-keys listener);
-  // (2) index the listener — re-registering the same listener first clears its
-  // previous index entries so a re-keyed listener is never left in a stale key
-  // bucket; (3) return a disposer that removes the listener from the set, the
-  // key index, and the disposables/keys maps before running any pending
-  // cleanup.
+  // Snapshot keys, replace prior index entries, and dispose indexes before any
+  // pending listener cleanup runs.
   const registerListener = (
     keys: Array<keyof S> | null,
     listener: Listener<S>,
@@ -634,12 +629,8 @@ export function createStore<S extends State>(
   };
 
   const storeBatch: StoreBatch<S> = (keys, listener) => {
-    // When the first batch listener is registered while the store is idle,
-    // refresh prevStateBatch to the current state. setState skips updating
-    // prevStateBatch while no batch listeners exist, so this avoids leaking
-    // stale state into the new listener. During an active dispatch, leave
-    // prevStateBatch alone so the upcoming microtask flush still reports the
-    // current setState's diff to the newly registered listener.
+    // An idle first batch listener needs the current baseline; one registered
+    // during dispatch must retain that in-flight diff.
     if (!batchListenerGroup.listeners.size && !inDispatch) {
       prevStateBatch = state;
     }
@@ -778,12 +769,8 @@ export function createStore<S extends State>(
         }
       }
 
-      // Parent fan-out can reenter this store and commit nested updates to
-      // other keys before these listeners run, advancing `state` past
-      // `nextState`. Preserve those nested updates in the previous snapshot,
-      // restoring only `key` to its pre-update value so this notification still
-      // reports the original diff. When nothing reentered, reuse `prevState`
-      // directly and skip the allocation.
+      // Reentrant parent fan-out may commit other keys before notification.
+      // Preserve them while restoring this key's original previous value.
       if (!superseded) {
         const listenerPrevState =
           state === nextState ? prevState : { ...state, [key]: prevState[key] };
@@ -793,14 +780,9 @@ export function createStore<S extends State>(
       inDispatch = wasInDispatch;
     }
 
-    // Skip the microtask when no batch listeners are registered. Their
-    // bookkeeping (microtask, updatedKeys) is only observable through batch
-    // listeners. Still keep prevStateBatch in sync with the current state at
-    // the end of every outermost setState so a future batch listener — whether
-    // registered idle or mid-dispatch during a later setState — observes the
-    // correct previous state. A reentrant setState leaves prevStateBatch
-    // alone so the outer setState's snapshot remains intact for batch
-    // listeners registered inside its dispatch.
+    // Skip batch work with no listeners, but refresh the idle baseline after
+    // the outermost update. Reentrant updates retain the outer snapshot for
+    // listeners registered during dispatch.
     if (!batchListenerGroup.listeners.size) {
       if (!inDispatch) prevStateBatch = state;
       return;
@@ -827,12 +809,8 @@ export function createStore<S extends State>(
         prevStateBatchBefore,
         updatedKeysSnapshot,
       );
-      // Anchor the next batch period to the pre-flush snapshot so surviving
-      // listeners see the diff "since the start of the last flush". When the
-      // flush already updated prevStateBatch through other paths — a
-      // reentrant setState's early-return refresh, or storeBatch refreshing
-      // on a successor listener — leave that fresher value in place rather
-      // than overwriting it with the stale snapshot.
+      // Start the next batch at the pre-flush snapshot unless reentrant work or
+      // a successor listener already installed a fresher baseline.
       if (prevStateBatch === prevStateBatchBefore) {
         prevStateBatch = snapshot;
       }

@@ -706,15 +706,9 @@ function computeSignificance({
     pairwiseSupportPercent,
     threshold: magnitudeOk,
     significant,
-    // A candidate clears the magnitude threshold and rounds agree on
-    // direction, but the raw samples fail to support it. It is reported as an
-    // unconfirmed change and triggers confirmation rounds like significant
-    // rows do; the extra rounds can demote it (direction flips) or leave it
-    // unconfirmed with more data behind its diagnostics. Promotion to
-    // significant would need five or more paired rounds (the n-1 rule), and
-    // CI stops at four on purpose: real changes pass agreement and raw
-    // support in every round, and the promotion path only ever confirmed
-    // noise.
+    // Candidates meet magnitude and agreement but lack raw-sample support. They
+    // get demote-only confirmation; CI stops before a fifth round could promote
+    // noise. See https://github.com/ariakit/ariakit/pull/6657
     candidate: primary && magnitudeOk && agreementOk && !significant,
   };
 }

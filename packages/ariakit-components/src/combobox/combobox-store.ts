@@ -351,7 +351,7 @@ export function createComboboxStore({
     );
   }
 
-  // Sync tag values with the combobox selectedValue state.
+  // Keep tag values and the combobox selection in sync.
   setup(combobox, () => {
     if (!tag) return;
     return chain(
@@ -406,7 +406,7 @@ export function createComboboxStore({
     }),
   );
 
-  // Otherwise, if the moves count changes, we update the activeValue state.
+  // Update the active value after composite movement.
   setup(combobox, () =>
     batch(combobox, ["moves", "renderedItems"], (state, prev) => {
       if (state.moves === prev.moves) return;

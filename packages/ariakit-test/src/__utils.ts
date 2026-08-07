@@ -20,22 +20,10 @@ export const isBrowser =
   typeof window !== "undefined" &&
   !isHappyDOM();
 
-// happy-dom doesn't implement the legacy `window.event` global, while jsdom and
-// real browsers expose the event currently being dispatched there for the
-// synchronous duration of the dispatch. React 18 reads `window.event` in
-// `getCurrentEventPriority` to classify an update triggered synchronously inside
-// a native event listener: a `click`/`keydown` yields DiscreteEventPriority
-// (sync lane, flushed in a microtask), whereas a missing `window.event` falls
-// back to DefaultEventPriority (default lane, flushed a macrotask later through
-// the scheduler). That later flush lets a microtask-coalesced store batch run
-// before React commits — e.g. a controlled `<Dialog open>` re-applies its stale
-// `open` prop right after `store.hide()`, transiently re-opening the dialog and
-// corrupting focus restoration on outside-click. Mirror jsdom by exposing the
-// dispatched event on `window.event` only while listeners run, then restoring
-// the previous value — or removing the property again when the environment had
-// none — so nested dispatches stay correct and the global isn't left behind. In
-// practice this only changes the React 18 suite: the controlled-dialog focus
-// divergence it fixes doesn't reproduce under React 19.
+// happy-dom omits `window.event`, so React 18 assigns native-listener updates
+// default rather than discrete priority. Expose the active event only during
+// dispatch, restoring it for nested events to match jsdom and browsers.
+// https://github.com/ariakit/ariakit/pull/6404#discussion_r3454880546
 export function withWindowEvent<T>(
   event: Event,
   run: () => T,
@@ -66,11 +54,8 @@ export async function flushMicrotasks() {
 }
 
 function macrotask() {
-  // Yield behind the host-scheduler primitive React drives its concurrent work
-  // loop with, so a turn runs after a React slice already queued on it: React 18
-  // prefers `setImmediate` in Node (the environment the suites run in) and falls
-  // back to `MessageChannel` in browser/worker builds, so route through the same
-  // order. Plain `setTimeout` is the last resort.
+  // Yield through React's preferred host-scheduler primitive so queued
+  // concurrent work runs before settling.
   return new Promise<void>((resolve) => {
     if (typeof setImmediate === "function") {
       setImmediate(resolve);
@@ -87,20 +72,9 @@ function macrotask() {
   });
 }
 
-// Drains pending host-scheduler work so a settle doesn't return mid-commit.
-// React 18 runs concurrently while simulated interactions run (the act
-// environment is disabled in `wrapAsync`), so it can split a render or commit
-// across several scheduler tasks when it judges the frame budget spent — which
-// happens more readily under CPU contention on CI. A fixed wall-clock settle can
-// then return between two slices, leaving the DOM momentarily unsettled. Yield
-// through the scheduler's own macrotask repeatedly so each pending slice runs,
-// stopping once two consecutive turns pass without a DOM mutation (a committed
-// React update mutates the tree, and the MutationObserver callback is flushed
-// within the turn). This is a bounded best effort: `maxTurns` caps the drain so
-// a runaway scheduler can't hang the settle, and a render that takes several
-// non-committing slices could still exit early — but the suites' updates commit
-// well within the budget. Each turn is a no-op when the queue is empty, so the
-// common already-settled case costs about two round-trips.
+// React 18 may split a commit across scheduler tasks under CI load. Wait for
+// two mutation-free host turns, bounded by `maxTurns`, so settling does not
+// return mid-commit. See https://github.com/ariakit/ariakit/pull/6265
 export async function flushScheduler(maxTurns = 10) {
   if (
     typeof document === "undefined" ||

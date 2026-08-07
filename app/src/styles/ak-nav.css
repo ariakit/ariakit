@@ -38,7 +38,6 @@
   @apply grid;
 }
 
-/* ak-nav-icon */
 @utility ak-nav-icon {
   @apply h-(--ak-button-leading) w-(--ak-nav-icon-size) flex-none self-start transition-[height];
   svg {

@@ -57,7 +57,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const command = q.text("Save");
     await command.focus();
 
-    // Pressing Space sets the active state on the focused command.
     await page.keyboard.down("Space");
     await test.expect(command).toHaveAttribute("data-active");
 
@@ -83,7 +82,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const card = q.text("Open article", { exact: false });
     await card.focus();
 
-    // Pressing Space sets the active state on the focused card.
     await page.keyboard.down("Space");
     await test.expect(card).toHaveAttribute("data-active");
 
@@ -110,7 +108,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const command = q.text("Bookmark");
     await command.focus();
 
-    // Pressing Space sets the active state on the focused command.
     await page.keyboard.down("Space");
     await test.expect(command).toHaveAttribute("data-active");
 

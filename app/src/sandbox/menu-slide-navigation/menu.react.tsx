@@ -126,7 +126,6 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
           render={renderMenuButton}
         />
       ) : (
-        // Otherwise, we just render the menu button.
         renderMenuButton({ ref, ...props })
       )}
       <Ariakit.Menu

@@ -2,25 +2,9 @@ import * as ak from "@ariakit/react";
 import { Component, useState } from "react";
 import type { ReactNode } from "react";
 
-// Reproduces https://github.com/ariakit/ariakit/issues/6308
-//
-// `form.names.*` values are documented string-like field paths. Accessing an
-// absent *symbol* key on one must return `undefined` like a plain object would,
-// instead of throwing "Cannot convert a Symbol value to a string" from the
-// names proxy. Two ordinary things an app does hit that absent-symbol access:
-//
-// - Rendering a raw name as a React child ("Show field name"): react-dom probes
-//   the child for `Symbol.iterator` to decide whether it is iterable. The proxy
-//   used to throw there, tearing down the surrounding tree, instead of letting
-//   React raise its own "Objects are not valid as a React child" error.
-// - Inspecting a name with `Object.prototype.toString.call(...)` ("Inspect field
-//   name"): it probes `Symbol.toStringTag` and should resolve to "[object
-//   Object]" rather than throwing.
-//
-// The error boundary wraps only the rendered name so the rest of the paragraph
-// stays mounted: the bug puts the Symbol coercion crash in its place, while both
-// the userland workaround (coercing the name) and the library fix keep that
-// crash away.
+// Regression fixture for https://github.com/ariakit/ariakit/issues/6308.
+// React and Object.prototype.toString probe absent symbol keys; the names
+// proxy must return undefined instead of coercing a Symbol to a string.
 class NameBoundary extends Component<
   { children: ReactNode },
   { error: Error | null }

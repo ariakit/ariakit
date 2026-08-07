@@ -14,7 +14,6 @@ import type { AriaHasPopup, AriaRole } from "./types.ts";
  */
 export const canUseDOM = checkIsBrowser();
 
-// Check if we can use the DOM. Useful for SSR purposes
 function checkIsBrowser() {
   return typeof window !== "undefined" && !!window.document?.createElement;
 }
@@ -121,7 +120,6 @@ export function isElement(
  * }
  */
 export function isNode(target: EventTarget | null | undefined): target is Node {
-  // Non-node targets don't have a numeric `nodeType`.
   return typeof (target as Node | null)?.nodeType === "number";
 }
 
@@ -193,13 +191,8 @@ export function isTextField(
     if (element.tagName !== "INPUT") return false;
     return (element as HTMLInputElement).selectionStart !== null;
   } catch (_error) {
-    // Safari throws an exception when trying to get `selectionStart` on
-    // non-text <input> elements (which, understandably, don't have the text
-    // selection API). We catch this via a try/catch block, as opposed to a more
-    // explicit check of the element's input types, because of Safari's
-    // non-standard behavior. This also means we don't have to worry about the
-    // list of input types that support `selectionStart` changing as the HTML
-    // spec evolves over time.
+    // Safari throws for `selectionStart` on non-text inputs. Catching keeps
+    // this future-proof as supported input types change.
     return false;
   }
 }
@@ -332,12 +325,8 @@ export function getScrollingElement(
     const { overflowX } = getComputedStyle(element);
     if (isScrollableOverflow(overflowX)) return element;
   }
-  // When no scrollable ancestor is found, fall back to the scrolling element of
-  // the element's own document rather than the global one. For an element
-  // inside an iframe, `parentElement` never crosses the frame boundary, so the
-  // recursion bottoms out at the iframe's `<html>` and would otherwise resolve
-  // against the top-level page's scroller. `getDocument` returns the same global
-  // `document` for top-level elements, so this leaves the common case unchanged.
+  // If no ancestor scrolls, use the element's own document scroller; iframe
+  // traversal would otherwise fall back to the top-level document.
   const doc = getDocument(element);
   return (
     getScrollingElement(element.parentElement) ||
@@ -405,14 +394,12 @@ export function sortBasedOnDOMPosition<T>(
     const elementB = getElement(b);
     if (elementA === elementB) return 0;
     if (!elementA || !elementB) return 0;
-    // a before b
     if (isElementPreceding(elementA, elementB)) {
       if (indexA > indexB) {
         isOrderDifferent = true;
       }
       return -1;
     }
-    // a after b
     if (indexA < indexB) {
       isOrderDifferent = true;
     }

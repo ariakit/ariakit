@@ -103,7 +103,6 @@ const tokens = getTokens();
 
 let diffInfo: DiffInfo | null = null;
 
-// Reusable UI class constants (template-only consumers)
 const REMOVED_TOKEN_CLASS =
   "ak-layer ak-layer-red-500 ak-layer-mix-30 ak-edge-red-500 ak-edge-20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-ink-0 [text-decoration:none] relative after:absolute after:top-1/2 after:w-full after:start-0 after:h-px after:ak-layer-contrast";
 const LINE_DIV_BASE_CLASS = "pe-14 [content-visibility:auto] h-(--line-height)";
@@ -117,7 +116,6 @@ function mergeHighlightRanges<
   for (const current of sorted) {
     const last = merged[merged.length - 1];
     if (last && current.start <= last.end) {
-      // merge
       last.end = Math.max(last.end, current.end);
       if (current.isDiff) last.isDiff = true;
     } else {
@@ -240,10 +238,7 @@ function getTokensForSubstring(
     const tokenStart = currentPos;
     const tokenEnd = currentPos + token.content.length;
 
-    if (tokenStart >= startIndex + length || tokenEnd <= startIndex) {
-      // token is completely outside the substring
-    } else {
-      // token is partially or fully inside.
+    if (tokenStart < startIndex + length && tokenEnd > startIndex) {
       const substrStartInToken = Math.max(0, startIndex - tokenStart);
       const substrEndInToken = Math.min(
         token.content.length,
@@ -270,7 +265,6 @@ function isCollapsed(lineIndex: number) {
   return maxLines !== undefined && lineIndex > maxLines;
 }
 
-// Helper function to find all text spans that should be highlighted
 function findAllTextHighlights(content: string) {
   const highlights: Array<{ start: number; end: number; text: string }> = [];
 
@@ -282,7 +276,6 @@ function findAllTextHighlights(content: string) {
     let currentInstanceIndex = 0;
 
     while ((foundIndex = content.indexOf(word, startIndex)) !== -1) {
-      // Check if this instance should be highlighted based on indexes
       const shouldHighlight =
         !indexes.length || indexes.includes(currentInstanceIndex);
 
@@ -299,14 +292,12 @@ function findAllTextHighlights(content: string) {
     }
   });
 
-  // Sort highlights by start position and merge overlapping ones
   highlights.sort((a, b) => a.start - b.start);
 
   const merged: typeof highlights = [];
   highlights.forEach((current) => {
     const last = merged[merged.length - 1];
     if (last && current.start <= last.end) {
-      // Merge overlapping highlights
       last.end = Math.max(last.end, current.end);
     } else {
       merged.push(current);
@@ -333,7 +324,10 @@ const highlightsByLine = codeLines.map((lineContent) => {
   return highlights;
 });
 
-// Helper function to create segments for text highlighting (returns data only)
+/**
+ * Splits syntax tokens at highlight boundaries, then groups adjacent fragments
+ * into renderable segments.
+ */
 function createHighlightSegments(
   line: ThemedToken[],
   textHighlights: Array<
@@ -345,22 +339,19 @@ function createHighlightSegments(
     return { isEmpty: true, segments: [] as Segment[] };
   }
 
-  // Create character-level mapping
   let currentPosition = 0;
   const allFragments: TokenFragment[] = [];
 
-  // Process each token and split it if it crosses highlight boundaries
+  // Split syntax tokens wherever a highlight starts or ends.
   line.forEach((token, tokenIndex) => {
     const tokenStart = currentPosition;
     const tokenEnd = currentPosition + token.content.length;
 
-    // Find all highlight boundaries that intersect with this token
     const relevantHighlights = textHighlights.filter(
       (h) => h.start < tokenEnd && h.end > tokenStart,
     );
 
     if (relevantHighlights.length === 0) {
-      // Token is completely outside any highlights
       allFragments.push({
         content: token.content,
         token,
@@ -370,10 +361,8 @@ function createHighlightSegments(
         charEnd: charOffset + tokenEnd,
       });
     } else {
-      // Token intersects with highlights - split it
       const splitPoints = new Set([tokenStart, tokenEnd]);
 
-      // Add highlight boundaries as split points
       relevantHighlights.forEach((h) => {
         if (h.start > tokenStart && h.start < tokenEnd) {
           splitPoints.add(h.start);
@@ -385,19 +374,16 @@ function createHighlightSegments(
 
       const sortedSplitPoints = Array.from(splitPoints).sort((a, b) => a - b);
 
-      // Create fragments between split points
       for (let i = 0; i < sortedSplitPoints.length - 1; i++) {
         const fragmentStart = sortedSplitPoints[i];
         const fragmentEnd = sortedSplitPoints[i + 1];
         invariant(fragmentStart !== undefined, "Fragment start is required");
         invariant(fragmentEnd !== undefined, "Fragment end is required");
 
-        // Check if this fragment is highlighted
         const highlight = textHighlights.find(
           (h) => fragmentStart >= h.start && fragmentEnd <= h.end,
         );
 
-        // Extract the content for this fragment
         const relativeStart = fragmentStart - tokenStart;
         const relativeEnd = fragmentEnd - tokenStart;
         const fragmentContent = token.content.slice(relativeStart, relativeEnd);
@@ -419,7 +405,7 @@ function createHighlightSegments(
     currentPosition += token.content.length;
   });
 
-  // Group consecutive fragments with the same highlight status into segments
+  // Coalesce adjacent fragments with the same highlight state.
   const segments: Segment[] = [];
   let currentSegment: Segment | null = null;
 
@@ -429,7 +415,6 @@ function createHighlightSegments(
       currentSegment.isHighlighted !== fragment.isHighlighted ||
       currentSegment.isDiff !== fragment.isDiff
     ) {
-      // Start new segment
       currentSegment = {
         fragments: [fragment],
         isHighlighted: fragment.isHighlighted,
@@ -438,12 +423,11 @@ function createHighlightSegments(
       };
       segments.push(currentSegment);
     } else {
-      // Add to current segment
       currentSegment.fragments.push(fragment);
     }
   });
 
-  // Determine if each segment spans multiple tokens
+  // Mark highlights that span multiple syntax tokens.
   segments.forEach((segment) => {
     if (segment.isHighlighted && segment.fragments.length > 0) {
       const tokenIndexes = new Set(segment.fragments.map((f) => f.tokenIndex));
@@ -608,7 +592,7 @@ const hasAddedOrRemoved = diffInfo?.some(
 const showGutter = lineNumbers || hasAddedOrRemoved;
 const showGridColumns = lineNumbers || Boolean(diffInfo);
 
-// Reference hovercards: compute anchor ranges per line (disabled in lite mode)
+// Build per-line hovercard anchors unless reference links are disabled.
 let anchorsByLine: ReturnType<typeof findCodeReferenceAnchors> = [];
 if (!disableReferenceLinks) {
   const references = await getCachedCollection("references");

@@ -2,23 +2,13 @@
 import { isFocusable, noop } from "@ariakit/utils";
 import { isBrowser, isHappyDOM } from "./__utils.ts";
 
-// Apply the browser shims once for the whole test environment, instead of only
-// while a simulated interaction runs. Components read layout and focusability
-// between interactions too — for example a dialog's auto-focus effect calls
-// `getFirstTabbableIn`, which uses the `getClientRects` shim to decide whether
-// an element is visible. If the shims only existed inside `wrapAsync`, those
-// reads would hit jsdom's empty layout and misbehave (focus landing on the
-// dialog container instead of the first tabbable).
-//
-// `index.ts` imports this module for its side effect, so the shims are applied
-// automatically when importing `@ariakit/test` (and `@ariakit/test/react`,
-// which re-exports `index.ts`).
+// Apply shims at import because components read layout and focusability between
+// interactions. Both public DOM entry points load this side effect.
+// https://github.com/ariakit/ariakit/pull/6256#discussion_r3366022385
 
 function applyBrowserShims() {
   if (isBrowser) return noop;
-  // Run at import (the call below), so guard against a missing DOM — when
-  // `@ariakit/test` is imported in a plain Node context there's nothing to
-  // shim, and patching the DOM constructors below would throw.
+  // Importing `@ariakit/test` in plain Node must remain a no-op.
   if (
     typeof window === "undefined" ||
     typeof HTMLElement === "undefined" ||
@@ -109,13 +99,8 @@ function applyBrowserShims() {
   };
 }
 
-// happy-dom returns an empty validationMessage for built-in constraint
-// violations (only setCustomValidity populates it); jsdom and real browsers
-// return a non-empty message. Ariakit's form validation reads
-// element.validationMessage to register errors, so mirror that here. The exact
-// string matches jsdom's generic message so the shared form example tests assert
-// the same text under both environments (real browsers use locale-specific text,
-// which these tests don't depend on).
+// happy-dom omits built-in constraint messages. Use jsdom's generic text so
+// shared form tests see a non-empty, environment-independent message.
 function patchHappyDOMValidationMessage() {
   const restores: Array<() => void> = [];
   for (const Constructor of [
@@ -154,15 +139,9 @@ function patchHappyDOMValidationMessage() {
   };
 }
 
-// happy-dom's FormData constructor only checks `disabled` for <input> controls,
-// so disabled <select>/<textarea> are wrongly included; the HTML spec (like real
-// browsers) excludes all disabled controls. Temporarily blank their names so the
-// constructor skips them, then restore the names. Blanking — rather than deleting
-// entries afterwards — lets the constructor build the entry list correctly and
-// avoids removing same-named entries that belong to other, enabled controls.
-// (Controls disabled only via an ancestor <fieldset disabled> are not handled
-// here: happy-dom doesn't propagate that to descendants for any control type, so
-// it's a broader happy-dom gap, not specific to this <select>/<textarea> bug.)
+// happy-dom includes disabled selects and textareas in FormData. Blank their
+// names during construction so same-named enabled entries remain intact.
+// Fieldset-disabled descendants are a separate upstream gap.
 function patchHappyDOMFormData() {
   const OriginalFormData = window.FormData;
   if (!OriginalFormData) return noop;
@@ -195,14 +174,9 @@ function patchHappyDOMFormData() {
   };
 }
 
-// happy-dom dispatches the `selectionchange` event synchronously from inside
-// Selection.removeAllRanges(). The spec — and jsdom and real browsers — queue it
-// as a task instead, so it fires after the current synchronous work settles.
-// @ariakit/test calls selection.removeAllRanges() before moving focus on mouse
-// down, so a synchronous selectionchange runs listeners while
-// document.activeElement is still stale (e.g. <body>), which can misfire
-// selection-driven UI. Defer the dispatch triggered during removeAllRanges to a
-// macrotask to match the spec/jsdom ordering.
+// happy-dom dispatches `selectionchange` synchronously from removeAllRanges(),
+// before focus moves. Defer it to the task queue to match the spec, jsdom, and
+// browsers.
 function patchHappyDOMSelectionChange() {
   const SelectionPrototype = window.Selection?.prototype;
   const originalRemoveAllRanges = SelectionPrototype?.removeAllRanges;
@@ -227,19 +201,9 @@ function patchHappyDOMSelectionChange() {
   };
 }
 
-// happy-dom schedules each `requestAnimationFrame` callback as its own
-// `setImmediate`, so callbacks registered for the same frame run in separate
-// tasks — and, under React, separate commits — instead of one batch. The HTML
-// spec runs the animation frame callbacks as a batch: it snapshots the
-// callbacks registered before the frame, invokes them all with a single shared
-// timestamp, and defers any callback registered *during* the run to the next
-// frame. jsdom and real browsers behave this way; happy-dom's unbatched
-// behavior makes siblings that schedule work in the same frame observe each
-// other's mid-flight state (e.g. a dialog and its backdrop, which read each
-// other's computed styles while a leave animation is being set up). Restore
-// spec-compliant batching while keeping happy-dom fast: a single 0ms timer per
-// frame rather than a 16ms wall-clock frame (the spec leaves the frame rate
-// implementation-defined, so the fast cadence is still conformant).
+// happy-dom schedules same-frame callbacks as separate tasks. Batch a frame's
+// initial callbacks with one timestamp and defer callbacks added during the
+// batch, matching browsers without a 16ms test delay.
 // https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#run-the-animation-frame-callbacks
 function patchHappyDOMAnimationFrame() {
   const originalRequestAnimationFrame = window.requestAnimationFrame;
@@ -297,27 +261,17 @@ function patchHappyDOMAnimationFrame() {
   };
 }
 
-// happy-dom's HTMLFormElement and HTMLSelectElement constructors return a Proxy
-// for legacy member access (`form.username`, `select[0]`). When one of those
-// elements is inserted with existing children, happy-dom's internal connection
-// hook re-points each child's parent at the raw target instead of the Proxy.
-// Ancestor APIs then disagree by identity: `parentNode`, `parentElement`,
-// `closest`, `contains`, `compareDocumentPosition`, and event `currentTarget`
-// can all expose or compare the wrong object.
-//
-// Patch the shared connection hook at the source. The internal symbols are
-// discovered from a detached probe and verified before use, so this becomes a
-// no-op when happy-dom fixes the parent pointer or changes those internals.
-// The repair runs after happy-dom connects descendants, so a synchronous custom
-// element connectedCallback can still observe the raw target during that
-// insertion. Repairing mid-recursion would require running the hook through the
-// Proxy or replaying more of happy-dom's internals. The upstream fix handles
-// this at the source.
+// happy-dom can point existing form/select children at the raw target instead
+// of its public Proxy. Repair the parent pointer after connection; a custom
+// element's synchronous connectedCallback may still observe the raw target.
 // https://github.com/ariakit/ariakit/issues/6849
 // https://github.com/capricorn86/happy-dom/issues/2253
+// https://github.com/ariakit/ariakit/pull/6873#discussion_r3654110630
 // TODO: Remove this shim once the upstream fix ships.
 function patchHappyDOMProxiedParentNode() {
   const nodePrototype = window.Node.prototype;
+  // Discover and verify the internal hook so this becomes a no-op if
+  // happy-dom's internals change.
   const connectedToNodeSymbol = Object.getOwnPropertySymbols(
     nodePrototype,
   ).find((symbol) => symbol.description === "connectedToNode");

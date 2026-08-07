@@ -69,9 +69,7 @@ export default function Example() {
       setTrigger(null);
       combobox.hide();
     }
-    // Sets our textarea value.
     setValue(event.target.value);
-    // Sets the combobox value that will be used to search in the list.
     combobox.setInputValue(searchValue);
   };
 
@@ -112,7 +110,8 @@ export default function Example() {
               // We need to re-calculate the position of the combobox popover
               // when the textarea contents are scrolled.
               onScroll={combobox.render}
-              // Hide the combobox popover whenever the selection changes.
+              // Pointer selection changes the caret context, so hide stale
+              // suggestions.
               onPointerDown={combobox.hide}
               onChange={onChange}
               onKeyDown={onKeyDown}

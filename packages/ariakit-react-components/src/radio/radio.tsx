@@ -81,9 +81,8 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   const storeId = useStoreState(store, "id");
   const name = nameProp ?? storeId;
 
-  // When the radio store has a default value, we need to update the active id
-  // to point to the checked element, otherwise it'll be the first item in the
-  // list. TODO: Maybe this could be done in the radio store directly?
+  // TODO: Consider moving this synchronization into the radio store.
+  // Keep the checked radio active; otherwise the first item becomes active.
   useEffect(() => {
     if (!id) return;
     if (!isChecked) return;

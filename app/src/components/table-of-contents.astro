@@ -77,14 +77,8 @@ const allHeadings = title
 
 <script>
   /**
-   * This script handles the table of contents behavior.
-   * - It highlights the current heading in the viewport.
-   * - It shows an indicator for all visible headings.
-   * - It scrolls the visible link into view in the table of contents:
-   *   - when scrolling down: the last visible link
-   *   - when scrolling up: the first visible link
-   *
-   * The script is initialized on `astro:page-load`.
+   * Tracks visible and active headings after each Astro page load and keeps the
+   * relevant TOC link in view while scrolling.
    */
   function initTableOfContents() {
     const tocElements = document.querySelectorAll<HTMLElement>(
@@ -92,7 +86,6 @@ const allHeadings = title
     );
     if (!tocElements.length) return;
 
-    // Finds the nearest scrollable ancestor on the Y axis.
     function getScrollParent(element: Element): Element {
       let parent: Element | null = element.parentElement;
       while (parent) {
@@ -119,11 +112,9 @@ const allHeadings = title
 
       const topOffset = Number.parseInt(tocElement.dataset.topOffset || "0");
 
-      // Get all the links within the table of contents.
       const links = Array.from(
         tocElement.querySelectorAll<HTMLAnchorElement>("[data-heading-link]"),
       );
-      // Get the actual heading elements on the page that correspond to the links.
       const headings = links
         .map((link) => {
           const slug = link.dataset.headingLink!;
@@ -135,8 +126,7 @@ const allHeadings = title
 
       tocElement.setAttribute("data-table-of-contents-initialized", "true");
 
-      // Use IntersectionObserver to show indicators for headings that are
-      // currently visible in the viewport.
+      // Track headings currently intersecting the viewport.
       let observer: IntersectionObserver | null = null;
       if ("IntersectionObserver" in window) {
         observer = new IntersectionObserver(
@@ -151,8 +141,6 @@ const allHeadings = title
               if (!listItem) continue;
               const indicator = listItem.querySelector("[data-indicator]");
               if (!indicator) continue;
-              // When a heading enters the viewport, show the indicator. When it
-              // leaves, hide it.
               if (entry.isIntersecting) {
                 indicator.setAttribute("data-visible", "");
               } else {
@@ -166,7 +154,6 @@ const allHeadings = title
           { rootMargin: `-${topOffset}px 0px 0px 0px` },
         );
 
-        // Observe all the headings.
         for (const heading of headings) {
           observer.observe(heading);
         }
@@ -176,11 +163,7 @@ const allHeadings = title
       let lastScrollY = window.scrollY;
       let isScrollingDown = true;
 
-      /**
-       * This function is responsible for setting the `data-active` attribute on
-       * the correct link in the table of contents. It also ensures the active
-       * link is scrolled into view within the TOC container.
-       */
+      // Update active markers and keep the directionally relevant link visible.
       function setActiveLink(link: Element | null) {
         if (activeLink === link) return;
 
@@ -266,10 +249,7 @@ const allHeadings = title
         resizeObserver.observe(document.body);
       }
 
-      /**
-       * This function is called on scroll. It determines which heading is
-       * currently active and calls `setActiveLink`.
-       */
+      // Select the active heading from the current scroll position.
       function onScroll() {
         const currentScrollY = window.scrollY;
         isScrollingDown = currentScrollY > lastScrollY;
@@ -328,17 +308,14 @@ const allHeadings = title
       };
 
       window.addEventListener("scroll", throttledScroll, { passive: true });
-      // Call onScroll once to set the initial state.
       onScroll();
 
-      // Clean up when the page is about to be torn down by Astro.
+      // Disconnect observers and listeners before Astro replaces the page.
       document.addEventListener("astro:before-preparation", cleanup, {
         once: true,
       });
     }
   }
 
-  // Initialize the table of contents script when Astro loads or navigates to a
-  // new page.
   document.addEventListener("astro:page-load", initTableOfContents);
 </script>

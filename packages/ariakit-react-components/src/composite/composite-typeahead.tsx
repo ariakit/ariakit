@@ -106,13 +106,11 @@ function getSameInitialItems({
   if (!activeItem) return items;
   if (!itemTextStartsWith(activeItem, char)) return items;
   const { chars } = typeaheadState;
-  // Typing "oo" will match "oof" instead of moving to the next item.
+  // Keep a matching multi-character query; otherwise repeated initials cycle
+  // by collapsing "oo" to "o" and rotating earlier matches after the active
+  // item.
   if (chars !== char && itemTextStartsWith(activeItem, chars)) return items;
-  // If we're looping through the items, we'll want to reset the chars so "oo"
-  // becomes just "o".
   typeaheadState.chars = char;
-  // flipItems will put the previous items at the end of the list so we can loop
-  // through them.
   return flipItems(
     items.filter((item) => itemTextStartsWith(item, char)),
     activeId,
@@ -171,15 +169,11 @@ export const useCompositeTypeahead = createHook<
       return clearChars(typeaheadState);
     }
     event.preventDefault();
-    // We need to clear the previous cleanup timeout so we can append the
-    // pressed char to the existing one.
+    // Restart the 500ms window so consecutive keys form one search.
     window.clearTimeout(typeaheadState.cleanupTimeout);
-    // Schedule a new cleanup timeout. After a short delay we'll reset the
-    // characters so the next one counts as a new start character.
     typeaheadState.cleanupTimeout = window.setTimeout(() => {
       clearChars(typeaheadState);
     }, 500);
-    // Always consider the lowercase version of the key.
     const char = event.key.toLowerCase();
     typeaheadState.chars += char;
     enabledItems = getSameInitialItems({
@@ -194,8 +188,6 @@ export const useCompositeTypeahead = createHook<
     if (item) {
       store.move(item.id);
     } else {
-      // Immediately clear the characters so the next keypress starts a new
-      // search.
       clearChars(typeaheadState);
     }
   });

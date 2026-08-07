@@ -11,9 +11,7 @@
 import { dirname, extname, relative, resolve } from "node:path";
 import type { StyleDependency } from "./styles.ts";
 
-// ============================================================================
-// Regex Patterns
-// ============================================================================
+// Import and export patterns
 
 // Shared quoted path fragment to capture module specifiers and preserve quote
 // type. Supports single quotes, double quotes, and template literals (without
@@ -22,7 +20,6 @@ const PATH_QUOTED = String.raw`(?:'(?<single>[^']+)'|"(?<double>[^"]+)"|\`(?<tem
 const FROM_CLAUSE = String.raw`\s+from\s+${PATH_QUOTED}`;
 const IMPORT_ATTRIBUTES = String.raw`(?<attributes>\s+(?:with|assert)\s+\{[\s\S]*?\})?`;
 
-// Import patterns
 const IMPORT_SIDE_EFFECT = new RegExp(
   String.raw`import\s+${PATH_QUOTED}${IMPORT_ATTRIBUTES}[\t ]*;?`,
   "g",
@@ -48,7 +45,6 @@ const IMPORT_DYNAMIC = new RegExp(
   "g",
 );
 
-// Export patterns
 const EXPORT_FROM_NAMED = new RegExp(
   String.raw`export\s+\{[\s\S]*?\}${FROM_CLAUSE}`,
   "g",
@@ -62,9 +58,7 @@ const EXPORT_FROM_ALL = new RegExp(
   "g",
 );
 
-// ============================================================================
-// Types
-// ============================================================================
+// Source model
 
 export interface SourceFile {
   id: string;
@@ -118,7 +112,8 @@ export type ImportPathType =
   | "export-type"
   | "export-all";
 
-// Central registry of patterns and their classification
+// Import pattern classification
+
 const PATTERNS: Array<[RegExp, ImportPathType]> = [
   [IMPORT_TYPE_NAMED, "import-type"],
   [IMPORT_TYPE_NAMESPACE, "import-type"],
@@ -130,9 +125,7 @@ const PATTERNS: Array<[RegExp, ImportPathType]> = [
   [EXPORT_FROM_ALL, "export-all"],
 ];
 
-// ============================================================================
-// Generic Helpers
-// ============================================================================
+// Text and module-specifier helpers
 
 /** Sorts an iterable of strings lexicographically. */
 function sortStrings<T extends string>(values: Iterable<T>): T[] {
@@ -150,10 +143,6 @@ function getOrCreate<K, V>(map: Map<K, V>, key: K, factory: () => V): V {
   map.set(key, created);
   return created;
 }
-
-// ============================================================================
-// Text Processing Helpers
-// ============================================================================
 
 /**
  * Removes lines that only contain a semicolon, which may be left after
@@ -175,10 +164,6 @@ function collapseExcessBlankLines(text: string): string {
 function cleanupText(text: string): string {
   return collapseExcessBlankLines(cleanSemicolonOnlyLines(text));
 }
-
-// ============================================================================
-// Module Path Extraction Helpers
-// ============================================================================
 
 /** Extracts the module path from regex match groups (single/double/template). */
 function getPathFromGroups(
@@ -224,9 +209,7 @@ function extractSpecifiersInsideBraces(matchText: string): string | null {
   return beforeFrom.slice(braceStart + 1, braceEnd);
 }
 
-// ============================================================================
-// Import Specifier Parsing
-// ============================================================================
+// Import specifier parsing
 
 interface ParsedSpecifiers {
   runtime: string[];
@@ -288,9 +271,7 @@ function parseTypeOnlySpecifiers(inside: string): string[] {
     .filter(Boolean);
 }
 
-// ============================================================================
-// Public API: Import Path Operations
-// ============================================================================
+// Import path operations
 
 /**
  * Returns the set of module specifiers found in the given `content` across
@@ -314,7 +295,6 @@ export function getImportPaths(
     }
   };
 
-  // Process all standard patterns
   for (const [pattern, type] of PATTERNS) {
     addPathsFromPattern(pattern, type);
   }
@@ -364,7 +344,6 @@ export function replaceImportPaths(
       const newPath = replacer(path, type);
       if (newPath === path) return match;
 
-      // Replace only the quoted path segment to preserve surrounding code
       const quote = getQuoteFromGroups(groups);
       const original = `${quote}${path}${quote}`;
       const replacement = `${quote}${newPath}${quote}`;
@@ -386,9 +365,7 @@ export function replaceImportPaths(
   return result;
 }
 
-// ============================================================================
-// Import Merging
-// ============================================================================
+// Named import merging
 
 /**
  * Builds hoisted import declaration strings from collected specifier maps.
@@ -434,12 +411,10 @@ function buildRemainingImport(
   remainingType: string[],
   moduleSource: string,
 ): string {
-  // All specifiers transformed - remove the line
   if (remainingRuntime.length === 0 && remainingType.length === 0) {
     return "";
   }
 
-  // Both kinds remain - split into two lines
   if (remainingRuntime.length > 0 && remainingType.length > 0) {
     return [
       `import { ${remainingRuntime.join(", ")} } from ${moduleSource};`,
@@ -447,12 +422,10 @@ function buildRemainingImport(
     ].join("\n");
   }
 
-  // Only runtime specifiers remain
   if (remainingRuntime.length > 0) {
     return `import { ${remainingRuntime.join(", ")} } from ${moduleSource};`;
   }
 
-  // Only type specifiers remain
   return `import type { ${remainingType.join(", ")} } from ${moduleSource};`;
 }
 
@@ -474,46 +447,23 @@ function insertHoistedImports(hoisted: string, body: string): string {
 }
 
 /**
- * Merges named import declarations within a single source string, hoisting them
- * to the top and separating runtime (`import { ... }`) and type-only
- * (`import type { ... }`) groups.
+ * Hoists transformed named imports, handling runtime and type specifiers
+ * separately. Returning `false` keeps specifiers in place, but value imports
+ * are rebuilt while `import type` declarations retain their text. Only hoisted
+ * specifiers are sorted and deduplicated; default and namespace imports are not
+ * handled. Inline `type` specifiers are split into their corresponding groups,
+ * and hoisted type imports are emitted before value imports.
  *
- * - Applies the provided `transform` function to each original module path,
- *   separately for its runtime and its type-only specifiers. When it returns a
- *   string, the corresponding specifiers are merged and hoisted.
- * - When `transform` returns `false`, the specifiers stay at their original
- *   position. An untransformed `import type { ... }` declaration is left
- *   alone, while an untransformed `import { ... }` declaration is rebuilt
- *   from its parsed parts, so the author's wrapping of the specifier list
- *   does not survive. That is deliberate; see `buildRemainingImport`.
- * - When a declaration has both kinds and only one is transformed, only that
- *   kind is hoisted; the other stays in place, and the original import line
- *   is rewritten to preserve it without duplication.
- * - Deduplicates hoisted specifiers by their full text (preserving `as`
- *   aliases) and sorts both specifiers and module specifiers lexicographically
- *   within each hoisted group. Specifiers left behind are neither sorted nor
- *   deduplicated.
- * - Preserves overall content by removing the original named import statements
- *   and returning the full transformed content with hoisted imports. Any
- *   orphaned semicolon-only lines left by the removal are also cleaned up to
- *   keep line breaks stable.
- * - Always orders hoisted imports with type-only (`import type`) first, then
- *   value imports, per final module path.
- *
- * Notes:
- * - Default imports and namespace imports are not handled here.
- * - Inline `type` specifiers (e.g., `import { A, type T } from "..."`) are
- *   split across runtime and type groups for the same module.
- *
- * @param content - The source code to transform
- * @param transform - Function returning a new path, or `false` to leave the
- *   specifiers where they are
+ * See https://github.com/ariakit/ariakit/pull/6918
+ * @param content - Source code to transform.
+ * @param transform - Returns a new path or `false` to leave that group in
+ *   place.
  */
 export function mergeImports(
   content: string,
   transform: (path: string, type: ImportPathType) => string | false,
 ): string {
-  // Collect value and type-only named imports keyed by the final module source
+  // Collect transformed specifiers by final module source.
   const valueNamed = new Map<string, Set<string>>();
   const typeNamed = new Map<string, Set<string>>();
 
@@ -567,7 +517,8 @@ export function mergeImports(
 
   const hoisted = buildHoistedImports(valueNamed, typeNamed);
 
-  // Remove or rewrite the named import declarations that are transformed
+  // Rewrite originals, retaining only untransformed specifiers.
+  // Removed declarations leave a semicolon marker for the cleanup pass.
   let body = content;
 
   const replaceImportDeclarations = (pattern: RegExp, isTypeOnly: boolean) => {
@@ -586,7 +537,6 @@ export function mergeImports(
         const transformed = transform(path, "import-type");
         if (transformed === false) return match;
 
-        // Entire declaration is transformed - remove it (will be hoisted)
         return ";";
       }
 
@@ -598,7 +548,6 @@ export function mergeImports(
         ? transform(path, "import-type")
         : false;
 
-      // Keep specifiers that weren't transformed
       const remainingRuntime = transformedValue === false ? runtime : [];
       const remainingType = transformedType === false ? typeOnly : [];
       const attributes = getAttributesFromGroups(groups);
@@ -618,9 +567,7 @@ export function mergeImports(
   return insertHoistedImports(hoisted, body);
 }
 
-// ============================================================================
-// File Resolution
-// ============================================================================
+// File resolution and dependency ordering
 
 /**
  * Resolves a relative import specifier from a given file id to an absolute id
@@ -639,7 +586,6 @@ function resolveSpecifierToId(
 
   if (files[absolute]) return absolute;
 
-  // Try adding extensions for extensionless specifiers
   if (!extname(absolute)) {
     const withTs = `${absolute}.ts`;
     if (files[withTs]) return withTs;
@@ -650,10 +596,6 @@ function resolveSpecifierToId(
 
   return null;
 }
-
-// ============================================================================
-// Topological Sorting
-// ============================================================================
 
 /**
  * Inserts a value into a sorted array, maintaining lexical order.
@@ -681,7 +623,6 @@ function computeTopologicalOrder(
 ): string[] {
   const memberSet = new Set(memberIds);
 
-  // Build adjacency list and indegree map
   const adjacency = new Map<string, Set<string>>();
   const indegree = new Map<string, number>();
 
@@ -690,7 +631,7 @@ function computeTopologicalOrder(
     indegree.set(id, 0);
   }
 
-  // Add edges based on imports: if A imports B, then B → A (B comes before A)
+  // A imports B becomes B → A so dependencies sort first.
   for (const id of memberIds) {
     const content = files[id]?.content ?? "";
 
@@ -703,7 +644,6 @@ function computeTopologicalOrder(
         if (!resolvedId) continue;
         if (!memberSet.has(resolvedId)) continue;
 
-        // Edge: dependency → dependent (resolvedId → id)
         const neighbors = adjacency.get(resolvedId);
         if (neighbors && !neighbors.has(id)) {
           neighbors.add(id);
@@ -712,12 +652,11 @@ function computeTopologicalOrder(
       }
     };
 
-    // Consider value imports (default, namespace, named) and type-only imports
     addDependencyEdges(IMPORT_FROM_ANY);
     addDependencyEdges(IMPORT_TYPE_NAMED);
   }
 
-  // Kahn's algorithm with lexical tie-breaker
+  // Lexical tie-breaking keeps generated output deterministic.
   const queue: string[] = [];
   for (const id of memberIds) {
     if ((indegree.get(id) ?? 0) === 0) {
@@ -744,7 +683,7 @@ function computeTopologicalOrder(
     }
   }
 
-  // Cycle detected - fall back to lexicographic order
+  // Fall back to lexical order when the dependency graph contains a cycle.
   if (ordered.length !== memberIds.length) {
     return [...memberIds].sort((a, b) => a.localeCompare(b));
   }
@@ -752,9 +691,7 @@ function computeTopologicalOrder(
   return ordered;
 }
 
-// ============================================================================
-// Internal Import Stripping
-// ============================================================================
+// Internal import and metadata merging
 
 /**
  * Removes import declarations that target other members of the same group.
@@ -778,7 +715,6 @@ function stripInternalImports(
       if (!resolvedId) return match;
       if (!groupIds.has(resolvedId)) return match;
 
-      // Namespace imports from internal files are not supported
       if (/\bimport\s+\*\s+as\s+/.test(match)) {
         throw new Error(
           `Namespace imports from internal files are not supported: "${specifier}"`,
@@ -789,7 +725,6 @@ function stripInternalImports(
     });
   };
 
-  // Remove all internal import declarations
   removeMatchingImports(IMPORT_TYPE_NAMED);
   removeMatchingImports(IMPORT_NAMED);
   removeMatchingImports(IMPORT_FROM_ANY);
@@ -797,10 +732,6 @@ function stripInternalImports(
 
   return cleanupText(body);
 }
-
-// ============================================================================
-// Style and Dependency Merging
-// ============================================================================
 
 /** Creates a unique key for a style dependency. */
 function getStyleKey(dep: StyleDependency): string {
@@ -850,9 +781,7 @@ function mergeDependencyMaps(
   return Object.keys(result).length ? result : undefined;
 }
 
-// ============================================================================
-// Import Hoisting
-// ============================================================================
+// Import hoisting
 
 /**
  * Parses a namespace value import statement.
@@ -907,7 +836,7 @@ export function hoistImports(content: string): string {
 
   if (imports.size === 0) return content;
 
-  // Track namespace value imports to remove redundant type imports
+  // A value namespace import makes the matching type import redundant.
   const namespaceValueImports = new Set<string>();
   for (const stmt of imports) {
     const parsed = parseNamespaceValueImport(stmt);
@@ -916,7 +845,6 @@ export function hoistImports(content: string): string {
     }
   }
 
-  // Filter out type namespace imports that duplicate value imports
   const finalImports = new Set<string>();
   for (const stmt of imports) {
     const parsed = parseNamespaceTypeImport(stmt);
@@ -930,9 +858,7 @@ export function hoistImports(content: string): string {
   return `${sortStrings(finalImports).join("\n")}\n\n${body.trimStart()}`;
 }
 
-// ============================================================================
-// File Grouping
-// ============================================================================
+// File grouping and merging
 
 interface MergedGroup {
   target: string;
@@ -959,7 +885,7 @@ function buildTargetMapping(
     return targetById;
   }
 
-  // Default: group by parent directory; merge directories with 2+ files
+  // By default, merge directories containing at least two files.
   const filesByDirectory = new Map<string, string[]>();
   for (const id of Object.keys(files)) {
     const dir = dirname(id);
@@ -991,7 +917,7 @@ function groupFilesByTarget(
     members.push(id);
   }
 
-  // Sort members for deterministic ordering
+  // Stabilize member order before building groups.
   for (const members of membersByTarget.values()) {
     members.sort((a, b) => a.localeCompare(b));
   }
@@ -1010,7 +936,7 @@ function mergeFileGroup(
   const order = computeTopologicalOrder(files, memberIds);
   const groupSet = new Set(memberIds);
 
-  // Build merged content from files in topological order
+  // Concatenate dependencies before their importers.
   const parts: string[] = [];
   for (let i = 0; i < order.length; i++) {
     const id = order[i];
@@ -1023,7 +949,7 @@ function mergeFileGroup(
     parts.push(stripped);
   }
 
-  // Merge styles and dependencies using lexical order for determinism
+  // Merge metadata lexically so graph order cannot affect the result.
   const sortedIds = [...memberIds].sort((a, b) => a.localeCompare(b));
   let mergedStyles: StyleDependency[] | undefined;
   let mergedDeps: Record<string, string> | undefined;
@@ -1067,7 +993,6 @@ function rewriteImportsForMergedTargets(
     if (!target) return false;
 
     const relativePath = relative(fileDir, target).replace(/\\/g, "/");
-    // Ensure relative paths start with ./ or ../
     return relativePath.startsWith(".") ? relativePath : `./${relativePath}`;
   });
 
@@ -1079,10 +1004,6 @@ function rewriteImportsForMergedTargets(
     devDependencies: file.devDependencies,
   };
 }
-
-// ============================================================================
-// Public API: File Merging
-// ============================================================================
 
 /**
  * Merges related files into grouped targets and rewrites named imports to point
@@ -1100,21 +1021,20 @@ export function mergeFiles(
   const targetById = buildTargetMapping(files, filter);
   const membersByTarget = groupFilesByTarget(targetById);
 
-  // Process merged groups
+  // Build merged groups before rewriting imports in files kept as-is.
   const mergedGroups: MergedGroup[] = [];
   for (const [target, memberIds] of membersByTarget) {
     mergedGroups.push(mergeFileGroup(files, target, memberIds));
   }
 
-  // Build result: first add non-merged files with rewritten imports
   const result: Record<string, SourceFile> = {};
 
   for (const [id, file] of Object.entries(files)) {
-    if (targetById.get(id)) continue; // Skip files that were merged
+    if (targetById.get(id)) continue;
     result[id] = rewriteImportsForMergedTargets(files, file, targetById);
   }
 
-  // Append merged groups in deterministic order
+  // Append merged groups in stable target order.
   mergedGroups.sort((a, b) => a.target.localeCompare(b.target));
   for (const group of mergedGroups) {
     result[group.target] = {

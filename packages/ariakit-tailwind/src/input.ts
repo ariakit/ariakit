@@ -10,7 +10,7 @@ import {
   set,
 } from "./lib.ts";
 
-// These identifiers mirror relative color channel names.
+// OKLCH channels used by CSS relative-color expressions.
 const l = "l";
 const c = "c";
 const h = "h";
@@ -363,7 +363,7 @@ function getResolvedLightnessOffset(
     lowerBoundary,
     upperBoundary,
   );
-  // Flipped result clamped to valid lightness range.
+  // Clamp the flipped candidate before comparing its distance from the source.
   const flippedDelta = fn.neg(normalDelta);
   const flippedL = fn.clamp01(fn.add(l, flippedDelta));
   // Directional distance: sign is only meaningful when inForbidden=1
@@ -1223,7 +1223,7 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
   ];
 }
 
-// Assign derived math first so later color stages can reference short vars.
+// Emit derived variables before the color stages that consume them.
 const layerMathDeclarations = [
   // Set contrastT explicitly so the 5+ references inside this body resolve
   // to the cached value instead of re-evaluating the var(--contrast) /
@@ -1255,7 +1255,8 @@ const layerMathDeclarations = [
   set(vars.edgeContrastValue, fn.mul(vars.contrastT, CONTRAST_SCALE)),
 ];
 
-// Build the layered color stages from idle -> base -> offset -> final.
+// Build color stages in dependency order: idle base -> idle offset -> idle ->
+// base -> offset.
 const layerColorDeclarations = [
   set(vars.layerIdleBase, layerIdleBase),
   set(vars.layerIdleOffset, layerIdleOffset),

@@ -166,13 +166,9 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     "contentElement",
   );
 
-  // This ensures that, when the menu is nested in a non-menu wrapper, the tab
-  // order will be preserved from the parent content element rather than from
-  // the anchor element. This is because the preserveTabOrderAnchor feature
-  // will use aria-owns to fix the tab order on screen readers. The parent
-  // content element may have a role that does not allow this menu's role as a
-  // child. By passing the parent content element as the tab order anchor, the
-  // aria-owns element will be added as a sibling instead. TODO: Test this.
+  // Anchor preserved tab order to the parent content so `aria-owns` is emitted
+  // as a sibling when that parent's role cannot contain this menu role.
+  // TODO: Add coverage for the aria-owns sibling path.
   const preserveTabOrderAnchor = useMemo(() => {
     if (!parentContentElement) return;
     if (!contentElement) return;
@@ -223,20 +219,12 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
       if (event.defaultPrevented) return true;
       if (!hasParentMenu) return true;
       if (!disclosureElement) return true;
-      // This can be tested by hovering over a menu item (that's also a menu
-      // button), waiting for the menu to open, and then moving towards the
-      // menu, but stopping before reaching it. Then, move the mouse to the
-      // other direction. The menu should close, but since we've already left
-      // the menu button, the mouseout and therefore the blurOnHoverEnd
-      // behavior won't be fired. That's why we need to manually re-fire it
-      // here when the menu is closed by hovering away.
+      // Re-fire mouseout when hover-away closes after the pointer already left
+      // the button; otherwise `blurOnHoverEnd` never runs.
       fireEvent(disclosureElement, "mouseout", event);
       if (!hasFocusWithin(disclosureElement)) return true;
-      // When the focus is determined by the aria-activedescendant attribute
-      // (virtual focus), the mouseout event above won't update the state
-      // synchronously. That is, the hasFocusWithin function above (which also
-      // takes into account aria-activedescendant) will be true even though
-      // the mouseout event has blurred the menu button.
+      // Virtual focus updates asynchronously, so the synthetic mouseout may
+      // leave `hasFocusWithin` temporarily true.
       requestAnimationFrame(() => {
         if (hasFocusWithin(disclosureElement)) return;
         store?.hide();

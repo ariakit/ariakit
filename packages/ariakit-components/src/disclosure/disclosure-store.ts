@@ -52,10 +52,10 @@ export function createDisclosureStore(
     ? createStore(initialState, store)
     : createStore(initialState);
 
+  // Clear the animation state when animation is disabled.
   setup(disclosure, () =>
     sync(disclosure, ["animated", "animating"], (state) => {
       if (state.animated) return;
-      // Reset animating to false when animation is disabled.
       disclosure.setState("animating", false);
     }),
   );

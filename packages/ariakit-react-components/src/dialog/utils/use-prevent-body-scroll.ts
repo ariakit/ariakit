@@ -38,15 +38,10 @@ export function usePreventBodyScroll(
     enabled,
   });
 
-  // Lock the scroll in the layout phase so the layout reads below (viewport
-  // width, scrollbar position) run during the commit, where layout is being
-  // computed anyway. As a passive effect, those reads ran after other effects
-  // had already written styles, forcing an extra synchronous layout on every
-  // open. This also locks the scroll before the dialog is first painted. On
-  // iOS, the lock stays in the passive phase: its scroll position bookkeeping
-  // (capture on lock, scrollTo on unlock) depends on the passive timing
-  // relative to the dialog's focus effects. The hook choice is stable because
-  // isIOS never changes within a session.
+  // Use layout timing to measure and lock before paint. Keep iOS passive
+  // because its scroll capture/restore depends on dialog focus timing. isIOS
+  // is session-stable, so the hook choice cannot change between renders.
+  // https://github.com/ariakit/ariakit/pull/6288
   const useLockEffect = isIOS ? useEffect : useSafeLayoutEffect;
 
   useLockEffect(() => {
@@ -68,14 +63,9 @@ export function usePreventBodyScroll(
 
     const setStyle = () => {
       const computedStyle = win.getComputedStyle(documentElement);
-      // The gutter may already be reserved, either because the page sets
-      // scrollbar-gutter itself or because a previous gutter lock is still in
-      // place when a remount re-locks before the deferred restore below runs
-      // (StrictMode). The scrollbar measures 0 in both states (clientWidth
-      // includes the reserved gutter), so check the computed style, like the
-      // --scrollbar-width read above, to keep such locks on the gutter
-      // branch. The computed value also carries author keywords such as
-      // both-edges that the lock must preserve.
+      // A pre-existing or StrictMode gutter makes scrollbar width measure zero.
+      // Preserve its computed value, including `both-edges`, across re-locks.
+      // https://github.com/ariakit/ariakit/pull/6634
       const scrollbarGutter =
         computedStyle.getPropertyValue("scrollbar-gutter");
       const hasGutter = scrollbarGutter.includes("stable");
@@ -110,13 +100,8 @@ export function usePreventBodyScroll(
           assignStyle(body, { overflow: "hidden" }),
         );
       }
-      // Keep the scrollbar's space reserved while the hidden overflow removes
-      // the scrollbar itself, so neither in-flow content nor `position:
-      // fixed` elements shift. `scrollbar-gutter` must be set on the html
-      // element: it applies to the viewport from there and doesn't propagate
-      // from body. Set the properties individually so the restore doesn't
-      // clobber unrelated inline styles (such as theme variables) written to
-      // html while the dialog is open.
+      // Reserve viewport scrollbar space on `html` so in-flow and fixed content
+      // do not shift. Mutate only owned properties so unrelated styles survive.
       if (hasGutter || supportsScrollbarGutter(win)) {
         return chain(
           setCSSProperty(

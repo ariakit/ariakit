@@ -11,7 +11,7 @@ export const TooltipAnchor = forwardRef<HTMLDivElement, TooltipAnchorProps>(
     const tooltip = Ariakit.useTooltipStore();
     const mounted = Ariakit.useStoreState(tooltip, "mounted");
 
-    // We move the tooltip up or down depending on the current placement.
+    // Enter and exit toward the resolved placement side.
     const y = Ariakit.useStoreState(tooltip, (state) => {
       const dir = state.currentPlacement.split("-")[0];
       return dir === "top" ? -8 : 8;

@@ -20,7 +20,6 @@
   }
 }
 
-/* ak-select */
 @utility ak-select_idle {
   @apply ak-button_idle;
 }
@@ -49,13 +48,11 @@
   @apply ak-command-disabled:ak-select_disabled;
 }
 
-/* ak-select-arrow */
 @utility ak-select-arrow {
   @apply ak-icon-chevron;
   @apply ms-auto size-4;
 }
 
-/* ak-select-popover */
 @utility ak-select-popover_idle {
   @apply ak-popover_idle ak-frame ak-frame-force ak-frame-container/container ak-layer-canvas;
   @apply outline-none;
@@ -79,7 +76,6 @@
   }
 }
 
-/* ak-select-item */
 @utility ak-select-item_idle {
   @apply ak-option_idle;
   @apply flex items-center gap-2;
@@ -114,7 +110,6 @@
   @apply ak-command-disabled:ak-select-item_disabled;
 }
 
-/* ak-select-item-check */
 @utility ak-select-item-check {
   @apply ak-icon-check;
   @apply invisible size-4;

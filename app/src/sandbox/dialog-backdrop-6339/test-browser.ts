@@ -18,7 +18,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // instantly and data-leave is never applied.
     await test.expect(backdrop).toHaveAttribute("data-leave", "true");
     await test.expect(backdrop).toBeVisible();
-    // After the transition ends, the backdrop hides.
     await test.expect(backdrop).toBeHidden();
   });
 
@@ -31,7 +30,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(backdrop).toHaveAttribute("data-enter", "true");
     await test.expect(q.button("Close")).toBeFocused();
     await q.button("Close").click();
-    // Focus returns to the disclosure as soon as the dialog closes.
     await test.expect(q.button("Show fast dialog")).toBeFocused();
     await test.expect(backdrop).toHaveAttribute("data-leave", "true");
     // Wait past the panel's 150ms transition. The backdrop must keep leaving
@@ -40,7 +38,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.waitForTimeout(250);
     await test.expect(backdrop).toHaveAttribute("data-leave", "true");
     await test.expect(backdrop).toBeVisible();
-    // After the backdrop's transition ends, it hides.
     await test.expect(backdrop).toBeHidden();
   });
 });

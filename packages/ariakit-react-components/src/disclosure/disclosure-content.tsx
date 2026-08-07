@@ -36,14 +36,8 @@ function parseCSSTime(time: string | undefined) {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
-// Returns the time a set of transitions or animations ends: the longest
-// per-item `delay + duration`. The number of items is the length of the
-// `transition-property`/`animation-name` list; CSS cycles the (possibly
-// shorter) delay and duration lists to match it, so we index them modulo their
-// own length. This is more accurate than adding the longest delay to the
-// longest duration, which overestimates when they belong to different items
-// (e.g. a transition with a long delay alongside an animation with a long
-// duration).
+// CSS cycles shorter delay/duration lists to match the property/name list.
+// Pair each item's delay and duration; independent maxima can overestimate.
 function getEndTime(names: string, delays: string, durations: string) {
   const nameList = names.split(",");
   const delayList = delays.split(",");
@@ -61,12 +55,7 @@ function getEndTime(names: string, delays: string, durations: string) {
   return endTime;
 }
 
-// Returns the time an element's transitions and animations end based on its
-// computed style. We compute each transition's and animation's end time
-// separately (pairing each item's own delay with its own duration) and take
-// the longest one. Combining them into a single max delay + max duration would
-// overestimate when, for example, the longest delay belongs to a transition
-// while the longest duration belongs to an animation.
+// Take the longest transition or animation end time for this element.
 function getElementEndTime(element: Element) {
   const {
     transitionProperty,
@@ -206,14 +195,9 @@ export const useDisclosureContent = createHook<
       const timeout = animated;
       return afterTimeout(timeout, stopAnimationSync);
     }
-    // We need to parse the CSS transition/animation duration and delay to know
-    // when the animation ends. This is safer than relying on the
-    // transitionend/animationend events because it's not guaranteed that these
-    // events will fire. For example, if the element is removed from the DOM
-    // before the animation ends or if the animation wasn't triggered in the
-    // first place, the events won't fire. Besides, there may be multiple
-    // transitions or animations with different durations and delays, and we
-    // need to consider the longest one.
+    // Derive a timeout because transition and animation end events may never
+    // fire. Use the longest timeline when multiple transitions or animations
+    // run.
     const elements = [contentElement];
     // If we're rendering a dialog backdrop, otherElement will be the dialog
     // element itself. We need to consider both the backdrop and the dialog

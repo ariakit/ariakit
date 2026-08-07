@@ -359,10 +359,8 @@ export function useStoreStateObject(
 
       if (typeof keyOrSelector === "function") {
         const value = keyOrSelector(state);
-        // Compare with Object.is, the same comparator useSyncExternalStore
-        // uses, so a NaN value doesn't invalidate the snapshot on every call,
-        // which would break the getSnapshot idempotency contract and make
-        // React loop until it throws "Maximum update depth exceeded". See
+        // Match `useSyncExternalStore` with `Object.is`; otherwise `NaN` can
+        // invalidate every snapshot and trigger an infinite render loop.
         // https://github.com/ariakit/ariakit/issues/6335
         if (!Object.is(value, obj[prop])) {
           obj[prop] = value;

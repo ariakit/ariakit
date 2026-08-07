@@ -41,8 +41,6 @@ async function clickLabel(element: HTMLLabelElement, options?: MouseEventInit) {
   const defaultAllowed = await dispatch.click(element, options);
 
   if (input) {
-    // Now we can revert input disabled state and fire events on it in the
-    // right order.
     input.disabled = isInputDisabled;
     if (defaultAllowed && isFocusable(input)) {
       await focus(input);
@@ -112,6 +110,8 @@ async function clickOption(
       }
     };
 
+    // Shift extends from the last unshifted option; Ctrl toggles one option,
+    // while an unmodified click replaces the selection.
     if (eventOptions?.shiftKey) {
       const elementIndex = options.indexOf(element);
       const referenceOption =
@@ -122,8 +122,6 @@ async function clickOption(
         : -1;
 
       resetOptions();
-      // Select options between the clicked element and the reference option,
-      // anchoring at the clicked element when there is no usable reference.
       selectRange(
         elementIndex,
         referenceOptionIndex === -1 ? elementIndex : referenceOptionIndex,
@@ -131,15 +129,11 @@ async function clickOption(
 
       setSelected(element, true);
     } else {
-      // Keep track of this option as this will be used later when shift key
-      // is used.
       select.lastOptionSelectedNotByShiftKey = element;
 
       if (eventOptions?.ctrlKey) {
-        // Clicking with ctrlKey will select/deselect the option
         setSelected(element, !element.selected);
       } else {
-        // Simply clicking an option will select only that option
         resetOptions();
         setSelected(element, true);
       }
@@ -198,7 +192,7 @@ export function click(
 
     await mouseUp(element, options);
 
-    // click is not called on disabled elements
+    // Disabled controls suppress the final user-generated click.
     const { disabled } = element as HTMLButtonElement;
     if (disabled) return;
 

@@ -7459,10 +7459,6 @@
               "value": "calc(\n    var(--ak-list-leading) + var(--ak-list-border-gap) + var(--ak-frame-padding)\n  )"
             },
             {
-              "name": "/* Border segment */",
-              "value": {}
-            },
-            {
               "name": "&::after",
               "value": [
                 {

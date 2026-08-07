@@ -135,10 +135,10 @@ async function clickSubmitButton(
     if (!isHappyDOM(submitButton.ownerDocument.defaultView)) return;
     if (!(submitButton instanceof HTMLInputElement)) return;
     if (submitButton.type !== "image") return;
-    // happy-dom fires the image submitter click but skips its submit activation.
-    // Keep this fallback intentionally small: legacy `returnValue`/DOM0 click
-    // cancellation and `window.event` for nested submit/invalid events still
-    // differ from browsers, but those edge cases are outside the #6353 target.
+    // happy-dom clicks image submitters without running submit activation. Keep
+    // this fallback narrow; legacy DOM0 cancellation and nested `window.event`
+    // fidelity remain separate limitations.
+    // https://github.com/ariakit/ariakit/pull/6404#discussion_r3455531568
     const currentForm = submitButton.form;
     if (!currentForm) return;
     if (!canSubmitWithButton(submitButton)) return;
@@ -379,9 +379,9 @@ function isPressable(element: Element) {
   return isFocusable(element) || element.tagName === "BODY";
 }
 
-// Fires `keydown` and applies the browser's default keydown behavior for the key
-// (moving focus with `Tab`, the caret with the arrow keys, etc.). Returns whether
-// the default action was allowed so the caller can gate the keyup behavior on it.
+// Fires `keydown` and applies the key's default behavior (focus for `Tab`, the
+// caret for arrows). Returns whether the default was allowed, which gates the
+// matching keyup behavior.
 async function pressKeyDown(
   element: Element,
   key: string,
@@ -405,8 +405,6 @@ interface PressKeyUpParams {
   defaultAllowed?: boolean;
 }
 
-// Fires `keyup` and applies the browser's default keyup behavior for the key
-// (clicking buttons, checkboxes, and radios with `Space`).
 async function pressKeyUp({
   element,
   key,
@@ -457,11 +455,10 @@ export function press(
 
     if (!element) return;
 
-    // We can't press on elements that aren't focusable
     if (!isPressable(element)) return;
 
-    // If it's a printable character, we type it
     if (isTextField(element)) {
+      // Route text insertion and editing keys through the typing simulation.
       if (key.length === 1) {
         return type(key, element, options);
       } else if (key === "Delete") {
@@ -473,7 +470,6 @@ export function press(
       }
     }
 
-    // If element is not focused, we should focus it
     if (element.ownerDocument?.activeElement !== element) {
       if (element.tagName === "BODY") {
         await blur();
@@ -482,16 +478,15 @@ export function press(
       }
     }
 
-    // This allows the DOM to be updated before we fire the event
+    // Flush focus updates before dispatching the key event.
     await settle();
 
-    // TODO: Implement repeat
+    // TODO: Implement repeated keydown simulation.
     const defaultAllowed = await pressKeyDown(element, key, options);
 
     await settle();
 
-    // If keydown effect changed focus (e.g. Tab), keyup will be triggered on the
-    // next element.
+    // Keyup follows focus if keydown moved it, for example with Tab.
     if (element.ownerDocument?.activeElement !== element) {
       element = element.ownerDocument.activeElement!;
     }
@@ -533,7 +528,7 @@ function pressDown(
     if (!element) return;
     if (!isPressable(element)) return;
 
-    // A key press always lands on the focused element, so focus the target first.
+    // Keyboard events target the focused element.
     if (element.ownerDocument?.activeElement !== element) {
       if (element.tagName === "BODY") {
         await blur();
@@ -542,10 +537,10 @@ function pressDown(
       }
     }
 
-    // This allows the DOM to be updated before we fire the event
+    // Flush focus updates before dispatching the key event.
     await settle();
 
-    // TODO: Implement repeat
+    // TODO: Implement repeated keydown simulation.
     await pressKeyDown(element, key, options);
 
     await sleep();
@@ -613,8 +608,6 @@ function createPressUp(key: string, defaultOptions: KeyboardEventInit = {}) {
     pressUp(key, element, { ...defaultOptions, ...options });
 }
 
-// Builds the per-key shortcut map (`.Space`, `.Enter`, `.ShiftTab`, ...) attached
-// to `press.down` and `press.up` from the matching factory.
 function createKeyShortcuts(
   create: (key: string, defaultOptions?: KeyboardEventInit) => PressShortcut,
 ) {

@@ -15,7 +15,6 @@
   @apply z-3 sticky bottom-0;
 }
 
-/* ak-table */
 @utility ak-table-container {
   @apply ak-frame ak-frame-card/0 ak-layer;
   @apply overflow-clip;
@@ -188,7 +187,6 @@
   @apply text-end tabular-nums;
 }
 
-/* ak-table-border */
 @utility ak-table-border {
   --ak-table-border-s: 1px;
   --ak-table-border-e: 1px;

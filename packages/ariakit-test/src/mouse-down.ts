@@ -72,15 +72,14 @@ export function mouseDown(element: Element | null, options?: PointerEventInit) {
 
     let defaultAllowed = pointerDefaultAllowed;
 
+    // Disabled controls and canceled pointerdown suppress compatibility
+    // mousedown.
     if (!disabled && pointerDefaultAllowed) {
-      // Mouse events are not called on disabled elements
       if (!(await dispatch.mouseDown(element, { detail: 1, ...options }))) {
         defaultAllowed = false;
       }
     }
 
-    // Do not enter this if event.preventDefault() has been called on
-    // pointerdown or mousedown.
     if (defaultAllowed) {
       const selection = getDocument(element).getSelection();
       if (selection?.rangeCount) {
@@ -95,12 +94,10 @@ export function mouseDown(element: Element | null, options?: PointerEventInit) {
       ) {
         await focus(element);
       } else if (element.parentElement) {
-        // If the element is not focusable, focus the closest focusable parent
         const closestFocusable = getClosestFocusable(element.parentElement);
         if (closestFocusable) {
           await focus(closestFocusable);
         } else {
-          // This will automatically set document.body as the activeElement
           await blur();
         }
       }
