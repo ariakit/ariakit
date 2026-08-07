@@ -73,7 +73,7 @@
     "@shikijs/langs": "4.4.1",
     "@shikijs/themes": "4.4.1",
     "@stackblitz/sdk": "1.11.1",
-    "@stripe/stripe-js": "9.12.1",
+    "@stripe/stripe-js": "9.13.0",
     "@tailwindcss/vite": "4.3.3",
     "@tanstack/react-query": "5.101.4",
     "@wordpress/components": "38.0.0",
