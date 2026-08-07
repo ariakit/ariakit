@@ -50,7 +50,11 @@ export default function Example() {
       <Ariakit.ComboboxSelectLabel store={store}>
         Vegetable
       </Ariakit.ComboboxSelectLabel>
-      <Ariakit.ComboboxSelect store={store} />
+      {/* The select announces the popup it controls, so its expanded state
+      follows the open state rather than whoever owned focus when it opened.
+      TODO: Remove once the select derives this on its own.
+      https://github.com/ariakit/ariakit/issues/7080 */}
+      <Ariakit.ComboboxSelect store={store} aria-expanded={open} />
       {/* Refuses the focus a click would take, so loading the remaining
       options is not itself a focus move out of the picker. */}
       <button
