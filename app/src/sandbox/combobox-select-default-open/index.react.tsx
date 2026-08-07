@@ -7,6 +7,10 @@ export default function Example() {
       <Ariakit.ComboboxSelectLabel>Vegetable</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect />
       <Ariakit.ComboboxPopover
+        // TODO: Remove once a programmatic open takes focus on its own. Opts
+        // the popup into the focus it already takes when the select opens it.
+        // https://github.com/ariakit/ariakit/issues/7068
+        autoFocusOnShow
         gutter={4}
         sameWidth
         style={{ background: "white", border: "1px solid gray" }}
