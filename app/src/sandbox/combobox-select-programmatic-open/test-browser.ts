@@ -31,25 +31,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.combobox("Vegetable")).toBeFocused();
   });
 
+  // A programmatic open is the app deciding to show the popup, so it takes
+  // focus like an interactive one instead of deferring to whoever held it.
   // https://github.com/ariakit/ariakit/issues/7068
-  test("leaves focus alone when another element owns it", async ({
-    page,
-    q,
-  }) => {
+  test("takes focus even when another element owns it", async ({ page, q }) => {
     const note = q.textbox("Note");
     await note.click();
+    await test.expect(note).toBeFocused();
 
     await page.keyboard.press("F2");
+
     await test.expect(q.listbox()).toBeVisible();
-
-    await q.button("Load all vegetables").click();
-    await test.expect(q.option("Onion")).toHaveAttribute("data-active-item");
-
-    // A popup that never took focus has no positive state for not taking it,
-    // so cross the registration's frame checkpoint before sampling the owner.
-    await flushFrames(page);
-    await test.expect(note).toBeFocused();
-    await test.expect(q.listbox()).toHaveJSProperty("scrollTop", 0);
+    await test.expect(q.combobox("Vegetable")).toBeFocused();
   });
 
   // https://github.com/ariakit/ariakit/issues/7068

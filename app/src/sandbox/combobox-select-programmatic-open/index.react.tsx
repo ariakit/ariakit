@@ -9,11 +9,11 @@ export default function Example() {
   const open = Ariakit.useStoreState(store, "open");
   const [options, setOptions] = useState(firstOptions);
 
-  // A global shortcut opens the picker while focus is still wherever the user
-  // left it, so the popup opens without an opener that could hand focus over.
+  // A global shortcut opens the picker programmatically, leaving focus wherever
+  // the user left it, so the open never passes through the select.
   // A button that refuses focus would not do: Safari falls back to the last
-  // mousedown target for the disclosure element, so "opened without an opener"
-  // would mean something different there than in the other engines.
+  // mousedown target for the disclosure element, so the open would carry an
+  // opener there and not in the other engines.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "F2") return;

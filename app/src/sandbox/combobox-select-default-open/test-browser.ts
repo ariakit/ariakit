@@ -2,10 +2,9 @@ import { withFramework } from "#app/test-utils/preview.ts";
 import { expectVerticallyCentered } from "#app/test-utils/scroll.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  // #7068 redefines the focus contract #6832 established here: this popup
-  // mounts while nothing owns focus, so it takes focus itself. One that opens
-  // while another element owns focus still leaves it alone, which
-  // combobox-select-focusless-open covers.
+  // #7068 redefines the focus contract #6832 established here: an open the
+  // select did not initiate still takes focus, because the app asked for the
+  // popup. combobox-select-programmatic-open covers the non-default openings.
   // https://github.com/ariakit/ariakit/pull/6832
   // https://github.com/ariakit/ariakit/issues/7068
   test("takes focus when the popup starts open", async ({ q }) => {
