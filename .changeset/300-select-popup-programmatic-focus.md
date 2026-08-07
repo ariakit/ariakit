@@ -18,4 +18,4 @@ A [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) that belon
 </ComboboxProvider>
 ```
 
-To keep a popup from taking focus, pass [`autoFocusOnShow={false}`](https://ariakit.com/reference/combobox-popover#autofocusonshow).
+A popup that opens outside the viewport is now scrolled into view, since taking focus is what moves the page. To keep a popup from taking focus, and with it the scroll, pass [`autoFocusOnShow={false}`](https://ariakit.com/reference/combobox-popover#autofocusonshow).
