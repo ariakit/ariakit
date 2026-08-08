@@ -12,7 +12,7 @@ import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { withDefaultButtonType } from "../button/utils.ts";
@@ -48,6 +48,7 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
     );
 
     const ref = useRef<HTMLType>(null);
+    const [expanded, setExpanded] = useState(false);
     const disclosureElement = useStoreState(store, "disclosureElement");
     const open = useStoreState(store, "open");
 
@@ -72,11 +73,16 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
     );
 
     // Assigns the disclosure element whenever it's undefined or disconnected
-    // from the DOM. The open state is a dependency so a disclosure element that
-    // silently left the DOM gets replaced on the next toggle.
+    // from the DOM. If the current element is the disclosure element, it will
+    // get the `aria-expanded` attribute set to `true` when the disclosure
+    // content is open.
     useEffect(() => {
-      if (disclosureElement?.isConnected) return;
-      store?.setDisclosureElement(ref.current);
+      let isCurrentDisclosure = disclosureElement === ref.current;
+      if (!disclosureElement?.isConnected) {
+        store?.setDisclosureElement(ref.current);
+        isCurrentDisclosure = true;
+      }
+      setExpanded(open && isCurrentDisclosure);
     }, [disclosureElement, store, open]);
 
     const onClickProp = props.onClick;
@@ -95,11 +101,7 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
     const contentElement = useStoreState(store, "contentElement");
 
     props = {
-      // This element controls the content, so it announces the content's state
-      // directly rather than from the store's disclosure element, which also
-      // serves focus restoration and outside interaction.
-      // https://github.com/ariakit/ariakit/issues/7083
-      "aria-expanded": open,
+      "aria-expanded": expanded,
       "aria-controls": contentElement?.id,
       ...metadataProps,
       ...props,

@@ -107,6 +107,7 @@ export const useComboboxDisclosure = createHook<
     children,
     tabIndex: -1,
     "aria-label": open ? "Hide popup" : "Show popup",
+    "aria-expanded": open,
     ...props,
     onMouseDown,
     onClick,
