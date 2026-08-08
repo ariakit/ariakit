@@ -195,16 +195,8 @@ export interface DisclosureStoreFunctions extends Pick<
   /**
    * Sets the `disclosureElement` state.
    *
-   * This is the element reported as expanded while the content is open. Content
-   * built on [`Dialog`](https://ariakit.com/reference/dialog), such as
-   * [`Popover`](https://ariakit.com/reference/popover) and
-   * [`Menu`](https://ariakit.com/reference/menu), also derives the elements that
-   * count as outside it, and where focus returns on close, from it.
-   *
-   * When showing such content programmatically, assign the opener before
-   * showing it. Otherwise the content keeps whatever already named one, such as
-   * a mounted disclosure button, and falls back to the focused element when
-   * nothing has.
+   * When showing the content programmatically, set this to the element that
+   * should act as its trigger.
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
