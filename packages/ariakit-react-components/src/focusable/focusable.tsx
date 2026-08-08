@@ -192,7 +192,15 @@ function onGlobalMouseDown(event: MouseEvent) {
 function onGlobalKeyDown(event: KeyboardEvent) {
   if (event.metaKey) return;
   if (event.ctrlKey) return;
-  if (event.altKey) return;
+  if (event.altKey) {
+    // Safari moves focus with Option+Tab when the macOS keyboard navigation
+    // setting is off, so that gesture is keyboard navigation rather than a
+    // shortcut. Every other Alt-modified key still keeps the current modality,
+    // since Option types special characters on macOS.
+    // https://github.com/ariakit/ariakit/issues/7094
+    if (!isSafariBrowser) return;
+    if (event.key !== "Tab") return;
+  }
   isKeyboardModality = true;
 }
 
