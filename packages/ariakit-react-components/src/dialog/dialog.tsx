@@ -82,11 +82,15 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 const isSafariBrowser = isSafari();
 const openModalPortals = new WeakSet<HTMLElement>();
 
-// The element a dialog captured when it last opened without an opener of its
-// own. It stands for nothing the application asked for, so a later open may
-// replace it. Keyed by the store rather than kept on the dialog because
-// unmountOnHide unmounts the dialog between opens.
-const capturedDisclosures = new WeakMap<object, Element>();
+// Elements a dialog captured because nothing named an opener. They stand for
+// nothing the application asked for, so a later open may replace them. Tracked
+// on the element rather than per dialog or per store, because both the dialog
+// and the store it derives are replaced when its component remounts, while the
+// store the application owns keeps the value. A mark is never dropped, since
+// two dialogs can share an element and one clearing it would leave the other
+// reading its own fallback as a name.
+// https://github.com/ariakit/ariakit/issues/7095
+const capturedDisclosures = new WeakSet<Element>();
 
 function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   const activeElement = getActiveElement(dialog);
@@ -287,11 +291,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     }, [domReady]);
   }
 
-  // The store the application owns outlives this component, so it keys the
-  // captured element above. Falls back to the local store when the dialog owns
-  // it, which is also the only case where nothing can unmount it separately.
-  const captureKey = storeProp || context || store;
-
   // Sets disclosure element using the current active element right after the
   // dialog is opened, unless something already named one.
   useSafeLayoutEffect(() => {
@@ -301,32 +300,23 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // an escape target rather than the element that disclosed the dialog.
     if (focusedStoreRef.current === store) return;
     const dialog = ref.current;
-    const previousCapture = capturedDisclosures.get(captureKey);
-    // A disclosure element this capture didn't leave behind names the opener
+    // A disclosure element no capture left behind names the opener
     // deliberately, whether it comes from a Disclosure component or from the
-    // application assigning it before showing the dialog. The capture is only a
-    // fallback for when nothing said otherwise, so it must not overwrite it.
-    // Re-assigning the previous capture is indistinguishable from leaving it
-    // there, because the store skips writes that don't change the value.
+    // application assigning it before showing the dialog. The capture is only
+    // a fallback for when nothing said otherwise, so it must not overwrite it.
     // https://github.com/ariakit/ariakit/issues/7087
     const hasNamedDisclosure = () => {
       const { disclosureElement } = store.getState();
       if (!disclosureElement) return false;
-      if (disclosureElement === previousCapture) return false;
+      if (capturedDisclosures.has(disclosureElement)) return false;
       if (!disclosureElement.isConnected) return false;
       // The disclosure element can't be inside the dialog.
       if (dialog && contains(dialog, disclosureElement)) return false;
       return true;
     };
-    // Only forget the previous capture once something has superseded it. The
-    // paths below can leave it in the store without capturing anything, and
-    // dropping the record there would make it look named on the next open.
-    if (hasNamedDisclosure()) {
-      capturedDisclosures.delete(captureKey);
-      return;
-    }
+    if (hasNamedDisclosure()) return;
     const captureDisclosure = (element: HTMLElement) => {
-      capturedDisclosures.set(captureKey, element);
+      capturedDisclosures.add(element);
       store.setDisclosureElement(element);
     };
     const activeElement = getActiveElement(dialog, true);
@@ -345,7 +335,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // The disclosure element can't be inside the dialog.
     if (dialog && contains(dialog, activeElement)) return;
     captureDisclosure(activeElement);
-  }, [store, captureKey, open]);
+  }, [store, open]);
 
   // Sets --dialog-viewport-height CSS variable to the height of the visual
   // viewport. This allows the dialog to be positioned correctly when the

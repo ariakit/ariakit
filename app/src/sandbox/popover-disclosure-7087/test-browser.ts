@@ -4,12 +4,18 @@ import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 type Query = ReturnType<typeof query>;
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  // The first PopoverDisclosure claims the store at mount, so opening from
-  // "Quick format" first moves the incumbent off that default and makes each
-  // test's expected opener a genuine outcome rather than the mount default.
+  // The last PopoverDisclosure to mount claims the store, which here is
+  // "Formatting". Opening from "Quick format" first moves the incumbent off
+  // that default, so each test's expected opener is a genuine outcome rather
+  // than whichever button happened to mount last.
   const openFromQuickFormatAndClose = async (q: Query) => {
     await q.button("Quick format").click();
     await test.expect(q.dialog("Formatting")).toBeVisible();
+    // Pins that this button, not "Formatting", holds the store when each test
+    // below starts, so naming "Formatting" there is a real change.
+    await test
+      .expect(q.button("Quick format"))
+      .toHaveAttribute("aria-expanded", "true");
     await q.button("Quick format").click();
     await test.expect(q.dialog("Formatting")).not.toBeVisible();
   };
@@ -116,6 +122,36 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // The button dropped focus, so this Escape comes from the body.
     await page.keyboard.press("Escape");
     await test.expect(q.dialog("Suggestions")).not.toBeVisible();
+
+    await title.click();
+    await title.press("/");
+    await test.expect(q.dialog("Suggestions")).toBeVisible();
+    await title.click();
+    // Nothing observable marks the dismissal that must not happen, so cross
+    // that window before asserting the title is the opener rather than the
+    // note.
+    await flushFrames(page);
+    await test.expect(q.dialog("Suggestions")).toBeVisible();
+  });
+
+  // The popup's own store is derived and gets replaced when its wrapper
+  // remounts, while the editor's store carries the opener across. Whatever
+  // tracks that the field was only a fallback has to survive that too, or the
+  // field stays the opener forever.
+  // https://github.com/ariakit/ariakit/issues/7087
+  test("replaces the fallback after the popup's own store is replaced", async ({
+    page,
+    q,
+  }) => {
+    const note = q.textbox("Note");
+    const title = q.textbox("Title");
+    await note.click();
+    await note.press("/");
+    await test.expect(q.dialog("Suggestions")).toBeVisible();
+    await note.press("Escape");
+    await test.expect(q.dialog("Suggestions")).not.toBeVisible();
+
+    await q.button("Reload suggestions").click();
 
     await title.click();
     await title.press("/");

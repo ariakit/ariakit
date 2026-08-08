@@ -1,12 +1,16 @@
 import { click, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// The first PopoverDisclosure claims the store at mount, so opening from "Quick
-// format" first moves the incumbent off that default and makes each test's
-// expected opener a genuine outcome rather than the mount default.
+// The last PopoverDisclosure to mount claims the store, which here is
+// "Formatting". Opening from "Quick format" first moves the incumbent off that
+// default, so each test's expected opener is a genuine outcome rather than
+// whichever button happened to mount last.
 async function openFromQuickFormatAndClose() {
   await click(q.button("Quick format"));
   expect(q.dialog("Formatting")).toBeVisible();
+  // Pins that this button, not "Formatting", holds the store when each test
+  // below starts, so naming "Formatting" there is a real change.
+  expect(q.button("Quick format")).toHaveAttribute("aria-expanded", "true");
   await click(q.button("Quick format"));
   await expect.poll(q.dialog.lazy("Formatting")).not.toBeInTheDocument();
 }
@@ -93,6 +97,32 @@ test("replaces the fallback after an open that captured nothing", async () => {
   // The button dropped focus, so this Escape comes from the body.
   await press.Escape();
   await expect.poll(q.dialog.lazy("Suggestions")).not.toBeInTheDocument();
+
+  await click(title);
+  await press("/", title);
+  expect(q.dialog("Suggestions")).toBeVisible();
+  await click(title);
+  // Nothing observable marks the dismissal that must not happen, so cross that
+  // window before asserting the title is the opener rather than the note.
+  await sleep();
+  expect(q.dialog("Suggestions")).toBeVisible();
+});
+
+// The popup's own store is derived and gets replaced when its wrapper remounts,
+// while the editor's store carries the opener across. Whatever tracks that the
+// field was only a fallback has to survive that too, or the field stays the
+// opener forever.
+// https://github.com/ariakit/ariakit/issues/7087
+test("replaces the fallback after the popup's own store is replaced", async () => {
+  const note = q.textbox.ensure("Note");
+  const title = q.textbox.ensure("Title");
+  await click(note);
+  await press("/", note);
+  expect(q.dialog("Suggestions")).toBeVisible();
+  await press.Escape(note);
+  await expect.poll(q.dialog.lazy("Suggestions")).not.toBeInTheDocument();
+
+  await click(q.button("Reload suggestions"));
 
   await click(title);
   await press("/", title);

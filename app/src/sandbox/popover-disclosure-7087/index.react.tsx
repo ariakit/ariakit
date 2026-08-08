@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import type { KeyboardEvent } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 // A note editor where "Formatting" and "Quick format" both open the same popup.
 // Typing "*" in a field opens it too and names "Formatting" as the opener, so
@@ -17,6 +17,7 @@ export default function Example() {
   const formatting = Ariakit.usePopoverStore();
   const suggestions = Ariakit.usePopoverStore();
   const formattingTriggerRef = useRef<HTMLButtonElement>(null);
+  const [suggestionsKey, setSuggestionsKey] = useState(0);
 
   // The markers stay in the text like they would in any markdown editor, so
   // these shortcuts intentionally don't prevent the default insertion.
@@ -51,18 +52,21 @@ export default function Example() {
         className="w-72 rounded border border-gray-300 px-3 py-1"
       />
 
+      {/* "Formatting" comes last on purpose. The last PopoverDisclosure to
+          mount claims the store, so this makes "Quick format" an incumbent a
+          test has to establish by opening the popup from it. */}
+      <Ariakit.PopoverDisclosure
+        store={formatting}
+        className="rounded border border-gray-300 px-3 py-1 aria-expanded:bg-blue-600 aria-expanded:text-white"
+      >
+        Quick format
+      </Ariakit.PopoverDisclosure>
       <Ariakit.PopoverDisclosure
         store={formatting}
         ref={formattingTriggerRef}
         className="rounded border border-gray-300 px-3 py-1 aria-expanded:bg-blue-600 aria-expanded:text-white"
       >
         Formatting
-      </Ariakit.PopoverDisclosure>
-      <Ariakit.PopoverDisclosure
-        store={formatting}
-        className="rounded border border-gray-300 px-3 py-1 aria-expanded:bg-blue-600 aria-expanded:text-white"
-      >
-        Quick format
       </Ariakit.PopoverDisclosure>
       {/* A plain button, so showing the popup from here names no opener at
           all. */}
@@ -88,6 +92,16 @@ export default function Example() {
       >
         Summarize note
       </button>
+      {/* Rebuilds the wrapper below, and with it the store that wrapper
+          derives. The editor's own store keeps the opener across that, so the
+          popup must still notice the field it fell back to is stale. */}
+      <button
+        type="button"
+        onClick={() => setSuggestionsKey((key) => key + 1)}
+        className="rounded border border-gray-300 px-3 py-1"
+      >
+        Reload suggestions
+      </button>
 
       {/* Both popups leave the caret where it was so the shortcuts don't
           interrupt typing. */}
@@ -109,23 +123,36 @@ export default function Example() {
         </Ariakit.PopoverDismiss>
       </Ariakit.Popover>
 
-      {/* unmountOnHide so the popup is rebuilt on every open, which is when a
-          fix that remembers the previous opener on the popup itself would lose
-          track of it. */}
-      <Ariakit.Popover
-        store={suggestions}
-        autoFocusOnShow={false}
-        portal
-        unmountOnHide
-        className="flex flex-col items-start gap-2 rounded-lg border border-gray-300 bg-white p-4 shadow-lg"
-      >
-        <Ariakit.PopoverHeading className="font-medium">
-          Suggestions
-        </Ariakit.PopoverHeading>
-        <Ariakit.Button className="rounded border border-gray-300 px-3 py-1">
-          Add a summary
-        </Ariakit.Button>
-      </Ariakit.Popover>
+      <SuggestionsPopover key={suggestionsKey} store={suggestions} />
     </div>
+  );
+}
+
+interface SuggestionsPopoverProps {
+  store: Ariakit.PopoverStore;
+}
+
+// Derives its own store from the one the editor owns, the way a wrapper
+// component in an application does. Remounting it replaces that derived store
+// while the editor's store keeps the opener, so a fix that remembers the
+// previous opener per store object loses track of it here. unmountOnHide adds
+// the same churn on every open.
+function SuggestionsPopover({ store }: SuggestionsPopoverProps) {
+  const popover = Ariakit.usePopoverStore({ store });
+  return (
+    <Ariakit.Popover
+      store={popover}
+      autoFocusOnShow={false}
+      portal
+      unmountOnHide
+      className="flex flex-col items-start gap-2 rounded-lg border border-gray-300 bg-white p-4 shadow-lg"
+    >
+      <Ariakit.PopoverHeading className="font-medium">
+        Suggestions
+      </Ariakit.PopoverHeading>
+      <Ariakit.Button className="rounded border border-gray-300 px-3 py-1">
+        Add a summary
+      </Ariakit.Button>
+    </Ariakit.Popover>
   );
 }
