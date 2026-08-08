@@ -77,8 +77,11 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
         }
         store.show();
         queueMicrotask(() => {
-          // Name the trigger again once the open has settled, in case anything
-          // else claimed the store while the hovercard was being shown.
+          // The dialog's open-time capture can still replace the trigger when
+          // it's an element a dialog previously captured as a fallback. That
+          // mark belongs to the element and is never dropped, so naming the
+          // trigger above can't rescue it and this has to land after the open.
+          // https://github.com/ariakit/ariakit/issues/7087
           store.setDisclosureElement(element);
         });
       };
