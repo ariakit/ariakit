@@ -128,6 +128,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     const multiSelectable = Array.isArray(selectedValue);
     const inputElement = useStoreState(store, "inputElement");
     const mounted = useStoreState(store, "mounted");
+    const open = useStoreState(store, "open");
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
@@ -291,6 +292,11 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       "aria-autocomplete": "none",
       "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       "aria-haspopup": getPopupRole(contentElement, "listbox"),
+      // The select is the combobox for this popup, so it announces the popup's
+      // state directly, like Combobox and ComboboxDisclosure do, instead of
+      // depending on still owning the store's disclosure element.
+      // https://github.com/ariakit/ariakit/issues/7080
+      "aria-expanded": open,
       "data-autofill": autofill || undefined,
       "data-name": name,
       children,
