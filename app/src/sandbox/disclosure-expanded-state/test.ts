@@ -90,7 +90,12 @@ test("announces every trigger that controls the same content", async () => {
 // its own open menu takes the switch away from every sibling.
 // https://github.com/ariakit/ariakit/issues/7083
 test("switches menus on hover after a programmatic open", async () => {
-  await click(q.textbox("Note"));
+  // Tab to the note instead of clicking it. `hover` replays a mousemove on the
+  // previously hovered element, and the note is the menu's disclosure element
+  // here, which arms the approach polygon the open menu uses to keep the
+  // pointer, swallowing the sibling's mousemove before it reaches React.
+  await press.Tab();
+  expect(q.textbox("Note")).toHaveFocus();
 
   await press("F8");
   expect(q.menu("Format")).toBeVisible();
