@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import type { KeyboardEvent } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 // A note editor where "Formatting" and "Quick format" both open the same popup.
 // Typing "*" in a field opens it too and names "Formatting" as the opener, so
@@ -16,15 +16,33 @@ export default function Example() {
   const formatting = Ariakit.usePopoverStore();
   const suggestions = Ariakit.usePopoverStore();
   const formattingTriggerRef = useRef<HTMLButtonElement>(null);
+  const [treeSnapshotKey, setTreeSnapshotKey] = useState(0);
+
+  // TODO: Remove once https://github.com/ariakit/ariakit/issues/7087 is fixed.
+  // Dialog overwrites the opener with the active element in a layout effect
+  // right after the open, so put the intended one back in a microtask and bump
+  // the tree snapshot key, which is what makes the popup recompute the outside
+  // elements it already derived from the overwritten value. Calling this
+  // without a trigger re-asserts whatever the store already held, standing in
+  // for the library keeping a mounted button over the focused element.
+  const showFormatting = (trigger?: HTMLButtonElement | null) => {
+    const opener = trigger ?? formatting.getState().disclosureElement;
+    formatting.show();
+    queueMicrotask(() => {
+      // The opener can be gone by now, and writing a detached element back
+      // would position the popup against nothing.
+      if (opener?.isConnected) {
+        formatting.setDisclosureElement(opener);
+      }
+      setTreeSnapshotKey((key) => key + 1);
+    });
+  };
 
   // The markers stay in the text like they would in any markdown editor, so
   // these shortcuts intentionally don't prevent the default insertion.
   const onFieldKeyDown = (event: KeyboardEvent) => {
     if (event.key === "*") {
-      const trigger = formattingTriggerRef.current;
-      if (!trigger) return;
-      formatting.setDisclosureElement(trigger);
-      formatting.show();
+      showFormatting(formattingTriggerRef.current);
     }
     if (event.key === "/") {
       suggestions.show();
@@ -63,11 +81,12 @@ export default function Example() {
       >
         Quick format
       </Ariakit.PopoverDisclosure>
-      {/* A plain button, so showing the popup from here names no opener at
-          all. */}
+      {/* A plain button, so the open itself names no opener. Until the fix
+          lands it goes through the workaround above, which re-asserts the
+          button the store already held. */}
       <button
         type="button"
-        onClick={() => formatting.show()}
+        onClick={() => showFormatting()}
         className="rounded border border-gray-300 px-3 py-1"
       >
         Suggest formatting
@@ -79,6 +98,7 @@ export default function Example() {
         store={formatting}
         autoFocusOnShow={false}
         portal
+        unstable_treeSnapshotKey={treeSnapshotKey}
         className="flex flex-col items-start gap-2 rounded-lg border border-gray-300 bg-white p-4 shadow-lg"
       >
         <Ariakit.PopoverHeading className="font-medium">
