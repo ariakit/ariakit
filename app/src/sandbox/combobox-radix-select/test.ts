@@ -79,7 +79,7 @@ test("search and select, then search again", async () => {
   expect(q.option("Russian")).toHaveAttribute("aria-selected", "true");
   await type("\b\b\b\b");
   expect(q.combobox("Search languages")).toHaveValue("");
-  expect(q.option("English")).toHaveFocus();
+  await expect.poll(q.option.lazy("English")).toHaveFocus();
   expect(q.option("English")).toHaveAttribute("data-active-item");
   expect(q.option("Russian")).toHaveAttribute("aria-selected", "true");
 });
