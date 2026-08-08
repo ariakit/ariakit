@@ -77,8 +77,8 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
         }
         store.show();
         queueMicrotask(() => {
-          // We need to set the trigger as the hovercard disclosure only when the
-          // hovercard is shown so it isn't replaced by the dialog component.
+          // Name the trigger again once the open has settled, in case anything
+          // else claimed the store while the hovercard was being shown.
           store.setDisclosureElement(element);
         });
       };
