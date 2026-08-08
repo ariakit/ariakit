@@ -195,8 +195,14 @@ export interface DisclosureStoreFunctions extends Pick<
   /**
    * Sets the `disclosureElement` state.
    *
+   * When showing the content programmatically, set this to the element that
+   * should act as its trigger.
+   *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
+   * @example
+   * store.setDisclosureElement(triggerRef.current);
+   * store.show();
    */
   setDisclosureElement: SetState<DisclosureStoreState["disclosureElement"]>;
 }

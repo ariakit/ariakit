@@ -82,6 +82,16 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 const isSafariBrowser = isSafari();
 const openModalPortals = new WeakSet<HTMLElement>();
 
+// Elements a dialog captured because nothing named an opener. They stand for
+// nothing the application asked for, so a later open may replace them. Tracked
+// on the element rather than per dialog or per store, because both the dialog
+// and the store it derives are replaced when its component remounts, while the
+// store the application owns keeps the value. A mark is never dropped, since
+// two dialogs can share an element and one clearing it would leave the other
+// reading its own fallback as a name.
+// https://github.com/ariakit/ariakit/issues/7095
+const capturedDisclosures = new WeakSet<Element>();
+
 function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   const activeElement = getActiveElement(dialog);
   if (!activeElement) return false;
@@ -282,7 +292,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   }
 
   // Sets disclosure element using the current active element right after the
-  // dialog is opened.
+  // dialog is opened, unless something already named one.
   useSafeLayoutEffect(() => {
     if (!open) return;
     // Native auto-focus can focus the dialog and synchronously move focus
@@ -290,6 +300,25 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // an escape target rather than the element that disclosed the dialog.
     if (focusedStoreRef.current === store) return;
     const dialog = ref.current;
+    // A disclosure element no capture left behind names the opener
+    // deliberately, whether it comes from a Disclosure component or from the
+    // application assigning it before showing the dialog. The capture is only
+    // a fallback for when nothing said otherwise, so it must not overwrite it.
+    // https://github.com/ariakit/ariakit/issues/7087
+    const hasNamedDisclosure = () => {
+      const { disclosureElement } = store.getState();
+      if (!disclosureElement) return false;
+      if (capturedDisclosures.has(disclosureElement)) return false;
+      if (!disclosureElement.isConnected) return false;
+      // The disclosure element can't be inside the dialog.
+      if (dialog && contains(dialog, disclosureElement)) return false;
+      return true;
+    };
+    if (hasNamedDisclosure()) return;
+    const captureDisclosure = (element: HTMLElement) => {
+      capturedDisclosures.add(element);
+      store.setDisclosureElement(element);
+    };
     const activeElement = getActiveElement(dialog, true);
     if (!activeElement) return;
     if (activeElement.tagName === "BODY") {
@@ -300,12 +329,12 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       if (!fallback?.isConnected) return;
       if (!isFocusable(fallback)) return;
       if (dialog && contains(dialog, fallback)) return;
-      store.setDisclosureElement(fallback as HTMLElement);
+      captureDisclosure(fallback as HTMLElement);
       return;
     }
     // The disclosure element can't be inside the dialog.
     if (dialog && contains(dialog, activeElement)) return;
-    store.setDisclosureElement(activeElement);
+    captureDisclosure(activeElement);
   }, [store, open]);
 
   // Sets --dialog-viewport-height CSS variable to the height of the visual
