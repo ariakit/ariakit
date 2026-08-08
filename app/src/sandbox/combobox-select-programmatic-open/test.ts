@@ -44,6 +44,22 @@ test("takes focus even when another element owns it", async () => {
   expect(q.combobox("Vegetable")).toHaveFocus();
 });
 
+// The select is the only control for this popup, so it stays the element that
+// announces the open state no matter who held focus when the open happened.
+// https://github.com/ariakit/ariakit/issues/7080
+test("announces the select as expanded when another element owns focus", async () => {
+  const select = q.combobox("Vegetable");
+  const note = q.textbox("Note");
+  await click(note);
+  expect(note).toHaveFocus();
+  expect(select).toHaveAttribute("aria-expanded", "false");
+
+  await press("F2");
+
+  expect(q.listbox()).toBeVisible();
+  expect(select).toHaveAttribute("aria-expanded", "true");
+});
+
 // https://github.com/ariakit/ariakit/issues/7068
 test("abandons the presentation when focus leaves before the options arrive", async () => {
   await press("F2");
