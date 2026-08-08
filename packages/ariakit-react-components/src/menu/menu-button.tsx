@@ -253,6 +253,9 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
         };
         const canShowOnHover = getShowOnHover();
         if (!canShowOnHover) return false;
+        // Menus take focus when they open, but a hover is the passive way to
+        // get there, so this one opts out.
+        store?.setAutoFocusOnShow(false);
         const parent = parentIsMenubar ? parentMenubar : parentMenu;
         if (!parent) return true;
         // When hovering over a menu button shows a menu and the menu button is
