@@ -7,8 +7,8 @@ import {
 import * as RadixSelect from "@radix-ui/react-select";
 import { matchSorter } from "match-sorter";
 import {
-  startTransition,
   useCallback,
+  useDeferredValue,
   useEffect,
   useMemo,
   useRef,
@@ -53,11 +53,12 @@ export default function Example() {
   const { open, setOpen, onOpenChange } = useRadixSelectOpenState();
   const [value, setValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
+  const deferredSearchValue = useDeferredValue(searchValue);
 
   const matches = useMemo(() => {
-    if (!searchValue) return languages;
+    if (!deferredSearchValue) return languages;
     const keys = ["label", "value"];
-    const matches = matchSorter(languages, searchValue, { keys });
+    const matches = matchSorter(languages, deferredSearchValue, { keys });
     // Radix Select does not work if we don't render the selected item, so we
     // make sure to include it in the list of matches.
     const selectedLanguage = languages.find((lang) => lang.value === value);
@@ -65,7 +66,7 @@ export default function Example() {
       matches.push(selectedLanguage);
     }
     return matches;
-  }, [searchValue, value]);
+  }, [deferredSearchValue, value]);
 
   return (
     <RadixSelect.Root
@@ -79,11 +80,7 @@ export default function Example() {
         setOpen={setOpen}
         resetValueOnHide
         compositeElementInFocusOrder={false}
-        setValue={(value) => {
-          startTransition(() => {
-            setSearchValue(value);
-          });
-        }}
+        setValue={setSearchValue}
       >
         <RadixSelect.Trigger
           aria-label="Language"
