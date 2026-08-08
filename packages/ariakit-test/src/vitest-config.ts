@@ -29,6 +29,7 @@ interface TextSelection {
   start: number | null;
   end: number | null;
   direction: "forward" | "backward" | "none" | null;
+  isMac: boolean;
   valueLength: number;
 }
 
@@ -114,6 +115,7 @@ async function ariakitPress(
       start: element.selectionStart,
       end: element.selectionEnd,
       direction: element.selectionDirection,
+      isMac: navigator.platform.startsWith("Mac"),
       valueLength: element.value.length,
     };
   });
@@ -195,9 +197,9 @@ async function ariakitPress(
         element.setSelectionRange(position, position);
         return;
       }
-      // Chromium and WebKit expand the physical selection in the key's
-      // direction, while Firefox extends it from the logical anchor.
-      if (browser !== "firefox") {
+      // macOS Chromium and WebKit expand the physical selection in the key's
+      // direction. Firefox and the Linux engines extend the logical anchor.
+      if (selection.isMac && browser !== "firefox") {
         element.setSelectionRange(
           key === "Home" ? position : selection.start,
           key === "End" ? position : selection.end,

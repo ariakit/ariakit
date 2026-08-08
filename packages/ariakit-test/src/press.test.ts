@@ -1,4 +1,4 @@
-import { isFirefox } from "@ariakit/utils";
+import { isFirefox, isMac } from "@ariakit/utils";
 import { afterEach, expect, test, vi } from "vitest";
 import { isBrowser } from "./__utils.ts";
 import { press } from "./index.ts";
@@ -298,11 +298,10 @@ test("press.Home with shiftKey follows native selection behavior", async () => {
   await press.Home(input, { shiftKey: true });
 
   expect(input.selectionStart).toBe(0);
-  // Firefox keeps the logical anchor. Chromium and WebKit extend from the
-  // physical end of the selection instead. happy-dom preserves the simulated
-  // logical-anchor behavior.
+  // macOS Chromium and WebKit expand the physical selection. Firefox, Linux
+  // Chromium, and happy-dom preserve the logical-anchor behavior.
   const expectedSelection =
-    isBrowser && !isFirefox() ? [8, "forward"] : [6, "backward"];
+    isBrowser && isMac() && !isFirefox() ? [8, "forward"] : [6, "backward"];
   expect([input.selectionEnd, input.selectionDirection]).toEqual(
     expectedSelection,
   );
@@ -316,7 +315,7 @@ test("press.End with shiftKey follows native selection behavior", async () => {
 
   expect(input.selectionEnd).toBe(11);
   const expectedSelection =
-    isBrowser && !isFirefox() ? [4, "backward"] : [6, "forward"];
+    isBrowser && isMac() && !isFirefox() ? [4, "backward"] : [6, "forward"];
   expect([input.selectionStart, input.selectionDirection]).toEqual(
     expectedSelection,
   );
