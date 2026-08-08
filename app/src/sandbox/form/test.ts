@@ -1,7 +1,15 @@
 import { click, press, q, type } from "@ariakit/test";
 import { expect, test, vi } from "vitest";
 
-const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
+function spyOnAlert() {
+  return vi.spyOn(window, "alert").mockImplementation(() => {});
+}
+
+function getErrorMessages() {
+  return Array.from(document.querySelectorAll(".error")).filter((element) =>
+    element.textContent?.trim(),
+  );
+}
 
 test("focus on the first input by tabbing", async () => {
   expect(q.textbox("Name")).not.toHaveFocus();
@@ -10,19 +18,19 @@ test("focus on the first input by tabbing", async () => {
 });
 
 test("show error on blur", async () => {
-  expect(q.text.all("Constraints not satisfied")).toHaveLength(0);
+  expect(getErrorMessages()).toHaveLength(0);
   await press.Tab();
   await press.Tab();
-  expect(q.text.all("Constraints not satisfied")).toHaveLength(1);
+  expect(getErrorMessages()).toHaveLength(1);
   await press.Tab();
-  expect(q.text.all("Constraints not satisfied")).toHaveLength(2);
+  expect(getErrorMessages()).toHaveLength(2);
 });
 
 test("show error on submit", async () => {
   await press.Tab();
-  expect(q.text.all("Constraints not satisfied")).toHaveLength(0);
+  expect(getErrorMessages()).toHaveLength(0);
   await press.Enter();
-  expect(q.text.all("Constraints not satisfied")).toHaveLength(2);
+  expect(getErrorMessages()).toHaveLength(2);
 });
 
 test("focus on input with error on submit", async () => {
@@ -34,9 +42,9 @@ test("fix error on change", async () => {
   await press.Tab();
   await press.Tab();
   await press.ShiftTab();
-  expect(q.text.all("Constraints not satisfied")).toHaveLength(2);
+  expect(getErrorMessages()).toHaveLength(2);
   await type("John");
-  expect(q.text.all("Constraints not satisfied")).toHaveLength(1);
+  expect(getErrorMessages()).toHaveLength(1);
 });
 
 test("reset form on reset", async () => {

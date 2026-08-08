@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 
 test("selected tab is restored only after the animation ends", async () => {
   await click(q.combobox());
-  expect(await q.dialog.wait("Pages")).toBeVisible();
+  await expect.poll(q.dialog.lazy("Pages")).toBeVisible();
   await press.ArrowDown();
   await press.ArrowRight();
   expect(q.tab("Examples 31")).toHaveFocus();
@@ -27,18 +27,20 @@ test("selected tab is restored only after the animation ends", async () => {
 
 test("can re-open the dialog with arrow down while the animation is running", async () => {
   await click(q.combobox());
-  expect(await q.dialog.wait("Pages")).toBeVisible();
+  await expect.poll(q.dialog.lazy("Pages")).toBeVisible();
   await press.ArrowDown();
   await press.ArrowRight();
   await press.Escape();
   expect(q.combobox()).toHaveAttribute("data-active-item");
+  // Re-open before the 1000ms exit animation can remove the dialog.
   await sleep(200);
   await press.ArrowDown();
-  expect(q.dialog("Pages")).toBeVisible();
+  await expect.poll(q.dialog.lazy("Pages")).toBeVisible();
   expect(q.tab("Examples 31")).not.toHaveFocus();
   expect(q.tab("Examples 31")).not.toHaveAttribute("data-active-item");
   expect(q.tab("Examples 31")).toHaveAttribute("aria-selected", "true");
   expect(q.tabpanel("Examples 31")).toBeVisible();
+  // Cross the original exit deadline to prove its stale timer was canceled.
   await sleep(1000);
   expect(q.dialog("Pages")).toBeVisible();
   expect(q.tabpanel("Examples 31")).toBeVisible();

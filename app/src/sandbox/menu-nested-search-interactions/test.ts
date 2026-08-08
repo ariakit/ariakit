@@ -58,7 +58,7 @@ test("open/hide with search submenu", async () => {
   expect(q.dialog("Turn into page in")).not.toBeInTheDocument();
   expect(await q.dialog.wait("Turn into page in")).toBeVisible();
   // Testing blurOnHoverEnd={false}
-  await hover(document.body);
+  await hover(document.body, { clientX: 10, clientY: 10 });
   expect(option).toHaveFocus();
   expect(option).toHaveAttribute("aria-expanded", "true");
   expect(q.combobox("Search actions...")).toHaveFocus();

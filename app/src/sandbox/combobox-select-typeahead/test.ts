@@ -97,6 +97,7 @@ for (const [name, labels] of Object.entries(fixtures)) {
         "apple",
       );
       expect(select).toHaveTextContent("Apple");
+      expect(select).toHaveFocus();
     });
   });
 }

@@ -121,6 +121,7 @@ function Counted({
       >
         <button
           type="button"
+          tabIndex={0}
           onKeyDown={(event) => {
             if (event.key !== "Escape") return;
             event.preventDefault();

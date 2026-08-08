@@ -8,6 +8,7 @@ Utilities for simulating user interactions in Ariakit's unit and end-to-end test
 
 - [Installation](#installation)
 - [Usage](#usage)
+- [Vitest Browser Mode](#vitest-browser-mode)
 - [API reference](#api-reference)
 - [React API reference](#react-api-reference)
 - [Playwright API reference](#playwright-api-reference)
@@ -29,6 +30,45 @@ import { click, press, type } from "@ariakit/test";
 ```
 
 The `@ariakit/test/react` entry point renders React components for testing, and the `@ariakit/test/playwright` entry point provides query helpers for Playwright tests.
+
+## Vitest Browser Mode
+
+In a [Vitest Browser Mode](https://vitest.dev/guide/browser/) project configured with the [Playwright provider](https://vitest.dev/config/browser/playwright), add the Ariakit server commands to the Vitest config:
+
+```ts
+import { playwright } from "@vitest/browser-playwright";
+import { ariakitBrowserCommands } from "@ariakit/test/vitest-config";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    browser: {
+      enabled: true,
+      provider: playwright(),
+      commands: ariakitBrowserCommands,
+      instances: [{ browser: "chromium" }],
+    },
+  },
+});
+```
+
+Then import the browser setup entry from a setup file:
+
+```ts
+import "@ariakit/test/vitest";
+```
+
+Tests can keep importing the same helpers and queries from `@ariakit/test`:
+
+```ts
+import { click, press, q, type } from "@ariakit/test";
+
+await type("Hello", q.textbox());
+await press.Enter();
+await click(q.button("Submit"));
+```
+
+The setup entry routes supported high-level interactions through Vitest's Playwright provider. Other providers, low-level `dispatch` calls, direct `option` element clicks, and interaction options that Playwright cannot represent continue to use Ariakit's event simulation.
 
 <!-- ariakit-docs:start -->
 
@@ -376,7 +416,7 @@ expect(document.getSelection()?.toString()).toBe("hello world");
 ### `sleep`
 
 ```ts
-function sleep(ms = defaultMs): Promise<void>;
+function sleep(ms?: number): Promise<void>;
 ```
 
 Waits for the DOM to settle between simulated interactions by yielding across two animation frames and a short timeout.

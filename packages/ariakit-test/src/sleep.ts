@@ -1,3 +1,4 @@
+import { getInteractionDriver } from "./__interaction-driver.ts";
 import { flushScheduler, isBrowser, nextFrame, wrapAsync } from "./__utils.ts";
 
 // The intermediate sub-steps of each interaction now settle without a wall-clock
@@ -5,8 +6,6 @@ import { flushScheduler, isBrowser, nextFrame, wrapAsync } from "./__utils.ts";
 // an interaction. It's kept small in non-browser environments — but not zero, as
 // a few milliseconds remain load-bearing for some interactions, such as hiding a
 // dialog by clicking outside.
-const defaultMs = isBrowser ? 150 : 4;
-
 /**
  * Waits for the DOM to settle between simulated interactions by yielding across
  * two animation frames and a short timeout.
@@ -23,7 +22,10 @@ const defaultMs = isBrowser ? 150 : 4;
  * expect(q.dialog()).toBeVisible();
  * ```
  */
-export function sleep(ms = defaultMs) {
+export function sleep(ms?: number) {
+  if (ms === undefined) {
+    ms = !isBrowser ? 4 : getInteractionDriver() ? 20 : 150;
+  }
   return wrapAsync(async () => {
     await nextFrame();
     await new Promise((resolve) => setTimeout(resolve, ms));

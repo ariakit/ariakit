@@ -24,13 +24,16 @@ test("show on disclosure space", async () => {
   expect(q.button("OK")).toHaveFocus();
 });
 
-test("focus trap", async () => {
-  await click(q.button("Show modal"));
-  expect(q.button("OK")).toHaveFocus();
-  await press.Tab();
-  expect(q.button("OK")).toHaveFocus();
-  await press.ShiftTab();
-  expect(q.button("OK")).toHaveFocus();
+test("keeps focus away from the disclosure while open", async () => {
+  const disclosure = q.button("Show modal");
+  for (const pressTab of [press.Tab, press.ShiftTab]) {
+    await click(disclosure);
+    expect(q.button("OK")).toHaveFocus();
+    await pressTab();
+    expect(q.dialog()).toBeVisible();
+    await expect.poll(q.button.lazy("OK")).toHaveFocus();
+    await press.Escape();
+  }
 });
 
 test("hide on escape", async () => {

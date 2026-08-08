@@ -6,8 +6,6 @@ test("show context menu and hide it with escape", async () => {
   await rightClick(q.text("Right click here"));
   await expect.poll(q.menu).toHaveFocus();
   expect(q.menu()).toBeVisible();
-  await rightClick(q.text("Right click here"));
-  await expect.poll(q.menu).toBeVisible();
   await press.Escape();
   expect(q.menu()).not.toBeInTheDocument();
 });

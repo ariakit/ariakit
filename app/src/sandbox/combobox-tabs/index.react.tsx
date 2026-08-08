@@ -11,6 +11,7 @@ import {
   ComboboxTabList,
 } from "./combobox.react.tsx";
 import { flatPages, pages } from "./pages.ts";
+import "./style.css";
 
 const categories = ["All", ...Object.keys(pages)];
 

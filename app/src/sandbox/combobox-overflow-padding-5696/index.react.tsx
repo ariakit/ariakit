@@ -38,7 +38,11 @@ export default function Example() {
         <Ariakit.ComboboxItem value="Apple" />
         <Ariakit.ComboboxItem value="Orange" />
       </Ariakit.ComboboxPopover>
-      <output ref={positionUpdatesRef} aria-label="Position updates">
+      <output
+        ref={positionUpdatesRef}
+        aria-label="Position updates"
+        className="sr-only"
+      >
         0
       </output>
     </Ariakit.ComboboxProvider>

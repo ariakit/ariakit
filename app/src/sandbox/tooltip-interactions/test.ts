@@ -8,6 +8,7 @@ const hoverOutside = async () => {
 };
 
 test("shows on hover, hides outside, and immediately reopens", async () => {
+  await hoverOutside();
   const anchor = q.link("Tooltip anchor");
 
   expect(q.tooltip("Tooltip content")).not.toBeInTheDocument();
@@ -21,15 +22,18 @@ test("shows on hover, hides outside, and immediately reopens", async () => {
 });
 
 test("stays open when hover is followed by keyboard focus", async () => {
+  await hoverOutside();
   const anchor = q.link("Tooltip anchor");
   await hover(anchor);
   expect(await q.tooltip.wait("Tooltip content")).toBeVisible();
-  await focus(anchor);
+  await press.Tab();
+  expect(anchor).toHaveFocus();
   await hoverOutside();
   expect(q.tooltip("Tooltip content")).toBeVisible();
 });
 
 test("shows on focus and hides after focus moves", async () => {
+  await hoverOutside();
   await focus(q.link("Tooltip anchor"));
   expect(await q.tooltip.wait("Tooltip content")).toBeVisible();
   await press.Tab();
@@ -38,6 +42,7 @@ test("shows on focus and hides after focus moves", async () => {
 });
 
 test("stays open after focus-visible and pointer movement", async () => {
+  await hoverOutside();
   const anchor = q.link("Tooltip anchor");
   await press.Tab();
   expect(anchor).toHaveFocus();
@@ -51,6 +56,7 @@ test("stays open after focus-visible and pointer movement", async () => {
 
 // https://github.com/ariakit/ariakit/issues/7043
 test("waits again after keyboard focus is lost", async () => {
+  await hoverOutside();
   const anchor = q.link("Tooltip anchor");
   await hover(anchor);
   expect(await q.tooltip.wait("Tooltip content")).toBeVisible();
@@ -70,6 +76,7 @@ test("waits again after keyboard focus is lost", async () => {
 });
 
 test("Escape from tooltip content restores its anchor", async () => {
+  await hoverOutside();
   const anchor = q.link("Tooltip anchor");
   await hover(anchor);
   expect(await q.tooltip.wait("Tooltip content")).toBeVisible();

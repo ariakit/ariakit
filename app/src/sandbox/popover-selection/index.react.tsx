@@ -53,9 +53,9 @@ export default function Example() {
           return selection.getRangeAt(0).getBoundingClientRect();
         }}
       >
-        <Ariakit.Button>Bookmark</Ariakit.Button>
-        <Ariakit.Button>Edit</Ariakit.Button>
-        <Ariakit.Button>Share</Ariakit.Button>
+        <Ariakit.Button tabIndex={0}>Bookmark</Ariakit.Button>
+        <Ariakit.Button tabIndex={0}>Edit</Ariakit.Button>
+        <Ariakit.Button tabIndex={0}>Share</Ariakit.Button>
       </Ariakit.Popover>
       <p ref={paragraphRef}>
         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Odio, sed fuga

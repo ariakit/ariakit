@@ -1,6 +1,40 @@
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
 
+function StoreReplacement() {
+  const storeA = Ariakit.useCompositeStore();
+  const storeB = Ariakit.useCompositeStore();
+  const [useStoreB, setUseStoreB] = useState(false);
+  const store = useStoreB ? storeB : storeA;
+  const itemId = useStoreB ? "store-b-item" : "store-a-item";
+
+  return (
+    <>
+      <Ariakit.Composite
+        aria-label="Store replacement actions"
+        focusOnMove={useStoreB}
+        store={store}
+      >
+        <Ariakit.CompositeItem id={itemId}>
+          Store {useStoreB ? "B" : "A"} item
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+      <button
+        type="button"
+        onClick={() => {
+          storeA.move("store-a-item");
+          storeB.move("store-b-item");
+        }}
+      >
+        Prime replacement stores
+      </button>
+      <button type="button" onClick={() => setUseStoreB(true)}>
+        Use replacement store
+      </button>
+    </>
+  );
+}
+
 export default function Example() {
   const store = Ariakit.useCompositeStore();
   const scrollStore = Ariakit.useCompositeStore({
@@ -98,6 +132,7 @@ export default function Example() {
       >
         Mount virtual late item
       </button>
+      <StoreReplacement />
     </>
   );
 }

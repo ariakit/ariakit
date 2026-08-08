@@ -1,4 +1,4 @@
-import { click, press, q, type } from "@ariakit/test";
+import { click, press, q, sleep, type } from "@ariakit/test";
 import { beforeEach, expect, test, vi } from "vitest";
 
 const spyOnLog = () => vi.spyOn(console, "log").mockImplementation(() => {});
@@ -173,8 +173,16 @@ test("navigate with keyboard ignoring disabled items", async () => {
   await press.Tab();
   await press.Enter();
   expect(q.menuitemcheckbox("Apple (checkboxControlled)")).toHaveFocus();
+  await expect.poll(q.menu.lazy()).toHaveAttribute("data-enter", "true");
+  await expect
+    .poll(q.menuitemcheckbox.lazy("Apple (checkboxControlled)"))
+    .toHaveFocus();
+  // Wait for the menu's opening focus transition to finish before navigating.
+  await sleep();
   await press.ArrowDown();
-  expect(q.menuitemcheckbox("Banana (checkboxControlled)")).toHaveFocus();
+  await expect
+    .poll(q.menuitemcheckbox.lazy("Banana (checkboxControlled)"))
+    .toHaveFocus();
   await press.ArrowDown();
   expect(q.menuitemcheckbox("Orange (checkboxControlled)")).toHaveFocus();
   await press.ArrowDown();

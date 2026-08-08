@@ -2,10 +2,11 @@ import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("check/uncheck on click", async () => {
+  const label = q.text("Technology");
   expect(q.checkbox()).toBeChecked();
-  await click(q.checkbox());
+  await click(label);
   expect(q.checkbox()).not.toBeChecked();
-  await click(q.checkbox());
+  await click(label);
   expect(q.checkbox()).toBeChecked();
 });
 

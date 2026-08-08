@@ -1,10 +1,11 @@
 import { isVisible, isFocusable, invariant } from "@ariakit/utils";
+import { getInteractionDriver } from "./__interaction-driver.ts";
 import { isHappyDOM, settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
-import { hover } from "./hover.ts";
-import { mouseDown } from "./mouse-down.ts";
-import { mouseUp } from "./mouse-up.ts";
+import { hover, simulateHover } from "./hover.ts";
+import { mouseDown, simulateMouseDown } from "./mouse-down.ts";
+import { mouseUp, simulateMouseUp } from "./mouse-up.ts";
 import { sleep } from "./sleep.ts";
 
 function getClosestLabel(element: Element) {
@@ -148,6 +149,28 @@ async function clickOption(
   await dispatch.click(element, eventOptions);
 }
 
+function getOption(element: Element) {
+  const { defaultView } = element.ownerDocument;
+  if (!defaultView) return;
+  if (!(element instanceof defaultView.HTMLOptionElement)) return;
+  return element;
+}
+
+async function clickOptionWithModifiers(
+  element: HTMLOptionElement,
+  options?: PointerEventInit,
+  tap = false,
+) {
+  await simulateHover(element, options);
+  await simulateMouseDown(element, options);
+  if (!tap) {
+    await settle();
+  }
+  await simulateMouseUp(element, options);
+  if (element.disabled) return;
+  await clickOption(element, { detail: 1, ...options });
+}
+
 /**
  * Clicks on an element, simulating the sequence of events a real mouse click
  * produces — hovering the target, then `pointerdown`, `mousedown`, `focus`,
@@ -171,7 +194,23 @@ export function click(
 ) {
   return wrapAsync(async () => {
     invariant(element, "Unable to click on null element");
-    if (!isVisible(element)) return;
+    const driver = getInteractionDriver();
+    const option = driver ? getOption(element) : undefined;
+    if (!option && !isVisible(element)) return;
+
+    if (await driver?.click(element, options, tap)) {
+      await sleep();
+      return;
+    }
+
+    // Options aren't independently actionable in every browser engine. When a
+    // browser driver is active, preserve the package's established event,
+    // focus, and modifier semantics through the simulation layer.
+    if (option) {
+      await clickOptionWithModifiers(option, options, tap);
+      await sleep();
+      return;
+    }
 
     await hover(element, options);
     await mouseDown(element, options);

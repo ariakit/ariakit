@@ -1,104 +1,95 @@
 import { afterAll, expect, test } from "vitest";
 
-const nodePrototype = window.Node.prototype;
-const connectedToNodeSymbol = Object.getOwnPropertySymbols(nodePrototype).find(
-  (symbol) => symbol.description === "connectedToNode",
-);
-if (!connectedToNodeSymbol) {
-  throw new Error("Missing happy-dom connectedToNode symbol");
-}
-const connectedToNodeDescriptor = Object.getOwnPropertyDescriptor(
-  nodePrototype,
-  connectedToNodeSymbol,
-);
-const originalConnectedToNode = connectedToNodeDescriptor?.value;
-if (
-  !connectedToNodeDescriptor ||
-  typeof originalConnectedToNode !== "function"
-) {
-  throw new Error("Missing happy-dom connectedToNode method");
+function getConnectionHook() {
+  const nodePrototype = window.Node.prototype;
+  const symbol = Object.getOwnPropertySymbols(nodePrototype).find(
+    (symbol) => symbol.description === "connectedToNode",
+  );
+  if (!symbol) return;
+  const descriptor = Object.getOwnPropertyDescriptor(nodePrototype, symbol);
+  const method = descriptor?.value;
+  if (!descriptor) return;
+  if (typeof method !== "function") return;
+  return { descriptor, method, symbol };
 }
 
+const connectionHook = getConnectionHook();
 const htmlElementPrototype = window.HTMLElement.prototype;
-const originalHTMLElementDescriptor = Object.getOwnPropertyDescriptor(
-  htmlElementPrototype,
-  connectedToNodeSymbol,
-);
 const formPrototype = window.HTMLFormElement.prototype;
-const originalFormDescriptor = Object.getOwnPropertyDescriptor(
-  formPrototype,
-  connectedToNodeSymbol,
-);
 const selectPrototype = window.HTMLSelectElement.prototype;
-const originalSelectDescriptor = Object.getOwnPropertyDescriptor(
-  selectPrototype,
-  connectedToNodeSymbol,
-);
+const originalHTMLElementDescriptor = connectionHook
+  ? Object.getOwnPropertyDescriptor(htmlElementPrototype, connectionHook.symbol)
+  : undefined;
+const originalFormDescriptor = connectionHook
+  ? Object.getOwnPropertyDescriptor(formPrototype, connectionHook.symbol)
+  : undefined;
+const originalSelectDescriptor = connectionHook
+  ? Object.getOwnPropertyDescriptor(selectPrototype, connectionHook.symbol)
+  : undefined;
 let formConnections = 0;
 let selectConnections = 0;
 
-Object.defineProperty(htmlElementPrototype, connectedToNodeSymbol, {
-  ...connectedToNodeDescriptor,
-  value: function connectedToNode(this: Node) {
-    if (this instanceof window.HTMLFormElement) {
-      formConnections++;
-    }
-    Reflect.apply(originalConnectedToNode, this, []);
-  },
-});
-Object.defineProperty(selectPrototype, connectedToNodeSymbol, {
-  configurable: true,
-  get() {
-    return function connectedToNode(this: Node) {
-      selectConnections++;
-      Reflect.apply(originalConnectedToNode, this, []);
-    };
-  },
-});
+if (connectionHook) {
+  const { descriptor, method, symbol } = connectionHook;
+  Object.defineProperty(htmlElementPrototype, symbol, {
+    ...descriptor,
+    value: function connectedToNode(this: Node) {
+      if (this instanceof window.HTMLFormElement) {
+        formConnections++;
+      }
+      Reflect.apply(method, this, []);
+    },
+  });
+  Object.defineProperty(selectPrototype, symbol, {
+    configurable: true,
+    get() {
+      return function connectedToNode(this: Node) {
+        selectConnections++;
+        Reflect.apply(method, this, []);
+      };
+    },
+  });
 
-const customHTMLElementDescriptor = Object.getOwnPropertyDescriptor(
-  htmlElementPrototype,
-  connectedToNodeSymbol,
-);
-const customSelectDescriptor = Object.getOwnPropertyDescriptor(
-  selectPrototype,
-  connectedToNodeSymbol,
-);
-await import("./shims.ts");
-formConnections = 0;
-selectConnections = 0;
+  await import("./shims.ts");
+  formConnections = 0;
+  selectConnections = 0;
+}
+
+const customHTMLElementDescriptor = connectionHook
+  ? Object.getOwnPropertyDescriptor(htmlElementPrototype, connectionHook.symbol)
+  : undefined;
+const customSelectDescriptor = connectionHook
+  ? Object.getOwnPropertyDescriptor(selectPrototype, connectionHook.symbol)
+  : undefined;
 
 afterAll(() => {
+  if (!connectionHook) return;
+  const { symbol } = connectionHook;
   if (originalFormDescriptor) {
-    Object.defineProperty(
-      formPrototype,
-      connectedToNodeSymbol,
-      originalFormDescriptor,
-    );
+    Object.defineProperty(formPrototype, symbol, originalFormDescriptor);
   } else {
-    Reflect.deleteProperty(formPrototype, connectedToNodeSymbol);
+    Reflect.deleteProperty(formPrototype, symbol);
   }
   if (originalSelectDescriptor) {
-    Object.defineProperty(
-      selectPrototype,
-      connectedToNodeSymbol,
-      originalSelectDescriptor,
-    );
+    Object.defineProperty(selectPrototype, symbol, originalSelectDescriptor);
   } else {
-    Reflect.deleteProperty(selectPrototype, connectedToNodeSymbol);
+    Reflect.deleteProperty(selectPrototype, symbol);
   }
   if (originalHTMLElementDescriptor) {
     Object.defineProperty(
       htmlElementPrototype,
-      connectedToNodeSymbol,
+      symbol,
       originalHTMLElementDescriptor,
     );
   } else {
-    Reflect.deleteProperty(htmlElementPrototype, connectedToNodeSymbol);
+    Reflect.deleteProperty(htmlElementPrototype, symbol);
   }
 });
 
-test("leaves an inherited connection hook unchanged", () => {
+const happyDOMTest = connectionHook ? test : test.skip;
+
+happyDOMTest("leaves an inherited connection hook unchanged", () => {
+  if (!connectionHook) return;
   const container = document.createElement("div");
   const form = document.createElement("form");
   const input = document.createElement("input");
@@ -107,16 +98,17 @@ test("leaves an inherited connection hook unchanged", () => {
   container.append(form);
 
   expect(formConnections).toBeGreaterThan(0);
-  expect(Object.hasOwn(formPrototype, connectedToNodeSymbol)).toBe(false);
+  expect(Object.hasOwn(formPrototype, connectionHook.symbol)).toBe(false);
   expect(
     Object.getOwnPropertyDescriptor(
       htmlElementPrototype,
-      connectedToNodeSymbol,
+      connectionHook.symbol,
     ),
   ).toEqual(customHTMLElementDescriptor);
 });
 
-test("leaves an accessor connection hook unchanged", () => {
+happyDOMTest("leaves an accessor connection hook unchanged", () => {
+  if (!connectionHook) return;
   const container = document.createElement("div");
   const select = document.createElement("select");
   const option = document.createElement("option");
@@ -126,6 +118,6 @@ test("leaves an accessor connection hook unchanged", () => {
 
   expect(selectConnections).toBeGreaterThan(0);
   expect(
-    Object.getOwnPropertyDescriptor(selectPrototype, connectedToNodeSymbol),
+    Object.getOwnPropertyDescriptor(selectPrototype, connectionHook.symbol),
   ).toEqual(customSelectDescriptor);
 });

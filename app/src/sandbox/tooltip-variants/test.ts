@@ -1,4 +1,4 @@
-import { click, hover, press, q } from "@ariakit/test";
+import { click, dispatch, hover, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 async function hoverOutside() {
@@ -30,9 +30,11 @@ test("keeps the label tooltip open when its anchor is clicked", async () => {
 test("keeps the hover-triggered tooltip mounted during leave", async () => {
   const anchor = q.link("Animated anchor");
   await hover(anchor);
-  expect(await q.tooltip.wait("Animated tooltip")).toBeVisible();
-  await hoverOutside();
-  expect(q.tooltip.hidden("Animated tooltip")).toBeVisible();
+  await expect.poll(q.tooltip.lazy("Animated tooltip")).toBeVisible();
+  // Dispatch directly so the assertion runs before the 100ms leave transition
+  // can unmount the tooltip.
+  await dispatch.mouseMove(document.body);
+  expect(q.tooltip.hidden("Animated tooltip")).toBeInTheDocument();
   await expect.poll(q.tooltip.lazy("Animated tooltip")).not.toBeInTheDocument();
 });
 
@@ -42,7 +44,7 @@ test("keeps the focus-triggered tooltip mounted during leave", async () => {
   await press.Tab();
   await press.Tab();
   expect(anchor).toHaveFocus();
-  expect(q.tooltip("Animated tooltip")).toBeVisible();
+  await expect.poll(q.tooltip.lazy("Animated tooltip")).toBeVisible();
   await click(q.button("Bold"));
   expect(q.tooltip.hidden("Animated tooltip")).toBeVisible();
   await expect.poll(q.tooltip.lazy("Animated tooltip")).not.toBeInTheDocument();
@@ -51,7 +53,7 @@ test("keeps the focus-triggered tooltip mounted during leave", async () => {
 test("Escape from animated tooltip content restores the anchor", async () => {
   const anchor = q.link("Animated anchor");
   await hover(anchor);
-  expect(await q.tooltip.wait("Animated tooltip")).toBeVisible();
+  await expect.poll(q.tooltip.lazy("Animated tooltip")).toBeVisible();
   await click(q.tooltip("Animated tooltip"));
   await press.Escape();
   expect(anchor).toHaveFocus();

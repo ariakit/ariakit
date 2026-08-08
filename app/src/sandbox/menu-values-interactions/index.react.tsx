@@ -42,7 +42,7 @@ export default function Example() {
   return (
     <div className="wrapper">
       <Ariakit.MenuProvider setValues={(values) => console.log(values)}>
-        <Ariakit.MenuButton className="button">
+        <Ariakit.MenuButton className="button" tabIndex={0}>
           Menu
           <Ariakit.MenuButtonArrow />
         </Ariakit.MenuButton>

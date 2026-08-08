@@ -2,51 +2,49 @@ import { beforeEach } from "vitest";
 
 type Framework = "react" | "solid";
 
-// Keep the path opaque so Vite's dynamic import vars transform does not
-// rewrite nested example paths into an unsupported one-level glob.
-async function importDefault(path: string) {
-  const { default: component } = await import(path);
-  return component;
-}
+type FixtureLoader = (dir: string) => Promise<() => void>;
 
-async function loadReact(dir: string) {
-  const { render } = await import("@ariakit/test/react");
-  const { createElement, Suspense } = await import("react");
-  const component = await importDefault(`./${dir}/index.react.tsx`);
-  const element = createElement(Suspense, {
-    fallback: null,
-    // oxlint-disable-next-line react/no-children-prop -- createElement requires children prop
-    children: createElement(component),
-  });
-  const { unmount } = await render(element, { strictMode: true });
-  return unmount;
-}
+const documentClasses = ["min-h-[200vh]!"];
+const bodyClasses = ["flex", "items-center-safe", "justify-center-safe"];
+const containerClasses = [
+  "@container",
+  "size-full",
+  "p-3",
+  "flex",
+  "items-center-safe",
+  "justify-center-safe",
+];
 
-async function loadSolid(dir: string) {
-  const { createComponent, render, Suspense } = await import("solid-js/web");
-  const component = await importDefault(`./${dir}/index.solid.tsx`);
-  const div = document.createElement("div");
-  document.body.appendChild(div);
-  const dispose = render(
-    () =>
-      createComponent(Suspense, {
-        fallback: null,
-        get children() {
-          return createComponent(component, {});
-        },
-      }),
-    div,
+function addClasses(element: Element, classes: string[]) {
+  const addedClasses = classes.filter(
+    (className) => !element.classList.contains(className),
   );
-  return () => {
-    dispose();
-    document.body.removeChild(div);
+  element.classList.add(...addedClasses);
+  return () => element.classList.remove(...addedClasses);
+}
+
+export function setupPreviewContainer(fullscreen = false) {
+  const container = document.createElement("div");
+  container.classList.add("@container", "size-full");
+  const restoreDocumentClasses = fullscreen
+    ? () => {}
+    : addClasses(document.documentElement, documentClasses);
+  const restoreBodyClasses = fullscreen
+    ? () => {}
+    : addClasses(document.body, bodyClasses);
+  if (!fullscreen) {
+    container.classList.add(...containerClasses.slice(2));
+  }
+  document.body.append(container);
+  return {
+    container,
+    cleanup() {
+      container.remove();
+      restoreBodyClasses();
+      restoreDocumentClasses();
+    },
   };
 }
-
-const LOADERS = {
-  react: loadReact,
-  solid: loadSolid,
-} satisfies Record<Framework, (dir: string) => Promise<() => void>>;
 
 /*
  * Fixture grammar:
@@ -70,7 +68,10 @@ function parseTest(filename?: string) {
   return { dir, framework };
 }
 
-export function setupFrameworkTests(framework: Framework) {
+export function setupFrameworkTests(
+  framework: Framework,
+  loadFixture: FixtureLoader,
+) {
   beforeEach(async ({ task, skip }) => {
     const parseResult = parseTest(task.file?.name);
     if (!parseResult) return;
@@ -79,6 +80,6 @@ export function setupFrameworkTests(framework: Framework) {
       skip();
       return;
     }
-    return LOADERS[framework](dir);
+    return loadFixture(dir);
   });
 }

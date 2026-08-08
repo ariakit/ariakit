@@ -124,6 +124,11 @@ interface CompositeFocusOnMoveProps {
   scrollIntoView?: (element: HTMLElement) => void;
 }
 
+interface DisabledMove {
+  store: CompositeStore;
+  moves: number;
+}
+
 /**
  * Renders nothing and reacts to the `moves` state by focusing on the active
  * item. This lives in a separate memoized component so moving through items
@@ -140,6 +145,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   scrollIntoView,
 }: CompositeFocusOnMoveProps) {
   const moves = useStoreState(store, "moves");
+  const disabledMoveRef = useRef<DisabledMove | null>(null);
   // The composite element is also tracked so the move-to-container effect
   // below can run once it becomes available. It's published to the store
   // through a ref callback and a transaction effect on the parent composite
@@ -152,8 +158,19 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
 
   // Present the active item.
   useEffect(() => {
-    if (!moves) return;
-    if (!focusOnMove) return;
+    // Remember moves made while focusOnMove is disabled so enabling it later
+    // doesn't replay a move that has already completed.
+    if (!focusOnMove) {
+      disabledMoveRef.current = { store, moves };
+      return;
+    }
+    if (!moves) {
+      disabledMoveRef.current = null;
+      return;
+    }
+    const disabledMove = disabledMoveRef.current;
+    if (disabledMove?.store === store && disabledMove.moves === moves) return;
+    disabledMoveRef.current = null;
     const { activeId } = store.getState();
     if (activeId == null) return;
     // A programmatic move made while focus is already outside keeps its

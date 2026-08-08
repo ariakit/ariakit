@@ -11,6 +11,15 @@ test("activates a far item reached through typeahead", async () => {
   expect(select).toHaveFocus();
 });
 
+test("keeps external focus when opening after a closed move", async () => {
+  await click(q.button("Move programmatic fruit"));
+  const open = q.button("Open programmatic fruit");
+  await click(open);
+
+  expect(q.listbox("Programmatic fruit")).toBeVisible();
+  expect(open).toHaveFocus();
+});
+
 // https://github.com/ariakit/ariakit/issues/7033
 test("honors initial focus when the dialog is inside a shadow root", async () => {
   await click(q.button("Open shadow-root focus dialog"));
@@ -33,7 +42,7 @@ test("focuses a dialog after its store changes", async () => {
 
   await click(q.button("Open store B"));
 
-  expect(q.textbox("Store B initial focus")).toHaveFocus();
+  await expect.poll(q.textbox.lazy("Store B initial focus")).toHaveFocus();
   expect(q.status("Store swap focus history")).toHaveTextContent(
     "open store A → store A input → open store B → store B input",
   );

@@ -798,9 +798,20 @@ function StoreSwapFixture() {
   const [dialog, setDialog] = useState(dialogA);
   const [dialogName, setDialogName] = useState("A");
   const [focusHistory, setFocusHistory] = useState<string[]>([]);
+  const focusHistoryRef = useRef<string[]>([]);
+  const updateFocusHistoryRef = useRef(0);
   const initialFocusRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    return () => cancelAnimationFrame(updateFocusHistoryRef.current);
+  }, []);
   const recordFocus = (target: string) => {
-    setFocusHistory((history) => [...history, target]);
+    focusHistoryRef.current.push(target);
+    cancelAnimationFrame(updateFocusHistoryRef.current);
+    // Observing focus shouldn't rerender the open dialog in the middle of the
+    // pointer interaction that moved focus.
+    updateFocusHistoryRef.current = requestAnimationFrame(() => {
+      setFocusHistory([...focusHistoryRef.current]);
+    });
   };
   const showDialog = (name: string, nextDialog: typeof dialogA) => {
     setDialogName(name);

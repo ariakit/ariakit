@@ -23,16 +23,17 @@ test("dispatches virtual focus events in order", async () => {
     "event: blur | currentTarget: toolbar | target: item-1",
     "event: blur | currentTarget: toolbar | target: toolbar",
   ]);
+  const initialEventCount = 10;
 
   await click(q.button("item-3"));
-  expect(events().slice(10)).toEqual([
+  expect(events().slice(initialEventCount)).toEqual([
     "event: focus | currentTarget: item-3 | target: item-3",
     "event: focus | currentTarget: toolbar | target: toolbar | relatedTarget: item-3",
     "event: focus | currentTarget: toolbar | target: item-3",
   ]);
 
   await click(q.button("item-2"));
-  expect(events().slice(13)).toEqual([
+  expect(events().slice(initialEventCount + 3)).toEqual([
     "event: blur | currentTarget: item-3 | target: item-3 | relatedTarget: item-2",
     "event: blur | currentTarget: toolbar | target: item-3 | relatedTarget: item-2",
     "event: focus | currentTarget: item-2 | target: item-2 | relatedTarget: toolbar",

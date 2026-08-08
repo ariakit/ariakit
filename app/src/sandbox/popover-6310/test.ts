@@ -1,5 +1,6 @@
 // See https://github.com/ariakit/ariakit/issues/6310
 import { click, q } from "@ariakit/test";
+import { isTabbable } from "@ariakit/utils";
 import { expect, test } from "vitest";
 
 test("reopened portaled popover focuses the first focusable element when a hidden element comes first", async () => {
@@ -19,7 +20,11 @@ test("reopened portaled popover focuses the first focusable element when a hidde
   await expect.poll(q.button.lazy("Attachments")).toHaveFocus();
   // Guard the bug precondition: the reopen only exercises the broken fallback
   // when no element inside is tabbable, so confirm the disable actually ran.
-  expect(q.button.hidden("Choose file")).toHaveAttribute("tabindex", "-1");
+  const chooseFile = q.button.hidden("Choose file");
+  if (!chooseFile) {
+    throw new Error("Missing hidden Choose file button");
+  }
+  expect(isTabbable(chooseFile)).toBe(false);
 
   // Reopening must move focus to the visible button again. Before the fix, focus
   // stayed on the disclosure because the focusable fallback resolved to the

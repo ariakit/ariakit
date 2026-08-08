@@ -1,3 +1,4 @@
+import { isFirefox, isSafari } from "@ariakit/utils";
 import { afterEach, expect, test } from "vitest";
 import { q, rightClick } from "./index.ts";
 
@@ -42,19 +43,24 @@ test("rightClick dispatches a secondary click sequence", async () => {
 
   await rightClick(button, { shiftKey: true });
 
+  const contextMenuEvents = isFirefox() ? [] : ["contextmenu"];
+  const focusEvents = isSafari() ? [] : ["focus"];
   expect(events).toEqual([
     "pointerdown",
     "mousedown",
-    "focus",
-    "contextmenu",
+    ...focusEvents,
+    ...contextMenuEvents,
     "pointerup",
     "mouseup",
     "auxclick",
   ]);
+  const contextMenuMouseEvents = isFirefox()
+    ? []
+    : [{ type: "contextmenu", button: 2, buttons: 2, shiftKey: true }];
   expect(mouseEvents).toEqual([
     { type: "pointerdown", button: 2, buttons: 2, shiftKey: true },
     { type: "mousedown", button: 2, buttons: 2, shiftKey: true },
-    { type: "contextmenu", button: 2, buttons: 2, shiftKey: true },
+    ...contextMenuMouseEvents,
     { type: "pointerup", button: 2, buttons: 0, shiftKey: true },
     { type: "mouseup", button: 2, buttons: 0, shiftKey: true },
     { type: "auxclick", button: 2, buttons: 0, shiftKey: true },

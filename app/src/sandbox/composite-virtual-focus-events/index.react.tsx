@@ -21,6 +21,10 @@ function getEventDescription(event: SyntheticEvent) {
 export default function Example() {
   const [events, setEvents] = useState<string[]>([]);
   const onEvent = useCallback((event: SyntheticEvent) => {
+    // Safari uses Option+Tab for full keyboard navigation. Ignore the physical
+    // Option key so this fixture records the same logical interaction in every
+    // browser.
+    if ("key" in event && event.key === "Alt") return;
     const description = getEventDescription(event);
     setEvents((currentEvents) => [...currentEvents, description]);
   }, []);
@@ -46,7 +50,9 @@ export default function Example() {
           </Ariakit.CompositeItem>
         </Ariakit.Composite>
       </Ariakit.CompositeProvider>
-      <button type="button">External button</button>
+      <button type="button" tabIndex={0}>
+        External button
+      </button>
       <ol aria-label="Event log">
         {events.map((event, index) => (
           <li key={`${index}-${event}`}>{event}</li>

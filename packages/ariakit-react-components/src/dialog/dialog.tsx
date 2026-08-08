@@ -21,6 +21,7 @@ import {
   getWindow,
   addGlobalEventListener,
   getFirstTabbableIn,
+  getLastTabbableIn,
   isElement,
   isNode,
   isFocusable,
@@ -652,6 +653,35 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     focusedStoreRef.current = store;
   });
 
+  const restoreFocusOnTab = useEvent((event: KeyboardEvent) => {
+    if (!modal) return;
+    if (event.key !== "Tab") return;
+    if (event.defaultPrevented) return;
+    const dialog = ref.current;
+    if (!dialog) return;
+    const { body } = getDocument(dialog);
+    const window = getWindow(dialog);
+    window.requestAnimationFrame(() => {
+      if (event.defaultPrevented) return;
+      if (!store.getState().open) return;
+      const activeElement = getActiveElement(dialog);
+      if (!activeElement) return;
+      const deepActiveElement = getDeepestActiveElement(activeElement);
+      const getBoundary = event.shiftKey
+        ? getFirstTabbableIn
+        : getLastTabbableIn;
+      const focusStayedAtBoundary =
+        deepActiveElement === event.target &&
+        deepActiveElement === getBoundary(dialog);
+      if (activeElement.tagName !== "BODY" && !focusStayedAtBoundary) return;
+      const getTabbable = event.shiftKey
+        ? getLastTabbableIn
+        : getFirstTabbableIn;
+      const fallback = getTabbable(body) || getTabbable(dialog);
+      fallback?.focus();
+    });
+  });
+
   const acceptEscape = useEvent((event: KeyboardEvent) => {
     if (event.key !== "Escape") return false;
     if (!event.bubbles) return false;
@@ -687,6 +717,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const nativeEvent = event.nativeEvent;
     const wasPropagationStopped = nativeEvent.cancelBubble;
     onKeyDownProp?.(event);
+    restoreFocusOnTab(nativeEvent);
     if (wasPropagationStopped) {
       escapeEvents.delete(nativeEvent);
       return;

@@ -65,42 +65,49 @@ export function mouseDown(element: Element | null, options?: PointerEventInit) {
 
     if (!isVisible(element)) return;
 
-    const { disabled } = element as HTMLButtonElement;
-
-    const pointerDefaultAllowed = await dispatch.pointerDown(element, options);
-    setPreventMouseEvents(getDocument(element), !pointerDefaultAllowed);
-
-    let defaultAllowed = pointerDefaultAllowed;
-
-    // Disabled controls and canceled pointerdown suppress compatibility
-    // mousedown.
-    if (!disabled && pointerDefaultAllowed) {
-      if (!(await dispatch.mouseDown(element, { detail: 1, ...options }))) {
-        defaultAllowed = false;
-      }
-    }
-
-    if (defaultAllowed) {
-      const selection = getDocument(element).getSelection();
-      if (selection?.rangeCount) {
-        const range = selection.getRangeAt(0);
-        if (!range.collapsed && shouldClearSelection(element)) {
-          selection.removeAllRanges();
-        }
-      }
-      if (
-        isFocusable(element) &&
-        getComputedStyle(element).pointerEvents !== "none"
-      ) {
-        await focus(element);
-      } else if (element.parentElement) {
-        const closestFocusable = getClosestFocusable(element.parentElement);
-        if (closestFocusable) {
-          await focus(closestFocusable);
-        } else {
-          await blur();
-        }
-      }
-    }
+    await simulateMouseDown(element, options);
   });
+}
+
+export async function simulateMouseDown(
+  element: Element,
+  options?: PointerEventInit,
+) {
+  const { disabled } = element as HTMLButtonElement;
+
+  const pointerDefaultAllowed = await dispatch.pointerDown(element, options);
+  setPreventMouseEvents(getDocument(element), !pointerDefaultAllowed);
+
+  let defaultAllowed = pointerDefaultAllowed;
+
+  // Disabled controls and canceled pointerdown suppress compatibility
+  // mousedown.
+  if (!disabled && pointerDefaultAllowed) {
+    if (!(await dispatch.mouseDown(element, { detail: 1, ...options }))) {
+      defaultAllowed = false;
+    }
+  }
+
+  if (defaultAllowed) {
+    const selection = getDocument(element).getSelection();
+    if (selection?.rangeCount) {
+      const range = selection.getRangeAt(0);
+      if (!range.collapsed && shouldClearSelection(element)) {
+        selection.removeAllRanges();
+      }
+    }
+    if (
+      isFocusable(element) &&
+      getComputedStyle(element).pointerEvents !== "none"
+    ) {
+      await focus(element);
+    } else if (element.parentElement) {
+      const closestFocusable = getClosestFocusable(element.parentElement);
+      if (closestFocusable) {
+        await focus(closestFocusable);
+      } else {
+        await blur();
+      }
+    }
+  }
 }

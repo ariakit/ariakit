@@ -44,3 +44,47 @@ test("shift-click exposes updated selectedOptions on change", async () => {
   expect(mouseUpSelection).toEqual(["Banana"]);
   expect(changedSelection).toEqual(["Banana", "Cherry", "Date"]);
 });
+
+test("clicking an option preserves the simulated pointer and focus sequence", async () => {
+  document.body.innerHTML = `
+      <label for="fruit">Fruit</label>
+      <select id="fruit">
+        <option>Apple</option>
+        <option>Banana</option>
+      </select>
+    `;
+
+  const select = q.combobox.ensure("Fruit");
+  const option = q.option.ensure("Banana");
+  const events: string[] = [];
+  for (const type of [
+    "pointerover",
+    "mouseover",
+    "pointerdown",
+    "mousedown",
+    "pointerup",
+    "mouseup",
+    "click",
+  ]) {
+    option.addEventListener(type, (event) => events.push(event.type));
+  }
+  select.addEventListener("focus", (event) => events.push(event.type));
+  select.addEventListener("input", (event) => events.push(event.type));
+  select.addEventListener("change", (event) => events.push(event.type));
+
+  await click(option);
+
+  expect(select).toHaveFocus();
+  expect(events).toEqual([
+    "pointerover",
+    "mouseover",
+    "pointerdown",
+    "mousedown",
+    "focus",
+    "pointerup",
+    "mouseup",
+    "input",
+    "change",
+    "click",
+  ]);
+});

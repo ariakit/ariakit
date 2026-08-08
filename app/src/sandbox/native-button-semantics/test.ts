@@ -1,4 +1,5 @@
-import { click, focus, press, q } from "@ariakit/test";
+import { blur, click, dispatch, focus, press, q, sleep } from "@ariakit/test";
+import { isSafari } from "@ariakit/utils";
 import { act, createElement } from "react";
 import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
@@ -73,6 +74,38 @@ test("clears submit focus visibility when focusable is disabled", async () => {
 
   await press("f");
   expect(button).not.toHaveAttribute("data-focus-visible");
+});
+
+test("keeps pointer modality for modified Tab shortcuts", async () => {
+  const button = q.button("Submit focus target");
+  const modifiers = [
+    { ctrlKey: true },
+    { metaKey: true },
+    ...(!isSafari() ? [{ altKey: true }] : []),
+  ];
+
+  for (const options of modifiers) {
+    await dispatch.mouseDown(document.body);
+    await dispatch.keyDown(document.body, { key: "Tab", ...options });
+    await focus(button);
+    // Let Focusable apply its queued focus-visible decision.
+    await sleep();
+    expect(button).not.toHaveAttribute("data-focus-visible");
+    await blur(button);
+  }
+});
+
+test("treats Safari Option+Tab as keyboard modality", async () => {
+  if (!isSafari()) return;
+  const button = q.button("Submit focus target");
+
+  await dispatch.mouseDown(document.body);
+  await dispatch.keyDown(document.body, { altKey: true, key: "Tab" });
+  await focus(button);
+  // Let Focusable apply its queued focus-visible decision.
+  await sleep();
+
+  expect(button).toHaveAttribute("data-focus-visible", "true");
 });
 
 test("server markup and hydration use the same native button type", async () => {

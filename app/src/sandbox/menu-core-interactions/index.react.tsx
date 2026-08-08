@@ -3,7 +3,7 @@ import * as Ariakit from "@ariakit/react";
 export default function Example() {
   return (
     <Ariakit.MenuProvider>
-      <Ariakit.MenuButton className="button">
+      <Ariakit.MenuButton className="button" tabIndex={0}>
         Actions
         <Ariakit.MenuButtonArrow />
       </Ariakit.MenuButton>
