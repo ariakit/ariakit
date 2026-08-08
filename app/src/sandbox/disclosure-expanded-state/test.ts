@@ -86,10 +86,13 @@ test("announces every trigger that controls the same content", async () => {
 });
 
 // Menubar triggers read each other's announced state off the DOM to decide
-// whether hovering a sibling switches menus, so a trigger that under-reports
-// its own open menu takes the switch away from every sibling.
+// whether hovering a sibling opens its menu, so a trigger that under-reports
+// its own open menu takes that away from every sibling.
+// The menu that was already open stays open, which is a separate defect in how
+// a menubar menu decides to hide on hover, not in the announced state.
+// https://github.com/ariakit/ariakit/issues/7086
 // https://github.com/ariakit/ariakit/issues/7083
-test("switches menus on hover after a programmatic open", async () => {
+test("opens a sibling menu on hover after a programmatic open", async () => {
   // Tab to the note instead of clicking it. `hover` replays a mousemove on the
   // previously hovered element, and the note is the menu's disclosure element
   // here, which arms the approach polygon the open menu uses to keep the
