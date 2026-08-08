@@ -86,6 +86,15 @@ export function createMenuStore({
     hideTimeout: defaultValue(props.hideTimeout, syncState.hideTimeout, 0),
   });
 
+  // Hovercard opens on hover, so it leaves focus alone by default. A menu that
+  // starts open has no gesture to speak for it, and rendering it open is still
+  // a request to interact with it, so it takes focus instead.
+  // https://github.com/ariakit/ariakit/issues/2946
+  hovercard.setState(
+    "autoFocusOnShow",
+    defaultValue(syncState.autoFocusOnShow, hovercard.getState().open),
+  );
+
   const initialState: MenuStoreState = {
     ...composite.getState(),
     ...hovercard.getState(),
