@@ -22,11 +22,16 @@ function useShortcut(key: string | undefined, show: () => void) {
 
 function SharePopover() {
   const store = Ariakit.usePopoverStore();
+  const open = Ariakit.useStoreState(store, "open");
   useShortcut("F2", store.show);
 
   return (
     <Ariakit.PopoverProvider store={store}>
-      <Ariakit.PopoverDisclosure>Share</Ariakit.PopoverDisclosure>
+      {/* TODO: Remove once the trigger derives this on its own.
+      https://github.com/ariakit/ariakit/issues/7083 */}
+      <Ariakit.PopoverDisclosure aria-expanded={open}>
+        Share
+      </Ariakit.PopoverDisclosure>
       <Ariakit.Popover>
         <Ariakit.PopoverHeading>Share note</Ariakit.PopoverHeading>
         <Ariakit.PopoverDismiss>Close share</Ariakit.PopoverDismiss>
@@ -37,11 +42,16 @@ function SharePopover() {
 
 function SettingsDialog() {
   const store = Ariakit.useDialogStore();
+  const open = Ariakit.useStoreState(store, "open");
   useShortcut("F4", store.show);
 
   return (
     <Ariakit.DialogProvider store={store}>
-      <Ariakit.DialogDisclosure>Settings</Ariakit.DialogDisclosure>
+      {/* TODO: Remove once the trigger derives this on its own.
+      https://github.com/ariakit/ariakit/issues/7083 */}
+      <Ariakit.DialogDisclosure aria-expanded={open}>
+        Settings
+      </Ariakit.DialogDisclosure>
       {/* A modal dialog marks everything outside it `aria-hidden`, which would
       take the trigger out of the accessibility tree along with the state it
       announces. */}
@@ -63,11 +73,14 @@ interface MenubarMenuProps {
 // is what makes the triggers read each other's announced state on hover.
 function MenubarMenu({ label, items, shortcut }: MenubarMenuProps) {
   const store = Ariakit.useMenuStore();
+  const open = Ariakit.useStoreState(store, "open");
   useShortcut(shortcut, store.show);
 
   return (
     <Ariakit.MenuProvider store={store}>
-      <Ariakit.MenuItem render={<Ariakit.MenuButton />}>
+      {/* TODO: Remove once the trigger derives this on its own.
+      https://github.com/ariakit/ariakit/issues/7083 */}
+      <Ariakit.MenuItem render={<Ariakit.MenuButton />} aria-expanded={open}>
         {label}
       </Ariakit.MenuItem>
       <Ariakit.Menu>
@@ -83,25 +96,37 @@ function MenubarMenu({ label, items, shortcut }: MenubarMenuProps) {
 // both control the same content, so neither can be the one that gets to
 // announce it.
 function RevisionHistory() {
+  const store = Ariakit.useDisclosureStore();
+  const open = Ariakit.useStoreState(store, "open");
+
+  // TODO: Remove the override on both triggers below once they derive this on
+  // their own. https://github.com/ariakit/ariakit/issues/7083
   return (
-    <Ariakit.DisclosureProvider>
-      <Ariakit.Disclosure>Revision history</Ariakit.Disclosure>
+    <Ariakit.DisclosureProvider store={store}>
+      <Ariakit.Disclosure aria-expanded={open}>
+        Revision history
+      </Ariakit.Disclosure>
       <Ariakit.DisclosureContent>
         <p>Edited 3 times.</p>
       </Ariakit.DisclosureContent>
-      <Ariakit.Disclosure>Toggle revision history</Ariakit.Disclosure>
+      <Ariakit.Disclosure aria-expanded={open}>
+        Toggle revision history
+      </Ariakit.Disclosure>
     </Ariakit.DisclosureProvider>
   );
 }
 
 function StatusSelect() {
   const store = Ariakit.useSelectStore({ defaultValue: "Draft" });
+  const open = Ariakit.useStoreState(store, "open");
   useShortcut("F9", store.show);
 
   return (
     <Ariakit.SelectProvider store={store}>
       <Ariakit.SelectLabel>Status</Ariakit.SelectLabel>
-      <Ariakit.Select />
+      {/* TODO: Remove once the trigger derives this on its own.
+      https://github.com/ariakit/ariakit/issues/7083 */}
+      <Ariakit.Select aria-expanded={open} />
       <Ariakit.SelectPopover>
         <Ariakit.SelectItem value="Draft" />
         <Ariakit.SelectItem value="Published" />
