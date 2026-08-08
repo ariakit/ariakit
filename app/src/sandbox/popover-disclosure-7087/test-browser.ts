@@ -95,6 +95,39 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toHaveAttribute("aria-expanded", "false");
   });
 
+  // An open with nothing focused captures nothing, so the field captured by an
+  // earlier open stays in the store without having been named. The next open
+  // must still treat it as a stale fallback rather than as somebody's choice.
+  // https://github.com/ariakit/ariakit/issues/7087
+  test("replaces the fallback after an open that captured nothing", async ({
+    page,
+    q,
+  }) => {
+    const note = q.textbox("Note");
+    const title = q.textbox("Title");
+    await note.click();
+    await note.press("/");
+    await test.expect(q.dialog("Suggestions")).toBeVisible();
+    await note.press("Escape");
+    await test.expect(q.dialog("Suggestions")).not.toBeVisible();
+
+    await q.button("Summarize note").click();
+    await test.expect(q.dialog("Suggestions")).toBeVisible();
+    // The button dropped focus, so this Escape comes from the body.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Suggestions")).not.toBeVisible();
+
+    await title.click();
+    await title.press("/");
+    await test.expect(q.dialog("Suggestions")).toBeVisible();
+    await title.click();
+    // Nothing observable marks the dismissal that must not happen, so cross
+    // that window before asserting the title is the opener rather than the
+    // note.
+    await flushFrames(page);
+    await test.expect(q.dialog("Suggestions")).toBeVisible();
+  });
+
   test("falls back to the focused field when no button is mounted", async ({
     page,
     q,
