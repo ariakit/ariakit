@@ -115,18 +115,12 @@ This intentionally keeps the popup open for every window resize, including virtu
 
 The Ariakit [Combobox](/components/combobox) component doesn't dictate how you filter the items. It focuses solely on the [`ComboboxItem`](/reference/combobox-item) elements you render. Consequently, you can render items conditionally based on the [`value`](/reference/combobox-provider#value) state.
 
-We use the [`setValue`](/reference/combobox-provider#setvalue) callback in combination with [`React.startTransition`](https://react.dev/reference/react/startTransition) to update our search value state without blocking the UI:
+We use the [`setValue`](/reference/combobox-provider#setvalue) callback to update our search value state. Keeping this update synchronous ensures the rendered items and the Combobox value stay in sync while `autoSelect` determines the active item:
 
-```jsx {5-7}
+```jsx
 const [searchValue, setSearchValue] = useState("");
 
-<ComboboxProvider
-  setValue={(value) => {
-    React.startTransition(() => {
-      setSearchValue(value);
-    });
-  }}
->
+<ComboboxProvider setValue={setSearchValue}>
 ```
 
 You're free to use any matching algorithm or library to filter the items. In this example, we use [match-sorter](https://www.npmjs.com/package/match-sorter):

@@ -6,14 +6,7 @@ import {
 } from "@ariakit/react";
 import * as RadixSelect from "@radix-ui/react-select";
 import { matchSorter } from "match-sorter";
-import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CheckIcon, ChevronUpDownIcon, SearchIcon } from "./icons.tsx";
 import { languages } from "./languages.ts";
 import "./style.css";
@@ -80,11 +73,7 @@ export default function Example() {
         setOpen={setOpen}
         resetValueOnHide
         compositeElementInFocusOrder={false}
-        setValue={(value) => {
-          startTransition(() => {
-            setSearchValue(value);
-          });
-        }}
+        setValue={setSearchValue}
       >
         <RadixSelect.Trigger aria-label="Language" className="select">
           <RadixSelect.Value placeholder="Select a language" />

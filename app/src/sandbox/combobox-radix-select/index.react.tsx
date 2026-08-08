@@ -6,14 +6,7 @@ import {
 } from "@ariakit/react";
 import * as RadixSelect from "@radix-ui/react-select";
 import { matchSorter } from "match-sorter";
-import {
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CheckIcon, ChevronUpDownIcon, SearchIcon } from "./icons.react.tsx";
 import { languages } from "./languages.ts";
 
@@ -53,12 +46,11 @@ export default function Example() {
   const { open, setOpen, onOpenChange } = useRadixSelectOpenState();
   const [value, setValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
-  const deferredSearchValue = useDeferredValue(searchValue);
 
   const matches = useMemo(() => {
-    if (!deferredSearchValue) return languages;
+    if (!searchValue) return languages;
     const keys = ["label", "value"];
-    const matches = matchSorter(languages, deferredSearchValue, { keys });
+    const matches = matchSorter(languages, searchValue, { keys });
     // Radix Select does not work if we don't render the selected item, so we
     // make sure to include it in the list of matches.
     const selectedLanguage = languages.find((lang) => lang.value === value);
@@ -66,7 +58,7 @@ export default function Example() {
       matches.push(selectedLanguage);
     }
     return matches;
-  }, [deferredSearchValue, value]);
+  }, [searchValue, value]);
 
   return (
     <RadixSelect.Root
