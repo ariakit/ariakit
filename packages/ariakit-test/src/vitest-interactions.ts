@@ -27,6 +27,7 @@ interface PointerCommand {
 }
 
 interface PressCommand {
+  browser: string;
   selector: string;
   temporaryAttribute?: string;
   key: string;
@@ -357,6 +358,7 @@ async function press(
   } else {
     await withElementTarget(element, (target) =>
       commands.ariakitPress({
+        browser: server.browser,
         selector: target.selector,
         temporaryAttribute: target.temporaryAttribute,
         key: getPressKey(key),
@@ -413,6 +415,7 @@ async function type(
         });
       } else {
         await commands.ariakitPress({
+          browser: server.browser,
           selector: elementTarget.selector,
           temporaryAttribute: elementTarget.temporaryAttribute,
           key: getTypeKey(character),

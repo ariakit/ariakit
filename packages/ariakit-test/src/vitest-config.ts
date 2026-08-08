@@ -20,6 +20,7 @@ interface PointerCommand extends ElementCommand {
 }
 
 interface PressCommand extends ElementCommand {
+  browser: string;
   key: string;
   modifiers: Modifier[];
 }
@@ -92,7 +93,7 @@ async function ariakitHover(
 
 async function ariakitPress(
   context: BrowserCommandContext,
-  { selector, temporaryAttribute, key, modifiers }: PressCommand,
+  { selector, temporaryAttribute, browser, key, modifiers }: PressCommand,
 ) {
   const element = await getElement(context, selector, temporaryAttribute);
   const focused = await element.evaluate((element) => {
@@ -194,6 +195,16 @@ async function ariakitPress(
         element.setSelectionRange(position, position);
         return;
       }
+      // Chromium and WebKit expand the physical selection in the key's
+      // direction, while Firefox extends it from the logical anchor.
+      if (browser !== "firefox") {
+        element.setSelectionRange(
+          key === "Home" ? position : selection.start,
+          key === "End" ? position : selection.end,
+          selection.direction || undefined,
+        );
+        return;
+      }
       const anchor =
         selection.direction === "backward" ? selection.end : selection.start;
       if (anchor == null) return;
@@ -204,6 +215,7 @@ async function ariakitPress(
       );
     },
     {
+      browser,
       key,
       selection,
       shiftKey: modifiers.includes("Shift"),

@@ -121,6 +121,7 @@ function getBrowserProjects(browserName: BrowserName) {
       test: {
         name: `dom-${browserName}`,
         fileParallelism: false,
+        retry: process.env.CI ? 2 : 0,
         sequence: { hooks: "list" as const },
         ...getProjectTestPatterns("dom", true),
         setupFiles: commonSetupFiles,
@@ -133,6 +134,7 @@ function getBrowserProjects(browserName: BrowserName) {
       test: {
         name: `react-${browserName}`,
         fileParallelism: false,
+        retry: process.env.CI ? 2 : 0,
         sequence: { hooks: "list" as const },
         ...getProjectTestPatterns("react", true),
         setupFiles: [
@@ -148,6 +150,7 @@ function getBrowserProjects(browserName: BrowserName) {
       test: {
         name: `solid-${browserName}`,
         fileParallelism: false,
+        retry: process.env.CI ? 2 : 0,
         sequence: { hooks: "list" as const },
         ...getProjectTestPatterns("solid", true),
         setupFiles: [

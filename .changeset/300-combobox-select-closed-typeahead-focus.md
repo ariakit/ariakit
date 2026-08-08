@@ -3,4 +3,4 @@
 "@ariakit/react": patch
 ---
 
-Fixed closed [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) typeahead moving focus to hidden popup items.
+Fixed [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) moving focus to popup items during closed typeahead and when opening after a closed programmatic move.

@@ -40,3 +40,10 @@ test("only focuses the latest item after rapid unresolved moves", async () => {
   expect(q.button("Late")).not.toHaveFocus();
   expect(q.button("Later")).toHaveFocus();
 });
+
+test("does not suppress an equal move from a replacement store", async () => {
+  await click(q.button("Prime replacement stores"));
+  await click(q.button("Use replacement store"));
+
+  expect(q.button("Store B item")).toHaveFocus();
+});
