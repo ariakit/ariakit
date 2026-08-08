@@ -1,0 +1,104 @@
+import { click, press, q, sleep } from "@ariakit/test";
+import { expect, test } from "vitest";
+
+// The first PopoverDisclosure claims the store at mount, so opening from "Quick
+// format" first moves the incumbent off that default and makes each test's
+// expected opener a genuine outcome rather than the mount default.
+async function openFromQuickFormatAndClose() {
+  await click(q.button("Quick format"));
+  expect(q.dialog("Formatting")).toBeVisible();
+  await click(q.button("Quick format"));
+  await expect.poll(q.dialog.hidden.lazy("Formatting")).not.toBeVisible();
+}
+
+// https://github.com/ariakit/ariakit/issues/7087
+test("names the Formatting button as the opener of a programmatic open", async () => {
+  await openFromQuickFormatAndClose();
+
+  const note = q.textbox.ensure("Note");
+  await click(note);
+  await press("*", note);
+
+  expect(q.dialog("Formatting")).toBeVisible();
+  expect(note).toHaveFocus();
+  expect(q.button("Formatting")).toHaveAttribute("aria-expanded", "true");
+  expect(q.button("Quick format")).toHaveAttribute("aria-expanded", "false");
+
+  // The popup takes its outside state from the named button, so the note the
+  // caret sits in is outside and clicking it dismisses the popup.
+  await click(note);
+  await expect.poll(q.dialog.hidden.lazy("Formatting")).not.toBeVisible();
+});
+
+// https://github.com/ariakit/ariakit/issues/7087
+test("returns focus to the named button when dismissed from inside", async () => {
+  await openFromQuickFormatAndClose();
+
+  const note = q.textbox.ensure("Note");
+  await click(note);
+  await press("*", note);
+  expect(q.dialog("Formatting")).toBeVisible();
+
+  await click(q.button("Done"));
+  await expect.poll(q.dialog.hidden.lazy("Formatting")).not.toBeVisible();
+  expect(q.button("Formatting")).toHaveFocus();
+});
+
+// The named button holds the store, but the popup still marks the caret's field
+// as outside itself, so Escape from there dismisses it. This is the one
+// consequence computed from the store when the popup opens rather than read
+// live, which is why the issue measured a deferred assignment losing it.
+// https://github.com/ariakit/ariakit/issues/7087
+test("dismisses with Escape from the field the caret is in", async () => {
+  await openFromQuickFormatAndClose();
+
+  const note = q.textbox.ensure("Note");
+  await click(note);
+  await press("*", note);
+  expect(q.dialog("Formatting")).toBeVisible();
+
+  await press.Escape(note);
+  await expect.poll(q.dialog.hidden.lazy("Formatting")).not.toBeVisible();
+});
+
+// A mounted button already claims the store, and the store can't tell that
+// apart from the application assigning the same button. So a show() that names
+// nothing keeps the button rather than the element that happened to be focused,
+// which also anchors the popup to that button and returns focus there on close.
+// https://github.com/ariakit/ariakit/issues/7087
+test("keeps a mounted button as the opener when the open names none", async () => {
+  await openFromQuickFormatAndClose();
+
+  await click(q.button("Suggest formatting"));
+  expect(q.dialog("Formatting")).toBeVisible();
+  expect(q.button("Quick format")).toHaveAttribute("aria-expanded", "true");
+  expect(q.button("Formatting")).toHaveAttribute("aria-expanded", "false");
+});
+
+test("falls back to the focused field when no button is mounted", async () => {
+  const note = q.textbox.ensure("Note");
+  const title = q.textbox.ensure("Title");
+  await click(note);
+  await press("/", note);
+  expect(q.dialog("Suggestions")).toBeVisible();
+
+  // The note opened the popup, so clicking it is not an outside interaction.
+  await click(note);
+  // Nothing observable marks the moment an outside interaction would have
+  // dismissed the popup, so cross that window before asserting it stayed open.
+  await sleep();
+  expect(q.dialog("Suggestions")).toBeVisible();
+
+  await click(title);
+  await expect.poll(q.dialog.hidden.lazy("Suggestions")).not.toBeVisible();
+
+  // Reopening from the title hands the popup a new opener, so now it's the
+  // title that no longer counts as outside. A fix that simply kept any opener
+  // it found would leave the note in place and dismiss the popup here.
+  await press("/", title);
+  expect(q.dialog("Suggestions")).toBeVisible();
+  await click(title);
+  // Same as above: nothing observable marks the dismissal that must not happen.
+  await sleep();
+  expect(q.dialog("Suggestions")).toBeVisible();
+});
