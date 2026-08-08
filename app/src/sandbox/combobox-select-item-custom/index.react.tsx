@@ -33,7 +33,7 @@ export default function Example() {
       setSelectedValue={setValue}
     >
       <Ariakit.ComboboxSelectLabel>Account</Ariakit.ComboboxSelectLabel>
-      <Ariakit.ComboboxSelect>
+      <Ariakit.ComboboxSelect tabIndex={0}>
         {renderValue(value)}
         <Ariakit.ComboboxSelectArrow />
       </Ariakit.ComboboxSelect>

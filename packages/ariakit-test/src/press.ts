@@ -5,6 +5,7 @@ import {
   getPreviousTabbable,
   isFocusable,
 } from "@ariakit/utils";
+import { getInteractionDriver } from "./__interaction-driver.ts";
 import {
   flushMicrotasks,
   isHappyDOM,
@@ -456,6 +457,22 @@ export function press(
     if (!element) return;
 
     if (!isPressable(element)) return;
+
+    const driver = getInteractionDriver();
+    if (driver) {
+      if (element.ownerDocument?.activeElement !== element) {
+        if (element.tagName === "BODY") {
+          await blur();
+        } else {
+          await focus(element);
+        }
+      }
+      await settle();
+      if (await driver.press(key, element, options)) {
+        await sleep();
+        return;
+      }
+    }
 
     if (isTextField(element)) {
       // Route text insertion and editing keys through the typing simulation.

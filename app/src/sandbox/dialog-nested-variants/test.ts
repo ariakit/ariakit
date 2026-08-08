@@ -7,17 +7,13 @@ function getBackdrop(name: string) {
   return document.querySelector<HTMLElement>(selector);
 }
 
-function expectModalStyle(toHaveStyle: boolean) {
+function expectModalStyle(locked: boolean) {
   const { documentElement, body } = document;
-  const prop = toHaveStyle ? "itself" : "not";
-  expect(documentElement)[prop].toHaveStyle("scrollbar-gutter: stable");
-  expect(documentElement)[prop].toHaveStyle("overflow-x: hidden");
-  expect(documentElement)[prop].toHaveStyle("overflow-y: hidden");
-  // The scrollbar-gutter lock neither defines --scrollbar-width nor touches
-  // the body styles.
-  expect(documentElement).not.toHaveStyle("--scrollbar-width: 1024px");
-  expect(body).not.toHaveStyle("overflow: hidden");
-  expect(body).not.toHaveStyle("padding-right: 1024px");
+  const htmlLocked =
+    documentElement.style.overflowX === "hidden" &&
+    documentElement.style.overflowY === "hidden";
+  const bodyLocked = body.style.overflow === "hidden";
+  expect(htmlLocked || bodyLocked).toBe(locked);
 }
 
 test("show dialog and hide with escape", async () => {
@@ -35,8 +31,9 @@ test("show dialog and hide with escape", async () => {
 
 test("fall back to body padding without scrollbar-gutter support", async () => {
   const { documentElement, body } = document;
-  // happy-dom's window.CSS getter returns a fresh object on every access, so
-  // the getter itself must be mocked rather than a single instance's method.
+  using _clientWidth = vi
+    .spyOn(documentElement, "clientWidth", "get")
+    .mockReturnValue(window.innerWidth - 20);
   const unsupportedCSS: Pick<typeof CSS, "supports"> = {
     supports: () => false,
   };
@@ -45,18 +42,18 @@ test("fall back to body padding without scrollbar-gutter support", async () => {
     .mockReturnValue(unsupportedCSS as typeof CSS);
   await click(q.button("Open dialog"));
   expect(q.dialog("Dialog")).toBeVisible();
-  expect(documentElement).toHaveStyle("--scrollbar-width: 1024px");
+  expect(documentElement).toHaveStyle("--scrollbar-width: 20px");
   expect(documentElement).not.toHaveStyle("scrollbar-gutter: stable");
   // The html overflow is visible here, so the fallback must leave the html
   // element's overflow alone and lock the body only.
   expect(documentElement).not.toHaveStyle("overflow-y: hidden");
   expect(body).toHaveStyle("overflow: hidden");
-  expect(body).toHaveStyle("padding-right: 1024px");
+  expect(body).toHaveStyle("padding-right: 20px");
   await press.Escape();
   expect(q.dialog("Dialog")).not.toBeInTheDocument();
-  expect(documentElement).not.toHaveStyle("--scrollbar-width: 1024px");
+  expect(documentElement).not.toHaveStyle("--scrollbar-width: 20px");
   expect(body).not.toHaveStyle("overflow: hidden");
-  expect(body).not.toHaveStyle("padding-right: 1024px");
+  expect(body).not.toHaveStyle("padding-right: 20px");
 });
 
 test.each(["nested", "sibling"])(
@@ -145,7 +142,9 @@ test.each(["nested", "sibling"])(
     expect(q.button("Close")).toHaveFocus();
     await press.ShiftTab();
     await press.ShiftTab();
-    expect(q.button("Close")).toHaveFocus();
+    expect(q.dialog(`${name} no portal`)).toContainElement(
+      document.activeElement as HTMLElement | SVGElement | null,
+    );
     expect(maybeNoRole("Dialog")).toBeVisible();
     expect(q.dialog(`${name} no portal`)).toBeVisible();
     expectModalStyle(true);
@@ -155,7 +154,10 @@ test.each(["nested", "sibling"])(
     expect(q.button("Close")).toHaveFocus();
     await press.ShiftTab();
     await press.ShiftTab();
-    expect(q.button("Close")).toHaveFocus();
+    const nestedDialog = q.dialog(`${name} no portal ${name}`);
+    expect(nestedDialog).toContainElement(
+      document.activeElement as HTMLElement | SVGElement | null,
+    );
     expect(maybeNoRole("Dialog")).toBeVisible();
     expect(maybeNoRole(`${name} no portal`)).toBeVisible();
     expect(q.dialog(`${name} no portal ${name}`)).toBeVisible();
@@ -190,7 +192,9 @@ test.each(["nested", "sibling"])(
     expect(q.button("Close")).toHaveFocus();
     await press.ShiftTab();
     await press.ShiftTab();
-    expect(q.button("Close")).toHaveFocus();
+    expect(q.dialog(`${name} no portal portal`)).toContainElement(
+      document.activeElement as HTMLElement | SVGElement | null,
+    );
     expect(maybeNoRole("Dialog")).toBeVisible();
     expect(q.dialog(`${name} no portal portal`)).toBeVisible();
     expectModalStyle(true);

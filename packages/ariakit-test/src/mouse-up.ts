@@ -24,20 +24,27 @@ export function mouseUp(element: Element | null, options?: PointerEventInit) {
 
     if (!isVisible(element)) return;
 
-    const { disabled } = element as HTMLButtonElement;
-
-    await dispatch.pointerUp(element, options);
-
-    const document = getDocument(element);
-    const preventMouseEvents = getPreventMouseEvents(document);
-    setPreventMouseEvents(document, false);
-
-    // Disabled controls and canceled pointerdown suppress compatibility
-    // mouseup.
-    if (disabled) return;
-
-    if (preventMouseEvents) return;
-
-    await dispatch.mouseUp(element, { detail: 1, ...options });
+    await simulateMouseUp(element, options);
   });
+}
+
+export async function simulateMouseUp(
+  element: Element,
+  options?: PointerEventInit,
+) {
+  const { disabled } = element as HTMLButtonElement;
+
+  await dispatch.pointerUp(element, options);
+
+  const document = getDocument(element);
+  const preventMouseEvents = getPreventMouseEvents(document);
+  setPreventMouseEvents(document, false);
+
+  // Disabled controls and canceled pointerdown suppress compatibility
+  // mouseup.
+  if (disabled) return;
+
+  if (preventMouseEvents) return;
+
+  await dispatch.mouseUp(element, { detail: 1, ...options });
 }

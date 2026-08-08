@@ -12,7 +12,7 @@ export default function Example() {
         <Ariakit.TagList className="ak-tag-list ak-input ak-focusable">
           {values.map((value) => (
             <Ariakit.Tag key={value} value={value} className="ak-tag">
-              {value}
+              <span>{value}</span>
               <Ariakit.TagRemove className="ak-tag-remove" />
             </Ariakit.Tag>
           ))}

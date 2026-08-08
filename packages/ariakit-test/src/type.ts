@@ -1,4 +1,5 @@
 import { getActiveElement, isTextField, isFocusable } from "@ariakit/utils";
+import { getInteractionDriver } from "./__interaction-driver.ts";
 import type { DirtiableElement, TextField } from "./__utils.ts";
 import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
@@ -61,6 +62,12 @@ export function type(
     if (!isFocusable(element)) return;
 
     await focus(element);
+
+    const driver = getInteractionDriver();
+    if (await driver?.type(text, element, options)) {
+      await sleep();
+      return;
+    }
 
     const restoreEmailInput = workAroundEmailInput(element);
 

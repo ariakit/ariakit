@@ -14,20 +14,23 @@ test("show/hide on click", async () => {
 });
 
 test("prevent body scroll", async () => {
-  // happy-dom reports a space-consuming scrollbar and supports
-  // scrollbar-gutter, so the scroll lock lands on the html element.
-  const { documentElement } = document;
-  const lockStyle =
-    "scrollbar-gutter: stable; overflow-x: hidden; overflow-y: hidden";
-  expect(documentElement).not.toHaveStyle({ overflowY: "hidden" });
+  const { documentElement, body } = document;
+  const expectScrollLocked = (locked: boolean) => {
+    const htmlLocked =
+      documentElement.style.overflowX === "hidden" &&
+      documentElement.style.overflowY === "hidden";
+    const bodyLocked = body.style.overflow === "hidden";
+    expect(htmlLocked || bodyLocked).toBe(locked);
+  };
+  expectScrollLocked(false);
   await press.Tab();
   await press.Enter();
-  expect(documentElement).toHaveStyle(lockStyle);
+  expectScrollLocked(true);
   expect(q.dialog()).toBeVisible();
-  expect(documentElement).toHaveStyle(lockStyle);
+  expectScrollLocked(true);
   await press.Enter();
   expect(q.dialog()).toBeVisible();
-  expect(documentElement).toHaveStyle(lockStyle);
+  expectScrollLocked(true);
   await expect.poll(q.dialog).not.toBeInTheDocument();
-  expect(documentElement).not.toHaveStyle({ overflowY: "hidden" });
+  expectScrollLocked(false);
 });

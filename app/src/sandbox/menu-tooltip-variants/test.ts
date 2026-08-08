@@ -43,8 +43,12 @@ describe.each(labels)("%s", (label) => {
     await click(q.button(label));
     expect(q.menu(label)).toBeVisible();
     expect(q.tooltip(label)).not.toBeInTheDocument();
-    await hover(q.button.hidden(label));
-    await hover(q.button.hidden(label));
+    if (label.includes("modal")) {
+      await hoverOutside();
+    } else {
+      await hover(q.button.hidden(label));
+      await hover(q.button.hidden(label));
+    }
     expect(q.tooltip(label)).not.toBeInTheDocument();
   });
 
@@ -55,11 +59,11 @@ describe.each(labels)("%s", (label) => {
     expect(q.menu(label)).toBeVisible();
     expect(q.tooltip(label)).not.toBeInTheDocument();
     await hoverOutside();
-    await hover(q.button.hidden(label));
-    await hover(q.button.hidden(label));
     if (label.includes("modal")) {
       expect(q.tooltip(label)).not.toBeInTheDocument();
     } else {
+      await hover(q.button.hidden(label));
+      await hover(q.button.hidden(label));
       expect(await q.tooltip.wait(label)).toBeVisible();
     }
   });
@@ -92,8 +96,10 @@ describe.each(nonModalLabels)("%s", (label) => {
   describe("with timeout", () => {
     beforeEach(async () => {
       await click(q.textbox("Timeout"));
-      await type("200");
-      expect(q.textbox("Timeout")).toHaveValue("200");
+      await type("500");
+      expect(q.textbox("Timeout")).toHaveValue("500");
+      // Wait for the preceding tooltip's global skip-timeout window to end.
+      await sleep(350);
     });
 
     test("do not show tooltip with timeout after clicking on menu button before the tooltip is shown", async () => {

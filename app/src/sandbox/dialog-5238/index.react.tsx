@@ -22,6 +22,7 @@ function Dialogs({ onRenderInShadowRoot }: DialogsProps) {
         unmountOnHide
         unstable_treeSnapshotKey={treeSnapshotKey}
         backdrop={<div data-testid="oranges-backdrop" />}
+        style={{ position: "fixed", zIndex: 1 }}
         className="fixed inset-3 m-auto flex h-fit w-72 flex-col items-start gap-3 rounded-lg border border-gray-300 bg-white p-4 shadow-lg"
       >
         <Ariakit.DialogHeading className="text-lg font-medium">
@@ -48,6 +49,7 @@ function Dialogs({ onRenderInShadowRoot }: DialogsProps) {
         onClose={() => setApplesOpen(false)}
         unmountOnHide
         backdrop={<div data-testid="apples-backdrop" />}
+        style={{ position: "fixed", zIndex: 1 }}
         className="fixed inset-3 m-auto flex h-fit w-72 translate-x-6 translate-y-6 flex-col items-start gap-3 rounded-lg border border-gray-300 bg-white p-4 shadow-lg"
       >
         <Ariakit.DialogHeading className="text-lg font-medium">

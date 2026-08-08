@@ -33,7 +33,7 @@ test("focuses a dialog after its store changes", async () => {
 
   await click(q.button("Open store B"));
 
-  expect(q.textbox("Store B initial focus")).toHaveFocus();
+  await expect.poll(q.textbox.lazy("Store B initial focus")).toHaveFocus();
   expect(q.status("Store swap focus history")).toHaveTextContent(
     "open store A → store A input → open store B → store B input",
   );

@@ -1,5 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
-import { getTextboxSelection } from "@ariakit/utils";
+import { getTextboxSelection, isApple } from "@ariakit/utils";
 import { expect, test } from "vitest";
 
 function getSelectionText(element: HTMLElement | HTMLInputElement | null) {
@@ -12,10 +12,13 @@ function getSelectionText(element: HTMLElement | HTMLInputElement | null) {
 }
 
 function undo() {
-  return press("z", null, { ctrlKey: true });
+  return press("z", null, isApple() ? { metaKey: true } : { ctrlKey: true });
 }
 
 function redo() {
+  if (isApple()) {
+    return press("z", null, { metaKey: true, shiftKey: true });
+  }
   return press("y", null, { ctrlKey: true });
 }
 
@@ -32,7 +35,7 @@ test("initial state", async () => {
 });
 
 test("click on tag", async () => {
-  await click(q.option("JavaScript"));
+  await click(q.text("JavaScript"));
   expect(q.option("JavaScript")).toHaveFocus();
 });
 
@@ -44,14 +47,14 @@ test("remove tag by clicking on remove button", async () => {
 });
 
 test("remove tag by pressing Delete", async () => {
-  await click(q.option("JavaScript"));
+  await click(q.text("JavaScript"));
   await press.Delete();
   expect(q.option("React")).toHaveFocus();
   expect(q.option("JavaScript")).not.toBeInTheDocument();
 });
 
 test("remove tag by pressing Backspace on the tag", async () => {
-  await click(q.option("React"));
+  await click(q.text("React"));
   await press.Backspace();
   expect(q.option("JavaScript")).toHaveFocus();
   expect(q.option("React")).not.toBeInTheDocument();

@@ -1,4 +1,6 @@
+import { isFirefox } from "@ariakit/utils";
 import { expect, test } from "vitest";
+import { isBrowser } from "./__utils.ts";
 import { dispatch, press } from "./index.ts";
 
 test("dispatch.keyDown uses empty strings for omitted keyboard strings", async () => {
@@ -37,7 +39,7 @@ test("dispatch.keyDown preserves provided keyboard strings", async () => {
   }
 });
 
-test("press uses an empty string for omitted keyboard code", async () => {
+test("press uses the environment keyboard code when available", async () => {
   const button = document.createElement("button");
   document.body.append(button);
   let key: string | undefined;
@@ -49,13 +51,14 @@ test("press uses an empty string for omitted keyboard code", async () => {
   try {
     await press("m", button);
     expect(key).toBe("m");
-    expect(code).toBe("");
+    // Synthetic events have no physical key location. Browser input does.
+    expect(code).toBe(isBrowser ? "KeyM" : "");
   } finally {
     button.remove();
   }
 });
 
-test("press.ArrowUp uses an empty inputType when stepping a number input", async () => {
+test("press.ArrowUp reports inputType when the environment provides it", async () => {
   const input = document.createElement("input");
   input.type = "number";
   input.value = "5";
@@ -69,7 +72,14 @@ test("press.ArrowUp uses an empty inputType when stepping a number input", async
   try {
     await press.ArrowUp(input);
     expect(input.value).toBe("6");
-    expect(inputType).toBe("");
+    // Native number stepping may dispatch a plain Event instead of InputEvent.
+    // Firefox reports the edit as replacement text.
+    const expectedInputType = !isBrowser
+      ? ""
+      : isFirefox()
+        ? "insertReplacementText"
+        : undefined;
+    expect(inputType).toBe(expectedInputType);
   } finally {
     input.remove();
   }

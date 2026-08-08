@@ -1,3 +1,4 @@
+import { isSafari } from "@ariakit/utils";
 import { beforeEach, expect, test } from "vitest";
 import { click } from "./click.ts";
 import { mouseDown } from "./mouse-down.ts";
@@ -46,6 +47,10 @@ async function selectParagraphText() {
   expect(document.getSelection()?.toString()).toBe(selectionText);
 }
 
+function selectionPreservedOutsideSafari() {
+  return isSafari() ? "" : selectionText;
+}
+
 test("mouseDown on a button preserves the document selection", async () => {
   await selectParagraphText();
   await mouseDown(q.button("Preserve selection"));
@@ -68,25 +73,33 @@ test("mouseDown on an email input clears the document selection", async () => {
 test("mouseDown on a non-text input preserves the document selection", async () => {
   await selectParagraphText();
   await mouseDown(q.checkbox("Toggle target"));
-  expect(document.getSelection()?.toString()).toBe(selectionText);
+  expect(document.getSelection()?.toString()).toBe(
+    selectionPreservedOutsideSafari(),
+  );
 });
 
 test("mouseDown on a select preserves the document selection", async () => {
   await selectParagraphText();
   await mouseDown(q.combobox("Select target"));
-  expect(document.getSelection()?.toString()).toBe(selectionText);
+  expect(document.getSelection()?.toString()).toBe(
+    selectionPreservedOutsideSafari(),
+  );
 });
 
 test("mouseDown on a link preserves the document selection", async () => {
   await selectParagraphText();
   await mouseDown(q.link("Link target"));
-  expect(document.getSelection()?.toString()).toBe(selectionText);
+  expect(document.getSelection()?.toString()).toBe(
+    selectionPreservedOutsideSafari(),
+  );
 });
 
 test("mouseDown on an SVG link preserves the document selection", async () => {
   await selectParagraphText();
   await mouseDown(q.link("SVG link target"));
-  expect(document.getSelection()?.toString()).toBe(selectionText);
+  expect(document.getSelection()?.toString()).toBe(
+    selectionPreservedOutsideSafari(),
+  );
 });
 
 test("mouseDown on a focusable text target clears the document selection", async () => {
@@ -136,15 +149,20 @@ test("click suppresses mouse events when pointerdown is prevented", async () => 
 
   await click(button);
 
+  const focusEvents = isSafari() ? [] : ["focus"];
   expect(events).toEqual([
     "pointerdown",
     "mousedown",
-    "focus",
+    ...focusEvents,
     "pointerup",
     "mouseup",
     "click",
   ]);
-  expect(button).toHaveFocus();
+  if (isSafari()) {
+    expect(document.body).toHaveFocus();
+  } else {
+    expect(button).toHaveFocus();
+  }
 });
 
 test("mouseUp suppresses mouseup after a prevented pointerdown", async () => {

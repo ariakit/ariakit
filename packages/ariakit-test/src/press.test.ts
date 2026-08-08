@@ -1,4 +1,6 @@
+import { isFirefox } from "@ariakit/utils";
 import { afterEach, expect, test, vi } from "vitest";
+import { isBrowser } from "./__utils.ts";
 import { press } from "./index.ts";
 
 afterEach(() => {
@@ -245,11 +247,14 @@ test("press.Enter does not resubmit an image submitter after validation", async 
 
   await press.Enter(input);
 
-  expect(invalidEvents).toBe(1);
+  // Browsers run native constraint validation after the scripted invalid event
+  // above, while happy-dom reports only that event.
+  const expectedInvalidEvents = isBrowser ? 2 : 1;
+  expect(invalidEvents).toBe(expectedInvalidEvents);
   expect(onSubmit).not.toHaveBeenCalled();
 });
 
-test("press.Enter submits an image submitter before queued click microtasks", async () => {
+test("press.Enter handles queued image submitter disabling", async () => {
   const form = document.createElement("form");
   const input = document.createElement("input");
   const submitter = document.createElement("input");
@@ -266,7 +271,10 @@ test("press.Enter submits an image submitter before queued click microtasks", as
 
   await press.Enter(input);
 
-  expect(onSubmit).toHaveBeenCalledOnce();
+  // Firefox submits before the click microtask disables the submitter;
+  // Chromium and WebKit do not. happy-dom preserves the simulated behavior.
+  const expectedCalls = isBrowser && !isFirefox() ? 0 : 1;
+  expect(onSubmit).toHaveBeenCalledTimes(expectedCalls);
   expect(submitter.disabled).toBe(true);
 });
 
@@ -283,26 +291,35 @@ test("press.Enter submits a single-input form without a submit button", async ()
   expect(onSubmit).toHaveBeenCalledOnce();
 });
 
-test("press.Home with shiftKey keeps the anchor of a forward selection", async () => {
+test("press.Home with shiftKey follows native selection behavior", async () => {
   const input = getTextInput();
   input.setSelectionRange(6, 8, "forward");
 
   await press.Home(input, { shiftKey: true });
 
   expect(input.selectionStart).toBe(0);
-  expect(input.selectionEnd).toBe(6);
-  expect(input.selectionDirection).toBe("backward");
+  // Firefox keeps the logical anchor. Chromium and WebKit extend from the
+  // physical end of the selection instead. happy-dom preserves the simulated
+  // logical-anchor behavior.
+  const expectedSelection =
+    isBrowser && !isFirefox() ? [8, "forward"] : [6, "backward"];
+  expect([input.selectionEnd, input.selectionDirection]).toEqual(
+    expectedSelection,
+  );
 });
 
-test("press.End with shiftKey keeps the anchor of a backward selection", async () => {
+test("press.End with shiftKey follows native selection behavior", async () => {
   const input = getTextInput();
   input.setSelectionRange(4, 6, "backward");
 
   await press.End(input, { shiftKey: true });
 
-  expect(input.selectionStart).toBe(6);
   expect(input.selectionEnd).toBe(11);
-  expect(input.selectionDirection).toBe("forward");
+  const expectedSelection =
+    isBrowser && !isFirefox() ? [4, "backward"] : [6, "forward"];
+  expect([input.selectionStart, input.selectionDirection]).toEqual(
+    expectedSelection,
+  );
 });
 
 test("press.Enter on a textarea emits an Enter keypress charCode", async () => {

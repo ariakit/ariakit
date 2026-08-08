@@ -2,7 +2,6 @@ import { click, hover, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 async function hoverOutside() {
-  await hover(document.body);
   await hover(document.body, { clientX: 10, clientY: 10 });
 }
 
@@ -74,5 +73,5 @@ test("search", async () => {
   expect(q.option.all()).toHaveLength(0);
   expect(q.text("No results found")).toBeVisible();
   await type("\b\b\b\b\b");
-  expect(q.option("Search Contacts")).toHaveFocus();
+  await expect.poll(q.option.lazy("Search Contacts")).toHaveFocus();
 });

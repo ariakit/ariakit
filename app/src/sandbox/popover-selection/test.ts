@@ -21,12 +21,12 @@ test("shows and hides on text selection", async () => {
   expect(q.dialog()).not.toBeInTheDocument();
 });
 
-test("tabs backward into the selection popover", async () => {
+test("tabs into the selection popover", async () => {
   await select("amet");
   expect(q.dialog()).toBeVisible();
-  await press.ShiftTab();
+  await press.Tab();
   expect(q.dialog()).toBeVisible();
-  expect(q.button("Share")).toHaveFocus();
+  expect(q.button("Bookmark")).toHaveFocus();
 });
 
 test("keeps the popover open when its button is clicked", async () => {

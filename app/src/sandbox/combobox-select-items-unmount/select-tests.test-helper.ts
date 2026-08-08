@@ -41,7 +41,6 @@ export function testSelect(focusTarget: "combobox" | "listbox") {
     expectFocusTarget();
     expect(q.option("Apple")).toHaveFocus();
     expect(q.combobox()).toHaveTextContent("Apple");
-    await press.ShiftTab();
     await press.Enter();
     expect(q.listbox()).not.toBeInTheDocument();
     expect(q.combobox()).toHaveTextContent("Apple");
@@ -54,7 +53,6 @@ export function testSelect(focusTarget: "combobox" | "listbox") {
     expectFocusTarget();
     expect(q.option("Apple")).toHaveFocus();
     expect(q.combobox()).toHaveTextContent("Apple");
-    await press.ShiftTab();
     await press.Space();
     expect(q.listbox()).not.toBeInTheDocument();
     expect(q.combobox()).toHaveTextContent("Apple");
@@ -66,7 +64,6 @@ export function testSelect(focusTarget: "combobox" | "listbox") {
     expect(q.listbox()).toBeVisible();
     expectFocusTarget();
     expect(q.option("Apple")).toHaveFocus();
-    await press.ShiftTab();
     expect(document.activeElement).toBe(q.combobox());
     await press.Escape();
     expect(q.listbox()).not.toBeInTheDocument();

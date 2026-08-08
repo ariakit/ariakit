@@ -192,7 +192,12 @@ function onGlobalMouseDown(event: MouseEvent) {
 function onGlobalKeyDown(event: KeyboardEvent) {
   if (event.metaKey) return;
   if (event.ctrlKey) return;
-  if (event.altKey) return;
+  // Safari uses Option+Tab for full keyboard navigation when that preference
+  // isn't enabled. It is still keyboard modality even though Alt is pressed.
+  if (event.altKey) {
+    if (!isSafariBrowser) return;
+    if (event.key !== "Tab") return;
+  }
   isKeyboardModality = true;
 }
 

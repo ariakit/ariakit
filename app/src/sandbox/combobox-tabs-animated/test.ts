@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 
 test("selected tab is restored only after the animation ends", async () => {
   await click(q.combobox());
-  expect(await q.dialog.wait("Pages")).toBeVisible();
+  await expect.poll(q.dialog.lazy("Pages")).toBeVisible();
   await press.ArrowDown();
   await press.ArrowRight();
   expect(q.tab("Examples 31")).toHaveFocus();
@@ -27,7 +27,7 @@ test("selected tab is restored only after the animation ends", async () => {
 
 test("can re-open the dialog with arrow down while the animation is running", async () => {
   await click(q.combobox());
-  expect(await q.dialog.wait("Pages")).toBeVisible();
+  await expect.poll(q.dialog.lazy("Pages")).toBeVisible();
   await press.ArrowDown();
   await press.ArrowRight();
   await press.Escape();

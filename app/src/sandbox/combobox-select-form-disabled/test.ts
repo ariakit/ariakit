@@ -17,7 +17,6 @@ test("disabled select cannot be opened with click", async () => {
 
 test("disabled select cannot be opened with keyboard", async () => {
   await press.Tab();
-  await press.ShiftTab();
 
   expect(q.button("Submit")).toHaveFocus();
 

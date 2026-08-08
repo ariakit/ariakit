@@ -48,7 +48,11 @@ test("recovers when the active toolbar item is removed", async () => {
   await press.ArrowRight();
   expect(italic).toHaveFocus();
   await click(q.button("Toggle italic"));
-  await press.ShiftTab();
+  await expect.poll(() => underline).toHaveAttribute("tabindex", "0");
+  await click(q.button("Before stale active item"));
+  await press.Tab();
+  await expect.poll(() => bold).toHaveFocus();
+  await press.ArrowRight();
   expect(underline).toHaveFocus();
   await press.ArrowLeft();
   expect(bold).toHaveFocus();

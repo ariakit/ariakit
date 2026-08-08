@@ -20,7 +20,7 @@
   },
   "type": "module",
   "scripts": {
-    "build": "ariakit build --entries=index,react,playwright",
+    "build": "ariakit build --entries=index,react,playwright,vitest,vitest-config",
     "clean": "ariakit clean",
     "docs": "ariakit docs --write && pnpm run docs-react && pnpm run docs-playwright",
     "docs-react": "ariakit docs --write --entry src/react.tsx --marker react --heading 'React API reference' --exclude src/index.ts",
@@ -41,7 +41,8 @@
   "peerDependencies": {
     "@playwright/test": "^1.27.0",
     "@testing-library/react": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0",
-    "react": "^18.0.0 || ^19.0.0"
+    "react": "^18.0.0 || ^19.0.0",
+    "vitest": "^4.1.0"
   },
   "peerDependenciesMeta": {
     "@playwright/test": {
@@ -52,12 +53,17 @@
     },
     "react": {
       "optional": true
+    },
+    "vitest": {
+      "optional": true
     }
   },
   "exports": {
     ".": "./src/index.ts",
     "./playwright": "./src/playwright.ts",
     "./react": "./src/react.tsx",
+    "./vitest": "./src/vitest.ts",
+    "./vitest-config": "./src/vitest-config.ts",
     "./package.json": "./package.json"
   }
 }

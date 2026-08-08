@@ -1,4 +1,5 @@
 import { isVisible, invariant } from "@ariakit/utils";
+import { getInteractionDriver } from "./__interaction-driver.ts";
 import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { hover } from "./hover.ts";
@@ -50,6 +51,12 @@ export function rightClick(
   return wrapAsync(async () => {
     invariant(element, "Unable to rightClick on null element");
     if (!isVisible(element)) return;
+
+    const driver = getInteractionDriver();
+    if (await driver?.rightClick(element, options)) {
+      await sleep();
+      return;
+    }
 
     await hover(element, getHoverOptions(options));
     const pressOptions = getPressOptions(options);

@@ -3,6 +3,17 @@ import { expect, test, vi } from "vitest";
 
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 
+function createOutsideButton() {
+  const button = document.createElement("button");
+  button.textContent = "Outside";
+  button.tabIndex = 0;
+  button.style.position = "fixed";
+  button.style.right = "0";
+  button.style.bottom = "0";
+  document.body.append(button);
+  return button;
+}
+
 test("show/hide on click", async () => {
   expect(q.menu()).not.toBeInTheDocument();
   await click(q.button("Actions"));
@@ -91,9 +102,7 @@ test("hide on click outside", async () => {
 });
 
 test("hide on click on outside element", async () => {
-  const buttonOutside = document.createElement("button");
-  buttonOutside.textContent = "Outside";
-  document.body.append(buttonOutside);
+  const buttonOutside = createOutsideButton();
 
   await click(q.button("Actions"));
   expect(q.menu()).toBeVisible();
@@ -105,9 +114,7 @@ test("hide on click on outside element", async () => {
 });
 
 test("hide on tab", async () => {
-  const buttonOutside = document.createElement("button");
-  buttonOutside.textContent = "Outside";
-  document.body.append(buttonOutside);
+  const buttonOutside = createOutsideButton();
 
   await click(q.button("Actions"));
   expect(q.menu()).toBeVisible();

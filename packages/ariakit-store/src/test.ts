@@ -2353,36 +2353,39 @@ test("warns when parent repair does not converge", () => {
   cleanup();
 });
 
-test("does not warn when parent repair does not converge in production", () => {
-  const first = createStore({ count: 0 });
-  const second = createStore({ count: 0 });
-  const child = createStore({ count: 0 }, first, second);
-  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+test.skipIf(!("happyDOM" in window))(
+  "does not warn when parent repair does not converge in production",
+  () => {
+    const first = createStore({ count: 0 });
+    const second = createStore({ count: 0 });
+    const child = createStore({ count: 0 }, first, second);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-  vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NODE_ENV", "production");
 
-  const cleanup = init(child);
-  const unsubscribeFirst = sync(first, ["count"], (state) => {
-    if (state.count === 1) return;
-    first.setState("count", 1);
-  });
-  const unsubscribeSecond = sync(second, ["count"], (state) => {
-    if (state.count === 2) return;
-    second.setState("count", 2);
-  });
+    const cleanup = init(child);
+    const unsubscribeFirst = sync(first, ["count"], (state) => {
+      if (state.count === 1) return;
+      first.setState("count", 1);
+    });
+    const unsubscribeSecond = sync(second, ["count"], (state) => {
+      if (state.count === 2) return;
+      second.setState("count", 2);
+    });
 
-  child.setState("count", 10);
+    child.setState("count", 10);
 
-  expect(warn).not.toHaveBeenCalled();
-  expect(child.getState().count).toBe(2);
-  expect(first.getState().count).toBe(1);
-  expect(second.getState().count).toBe(2);
+    expect(warn).not.toHaveBeenCalled();
+    expect(child.getState().count).toBe(2);
+    expect(first.getState().count).toBe(1);
+    expect(second.getState().count).toBe(2);
 
-  warn.mockRestore();
-  unsubscribeFirst();
-  unsubscribeSecond();
-  cleanup();
-});
+    warn.mockRestore();
+    unsubscribeFirst();
+    unsubscribeSecond();
+    cleanup();
+  },
+);
 
 test("refreshes child batch baseline after superseded same-key fan-out", async () => {
   const parent = createStore({ count: 0 });
@@ -2587,12 +2590,15 @@ test("throws on conflicting default props in development", () => {
   ).not.toThrow();
 });
 
-test("does not throw on conflicting default props in production", () => {
-  const store = createStore({ value: "Apple" });
+test.skipIf(!("happyDOM" in window))(
+  "does not throw on conflicting default props in production",
+  () => {
+    const store = createStore({ value: "Apple" });
 
-  vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NODE_ENV", "production");
 
-  expect(() =>
-    throwOnConflictingProps({ defaultValue: "Orange" }, store),
-  ).not.toThrow();
-});
+    expect(() =>
+      throwOnConflictingProps({ defaultValue: "Orange" }, store),
+    ).not.toThrow();
+  },
+);

@@ -39,13 +39,19 @@ function StaleActiveItemToolbar() {
   const [showItalic, setShowItalic] = useState(true);
   return (
     <>
-      <button type="button">Before stale active item</button>
+      <button type="button" tabIndex={0}>
+        Before stale active item
+      </button>
       <Ariakit.Toolbar aria-label="Stale active item">
         <Ariakit.ToolbarItem>Bold</Ariakit.ToolbarItem>
         {showItalic && <Ariakit.ToolbarItem>Italic</Ariakit.ToolbarItem>}
-        <Ariakit.ToolbarItem>Underline</Ariakit.ToolbarItem>
+        <Ariakit.ToolbarItem tabIndex={0}>Underline</Ariakit.ToolbarItem>
       </Ariakit.Toolbar>
-      <button type="button" onClick={() => setShowItalic((show) => !show)}>
+      <button
+        type="button"
+        tabIndex={0}
+        onClick={() => setShowItalic((show) => !show)}
+      >
         Toggle italic
       </button>
     </>

@@ -46,7 +46,7 @@ export default function Example() {
         </div>
       )}
 
-      <button type="button" onClick={() => setShowNickname(true)}>
+      <button type="button" tabIndex={0} onClick={() => setShowNickname(true)}>
         Add nickname
       </button>
 

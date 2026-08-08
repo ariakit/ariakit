@@ -1,4 +1,4 @@
-import { click, q, rightClick } from "@ariakit/test";
+import { click, focus, press, q, rightClick } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // Reproduces https://github.com/ariakit/ariakit/issues/5238
@@ -14,7 +14,10 @@ test("keeps the frontmost initially open sibling dialog interactive", async () =
   expect(q.dialog("Oranges")).not.toBeInTheDocument();
   expect(q.dialog("Apples")).toBeVisible();
 
-  await rightClick(document.querySelector("[data-testid=apples-backdrop]"));
+  await rightClick(document.querySelector("[data-testid=apples-backdrop]"), {
+    clientX: 10,
+    clientY: 10,
+  });
   expect(q.dialog("Apples")).not.toBeInTheDocument();
   expect(q.dialog("Oranges")).toBeVisible();
   await click(q.button("Eat orange"));
@@ -40,11 +43,26 @@ test("keeps initially open sibling dialogs interactive in a shadow root", async 
   expect(orangesDialog.closest("[inert]")).toBeTruthy();
   expect(applesDialog.closest("[inert]")).toBeNull();
 
-  await click(shadowQ.button("Eat apple"));
+  const eatApple = shadowQ.button("Eat apple");
+  const closeApples = shadowQ.button("Close apples");
+
+  await focus(closeApples);
+  expect(host?.shadowRoot?.activeElement).toBe(closeApples);
+  // document.activeElement is the shadow host, so target the deep active
+  // element when pressing at each dialog boundary.
+  await press.Tab(closeApples);
+  expect(host?.shadowRoot?.activeElement).toBe(eatApple);
+
+  await focus(eatApple);
+  await press.ShiftTab(eatApple);
+  expect(host?.shadowRoot?.activeElement).toBe(closeApples);
+
+  await click(eatApple);
   expect(shadowQ.status("Apple count")).toHaveTextContent("Apples eaten: 1");
 
   await rightClick(
     portal?.querySelector("[data-testid=apples-backdrop]") || null,
+    { clientX: 10, clientY: 10 },
   );
   expect(shadowQ.dialog("Apples")).not.toBeInTheDocument();
   expect(orangesDialog.closest("[inert]")).toBeNull();

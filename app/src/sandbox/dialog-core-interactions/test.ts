@@ -17,14 +17,18 @@ for (const trigger of ["click", "Enter", "Space"] as const) {
   });
 }
 
-test("traps focus inside the dialog", async () => {
-  await click(q.button("Show modal"));
-  expect(q.button("OK")).toHaveFocus();
+test("keeps focus away from inert elements outside the dialog", async () => {
+  const disclosure = q.button("Show modal");
+  for (const pressTab of [press.Tab, press.ShiftTab]) {
+    await click(disclosure);
+    expect(q.button("OK")).toHaveFocus();
 
-  await press.Tab();
-  expect(q.button("OK")).toHaveFocus();
-  await press.ShiftTab();
-  expect(q.button("OK")).toHaveFocus();
+    await pressTab();
+    expect(q.dialog("Success")).toBeVisible();
+    await expect.poll(q.button.lazy("OK")).toHaveFocus();
+
+    await press.Escape();
+  }
 });
 
 test("closes with Escape and restores disclosure focus", async () => {
@@ -38,9 +42,10 @@ test("closes with Escape and restores disclosure focus", async () => {
 
 test("closes on outside click without restoring disclosure focus", async () => {
   const disclosure = q.button("Show modal");
-  const outside = q.button("Outside dialog");
   await click(disclosure);
-  await click(outside);
+  const backdrop = document.querySelector<HTMLElement>("[data-backdrop]");
+  expect(backdrop).toBeInTheDocument();
+  await click(backdrop);
 
   expect(q.dialog("Success")).not.toBeInTheDocument();
   expect(disclosure).not.toHaveFocus();

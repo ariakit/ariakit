@@ -1,0 +1,25 @@
+.combobox-wrapper {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) auto;
+}
+
+.combobox-wrapper > .combobox {
+  min-width: 0;
+}
+
+.combobox-buttons,
+.tab-list {
+  display: flex;
+}
+
+.popover {
+  z-index: 50;
+  box-sizing: border-box;
+  display: flex;
+  max-height: min(var(--popover-available-height, 300px), 300px);
+  flex-direction: column;
+  overflow: auto;
+  border: 1px solid CanvasText;
+  background: Canvas;
+  padding: 0.5rem;
+}

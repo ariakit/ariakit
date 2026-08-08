@@ -1,8 +1,17 @@
 import { click, press, q, type } from "@ariakit/test";
 import { expect, test, vi } from "vitest";
 
-const errors = () => q.text.all("Constraints not satisfied");
-const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
+function errors() {
+  const ids =
+    q.combobox.ensure().getAttribute("aria-describedby")?.split(" ") ?? [];
+  return ids
+    .map((id) => document.getElementById(id))
+    .filter((element) => element?.textContent?.trim());
+}
+
+function spyOnAlert() {
+  return vi.spyOn(window, "alert").mockImplementation(() => {});
+}
 
 test("click on label", async () => {
   await click(q.text("Favorite fruit"));
@@ -12,8 +21,8 @@ test("click on label", async () => {
 });
 
 test("show error on tabbing through select button", async () => {
-  await press.ShiftTab();
-  await press.ShiftTab();
+  await press.Tab();
+  await press.Tab();
   expect(q.combobox()).toHaveFocus();
   expect(errors()).toHaveLength(0);
   await press.Tab();

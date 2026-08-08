@@ -7,6 +7,9 @@ test("default value", () => {
 
 test("set value on move", async () => {
   await click(q.combobox("Account"));
+  // Keep the physical pointer off the listbox so it can't override keyboard
+  // navigation after the popup opens over the button.
+  await hover(document.body);
   expect(q.option(/John Doe/)).toHaveFocus();
   await press.ArrowUp();
   expect(q.option(/Jane Doe/)).toHaveFocus();
@@ -29,8 +32,9 @@ test("typeahead", async () => {
   await press.Tab();
   await type("jjj");
   expect(q.combobox("Account")).toHaveTextContent(/Jane Doe/);
+  expect(q.combobox("Account")).toHaveFocus();
   await press.Enter();
-  expect(q.option(/Jane Doe/)).toHaveFocus();
+  await expect.poll(q.option.lazy(/Jane Doe/)).toHaveFocus();
   await type("harry");
   expect(q.combobox("Account")).toHaveTextContent(/Harry Poe/);
 });

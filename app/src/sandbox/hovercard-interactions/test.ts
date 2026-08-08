@@ -4,7 +4,6 @@ import { expect, test } from "vitest";
 const hovercard = () => q.dialog("Ariakit profile");
 
 const hoverOutside = async () => {
-  await hover(document.body);
   await hover(document.body, { clientX: 10, clientY: 10 });
 };
 
@@ -29,6 +28,7 @@ test("stays open while focused", async () => {
   await click(q.button("Follow"));
 
   await hoverOutside();
+  // Cross the provider's 200ms hide timeout to prove focus keeps it open.
   await sleep(300);
   expect(hovercard()).toBeVisible();
 });
@@ -39,14 +39,18 @@ test("stays open when the pointer quickly returns", async () => {
   await expect.poll(hovercard).toBeVisible();
 
   await hoverOutside();
-  await sleep(100);
+  // Return before the provider's 200ms hide timeout elapses.
+  await sleep(50);
   await hover(anchor);
+  // Cross the hide timeout to prove the pending close was canceled.
   await sleep(300);
   expect(hovercard()).toBeVisible();
 
   await hoverOutside();
-  await sleep(100);
+  // Return before the provider's 200ms hide timeout elapses.
+  await sleep(50);
   await hover(q.button("Follow"));
+  // Cross the hide timeout to prove the pending close was canceled.
   await sleep(300);
   expect(hovercard()).toBeVisible();
 });
