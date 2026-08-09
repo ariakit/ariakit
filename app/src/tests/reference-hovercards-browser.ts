@@ -35,7 +35,7 @@ test("reference hovercard shows partial content on hover", async ({
   page,
   q,
 }) => {
-  await gotoAndSettle(page, REFERENCE_PATH);
+  await gotoAndSettle(page, REFERENCE_PATH, { waitForHydration: false });
   // The Disclosure description links to the DisclosureContent reference; the
   // example code block renders more anchors with the same name, so take the
   // first (the description link).

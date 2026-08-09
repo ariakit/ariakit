@@ -17,7 +17,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         document.hidden ? 0 : native(callback);
     });
     // Re-navigate so the init script applies before the app loads.
-    await gotoAndSettle(page, page.url(), { waitForHydration: true });
+    await gotoAndSettle(page, page.url());
     await page.evaluate(() => {
       Object.defineProperty(document, "hidden", {
         configurable: true,

@@ -2,7 +2,7 @@ import { test } from "#app/test-utils/fixtures.ts";
 import { gotoAndSettle } from "#app/test-utils/preview.ts";
 
 test("theme button works after client-side navigation", async ({ page }) => {
-  await gotoAndSettle(page, "/");
+  await gotoAndSettle(page, "/", { waitForHydration: false });
 
   const themeSidebar = page.locator("#theme-sidebar");
   const pageLoad = page.evaluate(() => {
@@ -25,7 +25,9 @@ test("theme button works after client-side navigation", async ({ page }) => {
 });
 
 test("theme shortcut ignores editable targets", async ({ page }) => {
-  await gotoAndSettle(page, "/react/examples/checkbox-card/");
+  await gotoAndSettle(page, "/react/examples/checkbox-card/", {
+    waitForHydration: false,
+  });
 
   const themeSidebar = page.locator("#theme-sidebar");
   const nameField = page.getByRole("textbox", { name: "Name" });

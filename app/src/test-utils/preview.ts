@@ -19,21 +19,22 @@ interface PreviewNavigationOptions {
  * Navigates to `url` and waits for it to be ready for a browser test. Waits for
  * the bounded `load` event rather than `networkidle`: under CI contention,
  * networkidle's unbounded "no requests for 500ms" wait can stall past the test
- * timeout. After `load`, still wait for network idle so late work (such as
- * `client:load` island hydration) settles, but cap it so a stalled or chatty
- * request degrades to a short wait instead of consuming the test budget. Then
- * wait for Astro to hand every island to its renderer so tests do not interact
- * with server-rendered controls when `waitForHydration` is enabled. Keep that
- * disabled for full site pages, which can contain lazy offscreen islands. Only
- * the bounded settle timing out is expected; rethrow real failures such as the
- * page or context closing.
+ * timeout. After `load`, still wait for network idle so late work settles, but
+ * cap it so a stalled or chatty request degrades to a short wait instead of
+ * consuming the test budget. When `waitForHydration` is enabled, also wait for
+ * Astro to hand every island to its renderer. React can commit hydration in a
+ * later task, so callers that depend on state created by effects still need an
+ * observable readiness signal. Disable the hydration wait for full site pages,
+ * which can contain lazy offscreen islands. Only the bounded settle timing out
+ * is expected; rethrow real failures such as the page or context closing.
  *
- * Kept in sync with the copy in `packages/ariakit-scripts/src/perf.ts`.
+ * The bounded load and network-idle steps are kept in sync with the helper in
+ * `packages/ariakit-scripts/src/perf.ts`.
  */
 export async function gotoAndSettle(
   page: Page,
   url: string,
-  options: PreviewNavigationOptions = {},
+  { waitForHydration = true }: PreviewNavigationOptions = {},
 ) {
   await page.goto(url, { waitUntil: "load" });
   await page
@@ -41,7 +42,7 @@ export async function gotoAndSettle(
     .catch((error) => {
       if (!(error instanceof errors.TimeoutError)) throw error;
     });
-  if (options.waitForHydration) {
+  if (waitForHydration) {
     await page.waitForFunction(
       () => !document.querySelector("astro-island[ssr]"),
     );
@@ -96,7 +97,6 @@ interface WithFrameworkCallbackParams {
 export function withFramework(
   dirname: string,
   callback: (params: WithFrameworkCallbackParams) => Promise<void>,
-  options: PreviewNavigationOptions = { waitForHydration: true },
 ) {
   const id = getPreviewId(dirname);
   if (!id) {
@@ -107,18 +107,12 @@ export function withFramework(
     : getPreviewFrameworksSync(dirname);
   for (const framework of frameworkNames) {
     test.describe(framework, { tag: `@${framework}` }, () => {
-      test.beforeEach(async ({ page }) => {
-        await gotoAndSettle(page, `/${framework}/previews/${id}/`, options);
+      test.beforeEach(async ({ page, javaScriptEnabled }) => {
+        await gotoAndSettle(page, `/${framework}/previews/${id}/`, {
+          waitForHydration: javaScriptEnabled,
+        });
       });
       return callback({ id, framework, query, test });
     });
   }
-}
-
-/** Runs framework previews without waiting for client-side hydration. */
-export function withFrameworkBeforeHydration(
-  dirname: string,
-  callback: (params: WithFrameworkCallbackParams) => Promise<void>,
-) {
-  return withFramework(dirname, callback, { waitForHydration: false });
 }
