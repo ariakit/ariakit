@@ -11,42 +11,25 @@ import {
 import type { Framework } from "#app/lib/schemas.ts";
 import { test } from "./fixtures.ts";
 
-interface PreviewNavigationOptions {
-  waitForHydration?: boolean;
-}
-
 /**
  * Navigates to `url` and waits for it to be ready for a browser test. Waits for
  * the bounded `load` event rather than `networkidle`: under CI contention,
  * networkidle's unbounded "no requests for 500ms" wait can stall past the test
- * timeout. After `load`, still wait for network idle so late work settles, but
- * cap it so a stalled or chatty request degrades to a short wait instead of
- * consuming the test budget. When `waitForHydration` is enabled, also wait for
- * Astro to hand every island to its renderer. React can commit hydration in a
- * later task, so callers that depend on state created by effects still need an
- * observable readiness signal. Disable the hydration wait for full site pages,
- * which can contain lazy offscreen islands. Only the bounded settle timing out
- * is expected; rethrow real failures such as the page or context closing.
+ * timeout. After `load`, still wait for network idle so late network work can
+ * settle, but cap it so a stalled or chatty request degrades to a short wait
+ * instead of consuming the test budget. Only the bounded settle timing out is
+ * expected; rethrow real failures such as the page or context closing.
  *
  * The bounded load and network-idle steps are kept in sync with the helper in
  * `packages/ariakit-scripts/src/perf.ts`.
  */
-export async function gotoAndSettle(
-  page: Page,
-  url: string,
-  { waitForHydration = true }: PreviewNavigationOptions = {},
-) {
+export async function gotoAndSettle(page: Page, url: string) {
   await page.goto(url, { waitUntil: "load" });
   await page
     .waitForLoadState("networkidle", { timeout: 5_000 })
     .catch((error) => {
       if (!(error instanceof errors.TimeoutError)) throw error;
     });
-  if (waitForHydration) {
-    await page.waitForFunction(
-      () => !document.querySelector("astro-island[ssr]"),
-    );
-  }
 }
 
 /**
@@ -108,9 +91,14 @@ export function withFramework(
   for (const framework of frameworkNames) {
     test.describe(framework, { tag: `@${framework}` }, () => {
       test.beforeEach(async ({ page, javaScriptEnabled }) => {
-        await gotoAndSettle(page, `/${framework}/previews/${id}/`, {
-          waitForHydration: javaScriptEnabled,
-        });
+        await gotoAndSettle(page, `/${framework}/previews/${id}/`);
+        // Preview routes contain only eager client:load islands. JavaScript-
+        // disabled projects keep them server-rendered and must skip this wait.
+        if (javaScriptEnabled) {
+          await page.waitForFunction(
+            () => !document.querySelector("astro-island[ssr]"),
+          );
+        }
       });
       return callback({ id, framework, query, test });
     });
