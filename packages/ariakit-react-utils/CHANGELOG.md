@@ -1,5 +1,12 @@
 # @ariakit/react-utils
 
+## 0.2.4
+
+- Updated components created with `forwardRef` to drop props holding `undefined`, so passing one behaves the same as omitting it.
+- Fixed `mergeProps` so an own `__proto__` prop cannot replace the merged props object's prototype in rendered [`Role`](https://ariakit.com/reference/role) elements.
+- Fixed [`Checkbox`](https://ariakit.com/reference/checkbox) and other components composed with [`render`](https://ariakit.com/reference/checkbox#render) to preserve computed props when a render element receives `undefined`. Thanks to [@Jackardios](https://github.com/Jackardios).
+- Updated dependencies: `@ariakit/utils@0.1.6`, `@ariakit/store@0.1.8`
+
 ## 0.2.3
 
 - Updated dependencies: `@ariakit/utils@0.1.5`, `@ariakit/store@0.1.7`
