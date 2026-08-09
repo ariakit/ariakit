@@ -3,6 +3,22 @@ import { useState } from "react";
 
 const fruits = ["Apple", "Banana", "Grape", "Orange"];
 
+interface FocusedOptionsProps {
+  label: string;
+  items: string[];
+}
+
+function FocusedOptions({ label, items }: FocusedOptionsProps) {
+  return (
+    <p>
+      Focused options:{" "}
+      <output aria-label={`${label} focused options`}>
+        {items.join(", ") || "none"}
+      </output>
+    </p>
+  );
+}
+
 interface FruitSelectProps {
   label: string;
   virtualFocus?: boolean;
@@ -10,35 +26,14 @@ interface FruitSelectProps {
 
 function FruitSelect({ label, virtualFocus }: FruitSelectProps) {
   const [focusedItems, setFocusedItems] = useState<string[]>([]);
-  const store = Ariakit.useComboboxStore({
-    defaultSelectedValue: "Apple",
-    virtualFocus,
-  });
-  const open = Ariakit.useStoreState(store, "open");
-  // `ComboboxSelect` forwards composite options to `useComposite`, but it
-  // doesn't list them in its own props type, so they are spread in.
-  const focusOnMoveProps = {
-    focusOnMove: open,
-  } satisfies Ariakit.CompositeOptions;
 
   return (
     <div>
-      <Ariakit.ComboboxProvider store={store}>
-        <Ariakit.ComboboxSelect
-          aria-label={label}
-          // TODO: remove both workarounds once
-          // https://github.com/ariakit/ariakit/issues/7093 is fixed. The prop
-          // stops the closed moves from presenting an item, and the handler
-          // stops the presentation that virtual focus queues when the
-          // collapsed select itself is focused.
-          {...focusOnMoveProps}
-          onFocus={(event) => {
-            const state = store.getState();
-            if (state.open) return;
-            if (!state.virtualFocus) return;
-            event.preventDefault();
-          }}
-        />
+      <Ariakit.ComboboxProvider
+        defaultSelectedValue="Apple"
+        virtualFocus={virtualFocus}
+      >
+        <Ariakit.ComboboxSelect aria-label={label} />
         {/* The list stays visible while the select is collapsed, which is
             also what an exit transition leaves behind while it runs. */}
         <Ariakit.ComboboxList alwaysVisible aria-label={`${label} options`}>
@@ -55,12 +50,57 @@ function FruitSelect({ label, virtualFocus }: FruitSelectProps) {
           ))}
         </Ariakit.ComboboxList>
       </Ariakit.ComboboxProvider>
-      <p>
-        Focused options:{" "}
-        <output aria-label={`${label} focused options`}>
-          {focusedItems.join(", ") || "none"}
-        </output>
-      </p>
+      <FocusedOptions label={label} items={focusedItems} />
+    </div>
+  );
+}
+
+// Enough options that the typeahead target starts outside the scrollport, so
+// the list has somewhere to scroll while the select is collapsed.
+const codes = [
+  ...Array.from({ length: 29 }, (_, index) => `Alpha ${index + 1}`),
+  "Zulu",
+];
+
+function CodeSelect() {
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Alpha 1">
+      <Ariakit.ComboboxSelect aria-label="Code" />
+      <Ariakit.ComboboxList
+        alwaysVisible
+        aria-label="Code options"
+        style={{ maxHeight: 80, overflowY: "auto" }}
+      >
+        {codes.map((value) => (
+          <Ariakit.ComboboxItem key={value} value={value} />
+        ))}
+      </Ariakit.ComboboxList>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
+// The same contract without a select: the input is the composite element and
+// the options live in a list outside it, so a collapsed input must not focus
+// them either.
+function FilterCombobox() {
+  const [focusedItems, setFocusedItems] = useState<string[]>([]);
+
+  return (
+    <div>
+      <Ariakit.ComboboxProvider defaultActiveId="filter-banana">
+        <Ariakit.Combobox aria-label="Filter" />
+        <Ariakit.ComboboxList alwaysVisible aria-label="Filter options">
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem
+              key={value}
+              id={`filter-${value.toLowerCase()}`}
+              value={value}
+              onFocus={() => setFocusedItems((items) => [...items, value])}
+            />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxProvider>
+      <FocusedOptions label="Filter" items={focusedItems} />
     </div>
   );
 }
@@ -70,6 +110,8 @@ export default function Example() {
     <>
       <FruitSelect label="Fruit" />
       <FruitSelect label="Fruit without virtual focus" virtualFocus={false} />
+      <CodeSelect />
+      <FilterCombobox />
     </>
   );
 }

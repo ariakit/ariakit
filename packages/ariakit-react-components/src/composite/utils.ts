@@ -166,6 +166,31 @@ function presentItem({
     return id != null && state.activeId != null && state.activeId !== id;
   };
 
+  // Whether focusing the item would take DOM focus out of a composite element
+  // that isn't in the popup and put it inside a popup that hasn't opened. A
+  // collapsed widget keeps focus on itself, the way a native select does while
+  // typeahead changes its value. Containment is what separates this from an
+  // `alwaysVisible` popup that is its own composite, such as a Menu, where DOM
+  // focus is the accessibility cursor and has to follow the active item.
+  // https://github.com/ariakit/ariakit/issues/7093
+  const entersClosedPopup = (
+    state: ReturnType<typeof store.getState>,
+    target: HTMLElement,
+  ) => {
+    if (!("open" in state)) return false;
+    if (state.open) return false;
+    const popup = getPopupElement(store);
+    if (!popup?.contains(target)) return false;
+    const { compositeElement } = state;
+    if (!compositeElement) return false;
+    if (popup.contains(compositeElement)) return false;
+    // Focus only reaches a closed popup that is still on screen. Focusing a
+    // hidden one is already a no-op, the same reason the scroll below skips it,
+    // so withholding there would only keep a request alive for no gain. This
+    // reads style, so it goes last.
+    return isVisible(target);
+  };
+
   // Follow the active item only until one resolves, then pin its logical id so
   // a replacement node can be found without presenting a different item.
   const resolveElement = (state: ReturnType<typeof store.getState>) => {
@@ -212,7 +237,18 @@ function presentItem({
     } else if (!stillOwnsFocus(element)) {
       return cancel();
     }
-    if (focus && !focused) {
+    // Only the focus half is withheld: a list that is already on screen still
+    // scrolls to the item the user just made active.
+    const focusWithheld = focus && entersClosedPopup(state, element);
+    // A request parked on positioning keeps presenting the item it resolved,
+    // because the popup is open and the wait is short. This one waits for the
+    // popup to open at all, so the user has time to pick another item, and the
+    // focus it still owes would land on the wrong one.
+    if (focusWithheld) {
+      const { activeId } = state;
+      if (activeId != null && activeId !== resolvedId) return cancel();
+    }
+    if (focus && !focused && !focusWithheld) {
       focused = true;
       focusLeftElement = false;
       const itemElement = element;
@@ -238,13 +274,24 @@ function presentItem({
     }
     // Focus may move immediately, but scrolling is reserved for an explicit
     // presentation target; hover and stale active ids must not move the page.
-    if (markedOnly && !element.hasAttribute("data-autofocus")) return cancel();
+    if (markedOnly && !element.hasAttribute("data-autofocus")) {
+      // A withheld request still owes focus, so keep it pending. Only a
+      // request with nothing left to give is finished here.
+      if (focusWithheld) return;
+      return cancel();
+    }
     // The item can't be shown yet: a popup that is still hidden while closed,
     // or one that hasn't been positioned yet, would be scrolled to no visible
     // effect or to the wrong place.
     if (!isVisible(element)) return;
     if ("unstable_placing" in state && state.unstable_placing) return;
-    cancel();
+    // Withheld focus keeps the request alive, so opening the popup still gives
+    // the item the focus this pass skipped. Scrolling again while it waits only
+    // repeats a nearest-edge scroll, since a closed popup never takes the
+    // centering branch, so it settles unless something else moved the list.
+    if (!focusWithheld) {
+      cancel();
+    }
     if (scrollIntoView) {
       scrollIntoView(element);
       return;
