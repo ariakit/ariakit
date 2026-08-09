@@ -515,7 +515,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
     await test.expect(focusHistory).toHaveText("none");
     await test.expect(escapeTarget).toBeVisible();
-    await test.expect(disclosure).toBeEnabled();
 
     await disclosure.click();
 

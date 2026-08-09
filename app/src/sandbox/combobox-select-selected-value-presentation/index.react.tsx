@@ -592,7 +592,7 @@ function OversizedInlineOverflowFixture({
 function NativeAutoFocusFixture() {
   const dialog = Ariakit.useDialogStore();
   const shadowHostRef = useRef<HTMLDivElement>(null);
-  const [focusTarget, setFocusTarget] = useState<HTMLInputElement | null>(null);
+  const focusTargetRef = useRef<HTMLInputElement>(null);
   const [focusHistory, setFocusHistory] = useState<string[]>([]);
   const recordFocus = (target: string) => {
     setFocusHistory((history) => [...history, target]);
@@ -611,16 +611,16 @@ function NativeAutoFocusFixture() {
     input.addEventListener("focus", onFocus);
     nestedRoot.append(input);
     root.append(nestedHost);
-    setFocusTarget(input);
+    focusTargetRef.current = input;
     return () => {
-      setFocusTarget(null);
+      focusTargetRef.current = null;
       input.removeEventListener("focus", onFocus);
       nestedHost.remove();
     };
   }, []);
   return (
     <>
-      <Ariakit.DialogDisclosure store={dialog} disabled={!focusTarget}>
+      <Ariakit.DialogDisclosure store={dialog}>
         Native auto-focus dialog
       </Ariakit.DialogDisclosure>
       <div ref={shadowHostRef} />
@@ -643,7 +643,7 @@ function NativeAutoFocusFixture() {
           autoFocus
           onFocus={() => {
             recordFocus("input");
-            focusTarget?.focus();
+            focusTargetRef.current?.focus();
           }}
         />
       </Ariakit.Dialog>
