@@ -25,6 +25,7 @@ import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { useComposite } from "../composite/composite.tsx";
+import { isCompositeMoveKey } from "../focusable/__utils.ts";
 import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
@@ -51,19 +52,6 @@ function getSelectedValues(select: HTMLSelectElement) {
 
 function ownsFocus(element: HTMLElement) {
   return getActiveElement(element) === element;
-}
-
-function isCompositeMoveKey(key: string) {
-  return (
-    key === "ArrowUp" ||
-    key === "ArrowRight" ||
-    key === "ArrowDown" ||
-    key === "ArrowLeft" ||
-    key === "Home" ||
-    key === "End" ||
-    key === "PageUp" ||
-    key === "PageDown"
-  );
 }
 
 // When moving through the items while the select list is closed, we don't want

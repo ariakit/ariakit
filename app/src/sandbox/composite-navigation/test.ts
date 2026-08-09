@@ -1,4 +1,4 @@
-import { click, focus, press, q } from "@ariakit/test";
+import { click, focus, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("navigates a non-looping composite", async () => {
@@ -77,6 +77,75 @@ test("navigates a grid with focus shifting", async () => {
     await press(key);
     expect(q.gridcell(name)).toHaveFocus();
   }
+});
+
+// https://github.com/ariakit/ariakit/issues/7099
+test("moves focus-visible with an Alt-modified navigation key", async () => {
+  const apple = q.button("Apple");
+  const grape = q.button("Grape");
+
+  await click(apple);
+  expect(apple).toHaveFocus();
+  expect(apple).not.toHaveAttribute("data-focus-visible");
+
+  await press.ArrowDown(null, { altKey: true });
+  expect(grape).toHaveFocus();
+  expect(grape).toHaveAttribute("data-focus-visible", "true");
+});
+
+// https://github.com/ariakit/ariakit/issues/7099
+// Orange is the last item of the non-looping composite, so the key moves
+// nothing and no focus event fires. Only the item's own keydown handling can
+// apply the attribute here. The test above moves focus instead, which discards
+// that handling when the item blurs before its callback runs.
+test("shows focus-visible on the item when an Alt-modified navigation key doesn't move focus", async () => {
+  const orange = q.button("Orange");
+
+  await click(orange);
+  expect(orange).toHaveFocus();
+  expect(orange).not.toHaveAttribute("data-focus-visible");
+
+  await press.ArrowDown(null, { altKey: true });
+  expect(orange).toHaveFocus();
+  expect(orange).toHaveAttribute("data-focus-visible", "true");
+});
+
+// https://github.com/ariakit/ariakit/issues/7099
+test("moves focus-visible with Ctrl+Home on a grid", async () => {
+  const cell = q.gridcell("0B2");
+  const firstCell = q.gridcell("0A1");
+
+  await click(cell);
+  expect(cell).toHaveFocus();
+  expect(cell).not.toHaveAttribute("data-focus-visible");
+
+  await press.Home(null, { ctrlKey: true });
+  expect(firstCell).toHaveFocus();
+  expect(firstCell).toHaveAttribute("data-focus-visible", "true");
+});
+
+// https://github.com/ariakit/ariakit/issues/7099
+// The counterpart of the tests above. A modified key that Ariakit doesn't use
+// to move focus is typing or a shortcut, so it must keep pointer modality.
+test("keeps pointer modality on a modified non-navigation key", async () => {
+  const orange = q.button("Orange");
+  const grape = q.button("Grape");
+
+  await click(orange);
+  expect(orange).toHaveFocus();
+
+  await press("c", null, { ctrlKey: true });
+  expect(orange).toHaveFocus();
+  expect(orange).not.toHaveAttribute("data-focus-visible");
+
+  // The shortcut must leave the global modality alone too, which is only
+  // observable on the next element to receive focus.
+  await focus(grape);
+  expect(grape).toHaveFocus();
+  // focus() only flushes microtasks, so cross the frame the queued
+  // focus-visible callback would use before asserting it never arrives.
+  await sleep();
+  expect(grape).not.toHaveAttribute("data-focus-visible");
 });
 
 test("updates focus order through the deprecated prop", async () => {

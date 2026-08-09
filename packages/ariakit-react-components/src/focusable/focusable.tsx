@@ -30,6 +30,7 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { isCompositeMoveKey } from "./__utils.ts";
 import { FocusableContext } from "./focusable-context.tsx";
 
 const TagName = "div" satisfies ElementType;
@@ -190,13 +191,21 @@ function onGlobalMouseDown(event: MouseEvent) {
 }
 
 function onGlobalKeyDown(event: KeyboardEvent) {
+  // Composite items navigate on these keys without checking modifiers, and
+  // grids treat Ctrl+Home and Ctrl+End as first and last item, so the modified
+  // gesture moves focus just like the unmodified one.
+  // https://github.com/ariakit/ariakit/issues/7099
+  if (isCompositeMoveKey(event.key)) {
+    isKeyboardModality = true;
+    return;
+  }
   if (event.metaKey) return;
   if (event.ctrlKey) return;
   if (event.altKey) {
     // Safari moves focus with Option+Tab when the macOS keyboard navigation
     // setting is off, so that gesture is keyboard navigation rather than a
-    // shortcut. Every other Alt-modified key still keeps the current modality,
-    // since Option types special characters on macOS.
+    // shortcut. Every other Alt-modified non-navigation key still keeps the
+    // current modality, since Option types special characters on macOS.
     // https://github.com/ariakit/ariakit/issues/7094
     if (!isSafariBrowser) return;
     if (event.key !== "Tab") return;
@@ -344,9 +353,12 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if (!focusable) return;
       if (focusVisible) return;
       if (focusVisibleRef.current) return;
-      if (event.metaKey) return;
-      if (event.altKey) return;
-      if (event.ctrlKey) return;
+      const hasModifier = event.metaKey || event.altKey || event.ctrlKey;
+      // This guard also matters when the key moves nothing, such as the last
+      // item of a composite that doesn't loop: no focus event fires, so this
+      // handler is the only path that applies data-focus-visible.
+      // https://github.com/ariakit/ariakit/issues/7099
+      if (hasModifier && !isCompositeMoveKey(event.key)) return;
       if (!isSelfTarget(event)) return;
       const element = event.currentTarget;
       const applyFocusVisible = () => handleFocusVisible(event, element);
