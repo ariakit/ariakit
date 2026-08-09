@@ -1032,11 +1032,11 @@ async function collectInpValues(page: Page): Promise<number[]> {
 }
 
 /**
- * Waits for bounded load, then bounded network idle so late hydration settles
- * without letting chatty requests exhaust CI's timeout. Finally, waits for
- * Astro to hand every island to its renderer before measurement starts.
+ * Waits for bounded load, then bounded network idle so late network work can
+ * settle without letting chatty requests exhaust CI's timeout.
  *
- * Keep in sync with `app/src/test-utils/preview.ts`.
+ * The bounded load and network-idle steps are kept in sync with the helper in
+ * `app/src/test-utils/preview.ts`.
  */
 async function gotoAndSettle(page: Page, url: string) {
   await page.goto(url, { waitUntil: "load" });
@@ -1045,11 +1045,6 @@ async function gotoAndSettle(page: Page, url: string) {
     .catch((error) => {
       if (!(error instanceof errors.TimeoutError)) throw error;
     });
-  await page.waitForFunction(
-    () => !document.querySelector("astro-island[ssr]"),
-    undefined,
-    { timeout: ITERATION_NAVIGATION_TIMEOUT },
-  );
 }
 
 export interface SettleQuiescentOptions {
