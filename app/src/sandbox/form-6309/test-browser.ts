@@ -17,17 +17,17 @@ withFramework(import.meta.dirname, async ({ test }) => {
         document.hidden ? 0 : native(callback);
     });
     // Re-navigate so the init script applies before the app loads.
-    await gotoAndSettle(page, page.url());
+    await gotoAndSettle(page, page.url(), { waitForHydration: true });
     await page.evaluate(() => {
       Object.defineProperty(document, "hidden", {
         configurable: true,
         get: () => true,
       });
     });
-    // The auto-save listener attaches when the island hydrates, which
-    // `gotoAndSettle` doesn't strictly guarantee, so re-fire `visibilitychange`
-    // until it runs the save (the status leaves "Idle"). The save must then
-    // reach "Saved" rather than stall on "Saving".
+    // Astro can finish its hydration handoff before React flushes the passive
+    // effect that attaches the auto-save listener, so re-fire
+    // `visibilitychange` until it runs the save (the status leaves "Idle").
+    // The save must then reach "Saved" rather than stall on "Saving".
     await test
       .expect(async () => {
         await page.evaluate(() => {

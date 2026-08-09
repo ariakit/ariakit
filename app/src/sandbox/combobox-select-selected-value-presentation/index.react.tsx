@@ -592,7 +592,7 @@ function OversizedInlineOverflowFixture({
 function NativeAutoFocusFixture() {
   const dialog = Ariakit.useDialogStore();
   const shadowHostRef = useRef<HTMLDivElement>(null);
-  const focusTargetRef = useRef<HTMLInputElement>(null);
+  const [focusTarget, setFocusTarget] = useState<HTMLInputElement | null>(null);
   const [focusHistory, setFocusHistory] = useState<string[]>([]);
   const recordFocus = (target: string) => {
     setFocusHistory((history) => [...history, target]);
@@ -611,16 +611,16 @@ function NativeAutoFocusFixture() {
     input.addEventListener("focus", onFocus);
     nestedRoot.append(input);
     root.append(nestedHost);
-    focusTargetRef.current = input;
+    setFocusTarget(input);
     return () => {
-      focusTargetRef.current = null;
+      setFocusTarget(null);
       input.removeEventListener("focus", onFocus);
       nestedHost.remove();
     };
   }, []);
   return (
     <>
-      <Ariakit.DialogDisclosure store={dialog}>
+      <Ariakit.DialogDisclosure store={dialog} disabled={!focusTarget}>
         Native auto-focus dialog
       </Ariakit.DialogDisclosure>
       <div ref={shadowHostRef} />
@@ -643,7 +643,7 @@ function NativeAutoFocusFixture() {
           autoFocus
           onFocus={() => {
             recordFocus("input");
-            focusTargetRef.current?.focus();
+            focusTarget?.focus();
           }}
         />
       </Ariakit.Dialog>
@@ -673,6 +673,7 @@ function ShadowRootDialogFixture() {
     <>
       <button
         type="button"
+        disabled={!portalElement}
         onClick={() => {
           setFocusHistory([]);
           setOpen(true);
@@ -737,6 +738,7 @@ function IframeDialogFixture() {
     <>
       <Ariakit.DialogDisclosure
         store={dialog}
+        disabled={!frameBody}
         onClick={() => setFocusHistory([])}
       >
         Open iframe focus dialog

@@ -11,7 +11,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page.on("pageerror", (error) => hydrationErrors.push(error.message));
 
     // Re-navigate with listeners attached to capture errors from hydration.
-    await gotoAndSettle(page, page.url());
+    await gotoAndSettle(page, page.url(), { waitForHydration: true });
 
     await test.expect(q.status("useStoreState calls")).not.toHaveText("0");
     await test

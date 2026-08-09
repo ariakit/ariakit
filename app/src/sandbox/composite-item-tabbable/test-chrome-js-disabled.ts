@@ -1,6 +1,6 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { withFrameworkBeforeHydration } from "#app/test-utils/preview.ts";
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFrameworkBeforeHydration(import.meta.dirname, async ({ test }) => {
   test.use({ javaScriptEnabled: false });
 
   // Items must keep their native tab order before hydration so keyboard users

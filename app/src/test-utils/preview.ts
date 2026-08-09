@@ -11,25 +11,41 @@ import {
 import type { Framework } from "#app/lib/schemas.ts";
 import { test } from "./fixtures.ts";
 
+interface PreviewNavigationOptions {
+  waitForHydration?: boolean;
+}
+
 /**
  * Navigates to `url` and waits for it to be ready for a browser test. Waits for
  * the bounded `load` event rather than `networkidle`: under CI contention,
  * networkidle's unbounded "no requests for 500ms" wait can stall past the test
  * timeout. After `load`, still wait for network idle so late work (such as
  * `client:load` island hydration) settles, but cap it so a stalled or chatty
- * request degrades to a short wait instead of consuming the test budget. Only
+ * request degrades to a short wait instead of consuming the test budget. Then
+ * wait for Astro to hand every island to its renderer so tests do not interact
+ * with server-rendered controls when `waitForHydration` is enabled. Keep that
+ * disabled for full site pages, which can contain lazy offscreen islands. Only
  * the bounded settle timing out is expected; rethrow real failures such as the
  * page or context closing.
  *
  * Kept in sync with the copy in `packages/ariakit-scripts/src/perf.ts`.
  */
-export async function gotoAndSettle(page: Page, url: string) {
+export async function gotoAndSettle(
+  page: Page,
+  url: string,
+  options: PreviewNavigationOptions = {},
+) {
   await page.goto(url, { waitUntil: "load" });
   await page
     .waitForLoadState("networkidle", { timeout: 5_000 })
     .catch((error) => {
       if (!(error instanceof errors.TimeoutError)) throw error;
     });
+  if (options.waitForHydration) {
+    await page.waitForFunction(
+      () => !document.querySelector("astro-island[ssr]"),
+    );
+  }
 }
 
 /**
@@ -80,6 +96,7 @@ interface WithFrameworkCallbackParams {
 export function withFramework(
   dirname: string,
   callback: (params: WithFrameworkCallbackParams) => Promise<void>,
+  options: PreviewNavigationOptions = { waitForHydration: true },
 ) {
   const id = getPreviewId(dirname);
   if (!id) {
@@ -91,9 +108,17 @@ export function withFramework(
   for (const framework of frameworkNames) {
     test.describe(framework, { tag: `@${framework}` }, () => {
       test.beforeEach(async ({ page }) => {
-        await gotoAndSettle(page, `/${framework}/previews/${id}/`);
+        await gotoAndSettle(page, `/${framework}/previews/${id}/`, options);
       });
       return callback({ id, framework, query, test });
     });
   }
+}
+
+/** Runs framework previews without waiting for client-side hydration. */
+export function withFrameworkBeforeHydration(
+  dirname: string,
+  callback: (params: WithFrameworkCallbackParams) => Promise<void>,
+) {
+  return withFramework(dirname, callback, { waitForHydration: false });
 }

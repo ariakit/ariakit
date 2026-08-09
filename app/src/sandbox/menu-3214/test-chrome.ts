@@ -24,7 +24,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     // The error is thrown while the React island hydrates, so re-navigate with
     // the listeners already attached to capture it from the very first render.
-    await gotoAndSettle(page, page.url());
+    await gotoAndSettle(page, page.url(), { waitForHydration: true });
 
     // The alwaysVisible menu is shown even though its store is closed, so its
     // items must still register. This also confirms the island hydrated.

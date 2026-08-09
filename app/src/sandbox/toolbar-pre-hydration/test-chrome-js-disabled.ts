@@ -1,6 +1,6 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { withFrameworkBeforeHydration } from "#app/test-utils/preview.ts";
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFrameworkBeforeHydration(import.meta.dirname, async ({ test }) => {
   test.use({ javaScriptEnabled: false });
 
   test("keeps native items tabbable with undefined and null active IDs", async ({
