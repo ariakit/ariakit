@@ -30,6 +30,7 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { isCompositeMoveKey } from "./__utils.ts";
 import { FocusableContext } from "./focusable-context.tsx";
 
 const TagName = "div" satisfies ElementType;
@@ -187,22 +188,6 @@ function onGlobalMouseDown(event: MouseEvent) {
   if (isElement(target) && !target.hasAttribute("data-focus-visible")) {
     isKeyboardModality = false;
   }
-}
-
-// Keys that composite widgets move focus with. They're never typing, so they
-// count as keyboard navigation whether or not a modifier is held. Keep in sync
-// with the key maps in composite.tsx and composite-item.tsx.
-function isCompositeMoveKey(key: string) {
-  return (
-    key === "ArrowUp" ||
-    key === "ArrowRight" ||
-    key === "ArrowDown" ||
-    key === "ArrowLeft" ||
-    key === "Home" ||
-    key === "End" ||
-    key === "PageUp" ||
-    key === "PageDown"
-  );
 }
 
 function onGlobalKeyDown(event: KeyboardEvent) {
