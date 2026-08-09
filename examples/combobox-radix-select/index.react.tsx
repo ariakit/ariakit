@@ -108,15 +108,11 @@ export default function Example() {
               autoSelect
               placeholder="Search languages"
               className="combobox"
-              // Ariakit's Combobox manually triggers a blur event on virtually
-              // blurred items, making them work as if they had actual DOM
-              // focus. These blur events might happen after the corresponding
-              // focus events in the capture phase, leading Radix Select to
-              // close the popover. This happens because Radix Select relies on
-              // the order of these captured events to discern if the focus was
-              // outside the element. Since we don't have access to the
-              // onInteractOutside prop in the Radix SelectContent component to
-              // stop this behavior, we can turn off Ariakit's behavior here.
+              // Radix infers outside focus from captured focus/blur order.
+              // Ariakit's virtual blur can arrive after focus and close the
+              // Select, and SelectContent has no outside-interaction escape
+              // hatch, so disable virtual blur here.
+              // https://github.com/ariakit/ariakit/pull/3269
               onBlurCapture={(event) => {
                 event.preventDefault();
                 event.stopPropagation();

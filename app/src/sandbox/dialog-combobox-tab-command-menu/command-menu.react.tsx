@@ -101,7 +101,6 @@ export const CommandMenuInput = forwardRef<
           props.className,
         )}
         onKeyDown={(event) => {
-          // Tab key navigation across tabs
           props.onKeyDown?.(event);
           if (event.defaultPrevented) return;
           if (event.key !== "Tab") return;

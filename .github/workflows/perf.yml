@@ -372,19 +372,11 @@ jobs:
       actions: read
       contents: read
     env:
-      # Clean runs stop after two paired rounds. Significant deltas and
-      # unconfirmed candidates get up to two extra confirmation rounds (four
-      # paired rounds total), and the job re-compares between confirmation
-      # rounds so it can stop as soon as the report comes back clean; the
-      # comparison after the last round belongs to the post job. Confirmation
-      # is demote-only on purpose: with <= 4 paired rounds agreement and raw
-      # support are required in every round, so a candidate that already
-      # failed raw support in an immutable initial round can never be
-      # promoted to significant and stays reported as an unconfirmed
-      # candidate instead. A third confirmation round would open a promotion
-      # path (at five rounds the requirement relaxes to n-1 = 4), but in
-      # practice that path only ever confirmed noise: real changes pass
-      # agreement and raw support in every round.
+      # Start with two paired rounds; significant deltas and candidates get up
+      # to two confirmation rounds. At four total rounds, an initial raw-support
+      # failure cannot be promoted; a fifth round created only noise in
+      # practice.
+      # https://github.com/ariakit/ariakit/pull/6657
       PERF_INITIAL_ROUNDS: 2
       PERF_CONFIRMATION_ROUNDS: 2
       # Keep per-round samples modest; paired rounds and confirmation preserve
@@ -437,19 +429,10 @@ jobs:
 
       - name: Install Playwright (baseline)
         working-directory: ${{ runner.temp }}/perf-baseline
-        # No `--with-deps` here. The runner image already provides every library
-        # Chromium needs, and the current-branch step above skips its own
-        # `--with-deps` whenever the browser cache hits, so the rest of CI
-        # already launches browsers without it. The only packages it added were
-        # ~21 MB of optional fonts, re-fetched from the Ubuntu mirror on every
-        # job; when that mirror degrades the step has stalled for ~10 minutes.
-        # Dropping them keeps baseline and current on the same fonts, because
-        # both sides run on this runner after this step.
-        #
-        # The install stays unconditional so a baseline pinned to a different
-        # Playwright version still downloads its own browser build. It is a
-        # no-op when the version matches the current branch, since both
-        # checkouts share `~/.cache/ms-playwright` through `$HOME`.
+        # Skip `--with-deps`: the runner has Chromium's libraries, while the
+        # optional-font download caused long Ubuntu-mirror stalls. Keep browser
+        # install unconditional so older baselines can fetch their pinned build.
+        # https://github.com/ariakit/ariakit/pull/6912
         run: pnpm --filter app exec playwright install chromium
 
       - name: Download baseline artifacts
@@ -522,15 +505,11 @@ jobs:
 
           echo "Chrome perf file: ${PERF_FILE:-<none>}"
 
-          # Pass the per-test timeout on the CLI (it takes precedence over the
-          # config file) so the baseline worktree, which runs the base
-          # branch's Playwright config, gets the same headroom as the current
-          # side: script-profile tests can legitimately exceed the old 120s
-          # config default on slow runners. Playwright test retries are NOT
-          # passed here on purpose: the base worktree may predate the
-          # retry-safety guards (pass-only result recording and stale-attempt
-          # pruning), and a failed baseline invocation is retried whole below
-          # with its partial results removed.
+          # Pass timeout on the CLI so old baseline configs get profile-test
+          # headroom. Do not pass retries to baselines lacking retry-safe result
+          # pruning. The wrapper deletes partial output before retrying the
+          # whole invocation.
+          # https://github.com/ariakit/ariakit/pull/6651
           PLAYWRIGHT_TEST_TIMEOUT=180000
 
           baseline_perf_attempt() {
@@ -719,16 +698,9 @@ jobs:
       actions: read
       contents: read
     env:
-      # Clean runs stop after two paired rounds. Significant deltas get three
-      # extra confirmation rounds (five paired rounds total) before the final
-      # published comparison. Unlike Chrome, Node keeps the fifth paired
-      # round: node mode has no raw sample gate, so there are no unconfirmed
-      # candidates to promote, and five rounds relax the required agreement
-      # to n-1 = 4, which lets a real benchmark change survive one noisy
-      # round. That tolerance is also why Node runs its whole confirmation
-      # budget instead of stopping early like Chrome: a mid-loop comparison
-      # requires every round to agree, so a clean one would discard exactly
-      # the one-noisy-round changes the fifth round exists to keep.
+      # Node has no raw-sample candidate state. Five rounds preserve 4/5
+      # agreement when one round is noisy.
+      # https://github.com/ariakit/ariakit/pull/6657#discussion_r3525155713
       PERF_INITIAL_ROUNDS: 2
       PERF_CONFIRMATION_ROUNDS: 3
       PERF_RESULTS_TITLE: Node

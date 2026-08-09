@@ -23,7 +23,6 @@ const config: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            // Allow embedding from ariakit.com/ariakit.org domains and workers.dev
             value:
               "frame-ancestors 'self' https://ariakit.com https://*.ariakit.com https://ariakit.org https://*.ariakit.org https://*.workers.dev http://localhost:*",
           },

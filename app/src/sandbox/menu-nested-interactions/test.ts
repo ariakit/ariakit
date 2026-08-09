@@ -79,17 +79,13 @@ test("show/hide submenu on mouse hover", async () => {
   await click(q.button("Edit"));
   await hover(q.menuitem("Find"));
   expect(q.menuitem("Find")).toHaveFocus();
-  // The submenu shouldn't be immediately visible
   expect(q.menu("Find")).not.toBeInTheDocument();
-  // Wait for show timeout
   await expect.poll(q.menu.lazy("Find")).toBeVisible();
   expect(q.menuitem("Find")).toHaveFocus();
-  // Hover on submenu item
   await hover(q.menuitem("Find Next"));
   expect(q.menu("Find")).toBeVisible();
   expect(q.menu("Find")).toHaveFocus();
   expect(q.menuitem("Find Next")).toHaveAttribute("data-active-item");
-  // Hover on an adjacent submenu button
   await hover(q.menuitem("Speech"));
   expect(q.menuitem("Speech")).toHaveFocus();
   expect(q.menu("Find")).not.toBeInTheDocument();

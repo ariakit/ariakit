@@ -644,13 +644,8 @@ function slugifyHeading(heading: string) {
     .replace(/\s+/g, "-");
 }
 
-// Mirrors how GitHub (`github-slugger`) assigns heading anchors: the first
-// heading with a given slug keeps it, and later collisions get a `-1`, `-2`,
-// ... suffix, probing until the slug is unused so a generated suffix never
-// clashes with a natural slug (e.g. `foo`, `foo-1`, `foo` -> `foo-2`). Headings
-// must be slugged in the order the body renders them so the table of contents
-// links match. This matters for case-only collisions such as `wrapInstance`
-// and `WrapInstance`, which share a lowercased slug.
+// Match GitHub's top-down collision probing (`foo`, `foo-1`, `foo` => `foo-2`)
+// so generated contents links use the rendered anchors.
 function createSlugger() {
   const occurrences = new Map<string, number>();
   return (heading: string) => {

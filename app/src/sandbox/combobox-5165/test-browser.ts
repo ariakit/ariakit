@@ -11,16 +11,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const combobox = q.combobox();
     await combobox.focus();
 
-    // Scroll via mouse wheel to trigger loading more items
     await popover.hover();
+    // Wheel scrolling triggers the fixture's next page of items.
     await page.mouse.wheel(0, 10000);
 
-    // Wait for new items to load
     await test.expect
       .poll(() => popover.getByRole("option").count())
       .toBeGreaterThan(20);
 
-    // The scroll position should not have been reset to 0 by scrollIntoView
+    // Item updates must not let `scrollIntoView` reset the popover to the top.
     const scrollTop = await popover.evaluate((el) => el.scrollTop);
     test.expect(scrollTop).toBeGreaterThan(50);
   });
@@ -40,12 +39,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
       el.scrollTop = el.scrollHeight - el.clientHeight - 50;
     });
 
-    // Wait for new items to load
     await test.expect
       .poll(() => popover.getByRole("option").count())
       .toBeGreaterThan(20);
 
-    // The scroll position should not have been reset to 0 by scrollIntoView
+    // Item updates must not let `scrollIntoView` reset the popover to the top.
     const scrollTop = await popover.evaluate((el) => el.scrollTop);
     test.expect(scrollTop).toBeGreaterThan(50);
   });

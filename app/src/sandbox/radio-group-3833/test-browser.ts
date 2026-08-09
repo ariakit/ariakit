@@ -8,7 +8,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const fruitsGroup = q.radiogroup("Fruits");
     const vegetablesGroup = q.radiogroup("Vegetables");
 
-    // Get name attributes from radios in each group
     const fruitsNames = await fruitsGroup
       .getByRole("radio")
       .evaluateAll((els) => els.map((el) => (el as HTMLInputElement).name));
@@ -16,7 +15,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .getByRole("radio")
       .evaluateAll((els) => els.map((el) => (el as HTMLInputElement).name));
 
-    // All radios in each group should have the same non-empty name
     const fruitsName = fruitsNames[0];
     const vegetablesName = vegetablesNames[0];
 
@@ -25,7 +23,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(fruitsNames.every((n) => n === fruitsName)).toBe(true);
     test.expect(vegetablesNames.every((n) => n === vegetablesName)).toBe(true);
 
-    // The two groups should have different names
     test.expect(fruitsName).not.toBe(vegetablesName);
   });
 
@@ -35,11 +32,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.radio("Apple").click();
     await test.expect(q.radio("Apple")).toBeChecked();
 
-    // Tab should move focus out of the Fruits group into the Vegetables group
     await page.keyboard.press("Tab");
     await test.expect(q.radio("Potato")).toBeFocused();
 
-    // Shift+Tab should move focus back to the checked radio in Fruits
     await page.keyboard.press("Shift+Tab");
     await test.expect(q.radio("Apple")).toBeFocused();
   });
@@ -55,16 +50,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.radio("Carrot").click();
     await q.button("Submit").click();
 
-    // Wait for the alert to be captured
     await test.expect(() => test.expect(alertMessage).toBeTruthy()).toPass();
 
     const data = JSON.parse(alertMessage);
 
-    // Each group should submit under its own name key
     const keys = Object.keys(data);
     test.expect(keys.length).toBe(2);
 
-    // Values should match the selected radios
     test.expect(Object.values(data)).toContain("orange");
     test.expect(Object.values(data)).toContain("carrot");
   });

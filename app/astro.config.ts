@@ -66,11 +66,10 @@ export default defineConfig({
   },
 
   vite: {
-    // TODO: Remove this workaround once Astro isolates optimizer cache writes
-    // across dev and check commands. Running `astro check` while `astro dev`
-    // is active shares Vite's optimized deps cache, so the checker uses a
-    // separate cache directory to avoid invalidating the dev server's optimized
-    // SSR modules.
+    // TODO: Remove this workaround once Astro isolates optimizer cache writes.
+    // Isolate check/dev optimizer writes so a concurrent check cannot
+    // invalidate the dev server's SSR modules.
+    // https://github.com/ariakit/ariakit/pull/6418
     cacheDir: viteCacheDir,
     build: {
       // Perf CI enables this so CDP script profiles can resolve source maps.
@@ -80,18 +79,10 @@ export default defineConfig({
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
-    // TODO: Remove this workaround once
-    // https://github.com/withastro/astro/issues/17166 is fixed. These bare
-    // specifiers are missed by the SSR dependency optimizer's initial scan.
-    // Some are re-exported from Astro virtual modules (astro:transitions,
-    // astro:actions); others are imported directly (astro/zod in
-    // content.config.ts, astro-remote in markdown.astro). With the Cloudflare
-    // adapter they get optimized lazily during the first cold dev request, and
-    // the mid-request optimizer reload resets React's hook dispatcher,
-    // producing "Invalid hook call" errors. Pre-including them forces the
-    // optimizer to bundle them at startup so no reload happens mid-request. The
-    // Cloudflare adapter merges this list into the SSR environment's
-    // optimizeDeps.include.
+    // TODO: Remove this workaround once withastro/astro#17166 is fixed.
+    // Pre-optimize bare SSR imports so the Cloudflare adapter cannot reload
+    // React mid-request.
+    // https://github.com/withastro/astro/issues/17166
     optimizeDeps: {
       include: [
         "astro/virtual-modules/transitions.js",

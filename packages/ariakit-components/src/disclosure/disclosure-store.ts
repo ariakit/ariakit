@@ -52,10 +52,10 @@ export function createDisclosureStore(
     ? createStore(initialState, store)
     : createStore(initialState);
 
+  // Clear the animation state when animation is disabled.
   setup(disclosure, () =>
     sync(disclosure, ["animated", "animating"], (state) => {
       if (state.animated) return;
-      // Reset animating to false when animation is disabled.
       disclosure.setState("animating", false);
     }),
   );
@@ -195,8 +195,14 @@ export interface DisclosureStoreFunctions extends Pick<
   /**
    * Sets the `disclosureElement` state.
    *
+   * When showing the content programmatically, set this to the element that
+   * should act as its trigger.
+   *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
+   * @example
+   * store.setDisclosureElement(triggerRef.current);
+   * store.show();
    */
   setDisclosureElement: SetState<DisclosureStoreState["disclosureElement"]>;
 }

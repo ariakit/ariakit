@@ -1,5 +1,10 @@
 # @ariakit/utils
 
+## 0.1.6
+
+- Fixed components such as [`Button`](https://ariakit.com/reference/button) and [`Checkbox`](https://ariakit.com/reference/checkbox) copying inherited enumerable `Object.prototype` properties onto the element they render.
+- Fixed components such as [`Button`](https://ariakit.com/reference/button) and [`Checkbox`](https://ariakit.com/reference/checkbox) treating values carried by a `__proto__` prop passed directly to them, such as one coming from parsed JSON, as props they were never given.
+
 ## 0.1.5
 
 - Added a `warnOnce` utility that logs each warning once per message and optional object key. Thanks to [@ItaiYosephi](https://github.com/ItaiYosephi).

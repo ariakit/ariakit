@@ -85,7 +85,6 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       const eventWithValues = Object.assign(event, { values });
       if (!addValueOnPasteProp(eventWithValues)) return;
       if (!values.length) return;
-      // Prevent pasting the text into the input
       event.preventDefault();
       for (const tagValue of values) {
         store.addValue(tagValue);
@@ -104,7 +103,6 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       const currentTarget = event.currentTarget;
       const { start, end } = getTextboxSelection(currentTarget);
       const { value } = currentTarget;
-      // Set the value in the store if the value changes
       if (setValueOnChangeProp(event)) {
         void UndoManager.execute(() => {
           store.setValue(value);
@@ -119,11 +117,11 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       }
       const nativeEvent = event.nativeEvent;
       if (isInputEvent(nativeEvent) && nativeEvent.isComposing) return;
-      // Add values to the store if the input value ends with a delimiter
       const isTrailingCaret = start === end && start === value.length;
       if (isTrailingCaret) {
+        // At a trailing caret, commit complete delimiter-separated segments as
+        // tags and leave the final segment in the input.
         const delimiters = getDelimiters(delimiter);
-        // Split values and get the trailing value that will remain in the input
         let values = splitValueByDelimiter(value, delimiters);
         const trailingValue = values.pop() || "";
         values = values

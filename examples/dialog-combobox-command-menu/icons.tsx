@@ -342,17 +342,6 @@ export function ColorPickerIcon() {
           <stop stopColor="#FC466B" />
           <stop offset="1" stopColor="#3F5EFB" />
         </linearGradient>
-        {/* <radialGradient
-          id={`${id}r6`}
-          cx="0"
-          cy="0"
-          r="1"
-          gradientUnits="userSpaceOnUse"
-          gradientTransform="translate(256) rotate(90) scale(512)"
-        >
-          <stop stopColor="white"></stop>
-          <stop offset="1" stopColor="white" stopOpacity="0"></stop>
-        </radialGradient> */}
       </defs>
       <svg
         viewBox="0 0 16 16"

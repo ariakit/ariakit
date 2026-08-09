@@ -1,5 +1,76 @@
 # @ariakit/react
 
+## 0.4.37
+
+### Composite element state
+
+Composite stores now expose the [`compositeElement`](https://ariakit.com/reference/use-composite-store) state and [`setCompositeElement`](https://ariakit.com/reference/use-composite-store#setcompositeelement) method. The new [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder) option controls whether arrow key navigation can move focus to the composite element:
+
+```tsx
+<CompositeProvider compositeElementInFocusOrder>
+  <Composite>
+    <CompositeItem>Item 1</CompositeItem>
+    <CompositeItem>Item 2</CompositeItem>
+  </Composite>
+</CompositeProvider>
+```
+
+These APIs are also available on stores for [`Combobox`](https://ariakit.com/reference/combobox), [`Menu`](https://ariakit.com/reference/menu), [`Menubar`](https://ariakit.com/reference/menubar), [`Radio`](https://ariakit.com/reference/radio), [`Select`](https://ariakit.com/reference/select), [`Tab`](https://ariakit.com/reference/tab), and [`Toolbar`](https://ariakit.com/reference/toolbar) widgets.
+
+### `ComboboxSelect` popups take focus on every open
+
+A [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) that belongs to a [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) now takes focus whenever it opens, including when it is opened with [`defaultOpen`](https://ariakit.com/reference/combobox-provider#defaultopen) or programmatically while focus is somewhere else. Previously, unless the popup rendered a [`ComboboxInput`](https://ariakit.com/reference/combobox-input), it took focus only when the select itself was focused, so a popup that opened any other way left the user outside an open listbox, with no keyboard navigation and with the selected item still out of view.
+
+```tsx
+<ComboboxProvider defaultOpen defaultSelectedValue="Watermelon">
+  <ComboboxSelect />
+  <ComboboxPopover>
+    <ComboboxItem value="Apple" />
+    {/* Watermelon becomes the active item, ready for the arrow keys. */}
+    <ComboboxItem value="Watermelon" />
+  </ComboboxPopover>
+</ComboboxProvider>
+```
+
+A popup that opens outside the viewport is now scrolled into view, since taking focus is what moves the page. To keep a popup from taking focus, and with it the scroll, pass [`autoFocusOnShow={false}`](https://ariakit.com/reference/combobox-popover#autofocusonshow).
+
+### Explicitly undefined props no longer override computed defaults
+
+Passing `undefined` to a component prop now behaves exactly like omitting it, so the component keeps the value it computes for itself.
+
+This mainly affects wrapper components that forward optional props positionally, which is the common way to wrap an Ariakit component:
+
+```tsx
+function MyHovercard({ autoFocusOnShow, ...props }: MyHovercardProps) {
+  return <Ariakit.Hovercard autoFocusOnShow={autoFocusOnShow} {...props} />;
+}
+```
+
+Rendering `<MyHovercard />` no longer forces [`autoFocusOnShow`](https://ariakit.com/reference/hovercard#autofocusonshow) to `true` on [`Hovercard`](https://ariakit.com/reference/hovercard), so hovering the anchor stops pulling keyboard focus into the card. The same applies to every prop a component computes for itself, including [`focusable`](https://ariakit.com/reference/tab-panel#focusable) on [`TabPanel`](https://ariakit.com/reference/tab-panel), [`clickOnEnter`](https://ariakit.com/reference/checkbox#clickonenter) on [`Checkbox`](https://ariakit.com/reference/checkbox), and `children`, `role`, `type` and `aria-*` fallbacks, so it is worth auditing wrappers that forward props positionally.
+
+An explicitly defined value still wins, so `<Hovercard autoFocusOnShow={false} />` keeps working as before.
+
+### Other updates
+
+- Changed [`Dialog`](https://ariakit.com/reference/dialog) to scroll its initially focused element just far enough to become visible, rather than centering it.
+- Changed [`Dialog`](https://ariakit.com/reference/dialog) and components built on it, such as [`Popover`](https://ariakit.com/reference/popover) and [`Menu`](https://ariakit.com/reference/menu), to keep a mounted [`PopoverDisclosure`](https://ariakit.com/reference/popover-disclosure) or similar trigger as the opener when shown programmatically, instead of the element that happened to have focus, which also means the content is positioned against that trigger and returns focus to it when it closes.
+- Fixed [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) to center the initially selected item when its popup opens.
+- Fixed [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) and [`Combobox`](https://ariakit.com/reference/combobox) moving DOM focus off the collapsed control and into their popup, which was visible when the options stayed on screen next to it, such as with an [`alwaysVisible`](https://ariakit.com/reference/combobox-list#alwaysvisible) [`ComboboxList`](https://ariakit.com/reference/combobox-list).
+- Fixed [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) reporting `aria-expanded="false"` while its popup was open.
+- Fixed composite widgets scrolling the page while their popup was still being positioned, which affects [`Combobox`](https://ariakit.com/reference/combobox), [`Select`](https://ariakit.com/reference/select) and [`Menu`](https://ariakit.com/reference/menu). The page still moves when that is the only way to bring the item into view, such as a popup taller than the viewport.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog) and components built on it, such as [`Popover`](https://ariakit.com/reference/popover) and [`Menu`](https://ariakit.com/reference/menu), overwriting the element assigned with [`setDisclosureElement`](https://ariakit.com/reference/use-disclosure-store#setdisclosureelement) when they open.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog) and components built on it, such as [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover), so delayed auto-focus no longer pulls focus back after focus has moved outside the dialog.
+- Fixed components such as [`Button`](https://ariakit.com/reference/button) and [`Checkbox`](https://ariakit.com/reference/checkbox) copying inherited enumerable `Object.prototype` properties onto the element they render.
+- Fixed [`MenuItem`](https://ariakit.com/reference/menu-item) hover focus so partially visible menubar and submenu items no longer scroll the page or menu under the pointer.
+- Fixed [`Menu`](https://ariakit.com/reference/menu) to preserve DOM focus and bring a logical item into view when React replaces its element while the popup is positioning.
+- Fixed `mergeProps` so an own `__proto__` prop cannot replace the merged props object's prototype in rendered [`Role`](https://ariakit.com/reference/role) elements.
+- Fixed [`Focusable`](https://ariakit.com/reference/focusable) components, including [`CompositeItem`](https://ariakit.com/reference/composite-item) and [`ToolbarItem`](https://ariakit.com/reference/toolbar-item), not receiving [`data-focus-visible`](https://ariakit.com/guide/styling#data-focus-visible) on modified navigation keys such as `Alt+ArrowDown` between composite items or `Ctrl+Home` on a grid.
+- Fixed focus and scroll moving into a popup before a custom [`updatePosition`](https://ariakit.com/reference/popover#updateposition) that calls the supplied default function has finished its own work, which affects [`Popover`](https://ariakit.com/reference/popover) and components built on it such as [`Menu`](https://ariakit.com/reference/menu) and [`Select`](https://ariakit.com/reference/select).
+- Fixed components such as [`Button`](https://ariakit.com/reference/button) and [`Checkbox`](https://ariakit.com/reference/checkbox) treating values carried by a `__proto__` prop passed directly to them, such as one coming from parsed JSON, as props they were never given.
+- Fixed [`Checkbox`](https://ariakit.com/reference/checkbox) and other components composed with [`render`](https://ariakit.com/reference/checkbox#render) to preserve computed props when a render element receives `undefined`. Thanks to [@Jackardios](https://github.com/Jackardios).
+- Fixed [`Focusable`](https://ariakit.com/reference/focusable) treating Safari's `Option+Tab` navigation as a pointer interaction, so components built on it such as [`Button`](https://ariakit.com/reference/button) and [`TooltipAnchor`](https://ariakit.com/reference/tooltip-anchor) now receive [`data-focus-visible`](https://ariakit.com/guide/styling#data-focus-visible) when focus reaches them that way. On macOS, `Option+Tab` is how Safari moves focus between all focusable elements while the system keyboard navigation setting is off.
+- Updated dependencies: `@ariakit/react-components@0.4.1`
+
 ## 0.4.36
 
 ### New Combobox Select components

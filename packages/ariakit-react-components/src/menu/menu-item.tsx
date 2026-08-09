@@ -131,14 +131,10 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       store,
       preventScrollOnKeyDown,
       ...props,
-      // Skip registering items while the menu list is hidden. Unlike a Select,
-      // a Menu doesn't interact with its items while hidden, so registering
-      // them isn't useful. Registering many hidden menus' items at once on
-      // mount can also cascade into React's "Maximum update depth exceeded"
-      // error. Using the list's actual hidden state (rather than the store's
-      // `mounted` state) keeps items registered in `alwaysVisible` or
-      // `hidden={false}` menus, where the list is shown even while closed.
-      // See https://github.com/ariakit/ariakit/issues/3214.
+      // Hidden menus do not need registered items, and registering many can
+      // cause recursive mount updates. Use actual visibility so `alwaysVisible`
+      // and `hidden={false}` menus remain registered.
+      // https://github.com/ariakit/ariakit/issues/3214
       shouldRegisterItem: menuListHidden ? false : props.shouldRegisterItem,
     });
 

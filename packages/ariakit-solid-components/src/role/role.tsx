@@ -54,7 +54,8 @@ export const useRole = createHook<TagName, RoleOptions>(
   },
 );
 
-// TODO: adapt docs wording to be more accurate for Solid
+// TODO: Adapt the public docs wording for Solid.
+// https://github.com/ariakit/ariakit/issues/4117
 /**
  * Renders an abstract element that supports the `render` prop and a
  * `wrapInstance` prop that can be used to wrap the underlying component

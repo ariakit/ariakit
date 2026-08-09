@@ -79,7 +79,6 @@ async function syncPrices() {
   const pricesToCache = new Map<string, PriceData>();
   const updatedProductIds = new Set<string>();
 
-  // Get existing prices
   for await (const price of stripe.prices.list({
     active: true,
     type: "one_time",
@@ -89,7 +88,6 @@ async function syncPrices() {
     prices.push(price);
   }
 
-  // Check if existing price products have the correct metadata
   for (const price of prices) {
     expanded(price.product);
     if (price.product.deleted) continue;
@@ -140,10 +138,8 @@ async function syncPrices() {
     }
   }
 
-  // Get existing products
   const products = await stripe.products.list({ active: true, limit: 100 });
 
-  // Create the missing products and sync prices with KV store
   for (const defaultProduct of defaultProducts) {
     let product = products.data.find(
       (product) => product.metadata.plusType === defaultProduct.type,
@@ -200,7 +196,6 @@ async function syncPrices() {
 
   const cachedPrices = await getPrices();
 
-  // Delete prices that are not active
   for (const cachedPrice of cachedPrices) {
     // KV list metadata can lag behind writes, so keys synced during this run
     // must survive even when the listed id is stale or absent from Stripe.
@@ -305,7 +300,6 @@ async function syncPromos(context: APIContext) {
     logger.info("Synced promo %s", promo.id);
   }
 
-  // Delete promos that are not active
   for (const promo of cachedPromos) {
     const stripePromo = promos.find((p) => p.id === promo.id);
     if (stripePromo?.active) continue;

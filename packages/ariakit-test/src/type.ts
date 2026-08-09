@@ -72,8 +72,7 @@ export function type(
         : "insertText";
       let defaultAllowed = await dispatch.keyDown(element, { key, ...options });
 
-      // After key down, focus may change and be on a text field, so we get the
-      // active element again.
+      // Keydown may move focus; continue typing at the new active element.
       element = getActiveElement(element) || element;
 
       if (isTextField(element)) {
@@ -86,23 +85,20 @@ export function type(
         let nextCaretPosition = start;
 
         if (char === "\x7f") {
-          // Delete key
+          // Delete removes the selection or the character after the caret.
           const firstPart = input.value.slice(0, start);
           const secondPart = input.value.slice(collapsed ? end + 1 : end);
           value = `${firstPart}${secondPart}`;
           inputType = "deleteContentForward";
         } else if (char === "\b") {
-          // Backspace. If there's no selection (that is, the caret start position
-          // is the same as the end position), then we decrement the position so
-          // it deletes the previous character.
+          // Backspace removes the selection or the character before the caret.
           nextCaretPosition = collapsed ? Math.max(start - 1, 0) : start;
           const firstPart = input.value.slice(0, nextCaretPosition);
           const lastPart = input.value.slice(end, input.value.length);
           value = `${firstPart}${lastPart}`;
           inputType = "deleteContentBackward";
         } else {
-          // Any other character. Just get the caret position and add the
-          // character there.
+          // Insert at the caret, replacing the selection or prior composition.
           const firstPartEnd = options.isComposing ? start - 1 : start;
           const firstPart = input.value.slice(0, firstPartEnd);
           const lastPart = input.value.slice(end, input.value.length);

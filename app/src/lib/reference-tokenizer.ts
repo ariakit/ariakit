@@ -261,7 +261,7 @@ function parseLocalImports(code: string): Map<string, string> {
     const clause = match[2] || "";
     const source = match[3] || "";
 
-    // Namespace imports: * as X
+    // Namespace imports: `* as X`
     const nsRegex = new RegExp(`\\*\\s+as\\s+(${IDENTIFIER_PATTERN})`, "g");
     let nsMatch: RegExpExecArray | null;
     while ((nsMatch = nsRegex.exec(clause))) {
@@ -271,14 +271,14 @@ function parseLocalImports(code: string): Map<string, string> {
       }
     }
 
-    // Default imports: Name, ...
+    // Default imports: `Name, ...`
     const defaultRegex = new RegExp(`^\\s*(${IDENTIFIER_PATTERN})\\s*(?:,|$)`);
     const defaultMatch = defaultRegex.exec(clause);
     if (defaultMatch?.[1]) {
       localToSource.set(defaultMatch[1], source);
     }
 
-    // Named imports: { A, B as C }
+    // Named imports: `{ A, B as C }`
     const namedBlockRegex = /\{([\s\S]*?)\}/g;
     let blockMatch: RegExpExecArray | null;
     while ((blockMatch = namedBlockRegex.exec(clause))) {
@@ -302,11 +302,9 @@ function parseLocalImports(code: string): Map<string, string> {
 
 // #region Reference Helpers
 
-// Both caches key on the references array identity, so they only hit while
-// the same collection array is reused (the production build caches it; dev
-// gets a fresh array per call and skips memoization naturally). Code blocks
-// across reference partials repeat the same short snippets thousands of
-// times, so memoizing whole anchor results avoids re-scanning them.
+// Cache by shared references identity: production reuses the collection while
+// development naturally misses. Reference partials repeat enough snippets for
+// whole-result memoization to avoid substantial rescanning.
 const nameToReferenceCache = new WeakMap<
   CollectionEntry<"references">[],
   Map<string, NameToReference>
@@ -405,7 +403,7 @@ function findComponentPropRanges(
 
   if (!allowedProps.size) return result;
 
-  // Match prop names that are followed by = or whitespace/closing tag
+  // Match prop names only when followed by assignment or a tag boundary.
   const propRegex = new RegExp(
     `(^|\\s)(${IDENTIFIER_PATTERN}(?:-${IDENTIFIER_PATTERN})*)(?=\\s*(=|[\\s/>]|$))`,
     "g",
@@ -479,7 +477,6 @@ function findObjectLiteralAtFirstArg(
     }
 
     if (char === "{" && depth === 0) {
-      // Found first-arg object literal start
       const objStart = index;
       const closeIndex = findMatchingClose(code, index, "{", "}");
       if (closeIndex == null) return null;
@@ -606,7 +603,7 @@ function findUseStoreStateStateRanges(
   const ranges: TokenRange[] = [];
   const callText = code.slice(callStartIndex);
 
-  // String literal variant: useStoreState(store, "value")
+  // String form: `useStoreState(store, "value")`.
   const stringRegex = new RegExp(
     `^(?:${IDENTIFIER_PATTERN}\\s*\\.\\s*)?useStoreState\\s*\\(\\s*[^,()]*,\\s*(["'\`])(${IDENTIFIER_PATTERN})\\1`,
   );
@@ -624,7 +621,7 @@ function findUseStoreStateStateRanges(
     });
   }
 
-  // Arrow selector variant: useStoreState(store, (s) => s.value)
+  // Selector form: `useStoreState(store, (state) => state.value)`.
   const arrowRegex = new RegExp(
     `^(?:${IDENTIFIER_PATTERN}\\s*\\.\\s*)?useStoreState\\s*\\(\\s*[^,()]*,\\s*\\(?(${IDENTIFIER_PATTERN})\\)?\\s*=>\\s*\\1\\s*\\.\\s*(${IDENTIFIER_PATTERN})`,
   );
@@ -662,7 +659,6 @@ function findClassTokenRanges(code: string): TokenRange[] {
     let index = start;
 
     while (index < end) {
-      // Skip whitespace
       const wsRegex = /\s+/y;
       wsRegex.lastIndex = index;
       const wsMatch = wsRegex.exec(code);
@@ -671,7 +667,6 @@ function findClassTokenRanges(code: string): TokenRange[] {
         if (index >= end) break;
       }
 
-      // Find next segment (non-whitespace)
       const segmentRegex = /\S+/y;
       segmentRegex.lastIndex = index;
       const segment = segmentRegex.exec(code);
@@ -681,7 +676,7 @@ function findClassTokenRanges(code: string): TokenRange[] {
       const segmentStart = segment.index;
       const segmentAbsEnd = Math.min(segmentStart + segmentText.length, end);
 
-      // Split by colons (Tailwind modifiers), ignoring colons inside [] or ()
+      // Split Tailwind modifiers at top-level colons outside `[]` and `()`.
       let partStart = segmentStart;
       let bracketDepth = 0;
       let parenDepth = 0;
@@ -735,8 +730,8 @@ function findClassTokenRanges(code: string): TokenRange[] {
         continue;
       }
 
-      // Handle template expression ${...}
       if (char === "$" && code[index + 1] === "{") {
+        // Only static template segments can be linked.
         if (index > segmentStart) {
           findAkTokensInRange(segmentStart, index);
         }
@@ -812,7 +807,6 @@ function findClassTokenRanges(code: string): TokenRange[] {
           inString = false;
           continue;
         }
-        // Template string
         if (inString === "`") {
           index = scanTemplateStringSegments(index, code.length);
           inString = false;
@@ -860,7 +854,7 @@ function findClassTokenRanges(code: string): TokenRange[] {
         continue;
       }
 
-      // Comma at depth 0 ends expression
+      // A top-level comma ends the className property value.
       if (
         char === "," &&
         curlyDepth === 0 &&
@@ -876,7 +870,7 @@ function findClassTokenRanges(code: string): TokenRange[] {
     return index;
   };
 
-  // Process className="..." or className={"..."} attributes
+  // Scan quoted `className` and `class` attributes.
   const quotedAttrRegex = /(className|class)\s*=\s*(\{\s*["'`]|["'`])/g;
   let quotedMatch: RegExpExecArray | null;
 
@@ -886,7 +880,6 @@ function findClassTokenRanges(code: string): TokenRange[] {
     const quote = afterEquals[isWrapped ? 1 : 0] as QuoteChar;
     const contentStart = quotedAttrRegex.lastIndex;
 
-    // Find closing quote
     let index = contentStart;
     while (index < code.length) {
       const char = code[index];
@@ -904,20 +897,20 @@ function findClassTokenRanges(code: string): TokenRange[] {
     }
   }
 
-  // Process className={ expression } attributes
+  // Scan expression attributes such as `className={clsx(...)}`.
   const exprAttrRegex = /(className|class)\s*=\s*\{/g;
 
   while (exprAttrRegex.exec(code)) {
     const afterBrace = exprAttrRegex.lastIndex;
 
-    // Check if next non-space is a quote (already handled above)
+    // Quoted expressions were handled by the previous pass.
     const nextNonSpace = /\S/y;
     nextNonSpace.lastIndex = afterBrace;
     const nextChar = nextNonSpace.exec(code);
     if (!nextChar) break;
     if (isQuoteChar(nextChar[0])) continue;
 
-    // Find matching closing brace while respecting strings
+    // Find the matching brace without treating braces in strings as syntax.
     let depth = 1;
     let index = afterBrace;
     let inString: false | QuoteChar = false;
@@ -965,7 +958,7 @@ function findClassTokenRanges(code: string): TokenRange[] {
     const exprStart = afterBrace;
     if (exprEnd <= exprStart) continue;
 
-    // Scan expression for string literals
+    // Only string literals inside the expression can contain linkable tokens.
     let pos = exprStart;
     while (pos < exprEnd) {
       const char = code[pos];
@@ -1000,7 +993,7 @@ function findClassTokenRanges(code: string): TokenRange[] {
     }
   }
 
-  // Process object property: className: "..." or className: clsx(...)
+  // Scan object properties such as `className: clsx(...)`.
   const propClassRegex = /\bclassName\b\s*:/g;
 
   while (propClassRegex.exec(code)) {
@@ -1057,13 +1050,12 @@ function computeCodeReferenceAnchors({
   const trimmed = code.trim();
   const anchors: CodeReferenceAnchorRange[] = [];
 
-  // Fast bailout for empty references
   if (!references.length) {
     const lines = trimmed.split("\n");
     return lines.map(() => []);
   }
 
-  // Quick pattern checks to avoid expensive parsing
+  // Cheap syntax checks avoid running parsers that cannot produce anchors.
   const hasComponents = trimmed.includes("<");
   const hasCalls = trimmed.includes("(");
   const hasAkClasses = trimmed.includes("ak-");
@@ -1083,10 +1075,10 @@ function computeCodeReferenceAnchors({
 
   const nameToRef = getNameToReference(references, framework);
 
-  // Parse imports lazily
   let namedImports: Map<string, string> = new Map();
   let namespaceAliases: Set<string> = new Set();
 
+  // Parse package imports only when the source contains an Ariakit specifier.
   if (hasAriakitImport) {
     const parsed = parseAriakitImports(trimmed);
     namedImports = parsed.namedImports;
@@ -1097,7 +1089,6 @@ function computeCodeReferenceAnchors({
   const localImports = parseLocalImports(trimmed);
   const hasAnyImport = /(^|\n)\s*import\b/.test(trimmed);
 
-  // Cache href lookups
   const hrefCache = new Map<string, string>();
 
   const getHref = (
@@ -1133,15 +1124,15 @@ function computeCodeReferenceAnchors({
     return undefined;
   };
 
-  // Track store variable assignments for return-prop lookups
+  // Call passes populate this map before state and return-prop passes consume
+  // it.
   const storeVarToRef = new Map<string, CollectionEntry<"references">>();
 
-  // 1) Named imports: anchor local identifiers in import statements
+  // Link imported identifiers and JSX component and prop references.
   if (hasAriakitImport) {
     processNamedImports(trimmed, nameToRef, anchors, getHref);
   }
 
-  // 2) Component opening tags
   if (hasComponents) {
     processComponentTags(
       trimmed,
@@ -1154,7 +1145,7 @@ function computeCodeReferenceAnchors({
     );
   }
 
-  // 3) Namespaced calls: ak.useDisclosureStore(...)
+  // Link calls and record store assignments for later resolution.
   if (hasCalls) {
     processNamespacedCalls(
       trimmed,
@@ -1168,7 +1159,6 @@ function computeCodeReferenceAnchors({
     );
   }
 
-  // 4) Plain calls: useDisclosureStore(...)
   if (hasCalls) {
     processPlainCalls(
       trimmed,
@@ -1183,7 +1173,7 @@ function computeCodeReferenceAnchors({
     );
   }
 
-  // 5) useStoreState state keys
+  // Resolve state selectors and return props from recorded store variables.
   const hasUseStoreStateAvailable =
     namedImports.has("useStoreState") ||
     namespaceAliases.size > 0 ||
@@ -1193,21 +1183,19 @@ function computeCodeReferenceAnchors({
     processUseStoreStateCalls(trimmed, storeVarToRef, anchors, getHref);
   }
 
-  // 6) Return-prop accesses on store variables
   if (storeVarToRef.size) {
     processStoreReturnProps(trimmed, storeVarToRef, anchors, getHref);
   }
 
-  // 7) ak- class tokens
+  // Link static `ak-*` class tokens.
   if (hasAkClasses) {
     const classRanges = findClassTokenRanges(trimmed);
     for (const range of classRanges) {
-      // Placeholder href for class tokens
+      // Class tokens currently use a placeholder href.
       pushRange(anchors, range.start, range.end, "#", "prop");
     }
   }
 
-  // Build per-line anchors
   return buildPerLineAnchors(trimmed, anchors);
 }
 
@@ -1258,7 +1246,7 @@ function processNamedImports(
         const ref = nameToRef[exported];
         if (!ref) continue;
 
-        // Calculate precise position of the local name
+        // Anchor the local alias rather than the exported identifier.
         const specText = specMatch[0];
         const exportedIndex = specText.indexOf(exported);
         const localPosInSpec =
@@ -1312,7 +1300,7 @@ function processComponentTags(
     }
   };
 
-  // Namespaced components: <ak.Disclosure ...>
+  // Namespaced components: `<ak.Disclosure>`.
   const nsCompRegex = new RegExp(
     `<(${IDENTIFIER_PATTERN})\\.(${COMPONENT_NAME_PATTERN})(?=[\\s/>])`,
     "g",
@@ -1341,7 +1329,7 @@ function processComponentTags(
     }
   }
 
-  // Direct components: <Disclosure ...>
+  // Direct components: `<Disclosure>`.
   const compRegex = new RegExp(`<(${COMPONENT_NAME_PATTERN})(?=[\\s/>])`, "g");
   let compMatch: RegExpExecArray | null;
 
@@ -1413,7 +1401,6 @@ function processNamespacedCalls(
       pushRange(anchors, start, end, getHref(targetRef), labelKind);
     }
 
-    // Track store variable assignment
     trackStoreAssignment(
       code,
       callMatch.index || 0,
@@ -1422,7 +1409,6 @@ function processNamespacedCalls(
       storeVarToRef,
     );
 
-    // Process first-arg object props
     processFirstArgProps(
       code,
       callMatch.index || 0,
@@ -1460,7 +1446,7 @@ function processPlainCalls(
     const localName = callMatch[1] ?? "";
     const callIndex = callMatch.index || 0;
 
-    // Skip function declarations
+    // Exclude function declarations matched by the call-shaped pattern.
     const precedingText = code.slice(Math.max(0, callIndex - 64), callIndex);
     if (
       /(?:^|[^\w])(export\s+)?(?:async\s+)?function\s*$/.test(precedingText)
@@ -1488,10 +1474,8 @@ function processPlainCalls(
       pushRange(anchors, start, end, getHref(targetRef), labelKind);
     }
 
-    // Track store variable assignment
     trackStoreAssignment(code, callIndex, storeRef, ref, storeVarToRef, 200);
 
-    // Process first-arg object props
     processFirstArgProps(code, callIndex, ref, storeRef, anchors, getHref);
   }
 }
@@ -1579,7 +1563,7 @@ function processUseStoreStateCalls(
     const stateRanges = findUseStoreStateStateRanges(code, callIndex);
 
     for (const range of stateRanges) {
-      // Try to resolve reference by store variable
+      // Resolve the state key through the store passed as the first argument.
       const argSlice = code.slice(callIndex, callIndex + 120);
       const firstArgMatch = /useStoreState\s*\(\s*([A-Za-z_$][\w$]*)/.exec(
         argSlice,
@@ -1644,7 +1628,7 @@ function buildPerLineAnchors(
   const lines = code.split("\n");
   const byLine: CodeReferenceAnchorRange[][] = lines.map(() => []);
 
-  // Calculate line start positions
+  // Precompute absolute line offsets once for all anchors.
   const lineStarts: number[] = new Array(lines.length);
   let accumulator = 0;
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
@@ -1655,7 +1639,7 @@ function buildPerLineAnchors(
     }
   }
 
-  // Binary search to find line index for a position
+  // Locate an absolute position in logarithmic time.
   const findLineIndex = (position: number): number => {
     let low = 0;
     let high = lineStarts.length - 1;
@@ -1680,7 +1664,7 @@ function buildPerLineAnchors(
     return Math.max(0, Math.min(lineStarts.length - 1, low));
   };
 
-  // Assign anchors to lines with relative positions
+  // Convert absolute anchor offsets to line-relative ranges.
   for (const anchor of anchors) {
     const lineIndex = findLineIndex(anchor.start);
     const lineStart = lineStarts[lineIndex] ?? 0;
@@ -1703,7 +1687,7 @@ function buildPerLineAnchors(
     }
   }
 
-  // Sort and merge overlapping anchors on each line
+  // Sort and coalesce compatible overlaps on each line.
   for (const lineAnchors of byLine) {
     lineAnchors.sort((a, b) => a.start - b.start);
 

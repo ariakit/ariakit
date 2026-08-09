@@ -34,17 +34,8 @@ function ComboboxPersistentElement() {
   );
 }
 
-// Reproduces a non-modal dialog with getPersistentElements closing when the
-// user interacts with a persistent element before the dialog has been focused.
-// To see the bug:
-//   1. Click "Open dialog". The panel opens without taking focus
-//      (autoFocusOnShow={false}).
-//   2. Without clicking inside the dialog, click (or focus, or right-click) the
-//      "Notification field" input inside the persistent "Notifications" region.
-//   3. The dialog closes, even though the region is returned by
-//      getPersistentElements and should be treated as part of the dialog.
-// For contrast, focusing "Inside field" first makes the same interaction keep
-// the dialog open, as documented.
+// Persistent elements must not close this non-modal dialog, even when used
+// before it receives focus. See https://github.com/ariakit/ariakit/issues/6344.
 export default function Example() {
   const [open, setOpen] = useState(false);
   const [asSection, setAsSection] = useState(false);

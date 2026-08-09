@@ -100,14 +100,9 @@ export function getReferenceItemFromProp(
   };
 }
 
-// Sections derive purely from the reference data, but helpers such as
-// getReferenceItem and getReferencePath rebuild them on every call — once per
-// item link on reference pages and partials, which is quadratic in the number
-// of items. Memoizing per data object keeps those lookups cheap. Entries are
-// stable within a page render (and across pages when the collection itself is
-// cached), so the WeakMap hits without ever holding stale data. Callers must
-// treat the returned sections and their items as read-only, since the array is
-// shared across pages.
+// Reference pages rebuild these sections for every item link. Cache by
+// reference identity; callers must treat the shared result as read-only.
+// https://github.com/ariakit/ariakit/pull/6289
 const sectionsCache = new WeakMap<Reference, ReferenceSection[]>();
 
 export function getReferenceSections(reference: Reference) {

@@ -1,22 +1,11 @@
 import type { Locator } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
-import { recordScrollEvents } from "#app/test-utils/scroll.ts";
+import {
+  expectVerticallyCentered,
+  recordScrollEvents,
+} from "#app/test-utils/scroll.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
-  const expectVerticallyCentered = async (listbox: Locator, item: Locator) => {
-    await test
-      .expect(async () => {
-        const listboxBox = await listbox.boundingBox();
-        const itemBox = await item.boundingBox();
-        test.expect(listboxBox).not.toBeNull();
-        test.expect(itemBox).not.toBeNull();
-        const listboxCenter = listboxBox!.y + listboxBox!.height / 2;
-        const itemCenter = itemBox!.y + itemBox!.height / 2;
-        test.expect(itemCenter).toBeCloseTo(listboxCenter, 0);
-      })
-      .toPass();
-  };
-
   const expectInScrollport = async (listbox: Locator, item: Locator) => {
     await test
       .expect(async () => {
@@ -525,6 +514,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const focusHistory = q.status("Native auto-focus history");
 
     await test.expect(focusHistory).toHaveText("none");
+    await test.expect(escapeTarget).toBeVisible();
 
     await disclosure.click();
 
@@ -544,10 +534,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
   }) => {
     const focusHistory = q.status("Shadow-root dialog focus history");
+    const disclosure = q.button("Open shadow-root focus dialog");
 
     await test.expect(focusHistory).toHaveText("none");
+    await test.expect(disclosure).toBeEnabled();
 
-    await q.button("Open shadow-root focus dialog").click();
+    await disclosure.click();
 
     await test
       .expect(q.textbox("Shadow-root initial focus field"))
@@ -565,10 +557,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       page.frameLocator("iframe[title='Initial focus frame']"),
     );
     const focusHistory = q.status("Iframe dialog focus history");
+    const disclosure = q.button("Open iframe focus dialog");
 
     await test.expect(focusHistory).toHaveText("none");
+    await test.expect(disclosure).toBeEnabled();
 
-    await q.button("Open iframe focus dialog").click();
+    await disclosure.click();
 
     await test.expect(q.textbox("Iframe initial focus field")).toBeFocused();
     await test.expect(q.dialog("Iframe focus dialog")).toBeVisible();

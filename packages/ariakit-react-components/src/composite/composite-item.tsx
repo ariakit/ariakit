@@ -285,16 +285,9 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 
     const onFocusProp = props.onFocus;
     const hasFocusedComposite = useRef(false);
-    // Holds the unsubscribe function of a pending focus redirect scheduled in
-    // the onFocus handler below when the composite element isn't available
-    // yet. We don't cancel it on unmount: the subscription is created by a focus
-    // event, not an effect, so an unmount cleanup would permanently cancel it
-    // during strict mode's simulated unmount. The listener is self-cleaning
-    // instead: it unsubscribes on the next store update once this item no
-    // longer has DOM focus. That also covers unmounted items, since
-    // unmounting an item that registers itself in the store produces an
-    // update by unregistering it, even when the composite element never
-    // arrives. Redirects are only scheduled for such items.
+    // This event-created subscription cannot use effect cleanup: StrictMode's
+    // simulated unmount would cancel it permanently. It self-cancels when focus
+    // leaves or item unregistration updates the store.
     const cancelScheduledFocusRedirectRef = useRef<(() => void) | null>(null);
     const present = usePresentItem(store);
 
@@ -356,17 +349,9 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         }
         const fromComposite =
           relatedTarget === compositeElement || isItem(store, relatedTarget);
-        // This item is about to hand DOM focus back to the composite element,
-        // so the browser will not bring it into view. Present it explicitly,
-        // once its popup, if it's in one, has been positioned. Only if it's
-        // marked as a presentation target: an item that merely happened to
-        // receive focus, such as one under a resting pointer, should stay
-        // where it is.
-        // An item that opts out of registering itself can't be resolved from
-        // the store, so there would be nothing to wait for.
-        // The handoff below moves focus a second time, from this item to the
-        // composite element, but both are inside the composite, so the request
-        // survives it and only focus leaving the composite abandons it.
+        // Virtual-focus handoff prevents the browser from scrolling the item,
+        // so present registered, marked targets after popup placement. The
+        // internal item-to-composite move does not abandon the request.
         if (store.item(id)) {
           present({
             id,
@@ -400,15 +385,9 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         return;
       }
 
-      // The composite element isn't available at this point: it's stored in a
-      // later commit than the one that mounts it, so focusing an item during
-      // the mount commit lands here before the store has it. It may also be
-      // disconnected from the DOM, such as when it's removed just before this
-      // focus event (focusing it then would cause a scroll jump on Safari).
-      // Instead of dropping the focus redirect, we wait until a connected
-      // composite element is available in the store, then redirect focus to it
-      // if this item still has DOM focus.
-      // See https://github.com/ariakit/ariakit/issues/6623
+      // The composite element may be published a commit later or be temporarily
+      // disconnected. Wait for a connected element before redirecting focus.
+      // https://github.com/ariakit/ariakit/issues/6623
 
       // Items that opt out of registering themselves in the store never
       // produce the unregister store update that the scheduled redirect below

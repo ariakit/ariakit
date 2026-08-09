@@ -15,31 +15,24 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.tab(tab1)).toHaveAttribute("aria-selected", "true");
     await expect(q.tabpanel(tab1)).toBeVisible();
 
-    // [1]
-
+    // Transition from [1] to [1]←[ ]←[2].
     await q.tab(tab2).click();
-
-    // [1]←[ ]←[2]
 
     await expect(q.tabpanel(tab1)).toBeVisible();
     await expect(q.tabpanel(tab2)).toBeVisible();
 
-    // Tab 1 is sliding to the left
     await expect(q.tabpanel(tab1)).toHaveCSS("translate", /^-/);
     await expect(q.tabpanel(tab1)).toHaveCSS("opacity", /0\./);
 
-    // Tab 2 is sliding from the right
     await expect(q.tabpanel(tab2)).toHaveCSS("translate", /^\d+\./);
     await expect(q.tabpanel(tab2)).toHaveCSS("opacity", /0\./);
 
-    // Pressing the right arrow key before the animation is complete
+    // Move again before the first panel transition completes.
     await page.keyboard.press("ArrowRight");
 
-    // [1]←[ ]←[2]←[3]
-
+    // Interrupting it adds panel 3: [1]←[ ]←[2]←[3].
     await expect(q.tab(tab3)).toBeFocused();
 
-    // All panels are visible now
     await expect(q.tabpanel(tab1)).toBeVisible();
     await expect(q.tabpanel(tab2)).toBeVisible();
     await expect(q.tabpanel(tab3)).toBeVisible();

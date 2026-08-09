@@ -8,12 +8,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
-import {
-  getActiveElement,
-  getDocument,
-  invariant,
-  isFalsyBooleanCallback,
-} from "@ariakit/utils";
+import { getDocument, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useEffect, useRef } from "react";
@@ -84,8 +79,6 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     const selectElement = useStoreState(store, "selectElement");
     const hiddenByClickOutsideRef = useRef(false);
     const hasSelect = !!selectElement;
-    const selectOwnsFocus =
-      !!selectElement && getActiveElement(selectElement) === selectElement;
 
     const selectOnMove = useStoreState(store, "selectOnMove");
     const acceptedEscapeRef = useRef<{
@@ -219,10 +212,13 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       modal,
       alwaysVisible,
       backdrop: false,
-      // A callback would always be truthy, defeating the dialog's early-out and
-      // forcing a tabbable scan of the whole popup on every open.
-      // Without an input, only take focus when the select initiated the open.
-      autoFocusOnShow: hasSelect && (!!inputElement || selectOwnsFocus),
+      // A select-shaped popup takes focus on every open, including a default or
+      // programmatic one: showing it is a request to interact with it, and
+      // leaving focus behind would strand the user outside an open listbox.
+      // https://github.com/ariakit/ariakit/issues/7068
+      // Keep this a boolean, since a callback would always be truthy and defeat
+      // the dialog's early-out for popups that take no focus at all.
+      autoFocusOnShow: hasSelect,
       initialFocus: hasSelect ? inputElement : undefined,
       finalFocus: selectElement || compositeElement,
       preserveTabOrderAnchor: null,
@@ -342,6 +338,21 @@ export interface ComboboxPopoverOptions<T extends ElementType = TagName>
    * and `true` otherwise.
    */
   typeahead?: CompositeTypeaheadOptions<T>["typeahead"];
+  /**
+   * Determines whether the popup takes focus when it opens. Where that focus
+   * lands depends on the popup's contents and on
+   * [`virtualFocus`](https://ariakit.com/reference/combobox-provider#virtualfocus);
+   * the
+   * [`initialFocus`](https://ariakit.com/reference/combobox-popover#initialfocus)
+   * prop can be used to set a specific element to receive it.
+   *
+   * Defaults to `true` when a
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
+   * rendered, and `false` otherwise, since a standalone
+   * [`ComboboxInput`](https://ariakit.com/reference/combobox-input) keeps focus
+   * while its popup is open.
+   */
+  autoFocusOnShow?: PopoverOptions<T>["autoFocusOnShow"];
   /**
    * Whether the combobox's
    * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)

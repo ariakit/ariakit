@@ -186,18 +186,11 @@ async function syncWorkspace(rootPath: string, workspacePath: string) {
 }
 
 /**
- * Installs the React 18 dependency graph in the temporary workspace.
+ * Installs React 18 in a persistent disposable workspace. Let pnpm purge a
+ * modules directory whose recorded workspace settings are stale, answering its
+ * otherwise non-TTY prompt automatically.
  *
- * The workspace outlives a single run, so its `node_modules` can be recorded
- * under workspace settings that no longer match the `pnpm-workspace.yaml` this
- * run just synced. pnpm already detects that and recovers by purging and
- * reinstalling the modules directory, but it asks before doing so and aborts
- * outright when there is no TTY. Answering up front keeps pnpm's own check as
- * the authority on when the recorded settings went stale, and the workspace is
- * disposable either way.
- *
- * pnpm ignores unknown settings silently, so revisit the setting name whenever
- * the pinned pnpm version changes.
+ * Recheck the setting when upgrading pnpm; unknown settings are ignored.
  */
 async function installDependencies(workspacePath: string) {
   try {

@@ -49,25 +49,12 @@ const LOADERS = {
 } satisfies Record<Framework, (dir: string) => Promise<() => void>>;
 
 /*
-
-Example/test naming conventions:
-
-<example name>/
-  index.<react|solid>.tsx        - example, the loader is optional and defaults to "react"
-  test.ts                        - test, runs for all loaders
-  <react|solid>.test.ts          - test, runs only for the specified loader
-
-Note: test files can also be named `test-<browser target>.` instead of `test.` to run with Playwright. Available targets are:
-
-- browser (all desktop browsers)
-- chrome
-- firefox
-- safari
-- mobile (all mobile browsers)
-- ios
-- android
-
-*/
+ * Fixture grammar:
+ * - `test.ts` runs for every matching `index.<framework>.tsx`.
+ * - `<framework>.test.ts` runs only for that framework.
+ * Playwright uses `test-<target>.ts`; targets are defined in
+ * `app/playwright.config.ts`.
+ */
 
 function parseTest(filename?: string) {
   if (!filename) return false;

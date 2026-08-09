@@ -33,9 +33,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(submenuButton).toHaveAttribute("aria-haspopup", "dialog");
     await submenuButton.click();
 
-    // The parent menu should remain open.
     await test.expect(q.menuitem("Cut")).toBeVisible();
-    // The submenu should be open.
     await test.expect(q.combobox("Search submenu...")).toBeVisible();
   });
 });

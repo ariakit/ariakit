@@ -673,6 +673,7 @@ function ShadowRootDialogFixture() {
     <>
       <button
         type="button"
+        disabled={!portalElement}
         onClick={() => {
           setFocusHistory([]);
           setOpen(true);
@@ -737,6 +738,7 @@ function IframeDialogFixture() {
     <>
       <Ariakit.DialogDisclosure
         store={dialog}
+        disabled={!frameBody}
         onClick={() => setFocusHistory([])}
       >
         Open iframe focus dialog

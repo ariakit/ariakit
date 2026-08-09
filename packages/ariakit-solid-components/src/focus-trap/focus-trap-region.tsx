@@ -35,7 +35,8 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
           <Show when={options.enabled}>
             <FocusTrap
               onFocus={(event) => {
-                // TODO: (react) opportunity to extract into @ariakit/components?
+                // TODO: Extract shared React/Solid focus-trap logic.
+                // https://github.com/ariakit/ariakit/pull/6018
                 const container = ref.current;
                 if (!container) return;
                 const tabbables = getAllTabbableIn(container, true);
