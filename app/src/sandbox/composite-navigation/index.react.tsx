@@ -1,32 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import type { ElementRef, KeyboardEvent as ReactKeyboardEvent } from "react";
+import type { ElementRef } from "react";
 import { forwardRef, useState } from "react";
-
-// TODO: Remove once https://github.com/ariakit/ariakit/issues/7099 is released.
-// Ariakit navigates on these keys even when a modifier is held, but ignores the
-// same keystroke when deciding the focus modality. Re-announcing the gesture on
-// the item as an unmodified keydown records keyboard modality on both surfaces.
-// The replay carries no key, so composite navigation ignores it and cannot move
-// focus twice.
-const navigationKeys = new Set([
-  "ArrowUp",
-  "ArrowRight",
-  "ArrowDown",
-  "ArrowLeft",
-  "Home",
-  "End",
-  "PageUp",
-  "PageDown",
-]);
-
-function announceKeyboardModality(event: ReactKeyboardEvent<HTMLElement>) {
-  if (!event.altKey && !event.ctrlKey && !event.metaKey) return;
-  if (!navigationKeys.has(event.key)) return;
-  const target = event.target as HTMLElement;
-  const view = target.ownerDocument.defaultView;
-  if (!view) return;
-  target.dispatchEvent(new view.KeyboardEvent("keydown", { bubbles: true }));
-}
 
 interface GridProps extends Ariakit.CompositeProps {
   focusShift?: boolean;
@@ -36,12 +10,7 @@ const Grid = forwardRef<ElementRef<typeof Ariakit.Composite>, GridProps>(
   function Grid({ focusShift, ...props }, ref) {
     return (
       <Ariakit.CompositeProvider focusShift={focusShift}>
-        <Ariakit.Composite
-          role="grid"
-          onKeyDownCapture={announceKeyboardModality}
-          {...props}
-          ref={ref}
-        />
+        <Ariakit.Composite role="grid" {...props} ref={ref} />
       </Ariakit.CompositeProvider>
     );
   },
@@ -64,10 +33,7 @@ const GridCell = forwardRef<
 function BasicComposite() {
   return (
     <Ariakit.CompositeProvider>
-      <Ariakit.Composite
-        aria-label="Fruits"
-        onKeyDownCapture={announceKeyboardModality}
-      >
+      <Ariakit.Composite aria-label="Fruits">
         <Ariakit.CompositeItem>Apple</Ariakit.CompositeItem>
         <Ariakit.CompositeItem>Grape</Ariakit.CompositeItem>
         <Ariakit.CompositeItem>Orange</Ariakit.CompositeItem>
