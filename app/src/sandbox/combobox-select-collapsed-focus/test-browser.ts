@@ -105,6 +105,58 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(q.option("Alpha 25")).toHaveAttribute("data-active-item");
   });
 
+  // https://github.com/ariakit/ariakit/pull/7098#discussion_r3742291859
+  // Withholding belongs to the widget that owns focus. A move made from
+  // outside keeps presenting immediately, so the focus it moves is
+  // attributable to that call instead of landing on whoever is focused when
+  // the list next opens.
+  test("a move from outside the widget still presents immediately", async ({
+    page,
+    q,
+  }) => {
+    const openList = q.button("Open stage list");
+
+    await q.button("Apply stage preset").click();
+
+    await test.expect(q.option("Final")).toBeFocused();
+    await test
+      .expect(q.combobox("Stage"))
+      .toHaveAttribute("aria-expanded", "false");
+
+    await openList.click();
+
+    await test
+      .expect(q.combobox("Stage"))
+      .toHaveAttribute("aria-expanded", "true");
+    // Opening is observable above, but a presentation left over from the move
+    // would arrive from a passive effect after paint, so cross those frames
+    // before asserting that the click kept its focus.
+    await flushFrames(page);
+    await test.expect(openList).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7098#discussion_r3742291859
+  // Once focus is on an option, moving between options is navigation inside
+  // the list, not focus leaving the control, so the focus ring has to keep up
+  // with the active item even though the list is collapsed.
+  test("arrow keys keep moving focus between options in a collapsed list", async ({
+    page,
+    q,
+  }) => {
+    const list = q.listbox("Stage options");
+    await query(list).option("Draft").click();
+    await test.expect(query(list).option("Draft")).toBeFocused();
+    await test
+      .expect(q.combobox("Stage"))
+      .toHaveAttribute("aria-expanded", "false");
+
+    await page.keyboard.press("ArrowDown");
+
+    const review = query(list).option("Review");
+    await test.expect(review).toHaveAttribute("data-active-item");
+    await test.expect(review).toBeFocused();
+  });
+
   // https://github.com/ariakit/ariakit/issues/7093
   test("a collapsed combobox input never focuses its list", async ({
     page,

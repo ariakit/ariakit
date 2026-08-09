@@ -69,6 +69,42 @@ test("picking an option before opening retires the pending presentation", async 
   expect(q.option("Alpha 25")).toHaveAttribute("data-active-item");
 });
 
+// https://github.com/ariakit/ariakit/pull/7098#discussion_r3742291859
+// Withholding belongs to the widget that owns focus. A move made from outside
+// keeps presenting immediately, so the focus it moves is attributable to that
+// call instead of landing on whoever is focused when the list next opens.
+test("a move from outside the widget still presents immediately", async () => {
+  const openList = q.button("Open stage list");
+
+  await click(q.button("Apply stage preset"));
+
+  expect(q.option("Final")).toHaveFocus();
+  expect(q.combobox("Stage")).toHaveAttribute("aria-expanded", "false");
+
+  await click(openList);
+
+  expect(q.combobox("Stage")).toHaveAttribute("aria-expanded", "true");
+  expect(openList).toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/pull/7098#discussion_r3742291859
+// Once focus is on an option, moving between options is navigation inside the
+// list, not focus leaving the control, so the focus ring has to keep up with
+// the active item even though the list is collapsed.
+test("arrow keys keep moving focus between options in a collapsed list", async () => {
+  const list = q.listbox("Stage options");
+  const draft = q.within(list).option("Draft");
+  await click(draft);
+  expect(draft).toHaveFocus();
+  expect(q.combobox("Stage")).toHaveAttribute("aria-expanded", "false");
+
+  await press.ArrowDown();
+
+  const review = q.within(list).option("Review");
+  expect(review).toHaveAttribute("data-active-item");
+  expect(review).toHaveFocus();
+});
+
 // https://github.com/ariakit/ariakit/issues/7093
 test("a collapsed combobox input never focuses its list", async () => {
   const combobox = q.combobox.ensure("Filter");

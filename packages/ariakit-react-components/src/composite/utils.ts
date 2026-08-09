@@ -125,9 +125,13 @@ function presentItem({
   let done = false;
   let wasMounted = false;
   let wasOpen = false;
-  const owner = requireFocus
-    ? getActiveElement(store.getState().compositeElement)
-    : null;
+  const compositeAtStart = store.getState().compositeElement;
+  const activeAtStart = getActiveElement(compositeAtStart);
+  const owner = requireFocus ? activeAtStart : null;
+  // Only focus that would leave the control itself is this widget's to
+  // withhold, and that is decided once rather than per pass.
+  // https://github.com/ariakit/ariakit/pull/7098#discussion_r3742291859
+  const startedOnComposite = !!compositeAtStart?.contains(activeAtStart);
   const stillOwnsFocus = (target: HTMLElement) => {
     if (!owner) return true;
     const activeElement = getActiveElement(owner);
@@ -239,7 +243,8 @@ function presentItem({
     }
     // Only the focus half is withheld: a list that is already on screen still
     // scrolls to the item the user just made active.
-    const focusWithheld = focus && entersClosedPopup(state, element);
+    const focusWithheld =
+      focus && startedOnComposite && entersClosedPopup(state, element);
     // A request parked on positioning keeps presenting the item it resolved,
     // because the popup is open and the wait is short. This one waits for the
     // popup to open at all, so the user has time to pick another item, and the
