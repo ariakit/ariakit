@@ -67,7 +67,7 @@
     "cross-spawn": "7.0.6",
     "fs-extra": "11.4.0",
     "glob": "13.0.6",
-    "happy-dom": "20.11.1",
+    "happy-dom": "20.11.2",
     "husky": "9.1.7",
     "lint-staged": "17.3.0",
     "open-cli": "9.0.0",
