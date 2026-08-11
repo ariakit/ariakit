@@ -243,6 +243,12 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       accessibleWhenDisabled,
       ...props,
       showOnHover: (event) => {
+        // Opening a menu is an activation, so a disabled menu button must not
+        // do it on hover even when it stays keyboard accessible. The trigger
+        // only declines truly disabled elements, and the disabled state may
+        // also live below this hook, so check the element like onFocus and
+        // onKeyDown do.
+        if (isDisabled(event.currentTarget)) return false;
         const getShowOnHover = () => {
           if (typeof showOnHover === "function") return showOnHover(event);
           if (showOnHover != null) return showOnHover;

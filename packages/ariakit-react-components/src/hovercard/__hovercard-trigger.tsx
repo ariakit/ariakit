@@ -9,6 +9,7 @@ import { addGlobalEventListener, disabledFromProps } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
 import { useCallback, useEffect, useRef } from "react";
+import { resolveAccessibleWhenDisabled } from "../focusable/__utils.ts";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
@@ -28,7 +29,17 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
     setAnchorElement = false,
     ...props
   }) {
-    const disabled = disabledFromProps(props);
+    // A disabled element that stays keyboard accessible may still reveal its
+    // content on hover. Only a truly disabled one must not, because then the
+    // content would be reachable by pointer alone. useFocusable runs after this
+    // hook, so `accessibleWhenDisabled` has to be resolved the same way it
+    // does, including the value inherited from a component composed above.
+    // https://github.com/ariakit/ariakit/issues/7115
+    const accessibleWhenDisabled = resolveAccessibleWhenDisabled(
+      props,
+      props.accessibleWhenDisabled,
+    );
+    const trulyDisabled = disabledFromProps(props) && !accessibleWhenDisabled;
     const triggerRef = useRef<HTMLElement | null>(null);
     const showTimeoutRef = useRef(0);
 
@@ -56,7 +67,7 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
 
     const onMouseMove = useEvent((event: ReactMouseEvent<HTMLType>) => {
       onMouseMoveProp?.(event);
-      if (disabled) return;
+      if (trulyDisabled) return;
       if (event.defaultPrevented) return;
       if (showTimeoutRef.current) return;
       if (!isMouseMoving()) return;

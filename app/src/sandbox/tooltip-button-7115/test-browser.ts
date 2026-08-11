@@ -22,6 +22,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7115
+  test("shows the tooltip on hover when the anchor itself is the disabled one", async ({
+    q,
+  }) => {
+    await q.button("Export file").hover();
+    await test
+      .expect(q.tooltip("You need permission to export files"))
+      .toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7115
   test("shows the tooltip on keyboard focus in both composition orders", async ({
     q,
   }) => {
@@ -89,6 +99,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test
       .expect(q.button("Share file"))
       .toHaveAttribute("aria-disabled", "true");
+    await test
+      .expect(q.button("Export file"))
+      .toHaveAttribute("aria-disabled", "true");
   });
 
   test("does not put an accessible disabled anchor in the pressed state", async ({
@@ -116,6 +129,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // has to be forced to reproduce what a real pointer user can do.
     await q.button("Delete file").click({ force: true });
     await q.button("Share file").click({ force: true });
+    await q.button("Export file").click({ force: true });
     // Nothing changes when the clicks are correctly suppressed, so cross the
     // frames a state update would have landed on before asserting the count.
     await flushFrames(page);

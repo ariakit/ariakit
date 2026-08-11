@@ -14,6 +14,12 @@ test("shows the tooltip on hover when the disabled button renders the anchor", a
 });
 
 // https://github.com/ariakit/ariakit/issues/7115
+test("shows the tooltip on hover when the anchor itself is the disabled one", async () => {
+  await hover(q.button("Export file"));
+  expect(q.tooltip("You need permission to export files")).toBeVisible();
+});
+
+// https://github.com/ariakit/ariakit/issues/7115
 test("shows the tooltip on keyboard focus in both composition orders", async () => {
   await press.Tab();
   expect(q.button("Delete file")).toHaveFocus();
@@ -43,6 +49,7 @@ test("does not show the tooltip on hover for a truly disabled anchor that keeps 
 test("keeps the disabled semantics on accessible disabled anchors", async () => {
   expect(q.button("Delete file")).toHaveAttribute("aria-disabled", "true");
   expect(q.button("Share file")).toHaveAttribute("aria-disabled", "true");
+  expect(q.button("Export file")).toHaveAttribute("aria-disabled", "true");
 });
 
 test("does not put accessible disabled anchors in the pressed state", async () => {
@@ -69,6 +76,8 @@ test("does not activate accessible disabled anchors", async () => {
   await click(q.button("Delete file"));
   expect(q.text("Activations: 0")).toBeInTheDocument();
   await click(q.button("Share file"));
+  expect(q.text("Activations: 0")).toBeInTheDocument();
+  await click(q.button("Export file"));
   expect(q.text("Activations: 0")).toBeInTheDocument();
   // The same handler on an enabled button, so the assertions above fail if the
   // counter ever stops counting rather than if the clicks are suppressed.

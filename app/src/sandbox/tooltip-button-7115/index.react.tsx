@@ -34,20 +34,25 @@ export default function Example() {
           disabled
           accessibleWhenDisabled
           onClick={countActivation}
-          // TODO: Render the TooltipAnchor directly again once this is fixed.
-          // The anchor's hover trigger bails on the `aria-disabled` this Button
-          // resolves, so hiding that one prop from it is what opens the tooltip.
-          // https://github.com/ariakit/ariakit/issues/7115
-          render={({ "aria-disabled": ariaDisabled, ...props }) => (
-            <Ariakit.TooltipAnchor
-              {...props}
-              render={<div aria-disabled={ariaDisabled} />}
-            />
-          )}
+          render={<Ariakit.TooltipAnchor />}
         >
           Share file
         </Ariakit.Button>
         <Ariakit.Tooltip>You need permission to share files</Ariakit.Tooltip>
+      </Ariakit.TooltipProvider>
+
+      {/* No composition at all: the anchor carries the disabled props itself,
+      so it sees them in its own props rather than inheriting them. */}
+      <Ariakit.TooltipProvider timeout={0}>
+        <Ariakit.TooltipAnchor
+          disabled
+          accessibleWhenDisabled
+          onClick={countActivation}
+          render={<button type="button" />}
+        >
+          Export file
+        </Ariakit.TooltipAnchor>
+        <Ariakit.Tooltip>You need permission to export files</Ariakit.Tooltip>
       </Ariakit.TooltipProvider>
 
       {/* Truly disabled: the tooltip content is unreachable with the keyboard,

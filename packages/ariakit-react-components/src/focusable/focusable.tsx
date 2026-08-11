@@ -30,14 +30,16 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { isCompositeMoveKey } from "./__utils.ts";
+import {
+  accessibleWhenDisabledSymbol,
+  isCompositeMoveKey,
+  resolveAccessibleWhenDisabled,
+} from "./__utils.ts";
 import { FocusableContext } from "./focusable-context.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-
-const accessibleWhenDisabledSymbol = Symbol("accessibleWhenDisabled");
 
 const isSafariBrowser = isSafari();
 
@@ -231,12 +233,15 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     ...props
   }) {
     const ref = useRef<HTMLType>(null);
-    const [parentAccessibleWhenDisabled, metadataProps] = useMetadataProps(
+    accessibleWhenDisabled = resolveAccessibleWhenDisabled(
+      props,
+      accessibleWhenDisabled,
+    );
+    const [, metadataProps] = useMetadataProps(
       props,
       accessibleWhenDisabledSymbol,
       accessibleWhenDisabled,
     );
-    accessibleWhenDisabled ??= parentAccessibleWhenDisabled;
 
     // Add global event listeners to determine whether the user is using a
     // keyboard to navigate the site or not.
