@@ -241,14 +241,12 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       store,
       focusable,
       accessibleWhenDisabled,
+      // Opening a menu is an activation rather than an explanation, so by
+      // default a disabled menu button doesn't do it on hover even when it
+      // stays accessible. Before the spread, so consumers can opt back in.
+      showOnHoverWhenDisabled: false,
       ...props,
       showOnHover: (event) => {
-        // Opening a menu is an activation, so a disabled menu button must not
-        // do it on hover even when it stays keyboard accessible. The trigger
-        // only declines truly disabled elements, and the disabled state may
-        // also live below this hook, so check the element like onFocus and
-        // onKeyDown do.
-        if (isDisabled(event.currentTarget)) return false;
         const getShowOnHover = () => {
           if (typeof showOnHover === "function") return showOnHover(event);
           if (showOnHover != null) return showOnHover;
@@ -327,6 +325,24 @@ export interface MenuButtonOptions<T extends ElementType = TagName>
    * context will be used.
    */
   store?: MenuStore;
+  /**
+   * Whether hovering can open the menu while the
+   * [`MenuButton`](https://ariakit.com/reference/menu-button) is
+   * [`disabled`](https://ariakit.com/reference/focusable#disabled). Opening a
+   * menu is an activation rather than an explanation, so this defaults to
+   * `false` here instead of `true`. An element that declares `aria-disabled`
+   * or `disabled` on its own, outside Ariakit props, counts as disabled here
+   * too, the way [`MenuButton`](https://ariakit.com/reference/menu-button)
+   * already treats it for focus and key presses.
+   *
+   * **Note**: A disabled menu button that isn't
+   * [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled)
+   * never opens the menu on hover, and this prop can't turn that back on. Even
+   * when it is, opting in leaves the menu reachable by pointer users alone,
+   * because a disabled menu button never opens its menu from the keyboard.
+   * @default false
+   */
+  showOnHoverWhenDisabled?: HovercardAnchorOptions<T>["showOnHoverWhenDisabled"];
   /**
    * Determines whether pressing a character key while focusing on the
    * [`MenuButton`](https://ariakit.com/reference/menu-button) should move focus

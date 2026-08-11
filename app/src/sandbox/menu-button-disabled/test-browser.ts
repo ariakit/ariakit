@@ -57,4 +57,28 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Hover enabled").hover();
     await test.expect(q.menu("Hover enabled")).toBeVisible();
   });
+
+  test("disabled menu button opens its menu on hover when the consumer opts in", async ({
+    q,
+  }) => {
+    await q.button("Hover opted in").hover();
+    await test.expect(q.menu("Hover opted in")).toBeVisible();
+  });
+
+  test("opting in does not open the menu on hover for a truly disabled button", async ({
+    page,
+    q,
+  }) => {
+    // Opting back in must not override the rule that keeps a truly disabled
+    // trigger's popup away from pointer users, so this button restores pointer
+    // events to let the mouse move actually reach it.
+    const menuButton = q.button("Hover opted in truly disabled");
+    await test.expect(menuButton).toHaveCSS("pointer-events", "auto");
+    await menuButton.hover();
+    // Same store-update frames as the tests above.
+    await flushFrames(page);
+    await test
+      .expect(q.menu("Hover opted in truly disabled"))
+      .not.toBeVisible();
+  });
 });

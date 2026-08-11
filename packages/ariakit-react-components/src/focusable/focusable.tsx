@@ -30,16 +30,14 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import {
-  accessibleWhenDisabledSymbol,
-  isCompositeMoveKey,
-  resolveAccessibleWhenDisabled,
-} from "./__utils.ts";
+import { isCompositeMoveKey, trulyDisabledAttribute } from "./__utils.ts";
 import { FocusableContext } from "./focusable-context.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+const accessibleWhenDisabledSymbol = Symbol("accessibleWhenDisabled");
 
 const isSafariBrowser = isSafari();
 
@@ -233,15 +231,12 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     ...props
   }) {
     const ref = useRef<HTMLType>(null);
-    accessibleWhenDisabled = resolveAccessibleWhenDisabled(
-      props,
-      accessibleWhenDisabled,
-    );
-    const [, metadataProps] = useMetadataProps(
+    const [parentAccessibleWhenDisabled, metadataProps] = useMetadataProps(
       props,
       accessibleWhenDisabledSymbol,
       accessibleWhenDisabled,
     );
+    accessibleWhenDisabled ??= parentAccessibleWhenDisabled;
 
     // Add global event listeners to determine whether the user is using a
     // keyboard to navigate the site or not.
@@ -253,7 +248,8 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       hasInstalledGlobalEventListeners = true;
     }, [focusable]);
 
-    const disabled = focusable && disabledFromProps(props);
+    const declaredDisabled = disabledFromProps(props);
+    const disabled = focusable && declaredDisabled;
     const trulyDisabled = disabled && !accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
     const focusVisibleRef = useRef(false);
@@ -491,6 +487,13 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         tabIndexProp: props.tabIndex,
       }),
       disabled: supportsDisabled && trulyDisabled ? true : undefined,
+      // Placed after the spread, like the props above, so the innermost
+      // Focusable decides. `focusable={false}` makes `accessibleWhenDisabled`
+      // inoperative and stops focus from revealing anything, so a disabled
+      // element still counts as unreachable there.
+      [trulyDisabledAttribute]:
+        (declaredDisabled && !(focusable && accessibleWhenDisabled)) ||
+        undefined,
       // TODO: Add contentEditable coverage.
       contentEditable: disabled ? undefined : props.contentEditable,
       onKeyPressCapture,

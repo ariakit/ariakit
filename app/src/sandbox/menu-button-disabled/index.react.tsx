@@ -59,6 +59,45 @@ export default function Example() {
         </Ariakit.Menu>
       </Ariakit.MenuProvider>
 
+      {/* This consumer opts back in, so hovering opens the menu even though the
+      button stays disabled. */}
+      <Ariakit.MenuProvider timeout={0}>
+        <Ariakit.MenuButton
+          showOnHover
+          showOnHoverWhenDisabled
+          accessibleWhenDisabled
+          disabled
+          render={<Ariakit.Button />}
+        >
+          Hover opted in
+        </Ariakit.MenuButton>
+        <Ariakit.Menu>
+          <Ariakit.MenuItem>Item 1</Ariakit.MenuItem>
+          <Ariakit.MenuItem>Item 2</Ariakit.MenuItem>
+        </Ariakit.Menu>
+      </Ariakit.MenuProvider>
+
+      {/* Opting in must not reach a truly disabled button, whose menu would
+      then be reachable by pointer users alone. The button restores pointer
+      events and renders a div because React skips mouse handlers on native
+      controls carrying the `disabled` attribute, which would otherwise leave
+      the assertion unable to fail. */}
+      <Ariakit.MenuProvider timeout={0}>
+        <Ariakit.MenuButton
+          showOnHover
+          showOnHoverWhenDisabled
+          disabled
+          style={{ pointerEvents: "auto" }}
+          render={<Ariakit.Button render={<div />} />}
+        >
+          Hover opted in truly disabled
+        </Ariakit.MenuButton>
+        <Ariakit.Menu>
+          <Ariakit.MenuItem>Item 1</Ariakit.MenuItem>
+          <Ariakit.MenuItem>Item 2</Ariakit.MenuItem>
+        </Ariakit.Menu>
+      </Ariakit.MenuProvider>
+
       {/* Enabled control with the same setup, so the assertions above fail if
       hovering ever stops opening a menu at all. */}
       <Ariakit.MenuProvider timeout={0}>

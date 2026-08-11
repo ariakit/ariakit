@@ -26,3 +26,21 @@ test("disabled rendered button does not open its menu on hover", async () => {
   await sleep();
   expect(q.menu("Hover render props")).not.toBeInTheDocument();
 });
+
+test("disabled menu button opens its menu on hover when the consumer opts in", async () => {
+  await hover(q.button("Hover opted in"));
+  await expect.poll(q.menu.lazy("Hover opted in")).toBeVisible();
+});
+
+test("opting in does not open the menu on hover for a truly disabled button", async () => {
+  // Opting back in must not override the rule that keeps a truly disabled
+  // trigger's popup away from pointer users, so this button restores pointer
+  // events to let the mouse move actually reach it.
+  expect(q.button("Hover opted in truly disabled")).toHaveStyle(
+    "pointer-events: auto",
+  );
+  await hover(q.button("Hover opted in truly disabled"));
+  // Same portal-mount wait as the tests above.
+  await sleep();
+  expect(q.menu("Hover opted in truly disabled")).not.toBeInTheDocument();
+});

@@ -1,28 +1,19 @@
-import type { AnyFunction } from "@ariakit/utils";
-
-// Focusable passes its resolved `accessibleWhenDisabled` value down through
-// metadata props, so a hook that runs before its own useFocusable call can read
-// what an outer component composed with `render` already decided.
-export const accessibleWhenDisabledSymbol = Symbol("accessibleWhenDisabled");
-
-interface AccessibleWhenDisabledProps {
-  onLoadedMetadataCapture?: AnyFunction & {
-    [accessibleWhenDisabledSymbol]?: boolean;
-  };
-}
+// Internal marker Focusable stamps on an element it resolved as disabled with
+// no way to reach it by keyboard. Metadata props only reach inner components,
+// so a hook that runs before its own useFocusable call has to read the element
+// to learn what a component composed with `render` below it resolved. Neither
+// `pointer-events` nor `tabIndex` can stand in for it: consumers routinely
+// override the former, and roving tabindex makes the latter meaningless on
+// composite items.
+// https://github.com/ariakit/ariakit/issues/7116
+export const trulyDisabledAttribute = "data-truly-disabled";
 
 /**
- * Resolves whether an element should stay accessible while disabled, falling
- * back to the value inherited from an outer component.
+ * Checks whether Focusable resolved this element as disabled and not keyboard
+ * accessible, based on the attribute it stamps on it.
  */
-export function resolveAccessibleWhenDisabled(
-  props: AccessibleWhenDisabledProps,
-  accessibleWhenDisabled?: boolean,
-) {
-  return (
-    accessibleWhenDisabled ??
-    props.onLoadedMetadataCapture?.[accessibleWhenDisabledSymbol]
-  );
+export function trulyDisabledFromElement(element: Element) {
+  return element.hasAttribute(trulyDisabledAttribute);
 }
 
 // Keys that composite widgets move focus with. They're never typing, so they

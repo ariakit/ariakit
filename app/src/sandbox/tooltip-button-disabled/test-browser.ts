@@ -59,11 +59,87 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeVisible();
   });
 
+  test("does not show the tooltip on hover when the consumer opts out for disabled anchors", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Archive file").hover();
+    // The tooltip would open from a store update rendered on a later frame, so
+    // cross those frames to give the assertion below a chance to fail.
+    await flushFrames(page);
+    await test
+      .expect(q.tooltip("You need permission to archive files"))
+      .not.toBeVisible();
+  });
+
+  test("still shows the tooltip on keyboard focus when hover is opted out", async ({
+    q,
+  }) => {
+    // The same anchor and tooltip as the test above, so that one fails instead
+    // of passing vacuously if this tooltip ever stops opening at all.
+    const anchor = q.button("Archive file");
+    await anchor.focus();
+    await test.expect(anchor).toHaveAttribute("data-focus-visible", "true");
+    await test
+      .expect(q.tooltip("You need permission to archive files"))
+      .toBeVisible();
+  });
+
+  test("lets a callback decide whether a disabled anchor shows on hover", async ({
+    page,
+    q,
+  }) => {
+    // The callback returns false for this anchor's reason, so a callback that
+    // is ignored, coerced to a truthy object, or handed the wrong target would
+    // show the tooltip here.
+    await q.button("Restore file").hover();
+    // The tooltip would open from a store update rendered on a later frame, so
+    // cross those frames to give the assertion below a chance to fail.
+    await flushFrames(page);
+    await test
+      .expect(q.tooltip("You need permission to restore files"))
+      .not.toBeVisible();
+  });
+
+  test("still shows the tooltip on keyboard focus when a callback declines hover", async ({
+    q,
+  }) => {
+    // The same anchor and tooltip as the test above, so that one fails instead
+    // of passing vacuously if this tooltip ever stops opening at all.
+    const anchor = q.button("Restore file");
+    await anchor.focus();
+    await test.expect(anchor).toHaveAttribute("data-focus-visible", "true");
+    await test
+      .expect(q.tooltip("You need permission to restore files"))
+      .toBeVisible();
+  });
+
+  test("shows the tooltip on hover when the rendered element declares itself disabled", async ({
+    q,
+  }) => {
+    // Ariakit resolved no disabled state here, so the anchor still shows its
+    // tooltip on hover, the way it did before the hover decision started
+    // reading the element.
+    await q.button("Publish file").hover();
+    await test.expect(q.tooltip("Publishing needs a reviewer")).toBeVisible();
+  });
+
+  test("shows the tooltip on keyboard focus when the rendered element declares itself disabled", async ({
+    q,
+  }) => {
+    // The pointer and keyboard halves have to agree. Revealing on focus while
+    // withholding on hover is what the truly disabled rule exists to prevent,
+    // in reverse.
+    const anchor = q.button("Publish file");
+    await anchor.focus();
+    await test.expect(anchor).toHaveAttribute("data-focus-visible", "true");
+    await test.expect(q.tooltip("Publishing needs a reviewer")).toBeVisible();
+  });
+
   test("keeps truly disabled anchors out of pointer reach", async ({ q }) => {
     // Focusable applies `pointer-events: none` to truly disabled elements, so no
     // mouse move can reach these anchors and the shield is the behavior here.
-    // The hover decision is covered by the "Duplicate file" test, where it's
-    // lifted.
+    // The hover decision is covered by the two tests below, where it's lifted.
     await test
       .expect(q.button("Rename file"))
       .toHaveCSS("pointer-events", "none");
@@ -88,6 +164,51 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test
       .expect(q.tooltip("Duplicating is unavailable"))
       .not.toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7116
+  test("does not show the tooltip on hover when the truly disabled state is below the anchor", async ({
+    page,
+    q,
+  }) => {
+    const anchor = q.button("Print file");
+    await test.expect(anchor).toHaveCSS("pointer-events", "auto");
+    await anchor.hover();
+    // The tooltip would open from a store update rendered on a later frame, so
+    // cross those frames to give the assertion below a chance to fail.
+    await flushFrames(page);
+    await test.expect(q.tooltip("Printing is unavailable")).not.toBeVisible();
+  });
+
+  test("opens a delayed tooltip on hover", async ({ q }) => {
+    const anchor = q.button("Preview file");
+    // Scroll first so the hover is the last pointer activity. Ariakit resets
+    // its hover intent on `scroll`, and a smooth scroll triggered by hovering
+    // can land after the mouse move and cancel the pending show.
+    await anchor.scrollIntoViewIfNeeded();
+    await anchor.hover();
+    // The provider delays the show by 150ms, which the retrying assertion below
+    // waits out. This is the control for the test below, which uses the same
+    // delay.
+    await test.expect(q.tooltip("Opens a read-only preview")).toBeVisible();
+  });
+
+  test("does not open a delayed tooltip when the anchor turns truly disabled while it is pending", async ({
+    page,
+    q,
+  }) => {
+    const anchor = q.button("Sync file");
+    // Same scroll-before-hover ordering as the control above, so the pending
+    // show this test is about is actually scheduled.
+    await anchor.scrollIntoViewIfNeeded();
+    await anchor.hover();
+    // Hovering revoked the access that kept this anchor explainable, so it is
+    // truly disabled by now and dropped out of the tab order.
+    await test.expect(anchor).not.toHaveAttribute("tabindex");
+    // Same 150ms show timeout as the control above, and nothing observable
+    // tracks it, so cross it before asserting the tooltip stayed closed.
+    await page.waitForTimeout(250);
+    await test.expect(q.tooltip("Syncing needs access")).not.toBeVisible();
   });
 
   test("keeps the disabled semantics on accessible disabled anchors", async ({
@@ -130,6 +251,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Delete file").click({ force: true });
     await q.button("Share file").click({ force: true });
     await q.button("Export file").click({ force: true });
+    await q.button("Archive file").click({ force: true });
+    await q.button("Restore file").click({ force: true });
     // Nothing changes when the clicks are correctly suppressed, so cross the
     // frames a state update would have landed on before asserting the count.
     await flushFrames(page);
