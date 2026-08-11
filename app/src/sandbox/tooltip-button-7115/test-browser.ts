@@ -80,6 +80,36 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .not.toBeVisible();
   });
 
+  test("keeps the disabled semantics on accessible disabled anchors", async ({
+    q,
+  }) => {
+    await test
+      .expect(q.button("Delete file"))
+      .toHaveAttribute("aria-disabled", "true");
+    await test
+      .expect(q.button("Share file"))
+      .toHaveAttribute("aria-disabled", "true");
+  });
+
+  test("does not put an accessible disabled anchor in the pressed state", async ({
+    page,
+    q,
+  }) => {
+    // Activation stays suppressed here, so Space must not make the anchor look
+    // pressed either. Only the button-first order is covered: the anchor-first
+    // one renders a native button, where a trusted Space is a native click and
+    // never reaches the pressed state. The happy-dom duplicate, whose events
+    // are untrusted, covers both orders.
+    const buttonFirst = q.button("Share file");
+    await buttonFirst.focus();
+    // Space goes to the active element, so an anchor that stopped being
+    // focusable would leave the assertion passing against the body.
+    await test.expect(buttonFirst).toBeFocused();
+    await page.keyboard.down("Space");
+    await test.expect(buttonFirst).not.toHaveAttribute("data-active");
+    await page.keyboard.up("Space");
+  });
+
   test("does not activate accessible disabled anchors", async ({ page, q }) => {
     // These anchors still receive pointer events, but Playwright's
     // actionability check treats `aria-disabled` as not enabled, so the click

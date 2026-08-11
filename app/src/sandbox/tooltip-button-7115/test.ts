@@ -1,4 +1,4 @@
-import { click, hover, press, q } from "@ariakit/test";
+import { click, focus, hover, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/7115
@@ -38,6 +38,31 @@ test("does not show the tooltip on hover for a truly disabled anchor that keeps 
   expect(q.button("Duplicate file")).toHaveStyle("pointer-events: auto");
   await hover(q.button("Duplicate file"));
   expect(q.tooltip("Duplicating is unavailable")).not.toBeInTheDocument();
+});
+
+test("keeps the disabled semantics on accessible disabled anchors", async () => {
+  expect(q.button("Delete file")).toHaveAttribute("aria-disabled", "true");
+  expect(q.button("Share file")).toHaveAttribute("aria-disabled", "true");
+});
+
+test("does not put accessible disabled anchors in the pressed state", async () => {
+  // Activation stays suppressed on these anchors, so Space must not make them
+  // look pressed either, in either composition order.
+  const anchorFirst = q.button("Delete file");
+  await focus(anchorFirst);
+  // Space falls back to the active element, so an anchor that stopped being
+  // focusable would leave these assertions passing against the body.
+  expect(anchorFirst).toHaveFocus();
+  await press.down.Space();
+  expect(anchorFirst).not.toHaveAttribute("data-active");
+  await press.up.Space();
+
+  const buttonFirst = q.button("Share file");
+  await focus(buttonFirst);
+  expect(buttonFirst).toHaveFocus();
+  await press.down.Space();
+  expect(buttonFirst).not.toHaveAttribute("data-active");
+  await press.up.Space();
 });
 
 test("does not activate accessible disabled anchors", async () => {

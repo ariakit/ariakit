@@ -27,14 +27,23 @@ export default function Example() {
       </Ariakit.TooltipProvider>
 
       {/* The same scenario with the composition order flipped. The button
-      renders the tooltip anchor, so the anchor's own element wins and this
+      renders the tooltip anchor, so the innermost render element wins and this
       renders a div with role="button". */}
       <Ariakit.TooltipProvider timeout={0}>
         <Ariakit.Button
           disabled
           accessibleWhenDisabled
           onClick={countActivation}
-          render={<Ariakit.TooltipAnchor />}
+          // TODO: Render the TooltipAnchor directly again once this is fixed.
+          // The anchor's hover trigger bails on the `aria-disabled` this Button
+          // resolves, so hiding that one prop from it is what opens the tooltip.
+          // https://github.com/ariakit/ariakit/issues/7115
+          render={({ "aria-disabled": ariaDisabled, ...props }) => (
+            <Ariakit.TooltipAnchor
+              {...props}
+              render={<div aria-disabled={ariaDisabled} />}
+            />
+          )}
         >
           Share file
         </Ariakit.Button>
