@@ -61,7 +61,7 @@ export default function Example() {
       still shows it, because the prop only covers hover. */}
       <Ariakit.TooltipProvider timeout={0}>
         <Ariakit.TooltipAnchor
-          showOnHoverWhenDisabled={false}
+          unstable_showOnHoverWhenDisabled={false}
           render={
             <Ariakit.Button
               disabled
@@ -81,7 +81,7 @@ export default function Example() {
       <Ariakit.TooltipProvider timeout={0}>
         <Ariakit.TooltipAnchor
           data-reason="permission"
-          showOnHoverWhenDisabled={(event) =>
+          unstable_showOnHoverWhenDisabled={(event) =>
             event.currentTarget.dataset.reason !== "permission"
           }
           render={

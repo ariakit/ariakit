@@ -64,7 +64,7 @@ export default function Example() {
       <Ariakit.MenuProvider timeout={0}>
         <Ariakit.MenuButton
           showOnHover
-          showOnHoverWhenDisabled
+          unstable_showOnHoverWhenDisabled
           accessibleWhenDisabled
           disabled
           render={<Ariakit.Button />}
@@ -85,7 +85,7 @@ export default function Example() {
       <Ariakit.MenuProvider timeout={0}>
         <Ariakit.MenuButton
           showOnHover
-          showOnHoverWhenDisabled
+          unstable_showOnHoverWhenDisabled
           disabled
           style={{ pointerEvents: "auto" }}
           render={<Ariakit.Button render={<div />} />}

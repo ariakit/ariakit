@@ -30,7 +30,7 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
   function useHovercardTrigger({
     store,
     showOnHover = true,
-    showOnHoverWhenDisabled = true,
+    unstable_showOnHoverWhenDisabled: showOnHoverWhenDisabled = true,
     setAnchorElement = false,
     ...props
   }) {
@@ -94,8 +94,8 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
         // The trigger can lose its keyboard route while this timeout is
         // pending, and a stationary pointer doesn't reliably fire mouseleave to
         // cancel it, so the rule has to hold again here. Only this element read
-        // can be re-asked: the showOnHoverWhenDisabled callback takes the mouse
-        // event, whose currentTarget React has nulled by now.
+        // can be re-asked: the unstable_showOnHoverWhenDisabled callback takes
+        // the mouse event, whose currentTarget React has nulled by now.
         if (trulyDisabledFromElement(element)) return;
         if (setAnchorElement) {
           store.setAnchorElement(element);
@@ -179,17 +179,17 @@ export interface HovercardTriggerOptions<
   showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
   /**
    * Whether hovering can show the content element while the trigger element is
-   * [`disabled`](https://ariakit.com/reference/focusable#disabled). Set this to
-   * `false` when revealing the content counts as activating the trigger rather
-   * than explaining it. An element that declares `aria-disabled` or `disabled`
-   * on its own, outside Ariakit props, counts as disabled here too.
-   *
-   * **Note**: A disabled trigger that isn't
-   * [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled)
+   * disabled. Set this to `false` when revealing the content counts as
+   * activating the trigger rather than explaining it. An element that declares
+   * `aria-disabled` or `disabled` on its own, outside Ariakit props, counts as
+   * disabled here too. A disabled trigger that isn't `accessibleWhenDisabled`
    * never shows the content on hover, since the content would then be
-   * reachable by pointer users alone. This prop can't turn that back on.
+   * reachable by pointer users alone; this prop can't turn that back on.
    * @default true
+   * @private
    */
-  showOnHoverWhenDisabled?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
+  unstable_showOnHoverWhenDisabled?: BooleanOrCallback<
+    ReactMouseEvent<HTMLElement>
+  >;
   setAnchorElement?: boolean;
 }
