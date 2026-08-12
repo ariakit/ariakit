@@ -125,12 +125,4 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         .toHaveAttribute("data-active-item");
     });
   }
-
-  // https://github.com/ariakit/ariakit/pull/6832
-  test("honors focusOnHover on a closed always-visible list", async ({ q }) => {
-    const item = q.option("Explicit hover second");
-    await item.hover();
-
-    await test.expect(item).toHaveAttribute("data-active-item");
-  });
 });

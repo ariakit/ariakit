@@ -1,7 +1,8 @@
-import { click, focus, press, q, sleep } from "@ariakit/test";
+import { click, focus, hover, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 const labels = ["Fruit", "Fruit without virtual focus"];
+const hoverLabels = ["Hover fruit", "Callback hover fruit"];
 
 for (const label of labels) {
   // https://github.com/ariakit/ariakit/issues/7093
@@ -103,6 +104,79 @@ test("arrow keys keep moving focus between options in a collapsed list", async (
   const review = q.within(list).option("Review");
   expect(review).toHaveAttribute("data-active-item");
   expect(review).toHaveFocus();
+});
+
+for (const label of hoverLabels) {
+  // https://github.com/ariakit/ariakit/issues/7118
+  test(`${label}: hovering an option in a collapsed list changes nothing`, async () => {
+    const select = q.combobox(label);
+    const list = q.listbox(`${label} options`);
+    const grape = q.within(list).option("Grape");
+    const other = q.button(`${label} other control`);
+
+    await click(other);
+    expect(other).toHaveFocus();
+
+    // `hover` settles the DOM before resolving, so the assertions below run
+    // after any activation the mousemove handler committed.
+    await hover(grape);
+
+    expect(select).toHaveAttribute("aria-expanded", "false");
+    expect(grape).not.toHaveAttribute("data-active-item");
+    expect(other).toHaveFocus();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7118
+  // The gate is about the closed list, not about the authored value, so the
+  // same item still takes hover once the select opens.
+  test(`${label}: hovering an option activates it once the list opens`, async () => {
+    const select = q.combobox(label);
+    const list = q.listbox(`${label} options`);
+    const grape = q.within(list).option("Grape");
+
+    await click(select);
+    expect(select).toHaveAttribute("aria-expanded", "true");
+
+    await hover(grape);
+
+    expect(grape).toHaveAttribute("data-active-item");
+  });
+}
+
+// https://github.com/ariakit/ariakit/issues/7118
+// The default predicate is part of the same contract: with no authored
+// focusOnHover, hovering an option in a collapsed list changes nothing.
+test("default hover on a collapsed list changes nothing", async () => {
+  const select = q.combobox("Fruit");
+  const list = q.listbox("Fruit options");
+  const grape = q.within(list).option("Grape");
+
+  // `hover` settles the DOM before resolving, so the assertions below run
+  // after any activation the mousemove handler committed.
+  await hover(grape);
+
+  expect(select).toHaveAttribute("aria-expanded", "false");
+  expect(grape).not.toHaveAttribute("data-active-item");
+  expect(q.status("Fruit focused options")).toHaveTextContent(/^none$/);
+});
+
+// https://github.com/ariakit/ariakit/issues/7118
+// Without ComboboxSelect the default stays false even while the list is open,
+// so hover only activates an item when the consumer opts in.
+test("default hover in an open plain combobox activates nothing", async () => {
+  const combobox = q.combobox("Filter");
+  const list = q.listbox("Filter options");
+  const grape = q.within(list).option("Grape");
+
+  await click(combobox);
+  expect(combobox).toHaveAttribute("aria-expanded", "true");
+
+  // `hover` settles the DOM before resolving, so the assertions below run
+  // after any activation the mousemove handler committed.
+  await hover(grape);
+
+  expect(grape).not.toHaveAttribute("data-active-item");
+  expect(combobox).toHaveFocus();
 });
 
 // https://github.com/ariakit/ariakit/issues/7093

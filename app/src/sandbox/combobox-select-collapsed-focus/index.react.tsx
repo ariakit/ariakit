@@ -141,6 +141,41 @@ function FilterCombobox() {
   );
 }
 
+interface HoverSelectProps {
+  label: string;
+  focusOnHover: Ariakit.ComboboxItemProps["focusOnHover"];
+}
+
+// The pointer side of the same contract. An explicit boolean and a callback
+// are authored here so the collapsed gate is exercised on the authored path,
+// which the default predicate alone never reaches.
+// https://github.com/ariakit/ariakit/issues/7118
+function HoverSelect({ label, focusOnHover }: HoverSelectProps) {
+  return (
+    <div>
+      {/* Safari needs an explicit tabindex to focus the clicked button. */}
+      <button type="button" tabIndex={0}>
+        {label} other control
+      </button>
+      <Ariakit.ComboboxProvider
+        defaultSelectedValue="Apple"
+        virtualFocus={false}
+      >
+        <Ariakit.ComboboxSelect aria-label={label} />
+        <Ariakit.ComboboxList alwaysVisible aria-label={`${label} options`}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem
+              key={value}
+              value={value}
+              focusOnHover={focusOnHover}
+            />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxProvider>
+    </div>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -149,6 +184,8 @@ export default function Example() {
       <CodeSelect />
       <StageSelect />
       <FilterCombobox />
+      <HoverSelect label="Hover fruit" focusOnHover />
+      <HoverSelect label="Callback hover fruit" focusOnHover={() => true} />
     </>
   );
 }
