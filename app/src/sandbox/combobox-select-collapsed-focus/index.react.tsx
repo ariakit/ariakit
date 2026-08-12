@@ -151,23 +151,33 @@ interface HoverSelectProps {
 // which the default predicate alone never reaches.
 // https://github.com/ariakit/ariakit/issues/7118
 function HoverSelect({ label, focusOnHover }: HoverSelectProps) {
+  // TODO: Remove this store hoist and the open-state gate in focusOnHover
+  // below once https://github.com/ariakit/ariakit/issues/7118 is fixed.
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Apple",
+    virtualFocus: false,
+  });
+
   return (
     <div>
       {/* Safari needs an explicit tabindex to focus the clicked button. */}
       <button type="button" tabIndex={0}>
         {label} other control
       </button>
-      <Ariakit.ComboboxProvider
-        defaultSelectedValue="Apple"
-        virtualFocus={false}
-      >
+      <Ariakit.ComboboxProvider store={combobox}>
         <Ariakit.ComboboxSelect aria-label={label} />
         <Ariakit.ComboboxList alwaysVisible aria-label={`${label} options`}>
           {fruits.map((value) => (
             <Ariakit.ComboboxItem
               key={value}
               value={value}
-              focusOnHover={focusOnHover}
+              focusOnHover={(event) => {
+                if (!combobox.getState().open) return false;
+                if (typeof focusOnHover === "function") {
+                  return focusOnHover(event);
+                }
+                return focusOnHover ?? false;
+              }}
             />
           ))}
         </Ariakit.ComboboxList>
