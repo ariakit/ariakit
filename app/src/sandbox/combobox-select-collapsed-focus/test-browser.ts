@@ -203,6 +203,92 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   }
 
   // https://github.com/ariakit/ariakit/issues/7118
+  // The other hover direction: after the list closes by clicking an option,
+  // moving the pointer off that option must not clear the active item or move
+  // focus while the list is collapsed.
+  test("hover end on a collapsed list keeps the active item", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Hover fruit");
+    const list = q.listbox("Hover fruit options");
+    const grape = query(list).option("Grape");
+    const other = q.button("Hover fruit other control");
+
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+    await grape.hover();
+    await test.expect(grape).toHaveAttribute("data-active-item");
+
+    await grape.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "false");
+    await test.expect(grape).toHaveAttribute("data-active-item");
+    // Clicking an option in an always-visible list leaves DOM focus on it
+    // even as the list collapses, so the hover end below starts from the
+    // option.
+    await test.expect(grape).toBeFocused();
+
+    // The click's mouseup resets the mouse-movement tracker, and a hover
+    // teleport fires the boundary events before any mousemove, which would
+    // skip the hover-end handler entirely. Move within the option first the
+    // way a real pointer would, so the tracker is armed when it leaves.
+    await grape.hover({ position: { x: 4, y: 4 } });
+    await other.hover();
+
+    // Retaining the attribute and focus is an absence-of-change assertion,
+    // and the mouseleave clearing would land within a frame, so cross the
+    // frames before asserting that nothing changed.
+    await flushFrames(page);
+    await test.expect(grape).toHaveAttribute("data-active-item");
+    await test.expect(grape).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7118
+  // The closed gate must keep the authored callback from running at all: this
+  // one moves the composite from inside the predicate, so merely invoking it
+  // while collapsed would activate the item and steal focus.
+  test("a side-effectful callback does nothing on a collapsed list", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Move hover fruit");
+    const list = q.listbox("Move hover fruit options");
+    const grape = query(list).option("Grape");
+    const other = q.button("Move hover fruit other control");
+
+    await other.click();
+    await test.expect(other).toBeFocused();
+
+    await grape.hover();
+
+    await test.expect(select).toHaveAttribute("aria-expanded", "false");
+    // Hover activation is committed inside the mousemove handler, so there
+    // is no positive state to wait for. Cross the frames a presentation
+    // would use to reach the item before asserting that none did.
+    await flushFrames(page);
+    await test.expect(grape).not.toHaveAttribute("data-active-item");
+    await test.expect(other).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7118
+  // The gate is about the closed list: the same side-effectful callback keeps
+  // working once the select opens.
+  test("a side-effectful callback activates the option once the list opens", async ({
+    q,
+  }) => {
+    const select = q.combobox("Move hover fruit");
+    const list = q.listbox("Move hover fruit options");
+    const grape = query(list).option("Grape");
+
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+
+    await grape.hover();
+
+    await test.expect(grape).toHaveAttribute("data-active-item");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7118
   // The default predicate is part of the same contract: with no authored
   // focusOnHover, hovering an option in a collapsed list changes nothing.
   test("default hover on a collapsed list changes nothing", async ({

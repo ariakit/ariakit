@@ -151,8 +151,37 @@ interface HoverSelectProps {
 // which the default predicate alone never reaches.
 // https://github.com/ariakit/ariakit/issues/7118
 function HoverSelect({ label, focusOnHover }: HoverSelectProps) {
-  // TODO: Remove this store hoist and the open-state gate in focusOnHover
-  // below once https://github.com/ariakit/ariakit/issues/7118 is fixed.
+  return (
+    <div>
+      {/* Safari needs an explicit tabindex to focus the clicked button. */}
+      <button type="button" tabIndex={0}>
+        {label} other control
+      </button>
+      <Ariakit.ComboboxProvider
+        defaultSelectedValue="Apple"
+        virtualFocus={false}
+      >
+        <Ariakit.ComboboxSelect aria-label={label} />
+        <Ariakit.ComboboxList alwaysVisible aria-label={`${label} options`}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem
+              key={value}
+              value={value}
+              focusOnHover={focusOnHover}
+            />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxProvider>
+    </div>
+  );
+}
+
+// An authored callback with a side effect: the consumer moves the composite
+// from inside the predicate, like the select-grid example does. The closed
+// gate must keep the callback from running at all, or the move would still
+// activate the item and steal focus.
+// https://github.com/ariakit/ariakit/issues/7118
+function MoveHoverSelect() {
   const combobox = Ariakit.useComboboxStore({
     defaultSelectedValue: "Apple",
     virtualFocus: false,
@@ -162,21 +191,22 @@ function HoverSelect({ label, focusOnHover }: HoverSelectProps) {
     <div>
       {/* Safari needs an explicit tabindex to focus the clicked button. */}
       <button type="button" tabIndex={0}>
-        {label} other control
+        Move hover fruit other control
       </button>
       <Ariakit.ComboboxProvider store={combobox}>
-        <Ariakit.ComboboxSelect aria-label={label} />
-        <Ariakit.ComboboxList alwaysVisible aria-label={`${label} options`}>
+        <Ariakit.ComboboxSelect aria-label="Move hover fruit" />
+        <Ariakit.ComboboxList
+          alwaysVisible
+          aria-label="Move hover fruit options"
+        >
           {fruits.map((value) => (
             <Ariakit.ComboboxItem
               key={value}
               value={value}
               focusOnHover={(event) => {
-                if (!combobox.getState().open) return false;
-                if (typeof focusOnHover === "function") {
-                  return focusOnHover(event);
-                }
-                return focusOnHover ?? false;
+                if (event.type === "mouseleave") return false;
+                combobox.move(event.currentTarget.id);
+                return true;
               }}
             />
           ))}
@@ -196,6 +226,7 @@ export default function Example() {
       <FilterCombobox />
       <HoverSelect label="Hover fruit" focusOnHover />
       <HoverSelect label="Callback hover fruit" focusOnHover={() => true} />
+      <MoveHoverSelect />
     </>
   );
 }

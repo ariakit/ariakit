@@ -283,16 +283,19 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       },
     });
 
-    const focusOnHoverProp = useBooleanEvent(focusOnHover ?? false);
+    const focusOnHoverProp = useBooleanEvent(focusOnHover ?? selectMode);
 
     props = useCompositeHover({
       store,
       ...props,
+      // Disable focusOnHover when the popup is closed, even for authored
+      // values, so pointer hover can't activate an item or move focus while
+      // the combobox is collapsed. The open check comes first so authored
+      // callbacks with side effects don't run at all while closed.
+      // https://github.com/ariakit/ariakit/issues/7118
       focusOnHover(event) {
-        if (focusOnHover !== undefined) {
-          return focusOnHoverProp(event);
-        }
-        return selectMode && store.getState().open;
+        if (!store.getState().open) return false;
+        return focusOnHoverProp(event);
       },
     });
 
@@ -430,6 +433,9 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
   /**
    * Defaults to `false`, or `true` when the item is used with a
    * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select).
+   *
+   * Regardless of the value, hovering an item never activates it or moves
+   * focus while the combobox is closed.
    */
   focusOnHover?: CompositeHoverOptions["focusOnHover"];
 }
