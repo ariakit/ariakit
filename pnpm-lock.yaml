@@ -87,8 +87,8 @@ importers:
         specifier: 13.0.6
         version: 13.0.6
       happy-dom:
-        specifier: 20.11.1
-        version: 20.11.1
+        specifier: 20.11.2
+        version: 20.11.2
       husky:
         specifier: 9.1.7
         version: 9.1.7
@@ -148,7 +148,7 @@ importers:
         version: 2.11.14(@testing-library/jest-dom@7.0.0(@testing-library/dom@10.4.1))(solid-js@1.9.14)(supports-color@10.2.2)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
       vitest:
         specifier: 4.1.10
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
       vitest-fail-on-console:
         specifier: 0.10.1
         version: 0.10.1(@vitest/utils@4.1.10)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(vitest@4.1.10)
@@ -193,7 +193,7 @@ importers:
         version: 0.9.10(@typescript/typescript6@6.0.2)(prettier@3.9.6)
       '@astrojs/cloudflare':
         specifier: 14.2.0
-        version: 14.2.0(@types/node@24.13.3)(astro@7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(workerd@1.20260801.1)(wrangler@4.119.0)(yaml@2.9.0)
+        version: 14.2.0(@types/node@24.13.3)(astro@7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(workerd@1.20260801.1)(wrangler@4.120.0)(yaml@2.9.0)
       '@astrojs/markdown-remark':
         specifier: 7.2.2
         version: 7.2.2(supports-color@10.2.2)
@@ -207,8 +207,8 @@ importers:
         specifier: 7.0.2
         version: 7.0.2(@testing-library/jest-dom@7.0.0(@testing-library/dom@10.4.1))(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(solid-js@1.9.14)(supports-color@10.2.2)(terser@5.46.0)(yaml@2.9.0)
       '@clerk/astro':
-        specifier: 4.0.7
-        version: 4.0.7(astro@7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: 4.0.8
+        version: 4.0.8(astro@7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@fontsource-variable/inter':
         specifier: 5.3.0
         version: 5.3.0
@@ -276,8 +276,8 @@ importers:
         specifier: 4.18.1
         version: 4.18.1
       lucide-react:
-        specifier: 1.29.0
-        version: 1.29.0(react@19.2.8)
+        specifier: 1.30.0
+        version: 1.30.0(react@19.2.8)
       match-sorter:
         specifier: 8.3.0
         version: 8.3.0
@@ -407,10 +407,10 @@ importers:
         version: 8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)
       vitest:
         specifier: 4.1.10
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
       wrangler:
-        specifier: 4.119.0
-        version: 4.119.0
+        specifier: 4.120.0
+        version: 4.120.0
 
   examples:
     dependencies:
@@ -500,7 +500,7 @@ importers:
     devDependencies:
       '@opennextjs/cloudflare':
         specifier: 1.20.2
-        version: 1.20.2(encoding@0.1.13)(next@16.2.12(@babel/core@7.29.0(supports-color@10.2.2))(@playwright/test@1.62.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.2.2)(wrangler@4.119.0)
+        version: 1.20.2(encoding@0.1.13)(next@16.2.12(@babel/core@7.29.0(supports-color@10.2.2))(@playwright/test@1.62.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.2.2)(wrangler@4.120.0)
       '@tailwindcss/postcss':
         specifier: 4.3.3
         version: 4.3.3
@@ -526,8 +526,8 @@ importers:
         specifier: npm:typescript@7.0.2
         version: typescript@7.0.2
       wrangler:
-        specifier: 4.119.0
-        version: 4.119.0
+        specifier: 4.120.0
+        version: 4.120.0
 
   packages/ariakit-components:
     dependencies:
@@ -543,7 +543,7 @@ importers:
         version: link:../ariakit-scripts
       vitest:
         specifier: 4.1.10
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
 
   packages/ariakit-react:
     dependencies:
@@ -590,7 +590,7 @@ importers:
         version: 19.2.8(react@19.2.8)
       vitest:
         specifier: 4.1.10
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
 
   packages/ariakit-react-store:
     dependencies:
@@ -634,7 +634,7 @@ importers:
         version: 19.2.8
       vitest:
         specifier: 4.1.10
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
 
   packages/ariakit-scripts:
     dependencies:
@@ -671,7 +671,7 @@ importers:
         version: 19.2.8
       vitest:
         specifier: 4.1.10
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
 
   packages/ariakit-solid:
     dependencies:
@@ -732,7 +732,7 @@ importers:
         version: 1.9.14
       vitest:
         specifier: 4.1.10
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
 
   packages/ariakit-store:
     dependencies:
@@ -745,7 +745,7 @@ importers:
         version: link:../ariakit-scripts
       vitest:
         specifier: 4.1.10
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
 
   packages/ariakit-tailwind:
     devDependencies:
@@ -782,7 +782,7 @@ importers:
         version: 19.2.8(react@19.2.8)
       vitest:
         specifier: 4.1.10
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
 
   packages/ariakit-ui:
     dependencies:
@@ -822,7 +822,7 @@ importers:
         version: link:../ariakit-scripts
       vitest:
         specifier: 4.1.10
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
 
   templates/react:
     dependencies:
@@ -1163,7 +1163,7 @@ importers:
         version: 3.0.4
       vitest:
         specifier: 4.1.10
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0))
 
 packages:
 
@@ -2324,8 +2324,8 @@ packages:
     resolution: {integrity: sha512-S0My7XPGIgpRWMDG8uRqalbgT+a6FmCUdOW+HaIOVVpUPHOb7RrpvjTjiODadKp06fsrVDJZlIzc6yCTp4AnxA==}
     engines: {node: '>= 20.12.0'}
 
-  '@clerk/astro@4.0.7':
-    resolution: {integrity: sha512-RumZFMf83IpqezgMlMccSVthWOzWQwwn2xto3AGK7cizmGZmda5AEyzxnSHbyaX6vlw45FFKBLmAaVehEQhdwg==}
+  '@clerk/astro@4.0.8':
+    resolution: {integrity: sha512-Lb8DBR/sghqM5s+NRA9cwn/EQNDmrkaovAIlen2BLB7FkKjerM/XBYKcodn8AIXRW+5V4qWPPJPhG9DsEEMl0Q==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       astro: ^5.0.0 || ^6.0.0 || ^7.0.0
@@ -2334,8 +2334,8 @@ packages:
     resolution: {integrity: sha512-zmd0jPyb1iALlmyzyRbgujQXrGqw8sf+VpFjm5GkndpBeq5+9+oH7QgMaFEmWi9oxvTd2sZ+EN+QT4+OXPUnGA==}
     engines: {node: '>=14'}
 
-  '@clerk/backend@3.16.0':
-    resolution: {integrity: sha512-x+FO1BGGKeT/0q8XFtmkEpIszvxRTdADyPnWN/NlP0Lh/lQqG74ynWNE617AuUIF7bA4ZBYDDI3Xe280PCBkuA==}
+  '@clerk/backend@3.16.1':
+    resolution: {integrity: sha512-tbsrGqw45ar7PDnEV3gwkHE/HM1EwRcYPPLyL3Hw9H0Ms5fG7hZ8+EJegPJ4DpKdfvOw5M+hYMeCVKwv3NxahA==}
     engines: {node: '>=20.9.0'}
 
   '@clerk/clerk-react@4.32.5':
@@ -2365,8 +2365,8 @@ packages:
       react:
         optional: true
 
-  '@clerk/shared@4.27.0':
-    resolution: {integrity: sha512-pl/LUHInewGBDhomewBD9fnqYRniC9MaWjr1new3cliXmwq8tpq+QA8Ejn2USKYMQ0UENKAqf8HiJPthBm6hmA==}
+  '@clerk/shared@4.27.1':
+    resolution: {integrity: sha512-eAin1Iy42P3vkytTebD99BhxDm6Yh72Kf8xnpM401Yz/hPUe/Ut4jFqU64xzlhf/RTCPfoTkOHaNDWdMACwXjQ==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
@@ -7122,8 +7122,8 @@ packages:
   h3@1.15.11:
     resolution: {integrity: sha512-L3THSe2MPeBwgIZVSH5zLdBBU90TOxarvhK9d04IDY2AmVS8j2Jz2LIWtwsGOU3lu2I5jCN7FNvVfY2+XyF+mg==}
 
-  happy-dom@20.11.1:
-    resolution: {integrity: sha512-XSt8tMzbW9ymE7687xztkO1ckR7qJNQ3LywY9vlYGhGi3zXrGBHuUo2Cl1ztZaICW+1eAGdkLbj6iwVqDT33kg==}
+  happy-dom@20.11.2:
+    resolution: {integrity: sha512-7MB+bJLkxu3SowAfBJbjW+c55kNz5tkR45gu2qzrxznezhLeN5YIlJbwUgSzlGc+qWoZ8Ykg71H5ezz69xixrw==}
     engines: {node: '>=20.0.0'}
 
   has-ansi@2.0.0:
@@ -7791,8 +7791,8 @@ packages:
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  lucide-react@1.29.0:
-    resolution: {integrity: sha512-Xs9QFG5+9sNX04MdKVT4++umA+hJ2qsJVlRlRWHQ7qZobXgMiNHSpZ5eZm8JUoGCdNyoEdXoEwa8HVr0DNjOQg==}
+  lucide-react@1.30.0:
+    resolution: {integrity: sha512-tUIr2jXLbWpCkdtH8XP7P7YppM9ueWgTky99lpWDY6z5REs6B+O6ZQ3U5tHkUUY59ANyOv/PBcs8E4Fe3KO3eA==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -8201,8 +8201,8 @@ packages:
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  miniflare@5.20260801.0-alpha:
-    resolution: {integrity: sha512-AfMrnQbJg81ESsGkGhOkHBtwTqCG+mosR+3GE+qDrhF1I/ieIvgg3ICxNyBvgHBZ3iapy6cysBQHNPykkzrfgw==}
+  miniflare@5.20260801.1-alpha:
+    resolution: {integrity: sha512-BHPVzIDA6mbx7LefxpvkXW7DHx9FKB9GorZatbnrrFTt3CVMU8zuUpbgyCuebwDKcTTOZos43ta8GQ0eMVEpxA==}
     engines: {node: '>=22.0.0'}
 
   minimatch@10.2.4:
@@ -10027,8 +10027,8 @@ packages:
     resolution: {integrity: sha512-6KQ/+QxK49Z/p3HO6E5ZCZWNnCasyZLa5ExaVYyvPxUwKtbCPMKELJOqh7EqOle0t9cH/7d2TaaTRRa6Nhs4YQ==}
     engines: {node: '>=20.18.1'}
 
-  undici@7.28.0:
-    resolution: {integrity: sha512-cRZYrTDwWznlnRiPjggAGxZXanty6M8RV1ff8Wm4LWXBp7/IG8v5DnOm74DtUBp9OONpK75YlPnIjQqX0dBDtA==}
+  undici@7.29.0:
+    resolution: {integrity: sha512-IDxfleLmmbSskfWSUATiN1nfn2rDuvnMOqb5CWR92iIfojA0Ud+ulOAAEQ57LPr9rWmsreUyf5lwyao+7GNNVw==}
     engines: {node: '>=20.18.1'}
 
   unenv@2.0.0-rc.24:
@@ -10581,8 +10581,8 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  wrangler@4.119.0:
-    resolution: {integrity: sha512-ookClf+zly4DTc8pBMNrwGQzZKH8IpIYTXkjDw3XS7ZvBQ5mLYH6eOvfD5BEpk3U63zTbv91WRlo1UeRSKXa0g==}
+  wrangler@4.120.0:
+    resolution: {integrity: sha512-cBmu/MeaB/fPacC0JpATs4duTOCagBxrZo+vBzuTX06tLzwSyAHE1drlHUZ8rP0VqVz1fy3ReGYTiHdKkoHltg==}
     engines: {node: '>=22.0.0'}
     hasBin: true
     peerDependencies:
@@ -10792,15 +10792,15 @@ snapshots:
       - prettier
       - prettier-plugin-astro
 
-  '@astrojs/cloudflare@14.2.0(@types/node@24.13.3)(astro@7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(workerd@1.20260801.1)(wrangler@4.119.0)(yaml@2.9.0)':
+  '@astrojs/cloudflare@14.2.0(@types/node@24.13.3)(astro@7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(workerd@1.20260801.1)(wrangler@4.120.0)(yaml@2.9.0)':
     dependencies:
       '@astrojs/internal-helpers': 0.10.2
       '@astrojs/underscore-redirects': 1.0.3
-      '@cloudflare/vite-plugin': 1.39.0(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(workerd@1.20260801.1)(wrangler@4.119.0)
+      '@cloudflare/vite-plugin': 1.39.0(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(workerd@1.20260801.1)(wrangler@4.120.0)
       astro: 7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)
       piccolore: 0.1.3
       vite: 8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)
-      wrangler: 4.119.0
+      wrangler: 4.120.0
     transitivePeerDependencies:
       - '@types/node'
       - '@vitejs/devtools'
@@ -12734,10 +12734,10 @@ snapshots:
       fast-wrap-ansi: 0.2.0
       sisteransi: 1.0.5
 
-  '@clerk/astro@4.0.7(astro@7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@clerk/astro@4.0.8(astro@7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
-      '@clerk/backend': 3.16.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@clerk/shared': 4.27.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@clerk/backend': 3.16.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@clerk/shared': 4.27.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       astro: 7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)
       nanoid: 5.1.6
       nanostores: 1.0.1
@@ -12759,9 +12759,9 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  '@clerk/backend@3.16.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@clerk/backend@3.16.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
-      '@clerk/shared': 4.27.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@clerk/shared': 4.27.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       standardwebhooks: 1.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -12809,7 +12809,7 @@ snapshots:
     optionalDependencies:
       react: 18.3.1
 
-  '@clerk/shared@4.27.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@clerk/shared@4.27.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@tanstack/query-core': 5.101.4
       dequal: 2.0.3
@@ -12831,13 +12831,13 @@ snapshots:
     optionalDependencies:
       workerd: 1.20260801.1
 
-  '@cloudflare/vite-plugin@1.39.0(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(workerd@1.20260801.1)(wrangler@4.119.0)':
+  '@cloudflare/vite-plugin@1.39.0(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(workerd@1.20260801.1)(wrangler@4.120.0)':
     dependencies:
       '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260801.1)
       miniflare: 4.20260526.0
       unenv: 2.0.0-rc.24
       vite: 8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)
-      wrangler: 4.119.0
+      wrangler: 4.120.0
       ws: 8.20.1
     transitivePeerDependencies:
       - bufferutil
@@ -13779,7 +13779,7 @@ snapshots:
       - aws-crt
       - supports-color
 
-  '@opennextjs/cloudflare@1.20.2(encoding@0.1.13)(next@16.2.12(@babel/core@7.29.0(supports-color@10.2.2))(@playwright/test@1.62.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.2.2)(wrangler@4.119.0)':
+  '@opennextjs/cloudflare@1.20.2(encoding@0.1.13)(next@16.2.12(@babel/core@7.29.0(supports-color@10.2.2))(@playwright/test@1.62.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.2.2)(wrangler@4.120.0)':
     dependencies:
       '@ast-grep/napi': 0.40.5
       '@dotenvx/dotenvx': 1.31.0
@@ -13791,7 +13791,7 @@ snapshots:
       glob: 12.0.0
       next: 16.2.12(@babel/core@7.29.0(supports-color@10.2.2))(@playwright/test@1.62.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       ts-tqdm: 0.8.6
-      wrangler: 4.119.0
+      wrangler: 4.120.0
       yargs: 18.0.0
     transitivePeerDependencies:
       - aws-crt
@@ -15318,7 +15318,7 @@ snapshots:
       obug: 2.1.4
       std-env: 4.0.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+      vitest: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
 
   '@vitest/expect@4.1.10':
     dependencies:
@@ -17314,7 +17314,7 @@ snapshots:
       ufo: 1.6.3
       uncrypto: 0.1.3
 
-  happy-dom@20.11.1:
+  happy-dom@20.11.2:
     dependencies:
       '@types/node': 24.13.3
       '@types/whatwg-mimetype': 3.0.2
@@ -17780,7 +17780,7 @@ snapshots:
       saxes: 6.0.0
       symbol-tree: 3.2.4
       tough-cookie: 6.0.1
-      undici: 7.28.0
+      undici: 7.29.0
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-mimetype: 5.0.0
@@ -17982,7 +17982,7 @@ snapshots:
     dependencies:
       react: 19.2.8
 
-  lucide-react@1.29.0(react@19.2.8):
+  lucide-react@1.30.0(react@19.2.8):
     dependencies:
       react: 19.2.8
 
@@ -18821,11 +18821,11 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  miniflare@5.20260801.0-alpha:
+  miniflare@5.20260801.1-alpha:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.35.2
-      undici: 7.28.0
+      undici: 7.29.0
       workerd: 1.20260801.1
       ws: 8.21.0
       youch: 4.1.0-beta.10
@@ -20860,7 +20860,7 @@ snapshots:
 
   undici@7.24.8: {}
 
-  undici@7.28.0: {}
+  undici@7.29.0: {}
 
   unenv@2.0.0-rc.24:
     dependencies:
@@ -21199,9 +21199,9 @@ snapshots:
       '@vitest/utils': 4.1.10
       chalk: 5.6.2
       vite: 8.2.1(@types/node@24.13.3)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)
-      vitest: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+      vitest: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
 
-  vitest@4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)):
+  vitest@4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.10
       '@vitest/mocker': 4.1.10(vite@8.2.1(@types/node@24.13.3)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
@@ -21226,12 +21226,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.13.3
       '@vitest/coverage-v8': 4.1.10(vitest@4.1.10)
-      happy-dom: 20.11.1
+      happy-dom: 20.11.2
       jsdom: 29.1.1(@noble/hashes@1.8.0)
     transitivePeerDependencies:
       - msw
 
-  vitest@4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0)):
+  vitest@4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.10
       '@vitest/mocker': 4.1.10(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0))
@@ -21256,12 +21256,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.13.3
       '@vitest/coverage-v8': 4.1.10(vitest@4.1.10)
-      happy-dom: 20.11.1
+      happy-dom: 20.11.2
       jsdom: 29.1.1(@noble/hashes@1.8.0)
     transitivePeerDependencies:
       - msw
 
-  vitest@4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)):
+  vitest@4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.2)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.10
       '@vitest/mocker': 4.1.10(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
@@ -21286,7 +21286,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.13.3
       '@vitest/coverage-v8': 4.1.10(vitest@4.1.10)
-      happy-dom: 20.11.1
+      happy-dom: 20.11.2
       jsdom: 29.1.1(@noble/hashes@1.8.0)
     transitivePeerDependencies:
       - msw
@@ -21503,13 +21503,13 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20260801.1
       '@cloudflare/workerd-windows-64': 1.20260801.1
 
-  wrangler@4.119.0:
+  wrangler@4.120.0:
     dependencies:
       '@cloudflare/kv-asset-handler': 0.5.0
       '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260801.1)
       blake3-wasm: 2.1.5
       esbuild: 0.28.1
-      miniflare: 5.20260801.0-alpha
+      miniflare: 5.20260801.1-alpha
       path-to-regexp: 6.3.0
       unenv: 2.0.0-rc.24
       workerd: 1.20260801.1
