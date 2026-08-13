@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 type ShowLegacyPublicCase = (caseName: string) => Promise<void>;
 
@@ -91,5 +91,52 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(select).toContainText("Triangle");
     await page.keyboard.press("ArrowDown");
     await test.expect(select).toContainText("Square");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7120
+  // The authored focusOnHover callback moves the composite from inside the
+  // predicate. While the select is collapsed, the callback must not run at
+  // all, or the move would still activate the item, commit its value, and
+  // steal focus from the unrelated control.
+  test("a side-effectful focusOnHover callback does nothing on a collapsed list", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Show public-select-collapsed-hover").click();
+    const select = q.combobox("Collapsed hover fruit");
+    const grape = q.option("Grape");
+    const other = q.button("Collapsed hover other control");
+
+    await other.click();
+    await test.expect(other).toBeFocused();
+
+    await grape.hover();
+
+    await test.expect(select).toHaveAttribute("aria-expanded", "false");
+    // Hover activation is committed inside the mousemove handler, so there
+    // is no positive state to wait for. Cross the frames a presentation
+    // would use to reach the item before asserting that none did.
+    await flushFrames(page);
+    await test.expect(grape).not.toHaveAttribute("data-active-item");
+    await test.expect(select).toContainText("Apple");
+    await test.expect(other).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7120
+  // The gate is about the closed list: the same side-effectful callback
+  // keeps working once the select opens.
+  test("the same callback activates the option once the select opens", async ({
+    q,
+  }) => {
+    await q.button("Show public-select-collapsed-hover").click();
+    const select = q.combobox("Collapsed hover fruit");
+    const grape = q.option("Grape");
+
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+
+    await grape.hover();
+
+    await test.expect(grape).toHaveAttribute("data-active-item");
   });
 });

@@ -80,6 +80,50 @@ describe("public-select-item-custom", () => {
   });
 });
 
+describe("public-select-collapsed-hover", () => {
+  beforeEach(async () => {
+    await click(q.button("Show public-select-collapsed-hover"));
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7120
+  // The authored focusOnHover callback moves the composite from inside the
+  // predicate. While the select is collapsed, the callback must not run at
+  // all, or the move would still activate the item, commit its value, and
+  // steal focus from the unrelated control.
+  test("a side-effectful focusOnHover callback does nothing on a collapsed list", async () => {
+    const select = q.combobox("Collapsed hover fruit");
+    const grape = q.option("Grape");
+    const other = q.button("Collapsed hover other control");
+
+    await click(other);
+    expect(other).toHaveFocus();
+
+    // `hover` settles the DOM before resolving, so the assertions below run
+    // after any activation the mousemove handler committed.
+    await hover(grape);
+
+    expect(select).toHaveAttribute("aria-expanded", "false");
+    expect(grape).not.toHaveAttribute("data-active-item");
+    expect(select).toHaveTextContent("Apple");
+    expect(other).toHaveFocus();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7120
+  // The gate is about the closed list: the same side-effectful callback
+  // keeps working once the select opens.
+  test("the same callback activates the option once the select opens", async () => {
+    const select = q.combobox("Collapsed hover fruit");
+    const grape = q.option("Grape");
+
+    await click(select);
+    expect(select).toHaveAttribute("aria-expanded", "true");
+
+    await hover(grape);
+
+    expect(grape).toHaveAttribute("data-active-item");
+  });
+});
+
 describe("public-select-listbox", () => {
   beforeEach(async () => {
     await click(q.button("Show public-select-listbox"));
