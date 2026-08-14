@@ -1,0 +1,10 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 595405f16c11621c1d96db816b47bce10816bef3..f59bff8977c21847a658b7ba6b8af87fd070bfc7 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -123 +123,4 @@ async function getChangelogEntry(cwd, release, releases, changesets, changelogFu
+-	const resolvedChangelogLines = {
++	if (typeof changelogFuncs.getChangelogEntry === "function") {
++		return changelogFuncs.getChangelogEntry(release, changelogLines);
++	}
++	const resolvedChangelogLines = {

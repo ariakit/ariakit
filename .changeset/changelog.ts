@@ -8,15 +8,14 @@ import type {
  * Besides the standard Changesets `getReleaseLine` and
  * `getDependencyReleaseLine` functions, this module exports a non-standard
  * `getChangelogEntry` hook. It only works because
- * patches/@changesets__apply-release-plan@7.1.1.patch makes upstream's
+ * patches/@changesets__apply-release-plan@8.0.0.patch makes upstream's
  * getChangelogEntry delegate to it instead of rendering the default
  * "### Major/Minor/Patch Changes" sections.
  *
- * When bumping @changesets/apply-release-plan, regenerate the patch with
+ * When bumping `@changesets/apply-release-plan`, regenerate the patch with
  * `pnpm patch @changesets/apply-release-plan`, re-insert the hook before the
- * final return of getChangelogEntry in
- * dist/changesets-apply-release-plan.cjs.js, run `pnpm patch-commit <dir>`,
- * and verify with
+ * final return of getChangelogEntry in `dist/index.mjs`, run
+ * `pnpm patch-commit <dir>`, and verify with
  * `pnpm test .changeset/get-changelog-entry.test.ts`.
  */
 
