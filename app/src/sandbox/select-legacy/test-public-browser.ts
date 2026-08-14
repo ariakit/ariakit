@@ -145,7 +145,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // activation must still stop, or the hovered item would become active in
   // the just-collapsed list.
   test("built-in activation stops when the callback closes the select", async ({
-    page,
     q,
   }) => {
     await q.button("Show public-select-hide-on-hover").click();
@@ -158,11 +157,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await grape.hover();
 
     await test.expect(select).toHaveAttribute("aria-expanded", "false");
-    // The stray activation would be committed inside the same mousemove
-    // handler that closed the select, so there is no positive state to wait
-    // for. Cross the frames a presentation would use before asserting that
-    // none did.
-    await flushFrames(page);
+    // The buggy shape would commit the stray activation in the same mousemove
+    // handler that closes the select, so the awaited collapse above is the
+    // settle point for the assertions below.
     await test.expect(grape).not.toHaveAttribute("data-active-item");
     await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
   });
