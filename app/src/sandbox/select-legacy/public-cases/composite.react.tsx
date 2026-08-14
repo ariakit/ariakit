@@ -217,9 +217,6 @@ export function LegacyPublicSelectCollapsedHoverCase() {
               key={value}
               value={value}
               focusOnHover={(event) => {
-                // TODO: Remove this open check once
-                // https://github.com/ariakit/ariakit/issues/7120 is fixed.
-                if (!select.getState().open) return false;
                 if (event.type === "mouseleave") return false;
                 select.move(event.currentTarget.id);
                 return true;
