@@ -216,6 +216,46 @@ function MoveHoverSelect() {
   );
 }
 
+// An authored callback that closes the list from inside the predicate and
+// still returns true. The gate must re-read the live open state after the
+// callback, or the stale pre-check result would activate the item and steal
+// focus right as the list collapses.
+// https://github.com/ariakit/ariakit/issues/7118
+function HideHoverSelect() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Apple",
+    virtualFocus: false,
+  });
+
+  return (
+    <div>
+      {/* Safari needs an explicit tabindex to focus the clicked button. */}
+      <button type="button" tabIndex={0} onClick={() => combobox.show()}>
+        Open hide hover fruit list
+      </button>
+      <Ariakit.ComboboxProvider store={combobox}>
+        <Ariakit.ComboboxSelect aria-label="Hide hover fruit" />
+        <Ariakit.ComboboxList
+          alwaysVisible
+          aria-label="Hide hover fruit options"
+        >
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem
+              key={value}
+              value={value}
+              focusOnHover={(event) => {
+                if (event.type === "mouseleave") return false;
+                combobox.hide();
+                return true;
+              }}
+            />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxProvider>
+    </div>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -227,6 +267,7 @@ export default function Example() {
       <HoverSelect label="Hover fruit" focusOnHover />
       <HoverSelect label="Callback hover fruit" focusOnHover={() => true} />
       <MoveHoverSelect />
+      <HideHoverSelect />
     </>
   );
 }

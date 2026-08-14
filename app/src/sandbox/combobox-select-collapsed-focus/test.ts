@@ -212,6 +212,30 @@ test("a side-effectful callback activates the option once the list opens", async
 });
 
 // https://github.com/ariakit/ariakit/issues/7118
+// The open state must be re-read after the authored callback runs: this one
+// closes the list from inside the predicate and still returns true, so a
+// stale pre-check result would activate the item and steal focus right as
+// the list collapses.
+test("a callback that closes the list on hover activates nothing", async () => {
+  const select = q.combobox("Hide hover fruit");
+  const list = q.listbox("Hide hover fruit options");
+  const banana = q.within(list).option("Banana");
+  const other = q.button("Open hide hover fruit list");
+
+  await click(other);
+  expect(other).toHaveFocus();
+  expect(select).toHaveAttribute("aria-expanded", "true");
+
+  // `hover` settles the DOM before resolving, so the assertions below run
+  // after any activation the mousemove handler committed.
+  await hover(banana);
+
+  expect(select).toHaveAttribute("aria-expanded", "false");
+  expect(banana).not.toHaveAttribute("data-active-item");
+  expect(other).toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/issues/7118
 // The default predicate is part of the same contract: with no authored
 // focusOnHover, hovering an option in a collapsed list changes nothing.
 test("default hover on a collapsed list changes nothing", async () => {

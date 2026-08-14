@@ -291,11 +291,13 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       // Disable focusOnHover when the popup is closed, even for authored
       // values, so pointer hover can't activate an item or move focus while
       // the combobox is collapsed. The open check comes first so authored
-      // callbacks with side effects don't run at all while closed.
+      // callbacks with side effects don't run at all while closed, and it's
+      // re-read afterwards because the callback itself may close the list.
       // https://github.com/ariakit/ariakit/issues/7118
       focusOnHover(event) {
         if (!store.getState().open) return false;
-        return focusOnHoverProp(event);
+        if (!focusOnHoverProp(event)) return false;
+        return store.getState().open;
       },
     });
 
