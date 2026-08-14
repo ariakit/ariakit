@@ -49,9 +49,9 @@
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
     "@ariakit/test": "workspace:*",
-    "@changesets/apply-release-plan": "7.1.1",
-    "@changesets/cli": "2.31.1",
-    "@changesets/types": "6.1.0",
+    "@changesets/apply-release-plan": "8.0.0",
+    "@changesets/cli": "3.0.0",
+    "@changesets/types": "7.0.0",
     "@testing-library/jest-dom": "7.0.1",
     "@types/cross-spawn": "6.0.6",
     "@types/fs-extra": "11.0.4",
