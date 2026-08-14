@@ -19,9 +19,11 @@ import {
 import {
   LegacyPublicSelectAnimatedCase,
   LegacyPublicSelectAnimatedStoreCase,
+  LegacyPublicSelectCollapsedHoverCase,
   LegacyPublicSelectGridCase,
   LegacyPublicSelectGridStoreCase,
   LegacyPublicSelectGroupCase,
+  LegacyPublicSelectHideOnHoverCase,
   LegacyPublicSelectItemCustomCase,
   LegacyPublicSelectListboxCase,
 } from "./composite.react.tsx";
@@ -51,6 +53,8 @@ export const legacyPublicSelectCases = {
   "public-select-group": LegacyPublicSelectGroupCase,
   "public-select-item-custom": LegacyPublicSelectItemCustomCase,
   "public-select-listbox": LegacyPublicSelectListboxCase,
+  "public-select-collapsed-hover": LegacyPublicSelectCollapsedHoverCase,
+  "public-select-hide-on-hover": LegacyPublicSelectHideOnHoverCase,
   "public-select-combobox": LegacyPublicSelectComboboxCase,
   "public-select-combobox-store": LegacyPublicSelectComboboxStoreCase,
   "public-select-combobox-virtualized":

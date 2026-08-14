@@ -79,6 +79,12 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     focusable,
     accessibleWhenDisabled,
     showOnHover,
+    // Opening a menu is an activation rather than an explanation, so by
+    // default a disabled menu button doesn't do it on hover even when it stays
+    // accessible. Resolved here rather than before the spread below, so an own
+    // undefined value passed to this public hook still gets the false default
+    // instead of reaching the trigger's true default.
+    unstable_showOnHoverWhenDisabled: showOnHoverWhenDisabled = false,
     ...props
   }) {
     const context = useMenuProviderContext();
@@ -242,6 +248,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       focusable,
       accessibleWhenDisabled,
       ...props,
+      unstable_showOnHoverWhenDisabled: showOnHoverWhenDisabled,
       showOnHover: (event) => {
         const getShowOnHover = () => {
           if (typeof showOnHover === "function") return showOnHover(event);
@@ -321,6 +328,20 @@ export interface MenuButtonOptions<T extends ElementType = TagName>
    * context will be used.
    */
   store?: MenuStore;
+  /**
+   * Whether hovering can open the menu while the menu button is disabled.
+   * Opening a menu is an activation rather than an explanation, so this
+   * defaults to `false` here instead of `true`. An element that declares
+   * `aria-disabled` or `disabled` on its own, outside Ariakit props, counts as
+   * disabled here too, the way the menu button already treats it for focus and
+   * key presses. A disabled menu button that isn't `accessibleWhenDisabled`
+   * never opens the menu on hover, and this prop can't turn that back on. Even
+   * when it is, opting in leaves the menu reachable by pointer users alone,
+   * because a disabled menu button never opens its menu from the keyboard.
+   * @default false
+   * @private
+   */
+  unstable_showOnHoverWhenDisabled?: HovercardAnchorOptions<T>["unstable_showOnHoverWhenDisabled"];
   /**
    * Determines whether pressing a character key while focusing on the
    * [`MenuButton`](https://ariakit.com/reference/menu-button) should move focus

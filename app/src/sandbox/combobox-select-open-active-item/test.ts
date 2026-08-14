@@ -1,4 +1,4 @@
-import { click, focus, hover, press, q } from "@ariakit/test";
+import { click, focus, press, q } from "@ariakit/test";
 import { describe, expect, test } from "vitest";
 
 function activeText(label: string) {
@@ -95,11 +95,3 @@ for (const label of ["No-autofocus status", "Real-focus status"]) {
     );
   });
 }
-
-// https://github.com/ariakit/ariakit/pull/6832
-test("honors focusOnHover on a closed always-visible list", async () => {
-  const item = q.option.ensure("Explicit hover second");
-  await hover(item);
-
-  expect(item).toHaveAttribute("data-active-item");
-});
