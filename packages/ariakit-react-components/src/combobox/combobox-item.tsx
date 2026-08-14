@@ -436,8 +436,10 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    * Defaults to `false`, or `true` when the item is used with a
    * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select).
    *
-   * Regardless of the value, hovering an item never activates it or moves
-   * focus while the combobox is closed.
+   * Regardless of the value, hover has no effect while the combobox is
+   * closed: hovering an item never activates it or moves focus, and moving
+   * the pointer off an item never clears the active item or moves focus back
+   * to the combobox.
    */
   focusOnHover?: CompositeHoverOptions["focusOnHover"];
 }
