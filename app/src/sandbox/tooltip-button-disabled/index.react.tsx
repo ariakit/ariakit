@@ -5,6 +5,7 @@ export default function Example() {
   const [activations, setActivations] = useState(0);
   const countActivation = () => setActivations((count) => count + 1);
   const [accessRevoked, setAccessRevoked] = useState(false);
+  const [uploadLocked, setUploadLocked] = useState(false);
 
   return (
     <div style={{ display: "grid", gap: 48, justifyItems: "start" }}>
@@ -191,6 +192,59 @@ export default function Example() {
           Preview file
         </Ariakit.TooltipAnchor>
         <Ariakit.Tooltip>Opens a read-only preview</Ariakit.Tooltip>
+      </Ariakit.TooltipProvider>
+
+      {/* The rendered button declares itself disabled with `focusable={false}`,
+      which makes the disabled props inoperative on that layer: the button keeps
+      no disabled semantics, and the anchor above keeps it keyboard reachable
+      and reveals the tooltip on focus. Hover has to keep revealing it too, or
+      the tooltip becomes keyboard-only, inverting the truly disabled rule. */}
+      <Ariakit.TooltipProvider timeout={0}>
+        <Ariakit.TooltipAnchor
+          render={<Ariakit.Button disabled focusable={false} />}
+        >
+          Compress file
+        </Ariakit.TooltipAnchor>
+        <Ariakit.Tooltip>Compression runs in the background</Ariakit.Tooltip>
+      </Ariakit.TooltipProvider>
+
+      {/* The anchor itself is disabled with `focusable={false}`, so it has no
+      keyboard route at all: no tab stop and no focus reveal. Hover must not
+      reveal the tooltip either, or it would be reachable by pointer users
+      alone. */}
+      <Ariakit.TooltipProvider timeout={0}>
+        <Ariakit.TooltipAnchor disabled focusable={false}>
+          Encrypt file
+        </Ariakit.TooltipAnchor>
+        <Ariakit.Tooltip>Encryption is unavailable</Ariakit.Tooltip>
+      </Ariakit.TooltipProvider>
+
+      {/* Hovering costs this anchor its keyboard route entirely: it turns
+      disabled with `focusable={false}` while the show timeout is pending, so
+      the delayed check has to read the latest state rather than the one
+      captured when the timeout was scheduled. */}
+      <Ariakit.TooltipProvider timeout={150}>
+        <Ariakit.TooltipAnchor
+          disabled={uploadLocked}
+          focusable={!uploadLocked}
+          onMouseMove={() => setUploadLocked(true)}
+        >
+          Upload file
+        </Ariakit.TooltipAnchor>
+        <Ariakit.Tooltip>Uploading needs a connection</Ariakit.Tooltip>
+      </Ariakit.TooltipProvider>
+
+      {/* An enabled render component may emit this attribute itself with a
+      false value for its own styling, which React renders as the string
+      "false". Only Ariakit's stamped value counts, so this anchor keeps its
+      hover behavior. */}
+      <Ariakit.TooltipProvider timeout={0}>
+        <Ariakit.TooltipAnchor
+          render={<button type="button" data-truly-disabled={false} />}
+        >
+          Tag file
+        </Ariakit.TooltipAnchor>
+        <Ariakit.Tooltip>Tags help you find files</Ariakit.Tooltip>
       </Ariakit.TooltipProvider>
 
       {/* Enabled control sharing the counter, so the suppression assertions on

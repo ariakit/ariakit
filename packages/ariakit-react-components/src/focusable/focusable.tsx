@@ -248,8 +248,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       hasInstalledGlobalEventListeners = true;
     }, [focusable]);
 
-    const declaredDisabled = disabledFromProps(props);
-    const disabled = focusable && declaredDisabled;
+    const disabled = focusable && disabledFromProps(props);
     const trulyDisabled = disabled && !accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
     const focusVisibleRef = useRef(false);
@@ -488,12 +487,11 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       }),
       disabled: supportsDisabled && trulyDisabled ? true : undefined,
       // Placed after the spread, like the props above, so the innermost
-      // Focusable decides. `focusable={false}` makes `accessibleWhenDisabled`
-      // inoperative and stops focus from revealing anything, so a disabled
-      // element still counts as unreachable there.
-      [trulyDisabledAttribute]:
-        (declaredDisabled && !(focusable && accessibleWhenDisabled)) ||
-        undefined,
+      // Focusable decides. Only an active Focusable stamps: with
+      // `focusable={false}` this layer resolves nothing, and an outer trigger
+      // may still keep the element keyboard reachable, so the trigger checks
+      // its own `focusable` prop for that case instead.
+      [trulyDisabledAttribute]: trulyDisabled || undefined,
       // TODO: Add contentEditable coverage.
       contentEditable: disabled ? undefined : props.contentEditable,
       onKeyPressCapture,

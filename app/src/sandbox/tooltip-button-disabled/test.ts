@@ -128,6 +128,50 @@ test("does not open a delayed tooltip when the anchor turns truly disabled while
   expect(q.tooltip("Syncing needs access")).not.toBeInTheDocument();
 });
 
+test("shows the tooltip on hover when the rendered button is disabled with focusable false", async () => {
+  // `focusable={false}` makes the button's disabled props inoperative, so the
+  // anchor keeps the element keyboard reachable and reveals on focus. Hover
+  // has to agree, or the tooltip becomes keyboard-only.
+  await hover(q.button("Compress file"));
+  expect(q.tooltip("Compression runs in the background")).toBeVisible();
+});
+
+test("shows the tooltip on keyboard focus when the rendered button is disabled with focusable false", async () => {
+  // The keyboard half of the parity the test above locks in.
+  await focus(q.button("Preview file"));
+  await press.Tab();
+  expect(q.button("Compress file")).toHaveFocus();
+  expect(q.tooltip("Compression runs in the background")).toBeVisible();
+});
+
+test("does not show the tooltip on hover when the anchor is disabled with focusable false", async () => {
+  // With `focusable={false}` the anchor has no tab stop and no focus reveal,
+  // so revealing on hover would reach pointer users alone. No pointer-events
+  // shield applies here, so the hover decision itself is what this asserts.
+  expect(q.text("Encrypt file")).not.toHaveAttribute("tabindex");
+  await hover(q.text("Encrypt file"));
+  expect(q.tooltip("Encryption is unavailable")).not.toBeInTheDocument();
+});
+
+test("does not open a delayed tooltip when the anchor loses focusable while it is pending", async () => {
+  await hover(q.text("Upload file"));
+  // Hovering locked the upload, so the anchor is now disabled with
+  // `focusable={false}` and out of the tab order.
+  expect(q.text("Upload file")).not.toHaveAttribute("tabindex");
+  // Same 150ms show timeout as the "Preview file" control above, and still
+  // nothing observable to poll, so cross it before asserting the tooltip
+  // stayed closed.
+  await sleep(250);
+  expect(q.tooltip("Uploading needs a connection")).not.toBeInTheDocument();
+});
+
+test("shows the tooltip on hover when the rendered element carries the attribute with a false value", async () => {
+  // Only Ariakit's stamped value counts, so a render component emitting
+  // data-truly-disabled="false" for its own styling keeps its hover behavior.
+  await hover(q.button("Tag file"));
+  expect(q.tooltip("Tags help you find files")).toBeVisible();
+});
+
 test("keeps the disabled semantics on accessible disabled anchors", async () => {
   expect(q.button("Delete file")).toHaveAttribute("aria-disabled", "true");
   expect(q.button("Share file")).toHaveAttribute("aria-disabled", "true");

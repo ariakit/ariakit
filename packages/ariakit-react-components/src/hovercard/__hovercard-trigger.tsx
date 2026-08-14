@@ -35,8 +35,24 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
     ...props
   }) {
     const disabled = disabledFromProps(props);
+    const focusable = props.focusable !== false;
     const triggerRef = useRef<HTMLElement | null>(null);
     const showTimeoutRef = useRef(0);
+
+    // A truly disabled trigger must not reveal its content on hover, since
+    // that content would be reachable by pointer users alone. Read it from the
+    // element, because `render` composition can resolve the disabled state
+    // below this hook. `focusable={false}` on this trigger's own props also
+    // counts: it makes `accessibleWhenDisabled` inoperative and stops focus
+    // from revealing anything, and an inactive Focusable below never stamps,
+    // so only these props can say so. As an event function, this reads the
+    // latest render's values even from a pending show timeout.
+    // https://github.com/ariakit/ariakit/issues/7115
+    // https://github.com/ariakit/ariakit/issues/7116
+    const isTrulyDisabled = useEvent((element: Element) => {
+      if (disabled && !focusable) return true;
+      return trulyDisabledFromElement(element);
+    });
 
     // Clear the show timeout when the trigger unmounts.
     useEffect(() => () => window.clearTimeout(showTimeoutRef.current), []);
@@ -69,13 +85,7 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
       if (showTimeoutRef.current) return;
       if (!isMouseMoving()) return;
       const element = event.currentTarget;
-      // A truly disabled trigger must not reveal its content on hover, since
-      // that content would be reachable by pointer users alone. Read it from
-      // the element, because `render` composition can resolve the disabled
-      // state below this hook.
-      // https://github.com/ariakit/ariakit/issues/7115
-      // https://github.com/ariakit/ariakit/issues/7116
-      if (trulyDisabledFromElement(element)) return;
+      if (isTrulyDisabled(element)) return;
       // Kept next to showOnHover so both callbacks see the same hover intent.
       if (disabled || disabledFromElement(element)) {
         if (!showOnHoverWhenDisabledProp(event)) return;
@@ -93,10 +103,10 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
         if (!isMouseMoving()) return;
         // The trigger can lose its keyboard route while this timeout is
         // pending, and a stationary pointer doesn't reliably fire mouseleave to
-        // cancel it, so the rule has to hold again here. Only this element read
-        // can be re-asked: the unstable_showOnHoverWhenDisabled callback takes
-        // the mouse event, whose currentTarget React has nulled by now.
-        if (trulyDisabledFromElement(element)) return;
+        // cancel it, so the rule has to hold again here. Only this check can be
+        // re-asked: the unstable_showOnHoverWhenDisabled callback takes the
+        // mouse event, whose currentTarget React has nulled by now.
+        if (isTrulyDisabled(element)) return;
         if (setAnchorElement) {
           store.setAnchorElement(element);
         }
