@@ -79,6 +79,12 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     focusable,
     accessibleWhenDisabled,
     showOnHover,
+    // Opening a menu is an activation rather than an explanation, so by
+    // default a disabled menu button doesn't do it on hover even when it stays
+    // accessible. Resolved here rather than before the spread below, so an own
+    // undefined value passed to this public hook still gets the false default
+    // instead of reaching the trigger's true default.
+    unstable_showOnHoverWhenDisabled: showOnHoverWhenDisabled = false,
     ...props
   }) {
     const context = useMenuProviderContext();
@@ -241,11 +247,8 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       store,
       focusable,
       accessibleWhenDisabled,
-      // Opening a menu is an activation rather than an explanation, so by
-      // default a disabled menu button doesn't do it on hover even when it
-      // stays accessible. Before the spread, so consumers can opt back in.
-      unstable_showOnHoverWhenDisabled: false,
       ...props,
+      unstable_showOnHoverWhenDisabled: showOnHoverWhenDisabled,
       showOnHover: (event) => {
         const getShowOnHover = () => {
           if (typeof showOnHover === "function") return showOnHover(event);

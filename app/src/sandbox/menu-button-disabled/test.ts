@@ -27,6 +27,13 @@ test("disabled rendered button does not open its menu on hover", async () => {
   expect(q.menu("Hover render props")).not.toBeInTheDocument();
 });
 
+test("public hook keeps the false default when the option is an own undefined value", async () => {
+  await hover(q.button("Hover hook undefined"));
+  // Same portal-mount wait as the tests above.
+  await sleep();
+  expect(q.menu("Hover hook undefined")).not.toBeInTheDocument();
+});
+
 test("disabled menu button opens its menu on hover when the consumer opts in", async () => {
   await hover(q.button("Hover opted in"));
   await expect.poll(q.menu.lazy("Hover opted in")).toBeVisible();

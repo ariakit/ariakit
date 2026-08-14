@@ -58,6 +58,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.menu("Hover enabled")).toBeVisible();
   });
 
+  test("public hook keeps the false default when the option is an own undefined value", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Hover hook undefined").hover();
+    // Same store-update frames as the tests above.
+    await flushFrames(page);
+    await test.expect(q.menu("Hover hook undefined")).not.toBeVisible();
+  });
+
   test("disabled menu button opens its menu on hover when the consumer opts in", async ({
     q,
   }) => {

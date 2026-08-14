@@ -1,4 +1,28 @@
 import * as Ariakit from "@ariakit/react";
+import { useMenuButton } from "@ariakit/react-components/menu/menu-button";
+
+// The public hook, unlike the component, keeps an own undefined value in the
+// props it spreads, so it must still resolve the false default rather than
+// fall through to the trigger's true default.
+function HookMenuButton() {
+  const store = Ariakit.useMenuStore({ timeout: 0 });
+  const props = useMenuButton<"button">({
+    store,
+    showOnHover: true,
+    disabled: true,
+    accessibleWhenDisabled: true,
+    unstable_showOnHoverWhenDisabled: undefined,
+  });
+  return (
+    <>
+      <Ariakit.Role.button {...props}>Hover hook undefined</Ariakit.Role.button>
+      <Ariakit.Menu store={store}>
+        <Ariakit.MenuItem>Item 1</Ariakit.MenuItem>
+        <Ariakit.MenuItem>Item 2</Ariakit.MenuItem>
+      </Ariakit.Menu>
+    </>
+  );
+}
 
 export default function Example() {
   return (
@@ -97,6 +121,8 @@ export default function Example() {
           <Ariakit.MenuItem>Item 2</Ariakit.MenuItem>
         </Ariakit.Menu>
       </Ariakit.MenuProvider>
+
+      <HookMenuButton />
 
       {/* Enabled control with the same setup, so the assertions above fail if
       hovering ever stops opening a menu at all. */}
