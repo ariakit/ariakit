@@ -204,8 +204,8 @@ importers:
         specifier: 7.0.2
         version: 7.0.2(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@4.1.10))(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(solid-js@1.9.14)(supports-color@10.2.2)(terser@5.46.0)(yaml@2.9.0)
       '@clerk/astro':
-        specifier: 4.0.10
-        version: 4.0.10(astro@7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: 4.0.11
+        version: 4.0.11(astro@7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@fontsource-variable/inter':
         specifier: 5.3.0
         version: 5.3.0
@@ -2290,8 +2290,8 @@ packages:
     resolution: {integrity: sha512-S0My7XPGIgpRWMDG8uRqalbgT+a6FmCUdOW+HaIOVVpUPHOb7RrpvjTjiODadKp06fsrVDJZlIzc6yCTp4AnxA==}
     engines: {node: '>= 20.12.0'}
 
-  '@clerk/astro@4.0.10':
-    resolution: {integrity: sha512-O8qpkiW4FBhJtYLCAnGhHTvmE/jdYdt+7jhCdt7wH50wNcbs4WMbeAIGWjl8cSSpKm+ADj5ObQ7jWb7jzCk2Rg==}
+  '@clerk/astro@4.0.11':
+    resolution: {integrity: sha512-FSIB30rpJA2goqsQRaFcFLCudB1i6oX6wHxgyrr92LWI4LM66/xfrmQXmTMmpflchLVVRZywtQKfqnnh+ZgQNg==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       astro: ^5.0.0 || ^6.0.0 || ^7.0.0
@@ -12695,7 +12695,7 @@ snapshots:
       fast-wrap-ansi: 0.2.0
       sisteransi: 1.0.5
 
-  '@clerk/astro@4.0.10(astro@7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@clerk/astro@4.0.11(astro@7.2.0(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@2.0.0-alpha.3)(@emnapi/runtime@2.0.0-alpha.3)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@clerk/backend': 3.16.4(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@clerk/shared': 4.28.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
