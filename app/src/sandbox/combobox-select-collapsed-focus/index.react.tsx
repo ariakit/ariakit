@@ -141,6 +141,121 @@ function FilterCombobox() {
   );
 }
 
+interface HoverSelectProps {
+  label: string;
+  focusOnHover: Ariakit.ComboboxItemProps["focusOnHover"];
+}
+
+// The pointer side of the same contract. An explicit boolean and a callback
+// are authored here so the collapsed gate is exercised on the authored path,
+// which the default predicate alone never reaches.
+// https://github.com/ariakit/ariakit/issues/7118
+function HoverSelect({ label, focusOnHover }: HoverSelectProps) {
+  return (
+    <div>
+      {/* Safari needs an explicit tabindex to focus the clicked button. */}
+      <button type="button" tabIndex={0}>
+        {label} other control
+      </button>
+      <Ariakit.ComboboxProvider
+        defaultSelectedValue="Apple"
+        virtualFocus={false}
+      >
+        <Ariakit.ComboboxSelect aria-label={label} />
+        <Ariakit.ComboboxList alwaysVisible aria-label={`${label} options`}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem
+              key={value}
+              value={value}
+              focusOnHover={focusOnHover}
+            />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxProvider>
+    </div>
+  );
+}
+
+// An authored callback with a side effect: the consumer moves the composite
+// from inside the predicate, like the select-grid example does. The closed
+// gate must keep the callback from running at all, or the move would still
+// activate the item and steal focus.
+// https://github.com/ariakit/ariakit/issues/7118
+function MoveHoverSelect() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Apple",
+    virtualFocus: false,
+  });
+
+  return (
+    <div>
+      {/* Safari needs an explicit tabindex to focus the clicked button. */}
+      <button type="button" tabIndex={0}>
+        Move hover fruit other control
+      </button>
+      <Ariakit.ComboboxProvider store={combobox}>
+        <Ariakit.ComboboxSelect aria-label="Move hover fruit" />
+        <Ariakit.ComboboxList
+          alwaysVisible
+          aria-label="Move hover fruit options"
+        >
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem
+              key={value}
+              value={value}
+              focusOnHover={(event) => {
+                if (event.type === "mouseleave") return false;
+                combobox.move(event.currentTarget.id);
+                return true;
+              }}
+            />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxProvider>
+    </div>
+  );
+}
+
+// An authored callback that closes the list from inside the predicate and
+// still returns true. The gate must re-read the live open state after the
+// callback, or the stale pre-check result would activate the item and steal
+// focus right as the list collapses.
+// https://github.com/ariakit/ariakit/issues/7118
+function HideHoverSelect() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Apple",
+    virtualFocus: false,
+  });
+
+  return (
+    <div>
+      {/* Safari needs an explicit tabindex to focus the clicked button. */}
+      <button type="button" tabIndex={0} onClick={() => combobox.show()}>
+        Open hide hover fruit list
+      </button>
+      <Ariakit.ComboboxProvider store={combobox}>
+        <Ariakit.ComboboxSelect aria-label="Hide hover fruit" />
+        <Ariakit.ComboboxList
+          alwaysVisible
+          aria-label="Hide hover fruit options"
+        >
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem
+              key={value}
+              value={value}
+              focusOnHover={(event) => {
+                if (event.type === "mouseleave") return false;
+                combobox.hide();
+                return true;
+              }}
+            />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxProvider>
+    </div>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -149,6 +264,10 @@ export default function Example() {
       <CodeSelect />
       <StageSelect />
       <FilterCombobox />
+      <HoverSelect label="Hover fruit" focusOnHover />
+      <HoverSelect label="Callback hover fruit" focusOnHover={() => true} />
+      <MoveHoverSelect />
+      <HideHoverSelect />
     </>
   );
 }
