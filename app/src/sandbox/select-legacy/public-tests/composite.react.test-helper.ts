@@ -124,6 +124,32 @@ describe("public-select-collapsed-hover", () => {
   });
 });
 
+describe("public-select-hide-on-hover", () => {
+  beforeEach(async () => {
+    await click(q.button("Show public-select-hide-on-hover"));
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7121#discussion_r3780074062
+  // The authored callback closes the select and returns true. Built-in
+  // activation must still stop, or the hovered item would become active in
+  // the just-collapsed list.
+  test("built-in activation stops when the callback closes the select", async () => {
+    const select = q.combobox("Hide-on-hover fruit");
+    const grape = q.option("Grape");
+
+    await click(select);
+    expect(select).toHaveAttribute("aria-expanded", "true");
+
+    // `hover` settles the DOM before resolving, so the assertions below run
+    // after any activation the mousemove handler committed.
+    await hover(grape);
+
+    expect(select).toHaveAttribute("aria-expanded", "false");
+    expect(grape).not.toHaveAttribute("data-active-item");
+    expect(q.option("Apple")).toHaveAttribute("data-active-item");
+  });
+});
+
 describe("public-select-listbox", () => {
   beforeEach(async () => {
     await click(q.button("Show public-select-listbox"));

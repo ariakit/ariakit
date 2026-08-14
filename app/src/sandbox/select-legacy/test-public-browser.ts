@@ -139,4 +139,31 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(grape).toHaveAttribute("data-active-item");
   });
+
+  // https://github.com/ariakit/ariakit/pull/7121#discussion_r3780074062
+  // The authored callback closes the select and returns true. Built-in
+  // activation must still stop, or the hovered item would become active in
+  // the just-collapsed list.
+  test("built-in activation stops when the callback closes the select", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Show public-select-hide-on-hover").click();
+    const select = q.combobox("Hide-on-hover fruit");
+    const grape = q.option("Grape");
+
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+
+    await grape.hover();
+
+    await test.expect(select).toHaveAttribute("aria-expanded", "false");
+    // The stray activation would be committed inside the same mousemove
+    // handler that closed the select, so there is no positive state to wait
+    // for. Cross the frames a presentation would use before asserting that
+    // none did.
+    await flushFrames(page);
+    await test.expect(grape).not.toHaveAttribute("data-active-item");
+    await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
+  });
 });

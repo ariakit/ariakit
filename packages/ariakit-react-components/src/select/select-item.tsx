@@ -184,14 +184,16 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
     props = useCompositeHover({
       store,
       ...props,
-      // Disable focusOnHover when the popup is closed, even for authored
-      // values, so pointer hover can't activate an item or move focus while
-      // the select is collapsed. The open check comes first so authored
-      // callbacks with side effects don't run at all while closed.
+      // Withhold focusOnHover while the popup is closed, even for authored
+      // values, so hover can't activate an item or move focus while the
+      // select is collapsed. Check open before the authored callback so its
+      // side effects never run while closed, and again after so built-in
+      // activation stops when the callback itself closes the select.
       // https://github.com/ariakit/ariakit/issues/7120
       focusOnHover(event) {
         if (!store.getState().open) return false;
-        return focusOnHoverProp(event);
+        if (!focusOnHoverProp(event)) return false;
+        return store.getState().open;
       },
     });
 

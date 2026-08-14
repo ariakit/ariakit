@@ -229,6 +229,33 @@ export function LegacyPublicSelectCollapsedHoverCase() {
   );
 }
 
+// An authored focusOnHover callback that closes the select from inside the
+// predicate. Built-in activation must stop when the callback itself collapses
+// the popup, or the hovered item would become active after close.
+// https://github.com/ariakit/ariakit/pull/7121#discussion_r3780074062
+export function LegacyPublicSelectHideOnHoverCase() {
+  const select = Ariakit.useSelectStore({ defaultValue: "Apple" });
+  return (
+    <Ariakit.SelectProvider store={select}>
+      <Ariakit.SelectLabel>Hide-on-hover fruit</Ariakit.SelectLabel>
+      <Ariakit.Select />
+      <Ariakit.SelectList alwaysVisible aria-label="Hide-on-hover options">
+        {fruits.map((value) => (
+          <Ariakit.SelectItem
+            key={value}
+            value={value}
+            focusOnHover={(event) => {
+              if (event.type === "mouseleave") return false;
+              select.hide();
+              return true;
+            }}
+          />
+        ))}
+      </Ariakit.SelectList>
+    </Ariakit.SelectProvider>
+  );
+}
+
 export function LegacyPublicSelectListboxCase() {
   const select = Ariakit.useSelectStore({ open: true });
   return (
