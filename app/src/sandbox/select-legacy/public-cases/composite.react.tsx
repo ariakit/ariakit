@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
-import { FruitItems } from "./shared.react.tsx";
+import { fruits, FruitItems } from "./shared.react.tsx";
 
 function AnimatedPopover() {
   return (
@@ -191,6 +191,67 @@ export function LegacyPublicSelectItemCustomCase() {
           </Ariakit.SelectItem>
         ))}
       </Ariakit.SelectPopover>
+    </Ariakit.SelectProvider>
+  );
+}
+
+// An authored focusOnHover callback with a side effect: the consumer moves
+// the composite from inside the predicate, like the select-grid example does.
+// While the select is collapsed, the callback must not run at all, or the
+// move would still activate the item, commit its value, and steal focus.
+// https://github.com/ariakit/ariakit/issues/7120
+export function LegacyPublicSelectCollapsedHoverCase() {
+  const select = Ariakit.useSelectStore({ defaultValue: "Apple" });
+  return (
+    <>
+      {/* Safari needs an explicit tabindex to focus the clicked button. */}
+      <button type="button" tabIndex={0}>
+        Collapsed hover other control
+      </button>
+      <Ariakit.SelectProvider store={select}>
+        <Ariakit.SelectLabel>Collapsed hover fruit</Ariakit.SelectLabel>
+        <Ariakit.Select />
+        <Ariakit.SelectList alwaysVisible aria-label="Collapsed hover options">
+          {fruits.map((value) => (
+            <Ariakit.SelectItem
+              key={value}
+              value={value}
+              focusOnHover={(event) => {
+                if (event.type === "mouseleave") return false;
+                select.move(event.currentTarget.id);
+                return true;
+              }}
+            />
+          ))}
+        </Ariakit.SelectList>
+      </Ariakit.SelectProvider>
+    </>
+  );
+}
+
+// An authored focusOnHover callback that closes the select from inside the
+// predicate. Built-in activation must stop when the callback itself collapses
+// the popup, or the hovered item would become active after close.
+// https://github.com/ariakit/ariakit/pull/7121#discussion_r3780074062
+export function LegacyPublicSelectHideOnHoverCase() {
+  const select = Ariakit.useSelectStore({ defaultValue: "Apple" });
+  return (
+    <Ariakit.SelectProvider store={select}>
+      <Ariakit.SelectLabel>Hide-on-hover fruit</Ariakit.SelectLabel>
+      <Ariakit.Select />
+      <Ariakit.SelectList alwaysVisible aria-label="Hide-on-hover options">
+        {fruits.map((value) => (
+          <Ariakit.SelectItem
+            key={value}
+            value={value}
+            focusOnHover={(event) => {
+              if (event.type === "mouseleave") return false;
+              select.hide();
+              return true;
+            }}
+          />
+        ))}
+      </Ariakit.SelectList>
     </Ariakit.SelectProvider>
   );
 }
