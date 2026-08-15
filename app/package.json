@@ -76,7 +76,7 @@
     "@stripe/stripe-js": "9.13.0",
     "@tailwindcss/vite": "4.3.3",
     "@tanstack/react-query": "5.101.4",
-    "@wordpress/components": "38.0.0",
+    "@wordpress/components": "39.0.0",
     "astro": "7.2.2",
     "astro-remote": "0.3.4",
     "canvas-confetti": "1.9.4",
