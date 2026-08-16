@@ -41,7 +41,7 @@ jobs:
           git config user.email "283989922+ariakito[bot]@users.noreply.github.com"
 
       - name: Create PR or publish to npm
-        uses: changesets/action@22ccf9aa43179fe9e27dc62e575971d28cce197c # v2.0.0
+        uses: changesets/action@198f833dd7d863100ea6e28967bc9a9fdefadb0a # v2.1.0
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           pr-title: Publish
