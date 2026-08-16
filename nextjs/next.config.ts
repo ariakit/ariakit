@@ -7,6 +7,16 @@ const config: NextConfig = {
   typedRoutes: true,
   cacheComponents: true,
 
+  // Keep `next dev` from adding framework-managed agent instructions here.
+  agentRules: false,
+
+  experimental: {
+    // Next's CLI requires `tsc`, but @typescript/typescript6 exposes `tsc6`.
+    // Remove when upstream resolves alias support.
+    // https://github.com/vercel/next.js/issues/96589
+    useTypeScriptCli: false,
+  },
+
   // Pin the Turbopack root to the monorepo root (the parent of this workspace).
   // Otherwise Next.js walks up the tree collecting every workspace/lockfile and
   // picks the outermost one as the root. In a git worktree nested under the main
