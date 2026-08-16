@@ -99,6 +99,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   test("click on target blank link", async ({ page, context }) => {
+    // Keep popup creation independent of the external site's availability.
+    await context.route(
+      "https://bsky.app/profile/ariakit.com",
+      (route) => route.fulfill({ body: "" }),
+      { times: 1 },
+    );
     const q = query(page);
     await q.combobox("Links").click();
     await expect(q.listbox()).toBeVisible();
@@ -109,7 +115,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     ]);
     await expect(q.listbox()).not.toBeVisible();
     await expect(q.combobox("Links")).toHaveValue("");
-    await expect(newPage).toHaveURL(/https:\/\/bsky\.app/);
+    await expect(newPage).toHaveURL("https://bsky.app/profile/ariakit.com");
   });
 
   test("https://github.com/ariakit/ariakit/issues/2056", async ({ page }) => {
