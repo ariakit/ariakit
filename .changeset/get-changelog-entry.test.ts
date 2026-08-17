@@ -62,7 +62,7 @@ test("changesets getChangelogEntry hook", async () => {
     } as const;
 
     const packages = {
-      root: { dir: process.cwd() },
+      rootDir: process.cwd(),
       packages: [
         {
           dir: pkgDir,
@@ -90,7 +90,7 @@ test("changesets getChangelogEntry hook", async () => {
         onlyUpdatePeerDependentsWhenOutOfRange: true,
       },
       bumpVersionsWithWorkspaceProtocolOnly: false,
-      prettier: false,
+      format: false,
       ignore: [],
       privatePackages: { version: false, tag: false },
     } as const;

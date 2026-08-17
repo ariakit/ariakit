@@ -5,6 +5,9 @@ import type { NextConfig } from "next";
 const config: NextConfig = {
   reactCompiler: true,
   typedRoutes: true,
+
+  // Keep this enabled. The production build is the regression test for
+  // https://github.com/ariakit/ariakit/issues/5147.
   cacheComponents: true,
 
   // Pin the Turbopack root to the monorepo root (the parent of this workspace).

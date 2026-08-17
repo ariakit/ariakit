@@ -35,24 +35,17 @@ jobs:
 
       - name: Configure git
         run: |
-          # Authentication controls who can push; git config controls the
+          # The action token controls who can push; git config controls the
           # author/committer recorded on the release commit.
           git config user.name "ariakito[bot]"
           git config user.email "283989922+ariakito[bot]@users.noreply.github.com"
 
-      - name: Configure git authentication
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: gh auth setup-git
-
       - name: Create PR or publish to npm
-        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+        uses: changesets/action@198f833dd7d863100ea6e28967bc9a9fdefadb0a # v2.1.0
         with:
-          title: Publish
-          commit: Publish
-          version: pnpm run version
-          publish: pnpm run publish
-          setupGitUser: false
-        env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-          NPM_TOKEN: ""
+          github-token: ${{ steps.app-token.outputs.token }}
+          pr-title: Publish
+          commit-message: Publish
+          version-script: pnpm run version
+          publish-script: pnpm run publish
+          push-with-git-cli: true
