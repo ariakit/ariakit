@@ -513,6 +513,9 @@ importers:
       babel-plugin-react-compiler:
         specifier: 1.0.0
         version: 1.0.0
+      cross-env:
+        specifier: 10.1.0
+        version: 10.1.0
       tailwindcss:
         specifier: 4.3.3
         version: 4.3.3

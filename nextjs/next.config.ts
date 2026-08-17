@@ -2,15 +2,24 @@ import { join } from "node:path";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import type { NextConfig } from "next";
 
+const isOpenNextBuild = process.env.OPEN_NEXT_BUILD === "1";
+
 const config: NextConfig = {
   reactCompiler: true,
   typedRoutes: true,
-  cacheComponents: true,
+
+  // Keep Cache Components enabled in the regular build to cover #5147.
+  // Next 16.3's runtime hangs when OpenNext runs the output in Workerd.
+  cacheComponents: !isOpenNextBuild,
 
   // Keep `next dev` from adding framework-managed agent instructions here.
   agentRules: false,
 
   experimental: {
+    // Ariakit's route-driven dialogs expect the legacy handler to restore focus.
+    // Remove after the fixtures support Next's new focus behavior.
+    appNewScrollHandler: false,
+
     // Next's CLI requires `tsc`, but @typescript/typescript6 exposes `tsc6`.
     // Remove when upstream resolves alias support.
     // https://github.com/vercel/next.js/issues/96589

@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build-worker": "opennextjs-cloudflare build",
+    "build-worker": "pnpm run build && cross-env OPEN_NEXT_BUILD=1 opennextjs-cloudflare build",
     "preview": "opennextjs-cloudflare preview",
     "start": "next start",
     "tsc": "next typegen && tsc"
@@ -30,6 +30,7 @@
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
     "babel-plugin-react-compiler": "1.0.0",
+    "cross-env": "10.1.0",
     "tailwindcss": "4.3.3",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
