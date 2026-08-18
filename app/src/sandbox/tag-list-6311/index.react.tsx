@@ -17,7 +17,10 @@ export default function Example() {
             integration): display: contents keeps the tag list layout intact,
             and tabIndex makes it match the focusable selector. Because the
             wrapper generates no box, isFocusable still rejects it — the exact
-            selector/focusability mismatch that froze getClosestFocusable. */}
+            selector/focusability mismatch that froze getClosestFocusable.
+            Chrome still exposes the wrapper between the listbox and its
+            options, so this markup is deliberately not a valid listbox. It
+            reproduces the reported integration, not a recommended structure. */}
         <div tabIndex={-1} style={{ display: "contents" }}>
           <span>Frontend:</span>
           {values.map((value) => (
@@ -27,8 +30,8 @@ export default function Example() {
             </Tag>
           ))}
         </div>
-        <TagInput aria-label="New tag" />
       </TagList>
+      <TagInput aria-label="New tag" />
       <output>Tags: {values.length ? values.join(", ") : "none"}</output>
     </TagProvider>
   );

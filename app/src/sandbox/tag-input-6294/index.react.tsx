@@ -19,8 +19,8 @@ export default function Example() {
             <TagRemove />
           </Tag>
         ))}
-        <TagInput aria-label="New tag" />
       </TagList>
+      <TagInput aria-label="New tag" />
     </TagProvider>
   );
 }

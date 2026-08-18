@@ -146,22 +146,24 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
  * input element.
  * @see https://ariakit.com/components/tag
  * @example
- * ```jsx {7-10}
+ * ```jsx {8-11}
  * <TagProvider>
  *   <TagListLabel>Invitees</TagListLabel>
- *   <TagList>
- *     <TagValues>
- *       {(values) =>
- *         values.map((value) => (
- *           <Tag key={value} value={value}>
- *             {value}
- *             <TagRemove />
- *           </Tag>
- *         ))
- *       }
- *     </TagValues>
+ *   <div className="tag-list">
+ *     <TagList style={{ display: "contents" }}>
+ *       <TagValues>
+ *         {(values) =>
+ *           values.map((value) => (
+ *             <Tag key={value} value={value}>
+ *               {value}
+ *               <TagRemove />
+ *             </Tag>
+ *           ))
+ *         }
+ *       </TagValues>
+ *     </TagList>
  *     <TagInput />
- *   </TagList>
+ *   </div>
  * </TagProvider>
  * ```
  */

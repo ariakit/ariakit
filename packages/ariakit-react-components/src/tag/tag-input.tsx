@@ -28,7 +28,11 @@ import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useTagContext } from "./tag-context.tsx";
 import type { TagStore } from "./tag-store.ts";
-import { getDelimiters, splitValueByDelimiter } from "./utils.ts";
+import {
+  getDelimiters,
+  handleUndoRedoShortcut,
+  splitValueByDelimiter,
+} from "./utils.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
@@ -153,6 +157,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
+      handleUndoRedoShortcut(event);
       if (event.key === "Backspace" && removeOnBackspaceProp(event)) {
         const { start, end } = getTextboxSelection(event.currentTarget);
         const isLeadingCaret = start === end && start === 0;
@@ -180,7 +185,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
 );
 
 /**
- * Renders an input element within a
+ * Renders an input element as a sibling of the
  * [`TagList`](https://ariakit.com/reference/tag-list) component. This component
  * lets users input tag values that are added to the store when the input value
  * changes or when the user pastes text into the input element, based on the
@@ -192,22 +197,24 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
  * tag input with suggestions.
  * @see https://ariakit.com/components/tag
  * @example
- * ```jsx {14}
+ * ```jsx {16}
  * <TagProvider>
  *   <TagListLabel>Invitees</TagListLabel>
- *   <TagList>
- *     <TagValues>
- *       {(values) =>
- *         values.map((value) => (
- *           <Tag key={value} value={value}>
- *             {value}
- *             <TagRemove />
- *           </Tag>
- *         ))
- *       }
- *     </TagValues>
+ *   <div className="tag-list">
+ *     <TagList style={{ display: "contents" }}>
+ *       <TagValues>
+ *         {(values) =>
+ *           values.map((value) => (
+ *             <Tag key={value} value={value}>
+ *               {value}
+ *               <TagRemove />
+ *             </Tag>
+ *           ))
+ *         }
+ *       </TagValues>
+ *     </TagList>
  *     <TagInput />
- *   </TagList>
+ *   </div>
  * </TagProvider>
  * ```
  */

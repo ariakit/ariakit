@@ -23,8 +23,8 @@ function TagField({ label, delimiter }: TagFieldProps) {
             {value}
           </Tag>
         ))}
-        <TagInput delimiter={delimiter} aria-label={label} />
       </TagList>
+      <TagInput delimiter={delimiter} aria-label={label} />
       <output id={statusId}>
         {label} values: {values.length ? values.join(", ") : "none"}
       </output>

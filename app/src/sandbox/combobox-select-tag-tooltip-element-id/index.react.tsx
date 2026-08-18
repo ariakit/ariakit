@@ -84,9 +84,8 @@ function TagExample() {
     <section aria-label="Tag">
       <TagProvider>
         <DynamicTagLabel />
-        <TagList>
-          <DynamicTagInput />
-        </TagList>
+        <TagList />
+        <DynamicTagInput />
       </TagProvider>
     </section>
   );

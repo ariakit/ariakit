@@ -31,6 +31,16 @@ test("initial state", async () => {
   expect(q.textbox("Tags")).toBeVisible();
 });
 
+test("renders the tags inside the listbox and the input outside it", async () => {
+  const tagList = q.listbox.ensure("Tags");
+  expect(tagList).toContainElement(q.option("JavaScript"));
+  expect(tagList).toContainElement(q.option("React"));
+  expect(tagList).not.toHaveAttribute("aria-owns");
+  // The listbox role accepts only options as children, so the input must be a
+  // sibling of the tag list rather than a descendant of it.
+  expect(tagList).not.toContainElement(q.textbox.ensure("Tags"));
+});
+
 test("click on tag", async () => {
   await click(q.option("JavaScript"));
   expect(q.option("JavaScript")).toHaveFocus();

@@ -27,15 +27,17 @@ export function useTagStoreProps<T extends Core.TagStore>(
  * const tag = useTagStore({ defaultValues: ["Apple", "Banana"]});
  * const values = useStoreState(tag, "values");
  *
- * <TagList store={tag}>
- *   {values.map((value) => (
- *     <Tag key={value} value={value}>
- *       {value}
- *       <TagRemove />
- *     </Tag>
- *   ))}
- *   <TagInput />
- * </TagList>
+ * <div className="tag-list">
+ *   <TagList store={tag} style={{ display: "contents" }}>
+ *     {values.map((value) => (
+ *       <Tag key={value} value={value}>
+ *         {value}
+ *         <TagRemove />
+ *       </Tag>
+ *     ))}
+ *   </TagList>
+ *   <TagInput store={tag} />
+ * </div>
  * ```
  */
 export function useTagStore(props: TagStoreProps = {}): TagStore {

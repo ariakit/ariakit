@@ -18,22 +18,24 @@ import type { TagStore, TagStoreState } from "./tag-store.ts";
  * [`Tag`](https://ariakit.com/reference/tag) components.
  * @see https://ariakit.com/components/tag
  * @example
- * ```jsx {4-13}
+ * ```jsx {5-14}
  * <TagProvider>
  *   <TagListLabel>Invitees</TagListLabel>
- *   <TagList>
- *     <TagValues>
- *       {(values) =>
- *         values.map((value) => (
- *           <Tag key={value} value={value}>
- *             {value}
- *             <TagRemove />
- *           </Tag>
- *         ))
- *       }
- *     </TagValues>
+ *   <div className="tag-list">
+ *     <TagList style={{ display: "contents" }}>
+ *       <TagValues>
+ *         {(values) =>
+ *           values.map((value) => (
+ *             <Tag key={value} value={value}>
+ *               {value}
+ *               <TagRemove />
+ *             </Tag>
+ *           ))
+ *         }
+ *       </TagValues>
+ *     </TagList>
  *     <TagInput />
- *   </TagList>
+ *   </div>
  * </TagProvider>
  * ```
  */

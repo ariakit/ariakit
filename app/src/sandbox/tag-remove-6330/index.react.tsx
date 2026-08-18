@@ -20,8 +20,8 @@ export default function Example() {
             <TagRemove />
           </Tag>
         ))}
-        <TagInput aria-label="Add filter" />
       </TagList>
+      <TagInput aria-label="Add filter" />
       <p>
         <TagRemove value="React">Remove React filter</TagRemove>
       </p>

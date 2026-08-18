@@ -9,15 +9,17 @@ export default function Example() {
         <Ariakit.TagListLabel className="ak-tag-list-label">
           Tags
         </Ariakit.TagListLabel>
-        <Ariakit.TagList className="ak-tag-list ak-input ak-focusable">
-          {values.map((value) => (
-            <Ariakit.Tag key={value} value={value} className="ak-tag">
-              {value}
-              <Ariakit.TagRemove className="ak-tag-remove" />
-            </Ariakit.Tag>
-          ))}
+        <div className="ak-tag-list ak-input ak-focusable">
+          <Ariakit.TagList style={{ display: "contents" }}>
+            {values.map((value) => (
+              <Ariakit.Tag key={value} value={value} className="ak-tag">
+                {value}
+                <Ariakit.TagRemove className="ak-tag-remove" />
+              </Ariakit.Tag>
+            ))}
+          </Ariakit.TagList>
           <Ariakit.TagInput className="ak-tag-input" />
-        </Ariakit.TagList>
+        </div>
       </Ariakit.TagProvider>
     </div>
   );
