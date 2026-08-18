@@ -6,6 +6,7 @@ import {
   isTextbox,
   invariant,
 } from "@ariakit/utils";
+import { getPressOptions } from "./__mouse.ts";
 import { setPreventMouseEvents, wrapAsync } from "./__utils.ts";
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
@@ -45,13 +46,15 @@ function shouldClearSelection(element: Element) {
 }
 
 /**
- * Presses the primary pointer button down on an element, firing `pointerdown` and
+ * Presses a pointer button down on an element, firing `pointerdown` and
  * `mousedown` and moving focus the way a browser would. Disabled elements still
  * receive `pointerdown` but not `mousedown`, and focus falls back to the closest
  * focusable ancestor when the target itself isn't focusable.
  *
  * This is one step of a full `click`; use it directly to test press-and-hold
- * behavior. Pass `options` to set event properties such as modifier keys.
+ * behavior. Pass `options` to set event properties such as modifier keys, or
+ * `button` to press another mouse button. The events report the pressed button
+ * in `buttons`, like a browser does.
  * @example
  * ```ts
  * await mouseDown(q.button("Resize"));
@@ -66,8 +69,12 @@ export function mouseDown(element: Element | null, options?: PointerEventInit) {
     if (!isVisible(element)) return;
 
     const { disabled } = element as HTMLButtonElement;
+    const pressOptions = getPressOptions(options);
 
-    const pointerDefaultAllowed = await dispatch.pointerDown(element, options);
+    const pointerDefaultAllowed = await dispatch.pointerDown(
+      element,
+      pressOptions,
+    );
     setPreventMouseEvents(getDocument(element), !pointerDefaultAllowed);
 
     let defaultAllowed = pointerDefaultAllowed;
@@ -75,7 +82,9 @@ export function mouseDown(element: Element | null, options?: PointerEventInit) {
     // Disabled controls and canceled pointerdown suppress compatibility
     // mousedown.
     if (!disabled && pointerDefaultAllowed) {
-      if (!(await dispatch.mouseDown(element, { detail: 1, ...options }))) {
+      if (
+        !(await dispatch.mouseDown(element, { detail: 1, ...pressOptions }))
+      ) {
         defaultAllowed = false;
       }
     }

@@ -1,4 +1,5 @@
 import { isVisible, invariant } from "@ariakit/utils";
+import { getHoverOptions, getReleaseOptions } from "./__mouse.ts";
 import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { hover } from "./hover.ts";
@@ -31,7 +32,7 @@ export function select(
 
     const document = element.ownerDocument;
 
-    await hover(element, options);
+    await hover(element, getHoverOptions(options));
     await mouseDown(element, options);
 
     await dispatch(
@@ -88,7 +89,7 @@ export function select(
 
     await mouseUp(element, options);
 
-    await dispatch.click(element, { detail: 1, ...options });
+    await dispatch.click(element, { detail: 1, ...getReleaseOptions(options) });
 
     await sleep();
   });

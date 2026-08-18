@@ -177,3 +177,44 @@ test("mouseUp suppresses mouseup after a prevented pointerdown", async () => {
 
   expect(events).toEqual(["pointerdown", "mousedown", "pointerup", "mouseup"]);
 });
+
+// A standalone press must report the held button in `buttons` the way a browser
+// does, so a component that starts dragging on `buttons === 1` reacts to
+// `mouseDown` on its own and not only to a full `click`. The `buttons` bits are
+// not in `button` order, so every mapping is asserted.
+test("mouseDown and mouseUp report the held button", async () => {
+  document.body.innerHTML = `<button type="button">Resize</button>`;
+
+  const button = q.button.ensure("Resize");
+  const events: string[] = [];
+
+  for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup"]) {
+    button.addEventListener(type, (event) => {
+      const { button: pressed, buttons } = event as MouseEvent;
+      events.push(`${event.type} ${pressed} ${buttons}`);
+    });
+  }
+
+  const heldButtons = [
+    [0, 1],
+    [1, 4],
+    [2, 2],
+    [3, 8],
+    [4, 16],
+    [5, 32],
+  ];
+
+  for (const [pressed, held] of heldButtons) {
+    events.length = 0;
+
+    await mouseDown(button, { button: pressed });
+    await mouseUp(button, { button: pressed });
+
+    expect(events).toEqual([
+      `pointerdown ${pressed} ${held}`,
+      `mousedown ${pressed} ${held}`,
+      `pointerup ${pressed} 0`,
+      `mouseup ${pressed} 0`,
+    ]);
+  }
+});
