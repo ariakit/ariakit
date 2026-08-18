@@ -62,7 +62,7 @@
     "@vitest/coverage-v8": "4.1.10",
     "chalk": "6.0.0",
     "chokidar": "5.0.0",
-    "concurrently": "10.0.4",
+    "concurrently": "10.0.5",
     "cross-env": "10.1.0",
     "cross-spawn": "7.0.6",
     "fs-extra": "11.4.0",
