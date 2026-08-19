@@ -15,23 +15,24 @@ export const TagField = React.forwardRef<HTMLDivElement, TagFieldProps>(
     { label, value, setValue, values, setValues, ...props },
     ref,
   ) {
-    // Uses the store prop instead of TagProvider, so the tag list and the tag
-    // input inherit the store from TagControl.
-    const tag = Ariakit.useTagStore({ value, setValue, values, setValues });
     return (
-      <>
+      <Ariakit.TagProvider
+        value={value}
+        setValue={setValue}
+        values={values}
+        setValues={setValues}
+      >
         {label && (
-          <Ariakit.TagListLabel store={tag} className="ak-tag-list-label">
+          <Ariakit.TagListLabel className="ak-tag-list-label">
             {label}
           </Ariakit.TagListLabel>
         )}
         <Ariakit.TagControl
           ref={ref}
-          store={tag}
           {...props}
           className={clsx("ak-tag-list ak-input ak-focusable", props.className)}
         />
-      </>
+      </Ariakit.TagProvider>
     );
   },
 );
