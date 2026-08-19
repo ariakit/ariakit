@@ -194,3 +194,104 @@ test("dispatch(element, event) reports the same modifiers as the named form for 
     input.remove();
   }
 });
+
+function readPointerMembers(event: PointerEvent) {
+  const { width, height, pressure, isPrimary } = event;
+  return `${width} ${height} ${pressure} ${isPrimary}`;
+}
+
+// Pointer Events defaults `width` and `height` to 1, and requires 1 from any
+// device with no contact geometry to report, like a mouse. The pressure and the
+// primary pointer stay at their dictionary defaults, because a lone event carries
+// no gesture to derive them from.
+// https://w3c.github.io/pointerevents/#dom-pointerevent-width
+test("dispatch.pointerDown reports the PointerEventInit defaults for the contact, pressure, and primary pointer", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  let members: string | undefined;
+  button.addEventListener("pointerdown", (event) => {
+    members = readPointerMembers(event);
+  });
+  try {
+    await dispatch.pointerDown(button);
+    expect(members).toBe("1 1 0 false");
+  } finally {
+    button.remove();
+  }
+});
+
+test("dispatch.pointerDown preserves provided pointer values", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  let members: string | undefined;
+  button.addEventListener("pointerdown", (event) => {
+    members = readPointerMembers(event);
+  });
+  try {
+    await dispatch.pointerDown(button, {
+      width: 12,
+      height: 14,
+      pressure: 0.75,
+      isPrimary: true,
+    });
+    expect(members).toBe("12 14 0.75 true");
+  } finally {
+    button.remove();
+  }
+});
+
+// Zero is a contact size a digitizer can report, so it has to survive instead of
+// falling back to the default.
+test("dispatch.pointerDown preserves a zero contact size", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  let members: string | undefined;
+  button.addEventListener("pointerdown", (event) => {
+    members = readPointerMembers(event);
+  });
+  try {
+    await dispatch.pointerDown(button, { width: 0, height: 0 });
+    expect(members).toBe("0 0 0 false");
+  } finally {
+    button.remove();
+  }
+});
+
+function readTransducerAngles(event: PointerEvent) {
+  return `${event.altitudeAngle} ${event.azimuthAngle}`;
+}
+
+// `initPointerEvent` used to leave these two alone, so they reached the event
+// only through the constructor and took happy-dom's default of 0. Chromium,
+// Firefox, and WebKit all report π/2 and 0 for a mouse, on every pointer event
+// including `click`.
+// https://github.com/ariakit/ariakit/issues/7172
+test("dispatch.pointerDown reports the transducer angles of a perpendicular pointer", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  let angles: string | undefined;
+  button.addEventListener("pointerdown", (event) => {
+    angles = readTransducerAngles(event);
+  });
+  try {
+    await dispatch.pointerDown(button);
+    expect(angles).toBe(`${Math.PI / 2} 0`);
+  } finally {
+    button.remove();
+  }
+});
+
+test("dispatch.pointerDown preserves provided transducer angles", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  let angles: string | undefined;
+  button.addEventListener("pointerdown", (event) => {
+    angles = readTransducerAngles(event);
+  });
+  try {
+    await dispatch.pointerDown(button, { altitudeAngle: 0, azimuthAngle: 1 });
+    expect(angles).toBe("0 1");
+  } finally {
+    button.remove();
+  }
+});

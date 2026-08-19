@@ -6,7 +6,11 @@ import {
   isTextbox,
   invariant,
 } from "@ariakit/utils";
-import { getPressOptions, isChordedPress } from "./__mouse.ts";
+import {
+  getPointerOptions,
+  getPressOptions,
+  isChordedPress,
+} from "./__mouse.ts";
 import {
   getPreventMouseEvents,
   setPreventMouseEvents,
@@ -62,7 +66,8 @@ function shouldClearSelection(element: Element) {
  * describe a chorded gesture. When that value shows another button was already
  * held down, the press fires `pointermove` instead of `pointerdown`, the way
  * Pointer Events routes a chorded press, and the compatibility `mousedown`
- * still fires.
+ * still fires. The pointer event reports `pressure: 0.5`, the value Pointer
+ * Events defines while a device with no pressure sensor holds a button down.
  * @example
  * ```ts
  * await mouseDown(q.button("Resize"));
@@ -77,7 +82,7 @@ export function mouseDown(element: Element | null, options?: PointerEventInit) {
     if (!isVisible(element)) return;
 
     const { disabled } = element as HTMLButtonElement;
-    const pressOptions = getPressOptions(options);
+    const pressOptions = getPointerOptions(getPressOptions(options));
     const document = getDocument(element);
 
     // A chorded press has no `pointerdown` of its own to cancel, so it leaves
