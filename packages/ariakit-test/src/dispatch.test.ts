@@ -117,9 +117,9 @@ test("dispatch(element, event) reads modifier state on a caller-built mouse even
   }
 });
 
-// Parity covers the standard modifiers and `x`/`y`. happy-dom's constructor
-// discards the `modifier*` init members, so a caller-built event cannot report
-// those the way a named dispatcher does.
+// Parity covers the standard modifiers and `x`/`y`. happy-dom's `MouseEvent`
+// constructor discards the `modifier*` init members, so a caller-built event
+// cannot report those the way a named dispatcher does.
 test("dispatch(element, event) reports the same standard modifiers and x/y as the named form", async () => {
   const button = document.createElement("button");
   document.body.append(button);
@@ -150,5 +150,47 @@ test("dispatch(element, event) reports the same standard modifiers and x/y as th
     });
   } finally {
     button.remove();
+  }
+});
+
+// Keyboard parity covers the `modifier*` init members too, because the
+// environment records them for a caller-built event.
+// https://github.com/ariakit/ariakit/issues/7166
+test("dispatch(element, event) reports the same modifiers as the named form for a keyboard event", async () => {
+  const input = document.createElement("input");
+  document.body.append(input);
+  const options: KeyboardEventInit = {
+    key: "a",
+    altKey: true,
+    modifierCapsLock: true,
+    // No browser engine implements `Super`, so neither path records it here.
+    // Recording it on one side only would break the parity below.
+    modifierSuper: true,
+  };
+  const received: KeyboardEvent[] = [];
+  input.addEventListener("keydown", (event) => {
+    received.push(event);
+  });
+  try {
+    await dispatch(input, new KeyboardEvent("keydown", options));
+    await dispatch.keyDown(input, options);
+    const readModifiers = (event: KeyboardEvent | undefined) => ({
+      alt: event?.getModifierState("Alt"),
+      altGraph: event?.getModifierState("AltGraph"),
+      capsLock: event?.getModifierState("CapsLock"),
+      shift: event?.getModifierState("Shift"),
+      super: event?.getModifierState("Super"),
+    });
+    const [direct, named] = received;
+    expect(readModifiers(direct)).toEqual(readModifiers(named));
+    expect(readModifiers(direct)).toEqual({
+      alt: true,
+      altGraph: false,
+      capsLock: true,
+      shift: false,
+      super: false,
+    });
+  } finally {
+    input.remove();
   }
 });
