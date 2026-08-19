@@ -116,7 +116,7 @@ type Target = Document | Window | Node | Element | null;
 
 type EventFunction = (element: Target, options?: object) => Promise<boolean>;
 
-type DispatchEventType = EventType | "auxClick";
+type DispatchEventType = Exclude<EventType, "doubleClick"> | "auxClick";
 
 type EventsObject = {
   [K in DispatchEventType]: EventFunction;

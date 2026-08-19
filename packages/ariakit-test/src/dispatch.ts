@@ -15,8 +15,9 @@ type Target = Document | Window | Node | Element | null;
 type EventFunction = (element: Target, options?: object) => Promise<boolean>;
 
 // `@testing-library/dom` has no `auxclick` in its event map, so `dispatch` adds
-// it to the events it can build by name.
-type DispatchEventType = EventType | "auxClick";
+// it to the events it can build by name. Its `doubleClick` alias has no matching
+// `createEvent` method, so only the buildable `dblClick` name is exposed.
+type DispatchEventType = Exclude<EventType, "doubleClick"> | "auxClick";
 
 type EventsObject = {
   [K in DispatchEventType]: EventFunction;
@@ -199,7 +200,10 @@ function createNamedEvent(
   return createEvent[eventName](element, options);
 }
 
-const eventNames: DispatchEventType[] = [...getKeys(createEvent), "auxClick"];
+const eventNames: DispatchEventType[] = [
+  ...getKeys(createEvent).filter((eventName) => eventName !== "doubleClick"),
+  "auxClick",
+];
 
 const events = eventNames.reduce((events, eventName) => {
   events[eventName] = (element, options) => {

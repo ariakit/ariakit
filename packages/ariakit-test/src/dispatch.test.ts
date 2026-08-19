@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, expectTypeOf, test } from "vitest";
 import { dispatch, press } from "./index.ts";
 
 test("dispatch.keyDown uses empty strings for omitted keyboard strings", async () => {
@@ -93,6 +93,8 @@ test("dispatch.input preserves provided inputType", async () => {
 });
 
 test("dispatch exposes only buildable double-click events", async () => {
+  expectTypeOf(dispatch).toHaveProperty("dblClick");
+  expectTypeOf(dispatch).not.toHaveProperty("doubleClick");
   const button = document.createElement("button");
   document.body.append(button);
   let calls = 0;
