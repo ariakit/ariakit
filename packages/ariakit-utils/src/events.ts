@@ -4,6 +4,7 @@
  */
 
 import { contains, isElement, isNode } from "./dom.ts";
+import { hasOwnProperty } from "./misc.ts";
 import { isApple } from "./platform.ts";
 
 /**
@@ -124,13 +125,101 @@ export function fireKeyboardEvent(
   return element.dispatchEvent(event);
 }
 
+type PointerIdentityAttribute = "pointerId" | "pointerType";
+
+type ResetAttribute =
+  | Exclude<
+      keyof PointerEventInit,
+      keyof MouseEventInit | PointerIdentityAttribute
+    >
+  // Chromium and Firefox read this one from the init, but `lib.dom` doesn't
+  // declare it on `PointerEventInit` yet, so `Exclude` can't find it. Measured
+  // leaking a caller's value onto the click in both, where their own click
+  // reports 0.
+  | "persistentDeviceId";
+
+// Pointer Events requires every pointer attribute other than `pointerId` and
+// `pointerType` to have its default value on a click, so the event never
+// reports the contact a press described. `isPrimary` is one of them, even
+// though it identifies the pointer rather than the contact: Firefox and WebKit
+// carry a caller's value over where Chromium resets it, and the specification,
+// not the engine count, decides which is right.
+//
+// Keyed rather than listed so TypeScript requires every non-identity member it
+// knows about, because `PointerEventInit` keeps growing.
+// https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
+const resetAttributes: Record<ResetAttribute, true> = {
+  width: true,
+  height: true,
+  pressure: true,
+  tangentialPressure: true,
+  tiltX: true,
+  tiltY: true,
+  twist: true,
+  altitudeAngle: true,
+  azimuthAngle: true,
+  isPrimary: true,
+  coalescedEvents: true,
+  predictedEvents: true,
+  persistentDeviceId: true,
+};
+
+// Chromium, Firefox, and WebKit all report an unset pointer on a click no
+// pointer caused, such as keyboard activation, so the event doesn't claim a
+// mouse pressed the element.
+//
+// The constructor reads the init through the prototype chain, so a caller can
+// pass a live event. Copying it would flatten it to its own properties, which a
+// live event mostly doesn't have, and inheriting from it would break the native
+// getters' brand checks, so the members are layered on with a proxy instead.
+function getClickEventInit(eventInit?: PointerEventInit | null) {
+  const init = eventInit ?? {};
+  // Proxying a fresh object rather than the caller's, because a trap may not
+  // report a value different from a frozen own property of its target, and
+  // every member below is layered over whatever the caller froze. Only the
+  // constructor reads the result, and it reads each member by name, so the
+  // empty target reporting no own keys is not observable.
+  const target: PointerEventInit = {};
+  return new Proxy(target, {
+    get(_target, key) {
+      if (key === "pointerId") return init.pointerId ?? -1;
+      if (key === "pointerType") return init.pointerType ?? "";
+      // Reading one of them as absent leaves the constructor's own default,
+      // which is the value browsers report on a click.
+      if (hasOwnProperty(resetAttributes, key)) return undefined;
+      // Rooted at the caller's init rather than at the empty target, so a
+      // native getter runs against the object that owns it.
+      return Reflect.get(init, key);
+    },
+  });
+}
+
 /**
  * Creates and dispatches a click event.
+ *
+ * The event is a `PointerEvent` built by the window that owns the element, the
+ * way browsers dispatch it, falling back to a `MouseEvent` where that window
+ * has no `PointerEvent`. It reports no pointer behind the click unless the
+ * caller passes one, and reports every other pointer attribute at its default
+ * value, the way a click always does.
  * @example
  * fireClickEvent(document.getElementById("id"));
  */
-export function fireClickEvent(element: Element, eventInit?: PointerEventInit) {
-  const event = new MouseEvent("click", eventInit);
+export function fireClickEvent(
+  element: Element,
+  eventInit?: PointerEventInit | null,
+) {
+  // Read straight from the document rather than through `getWindow`, which
+  // treats any node with a `self` property as a window. A form exposes its
+  // controls as named properties, so a form owning a control named `self` would
+  // resolve to that control. A form can shadow `ownerDocument` the same way,
+  // which the `?? window` fallback below only degrades rather than fixes; that
+  // residue is https://github.com/ariakit/ariakit/issues/7201.
+  const view = element.ownerDocument.defaultView ?? window;
+  // Falls back to `MouseEvent` where `PointerEvent` is missing, so activation
+  // keeps working there and only the pointer members are dropped.
+  const EventConstructor = view.PointerEvent ?? view.MouseEvent;
+  const event = new EventConstructor("click", getClickEventInit(eventInit));
   return element.dispatchEvent(event);
 }
 
