@@ -73,7 +73,10 @@ export default function Example() {
 
       <TagProvider>
         <TagLabel>Tag label</TagLabel>
-        <TagList aria-label="Custom tag list label" />
+        <TagList
+          aria-label="Custom tag list label"
+          style={{ display: "contents" }}
+        />
       </TagProvider>
 
       <TagProvider>
