@@ -62,6 +62,62 @@ test("runs animation frame callbacks as a spec-compliant batch", async () => {
   expect(timestamps[0]).toBe(timestamps[1]);
 });
 
+test("gives mouse and pointer events the browser's modifier state and x/y", () => {
+  // These hold natively in browsers and jsdom (see shims.jsdom.test.ts), so the
+  // assertions are not guarded by `isBrowser`. Dispatching without going through
+  // `dispatch` reaches only the environment shim.
+  const button = document.createElement("button");
+  document.body.append(button);
+  const received: MouseEvent[] = [];
+  button.addEventListener("auxclick", (event) => {
+    received.push(event);
+  });
+  button.addEventListener("pointerdown", (event) => {
+    received.push(event);
+  });
+  try {
+    button.dispatchEvent(
+      new MouseEvent("auxclick", {
+        altKey: true,
+        ctrlKey: true,
+        clientX: 3,
+        clientY: 4,
+      }),
+    );
+    // PointerEvent extends MouseEvent, so it inherits the same members.
+    button.dispatchEvent(
+      new PointerEvent("pointerdown", { metaKey: true, shiftKey: true }),
+    );
+    // A third combination gives every modifier a pattern of its own across the
+    // three events, so no transposed pair in the lookup can pass. TypeScript
+    // can't catch one: every flag name belongs to the same union.
+    button.dispatchEvent(
+      new PointerEvent("pointerdown", { altKey: true, metaKey: true }),
+    );
+    expect(
+      received.map((event) => [
+        event.getModifierState("Alt"),
+        event.getModifierState("Control"),
+        event.getModifierState("Meta"),
+        event.getModifierState("Shift"),
+        event.x,
+        event.y,
+      ]),
+    ).toEqual([
+      [true, true, false, false, 3, 4],
+      [false, false, true, true, 0, 0],
+      [true, false, true, false, 0, 0],
+    ]);
+    // An unrecognized key reports false, the way browsers do. `Object.prototype`
+    // member names are the interesting case: looking them up on a plain object
+    // literal finds an inherited value and reports something other than false.
+    expect(received[0]?.getModifierState("constructor")).toBe(false);
+    expect(received[0]?.getModifierState("Nope")).toBe(false);
+  } finally {
+    button.remove();
+  }
+});
+
 test("exposes the dispatched event on window.event while listeners run", async () => {
   if (isBrowser) return;
   const button = document.createElement("button");

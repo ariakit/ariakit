@@ -72,6 +72,8 @@ function applyBrowserShims() {
     window.PointerEvent = class PointerEvent extends MouseEvent {};
   }
 
+  polyfillMouseEventMembers();
+
   // happy-dom doesn't implement window.alert (jsdom and real browsers do).
   // Provide a no-op so code that calls or spies on it works under happy-dom.
   if (isHappyDOM() && typeof window.alert !== "function") {
@@ -97,6 +99,62 @@ function applyBrowserShims() {
     Element.prototype.getClientRects = originalGetClientRects;
     for (const restore of restoreHappyDOMShims) restore();
   };
+}
+
+// happy-dom's MouseEvent implements neither `getModifierState` nor the `x`/`y`
+// aliases of `clientX`/`clientY`, which browsers and jsdom provide. A named
+// dispatcher installs both while initializing the event, so only events the
+// caller built reached listeners without them. PointerEvent extends MouseEvent
+// and inherits this patch.
+// https://github.com/ariakit/ariakit/issues/7156
+// https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/getModifierState
+// https://drafts.csswg.org/cssom-view/#dom-mouseevent-x
+function polyfillMouseEventMembers() {
+  if (typeof window.MouseEvent === "undefined") return;
+  const prototype = window.MouseEvent.prototype;
+
+  if (typeof prototype.getModifierState !== "function") {
+    // happy-dom's constructor keeps only these four flags and drops the
+    // `modifier*` init members, so this fallback can never report the others.
+    // A Map, because an object literal would resolve `Object.prototype` key
+    // names such as `constructor` to a bogus flag.
+    // https://github.com/ariakit/ariakit/issues/7165
+    const flagsByModifier = new Map<
+      string,
+      "altKey" | "ctrlKey" | "metaKey" | "shiftKey"
+    >([
+      ["Alt", "altKey"],
+      ["Control", "ctrlKey"],
+      ["Meta", "metaKey"],
+      ["Shift", "shiftKey"],
+    ]);
+    // Plain assignment matches the writable, enumerable, configurable
+    // descriptor browsers and jsdom give this method.
+    prototype.getModifierState = function getModifierState(
+      this: MouseEvent,
+      key: string,
+    ) {
+      const flag = flagsByModifier.get(key);
+      if (!flag) return false;
+      return this[flag];
+    };
+  }
+
+  const aliases = [
+    ["x", "clientX"],
+    ["y", "clientY"],
+  ] as const;
+
+  for (const [alias, source] of aliases) {
+    if (alias in prototype) continue;
+    Object.defineProperty(prototype, alias, {
+      configurable: true,
+      enumerable: true,
+      get(this: MouseEvent) {
+        return this[source];
+      },
+    });
+  }
 }
 
 // happy-dom omits built-in constraint messages. Use jsdom's generic text so
