@@ -3,6 +3,20 @@
 import { expect, test } from "vitest";
 import "./shims.ts";
 
+test("constructs clipboard events from ClipboardEventInit", () => {
+  const clipboardData = { getData: () => "a,b" };
+  // jsdom has no `DataTransfer` constructor, so use the smallest test double
+  // that can prove the fallback preserves the caller's object.
+  // @ts-expect-error
+  const event = new ClipboardEvent("paste", { clipboardData });
+  expect(event.clipboardData).toBe(clipboardData);
+  expect(new ClipboardEvent("paste").clipboardData).toBeNull();
+  // Web IDL converts a null dictionary to an empty dictionary.
+  // https://webidl.spec.whatwg.org/#es-dictionary
+  // @ts-expect-error
+  expect(new ClipboardEvent("paste", null).clipboardData).toBeNull();
+});
+
 test("leaves an environment that already implements mouse event members alone", () => {
   // jsdom implements the full `getModifierState`, including the `modifier*`
   // init members the happy-dom fallback cannot see, so replacing it would

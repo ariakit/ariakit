@@ -49,9 +49,7 @@ function assignProps<T extends object>(
 ) {
   for (const [key, value] of Object.entries(props)) {
     // Configurable, matching the descriptors browsers and jsdom give these
-    // members, so a member assigned here can be replaced afterwards. It cannot
-    // rescue a redefine of a member `createEvent` already installed as
-    // non-configurable, which is what #7179 tracks.
+    // members, so a member assigned here can be replaced afterwards.
     Object.defineProperty(obj, key, {
       configurable: true,
       get: () => value ?? null,
@@ -87,6 +85,11 @@ function initClipboardEvent(
   event: ClipboardEvent,
   { clipboardData }: ClipboardEventInit,
 ) {
+  // `@testing-library/dom` may have already installed the requested value as a
+  // non-configurable property when the environment has no `DataTransfer`.
+  // https://github.com/ariakit/ariakit/issues/7179
+  const descriptor = Object.getOwnPropertyDescriptor(event, "clipboardData");
+  if (descriptor?.configurable === false) return;
   assignProps(event, {
     clipboardData,
   });

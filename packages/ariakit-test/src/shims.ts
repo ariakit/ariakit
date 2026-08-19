@@ -60,8 +60,19 @@ function applyBrowserShims() {
     typeof window.ClipboardEvent === "undefined" &&
     typeof Event !== "undefined"
   ) {
-    // @ts-expect-error
-    window.ClipboardEvent = class ClipboardEvent extends Event {};
+    window.ClipboardEvent = class ClipboardEvent extends Event {
+      #clipboardData: DataTransfer | null;
+
+      constructor(type: string, eventInitDict: ClipboardEventInit | null = {}) {
+        const eventInit = eventInitDict ?? {};
+        super(type, eventInit);
+        this.#clipboardData = eventInit.clipboardData ?? null;
+      }
+
+      get clipboardData() {
+        return this.#clipboardData;
+      }
+    };
   }
 
   polyfillMouseEventMembers();
