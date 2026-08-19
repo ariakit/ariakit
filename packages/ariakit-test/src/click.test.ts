@@ -357,6 +357,58 @@ test("click forwards the pointer identity from a label to its control", async ()
   expect((checkbox as HTMLInputElement).checked).toBe(true);
 });
 
+// Chromium and Firefox report `detail: 1` on the forwarded click, while WebKit
+// reports `0`. Keep the gesture's value so both clicks describe one activation.
+// https://github.com/ariakit/ariakit/issues/7176
+test("click forwards the gesture init from a label to its control", async () => {
+  document.body.innerHTML = `
+    <label for="agree">Agree</label>
+    <input id="agree" type="checkbox">
+  `;
+
+  const label = q.text("Agree");
+  const checkbox = q.checkbox("Agree");
+  const events: Array<Record<string, unknown>> = [];
+  const recordEvent = (event: PointerEvent) => {
+    events.push({
+      target: event.currentTarget === label ? "label" : "checkbox",
+      shiftKey: event.shiftKey,
+      capsLock: event.getModifierState("CapsLock"),
+      clientX: event.clientX,
+      clientY: event.clientY,
+      detail: event.detail,
+    });
+  };
+  label.addEventListener("click", recordEvent);
+  checkbox.addEventListener("click", recordEvent);
+
+  await click(label, {
+    shiftKey: true,
+    modifierCapsLock: true,
+    clientX: 17,
+    clientY: 19,
+  });
+
+  expect(events).toEqual([
+    {
+      target: "label",
+      shiftKey: true,
+      capsLock: true,
+      clientX: 17,
+      clientY: 19,
+      detail: 1,
+    },
+    {
+      target: "checkbox",
+      shiftKey: true,
+      capsLock: true,
+      clientX: 17,
+      clientY: 19,
+      detail: 1,
+    },
+  ]);
+});
+
 test("rightClick carries the pointer identity to contextmenu and auxclick", async () => {
   document.body.innerHTML = `<button type="button">Open menu</button>`;
 

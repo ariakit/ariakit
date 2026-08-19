@@ -98,13 +98,10 @@ function createKeyboardClickEvent(
   const PointerEventConstructor =
     defaultView?.PointerEvent ?? defaultView?.MouseEvent ?? MouseEvent;
   const eventOptions: PointerEventInit = {
+    ...options,
     bubbles: true,
     cancelable: true,
     composed: true,
-    altKey: options.altKey,
-    ctrlKey: options.ctrlKey,
-    metaKey: options.metaKey,
-    shiftKey: options.shiftKey,
     ...noPointerOptions,
   };
   const event = new PointerEventConstructor("click", eventOptions);

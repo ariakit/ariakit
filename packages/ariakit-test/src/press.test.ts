@@ -377,3 +377,25 @@ test("press.Enter submits with no pointer behind the default button click", asyn
     },
   ]);
 });
+
+// https://github.com/ariakit/ariakit/issues/7181
+test("press.Enter keeps modifier state on the default button click", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const states: string[] = [];
+  const recordState = (event: KeyboardEvent | MouseEvent) => {
+    states.push(`${event.type} ${event.getModifierState("CapsLock")}`);
+  };
+  button.type = "submit";
+  input.addEventListener("keydown", recordState);
+  button.addEventListener("click", recordState);
+  input.addEventListener("keyup", recordState);
+  form.addEventListener("submit", (event) => event.preventDefault());
+  form.append(input, button);
+  document.body.append(form);
+
+  await press.Enter(input, { modifierCapsLock: true });
+
+  expect(states).toEqual(["keydown true", "click true", "keyup true"]);
+});

@@ -149,21 +149,6 @@ const contactAttributes: Record<ContactAttribute, true> = {
 const contactAttributeKeys = getKeys(contactAttributes);
 
 /**
- * Returns only the members that identify the pointer behind a gesture, for an
- * event a browser derives from another one, like the `click` a label forwards to
- * its control.
- */
-export function getPointerIdentity(
-  options?: PointerEventInit,
-): PointerEventInit {
-  return {
-    pointerId: options?.pointerId,
-    pointerType: options?.pointerType,
-    isPrimary: options?.isPrimary,
-  };
-}
-
-/**
  * Returns the event properties for the `click` or `auxclick` that ends the
  * gesture, which a browser fires on the release with the contact reset.
  */
