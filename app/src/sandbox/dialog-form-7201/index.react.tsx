@@ -24,6 +24,7 @@ function CoverageDialog({ label, withDocumentField }: CoverageDialogProps) {
         open={open}
         onClose={() => setOpen(false)}
         render={<form />}
+        className="fixed inset-x-4 top-20 mx-auto flex max-w-md flex-col gap-3 rounded bg-white p-6"
       >
         <Ariakit.DialogHeading>{label}</Ariakit.DialogHeading>
         <label>
