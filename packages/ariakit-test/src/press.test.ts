@@ -383,9 +383,17 @@ test("press.Enter keeps modifier state on the default button click", async () =>
   const form = document.createElement("form");
   const input = document.createElement("input");
   const button = document.createElement("button");
-  const states: string[] = [];
+  const states: Array<{
+    type: string;
+    detail: number;
+    capsLock: boolean;
+  }> = [];
   const recordState = (event: KeyboardEvent | MouseEvent) => {
-    states.push(`${event.type} ${event.getModifierState("CapsLock")}`);
+    states.push({
+      type: event.type,
+      detail: event.detail,
+      capsLock: event.getModifierState("CapsLock"),
+    });
   };
   button.type = "submit";
   input.addEventListener("keydown", recordState);
@@ -395,7 +403,11 @@ test("press.Enter keeps modifier state on the default button click", async () =>
   form.append(input, button);
   document.body.append(form);
 
-  await press.Enter(input, { modifierCapsLock: true });
+  await press.Enter(input, { detail: 2, modifierCapsLock: true });
 
-  expect(states).toEqual(["keydown true", "click true", "keyup true"]);
+  expect(states).toEqual([
+    { type: "keydown", detail: 2, capsLock: true },
+    { type: "click", detail: 0, capsLock: true },
+    { type: "keyup", detail: 2, capsLock: true },
+  ]);
 });

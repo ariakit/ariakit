@@ -97,8 +97,37 @@ function createKeyboardClickEvent(
   // https://github.com/ariakit/ariakit/issues/7178
   const PointerEventConstructor =
     defaultView?.PointerEvent ?? defaultView?.MouseEvent ?? MouseEvent;
+  const {
+    altKey,
+    ctrlKey,
+    metaKey,
+    shiftKey,
+    modifierAltGraph,
+    modifierCapsLock,
+    modifierFn,
+    modifierFnLock,
+    modifierHyper,
+    modifierNumLock,
+    modifierScrollLock,
+    modifierSuper,
+    modifierSymbol,
+    modifierSymbolLock,
+  } = options;
   const eventOptions: PointerEventInit = {
-    ...options,
+    altKey,
+    ctrlKey,
+    metaKey,
+    shiftKey,
+    modifierAltGraph,
+    modifierCapsLock,
+    modifierFn,
+    modifierFnLock,
+    modifierHyper,
+    modifierNumLock,
+    modifierScrollLock,
+    modifierSuper,
+    modifierSymbol,
+    modifierSymbolLock,
     bubbles: true,
     cancelable: true,
     composed: true,
