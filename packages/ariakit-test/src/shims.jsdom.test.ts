@@ -32,8 +32,19 @@ test("leaves an environment with a conformant modifier state alone", () => {
     event.getModifierState("alt"),
   ]).toEqual([true, false, false]);
   // Both implementations answer those the same way. `Super` is what separates
-  // them: jsdom reports the spec member that Chrome, Firefox, and Safari all
+  // them: jsdom reports the spec member that Chromium, Firefox, and WebKit all
   // ignore, so the shim doesn't record it and would report false here.
   const superEvent = new KeyboardEvent("keydown", { modifierSuper: true });
   expect(superEvent.getModifierState("Super")).toBe(true);
+  // That discriminator only holds while the two tables differ, so assert the
+  // replacement itself as well. jsdom's method is a branded WebIDL operation
+  // and rejects a foreign `this`; the shim installs a plain function, which
+  // answers `true` here instead of throwing. The error comes from jsdom's
+  // realm, so match that it throws rather than its constructor identity.
+  expect(() =>
+    KeyboardEvent.prototype.getModifierState.call(
+      { altKey: true } as unknown as KeyboardEvent,
+      "Alt",
+    ),
+  ).toThrow();
 });

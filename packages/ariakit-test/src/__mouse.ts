@@ -1,3 +1,4 @@
+import { initEvent } from "./__init-event.ts";
 import { dispatch } from "./dispatch.ts";
 
 // `MouseEvent.buttons` is a bitmask of the buttons currently held down, and its
@@ -134,12 +135,17 @@ export function isChordedRelease(options: PointerEventInit) {
 export function dispatchAuxClick(element: Element, options?: MouseEventInit) {
   const { defaultView } = element.ownerDocument;
   const MouseEventConstructor = defaultView?.MouseEvent ?? MouseEvent;
-  const event = new MouseEventConstructor("auxclick", {
+  const init: MouseEventInit = {
     bubbles: true,
     cancelable: true,
     composed: true,
     detail: 1,
     ...options,
-  });
+  };
+  const event = new MouseEventConstructor("auxclick", init);
+  // Run the same initialization a named dispatcher does, so this step reports
+  // the same modifier state as the rest of the gesture that fires it.
+  // https://github.com/ariakit/ariakit/issues/7165
+  initEvent(event, init);
   return dispatch(element, event);
 }

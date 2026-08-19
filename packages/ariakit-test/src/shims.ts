@@ -116,8 +116,8 @@ const standardModifierFlags = new Map<
 ]);
 
 // The modifier keys an event carries only as an `EventModifierInit` member.
-// This mirrors `initUIEventModififiers`, which also leaves out UI Events'
-// `modifierHyper` and `modifierSuper`, and no browser engine implements those.
+// This mirrors `modifierNameByInitMember` in `__init-event.ts`, which also
+// leaves out `modifierHyper` and `modifierSuper` and records why.
 // https://w3c.github.io/uievents/#event-modifier-initializers
 const initOnlyModifierMembers = new Map<string, keyof EventModifierInit>([
   ["AltGraph", "modifierAltGraph"],
