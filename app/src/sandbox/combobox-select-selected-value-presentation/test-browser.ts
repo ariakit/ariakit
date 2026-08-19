@@ -180,21 +180,20 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
   }) => {
     const item = page.locator("[data-render-count]");
-    // Item registration has no separate completion marker, so cross its frame
-    // checkpoint before sampling the stable render count.
-    await flushFrames(page);
-    const renderCount = await item.getAttribute("data-render-count");
-    if (renderCount == null) {
-      throw new Error("Combobox item render count was not found");
-    }
+    // Mounting renders the item twice: once on its own, then again when the
+    // composite element is published. `beforeEach` returns when Astro only
+    // schedules hydration, so a frame checkpoint can still sample the first.
+    // https://github.com/ariakit/ariakit/issues/7184
+    await test.expect(item).toHaveAttribute("data-render-count", "2");
 
     await q.combobox("Render-counted fruit").click();
     await test.expect(q.listbox("Render-counted fruit")).toBeVisible();
-    // Opening can finish focus work on the next frames, and the absence of an
-    // item render has no positive state to await.
+    // The open still commits on the next frames, and the absence of an item
+    // render has no positive state to await, so give a stray render a chance
+    // to appear before asserting it never happened.
     await flushFrames(page);
 
-    await test.expect(item).toHaveAttribute("data-render-count", renderCount);
+    await test.expect(item).toHaveAttribute("data-render-count", "2");
   });
 
   test("keeps a late-mounted selected item nearest-edge aligned", async ({
