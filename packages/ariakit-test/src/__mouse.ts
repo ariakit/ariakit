@@ -1,4 +1,5 @@
 import { getKeys } from "@ariakit/utils";
+import type { PointerEventInitWithPersistentDeviceId } from "./__init-event.ts";
 
 // `MouseEvent.buttons` is a bitmask of the buttons currently held down, and its
 // bits are not ordered like `MouseEvent.button`: the secondary button is bit 1
@@ -19,9 +20,9 @@ export function getMouseButton(options?: MouseEventInit) {
 }
 
 function omit(
-  options: PointerEventInit | undefined,
-  keys: ReadonlyArray<keyof PointerEventInit>,
-): PointerEventInit {
+  options: PointerEventInitWithPersistentDeviceId | undefined,
+  keys: ReadonlyArray<keyof PointerEventInitWithPersistentDeviceId>,
+): PointerEventInitWithPersistentDeviceId {
   const remaining = { ...options };
   for (const key of keys) {
     delete remaining[key];
@@ -114,25 +115,24 @@ export function getReleaseOptions(
   };
 }
 
-type PointerIdentityAttribute = "pointerId" | "pointerType" | "isPrimary";
+type PointerIdentityAttribute = "pointerId" | "pointerType";
 
-type ContactAttribute = Exclude<
-  keyof PointerEventInit,
+type ClickResetAttribute = Exclude<
+  keyof PointerEventInitWithPersistentDeviceId,
   keyof MouseEventInit | PointerIdentityAttribute
 >;
 
-// The contact a caller described for the press, which browsers reset on the
-// click-family events so each member falls back to the value `dispatch` gives a
-// device that reports none. `isPrimary` stays out on purpose: nothing derives it
-// for these events, and Firefox and WebKit carry a caller's value over where
-// Chromium resets it. So a caller's `pressure` is dropped here while their
-// `isPrimary` reaches the click.
+// The pointer-specific values a caller described for the press, which the
+// click-family events reset so each member falls back to the value `dispatch`
+// gives a device that reports none. Only the causal pointer's ID and type carry
+// over.
 //
 // Keyed rather than listed so TypeScript requires every non-identity member. A
 // list silently missed `altitudeAngle`, `azimuthAngle`, `coalescedEvents`, and
 // `predictedEvents`, and `PointerEventInit` keeps growing.
 // https://github.com/ariakit/ariakit/pull/7177#discussion_r3811185510
-const contactAttributes: Record<ContactAttribute, true> = {
+const clickResetAttributes: Record<ClickResetAttribute, true> = {
+  isPrimary: true,
   width: true,
   height: true,
   pressure: true,
@@ -142,31 +142,32 @@ const contactAttributes: Record<ContactAttribute, true> = {
   twist: true,
   altitudeAngle: true,
   azimuthAngle: true,
+  persistentDeviceId: true,
   coalescedEvents: true,
   predictedEvents: true,
 };
 
-const contactAttributeKeys = getKeys(contactAttributes);
+const clickResetAttributeKeys = getKeys(clickResetAttributes);
 
 /**
  * Returns the event properties for the `click` or `auxclick` that ends the
- * gesture, which a browser fires on the release with the contact reset.
+ * gesture, with every pointer-specific member except the ID and type reset.
  */
 export function getClickOptions(options?: PointerEventInit): PointerEventInit {
   return {
     detail: 1,
-    ...omit(getReleaseOptions(options), contactAttributeKeys),
+    ...omit(getReleaseOptions(options), clickResetAttributeKeys),
   };
 }
 
 /**
  * Returns the event properties for the `contextmenu` the secondary button opens
- * while it is still held down, with the same contact reset.
+ * while it is still held down, with the same pointer-specific reset.
  */
 export function getContextMenuOptions(
   options?: PointerEventInit,
 ): PointerEventInit {
-  return omit(getPressOptions(options), contactAttributeKeys);
+  return omit(getPressOptions(options), clickResetAttributeKeys);
 }
 
 // Pointer Events fires no `pointerdown` or `pointerup` for a chorded button

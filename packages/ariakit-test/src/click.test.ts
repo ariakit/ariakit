@@ -284,29 +284,38 @@ function recordPointerMembers(element: Element, types: string[]) {
   return events;
 }
 
-// Browsers carry only the causal pointer's identity onto the event that ends
-// the gesture: a pen press reporting `tiltX: 30` still produces a `click` with
-// `tiltX: 0`. `isPrimary` is the deliberate exception, kept because Firefox and
-// WebKit carry it over, while Chromium resets it as the specification requires.
+// Pointer Events carries only the causal pointer's ID and type onto the event
+// that ends the gesture. Chromium resets `isPrimary` as required; Firefox and
+// WebKit carry it over instead.
+// https://github.com/ariakit/ariakit/issues/7204
 test("click carries only the pointer identity to the click event", async () => {
   document.body.innerHTML = `<button type="button">Submit</button>`;
 
   const button = q.button("Submit");
   const events = recordPointerMembers(button, ["pointerdown", "click"]);
+  const persistentDeviceIds: Array<number | undefined> = [];
+  for (const type of ["pointerdown", "click"]) {
+    button.addEventListener(type, (event) => {
+      persistentDeviceIds.push((event as PointerEvent).persistentDeviceId);
+    });
+  }
 
-  await click(button, {
+  const options: PointerEventInit & { persistentDeviceId: number } = {
     pointerId: 7,
     pointerType: "pen",
     isPrimary: true,
     pressure: 0.5,
     altitudeAngle: 0.3,
     tiltX: 30,
-  });
+    persistentDeviceId: 91,
+  };
+  await click(button, options);
 
   expect(events).toEqual([
     "pointerdown true 7 pen true 0.5 30 0.3",
-    `click true 7 pen true 0 0 ${Math.PI / 2}`,
+    `click true 7 pen false 0 0 ${Math.PI / 2}`,
   ]);
+  expect(persistentDeviceIds).toEqual([91, 0]);
 });
 
 test("click with the auxiliary button carries the pointer identity to auxclick", async () => {
@@ -327,7 +336,7 @@ test("click with the auxiliary button carries the pointer identity to auxclick",
 
   expect(events).toEqual([
     "pointerdown true 7 pen true 0.5 30 0.3",
-    `auxclick true 7 pen true 0 0 ${Math.PI / 2}`,
+    `auxclick true 7 pen false 0 0 ${Math.PI / 2}`,
   ]);
 });
 
@@ -353,7 +362,7 @@ test("click forwards the pointer identity from a label to its control", async ()
     tiltX: 30,
   });
 
-  expect(events).toEqual([`click true 7 pen true 0 0 ${Math.PI / 2}`]);
+  expect(events).toEqual([`click true 7 pen false 0 0 ${Math.PI / 2}`]);
   expect((checkbox as HTMLInputElement).checked).toBe(true);
 });
 
@@ -430,8 +439,8 @@ test("rightClick carries the pointer identity to contextmenu and auxclick", asyn
 
   expect(events).toEqual([
     "pointerdown true 7 pen true 0.5 30 0.3",
-    `contextmenu true 7 pen true 0 0 ${Math.PI / 2}`,
-    `auxclick true 7 pen true 0 0 ${Math.PI / 2}`,
+    `contextmenu true 7 pen false 0 0 ${Math.PI / 2}`,
+    `auxclick true 7 pen false 0 0 ${Math.PI / 2}`,
   ]);
 });
 
