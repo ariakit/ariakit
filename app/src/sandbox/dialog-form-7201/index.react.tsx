@@ -20,24 +20,31 @@ function CoverageDialog({ label, withDocumentField }: CoverageDialogProps) {
       <button tabIndex={0} onClick={() => setOpen(true)}>
         {label}
       </button>
+      {/* TODO: Remove once https://github.com/ariakit/ariakit/issues/7201 is
+          fixed. The dialog resolves its own document and window from the
+          element it renders, and a form answers those lookups with a control
+          named after them. Nesting the form inside the dialog, rather than
+          rendering the dialog as the form, keeps the form out of that lookup
+          while the dialog still holds exactly the same controls. */}
       <Ariakit.Dialog
         open={open}
         onClose={() => setOpen(false)}
-        render={<form />}
         className="fixed inset-x-4 top-20 mx-auto flex max-w-md flex-col gap-3 rounded bg-white p-6"
       >
         <Ariakit.DialogHeading>{label}</Ariakit.DialogHeading>
-        <label>
-          <input type="checkbox" name="self" />
-          This coverage is for me
-        </label>
-        {withDocumentField ? (
+        <form className="flex flex-col gap-3">
           <label>
-            Proof of eligibility
-            <input name="document" />
+            <input type="checkbox" name="self" />
+            This coverage is for me
           </label>
-        ) : null}
-        <Ariakit.DialogDismiss>Cancel</Ariakit.DialogDismiss>
+          {withDocumentField ? (
+            <label>
+              Proof of eligibility
+              <input name="document" />
+            </label>
+          ) : null}
+          <Ariakit.DialogDismiss>Cancel</Ariakit.DialogDismiss>
+        </form>
       </Ariakit.Dialog>
     </div>
   );

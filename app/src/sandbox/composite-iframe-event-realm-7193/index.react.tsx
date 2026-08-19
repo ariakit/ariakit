@@ -60,6 +60,21 @@ export default function Example() {
   const [frameBody, setFrameBody] = useState<HTMLElement | null>(null);
 
   const setFrame = useCallback((element: HTMLIFrameElement | null) => {
+    // TODO: Remove once https://github.com/ariakit/ariakit/issues/7193 is
+    // fixed. `Composite` builds the events it synthesizes with the ambient
+    // window's constructors, so a listener inside the frame receives an event
+    // from the parent realm. Pointing the frame's constructors at the parent's
+    // makes its own `instanceof` checks recognize them again.
+    //
+    // This only covers the interfaces listed here, and it gives up the frame's
+    // ability to tell a parent-built event from one of its own, so code inside
+    // the frame that relies on that distinction needs a different approach.
+    const frameWindow = element?.contentDocument?.defaultView;
+    if (frameWindow) {
+      frameWindow.Event = window.Event;
+      frameWindow.FocusEvent = window.FocusEvent;
+      frameWindow.KeyboardEvent = window.KeyboardEvent;
+    }
     setFrameBody(element?.contentDocument?.body ?? null);
   }, []);
 
