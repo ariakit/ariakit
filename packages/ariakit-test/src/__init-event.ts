@@ -3,6 +3,12 @@ import { getKeys } from "@ariakit/utils";
 import type { OwnerWindowSource } from "./__utils.ts";
 import { getOwnerWindow } from "./__utils.ts";
 
+// Pointer Events Level 4 includes this member in its initializer, but TypeScript
+// 6.0 declares it only on the resulting event.
+export type PointerEventInitWithPersistentDeviceId = PointerEventInit & {
+  persistentDeviceId?: PointerEvent["persistentDeviceId"];
+};
+
 type SpecificEventInit<E extends Event> = E extends InputEvent
   ? InputEventInit
   : E extends ClipboardEvent
@@ -10,7 +16,7 @@ type SpecificEventInit<E extends Event> = E extends InputEvent
     : E extends KeyboardEvent
       ? KeyboardEventInit
       : E extends PointerEvent
-        ? PointerEventInit
+        ? PointerEventInitWithPersistentDeviceId
         : E extends MouseEvent
           ? MouseEventInit
           : E extends CompositionEvent
@@ -251,9 +257,10 @@ function initPointerEvent(
     twist,
     altitudeAngle,
     azimuthAngle,
+    persistentDeviceId,
     isPrimary,
     pointerType = "mouse",
-  }: PointerEventInit,
+  }: PointerEventInitWithPersistentDeviceId,
 ) {
   assignProps(event, {
     pointerId: sanitizeNumber(pointerId),
@@ -266,6 +273,7 @@ function initPointerEvent(
     twist: sanitizeNumber(twist),
     altitudeAngle: sanitizeAltitudeAngle(altitudeAngle),
     azimuthAngle: sanitizeNumber(azimuthAngle),
+    persistentDeviceId: sanitizeNumber(persistentDeviceId),
     isPrimary: !!isPrimary,
     pointerType: pointerType,
   });

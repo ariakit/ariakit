@@ -4,7 +4,6 @@ import {
   getContextMenuOptions,
   getHoverOptions,
   getMouseButton,
-  getPointerIdentity,
   omitButtons,
 } from "./__mouse.ts";
 import { isHappyDOM, settle, wrapAsync } from "./__utils.ts";
@@ -56,10 +55,9 @@ async function clickLabel(
     if (defaultAllowed && isFocusable(input)) {
       await focus(input);
       // Only "click" is fired! Browsers don't go over the whole event stack in
-      // this case (mousedown, mouseup etc.). The forwarded click still reports
-      // the pointer that caused it, as it does in Chromium and Firefox (WebKit
-      // reports an unset pointer instead).
-      await dispatch.click(input, getPointerIdentity(options));
+      // this case (mousedown, mouseup etc.). The forwarded click carries the
+      // terminal event init from the gesture that activated the label.
+      await dispatch.click(input, options);
     }
   }
 }
