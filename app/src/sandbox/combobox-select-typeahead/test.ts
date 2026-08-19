@@ -41,12 +41,12 @@ for (const [name, labels] of Object.entries(fixtures)) {
 
     // https://github.com/ariakit/ariakit/issues/2699
     test("matches custom item content while closed", async () => {
-      const select = q.combobox.ensure(labels.country);
+      const select = q.combobox(labels.country);
       await focus(select);
       await press("c", select);
 
       expect(select).toHaveTextContent("Canada");
-      expect(q.listbox()).not.toBeInTheDocument();
+      expect(q.listbox.maybe()).not.toBeInTheDocument();
     });
 
     // https://github.com/ariakit/ariakit/issues/2699
@@ -63,9 +63,9 @@ for (const [name, labels] of Object.entries(fixtures)) {
     test("typeahead updates the value for late unmounted items", async () => {
       await click(q.button(labels.loadFruitOptions));
 
-      const select = q.combobox.ensure(labels.fruit);
+      const select = q.combobox(labels.fruit);
       expect(select).toHaveFocus();
-      expect(q.option("Apple")).not.toBeInTheDocument();
+      expect(q.option.maybe("Apple")).not.toBeInTheDocument();
       expect(q.status(`${labels.fruit} active item`)).toHaveTextContent(
         "orange",
       );
@@ -83,9 +83,9 @@ for (const [name, labels] of Object.entries(fixtures)) {
     test("typeahead updates the value for late renderer items", async () => {
       await click(q.button(labels.loadRenderedFruitOptions));
 
-      const select = q.combobox.ensure(labels.renderedFruit);
+      const select = q.combobox(labels.renderedFruit);
       expect(select).toHaveFocus();
-      expect(q.option("Apple")).not.toBeInTheDocument();
+      expect(q.option.maybe("Apple")).not.toBeInTheDocument();
       expect(q.status(`${labels.renderedFruit} active item`)).toHaveTextContent(
         "orange",
       );

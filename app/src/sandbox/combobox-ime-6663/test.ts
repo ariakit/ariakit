@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6663
 test("keeps focus in the combobox between IME composition sessions", async () => {
-  const combobox = q.combobox.ensure("Fruit");
+  const combobox = q.combobox("Fruit");
 
   combobox.focus();
   await type("사", combobox, { isComposing: true });

@@ -14,7 +14,7 @@ describe("public-select", () => {
     expect(q.option("Apple")).toHaveFocus();
     expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
     await click(q.option("Banana"));
-    expect(q.listbox()).not.toBeInTheDocument();
+    expect(q.listbox.maybe()).not.toBeInTheDocument();
     expect(select).toHaveTextContent("Banana");
   });
 });
@@ -84,7 +84,7 @@ describe("public-select-form-disabled", () => {
     expect(select).toBeDisabled();
     expect(select).toHaveAttribute("aria-disabled", "true");
     await click(select);
-    expect(q.listbox()).not.toBeInTheDocument();
+    expect(q.listbox.maybe()).not.toBeInTheDocument();
     await click(q.button("Submit disabled legacy select"));
     expect(alert).toHaveBeenCalledWith(null);
   });
@@ -100,7 +100,7 @@ describe("public-select-items-unmount", () => {
     const select = q.combobox("Unmounting favorite fruit");
     await click(select);
     await click(q.option("Banana"));
-    expect(q.listbox()).not.toBeInTheDocument();
+    expect(q.listbox.maybe()).not.toBeInTheDocument();
     await click(select);
     expect(q.option("Banana")).toHaveAttribute("aria-selected", "true");
   });
@@ -116,7 +116,7 @@ describe("public-select-default-open-controlled", () => {
     const select = q.combobox("Default-open favorite fruit");
     expect(q.listbox()).toBeVisible();
     await click(select);
-    expect(q.listbox()).not.toBeInTheDocument();
+    expect(q.listbox.maybe()).not.toBeInTheDocument();
     await click(select);
     expect(q.listbox()).toBeVisible();
   });

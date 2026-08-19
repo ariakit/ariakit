@@ -19,10 +19,10 @@ import { expect, test } from "vitest";
  */
 async function loadRecentFilesWithFocusInside() {
   await click(q.button("Show shortcuts"));
-  const editShortcuts = q.button.ensure("Edit shortcuts");
+  const editShortcuts = q.button("Edit shortcuts");
   await focus(editShortcuts);
   // Clicked through the DOM so the click doesn't move focus out of the panel.
-  q.button.ensure("Load recent files").click();
+  q.button("Load recent files").click();
   await sleep();
   expect(q.button("Recent files")).toBeVisible();
   return editShortcuts;
@@ -48,11 +48,11 @@ test("keeps focus after the panel is hidden synchronously", async () => {
 });
 
 test("keeps focus after tabbing into a panel that hides itself", async () => {
-  const arm = q.button.ensure("Hide shortcuts on focus");
+  const arm = q.button("Hide shortcuts on focus");
   await click(arm);
   expect(arm).toHaveFocus();
   await press.Tab();
-  expect(q.toolbar("Shortcuts")).not.toBeInTheDocument();
+  expect(q.toolbar.maybe("Shortcuts")).not.toBeInTheDocument();
 
   expect(await loadRecentFilesWithFocusInside()).toHaveFocus();
 });

@@ -2,12 +2,12 @@ import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("show/hide when clicking on disclosure", async () => {
-  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.dialog.maybe()).not.toBeInTheDocument();
   await click(q.button("Accept invite"));
   expect(q.dialog()).toBeVisible();
   expect(q.button("Accept")).toHaveFocus();
   await click(q.button("Accept invite"));
-  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.dialog.maybe()).not.toBeInTheDocument();
   expect(q.button("Accept invite")).toHaveFocus();
 });
 
@@ -18,7 +18,7 @@ test("show/hide when pressing enter on disclosure", async () => {
   expect(q.button("Accept")).toHaveFocus();
   await press.ShiftTab();
   await press.Enter();
-  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.dialog.maybe()).not.toBeInTheDocument();
 });
 
 test("show/hide when pressing space on disclosure", async () => {
@@ -28,7 +28,7 @@ test("show/hide when pressing space on disclosure", async () => {
   expect(q.button("Accept")).toHaveFocus();
   await press.ShiftTab();
   await press.Space();
-  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.dialog.maybe()).not.toBeInTheDocument();
 });
 
 test("hide when pressing escape on disclosure", async () => {
@@ -36,13 +36,13 @@ test("hide when pressing escape on disclosure", async () => {
   await press.ShiftTab();
   expect(q.dialog()).toBeVisible();
   await press.Escape();
-  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.dialog.maybe()).not.toBeInTheDocument();
 });
 
 test("hide when pressing escape on popover", async () => {
   await click(q.button("Accept invite"));
   expect(q.dialog()).toBeVisible();
   await press.Escape();
-  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.dialog.maybe()).not.toBeInTheDocument();
   expect(q.button("Accept invite")).toHaveFocus();
 });

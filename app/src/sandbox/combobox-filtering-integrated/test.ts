@@ -6,20 +6,20 @@ test("show/hide popover with click", async () => {
   expect(q.listbox()).toBeVisible();
   expect(q.option("Apple")).not.toHaveFocus();
   await click(document.body);
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox()).not.toHaveFocus();
 });
 
 test("show/hide popover with keyboard", async () => {
   await press.Tab();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await press.ArrowDown();
   expect(q.listbox()).toBeVisible();
   expect(q.option("Apple")).not.toHaveFocus();
   await press.PageDown();
   expect(q.option("Yogurt")).toHaveFocus();
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox()).toHaveFocus();
 });
 

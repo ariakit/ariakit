@@ -17,7 +17,7 @@ describe.each(cases)("%s", (label, searchable, manual) => {
     expect(q.option("main")).toHaveAttribute("aria-selected", "true");
 
     await click(q.option("leg"));
-    expect(q.dialog()).not.toBeInTheDocument();
+    expect(q.dialog.maybe()).not.toBeInTheDocument();
     expect(select).toHaveTextContent("leg");
 
     await focus(select);
@@ -35,7 +35,7 @@ describe.each(cases)("%s", (label, searchable, manual) => {
       manual ? "false" : "true",
     );
     if (manual) {
-      expect(q.tabpanel("Tags")).not.toBeInTheDocument();
+      expect(q.tabpanel.maybe("Tags")).not.toBeInTheDocument();
       await press.Enter();
     }
     expect(q.tab("Tags")).toHaveAttribute("aria-selected", "true");
@@ -53,7 +53,7 @@ describe.each(cases)("%s", (label, searchable, manual) => {
     await press.ArrowRight();
     expect(q.tab("Tags")).toHaveFocus();
     await press.Tab();
-    expect(q.dialog()).not.toBeInTheDocument();
+    expect(q.dialog.maybe()).not.toBeInTheDocument();
 
     target.remove();
   });
@@ -70,7 +70,7 @@ describe.each(cases)("%s", (label, searchable, manual) => {
       const custom = q.option("Create branch custom from main");
       expect(custom).toHaveFocus();
       await press.Enter();
-      expect(q.dialog()).not.toBeInTheDocument();
+      expect(q.dialog.maybe()).not.toBeInTheDocument();
       expect(select).toHaveTextContent("custom");
 
       await press.Space();

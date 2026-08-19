@@ -4,7 +4,7 @@ import { expect, test } from "vitest";
 // Reproduces https://github.com/ariakit/ariakit/issues/6307
 
 test("a successful submit does not steal focus on later items changes", async () => {
-  const email = q.textbox.ensure("Email");
+  const email = q.textbox("Email");
 
   // 1. Submit with the email empty: the submission fails and the invalid email
   //    field is focused (correct autoFocusOnSubmit behavior).

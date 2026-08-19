@@ -9,7 +9,7 @@ A listener on the pointer events that `hover`, `mouseDown`, `mouseUp`, and the `
 Those events now report the values Chromium, Firefox, and WebKit all report for one ordinary click, including the pressure Pointer Events defines for a device with no pressure sensor: `0.5` while a button is held down and `0` otherwise. A chorded release keeps `0.5` while another button stays held, because the pointer is still in the active buttons state, which is what Firefox and WebKit report. Chromium derives that one from the button being released and reports `0`.
 
 ```ts
-q.button.ensure("Resize").addEventListener("pointerdown", (event) => {
+q.button("Resize").addEventListener("pointerdown", (event) => {
   event.width; // 1
   event.height; // 1
   event.pressure; // 0.5

@@ -2,6 +2,7 @@ import { click, dispatch, hover, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 const hovercard = () => q.dialog("Ariakit profile");
+const maybeHovercard = () => q.dialog.maybe("Ariakit profile");
 
 const hoverOutside = async () => {
   await hover(document.body);
@@ -10,17 +11,17 @@ const hoverOutside = async () => {
 
 // https://github.com/ariakit/ariakit/issues/7043
 test("shows after hovering and hides after hovering outside", async () => {
-  expect(hovercard()).not.toBeInTheDocument();
+  expect(maybeHovercard()).not.toBeInTheDocument();
 
   // Dispatch directly so the assertions run before the timeout can expire
   // when the full suite delays the interaction helper.
   await dispatch.mouseMove(q.link("@ariakit.com"));
-  expect(hovercard()).not.toBeInTheDocument();
+  expect(maybeHovercard()).not.toBeInTheDocument();
   await expect.poll(hovercard).toBeVisible();
 
   await dispatch.mouseMove(document.body);
   expect(hovercard()).toBeVisible();
-  await expect.poll(hovercard).not.toBeInTheDocument();
+  await expect.poll(maybeHovercard).not.toBeInTheDocument();
 });
 
 test("stays open while focused", async () => {
@@ -57,7 +58,7 @@ test("Escape closes an unfocused hovercard without moving focus", async () => {
   await expect.poll(hovercard).toBeVisible();
 
   await press.Escape();
-  expect(hovercard()).not.toBeInTheDocument();
+  expect(maybeHovercard()).not.toBeInTheDocument();
   expect(anchor).not.toHaveFocus();
 });
 
@@ -68,6 +69,6 @@ test("Escape closes a focused hovercard and restores the anchor", async () => {
   await click(q.button("Follow"));
 
   await press.Escape();
-  expect(hovercard()).not.toBeInTheDocument();
+  expect(maybeHovercard()).not.toBeInTheDocument();
   expect(anchor).toHaveFocus();
 });

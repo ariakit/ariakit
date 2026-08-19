@@ -43,6 +43,6 @@ test("renders every selected value when options share a value", () => {
   const listbox = q.listbox("Duplicate selected values");
   expect(q.within(listbox).option("Selected Banana")).toBeInTheDocument();
   expect(
-    q.within(listbox).option("Later duplicate Banana"),
+    q.within(listbox).option.maybe("Later duplicate Banana"),
   ).not.toBeInTheDocument();
 });

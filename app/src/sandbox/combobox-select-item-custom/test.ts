@@ -20,7 +20,7 @@ test("set value on move", async () => {
   expect(q.option(/Sonia Poe/)).toHaveFocus();
   expect(q.combobox("Account")).toHaveTextContent(/Sonia Poe/);
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Account")).toHaveTextContent(/Jane Doe/);
 });
 

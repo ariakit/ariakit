@@ -14,11 +14,11 @@ Range.prototype.getBoundingClientRect = () => ({
 });
 
 test("shows and hides on text selection", async () => {
-  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.dialog.maybe()).not.toBeInTheDocument();
   await select("dolor, sit");
   expect(q.dialog()).toBeVisible();
   await click(q.text(/^Lorem ipsum/));
-  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.dialog.maybe()).not.toBeInTheDocument();
 });
 
 test("tabs backward into the selection popover", async () => {

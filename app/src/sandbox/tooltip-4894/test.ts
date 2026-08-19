@@ -16,10 +16,10 @@ test("keeps multiple forced tooltips visible", async () => {
 test("hides controlled tooltips that accept setOpen updates", async () => {
   await click(q.button("Open managed one"));
   expect(q.tooltip("MANAGED ONE")).toBeVisible();
-  expect(q.tooltip("MANAGED TWO")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("MANAGED TWO")).not.toBeInTheDocument();
 
   await click(q.button("Open managed two"));
-  expect(q.tooltip("MANAGED ONE")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("MANAGED ONE")).not.toBeInTheDocument();
   expect(q.tooltip("MANAGED TWO")).toBeVisible();
 });
 
@@ -29,7 +29,7 @@ test("keeps managed tooltips active after forced tooltips reopen", async () => {
   expect(q.tooltip("MANAGED ONE")).toBeVisible();
 
   await click(q.button("Open managed two"));
-  expect(q.tooltip("MANAGED ONE")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("MANAGED ONE")).not.toBeInTheDocument();
   expect(q.tooltip("MANAGED TWO")).toBeVisible();
   expect(q.tooltip("FORCED ONE")).toBeVisible();
   expect(q.tooltip("FORCED TWO")).toBeVisible();

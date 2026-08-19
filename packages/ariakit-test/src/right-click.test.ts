@@ -8,7 +8,7 @@ afterEach(() => {
 test("rightClick dispatches a secondary click sequence", async () => {
   document.body.innerHTML = `<button type="button">Open menu</button>`;
 
-  const button = q.button.ensure("Open menu");
+  const button = q.button("Open menu");
   const events: string[] = [];
   const mouseEvents: Array<{
     button: number;
@@ -64,7 +64,7 @@ test("rightClick dispatches a secondary click sequence", async () => {
 test("rightClick dispatches contextmenu and auxclick after prevented pointerdown", async () => {
   document.body.innerHTML = `<button type="button">Open menu</button>`;
 
-  const button = q.button.ensure("Open menu");
+  const button = q.button("Open menu");
   const events: string[] = [];
 
   for (const type of [
@@ -103,7 +103,7 @@ test("rightClick retargets pointer events on pointer-events none", async () => {
   `;
 
   const parent = document.querySelector("[data-testid='parent']");
-  const button = q.button.ensure("Open menu");
+  const button = q.button("Open menu");
   const events: string[] = [];
 
   parent?.addEventListener("pointerdown", (event) => {

@@ -24,7 +24,7 @@ test("leaves focus outside after a focused item is replaced", async () => {
   const withinMenu = q.within(q.menu("Replacement actions"));
   await focus(withinMenu.menuitem("Action 1"));
   await press.End();
-  const item = withinMenu.menuitem.ensure("Action 30");
+  const item = withinMenu.menuitem("Action 30");
   expect(item).toHaveFocus();
 
   await blur(item);
@@ -44,7 +44,7 @@ test("restores focus when a refocused item is replaced", async () => {
   const withinMenu = q.within(menu);
   await focus(withinMenu.menuitem("Action 1"));
   await press.End();
-  const item = withinMenu.menuitem.ensure("Action 30");
+  const item = withinMenu.menuitem("Action 30");
   expect(item).toHaveFocus();
   expect(menu).toHaveAttribute("data-placing");
   await blur(item);

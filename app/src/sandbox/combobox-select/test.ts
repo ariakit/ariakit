@@ -9,7 +9,7 @@ const cases = [
 describe.each(cases)("%s", (label, searchLabel) => {
   test("opens and closes with the pointer and keyboard", async () => {
     const select = q.combobox(label);
-    expect(q.dialog(label)).not.toBeInTheDocument();
+    expect(q.dialog.maybe(label)).not.toBeInTheDocument();
 
     await click(select);
     expect(q.dialog(label)).toBeVisible();
@@ -18,7 +18,7 @@ describe.each(cases)("%s", (label, searchLabel) => {
     expect(q.option("Apple")).toHaveFocus();
 
     await click(select);
-    expect(q.dialog(label)).not.toBeInTheDocument();
+    expect(q.dialog.maybe(label)).not.toBeInTheDocument();
     expect(select).toHaveFocus();
 
     await press.Enter();
@@ -27,7 +27,7 @@ describe.each(cases)("%s", (label, searchLabel) => {
     await press.ShiftTab();
     expect(select).toHaveFocus();
     await press.Enter();
-    expect(q.dialog(label)).not.toBeInTheDocument();
+    expect(q.dialog.maybe(label)).not.toBeInTheDocument();
   });
 
   test("filters, commits, and restores the selected item", async () => {

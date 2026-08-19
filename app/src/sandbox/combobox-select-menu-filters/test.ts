@@ -16,10 +16,10 @@ test("checkbox menu adds an open filter and commits its value", async () => {
   await click(filters.button("Filters (0)"));
   await click(filters.menuitemcheckbox("Language"));
 
-  const select = filters.combobox.ensure("Language:");
+  const select = filters.combobox("Language:");
   expect(select).toHaveAttribute("aria-expanded", "true");
   expect(select).toHaveTextContent("Language: Choose one");
-  const listbox = filters.listbox.ensure("Language:");
+  const listbox = filters.listbox("Language:");
   const listboxQuery = q.within(listbox);
   await type("fr", select);
   expect(listboxQuery.option("French")).toHaveFocus();
@@ -40,7 +40,7 @@ test("click menu removes an uncommitted filter on outside click", async () => {
   );
   await click(document.body);
   expect(filters.button("Filters (0)")).toBeVisible();
-  expect(filters.combobox("Language:")).not.toBeInTheDocument();
+  expect(filters.combobox.maybe("Language:")).not.toBeInTheDocument();
 });
 
 for (const mode of ["Checkbox", "Click"]) {
@@ -54,7 +54,7 @@ for (const mode of ["Checkbox", "Click"]) {
     expect(filters.combobox("Status:")).toHaveFocus();
     await press.Tab();
     await expect
-      .poll(() => filters.combobox("Status:"))
+      .poll(() => filters.combobox.maybe("Status:"))
       .not.toBeInTheDocument();
     expect(filters.button("Filters (0)")).toBeVisible();
   });
@@ -78,7 +78,7 @@ test("click menu manages multiple filters", async () => {
   expect(filters.button("Filters (2)")).toBeVisible();
 
   await click(filters.button("Remove Language filter"));
-  expect(filters.combobox("Language:")).not.toBeInTheDocument();
+  expect(filters.combobox.maybe("Language:")).not.toBeInTheDocument();
   await click(filters.button("Filters (1)"));
   await click(q.menuitem("Clear all"));
   expect(filters.button("Filters (0)")).toHaveFocus();

@@ -125,8 +125,8 @@ test("click suppresses mouse events when pointerdown is prevented", async () => 
     <button type="button">Press me</button>
   `;
 
-  const input = q.textbox.ensure("Before");
-  const button = q.button.ensure("Press me");
+  const input = q.textbox("Before");
+  const button = q.button("Press me");
   const events: string[] = [];
   let preventPointerDown = true;
 
@@ -168,7 +168,7 @@ test("click suppresses mouse events when pointerdown is prevented", async () => 
 test("mouseUp suppresses mouseup after a prevented pointerdown", async () => {
   document.body.innerHTML = `<button type="button">Press me</button>`;
 
-  const button = q.button.ensure("Press me");
+  const button = q.button("Press me");
   const events: string[] = [];
   let preventPointerDown = true;
 
@@ -203,7 +203,7 @@ test("mouseUp suppresses mouseup after a prevented pointerdown", async () => {
 test("mouseDown and mouseUp report the held button", async () => {
   document.body.innerHTML = `<button type="button">Resize</button>`;
 
-  const button = q.button.ensure("Resize");
+  const button = q.button("Resize");
   const events = recordPressEvents(button);
 
   const heldButtons = [
@@ -240,7 +240,7 @@ test("mouseDown and mouseUp report the held button", async () => {
 test("mouseDown and mouseUp fire pointermove for a chorded button change", async () => {
   document.body.innerHTML = `<button type="button">Resize</button>`;
 
-  const button = q.button.ensure("Resize");
+  const button = q.button("Resize");
   const events = recordPressEvents(button, chordEventTypes);
 
   // The primary button stays held while the secondary one is pressed and
@@ -269,7 +269,7 @@ test("mouseDown and mouseUp fire pointermove for a chorded button change", async
 test("a canceled pointermove keeps the mouse events of a chorded gesture", async () => {
   document.body.innerHTML = `<button type="button">Resize</button>`;
 
-  const button = q.button.ensure("Resize");
+  const button = q.button("Resize");
   const events = recordPressEvents(button, chordEventTypes);
   button.addEventListener("pointermove", (event) => event.preventDefault());
 
@@ -296,7 +296,7 @@ test("a canceled pointermove keeps the mouse events of a chorded gesture", async
 test("a canceled pointerdown suppresses the mouse events of a chorded gesture", async () => {
   document.body.innerHTML = `<button type="button">Resize</button>`;
 
-  const button = q.button.ensure("Resize");
+  const button = q.button("Resize");
   const events = recordPressEvents(button, chordEventTypes);
   button.addEventListener("pointerdown", (event) => event.preventDefault());
 
@@ -316,7 +316,7 @@ test("a canceled pointerdown suppresses the mouse events of a chorded gesture", 
 // `select` runs every step from one init like `click` does, so it derives each
 // step and ignores an explicit `buttons`.
 test("select derives buttons from the button it presses", async () => {
-  const paragraph = q.text.ensure(/Keep this/);
+  const paragraph = q.text(/Keep this/);
   const events = recordPressEvents(paragraph);
 
   await select(selectionText, paragraph, { buttons: 3 });

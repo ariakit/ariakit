@@ -5,6 +5,10 @@ const validationError = () =>
   q.text(
     "Constraints not satisfied - Field 1 - Field 2 - Abstract Form - Form",
   );
+const maybeValidationError = () =>
+  q.text.maybe(
+    "Constraints not satisfied - Field 1 - Field 2 - Abstract Form - Form",
+  );
 const submitErrors = () =>
   q.text.all("Field - Abstract Form 1 - Abstract Form 2 - Form 1 - Form 2");
 
@@ -12,7 +16,7 @@ test("validation on sync input", async () => {
   const input = q.textbox.all().at(0);
   if (!input) throw new Error("Missing textbox");
   await click(input);
-  expect(validationError()).not.toBeInTheDocument();
+  expect(maybeValidationError()).not.toBeInTheDocument();
   await click(document.body);
   expect(validationError()).toBeInTheDocument();
 });
@@ -21,7 +25,7 @@ test("validation on async input", async () => {
   const input = q.textbox.all().at(1);
   if (!input) throw new Error("Missing textbox");
   await click(input);
-  expect(validationError()).not.toBeInTheDocument();
+  expect(maybeValidationError()).not.toBeInTheDocument();
   await click(document.body);
   expect(validationError()).toBeInTheDocument();
 });

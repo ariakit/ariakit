@@ -12,7 +12,7 @@ test("disabled select is visually and semantically disabled", () => {
 
 test("disabled select cannot be opened with click", async () => {
   await click(q.combobox("Favorite fruit"));
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
 });
 
 test("disabled select cannot be opened with keyboard", async () => {
@@ -22,7 +22,7 @@ test("disabled select cannot be opened with keyboard", async () => {
   expect(q.button("Submit")).toHaveFocus();
 
   await press.ArrowDown();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
 });
 
 test("disabled select does not submit value", async () => {

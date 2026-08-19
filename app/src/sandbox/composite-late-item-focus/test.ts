@@ -6,7 +6,7 @@ test("does not refocus a late item after focus leaves the composite", async () =
   await focus(q.button("First"));
   await press.ArrowDown();
 
-  const mount = q.button.ensure("Mount late items");
+  const mount = q.button("Mount late items");
   await click(mount);
 
   expect(mount).toHaveFocus();
@@ -15,11 +15,11 @@ test("does not refocus a late item after focus leaves the composite", async () =
 
 // https://github.com/ariakit/ariakit/issues/6986
 test("does not refocus a late item after focus leaves a virtual focus composite", async () => {
-  const composite = q.listbox.ensure("Virtual actions");
+  const composite = q.listbox("Virtual actions");
   await focus(composite);
   expect(composite).toHaveFocus();
 
-  const mount = q.button.ensure("Mount virtual late item");
+  const mount = q.button("Mount virtual late item");
   await click(mount);
 
   expect(q.option("Virtual late item")).toBeVisible();
@@ -34,7 +34,7 @@ test("only focuses the latest item after rapid unresolved moves", async () => {
 
   // Mount without moving focus out of the composite so the pending retry can
   // still focus the latest unresolved item.
-  q.button.ensure("Mount late items").click();
+  q.button("Mount late items").click();
   await sleep();
 
   expect(q.button("Late")).not.toHaveFocus();

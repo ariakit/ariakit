@@ -18,7 +18,7 @@ test("forwarded undefined focusable keeps the tab panel out of the tab order", a
 
 // https://github.com/ariakit/ariakit/issues/7028
 test("forwarded undefined clickOnEnter keeps Enter inert on a native checkbox", async () => {
-  const checkbox = q.checkbox.ensure("Subscribe");
+  const checkbox = q.checkbox("Subscribe");
   await click(checkbox);
   expect(checkbox).toBeChecked();
   await press.Enter(checkbox);
@@ -40,7 +40,7 @@ test("explicit focusable still overrides the computed default", async () => {
 
 // https://github.com/ariakit/ariakit/issues/7028
 test("explicit clickOnEnter still overrides the computed default", async () => {
-  const checkbox = q.checkbox.ensure("Notify");
+  const checkbox = q.checkbox("Notify");
   await click(checkbox);
   expect(checkbox).toBeChecked();
   await press.Enter(checkbox);
@@ -49,7 +49,7 @@ test("explicit clickOnEnter still overrides the computed default", async () => {
 
 // https://github.com/ariakit/ariakit/issues/7037
 test("a composed hook preserves a later computed default", async () => {
-  const combobox = q.combobox.ensure("Direct hook");
+  const combobox = q.combobox("Direct hook");
   await type("a", combobox);
   await expect.poll(q.listbox.lazy()).toBeVisible();
   // The assertion is about focus not moving, so wait for the popover's

@@ -22,7 +22,7 @@ test("keeps focus while options arrive after the open", async () => {
   expect(q.listbox()).toBeVisible();
   // Pins that Onion registers after the open instead of being there all along,
   // which is the whole point of this test.
-  expect(q.option("Onion")).not.toBeInTheDocument();
+  expect(q.option.maybe("Onion")).not.toBeInTheDocument();
 
   await click(q.button("Load all vegetables"));
 
@@ -66,7 +66,7 @@ test("abandons the presentation when focus leaves before the options arrive", as
   expect(q.combobox("Vegetable")).toHaveFocus();
   // The presentation is still waiting for its target, which is what makes the
   // focus move below an abandonment rather than a no-op.
-  expect(q.option("Onion")).not.toBeInTheDocument();
+  expect(q.option.maybe("Onion")).not.toBeInTheDocument();
 
   const note = q.textbox("Note");
   await click(note);

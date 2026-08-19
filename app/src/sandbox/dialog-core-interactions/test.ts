@@ -32,7 +32,7 @@ test("closes with Escape and restores disclosure focus", async () => {
   await click(disclosure);
   await press.Escape();
 
-  expect(q.dialog("Success")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Success")).not.toBeInTheDocument();
   expect(disclosure).toHaveFocus();
 });
 
@@ -42,7 +42,7 @@ test("closes on outside click without restoring disclosure focus", async () => {
   await click(disclosure);
   await click(outside);
 
-  expect(q.dialog("Success")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Success")).not.toBeInTheDocument();
   expect(disclosure).not.toHaveFocus();
 });
 
@@ -60,7 +60,7 @@ for (const trigger of ["click", "Enter", "Space"] as const) {
       await press.Space(dismiss);
     }
 
-    expect(q.dialog("Success")).not.toBeInTheDocument();
+    expect(q.dialog.maybe("Success")).not.toBeInTheDocument();
     expect(disclosure).toHaveFocus();
   });
 }

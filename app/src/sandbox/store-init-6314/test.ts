@@ -18,7 +18,7 @@ test("keeps sibling setup teardowns active after a stale init disposer runs", as
   expect(q.text("B count: 2")).toBeVisible();
 
   await click(q.button("Hide panel A"));
-  expect(q.text("A count:")).not.toBeInTheDocument();
+  expect(q.text.maybe("A count:")).not.toBeInTheDocument();
 
   await press("b");
   expect(q.text("B count: 3")).toBeVisible();

@@ -43,7 +43,7 @@ test("shift-click exposes updated selectedOptions on change", async () => {
     </select>
   `;
 
-  const select = q.listbox.ensure("Fruits") as HTMLSelectElement;
+  const select = q.listbox("Fruits") as HTMLSelectElement;
   const date = q.option("Date");
   let changedSelection: string[] = [];
   let mouseUpSelection: string[] = [];
@@ -75,7 +75,7 @@ test("shift-click exposes updated selectedOptions on change", async () => {
 test("click with the auxiliary button dispatches auxclick instead of click", async () => {
   document.body.innerHTML = `<button type="button">Paste</button>`;
 
-  const button = q.button.ensure("Paste");
+  const button = q.button("Paste");
   const events = recordEvents(button);
 
   await click(button, { button: 1 });
@@ -95,7 +95,7 @@ test("click with the auxiliary button dispatches auxclick instead of click", asy
 test("click moves the pointer onto the element with no button held", async () => {
   document.body.innerHTML = `<button type="button">Paste</button>`;
 
-  const button = q.button.ensure("Paste");
+  const button = q.button("Paste");
   const events: string[] = [];
 
   const types = [
@@ -134,8 +134,8 @@ test("click and rightClick derive buttons from the button they press", async () 
     <button type="button">Open menu</button>
   `;
 
-  const paste = q.button.ensure("Paste");
-  const menu = q.button.ensure("Open menu");
+  const paste = q.button("Paste");
+  const menu = q.button("Open menu");
   const pasteEvents = recordEvents(paste);
   const menuEvents = recordEvents(menu);
 
@@ -164,7 +164,7 @@ test("click and rightClick derive buttons from the button they press", async () 
 test("click with the primary button keeps dispatching click", async () => {
   document.body.innerHTML = `<button type="button">Submit</button>`;
 
-  const button = q.button.ensure("Submit");
+  const button = q.button("Submit");
   const events = recordEvents(button);
 
   await click(button);
@@ -182,7 +182,7 @@ test("click with the primary button keeps dispatching click", async () => {
 test("click with the secondary button matches rightClick", async () => {
   document.body.innerHTML = `<button type="button">Open menu</button>`;
 
-  const button = q.button.ensure("Open menu");
+  const button = q.button("Open menu");
   const events = recordEvents(button);
 
   await click(button, { button: 2 });
@@ -204,7 +204,7 @@ test("click with the secondary button matches rightClick", async () => {
 test("click with the auxiliary button dispatches auxclick on disabled controls", async () => {
   document.body.innerHTML = `<button type="button" disabled>Paste</button>`;
 
-  const button = q.button.ensure("Paste");
+  const button = q.button("Paste");
   const events = recordEvents(button);
 
   await click(button, { button: 1 });
@@ -231,10 +231,10 @@ test("click with the auxiliary button doesn't run activation behavior", async ()
     </select>
   `;
 
-  const select = q.listbox.ensure("Fruits") as HTMLSelectElement;
-  const checkbox = q.checkbox.ensure("Agree") as HTMLInputElement;
-  const label = q.text.ensure("Agree");
-  const cherry = q.option.ensure("Cherry");
+  const select = q.listbox("Fruits") as HTMLSelectElement;
+  const checkbox = q.checkbox("Agree") as HTMLInputElement;
+  const label = q.text("Agree");
+  const cherry = q.option("Cherry");
   const checkboxEvents = recordEvents(checkbox);
   const labelEvents = recordEvents(label);
   const optionEvents = recordEvents(cherry);
@@ -291,7 +291,7 @@ function recordPointerMembers(element: Element, types: string[]) {
 test("click carries only the pointer identity to the click event", async () => {
   document.body.innerHTML = `<button type="button">Submit</button>`;
 
-  const button = q.button.ensure("Submit");
+  const button = q.button("Submit");
   const events = recordPointerMembers(button, ["pointerdown", "click"]);
 
   await click(button, {
@@ -312,7 +312,7 @@ test("click carries only the pointer identity to the click event", async () => {
 test("click with the auxiliary button carries the pointer identity to auxclick", async () => {
   document.body.innerHTML = `<button type="button">Paste</button>`;
 
-  const button = q.button.ensure("Paste");
+  const button = q.button("Paste");
   const events = recordPointerMembers(button, ["pointerdown", "auxclick"]);
 
   await click(button, {
@@ -340,8 +340,8 @@ test("click forwards the pointer identity from a label to its control", async ()
     <input id="agree" type="checkbox">
   `;
 
-  const label = q.text.ensure("Agree");
-  const checkbox = q.checkbox.ensure("Agree");
+  const label = q.text("Agree");
+  const checkbox = q.checkbox("Agree");
   const events = recordPointerMembers(checkbox, ["click"]);
 
   await click(label, {
@@ -360,7 +360,7 @@ test("click forwards the pointer identity from a label to its control", async ()
 test("rightClick carries the pointer identity to contextmenu and auxclick", async () => {
   document.body.innerHTML = `<button type="button">Open menu</button>`;
 
-  const button = q.button.ensure("Open menu");
+  const button = q.button("Open menu");
   const events = recordPointerMembers(button, [
     "pointerdown",
     "contextmenu",
@@ -402,7 +402,7 @@ function recordModifiers(element: Element, modifier: string) {
 test("click with the auxiliary button reports its modifier state on auxclick", async () => {
   document.body.innerHTML = `<button type="button">Paste</button>`;
 
-  const button = q.button.ensure("Paste");
+  const button = q.button("Paste");
   const states = recordModifiers(button, "CapsLock");
 
   await click(button, { button: 1, modifierCapsLock: true });
@@ -413,7 +413,7 @@ test("click with the auxiliary button reports its modifier state on auxclick", a
 test("rightClick reports its modifier state on auxclick", async () => {
   document.body.innerHTML = `<button type="button">Open menu</button>`;
 
-  const button = q.button.ensure("Open menu");
+  const button = q.button("Open menu");
   const states = recordModifiers(button, "AltGraph");
 
   await rightClick(button, { modifierAltGraph: true });

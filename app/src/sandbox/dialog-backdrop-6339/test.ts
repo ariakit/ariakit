@@ -5,7 +5,7 @@ import { expect, test } from "vitest";
 test("backdrop fades out on close when only the backdrop is animated", async () => {
   await click(q.button("Show dialog"));
   expect(q.dialog()).toBeVisible();
-  const backdrop = q.presentation.ensure();
+  const backdrop = q.presentation();
   // The enter state is applied after a couple of frames.
   await expect.poll(() => backdrop.getAttribute("data-enter")).toBe("true");
   expect(q.button("Close")).toHaveFocus();
@@ -24,7 +24,7 @@ test("backdrop fades out on close when only the backdrop is animated", async () 
 test("backdrop finishes its longer fade out when the panel has a shorter transition", async () => {
   await click(q.button("Show fast dialog"));
   expect(q.dialog()).toBeVisible();
-  const backdrop = q.presentation.ensure();
+  const backdrop = q.presentation();
   // The enter state is applied after a couple of frames.
   await expect.poll(() => backdrop.getAttribute("data-enter")).toBe("true");
   expect(q.button("Close")).toHaveFocus();

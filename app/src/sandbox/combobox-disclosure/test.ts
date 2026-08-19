@@ -8,7 +8,7 @@ test("show and hide popup with disclosure button", async () => {
   expect(q.listbox()).toBeVisible();
   await click(q.button("Hide popup"));
   expect(q.button("Show popup")).toHaveAttribute("aria-expanded", "false");
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
 });
 
 test("show and hide popup with combobox", async () => {
@@ -18,7 +18,7 @@ test("show and hide popup with combobox", async () => {
   expect(q.listbox()).toBeVisible();
   await press.Escape();
   expect(q.button("Show popup")).toHaveAttribute("aria-expanded", "false");
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
 });
 
 test("keep focus on combobox if disclosure button pressed", async () => {

@@ -9,26 +9,26 @@ function activeText(label: string) {
 for (const label of ["Mounted fruit", "Unmounted fruit"]) {
   describe(label, () => {
     test("click", async () => {
-      await click(q.combobox.ensure(label));
+      await click(q.combobox(label));
       expect(activeText(label)).toBe("Orange");
     });
     test("Enter", async () => {
-      await focus(q.combobox.ensure(label));
+      await focus(q.combobox(label));
       await press.Enter();
       expect(activeText(label)).toBe("Orange");
     });
     test("Space", async () => {
-      await focus(q.combobox.ensure(label));
+      await focus(q.combobox(label));
       await press.Space();
       expect(activeText(label)).toBe("Orange");
     });
     test("ArrowDown", async () => {
-      await focus(q.combobox.ensure(label));
+      await focus(q.combobox(label));
       await press.ArrowDown();
       expect(activeText(label)).toBe("Orange");
     });
     test("ArrowUp", async () => {
-      await focus(q.combobox.ensure(label));
+      await focus(q.combobox(label));
       await press.ArrowUp();
       expect(activeText(label)).toBe("Orange");
     });
@@ -38,7 +38,7 @@ for (const label of ["Mounted fruit", "Unmounted fruit"]) {
 describe("Status", () => {
   // https://github.com/ariakit/ariakit/pull/6832#discussion_r3648996674
   test("ArrowDown moves through the items after clicking to open", async () => {
-    await click(q.combobox.ensure("Status"));
+    await click(q.combobox("Status"));
     expect(activeText("Status")).toBeUndefined();
 
     await press.ArrowDown();
@@ -57,7 +57,7 @@ describe("Status", () => {
 
   // https://github.com/ariakit/ariakit/pull/6832#discussion_r3648996674
   test("ArrowDown moves through the items after opening with Enter", async () => {
-    await focus(q.combobox.ensure("Status"));
+    await focus(q.combobox("Status"));
     await press.Enter();
     expect(activeText("Status")).toBeUndefined();
 
@@ -75,11 +75,11 @@ describe("Status", () => {
 for (const label of ["No-autofocus status", "Real-focus status"]) {
   // https://github.com/ariakit/ariakit/pull/6832
   test(`${label} moves from the focused select`, async () => {
-    const select = q.combobox.ensure(label);
+    const select = q.combobox(label);
     await click(select);
     expect(select).toHaveFocus();
 
-    const listbox = q.listbox.ensure(`${label} options`);
+    const listbox = q.listbox(`${label} options`);
     expect(q.within(listbox).option("Draft")).toHaveAttribute(
       "data-active-item",
     );

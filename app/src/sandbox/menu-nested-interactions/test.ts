@@ -2,10 +2,10 @@ import { click, hover, press, q, sleep, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("show/hide submenu on click", async () => {
-  expect(q.menu("Edit")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Edit")).not.toBeInTheDocument();
   await click(q.button("Edit"));
   expect(q.menu("Edit")).toBeVisible();
-  expect(q.menu("Find")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Find")).not.toBeInTheDocument();
   await click(q.menuitem("Find"));
   expect(q.menu("Find")).toBeVisible();
   expect(q.menuitem("Find")).toHaveFocus();
@@ -13,7 +13,7 @@ test("show/hide submenu on click", async () => {
   expect(q.menu("Find")).toBeVisible();
   expect(q.menuitem("Find")).toHaveFocus();
   await click(q.menuitem("Find Next"));
-  expect(q.menu("Edit")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Edit")).not.toBeInTheDocument();
   expect(q.button("Edit")).toHaveFocus();
 });
 
@@ -22,13 +22,13 @@ test("show/hide submenu on enter", async () => {
   await press.Enter();
   await type("f");
   expect(q.menuitem("Find")).toHaveFocus();
-  expect(q.menu("Find")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Find")).not.toBeInTheDocument();
   await press.Enter();
   expect(q.menu("Find")).toBeVisible();
   expect(q.menuitem("Search the Web...")).toHaveFocus();
   await press.Enter();
-  expect(q.menu("Edit")).not.toBeInTheDocument();
-  expect(q.menu("Find")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Edit")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Find")).not.toBeInTheDocument();
   expect(q.button("Edit")).toHaveFocus();
 });
 
@@ -38,15 +38,15 @@ test("show/hide submenu on space", async () => {
   await sleep();
   await type("s");
   expect(q.menuitem("Speech")).toHaveFocus();
-  expect(q.menu("Speech")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Speech")).not.toBeInTheDocument();
   // Wait for typeahead delay
   await sleep(600);
   await press.Space();
   expect(q.menu("Speech")).toBeVisible();
   expect(q.menuitem("Start Speaking")).toHaveFocus();
   await press.Space();
-  expect(q.menu("Edit")).not.toBeInTheDocument();
-  expect(q.menu("Speech")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Edit")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Speech")).not.toBeInTheDocument();
   expect(q.button("Edit")).toHaveFocus();
 });
 
@@ -55,7 +55,7 @@ test("show/hide submenu on arrow keys", async () => {
   await press.Enter();
   await type("f");
   await press.ArrowLeft();
-  expect(q.menu("Find")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Find")).not.toBeInTheDocument();
   await press.ArrowRight();
   expect(q.menu("Find")).toBeVisible();
   expect(q.menuitem("Search the Web...")).toHaveFocus();
@@ -72,14 +72,14 @@ test("show/hide submenu on arrow keys", async () => {
   expect(q.menuitem("Find Previous")).toHaveFocus();
   await press.ArrowLeft();
   expect(q.menuitem("Find")).toHaveFocus();
-  expect(q.menu("Find")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Find")).not.toBeInTheDocument();
 });
 
 test("show/hide submenu on mouse hover", async () => {
   await click(q.button("Edit"));
   await hover(q.menuitem("Find"));
   expect(q.menuitem("Find")).toHaveFocus();
-  expect(q.menu("Find")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Find")).not.toBeInTheDocument();
   await expect.poll(q.menu.lazy("Find")).toBeVisible();
   expect(q.menuitem("Find")).toHaveFocus();
   await hover(q.menuitem("Find Next"));
@@ -88,8 +88,8 @@ test("show/hide submenu on mouse hover", async () => {
   expect(q.menuitem("Find Next")).toHaveAttribute("data-active-item");
   await hover(q.menuitem("Speech"));
   expect(q.menuitem("Speech")).toHaveFocus();
-  expect(q.menu("Find")).not.toBeInTheDocument();
-  expect(q.menu("Speech")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Find")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Speech")).not.toBeInTheDocument();
   await expect.poll(q.menu.lazy("Speech")).toBeVisible();
 });
 
@@ -98,8 +98,8 @@ test("hide submenu on escape", async () => {
   await click(q.menuitem("Find"));
   await hover(q.menuitem("Find Next"));
   await press.Escape();
-  expect(q.menu("Find")).not.toBeInTheDocument();
-  expect(q.menu("Edit")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Find")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Edit")).not.toBeInTheDocument();
   expect(q.button("Edit")).toHaveFocus();
 });
 
@@ -119,6 +119,6 @@ test("blur submenu button on mouse leave after hovering over disabled submenu it
   await hover(q.menuitem("Speech"));
   await hover(await q.menuitem.wait("Stop Speaking"));
   await hover(document.body);
-  expect(q.menu("Speech")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Speech")).not.toBeInTheDocument();
   expect(q.menuitem("Speech")).not.toHaveAttribute("data-active-item");
 });

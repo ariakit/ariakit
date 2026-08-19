@@ -41,7 +41,7 @@ for (const trigger of ["click", "Enter", "Space"] as const) {
     } else {
       await press.Space(disclosure());
     }
-    expect(q.dialog("Ariakit")).not.toBeInTheDocument();
+    expect(q.dialog.maybe("Ariakit")).not.toBeInTheDocument();
     expect(disclosure()).toHaveFocus();
   });
 }
@@ -51,7 +51,7 @@ test("Escape restores focus to the anchor", async () => {
   await press.Tab();
   await press.Enter();
   await press.Escape();
-  expect(q.dialog("Ariakit")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Ariakit")).not.toBeInTheDocument();
   expect(q.link("@ariakit.com")).toHaveFocus();
 });
 
