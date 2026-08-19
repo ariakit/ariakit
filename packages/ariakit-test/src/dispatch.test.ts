@@ -117,9 +117,9 @@ test("dispatch(element, event) reads modifier state on a caller-built mouse even
   }
 });
 
-// Parity covers the standard modifiers and `x`/`y`. happy-dom's constructor
-// discards the `modifier*` init members, so a caller-built event cannot report
-// those the way a named dispatcher does.
+// Parity covers the standard modifiers and `x`/`y`. happy-dom's `MouseEvent`
+// constructor discards the `modifier*` init members, so a caller-built event
+// cannot report those the way a named dispatcher does.
 test("dispatch(element, event) reports the same standard modifiers and x/y as the named form", async () => {
   const button = document.createElement("button");
   document.body.append(button);
@@ -353,5 +353,51 @@ test("dispatch.drop keeps the member only DragEvent defines", async () => {
     expect(event?.clientX).toBe(3);
   } finally {
     zone.remove();
+  }
+});
+
+// Keyboard parity covers the `modifier*` init members too, because the
+// environment records them for a caller-built event.
+// https://github.com/ariakit/ariakit/issues/7166
+test("dispatch(element, event) reports the same modifiers as the named form for a keyboard event", async () => {
+  const input = document.createElement("input");
+  document.body.append(input);
+  const options: KeyboardEventInit = {
+    key: "a",
+    altKey: true,
+    modifierCapsLock: true,
+    // `Hyper` and `Super` are the two members no engine reports even when the
+    // event is built with them. UI Events defines both and jsdom answers both,
+    // and both paths record them, so the parity below holds.
+    modifierHyper: true,
+    modifierSuper: true,
+  };
+  const received: KeyboardEvent[] = [];
+  input.addEventListener("keydown", (event) => {
+    received.push(event);
+  });
+  try {
+    await dispatch(input, new KeyboardEvent("keydown", options));
+    await dispatch.keyDown(input, options);
+    const readModifiers = (event: KeyboardEvent | undefined) => ({
+      alt: event?.getModifierState("Alt"),
+      altGraph: event?.getModifierState("AltGraph"),
+      capsLock: event?.getModifierState("CapsLock"),
+      shift: event?.getModifierState("Shift"),
+      hyper: event?.getModifierState("Hyper"),
+      super: event?.getModifierState("Super"),
+    });
+    const [direct, named] = received;
+    expect(readModifiers(direct)).toEqual(readModifiers(named));
+    expect(readModifiers(direct)).toEqual({
+      alt: true,
+      altGraph: false,
+      capsLock: true,
+      shift: false,
+      hyper: true,
+      super: true,
+    });
+  } finally {
+    input.remove();
   }
 });

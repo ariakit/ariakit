@@ -72,7 +72,10 @@ type ModifierInitMember = Exclude<keyof EventModifierInit, keyof UIEventInit>;
 
 // The modifier name `getModifierState` answers to, for each of those members.
 // `satisfies` makes the compiler reject a table that misses one, which is how
-// the previous table lost `modifierHyper` and `modifierSuper`.
+// the previous table silently lost `modifierHyper` and `modifierSuper`. In a
+// test environment the keyboard shim answers a caller-built event from the same
+// members, so both forms of `dispatch` agree there. A real browser gets no
+// shim, and reports neither `Hyper` nor `Super`.
 // https://w3c.github.io/uievents/#event-modifier-initializers
 const modifierNameByInitMember = {
   altKey: "Alt",
