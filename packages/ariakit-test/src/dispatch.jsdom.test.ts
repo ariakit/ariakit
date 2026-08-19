@@ -141,6 +141,29 @@ test.each([
   },
 );
 
+test.each([
+  ["copy", "copy"],
+  ["cut", "cut"],
+  ["paste", "paste"],
+] as const)(
+  "dispatch.%s delivers caller-supplied clipboardData",
+  async (dispatcher, type) => {
+    const input = document.createElement("input");
+    document.body.append(input);
+    const clipboardData = { getData: () => "a,b" };
+    let receivedClipboardData: DataTransfer | null | undefined;
+    input.addEventListener(type, (event) => {
+      receivedClipboardData = event.clipboardData;
+    });
+    try {
+      expect(await dispatch[dispatcher](input, { clipboardData })).toBe(true);
+      expect(receivedClipboardData).toBe(clipboardData);
+    } finally {
+      input.remove();
+    }
+  },
+);
+
 // jsdom reaches the same gap for a different reason: it ships no `DragEvent`,
 // so `createEvent` falls back to `Event`. Its `WheelEvent` already derives from
 // `MouseEvent`, and is pinned here so fixing drag can't stop initializing it.
