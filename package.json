@@ -69,6 +69,7 @@
     "glob": "13.0.6",
     "happy-dom": "20.11.2",
     "husky": "9.1.7",
+    "jsdom": "29.1.1",
     "lint-staged": "17.3.0",
     "open-cli": "9.0.0",
     "oxfmt": "0.63.0",
