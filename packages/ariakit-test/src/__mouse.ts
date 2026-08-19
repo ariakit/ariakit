@@ -1,5 +1,3 @@
-import { dispatch } from "./dispatch.ts";
-
 // `MouseEvent.buttons` is a bitmask of the buttons currently held down, and its
 // bits are not ordered like `MouseEvent.button`: the secondary button is bit 1
 // while the auxiliary button is bit 2. Pointer Events defines the whole mapping,
@@ -18,6 +16,17 @@ export function getMouseButton(options?: MouseEventInit) {
   return options?.button ?? 0;
 }
 
+function omit(
+  options: PointerEventInit | undefined,
+  keys: ReadonlyArray<keyof PointerEventInit>,
+): PointerEventInit {
+  const remaining = { ...options };
+  for (const key of keys) {
+    delete remaining[key];
+  }
+  return remaining;
+}
+
 // Each phase derives `buttons` from the button it simulates. `mouseDown` and
 // `mouseUp` run a single phase, so an explicit value describes a chord there and
 // wins. A multi-step helper runs every phase from one init, where no single
@@ -30,9 +39,48 @@ export function getMouseButton(options?: MouseEventInit) {
  * device can be in.
  */
 export function omitButtons(options?: PointerEventInit): PointerEventInit {
-  const stepOptions = { ...options };
-  delete stepOptions.buttons;
-  return stepOptions;
+  return omit(options, ["buttons"]);
+}
+
+// The attributes that describe the contact itself rather than the pointer that
+// made it. `isPrimary` is left out because it describes the pointer, and
+// Firefox and WebKit do carry it through (Chromium reports `false`).
+const contactAttributes = [
+  "width",
+  "height",
+  "pressure",
+  "tangentialPressure",
+  "tiltX",
+  "tiltY",
+  "twist",
+] as const;
+
+/**
+ * Drops the contact attributes, which don't survive into `click`, `auxclick`,
+ * and `contextmenu`, keeping the members that identify the pointer behind them.
+ * Browsers reset the contact there: a pen press reporting `tiltX: 30` still ends
+ * in a `click` reporting `tiltX: 0`.
+ * https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
+ */
+export function omitContactAttributes(
+  options?: PointerEventInit,
+): PointerEventInit {
+  return omit(options, contactAttributes);
+}
+
+/**
+ * Returns only the members that identify the pointer behind a gesture, for an
+ * event a browser derives from another one, like the `click` a label forwards to
+ * its control.
+ */
+export function getPointerIdentity(
+  options?: PointerEventInit,
+): PointerEventInit {
+  return {
+    pointerId: options?.pointerId,
+    pointerType: options?.pointerType,
+    isPrimary: options?.isPrimary,
+  };
 }
 
 /**
@@ -73,6 +121,14 @@ export function getReleaseOptions(
   };
 }
 
+/**
+ * Returns the event properties for the `click` or `auxclick` that ends the
+ * gesture, which a browser fires on the release with the contact reset.
+ */
+export function getClickOptions(options?: PointerEventInit): PointerEventInit {
+  return { detail: 1, ...omitContactAttributes(getReleaseOptions(options)) };
+}
+
 // Pointer Events fires no `pointerdown` or `pointerup` for a chorded button
 // change, where a button changes state while another one stays held down. The
 // change rides on `pointermove` instead, and only the compatibility mouse
@@ -95,19 +151,4 @@ export function isChordedPress(options: PointerEventInit) {
  */
 export function isChordedRelease(options: PointerEventInit) {
   return (options.buttons ?? 0) !== 0;
-}
-
-// `@testing-library/dom` has no `auxclick` in its event map, so `dispatch` can't
-// build this one by name.
-export function dispatchAuxClick(element: Element, options?: MouseEventInit) {
-  const { defaultView } = element.ownerDocument;
-  const MouseEventConstructor = defaultView?.MouseEvent ?? MouseEvent;
-  const event = new MouseEventConstructor("auxclick", {
-    bubbles: true,
-    cancelable: true,
-    composed: true,
-    detail: 1,
-    ...options,
-  });
-  return dispatch(element, event);
 }

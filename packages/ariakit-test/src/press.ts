@@ -23,6 +23,15 @@ type KeyActionMap = Record<
   (element: Element, options: KeyboardEventInit) => Promise<void>
 >;
 
+// A keyboard activation still fires a `PointerEvent`, but no pointer caused it.
+// Chromium, Firefox, and WebKit all report an unset pointer there, so the click
+// doesn't claim a mouse pressed the control.
+// https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
+const noPointerOptions: PointerEventInit = {
+  pointerId: -1,
+  pointerType: "",
+};
+
 const clickableInputTypes = [
   "button",
   "color",
@@ -74,13 +83,15 @@ function getSubmitButton(form: HTMLFormElement) {
   );
 }
 
+// Built here rather than through `dispatch.click` because implicit submission
+// needs the click dispatched synchronously, before `requestSubmit` runs.
 function createKeyboardClickEvent(
   element: Element,
   options: KeyboardEventInit,
 ) {
   const { defaultView } = element.ownerDocument;
-  const MouseEventConstructor = defaultView?.MouseEvent ?? MouseEvent;
-  return new MouseEventConstructor("click", {
+  const PointerEventConstructor = defaultView?.PointerEvent ?? PointerEvent;
+  return new PointerEventConstructor("click", {
     bubbles: true,
     cancelable: true,
     composed: true,
@@ -88,6 +99,7 @@ function createKeyboardClickEvent(
     ctrlKey: options.ctrlKey,
     metaKey: options.metaKey,
     shiftKey: options.shiftKey,
+    ...noPointerOptions,
   });
 }
 
@@ -238,7 +250,7 @@ const keyDownMap: KeyActionMap = {
       !nonSubmittableTypes.includes(element.type);
 
     if (isClickable) {
-      await dispatch.click(element, options);
+      await dispatch.click(element, { ...options, ...noPointerOptions });
     } else if (isSubmittable) {
       await submitFormByPressingEnterOn(element, options);
     }
@@ -361,7 +373,7 @@ const keyUpMap: KeyActionMap = {
     // (the DOM test environments don't blur it the way a real browser does, and
     // jsdom would otherwise fire the click).
     if (isSpaceable && !isDisabled(element)) {
-      await dispatch.click(element, options);
+      await dispatch.click(element, { ...options, ...noPointerOptions });
     }
   },
 };

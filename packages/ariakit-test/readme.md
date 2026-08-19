@@ -108,8 +108,10 @@ type Target = Document | Window | Node | Element | null;
 
 type EventFunction = (element: Target, options?: object) => Promise<boolean>;
 
+type DispatchEventType = EventType | "auxClick";
+
 type EventsObject = {
-  [K in EventType]: EventFunction;
+  [K in DispatchEventType]: EventFunction;
 };
 
 const dispatch: typeof baseDispatch & EventsObject;
@@ -119,6 +121,8 @@ Creates and fires a DOM event on an element, then waits for the resulting microt
 
 Unlike higher-level helpers such as `click` and `type`, this fires a single event without simulating the surrounding interaction sequence. Pointer and mouse events fired on an element with `pointer-events: none` are re-dispatched on the nearest ancestor that has pointer events enabled, matching how browsers route those events.
 
+`click`, `auxclick`, and `contextmenu` are built as `PointerEvent`, the way browsers dispatch them, so they accept and report pointer properties such as `pointerType`.
+
 Returns: A promise that resolves to `false` when the event's default action was prevented with `event.preventDefault()`, and `true` otherwise.
 
 Example:
@@ -126,6 +130,7 @@ Example:
 ```ts
 await dispatch.keyDown(q.textbox(), { key: "Enter" });
 await dispatch.click(q.button());
+await dispatch.auxClick(q.link("Ariakit"), { button: 1 });
 // Fire a custom event instance directly:
 await dispatch(q.textbox(), new Event("selectstart", { bubbles: true }));
 ```

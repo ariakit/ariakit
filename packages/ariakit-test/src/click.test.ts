@@ -257,3 +257,117 @@ test("click with the auxiliary button doesn't run activation behavior", async ()
     "Banana",
   ]);
 });
+
+// Records the pointer members that separate the press from the event ending the
+// gesture, in the shape the expectations below were recorded in from Chromium,
+// Firefox, and WebKit through Playwright.
+// https://github.com/ariakit/ariakit/issues/7162
+function recordPointerMembers(element: Element, types: string[]) {
+  const events: string[] = [];
+  for (const type of types) {
+    element.addEventListener(type, (event) => {
+      const { pointerId, pointerType, isPrimary, pressure, tiltX } =
+        event as PointerEvent;
+      const isPointerEvent = event instanceof PointerEvent;
+      events.push(
+        `${event.type} ${isPointerEvent} ${pointerId} ${pointerType} ${isPrimary} ${pressure} ${tiltX}`,
+      );
+    });
+  }
+  return events;
+}
+
+// Browsers carry only the causal pointer's identity onto the event that ends
+// the gesture: a pen press reporting `tiltX: 30` still produces a `click` with
+// `tiltX: 0`. `isPrimary` describes the pointer, so it carries over, the way
+// Firefox and WebKit report it (Chromium resets it).
+test("click carries only the pointer identity to the click event", async () => {
+  document.body.innerHTML = `<button type="button">Submit</button>`;
+
+  const button = q.button.ensure("Submit");
+  const events = recordPointerMembers(button, ["pointerdown", "click"]);
+
+  await click(button, {
+    pointerId: 7,
+    pointerType: "pen",
+    isPrimary: true,
+    pressure: 0.5,
+    tiltX: 30,
+  });
+
+  expect(events).toEqual([
+    "pointerdown true 7 pen true 0.5 30",
+    "click true 7 pen true 0 0",
+  ]);
+});
+
+test("click with the auxiliary button carries the pointer identity to auxclick", async () => {
+  document.body.innerHTML = `<button type="button">Paste</button>`;
+
+  const button = q.button.ensure("Paste");
+  const events = recordPointerMembers(button, ["pointerdown", "auxclick"]);
+
+  await click(button, {
+    button: 1,
+    pointerId: 7,
+    pointerType: "pen",
+    isPrimary: true,
+    pressure: 0.5,
+    tiltX: 30,
+  });
+
+  expect(events).toEqual([
+    "pointerdown true 7 pen true 0.5 30",
+    "auxclick true 7 pen true 0 0",
+  ]);
+});
+
+// Activating a label forwards a click to its control, and Chromium and Firefox
+// give that forwarded event the pointer that caused it. WebKit reports an unset
+// pointer there instead.
+test("click forwards the pointer identity from a label to its control", async () => {
+  document.body.innerHTML = `
+    <label for="agree">Agree</label>
+    <input id="agree" type="checkbox">
+  `;
+
+  const label = q.text.ensure("Agree");
+  const checkbox = q.checkbox.ensure("Agree");
+  const events = recordPointerMembers(checkbox, ["click"]);
+
+  await click(label, {
+    pointerId: 7,
+    pointerType: "pen",
+    isPrimary: true,
+    pressure: 0.5,
+    tiltX: 30,
+  });
+
+  expect(events).toEqual(["click true 7 pen true 0 0"]);
+  expect((checkbox as HTMLInputElement).checked).toBe(true);
+});
+
+test("rightClick carries the pointer identity to contextmenu and auxclick", async () => {
+  document.body.innerHTML = `<button type="button">Open menu</button>`;
+
+  const button = q.button.ensure("Open menu");
+  const events = recordPointerMembers(button, [
+    "pointerdown",
+    "contextmenu",
+    "auxclick",
+  ]);
+
+  await rightClick(button, {
+    pointerId: 7,
+    pointerType: "pen",
+    isPrimary: true,
+    pressure: 0.5,
+    tiltX: 30,
+  });
+
+  expect(events).toEqual([
+    "pointerdown true 7 pen true 0.5 30",
+    "contextmenu true 7 pen true 0 0",
+    "auxclick true 7 pen true 0 0",
+  ]);
+});

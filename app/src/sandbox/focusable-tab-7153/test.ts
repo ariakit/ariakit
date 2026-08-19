@@ -1,18 +1,11 @@
 import { dispatch, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// A middle click activates a link through `auxclick`, and `@ariakit/test` has
-// no middle-click utility, so dispatch the single event that carries the
-// activation. `dispatch` resolves to `false` when it was prevented.
+// A middle click activates a link through `auxclick`, so fire the single event
+// that carries the activation rather than the whole `click` sequence.
+// `dispatch` resolves to `false` when it was prevented.
 function middleClick(element: Element | null) {
-  const event = new MouseEvent("auxclick", {
-    bubbles: true,
-    cancelable: true,
-    composed: true,
-    detail: 1,
-    button: 1,
-  });
-  return dispatch(element, event);
+  return dispatch.auxClick(element, { detail: 1, button: 1 });
 }
 
 // Only the browser test covers the truly disabled link: `dispatch` routes

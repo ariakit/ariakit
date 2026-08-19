@@ -1,11 +1,12 @@
 import { isVisible, isFocusable, invariant } from "@ariakit/utils";
 import {
-  dispatchAuxClick,
+  getClickOptions,
   getHoverOptions,
   getMouseButton,
+  getPointerIdentity,
   getPressOptions,
-  getReleaseOptions,
   omitButtons,
+  omitContactAttributes,
 } from "./__mouse.ts";
 import { isHappyDOM, settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
@@ -35,7 +36,10 @@ function getInputFromLabel(element: HTMLLabelElement) {
     | undefined;
 }
 
-async function clickLabel(element: HTMLLabelElement, options?: MouseEventInit) {
+async function clickLabel(
+  element: HTMLLabelElement,
+  options?: PointerEventInit,
+) {
   const input = getInputFromLabel(element);
   const isInputDisabled = Boolean(input?.disabled);
 
@@ -53,8 +57,10 @@ async function clickLabel(element: HTMLLabelElement, options?: MouseEventInit) {
     if (defaultAllowed && isFocusable(input)) {
       await focus(input);
       // Only "click" is fired! Browsers don't go over the whole event stack in
-      // this case (mousedown, mouseup etc.).
-      await dispatch.click(input);
+      // this case (mousedown, mouseup etc.). The forwarded click still reports
+      // the pointer that caused it, as it does in Chromium and Firefox (WebKit
+      // reports an unset pointer instead).
+      await dispatch.click(input, getPointerIdentity(options));
     }
   }
 }
@@ -90,7 +96,7 @@ function clearHappyDOMSelectCache(element: HTMLSelectElement) {
 
 async function clickOption(
   element: HTMLOptionElement,
-  eventOptions?: MouseEventInit,
+  eventOptions?: PointerEventInit,
 ) {
   // https://stackoverflow.com/a/16530782/5513909
   const select = element.closest("select") as HTMLSelectElement & {
@@ -205,7 +211,10 @@ export function click(
 
     // The secondary button opens the context menu while it's still held down.
     if (button === 2) {
-      await dispatch.contextMenu(element, getPressOptions(stepOptions));
+      await dispatch.contextMenu(
+        element,
+        omitContactAttributes(getPressOptions(stepOptions)),
+      );
     }
 
     if (!tap) {
@@ -218,18 +227,18 @@ export function click(
     await mouseUp(element, stepOptions);
 
     const { disabled } = element as HTMLButtonElement;
+    const clickOptions = getClickOptions(stepOptions);
 
     if (button !== 0) {
       // Non-primary buttons fire `auxclick` instead of `click`, and never run
       // activation behavior, so labels and options aren't forwarded. Chromium
       // and WebKit still fire it on disabled controls, so it isn't suppressed
       // here (Firefox doesn't fire it).
-      await dispatchAuxClick(element, getReleaseOptions(stepOptions));
+      await dispatch.auxClick(element, clickOptions);
     } else if (disabled) {
       // Disabled controls suppress the final user-generated click.
       return;
     } else {
-      const clickOptions = { detail: 1, ...getReleaseOptions(stepOptions) };
       const label = getClosestLabel(element);
 
       if (label) {

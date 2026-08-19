@@ -1,5 +1,5 @@
 import { isVisible, invariant } from "@ariakit/utils";
-import { getHoverOptions, getReleaseOptions, omitButtons } from "./__mouse.ts";
+import { getClickOptions, getHoverOptions, omitButtons } from "./__mouse.ts";
 import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { hover } from "./hover.ts";
@@ -91,10 +91,7 @@ export function select(
 
     await mouseUp(element, stepOptions);
 
-    await dispatch.click(element, {
-      detail: 1,
-      ...getReleaseOptions(stepOptions),
-    });
+    await dispatch.click(element, getClickOptions(stepOptions));
 
     await sleep();
   });
