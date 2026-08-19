@@ -85,7 +85,7 @@ Clicks on an element, simulating the sequence of events a real mouse click produ
 
 Hidden and disabled elements are handled the same way a browser would, and clicks on labels, `option` elements, and form controls behave like native interactions. Pass `options` to set event properties such as modifier keys (e.g. `{ shiftKey: true }`).
 
-Pass `button` to click with another mouse button. Activation behavior runs on `click`, so a non-primary button fires `auxclick` instead and doesn't activate labels or `option` elements, and the secondary button also fires `contextmenu` while it's held down.
+Pass `button` to click with another mouse button. Activation behavior runs on `click`, so a non-primary button fires `auxclick` instead and doesn't activate labels or `option` elements, and the secondary button also fires `contextmenu` while it's held down. Each step derives `buttons` from that button, so an explicit `buttons` is ignored here; `mouseDown` and `mouseUp` accept one to describe a chorded gesture.
 
 Example:
 
@@ -364,7 +364,7 @@ function select(
 
 Selects a range of text within an element, simulating a real user dragging across it. Hovers and presses on the element, finds the given `text` in its descendant text nodes, sets the document selection to cover it, then releases.
 
-When no element is passed, `document.body` is used. Pass `options` to set event properties such as modifier keys.
+When no element is passed, `document.body` is used. Pass `options` to set event properties such as modifier keys. Each step derives `buttons` from the button it presses, so an explicit `buttons` is ignored.
 
 Example:
 

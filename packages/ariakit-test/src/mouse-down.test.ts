@@ -243,3 +243,19 @@ test("mouseDown and mouseUp keep an explicit buttons value", async () => {
     "mouseup 2 1",
   ]);
 });
+
+// `select` runs every step from one init like `click` does, so it derives each
+// step and ignores an explicit `buttons`.
+test("select derives buttons from the button it presses", async () => {
+  const paragraph = q.text.ensure(/Keep this/);
+  const events = recordPressEvents(paragraph);
+
+  await select(selectionText, paragraph, { buttons: 3 });
+
+  expect(events).toEqual([
+    "pointerdown 0 1",
+    "mousedown 0 1",
+    "pointerup 0 0",
+    "mouseup 0 0",
+  ]);
+});

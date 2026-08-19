@@ -18,10 +18,22 @@ export function getMouseButton(options?: MouseEventInit) {
   return options?.button ?? 0;
 }
 
-// The three helpers below default `buttons` to the state their phase implies. A
-// chorded gesture holds buttons that can't be inferred from the button being
-// pressed, and `buttons` is the only way to express it, so an explicit value
-// always wins.
+// Each phase derives `buttons` from the button it simulates. `mouseDown` and
+// `mouseUp` run a single phase, so an explicit value describes a chord there and
+// wins. A multi-step helper runs every phase from one init, where no single
+// value is right for all of them, so it drops `buttons` with `omitButtons`.
+
+/**
+ * Drops `buttons` from the options a multi-step helper threads through its
+ * phases, so each phase derives its own value. Keeping it would let the press
+ * report a mask that omits the button it is pressing, a state no pointing
+ * device can be in.
+ */
+export function omitButtons(options?: PointerEventInit): PointerEventInit {
+  const stepOptions = { ...options };
+  delete stepOptions.buttons;
+  return stepOptions;
+}
 
 /**
  * Returns the event properties for moving the pointer onto the element, before
@@ -31,7 +43,7 @@ export function getMouseButton(options?: MouseEventInit) {
  * https://w3c.github.io/pointerevents/#the-button-property
  */
 export function getHoverOptions(options?: PointerEventInit): PointerEventInit {
-  return { ...options, button: 0, buttons: options?.buttons ?? 0 };
+  return { ...options, button: 0, buttons: 0 };
 }
 
 /**

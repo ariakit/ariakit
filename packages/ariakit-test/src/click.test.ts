@@ -1,5 +1,5 @@
 import { afterEach, expect, test } from "vitest";
-import { click, q } from "./index.ts";
+import { click, q, rightClick } from "./index.ts";
 
 afterEach(() => {
   document.body.innerHTML = "";
@@ -91,8 +91,8 @@ test("click with the auxiliary button dispatches auxclick instead of click", asy
 });
 
 // The pointer moves onto the element before anything is pressed, so the hover
-// phase reports no button unless the caller says one is already held.
-test("click reports the held buttons on the hover phase", async () => {
+// phase reports no button held even when the caller passes one.
+test("click moves the pointer onto the element with no button held", async () => {
   document.body.innerHTML = `<button type="button">Paste</button>`;
 
   const button = q.button.ensure("Paste");
@@ -114,7 +114,7 @@ test("click reports the held buttons on the hover phase", async () => {
     });
   }
 
-  await click(button, { button: 1 });
+  await click(button, { button: 1, buttons: 1 });
 
   expect(events).toEqual([
     "pointerover 0 0",
@@ -124,20 +124,40 @@ test("click reports the held buttons on the hover phase", async () => {
     "pointermove 0 0",
     "mousemove 0 0",
   ]);
+});
 
-  events.length = 0;
+// An explicit `buttons` changes nothing here, so both sequences match the ones
+// the tests that pass no `buttons` assert.
+test("click and rightClick derive buttons from the button they press", async () => {
+  document.body.innerHTML = `
+    <button type="button">Paste</button>
+    <button type="button">Open menu</button>
+  `;
 
-  // Unless the caller says a button is already held, as when the pointer moves
-  // onto the element mid-drag.
-  await click(button, { button: 1, buttons: 1 });
+  const paste = q.button.ensure("Paste");
+  const menu = q.button.ensure("Open menu");
+  const pasteEvents = recordEvents(paste);
+  const menuEvents = recordEvents(menu);
 
-  expect(events).toEqual([
-    "pointerover 0 1",
-    "pointerenter 0 1",
-    "mouseover 0 1",
-    "mouseenter 0 1",
-    "pointermove 0 1",
-    "mousemove 0 1",
+  await click(paste, { button: 1, buttons: 1 });
+  await rightClick(menu, { buttons: 1 });
+
+  expect(pasteEvents).toEqual([
+    "pointerdown 1 4 0",
+    "mousedown 1 4 1",
+    "focus - - 0",
+    "pointerup 1 0 0",
+    "mouseup 1 0 1",
+    "auxclick 1 0 1",
+  ]);
+  expect(menuEvents).toEqual([
+    "pointerdown 2 2 0",
+    "mousedown 2 2 1",
+    "focus - - 0",
+    "contextmenu 2 2 0",
+    "pointerup 2 0 0",
+    "mouseup 2 0 1",
+    "auxclick 2 0 1",
   ]);
 });
 

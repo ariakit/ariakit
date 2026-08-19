@@ -5,6 +5,7 @@ import {
   getMouseButton,
   getPressOptions,
   getReleaseOptions,
+  omitButtons,
 } from "./__mouse.ts";
 import { isHappyDOM, settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
@@ -168,7 +169,9 @@ async function clickOption(
  * Pass `button` to click with another mouse button. Activation behavior runs on
  * `click`, so a non-primary button fires `auxclick` instead and doesn't activate
  * labels or `option` elements, and the secondary button also fires `contextmenu`
- * while it's held down.
+ * while it's held down. Each step derives `buttons` from that button, so an
+ * explicit `buttons` is ignored here; `mouseDown` and `mouseUp` accept one to
+ * describe a chorded gesture.
  * @example
  * ```ts
  * await click(q.button("Submit"));
@@ -188,9 +191,10 @@ export function click(
     if (!isVisible(element)) return;
 
     const button = getMouseButton(options);
+    const stepOptions = omitButtons(options);
 
-    await hover(element, getHoverOptions(options));
-    await mouseDown(element, options);
+    await hover(element, getHoverOptions(stepOptions));
+    await mouseDown(element, stepOptions);
 
     // The element may be hidden after hover/mouseDown, so we need to check again
     // and find the first visible parent.
@@ -201,7 +205,7 @@ export function click(
 
     // The secondary button opens the context menu while it's still held down.
     if (button === 2) {
-      await dispatch.contextMenu(element, getPressOptions(options));
+      await dispatch.contextMenu(element, getPressOptions(stepOptions));
     }
 
     if (!tap) {
@@ -211,7 +215,7 @@ export function click(
       await settle();
     }
 
-    await mouseUp(element, options);
+    await mouseUp(element, stepOptions);
 
     const { disabled } = element as HTMLButtonElement;
 
@@ -220,12 +224,12 @@ export function click(
       // activation behavior, so labels and options aren't forwarded. Chromium
       // and WebKit still fire it on disabled controls, so it isn't suppressed
       // here (Firefox doesn't fire it).
-      await dispatchAuxClick(element, getReleaseOptions(options));
+      await dispatchAuxClick(element, getReleaseOptions(stepOptions));
     } else if (disabled) {
       // Disabled controls suppress the final user-generated click.
       return;
     } else {
-      const clickOptions = { detail: 1, ...getReleaseOptions(options) };
+      const clickOptions = { detail: 1, ...getReleaseOptions(stepOptions) };
       const label = getClosestLabel(element);
 
       if (label) {
