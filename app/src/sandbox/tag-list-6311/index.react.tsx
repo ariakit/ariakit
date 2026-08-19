@@ -1,8 +1,8 @@
 import { Tag } from "@ariakit/react-components/tag/tag";
 import { TagControl } from "@ariakit/react-components/tag/tag-control";
 import { TagInput } from "@ariakit/react-components/tag/tag-input";
+import { TagLabel } from "@ariakit/react-components/tag/tag-label";
 import { TagList } from "@ariakit/react-components/tag/tag-list";
-import { TagListLabel } from "@ariakit/react-components/tag/tag-list-label";
 import { TagProvider } from "@ariakit/react-components/tag/tag-provider";
 import { TagRemove } from "@ariakit/react-components/tag/tag-remove";
 import { useState } from "react";
@@ -12,7 +12,7 @@ export default function Example() {
   const [values, setValues] = useState(["JavaScript", "React"]);
   return (
     <TagProvider values={values} setValues={setValues}>
-      <TagListLabel>Tags</TagListLabel>
+      <TagLabel>Tags</TagLabel>
       <TagControl>
         <TagList style={{ display: "contents" }}>
           {/* Layout-neutral wrapper (e.g. rendered by a sortable/grouping

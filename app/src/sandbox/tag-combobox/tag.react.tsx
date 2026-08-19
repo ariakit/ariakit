@@ -23,9 +23,9 @@ export const TagField = React.forwardRef<HTMLDivElement, TagFieldProps>(
         setValues={setValues}
       >
         {label && (
-          <Ariakit.TagListLabel className="ak-tag-list-label">
+          <Ariakit.TagLabel className="ak-tag-list-label">
             {label}
-          </Ariakit.TagListLabel>
+          </Ariakit.TagLabel>
         )}
         <Ariakit.TagControl
           ref={ref}

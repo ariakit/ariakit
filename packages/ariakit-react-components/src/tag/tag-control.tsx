@@ -1,4 +1,6 @@
+import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useEvent,
   useWrapElement,
   createElement,
@@ -40,6 +42,10 @@ export const useTagControl = createHook<TagName, TagControlOptions>(
       process.env.NODE_ENV !== "production" &&
         "TagControl must receive a `store` prop or be wrapped in a TagProvider component.",
     );
+
+    const labelElement = useStoreState(store, "labelElement");
+    useAttribute(labelElement, "id");
+    const labelId = labelElement?.id;
 
     const onMouseDownProp = props.onMouseDown;
 
@@ -93,6 +99,10 @@ export const useTagControl = createHook<TagName, TagControlOptions>(
     );
 
     props = {
+      // The tags and the input are separate widgets that look like a single
+      // input field, so this element groups them under the same label.
+      role: "group",
+      "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       ...props,
       onMouseDown,
       onKeyDown,
@@ -110,11 +120,16 @@ export const useTagControl = createHook<TagName, TagControlOptions>(
  * Clicking on this element focuses the input element, and the undo and redo
  * keyboard shortcuts are handled here, so both the tags and the input are
  * covered by a single element.
+ *
+ * The tags and the input are separate widgets for assistive technologies, so
+ * this component renders a `group` element that keeps them together. The
+ * [`TagLabel`](https://ariakit.com/reference/tag-label) component provides its
+ * accessible name.
  * @see https://ariakit.com/components/tag
  * @example
  * ```jsx {3-17}
  * <TagProvider>
- *   <TagListLabel>Invitees</TagListLabel>
+ *   <TagLabel>Invitees</TagLabel>
  *   <TagControl>
  *     <TagList style={{ display: "contents" }}>
  *       <TagValues>

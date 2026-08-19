@@ -39,14 +39,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await expect(q.textbox("Tags")).toBeVisible();
   });
 
-  test("focuses the input when clicking on the control", async ({
-    page,
-    q,
-  }) => {
+  test("focuses the input when clicking on the control", async ({ q }) => {
     // The tag list has a display: contents style and generates no box, so the
     // control is the element that receives clicks on the field's padding.
-    const control = page.locator(".ak-tag-list");
-    await control.click({ position: { x: 4, y: 4 } });
+    await q.group("Tags").click({ position: { x: 4, y: 4 } });
     await expect(q.textbox("Tags")).toBeFocused();
   });
 

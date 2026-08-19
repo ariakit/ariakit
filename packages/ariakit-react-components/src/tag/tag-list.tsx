@@ -96,13 +96,13 @@ export const useTagList = createHook<TagName, TagListOptions>(
  * [`TagControl`](https://ariakit.com/reference/tag-control), so render one even
  * when there's no [`TagInput`](https://ariakit.com/reference/tag-input).
  *
- * The [`TagListLabel`](https://ariakit.com/reference/tag-list-label) component
- * can be used to provide an accessible name for the listbox element.
+ * The [`TagLabel`](https://ariakit.com/reference/tag-label) component can be
+ * used to provide an accessible name for the listbox element.
  * @see https://ariakit.com/components/tag
  * @example
  * ```jsx {4-15}
  * <TagProvider>
- *   <TagListLabel>Invitees</TagListLabel>
+ *   <TagLabel>Invitees</TagLabel>
  *   <TagControl>
  *     <TagList style={{ display: "contents" }}>
  *       <TagValues>

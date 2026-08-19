@@ -9,7 +9,7 @@ import { useTagStore } from "./tag-store.ts";
  * @example
  * ```jsx
  * <TagProvider>
- *   <TagListLabel>Invitees</TagListLabel>
+ *   <TagLabel>Invitees</TagLabel>
  *   <TagControl>
  *     <TagList style={{ display: "contents" }}>
  *       <TagValues>

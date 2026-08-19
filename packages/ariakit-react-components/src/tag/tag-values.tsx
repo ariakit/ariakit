@@ -20,7 +20,7 @@ import type { TagStore, TagStoreState } from "./tag-store.ts";
  * @example
  * ```jsx {5-14}
  * <TagProvider>
- *   <TagListLabel>Invitees</TagListLabel>
+ *   <TagLabel>Invitees</TagLabel>
  *   <TagControl>
  *     <TagList style={{ display: "contents" }}>
  *       <TagValues>

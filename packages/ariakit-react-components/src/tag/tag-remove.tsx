@@ -122,7 +122,7 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
  * @example
  * ```jsx {10}
  * <TagProvider>
- *   <TagListLabel>Invitees</TagListLabel>
+ *   <TagLabel>Invitees</TagLabel>
  *   <TagControl>
  *     <TagList style={{ display: "contents" }}>
  *       <TagValues>

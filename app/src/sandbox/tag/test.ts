@@ -41,6 +41,14 @@ test("renders the tags inside the listbox and the input outside it", async () =>
   expect(tagList).not.toContainElement(q.textbox.ensure("Tags"));
 });
 
+test("labels the control, the tag list and the input", async () => {
+  // The tags and the input are separate widgets, so the control groups them
+  // and the label names all three.
+  const control = q.group("Tags");
+  expect(control).toContainElement(q.listbox("Tags"));
+  expect(control).toContainElement(q.textbox("Tags"));
+});
+
 test("click on tag", async () => {
   await click(q.option("JavaScript"));
   expect(q.option("JavaScript")).toHaveFocus();

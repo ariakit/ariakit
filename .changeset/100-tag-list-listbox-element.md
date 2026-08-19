@@ -40,6 +40,8 @@ After:
 
 `TagControl` takes over the two behaviors that used to live on `TagList`: clicking the field focuses the input, and the undo and redo shortcuts are handled there. Both now cover the tags and the input from a single element, so render a `TagControl` if you rely on either.
 
+Because the tags and the input are separate widgets for assistive technologies, `TagControl` renders a `group` element that keeps them together, and the tag label component, renamed to `TagLabel` in this release, names the group along with the tag list and the input.
+
 `TagInput` no longer inherits the store from `TagList`. It inherits it from `TagControl` instead, so pass the `store` prop to `TagControl` when you're not using `TagProvider`.
 
 The tags must also be direct children of `TagList` now. `aria-owns` referenced them by id, so any element between `TagList` and the tags used to be irrelevant. Such an element can now stop assistive technologies from seeing the tags as options of the listbox.

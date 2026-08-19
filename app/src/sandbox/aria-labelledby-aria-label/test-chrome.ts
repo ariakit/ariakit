@@ -77,6 +77,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(listbox).not.toHaveAttribute("aria-labelledby");
   });
 
+  test("tag control with aria-label has no aria-labelledby", async ({ q }) => {
+    const group = q.group("Custom tag control label");
+    await test.expect(group).toBeAttached();
+    await test
+      .expect(group)
+      .toHaveAttribute("aria-label", "Custom tag control label");
+    await test.expect(group).not.toHaveAttribute("aria-labelledby");
+  });
+
   test("tab panel without aria-label preserves aria-labelledby", async ({
     q,
   }) => {

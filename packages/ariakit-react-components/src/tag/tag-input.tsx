@@ -194,7 +194,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
  * @example
  * ```jsx {16}
  * <TagProvider>
- *   <TagListLabel>Invitees</TagListLabel>
+ *   <TagLabel>Invitees</TagLabel>
  *   <TagControl>
  *     <TagList style={{ display: "contents" }}>
  *       <TagValues>
