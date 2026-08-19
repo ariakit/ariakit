@@ -14,9 +14,8 @@ function getSelectionText(element: HTMLElement | HTMLInputElement | null) {
 function tags() {
   // The combobox suggestions are options too, so only the ones inside the tag
   // list count as tags.
-  const tagList = q.listbox.ensure("Invitees");
   return q
-    .within(tagList)
+    .within(q.listbox("Invitees"))
     .option.all()
     .map((el) => el.textContent);
 }

@@ -32,7 +32,7 @@ test("initial state", async () => {
 });
 
 test("renders the tags inside the listbox and the input outside it", async () => {
-  const tagList = q.listbox.ensure("Tags");
+  const tagList = q.listbox("Tags");
   expect(tagList).toContainElement(q.option("JavaScript"));
   expect(tagList).toContainElement(q.option("React"));
   expect(tagList).not.toHaveAttribute("aria-owns");
