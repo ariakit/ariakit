@@ -257,3 +257,47 @@ test("click with the auxiliary button doesn't run activation behavior", async ()
     "Banana",
   ]);
 });
+
+// One gesture reports one modifier state. `auxclick` has no
+// `@testing-library/dom` event map entry, so the helper builds it instead of
+// going through a named dispatcher, and it used to skip the initializer that
+// reads the `modifier*` init members the other steps honor.
+// https://github.com/ariakit/ariakit/issues/7165
+function recordModifiers(element: Element, modifier: string) {
+  const states: string[] = [];
+  const types = ["mousedown", "contextmenu", "mouseup", "auxclick"];
+  for (const type of types) {
+    element.addEventListener(type, (event) => {
+      const mouseEvent = event as MouseEvent;
+      states.push(`${type} ${mouseEvent.getModifierState(modifier)}`);
+    });
+  }
+  return states;
+}
+
+test("click with the auxiliary button reports its modifier state on auxclick", async () => {
+  document.body.innerHTML = `<button type="button">Paste</button>`;
+
+  const button = q.button.ensure("Paste");
+  const states = recordModifiers(button, "CapsLock");
+
+  await click(button, { button: 1, modifierCapsLock: true });
+
+  expect(states).toEqual(["mousedown true", "mouseup true", "auxclick true"]);
+});
+
+test("rightClick reports its modifier state on auxclick", async () => {
+  document.body.innerHTML = `<button type="button">Open menu</button>`;
+
+  const button = q.button.ensure("Open menu");
+  const states = recordModifiers(button, "AltGraph");
+
+  await rightClick(button, { modifierAltGraph: true });
+
+  expect(states).toEqual([
+    "mousedown true",
+    "contextmenu true",
+    "mouseup true",
+    "auxclick true",
+  ]);
+});

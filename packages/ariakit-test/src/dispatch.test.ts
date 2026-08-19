@@ -152,3 +152,206 @@ test("dispatch(element, event) reports the same standard modifiers and x/y as th
     button.remove();
   }
 });
+
+// UI Events specifies one modifier name per `EventModifierInit` member, and an
+// unrecognized name reports false.
+// https://w3c.github.io/uievents/#event-modifier-initializers
+// https://github.com/ariakit/ariakit/issues/7168
+const modifierNameByInitMember = {
+  altKey: "Alt",
+  ctrlKey: "Control",
+  metaKey: "Meta",
+  shiftKey: "Shift",
+  modifierAltGraph: "AltGraph",
+  modifierCapsLock: "CapsLock",
+  modifierFn: "Fn",
+  modifierFnLock: "FnLock",
+  modifierHyper: "Hyper",
+  modifierNumLock: "NumLock",
+  modifierScrollLock: "ScrollLock",
+  modifierSuper: "Super",
+  modifierSymbol: "Symbol",
+  modifierSymbolLock: "SymbolLock",
+} as const satisfies Record<string, string>;
+
+const modifierInitMembers = Object.keys(modifierNameByInitMember) as Array<
+  keyof typeof modifierNameByInitMember
+>;
+
+const modifierNames = Object.values(modifierNameByInitMember);
+
+test("dispatch.keyDown maps each modifier init member to its own modifier name", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  let event: KeyboardEvent | undefined;
+  button.addEventListener("keydown", (keyDownEvent) => {
+    event = keyDownEvent;
+  });
+  try {
+    // One dispatch per member, so a member that reports another member's name
+    // fails even though requesting them together would not tell the two apart.
+    const pressed: Record<string, string[]> = {};
+    for (const member of modifierInitMembers) {
+      const options: EventModifierInit = {};
+      options[member] = true;
+      await dispatch.keyDown(button, options);
+      pressed[member] = modifierNames.filter((name) =>
+        event?.getModifierState(name),
+      );
+    }
+    expect(pressed).toEqual(
+      Object.fromEntries(
+        modifierInitMembers.map((member) => [
+          member,
+          [modifierNameByInitMember[member]],
+        ]),
+      ),
+    );
+  } finally {
+    button.remove();
+  }
+});
+
+test("dispatch.click reports false for modifier names it doesn't recognize", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  let event: MouseEvent | undefined;
+  button.addEventListener("click", (clickEvent) => {
+    event = clickEvent;
+  });
+  try {
+    await dispatch.click(button);
+    // `Object.prototype` member names are the interesting case: an object
+    // literal answers them with an inherited value instead of `undefined`.
+    const keys = ["constructor", "toString", "hasOwnProperty", "Nope"];
+    expect(keys.map((key) => event?.getModifierState(key))).toEqual([
+      false,
+      false,
+      false,
+      false,
+    ]);
+  } finally {
+    button.remove();
+  }
+});
+
+// These carry the mouse and modifier members in browsers, where `WheelEvent`
+// and `DragEvent` derive from `MouseEvent`, but not in the test environments.
+// Every dispatcher the two interfaces cover is listed, because the set they are
+// selected by mirrors `@testing-library/dom`'s event map by hand. `dragExit` is
+// the exception: browsers never fire it, so it has no typed listener to assert
+// through.
+// https://github.com/ariakit/ariakit/issues/7169
+test.each([
+  ["wheel", "wheel"],
+  ["drag", "drag"],
+  ["dragEnd", "dragend"],
+  ["dragEnter", "dragenter"],
+  ["dragLeave", "dragleave"],
+  ["dragOver", "dragover"],
+  ["dragStart", "dragstart"],
+  ["drop", "drop"],
+] as const)(
+  "dispatch.%s applies the MouseEventInit and modifier init members",
+  async (dispatcher, type) => {
+    const button = document.createElement("button");
+    document.body.append(button);
+    let event: MouseEvent | undefined;
+    button.addEventListener(type, (receivedEvent) => {
+      event = receivedEvent;
+    });
+    try {
+      await dispatch[dispatcher](button, {
+        ctrlKey: true,
+        modifierCapsLock: true,
+        clientX: 3,
+        clientY: 4,
+        movementX: 5,
+        movementY: 6,
+        button: 1,
+      });
+      expect({
+        control: event?.getModifierState("Control"),
+        capsLock: event?.getModifierState("CapsLock"),
+        shift: event?.getModifierState("Shift"),
+        ctrlKey: event?.ctrlKey,
+        shiftKey: event?.shiftKey,
+        clientX: event?.clientX,
+        clientY: event?.clientY,
+        x: event?.x,
+        y: event?.y,
+        movementX: event?.movementX,
+        movementY: event?.movementY,
+        button: event?.button,
+        buttons: event?.buttons,
+        // Omitted members report the value the browser defaults them to, which
+        // covers the whole `MouseEventInit` surface between them and the ones
+        // requested above.
+        screenX: event?.screenX,
+        screenY: event?.screenY,
+        relatedTarget: event?.relatedTarget,
+        // `UIEvent` members, which the browser interfaces inherit through
+        // `MouseEvent`.
+        detail: event?.detail,
+      }).toEqual({
+        control: true,
+        capsLock: true,
+        shift: false,
+        ctrlKey: true,
+        shiftKey: false,
+        clientX: 3,
+        clientY: 4,
+        x: 3,
+        y: 4,
+        movementX: 5,
+        movementY: 6,
+        button: 1,
+        buttons: 0,
+        screenX: 0,
+        screenY: 0,
+        relatedTarget: null,
+        detail: 0,
+      });
+    } finally {
+      button.remove();
+    }
+  },
+);
+
+test("dispatch.wheel keeps the members only WheelEvent defines", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  let event: WheelEvent | undefined;
+  button.addEventListener("wheel", (wheelEvent) => {
+    event = wheelEvent;
+  });
+  try {
+    await dispatch.wheel(button, { deltaX: 10, deltaY: -100, deltaMode: 1 });
+    expect([event?.deltaX, event?.deltaY, event?.deltaMode]).toEqual([
+      10, -100, 1,
+    ]);
+  } finally {
+    button.remove();
+  }
+});
+
+// `createEvent` installs `dataTransfer` itself, with a non-configurable
+// descriptor, before the mouse members are initialized. An initializer that
+// reached this member would throw rather than silently lose it.
+test("dispatch.drop keeps the member only DragEvent defines", async () => {
+  const zone = document.createElement("div");
+  document.body.append(zone);
+  let event: DragEvent | undefined;
+  zone.addEventListener("drop", (dropEvent) => {
+    event = dropEvent;
+  });
+  try {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData("text/plain", "Ariakit");
+    await dispatch.drop(zone, { dataTransfer, clientX: 3 });
+    expect(event?.dataTransfer?.getData("text/plain")).toBe("Ariakit");
+    expect(event?.clientX).toBe(3);
+  } finally {
+    zone.remove();
+  }
+});
