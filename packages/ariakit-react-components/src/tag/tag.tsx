@@ -149,7 +149,7 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
  * ```jsx {8-11}
  * <TagProvider>
  *   <TagListLabel>Invitees</TagListLabel>
- *   <div className="tag-list">
+ *   <TagControl>
  *     <TagList style={{ display: "contents" }}>
  *       <TagValues>
  *         {(values) =>
@@ -163,7 +163,7 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
  *       </TagValues>
  *     </TagList>
  *     <TagInput />
- *   </div>
+ *   </TagControl>
  * </TagProvider>
  * ```
  */

@@ -28,11 +28,7 @@ import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useTagContext } from "./tag-context.tsx";
 import type { TagStore } from "./tag-store.ts";
-import {
-  getDelimiters,
-  handleUndoRedoShortcut,
-  splitValueByDelimiter,
-} from "./utils.ts";
+import { getDelimiters, splitValueByDelimiter } from "./utils.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
@@ -157,7 +153,6 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
-      handleUndoRedoShortcut(event);
       if (event.key === "Backspace" && removeOnBackspaceProp(event)) {
         const { start, end } = getTextboxSelection(event.currentTarget);
         const isLeadingCaret = start === end && start === 0;
@@ -200,7 +195,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
  * ```jsx {16}
  * <TagProvider>
  *   <TagListLabel>Invitees</TagListLabel>
- *   <div className="tag-list">
+ *   <TagControl>
  *     <TagList style={{ display: "contents" }}>
  *       <TagValues>
  *         {(values) =>
@@ -214,7 +209,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
  *       </TagValues>
  *     </TagList>
  *     <TagInput />
- *   </div>
+ *   </TagControl>
  * </TagProvider>
  * ```
  */

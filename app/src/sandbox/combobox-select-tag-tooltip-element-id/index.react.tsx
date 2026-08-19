@@ -1,4 +1,5 @@
 import * as Ariakit from "@ariakit/react";
+import { TagControl } from "@ariakit/react-components/tag/tag-control";
 import { TagInput } from "@ariakit/react-components/tag/tag-input";
 import { TagList } from "@ariakit/react-components/tag/tag-list";
 import { TagListLabel } from "@ariakit/react-components/tag/tag-list-label";
@@ -84,8 +85,10 @@ function TagExample() {
     <section aria-label="Tag">
       <TagProvider>
         <DynamicTagLabel />
-        <TagList />
-        <DynamicTagInput />
+        <TagControl>
+          <TagList />
+          <DynamicTagInput />
+        </TagControl>
       </TagProvider>
     </section>
   );

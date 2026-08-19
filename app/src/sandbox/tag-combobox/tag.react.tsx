@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import * as React from "react";
 import * as Ariakit from "./ariakit-experimental.react.ts";
 
-export interface TagFieldProps extends React.ComponentPropsWithRef<"div"> {
+export interface TagFieldProps extends Ariakit.TagControlProps {
   label?: React.ReactNode;
   value?: Ariakit.TagProviderProps["value"];
   setValue?: Ariakit.TagProviderProps["setValue"];
@@ -15,24 +15,23 @@ export const TagField = React.forwardRef<HTMLDivElement, TagFieldProps>(
     { label, value, setValue, values, setValues, ...props },
     ref,
   ) {
+    // Uses the store prop instead of TagProvider, so the tag list and the tag
+    // input inherit the store from TagControl.
+    const tag = Ariakit.useTagStore({ value, setValue, values, setValues });
     return (
-      <Ariakit.TagProvider
-        value={value}
-        setValue={setValue}
-        values={values}
-        setValues={setValues}
-      >
+      <>
         {label && (
-          <Ariakit.TagListLabel className="ak-tag-list-label">
+          <Ariakit.TagListLabel store={tag} className="ak-tag-list-label">
             {label}
           </Ariakit.TagListLabel>
         )}
-        <div
+        <Ariakit.TagControl
           ref={ref}
+          store={tag}
           {...props}
           className={clsx("ak-tag-list ak-input ak-focusable", props.className)}
         />
-      </Ariakit.TagProvider>
+      </>
     );
   },
 );

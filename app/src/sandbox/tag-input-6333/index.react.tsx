@@ -1,4 +1,5 @@
 import { Tag } from "@ariakit/react-components/tag/tag";
+import { TagControl } from "@ariakit/react-components/tag/tag-control";
 import { TagInput } from "@ariakit/react-components/tag/tag-input";
 import { TagList } from "@ariakit/react-components/tag/tag-list";
 import { TagListLabel } from "@ariakit/react-components/tag/tag-list-label";
@@ -17,14 +18,16 @@ function TagField({ label, delimiter }: TagFieldProps) {
   return (
     <TagProvider values={values} setValues={setValues}>
       <TagListLabel>{label}</TagListLabel>
-      <TagList aria-describedby={statusId}>
-        {values.map((value) => (
-          <Tag key={value} value={value}>
-            {value}
-          </Tag>
-        ))}
-      </TagList>
-      <TagInput delimiter={delimiter} aria-label={label} />
+      <TagControl>
+        <TagList aria-describedby={statusId}>
+          {values.map((value) => (
+            <Tag key={value} value={value}>
+              {value}
+            </Tag>
+          ))}
+        </TagList>
+        <TagInput delimiter={delimiter} aria-label={label} />
+      </TagControl>
       <output id={statusId}>
         {label} values: {values.length ? values.join(", ") : "none"}
       </output>

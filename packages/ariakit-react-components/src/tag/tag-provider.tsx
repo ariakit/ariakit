@@ -10,7 +10,7 @@ import { useTagStore } from "./tag-store.ts";
  * ```jsx
  * <TagProvider>
  *   <TagListLabel>Invitees</TagListLabel>
- *   <div className="tag-list">
+ *   <TagControl>
  *     <TagList style={{ display: "contents" }}>
  *       <TagValues>
  *         {(values) =>
@@ -24,7 +24,7 @@ import { useTagStore } from "./tag-store.ts";
  *       </TagValues>
  *     </TagList>
  *     <TagInput />
- *   </div>
+ *   </TagControl>
  * </TagProvider>
  * ```
  */

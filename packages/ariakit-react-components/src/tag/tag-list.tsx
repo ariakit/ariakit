@@ -1,19 +1,14 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
   useAttribute,
-  useEvent,
   useWrapElement,
   createElement,
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import {
-  queueBeforeEvent,
-  getClosestFocusable,
-  invariant,
-} from "@ariakit/utils";
-import type { ElementType, KeyboardEvent, MouseEvent } from "react";
+import { invariant } from "@ariakit/utils";
+import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import {
@@ -21,11 +16,10 @@ import {
   useTagProviderContext,
 } from "./tag-context.tsx";
 import type { TagStore } from "./tag-store.ts";
-import { handleUndoRedoShortcut, useTouchDevice } from "./utils.ts";
+import { useTouchDevice } from "./utils.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
-type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `TagList` component.
@@ -46,35 +40,6 @@ export const useTagList = createHook<TagName, TagListOptions>(
       process.env.NODE_ENV !== "production" &&
         "TagList must receive a `store` prop or be wrapped in a TagProvider component.",
     );
-
-    const onMouseDownProp = props.onMouseDown;
-
-    // Focus on the input element when clicking on the tag list.
-    const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
-      onMouseDownProp?.(event);
-      if (event.defaultPrevented) return;
-      const target = event.target as HTMLElement;
-      const currentTarget = event.currentTarget;
-      const focusableTarget = getClosestFocusable(target);
-      const isSelfFocusable = focusableTarget === currentTarget;
-      // If the user clicked on an element that's already focusable, don't focus
-      // the input element.
-      if (!isSelfFocusable && currentTarget.contains(focusableTarget)) return;
-      const { inputElement } = store.getState();
-      // We can't immediately focus on mousedown, otherwise the input element
-      // will lose focus to the body as an effect of the mousedown event.
-      queueBeforeEvent(event.currentTarget, "mouseup", () => {
-        inputElement?.focus();
-      });
-    });
-
-    const onKeyDownProp = props.onKeyDown;
-
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
-      onKeyDownProp?.(event);
-      if (event.defaultPrevented) return;
-      handleUndoRedoShortcut(event);
-    });
 
     props = useWrapElement(
       props,
@@ -104,8 +69,6 @@ export const useTagList = createHook<TagName, TagListOptions>(
       "aria-orientation": orientation,
       "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       ...props,
-      onMouseDown,
-      onKeyDown,
     };
 
     props = useComposite({ store, ...props });
@@ -120,17 +83,18 @@ export const useTagList = createHook<TagName, TagListOptions>(
  *
  * The [`TagInput`](https://ariakit.com/reference/tag-input) component must be
  * rendered as a sibling of this component. To style them together as a single
- * input field, wrap both in a container element and give this component a
- * `display: contents` style.
+ * input field, wrap both in a
+ * [`TagControl`](https://ariakit.com/reference/tag-control) component and give
+ * this component a `display: contents` style.
  *
  * Because this component is the listbox element, any element rendered between
  * it and the tags can stop assistive technologies from seeing the tags as
  * options of this listbox.
  *
- * Clicking this element focuses the input element. This doesn't apply when the
- * element generates no box, such as with a `display: contents` style, so a
- * container element that is styled as an input field should handle this on its
- * own.
+ * Clicking the field to focus the input and the undo and redo keyboard
+ * shortcuts are handled by
+ * [`TagControl`](https://ariakit.com/reference/tag-control), so render one even
+ * when there's no [`TagInput`](https://ariakit.com/reference/tag-input).
  *
  * The [`TagListLabel`](https://ariakit.com/reference/tag-list-label) component
  * can be used to provide an accessible name for the listbox element.
@@ -139,7 +103,7 @@ export const useTagList = createHook<TagName, TagListOptions>(
  * ```jsx {4-15}
  * <TagProvider>
  *   <TagListLabel>Invitees</TagListLabel>
- *   <div className="tag-list">
+ *   <TagControl>
  *     <TagList style={{ display: "contents" }}>
  *       <TagValues>
  *         {(values) =>
@@ -153,7 +117,7 @@ export const useTagList = createHook<TagName, TagListOptions>(
  *       </TagValues>
  *     </TagList>
  *     <TagInput />
- *   </div>
+ *   </TagControl>
  * </TagProvider>
  * ```
  */

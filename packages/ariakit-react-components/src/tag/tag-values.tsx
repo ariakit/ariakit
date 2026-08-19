@@ -21,7 +21,7 @@ import type { TagStore, TagStoreState } from "./tag-store.ts";
  * ```jsx {5-14}
  * <TagProvider>
  *   <TagListLabel>Invitees</TagListLabel>
- *   <div className="tag-list">
+ *   <TagControl>
  *     <TagList style={{ display: "contents" }}>
  *       <TagValues>
  *         {(values) =>
@@ -35,7 +35,7 @@ import type { TagStore, TagStoreState } from "./tag-store.ts";
  *       </TagValues>
  *     </TagList>
  *     <TagInput />
- *   </div>
+ *   </TagControl>
  * </TagProvider>
  * ```
  */

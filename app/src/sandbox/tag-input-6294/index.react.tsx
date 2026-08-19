@@ -1,4 +1,5 @@
 import { Tag } from "@ariakit/react-components/tag/tag";
+import { TagControl } from "@ariakit/react-components/tag/tag-control";
 import { TagInput } from "@ariakit/react-components/tag/tag-input";
 import { TagList } from "@ariakit/react-components/tag/tag-list";
 import { TagListLabel } from "@ariakit/react-components/tag/tag-list-label";
@@ -12,15 +13,17 @@ export default function Example() {
   return (
     <TagProvider values={values} setValues={setValues}>
       <TagListLabel>Tags</TagListLabel>
-      <TagList>
-        {values.map((value) => (
-          <Tag key={value} value={value}>
-            {value}
-            <TagRemove />
-          </Tag>
-        ))}
-      </TagList>
-      <TagInput aria-label="New tag" />
+      <TagControl>
+        <TagList>
+          {values.map((value) => (
+            <Tag key={value} value={value}>
+              {value}
+              <TagRemove />
+            </Tag>
+          ))}
+        </TagList>
+        <TagInput aria-label="New tag" />
+      </TagControl>
     </TagProvider>
   );
 }

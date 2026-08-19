@@ -62,7 +62,7 @@ export const useTagListLabel = createHook<TagName, TagListLabelOptions>(
  * ```jsx {2}
  * <TagProvider>
  *   <TagListLabel>Invitees</TagListLabel>
- *   <div className="tag-list">
+ *   <TagControl>
  *     <TagList style={{ display: "contents" }}>
  *       <TagValues>
  *         {(values) =>
@@ -76,7 +76,7 @@ export const useTagListLabel = createHook<TagName, TagListLabelOptions>(
  *       </TagValues>
  *     </TagList>
  *     <TagInput />
- *   </div>
+ *   </TagControl>
  * </TagProvider>
  * ```
  */

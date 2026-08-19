@@ -27,8 +27,8 @@ export function useTagStoreProps<T extends Core.TagStore>(
  * const tag = useTagStore({ defaultValues: ["Apple", "Banana"]});
  * const values = useStoreState(tag, "values");
  *
- * <div className="tag-list">
- *   <TagList store={tag} style={{ display: "contents" }}>
+ * <TagControl store={tag}>
+ *   <TagList style={{ display: "contents" }}>
  *     {values.map((value) => (
  *       <Tag key={value} value={value}>
  *         {value}
@@ -36,8 +36,8 @@ export function useTagStoreProps<T extends Core.TagStore>(
  *       </Tag>
  *     ))}
  *   </TagList>
- *   <TagInput store={tag} />
- * </div>
+ *   <TagInput />
+ * </TagControl>
  * ```
  */
 export function useTagStore(props: TagStoreProps = {}): TagStore {

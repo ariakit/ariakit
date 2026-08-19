@@ -8,7 +8,7 @@
 
 The `TagList` component now renders the listbox element itself. Previously it rendered a separate, visually empty element that referenced the tags with `aria-owns`, which Safari does not support well.
 
-Because the `listbox` role accepts only options as children, `TagInput` must now be rendered as a sibling of `TagList`. To keep styling them as a single input field, wrap both in a container element and give `TagList` a `display: contents` style.
+Because the `listbox` role accepts only options as children, `TagInput` must now be rendered as a sibling of `TagList`. The new `TagControl` component wraps both and is styled as the input field, and a `display: contents` style on `TagList` keeps the tags and the input on a single shared layout.
 
 Before:
 
@@ -26,7 +26,7 @@ Before:
 After:
 
 ```tsx
-<div className="tag-list">
+<TagControl className="tag-list">
   <TagList style={{ display: "contents" }}>
     {values.map((value) => (
       <Tag key={value} value={value}>
@@ -35,11 +35,11 @@ After:
     ))}
   </TagList>
   <TagInput />
-</div>
+</TagControl>
 ```
 
-`TagInput` no longer inherits the store from `TagList`, so pass the `store` prop to it as well when you're not using `TagProvider`.
+`TagControl` takes over the two behaviors that used to live on `TagList`: clicking the field focuses the input, and the undo and redo shortcuts are handled there. Both now cover the tags and the input from a single element, so render a `TagControl` if you rely on either.
+
+`TagInput` no longer inherits the store from `TagList`. It inherits it from `TagControl` instead, so pass the `store` prop to `TagControl` when you're not using `TagProvider`.
 
 The tags must also be direct children of `TagList` now. `aria-owns` referenced them by id, so any element between `TagList` and the tags used to be irrelevant. Such an element can now stop assistive technologies from seeing the tags as options of the listbox.
-
-Clicking `TagList` still focuses the input, but an element with a `display: contents` style generates no box, so it's never the target of a click. If you rely on clicking the empty area of the field, handle that on your container element.

@@ -1,5 +1,4 @@
-import { isApple, isTouchDevice, toArray, UndoManager } from "@ariakit/utils";
-import type { KeyboardEvent } from "react";
+import { isTouchDevice, toArray } from "@ariakit/utils";
 import { useEffect, useState } from "react";
 
 type Delimiter = string | RegExp;
@@ -50,25 +49,6 @@ function matchDelimiter(
   const match = value.match(delimiter);
   if (!match) return null;
   return { index: match.index, length: match[0].length };
-}
-
-/**
- * Runs undo/redo on the shared undo manager when the event matches the
- * platform's undo/redo shortcut. The tag list and the tag input are siblings,
- * so neither element can handle the shortcut on behalf of the other.
- */
-export function handleUndoRedoShortcut(event: KeyboardEvent<HTMLElement>) {
-  const pc = !isApple();
-  const z = event.key === "z" || event.key === "Z";
-  const mod = pc ? event.ctrlKey : event.metaKey;
-  const shiftZ = (event.shiftKey && z) || (pc && event.key === "y");
-  if (mod && shiftZ) {
-    event.preventDefault();
-    void UndoManager.redo();
-  } else if (mod && z) {
-    event.preventDefault();
-    void UndoManager.undo();
-  }
 }
 
 export function useTouchDevice() {
