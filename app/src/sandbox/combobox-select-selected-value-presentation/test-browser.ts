@@ -181,8 +181,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   }) => {
     const item = page.locator("[data-render-count]");
     // Mounting renders the item twice: once on its own, then again when the
-    // composite element is published. `beforeEach` returns when Astro only
-    // schedules hydration, so a frame checkpoint can still sample the first.
+    // composite element is published. Assert the settled count before opening
+    // so an actual render on open still moves it to three.
     // https://github.com/ariakit/ariakit/issues/7184
     await test.expect(item).toHaveAttribute("data-render-count", "2");
 

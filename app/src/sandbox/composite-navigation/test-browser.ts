@@ -34,11 +34,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     const apple = q.button("Apple");
     const grape = q.button("Grape");
-    // Wait for hydration before clicking, since the listener that records
-    // pointer modality is installed from an effect and Apple is the store's
-    // default active item. Otherwise a click landing first leaves modality at
-    // its keyboard default and passes on broken code.
-    await test.expect(apple).toHaveAttribute("data-active-item");
 
     await apple.click();
     await test.expect(apple).toBeFocused();
@@ -63,10 +58,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     const orange = q.button("Orange");
-    // Wait for hydration before clicking, since the listener that records
-    // pointer modality is installed from an effect and Apple is the store's
-    // default active item.
-    await test.expect(q.button("Apple")).toHaveAttribute("data-active-item");
 
     await orange.click();
     await test.expect(orange).toBeFocused();
@@ -85,10 +76,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("moves focus-visible with Ctrl+Home on a grid", async ({ page, q }) => {
     const cell = q.gridcell("0B2");
     const firstCell = q.gridcell("0A1");
-    // Wait for hydration before clicking, since the listener that records
-    // pointer modality is installed from an effect and 0A1 is the grid store's
-    // default active item.
-    await test.expect(firstCell).toHaveAttribute("data-active-item");
 
     await cell.click();
     await test.expect(cell).toBeFocused();
@@ -112,10 +99,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     const orange = q.button("Orange");
     const grape = q.button("Grape");
-    // Wait for hydration before clicking, since the listener that records
-    // pointer modality is installed from an effect and Apple is the store's
-    // default active item.
-    await test.expect(q.button("Apple")).toHaveAttribute("data-active-item");
 
     await orange.click();
     await test.expect(orange).toBeFocused();

@@ -500,9 +500,6 @@ function formatColorContrastViolations(
 async function waitForPreviewReady(page: Page) {
   await page.evaluate(installSectionLabelHelpers);
   await page.waitForFunction(async () => {
-    if (document.querySelector("astro-island[ssr]")) {
-      return false;
-    }
     const getSectionLabels = () => {
       const sections = Array.from(
         document.querySelectorAll("section[aria-labelledby]"),

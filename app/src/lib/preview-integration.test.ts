@@ -69,6 +69,7 @@ test("removes stale preview wrappers", async () => {
   const codegenDir = join(dir, "codegen");
   const previewFile = join(codegenDir, "previews/menu/preview.astro");
   const contentFile = join(codegenDir, "previews/menu/preview.mdx");
+  const clientFile = join(codegenDir, "previews/menu/preview.react.tsx");
 
   await writePreviewCodegen({
     codegenDir,
@@ -78,7 +79,46 @@ test("removes stale preview wrappers", async () => {
 
   await expect(fs.access(previewFile)).rejects.toThrow();
   await expect(fs.access(contentFile)).rejects.toThrow();
+  await expect(fs.access(clientFile)).rejects.toThrow();
   expect(result.changed).toBe(true);
+});
+
+test("wraps preview entries with framework hydration markers", async () => {
+  const dir = await createDir();
+  const codegenDir = join(dir, "codegen");
+  const preview = getPreview(dir);
+  preview.frameworks.push("solid");
+  preview.entryFiles.solid = join(dir, "sandbox/menu/index.solid.tsx");
+
+  await writePreviewCodegen({ codegenDir, previews: [preview] });
+
+  const previewDir = join(codegenDir, "previews/menu");
+  const astro = await fs.readFile(join(previewDir, "preview.astro"), "utf8");
+  const react = await fs.readFile(
+    join(previewDir, "preview.react.tsx"),
+    "utf8",
+  );
+  const solid = await fs.readFile(
+    join(previewDir, "preview.solid.tsx"),
+    "utf8",
+  );
+
+  expect(astro).toContain('import ReactExample from "./preview.react.tsx";');
+  expect(astro).toContain('import SolidExample from "./preview.solid.tsx";');
+  expect(react).toMatchInlineSnapshot(`
+    "import { withPreviewHydration } from "#app/components/preview-hydration.react.tsx";
+    import Preview from "../../../sandbox/menu/index.react.tsx";
+
+    export default withPreviewHydration(Preview);
+    "
+  `);
+  expect(solid).toMatchInlineSnapshot(`
+    "import { withPreviewHydration } from "#app/components/preview-hydration.solid.tsx";
+    import Preview from "../../../sandbox/menu/index.solid.tsx";
+
+    export default withPreviewHydration(Preview);
+    "
+  `);
 });
 
 test("generates deferred preview content modules", async () => {

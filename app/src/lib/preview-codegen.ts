@@ -17,6 +17,8 @@ import type { Framework } from "./schemas.ts";
 
 const INTEGRATION_NAME = "ariakit-previews";
 
+type ClientFramework = "react" | "solid";
+
 interface PreviewCodegenParams {
   codegenDir: string;
   previews: DiscoveredPreview[];
@@ -58,6 +60,10 @@ function getPascalCase(value: string) {
 
 function getFrameworkVariable(framework: Framework) {
   return getPascalCase(framework) || "Preview";
+}
+
+function isClientFramework(framework: Framework): framework is ClientFramework {
+  return framework === "react" || framework === "solid";
 }
 
 export function getPreviewFile(previewsDir: string, id: string) {
@@ -106,12 +112,16 @@ function generatePreviewWrapper(preview: DiscoveredPreview, file: string) {
     const entryFile = preview.entryFiles[framework];
     invariant(entryFile, `Missing ${framework} entry file for ${preview.id}`);
     const variable = getFrameworkVariable(framework);
-    const importPath = getRelativeImportPath(file, entryFile);
+    const componentFile = isClientFramework(framework)
+      ? join(dirname(file), `preview.${framework}.tsx`)
+      : entryFile;
+    const importPath = getRelativeImportPath(file, componentFile);
+    const sourceImportPath = getRelativeImportPath(file, entryFile);
     componentImports.push(
       `import ${variable}Example from ${JSON.stringify(importPath)};`,
     );
     sourceImports.push(
-      `import source${variable} from ${JSON.stringify(`${importPath}?source`)};`,
+      `import source${variable} from ${JSON.stringify(`${sourceImportPath}?source`)};`,
     );
     sourceEntries.push(`  ${JSON.stringify(framework)}: source${variable},`);
     componentEntries.push(
@@ -119,6 +129,15 @@ function generatePreviewWrapper(preview: DiscoveredPreview, file: string) {
     );
   }
   return `---\nimport PreviewFramework from "#app/components/preview-framework.astro";\n${componentImports.join("\n")}\n\n${sourceImports.join("\n")}\n\nexport const source = {\n${sourceEntries.join("\n")}\n};\n---\n\n<PreviewFramework>\n${componentEntries.join("\n")}\n</PreviewFramework>\n`;
+}
+
+function generatePreviewClientWrapper(
+  framework: ClientFramework,
+  entryFile: string,
+  file: string,
+) {
+  const importPath = getRelativeImportPath(file, entryFile);
+  return `import { withPreviewHydration } from "#app/components/preview-hydration.${framework}.tsx";\nimport Preview from ${JSON.stringify(importPath)};\n\nexport default withPreviewHydration(Preview);\n`;
 }
 
 function generatePreviewContent() {
@@ -141,7 +160,9 @@ async function getGeneratedPreviewFiles(dir: string) {
     }
     if (
       entry.isFile() &&
-      (entry.name === "preview.astro" || entry.name === "preview.mdx")
+      /^(?:preview\.astro|preview\.mdx|preview\.(?:react|solid)\.tsx)$/.test(
+        entry.name,
+      )
     ) {
       files.push(file);
     }
@@ -182,6 +203,18 @@ export async function writePreviewCodegen({
     const contentFile = getPreviewContentFile(previewsDir, preview.id);
     generatedFiles.add(file);
     generatedFiles.add(contentFile);
+    for (const framework of preview.frameworks) {
+      if (!isClientFramework(framework)) continue;
+      const entryFile = preview.entryFiles[framework];
+      if (!entryFile) continue;
+      const clientFile = join(dirname(file), `preview.${framework}.tsx`);
+      generatedFiles.add(clientFile);
+      changed =
+        (await writeFileIfChanged(
+          clientFile,
+          generatePreviewClientWrapper(framework, entryFile, clientFile),
+        )) || changed;
+    }
     changed =
       (await writeFileIfChanged(file, generatePreviewWrapper(preview, file))) ||
       changed;
