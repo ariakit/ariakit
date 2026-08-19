@@ -18,22 +18,76 @@ function checkIsBrowser() {
   return typeof window !== "undefined" && !!window.document?.createElement;
 }
 
-/**
- * Returns `element.ownerDocument || document`.
- */
-export function getDocument(node?: Window | Document | Node | null): Document {
-  if (!node) return document;
-  if ("self" in node) return node.document;
-  return node.ownerDocument || document;
+// A form exposes its controls as named properties that override built-ins, and
+// a document does the same for the elements it names, so any member read while
+// resolving a realm can answer with one of those instead: a control named
+// `self` makes a form answer the window test, one named `ownerDocument` makes
+// it answer the document lookup, and a form named `defaultView` makes a
+// document answer the window lookup. The two guards below check what came back
+// rather than trusting the member it came from.
+// https://github.com/ariakit/ariakit/issues/7201
+
+// Typed the way `document.defaultView` is, because the interfaces a caller
+// reads off a window, such as `PointerEvent`, are globals rather than members
+// of `Window`.
+function isWindow(value: unknown): value is Window & typeof globalThis {
+  if (!value) return false;
+  // A window is the only object that is its own `window`.
+  return (value as Window).window === value;
+}
+
+function isDocument(value: unknown): value is Document {
+  // Node.DOCUMENT_NODE === 9. The numeric literal avoids referencing the `Node`
+  // global, the way `isElement` below does.
+  return (value as Node | null | undefined)?.nodeType === 9;
+}
+
+function ownsDocument(
+  view: Window & typeof globalThis,
+  ownerDocument: Document,
+) {
+  try {
+    return view.document === ownerDocument;
+  } catch {
+    // A cross-origin window answers only an allowlist, which `document` is not
+    // on, so refusing to answer is itself proof that it owns another document.
+    return false;
+  }
 }
 
 /**
- * Returns `element.ownerDocument.defaultView || window`.
+ * Returns the document `node` belongs to, or the current one when it has none.
  */
-export function getWindow(node?: Window | Document | Node | null): Window {
+export function getDocument(node?: Window | Document | Node | null): Document {
+  if (!node) return document;
+  if (isDocument(node)) return node;
+  // A plain `Window` is not assignable to the intersection `isWindow` asserts,
+  // so it stays in the type of the branch that has already ruled it out.
+  const nodeDocument = isWindow(node)
+    ? node.document
+    : (node as Node).ownerDocument;
+  if (isDocument(nodeDocument)) return nodeDocument;
+  return document;
+}
+
+/**
+ * Returns the window `node` belongs to, or the current one when it has none.
+ */
+export function getWindow(
+  node?: Window | Document | Node | null,
+): Window & typeof globalThis {
   if (!node) return self;
-  if ("self" in node) return node.self;
-  return getDocument(node).defaultView || window;
+  if (isWindow(node)) return node;
+  const nodeDocument = getDocument(node);
+  const { defaultView } = nodeDocument;
+  // Being a window is not enough, because the named getter answers with the
+  // window of an `<iframe name="defaultView">`, which is a real window from
+  // another realm. A window is only this document's view when it owns it back,
+  // and `Window.document` cannot be shadowed the way `Document` members can.
+  if (isWindow(defaultView) && ownsDocument(defaultView, nodeDocument)) {
+    return defaultView;
+  }
+  return window;
 }
 
 /**

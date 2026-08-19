@@ -261,7 +261,7 @@ const title = canUseDOM ? document.title : "";
 function getDocument(node?: Window | Document | Node | null): Document;
 ```
 
-Returns `element.ownerDocument || document`.
+Returns the document `node` belongs to, or the current one when it has none.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
@@ -270,10 +270,12 @@ Returns `element.ownerDocument || document`.
 #### `getWindow`
 
 ```ts
-function getWindow(node?: Window | Document | Node | null): Window;
+function getWindow(
+  node?: Window | Document | Node | null,
+): Window & typeof globalThis;
 ```
 
-Returns `element.ownerDocument.defaultView || window`.
+Returns the window `node` belongs to, or the current one when it has none.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>

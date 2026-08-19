@@ -224,6 +224,45 @@ test("getWindow falls back when a document answers its default view with an elem
   expect(getWindow(element)).toBe(window);
 });
 
+// The same getter answers with a real window when the element it names is a
+// frame, so the resolved view has to own the document back rather than merely
+// be a window. Measured on the three engines above.
+test("getWindow falls back when a document answers its default view with another realm's window", () => {
+  const { frameWindow } = appendFrame();
+  const otherDocument = document.implementation.createHTMLDocument("Other");
+  const element = otherDocument.createElement("div");
+  otherDocument.body.append(element);
+  Object.defineProperty(otherDocument, "defaultView", {
+    configurable: true,
+    value: frameWindow,
+  });
+
+  expect(getWindow(element)).toBe(window);
+});
+
+// Measured on the same three engines: when that frame is cross-origin, its
+// window still answers `window` with itself and throws a `SecurityError` for
+// `document`, so refusing to answer has to count as owning another document.
+// The environment has no cross-origin frames, so the refusal is emulated.
+test("getWindow falls back when the view it resolves refuses to report its document", () => {
+  const refusingView = {
+    window: null as unknown,
+    get document(): Document {
+      throw new Error("SecurityError");
+    },
+  };
+  refusingView.window = refusingView;
+  const otherDocument = document.implementation.createHTMLDocument("Other");
+  const element = otherDocument.createElement("div");
+  otherDocument.body.append(element);
+  Object.defineProperty(otherDocument, "defaultView", {
+    configurable: true,
+    value: refusingView,
+  });
+
+  expect(getWindow(element)).toBe(window);
+});
+
 // A `Document` is a `Node` whose `ownerDocument` is `null`, so resolving one
 // through that member falls through to the ambient document. Measured on
 // Chromium 151, Firefox 153, and WebKit 26.5: both helpers report the top-level

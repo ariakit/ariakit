@@ -36,8 +36,25 @@ test("getOwnerWindow reports no window for a document with no view", () => {
 });
 
 // `Document` exposes named elements as its own properties too, so the view a
-// document answers with has to be checked rather than returned as it comes.
+// document answers with has to own it back rather than merely be a window: the
+// same getter answers with a real window when the element it names is a frame.
 // https://github.com/ariakit/ariakit/issues/7209
+test("getOwnerWindow reports no window when a document answers its default view with another realm's window", () => {
+  const frame = document.createElement("iframe");
+  document.body.append(frame);
+  const frameWindow = frame.contentDocument?.defaultView;
+  if (!frameWindow) throw new Error("iframe window is not available");
+  const otherDocument = document.implementation.createHTMLDocument("Other");
+  const element = otherDocument.createElement("div");
+  otherDocument.body.append(element);
+  Object.defineProperty(otherDocument, "defaultView", {
+    configurable: true,
+    value: frameWindow,
+  });
+
+  expect(getOwnerWindow(element)).toBeNull();
+});
+
 test("getOwnerWindow reports no window when a document answers its default view with an element", () => {
   const otherDocument = document.implementation.createHTMLDocument("Other");
   const element = otherDocument.createElement("div");

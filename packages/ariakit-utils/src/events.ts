@@ -3,7 +3,7 @@
  * @module Event utilities
  */
 
-import { contains, isElement, isNode } from "./dom.ts";
+import { contains, getWindow, isElement, isNode } from "./dom.ts";
 import { hasOwnProperty } from "./misc.ts";
 import { isApple } from "./platform.ts";
 
@@ -78,6 +78,10 @@ export function fireEvent(
   type: string,
   eventInit?: EventInit,
 ) {
+  // Built by the window that owns the element, so a listener inside a
+  // same-origin frame gets an event that its own interfaces recognize. The
+  // helpers below do the same. https://github.com/ariakit/ariakit/issues/7193
+  const { Event } = getWindow(element);
   const event = new Event(type, eventInit);
   return element.dispatchEvent(event);
 }
@@ -88,6 +92,7 @@ export function fireEvent(
  * fireBlurEvent(document.getElementById("id"));
  */
 export function fireBlurEvent(element: Element, eventInit?: FocusEventInit) {
+  const { FocusEvent } = getWindow(element);
   const event = new FocusEvent("blur", eventInit);
   const defaultAllowed = element.dispatchEvent(event);
   const bubbleInit = { ...eventInit, bubbles: true };
@@ -101,6 +106,7 @@ export function fireBlurEvent(element: Element, eventInit?: FocusEventInit) {
  * fireFocusEvent(document.getElementById("id"));
  */
 export function fireFocusEvent(element: Element, eventInit?: FocusEventInit) {
+  const { FocusEvent } = getWindow(element);
   const event = new FocusEvent("focus", eventInit);
   const defaultAllowed = element.dispatchEvent(event);
   const bubbleInit = { ...eventInit, bubbles: true };
@@ -121,6 +127,7 @@ export function fireKeyboardEvent(
   type: string,
   eventInit?: KeyboardEventInit,
 ) {
+  const { KeyboardEvent } = getWindow(element);
   const event = new KeyboardEvent(type, eventInit);
   return element.dispatchEvent(event);
 }
@@ -209,13 +216,7 @@ export function fireClickEvent(
   element: Element,
   eventInit?: PointerEventInit | null,
 ) {
-  // Read straight from the document rather than through `getWindow`, which
-  // treats any node with a `self` property as a window. A form exposes its
-  // controls as named properties, so a form owning a control named `self` would
-  // resolve to that control. A form can shadow `ownerDocument` the same way,
-  // which the `?? window` fallback below only degrades rather than fixes; that
-  // residue is https://github.com/ariakit/ariakit/issues/7201.
-  const view = element.ownerDocument.defaultView ?? window;
+  const view = getWindow(element);
   // Falls back to `MouseEvent` where `PointerEvent` is missing, so activation
   // keeps working there and only the pointer members are dropped.
   const EventConstructor = view.PointerEvent ?? view.MouseEvent;
