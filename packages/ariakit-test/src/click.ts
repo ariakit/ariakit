@@ -1,4 +1,12 @@
 import { isVisible, isFocusable, invariant } from "@ariakit/utils";
+import {
+  dispatchAuxClick,
+  getHoverOptions,
+  getMouseButton,
+  getPressOptions,
+  getReleaseOptions,
+  omitButtons,
+} from "./__mouse.ts";
 import { isHappyDOM, settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
@@ -157,11 +165,20 @@ async function clickOption(
  * clicks on labels, `option` elements, and form controls behave like native
  * interactions. Pass `options` to set event properties such as modifier keys
  * (e.g. `{ shiftKey: true }`).
+ *
+ * Pass `button` to click with another mouse button. Activation behavior runs on
+ * `click`, so a non-primary button fires `auxclick` instead and doesn't activate
+ * labels or `option` elements, and the secondary button also fires `contextmenu`
+ * while it's held down. Each step derives `buttons` from that button, so an
+ * explicit `buttons` is ignored here; `mouseDown` and `mouseUp` accept one to
+ * describe a chorded gesture.
  * @example
  * ```ts
  * await click(q.button("Submit"));
  * // With a modifier key held down:
  * await click(q.option("Item"), { shiftKey: true });
+ * // With the middle mouse button, firing `auxclick`:
+ * await click(q.link("Ariakit"), { button: 1 });
  * ```
  */
 export function click(
@@ -173,14 +190,22 @@ export function click(
     invariant(element, "Unable to click on null element");
     if (!isVisible(element)) return;
 
-    await hover(element, options);
-    await mouseDown(element, options);
+    const button = getMouseButton(options);
+    const stepOptions = omitButtons(options);
+
+    await hover(element, getHoverOptions(stepOptions));
+    await mouseDown(element, stepOptions);
 
     // The element may be hidden after hover/mouseDown, so we need to check again
     // and find the first visible parent.
     while (!isVisible(element)) {
       if (!element.parentElement) return;
       element = element.parentElement;
+    }
+
+    // The secondary button opens the context menu while it's still held down.
+    if (button === 2) {
+      await dispatch.contextMenu(element, getPressOptions(stepOptions));
     }
 
     if (!tap) {
@@ -190,20 +215,30 @@ export function click(
       await settle();
     }
 
-    await mouseUp(element, options);
+    await mouseUp(element, stepOptions);
 
-    // Disabled controls suppress the final user-generated click.
     const { disabled } = element as HTMLButtonElement;
-    if (disabled) return;
 
-    const label = getClosestLabel(element);
-
-    if (label) {
-      await clickLabel(label, { detail: 1, ...options });
-    } else if (element instanceof HTMLOptionElement) {
-      await clickOption(element, { detail: 1, ...options });
+    if (button !== 0) {
+      // Non-primary buttons fire `auxclick` instead of `click`, and never run
+      // activation behavior, so labels and options aren't forwarded. Chromium
+      // and WebKit still fire it on disabled controls, so it isn't suppressed
+      // here (Firefox doesn't fire it).
+      await dispatchAuxClick(element, getReleaseOptions(stepOptions));
+    } else if (disabled) {
+      // Disabled controls suppress the final user-generated click.
+      return;
     } else {
-      await dispatch.click(element, { detail: 1, ...options });
+      const clickOptions = { detail: 1, ...getReleaseOptions(stepOptions) };
+      const label = getClosestLabel(element);
+
+      if (label) {
+        await clickLabel(label, clickOptions);
+      } else if (element instanceof HTMLOptionElement) {
+        await clickOption(element, clickOptions);
+      } else {
+        await dispatch.click(element, clickOptions);
+      }
     }
 
     await sleep();

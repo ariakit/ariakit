@@ -1,4 +1,5 @@
 import { isVisible, invariant } from "@ariakit/utils";
+import { getHoverOptions, getReleaseOptions, omitButtons } from "./__mouse.ts";
 import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { hover } from "./hover.ts";
@@ -12,7 +13,8 @@ import { sleep } from "./sleep.ts";
  * descendant text nodes, sets the document selection to cover it, then releases.
  *
  * When no element is passed, `document.body` is used. Pass `options` to set event
- * properties such as modifier keys.
+ * properties such as modifier keys. Each step derives `buttons` from the button
+ * it presses, so an explicit `buttons` is ignored.
  * @example
  * ```ts
  * await select("hello world");
@@ -30,9 +32,10 @@ export function select(
     if (!isVisible(element)) return;
 
     const document = element.ownerDocument;
+    const stepOptions = omitButtons(options);
 
-    await hover(element, options);
-    await mouseDown(element, options);
+    await hover(element, getHoverOptions(stepOptions));
+    await mouseDown(element, stepOptions);
 
     await dispatch(
       element,
@@ -86,9 +89,12 @@ export function select(
     // Let the selection change flush before releasing — microtask/rAF settle.
     await settle();
 
-    await mouseUp(element, options);
+    await mouseUp(element, stepOptions);
 
-    await dispatch.click(element, { detail: 1, ...options });
+    await dispatch.click(element, {
+      detail: 1,
+      ...getReleaseOptions(stepOptions),
+    });
 
     await sleep();
   });

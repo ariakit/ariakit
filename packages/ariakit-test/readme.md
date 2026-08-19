@@ -85,12 +85,16 @@ Clicks on an element, simulating the sequence of events a real mouse click produ
 
 Hidden and disabled elements are handled the same way a browser would, and clicks on labels, `option` elements, and form controls behave like native interactions. Pass `options` to set event properties such as modifier keys (e.g. `{ shiftKey: true }`).
 
+Pass `button` to click with another mouse button. Activation behavior runs on `click`, so a non-primary button fires `auxclick` instead and doesn't activate labels or `option` elements, and the secondary button also fires `contextmenu` while it's held down. Each step derives `buttons` from that button, so an explicit `buttons` is ignored here; `mouseDown` and `mouseUp` accept one to describe a chorded gesture.
+
 Example:
 
 ```ts
 await click(q.button("Submit"));
 // With a modifier key held down:
 await click(q.option("Item"), { shiftKey: true });
+// With the middle mouse button, firing `auxclick`:
+await click(q.link("Ariakit"), { button: 1 });
 ```
 
 <div align="right">
@@ -182,9 +186,9 @@ function mouseDown(
 ): Promise<void>;
 ```
 
-Presses the primary pointer button down on an element, firing `pointerdown` and `mousedown` and moving focus the way a browser would. Disabled elements still receive `pointerdown` but not `mousedown`, and focus falls back to the closest focusable ancestor when the target itself isn't focusable.
+Presses a pointer button down on an element, firing `pointerdown` and `mousedown` and moving focus the way a browser would. Disabled elements still receive `pointerdown` but not `mousedown`, and focus falls back to the closest focusable ancestor when the target itself isn't focusable.
 
-This is one step of a full `click`; use it directly to test press-and-hold behavior. Pass `options` to set event properties such as modifier keys.
+This is one step of a full `click`; use it directly to test press-and-hold behavior. Pass `options` to set event properties such as modifier keys, or `button` to press another mouse button. The events report the pressed button in `buttons`, like a browser does, unless you pass `buttons` yourself to describe a chorded gesture. When another button is already held, a browser fires `pointermove` instead of `pointerdown`. This helper fires `pointerdown` in both cases.
 
 Example:
 
@@ -207,9 +211,9 @@ function mouseUp(
 ): Promise<void>;
 ```
 
-Releases the primary pointer button on an element, firing `pointerup` and `mouseup`. Disabled elements still receive `pointerup` but not `mouseup`.
+Releases a pointer button on an element, firing `pointerup` and `mouseup`. Disabled elements still receive `pointerup` but not `mouseup`.
 
-This is the counterpart to `mouseDown` and one step of a full `click`. Pass `options` to set event properties such as modifier keys.
+This is the counterpart to `mouseDown` and one step of a full `click`. Pass `options` to set event properties such as modifier keys, or `button` to release another mouse button. The events report no button still held down in `buttons`, like a browser does, unless you pass `buttons` yourself to describe the buttons a chorded gesture keeps held. When another button stays held, a browser fires `pointermove` instead of `pointerup`. This helper fires `pointerup` in both cases.
 
 Example:
 
@@ -360,7 +364,7 @@ function select(
 
 Selects a range of text within an element, simulating a real user dragging across it. Hovers and presses on the element, finds the given `text` in its descendant text nodes, sets the document selection to cover it, then releases.
 
-When no element is passed, `document.body` is used. Pass `options` to set event properties such as modifier keys.
+When no element is passed, `document.body` is used. Pass `options` to set event properties such as modifier keys. Each step derives `buttons` from the button it presses, so an explicit `buttons` is ignored.
 
 Example:
 

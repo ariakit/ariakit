@@ -8,6 +8,18 @@ import "./shims.ts";
 
 const selectionText = "sample paragraph text";
 
+// Records each press event as `type button buttons`.
+function recordPressEvents(element: Element) {
+  const events: string[] = [];
+  for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup"]) {
+    element.addEventListener(type, (event) => {
+      const { button, buttons } = event as MouseEvent;
+      events.push(`${event.type} ${button} ${buttons}`);
+    });
+  }
+  return events;
+}
+
 beforeEach(() => {
   document.body.innerHTML = `
     <p>Keep this ${selectionText} selected.</p>
@@ -176,4 +188,74 @@ test("mouseUp suppresses mouseup after a prevented pointerdown", async () => {
   await mouseUp(button);
 
   expect(events).toEqual(["pointerdown", "mousedown", "pointerup", "mouseup"]);
+});
+
+// A standalone press must report the held button in `buttons` the way a browser
+// does, so a component that starts dragging on `buttons === 1` reacts to
+// `mouseDown` on its own and not only to a full `click`. The `buttons` bits are
+// not in `button` order, so every mapping is asserted.
+test("mouseDown and mouseUp report the held button", async () => {
+  document.body.innerHTML = `<button type="button">Resize</button>`;
+
+  const button = q.button.ensure("Resize");
+  const events = recordPressEvents(button);
+
+  const heldButtons = [
+    [0, 1],
+    [1, 4],
+    [2, 2],
+    [3, 8],
+    [4, 16],
+    [5, 32],
+  ];
+
+  for (const [pressed, held] of heldButtons) {
+    events.length = 0;
+
+    await mouseDown(button, { button: pressed });
+    await mouseUp(button, { button: pressed });
+
+    expect(events).toEqual([
+      `pointerdown ${pressed} ${held}`,
+      `mousedown ${pressed} ${held}`,
+      `pointerup ${pressed} 0`,
+      `mouseup ${pressed} 0`,
+    ]);
+  }
+});
+
+// A chorded gesture holds buttons that can't be derived from the one being
+// pressed, so an explicit `buttons` wins over the per-phase default. Here the
+// primary button stays held while the secondary one is pressed and released.
+test("mouseDown and mouseUp keep an explicit buttons value", async () => {
+  document.body.innerHTML = `<button type="button">Resize</button>`;
+
+  const button = q.button.ensure("Resize");
+  const events = recordPressEvents(button);
+
+  await mouseDown(button, { button: 2, buttons: 3 });
+  await mouseUp(button, { button: 2, buttons: 1 });
+
+  expect(events).toEqual([
+    "pointerdown 2 3",
+    "mousedown 2 3",
+    "pointerup 2 1",
+    "mouseup 2 1",
+  ]);
+});
+
+// `select` runs every step from one init like `click` does, so it derives each
+// step and ignores an explicit `buttons`.
+test("select derives buttons from the button it presses", async () => {
+  const paragraph = q.text.ensure(/Keep this/);
+  const events = recordPressEvents(paragraph);
+
+  await select(selectionText, paragraph, { buttons: 3 });
+
+  expect(events).toEqual([
+    "pointerdown 0 1",
+    "mousedown 0 1",
+    "pointerup 0 0",
+    "mouseup 0 0",
+  ]);
 });
