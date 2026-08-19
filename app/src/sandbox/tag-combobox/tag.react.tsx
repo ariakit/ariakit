@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import * as React from "react";
 import * as Ariakit from "./ariakit-experimental.react.ts";
 
-export interface TagListProps extends Ariakit.TagListProps {
+export interface TagFieldProps extends Ariakit.TagControlProps {
   label?: React.ReactNode;
   value?: Ariakit.TagProviderProps["value"];
   setValue?: Ariakit.TagProviderProps["setValue"];
@@ -10,8 +10,8 @@ export interface TagListProps extends Ariakit.TagListProps {
   setValues?: Ariakit.TagProviderProps["setValues"];
 }
 
-export const TagList = React.forwardRef<HTMLDivElement, TagListProps>(
-  function TagList(
+export const TagField = React.forwardRef<HTMLDivElement, TagFieldProps>(
+  function TagField(
     { label, value, setValue, values, setValues, ...props },
     ref,
   ) {
@@ -23,16 +23,32 @@ export const TagList = React.forwardRef<HTMLDivElement, TagListProps>(
         setValues={setValues}
       >
         {label && (
-          <Ariakit.TagListLabel className="ak-tag-list-label">
+          <Ariakit.TagLabel className="ak-tag-list-label">
             {label}
-          </Ariakit.TagListLabel>
+          </Ariakit.TagLabel>
         )}
-        <Ariakit.TagList
+        <Ariakit.TagControl
           ref={ref}
           {...props}
           className={clsx("ak-tag-list ak-input ak-focusable", props.className)}
         />
       </Ariakit.TagProvider>
+    );
+  },
+);
+
+export interface TagListProps extends Ariakit.TagListProps {}
+
+export const TagList = React.forwardRef<HTMLDivElement, TagListProps>(
+  function TagList(props, ref) {
+    return (
+      <Ariakit.TagList
+        ref={ref}
+        {...props}
+        // The listbox generates no box, so the tags share the field's layout
+        // with the input, which is a sibling of this element.
+        style={{ display: "contents", ...props.style }}
+      />
     );
   },
 );

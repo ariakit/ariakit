@@ -12,13 +12,11 @@ function getSelectionText(element: HTMLElement | HTMLInputElement | null) {
 }
 
 function tags() {
-  const combobox = q.combobox("Invitees");
-  return q.option
-    .all(undefined, {
-      name(_, element) {
-        return !!element.parentElement?.contains(combobox);
-      },
-    })
+  // The combobox suggestions are options too, so only the ones inside the tag
+  // list count as tags.
+  return q
+    .within(q.listbox("Invitees"))
+    .option.all()
     .map((el) => el.textContent);
 }
 

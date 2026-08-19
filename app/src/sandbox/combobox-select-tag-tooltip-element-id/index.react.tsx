@@ -1,7 +1,8 @@
 import * as Ariakit from "@ariakit/react";
+import { TagControl } from "@ariakit/react-components/tag/tag-control";
 import { TagInput } from "@ariakit/react-components/tag/tag-input";
+import { TagLabel } from "@ariakit/react-components/tag/tag-label";
 import { TagList } from "@ariakit/react-components/tag/tag-list";
-import { TagListLabel } from "@ariakit/react-components/tag/tag-list-label";
 import { TagProvider } from "@ariakit/react-components/tag/tag-provider";
 import { useEffect, useState } from "react";
 
@@ -62,7 +63,7 @@ function DynamicTagLabel() {
       <button type="button" onClick={() => setId("tag-label-after")}>
         Change tag label id
       </button>
-      <TagListLabel id={id}>Tag label</TagListLabel>
+      <TagLabel id={id}>Tag label</TagLabel>
     </>
   );
 }
@@ -84,9 +85,10 @@ function TagExample() {
     <section aria-label="Tag">
       <TagProvider>
         <DynamicTagLabel />
-        <TagList>
+        <TagControl>
+          <TagList />
           <DynamicTagInput />
-        </TagList>
+        </TagControl>
       </TagProvider>
     </section>
   );

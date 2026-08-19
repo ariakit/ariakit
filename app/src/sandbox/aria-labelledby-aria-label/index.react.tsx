@@ -1,6 +1,7 @@
 import * as ak from "@ariakit/react";
+import { TagControl } from "@ariakit/react-components/tag/tag-control";
+import { TagLabel } from "@ariakit/react-components/tag/tag-label";
 import { TagList } from "@ariakit/react-components/tag/tag-list";
-import { TagListLabel } from "@ariakit/react-components/tag/tag-list-label";
 import { TagProvider } from "@ariakit/react-components/tag/tag-provider";
 
 export default function Example() {
@@ -71,8 +72,13 @@ export default function Example() {
       </ak.TooltipProvider>
 
       <TagProvider>
-        <TagListLabel>Tag label</TagListLabel>
+        <TagLabel>Tag label</TagLabel>
         <TagList aria-label="Custom tag list label" />
+      </TagProvider>
+
+      <TagProvider>
+        <TagLabel>Tag control label</TagLabel>
+        <TagControl aria-label="Custom tag control label" />
       </TagProvider>
 
       <ak.Group aria-labelledby="explicit-labelledby">

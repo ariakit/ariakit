@@ -52,10 +52,15 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const label = section.text("Tag label");
     const input = section.textbox("Tag label");
     const list = section.listbox("Tag label");
+    // The label names the control too, which groups the tag list and the input.
+    const control = section.group("Tag label");
 
     await test.expect(label).toHaveAttribute("for", "tag-input-before");
     await test
       .expect(list)
+      .toHaveAttribute("aria-labelledby", "tag-label-before");
+    await test
+      .expect(control)
       .toHaveAttribute("aria-labelledby", "tag-label-before");
 
     await section.button("Change tag input id").click();
@@ -67,6 +72,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await test
       .expect(list)
+      .toHaveAttribute("aria-labelledby", "tag-label-after");
+    await test
+      .expect(control)
       .toHaveAttribute("aria-labelledby", "tag-label-after");
   });
 
