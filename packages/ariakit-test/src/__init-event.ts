@@ -1,5 +1,7 @@
 // Part of this code is based on https://github.com/testing-library/user-event/blob/d7483f049a1ec2ebf1ca1e2c1f4367849fca5997/src/event/createEvent.ts
 import { getKeys } from "@ariakit/utils";
+import type { OwnerWindowSource } from "./__utils.ts";
+import { getOwnerWindow } from "./__utils.ts";
 
 type SpecificEventInit<E extends Event> = E extends InputEvent
   ? InputEventInit
@@ -11,9 +13,35 @@ type SpecificEventInit<E extends Event> = E extends InputEvent
         ? PointerEventInit
         : E extends MouseEvent
           ? MouseEventInit
-          : E extends UIEvent
-            ? UIEventInit
-            : EventInit;
+          : E extends CompositionEvent
+            ? CompositionEventInit
+            : E extends UIEvent
+              ? UIEventInit
+              : EventInit;
+
+// The realm whose constructors an interface test runs against: the window that
+// owns the target the event was built for, or the ambient globals when that
+// target has no window. `createEvent` resolves the constructor the same way, so
+// an event built for a node inside a same-origin iframe belongs to that frame
+// and matches no ambient `instanceof`.
+// https://github.com/ariakit/ariakit/issues/7195
+type EventRealm = typeof globalThis;
+
+function getEventRealm(target: OwnerWindowSource): EventRealm {
+  return getOwnerWindow(target) ?? globalThis;
+}
+
+// A realm doesn't necessarily implement every interface `initEvent` tests for,
+// so a missing constructor has to answer false rather than throw. jsdom has
+// `PointerEvent` only from v27 on, and `shims.ts` installs `ClipboardEvent` on
+// the ambient realm only, so an iframe realm has none even though the top one
+// does. https://github.com/ariakit/ariakit/issues/7200
+function isInstanceOf<T>(
+  event: Event,
+  constructor: (new (...args: never[]) => T) | undefined,
+): event is Event & T {
+  return typeof constructor === "function" && event instanceof constructor;
+}
 
 function assignProps<T extends object>(
   obj: T,
@@ -35,7 +63,7 @@ function sanitizeNumber(n: number | undefined) {
   return n ?? 0;
 }
 
-function sanitizeString(value: string | undefined) {
+function sanitizeString(value: string | null | undefined) {
   return value ?? "";
 }
 
@@ -79,6 +107,22 @@ function initUIEvent(event: UIEvent, { view, detail }: UIEventInit) {
   assignProps(event, {
     view,
     detail: sanitizeNumber(detail),
+  });
+}
+
+// `CompositionEventInit` defaults `data` to the empty string, which is what
+// Chromium 151, Firefox 153, and WebKit 26.5 report for an event built without
+// it. `data` is also the only member the interface adds to `UIEvent`. The
+// parameter accepts `InputEventInit` too, because `initEvent` hands every
+// initializer the same options object and that interface declares a nullable
+// `data` of its own.
+// https://w3c.github.io/uievents/#idl-compositionevent
+function initCompositionEvent(
+  event: CompositionEvent,
+  { data }: CompositionEventInit | InputEventInit,
+) {
+  assignProps(event, {
+    data: sanitizeString(data),
   });
 }
 
@@ -265,28 +309,44 @@ const pointerEventTypes = new Set([
   "pointerup",
 ]);
 
-function isPointerEvent(event: Event): event is PointerEvent {
-  // `typeof` first, because the bare global throws where it doesn't exist,
-  // which is the very case the name test covers.
-  if (typeof PointerEvent !== "undefined" && event instanceof PointerEvent) {
-    return true;
-  }
+function isPointerEvent(
+  event: Event,
+  realm: EventRealm,
+): event is PointerEvent {
+  if (isInstanceOf(event, realm.PointerEvent)) return true;
   return pointerEventTypes.has(event.type);
 }
 
-function isMouseEvent(event: Event): event is MouseEvent {
-  if (event instanceof MouseEvent) return true;
+function isMouseEvent(event: Event, realm: EventRealm): event is MouseEvent {
+  if (isInstanceOf(event, realm.MouseEvent)) return true;
   // `PointerEvent` derives from `MouseEvent`, so a pointer event carries the
   // mouse members too.
-  if (isPointerEvent(event)) return true;
+  if (isPointerEvent(event, realm)) return true;
   return mouseDerivedEventTypes.has(event.type);
 }
 
-function isUIEvent(event: Event): event is UIEvent {
-  if (event instanceof UIEvent) return true;
-  // `MouseEvent` derives from `UIEvent`, so anything carrying the mouse members
-  // carries the `UIEvent` ones too.
-  return isMouseEvent(event);
+// The three types `CompositionEvent` covers. happy-dom aliases the interface to
+// `Event`, so `instanceof` there answers true for every event rather than these
+// alone, and the type is the only thing that separates them. Any event
+// `initEvent` sees with one of these names was built by the matching named
+// dispatcher, so the name identifies the interface here.
+// https://github.com/ariakit/ariakit/issues/7174
+const compositionEventTypes = new Set([
+  "compositionstart",
+  "compositionupdate",
+  "compositionend",
+]);
+
+function isCompositionEvent(event: Event): event is CompositionEvent {
+  return compositionEventTypes.has(event.type);
+}
+
+function isUIEvent(event: Event, realm: EventRealm): event is UIEvent {
+  if (isInstanceOf(event, realm.UIEvent)) return true;
+  // `MouseEvent` and `CompositionEvent` both derive from `UIEvent`, so anything
+  // carrying either interface's members carries the `UIEvent` ones too.
+  if (isMouseEvent(event, realm)) return true;
+  return isCompositionEvent(event);
 }
 
 /**
@@ -296,29 +356,36 @@ function isUIEvent(event: Event): event is UIEvent {
  * `keyCode` under happy-dom. Only a caller that built the event for a known
  * event name may run this, because it overwrites whatever the constructor did
  * with the values in `options`.
+ * @param target The node, document, or window the event was built for, whose
+ * realm owns the constructors the interface tests run against.
  */
 export function initEvent<T extends Event>(
   event: T,
+  target: OwnerWindowSource,
   options: SpecificEventInit<T> = {} as SpecificEventInit<T>,
 ) {
-  if (event instanceof ClipboardEvent) {
+  const realm = getEventRealm(target);
+  if (isInstanceOf(event, realm.ClipboardEvent)) {
     initClipboardEvent(event, options);
   }
-  if (event instanceof InputEvent) {
+  if (isInstanceOf(event, realm.InputEvent)) {
     initInputEvent(event, options);
   }
-  if (isUIEvent(event)) {
+  if (isUIEvent(event, realm)) {
     initUIEvent(event, options);
   }
-  if (event instanceof KeyboardEvent) {
+  if (isCompositionEvent(event)) {
+    initCompositionEvent(event, options);
+  }
+  if (isInstanceOf(event, realm.KeyboardEvent)) {
     initKeyboardEvent(event, options);
     initUIEventModifiers(event, options);
   }
-  if (isMouseEvent(event)) {
+  if (isMouseEvent(event, realm)) {
     initMouseEvent(event, options);
     initUIEventModifiers(event, options);
   }
-  if (isPointerEvent(event)) {
+  if (isPointerEvent(event, realm)) {
     initPointerEvent(event, options);
   }
 }

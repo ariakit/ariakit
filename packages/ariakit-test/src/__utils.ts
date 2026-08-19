@@ -14,6 +14,34 @@ export function isHappyDOM(
   return !!win && "happyDOM" in win;
 }
 
+export type OwnerWindowSource = Window | Document | Node | null | undefined;
+
+/**
+ * The window that owns `target`, which is the realm `@testing-library/dom`
+ * builds an event in, or `null` when none can be resolved. Read a constructor
+ * from here rather than from the ambient global whenever the target may live in
+ * a same-origin iframe, because that frame has interfaces of its own.
+ * https://github.com/ariakit/ariakit/issues/7195
+ */
+export function getOwnerWindow(target: OwnerWindowSource) {
+  if (!target) return null;
+  // `ownerDocument` first, because a form exposes its controls as named
+  // properties and one named `document` would answer the branch below. Neither
+  // happy-dom nor jsdom implements the form's `[LegacyOverrideBuiltIns]`, so
+  // this name still resolves through `Node.prototype` there; a browser does
+  // implement it, but `createEvent` resolves the window just as fragilely then.
+  // A `Document` reports `null` here and falls through to its own view.
+  // https://html.spec.whatwg.org/multipage/forms.html#the-form-element
+  if ("ownerDocument" in target && target.ownerDocument) {
+    return target.ownerDocument.defaultView;
+  }
+  if ("defaultView" in target) return target.defaultView;
+  // Through the document either way, since only `defaultView` is typed with the
+  // constructors a window carries.
+  if ("document" in target) return target.document.defaultView;
+  return null;
+}
+
 export const isBrowser =
   typeof navigator !== "undefined" &&
   !navigator.userAgent.includes("jsdom") &&

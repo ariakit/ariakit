@@ -106,3 +106,18 @@ test("type marks the text field that receives text after focus moves", async () 
   expect(onFirstInputChange).not.toHaveBeenCalled();
   expect(onSecondInputChange).toHaveBeenCalledOnce();
 });
+
+// Composed text goes out through `dispatch.compositionUpdate`, which is the one
+// path in the repository that already depends on `data` reaching a listener.
+// https://github.com/ariakit/ariakit/issues/7174
+test("type reports each composed character on the composition event", async () => {
+  const input = createInput();
+  const composed: string[] = [];
+  input.addEventListener("compositionupdate", (event) => {
+    composed.push(event.data);
+  });
+
+  await type("ni", input, { isComposing: true });
+
+  expect(composed).toEqual(["n", "i"]);
+});

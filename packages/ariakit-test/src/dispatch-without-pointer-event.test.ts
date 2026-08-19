@@ -17,9 +17,12 @@ afterAll(() => {
 });
 
 test("runs in an environment with no PointerEvent constructor", () => {
-  // `initEvent` reads the ambient binding, so pin that rather than the window
-  // property: they coincide only while the environment makes them the same
-  // object, and the mouse assertions below would pass either way.
+  // `initEvent` and `createNamedEvent` both read the constructor off the window
+  // that owns the target, so the window property is the one that gates the path
+  // below. The ambient binding is pinned too, because they coincide only while
+  // the environment makes them the same object, and the mouse assertions below
+  // would pass either way.
+  expect(typeof window.PointerEvent).toBe("undefined");
   expect(typeof PointerEvent).toBe("undefined");
 });
 
