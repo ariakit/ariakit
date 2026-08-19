@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 
 test("updates combobox relationships when the input id changes", async () => {
   const section = q.within(q.region("Combobox"));
-  const label = section.text.ensure("Combobox label");
+  const label = section.text("Combobox label");
   const combobox = section.combobox("Combobox label");
   const cancel = section.button("Clear input");
 
@@ -19,7 +19,7 @@ test("updates combobox relationships when the input id changes", async () => {
 
 test("updates the tooltip anchor when the content id changes", async () => {
   const section = q.within(q.region("Tooltip"));
-  const anchor = section.button.ensure("Tooltip label");
+  const anchor = section.button("Tooltip label");
 
   expect(anchor).toHaveAttribute("aria-labelledby", "tooltip-before");
 

@@ -29,20 +29,20 @@ async function middleClickActivates(element: Element) {
 // keeps the gesture away from it, so the `auxclick` never lands on the link.
 
 test("middle click activates an enabled link", async () => {
-  expect(await middleClickActivates(q.link.ensure("Enabled link"))).toBe(true);
+  expect(await middleClickActivates(q.link("Enabled link"))).toBe(true);
 });
 
 test("middle click activates an enabled tab rendered as a link", async () => {
-  expect(await middleClickActivates(q.tab.ensure("Overview"))).toBe(true);
+  expect(await middleClickActivates(q.tab("Overview"))).toBe(true);
 });
 
 // https://github.com/ariakit/ariakit/issues/7153
 test("middle click does not activate an accessible disabled link", async () => {
-  const link = q.link.ensure("Accessible disabled link");
+  const link = q.link("Accessible disabled link");
   expect(await middleClickActivates(link)).toBe(false);
 });
 
 // https://github.com/ariakit/ariakit/issues/7153
 test("middle click does not activate a disabled tab rendered as a link", async () => {
-  expect(await middleClickActivates(q.tab.ensure("Billing"))).toBe(false);
+  expect(await middleClickActivates(q.tab("Billing"))).toBe(false);
 });

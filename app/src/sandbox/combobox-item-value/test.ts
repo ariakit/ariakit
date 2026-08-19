@@ -14,31 +14,31 @@ function getPartTexts(element: HTMLElement, selector: string) {
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6298
 test("renders overlapping matches without duplicated text", async () => {
-  await type("ana", q.combobox.ensure("Search files"));
+  await type("ana", q.combobox("Search files"));
 
-  const option = q.option.ensure("Banana.txt");
+  const option = q.option("Banana.txt");
   expect(option.textContent).toBe("Banana.txt");
   expect(getPartTexts(option, "[data-user-value]")).toEqual(["anana"]);
 
-  const normalizedEmptyValue = q.status.ensure("Normalized empty value");
+  const normalizedEmptyValue = q.status("Normalized empty value");
   expect(normalizedEmptyValue.textContent).toBe("Cafe");
   expect(getPartTexts(normalizedEmptyValue, "[data-user-value]")).toEqual([]);
 });
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6329
 test("highlights only the typed syllable in Hangul item values", async () => {
-  await type("사", q.combobox.ensure("Search files"));
+  await type("사", q.combobox("Search files"));
 
-  const option = q.option.ensure("사과.txt");
+  const option = q.option("사과.txt");
   expect(option.textContent).toBe("사과.txt");
   expect(getPartTexts(option, "[data-user-value]")).toEqual(["사"]);
   expect(getPartTexts(option, "[data-autocomplete-value]")).toEqual(["과.txt"]);
 });
 
 test("highlights only the typed kana in item values with dakuten", async () => {
-  await type("ガ", q.combobox.ensure("Search files"));
+  await type("ガ", q.combobox("Search files"));
 
-  const option = q.option.ensure("ガラス.txt");
+  const option = q.option("ガラス.txt");
   expect(option.textContent).toBe("ガラス.txt");
   expect(getPartTexts(option, "[data-user-value]")).toEqual(["ガ"]);
   expect(getPartTexts(option, "[data-autocomplete-value]")).toEqual([
@@ -47,9 +47,9 @@ test("highlights only the typed kana in item values with dakuten", async () => {
 });
 
 test("keeps combining marks attached in decomposed item values", async () => {
-  await type("sum", q.combobox.ensure("Search files"));
+  await type("sum", q.combobox("Search files"));
 
-  const option = q.option.ensure(decomposedResume);
+  const option = q.option(decomposedResume);
   expect(option.textContent).toBe(decomposedResume);
   expect(getPartTexts(option, "[data-user-value]")).toEqual(["sum"]);
   expect(getPartTexts(option, "[data-autocomplete-value]")).toEqual([
@@ -61,9 +61,9 @@ test("keeps combining marks attached in decomposed item values", async () => {
 test("renders a single autocomplete span for normalized-empty input", async () => {
   // A lone combining mark normalizes to an empty string, which must not
   // produce highlights but must keep the autocomplete span structure.
-  await type("\u0301", q.combobox.ensure("Search files"));
+  await type("\u0301", q.combobox("Search files"));
 
-  const option = q.option.ensure("notes.txt");
+  const option = q.option("notes.txt");
   expect(option.textContent).toBe("notes.txt");
   expect(getPartTexts(option, "[data-user-value]")).toEqual([]);
   expect(getPartTexts(option, "[data-autocomplete-value]")).toEqual([
@@ -74,9 +74,9 @@ test("renders a single autocomplete span for normalized-empty input", async () =
 test("does not highlight characters the input only partially matches", async () => {
   // A lone medial jamo matches only a fragment of the decomposed 사 syllable,
   // which must not highlight the whole character.
-  await type("\u1161", q.combobox.ensure("Search files"));
+  await type("\u1161", q.combobox("Search files"));
 
-  const option = q.option.ensure("사과.txt");
+  const option = q.option("사과.txt");
   expect(option.textContent).toBe("사과.txt");
   expect(getPartTexts(option, "[data-user-value]")).toEqual([]);
   expect(getPartTexts(option, "[data-autocomplete-value]")).toEqual([
@@ -86,7 +86,7 @@ test("does not highlight characters the input only partially matches", async () 
 
 test("collapses partial matches next to removed combining marks", async () => {
   const markedApple = "사\u0301과.txt";
-  const output = q.status.ensure("Partial match with combining mark");
+  const output = q.status("Partial match with combining mark");
   expect(output.textContent).toBe(markedApple);
   expect(getPartTexts(output, "[data-user-value]")).toEqual([]);
   expect(getPartTexts(output, "[data-autocomplete-value]")).toEqual([
@@ -95,16 +95,16 @@ test("collapses partial matches next to removed combining marks", async () => {
 });
 
 test("highlights a character fully covered by overlapping partial matches", async () => {
-  const output = q.status.ensure("Union of partial matches");
+  const output = q.status("Union of partial matches");
   expect(output.textContent).toBe("각");
   expect(getPartTexts(output, "[data-user-value]")).toEqual(["각"]);
   expect(getPartTexts(output, "[data-autocomplete-value]")).toEqual([]);
 });
 
 test("highlights diacritic-insensitive matches in decomposed item values", async () => {
-  await type("resume", q.combobox.ensure("Search files"));
+  await type("resume", q.combobox("Search files"));
 
-  const option = q.option.ensure(decomposedResume);
+  const option = q.option(decomposedResume);
   expect(option.textContent).toBe(decomposedResume);
   expect(getPartTexts(option, "[data-user-value]")).toEqual([
     "Re\u0301sume\u0301",

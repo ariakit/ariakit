@@ -9,7 +9,7 @@ Pointer Events defines these three events as `PointerEvent`, and Chromium, Firef
 `click`, `tap`, `rightClick`, and `select` now carry the `pointerId` and `pointerType` they simulate through to the event that ends the gesture, including the click a label forwards to its control. The attributes describing the contact itself, such as `pressure` and `tiltX`, stay at their default values there, the way browsers reset them, so a pen press reporting `tiltX: 30` still ends in a `click` reporting `tiltX: 0`.
 
 ```ts
-q.link.ensure("Ariakit").addEventListener("auxclick", (event) => {
+q.link("Ariakit").addEventListener("auxclick", (event) => {
   event.pointerType; // "pen"
 });
 

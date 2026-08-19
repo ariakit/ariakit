@@ -53,7 +53,7 @@ test("still restores when the descendant is out of the event path", async () => 
   await press.ArrowDown();
   expect(q.combobox("Descendant")).toHaveTextContent("Banana");
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Descendant")).toHaveTextContent("Apple");
 });
 
@@ -64,7 +64,7 @@ test("keeps the previewed value when clicking outside after a consumed Escape", 
   await click(q.button("Handles escape"));
   await press.Escape();
   await click(document.body);
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Descendant")).toHaveTextContent("Banana");
 });
 
@@ -86,7 +86,7 @@ test("still restores when hideOnEscape prevents the default", async () => {
   await press.ArrowDown();
   expect(q.combobox("Prevented")).toHaveTextContent("Banana");
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Prevented")).toHaveTextContent("Apple");
 });
 
@@ -96,7 +96,7 @@ test("keeps the previewed value when the popover is toggled closed after a consu
   await click(q.button("Handles escape"));
   await press.Escape();
   await click(q.combobox("Descendant"));
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Descendant")).toHaveTextContent("Banana");
 });
 
@@ -107,7 +107,7 @@ test("reports one closing Escape per keypress", async () => {
     "reset:0 close:0 events:",
   );
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.status("Counted counts")).toHaveTextContent(
     "reset:1 close:1 events:close,reset",
   );
@@ -154,7 +154,7 @@ test("preserves the original baseline after a prevented close", async () => {
   expect(q.combobox("Vetoed once")).toHaveTextContent("Banana");
   expect(q.status("Vetoed once ready")).toHaveTextContent("ready");
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Vetoed once")).toHaveTextContent("Apple");
 });
 
@@ -165,11 +165,11 @@ test("keeps tracking the baseline after a close is prevented before moving", asy
   expect(q.status("Vetoed before move ready")).toHaveTextContent("ready");
   await click(q.button("Set selection after veto"));
   expect(q.combobox("Vetoed before move")).toHaveTextContent("Banana");
-  q.combobox.ensure("Vetoed before move").focus();
+  q.combobox("Vetoed before move").focus();
   await press.End();
   expect(q.combobox("Vetoed before move")).toHaveTextContent("Grape");
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Vetoed before move")).toHaveTextContent("Banana");
 });
 
@@ -179,11 +179,11 @@ test("keeps tracking a synchronous selection update from a vetoing onClose", asy
   expect(q.listbox()).toBeVisible();
   expect(q.combobox("Vetoed with selection")).toHaveTextContent("Banana");
   expect(q.status("Vetoed with selection ready")).toHaveTextContent("ready");
-  q.combobox.ensure("Vetoed with selection").focus();
+  q.combobox("Vetoed with selection").focus();
   await press.End();
   expect(q.combobox("Vetoed with selection")).toHaveTextContent("Grape");
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Vetoed with selection")).toHaveTextContent("Banana");
 });
 
@@ -193,7 +193,7 @@ test("doesn't reset for a different close from a consumed Escape", async () => {
   expect(q.combobox("Descendant close")).toHaveTextContent("Banana");
   await click(q.button("Consumes Escape and closes"));
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Descendant close")).toHaveTextContent("Banana");
 });
 
@@ -213,7 +213,7 @@ test("doesn't reuse a consumed Escape for a later close", async () => {
   await click(q.button("Swallows escape"));
   await press.Escape();
   await click(q.combobox("Counted"));
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Counted")).toHaveTextContent("Banana");
   expect(q.status("Counted counts")).toHaveTextContent(
     "reset:0 close:1 events:close",
@@ -237,7 +237,7 @@ test("restores independently across open sessions", async () => {
 // https://github.com/ariakit/ariakit/pull/6832#discussion_r3650305278
 test("doesn't render the popover when the selected value changes", async () => {
   await click(q.combobox("Render counted"));
-  const renderCount = q.status.ensure("Render counted popover renders");
+  const renderCount = q.status("Render counted popover renders");
   const countBeforeChange = renderCount.textContent;
   await dispatch.click(q.button("Set render counted selection"));
   expect(q.combobox("Render counted")).toHaveTextContent("Banana");
@@ -248,7 +248,7 @@ test("tracks selection changes before the first move", async () => {
   await click(q.combobox("Render counted"));
   await click(q.button("Set render counted selection"));
   expect(q.combobox("Render counted")).toHaveTextContent("Banana");
-  q.combobox.ensure("Render counted").focus();
+  q.combobox("Render counted").focus();
   await press.ArrowDown();
   expect(q.combobox("Render counted")).toHaveTextContent("Banana");
   await press.ArrowDown();
@@ -274,7 +274,7 @@ test("captures the baseline when an already-open store replaces the store", asyn
   expect(q.combobox("Store replacement")).toHaveTextContent("Banana");
   await click(q.button("Replace open store"));
   expect(q.listbox()).toBeVisible();
-  q.combobox.ensure("Store replacement").focus();
+  q.combobox("Store replacement").focus();
   await press.End();
   expect(q.combobox("Store replacement")).toHaveTextContent("Grape");
   await press.Escape();
@@ -284,8 +284,8 @@ test("captures the baseline when an already-open store replaces the store", asyn
 // https://github.com/ariakit/ariakit/pull/6832#discussion_r3650306657
 test("doesn't steal focus after focus leaves the popover", async () => {
   await click(q.combobox("Render counted"));
-  const popover = q.listbox.ensure();
-  const target = q.button.ensure("External focus target");
+  const popover = q.listbox();
+  const target = q.button("External focus target");
   popover.focus();
   target.focus();
   await Promise.resolve();

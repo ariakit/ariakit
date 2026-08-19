@@ -4,25 +4,25 @@ import { expect, test } from "vitest";
 test("toggles provider popover with click, Enter, and Space", async () => {
   const disclosure = q.button("Accept invite");
 
-  expect(q.dialog("Team meeting")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Team meeting")).not.toBeInTheDocument();
   await click(disclosure);
   expect(q.dialog("Team meeting")).toBeVisible();
   expect(q.button("Accept")).toHaveFocus();
   await click(disclosure);
-  expect(q.dialog("Team meeting")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Team meeting")).not.toBeInTheDocument();
   expect(disclosure).toHaveFocus();
 
   await press.Enter(disclosure);
   expect(q.dialog("Team meeting")).toBeVisible();
   await press.ShiftTab();
   await press.Enter();
-  expect(q.dialog("Team meeting")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Team meeting")).not.toBeInTheDocument();
 
   await press.Space(disclosure);
   expect(q.dialog("Team meeting")).toBeVisible();
   await press.ShiftTab();
   await press.Space();
-  expect(q.dialog("Team meeting")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Team meeting")).not.toBeInTheDocument();
 });
 
 test("hides provider popover with Escape from disclosure and content", async () => {
@@ -32,12 +32,12 @@ test("hides provider popover with Escape from disclosure and content", async () 
   await press.ShiftTab();
   expect(q.dialog("Team meeting")).toBeVisible();
   await press.Escape();
-  expect(q.dialog("Team meeting")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Team meeting")).not.toBeInTheDocument();
 
   await click(disclosure);
   expect(q.button("Accept")).toHaveFocus();
   await press.Escape();
-  expect(q.dialog("Team meeting")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Team meeting")).not.toBeInTheDocument();
   expect(disclosure).toHaveFocus();
 });
 
@@ -47,7 +47,7 @@ test("controlled standalone popover closes through onClose", async () => {
   await click(disclosure);
   expect(q.dialog("Review meeting")).toBeVisible();
   await press.Escape();
-  expect(q.dialog("Review meeting")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Review meeting")).not.toBeInTheDocument();
   expect(disclosure).toHaveFocus();
 });
 
@@ -71,7 +71,7 @@ for (const trigger of ["click", "Enter", "Space"] as const) {
     } else {
       await press.Space(disclosure);
     }
-    expect(q.dialog("Review meeting")).not.toBeInTheDocument();
+    expect(q.dialog.maybe("Review meeting")).not.toBeInTheDocument();
   });
 }
 
@@ -79,5 +79,5 @@ test("hides controlled standalone popover with Escape from disclosure", async ()
   await click(q.button("Review invite"));
   await press.ShiftTab();
   await press.Escape();
-  expect(q.dialog("Review meeting")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Review meeting")).not.toBeInTheDocument();
 });

@@ -283,14 +283,14 @@ interface QueryObject extends RoleQueries {
 const query: QueryObject;
 ```
 
-Queries the DOM by ARIA role, accessible name, text, or label, built on top of Testing Library. Call a role method such as `query.button(name)` or `query.dialog()` to get the matching element (or `null`), passing a string or `RegExp` to match its accessible name. Use `query.text()` and `query.labeled()` to query by text content or associated label, and `query.within(element)` to scope queries to a subtree.
+Queries the DOM by ARIA role, accessible name, text, or label, built on top of Testing Library. Call a role method such as `query.button(name)` or `query.dialog()` to get the matching element, passing a string or `RegExp` to match its accessible name. Queries throw when no matching element is found. Use `query.text()` and `query.labeled()` to query by text content or associated label, and `query.within(element)` to scope queries to a subtree.
 
-Every query also exposes `.lazy` (return a reusable function that runs the query when called), `.all` (return all matches), `.wait` (resolve once the element appears), and `.ensure` (throw when it's missing) variants, and role queries additionally expose `.hidden` to include otherwise-hidden elements.
+Every query also exposes `.lazy` (return a reusable function that runs the query when called), `.all` (return all matches, including an empty array), `.wait` (resolve once the element appears), and `.maybe` (return `null` when it's missing) variants. Role queries additionally expose `.hidden` to include otherwise-hidden elements.
 
 Example:
 
 ```ts
-const dialog = query.dialog.lazy("Settings");
+const dialog = query.dialog.maybe.lazy("Settings");
 expect(dialog()).not.toBeInTheDocument();
 await click(query.button("Open settings"));
 expect(dialog()).toBeVisible();
@@ -326,7 +326,7 @@ Short alias for `query`. Queries the DOM by ARIA role, accessible name, text, or
 Example:
 
 ```ts
-const dialog = q.dialog.lazy("Settings");
+const dialog = q.dialog.maybe.lazy("Settings");
 expect(dialog()).not.toBeInTheDocument();
 await click(q.button("Open settings"));
 expect(dialog()).toBeVisible();
@@ -468,7 +468,7 @@ Example:
 
 ```ts
 await click(q.button("Close"));
-await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
+await waitFor(() => expect(q.dialog.maybe()).not.toBeInTheDocument());
 ```
 
 <div align="right">

@@ -14,7 +14,7 @@ async function pressSafariComposingEnter(input: HTMLElement) {
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6579
 test("keeps focus in the field on composing Enter", async () => {
-  const input = q.textbox.ensure("Message");
+  const input = q.textbox("Message");
 
   input.focus();
   expect(input).toHaveFocus();
@@ -27,7 +27,7 @@ test("keeps focus in the field on composing Enter", async () => {
 });
 
 test("keeps focus in the field on Safari composing Enter", async () => {
-  const input = q.textbox.ensure("Message");
+  const input = q.textbox("Message");
 
   input.focus();
   expect(input).toHaveFocus();

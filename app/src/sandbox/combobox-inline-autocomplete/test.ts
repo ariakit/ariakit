@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 
 test("autocomplete on arrow down key", async () => {
   await press.Tab();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Your favorite fruit")).toHaveFocus();
   await type("a");
   expect(q.listbox()).toBeVisible();
@@ -13,7 +13,7 @@ test("autocomplete on arrow down key", async () => {
 
 test("autocomplete on arrow up key", async () => {
   await press.Tab();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Your favorite fruit")).toHaveFocus();
   await type("w");
   expect(q.listbox()).toBeVisible();

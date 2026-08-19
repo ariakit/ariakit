@@ -109,7 +109,7 @@ test("composition text", async () => {
   // TODO: Add a composition helper to @ariakit/test.
   await dispatch.compositionStart(q.combobox());
   await type("'", q.combobox(), { isComposing: true });
-  expect(q.option("John Smith")).not.toBeInTheDocument();
+  expect(q.option.maybe("John Smith")).not.toBeInTheDocument();
   await type("á", q.combobox(), { isComposing: true });
   await dispatch.compositionEnd(q.combobox());
   await sleep();

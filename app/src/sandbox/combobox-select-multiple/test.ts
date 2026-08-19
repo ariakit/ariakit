@@ -6,7 +6,7 @@ test("default value", () => {
 });
 
 test("show/hide on click", async () => {
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await click(q.combobox("Favorite food"));
   expect(q.listbox()).toBeVisible();
   expect(q.combobox("Favorite food")).toHaveFocus();
@@ -14,13 +14,13 @@ test("show/hide on click", async () => {
   expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
   expect(q.option("Cake")).toHaveAttribute("aria-selected", "true");
   await click(q.combobox("Favorite food"));
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Favorite food")).toHaveFocus();
   expect(q.combobox("Favorite food")).toHaveTextContent("2 food selected");
 });
 
 test("show/hide on enter", async () => {
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await press.Tab();
   await press.Enter();
   expect(q.listbox()).toBeVisible();
@@ -29,12 +29,12 @@ test("show/hide on enter", async () => {
   expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
   expect(q.option("Cake")).toHaveAttribute("aria-selected", "true");
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Favorite food")).toHaveFocus();
 });
 
 test("show/hide on space", async () => {
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await press.Tab();
   await press.Space();
   expect(q.listbox()).toBeVisible();
@@ -43,7 +43,7 @@ test("show/hide on space", async () => {
   expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
   expect(q.option("Cake")).toHaveAttribute("aria-selected", "true");
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Favorite food")).toHaveFocus();
 });
 
@@ -58,7 +58,7 @@ test("select with keyboard", async () => {
   expect(q.combobox("Favorite food")).toHaveTextContent("3 food selected");
   await press.ArrowDown();
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Favorite food")).toHaveFocus();
   expect(q.combobox("Favorite food")).toHaveTextContent("3 food selected");
   await press.ArrowUp();

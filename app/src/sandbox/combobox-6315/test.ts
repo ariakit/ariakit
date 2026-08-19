@@ -19,7 +19,7 @@ function getInputValue(element: HTMLElement) {
 
 // https://github.com/ariakit/ariakit/issues/6315
 test("does not corrupt decomposed inline completion", async () => {
-  const combobox = q.combobox.ensure("Your favorite drink");
+  const combobox = q.combobox("Your favorite drink");
 
   await click(combobox);
   await type(decomposedCafe);
@@ -30,7 +30,7 @@ test("does not corrupt decomposed inline completion", async () => {
   ]);
 
   await click(q.button("Save"));
-  expectSafeValue(q.status.ensure().textContent ?? "", [
+  expectSafeValue(q.status().textContent ?? "", [
     decomposedCafe,
     decomposedCafeteria,
     composedCafeteria,
@@ -38,7 +38,7 @@ test("does not corrupt decomposed inline completion", async () => {
 });
 
 test("does not drop completion characters after decomposed input", async () => {
-  const combobox = q.combobox.ensure("Your favorite drink");
+  const combobox = q.combobox("Your favorite drink");
 
   await click(combobox);
   await type(decomposedCafet);
@@ -49,7 +49,7 @@ test("does not drop completion characters after decomposed input", async () => {
   ]);
 
   await click(q.button("Save"));
-  expectSafeValue(q.status.ensure().textContent ?? "", [
+  expectSafeValue(q.status().textContent ?? "", [
     decomposedCafet,
     decomposedCafeteria,
     composedCafeteria,
@@ -57,7 +57,7 @@ test("does not drop completion characters after decomposed input", async () => {
 });
 
 test("completes unaccented input against accented items", async () => {
-  const combobox = q.combobox.ensure("Your favorite drink");
+  const combobox = q.combobox("Your favorite drink");
 
   await click(combobox);
   await type("cafe ");

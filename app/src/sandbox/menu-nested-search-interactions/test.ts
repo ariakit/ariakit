@@ -6,7 +6,7 @@ test("open/hide menu", async () => {
   expect(q.dialog("Actions")).toBeVisible();
   expect(q.combobox("Search actions...")).toHaveFocus();
   await click(q.button("Actions"));
-  expect(q.dialog("Actions")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Actions")).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
 });
 
@@ -17,7 +17,7 @@ test("open/hide menu with keyboard", async () => {
   expect(q.combobox("Search actions...")).toHaveFocus();
   expect(q.option("Ask AI")).toHaveFocus();
   await press.Escape();
-  expect(q.dialog("Actions")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Actions")).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
 });
 
@@ -43,7 +43,7 @@ test("reset filter on hide", async () => {
   await type("a");
   expect(q.combobox("Search actions...")).toHaveValue("a");
   await click(document.body);
-  expect(q.dialog("Actions")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Actions")).not.toBeInTheDocument();
   expect(q.button("Actions")).not.toHaveFocus();
   await click(q.button("Actions"));
   expect(q.combobox("Search actions...")).toHaveValue("");
@@ -55,7 +55,7 @@ test("open/hide with search submenu", async () => {
   await hover(option);
   expect(option).toHaveFocus();
   expect(option).toHaveAttribute("aria-expanded", "false");
-  expect(q.dialog("Turn into page in")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Turn into page in")).not.toBeInTheDocument();
   expect(await q.dialog.wait("Turn into page in")).toBeVisible();
   // Testing blurOnHoverEnd={false}
   await hover(document.body);
@@ -67,7 +67,7 @@ test("open/hide with search submenu", async () => {
   expect(q.combobox("Search pages to add in...")).toHaveFocus();
   expect(q.option("Private pages")).toHaveFocus();
   await press.ArrowLeft();
-  expect(q.dialog("Turn into page in")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Turn into page in")).not.toBeInTheDocument();
   expect(option).toHaveFocus();
   expect(option).toHaveAttribute("aria-expanded", "false");
   expect(q.combobox("Search actions...")).toHaveFocus();
@@ -80,8 +80,8 @@ test("open/hide with search submenu", async () => {
   await hover(q.option("Private pages"));
   await press.Escape();
   expect(q.button("Actions")).toHaveFocus();
-  expect(q.dialog("Actions")).not.toBeInTheDocument();
-  expect(q.dialog("Turn into page in")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Actions")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Turn into page in")).not.toBeInTheDocument();
 });
 
 test("tab in/out search menu", async () => {
@@ -110,13 +110,13 @@ test("set block type", async () => {
   expect(q.menuitemradio("Text")).toHaveAttribute("aria-checked", "true");
   await type("cc");
   await press.Enter();
-  expect(q.dialog("Actions")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Actions")).not.toBeInTheDocument();
   expect(q.text("Callout")).toBeInTheDocument();
   await press.Enter();
   await type("Turn into");
   expect(q.option("Text not checked")).toHaveFocus();
   expect(q.option("Callout checked")).toBeInTheDocument();
   await press.Enter();
-  expect(q.dialog("Actions")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Actions")).not.toBeInTheDocument();
   expect(q.text("Text")).toBeInTheDocument();
 });

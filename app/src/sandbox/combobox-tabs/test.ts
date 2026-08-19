@@ -15,9 +15,9 @@ test("open popover with components tab initially selected, but not active", asyn
   expect(q.tab("Components 16")).toHaveAttribute("aria-selected", "true");
   expect(q.tab("Components 16")).not.toHaveFocus();
   expect(q.tab("Components 16")).not.toHaveAttribute("data-active-item");
-  expect(q.tabpanel("All 53")).not.toBeInTheDocument();
-  expect(q.tabpanel("Guide 6")).not.toBeInTheDocument();
-  expect(q.tabpanel("Examples 31")).not.toBeInTheDocument();
+  expect(q.tabpanel.maybe("All 53")).not.toBeInTheDocument();
+  expect(q.tabpanel.maybe("Guide 6")).not.toBeInTheDocument();
+  expect(q.tabpanel.maybe("Examples 31")).not.toBeInTheDocument();
   expect(q.tabpanel("Components 16")).toBeVisible();
   expect(q.option("Button")).toBeVisible();
   expect(q.option("Button")).not.toHaveFocus();
@@ -26,7 +26,7 @@ test("open popover with components tab initially selected, but not active", asyn
 
 test("move through items and tabs with the keyboard", async () => {
   await press.Tab();
-  expect(q.dialog("Pages")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Pages")).not.toBeInTheDocument();
   await press.ArrowDown();
   expect(await q.dialog.wait("Pages")).toBeVisible();
   expect(q.combobox()).toHaveAttribute("data-active-item");
@@ -71,7 +71,7 @@ test("move through items and tabs with a mouse", async () => {
   expect(q.option("Button")).toHaveFocus();
   await click(q.tab("Guide 6"));
   expect(q.tab("Guide 6")).toHaveAttribute("aria-selected", "true");
-  expect(q.option("Button")).not.toBeInTheDocument();
+  expect(q.option.maybe("Button")).not.toBeInTheDocument();
 });
 
 test("filter items and change tabs", async () => {
@@ -141,7 +141,7 @@ test("open the popover with arrow down after switching tabs", async () => {
   await expect.poll(q.tab.lazy("Examples 31")).toHaveFocus();
   await press.Escape();
   await expect.poll(q.combobox).toHaveAttribute("data-active-item");
-  expect(q.dialog("Pages")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Pages")).not.toBeInTheDocument();
   await press.ArrowDown();
   await expect.poll(q.dialog.lazy("Pages")).toBeVisible();
   expect(q.tabpanel("Components 16")).toBeVisible();

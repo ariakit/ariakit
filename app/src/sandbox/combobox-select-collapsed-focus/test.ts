@@ -7,7 +7,7 @@ const hoverLabels = ["Hover fruit", "Callback hover fruit"];
 for (const label of labels) {
   // https://github.com/ariakit/ariakit/issues/7093
   test(`${label}: a collapsed select never focuses its list`, async () => {
-    const select = q.combobox.ensure(label);
+    const select = q.combobox(label);
     const list = q.listbox(`${label} options`);
     const focusedOptions = q.status(`${label} focused options`);
 
@@ -46,7 +46,7 @@ for (const label of labels) {
 // one that has to survive until the list opens, so a pointer open with no move
 // before it still presents the item.
 test("opening the collapsed select with a pointer presents its item", async () => {
-  const select = q.combobox.ensure("Fruit");
+  const select = q.combobox("Fruit");
 
   await click(select);
 
@@ -59,7 +59,7 @@ test("opening the collapsed select with a pointer presents its item", async () =
 // open. Picking another option before that happens has to retire it, or
 // opening the list would present the option that was active on focus.
 test("picking an option before opening retires the pending presentation", async () => {
-  const select = q.combobox.ensure("Code");
+  const select = q.combobox("Code");
   await focus(select);
   await click(q.option("Alpha 25"));
   expect(select).toHaveTextContent("Alpha 25");
@@ -273,7 +273,7 @@ test("default hover in an open plain combobox activates nothing", async () => {
 
 // https://github.com/ariakit/ariakit/issues/7093
 test("a collapsed combobox input never focuses its list", async () => {
-  const combobox = q.combobox.ensure("Filter");
+  const combobox = q.combobox("Filter");
 
   await focus(combobox);
   // The presentation is queued in a microtask, so cross a macrotask before

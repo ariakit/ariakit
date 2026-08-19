@@ -19,7 +19,7 @@ function setupMultiSelect() {
 }
 
 function getSelect() {
-  return q.listbox.ensure("Fruits") as HTMLSelectElement;
+  return q.listbox("Fruits") as HTMLSelectElement;
 }
 
 function getSelectedValues() {

@@ -9,7 +9,7 @@ import { wrapAsync } from "./__utils.ts";
  * @example
  * ```ts
  * await click(q.button("Close"));
- * await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
+ * await waitFor(() => expect(q.dialog.maybe()).not.toBeInTheDocument());
  * ```
  */
 export function waitFor<T>(

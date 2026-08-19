@@ -93,8 +93,7 @@ interface TextQueryParams {
   all: TextMethod<"array", TextQueryArgs>;
   wait: TextMethod<"waitValue", TextWaitQueryArgs>;
   waitAll: TextMethod<"waitArray", TextWaitQueryArgs>;
-  ensure: TextMethod<"value", TextQueryArgs>;
-  ensureAll: TextMethod<"array", TextQueryArgs>;
+  maybe: TextMethod<"nullable", TextQueryArgs>;
 }
 
 interface QueryObject extends RoleQueries {
@@ -188,20 +187,16 @@ function createRoleQuery(role: AriaRole, queries = documentQueries) {
         query(name, { hidden: true, ...options }),
     );
 
-  const query = assignLazy(createQuery(queries.queryByRole));
+  const query = assignLazy(createQuery(queries.getByRole));
   const allQuery = assignLazy(createQuery(queries.queryAllByRole));
   const waitQuery = assignLazy(createQuery(queries.findByRole));
   const waitAllQuery = assignLazy(createQuery(queries.findAllByRole));
-  const ensureQuery = assignLazy(createQuery(queries.getByRole));
-  const ensureAllQuery = assignLazy(createQuery(queries.getAllByRole));
+  const maybeQuery = assignLazy(createQuery(queries.queryByRole));
 
   const all = Object.assign(allQuery, {
     hidden: createHiddenQuery(allQuery),
     wait: Object.assign(waitAllQuery, {
       hidden: createHiddenQuery(waitAllQuery),
-    }),
-    ensure: Object.assign(ensureAllQuery, {
-      hidden: createHiddenQuery(ensureAllQuery),
     }),
   });
 
@@ -212,18 +207,15 @@ function createRoleQuery(role: AriaRole, queries = documentQueries) {
     }),
   });
 
-  const ensure = Object.assign(ensureQuery, {
-    hidden: createHiddenQuery(ensureQuery),
-    all: Object.assign(ensureAllQuery, {
-      hidden: createHiddenQuery(ensureAllQuery),
-    }),
+  const maybe = Object.assign(maybeQuery, {
+    hidden: createHiddenQuery(maybeQuery),
   });
 
   return Object.assign(query, {
     hidden: createHiddenQuery(query),
     all,
     wait,
-    ensure,
+    maybe,
   });
 }
 
@@ -235,7 +227,7 @@ function createRoleQueries(queries = documentQueries) {
 }
 
 function createTextQuery(
-  defaultQuery: TextMethod<"nullable", TextQueryArgs>,
+  defaultQuery: TextMethod<"value", TextQueryArgs>,
   params: TextQueryParams,
 ) {
   const query = assignTextLazy(defaultQuery);
@@ -245,35 +237,30 @@ function createTextQuery(
     all: assignTextLazy(params.waitAll),
   });
 
-  const ensure = Object.assign(assignTextLazy(params.ensure), {
-    all: assignTextLazy(params.ensureAll),
-  });
+  const maybe = assignTextLazy(params.maybe);
 
   const all = Object.assign(allQuery, {
     wait: wait.all,
-    ensure: ensure.all,
   });
 
-  return Object.assign(query, { all, wait, ensure });
+  return Object.assign(query, { all, wait, maybe });
 }
 
 function createTextQueryObject(queries = documentQueries) {
-  return createTextQuery(queries.queryByText, {
+  return createTextQuery(queries.getByText, {
     all: queries.queryAllByText,
     wait: queries.findByText,
     waitAll: queries.findAllByText,
-    ensure: queries.getByText,
-    ensureAll: queries.getAllByText,
+    maybe: queries.queryByText,
   });
 }
 
 function createLabeledQuery(queries = documentQueries) {
-  return createTextQuery(queries.queryByLabelText, {
+  return createTextQuery(queries.getByLabelText, {
     all: queries.queryAllByLabelText,
     wait: queries.findByLabelText,
     waitAll: queries.findAllByLabelText,
-    ensure: queries.getByLabelText,
-    ensureAll: queries.getAllByLabelText,
+    maybe: queries.queryByLabelText,
   });
 }
 
@@ -292,18 +279,19 @@ function createQueryObject(queries = documentQueries): QueryObject {
 /**
  * Queries the DOM by ARIA role, accessible name, text, or label, built on top of
  * Testing Library. Call a role method such as `query.button(name)` or
- * `query.dialog()` to get the matching element (or `null`), passing a string or
- * `RegExp` to match its accessible name. Use `query.text()` and `query.labeled()`
- * to query by text content or associated label, and `query.within(element)` to
- * scope queries to a subtree.
+ * `query.dialog()` to get the matching element, passing a string or `RegExp` to
+ * match its accessible name. Queries throw when no matching element is found.
+ * Use `query.text()` and `query.labeled()` to query by text content or associated
+ * label, and `query.within(element)` to scope queries to a subtree.
  *
  * Every query also exposes `.lazy` (return a reusable function that runs the
- * query when called), `.all` (return all matches), `.wait` (resolve once the
- * element appears), and `.ensure` (throw when it's missing) variants, and role
- * queries additionally expose `.hidden` to include otherwise-hidden elements.
+ * query when called), `.all` (return all matches, including an empty array),
+ * `.wait` (resolve once the element appears), and `.maybe` (return `null` when
+ * it's missing) variants. Role queries additionally expose `.hidden` to include
+ * otherwise-hidden elements.
  * @example
  * ```ts
- * const dialog = query.dialog.lazy("Settings");
+ * const dialog = query.dialog.maybe.lazy("Settings");
  * expect(dialog()).not.toBeInTheDocument();
  * await click(query.button("Open settings"));
  * expect(dialog()).toBeVisible();
@@ -319,7 +307,7 @@ export const query = createQueryObject();
  * label.
  * @example
  * ```ts
- * const dialog = q.dialog.lazy("Settings");
+ * const dialog = q.dialog.maybe.lazy("Settings");
  * expect(dialog()).not.toBeInTheDocument();
  * await click(q.button("Open settings"));
  * expect(dialog()).toBeVisible();

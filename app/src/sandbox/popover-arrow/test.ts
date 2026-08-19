@@ -33,7 +33,7 @@ const cases = [
 // See https://github.com/ariakit/ariakit/issues/6320
 test("clears the arrow's stale static-side inset after a placement change", async () => {
   await click(q.button("Accept invite"));
-  const dialog = q.dialog.ensure("Team meeting");
+  const dialog = q.dialog("Team meeting");
   const arrow = dialog.querySelector<HTMLElement>(".arrow");
   expect(arrow).toBeInTheDocument();
   if (!arrow) return;
@@ -61,7 +61,7 @@ test("clears the arrow's stale static-side inset after a placement change", asyn
 for (const { label, strokeWidth, stroke } of cases) {
   test(`arrow stroke matches the ${label.toLowerCase()} box-shadow`, async () => {
     await click(q.button(label));
-    const dialog = q.dialog.ensure(label);
+    const dialog = q.dialog(label);
     // The arrow SVG paths inherit the stroke and stroke-width set on the
     // arrow element, so the values on the arrow are what the user sees drawn
     // around the arrow notch.

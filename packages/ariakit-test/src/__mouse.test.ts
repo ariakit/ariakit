@@ -29,7 +29,7 @@ const enterEventTypes = ["pointerover", "pointerenter", "pointermove"];
 test("hover reports the contact and pointer a mouse reports", async () => {
   document.body.innerHTML = `<button type="button">Save</button>`;
 
-  const button = q.button.ensure("Save");
+  const button = q.button("Save");
   const events = recordPointerEvents(button, enterEventTypes);
 
   await hover(button);
@@ -47,7 +47,7 @@ test("hover reports the same values on the events leaving an element", async () 
     <button type="button">Cancel</button>
   `;
 
-  const save = q.button.ensure("Save");
+  const save = q.button("Save");
   const events = recordPointerEvents(save, [
     "pointermove",
     "pointerout",
@@ -70,7 +70,7 @@ test("hover reports the same values on the events leaving an element", async () 
 test("hover reports pressure while a button stays held", async () => {
   document.body.innerHTML = `<button type="button">Resize</button>`;
 
-  const button = q.button.ensure("Resize");
+  const button = q.button("Resize");
   const events = recordPointerEvents(button, ["pointermove"]);
 
   await hover(button, { buttons: 1 });
@@ -81,7 +81,7 @@ test("hover reports pressure while a button stays held", async () => {
 test("mouseDown and mouseUp report the pressure of the button they press", async () => {
   document.body.innerHTML = `<button type="button">Resize</button>`;
 
-  const button = q.button.ensure("Resize");
+  const button = q.button("Resize");
   const events = recordPointerEvents(button, ["pointerdown", "pointerup"]);
 
   await mouseDown(button);
@@ -96,7 +96,7 @@ test("mouseDown and mouseUp report the pressure of the button they press", async
 test("a chorded release keeps the pressure of the button still held", async () => {
   document.body.innerHTML = `<button type="button">Resize</button>`;
 
-  const button = q.button.ensure("Resize");
+  const button = q.button("Resize");
   const events = recordPointerEvents(button, [
     "pointerdown",
     "pointermove",
@@ -122,7 +122,7 @@ test("a chorded release keeps the pressure of the button still held", async () =
 test("click reports the values a browser reports through the gesture", async () => {
   document.body.innerHTML = `<button type="button">Submit</button>`;
 
-  const button = q.button.ensure("Submit");
+  const button = q.button("Submit");
   const events = recordPointerEvents(button, [
     ...enterEventTypes,
     "pointerdown",
@@ -146,7 +146,7 @@ test("click reports the values a browser reports through the gesture", async () 
 test("a press reports the transducer angle of a perpendicular pointer", async () => {
   document.body.innerHTML = `<button type="button">Resize</button>`;
 
-  const button = q.button.ensure("Resize");
+  const button = q.button("Resize");
   let angles: string | undefined;
   button.addEventListener("pointerdown", (event) => {
     angles = `${event.altitudeAngle} ${event.azimuthAngle}`;
@@ -160,7 +160,7 @@ test("a press reports the transducer angle of a perpendicular pointer", async ()
 test("explicit pointer values win over the simulated ones", async () => {
   document.body.innerHTML = `<button type="button">Draw</button>`;
 
-  const button = q.button.ensure("Draw");
+  const button = q.button("Draw");
   const events = recordPointerEvents(button, [
     "pointermove",
     "pointerdown",
@@ -192,7 +192,7 @@ test("explicit pointer values win over the simulated ones", async () => {
 test("an explicit zero pressure wins over the pressure a press derives", async () => {
   document.body.innerHTML = `<button type="button">Draw</button>`;
 
-  const button = q.button.ensure("Draw");
+  const button = q.button("Draw");
   const events = recordPointerEvents(button, ["pointerdown"]);
 
   await mouseDown(button, { pressure: 0 });

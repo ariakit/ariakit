@@ -32,7 +32,7 @@ test("shows the tooltip on keyboard focus in both composition orders", async () 
 test("does not show the tooltip on hover when the consumer opts out for disabled anchors", async () => {
   await hover(q.button("Archive file"));
   expect(
-    q.tooltip("You need permission to archive files"),
+    q.tooltip.maybe("You need permission to archive files"),
   ).not.toBeInTheDocument();
 });
 
@@ -53,7 +53,7 @@ test("lets a callback decide whether a disabled anchor shows on hover", async ()
   // the tooltip here.
   await hover(q.button("Restore file"));
   expect(
-    q.tooltip("You need permission to restore files"),
+    q.tooltip.maybe("You need permission to restore files"),
   ).not.toBeInTheDocument();
 });
 
@@ -98,14 +98,14 @@ test("does not show the tooltip on hover for a truly disabled anchor that keeps 
   // keep the tooltip closed.
   expect(q.button("Duplicate file")).toHaveStyle("pointer-events: auto");
   await hover(q.button("Duplicate file"));
-  expect(q.tooltip("Duplicating is unavailable")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("Duplicating is unavailable")).not.toBeInTheDocument();
 });
 
 // https://github.com/ariakit/ariakit/issues/7116
 test("does not show the tooltip on hover when the truly disabled state is below the anchor", async () => {
   expect(q.button("Print file")).toHaveStyle("pointer-events: auto");
   await hover(q.button("Print file"));
-  expect(q.tooltip("Printing is unavailable")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("Printing is unavailable")).not.toBeInTheDocument();
 });
 
 test("opens a delayed tooltip on hover", async () => {
@@ -125,7 +125,7 @@ test("does not open a delayed tooltip when the anchor turns truly disabled while
   // Same 150ms show timeout as the control above, and still nothing observable
   // to poll, so cross it before asserting the tooltip stayed closed.
   await sleep(250);
-  expect(q.tooltip("Syncing needs access")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("Syncing needs access")).not.toBeInTheDocument();
 });
 
 test("shows the tooltip on hover when the rendered button is disabled with focusable false", async () => {
@@ -150,7 +150,7 @@ test("does not show the tooltip on hover when the anchor is disabled with focusa
   // shield applies here, so the hover decision itself is what this asserts.
   expect(q.text("Encrypt file")).not.toHaveAttribute("tabindex");
   await hover(q.text("Encrypt file"));
-  expect(q.tooltip("Encryption is unavailable")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("Encryption is unavailable")).not.toBeInTheDocument();
 });
 
 test("does not open a delayed tooltip when the anchor loses focusable while it is pending", async () => {
@@ -162,7 +162,9 @@ test("does not open a delayed tooltip when the anchor loses focusable while it i
   // nothing observable to poll, so cross it before asserting the tooltip
   // stayed closed.
   await sleep(250);
-  expect(q.tooltip("Uploading needs a connection")).not.toBeInTheDocument();
+  expect(
+    q.tooltip.maybe("Uploading needs a connection"),
+  ).not.toBeInTheDocument();
 });
 
 test("shows the tooltip on hover when the rendered element carries the attribute with a false value", async () => {

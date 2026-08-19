@@ -4,13 +4,13 @@ import { expect, test, vi } from "vitest";
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 
 test("show/hide on click", async () => {
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   await click(q.button("Actions"));
   expect(q.menu()).toBeVisible();
   expect(q.menu()).toHaveFocus();
   expect(q.menuitem("Edit")).not.toHaveFocus();
   await click(q.button("Actions"));
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
 });
 
@@ -23,7 +23,7 @@ test("show/hide on enter", async () => {
   await press.ShiftTab();
   expect(q.menu()).toBeVisible();
   await press.Enter();
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
 });
 
 test("show/hide on space", async () => {
@@ -37,7 +37,7 @@ test("show/hide on space", async () => {
   await press.ShiftTab();
   expect(q.menu()).toBeVisible();
   await press.Space();
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
 });
 
 test("show on arrow down", async () => {
@@ -58,27 +58,27 @@ test("hide on escape", async () => {
   await click(q.button("Actions"));
   expect(q.menu()).toBeVisible();
   await press.Escape();
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
   await press.Enter();
   expect(q.menu()).toBeVisible();
   await press.Escape();
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
   await press.Space();
   expect(q.menu()).toBeVisible();
   await press.Escape();
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
   await press.ArrowDown();
   expect(q.menu()).toBeVisible();
   await press.Escape();
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
   await press.ArrowUp();
   expect(q.menu()).toBeVisible();
   await press.Escape();
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
 });
 
@@ -86,7 +86,7 @@ test("hide on click outside", async () => {
   await click(q.button("Actions"));
   expect(q.menu()).toBeVisible();
   await click(document.body);
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.button("Actions")).not.toHaveFocus();
 });
 
@@ -98,7 +98,7 @@ test("hide on click on outside element", async () => {
   await click(q.button("Actions"));
   expect(q.menu()).toBeVisible();
   await click(q.text("Outside"));
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.text("Outside")).toHaveFocus();
 
   buttonOutside.remove();
@@ -112,7 +112,7 @@ test("hide on tab", async () => {
   await click(q.button("Actions"));
   expect(q.menu()).toBeVisible();
   await press.Tab();
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.text("Outside")).toHaveFocus();
 
   buttonOutside.remove();
@@ -172,7 +172,7 @@ test("menu item click", async () => {
   expect(alert).toHaveBeenCalledTimes(0);
   await click(q.menuitem("Edit"));
   expect(alert).toHaveBeenCalledTimes(1);
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
 });
 
@@ -183,7 +183,7 @@ test("menu item enter", async () => {
   expect(alert).toHaveBeenCalledTimes(0);
   await press.Enter();
   expect(alert).toHaveBeenCalledTimes(1);
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
 });
 
@@ -194,7 +194,7 @@ test("menu item space", async () => {
   expect(alert).toHaveBeenCalledTimes(0);
   await press.Space();
   expect(alert).toHaveBeenCalledTimes(1);
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
 });
 
@@ -207,7 +207,7 @@ test("menu item hover enter", async () => {
   await hover(q.menuitem("Edit"));
   await press.Enter();
   expect(alert).toHaveBeenCalledTimes(1);
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
 });
 
@@ -220,7 +220,7 @@ test("menu item hover space", async () => {
   await hover(q.menuitem("Edit"));
   await press.Space();
   expect(alert).toHaveBeenCalledTimes(1);
-  expect(q.menu()).not.toBeInTheDocument();
+  expect(q.menu.maybe()).not.toBeInTheDocument();
   expect(q.button("Actions")).toHaveFocus();
 });
 
@@ -234,7 +234,7 @@ test("typeahead", async () => {
 });
 
 test("https://github.com/ariakit/ariakit/issues/3342", async () => {
-  const button = q.button.ensure("Actions");
+  const button = q.button("Actions");
   await click(button);
   const nextSibling = button.nextElementSibling;
   expect(nextSibling).toBe(q.menu()?.parentElement);

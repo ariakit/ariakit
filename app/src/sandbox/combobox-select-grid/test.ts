@@ -28,7 +28,7 @@ test("changes an expanded value with the keyboard", async () => {
   await type("tt");
   expect(q.gridcell("Top Right")).toHaveFocus();
   await press.Escape();
-  expect(q.grid()).not.toBeInTheDocument();
+  expect(q.grid.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Position")).toHaveTextContent("Center");
   await press.Space();
   await type("top right");
@@ -40,7 +40,7 @@ test("changes an expanded value with the keyboard", async () => {
 test("changes a collapsed value with the keyboard", async () => {
   await press.Tab();
   await press.ArrowDown();
-  expect(q.grid()).not.toBeInTheDocument();
+  expect(q.grid.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Position")).toHaveTextContent("Bottom Center");
   await press.ArrowLeft();
   expect(q.combobox("Position")).toHaveTextContent("Bottom Left");
@@ -70,7 +70,7 @@ test("changes the value on hover", async () => {
   await hover(document.body);
   expect(q.gridcell("Top Center")).toHaveFocus();
   await click(document.body);
-  expect(q.grid()).not.toBeInTheDocument();
+  expect(q.grid.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Position")).toHaveTextContent("Top Center");
 });
 
@@ -83,7 +83,7 @@ test("keeps the moved value when tabbing out", async () => {
   await click(q.combobox("Position"));
   await press.ArrowDown();
   await press.Tab();
-  expect(q.grid()).not.toBeInTheDocument();
+  expect(q.grid.maybe()).not.toBeInTheDocument();
   expect(q.combobox("Position")).toHaveTextContent("Bottom Center");
 
   target.remove();

@@ -5,7 +5,7 @@ import { expect, test } from "vitest";
 test("shows and hides the cancel button with popover focus", async () => {
   const select = q.combobox("Favorite fruit");
   await click(select);
-  const search = q.combobox.ensure("Search...");
+  const search = q.combobox("Search...");
   const cancel = q.button("Clear input");
   expect(search).toHaveFocus();
   expect(cancel).toHaveAttribute("data-visible");
@@ -37,7 +37,7 @@ test("shows and hides the cancel button with popover focus", async () => {
   await press.Tab();
   expect(cancel).toHaveFocus();
   await press.Tab();
-  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.dialog.maybe()).not.toBeInTheDocument();
 });
 
 // examples/select-combobox-focus-within/test.ts

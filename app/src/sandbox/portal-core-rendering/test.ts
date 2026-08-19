@@ -5,7 +5,7 @@ test("renders detached content and removes it when unmounted", async () => {
   expect(q.text("Detached portal content")).toBeInTheDocument();
 
   await click(q.button("Toggle portal"));
-  expect(q.text("Detached portal content")).not.toBeInTheDocument();
+  expect(q.text.maybe("Detached portal content")).not.toBeInTheDocument();
 
   await click(q.button("Toggle portal"));
   expect(q.text("Detached portal content")).toBeInTheDocument();

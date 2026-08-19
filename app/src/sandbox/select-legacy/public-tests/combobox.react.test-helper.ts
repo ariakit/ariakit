@@ -27,7 +27,7 @@ describe.each([
     expect(q.option("Grape")).toHaveFocus();
     await press.Enter();
     expect(select).toHaveTextContent("Grape");
-    expect(q.dialog()).not.toBeInTheDocument();
+    expect(q.dialog.maybe()).not.toBeInTheDocument();
   });
 });
 

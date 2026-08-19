@@ -10,11 +10,11 @@ const hoverOutside = async () => {
 test("shows on hover, hides outside, and immediately reopens", async () => {
   const anchor = q.link("Tooltip anchor");
 
-  expect(q.tooltip("Tooltip content")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("Tooltip content")).not.toBeInTheDocument();
   await hover(anchor);
   expect(await q.tooltip.wait("Tooltip content")).toBeVisible();
   await hoverOutside();
-  await expect.poll(q.tooltip).not.toBeInTheDocument();
+  await expect.poll(q.tooltip.maybe).not.toBeInTheDocument();
 
   await hover(anchor);
   expect(q.tooltip("Tooltip content")).toBeVisible();
@@ -34,7 +34,7 @@ test("shows on focus and hides after focus moves", async () => {
   expect(await q.tooltip.wait("Tooltip content")).toBeVisible();
   await press.Tab();
   expect(q.button("After tooltip")).toHaveFocus();
-  expect(q.tooltip("Tooltip content")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("Tooltip content")).not.toBeInTheDocument();
 });
 
 test("stays open after focus-visible and pointer movement", async () => {
@@ -57,7 +57,7 @@ test("waits again after keyboard focus is lost", async () => {
   await press.Tab();
   await press.Tab();
   expect(q.button("After tooltip")).toHaveFocus();
-  expect(q.tooltip("Tooltip content")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("Tooltip content")).not.toBeInTheDocument();
 
   await hoverOutside();
   // Dispatch directly so the assertion runs before the timeout can expire
@@ -65,7 +65,7 @@ test("waits again after keyboard focus is lost", async () => {
   await dispatch.mouseOver(anchor);
   await dispatch.mouseEnter(anchor);
   await dispatch.mouseMove(anchor);
-  expect(q.tooltip("Tooltip content")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("Tooltip content")).not.toBeInTheDocument();
   expect(await q.tooltip.wait("Tooltip content")).toBeVisible();
 });
 
@@ -76,6 +76,6 @@ test("Escape from tooltip content restores its anchor", async () => {
   await click(q.tooltip("Tooltip content"));
 
   await press.Escape();
-  expect(q.tooltip("Tooltip content")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("Tooltip content")).not.toBeInTheDocument();
   expect(anchor).toHaveFocus();
 });

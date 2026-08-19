@@ -11,7 +11,7 @@ test("exposes standalone TagRemove with visible text as a named button", () => {
   );
   expect(tagRemove).toHaveAttribute("aria-hidden", "true");
   expect(tagRemove?.querySelector("svg")).toBeInTheDocument();
-  expect(q.button("Remove React")).not.toBeInTheDocument();
+  expect(q.button.maybe("Remove React")).not.toBeInTheDocument();
 });
 
 test("exposes standalone TagRemove with an aria-label", () => {
@@ -19,11 +19,11 @@ test("exposes standalone TagRemove with an aria-label", () => {
   expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
   expect(removeButton).toHaveAttribute("aria-label", "Remove Vue filter");
   expect(removeButton).toHaveTextContent("x");
-  expect(q.button("Remove Vue")).not.toBeInTheDocument();
+  expect(q.button.maybe("Remove Vue")).not.toBeInTheDocument();
 });
 
 test("does not render a default icon outside a Tag", () => {
-  const removeButton = q.button.ensure("Remove Angular filter");
+  const removeButton = q.button("Remove Angular filter");
   expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
   expect(removeButton).toHaveAttribute("aria-label", "Remove Angular filter");
   expect(removeButton.querySelector("svg")).not.toBeInTheDocument();
@@ -33,7 +33,7 @@ test("preserves a standalone render element name", () => {
   const removeButton = q.button("Remove Svelte filter");
   expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
   expect(removeButton).not.toHaveAttribute("aria-label");
-  expect(q.button("Remove Svelte")).not.toBeInTheDocument();
+  expect(q.button.maybe("Remove Svelte")).not.toBeInTheDocument();
 });
 
 test("preserves a standalone root labelledby name", () => {
@@ -42,5 +42,5 @@ test("preserves a standalone root labelledby name", () => {
   expect(removeButton).not.toHaveAttribute("aria-label");
   expect(removeButton).toHaveAttribute("aria-labelledby", "solid-label");
   expect(removeButton).toHaveTextContent("x");
-  expect(q.button("Remove Solid")).not.toBeInTheDocument();
+  expect(q.button.maybe("Remove Solid")).not.toBeInTheDocument();
 });

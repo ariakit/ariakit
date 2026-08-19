@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 
 test("@ at the beginning", async () => {
   await press.Tab();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await type("@");
   expect(q.combobox()).toHaveValue("@");
   expect(q.combobox()).toHaveFocus();
@@ -43,9 +43,9 @@ test("typing on the textarea", async () => {
   expect(q.combobox()).toHaveValue("Hi @tcodes0 @matheus1lva ");
   await type("\b\n\n#lat");
   await press.ArrowLeft();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await type("\b");
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await type("\b");
   expect(q.listbox()).toBeVisible();
   await press.Enter();

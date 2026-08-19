@@ -11,7 +11,7 @@ afterEach(() => {
 test("select carries only the pointer identity to the click event", async () => {
   document.body.innerHTML = `<div>first second third</div>`;
 
-  const element = q.text.ensure("first second third");
+  const element = q.text("first second third");
   const events: string[] = [];
   element.addEventListener("click", (event) => {
     const isPointerEvent = event instanceof PointerEvent;
