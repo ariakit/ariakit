@@ -13,8 +13,12 @@ type Target = Document | Window | Node | Element | null;
 
 type EventFunction = (element: Target, options?: object) => Promise<boolean>;
 
+// `@testing-library/dom` has no `auxclick` in its event map, so `dispatch` adds
+// it to the events it can build by name.
+type DispatchEventType = EventType | "auxClick";
+
 type EventsObject = {
-  [K in EventType]: EventFunction;
+  [K in DispatchEventType]: EventFunction;
 };
 
 const pointerEvents = [
@@ -161,10 +165,39 @@ function baseDispatch(element: Target, event: Event): Promise<boolean> {
   });
 }
 
-const events = getKeys(fireEvent).reduce((events, eventName) => {
+// The `@testing-library/dom` event map builds `click` and `contextmenu` from
+// `MouseEvent` and has no `auxclick` entry, but Pointer Events defines all three
+// as `PointerEvent`, which is what Chromium, Firefox, and WebKit dispatch. Only
+// the interface and the pointer members change; `button` and `buttons` keep
+// their mouse-event semantics. Replacing the map's `click` entry also drops its
+// `button: 0`, which `initMouseEvent` assigns anyway.
+// https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
+const clickFamilyInit = { bubbles: true, cancelable: true, composed: true };
+
+function createNamedEvent(
+  eventName: DispatchEventType,
+  element: NonNullable<Target>,
+  options?: object,
+) {
+  if (
+    eventName === "click" ||
+    eventName === "auxClick" ||
+    eventName === "contextMenu"
+  ) {
+    return createEvent(eventName.toLowerCase(), element, options, {
+      EventType: "PointerEvent",
+      defaultInit: clickFamilyInit,
+    });
+  }
+  return createEvent[eventName](element, options);
+}
+
+const eventNames: DispatchEventType[] = [...getKeys(fireEvent), "auxClick"];
+
+const events = eventNames.reduce((events, eventName) => {
   events[eventName] = (element, options) => {
     invariant(element, `Unable to dispatch ${eventName} on null element`);
-    const event = createEvent[eventName](element, options);
+    const event = createNamedEvent(eventName, element, options);
     initEvent(event, options);
     return baseDispatch(element, event);
   };
@@ -190,12 +223,17 @@ const events = getKeys(fireEvent).reduce((events, eventName) => {
  * `pressure` and `isPrimary`, keep their defaults here; the higher-level helpers
  * fill those in. An event you construct yourself keeps whatever its constructor
  * gave it.
+ *
+ * `click`, `auxclick`, and `contextmenu` are built as `PointerEvent`, the way
+ * browsers dispatch them, so they accept and report pointer properties such as
+ * `pointerType`.
  * @returns A promise that resolves to `false` when the event's default action was
  * prevented with `event.preventDefault()`, and `true` otherwise.
  * @example
  * ```ts
  * await dispatch.keyDown(q.textbox(), { key: "Enter" });
  * await dispatch.click(q.button());
+ * await dispatch.auxClick(q.link("Ariakit"), { button: 1 });
  * // Fire a custom event instance directly:
  * await dispatch(q.textbox(), new Event("selectstart", { bubbles: true }));
  * ```

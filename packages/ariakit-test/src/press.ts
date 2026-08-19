@@ -5,6 +5,7 @@ import {
   getPreviousTabbable,
   isFocusable,
 } from "@ariakit/utils";
+import { initEvent } from "./__init-event.ts";
 import {
   flushMicrotasks,
   isHappyDOM,
@@ -22,6 +23,15 @@ type KeyActionMap = Record<
   string,
   (element: Element, options: KeyboardEventInit) => Promise<void>
 >;
+
+// A keyboard activation still fires a `PointerEvent`, but no pointer caused it.
+// Chromium, Firefox, and WebKit all report an unset pointer there, so the click
+// doesn't claim a mouse pressed the control.
+// https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
+const noPointerOptions: PointerEventInit = {
+  pointerId: -1,
+  pointerType: "",
+};
 
 const clickableInputTypes = [
   "button",
@@ -74,13 +84,15 @@ function getSubmitButton(form: HTMLFormElement) {
   );
 }
 
+// Built here rather than through `dispatch.click` because implicit submission
+// needs the click dispatched synchronously, before `requestSubmit` runs.
 function createKeyboardClickEvent(
   element: Element,
   options: KeyboardEventInit,
 ) {
   const { defaultView } = element.ownerDocument;
-  const MouseEventConstructor = defaultView?.MouseEvent ?? MouseEvent;
-  return new MouseEventConstructor("click", {
+  const PointerEventConstructor = defaultView?.PointerEvent ?? PointerEvent;
+  const eventOptions: PointerEventInit = {
     bubbles: true,
     cancelable: true,
     composed: true,
@@ -88,7 +100,14 @@ function createKeyboardClickEvent(
     ctrlKey: options.ctrlKey,
     metaKey: options.metaKey,
     shiftKey: options.shiftKey,
-  });
+    ...noPointerOptions,
+  };
+  const event = new PointerEventConstructor("click", eventOptions);
+  // Run the same initialization a named dispatcher does, so this click reports
+  // the pointer members every other one does instead of whatever the
+  // environment's constructor happens to store.
+  initEvent(event, eventOptions);
+  return event;
 }
 
 function dispatchKeyboardClick(element: Element, options: KeyboardEventInit) {
@@ -238,7 +257,7 @@ const keyDownMap: KeyActionMap = {
       !nonSubmittableTypes.includes(element.type);
 
     if (isClickable) {
-      await dispatch.click(element, options);
+      await dispatch.click(element, { ...options, ...noPointerOptions });
     } else if (isSubmittable) {
       await submitFormByPressingEnterOn(element, options);
     }
@@ -361,7 +380,7 @@ const keyUpMap: KeyActionMap = {
     // (the DOM test environments don't blur it the way a real browser does, and
     // jsdom would otherwise fire the click).
     if (isSpaceable && !isDisabled(element)) {
-      await dispatch.click(element, options);
+      await dispatch.click(element, { ...options, ...noPointerOptions });
     }
   },
 };

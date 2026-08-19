@@ -1,5 +1,4 @@
-import { initEvent } from "./__init-event.ts";
-import { dispatch } from "./dispatch.ts";
+import { getKeys } from "@ariakit/utils";
 
 // `MouseEvent.buttons` is a bitmask of the buttons currently held down, and its
 // bits are not ordered like `MouseEvent.button`: the secondary button is bit 1
@@ -19,6 +18,17 @@ export function getMouseButton(options?: MouseEventInit) {
   return options?.button ?? 0;
 }
 
+function omit(
+  options: PointerEventInit | undefined,
+  keys: ReadonlyArray<keyof PointerEventInit>,
+): PointerEventInit {
+  const remaining = { ...options };
+  for (const key of keys) {
+    delete remaining[key];
+  }
+  return remaining;
+}
+
 // Each phase derives `buttons` from the button it simulates. `mouseDown` and
 // `mouseUp` run a single phase, so an explicit value describes a chord there and
 // wins. A multi-step helper runs every phase from one init, where no single
@@ -31,9 +41,7 @@ export function getMouseButton(options?: MouseEventInit) {
  * device can be in.
  */
 export function omitButtons(options?: PointerEventInit): PointerEventInit {
-  const stepOptions = { ...options };
-  delete stepOptions.buttons;
-  return stepOptions;
+  return omit(options, ["buttons"]);
 }
 
 // A pointing device with no pressure sensor, which is what these helpers
@@ -45,11 +53,11 @@ function getPressure(buttons: number) {
 
 // Neither `dispatch` nor the phase builders below can own these, because
 // `click.ts` and `select.ts` build `click`, `auxclick`, and `contextmenu` from
-// `getPressOptions` and `getReleaseOptions` directly, and Pointer Events resets
-// every pointer attribute on those three except `pointerId` and `pointerType`.
-// Unlike the contact size and transducer angle `dispatch` defaults, these two
-// reset to something other than what a gesture derives. Only the helpers that
-// fire pointer events apply them.
+// the same gesture options, and Pointer Events resets every pointer attribute on
+// those three except `pointerId` and `pointerType`. Unlike the contact size and
+// transducer angle `dispatch` defaults, these two reset to something other than
+// what a gesture derives. Only the helpers that fire pointer events apply them,
+// so the click-family options below never pick them up.
 // https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
 
 /**
@@ -106,6 +114,76 @@ export function getReleaseOptions(
   };
 }
 
+type PointerIdentityAttribute = "pointerId" | "pointerType" | "isPrimary";
+
+type ContactAttribute = Exclude<
+  keyof PointerEventInit,
+  keyof MouseEventInit | PointerIdentityAttribute
+>;
+
+// The contact a caller described for the press, which browsers reset on the
+// click-family events so each member falls back to the value `dispatch` gives a
+// device that reports none. `isPrimary` stays out on purpose: nothing derives it
+// for these events, and Firefox and WebKit carry a caller's value over where
+// Chromium resets it. So a caller's `pressure` is dropped here while their
+// `isPrimary` reaches the click.
+//
+// Keyed rather than listed so TypeScript requires every non-identity member. A
+// list silently missed `altitudeAngle`, `azimuthAngle`, `coalescedEvents`, and
+// `predictedEvents`, and `PointerEventInit` keeps growing.
+// https://github.com/ariakit/ariakit/pull/7177#discussion_r3811185510
+const contactAttributes: Record<ContactAttribute, true> = {
+  width: true,
+  height: true,
+  pressure: true,
+  tangentialPressure: true,
+  tiltX: true,
+  tiltY: true,
+  twist: true,
+  altitudeAngle: true,
+  azimuthAngle: true,
+  coalescedEvents: true,
+  predictedEvents: true,
+};
+
+const contactAttributeKeys = getKeys(contactAttributes);
+
+/**
+ * Returns only the members that identify the pointer behind a gesture, for an
+ * event a browser derives from another one, like the `click` a label forwards to
+ * its control.
+ */
+export function getPointerIdentity(
+  options?: PointerEventInit,
+): PointerEventInit {
+  return {
+    pointerId: options?.pointerId,
+    pointerType: options?.pointerType,
+    isPrimary: options?.isPrimary,
+  };
+}
+
+/**
+ * Returns the event properties for the `click` or `auxclick` that ends the
+ * gesture, which a browser fires on the release with the contact reset.
+ */
+export function getClickOptions(options?: PointerEventInit): PointerEventInit {
+  return {
+    detail: 1,
+    ...omit(getReleaseOptions(options), contactAttributeKeys),
+  };
+}
+
+/**
+ * Returns the event properties for the `contextmenu` the secondary button opens
+ * while it is still held down, with the same contact reset.
+ */
+export function getContextMenuOptions(
+  options?: PointerEventInit,
+): PointerEventInit {
+  return omit(getPressOptions(options), contactAttributeKeys);
+}
+
 // Pointer Events fires no `pointerdown` or `pointerup` for a chorded button
 // change, where a button changes state while another one stays held down. The
 // change rides on `pointermove` instead, and only the compatibility mouse
@@ -128,24 +206,4 @@ export function isChordedPress(options: PointerEventInit) {
  */
 export function isChordedRelease(options: PointerEventInit) {
   return (options.buttons ?? 0) !== 0;
-}
-
-// `@testing-library/dom` has no `auxclick` in its event map, so `dispatch` can't
-// build this one by name.
-export function dispatchAuxClick(element: Element, options?: MouseEventInit) {
-  const { defaultView } = element.ownerDocument;
-  const MouseEventConstructor = defaultView?.MouseEvent ?? MouseEvent;
-  const init: MouseEventInit = {
-    bubbles: true,
-    cancelable: true,
-    composed: true,
-    detail: 1,
-    ...options,
-  };
-  const event = new MouseEventConstructor("auxclick", init);
-  // Run the same initialization a named dispatcher does, so this step reports
-  // the same modifier state as the rest of the gesture that fires it.
-  // https://github.com/ariakit/ariakit/issues/7165
-  initEvent(event, init);
-  return dispatch(element, event);
 }

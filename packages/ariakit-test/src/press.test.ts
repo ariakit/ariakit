@@ -318,3 +318,62 @@ test("press.Enter on a textarea emits an Enter keypress charCode", async () => {
     expect.objectContaining({ charCode: 13 }),
   );
 });
+
+// Keyboard activation still fires a `PointerEvent`, but Chromium, Firefox, and
+// WebKit all report an unset pointer on it, so the click must not claim a mouse
+// pressed the control.
+// https://github.com/ariakit/ariakit/issues/7162
+test("press activates a button with no pointer behind the click", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  const events: Array<Record<string, unknown>> = [];
+  button.addEventListener("click", (event) => {
+    const { pointerId, pointerType } = event;
+    events.push({
+      isPointerEvent: event instanceof PointerEvent,
+      pointerId,
+      pointerType,
+    });
+  });
+
+  await press.Enter(button);
+  await press.Space(button);
+
+  expect(events).toEqual([
+    { isPointerEvent: true, pointerId: -1, pointerType: "" },
+    { isPointerEvent: true, pointerId: -1, pointerType: "" },
+  ]);
+});
+
+test("press.Enter submits with no pointer behind the default button click", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const events: Array<Record<string, unknown>> = [];
+  button.type = "submit";
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+    const { pointerId, pointerType, altitudeAngle } = event;
+    events.push({
+      isPointerEvent: event instanceof PointerEvent,
+      pointerId,
+      pointerType,
+      // The constructor supplies the two members above, so only one it doesn't
+      // supply can catch this click skipping the shared initialization.
+      altitudeAngle,
+    });
+  });
+  form.append(input, button);
+  document.body.append(form);
+
+  await press.Enter(input);
+
+  expect(events).toEqual([
+    {
+      isPointerEvent: true,
+      pointerId: -1,
+      pointerType: "",
+      altitudeAngle: Math.PI / 2,
+    },
+  ]);
+});

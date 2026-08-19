@@ -108,8 +108,10 @@ type Target = Document | Window | Node | Element | null;
 
 type EventFunction = (element: Target, options?: object) => Promise<boolean>;
 
+type DispatchEventType = EventType | "auxClick";
+
 type EventsObject = {
-  [K in EventType]: EventFunction;
+  [K in DispatchEventType]: EventFunction;
 };
 
 const dispatch: typeof baseDispatch & EventsObject;
@@ -121,6 +123,8 @@ Unlike higher-level helpers such as `click` and `type`, this fires a single even
 
 A pointer event built by name reports the contact size and transducer angle browsers report for a device with neither, so `width` and `height` are `1` and `altitudeAngle` is a right angle. The members describing a gesture, such as `pressure` and `isPrimary`, keep their defaults here; the higher-level helpers fill those in. An event you construct yourself keeps whatever its constructor gave it.
 
+`click`, `auxclick`, and `contextmenu` are built as `PointerEvent`, the way browsers dispatch them, so they accept and report pointer properties such as `pointerType`.
+
 Returns: A promise that resolves to `false` when the event's default action was prevented with `event.preventDefault()`, and `true` otherwise.
 
 Example:
@@ -128,6 +132,7 @@ Example:
 ```ts
 await dispatch.keyDown(q.textbox(), { key: "Enter" });
 await dispatch.click(q.button());
+await dispatch.auxClick(q.link("Ariakit"), { button: 1 });
 // Fire a custom event instance directly:
 await dispatch(q.textbox(), new Event("selectstart", { bubbles: true }));
 ```
