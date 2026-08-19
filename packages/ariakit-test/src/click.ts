@@ -1,12 +1,11 @@
 import { isVisible, isFocusable, invariant } from "@ariakit/utils";
 import {
   getClickOptions,
+  getContextMenuOptions,
   getHoverOptions,
   getMouseButton,
   getPointerIdentity,
-  getPressOptions,
   omitButtons,
-  omitContactAttributes,
 } from "./__mouse.ts";
 import { isHappyDOM, settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
@@ -211,10 +210,7 @@ export function click(
 
     // The secondary button opens the context menu while it's still held down.
     if (button === 2) {
-      await dispatch.contextMenu(
-        element,
-        omitContactAttributes(getPressOptions(stepOptions)),
-      );
+      await dispatch.contextMenu(element, getContextMenuOptions(stepOptions));
     }
 
     if (!tap) {

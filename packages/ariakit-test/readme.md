@@ -121,6 +121,8 @@ Creates and fires a DOM event on an element, then waits for the resulting microt
 
 Unlike higher-level helpers such as `click` and `type`, this fires a single event without simulating the surrounding interaction sequence. Pointer and mouse events fired on an element with `pointer-events: none` are re-dispatched on the nearest ancestor that has pointer events enabled, matching how browsers route those events.
 
+A pointer event built by name reports the contact size and transducer angle browsers report for a device with neither, so `width` and `height` are `1` and `altitudeAngle` is a right angle. The members describing a gesture, such as `pressure` and `isPrimary`, keep their defaults here; the higher-level helpers fill those in. An event you construct yourself keeps whatever its constructor gave it.
+
 `click`, `auxclick`, and `contextmenu` are built as `PointerEvent`, the way browsers dispatch them, so they accept and report pointer properties such as `pointerType`.
 
 Returns: A promise that resolves to `false` when the event's default action was prevented with `event.preventDefault()`, and `true` otherwise.
@@ -169,7 +171,7 @@ function hover(
 
 Moves the pointer over an element, simulating a real user hovering it. Fires the relevant `pointer`/`mouse` enter, over, and move events, and dispatches the matching leave events on the previously hovered element.
 
-Hidden elements and elements with `pointer-events: none` are handled the way a browser would. Pass `options` to set event properties such as modifier keys.
+Hidden elements and elements with `pointer-events: none` are handled the way a browser would. Pass `options` to set event properties such as modifier keys. The pointer events report `pressure: 0`, or `0.5` when you pass `buttons` to describe a move with a button held down, as during a drag.
 
 Example:
 
@@ -193,7 +195,7 @@ function mouseDown(
 
 Presses a pointer button down on an element, firing `pointerdown` and `mousedown` and moving focus the way a browser would. Disabled elements still receive the pointer event but not `mousedown`, and focus falls back to the closest focusable ancestor when the target itself isn't focusable.
 
-This is one step of a full `click`; use it directly to test press-and-hold behavior. Pass `options` to set event properties such as modifier keys, or `button` to press another mouse button. The events report the pressed button in `buttons`, like a browser does, unless you pass `buttons` yourself to describe a chorded gesture. When that value shows another button was already held down, the press fires `pointermove` instead of `pointerdown`, the way Pointer Events routes a chorded press, and the compatibility `mousedown` still fires.
+This is one step of a full `click`; use it directly to test press-and-hold behavior. Pass `options` to set event properties such as modifier keys, or `button` to press another mouse button. The events report the pressed button in `buttons`, like a browser does, unless you pass `buttons` yourself to describe a chorded gesture. When that value shows another button was already held down, the press fires `pointermove` instead of `pointerdown`, the way Pointer Events routes a chorded press, and the compatibility `mousedown` still fires. The pointer event reports `pressure: 0.5`, the value Pointer Events defines while a device with no pressure sensor holds a button down.
 
 Example:
 
@@ -218,7 +220,7 @@ function mouseUp(
 
 Releases a pointer button on an element, firing `pointerup` and `mouseup`. Disabled elements still receive the pointer event but not `mouseup`.
 
-This is the counterpart to `mouseDown` and one step of a full `click`. Pass `options` to set event properties such as modifier keys, or `button` to release another mouse button. The events report no button still held down in `buttons`, like a browser does, unless you pass `buttons` yourself to describe the buttons a chorded gesture keeps held. When that value shows another button stays held down, the release fires `pointermove` instead of `pointerup`, the way Pointer Events routes a chorded release, and the compatibility `mouseup` still fires.
+This is the counterpart to `mouseDown` and one step of a full `click`. Pass `options` to set event properties such as modifier keys, or `button` to release another mouse button. The events report no button still held down in `buttons`, like a browser does, unless you pass `buttons` yourself to describe the buttons a chorded gesture keeps held. When that value shows another button stays held down, the release fires `pointermove` instead of `pointerup`, the way Pointer Events routes a chorded release, and the compatibility `mouseup` still fires. The pointer event reports `pressure: 0`, or `0.5` while a chorded gesture keeps a button held.
 
 Example:
 

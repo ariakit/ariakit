@@ -1,27 +1,13 @@
-// Part of this code is based on https://github.com/testing-library/user-event/blob/d7483f049a1ec2ebf1ca1e2c1f4367849fca5997/src/event/createEvent.ts
 import { getKeys, invariant } from "@ariakit/utils";
 import type { EventType } from "@testing-library/dom";
 import { createEvent, fireEvent } from "@testing-library/dom";
+import { initEvent } from "./__init-event.ts";
 import {
   flushMicrotasks,
   isHappyDOM,
   withWindowEvent,
   wrapAsync,
 } from "./__utils.ts";
-
-type SpecificEventInit<E extends Event> = E extends InputEvent
-  ? InputEventInit
-  : E extends ClipboardEvent
-    ? ClipboardEventInit
-    : E extends KeyboardEvent
-      ? KeyboardEventInit
-      : E extends PointerEvent
-        ? PointerEventInit
-        : E extends MouseEvent
-          ? MouseEventInit
-          : E extends UIEvent
-            ? UIEventInit
-            : EventInit;
 
 type Target = Document | Window | Node | Element | null;
 
@@ -34,193 +20,6 @@ type DispatchEventType = EventType | "auxClick";
 type EventsObject = {
   [K in DispatchEventType]: EventFunction;
 };
-
-function assignProps<T extends object>(
-  obj: T,
-  props: { [k in keyof T]?: T[k] },
-) {
-  for (const [key, value] of Object.entries(props)) {
-    Object.defineProperty(obj, key, { get: () => value ?? null });
-  }
-}
-
-function sanitizeNumber(n: number | undefined) {
-  return n ?? 0;
-}
-
-function sanitizeString(value: string | undefined) {
-  return value ?? "";
-}
-
-function initClipboardEvent(
-  event: ClipboardEvent,
-  { clipboardData }: ClipboardEventInit,
-) {
-  assignProps(event, {
-    clipboardData,
-  });
-}
-
-function initInputEvent(
-  event: InputEvent,
-  { data, inputType, isComposing }: InputEventInit,
-) {
-  assignProps(event, {
-    data,
-    isComposing: !!isComposing,
-    inputType: sanitizeString(inputType),
-  });
-}
-
-function initUIEvent(event: UIEvent, { view, detail }: UIEventInit) {
-  assignProps(event, {
-    view,
-    detail: sanitizeNumber(detail ?? 0),
-  });
-}
-
-function initUIEventModififiers(
-  event: KeyboardEvent | MouseEvent,
-  {
-    altKey,
-    ctrlKey,
-    metaKey,
-    shiftKey,
-    modifierAltGraph,
-    modifierCapsLock,
-    modifierFn,
-    modifierFnLock,
-    modifierNumLock,
-    modifierScrollLock,
-    modifierSymbol,
-    modifierSymbolLock,
-  }: EventModifierInit,
-) {
-  assignProps(event, {
-    altKey: !!altKey,
-    ctrlKey: !!ctrlKey,
-    metaKey: !!metaKey,
-    shiftKey: !!shiftKey,
-    getModifierState(k: string) {
-      return Boolean(
-        {
-          Alt: altKey,
-          AltGraph: modifierAltGraph,
-          CapsLock: modifierCapsLock,
-          Control: ctrlKey,
-          Fn: modifierFn,
-          FnLock: modifierFnLock,
-          Meta: metaKey,
-          NumLock: modifierNumLock,
-          ScrollLock: modifierScrollLock,
-          Shift: shiftKey,
-          Symbol: modifierSymbol,
-          SymbolLock: modifierSymbolLock,
-        }[k],
-      );
-    },
-  });
-}
-
-function initKeyboardEvent(
-  event: KeyboardEvent,
-  { key, code, location, repeat, isComposing, charCode }: KeyboardEventInit,
-) {
-  assignProps(event, {
-    key: sanitizeString(key),
-    code: sanitizeString(code),
-    location: sanitizeNumber(location),
-    repeat: !!repeat,
-    isComposing: !!isComposing,
-  });
-  if (charCode != null) {
-    assignProps(event, {
-      charCode: sanitizeNumber(charCode),
-    });
-  }
-}
-
-function initMouseEvent(
-  event: MouseEvent,
-  {
-    x,
-    y,
-    screenX,
-    screenY,
-    clientX = x,
-    clientY = y,
-    button,
-    buttons,
-    relatedTarget,
-  }: MouseEventInit & { x?: number; y?: number },
-) {
-  assignProps(event, {
-    screenX: sanitizeNumber(screenX),
-    screenY: sanitizeNumber(screenY),
-    clientX: sanitizeNumber(clientX),
-    x: sanitizeNumber(clientX),
-    clientY: sanitizeNumber(clientY),
-    y: sanitizeNumber(clientY),
-    button: sanitizeNumber(button),
-    buttons: sanitizeNumber(buttons),
-    relatedTarget,
-  });
-}
-
-function initPointerEvent(
-  event: PointerEvent,
-  {
-    pointerId,
-    width,
-    height,
-    pressure,
-    tangentialPressure,
-    tiltX,
-    tiltY,
-    twist,
-    isPrimary,
-    pointerType = "mouse",
-  }: PointerEventInit,
-) {
-  assignProps(event, {
-    pointerId: sanitizeNumber(pointerId),
-    width: sanitizeNumber(width),
-    height: sanitizeNumber(height),
-    pressure: sanitizeNumber(pressure),
-    tangentialPressure: sanitizeNumber(tangentialPressure),
-    tiltX: sanitizeNumber(tiltX),
-    tiltY: sanitizeNumber(tiltY),
-    twist: sanitizeNumber(twist),
-    isPrimary: !!isPrimary,
-    pointerType: pointerType,
-  });
-}
-
-function initEvent<T extends Event>(
-  event: T,
-  options: SpecificEventInit<T> = {} as SpecificEventInit<T>,
-) {
-  if (event instanceof ClipboardEvent) {
-    initClipboardEvent(event, options);
-  }
-  if (event instanceof InputEvent) {
-    initInputEvent(event, options);
-  }
-  if (event instanceof UIEvent) {
-    initUIEvent(event, options);
-  }
-  if (event instanceof KeyboardEvent) {
-    initKeyboardEvent(event, options);
-    initUIEventModififiers(event, options);
-  }
-  if (event instanceof MouseEvent) {
-    initMouseEvent(event, options);
-    initUIEventModififiers(event, options);
-  }
-  if (event instanceof PointerEvent) {
-    initPointerEvent(event, options);
-  }
-}
 
 const pointerEvents = [
   "mousemove",
@@ -417,6 +216,13 @@ const events = eventNames.reduce((events, eventName) => {
  * mouse events fired on an element with `pointer-events: none` are re-dispatched
  * on the nearest ancestor that has pointer events enabled, matching how browsers
  * route those events.
+ *
+ * A pointer event built by name reports the contact size and transducer angle
+ * browsers report for a device with neither, so `width` and `height` are `1` and
+ * `altitudeAngle` is a right angle. The members describing a gesture, such as
+ * `pressure` and `isPrimary`, keep their defaults here; the higher-level helpers
+ * fill those in. An event you construct yourself keeps whatever its constructor
+ * gave it.
  *
  * `click`, `auxclick`, and `contextmenu` are built as `PointerEvent`, the way
  * browsers dispatch them, so they accept and report pointer properties such as

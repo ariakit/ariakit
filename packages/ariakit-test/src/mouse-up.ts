@@ -1,5 +1,9 @@
 import { getDocument, isVisible, invariant } from "@ariakit/utils";
-import { getReleaseOptions, isChordedRelease } from "./__mouse.ts";
+import {
+  getPointerOptions,
+  getReleaseOptions,
+  isChordedRelease,
+} from "./__mouse.ts";
 import {
   getPreventMouseEvents,
   setPreventMouseEvents,
@@ -18,7 +22,8 @@ import { dispatch } from "./dispatch.ts";
  * the buttons a chorded gesture keeps held. When that value shows another button
  * stays held down, the release fires `pointermove` instead of `pointerup`, the
  * way Pointer Events routes a chorded release, and the compatibility `mouseup`
- * still fires.
+ * still fires. The pointer event reports `pressure: 0`, or `0.5` while a chorded
+ * gesture keeps a button held.
  * @example
  * ```ts
  * await mouseDown(q.button("Resize"));
@@ -32,7 +37,7 @@ export function mouseUp(element: Element | null, options?: PointerEventInit) {
     if (!isVisible(element)) return;
 
     const { disabled } = element as HTMLButtonElement;
-    const releaseOptions = getReleaseOptions(options);
+    const releaseOptions = getPointerOptions(getReleaseOptions(options));
     const chorded = isChordedRelease(releaseOptions);
 
     if (chorded) {

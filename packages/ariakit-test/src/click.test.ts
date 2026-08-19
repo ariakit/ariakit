@@ -260,13 +260,9 @@ test("click with the auxiliary button doesn't run activation behavior", async ()
 
 // Records the pointer members that separate the press from the event ending the
 // gesture, in the shape the expectations below were recorded in from Chromium,
-// Firefox, and WebKit through Playwright. `altitudeAngle` is the exception:
-// `initPointerEvent` never touches it, so it only resets when the options
-// reaching the constructor drop it, and it then lands on happy-dom's default of
-// `0` where browsers report π/2. What the expectations pin is that it stops
-// reporting the press's value, not the value it resets to.
+// Firefox, and WebKit through Playwright. A reset `altitudeAngle` reports the
+// right angle browsers report for a device with no tilt, not zero.
 // https://github.com/ariakit/ariakit/issues/7162
-// https://github.com/ariakit/ariakit/issues/7172
 function recordPointerMembers(element: Element, types: string[]) {
   const events: string[] = [];
   for (const type of types) {
@@ -309,7 +305,7 @@ test("click carries only the pointer identity to the click event", async () => {
 
   expect(events).toEqual([
     "pointerdown true 7 pen true 0.5 30 0.3",
-    "click true 7 pen true 0 0 0",
+    `click true 7 pen true 0 0 ${Math.PI / 2}`,
   ]);
 });
 
@@ -331,7 +327,7 @@ test("click with the auxiliary button carries the pointer identity to auxclick",
 
   expect(events).toEqual([
     "pointerdown true 7 pen true 0.5 30 0.3",
-    "auxclick true 7 pen true 0 0 0",
+    `auxclick true 7 pen true 0 0 ${Math.PI / 2}`,
   ]);
 });
 
@@ -357,7 +353,7 @@ test("click forwards the pointer identity from a label to its control", async ()
     tiltX: 30,
   });
 
-  expect(events).toEqual(["click true 7 pen true 0 0 0"]);
+  expect(events).toEqual([`click true 7 pen true 0 0 ${Math.PI / 2}`]);
   expect((checkbox as HTMLInputElement).checked).toBe(true);
 });
 
@@ -382,7 +378,50 @@ test("rightClick carries the pointer identity to contextmenu and auxclick", asyn
 
   expect(events).toEqual([
     "pointerdown true 7 pen true 0.5 30 0.3",
-    "contextmenu true 7 pen true 0 0 0",
-    "auxclick true 7 pen true 0 0 0",
+    `contextmenu true 7 pen true 0 0 ${Math.PI / 2}`,
+    `auxclick true 7 pen true 0 0 ${Math.PI / 2}`,
+  ]);
+});
+
+// One gesture reports one modifier state. `auxclick` used to be built by hand
+// here, skipping the initializer that reads the `modifier*` init members the
+// other steps honor; it now goes through `dispatch.auxClick` like the rest.
+// https://github.com/ariakit/ariakit/issues/7165
+function recordModifiers(element: Element, modifier: string) {
+  const states: string[] = [];
+  const types = ["mousedown", "contextmenu", "mouseup", "auxclick"];
+  for (const type of types) {
+    element.addEventListener(type, (event) => {
+      const mouseEvent = event as MouseEvent;
+      states.push(`${type} ${mouseEvent.getModifierState(modifier)}`);
+    });
+  }
+  return states;
+}
+
+test("click with the auxiliary button reports its modifier state on auxclick", async () => {
+  document.body.innerHTML = `<button type="button">Paste</button>`;
+
+  const button = q.button.ensure("Paste");
+  const states = recordModifiers(button, "CapsLock");
+
+  await click(button, { button: 1, modifierCapsLock: true });
+
+  expect(states).toEqual(["mousedown true", "mouseup true", "auxclick true"]);
+});
+
+test("rightClick reports its modifier state on auxclick", async () => {
+  document.body.innerHTML = `<button type="button">Open menu</button>`;
+
+  const button = q.button.ensure("Open menu");
+  const states = recordModifiers(button, "AltGraph");
+
+  await rightClick(button, { modifierAltGraph: true });
+
+  expect(states).toEqual([
+    "mousedown true",
+    "contextmenu true",
+    "mouseup true",
+    "auxclick true",
   ]);
 });

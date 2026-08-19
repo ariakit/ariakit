@@ -44,63 +44,35 @@ export function omitButtons(options?: PointerEventInit): PointerEventInit {
   return omit(options, ["buttons"]);
 }
 
-type PointerIdentityAttribute = "pointerId" | "pointerType" | "isPrimary";
-
-type ContactAttribute = Exclude<
-  keyof PointerEventInit,
-  keyof MouseEventInit | PointerIdentityAttribute
->;
-
-// The attributes that describe the contact itself rather than the pointer that
-// made it. `isPrimary` is left out deliberately, not by that rule: the
-// specification resets every pointer attribute here except `pointerId` and
-// `pointerType`, and Chromium follows it, but Firefox and WebKit carry
-// `isPrimary` over, so a value the caller passes explicitly is kept.
-//
-// Keyed rather than listed so TypeScript requires every non-identity member. A
-// list silently missed the four below, and `PointerEventInit` keeps growing.
-// https://github.com/ariakit/ariakit/pull/7177#discussion_r3811185510
-const contactAttributes: Record<ContactAttribute, true> = {
-  width: true,
-  height: true,
-  pressure: true,
-  tangentialPressure: true,
-  tiltX: true,
-  tiltY: true,
-  twist: true,
-  altitudeAngle: true,
-  azimuthAngle: true,
-  coalescedEvents: true,
-  predictedEvents: true,
-};
-
-const contactAttributeKeys = getKeys(contactAttributes);
-
-/**
- * Drops the contact attributes, which don't survive into `click`, `auxclick`,
- * and `contextmenu`, keeping the members that identify the pointer behind them.
- * Browsers reset the contact there: a pen press reporting `tiltX: 30` still ends
- * in a `click` reporting `tiltX: 0`.
- * https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
- */
-export function omitContactAttributes(
-  options?: PointerEventInit,
-): PointerEventInit {
-  return omit(options, contactAttributeKeys);
+// A pointing device with no pressure sensor, which is what these helpers
+// simulate, reports 0.5 while it is in the active buttons state and 0 otherwise.
+// https://w3c.github.io/pointerevents/#dom-pointerevent-pressure
+function getPressure(buttons: number) {
+  return buttons === 0 ? 0 : 0.5;
 }
 
+// Neither `dispatch` nor the phase builders below can own these, because
+// `click.ts` and `select.ts` build `click`, `auxclick`, and `contextmenu` from
+// the same gesture options, and Pointer Events resets every pointer attribute on
+// those three except `pointerId` and `pointerType`. Unlike the contact size and
+// transducer angle `dispatch` defaults, these two reset to something other than
+// what a gesture derives. Only the helpers that fire pointer events apply them,
+// so the click-family options below never pick them up.
+// https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
+
 /**
- * Returns only the members that identify the pointer behind a gesture, for an
- * event a browser derives from another one, like the `click` a label forwards to
- * its control.
+ * Fills in the members describing the pointer a phase simulates: these helpers
+ * drive one pointer, which is the primary pointer of its type, and the pressure
+ * follows the `buttons` the phase options already describe.
+ * https://w3c.github.io/pointerevents/#dom-pointerevent-isprimary
  */
-export function getPointerIdentity(
+export function getPointerOptions(
   options?: PointerEventInit,
 ): PointerEventInit {
   return {
-    pointerId: options?.pointerId,
-    pointerType: options?.pointerType,
-    isPrimary: options?.isPrimary,
+    ...options,
+    pressure: options?.pressure ?? getPressure(options?.buttons ?? 0),
+    isPrimary: options?.isPrimary ?? true,
   };
 }
 
@@ -142,12 +114,74 @@ export function getReleaseOptions(
   };
 }
 
+type PointerIdentityAttribute = "pointerId" | "pointerType" | "isPrimary";
+
+type ContactAttribute = Exclude<
+  keyof PointerEventInit,
+  keyof MouseEventInit | PointerIdentityAttribute
+>;
+
+// The contact a caller described for the press, which browsers reset on the
+// click-family events so each member falls back to the value `dispatch` gives a
+// device that reports none. `isPrimary` stays out on purpose: nothing derives it
+// for these events, and Firefox and WebKit carry a caller's value over where
+// Chromium resets it. So a caller's `pressure` is dropped here while their
+// `isPrimary` reaches the click.
+//
+// Keyed rather than listed so TypeScript requires every non-identity member. A
+// list silently missed `altitudeAngle`, `azimuthAngle`, `coalescedEvents`, and
+// `predictedEvents`, and `PointerEventInit` keeps growing.
+// https://github.com/ariakit/ariakit/pull/7177#discussion_r3811185510
+const contactAttributes: Record<ContactAttribute, true> = {
+  width: true,
+  height: true,
+  pressure: true,
+  tangentialPressure: true,
+  tiltX: true,
+  tiltY: true,
+  twist: true,
+  altitudeAngle: true,
+  azimuthAngle: true,
+  coalescedEvents: true,
+  predictedEvents: true,
+};
+
+const contactAttributeKeys = getKeys(contactAttributes);
+
+/**
+ * Returns only the members that identify the pointer behind a gesture, for an
+ * event a browser derives from another one, like the `click` a label forwards to
+ * its control.
+ */
+export function getPointerIdentity(
+  options?: PointerEventInit,
+): PointerEventInit {
+  return {
+    pointerId: options?.pointerId,
+    pointerType: options?.pointerType,
+    isPrimary: options?.isPrimary,
+  };
+}
+
 /**
  * Returns the event properties for the `click` or `auxclick` that ends the
  * gesture, which a browser fires on the release with the contact reset.
  */
 export function getClickOptions(options?: PointerEventInit): PointerEventInit {
-  return { detail: 1, ...omitContactAttributes(getReleaseOptions(options)) };
+  return {
+    detail: 1,
+    ...omit(getReleaseOptions(options), contactAttributeKeys),
+  };
+}
+
+/**
+ * Returns the event properties for the `contextmenu` the secondary button opens
+ * while it is still held down, with the same contact reset.
+ */
+export function getContextMenuOptions(
+  options?: PointerEventInit,
+): PointerEventInit {
+  return omit(getPressOptions(options), contactAttributeKeys);
 }
 
 // Pointer Events fires no `pointerdown` or `pointerup` for a chorded button
