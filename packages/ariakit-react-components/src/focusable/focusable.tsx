@@ -305,6 +305,13 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       disabled,
     );
     const onClickCapture = useDisableEvent(props.onClickCapture, disabled);
+    // A middle click fires auxclick instead of click, and preventing mousedown
+    // doesn't stop it, so a disabled element rendered as a link would still
+    // open its destination. See https://github.com/ariakit/ariakit/issues/7153
+    const onAuxClickCapture = useDisableEvent(
+      props.onAuxClickCapture,
+      disabled,
+    );
 
     const handleFocusVisible = (
       event: SyntheticEvent<HTMLType>,
@@ -496,6 +503,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       contentEditable: disabled ? undefined : props.contentEditable,
       onKeyPressCapture,
       onClickCapture,
+      onAuxClickCapture,
       onMouseDownCapture,
       onKeyDownCapture,
       onFocusCapture,
