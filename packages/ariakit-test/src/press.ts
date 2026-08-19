@@ -5,6 +5,7 @@ import {
   getPreviousTabbable,
   isFocusable,
 } from "@ariakit/utils";
+import { initEvent } from "./__init-event.ts";
 import {
   flushMicrotasks,
   isHappyDOM,
@@ -91,7 +92,7 @@ function createKeyboardClickEvent(
 ) {
   const { defaultView } = element.ownerDocument;
   const PointerEventConstructor = defaultView?.PointerEvent ?? PointerEvent;
-  return new PointerEventConstructor("click", {
+  const eventOptions: PointerEventInit = {
     bubbles: true,
     cancelable: true,
     composed: true,
@@ -100,7 +101,13 @@ function createKeyboardClickEvent(
     metaKey: options.metaKey,
     shiftKey: options.shiftKey,
     ...noPointerOptions,
-  });
+  };
+  const event = new PointerEventConstructor("click", eventOptions);
+  // Run the same initialization a named dispatcher does, so this click reports
+  // the pointer members every other one does instead of whatever the
+  // environment's constructor happens to store.
+  initEvent(event, eventOptions);
+  return event;
 }
 
 function dispatchKeyboardClick(element: Element, options: KeyboardEventInit) {

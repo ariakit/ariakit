@@ -353,11 +353,14 @@ test("press.Enter submits with no pointer behind the default button click", asyn
   button.type = "submit";
   button.addEventListener("click", (event) => {
     event.preventDefault();
-    const { pointerId, pointerType } = event;
+    const { pointerId, pointerType, altitudeAngle } = event;
     events.push({
       isPointerEvent: event instanceof PointerEvent,
       pointerId,
       pointerType,
+      // The constructor supplies the two members above, so only one it doesn't
+      // supply can catch this click skipping the shared initialization.
+      altitudeAngle,
     });
   });
   form.append(input, button);
@@ -366,6 +369,11 @@ test("press.Enter submits with no pointer behind the default button click", asyn
   await press.Enter(input);
 
   expect(events).toEqual([
-    { isPointerEvent: true, pointerId: -1, pointerType: "" },
+    {
+      isPointerEvent: true,
+      pointerId: -1,
+      pointerType: "",
+      altitudeAngle: Math.PI / 2,
+    },
   ]);
 });
