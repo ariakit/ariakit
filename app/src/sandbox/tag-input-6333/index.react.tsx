@@ -19,7 +19,7 @@ function TagField({ label, delimiter }: TagFieldProps) {
     <TagProvider values={values} setValues={setValues}>
       <TagLabel>{label}</TagLabel>
       <TagControl>
-        <TagList aria-describedby={statusId}>
+        <TagList aria-describedby={statusId} style={{ display: "contents" }}>
           {values.map((value) => (
             <Tag key={value} value={value}>
               {value}

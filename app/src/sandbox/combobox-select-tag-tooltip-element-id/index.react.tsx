@@ -86,7 +86,7 @@ function TagExample() {
       <TagProvider>
         <DynamicTagLabel />
         <TagControl>
-          <TagList />
+          <TagList style={{ display: "contents" }} />
           <DynamicTagInput />
         </TagControl>
       </TagProvider>

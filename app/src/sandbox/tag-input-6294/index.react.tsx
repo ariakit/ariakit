@@ -14,7 +14,7 @@ export default function Example() {
     <TagProvider values={values} setValues={setValues}>
       <TagLabel>Tags</TagLabel>
       <TagControl>
-        <TagList>
+        <TagList style={{ display: "contents" }}>
           {values.map((value) => (
             <Tag key={value} value={value}>
               {value}
