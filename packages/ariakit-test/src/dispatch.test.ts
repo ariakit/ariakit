@@ -91,3 +91,64 @@ test("dispatch.input preserves provided inputType", async () => {
     input.remove();
   }
 });
+
+// `auxclick` has no `@testing-library/dom` event map entry, so it can only be
+// dispatched through the direct form, which is how the gap below surfaced.
+// https://github.com/ariakit/ariakit/issues/7156
+test("dispatch(element, event) reads modifier state on a caller-built mouse event", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  const modifiers: boolean[] = [];
+  button.addEventListener("auxclick", (event) => {
+    // A plain DOM listener calls this unguarded, the way a browser allows.
+    modifiers.push(
+      event.getModifierState("Shift"),
+      event.getModifierState("Control"),
+    );
+  });
+  try {
+    await dispatch(
+      button,
+      new MouseEvent("auxclick", { bubbles: true, shiftKey: true }),
+    );
+    expect(modifiers).toEqual([true, false]);
+  } finally {
+    button.remove();
+  }
+});
+
+// Parity covers the standard modifiers and `x`/`y`. happy-dom's constructor
+// discards the `modifier*` init members, so a caller-built event cannot report
+// those the way a named dispatcher does.
+test("dispatch(element, event) reports the same standard modifiers and x/y as the named form", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  const options: MouseEventInit = { shiftKey: true, clientX: 7, clientY: 9 };
+  let direct: MouseEvent | undefined;
+  let named: MouseEvent | undefined;
+  button.addEventListener("auxclick", (event) => {
+    direct = event;
+  });
+  button.addEventListener("click", (event) => {
+    named = event;
+  });
+  try {
+    await dispatch(button, new MouseEvent("auxclick", options));
+    await dispatch.click(button, options);
+    const readMembers = (event: MouseEvent | undefined) => ({
+      shift: event?.getModifierState("Shift"),
+      control: event?.getModifierState("Control"),
+      x: event?.x,
+      y: event?.y,
+    });
+    expect(readMembers(direct)).toEqual(readMembers(named));
+    expect(readMembers(direct)).toEqual({
+      shift: true,
+      control: false,
+      x: 7,
+      y: 9,
+    });
+  } finally {
+    button.remove();
+  }
+});
