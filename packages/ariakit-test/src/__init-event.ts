@@ -242,8 +242,43 @@ const mouseDerivedEventTypes = new Set([
   "wheel",
 ]);
 
+// The same gap one interface further down: jsdom implements `PointerEvent` only
+// from v27 on, so an older environment cannot build these from an interface of
+// their own, and testing the name as well keeps them initialized there. The
+// click family belongs here because Pointer Events defines those three as
+// `PointerEvent` too, so they carry the pointer members even where the
+// dispatchers build them from `MouseEvent` instead.
+// https://github.com/ariakit/ariakit/issues/7178
+const pointerEventTypes = new Set([
+  "auxclick",
+  "click",
+  "contextmenu",
+  "gotpointercapture",
+  "lostpointercapture",
+  "pointercancel",
+  "pointerdown",
+  "pointerenter",
+  "pointerleave",
+  "pointermove",
+  "pointerout",
+  "pointerover",
+  "pointerup",
+]);
+
+function isPointerEvent(event: Event): event is PointerEvent {
+  // `typeof` first, because the bare global throws where it doesn't exist,
+  // which is the very case the name test covers.
+  if (typeof PointerEvent !== "undefined" && event instanceof PointerEvent) {
+    return true;
+  }
+  return pointerEventTypes.has(event.type);
+}
+
 function isMouseEvent(event: Event): event is MouseEvent {
   if (event instanceof MouseEvent) return true;
+  // `PointerEvent` derives from `MouseEvent`, so a pointer event carries the
+  // mouse members too.
+  if (isPointerEvent(event)) return true;
   return mouseDerivedEventTypes.has(event.type);
 }
 
@@ -283,7 +318,7 @@ export function initEvent<T extends Event>(
     initMouseEvent(event, options);
     initUIEventModifiers(event, options);
   }
-  if (event instanceof PointerEvent) {
+  if (isPointerEvent(event)) {
     initPointerEvent(event, options);
   }
 }

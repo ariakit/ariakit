@@ -91,7 +91,12 @@ function createKeyboardClickEvent(
   options: KeyboardEventInit,
 ) {
   const { defaultView } = element.ownerDocument;
-  const PointerEventConstructor = defaultView?.PointerEvent ?? PointerEvent;
+  // jsdom has `PointerEvent` only from v27 on, and the bare global throws where
+  // it doesn't exist, so fall back to the closest interface the environment
+  // implements. `initEvent` below assigns the members either way.
+  // https://github.com/ariakit/ariakit/issues/7178
+  const PointerEventConstructor =
+    defaultView?.PointerEvent ?? defaultView?.MouseEvent ?? MouseEvent;
   const eventOptions: PointerEventInit = {
     bubbles: true,
     cancelable: true,

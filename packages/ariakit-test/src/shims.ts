@@ -64,14 +64,6 @@ function applyBrowserShims() {
     window.ClipboardEvent = class ClipboardEvent extends Event {};
   }
 
-  if (
-    typeof window.PointerEvent === "undefined" &&
-    typeof MouseEvent !== "undefined"
-  ) {
-    // @ts-expect-error
-    window.PointerEvent = class PointerEvent extends MouseEvent {};
-  }
-
   polyfillMouseEventMembers();
   patchKeyboardEventModifierState();
 
