@@ -7,8 +7,11 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-export const PREVIEW_HYDRATED_ATTRIBUTE = "data-preview-hydrated";
+export function isPreviewHydrated() {
+  if (!document.querySelector("astro-island")) return true;
+  return document.documentElement.dataset.previewHydrated != null;
+}
 
 export function markPreviewHydrated() {
-  document.documentElement.setAttribute(PREVIEW_HYDRATED_ATTRIBUTE, "");
+  document.documentElement.dataset.previewHydrated = "";
 }

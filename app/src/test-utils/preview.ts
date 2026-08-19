@@ -8,7 +8,7 @@ import {
   getPreviewFrameworksSync,
   resolvePreviewRoots,
 } from "#app/lib/preview-discovery.ts";
-import { PREVIEW_HYDRATED_ATTRIBUTE } from "#app/lib/preview-hydration.ts";
+import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import { test } from "./fixtures.ts";
 
@@ -98,12 +98,7 @@ export function withFramework(
         // commits. JavaScript-disabled previews skip the check, while Next.js
         // previews contain no Astro island and pass through it immediately.
         if (javaScriptEnabled) {
-          await page.waitForFunction(
-            (attribute) =>
-              !document.querySelector("astro-island") ||
-              document.documentElement.hasAttribute(attribute),
-            PREVIEW_HYDRATED_ATTRIBUTE,
-          );
+          await page.waitForFunction(isPreviewHydrated);
         }
       });
       return callback({ id, framework, query, test });
