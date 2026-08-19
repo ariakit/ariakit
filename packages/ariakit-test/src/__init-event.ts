@@ -39,6 +39,22 @@ function sanitizeString(value: string | undefined) {
   return value ?? "";
 }
 
+// `PointerEventInit` defaults the contact geometry to 1x1, and Pointer Events
+// requires 1 from a device that doesn't report geometry of its own, like a mouse.
+// https://w3c.github.io/pointerevents/#dom-pointerevent-width
+function sanitizeContactSize(size: number | undefined) {
+  return size ?? 1;
+}
+
+// Pointer Events requires π/2, a transducer perpendicular to the screen, from a
+// device that reports no tilt. It has no dictionary default, and happy-dom's
+// constructor uses 0, an angle no engine produces for a mouse. The tilt pair is
+// left unconverted, tracked in https://github.com/ariakit/ariakit/issues/7185.
+// https://w3c.github.io/pointerevents/#dom-pointerevent-altitudeangle
+function sanitizeAltitudeAngle(angle: number | undefined) {
+  return angle ?? Math.PI / 2;
+}
+
 function initClipboardEvent(
   event: ClipboardEvent,
   { clipboardData }: ClipboardEventInit,
@@ -186,19 +202,23 @@ function initPointerEvent(
     tiltX,
     tiltY,
     twist,
+    altitudeAngle,
+    azimuthAngle,
     isPrimary,
     pointerType = "mouse",
   }: PointerEventInit,
 ) {
   assignProps(event, {
     pointerId: sanitizeNumber(pointerId),
-    width: sanitizeNumber(width),
-    height: sanitizeNumber(height),
+    width: sanitizeContactSize(width),
+    height: sanitizeContactSize(height),
     pressure: sanitizeNumber(pressure),
     tangentialPressure: sanitizeNumber(tangentialPressure),
     tiltX: sanitizeNumber(tiltX),
     tiltY: sanitizeNumber(tiltY),
     twist: sanitizeNumber(twist),
+    altitudeAngle: sanitizeAltitudeAngle(altitudeAngle),
+    azimuthAngle: sanitizeNumber(azimuthAngle),
     isPrimary: !!isPrimary,
     pointerType: pointerType,
   });
