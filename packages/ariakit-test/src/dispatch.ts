@@ -230,10 +230,15 @@ const events = eventNames.reduce((events, eventName) => {
  *
  * A pointer event built by name reports the contact size and transducer angle
  * browsers report for a device with neither, so `width` and `height` are `1` and
- * `altitudeAngle` is a right angle. The members describing a gesture, such as
+ * `altitudeAngle` is a right angle. Supplying only the tilt or spherical angle
+ * pair derives the other pair. The members describing a gesture, such as
  * `pressure` and `isPrimary`, keep their defaults here; the higher-level helpers
  * fill those in. An event you construct yourself keeps whatever its constructor
  * gave it.
+ *
+ * Mouse and pointer events built by name derive `pageX` and `pageY` from the
+ * client coordinates and target window scroll, and derive `which` from `button`.
+ * The layout-dependent `offsetX` and `offsetY` keep the environment's values.
  *
  * `click`, `auxclick`, and `contextmenu` are built as `PointerEvent`, the way
  * browsers dispatch them, so they accept and report pointer properties such as

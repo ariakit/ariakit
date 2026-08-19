@@ -101,9 +101,29 @@ test.each(["document", "window"] as const)(
   },
 );
 
+// https://github.com/ariakit/ariakit/issues/7197
+test("dispatch.mouseDown derives page coordinates from the target window", async () => {
+  using fixture = createIframeButton();
+  const { button, iframeWindow } = fixture;
+  Object.defineProperties(iframeWindow, {
+    scrollX: { configurable: true, value: 40 },
+    scrollY: { configurable: true, value: 50 },
+  });
+  let event: MouseEvent | undefined;
+  button.addEventListener("mousedown", (receivedEvent) => {
+    event = receivedEvent;
+  });
+  await dispatch.mouseDown(button, { clientX: 11, clientY: 12 });
+  expect({ pageX: event?.pageX, pageY: event?.pageY }).toEqual({
+    pageX: 51,
+    pageY: 62,
+  });
+});
+
 // The pointer members reach a cross-realm event through the type fallback
 // `isPointerEvent` already applies, so this pins that the realm-resolved
 // interface test doesn't take them away again.
+// https://github.com/ariakit/ariakit/issues/7185
 test.each([
   ["pointerDown", "pointerdown"],
   ["click", "click"],
@@ -130,7 +150,7 @@ test.each([
     }).toEqual({
       ambientInstance: false,
       iframeInstance: true,
-      altitudeAngle: Math.PI / 2,
+      altitudeAngle: Math.PI / 2 - Math.PI / 6,
       azimuthAngle: 0,
       width: 1,
       height: 1,

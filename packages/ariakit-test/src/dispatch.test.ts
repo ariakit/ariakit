@@ -481,6 +481,30 @@ test("dispatch.drop keeps the member only DragEvent defines", async () => {
   }
 });
 
+// https://github.com/ariakit/ariakit/issues/7197
+test("dispatch.mouseDown reports the computed mouse members", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  let event: MouseEvent | undefined;
+  button.addEventListener("mousedown", (receivedEvent) => {
+    event = receivedEvent;
+  });
+  try {
+    await dispatch.mouseDown(button, {
+      clientX: 11,
+      clientY: 12,
+      button: 2,
+    });
+    expect({
+      pageX: event?.pageX,
+      pageY: event?.pageY,
+      which: event?.which,
+    }).toEqual({ pageX: 11, pageY: 12, which: 3 });
+  } finally {
+    button.remove();
+  }
+});
+
 // Keyboard parity covers the `modifier*` init members too, because the
 // environment records them for a caller-built event.
 // https://github.com/ariakit/ariakit/issues/7166
@@ -626,6 +650,90 @@ test("dispatch.pointerDown preserves provided transducer angles", async () => {
   } finally {
     button.remove();
   }
+});
+
+async function getPointerDownEvent(options?: PointerEventInit) {
+  const button = document.createElement("button");
+  document.body.append(button);
+  let event: PointerEvent | undefined;
+  button.addEventListener("pointerdown", (receivedEvent) => {
+    event = receivedEvent;
+  });
+  try {
+    await dispatch.pointerDown(button, options);
+    return event;
+  } finally {
+    button.remove();
+  }
+}
+
+// https://github.com/ariakit/ariakit/issues/7185
+test("dispatch.pointerDown derives transducer angles from tilt", async () => {
+  const event = await getPointerDownEvent({ tiltX: 30 });
+  expect(event?.tiltX).toBe(30);
+  expect(event?.tiltY).toBe(0);
+  expect(event?.altitudeAngle).toBeCloseTo(Math.PI / 3);
+  expect(event?.azimuthAngle).toBe(0);
+});
+
+// https://github.com/ariakit/ariakit/issues/7185
+test("dispatch.pointerDown derives tilt from transducer angles", async () => {
+  const event = await getPointerDownEvent({
+    altitudeAngle: 0.5,
+    azimuthAngle: 1,
+  });
+  expect(event?.tiltX).toBe(45);
+  expect(event?.tiltY).toBe(57);
+  expect(event?.altitudeAngle).toBe(0.5);
+  expect(event?.azimuthAngle).toBe(1);
+});
+
+// Web IDL converts signed zero to positive zero when it stores the rounded
+// result as a `long`.
+// https://github.com/ariakit/ariakit/issues/7185
+test("dispatch.pointerDown normalizes rounded tilt to positive zero", async () => {
+  const event = await getPointerDownEvent({
+    altitudeAngle: 0.5,
+    azimuthAngle: 2 * Math.PI,
+  });
+  expect(event?.tiltY).toBe(0);
+});
+
+// At altitude zero, the azimuth selects an axis or quadrant whose tilt is at
+// the corresponding 90-degree boundary.
+// https://github.com/ariakit/ariakit/issues/7185
+test.each([
+  [0, 90, 0],
+  [Math.PI / 2, 0, 90],
+  [Math.PI, -90, 0],
+  [(3 * Math.PI) / 2, 0, -90],
+  [Math.PI / 4, 90, 90],
+  [(3 * Math.PI) / 4, -90, 90],
+  [(5 * Math.PI) / 4, -90, -90],
+  [(7 * Math.PI) / 4, 90, -90],
+] as const)(
+  "dispatch.pointerDown derives boundary tilt at azimuth %s",
+  async (azimuthAngle, tiltX, tiltY) => {
+    const event = await getPointerDownEvent({ altitudeAngle: 0, azimuthAngle });
+    expect([event?.tiltX, event?.tiltY]).toEqual([tiltX, tiltY]);
+  },
+);
+
+// Chromium and Firefox preserve both explicit pairs, so conversion only fills
+// a pair the caller omitted completely.
+test("dispatch.pointerDown preserves both provided orientation pairs", async () => {
+  const event = await getPointerDownEvent({
+    tiltX: 10,
+    tiltY: 20,
+    altitudeAngle: 0.5,
+    azimuthAngle: 1,
+  });
+  expect({
+    tiltX: event?.tiltX,
+    tiltY: event?.tiltY,
+    altitudeAngle: event?.altitudeAngle,
+    azimuthAngle: event?.azimuthAngle,
+  }).toEqual({ tiltX: 10, tiltY: 20, altitudeAngle: 0.5, azimuthAngle: 1 });
 });
 
 // happy-dom aliases `CompositionEvent` to `Event`, so a composition event is an
