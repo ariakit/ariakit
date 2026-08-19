@@ -11,6 +11,10 @@ test("constructs clipboard events from ClipboardEventInit", () => {
   const event = new ClipboardEvent("paste", { clipboardData });
   expect(event.clipboardData).toBe(clipboardData);
   expect(new ClipboardEvent("paste").clipboardData).toBeNull();
+  // Web IDL converts a null dictionary to an empty dictionary.
+  // https://webidl.spec.whatwg.org/#es-dictionary
+  // @ts-expect-error
+  expect(new ClipboardEvent("paste", null).clipboardData).toBeNull();
 });
 
 test("leaves an environment that already implements mouse event members alone", () => {

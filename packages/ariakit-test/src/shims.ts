@@ -63,9 +63,10 @@ function applyBrowserShims() {
     window.ClipboardEvent = class ClipboardEvent extends Event {
       #clipboardData: DataTransfer | null;
 
-      constructor(type: string, eventInitDict: ClipboardEventInit = {}) {
-        super(type, eventInitDict);
-        this.#clipboardData = eventInitDict.clipboardData ?? null;
+      constructor(type: string, eventInitDict: ClipboardEventInit | null = {}) {
+        const eventInit = eventInitDict ?? {};
+        super(type, eventInit);
+        this.#clipboardData = eventInit.clipboardData ?? null;
       }
 
       get clipboardData() {
