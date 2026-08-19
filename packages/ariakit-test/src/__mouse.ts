@@ -35,6 +35,38 @@ export function omitButtons(options?: PointerEventInit): PointerEventInit {
   return stepOptions;
 }
 
+// A pointing device with no pressure sensor, which is what these helpers
+// simulate, reports 0.5 while it is in the active buttons state and 0 otherwise.
+// https://w3c.github.io/pointerevents/#dom-pointerevent-pressure
+function getPressure(buttons: number) {
+  return buttons === 0 ? 0 : 0.5;
+}
+
+// Neither `dispatch` nor the phase builders below can own these, because
+// `click.ts` and `select.ts` build `click`, `auxclick`, and `contextmenu` from
+// `getPressOptions` and `getReleaseOptions` directly, and Pointer Events resets
+// every pointer attribute on those three except `pointerId` and `pointerType`.
+// Unlike the contact size and transducer angle `dispatch` defaults, these two
+// reset to something other than what a gesture derives. Only the helpers that
+// fire pointer events apply them.
+// https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
+
+/**
+ * Fills in the members describing the pointer a phase simulates: these helpers
+ * drive one pointer, which is the primary pointer of its type, and the pressure
+ * follows the `buttons` the phase options already describe.
+ * https://w3c.github.io/pointerevents/#dom-pointerevent-isprimary
+ */
+export function getPointerOptions(
+  options?: PointerEventInit,
+): PointerEventInit {
+  return {
+    ...options,
+    pressure: options?.pressure ?? getPressure(options?.buttons ?? 0),
+    isPrimary: options?.isPrimary ?? true,
+  };
+}
+
 /**
  * Returns the event properties for moving the pointer onto the element, before
  * any button is pressed. One init feeds both the pointer and the mouse events,
