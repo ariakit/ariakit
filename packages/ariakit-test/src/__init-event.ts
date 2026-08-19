@@ -66,16 +66,24 @@ function initUIEvent(event: UIEvent, { view, detail }: UIEventInit) {
   });
 }
 
-// Everything `EventModifierInit` adds to `UIEventInit`, which is exactly the
-// members that name a modifier.
-type ModifierInitMember = Exclude<keyof EventModifierInit, keyof UIEventInit>;
+// UI Events defines these two, but no engine reports either, even when the
+// event is built with the member: measured on Chromium 151, Firefox 153, and
+// WebKit 26.5, where `new KeyboardEvent("keydown", { modifierSuper: true })`
+// answers false. Every other member below is reported by at least one of the
+// three. jsdom reports these two, and is the outlier.
+type UnreportedModifierInitMember = "modifierHyper" | "modifierSuper";
+
+// What `EventModifierInit` adds to `UIEventInit`, minus those two, which is
+// exactly the members that name a modifier an engine reports.
+type ModifierInitMember = Exclude<
+  keyof EventModifierInit,
+  keyof UIEventInit | UnreportedModifierInitMember
+>;
 
 // The modifier name `getModifierState` answers to, for each of those members.
-// `satisfies` makes the compiler reject a table that misses one, which is how
-// the previous table silently lost `modifierHyper` and `modifierSuper`. In a
-// test environment the keyboard shim answers a caller-built event from the same
-// members, so both forms of `dispatch` agree there. A real browser gets no
-// shim, and reports neither `Hyper` nor `Super`.
+// `satisfies` makes the compiler reject a table that misses one, so a member
+// the type above keeps cannot be dropped silently, and one it excludes cannot
+// be added back without revisiting that decision.
 // https://w3c.github.io/uievents/#event-modifier-initializers
 const modifierNameByInitMember = {
   altKey: "Alt",
@@ -86,10 +94,8 @@ const modifierNameByInitMember = {
   modifierCapsLock: "CapsLock",
   modifierFn: "Fn",
   modifierFnLock: "FnLock",
-  modifierHyper: "Hyper",
   modifierNumLock: "NumLock",
   modifierScrollLock: "ScrollLock",
-  modifierSuper: "Super",
   modifierSymbol: "Symbol",
   modifierSymbolLock: "SymbolLock",
 } as const satisfies Record<ModifierInitMember, string>;

@@ -154,7 +154,9 @@ test("dispatch(element, event) reports the same standard modifiers and x/y as th
 });
 
 // UI Events specifies one modifier name per `EventModifierInit` member, and an
-// unrecognized name reports false.
+// unrecognized name reports false. `modifierHyper` and `modifierSuper` are left
+// out, since no engine reports either; the keyboard parity test below covers
+// them instead.
 // https://w3c.github.io/uievents/#event-modifier-initializers
 // https://github.com/ariakit/ariakit/issues/7168
 const modifierNameByInitMember = {
@@ -166,10 +168,8 @@ const modifierNameByInitMember = {
   modifierCapsLock: "CapsLock",
   modifierFn: "Fn",
   modifierFnLock: "FnLock",
-  modifierHyper: "Hyper",
   modifierNumLock: "NumLock",
   modifierScrollLock: "ScrollLock",
-  modifierSuper: "Super",
   modifierSymbol: "Symbol",
   modifierSymbolLock: "SymbolLock",
 } as const satisfies Record<string, string>;
@@ -367,8 +367,8 @@ test("dispatch(element, event) reports the same modifiers as the named form for 
     altKey: true,
     modifierCapsLock: true,
     // `Hyper` and `Super` are the two members no engine reports even when the
-    // event is built with them. UI Events defines both and jsdom answers both,
-    // and both paths record them, so the parity below holds.
+    // event is built with them, so neither path records them and both report
+    // false below. Recording them on one side only would break the parity.
     modifierHyper: true,
     modifierSuper: true,
   };
@@ -394,8 +394,8 @@ test("dispatch(element, event) reports the same modifiers as the named form for 
       altGraph: false,
       capsLock: true,
       shift: false,
-      hyper: true,
-      super: true,
+      hyper: false,
+      super: false,
     });
   } finally {
     input.remove();

@@ -116,22 +116,16 @@ const standardModifierFlags = new Map<
 ]);
 
 // The modifier keys an event carries only as an `EventModifierInit` member.
-// This covers every member UI Events defines, including `Hyper` and `Super`.
-// Those two are the only ones no engine reports even when the event is built
-// with them: measured on Chromium 151, Firefox 153, and WebKit 26.5, where
-// `new KeyboardEvent("keydown", { modifierSuper: true })` still answers false.
-// jsdom answers true, as the specification requires, and this follows jsdom, so
-// both forms of `dispatch` agree. The dispatch layer maps the same set.
+// This mirrors `modifierNameByInitMember` in `__init-event.ts`, which also
+// leaves out `modifierHyper` and `modifierSuper` and records why.
 // https://w3c.github.io/uievents/#event-modifier-initializers
 const initOnlyModifierMembers = new Map<string, keyof EventModifierInit>([
   ["AltGraph", "modifierAltGraph"],
   ["CapsLock", "modifierCapsLock"],
   ["Fn", "modifierFn"],
   ["FnLock", "modifierFnLock"],
-  ["Hyper", "modifierHyper"],
   ["NumLock", "modifierNumLock"],
   ["ScrollLock", "modifierScrollLock"],
-  ["Super", "modifierSuper"],
   ["Symbol", "modifierSymbol"],
   ["SymbolLock", "modifierSymbolLock"],
 ]);
