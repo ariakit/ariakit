@@ -8,6 +8,18 @@ import "./shims.ts";
 
 const selectionText = "sample paragraph text";
 
+// Records each press event as `type button buttons`.
+function recordPressEvents(element: Element) {
+  const events: string[] = [];
+  for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup"]) {
+    element.addEventListener(type, (event) => {
+      const { button, buttons } = event as MouseEvent;
+      events.push(`${event.type} ${button} ${buttons}`);
+    });
+  }
+  return events;
+}
+
 beforeEach(() => {
   document.body.innerHTML = `
     <p>Keep this ${selectionText} selected.</p>
@@ -186,14 +198,7 @@ test("mouseDown and mouseUp report the held button", async () => {
   document.body.innerHTML = `<button type="button">Resize</button>`;
 
   const button = q.button.ensure("Resize");
-  const events: string[] = [];
-
-  for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup"]) {
-    button.addEventListener(type, (event) => {
-      const { button: pressed, buttons } = event as MouseEvent;
-      events.push(`${event.type} ${pressed} ${buttons}`);
-    });
-  }
+  const events = recordPressEvents(button);
 
   const heldButtons = [
     [0, 1],
@@ -217,4 +222,24 @@ test("mouseDown and mouseUp report the held button", async () => {
       `mouseup ${pressed} 0`,
     ]);
   }
+});
+
+// A chorded gesture holds buttons that can't be derived from the one being
+// pressed, so an explicit `buttons` wins over the per-phase default. Here the
+// primary button stays held while the secondary one is pressed and released.
+test("mouseDown and mouseUp keep an explicit buttons value", async () => {
+  document.body.innerHTML = `<button type="button">Resize</button>`;
+
+  const button = q.button.ensure("Resize");
+  const events = recordPressEvents(button);
+
+  await mouseDown(button, { button: 2, buttons: 3 });
+  await mouseUp(button, { button: 2, buttons: 1 });
+
+  expect(events).toEqual([
+    "pointerdown 2 3",
+    "mousedown 2 3",
+    "pointerup 2 1",
+    "mouseup 2 1",
+  ]);
 });

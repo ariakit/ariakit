@@ -54,7 +54,8 @@ function shouldClearSelection(element: Element) {
  * This is one step of a full `click`; use it directly to test press-and-hold
  * behavior. Pass `options` to set event properties such as modifier keys, or
  * `button` to press another mouse button. The events report the pressed button
- * in `buttons`, like a browser does.
+ * in `buttons`, like a browser does, unless you pass `buttons` yourself to
+ * describe a chorded gesture.
  * @example
  * ```ts
  * await mouseDown(q.button("Resize"));

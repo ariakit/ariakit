@@ -14,7 +14,8 @@ import { dispatch } from "./dispatch.ts";
  * This is the counterpart to `mouseDown` and one step of a full `click`. Pass
  * `options` to set event properties such as modifier keys, or `button` to
  * release another mouse button. The events report no button still held down in
- * `buttons`, like a browser does.
+ * `buttons`, like a browser does, unless you pass `buttons` yourself to describe
+ * the buttons a chorded gesture keeps held.
  * @example
  * ```ts
  * await mouseDown(q.button("Resize"));
