@@ -174,6 +174,27 @@ function baseDispatch(element: Target, event: Event): Promise<boolean> {
 // https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
 const clickFamilyInit = { bubbles: true, cancelable: true, composed: true };
 
+// `createEvent` resolves the constructor against the target's own window, so
+// the interface named below has to be probed on that window rather than on the
+// ambient global.
+function getTargetView(target: NonNullable<Target>) {
+  // `ownerDocument` first, because a form exposes its controls as named
+  // properties and one named `document` would answer the branch below. Neither
+  // happy-dom nor jsdom implements the form's `[LegacyOverrideBuiltIns]`, so
+  // this name still resolves through `Node.prototype` there; a browser does
+  // implement it, but `createEvent` resolves the window just as fragilely then.
+  // A `Document` reports `null` here and falls through to its own view.
+  // https://html.spec.whatwg.org/multipage/forms.html#the-form-element
+  if ("ownerDocument" in target && target.ownerDocument) {
+    return target.ownerDocument.defaultView;
+  }
+  if ("defaultView" in target) return target.defaultView;
+  // Through the document either way, since only `defaultView` is typed with the
+  // constructors a window carries.
+  if ("document" in target) return target.document.defaultView;
+  return null;
+}
+
 function createNamedEvent(
   eventName: DispatchEventType,
   element: NonNullable<Target>,
@@ -185,7 +206,13 @@ function createNamedEvent(
     eventName === "contextMenu"
   ) {
     return createEvent(eventName.toLowerCase(), element, options, {
-      EventType: "PointerEvent",
+      // Name the closest interface the environment implements. jsdom has
+      // `PointerEvent` only from v27 on, and falling back to `MouseEvent` there
+      // keeps the members it computes rather than dropping to a bare `Event`.
+      // https://github.com/ariakit/ariakit/issues/7178
+      EventType: getTargetView(element)?.PointerEvent
+        ? "PointerEvent"
+        : "MouseEvent",
       defaultInit: clickFamilyInit,
     });
   }
@@ -226,7 +253,8 @@ const events = eventNames.reduce((events, eventName) => {
  *
  * `click`, `auxclick`, and `contextmenu` are built as `PointerEvent`, the way
  * browsers dispatch them, so they accept and report pointer properties such as
- * `pointerType`.
+ * `pointerType`. An environment with no `PointerEvent` builds them as
+ * `MouseEvent` instead, and they report the same properties there.
  * @returns A promise that resolves to `false` when the event's default action was
  * prevented with `event.preventDefault()`, and `true` otherwise.
  * @example

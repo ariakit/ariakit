@@ -30,6 +30,14 @@ import { click, press, type } from "@ariakit/test";
 
 The `@ariakit/test/react` entry point renders React components for testing, and the `@ariakit/test/playwright` entry point provides query helpers for Playwright tests.
 
+### Test environment
+
+The helpers expect a DOM that implements `PointerEvent`, which means happy-dom, jsdom v27 or later, or a real browser.
+
+They still run on jsdom 26, which `jest-environment-jsdom` 30 depends on. Every event the helpers fire there carries the same mouse, modifier, and pointer members it carries anywhere else, so a listener reads the same `clientX`, `button`, `pointerId`, and modifier state it would in a browser. `click`, `auxclick`, and `contextmenu` are built from `MouseEvent` there rather than `PointerEvent`, which also keeps the members a browser computes.
+
+The `pointer*` events are the ones that environment cannot build from an interface of their own, so they come from `Event`: they are not `instanceof MouseEvent` there, and `pageX`, `pageY`, `offsetX`, `offsetY`, and `which` are undefined on them. The `PointerEvent` global is absent altogether, so both `new PointerEvent()` and `event instanceof PointerEvent` throw a `ReferenceError`.
+
 <!-- ariakit-docs:start -->
 
 ## API reference
@@ -123,7 +131,7 @@ Unlike higher-level helpers such as `click` and `type`, this fires a single even
 
 A pointer event built by name reports the contact size and transducer angle browsers report for a device with neither, so `width` and `height` are `1` and `altitudeAngle` is a right angle. The members describing a gesture, such as `pressure` and `isPrimary`, keep their defaults here; the higher-level helpers fill those in. An event you construct yourself keeps whatever its constructor gave it.
 
-`click`, `auxclick`, and `contextmenu` are built as `PointerEvent`, the way browsers dispatch them, so they accept and report pointer properties such as `pointerType`.
+`click`, `auxclick`, and `contextmenu` are built as `PointerEvent`, the way browsers dispatch them, so they accept and report pointer properties such as `pointerType`. An environment with no `PointerEvent` builds them as `MouseEvent` instead, and they report the same properties there.
 
 Returns: A promise that resolves to `false` when the event's default action was prevented with `event.preventDefault()`, and `true` otherwise.
 

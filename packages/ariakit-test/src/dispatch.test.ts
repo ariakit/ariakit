@@ -126,6 +126,29 @@ test("dispatch builds the click-family events as PointerEvent", async () => {
   }
 });
 
+// The interface above is named after probing the target's own window, and a
+// form exposes its controls as named properties, so one named `document`
+// answers `"document" in form`. Probing through that name would find the
+// control instead and fall back to the weaker interface.
+// https://github.com/ariakit/ariakit/issues/7178
+// https://webidl.spec.whatwg.org/#legacy-platform-object
+test("dispatch.click builds a PointerEvent for a form with a control named document", async () => {
+  const form = document.createElement("form");
+  form.innerHTML = "<input name='document'>";
+  document.body.append(form);
+  const received: Event[] = [];
+  form.addEventListener("click", (event) => {
+    received.push(event);
+  });
+  try {
+    await dispatch.click(form, { pointerType: "pen" });
+    expect(received[0]).toBeInstanceOf(PointerEvent);
+    expect((received[0] as PointerEvent).pointerType).toBe("pen");
+  } finally {
+    form.remove();
+  }
+});
+
 // `dispatch` fires the event the caller describes. Dropping the attributes a
 // browser resets on a click is the job of the gesture helpers, which know the
 // press those attributes came from.
