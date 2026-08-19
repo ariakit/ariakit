@@ -188,7 +188,7 @@ function mouseDown(
 
 Presses a pointer button down on an element, firing `pointerdown` and `mousedown` and moving focus the way a browser would. Disabled elements still receive `pointerdown` but not `mousedown`, and focus falls back to the closest focusable ancestor when the target itself isn't focusable.
 
-This is one step of a full `click`; use it directly to test press-and-hold behavior. Pass `options` to set event properties such as modifier keys, or `button` to press another mouse button. The events report the pressed button in `buttons`, like a browser does, unless you pass `buttons` yourself to describe a chorded gesture.
+This is one step of a full `click`; use it directly to test press-and-hold behavior. Pass `options` to set event properties such as modifier keys, or `button` to press another mouse button. The events report the pressed button in `buttons`, like a browser does, unless you pass `buttons` yourself to describe a chorded gesture. When another button is already held, a browser fires `pointermove` instead of `pointerdown`. This helper fires `pointerdown` in both cases.
 
 Example:
 
@@ -213,7 +213,7 @@ function mouseUp(
 
 Releases a pointer button on an element, firing `pointerup` and `mouseup`. Disabled elements still receive `pointerup` but not `mouseup`.
 
-This is the counterpart to `mouseDown` and one step of a full `click`. Pass `options` to set event properties such as modifier keys, or `button` to release another mouse button. The events report no button still held down in `buttons`, like a browser does, unless you pass `buttons` yourself to describe the buttons a chorded gesture keeps held.
+This is the counterpart to `mouseDown` and one step of a full `click`. Pass `options` to set event properties such as modifier keys, or `button` to release another mouse button. The events report no button still held down in `buttons`, like a browser does, unless you pass `buttons` yourself to describe the buttons a chorded gesture keeps held. When another button stays held, a browser fires `pointermove` instead of `pointerup`. This helper fires `pointerup` in both cases.
 
 Example:
 

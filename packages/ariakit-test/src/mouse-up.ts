@@ -15,7 +15,9 @@ import { dispatch } from "./dispatch.ts";
  * `options` to set event properties such as modifier keys, or `button` to
  * release another mouse button. The events report no button still held down in
  * `buttons`, like a browser does, unless you pass `buttons` yourself to describe
- * the buttons a chorded gesture keeps held.
+ * the buttons a chorded gesture keeps held. When another button stays held, a
+ * browser fires `pointermove` instead of `pointerup`. This helper fires
+ * `pointerup` in both cases.
  * @example
  * ```ts
  * await mouseDown(q.button("Resize"));

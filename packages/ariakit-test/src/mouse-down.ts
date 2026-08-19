@@ -55,7 +55,9 @@ function shouldClearSelection(element: Element) {
  * behavior. Pass `options` to set event properties such as modifier keys, or
  * `button` to press another mouse button. The events report the pressed button
  * in `buttons`, like a browser does, unless you pass `buttons` yourself to
- * describe a chorded gesture.
+ * describe a chorded gesture. When another button is already held, a browser
+ * fires `pointermove` instead of `pointerdown`. This helper fires `pointerdown`
+ * in both cases.
  * @example
  * ```ts
  * await mouseDown(q.button("Resize"));
