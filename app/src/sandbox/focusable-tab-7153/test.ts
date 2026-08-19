@@ -16,8 +16,11 @@ async function middleClickActivates(element: Element) {
   };
   const { ownerDocument } = element;
   ownerDocument.addEventListener("auxclick", record, true);
-  await click(element, { button: 1 });
-  ownerDocument.removeEventListener("auxclick", record, true);
+  try {
+    await click(element, { button: 1 });
+  } finally {
+    ownerDocument.removeEventListener("auxclick", record, true);
+  }
   expect(auxClicks, "no auxclick landed on the element").toHaveLength(1);
   return auxClicks.every((event) => !event.defaultPrevented);
 }
