@@ -4,6 +4,7 @@ import { createEvent, fireEvent } from "@testing-library/dom";
 import { initEvent } from "./__init-event.ts";
 import {
   flushMicrotasks,
+  getOwnerWindow,
   isHappyDOM,
   withWindowEvent,
   wrapAsync,
@@ -174,27 +175,6 @@ function baseDispatch(element: Target, event: Event): Promise<boolean> {
 // https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
 const clickFamilyInit = { bubbles: true, cancelable: true, composed: true };
 
-// `createEvent` resolves the constructor against the target's own window, so
-// the interface named below has to be probed on that window rather than on the
-// ambient global.
-function getTargetView(target: NonNullable<Target>) {
-  // `ownerDocument` first, because a form exposes its controls as named
-  // properties and one named `document` would answer the branch below. Neither
-  // happy-dom nor jsdom implements the form's `[LegacyOverrideBuiltIns]`, so
-  // this name still resolves through `Node.prototype` there; a browser does
-  // implement it, but `createEvent` resolves the window just as fragilely then.
-  // A `Document` reports `null` here and falls through to its own view.
-  // https://html.spec.whatwg.org/multipage/forms.html#the-form-element
-  if ("ownerDocument" in target && target.ownerDocument) {
-    return target.ownerDocument.defaultView;
-  }
-  if ("defaultView" in target) return target.defaultView;
-  // Through the document either way, since only `defaultView` is typed with the
-  // constructors a window carries.
-  if ("document" in target) return target.document.defaultView;
-  return null;
-}
-
 function createNamedEvent(
   eventName: DispatchEventType,
   element: NonNullable<Target>,
@@ -210,7 +190,7 @@ function createNamedEvent(
       // `PointerEvent` only from v27 on, and falling back to `MouseEvent` there
       // keeps the members it computes rather than dropping to a bare `Event`.
       // https://github.com/ariakit/ariakit/issues/7178
-      EventType: getTargetView(element)?.PointerEvent
+      EventType: getOwnerWindow(element)?.PointerEvent
         ? "PointerEvent"
         : "MouseEvent",
       defaultInit: clickFamilyInit,
@@ -225,7 +205,7 @@ const events = eventNames.reduce((events, eventName) => {
   events[eventName] = (element, options) => {
     invariant(element, `Unable to dispatch ${eventName} on null element`);
     const event = createNamedEvent(eventName, element, options);
-    initEvent(event, options);
+    initEvent(event, element, options);
     return baseDispatch(element, event);
   };
   return events;

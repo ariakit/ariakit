@@ -111,7 +111,7 @@ function createKeyboardClickEvent(
   // Run the same initialization a named dispatcher does, so this click reports
   // the pointer members every other one does instead of whatever the
   // environment's constructor happens to store.
-  initEvent(event, eventOptions);
+  initEvent(event, element, eventOptions);
   return event;
 }
 

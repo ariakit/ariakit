@@ -609,3 +609,65 @@ test("dispatch.pointerDown preserves provided transducer angles", async () => {
     button.remove();
   }
 });
+
+// happy-dom aliases `CompositionEvent` to `Event`, so a composition event is an
+// instance of no interface `initEvent` tests for, and used to reach its
+// listeners with none of the members the interface defines.
+// https://github.com/ariakit/ariakit/issues/7174
+const compositionDispatchers = [
+  ["compositionStart", "compositionstart"],
+  ["compositionUpdate", "compositionupdate"],
+  ["compositionEnd", "compositionend"],
+] as const;
+
+function readCompositionMembers(event: CompositionEvent | undefined) {
+  return { data: event?.data, detail: event?.detail, view: event?.view };
+}
+
+test.each(compositionDispatchers)(
+  "dispatch.%s reports the CompositionEvent defaults",
+  async (dispatcher, type) => {
+    const input = document.createElement("input");
+    document.body.append(input);
+    let event: CompositionEvent | undefined;
+    input.addEventListener(type, (receivedEvent) => {
+      event = receivedEvent;
+    });
+    try {
+      await dispatch[dispatcher](input);
+      expect(readCompositionMembers(event)).toEqual({
+        data: "",
+        detail: 0,
+        view: null,
+      });
+    } finally {
+      input.remove();
+    }
+  },
+);
+
+test.each(compositionDispatchers)(
+  "dispatch.%s preserves the provided CompositionEvent members",
+  async (dispatcher, type) => {
+    const input = document.createElement("input");
+    document.body.append(input);
+    let event: CompositionEvent | undefined;
+    input.addEventListener(type, (receivedEvent) => {
+      event = receivedEvent;
+    });
+    try {
+      await dispatch[dispatcher](input, {
+        data: "ni",
+        detail: 3,
+        view: window,
+      });
+      expect(readCompositionMembers(event)).toEqual({
+        data: "ni",
+        detail: 3,
+        view: window,
+      });
+    } finally {
+      input.remove();
+    }
+  },
+);
