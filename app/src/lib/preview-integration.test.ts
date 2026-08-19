@@ -64,23 +64,41 @@ test("tracks whether generated preview code changes", async () => {
   expect(second.changed).toBe(false);
 });
 
-test("removes stale preview wrappers", async () => {
+test("removes stale generated preview files", async () => {
   const dir = await createDir();
   const codegenDir = join(dir, "codegen");
   const previewFile = join(codegenDir, "previews/menu/preview.astro");
   const contentFile = join(codegenDir, "previews/menu/preview.mdx");
-  const clientFile = join(codegenDir, "previews/menu/preview.react.tsx");
+  const clientFile = join(codegenDir, "previews/menu/preview.client.react.tsx");
+  const futureClientFile = join(
+    codegenDir,
+    "previews/menu/preview.client.vue.vue",
+  );
+  const legacyClientFile = join(codegenDir, "previews/menu/preview.react.tsx");
+  const preview = getPreview(dir);
 
   await writePreviewCodegen({
     codegenDir,
-    previews: [getPreview(dir)],
+    previews: [preview],
   });
-  const result = await writePreviewCodegen({ codegenDir, previews: [] });
+  await fs.writeFile(futureClientFile, "");
+  await fs.writeFile(legacyClientFile, "");
+  const cleanupResult = await writePreviewCodegen({
+    codegenDir,
+    previews: [preview],
+  });
+
+  await expect(fs.access(clientFile)).resolves.toBeUndefined();
+  await expect(fs.access(futureClientFile)).rejects.toThrow();
+  await expect(fs.access(legacyClientFile)).rejects.toThrow();
+  expect(cleanupResult.changed).toBe(true);
+
+  const removalResult = await writePreviewCodegen({ codegenDir, previews: [] });
 
   await expect(fs.access(previewFile)).rejects.toThrow();
   await expect(fs.access(contentFile)).rejects.toThrow();
   await expect(fs.access(clientFile)).rejects.toThrow();
-  expect(result.changed).toBe(true);
+  expect(removalResult.changed).toBe(true);
 });
 
 test("wraps preview entries with framework hydration markers", async () => {
@@ -95,16 +113,20 @@ test("wraps preview entries with framework hydration markers", async () => {
   const previewDir = join(codegenDir, "previews/menu");
   const astro = await fs.readFile(join(previewDir, "preview.astro"), "utf8");
   const react = await fs.readFile(
-    join(previewDir, "preview.react.tsx"),
+    join(previewDir, "preview.client.react.tsx"),
     "utf8",
   );
   const solid = await fs.readFile(
-    join(previewDir, "preview.solid.tsx"),
+    join(previewDir, "preview.client.solid.tsx"),
     "utf8",
   );
 
-  expect(astro).toContain('import ReactExample from "./preview.react.tsx";');
-  expect(astro).toContain('import SolidExample from "./preview.solid.tsx";');
+  expect(astro).toContain(
+    'import ReactExample from "./preview.client.react.tsx";',
+  );
+  expect(astro).toContain(
+    'import SolidExample from "./preview.client.solid.tsx";',
+  );
   expect(react).toMatchInlineSnapshot(`
     "import { withPreviewHydration } from "#app/components/preview-hydration.react.tsx";
     import Preview from "../../../sandbox/menu/index.react.tsx";
