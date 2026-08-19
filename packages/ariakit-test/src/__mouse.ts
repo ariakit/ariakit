@@ -1,3 +1,5 @@
+import { getKeys } from "@ariakit/utils";
+
 // `MouseEvent.buttons` is a bitmask of the buttons currently held down, and its
 // bits are not ordered like `MouseEvent.button`: the secondary button is bit 1
 // while the auxiliary button is bit 2. Pointer Events defines the whole mapping,
@@ -42,18 +44,37 @@ export function omitButtons(options?: PointerEventInit): PointerEventInit {
   return omit(options, ["buttons"]);
 }
 
+type PointerIdentityAttribute = "pointerId" | "pointerType" | "isPrimary";
+
+type ContactAttribute = Exclude<
+  keyof PointerEventInit,
+  keyof MouseEventInit | PointerIdentityAttribute
+>;
+
 // The attributes that describe the contact itself rather than the pointer that
-// made it. `isPrimary` is left out because it describes the pointer, and
-// Firefox and WebKit do carry it through (Chromium reports `false`).
-const contactAttributes = [
-  "width",
-  "height",
-  "pressure",
-  "tangentialPressure",
-  "tiltX",
-  "tiltY",
-  "twist",
-] as const;
+// made it. `isPrimary` is left out deliberately, not by that rule: the
+// specification resets every pointer attribute here except `pointerId` and
+// `pointerType`, and Chromium follows it, but Firefox and WebKit carry
+// `isPrimary` over, so a value the caller passes explicitly is kept.
+//
+// Keyed rather than listed so TypeScript requires every non-identity member. A
+// list silently missed the four below, and `PointerEventInit` keeps growing.
+// https://github.com/ariakit/ariakit/pull/7177#discussion_r3811185510
+const contactAttributes: Record<ContactAttribute, true> = {
+  width: true,
+  height: true,
+  pressure: true,
+  tangentialPressure: true,
+  tiltX: true,
+  tiltY: true,
+  twist: true,
+  altitudeAngle: true,
+  azimuthAngle: true,
+  coalescedEvents: true,
+  predictedEvents: true,
+};
+
+const contactAttributeKeys = getKeys(contactAttributes);
 
 /**
  * Drops the contact attributes, which don't survive into `click`, `auxclick`,
@@ -65,7 +86,7 @@ const contactAttributes = [
 export function omitContactAttributes(
   options?: PointerEventInit,
 ): PointerEventInit {
-  return omit(options, contactAttributes);
+  return omit(options, contactAttributeKeys);
 }
 
 /**

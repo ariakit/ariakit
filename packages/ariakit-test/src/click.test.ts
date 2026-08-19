@@ -260,17 +260,28 @@ test("click with the auxiliary button doesn't run activation behavior", async ()
 
 // Records the pointer members that separate the press from the event ending the
 // gesture, in the shape the expectations below were recorded in from Chromium,
-// Firefox, and WebKit through Playwright.
+// Firefox, and WebKit through Playwright. `altitudeAngle` is the exception:
+// `initPointerEvent` never touches it, so it only resets when the options
+// reaching the constructor drop it, and it then lands on happy-dom's default of
+// `0` where browsers report π/2. What the expectations pin is that it stops
+// reporting the press's value, not the value it resets to.
 // https://github.com/ariakit/ariakit/issues/7162
+// https://github.com/ariakit/ariakit/issues/7172
 function recordPointerMembers(element: Element, types: string[]) {
   const events: string[] = [];
   for (const type of types) {
     element.addEventListener(type, (event) => {
-      const { pointerId, pointerType, isPrimary, pressure, tiltX } =
-        event as PointerEvent;
+      const {
+        pointerId,
+        pointerType,
+        isPrimary,
+        pressure,
+        tiltX,
+        altitudeAngle,
+      } = event as PointerEvent;
       const isPointerEvent = event instanceof PointerEvent;
       events.push(
-        `${event.type} ${isPointerEvent} ${pointerId} ${pointerType} ${isPrimary} ${pressure} ${tiltX}`,
+        `${event.type} ${isPointerEvent} ${pointerId} ${pointerType} ${isPrimary} ${pressure} ${tiltX} ${altitudeAngle}`,
       );
     });
   }
@@ -279,8 +290,8 @@ function recordPointerMembers(element: Element, types: string[]) {
 
 // Browsers carry only the causal pointer's identity onto the event that ends
 // the gesture: a pen press reporting `tiltX: 30` still produces a `click` with
-// `tiltX: 0`. `isPrimary` describes the pointer, so it carries over, the way
-// Firefox and WebKit report it (Chromium resets it).
+// `tiltX: 0`. `isPrimary` is the deliberate exception, kept because Firefox and
+// WebKit carry it over, while Chromium resets it as the specification requires.
 test("click carries only the pointer identity to the click event", async () => {
   document.body.innerHTML = `<button type="button">Submit</button>`;
 
@@ -292,12 +303,13 @@ test("click carries only the pointer identity to the click event", async () => {
     pointerType: "pen",
     isPrimary: true,
     pressure: 0.5,
+    altitudeAngle: 0.3,
     tiltX: 30,
   });
 
   expect(events).toEqual([
-    "pointerdown true 7 pen true 0.5 30",
-    "click true 7 pen true 0 0",
+    "pointerdown true 7 pen true 0.5 30 0.3",
+    "click true 7 pen true 0 0 0",
   ]);
 });
 
@@ -313,12 +325,13 @@ test("click with the auxiliary button carries the pointer identity to auxclick",
     pointerType: "pen",
     isPrimary: true,
     pressure: 0.5,
+    altitudeAngle: 0.3,
     tiltX: 30,
   });
 
   expect(events).toEqual([
-    "pointerdown true 7 pen true 0.5 30",
-    "auxclick true 7 pen true 0 0",
+    "pointerdown true 7 pen true 0.5 30 0.3",
+    "auxclick true 7 pen true 0 0 0",
   ]);
 });
 
@@ -340,10 +353,11 @@ test("click forwards the pointer identity from a label to its control", async ()
     pointerType: "pen",
     isPrimary: true,
     pressure: 0.5,
+    altitudeAngle: 0.3,
     tiltX: 30,
   });
 
-  expect(events).toEqual(["click true 7 pen true 0 0"]);
+  expect(events).toEqual(["click true 7 pen true 0 0 0"]);
   expect((checkbox as HTMLInputElement).checked).toBe(true);
 });
 
@@ -362,12 +376,13 @@ test("rightClick carries the pointer identity to contextmenu and auxclick", asyn
     pointerType: "pen",
     isPrimary: true,
     pressure: 0.5,
+    altitudeAngle: 0.3,
     tiltX: 30,
   });
 
   expect(events).toEqual([
-    "pointerdown true 7 pen true 0.5 30",
-    "contextmenu true 7 pen true 0 0",
-    "auxclick true 7 pen true 0 0",
+    "pointerdown true 7 pen true 0.5 30 0.3",
+    "contextmenu true 7 pen true 0 0 0",
+    "auxclick true 7 pen true 0 0 0",
   ]);
 });
