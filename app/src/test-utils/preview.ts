@@ -8,6 +8,7 @@ import {
   getPreviewFrameworksSync,
   resolvePreviewRoots,
 } from "#app/lib/preview-discovery.ts";
+import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import { test } from "./fixtures.ts";
 
@@ -92,12 +93,12 @@ export function withFramework(
     test.describe(framework, { tag: `@${framework}` }, () => {
       test.beforeEach(async ({ page, javaScriptEnabled }) => {
         await gotoAndSettle(page, `/${framework}/previews/${id}/`);
-        // Preview routes contain only eager client:load islands. JavaScript-
-        // disabled projects keep them server-rendered and must skip this wait.
+        // Generated Astro previews contain one eager client:load island. Its
+        // wrapper marks the document from a mount effect after the example
+        // commits. JavaScript-disabled previews skip the check, while Next.js
+        // previews contain no Astro island and pass through it immediately.
         if (javaScriptEnabled) {
-          await page.waitForFunction(
-            () => !document.querySelector("astro-island[ssr]"),
-          );
+          await page.waitForFunction(isPreviewHydrated);
         }
       });
       return callback({ id, framework, query, test });
