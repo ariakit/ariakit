@@ -199,7 +199,7 @@ function createNamedEvent(
   return createEvent[eventName](element, options);
 }
 
-const eventNames: DispatchEventType[] = [...getKeys(fireEvent), "auxClick"];
+const eventNames: DispatchEventType[] = [...getKeys(createEvent), "auxClick"];
 
 const events = eventNames.reduce((events, eventName) => {
   events[eventName] = (element, options) => {

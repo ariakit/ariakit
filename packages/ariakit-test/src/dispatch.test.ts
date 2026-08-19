@@ -92,6 +92,22 @@ test("dispatch.input preserves provided inputType", async () => {
   }
 });
 
+test("dispatch exposes only buildable double-click events", async () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  let calls = 0;
+  button.addEventListener("dblclick", () => {
+    calls += 1;
+  });
+  try {
+    await dispatch.dblClick(button);
+    expect(calls).toBe(1);
+    expect(dispatch).not.toHaveProperty("doubleClick");
+  } finally {
+    button.remove();
+  }
+});
+
 // Pointer Events defines `click`, `auxclick`, and `contextmenu` as
 // `PointerEvent`, which is what Chromium, Firefox, and WebKit dispatch for all
 // three. `@testing-library/dom` declares `MouseEvent` for `click` and
