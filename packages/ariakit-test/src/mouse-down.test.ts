@@ -8,10 +8,16 @@ import "./shims.ts";
 
 const selectionText = "sample paragraph text";
 
+const pressEventTypes = ["pointerdown", "mousedown", "pointerup", "mouseup"];
+
+// A chorded button change rides on `pointermove`, which only the chord tests
+// record because `hover` fires it too.
+const chordEventTypes = [...pressEventTypes, "pointermove"];
+
 // Records each press event as `type button buttons`.
-function recordPressEvents(element: Element) {
+function recordPressEvents(element: Element, types = pressEventTypes) {
   const events: string[] = [];
-  for (const type of ["pointerdown", "mousedown", "pointerup", "mouseup"]) {
+  for (const type of types) {
     element.addEventListener(type, (event) => {
       const { button, buttons } = event as MouseEvent;
       events.push(`${event.type} ${button} ${buttons}`);
@@ -225,22 +231,85 @@ test("mouseDown and mouseUp report the held button", async () => {
 });
 
 // A chorded gesture holds buttons that can't be derived from the one being
-// pressed, so an explicit `buttons` wins over the per-phase default. Here the
-// primary button stays held while the secondary one is pressed and released.
-test("mouseDown and mouseUp keep an explicit buttons value", async () => {
+// pressed, so an explicit `buttons` wins over the per-phase default. Pointer
+// Events fires no `pointerdown` or `pointerup` for a button that changes state
+// while another one stays held: the change rides on `pointermove`, and only the
+// compatibility mouse events fire for each button. This is the sequence
+// Chromium, Firefox, and WebKit produce for the same gesture.
+// https://w3c.github.io/pointerevents/#chorded-button-interactions
+test("mouseDown and mouseUp fire pointermove for a chorded button change", async () => {
   document.body.innerHTML = `<button type="button">Resize</button>`;
 
   const button = q.button.ensure("Resize");
-  const events = recordPressEvents(button);
+  const events = recordPressEvents(button, chordEventTypes);
 
+  // The primary button stays held while the secondary one is pressed and
+  // released.
+  await mouseDown(button);
   await mouseDown(button, { button: 2, buttons: 3 });
   await mouseUp(button, { button: 2, buttons: 1 });
+  await mouseUp(button);
 
   expect(events).toEqual([
-    "pointerdown 2 3",
+    "pointerdown 0 1",
+    "mousedown 0 1",
+    "pointermove 2 3",
     "mousedown 2 3",
-    "pointerup 2 1",
+    "pointermove 2 1",
     "mouseup 2 1",
+    "pointerup 0 0",
+    "mouseup 0 0",
+  ]);
+});
+
+// Only a canceled `pointerdown` starts suppressing the compatibility mouse
+// events, so canceling the `pointermove` a chorded change rides on leaves them
+// firing.
+// https://w3c.github.io/pointerevents/#mapping-for-devices-that-support-hover
+test("a canceled pointermove keeps the mouse events of a chorded gesture", async () => {
+  document.body.innerHTML = `<button type="button">Resize</button>`;
+
+  const button = q.button.ensure("Resize");
+  const events = recordPressEvents(button, chordEventTypes);
+  button.addEventListener("pointermove", (event) => event.preventDefault());
+
+  await mouseDown(button);
+  await mouseDown(button, { button: 2, buttons: 3 });
+  await mouseUp(button, { button: 2, buttons: 1 });
+  await mouseUp(button);
+
+  expect(events).toEqual([
+    "pointerdown 0 1",
+    "mousedown 0 1",
+    "pointermove 2 3",
+    "mousedown 2 3",
+    "pointermove 2 1",
+    "mouseup 2 1",
+    "pointerup 0 0",
+    "mouseup 0 0",
+  ]);
+});
+
+// A canceled `pointerdown` suppresses the compatibility mouse events until the
+// gesture ends, so the chorded press and release in between fire none either.
+// Measured identically in Chromium, Firefox, and WebKit.
+test("a canceled pointerdown suppresses the mouse events of a chorded gesture", async () => {
+  document.body.innerHTML = `<button type="button">Resize</button>`;
+
+  const button = q.button.ensure("Resize");
+  const events = recordPressEvents(button, chordEventTypes);
+  button.addEventListener("pointerdown", (event) => event.preventDefault());
+
+  await mouseDown(button);
+  await mouseDown(button, { button: 2, buttons: 3 });
+  await mouseUp(button, { button: 2, buttons: 1 });
+  await mouseUp(button);
+
+  expect(events).toEqual([
+    "pointerdown 0 1",
+    "pointermove 2 3",
+    "pointermove 2 1",
+    "pointerup 0 0",
   ]);
 });
 

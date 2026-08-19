@@ -73,6 +73,30 @@ export function getReleaseOptions(
   };
 }
 
+// Pointer Events fires no `pointerdown` or `pointerup` for a chorded button
+// change, where a button changes state while another one stays held down. The
+// change rides on `pointermove` instead, and only the compatibility mouse
+// events fire for each button.
+// https://w3c.github.io/pointerevents/#chorded-button-interactions
+
+/**
+ * Whether the press described by these press options happens while another
+ * button is already held down. The pressed button is part of `buttons` at this
+ * point, so its own bit is left out of the check.
+ */
+export function isChordedPress(options: PointerEventInit) {
+  const pressedBit = buttonsByButton[getMouseButton(options)] ?? 0;
+  return ((options.buttons ?? 0) & ~pressedBit) !== 0;
+}
+
+/**
+ * Whether the release described by these release options leaves another button
+ * held down. The released button is already out of `buttons` at this point.
+ */
+export function isChordedRelease(options: PointerEventInit) {
+  return (options.buttons ?? 0) !== 0;
+}
+
 // `@testing-library/dom` has no `auxclick` in its event map, so `dispatch` can't
 // build this one by name.
 export function dispatchAuxClick(element: Element, options?: MouseEventInit) {
