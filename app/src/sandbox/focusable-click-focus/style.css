@@ -1,0 +1,26 @@
+.node-editor {
+  min-height: 180px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 16px;
+  border: 2px solid #16a34a;
+  border-radius: 8px;
+}
+
+.keyboard-focus {
+  display: none;
+}
+
+.node-editor[data-focus-visible] .keyboard-focus {
+  display: inline;
+}
+
+.node-editor[data-focus-visible] .pointer-focus {
+  display: none;
+}
+
+.node-editor[data-focus-visible] {
+  border-color: #dc2626;
+}
