@@ -1,4 +1,4 @@
-import { afterEach, expect, test } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
 import {
   getActiveElement,
   getDocument,
@@ -7,6 +7,8 @@ import {
   getTextboxSelection,
   getTextboxValue,
   getWindow,
+  isElement,
+  isNode,
   isTextField,
   setSelectionRange,
 } from "./dom.ts";
@@ -115,6 +117,41 @@ function appendShadowingForm(
   return form;
 }
 
+function shadowFormMember(form: HTMLFormElement, name: string) {
+  const control = form.querySelector(`[name="${name}"]`);
+  if (!control) throw new Error(`Expected a control named ${name}`);
+  Object.defineProperty(form, name, {
+    configurable: true,
+    value: control,
+  });
+}
+
+// https://github.com/ariakit/ariakit/issues/7215
+test("isElement handles a form that answers nodeType with a control", () => {
+  const form = appendShadowingForm(document, "nodeType");
+  shadowFormMember(form, "nodeType");
+
+  expect(isElement(form)).toBe(true);
+});
+
+// https://github.com/ariakit/ariakit/issues/7215
+test("isNode handles a form that answers nodeType with a control", () => {
+  const form = appendShadowingForm(document, "nodeType");
+  shadowFormMember(form, "nodeType");
+
+  expect(isNode(form)).toBe(true);
+});
+
+test("isElement rejects event targets that are not nodes", () => {
+  expect(isElement(window)).toBe(false);
+  expect(isElement(new EventTarget())).toBe(false);
+});
+
+test("isNode rejects event targets that are not nodes", () => {
+  expect(isNode(window)).toBe(false);
+  expect(isNode(new EventTarget())).toBe(false);
+});
+
 // Each helper gets its own case, because a bundled test stops at the first
 // failing assertion. `getDocument` and `getActiveElement` also fail differently
 // per shape, while `getWindow` reads only `self` and fails the same way in both.
@@ -208,79 +245,36 @@ test("getDocument resolves an element whose document answers nodeType with an el
   expect(getDocument(element)).toBe(otherDocument);
 });
 
-test("getDocument falls back when a form answers its owner document with a control", () => {
-  const form = document.createElement("form");
-  const control = document.createElement("input");
-  control.name = "ownerDocument";
-  form.append(control);
-  document.body.append(form);
+// https://github.com/ariakit/ariakit/issues/7215
+test("getDocument ignores a form's named ownerDocument control", () => {
+  const { frameDocument } = appendFrame();
+  const form = appendShadowingForm(frameDocument, "ownerDocument");
   // happy-dom overrides only members it does not define on the prototype chain,
   // so the browsers' answer for the control above is emulated here.
-  Object.defineProperty(form, "ownerDocument", {
-    configurable: true,
-    value: control,
-  });
+  shadowFormMember(form, "ownerDocument");
 
-  expect(getDocument(form)).toBe(document);
+  expect(getDocument(form)).toBe(frameDocument);
 });
 
-test("getWindow falls back when a document answers its default view with an element", () => {
-  const otherDocument = document.implementation.createHTMLDocument("Other");
-  const element = otherDocument.createElement("div");
-  otherDocument.body.append(element);
-  const form = otherDocument.createElement("form");
+// https://github.com/ariakit/ariakit/issues/7215
+test("getWindow ignores a document's named defaultView form", () => {
+  const { frameDocument, frameWindow } = appendFrame();
+  const element = frameDocument.createElement("div");
+  frameDocument.body.append(element);
+  const form = frameDocument.createElement("form");
   form.name = "defaultView";
-  otherDocument.body.append(form);
+  frameDocument.body.append(form);
   // `Document` carries the same named-element override, measured on the three
   // engines above: a form named `defaultView` makes the document answer that
   // lookup with the form. happy-dom implements no document named getter, so it
   // is emulated here. This one reaches every caller rather than only the ones
   // handed a form, because `getWindow` resolves through the document.
-  Object.defineProperty(otherDocument, "defaultView", {
+  Object.defineProperty(frameDocument, "defaultView", {
     configurable: true,
     value: form,
   });
 
-  expect(getWindow(element)).toBe(window);
-});
-
-// The same getter answers with a real window when the element it names is a
-// frame, so the resolved view has to own the document back rather than merely
-// be a window. Measured on the three engines above.
-test("getWindow falls back when a document answers its default view with another realm's window", () => {
-  const { frameWindow } = appendFrame();
-  const otherDocument = document.implementation.createHTMLDocument("Other");
-  const element = otherDocument.createElement("div");
-  otherDocument.body.append(element);
-  Object.defineProperty(otherDocument, "defaultView", {
-    configurable: true,
-    value: frameWindow,
-  });
-
-  expect(getWindow(element)).toBe(window);
-});
-
-// Measured on the same three engines: when that frame is cross-origin, its
-// window still answers `window` with itself and throws a `SecurityError` for
-// `document`, so refusing to answer has to count as owning another document.
-// The environment has no cross-origin frames, so the refusal is emulated.
-test("getWindow falls back when the view it resolves refuses to report its document", () => {
-  const refusingView = {
-    window: null as unknown,
-    get document(): Document {
-      throw new Error("SecurityError");
-    },
-  };
-  refusingView.window = refusingView;
-  const otherDocument = document.implementation.createHTMLDocument("Other");
-  const element = otherDocument.createElement("div");
-  otherDocument.body.append(element);
-  Object.defineProperty(otherDocument, "defaultView", {
-    configurable: true,
-    value: refusingView,
-  });
-
-  expect(getWindow(element)).toBe(window);
+  expect(getWindow(element)).toBe(frameWindow);
 });
 
 // A `Document` is a `Node` whose `ownerDocument` is `null`, so resolving one
@@ -299,6 +293,38 @@ test("getWindow resolves a document from another realm to its own view", () => {
   const { frameDocument, frameWindow } = appendFrame();
 
   expect(getWindow(frameDocument)).toBe(frameWindow);
+});
+
+test("resolves supplied nodes when imported without DOM globals", async () => {
+  const { frameDocument, frameWindow } = appendFrame();
+  const form = appendShadowingForm(frameDocument, "nodeType", "ownerDocument");
+  shadowFormMember(form, "nodeType");
+  shadowFormMember(form, "ownerDocument");
+  const globalNames = ["window", "document", "Node"] as const;
+  const descriptors = globalNames.map(
+    (name) =>
+      [name, Object.getOwnPropertyDescriptor(globalThis, name)] as const,
+  );
+
+  try {
+    for (const name of globalNames) {
+      Reflect.deleteProperty(globalThis, name);
+    }
+    vi.resetModules();
+    const dom = await import("./dom.ts");
+
+    expect(dom.isElement(form)).toBe(true);
+    expect(dom.isNode(form)).toBe(true);
+    expect(dom.getDocument(form)).toBe(frameDocument);
+    expect(dom.getWindow(form)).toBe(frameWindow);
+  } finally {
+    for (const [name, descriptor] of descriptors) {
+      if (descriptor) {
+        Object.defineProperty(globalThis, name, descriptor);
+      }
+    }
+    vi.resetModules();
+  }
 });
 
 test("setSelectionRange skips input types that do not support text selection", () => {

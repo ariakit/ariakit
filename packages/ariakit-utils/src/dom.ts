@@ -19,13 +19,11 @@ function checkIsBrowser() {
 }
 
 // A form exposes its controls as named properties that override built-ins, and
-// a document does the same for the elements it names, so any member read while
-// resolving a realm can answer with one of those instead: a control named
-// `self` makes a form answer the window test, one named `ownerDocument` makes
-// it answer the document lookup, and a form named `defaultView` makes a
-// document answer the window lookup. The two guards below check what came back
-// rather than trusting the member it came from.
+// a document does the same for the elements it names. Read the Node and
+// Document members below through their interface getters so named elements
+// cannot answer those lookups.
 // https://github.com/ariakit/ariakit/issues/7201
+// https://github.com/ariakit/ariakit/issues/7215
 
 // Typed the way `document.defaultView` is, because the interfaces a caller
 // reads off a window, such as `PointerEvent`, are globals rather than members
@@ -36,40 +34,74 @@ function isWindow(value: unknown): value is Window & typeof globalThis {
   return (value as Window).window === value;
 }
 
-// Taken from the prototype because a document names its own elements too, so
-// one holding an element named `nodeType` answers that read with it. The getter
-// bypasses that lookup and is brand-checked against the interface rather than
-// the realm, so it still answers for a node belonging to a frame.
-// https://github.com/ariakit/ariakit/pull/7213#discussion_r3816584472
-const nodeTypeGetter =
-  typeof Node === "undefined"
-    ? undefined
-    : // oxlint-disable-next-line typescript/unbound-method -- the receiver is supplied explicitly below
-      Object.getOwnPropertyDescriptor(Node.prototype, "nodeType")?.get;
+type DOMGetter = (this: unknown) => unknown;
 
-function isDocument(value: unknown): value is Document {
-  if (!value) return false;
-  // Node.DOCUMENT_NODE === 9.
-  if (!nodeTypeGetter) return (value as Node).nodeType === 9;
+function getDOMGetter(prototype: object | undefined, name: string) {
+  for (
+    let current = prototype;
+    current;
+    current = Object.getPrototypeOf(current)
+  ) {
+    // oxlint-disable-next-line typescript/unbound-method -- called with a receiver
+    const getter = Object.getOwnPropertyDescriptor(current, name)?.get;
+    if (getter) return getter as DOMGetter;
+  }
+  return undefined;
+}
+
+const nodeTypeGetter = getDOMGetter(
+  typeof Node === "undefined" ? undefined : Node.prototype,
+  "nodeType",
+);
+
+const ownerDocumentGetter = getDOMGetter(
+  typeof Node === "undefined" ? undefined : Node.prototype,
+  "ownerDocument",
+);
+
+function callDOMGetter(getter: DOMGetter, value: unknown) {
   try {
-    return nodeTypeGetter.call(value) === 9;
+    return getter.call(value);
   } catch {
-    // The brand check rejects anything that is not a node.
-    return false;
+    // Web IDL getters reject values that do not implement their interface.
+    return undefined;
   }
 }
 
-function ownsDocument(
-  view: Window & typeof globalThis,
-  ownerDocument: Document,
-) {
+function getNodeType(value: unknown) {
+  if (!value) return undefined;
+  const getter =
+    nodeTypeGetter ?? getDOMGetter(Object.getPrototypeOf(value), "nodeType");
+  if (!getter) return (value as Node).nodeType;
   try {
-    return view.document === ownerDocument;
+    return getter.call(value);
   } catch {
-    // A cross-origin window answers only an allowlist, which `document` is not
-    // on, so refusing to answer is itself proof that it owns another document.
-    return false;
+    // The brand check rejects anything that is not a node.
+    return undefined;
   }
+}
+
+function isDocument(value: unknown): value is Document {
+  // Node.DOCUMENT_NODE === 9.
+  return getNodeType(value) === 9;
+}
+
+function getOwnerDocument(node: Node) {
+  const getter =
+    ownerDocumentGetter ??
+    getDOMGetter(Object.getPrototypeOf(node), "ownerDocument");
+  if (!getter) return node.ownerDocument;
+  return callDOMGetter(getter, node);
+}
+
+function getDefaultView(ownerDocument: Document) {
+  if (typeof window !== "undefined" && ownerDocument === window.document) {
+    return window;
+  }
+  const prototype = Object.getPrototypeOf(ownerDocument) as object;
+  const getter = getDOMGetter(prototype, "defaultView");
+  if (!getter) return ownerDocument.defaultView;
+  return callDOMGetter(getter, ownerDocument);
 }
 
 /**
@@ -82,7 +114,7 @@ export function getDocument(node?: Window | Document | Node | null): Document {
   // so it stays in the type of the branch that has already ruled it out.
   const nodeDocument = isWindow(node)
     ? node.document
-    : (node as Node).ownerDocument;
+    : getOwnerDocument(node as Node);
   if (isDocument(nodeDocument)) return nodeDocument;
   return document;
 }
@@ -96,14 +128,8 @@ export function getWindow(
   if (!node) return self;
   if (isWindow(node)) return node;
   const nodeDocument = getDocument(node);
-  const { defaultView } = nodeDocument;
-  // Being a window is not enough, because the named getter answers with the
-  // window of an `<iframe name="defaultView">`, which is a real window from
-  // another realm. A window is only this document's view when it owns it back,
-  // and `Window.document` cannot be shadowed the way `Document` members can.
-  if (isWindow(defaultView) && ownsDocument(defaultView, nodeDocument)) {
-    return defaultView;
-  }
+  const defaultView = getDefaultView(nodeDocument);
+  if (isWindow(defaultView)) return defaultView;
   return window;
 }
 
@@ -172,15 +198,8 @@ export function contains(parent: Node, child: Node): boolean {
 export function isElement(
   target: EventTarget | null | undefined,
 ): target is Element {
-  // Reading `nodeType` on a non-node target yields `undefined`. The numeric
-  // literal (Node.ELEMENT_NODE === 1) avoids referencing the `Node` global, so
-  // the guard stays safe even if it's ever evaluated during SSR.
-  //
-  // Unlike `isDocument` above, this reads the member directly, so a form
-  // holding a control named `nodeType` answers for it. Left alone until the
-  // cost of the prototype read on this hot path is measured.
-  // https://github.com/ariakit/ariakit/issues/7215
-  return (target as Node | null)?.nodeType === 1;
+  // Node.ELEMENT_NODE === 1.
+  return getNodeType(target) === 1;
 }
 
 /**
@@ -196,7 +215,7 @@ export function isElement(
  * }
  */
 export function isNode(target: EventTarget | null | undefined): target is Node {
-  return typeof (target as Node | null)?.nodeType === "number";
+  return typeof getNodeType(target) === "number";
 }
 
 /**

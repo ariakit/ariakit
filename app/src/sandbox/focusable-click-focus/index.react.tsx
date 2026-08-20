@@ -52,11 +52,7 @@ export default function Example() {
               aria-label="Node editor"
               onSubmit={(event) => {
                 event.preventDefault();
-                // TODO: Remove this workaround after the linked issue is fixed.
-                // https://github.com/ariakit/ariakit/issues/7215
                 const data = new FormData(event.currentTarget);
-                data.set("nodeType", data.get("nodeTypeField") ?? "");
-                data.delete("nodeTypeField");
                 setSubmittedData(JSON.stringify(Object.fromEntries(data)));
               }}
             />
@@ -65,7 +61,7 @@ export default function Example() {
         >
           <label>
             Node type
-            <input name="nodeTypeField" />
+            <input name="nodeType" />
           </label>
           <button type="submit">Save node</button>
           {submittedData ? (

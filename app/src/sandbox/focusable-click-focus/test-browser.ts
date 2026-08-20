@@ -29,9 +29,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7215
-  // The workaround uses a collision-free DOM field name so pointer focus is
-  // not mistaken for keyboard focus.
-  test("uses pointer focus with the nodeType workaround", async ({
+  // happy-dom defines `nodeType` on the form's prototype, so only real browsers
+  // reproduce the named-property override this interaction exercises.
+  test("uses pointer focus on a form that names a nodeType field", async ({
     page,
     q,
   }) => {
