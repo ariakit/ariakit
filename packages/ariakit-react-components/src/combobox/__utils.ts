@@ -1,5 +1,6 @@
 import { useSafeLayoutEffect } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
+import { getWindow } from "@ariakit/utils";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const openingMovesByStore = new WeakMap<ComboboxStore, number>();
@@ -13,8 +14,7 @@ function scrollIntoViewNearest(element: HTMLElement) {
 }
 
 function getSingleVerticalScrollport(element: HTMLElement, popup: HTMLElement) {
-  const view = element.ownerDocument.defaultView;
-  if (!view) return null;
+  const view = getWindow(element);
   if (!view.getComputedStyle(popup).writingMode.startsWith("horizontal")) {
     return null;
   }
