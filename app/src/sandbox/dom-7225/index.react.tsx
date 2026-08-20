@@ -1,11 +1,14 @@
+import * as Ariakit from "@ariakit/react";
 import { getActiveElement, isButton, isVisible } from "@ariakit/utils";
 import { useRef, useState } from "react";
 
 export default function Example() {
+  const dialog = Ariakit.useDialogStore();
   const formRef = useRef<HTMLFormElement>(null);
   const [activeElementResult, setActiveElementResult] = useState("Not checked");
   const [buttonResult, setButtonResult] = useState("Not checked");
   const [visibilityResult, setVisibilityResult] = useState("Not checked");
+  const [focusedElement, setFocusedElement] = useState("None");
 
   const checkActiveElement = (button: HTMLButtonElement) => {
     const activeElement = getActiveElement(button);
@@ -50,6 +53,24 @@ export default function Example() {
           <input name="getClientRects" />
         </label>
       </form>
+
+      <button
+        type="button"
+        onClick={dialog.show}
+        onFocus={() => setFocusedElement("Open dialog")}
+      >
+        Open dialog
+      </button>
+      <Ariakit.Dialog store={dialog} modal={false} aria-label="Example dialog">
+        <button
+          type="button"
+          onClick={dialog.hide}
+          onFocus={() => setFocusedElement("Close dialog")}
+        >
+          Close dialog
+        </button>
+      </Ariakit.Dialog>
+      <output aria-label="Focused element">{focusedElement}</output>
 
       <button
         type="button"

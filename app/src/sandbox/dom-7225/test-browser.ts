@@ -13,6 +13,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7225
+  // happy-dom has no document named getter, so this integration stays in the
+  // browser suite that reproduces the platform behavior.
+  test("restores dialog focus past a named activeElement form", async ({
+    q,
+  }) => {
+    await q.button("Open dialog").click();
+    await test.expect(q.status("Focused element")).toHaveText("Close dialog");
+
+    await q.button("Close dialog").click();
+
+    await test.expect(q.status("Focused element")).toHaveText("Open dialog");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7225
   test("checks a form with a control named tagName", async ({ q }) => {
     await q.button("Check button type").click();
 
