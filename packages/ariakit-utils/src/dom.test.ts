@@ -221,6 +221,16 @@ test("getDocument resolves a window to its own document", () => {
   expect(getDocument(frameWindow)).toBe(frameDocument);
 });
 
+test("getDocument rejects a window's numeric nodeType global", () => {
+  const { frameDocument, frameWindow } = appendFrame();
+  Object.defineProperty(frameWindow, "nodeType", {
+    configurable: true,
+    value: Node.DOCUMENT_NODE,
+  });
+
+  expect(getDocument(frameWindow)).toBe(frameDocument);
+});
+
 test("getWindow resolves a window to itself", () => {
   const { frameWindow } = appendFrame();
 

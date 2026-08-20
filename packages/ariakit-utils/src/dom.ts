@@ -89,7 +89,8 @@ function isDocument(value: unknown): value is Document {
   // Node.DOCUMENT_NODE === 9.
   const nodeType = (value as Node | null | undefined)?.nodeType;
   return (
-    nodeType === 9 || (typeof nodeType === "object" && getNodeType(value) === 9)
+    (nodeType === 9 && !isWindow(value)) ||
+    (typeof nodeType === "object" && getNodeType(value) === 9)
   );
 }
 
