@@ -154,6 +154,20 @@ test("isNode rejects event targets that are not nodes", () => {
   expect(isNode(new EventTarget())).toBe(false);
 });
 
+test("node guards reject event targets that throw on nodeType", () => {
+  const target = new Proxy(new EventTarget(), {
+    get(target, property, receiver) {
+      if (property === "nodeType") {
+        throw new Error("Blocked property");
+      }
+      return Reflect.get(target, property, receiver);
+    },
+  });
+
+  expect(isElement(target)).toBe(false);
+  expect(isNode(target)).toBe(false);
+});
+
 // Each helper gets its own case, because a bundled test stops at the first
 // failing assertion. `getDocument` and `getActiveElement` also fail differently
 // per shape, while `getWindow` reads only `self` and fails the same way in both.

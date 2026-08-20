@@ -82,6 +82,14 @@ function readDOMMember(
 }
 
 function getNodeType(value: unknown) {
+  try {
+    const nodeType = (value as Node | null | undefined)?.nodeType;
+    if (typeof nodeType === "number") {
+      return nodeType;
+    }
+  } catch {
+    // A cross-origin WindowProxy can throw before the getter rejects it below.
+  }
   return readDOMMember(value, nodeTypeGetter, "nodeType");
 }
 
