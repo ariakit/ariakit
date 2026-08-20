@@ -1,80 +1,53 @@
 import * as Ariakit from "@ariakit/react";
-import type { MouseEvent, MutableRefObject } from "react";
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
-import {
-  getScrollItemIntoView,
-  useTrackComboboxSelectPresentation,
-} from "../../../../packages/ariakit-react-components/src/combobox/__utils.ts";
+import type { RefObject } from "react";
+import { useRef } from "react";
 
 const items = Array.from({ length: 30 }, (_, index) => `Item ${index + 1}`);
+const formName = "preferences";
 
-interface CollisionProps {
-  formRef: MutableRefObject<HTMLFormElement | null>;
+// React 19 reads the same named property during commits. Scope the collision
+// to native browser work so its failure does not hide Ariakit's behavior.
+function setFormName(formRef: RefObject<HTMLFormElement | null>, name: string) {
+  const form = formRef.current;
+  if (!form) return;
+  form.name = name;
 }
 
-function createDefaultViewForm() {
-  const form = document.createElement("form");
-  form.name = "defaultView";
-  form.setAttribute("aria-label", "Preferences");
-  const label = document.createElement("label");
-  label.textContent = "Theme";
-  const input = document.createElement("input");
-  input.name = "theme";
-  input.defaultValue = "System";
-  label.appendChild(input);
-  form.appendChild(label);
-  return form;
-}
-
-function AddDefaultViewCollision({ formRef }: CollisionProps) {
-  useLayoutEffect(() => {
-    // Keep the real named form across the target layout effects only. React 19
-    // has its own direct lookup that would otherwise mask the Ariakit result.
-    const form = createDefaultViewForm();
-    document.body.appendChild(form);
-    formRef.current = form;
-    return () => form.remove();
-  }, [formRef]);
-
-  return null;
-}
-
-interface RemoveCollisionProps extends CollisionProps {
-  recordResult: () => void;
-}
-
-function RemoveDefaultViewCollision({
+function PreferencesForm({
   formRef,
-  recordResult,
-}: RemoveCollisionProps) {
-  useLayoutEffect(() => {
-    recordResult();
-    formRef.current?.remove();
-    formRef.current = null;
-  }, [formRef, recordResult]);
-
-  return null;
+}: {
+  formRef: RefObject<HTMLFormElement | null>;
+}) {
+  return (
+    <form ref={formRef} name={formName}>
+      <label>
+        Theme
+        <input name="theme" defaultValue="System" />
+      </label>
+    </form>
+  );
 }
 
-function FullscreenPortal() {
+function FullscreenPortal({
+  formRef,
+}: {
+  formRef: RefObject<HTMLFormElement | null>;
+}) {
   const fullscreenHostRef = useRef<HTMLDivElement>(null);
-  const formRef = useRef<HTMLFormElement>(null);
-  const [mounted, setMounted] = useState(false);
 
   const enterFullscreen = () => {
-    void fullscreenHostRef.current?.requestFullscreen();
+    const form = formRef.current;
+    const host = fullscreenHostRef.current;
+    if (!form || !host) return;
+    setFormName(formRef, "defaultView");
+    const restoreName = () => {
+      setFormName(formRef, formName);
+    };
+    host.ownerDocument.addEventListener("fullscreenchange", restoreName, {
+      once: true,
+    });
+    void host.requestFullscreen().catch(restoreName);
   };
-
-  const recordResult = useCallback(() => {
-    const portal = document.querySelector('[id="portal/fullscreen-content"]');
-    const result = document.getElementById("portal-result");
-    if (!result) return;
-    const insideFullscreen =
-      portal?.parentElement === fullscreenHostRef.current;
-    result.textContent = insideFullscreen
-      ? "Portal parent: fullscreen"
-      : "Portal parent: body";
-  }, []);
 
   return (
     <section aria-label="Fullscreen portal">
@@ -85,95 +58,38 @@ function FullscreenPortal() {
         <button type="button" onClick={enterFullscreen}>
           Enter portal fullscreen
         </button>
-        <button type="button" onClick={() => setMounted(true)}>
-          Mount named form and portal
-        </button>
-        <div id="portal-result" role="status" aria-label="Portal result">
-          Portal parent: pending
-        </div>
-        {mounted && (
-          <>
-            <AddDefaultViewCollision formRef={formRef} />
-            <Ariakit.Portal id="fullscreen-content">
-              Fullscreen portal content
-            </Ariakit.Portal>
-            <RemoveDefaultViewCollision
-              formRef={formRef}
-              recordResult={recordResult}
-            />
-          </>
-        )}
+        <Ariakit.Portal>Fullscreen portal content</Ariakit.Portal>
       </div>
     </section>
   );
 }
 
-function ComboboxScroll() {
-  const store = Ariakit.useComboboxStore({
-    defaultSelectedValue: "Item 24",
-    virtualFocus: false,
-  });
-  // Use the same module instance as the callback invoked below so the
-  // user-triggered scroll follows the normal select-presentation branch.
-  useTrackComboboxSelectPresentation(store);
-
-  const recordResult = useCallback(() => {
-    const listbox = document.getElementById("combobox-listbox");
-    const item = document.getElementById("combobox-item-24");
-    const result = document.getElementById("combobox-result");
-    if (!listbox || !item || !result) return;
-    const listboxRect = listbox.getBoundingClientRect();
-    const itemRect = item.getBoundingClientRect();
-    const visible =
-      itemRect.top >= listboxRect.top && itemRect.bottom <= listboxRect.bottom;
-    result.textContent = visible
-      ? "Selected item: visible"
-      : "Selected item: hidden";
-  }, []);
-
-  const testScroll = () => {
-    const listbox = document.getElementById("combobox-listbox");
-    const item = document.getElementById("combobox-item-24");
-    if (!listbox || !item) return;
-    listbox.scrollTop = 0;
-    const form = createDefaultViewForm();
-    document.body.appendChild(form);
-    try {
-      getScrollItemIntoView(store)(item);
-    } finally {
-      recordResult();
-      form.remove();
-    }
+function ComboboxScroll({
+  formRef,
+}: {
+  formRef: RefObject<HTMLFormElement | null>;
+}) {
+  const setLegacyFormName = () => {
+    setFormName(formRef, "defaultView");
   };
-
-  const keepPopupOpen = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+  const restoreFormName = () => {
+    setFormName(formRef, formName);
   };
 
   return (
     <section aria-label="Combobox scroll">
-      <div id="combobox-result" role="status" aria-label="Combobox result">
-        Selected item: pending
-      </div>
-      <Ariakit.ComboboxProvider store={store}>
+      <Ariakit.ComboboxProvider defaultSelectedValue="Item 24">
         <Ariakit.ComboboxSelectLabel>Favorite item</Ariakit.ComboboxSelectLabel>
         <Ariakit.ComboboxSelect />
         <Ariakit.ComboboxPopover
-          id="combobox-listbox"
           aria-label="Favorite item options"
+          onPointerDownCapture={setLegacyFormName}
+          onFocus={restoreFormName}
+          onPointerUp={restoreFormName}
           style={{ maxHeight: 120, overflow: "auto" }}
         >
-          <button
-            type="button"
-            tabIndex={0}
-            onMouseDown={keepPopupOpen}
-            onClick={testScroll}
-          >
-            Scroll selected item with named form
-          </button>
-          {items.map((item, index) => (
+          {items.map((item) => (
             <Ariakit.ComboboxItem
-              id={`combobox-item-${index + 1}`}
               key={item}
               value={item}
               style={{ display: "block", padding: "4px 8px" }}
@@ -186,10 +102,14 @@ function ComboboxScroll() {
 }
 
 export default function Example() {
+  const formRef = useRef<HTMLFormElement>(null);
+
   return (
     <main>
-      <FullscreenPortal />
-      <ComboboxScroll />
+      <h1>Preferences</h1>
+      <PreferencesForm formRef={formRef} />
+      <FullscreenPortal formRef={formRef} />
+      <ComboboxScroll formRef={formRef} />
     </main>
   );
 }
