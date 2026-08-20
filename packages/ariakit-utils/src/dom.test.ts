@@ -204,6 +204,30 @@ test("getActiveElement ignores a document's named activeElement form", () => {
   expect(getActiveElement(button)).toBe(button);
 });
 
+// https://github.com/ariakit/ariakit/pull/7226#discussion_r3822521065
+test("getActiveElement works without Object.hasOwn", () => {
+  const button = document.createElement("button");
+  document.body.append(button);
+  button.focus();
+  const descriptor = Object.getOwnPropertyDescriptor(Object, "hasOwn");
+  Object.defineProperty(Object, "hasOwn", {
+    configurable: true,
+    value: undefined,
+  });
+  let activeElement: HTMLElement | null = null;
+  try {
+    activeElement = getActiveElement(button);
+  } finally {
+    if (descriptor) {
+      Object.defineProperty(Object, "hasOwn", descriptor);
+    } else {
+      Reflect.deleteProperty(Object, "hasOwn");
+    }
+  }
+
+  expect(activeElement).toBe(button);
+});
+
 // https://github.com/ariakit/ariakit/issues/7225
 test("isButton ignores a form's named tagName control", () => {
   const form = appendShadowingForm(document, "tagName");
@@ -226,6 +250,30 @@ test("isVisible ignores controls named after the members it reads", () => {
   }
 
   expect(isVisible(form)).toBe(true);
+});
+
+// https://github.com/ariakit/ariakit/issues/7225
+// Emulate an engine without checkVisibility so the geometry fallbacks run.
+test("isVisible reads geometry past named controls", () => {
+  const descriptor = Object.getOwnPropertyDescriptor(
+    Element.prototype,
+    "checkVisibility",
+  );
+  if (!descriptor) {
+    throw new Error("Expected Element.prototype.checkVisibility");
+  }
+  Reflect.deleteProperty(Element.prototype, "checkVisibility");
+  try {
+    const memberNames = ["offsetWidth", "offsetHeight", "getClientRects"];
+    const form = appendShadowingForm(document, ...memberNames);
+    for (const name of memberNames) {
+      shadowFormMember(form, name);
+    }
+
+    expect(isVisible(form)).toBe(true);
+  } finally {
+    Object.defineProperty(Element.prototype, "checkVisibility", descriptor);
+  }
 });
 
 // Resolving through the frame is what makes a wrong answer visible: in the

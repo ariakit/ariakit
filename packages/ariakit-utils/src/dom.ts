@@ -4,7 +4,7 @@
  */
 
 import { hasOwnProperty } from "./misc.ts";
-import type { AriaHasPopup, AriaRole } from "./types.ts";
+import type { AnyFunction, AriaHasPopup, AriaRole } from "./types.ts";
 
 /**
  * It's `true` if it is running in a browser environment or `false` if it is not
@@ -62,8 +62,32 @@ function isDocument(value: unknown): value is Document {
 
 // Start at the prototype to bypass named properties while keeping `value` as
 // the getter receiver, including for values from another realm.
-function getDOMProperty(value: object, name: string) {
+function getDOMProperty(value: Document, name: "activeElement"): Element | null;
+function getDOMProperty(value: object, name: string): unknown;
+function getDOMProperty(value: object, name: string): unknown {
   return Reflect.get(Object.getPrototypeOf(value), name, value);
+}
+
+interface DOMMemberTypes {
+  function: AnyFunction;
+  number: number;
+  string: string;
+}
+
+function getDOMMember<Type extends keyof DOMMemberTypes>(
+  value: object,
+  name: string,
+  type: Type,
+): DOMMemberTypes[Type] | undefined {
+  const member: unknown = Reflect.get(value, name);
+  if (typeof member === type) {
+    return member as DOMMemberTypes[Type];
+  }
+  const unshadowedMember = getDOMProperty(value, name);
+  if (typeof unshadowedMember === type) {
+    return unshadowedMember as DOMMemberTypes[Type];
+  }
+  return undefined;
 }
 
 function ownsDocument(
@@ -124,7 +148,7 @@ export function getActiveElement(
 ): HTMLElement | null {
   const ownerDocument = getDocument(node);
   // The native accessor is inherited, so an own answer may be a named element.
-  const activeElement = Object.hasOwn(ownerDocument, "activeElement")
+  const activeElement = hasOwnProperty(ownerDocument, "activeElement")
     ? getDOMProperty(ownerDocument, "activeElement")
     : ownerDocument.activeElement;
   if (!activeElement?.nodeName) {
@@ -233,12 +257,8 @@ export function isFrame(element: Element): element is HTMLIFrameElement {
  * isButton(document.querySelector("div[role='button']")); // false
  */
 export function isButton(element: { tagName: string; type?: string }) {
-  const tagNameProperty = element.tagName;
-  const tagName =
-    typeof tagNameProperty === "string"
-      ? tagNameProperty
-      : getDOMProperty(element, "tagName");
-  if (typeof tagName !== "string") return false;
+  const tagName = getDOMMember(element, "tagName", "string");
+  if (!tagName) return false;
   const normalizedTagName = tagName.toLowerCase();
   if (normalizedTagName === "button") return true;
   if (normalizedTagName === "input" && element.type) {
@@ -260,32 +280,15 @@ const buttonInputTypes = [
  * Checks if the element is visible or not.
  */
 export function isVisible(element: Element): boolean {
-  if (typeof element.checkVisibility === "function") {
-    return element.checkVisibility();
-  }
-  const unshadowedCheckVisibility = getDOMProperty(element, "checkVisibility");
-  if (typeof unshadowedCheckVisibility === "function") {
-    return unshadowedCheckVisibility.call(element);
-  }
-  const htmlElement = element as HTMLElement;
-  const offsetWidthProperty = htmlElement.offsetWidth;
-  const offsetWidth =
-    typeof offsetWidthProperty === "number"
-      ? offsetWidthProperty
-      : getDOMProperty(element, "offsetWidth");
-  if (typeof offsetWidth === "number" && offsetWidth > 0) return true;
-  const offsetHeightProperty = htmlElement.offsetHeight;
-  const offsetHeight =
-    typeof offsetHeightProperty === "number"
-      ? offsetHeightProperty
-      : getDOMProperty(element, "offsetHeight");
-  if (typeof offsetHeight === "number" && offsetHeight > 0) return true;
-  if (typeof element.getClientRects === "function") {
-    return element.getClientRects().length > 0;
-  }
-  const unshadowedGetClientRects = getDOMProperty(element, "getClientRects");
-  if (typeof unshadowedGetClientRects !== "function") return false;
-  return unshadowedGetClientRects.call(element).length > 0;
+  const checkVisibility = getDOMMember(element, "checkVisibility", "function");
+  if (checkVisibility) return checkVisibility.call(element);
+  const offsetWidth = getDOMMember(element, "offsetWidth", "number");
+  if (offsetWidth != null && offsetWidth > 0) return true;
+  const offsetHeight = getDOMMember(element, "offsetHeight", "number");
+  if (offsetHeight != null && offsetHeight > 0) return true;
+  const getClientRects = getDOMMember(element, "getClientRects", "function");
+  if (!getClientRects) return false;
+  return getClientRects.call(element).length > 0;
 }
 
 /**
