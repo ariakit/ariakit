@@ -1,107 +1,154 @@
 // oxlint-disable unbound-method
-import { isFocusable, noop } from "@ariakit/utils";
-import { isBrowser, isHappyDOM } from "./__utils.ts";
+import {
+  isFocusable as isElementFocusable,
+  isVisible as isElementVisible,
+  noop,
+} from "@ariakit/utils";
+import type { OwnerWindowSource } from "./__utils.ts";
+import { getOwnerWindow, isBrowser, isHappyDOM } from "./__utils.ts";
 
 // Apply shims at import because components read layout and focusability between
 // interactions. Both public DOM entry points load this side effect.
 // https://github.com/ariakit/ariakit/pull/6256#discussion_r3366022385
 
-function applyBrowserShims() {
+// Key by the prototype because happy-dom frames share their parent's classes;
+// keying by window would wrap the same methods again for every frame.
+// https://github.com/ariakit/ariakit/issues/7200
+const appliedBrowserShims = new WeakMap<object, () => void>();
+
+function applyBrowserShims(
+  targetWindow:
+    | (Window & typeof globalThis)
+    | null
+    | undefined = typeof window === "undefined" ? undefined : window,
+) {
   if (isBrowser) return noop;
   // Importing `@ariakit/test` in plain Node must remain a no-op.
   if (
-    typeof window === "undefined" ||
-    typeof HTMLElement === "undefined" ||
-    typeof Element === "undefined"
+    !targetWindow ||
+    typeof targetWindow.HTMLElement === "undefined" ||
+    typeof targetWindow.Element === "undefined"
   ) {
     return noop;
   }
 
-  const originalFocus = HTMLElement.prototype.focus;
+  const { Element: ElementConstructor } = targetWindow;
+  const { HTMLElement: HTMLElementConstructor } = targetWindow;
+  polyfillClipboardEvent(targetWindow);
+  const existingRestore = appliedBrowserShims.get(ElementConstructor.prototype);
+  if (existingRestore) return existingRestore;
 
-  HTMLElement.prototype.focus = function focus(options) {
-    if (!isFocusable(this)) return;
+  const originalFocus = HTMLElementConstructor.prototype.focus;
+
+  HTMLElementConstructor.prototype.focus = function focus(options) {
+    if (!isElementFocusable(this)) return;
     return originalFocus.call(this, options);
   };
 
-  const originalGetClientRects = Element.prototype.getClientRects;
+  const originalGetClientRects = ElementConstructor.prototype.getClientRects;
 
   // @ts-expect-error
-  Element.prototype.getClientRects = function getClientRects() {
+  ElementConstructor.prototype.getClientRects = function getClientRects() {
     const isHidden = (element: Element) => {
       if (!element.isConnected) return true;
       if (element.parentElement && isHidden(element.parentElement)) return true;
-      if (!(element instanceof HTMLElement)) return false;
+      if (!(element instanceof HTMLElementConstructor)) return false;
       if (element.hidden) return true;
-      const style = getComputedStyle(element);
+      const style = targetWindow.getComputedStyle(element);
       return style.display === "none" || style.visibility === "hidden";
     };
     if (isHidden(this)) return [];
     return [{ width: 1, height: 1 }];
   };
 
-  if (!Element.prototype.scrollIntoView) {
-    Element.prototype.scrollIntoView = noop;
+  if (!ElementConstructor.prototype.scrollIntoView) {
+    ElementConstructor.prototype.scrollIntoView = noop;
   }
 
-  if (!Element.prototype.hasPointerCapture) {
-    Element.prototype.hasPointerCapture = noop;
+  if (!ElementConstructor.prototype.hasPointerCapture) {
+    ElementConstructor.prototype.hasPointerCapture = noop;
   }
 
-  if (!Element.prototype.setPointerCapture) {
-    Element.prototype.setPointerCapture = noop;
+  if (!ElementConstructor.prototype.setPointerCapture) {
+    ElementConstructor.prototype.setPointerCapture = noop;
   }
 
-  if (!Element.prototype.releasePointerCapture) {
-    Element.prototype.releasePointerCapture = noop;
+  if (!ElementConstructor.prototype.releasePointerCapture) {
+    ElementConstructor.prototype.releasePointerCapture = noop;
   }
 
-  if (
-    typeof window.ClipboardEvent === "undefined" &&
-    typeof Event !== "undefined"
-  ) {
-    window.ClipboardEvent = class ClipboardEvent extends Event {
-      #clipboardData: DataTransfer | null;
-
-      constructor(type: string, eventInitDict: ClipboardEventInit | null = {}) {
-        const eventInit = eventInitDict ?? {};
-        super(type, eventInit);
-        this.#clipboardData = eventInit.clipboardData ?? null;
-      }
-
-      get clipboardData() {
-        return this.#clipboardData;
-      }
-    };
-  }
-
-  polyfillMouseEventMembers();
-  patchKeyboardEventModifierState();
+  polyfillMouseEventMembers(targetWindow);
+  patchKeyboardEventModifierState(targetWindow);
 
   // happy-dom doesn't implement window.alert (jsdom and real browsers do).
   // Provide a no-op so code that calls or spies on it works under happy-dom.
-  if (isHappyDOM() && typeof window.alert !== "function") {
-    window.alert = () => {};
+  if (isHappyDOM(targetWindow) && typeof targetWindow.alert !== "function") {
+    targetWindow.alert = () => {};
   }
 
   // happy-dom diverges from real browsers in a few spec-conformance areas; these
   // shims patch them for the whole test environment (jsdom already behaves
   // correctly). Each helper returns a function that restores the original
   // behavior.
-  const restoreHappyDOMShims = isHappyDOM()
-    ? [
-        patchHappyDOMValidationMessage(),
-        patchHappyDOMFormData(),
-        patchHappyDOMSelectionChange(),
-        patchHappyDOMAnimationFrame(),
-        patchHappyDOMProxiedParentNode(),
-      ]
-    : [];
+  const restoreHappyDOMShims =
+    isHappyDOM(targetWindow) &&
+    typeof window !== "undefined" &&
+    targetWindow === window
+      ? [
+          patchHappyDOMValidationMessage(),
+          patchHappyDOMFormData(),
+          patchHappyDOMSelectionChange(),
+          patchHappyDOMAnimationFrame(),
+          patchHappyDOMProxiedParentNode(),
+        ]
+      : [];
 
-  return () => {
-    HTMLElement.prototype.focus = originalFocus;
-    Element.prototype.getClientRects = originalGetClientRects;
+  const restore = () => {
+    HTMLElementConstructor.prototype.focus = originalFocus;
+    ElementConstructor.prototype.getClientRects = originalGetClientRects;
     for (const restore of restoreHappyDOMShims) restore();
+    appliedBrowserShims.delete(ElementConstructor.prototype);
+  };
+  appliedBrowserShims.set(ElementConstructor.prototype, restore);
+  return restore;
+}
+
+export function ensureBrowserShims(target: OwnerWindowSource) {
+  const targetWindow = getOwnerWindow(target);
+  applyBrowserShims(targetWindow);
+  return targetWindow;
+}
+
+export function isVisible(element: Element) {
+  ensureBrowserShims(element);
+  return isElementVisible(element);
+}
+
+export function isFocusable(element: Element) {
+  ensureBrowserShims(element);
+  return isElementFocusable(element);
+}
+
+export function getElementStyle(element: Element) {
+  return ensureBrowserShims(element)?.getComputedStyle(element);
+}
+
+function polyfillClipboardEvent(targetWindow: Window & typeof globalThis) {
+  if (typeof targetWindow.ClipboardEvent !== "undefined") return;
+  if (typeof targetWindow.Event === "undefined") return;
+  const { Event: EventConstructor } = targetWindow;
+  targetWindow.ClipboardEvent = class ClipboardEvent extends EventConstructor {
+    #clipboardData: DataTransfer | null;
+
+    constructor(type: string, eventInitDict: ClipboardEventInit | null = {}) {
+      const eventInit = eventInitDict ?? {};
+      super(type, eventInit);
+      this.#clipboardData = eventInit.clipboardData ?? null;
+    }
+
+    get clipboardData() {
+      return this.#clipboardData;
+    }
   };
 }
 
@@ -141,9 +188,9 @@ const initOnlyModifierMembers = new Map<string, keyof EventModifierInit>([
 // https://github.com/ariakit/ariakit/issues/7156
 // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/getModifierState
 // https://drafts.csswg.org/cssom-view/#dom-mouseevent-x
-function polyfillMouseEventMembers() {
-  if (typeof window.MouseEvent === "undefined") return;
-  const prototype = window.MouseEvent.prototype;
+function polyfillMouseEventMembers(targetWindow: Window & typeof globalThis) {
+  if (typeof targetWindow.MouseEvent === "undefined") return;
+  const prototype = targetWindow.MouseEvent.prototype;
 
   if (typeof prototype.getModifierState !== "function") {
     // happy-dom's constructor keeps only the standard flags and drops the
@@ -186,8 +233,10 @@ function polyfillMouseEventMembers() {
 // member, so record the initializer as the event is built and answer from it.
 // https://github.com/ariakit/ariakit/issues/7166
 // https://w3c.github.io/uievents/#event-modifier-initializers
-function patchKeyboardEventModifierState() {
-  const OriginalKeyboardEvent = window.KeyboardEvent;
+function patchKeyboardEventModifierState(
+  targetWindow: Window & typeof globalThis,
+) {
+  const OriginalKeyboardEvent = targetWindow.KeyboardEvent;
   if (typeof OriginalKeyboardEvent !== "function") return;
   const prototype = OriginalKeyboardEvent.prototype;
 
@@ -233,7 +282,7 @@ function patchKeyboardEventModifierState() {
     },
   });
 
-  window.KeyboardEvent = PatchedKeyboardEvent;
+  targetWindow.KeyboardEvent = PatchedKeyboardEvent;
   // An event reports the same constructor the global exposes, so move the
   // prototype's own pointer to the wrapper as well.
   prototype.constructor = PatchedKeyboardEvent;

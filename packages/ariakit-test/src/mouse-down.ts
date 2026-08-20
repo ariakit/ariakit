@@ -1,8 +1,6 @@
 import {
   getDocument,
-  isVisible,
   getClosestFocusable,
-  isFocusable,
   isTextbox,
   invariant,
 } from "@ariakit/utils";
@@ -19,6 +17,7 @@ import {
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
+import { getElementStyle, isFocusable, isVisible } from "./shims.ts";
 
 const selectionClearingInputTypes = [
   "date",
@@ -122,7 +121,7 @@ export function mouseDown(element: Element | null, options?: PointerEventInit) {
       }
       if (
         isFocusable(element) &&
-        getComputedStyle(element).pointerEvents !== "none"
+        getElementStyle(element)?.pointerEvents !== "none"
       ) {
         await focus(element);
       } else if (element.parentElement) {

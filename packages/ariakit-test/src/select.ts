@@ -1,10 +1,11 @@
-import { isVisible, invariant } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import { getClickOptions, getHoverOptions, omitButtons } from "./__mouse.ts";
 import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { hover } from "./hover.ts";
 import { mouseDown } from "./mouse-down.ts";
 import { mouseUp } from "./mouse-up.ts";
+import { isVisible } from "./shims.ts";
 import { sleep } from "./sleep.ts";
 
 /**

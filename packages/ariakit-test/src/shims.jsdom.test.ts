@@ -1,7 +1,23 @@
 // @vitest-environment jsdom
 
 import { expect, test } from "vitest";
-import "./shims.ts";
+import { click, dispatch, hover, press } from "./index.ts";
+
+function createIframeButton() {
+  const iframe = document.createElement("iframe");
+  document.body.append(iframe);
+  const iframeWindow = iframe.contentDocument?.defaultView;
+  if (!iframeWindow) throw new Error("Unable to reach the iframe window");
+  const button = iframeWindow.document.createElement("button");
+  iframeWindow.document.body.append(button);
+  return {
+    iframeWindow,
+    button,
+    [Symbol.dispose]() {
+      iframe.remove();
+    },
+  };
+}
 
 test("constructs clipboard events from ClipboardEventInit", () => {
   const clipboardData = { getData: () => "a,b" };
@@ -15,6 +31,70 @@ test("constructs clipboard events from ClipboardEventInit", () => {
   // https://webidl.spec.whatwg.org/#es-dictionary
   // @ts-expect-error
   expect(new ClipboardEvent("paste", null).clipboardData).toBeNull();
+});
+
+test("applies layout shims in an iframe realm before hovering", async () => {
+  using fixture = createIframeButton();
+  const { button, iframeWindow } = fixture;
+  const hiddenButton = iframeWindow.document.createElement("button");
+  hiddenButton.style.display = "none";
+  iframeWindow.document.body.append(hiddenButton);
+  const received: string[] = [];
+  button.addEventListener("pointerover", (event) => received.push(event.type));
+  hiddenButton.addEventListener("pointerover", (event) =>
+    received.push(event.type),
+  );
+
+  await hover(button);
+  await hover(hiddenButton);
+
+  expect(received).toEqual(["pointerover"]);
+  expect(button.getClientRects()[0]).toMatchObject({ width: 1, height: 1 });
+  expect(hiddenButton.getClientRects()).toHaveLength(0);
+});
+
+test("applies focus shims in an iframe realm before clicking", async () => {
+  using fixture = createIframeButton();
+  const { button, iframeWindow } = fixture;
+  const received: string[] = [];
+  button.addEventListener("pointerdown", (event) => received.push(event.type));
+  button.addEventListener("click", (event) => received.push(event.type));
+
+  await click(button);
+
+  expect(received).toEqual(["pointerdown", "click"]);
+  expect(iframeWindow.document.activeElement).toBe(button);
+});
+
+test("applies browser shims in an iframe realm before pressing", async () => {
+  using fixture = createIframeButton();
+  const { button } = fixture;
+  const received: string[] = [];
+  button.addEventListener("keydown", (event) => received.push(event.type));
+  button.addEventListener("click", (event) => received.push(event.type));
+  button.addEventListener("keyup", (event) => received.push(event.type));
+
+  await press.Enter(button);
+
+  expect(received).toEqual(["keydown", "click", "keyup"]);
+});
+
+test("installs ClipboardEvent in an iframe realm before dispatching", async () => {
+  using fixture = createIframeButton();
+  const { button, iframeWindow } = fixture;
+  const clipboardData = { getData: () => "a,b" };
+  let received: ClipboardEvent | undefined;
+  button.addEventListener("paste", (event) => {
+    received = event;
+  });
+
+  // jsdom has no `DataTransfer` constructor, so use the smallest test double
+  // that can prove the fallback preserves the caller's object.
+  await dispatch.paste(button, { clipboardData });
+
+  expect(received).toBeInstanceOf(iframeWindow.ClipboardEvent);
+  expect(received).not.toBeInstanceOf(ClipboardEvent);
+  expect(received?.clipboardData).toBe(clipboardData);
 });
 
 test("leaves an environment that already implements mouse event members alone", () => {

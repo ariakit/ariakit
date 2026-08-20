@@ -3,7 +3,6 @@ import {
   setSelectionRange,
   getNextTabbable,
   getPreviousTabbable,
-  isFocusable,
 } from "@ariakit/utils";
 import { initEvent } from "./__init-event.ts";
 import {
@@ -16,6 +15,7 @@ import {
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
+import { isFocusable } from "./shims.ts";
 import { sleep } from "./sleep.ts";
 import { type } from "./type.ts";
 

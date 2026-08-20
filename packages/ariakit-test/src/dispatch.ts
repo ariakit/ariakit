@@ -9,6 +9,7 @@ import {
   withWindowEvent,
   wrapAsync,
 } from "./__utils.ts";
+import { ensureBrowserShims, getElementStyle } from "./shims.ts";
 
 type Target = Document | Window | Node | Element | null;
 
@@ -145,11 +146,12 @@ function dispatchDisabledControlClick(
 function baseDispatch(element: Target, event: Event): Promise<boolean> {
   return wrapAsync(async () => {
     invariant(element, `Unable to dispatch ${event.type} on null element`);
+    ensureBrowserShims(element);
 
     const eventName = event.type.toLowerCase();
 
     if (pointerEvents.includes(eventName) && "classList" in element) {
-      const { pointerEvents } = getComputedStyle(element);
+      const pointerEvents = getElementStyle(element)?.pointerEvents;
       if (pointerEvents === "none") {
         if (element.parentElement) {
           // Recursive so we'll repeat the process if the parent element also
@@ -181,6 +183,7 @@ function createNamedEvent(
   element: NonNullable<Target>,
   options?: object,
 ) {
+  ensureBrowserShims(element);
   if (
     eventName === "click" ||
     eventName === "auxClick" ||

@@ -1,8 +1,9 @@
-import { getActiveElement, isTextField, isFocusable } from "@ariakit/utils";
+import { getActiveElement, isTextField } from "@ariakit/utils";
 import type { DirtiableElement, TextField } from "./__utils.ts";
 import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
+import { isFocusable } from "./shims.ts";
 import { sleep } from "./sleep.ts";
 
 function getKeyFromChar(key: string) {

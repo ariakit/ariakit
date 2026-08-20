@@ -1,7 +1,8 @@
-import { getActiveElement, isFocusable, invariant } from "@ariakit/utils";
+import { getActiveElement, invariant } from "@ariakit/utils";
 import type { DirtiableElement } from "./__utils.ts";
 import { flushMicrotasks, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
+import { isFocusable } from "./shims.ts";
 
 /**
  * Moves focus to an element, simulating a real user focusing it. Elements that

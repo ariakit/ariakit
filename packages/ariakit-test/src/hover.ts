@@ -1,7 +1,8 @@
-import { isVisible, invariant } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import { getPointerOptions } from "./__mouse.ts";
 import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
+import { getElementStyle, isVisible } from "./shims.ts";
 import { sleep } from "./sleep.ts";
 
 type DocumentWithLastHovered = Document & {
@@ -9,7 +10,7 @@ type DocumentWithLastHovered = Document & {
 };
 
 function isPointerEventsEnabled(element: Element) {
-  return getComputedStyle(element).pointerEvents !== "none";
+  return getElementStyle(element)?.pointerEvents !== "none";
 }
 
 /**

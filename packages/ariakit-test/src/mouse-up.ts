@@ -1,4 +1,4 @@
-import { getDocument, isVisible, invariant } from "@ariakit/utils";
+import { getDocument, invariant } from "@ariakit/utils";
 import {
   getPointerOptions,
   getReleaseOptions,
@@ -10,6 +10,7 @@ import {
   wrapAsync,
 } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
+import { isVisible } from "./shims.ts";
 
 /**
  * Releases a pointer button on an element, firing `pointerup` and `mouseup`.

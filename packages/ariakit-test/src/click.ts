@@ -1,4 +1,4 @@
-import { isVisible, isFocusable, invariant } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import {
   getClickOptions,
   getContextMenuOptions,
@@ -12,6 +12,7 @@ import { focus } from "./focus.ts";
 import { hover } from "./hover.ts";
 import { mouseDown } from "./mouse-down.ts";
 import { mouseUp } from "./mouse-up.ts";
+import { isFocusable, isVisible } from "./shims.ts";
 import { sleep } from "./sleep.ts";
 
 function getClosestLabel(element: Element) {
