@@ -1,6 +1,10 @@
 import { expect, onTestFinished, test, vi } from "vitest";
 import {
+  fireBlurEvent,
   fireClickEvent,
+  fireEvent,
+  fireFocusEvent,
+  fireKeyboardEvent,
   isFocusEventOutside,
   isInputEvent,
   isPortalEvent,
@@ -263,7 +267,7 @@ test("fireClickEvent forwards the members of a live event passed as the init", (
 // `instanceof` check here. Replacing the constructor on the frame's window
 // alone makes the two distinguishable: only an implementation that reads the
 // element's own window builds the subclass.
-test("fireClickEvent builds the event with the element's own window", () => {
+function appendFrameButton() {
   const frame = document.createElement("iframe");
   document.body.append(frame);
   onTestFinished(() => frame.remove());
@@ -274,6 +278,11 @@ test("fireClickEvent builds the event with the element's own window", () => {
   const button = frameDocument.body.appendChild(
     frameDocument.createElement("button"),
   );
+  return { button, view };
+}
+
+test("fireClickEvent builds the event with the element's own window", () => {
+  const { button, view } = appendFrameButton();
   const ambientPointerEvent = view.PointerEvent;
   class FramePointerEvent extends ambientPointerEvent {}
   view.PointerEvent = FramePointerEvent;
@@ -292,16 +301,7 @@ test("fireClickEvent builds the event with the element's own window", () => {
 // still has none. Activation has to keep working there rather than throwing,
 // dropping only the pointer members.
 test("fireClickEvent falls back to MouseEvent where PointerEvent is missing", () => {
-  const frame = document.createElement("iframe");
-  document.body.append(frame);
-  onTestFinished(() => frame.remove());
-  const frameDocument = frame.contentDocument;
-  if (!frameDocument) throw new Error("iframe document is not available");
-  const view = frameDocument.defaultView;
-  if (!view) throw new Error("iframe window is not available");
-  const button = frameDocument.body.appendChild(
-    frameDocument.createElement("button"),
-  );
+  const { button, view } = appendFrameButton();
   const framePointerEvent = view.PointerEvent;
   Reflect.deleteProperty(view, "PointerEvent");
   onTestFinished(() => {
@@ -313,4 +313,109 @@ test("fireClickEvent falls back to MouseEvent where PointerEvent is missing", ()
   expect(clicked).toBeInstanceOf(view.MouseEvent);
   expect(clicked).not.toBeInstanceOf(framePointerEvent);
   expect(clicked?.ctrlKey).toBe(true);
+});
+
+// The remaining helpers have to read the same window `fireClickEvent` does, or
+// a listener inside a same-origin frame gets an event that fails `instanceof`
+// against its own interfaces. They tell the two realms apart the same way the
+// two tests above do. https://github.com/ariakit/ariakit/issues/7193
+
+function captureEvents(element: Element, ...types: string[]) {
+  const received: Event[] = [];
+  for (const type of types) {
+    element.addEventListener(type, (event) => received.push(event));
+  }
+  return received;
+}
+
+test("fireEvent builds the event with the element's own window", () => {
+  const { button, view } = appendFrameButton();
+  const frameEvent = view.Event;
+  class SubclassedEvent extends frameEvent {}
+  view.Event = SubclassedEvent;
+  onTestFinished(() => {
+    view.Event = frameEvent;
+  });
+  const received = captureEvents(button, "mouseout");
+
+  fireEvent(button, "mouseout");
+
+  expect(received).toHaveLength(1);
+  expect(received[0]).toBeInstanceOf(SubclassedEvent);
+});
+
+test("fireBlurEvent builds both events with the element's own window", () => {
+  const { button, view } = appendFrameButton();
+  const frameFocusEvent = view.FocusEvent;
+  class SubclassedFocusEvent extends frameFocusEvent {}
+  view.FocusEvent = SubclassedFocusEvent;
+  onTestFinished(() => {
+    view.FocusEvent = frameFocusEvent;
+  });
+  const received = captureEvents(button, "blur", "focusout");
+
+  fireBlurEvent(button);
+
+  expect(received.map((event) => event.type)).toEqual(["blur", "focusout"]);
+  for (const event of received) {
+    expect(event).toBeInstanceOf(SubclassedFocusEvent);
+  }
+});
+
+test("fireFocusEvent builds both events with the element's own window", () => {
+  const { button, view } = appendFrameButton();
+  const frameFocusEvent = view.FocusEvent;
+  class SubclassedFocusEvent extends frameFocusEvent {}
+  view.FocusEvent = SubclassedFocusEvent;
+  onTestFinished(() => {
+    view.FocusEvent = frameFocusEvent;
+  });
+  const received = captureEvents(button, "focus", "focusin");
+
+  fireFocusEvent(button);
+
+  expect(received.map((event) => event.type)).toEqual(["focus", "focusin"]);
+  for (const event of received) {
+    expect(event).toBeInstanceOf(SubclassedFocusEvent);
+  }
+});
+
+test("fireKeyboardEvent builds the event with the element's own window", () => {
+  const { button, view } = appendFrameButton();
+  const frameKeyboardEvent = view.KeyboardEvent;
+  class SubclassedKeyboardEvent extends frameKeyboardEvent {}
+  view.KeyboardEvent = SubclassedKeyboardEvent;
+  onTestFinished(() => {
+    view.KeyboardEvent = frameKeyboardEvent;
+  });
+  const received = captureEvents(button, "keydown");
+
+  fireKeyboardEvent(button, "keydown", { key: "ArrowDown" });
+
+  expect(received).toHaveLength(1);
+  expect(received[0]).toBeInstanceOf(SubclassedKeyboardEvent);
+});
+
+// `Document` exposes named elements as its own properties, so a form named
+// `defaultView` answers the lookup that resolves the window. Reading that
+// member without checking what came back leaves no constructor to build the
+// click with. https://github.com/ariakit/ariakit/issues/7201
+test("fireClickEvent falls back when a document answers its default view with an element", () => {
+  const otherDocument = document.implementation.createHTMLDocument("Other");
+  const button = otherDocument.body.appendChild(
+    otherDocument.createElement("button"),
+  );
+  const form = otherDocument.createElement("form");
+  form.name = "defaultView";
+  otherDocument.body.append(form);
+  Object.defineProperty(otherDocument, "defaultView", {
+    configurable: true,
+    value: form,
+  });
+  const received = captureEvents(button, "click");
+
+  fireClickEvent(button);
+
+  expect(received).toHaveLength(1);
+  expect(received[0]).toBeInstanceOf(PointerEvent);
 });

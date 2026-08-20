@@ -1,4 +1,4 @@
-import { noop } from "@ariakit/utils";
+import { getDocument, getWindow, noop } from "@ariakit/utils";
 
 export type DirtiableElement = Element & { dirty?: boolean };
 
@@ -25,21 +25,15 @@ export type OwnerWindowSource = Window | Document | Node | null | undefined;
  */
 export function getOwnerWindow(target: OwnerWindowSource) {
   if (!target) return null;
-  // `ownerDocument` first, because a form exposes its controls as named
-  // properties and one named `document` would answer the branch below. Neither
-  // happy-dom nor jsdom implements the form's `[LegacyOverrideBuiltIns]`, so
-  // this name still resolves through `Node.prototype` there; a browser does
-  // implement it, but `createEvent` resolves the window just as fragilely then.
-  // A `Document` reports `null` here and falls through to its own view.
-  // https://html.spec.whatwg.org/multipage/forms.html#the-form-element
-  if ("ownerDocument" in target && target.ownerDocument) {
-    return target.ownerDocument.defaultView;
-  }
-  if ("defaultView" in target) return target.defaultView;
-  // Through the document either way, since only `defaultView` is typed with the
-  // constructors a window carries.
-  if ("document" in target) return target.document.defaultView;
-  return null;
+  // `getWindow` resolves the realm defensively, because a form exposes its
+  // controls as named properties that override built-ins and a document does
+  // the same for the elements it names. It falls back to the ambient window
+  // rather than reporting failure, so the target's own view is the one that
+  // owns the target's document back. Everything else reports absent, which is
+  // what both callers fall back on.
+  // https://github.com/ariakit/ariakit/issues/7209
+  const view = getWindow(target);
+  return view.document === getDocument(target) ? view : null;
 }
 
 export const isBrowser =
