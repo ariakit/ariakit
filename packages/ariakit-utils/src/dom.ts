@@ -26,6 +26,7 @@ function checkIsBrowser() {
 // document answer the window lookup. The two guards below check what came back
 // rather than trusting the member it came from.
 // https://github.com/ariakit/ariakit/issues/7201
+// https://github.com/ariakit/ariakit/issues/7215
 
 // Typed the way `document.defaultView` is, because the interfaces a caller
 // reads off a window, such as `PointerEvent`, are globals rather than members
@@ -59,6 +60,12 @@ function isDocument(value: unknown): value is Document {
   }
 }
 
+// Start at the prototype to bypass named properties while keeping `value` as
+// the getter receiver, including for values from another realm.
+function getDOMProperty(value: object, name: string) {
+  return Reflect.get(Object.getPrototypeOf(value), name, value);
+}
+
 function ownsDocument(
   view: Window & typeof globalThis,
   ownerDocument: Document,
@@ -78,12 +85,11 @@ function ownsDocument(
 export function getDocument(node?: Window | Document | Node | null): Document {
   if (!node) return document;
   if (isDocument(node)) return node;
-  // A plain `Window` is not assignable to the intersection `isWindow` asserts,
-  // so it stays in the type of the branch that has already ruled it out.
-  const nodeDocument = isWindow(node)
-    ? node.document
-    : (node as Node).ownerDocument;
+  if (isWindow(node)) return node.document;
+  const nodeDocument = (node as Node).ownerDocument;
   if (isDocument(nodeDocument)) return nodeDocument;
+  const unshadowedDocument = getDOMProperty(node, "ownerDocument");
+  if (isDocument(unshadowedDocument)) return unshadowedDocument;
   return document;
 }
 
@@ -104,6 +110,8 @@ export function getWindow(
   if (isWindow(defaultView) && ownsDocument(defaultView, nodeDocument)) {
     return defaultView;
   }
+  const unshadowedView = getDOMProperty(nodeDocument, "defaultView");
+  if (isWindow(unshadowedView)) return unshadowedView;
   return window;
 }
 
@@ -172,15 +180,14 @@ export function contains(parent: Node, child: Node): boolean {
 export function isElement(
   target: EventTarget | null | undefined,
 ): target is Element {
-  // Reading `nodeType` on a non-node target yields `undefined`. The numeric
-  // literal (Node.ELEMENT_NODE === 1) avoids referencing the `Node` global, so
-  // the guard stays safe even if it's ever evaluated during SSR.
-  //
-  // Unlike `isDocument` above, this reads the member directly, so a form
-  // holding a control named `nodeType` answers for it. Left alone until the
-  // cost of the prototype read on this hot path is measured.
-  // https://github.com/ariakit/ariakit/issues/7215
-  return (target as Node | null)?.nodeType === 1;
+  // Node.ELEMENT_NODE === 1.
+  // Named-property collisions are objects, so numeric reads stay genuine.
+  const nodeType = (target as Node | null)?.nodeType;
+  return (
+    nodeType === 1 ||
+    (typeof nodeType === "object" &&
+      getDOMProperty(target as object, "nodeType") === 1)
+  );
 }
 
 /**
@@ -196,7 +203,13 @@ export function isElement(
  * }
  */
 export function isNode(target: EventTarget | null | undefined): target is Node {
-  return typeof (target as Node | null)?.nodeType === "number";
+  // Named-property collisions are objects, so numeric reads stay genuine.
+  const nodeType = (target as Node | null)?.nodeType;
+  return (
+    typeof nodeType === "number" ||
+    (typeof nodeType === "object" &&
+      typeof getDOMProperty(target as object, "nodeType") === "number")
+  );
 }
 
 /**

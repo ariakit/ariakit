@@ -37,6 +37,13 @@ export default function Example() {
         />{" "}
         Wrapped
       </label>
+      {/* https://github.com/ariakit/ariakit/issues/7215 */}
+      <Ariakit.Focusable
+        render={<form aria-label="Node editor" style={{ padding: 16 }} />}
+        tabIndex={0}
+      >
+        <input aria-label="Node type" name="nodeType" />
+      </Ariakit.Focusable>
     </div>
   );
 }
