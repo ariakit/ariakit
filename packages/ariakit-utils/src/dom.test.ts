@@ -7,9 +7,11 @@ import {
   getTextboxSelection,
   getTextboxValue,
   getWindow,
+  isButton,
   isElement,
   isNode,
   isTextField,
+  isVisible,
   setSelectionRange,
 } from "./dom.ts";
 
@@ -184,6 +186,47 @@ test.each(shadowingForms)(
     expect(getActiveElement(form)).toBe(button);
   },
 );
+
+// https://github.com/ariakit/ariakit/issues/7225
+test("getActiveElement ignores a document's named activeElement form", () => {
+  const { frameDocument } = appendFrame();
+  const button = frameDocument.createElement("button");
+  frameDocument.body.append(button);
+  const form = frameDocument.createElement("form");
+  form.name = "activeElement";
+  frameDocument.body.append(form);
+  button.focus();
+  Object.defineProperty(frameDocument, "activeElement", {
+    configurable: true,
+    value: form,
+  });
+
+  expect(getActiveElement(button)).toBe(button);
+});
+
+// https://github.com/ariakit/ariakit/issues/7225
+test("isButton ignores a form's named tagName control", () => {
+  const form = appendShadowingForm(document, "tagName");
+  shadowFormMember(form, "tagName");
+
+  expect(isButton(form)).toBe(false);
+});
+
+// https://github.com/ariakit/ariakit/issues/7225
+test("isVisible ignores controls named after the members it reads", () => {
+  const memberNames = [
+    "checkVisibility",
+    "offsetWidth",
+    "offsetHeight",
+    "getClientRects",
+  ];
+  const form = appendShadowingForm(document, ...memberNames);
+  for (const name of memberNames) {
+    shadowFormMember(form, name);
+  }
+
+  expect(isVisible(form)).toBe(true);
+});
 
 // Resolving through the frame is what makes a wrong answer visible: in the
 // ambient realm the fallback happens to be correct, so a helper that resolves

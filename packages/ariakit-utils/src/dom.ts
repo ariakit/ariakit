@@ -122,7 +122,11 @@ export function getActiveElement(
   node?: Node | null,
   activeDescendant = false,
 ): HTMLElement | null {
-  const { activeElement } = getDocument(node);
+  const ownerDocument = getDocument(node);
+  // The native accessor is inherited, so an own answer may be a named element.
+  const activeElement = Object.hasOwn(ownerDocument, "activeElement")
+    ? getDOMProperty(ownerDocument, "activeElement")
+    : ownerDocument.activeElement;
   if (!activeElement?.nodeName) {
     // In IE11, activeElement might be an empty object if we're interacting
     // with elements inside of an iframe.
@@ -229,9 +233,15 @@ export function isFrame(element: Element): element is HTMLIFrameElement {
  * isButton(document.querySelector("div[role='button']")); // false
  */
 export function isButton(element: { tagName: string; type?: string }) {
-  const tagName = element.tagName.toLowerCase();
-  if (tagName === "button") return true;
-  if (tagName === "input" && element.type) {
+  const tagNameProperty = element.tagName;
+  const tagName =
+    typeof tagNameProperty === "string"
+      ? tagNameProperty
+      : getDOMProperty(element, "tagName");
+  if (typeof tagName !== "string") return false;
+  const normalizedTagName = tagName.toLowerCase();
+  if (normalizedTagName === "button") return true;
+  if (normalizedTagName === "input" && element.type) {
     return buttonInputTypes.indexOf(element.type) !== -1;
   }
   return false;
@@ -253,12 +263,29 @@ export function isVisible(element: Element) {
   if (typeof element.checkVisibility === "function") {
     return element.checkVisibility();
   }
+  const unshadowedCheckVisibility = getDOMProperty(element, "checkVisibility");
+  if (typeof unshadowedCheckVisibility === "function") {
+    return unshadowedCheckVisibility.call(element);
+  }
   const htmlElement = element as HTMLElement;
-  return (
-    htmlElement.offsetWidth > 0 ||
-    htmlElement.offsetHeight > 0 ||
-    element.getClientRects().length > 0
-  );
+  const offsetWidthProperty = htmlElement.offsetWidth;
+  const offsetWidth =
+    typeof offsetWidthProperty === "number"
+      ? offsetWidthProperty
+      : getDOMProperty(element, "offsetWidth");
+  if (typeof offsetWidth === "number" && offsetWidth > 0) return true;
+  const offsetHeightProperty = htmlElement.offsetHeight;
+  const offsetHeight =
+    typeof offsetHeightProperty === "number"
+      ? offsetHeightProperty
+      : getDOMProperty(element, "offsetHeight");
+  if (typeof offsetHeight === "number" && offsetHeight > 0) return true;
+  if (typeof element.getClientRects === "function") {
+    return element.getClientRects().length > 0;
+  }
+  const unshadowedGetClientRects = getDOMProperty(element, "getClientRects");
+  if (typeof unshadowedGetClientRects !== "function") return false;
+  return unshadowedGetClientRects.call(element).length > 0;
 }
 
 /**

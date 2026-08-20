@@ -28,26 +28,26 @@ export default function Example() {
 
   return (
     <main>
-      <form ref={formRef} name="profileForm" aria-label="Profile">
+      <form ref={formRef} name="activeElement" aria-label="Profile">
         <label>
           Tag name
-          <input name="tagNameField" />
+          <input name="tagName" />
         </label>
         <label>
           Visibility check
-          <input name="checkVisibilityField" />
+          <input name="checkVisibility" />
         </label>
         <label>
           Width
-          <input name="offsetWidthField" />
+          <input name="offsetWidth" />
         </label>
         <label>
           Height
-          <input name="offsetHeightField" />
+          <input name="offsetHeight" />
         </label>
         <label>
           Client rectangles
-          <input name="getClientRectsField" />
+          <input name="getClientRects" />
         </label>
       </form>
 
