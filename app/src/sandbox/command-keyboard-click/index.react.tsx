@@ -92,9 +92,13 @@ export default function Example() {
     <main>
       <h1>Command keyboard click event</h1>
 
-      {/* TODO: Remove the native button workaround once
-          https://github.com/ariakit/ariakit/issues/7192 is fixed. */}
+      {/* Both commands render a non-native element on purpose, because that is
+          what makes `Command` synthesize the click for Enter and Space. On a
+          native button the browser dispatches it, and `@ariakit/test` simulates
+          it, so neither would exercise the code under test. */}
       <Ariakit.Command
+        role="button"
+        render={<div />}
         onClick={createClickReporter(setClickEvents, setClickMetadata)}
       >
         Report click
@@ -118,6 +122,8 @@ export default function Example() {
       {frameBody
         ? createPortal(
             <Ariakit.Command
+              role="button"
+              render={<div />}
               onClick={createClickReporter(
                 setFrameClickEvents,
                 setFrameClickMetadata,
@@ -145,7 +151,9 @@ export default function Example() {
       <div data-shadow-host ref={setShadowHost} />
       {shadowRoot
         ? createPortal(
-            <Ariakit.Command>Shadow command</Ariakit.Command>,
+            <Ariakit.Command role="button" render={<div />}>
+              Shadow command
+            </Ariakit.Command>,
             shadowRoot,
           )
         : null}
