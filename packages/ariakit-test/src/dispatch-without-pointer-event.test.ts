@@ -116,10 +116,12 @@ test("initializes pointer events built without the constructor", async () => {
     expect(event?.getModifierState("Shift")).toBe(true);
     expect(event?.pointerId).toBe(7);
     expect(event?.pointerType).toBe("pen");
-    // The boundary the readme documents: a member a browser computes rather
-    // than reading from an init came from the `MouseEvent` base, which a bare
-    // `Event` has no equivalent of, so no initializer can supply it.
-    expect(event?.pageX).toBeUndefined();
+    expect(event?.pageX).toBe(11);
+    expect(event?.pageY).toBe(0);
+    expect(event?.which).toBe(1);
+    // The offset pair depends on layout, which this environment cannot report.
+    expect(event?.offsetX).toBeUndefined();
+    expect(event?.offsetY).toBeUndefined();
   } finally {
     button.remove();
   }

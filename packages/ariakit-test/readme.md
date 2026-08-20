@@ -36,7 +36,7 @@ The helpers expect a DOM that implements `PointerEvent`, which means happy-dom, 
 
 They still run on jsdom 26, which `jest-environment-jsdom` 30 depends on. Every event the helpers fire there carries the same mouse, modifier, and pointer members it carries anywhere else, so a listener reads the same `clientX`, `button`, `pointerId`, and modifier state it would in a browser. `click`, `auxclick`, and `contextmenu` are built from `MouseEvent` there rather than `PointerEvent`, which also keeps the members a browser computes.
 
-The `pointer*` events are the ones that environment cannot build from an interface of their own, so they come from `Event`: they are not `instanceof MouseEvent` there, and `pageX`, `pageY`, `offsetX`, `offsetY`, and `which` are undefined on them. The `PointerEvent` global is absent altogether, so both `new PointerEvent()` and `event instanceof PointerEvent` throw a `ReferenceError`.
+The `pointer*` events are the ones that environment cannot build from an interface of their own, so they come from `Event` and are not `instanceof MouseEvent`. The dispatch layer still derives `pageX`, `pageY`, and `which`, but leaves the layout-dependent `offsetX` and `offsetY` undefined. The `PointerEvent` global is absent altogether, so both `new PointerEvent()` and `event instanceof PointerEvent` throw a `ReferenceError`.
 
 <!-- ariakit-docs:start -->
 
@@ -129,7 +129,9 @@ Creates and fires a DOM event on an element, then waits for the resulting microt
 
 Unlike higher-level helpers such as `click` and `type`, this fires a single event without simulating the surrounding interaction sequence. Pointer and mouse events fired on an element with `pointer-events: none` are re-dispatched on the nearest ancestor that has pointer events enabled, matching how browsers route those events.
 
-A pointer event built by name reports the contact size and transducer angle browsers report for a device with neither, so `width` and `height` are `1` and `altitudeAngle` is a right angle. The members describing a gesture, such as `pressure` and `isPrimary`, keep their defaults here; the higher-level helpers fill those in. An event you construct yourself keeps whatever its constructor gave it.
+A pointer event built by name reports the contact size and transducer angle browsers report for a device with neither, so `width` and `height` are `1` and `altitudeAngle` is a right angle. Supplying only the tilt or spherical angle pair derives the other pair. The members describing a gesture, such as `pressure` and `isPrimary`, keep their defaults here; the higher-level helpers fill those in. An event you construct yourself keeps whatever its constructor gave it.
+
+Mouse and pointer events built by name derive `pageX` and `pageY` from the client coordinates and target window scroll, and derive `which` from `button`. The layout-dependent `offsetX` and `offsetY` keep the environment's values.
 
 `click`, `auxclick`, and `contextmenu` are built as `PointerEvent`, the way browsers dispatch them, so they accept and report pointer properties such as `pointerType`. An environment with no `PointerEvent` builds them as `MouseEvent` instead, and they report the same properties there.
 

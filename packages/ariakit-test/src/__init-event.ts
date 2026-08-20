@@ -80,11 +80,92 @@ function sanitizeContactSize(size: number | undefined) {
 
 // Pointer Events requires π/2, a transducer perpendicular to the screen, from a
 // device that reports no tilt. It has no dictionary default, and happy-dom's
-// constructor uses 0, an angle no engine produces for a mouse. The tilt pair is
-// left unconverted, tracked in https://github.com/ariakit/ariakit/issues/7185.
+// constructor uses 0, an angle no engine produces for a mouse.
 // https://w3c.github.io/pointerevents/#dom-pointerevent-altitudeangle
 function sanitizeAltitudeAngle(angle: number | undefined) {
   return angle ?? Math.PI / 2;
+}
+
+// Convert between the two orientation pairs with the Pointer Events algorithm.
+// https://www.w3.org/TR/pointerevents/#converting-between-tiltx-tilty-and-altitudeangle-azimuthangle
+function sphericalToTilt(altitudeAngle: number, azimuthAngle: number) {
+  let tiltXRadians = 0;
+  let tiltYRadians = 0;
+
+  if (altitudeAngle === 0) {
+    if (azimuthAngle === 0 || azimuthAngle === 2 * Math.PI) {
+      tiltXRadians = Math.PI / 2;
+    } else if (azimuthAngle === Math.PI / 2) {
+      tiltYRadians = Math.PI / 2;
+    } else if (azimuthAngle === Math.PI) {
+      tiltXRadians = -Math.PI / 2;
+    } else if (azimuthAngle === (3 * Math.PI) / 2) {
+      tiltYRadians = -Math.PI / 2;
+    } else if (azimuthAngle > 0 && azimuthAngle < Math.PI / 2) {
+      tiltXRadians = Math.PI / 2;
+      tiltYRadians = Math.PI / 2;
+    } else if (azimuthAngle > Math.PI / 2 && azimuthAngle < Math.PI) {
+      tiltXRadians = -Math.PI / 2;
+      tiltYRadians = Math.PI / 2;
+    } else if (azimuthAngle > Math.PI && azimuthAngle < (3 * Math.PI) / 2) {
+      tiltXRadians = -Math.PI / 2;
+      tiltYRadians = -Math.PI / 2;
+    } else if (azimuthAngle > (3 * Math.PI) / 2 && azimuthAngle < 2 * Math.PI) {
+      tiltXRadians = Math.PI / 2;
+      tiltYRadians = -Math.PI / 2;
+    }
+  } else {
+    const tangent = Math.tan(altitudeAngle);
+    tiltXRadians = Math.atan(Math.cos(azimuthAngle) / tangent);
+    tiltYRadians = Math.atan(Math.sin(azimuthAngle) / tangent);
+  }
+
+  const radiansToDegrees = 180 / Math.PI;
+  const tiltX = Math.round(tiltXRadians * radiansToDegrees);
+  const tiltY = Math.round(tiltYRadians * radiansToDegrees);
+  return {
+    tiltX: tiltX === 0 ? 0 : tiltX,
+    tiltY: tiltY === 0 ? 0 : tiltY,
+  };
+}
+
+function tiltToSpherical(tiltX: number, tiltY: number) {
+  const tiltXRadians = (tiltX * Math.PI) / 180;
+  const tiltYRadians = (tiltY * Math.PI) / 180;
+  const isParallel = Math.abs(tiltX) === 90 || Math.abs(tiltY) === 90;
+
+  let azimuthAngle = 0;
+  if (tiltX === 0) {
+    if (tiltY > 0) {
+      azimuthAngle = Math.PI / 2;
+    } else if (tiltY < 0) {
+      azimuthAngle = (3 * Math.PI) / 2;
+    }
+  } else if (tiltY === 0) {
+    if (tiltX < 0) {
+      azimuthAngle = Math.PI;
+    }
+  } else if (!isParallel) {
+    azimuthAngle = Math.atan2(Math.tan(tiltYRadians), Math.tan(tiltXRadians));
+    if (azimuthAngle < 0) {
+      azimuthAngle += 2 * Math.PI;
+    }
+  }
+
+  let altitudeAngle = 0;
+  if (isParallel) {
+    altitudeAngle = 0;
+  } else if (tiltX === 0) {
+    altitudeAngle = Math.PI / 2 - Math.abs(tiltYRadians);
+  } else if (tiltY === 0) {
+    altitudeAngle = Math.PI / 2 - Math.abs(tiltXRadians);
+  } else {
+    altitudeAngle = Math.atan(
+      1 / Math.sqrt(Math.tan(tiltXRadians) ** 2 + Math.tan(tiltYRadians) ** 2),
+    );
+  }
+
+  return { altitudeAngle, azimuthAngle };
 }
 
 function initClipboardEvent(
@@ -228,18 +309,25 @@ function initMouseEvent(
     buttons,
     relatedTarget,
   }: MouseEventInit & { x?: number; y?: number },
+  realm: EventRealm,
 ) {
+  const sanitizedClientX = sanitizeNumber(clientX);
+  const sanitizedClientY = sanitizeNumber(clientY);
+  const sanitizedButton = sanitizeNumber(button);
   assignProps(event, {
     screenX: sanitizeNumber(screenX),
     screenY: sanitizeNumber(screenY),
-    clientX: sanitizeNumber(clientX),
-    x: sanitizeNumber(clientX),
-    clientY: sanitizeNumber(clientY),
-    y: sanitizeNumber(clientY),
+    clientX: sanitizedClientX,
+    x: sanitizedClientX,
+    pageX: sanitizedClientX + sanitizeNumber(realm.scrollX),
+    clientY: sanitizedClientY,
+    y: sanitizedClientY,
+    pageY: sanitizedClientY + sanitizeNumber(realm.scrollY),
     movementX: sanitizeNumber(movementX),
     movementY: sanitizeNumber(movementY),
-    button: sanitizeNumber(button),
+    button: sanitizedButton,
     buttons: sanitizeNumber(buttons),
+    which: sanitizedButton + 1,
     relatedTarget,
   });
 }
@@ -262,17 +350,34 @@ function initPointerEvent(
     pointerType = "mouse",
   }: PointerEventInitWithPersistentDeviceId,
 ) {
+  let sanitizedTiltX = sanitizeNumber(tiltX);
+  let sanitizedTiltY = sanitizeNumber(tiltY);
+  let sanitizedAltitudeAngle = sanitizeAltitudeAngle(altitudeAngle);
+  let sanitizedAzimuthAngle = sanitizeNumber(azimuthAngle);
+  const hasTilt = tiltX != null || tiltY != null;
+  const hasSphericalAngles = altitudeAngle != null || azimuthAngle != null;
+
+  if (hasTilt && !hasSphericalAngles) {
+    const angles = tiltToSpherical(sanitizedTiltX, sanitizedTiltY);
+    sanitizedAltitudeAngle = angles.altitudeAngle;
+    sanitizedAzimuthAngle = angles.azimuthAngle;
+  } else if (hasSphericalAngles && !hasTilt) {
+    const tilt = sphericalToTilt(sanitizedAltitudeAngle, sanitizedAzimuthAngle);
+    sanitizedTiltX = tilt.tiltX;
+    sanitizedTiltY = tilt.tiltY;
+  }
+
   assignProps(event, {
     pointerId: sanitizeNumber(pointerId),
     width: sanitizeContactSize(width),
     height: sanitizeContactSize(height),
     pressure: sanitizeNumber(pressure),
     tangentialPressure: sanitizeNumber(tangentialPressure),
-    tiltX: sanitizeNumber(tiltX),
-    tiltY: sanitizeNumber(tiltY),
+    tiltX: sanitizedTiltX,
+    tiltY: sanitizedTiltY,
     twist: sanitizeNumber(twist),
-    altitudeAngle: sanitizeAltitudeAngle(altitudeAngle),
-    azimuthAngle: sanitizeNumber(azimuthAngle),
+    altitudeAngle: sanitizedAltitudeAngle,
+    azimuthAngle: sanitizedAzimuthAngle,
     persistentDeviceId: sanitizeNumber(persistentDeviceId),
     isPrimary: !!isPrimary,
     pointerType: pointerType,
@@ -393,7 +498,7 @@ export function initEvent<T extends Event>(
     initUIEventModifiers(event, options);
   }
   if (isMouseEvent(event, realm)) {
-    initMouseEvent(event, options);
+    initMouseEvent(event, options, realm);
     initUIEventModifiers(event, options);
   }
   if (isPointerEvent(event, realm)) {
