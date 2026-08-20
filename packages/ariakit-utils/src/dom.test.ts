@@ -119,7 +119,9 @@ function appendShadowingForm(
 
 function shadowFormMember(form: HTMLFormElement, name: string) {
   const control = form.querySelector(`[name="${name}"]`);
-  if (!control) throw new Error(`Expected a control named ${name}`);
+  if (!control) {
+    throw new Error(`Expected a control named ${name}`);
+  }
   Object.defineProperty(form, name, {
     configurable: true,
     value: control,
@@ -300,7 +302,7 @@ test("resolves supplied nodes when imported without DOM globals", async () => {
   const form = appendShadowingForm(frameDocument, "nodeType", "ownerDocument");
   shadowFormMember(form, "nodeType");
   shadowFormMember(form, "ownerDocument");
-  const globalNames = ["window", "document", "Node"] as const;
+  const globalNames = ["window", "document", "Node", "Document"] as const;
   const descriptors = globalNames.map(
     (name) =>
       [name, Object.getOwnPropertyDescriptor(globalThis, name)] as const,

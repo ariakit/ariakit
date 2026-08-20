@@ -44,22 +44,35 @@ function getDOMGetter(prototype: object | undefined, name: string) {
   ) {
     // oxlint-disable-next-line typescript/unbound-method -- called with a receiver
     const getter = Object.getOwnPropertyDescriptor(current, name)?.get;
-    if (getter) return getter as DOMGetter;
+    if (getter) {
+      return getter as DOMGetter;
+    }
   }
   return undefined;
 }
 
-const nodeTypeGetter = getDOMGetter(
-  typeof Node === "undefined" ? undefined : Node.prototype,
-  "nodeType",
-);
+const nodePrototype = typeof Node === "undefined" ? undefined : Node.prototype;
+const documentPrototype =
+  typeof Document === "undefined" ? undefined : Document.prototype;
 
-const ownerDocumentGetter = getDOMGetter(
-  typeof Node === "undefined" ? undefined : Node.prototype,
-  "ownerDocument",
-);
+const nodeTypeGetter = getDOMGetter(nodePrototype, "nodeType");
+const ownerDocumentGetter = getDOMGetter(nodePrototype, "ownerDocument");
+const defaultViewGetter = getDOMGetter(documentPrototype, "defaultView");
 
-function callDOMGetter(getter: DOMGetter, value: unknown) {
+function readDOMMember(
+  value: unknown,
+  cachedGetter: DOMGetter | undefined,
+  name: string,
+) {
+  if (value === null) return undefined;
+  if (typeof value !== "object" && typeof value !== "function") {
+    return undefined;
+  }
+  const getter =
+    cachedGetter ?? getDOMGetter(Object.getPrototypeOf(value), name);
+  if (!getter) {
+    return Reflect.get(value, name);
+  }
   try {
     return getter.call(value);
   } catch {
@@ -69,16 +82,7 @@ function callDOMGetter(getter: DOMGetter, value: unknown) {
 }
 
 function getNodeType(value: unknown) {
-  if (!value) return undefined;
-  const getter =
-    nodeTypeGetter ?? getDOMGetter(Object.getPrototypeOf(value), "nodeType");
-  if (!getter) return (value as Node).nodeType;
-  try {
-    return getter.call(value);
-  } catch {
-    // The brand check rejects anything that is not a node.
-    return undefined;
-  }
+  return readDOMMember(value, nodeTypeGetter, "nodeType");
 }
 
 function isDocument(value: unknown): value is Document {
@@ -87,21 +91,17 @@ function isDocument(value: unknown): value is Document {
 }
 
 function getOwnerDocument(node: Node) {
-  const getter =
-    ownerDocumentGetter ??
-    getDOMGetter(Object.getPrototypeOf(node), "ownerDocument");
-  if (!getter) return node.ownerDocument;
-  return callDOMGetter(getter, node);
+  return readDOMMember(node, ownerDocumentGetter, "ownerDocument");
 }
 
 function getDefaultView(ownerDocument: Document) {
+  // Preserve the exact ambient window object; some DOM implementations expose
+  // a different object through the `Document` getter.
+  // https://github.com/ariakit/ariakit/pull/7217#discussion_r3819047925
   if (typeof window !== "undefined" && ownerDocument === window.document) {
     return window;
   }
-  const prototype = Object.getPrototypeOf(ownerDocument) as object;
-  const getter = getDOMGetter(prototype, "defaultView");
-  if (!getter) return ownerDocument.defaultView;
-  return callDOMGetter(getter, ownerDocument);
+  return readDOMMember(ownerDocument, defaultViewGetter, "defaultView");
 }
 
 /**
@@ -129,7 +129,9 @@ export function getWindow(
   if (isWindow(node)) return node;
   const nodeDocument = getDocument(node);
   const defaultView = getDefaultView(nodeDocument);
-  if (isWindow(defaultView)) return defaultView;
+  if (isWindow(defaultView)) {
+    return defaultView;
+  }
   return window;
 }
 
