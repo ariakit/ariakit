@@ -11,6 +11,7 @@ import {
 import type { Options, Props } from "@ariakit/react-utils";
 import {
   getDocument,
+  getWindow,
   isFocusEventOutside,
   disableFocusIn,
   getNextTabbable,
@@ -33,7 +34,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 function getRootElement(element?: Element | null) {
   const doc = getDocument(element);
   const { fullscreenElement } = doc;
-  const HTMLElementClass = doc.defaultView?.HTMLElement;
+  const HTMLElementClass = getWindow(element).HTMLElement;
   if (HTMLElementClass && fullscreenElement instanceof HTMLElementClass) {
     return fullscreenElement;
   }
