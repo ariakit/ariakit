@@ -8,8 +8,10 @@ import type { OwnerWindowSource } from "./__utils.ts";
 import { getOwnerWindow, isBrowser, isHappyDOM } from "./__utils.ts";
 
 // Apply shims at import because components read layout and focusability between
-// interactions. Both public DOM entry points load this side effect.
+// interactions. Frame realms stay unshimmed until a helper first receives one
+// of their nodes. Both public DOM entry points load this side effect.
 // https://github.com/ariakit/ariakit/pull/6256#discussion_r3366022385
+// https://github.com/ariakit/ariakit/pull/7219#discussion_r3819765577
 
 // Key by the prototype because happy-dom frames share their parent's classes;
 // keying by window would wrap the same methods again for every frame.
