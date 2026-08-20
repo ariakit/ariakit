@@ -74,12 +74,12 @@ interface DOMMemberTypes {
   string: string;
 }
 
-function getDOMMember<Type extends keyof DOMMemberTypes>(
-  value: object,
-  name: string,
+function getDOMMember<Value extends object, Type extends keyof DOMMemberTypes>(
+  value: Value,
+  name: Extract<keyof Value, string>,
   type: Type,
 ): DOMMemberTypes[Type] | undefined {
-  const member: unknown = Reflect.get(value, name);
+  const member: unknown = value[name];
   if (typeof member === type) {
     return member as DOMMemberTypes[Type];
   }
@@ -282,9 +282,10 @@ const buttonInputTypes = [
 export function isVisible(element: Element): boolean {
   const checkVisibility = getDOMMember(element, "checkVisibility", "function");
   if (checkVisibility) return checkVisibility.call(element);
-  const offsetWidth = getDOMMember(element, "offsetWidth", "number");
+  const htmlElement = element as HTMLElement;
+  const offsetWidth = getDOMMember(htmlElement, "offsetWidth", "number");
   if (offsetWidth != null && offsetWidth > 0) return true;
-  const offsetHeight = getDOMMember(element, "offsetHeight", "number");
+  const offsetHeight = getDOMMember(htmlElement, "offsetHeight", "number");
   if (offsetHeight != null && offsetHeight > 0) return true;
   const getClientRects = getDOMMember(element, "getClientRects", "function");
   if (!getClientRects) return false;
