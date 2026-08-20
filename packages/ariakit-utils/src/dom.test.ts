@@ -188,6 +188,26 @@ test("getWindow resolves a window to itself", () => {
   expect(getWindow(frameWindow)).toBe(frameWindow);
 });
 
+// A document names its own elements the same way, so one that names an element
+// `nodeType` answers that read with the element. Measured on the three engines
+// above; happy-dom implements no document named getter, so it is emulated here.
+// Validating through that read would reject the document every element in it
+// belongs to. https://github.com/ariakit/ariakit/pull/7213#discussion_r3816584472
+test("getDocument resolves an element whose document answers nodeType with an element", () => {
+  const otherDocument = document.implementation.createHTMLDocument("Other");
+  const element = otherDocument.createElement("div");
+  otherDocument.body.append(element);
+  const form = otherDocument.createElement("form");
+  form.name = "nodeType";
+  otherDocument.body.append(form);
+  Object.defineProperty(otherDocument, "nodeType", {
+    configurable: true,
+    value: form,
+  });
+
+  expect(getDocument(element)).toBe(otherDocument);
+});
+
 test("getDocument falls back when a form answers its owner document with a control", () => {
   const form = document.createElement("form");
   const control = document.createElement("input");

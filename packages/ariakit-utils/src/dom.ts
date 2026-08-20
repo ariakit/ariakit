@@ -36,10 +36,27 @@ function isWindow(value: unknown): value is Window & typeof globalThis {
   return (value as Window).window === value;
 }
 
+// Taken from the prototype because a document names its own elements too, so
+// one holding an element named `nodeType` answers that read with it. The getter
+// bypasses that lookup and is brand-checked against the interface rather than
+// the realm, so it still answers for a node belonging to a frame.
+// https://github.com/ariakit/ariakit/pull/7213#discussion_r3816584472
+const nodeTypeGetter =
+  typeof Node === "undefined"
+    ? undefined
+    : // oxlint-disable-next-line typescript/unbound-method -- the receiver is supplied explicitly below
+      Object.getOwnPropertyDescriptor(Node.prototype, "nodeType")?.get;
+
 function isDocument(value: unknown): value is Document {
-  // Node.DOCUMENT_NODE === 9. The numeric literal avoids referencing the `Node`
-  // global, the way `isElement` below does.
-  return (value as Node | null | undefined)?.nodeType === 9;
+  if (!value) return false;
+  // Node.DOCUMENT_NODE === 9.
+  if (!nodeTypeGetter) return (value as Node).nodeType === 9;
+  try {
+    return nodeTypeGetter.call(value) === 9;
+  } catch {
+    // The brand check rejects anything that is not a node.
+    return false;
+  }
 }
 
 function ownsDocument(
@@ -158,6 +175,11 @@ export function isElement(
   // Reading `nodeType` on a non-node target yields `undefined`. The numeric
   // literal (Node.ELEMENT_NODE === 1) avoids referencing the `Node` global, so
   // the guard stays safe even if it's ever evaluated during SSR.
+  //
+  // Unlike `isDocument` above, this reads the member directly, so a form
+  // holding a control named `nodeType` answers for it. Left alone until the
+  // cost of the prototype read on this hot path is measured.
+  // https://github.com/ariakit/ariakit/issues/7215
   return (target as Node | null)?.nodeType === 1;
 }
 
