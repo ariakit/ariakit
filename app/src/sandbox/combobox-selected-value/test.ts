@@ -12,7 +12,7 @@ test("renders fallback, selected value, and item state", async () => {
   expect(q.option("Apple")).toHaveTextContent("✓");
   expect(q.option("Banana")).not.toHaveTextContent("✓");
   expect(
-    q.option.ensure("Apple").querySelector("[data-selected]"),
+    q.option("Apple").querySelector("[data-selected]"),
   ).toBeInTheDocument();
 
   await click(q.option("Banana"));
@@ -39,7 +39,7 @@ test("heading labels the popover and nested list", async () => {
 
   await click(q.button("Dismiss fruit options"));
 
-  expect(q.dialog("Fruit options")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Fruit options")).not.toBeInTheDocument();
 });
 
 test("restores the selected value on Escape", async () => {
@@ -66,7 +66,7 @@ test("keeps a disabled filterable select out of the tab order", async () => {
 
 // https://github.com/ariakit/ariakit/pull/6832#discussion_r3647555511
 test("preserves the input value when resetValueOnSelect is false", async () => {
-  const input = q.combobox.ensure("Persistent fruit filter");
+  const input = q.combobox("Persistent fruit filter");
   await type("ap", input);
   await click(q.option("Apple"));
 
@@ -76,7 +76,7 @@ test("preserves the input value when resetValueOnSelect is false", async () => {
 // https://github.com/ariakit/ariakit/pull/6832
 test("preserves a select input value when resetValueOnSelect is false", async () => {
   await click(q.combobox("Persistent select fruit"));
-  const input = q.combobox.ensure("Persistent select fruit filter");
+  const input = q.combobox("Persistent select fruit filter");
   await type("ap", input);
   await click(q.option("Apple"));
 

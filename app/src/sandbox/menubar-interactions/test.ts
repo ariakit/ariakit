@@ -2,17 +2,17 @@ import { click, hover, press, q, sleep, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("show/hide on click", async () => {
-  expect(q.menu("File")).not.toBeInTheDocument();
+  expect(q.menu.maybe("File")).not.toBeInTheDocument();
   await click(q.menuitem("File"));
   expect(q.menu("File")).toBeVisible();
   expect(q.menu("File")).toHaveFocus();
   expect(q.menuitem("New Tab")).not.toHaveFocus();
   await click(q.menuitem("New Tab"));
-  expect(q.menu("File")).not.toBeInTheDocument();
+  expect(q.menu.maybe("File")).not.toBeInTheDocument();
   expect(q.menuitem("File")).toHaveFocus();
   await click(q.menuitem("File"));
   await click(q.menuitem("File"));
-  expect(q.menu("File")).not.toBeInTheDocument();
+  expect(q.menu.maybe("File")).not.toBeInTheDocument();
   expect(q.menuitem("File")).toHaveFocus();
 });
 
@@ -22,14 +22,14 @@ test("show/hide on enter", async () => {
   expect(q.menu("File")).toBeVisible();
   expect(q.menuitem("New Tab")).toHaveFocus();
   await press.Enter();
-  expect(q.menu("File")).not.toBeInTheDocument();
+  expect(q.menu.maybe("File")).not.toBeInTheDocument();
   expect(q.menuitem("File")).toHaveFocus();
   await press.Enter();
   await press.ShiftTab();
   expect(q.menu("File")).toBeVisible();
   expect(q.menuitem("File")).toHaveFocus();
   await press.Enter();
-  expect(q.menu("File")).not.toBeInTheDocument();
+  expect(q.menu.maybe("File")).not.toBeInTheDocument();
   expect(q.menuitem("File")).toHaveFocus();
 });
 
@@ -39,14 +39,14 @@ test("show/hide on space", async () => {
   expect(q.menu("File")).toBeVisible();
   await expect.poll(q.menuitem.lazy("New Tab")).toHaveFocus();
   await press.Space();
-  expect(q.menu("File")).not.toBeInTheDocument();
+  expect(q.menu.maybe("File")).not.toBeInTheDocument();
   expect(q.menuitem("File")).toHaveFocus();
   await press.Space();
   await press.ShiftTab();
   expect(q.menu("File")).toBeVisible();
   expect(q.menuitem("File")).toHaveFocus();
   await press.Space();
-  expect(q.menu("File")).not.toBeInTheDocument();
+  expect(q.menu.maybe("File")).not.toBeInTheDocument();
   expect(q.menuitem("File")).toHaveFocus();
 });
 
@@ -56,7 +56,7 @@ test("show/hide on key down", async () => {
   expect(q.menu("File")).toBeVisible();
   expect(q.menuitem("New Tab")).toHaveFocus();
   await press.ArrowRight();
-  expect(q.menu("File")).not.toBeInTheDocument();
+  expect(q.menu.maybe("File")).not.toBeInTheDocument();
   expect(q.menu("Edit")).toBeInTheDocument();
   expect(q.menu("Edit")).toBeVisible();
   expect(q.menuitem("Edit")).toHaveFocus();
@@ -68,14 +68,14 @@ test("show/hide on key down", async () => {
   expect(q.menuitem("Emoji & Symbols")).toHaveFocus();
   await type("f");
   expect(q.menuitem("Find")).toHaveFocus();
-  expect(q.menu("Find")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Find")).not.toBeInTheDocument();
   await press.ArrowRight();
   expect(q.menu("Find")).toBeInTheDocument();
   expect(q.menu("Find")).toBeVisible();
   expect(q.menuitem("Search the Web")).toHaveFocus();
   await press.ArrowLeft();
   expect(q.menuitem("Find")).toHaveFocus();
-  expect(q.menu("Find")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Find")).not.toBeInTheDocument();
   await press.ArrowRight();
   await press.ArrowRight();
   expect(q.menuitem("View")).toHaveFocus();
@@ -105,20 +105,20 @@ test("typeahead from menu button continues after focus moves to menu", async () 
 
 test("show/hide on hover", async () => {
   await hover(q.menuitem("File"));
-  expect(q.menu("File")).not.toBeInTheDocument();
+  expect(q.menu.maybe("File")).not.toBeInTheDocument();
   await click(q.menuitem("File"));
   expect(q.menu("File")).toBeVisible();
   await hover(q.menuitem("New Window"));
   expect(q.menu("File")).toHaveFocus();
   await hover(q.menuitem("View"));
   expect(q.menuitem("View")).toHaveFocus();
-  expect(q.menu("File")).not.toBeInTheDocument();
+  expect(q.menu.maybe("File")).not.toBeInTheDocument();
   expect(q.menu("View")).toBeVisible();
   await hover(q.menuitem("Developer"));
   await hover(await q.menuitem.wait("View Source"));
   await hover(q.menuitem("File"));
   expect(q.menu("File")).toBeVisible();
-  expect(q.menu("View")).not.toBeInTheDocument();
+  expect(q.menu.maybe("View")).not.toBeInTheDocument();
 });
 
 test("hide on escape", async () => {
@@ -131,12 +131,12 @@ test("hide on escape", async () => {
   await expect.poll(q.menuitem.lazy("Email Link")).toHaveFocus();
   await press.Escape();
   expect(q.menuitem("File")).toHaveFocus();
-  expect(q.menu("Share")).not.toBeInTheDocument();
-  expect(q.menu("File")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Share")).not.toBeInTheDocument();
+  expect(q.menu.maybe("File")).not.toBeInTheDocument();
   await press.ArrowRight();
   expect(q.menuitem("Edit")).toHaveFocus();
-  expect(q.menu("Edit")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Edit")).not.toBeInTheDocument();
   await press.Escape();
   await hover(q.menuitem("View"));
-  expect(q.menu("View")).not.toBeInTheDocument();
+  expect(q.menu.maybe("View")).not.toBeInTheDocument();
 });

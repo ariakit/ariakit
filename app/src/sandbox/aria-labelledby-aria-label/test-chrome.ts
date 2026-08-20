@@ -69,12 +69,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   test("tag list with aria-label has no aria-labelledby", async ({ q }) => {
-    const listbox = q.listbox("Custom tag list label");
+    // Playwright filters an initially empty display: contents list from
+    // default role queries.
+    // https://github.com/ariakit/ariakit/issues/7164
+    const listbox = q.listbox("Custom tag list label", {
+      includeHidden: true,
+    });
     await test.expect(listbox).toBeAttached();
     await test
       .expect(listbox)
       .toHaveAttribute("aria-label", "Custom tag list label");
     await test.expect(listbox).not.toHaveAttribute("aria-labelledby");
+  });
+
+  test("tag control with aria-label has no aria-labelledby", async ({ q }) => {
+    const group = q.group("Custom tag control label");
+    await test.expect(group).toBeAttached();
+    await test
+      .expect(group)
+      .toHaveAttribute("aria-label", "Custom tag control label");
+    await test.expect(group).not.toHaveAttribute("aria-labelledby");
   });
 
   test("tab panel without aria-label preserves aria-labelledby", async ({

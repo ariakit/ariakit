@@ -14,7 +14,7 @@ test("open/hide dialog without filling in the form", async () => {
   expect(q.dialog("Post")).toBeVisible();
   expect(q.textbox()).toHaveFocus();
   await click(q.button("Dismiss popup"));
-  expect(q.dialog("Post")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Post")).not.toBeInTheDocument();
 });
 
 test("try to hide the dialog with Escape after filling in the form", async () => {
@@ -22,21 +22,21 @@ test("try to hide the dialog with Escape after filling in the form", async () =>
   await type("Hello");
   await press.Escape();
   expect(q.dialog.hidden("Post")).toBeVisible();
-  expect(q.dialog("Post")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Post")).not.toBeInTheDocument();
   expect(q.dialog("Save post?")).toBeVisible();
   expect(q.button("Save")).toHaveFocus();
   await press.Escape();
-  expect(q.dialog("Save post?")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Save post?")).not.toBeInTheDocument();
   expect(q.dialog("Post")).toBeVisible();
   expect(q.textbox()).toHaveFocus();
   await press.Escape();
   expect(q.dialog.hidden("Post")).toBeVisible();
-  expect(q.dialog("Post")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Post")).not.toBeInTheDocument();
   expect(q.dialog("Save post?")).toBeVisible();
   expect(q.button("Save")).toHaveFocus();
   await press.Enter();
-  expect(q.dialog("Post")).not.toBeInTheDocument();
-  expect(q.dialog("Save post?")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Post")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Save post?")).not.toBeInTheDocument();
   expect(q.button("Post")).toHaveFocus();
 });
 
@@ -45,21 +45,21 @@ test("try to hide the dialog by clicking outside after filling in the form", asy
   await type("Hello");
   await click(backdrop());
   expect(q.dialog.hidden("Post")).toBeVisible();
-  expect(q.dialog("Post")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Post")).not.toBeInTheDocument();
   expect(q.dialog("Save post?")).toBeVisible();
   expect(q.button("Save")).toHaveFocus();
   await click(backdrop());
-  expect(q.dialog("Save post?")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Save post?")).not.toBeInTheDocument();
   expect(q.dialog("Post")).toBeVisible();
   expect(q.textbox()).toHaveFocus();
   await click(backdrop());
   expect(q.dialog.hidden("Post")).toBeVisible();
-  expect(q.dialog("Post")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Post")).not.toBeInTheDocument();
   expect(q.dialog("Save post?")).toBeVisible();
   expect(q.button("Save")).toHaveFocus();
   await click(q.button("Save"));
-  expect(q.dialog("Post")).not.toBeInTheDocument();
-  expect(q.dialog("Save post?")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Post")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Save post?")).not.toBeInTheDocument();
   expect(q.button("Post")).toHaveFocus();
 });
 
@@ -68,12 +68,12 @@ test("try to hide the dialog by clicking on the dismiss button after filling in 
   await type("Hello");
   await click(q.button("Dismiss popup"));
   expect(q.dialog.hidden("Post")).toBeVisible();
-  expect(q.dialog("Post")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Post")).not.toBeInTheDocument();
   expect(q.dialog("Save post?")).toBeVisible();
   expect(q.button("Save")).toHaveFocus();
   await click(backdrop());
   expect(q.textbox()).toHaveFocus();
   await click(q.button("Post"));
-  expect(q.dialog("Post")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Post")).not.toBeInTheDocument();
   expect(q.button("Post")).toHaveFocus();
 });

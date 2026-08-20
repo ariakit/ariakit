@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 
 // See https://github.com/ariakit/ariakit/pull/6143
 const installCount = () =>
-  q.status.ensure("Parent hovercard mousemove listener installs").textContent;
+  q.status("Parent hovercard mousemove listener installs").textContent;
 
 test("toggling a nested hovercard does not reinstall the parent mousemove listener", async () => {
   expect(q.dialog("Parent hovercard")).toBeVisible();
@@ -16,7 +16,9 @@ test("toggling a nested hovercard does not reinstall the parent mousemove listen
 
   // Unmounting the nested hovercard must not reinstall it either.
   await click(q.button("Toggle nested"));
-  await expect.poll(q.dialog.lazy("Nested hovercard")).not.toBeInTheDocument();
+  await expect
+    .poll(q.dialog.maybe.lazy("Nested hovercard"))
+    .not.toBeInTheDocument();
   expect(installCount()).toBe(initialInstalls);
 });
 
@@ -31,6 +33,8 @@ test("closes nested hovercard on Escape when focus is outside", async () => {
   expect(q.dialog("Nested hovercard")).toBeVisible();
 
   await press.Escape();
-  await expect.poll(q.dialog.lazy("Nested hovercard")).not.toBeInTheDocument();
+  await expect
+    .poll(q.dialog.maybe.lazy("Nested hovercard"))
+    .not.toBeInTheDocument();
   expect(q.dialog("Parent hovercard")).toBeVisible();
 });

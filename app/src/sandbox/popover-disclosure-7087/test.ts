@@ -12,14 +12,14 @@ async function openFromQuickFormatAndClose() {
   // below starts, so naming "Formatting" there is a real change.
   expect(q.button("Quick format")).toHaveAttribute("aria-expanded", "true");
   await click(q.button("Quick format"));
-  await expect.poll(q.dialog.lazy("Formatting")).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe.lazy("Formatting")).not.toBeInTheDocument();
 }
 
 // https://github.com/ariakit/ariakit/issues/7087
 test("names the Formatting button as the opener of a programmatic open", async () => {
   await openFromQuickFormatAndClose();
 
-  const note = q.textbox.ensure("Note");
+  const note = q.textbox("Note");
   await click(note);
   await press("*", note);
 
@@ -31,20 +31,20 @@ test("names the Formatting button as the opener of a programmatic open", async (
   // The popup takes its outside state from the named button, so the note the
   // caret sits in is outside and clicking it dismisses the popup.
   await click(note);
-  await expect.poll(q.dialog.lazy("Formatting")).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe.lazy("Formatting")).not.toBeInTheDocument();
 });
 
 // https://github.com/ariakit/ariakit/issues/7087
 test("returns focus to the named button when dismissed from inside", async () => {
   await openFromQuickFormatAndClose();
 
-  const note = q.textbox.ensure("Note");
+  const note = q.textbox("Note");
   await click(note);
   await press("*", note);
   expect(q.dialog("Formatting")).toBeVisible();
 
   await click(q.button("Done"));
-  await expect.poll(q.dialog.lazy("Formatting")).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe.lazy("Formatting")).not.toBeInTheDocument();
   expect(q.button("Formatting")).toHaveFocus();
 });
 
@@ -56,13 +56,13 @@ test("returns focus to the named button when dismissed from inside", async () =>
 test("dismisses with Escape from the field the caret is in", async () => {
   await openFromQuickFormatAndClose();
 
-  const note = q.textbox.ensure("Note");
+  const note = q.textbox("Note");
   await click(note);
   await press("*", note);
   expect(q.dialog("Formatting")).toBeVisible();
 
   await press.Escape(note);
-  await expect.poll(q.dialog.lazy("Formatting")).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe.lazy("Formatting")).not.toBeInTheDocument();
 });
 
 // A mounted button already claims the store, and the store can't tell that
@@ -84,19 +84,19 @@ test("keeps a mounted button as the opener when the open names none", async () =
 // still treat it as a stale fallback rather than as somebody's choice.
 // https://github.com/ariakit/ariakit/issues/7087
 test("replaces the fallback after an open that captured nothing", async () => {
-  const note = q.textbox.ensure("Note");
-  const title = q.textbox.ensure("Title");
+  const note = q.textbox("Note");
+  const title = q.textbox("Title");
   await click(note);
   await press("/", note);
   expect(q.dialog("Suggestions")).toBeVisible();
   await press.Escape(note);
-  await expect.poll(q.dialog.lazy("Suggestions")).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe.lazy("Suggestions")).not.toBeInTheDocument();
 
   await click(q.button("Summarize note"));
   expect(q.dialog("Suggestions")).toBeVisible();
   // The button dropped focus, so this Escape comes from the body.
   await press.Escape();
-  await expect.poll(q.dialog.lazy("Suggestions")).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe.lazy("Suggestions")).not.toBeInTheDocument();
 
   await click(title);
   await press("/", title);
@@ -114,13 +114,13 @@ test("replaces the fallback after an open that captured nothing", async () => {
 // opener forever.
 // https://github.com/ariakit/ariakit/issues/7087
 test("replaces the fallback after the popup's own store is replaced", async () => {
-  const note = q.textbox.ensure("Note");
-  const title = q.textbox.ensure("Title");
+  const note = q.textbox("Note");
+  const title = q.textbox("Title");
   await click(note);
   await press("/", note);
   expect(q.dialog("Suggestions")).toBeVisible();
   await press.Escape(note);
-  await expect.poll(q.dialog.lazy("Suggestions")).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe.lazy("Suggestions")).not.toBeInTheDocument();
 
   await click(q.button("Reload suggestions"));
 
@@ -135,8 +135,8 @@ test("replaces the fallback after the popup's own store is replaced", async () =
 });
 
 test("falls back to the focused field when no button is mounted", async () => {
-  const note = q.textbox.ensure("Note");
-  const title = q.textbox.ensure("Title");
+  const note = q.textbox("Note");
+  const title = q.textbox("Title");
   await click(note);
   await press("/", note);
   expect(q.dialog("Suggestions")).toBeVisible();
@@ -149,7 +149,7 @@ test("falls back to the focused field when no button is mounted", async () => {
   expect(q.dialog("Suggestions")).toBeVisible();
 
   await click(title);
-  await expect.poll(q.dialog.lazy("Suggestions")).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe.lazy("Suggestions")).not.toBeInTheDocument();
 
   // Reopening from the title hands the popup a new opener, so now it's the
   // title that no longer counts as outside. A fix that simply kept any opener

@@ -6,21 +6,21 @@ function getSelectionStart(element: Element | HTMLInputElement | null) {
 }
 
 test("show on click", async () => {
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await click(q.combobox());
   expect(q.listbox()).toBeVisible();
   expect(q.option("🍎 Apple")).not.toHaveFocus();
 });
 
 test("label click", async () => {
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await click(q.text("Your favorite fruit"));
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
 });
 
 test("show on arrow down key", async () => {
   await press.Tab();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await press.ArrowDown();
   expect(q.listbox()).toBeVisible();
   expect(q.option("🍎 Apple")).not.toHaveFocus();
@@ -28,7 +28,7 @@ test("show on arrow down key", async () => {
 
 test("show on arrow up key", async () => {
   await press.Tab();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await press.ArrowUp();
   expect(q.listbox()).toBeVisible();
   expect(q.option("🍉 Watermelon")).not.toHaveFocus();
@@ -36,7 +36,7 @@ test("show on arrow up key", async () => {
 
 test("show on change", async () => {
   await press.Tab();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await type("a");
   expect(q.listbox()).toBeVisible();
   expect(q.option("🍎 Apple")).not.toHaveFocus();
@@ -71,7 +71,7 @@ test("set value and hide on item click with mouse", async () => {
   await click(q.option("🍊 Orange"));
   expect(q.combobox()).toHaveFocus();
   expect(q.combobox()).toHaveValue("Orange");
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
 });
 
 test("set value and hide on item click with keyboard", async () => {
@@ -83,7 +83,7 @@ test("set value and hide on item click with keyboard", async () => {
   await press.Enter();
   expect(q.combobox()).toHaveFocus();
   expect(q.combobox()).toHaveValue("Grape");
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
 });
 
 test("do not set value and hide by pressing space", async () => {
@@ -103,7 +103,7 @@ test("hide listbox by pressing escape", async () => {
   await click(q.combobox());
   expect(q.listbox()).toBeVisible();
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox()).toHaveFocus();
 });
 
@@ -111,7 +111,7 @@ test("hide listbox by clicking outside", async () => {
   await click(q.combobox());
   expect(q.listbox()).toBeVisible();
   await click(document.body);
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   expect(q.combobox()).not.toHaveFocus();
 });
 
@@ -120,7 +120,7 @@ test("re-open listbox when deleting content", async () => {
   await type("a");
   expect(q.listbox()).toBeVisible();
   await press.Escape();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
   await type("\b");
   expect(q.listbox()).toBeVisible();
 });

@@ -180,7 +180,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
 );
 
 /**
- * Renders an input element within a
+ * Renders an input element as a sibling of the
  * [`TagList`](https://ariakit.com/reference/tag-list) component. This component
  * lets users input tag values that are added to the store when the input value
  * changes or when the user pastes text into the input element, based on the
@@ -192,22 +192,24 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
  * tag input with suggestions.
  * @see https://ariakit.com/components/tag
  * @example
- * ```jsx {14}
+ * ```jsx {16}
  * <TagProvider>
- *   <TagListLabel>Invitees</TagListLabel>
- *   <TagList>
- *     <TagValues>
- *       {(values) =>
- *         values.map((value) => (
- *           <Tag key={value} value={value}>
- *             {value}
- *             <TagRemove />
- *           </Tag>
- *         ))
- *       }
- *     </TagValues>
+ *   <TagLabel>Invitees</TagLabel>
+ *   <TagControl>
+ *     <TagList style={{ display: "contents" }}>
+ *       <TagValues>
+ *         {(values) =>
+ *           values.map((value) => (
+ *             <Tag key={value} value={value}>
+ *               {value}
+ *               <TagRemove />
+ *             </Tag>
+ *           ))
+ *         }
+ *       </TagValues>
+ *     </TagList>
  *     <TagInput />
- *   </TagList>
+ *   </TagControl>
  * </TagProvider>
  * ```
  */

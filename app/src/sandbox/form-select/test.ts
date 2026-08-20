@@ -8,7 +8,7 @@ test("click on label", async () => {
   await click(q.text("Favorite fruit"));
   expect(q.combobox()).toHaveFocus();
   expect(q.combobox()).toHaveAttribute("data-focus-visible");
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
 });
 
 test("show error on tabbing through select button", async () => {
@@ -43,7 +43,7 @@ test("submit failed", async () => {
   await click(q.button("Submit"));
   expect(errors()).toHaveLength(1);
   expect(q.combobox()).toHaveFocus();
-  expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
 });
 
 test("submit succeed", async () => {

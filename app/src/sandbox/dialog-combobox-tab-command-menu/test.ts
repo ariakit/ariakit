@@ -27,17 +27,17 @@ describe.each(LABELS)("%s", (label) => {
 
   test("close command menu when Escape key is pressed", async () => {
     await press.Escape();
-    expect(q.dialog("Command Menu")).not.toBeInTheDocument();
+    expect(q.dialog.maybe("Command Menu")).not.toBeInTheDocument();
   });
 
   test("close command menu when clicking outside", async () => {
     await click(document.body);
-    expect(q.dialog("Command Menu")).not.toBeInTheDocument();
+    expect(q.dialog.maybe("Command Menu")).not.toBeInTheDocument();
   });
 
   test("close command menu when clicking on the esc button", async () => {
     await click(q.button("Esc"));
-    expect(q.dialog("Command Menu")).not.toBeInTheDocument();
+    expect(q.dialog.maybe("Command Menu")).not.toBeInTheDocument();
   });
 
   test("filter options when typing", async () => {
@@ -75,21 +75,21 @@ describe.each(TABS)("Tabs - %s", (label) => {
   test("pressing Tab key should select tabs", async () => {
     await press.Tab();
     expect(q.tab(/^All/)).toHaveAttribute("aria-selected", "false");
-    expect(q.tabpanel(/^All/)).not.toBeInTheDocument();
+    expect(q.tabpanel.maybe(/^All/)).not.toBeInTheDocument();
     expect(q.tab(/^Guide/)).toHaveAttribute("aria-selected", "true");
     expect(q.tab(/^Guide/)).toHaveAttribute("data-active-item");
     expect(q.tabpanel(/^Guide/)).toBeVisible();
 
     await press.Tab();
     expect(q.tab(/^Guide/)).toHaveAttribute("aria-selected", "false");
-    expect(q.tabpanel(/^Guide/)).not.toBeInTheDocument();
+    expect(q.tabpanel.maybe(/^Guide/)).not.toBeInTheDocument();
     expect(q.tab(/^Components/)).toHaveAttribute("aria-selected", "true");
     expect(q.tab(/^Components/)).toHaveAttribute("data-active-item");
     expect(q.tabpanel(/^Components/)).toBeVisible();
 
     await press.ShiftTab();
     expect(q.tab(/^Components/)).toHaveAttribute("aria-selected", "false");
-    expect(q.tabpanel(/^Components/)).not.toBeInTheDocument();
+    expect(q.tabpanel.maybe(/^Components/)).not.toBeInTheDocument();
     expect(q.tab(/^Guide/)).toHaveAttribute("aria-selected", "true");
     expect(q.tab(/^Guide/)).toHaveAttribute("data-active-item");
     expect(q.tabpanel(/^Guide/)).toBeVisible();
@@ -122,13 +122,13 @@ describe.each(TABS)("Tabs - %s", (label) => {
     await press.Tab();
     await press.ArrowRight();
     expect(q.tab(/^Guide/)).toHaveAttribute("aria-selected", "false");
-    expect(q.tabpanel(/^Guide/)).not.toBeInTheDocument();
+    expect(q.tabpanel.maybe(/^Guide/)).not.toBeInTheDocument();
     expect(q.tab(/^Components/)).toHaveAttribute("aria-selected", "true");
     expect(q.tab(/^Components/)).toHaveAttribute("data-active-item");
     expect(q.tabpanel(/^Components/)).toBeVisible();
     await press.ArrowLeft();
     expect(q.tab(/^Components/)).toHaveAttribute("aria-selected", "false");
-    expect(q.tabpanel(/^Components/)).not.toBeInTheDocument();
+    expect(q.tabpanel.maybe(/^Components/)).not.toBeInTheDocument();
     expect(q.tab(/^Guide/)).toHaveAttribute("aria-selected", "true");
     expect(q.tab(/^Guide/)).toHaveAttribute("data-active-item");
     expect(q.tabpanel(/^Guide/)).toBeVisible();

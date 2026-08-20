@@ -36,5 +36,5 @@ test.each([
     expect(q.dialog.hidden(name)).not.toHaveStyle("display: none");
   }
 
-  await expect.poll(q.dialog.lazy(name)).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe.lazy(name)).not.toBeInTheDocument();
 });

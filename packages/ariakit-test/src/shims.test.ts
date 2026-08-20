@@ -62,6 +62,158 @@ test("runs animation frame callbacks as a spec-compliant batch", async () => {
   expect(timestamps[0]).toBe(timestamps[1]);
 });
 
+test("gives mouse and pointer events the browser's modifier state and x/y", () => {
+  // These hold natively in browsers and jsdom (see shims.jsdom.test.ts), so the
+  // assertions are not guarded by `isBrowser`. Dispatching without going through
+  // `dispatch` reaches only the environment shim.
+  const button = document.createElement("button");
+  document.body.append(button);
+  const received: MouseEvent[] = [];
+  button.addEventListener("auxclick", (event) => {
+    received.push(event);
+  });
+  button.addEventListener("pointerdown", (event) => {
+    received.push(event);
+  });
+  try {
+    button.dispatchEvent(
+      new MouseEvent("auxclick", {
+        altKey: true,
+        ctrlKey: true,
+        clientX: 3,
+        clientY: 4,
+      }),
+    );
+    // PointerEvent extends MouseEvent, so it inherits the same members.
+    button.dispatchEvent(
+      new PointerEvent("pointerdown", { metaKey: true, shiftKey: true }),
+    );
+    // A third combination gives every modifier a pattern of its own across the
+    // three events, so no transposed pair in the lookup can pass. TypeScript
+    // can't catch one: every flag name belongs to the same union.
+    button.dispatchEvent(
+      new PointerEvent("pointerdown", { altKey: true, metaKey: true }),
+    );
+    expect(
+      received.map((event) => [
+        event.getModifierState("Alt"),
+        event.getModifierState("Control"),
+        event.getModifierState("Meta"),
+        event.getModifierState("Shift"),
+        event.x,
+        event.y,
+      ]),
+    ).toEqual([
+      [true, true, false, false, 3, 4],
+      [false, false, true, true, 0, 0],
+      [true, false, true, false, 0, 0],
+    ]);
+    // An unrecognized key reports false, the way browsers do. `Object.prototype`
+    // member names are the interesting case: looking them up on a plain object
+    // literal finds an inherited value and reports something other than false.
+    expect(received[0]?.getModifierState("constructor")).toBe(false);
+    expect(received[0]?.getModifierState("Nope")).toBe(false);
+  } finally {
+    button.remove();
+  }
+});
+
+test("gives keyboard events the browser's exact modifier state", () => {
+  // These hold natively in browsers and jsdom (see shims.jsdom.test.ts), so the
+  // assertions are not guarded by `isBrowser`. Dispatching without going through
+  // `press` or `dispatch.keyDown` reaches only the environment shim.
+  const input = document.createElement("input");
+  document.body.append(input);
+  const received: KeyboardEvent[] = [];
+  input.addEventListener("keydown", (event) => {
+    received.push(event);
+  });
+  try {
+    input.dispatchEvent(new KeyboardEvent("keydown", { altKey: true }));
+    // `AltGraph` is a modifier of its own: `Alt` must not report it, and it
+    // must not report `Alt` back.
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", { modifierAltGraph: true }),
+    );
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", { shiftKey: true, modifierCapsLock: true }),
+    );
+    expect(
+      received.map((event) => [
+        event.getModifierState("Alt"),
+        event.getModifierState("AltGraph"),
+        event.getModifierState("Shift"),
+        event.getModifierState("CapsLock"),
+        event.altKey,
+        event.shiftKey,
+      ]),
+    ).toEqual([
+      [true, false, false, false, true, false],
+      [false, true, false, false, false, false],
+      [false, false, true, true, false, true],
+    ]);
+    // UI Events lists exact, case-sensitive modifier names.
+    expect(received[0]?.getModifierState("alt")).toBe(false);
+    expect(received[1]?.getModifierState("altgraph")).toBe(false);
+    expect(received[2]?.getModifierState("shift")).toBe(false);
+    // An unrecognized name reports false, the way browsers do. `Object.prototype`
+    // member names are the interesting case: looking them up on a plain object
+    // literal finds an inherited value and reports something other than false.
+    // This event has recorded members, so the name reaches the recorded set
+    // rather than stopping at the standard-flag lookup.
+    expect(received[2]?.getModifierState("constructor")).toBe(false);
+    expect(received[2]?.getModifierState("Nope")).toBe(false);
+  } finally {
+    input.remove();
+  }
+});
+
+test("keeps the keyboard event constructor's contract while patching it", () => {
+  // Recording the modifier initializer replaces `window.KeyboardEvent`, so pin
+  // what the replacement must keep.
+  expect(KeyboardEvent.DOM_KEY_LOCATION_NUMPAD).toBe(3);
+  // A subclass would fail this: the environment builds this event from its own
+  // class, which is not an instance of a class that extends it.
+  expect(document.createEvent("KeyboardEvent")).toBeInstanceOf(KeyboardEvent);
+  // Wrapping the constructor leaves the prototype pointing at the unwrapped
+  // class unless the patch moves it too.
+  expect(new KeyboardEvent("keydown").constructor).toBe(KeyboardEvent);
+  const options = {
+    key: "a",
+    code: "KeyA",
+    location: 3,
+    repeat: true,
+    isComposing: true,
+    bubbles: true,
+    cancelable: true,
+  };
+  const event = new KeyboardEvent("keydown", options);
+  expect(event).toBeInstanceOf(UIEvent);
+  expect({
+    key: event.key,
+    code: event.code,
+    location: event.location,
+    repeat: event.repeat,
+    isComposing: event.isComposing,
+    bubbles: event.bubbles,
+    cancelable: event.cancelable,
+  }).toEqual(options);
+  class CustomKeyboardEvent extends KeyboardEvent {}
+  const custom = new CustomKeyboardEvent("keydown", { modifierCapsLock: true });
+  expect(custom).toBeInstanceOf(CustomKeyboardEvent);
+  expect(custom.getModifierState("CapsLock")).toBe(true);
+  // WebIDL reads each dictionary member with a plain get, so an inherited
+  // member counts, as it does for the flags the environment reads itself.
+  const inherited = new KeyboardEvent(
+    "keydown",
+    Object.create({ modifierCapsLock: true }),
+  );
+  expect(inherited.getModifierState("CapsLock")).toBe(true);
+  // Browsers, jsdom, and happy-dom all throw when the name is missing.
+  const nameless: { getModifierState(key?: string): boolean } = event;
+  expect(() => nameless.getModifierState()).toThrow(TypeError);
+});
+
 test("exposes the dispatched event on window.event while listeners run", async () => {
   if (isBrowser) return;
   const button = document.createElement("button");

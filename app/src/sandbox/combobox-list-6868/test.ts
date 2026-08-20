@@ -5,7 +5,7 @@ import { expect, test } from "vitest";
 test("skips the list by default", async () => {
   await click(q.combobox("Default fruit"));
   expect(q.combobox("Search Default fruit")).toHaveFocus();
-  const list = q.listbox.ensure("Default fruit options");
+  const list = q.listbox("Default fruit options");
   expect(list).toHaveAttribute("tabindex", "-1");
 
   await press.Tab();
@@ -18,10 +18,10 @@ test("skips the list by default", async () => {
 // https://github.com/ariakit/ariakit/issues/6868
 test("skips an empty list by default", async () => {
   await click(q.combobox("Default fruit"));
-  const input = q.combobox.ensure("Search Default fruit");
+  const input = q.combobox("Search Default fruit");
   await type("zzzz", input);
   expect(q.status()).toHaveTextContent("No results");
-  const list = q.listbox.ensure("Default fruit options");
+  const list = q.listbox("Default fruit options");
   expect(list).toHaveAttribute("tabindex", "-1");
 
   await press.Tab();
@@ -32,7 +32,7 @@ test("skips an empty list by default", async () => {
 test("ignores an authored tabIndex", async () => {
   await click(q.combobox("Authored tab index fruit"));
   expect(q.combobox("Search Authored tab index fruit")).toHaveFocus();
-  const list = q.listbox.ensure("Authored tab index fruit options");
+  const list = q.listbox("Authored tab index fruit options");
 
   await press.Tab();
   expect(q.button("After Authored tab index fruit options")).toHaveFocus();
@@ -40,8 +40,8 @@ test("ignores an authored tabIndex", async () => {
 });
 
 test("moves focus from a standalone list to the combobox", async () => {
-  const combobox = q.combobox.ensure("Standalone fruit");
-  const list = q.listbox.ensure("Standalone fruit options");
+  const combobox = q.combobox("Standalone fruit");
+  const list = q.listbox("Standalone fruit options");
 
   await click(list);
   expect(combobox).toHaveFocus();

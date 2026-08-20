@@ -12,7 +12,7 @@ async function setValue(input: HTMLElement, value: string) {
 // Reproduces https://github.com/ariakit/ariakit/issues/6335
 test("clearing the page field does not crash the app", async () => {
   expect(q.option("Item 1")).toBeInTheDocument();
-  const input = q.spinbutton.ensure("Page");
+  const input = q.spinbutton("Page");
   await click(input);
   // Clearing the field makes the page number NaN, a transient state while the
   // user types another page number

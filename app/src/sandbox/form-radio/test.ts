@@ -13,14 +13,14 @@ test("focus on the first radio button by tabbing", async () => {
 
 test("show error on blur", async () => {
   await press.Tab();
-  expect(q.text("Please select a color.")).not.toBeInTheDocument();
+  expect(q.text.maybe("Please select a color.")).not.toBeInTheDocument();
   await press.Tab();
   expect(q.button("Submit")).toHaveFocus();
   expect(q.text("Please select a color.")).toBeInTheDocument();
 });
 
 test("show error on submit", async () => {
-  expect(q.text("Please select a color.")).not.toBeInTheDocument();
+  expect(q.text.maybe("Please select a color.")).not.toBeInTheDocument();
   await click(q.button("Submit"));
   expect(q.text("Please select a color.")).toBeInTheDocument();
 });
@@ -39,7 +39,7 @@ test("fix error on change", async () => {
   expect(q.radio("Blue")).toHaveFocus();
   expect(q.text("Please select a color.")).toBeInTheDocument();
   await press.Space();
-  expect(q.text("Please select a color.")).not.toBeInTheDocument();
+  expect(q.text.maybe("Please select a color.")).not.toBeInTheDocument();
 });
 
 test("submit form", async () => {

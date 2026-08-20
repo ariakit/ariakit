@@ -21,7 +21,7 @@ for (const trigger of ["click", "Enter", "Space"] as const) {
     } else {
       await press.Enter(disclosure);
     }
-    expect(q.dialog("Team meeting")).not.toBeInTheDocument();
+    expect(q.dialog.maybe("Team meeting")).not.toBeInTheDocument();
   });
 }
 
@@ -29,13 +29,13 @@ test("hides a lazy popover with Escape from disclosure", async () => {
   await click(q.button("Accept invite"));
   await press.ShiftTab();
   await press.Escape();
-  expect(q.dialog("Team meeting")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Team meeting")).not.toBeInTheDocument();
 });
 
 test("hides a lazy popover with Escape from content", async () => {
   const disclosure = q.button("Accept invite");
   await click(disclosure);
   await press.Escape();
-  expect(q.dialog("Team meeting")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Team meeting")).not.toBeInTheDocument();
   expect(disclosure).toHaveFocus();
 });

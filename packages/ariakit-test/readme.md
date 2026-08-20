@@ -30,6 +30,14 @@ import { click, press, type } from "@ariakit/test";
 
 The `@ariakit/test/react` entry point renders React components for testing, and the `@ariakit/test/playwright` entry point provides query helpers for Playwright tests.
 
+### Test environment
+
+The helpers expect a DOM that implements `PointerEvent`, which means happy-dom, jsdom v27 or later, or a real browser.
+
+They still run on jsdom 26, which `jest-environment-jsdom` 30 depends on. Every event the helpers fire there carries the same mouse, modifier, and pointer members it carries anywhere else, so a listener reads the same `clientX`, `button`, `pointerId`, and modifier state it would in a browser. `click`, `auxclick`, and `contextmenu` are built from `MouseEvent` there rather than `PointerEvent`, which also keeps the members a browser computes.
+
+The `pointer*` events are the ones that environment cannot build from an interface of their own, so they come from `Event` and are not `instanceof MouseEvent`. The dispatch layer still derives `pageX`, `pageY`, and `which`, but leaves the layout-dependent `offsetX` and `offsetY` undefined. The `PointerEvent` global is absent altogether, so both `new PointerEvent()` and `event instanceof PointerEvent` throw a `ReferenceError`.
+
 <!-- ariakit-docs:start -->
 
 ## API reference
@@ -85,12 +93,16 @@ Clicks on an element, simulating the sequence of events a real mouse click produ
 
 Hidden and disabled elements are handled the same way a browser would, and clicks on labels, `option` elements, and form controls behave like native interactions. Pass `options` to set event properties such as modifier keys (e.g. `{ shiftKey: true }`).
 
+Pass `button` to click with another mouse button. Activation behavior runs on `click`, so a non-primary button fires `auxclick` instead and doesn't activate labels or `option` elements, and the secondary button also fires `contextmenu` while it's held down. Each step derives `buttons` from that button, so an explicit `buttons` is ignored here; `mouseDown` and `mouseUp` accept one to describe a chorded gesture.
+
 Example:
 
 ```ts
 await click(q.button("Submit"));
 // With a modifier key held down:
 await click(q.option("Item"), { shiftKey: true });
+// With the middle mouse button, firing `auxclick`:
+await click(q.link("Ariakit"), { button: 1 });
 ```
 
 <div align="right">
@@ -104,8 +116,10 @@ type Target = Document | Window | Node | Element | null;
 
 type EventFunction = (element: Target, options?: object) => Promise<boolean>;
 
+type DispatchEventType = Exclude<EventType, "doubleClick"> | "auxClick";
+
 type EventsObject = {
-  [K in EventType]: EventFunction;
+  [K in DispatchEventType]: EventFunction;
 };
 
 const dispatch: typeof baseDispatch & EventsObject;
@@ -115,6 +129,12 @@ Creates and fires a DOM event on an element, then waits for the resulting microt
 
 Unlike higher-level helpers such as `click` and `type`, this fires a single event without simulating the surrounding interaction sequence. Pointer and mouse events fired on an element with `pointer-events: none` are re-dispatched on the nearest ancestor that has pointer events enabled, matching how browsers route those events.
 
+A pointer event built by name reports the contact size and transducer angle browsers report for a device with neither, so `width` and `height` are `1` and `altitudeAngle` is a right angle. Supplying only the tilt or spherical angle pair derives the other pair. The members describing a gesture, such as `pressure` and `isPrimary`, keep their defaults here; the higher-level helpers fill those in. An event you construct yourself keeps whatever its constructor gave it.
+
+Mouse and pointer events built by name derive `pageX` and `pageY` from the client coordinates and target window scroll, and derive `which` from `button`. The layout-dependent `offsetX` and `offsetY` keep the environment's values.
+
+`click`, `auxclick`, and `contextmenu` are built as `PointerEvent`, the way browsers dispatch them, so they accept and report pointer properties such as `pointerType`. An environment with no `PointerEvent` builds them as `MouseEvent` instead, and they report the same properties there.
+
 Returns: A promise that resolves to `false` when the event's default action was prevented with `event.preventDefault()`, and `true` otherwise.
 
 Example:
@@ -122,6 +142,7 @@ Example:
 ```ts
 await dispatch.keyDown(q.textbox(), { key: "Enter" });
 await dispatch.click(q.button());
+await dispatch.auxClick(q.link("Ariakit"), { button: 1 });
 // Fire a custom event instance directly:
 await dispatch(q.textbox(), new Event("selectstart", { bubbles: true }));
 ```
@@ -160,7 +181,7 @@ function hover(
 
 Moves the pointer over an element, simulating a real user hovering it. Fires the relevant `pointer`/`mouse` enter, over, and move events, and dispatches the matching leave events on the previously hovered element.
 
-Hidden elements and elements with `pointer-events: none` are handled the way a browser would. Pass `options` to set event properties such as modifier keys.
+Hidden elements and elements with `pointer-events: none` are handled the way a browser would. Pass `options` to set event properties such as modifier keys. The pointer events report `pressure: 0`, or `0.5` when you pass `buttons` to describe a move with a button held down, as during a drag.
 
 Example:
 
@@ -182,9 +203,9 @@ function mouseDown(
 ): Promise<void>;
 ```
 
-Presses the primary pointer button down on an element, firing `pointerdown` and `mousedown` and moving focus the way a browser would. Disabled elements still receive `pointerdown` but not `mousedown`, and focus falls back to the closest focusable ancestor when the target itself isn't focusable.
+Presses a pointer button down on an element, firing `pointerdown` and `mousedown` and moving focus the way a browser would. Disabled elements still receive the pointer event but not `mousedown`, and focus falls back to the closest focusable ancestor when the target itself isn't focusable.
 
-This is one step of a full `click`; use it directly to test press-and-hold behavior. Pass `options` to set event properties such as modifier keys.
+This is one step of a full `click`; use it directly to test press-and-hold behavior. Pass `options` to set event properties such as modifier keys, or `button` to press another mouse button. The events report the pressed button in `buttons`, like a browser does, unless you pass `buttons` yourself to describe a chorded gesture. When that value shows another button was already held down, the press fires `pointermove` instead of `pointerdown`, the way Pointer Events routes a chorded press, and the compatibility `mousedown` still fires. The pointer event reports `pressure: 0.5`, the value Pointer Events defines while a device with no pressure sensor holds a button down.
 
 Example:
 
@@ -207,9 +228,9 @@ function mouseUp(
 ): Promise<void>;
 ```
 
-Releases the primary pointer button on an element, firing `pointerup` and `mouseup`. Disabled elements still receive `pointerup` but not `mouseup`.
+Releases a pointer button on an element, firing `pointerup` and `mouseup`. Disabled elements still receive the pointer event but not `mouseup`.
 
-This is the counterpart to `mouseDown` and one step of a full `click`. Pass `options` to set event properties such as modifier keys.
+This is the counterpart to `mouseDown` and one step of a full `click`. Pass `options` to set event properties such as modifier keys, or `button` to release another mouse button. The events report no button still held down in `buttons`, like a browser does, unless you pass `buttons` yourself to describe the buttons a chorded gesture keeps held. When that value shows another button stays held down, the release fires `pointermove` instead of `pointerup`, the way Pointer Events routes a chorded release, and the compatibility `mouseup` still fires. The pointer event reports `pressure: 0`, or `0.5` while a chorded gesture keeps a button held.
 
 Example:
 
@@ -272,14 +293,14 @@ interface QueryObject extends RoleQueries {
 const query: QueryObject;
 ```
 
-Queries the DOM by ARIA role, accessible name, text, or label, built on top of Testing Library. Call a role method such as `query.button(name)` or `query.dialog()` to get the matching element (or `null`), passing a string or `RegExp` to match its accessible name. Use `query.text()` and `query.labeled()` to query by text content or associated label, and `query.within(element)` to scope queries to a subtree.
+Queries the DOM by ARIA role, accessible name, text, or label, built on top of Testing Library. Call a role method such as `query.button(name)` or `query.dialog()` to get the matching element, passing a string or `RegExp` to match its accessible name. Queries throw when no matching element is found. Use `query.text()` and `query.labeled()` to query by text content or associated label, and `query.within(element)` to scope queries to a subtree.
 
-Every query also exposes `.lazy` (return a reusable function that runs the query when called), `.all` (return all matches), `.wait` (resolve once the element appears), and `.ensure` (throw when it's missing) variants, and role queries additionally expose `.hidden` to include otherwise-hidden elements.
+Every query also exposes `.lazy` (return a reusable function that runs the query when called), `.all` (return all matches, including an empty array), `.wait` (resolve once the element appears), and `.maybe` (return `null` when it's missing) variants. Role queries additionally expose `.hidden` to include otherwise-hidden elements.
 
 Example:
 
 ```ts
-const dialog = query.dialog.lazy("Settings");
+const dialog = query.dialog.maybe.lazy("Settings");
 expect(dialog()).not.toBeInTheDocument();
 await click(query.button("Open settings"));
 expect(dialog()).toBeVisible();
@@ -315,7 +336,7 @@ Short alias for `query`. Queries the DOM by ARIA role, accessible name, text, or
 Example:
 
 ```ts
-const dialog = q.dialog.lazy("Settings");
+const dialog = q.dialog.maybe.lazy("Settings");
 expect(dialog()).not.toBeInTheDocument();
 await click(q.button("Open settings"));
 expect(dialog()).toBeVisible();
@@ -360,7 +381,7 @@ function select(
 
 Selects a range of text within an element, simulating a real user dragging across it. Hovers and presses on the element, finds the given `text` in its descendant text nodes, sets the document selection to cover it, then releases.
 
-When no element is passed, `document.body` is used. Pass `options` to set event properties such as modifier keys.
+When no element is passed, `document.body` is used. Pass `options` to set event properties such as modifier keys. Each step derives `buttons` from the button it presses, so an explicit `buttons` is ignored.
 
 Example:
 
@@ -457,7 +478,7 @@ Example:
 
 ```ts
 await click(q.button("Close"));
-await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
+await waitFor(() => expect(q.dialog.maybe()).not.toBeInTheDocument());
 ```
 
 <div align="right">

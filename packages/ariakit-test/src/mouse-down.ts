@@ -6,7 +6,16 @@ import {
   isTextbox,
   invariant,
 } from "@ariakit/utils";
-import { setPreventMouseEvents, wrapAsync } from "./__utils.ts";
+import {
+  getPointerOptions,
+  getPressOptions,
+  isChordedPress,
+} from "./__mouse.ts";
+import {
+  getPreventMouseEvents,
+  setPreventMouseEvents,
+  wrapAsync,
+} from "./__utils.ts";
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
@@ -45,13 +54,20 @@ function shouldClearSelection(element: Element) {
 }
 
 /**
- * Presses the primary pointer button down on an element, firing `pointerdown` and
+ * Presses a pointer button down on an element, firing `pointerdown` and
  * `mousedown` and moving focus the way a browser would. Disabled elements still
- * receive `pointerdown` but not `mousedown`, and focus falls back to the closest
- * focusable ancestor when the target itself isn't focusable.
+ * receive the pointer event but not `mousedown`, and focus falls back to the
+ * closest focusable ancestor when the target itself isn't focusable.
  *
  * This is one step of a full `click`; use it directly to test press-and-hold
- * behavior. Pass `options` to set event properties such as modifier keys.
+ * behavior. Pass `options` to set event properties such as modifier keys, or
+ * `button` to press another mouse button. The events report the pressed button
+ * in `buttons`, like a browser does, unless you pass `buttons` yourself to
+ * describe a chorded gesture. When that value shows another button was already
+ * held down, the press fires `pointermove` instead of `pointerdown`, the way
+ * Pointer Events routes a chorded press, and the compatibility `mousedown`
+ * still fires. The pointer event reports `pressure: 0.5`, the value Pointer
+ * Events defines while a device with no pressure sensor holds a button down.
  * @example
  * ```ts
  * await mouseDown(q.button("Resize"));
@@ -66,22 +82,38 @@ export function mouseDown(element: Element | null, options?: PointerEventInit) {
     if (!isVisible(element)) return;
 
     const { disabled } = element as HTMLButtonElement;
+    const pressOptions = getPointerOptions(getPressOptions(options));
+    const document = getDocument(element);
 
-    const pointerDefaultAllowed = await dispatch.pointerDown(element, options);
-    setPreventMouseEvents(getDocument(element), !pointerDefaultAllowed);
+    // A chorded press has no `pointerdown` of its own to cancel, so it leaves
+    // the suppression to the press that opened the gesture.
+    if (isChordedPress(pressOptions)) {
+      await dispatch.pointerMove(element, pressOptions);
+    } else {
+      const pointerDefaultAllowed = await dispatch.pointerDown(
+        element,
+        pressOptions,
+      );
+      setPreventMouseEvents(document, !pointerDefaultAllowed);
+    }
 
-    let defaultAllowed = pointerDefaultAllowed;
+    // One flag gates the compatibility mouse events in both cases.
+    const mouseEventsAllowed = !getPreventMouseEvents(document);
+
+    let defaultAllowed = mouseEventsAllowed;
 
     // Disabled controls and canceled pointerdown suppress compatibility
     // mousedown.
-    if (!disabled && pointerDefaultAllowed) {
-      if (!(await dispatch.mouseDown(element, { detail: 1, ...options }))) {
+    if (!disabled && mouseEventsAllowed) {
+      if (
+        !(await dispatch.mouseDown(element, { detail: 1, ...pressOptions }))
+      ) {
         defaultAllowed = false;
       }
     }
 
     if (defaultAllowed) {
-      const selection = getDocument(element).getSelection();
+      const selection = document.getSelection();
       if (selection?.rangeCount) {
         const range = selection.getRangeAt(0);
         if (!range.collapsed && shouldClearSelection(element)) {

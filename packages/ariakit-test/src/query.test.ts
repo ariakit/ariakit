@@ -7,7 +7,7 @@ afterEach(() => {
 });
 
 test("lazy role queries run when called", () => {
-  const dialog = q.dialog.lazy("Name");
+  const dialog = q.dialog.maybe.lazy("Name");
 
   expect(dialog()).toBeNull();
 
@@ -23,7 +23,7 @@ test("lazy role queries run when called", () => {
 });
 
 test("lazy role query variants run the matching variant", () => {
-  const dialog = q.dialog.ensure.lazy("Visible");
+  const dialog = q.dialog.lazy("Visible");
   const hiddenDialog = q.dialog.hidden.lazy("Hidden");
   const dialogs = q.dialog.all.lazy("Visible");
 
@@ -43,8 +43,8 @@ test("lazy role queries can be scoped with within", () => {
     <div role="dialog" aria-label="Scoped">Outside</div>
   `;
 
-  const region = q.region.ensure("Wrapper");
-  const dialog = q.within(region).dialog.lazy("Scoped");
+  const region = q.region("Wrapper");
+  const dialog = q.within(region).dialog.maybe.lazy("Scoped");
 
   expect(dialog()).toBeNull();
 
@@ -54,8 +54,8 @@ test("lazy role queries can be scoped with within", () => {
 });
 
 test("lazy text and label queries run when called", () => {
-  const text = q.text.lazy<HTMLButtonElement>("Submit");
-  const input = q.labeled.lazy<HTMLInputElement>("Email");
+  const text = q.text.maybe.lazy<HTMLButtonElement>("Submit");
+  const input = q.labeled.maybe.lazy<HTMLInputElement>("Email");
 
   expect(text()).toBeNull();
   expect(input()).toBeNull();
@@ -71,18 +71,14 @@ test("lazy text and label queries run when called", () => {
 });
 
 test("lazy text and label query variants run the matching variant", async () => {
-  const text = q.text.ensure.lazy("Ready");
+  const text = q.text.lazy("Ready");
   const texts = q.text.all.lazy("Submit");
   const waitedTexts = q.text.wait.all.lazy("Submit");
   const allWaitedTexts = q.text.all.wait.lazy("Submit");
-  const ensuredTexts = q.text.ensure.all.lazy("Submit");
-  const allEnsuredTexts = q.text.all.ensure.lazy("Submit");
-  const label = q.labeled.ensure.lazy<HTMLInputElement>("Name");
+  const label = q.labeled.lazy<HTMLInputElement>("Name");
   const labels = q.labeled.all.lazy<HTMLInputElement>("Email");
   const waitedLabels = q.labeled.wait.all.lazy<HTMLInputElement>("Email");
   const allWaitedLabels = q.labeled.all.wait.lazy<HTMLInputElement>("Email");
-  const ensuredLabels = q.labeled.ensure.all.lazy<HTMLInputElement>("Email");
-  const allEnsuredLabels = q.labeled.all.ensure.lazy<HTMLInputElement>("Email");
 
   document.body.innerHTML = `
     <button>Submit</button>
@@ -97,12 +93,21 @@ test("lazy text and label query variants run the matching variant", async () => 
   expect(texts()).toHaveLength(2);
   await expect(waitedTexts()).resolves.toHaveLength(2);
   await expect(allWaitedTexts()).resolves.toHaveLength(2);
-  expect(ensuredTexts()).toHaveLength(2);
-  expect(allEnsuredTexts()).toHaveLength(2);
   expect(label()).toBeInstanceOf(HTMLInputElement);
   expect(labels()).toHaveLength(2);
   await expect(waitedLabels()).resolves.toHaveLength(2);
   await expect(allWaitedLabels()).resolves.toHaveLength(2);
-  expect(ensuredLabels()).toHaveLength(2);
-  expect(allEnsuredLabels()).toHaveLength(2);
+});
+
+test("queries ensure matches by default", () => {
+  expect(() => q.button("Save")).toThrow();
+  expect(() => q.text("Ready")).toThrow();
+  expect(() => q.labeled("Name")).toThrow();
+
+  expect(q.button.maybe("Save")).toBeNull();
+  expect(q.button.all("Save")).toHaveLength(0);
+  expect(q.text.maybe("Ready")).toBeNull();
+  expect(q.text.all("Ready")).toHaveLength(0);
+  expect(q.labeled.maybe("Name")).toBeNull();
+  expect(q.labeled.all("Name")).toHaveLength(0);
 });

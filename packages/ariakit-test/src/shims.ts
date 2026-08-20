@@ -60,17 +60,23 @@ function applyBrowserShims() {
     typeof window.ClipboardEvent === "undefined" &&
     typeof Event !== "undefined"
   ) {
-    // @ts-expect-error
-    window.ClipboardEvent = class ClipboardEvent extends Event {};
+    window.ClipboardEvent = class ClipboardEvent extends Event {
+      #clipboardData: DataTransfer | null;
+
+      constructor(type: string, eventInitDict: ClipboardEventInit | null = {}) {
+        const eventInit = eventInitDict ?? {};
+        super(type, eventInit);
+        this.#clipboardData = eventInit.clipboardData ?? null;
+      }
+
+      get clipboardData() {
+        return this.#clipboardData;
+      }
+    };
   }
 
-  if (
-    typeof window.PointerEvent === "undefined" &&
-    typeof MouseEvent !== "undefined"
-  ) {
-    // @ts-expect-error
-    window.PointerEvent = class PointerEvent extends MouseEvent {};
-  }
+  polyfillMouseEventMembers();
+  patchKeyboardEventModifierState();
 
   // happy-dom doesn't implement window.alert (jsdom and real browsers do).
   // Provide a no-op so code that calls or spies on it works under happy-dom.
@@ -96,6 +102,156 @@ function applyBrowserShims() {
     HTMLElement.prototype.focus = originalFocus;
     Element.prototype.getClientRects = originalGetClientRects;
     for (const restore of restoreHappyDOMShims) restore();
+  };
+}
+
+// The modifier keys every mouse and keyboard event exposes as a standard flag.
+// A Map, because an object literal would resolve `Object.prototype` key names
+// such as `constructor` to a bogus flag.
+const standardModifierFlags = new Map<
+  string,
+  "altKey" | "ctrlKey" | "metaKey" | "shiftKey"
+>([
+  ["Alt", "altKey"],
+  ["Control", "ctrlKey"],
+  ["Meta", "metaKey"],
+  ["Shift", "shiftKey"],
+]);
+
+// The modifier keys an event carries only as an `EventModifierInit` member.
+// This mirrors `modifierNameByInitMember` in `__init-event.ts`, which also
+// leaves out `modifierHyper` and `modifierSuper` and records why.
+// https://w3c.github.io/uievents/#event-modifier-initializers
+const initOnlyModifierMembers = new Map<string, keyof EventModifierInit>([
+  ["AltGraph", "modifierAltGraph"],
+  ["CapsLock", "modifierCapsLock"],
+  ["Fn", "modifierFn"],
+  ["FnLock", "modifierFnLock"],
+  ["NumLock", "modifierNumLock"],
+  ["ScrollLock", "modifierScrollLock"],
+  ["Symbol", "modifierSymbol"],
+  ["SymbolLock", "modifierSymbolLock"],
+]);
+
+// happy-dom's MouseEvent implements neither `getModifierState` nor the `x`/`y`
+// aliases of `clientX`/`clientY`, which browsers and jsdom provide. A named
+// dispatcher installs both while initializing the event, so only events the
+// caller built reached listeners without them. PointerEvent extends MouseEvent
+// and inherits this patch.
+// https://github.com/ariakit/ariakit/issues/7156
+// https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/getModifierState
+// https://drafts.csswg.org/cssom-view/#dom-mouseevent-x
+function polyfillMouseEventMembers() {
+  if (typeof window.MouseEvent === "undefined") return;
+  const prototype = window.MouseEvent.prototype;
+
+  if (typeof prototype.getModifierState !== "function") {
+    // happy-dom's constructor keeps only the standard flags and drops the
+    // `modifier*` init members, so this fallback can never report the others.
+    // https://github.com/ariakit/ariakit/issues/7165
+    // Plain assignment matches the writable, enumerable, configurable
+    // descriptor browsers and jsdom give this method.
+    prototype.getModifierState = function getModifierState(
+      this: MouseEvent,
+      key: string,
+    ) {
+      const flag = standardModifierFlags.get(key);
+      if (!flag) return false;
+      return this[flag];
+    };
+  }
+
+  const aliases = [
+    ["x", "clientX"],
+    ["y", "clientY"],
+  ] as const;
+
+  for (const [alias, source] of aliases) {
+    if (alias in prototype) continue;
+    Object.defineProperty(prototype, alias, {
+      configurable: true,
+      enumerable: true,
+      get(this: MouseEvent) {
+        return this[source];
+      },
+    });
+  }
+}
+
+// happy-dom's KeyboardEvent lowercases the name `getModifierState` is given, so
+// `shift` matches `Shift`, and it answers `AltGraph` from `altKey`. Its
+// constructor also keeps only the standard flags, dropping every `modifier*`
+// init member, which a prototype patch alone can no longer recover. Browsers
+// and jsdom match the exact UI Events names and read `AltGraph` from its own
+// member, so record the initializer as the event is built and answer from it.
+// https://github.com/ariakit/ariakit/issues/7166
+// https://w3c.github.io/uievents/#event-modifier-initializers
+function patchKeyboardEventModifierState() {
+  const OriginalKeyboardEvent = window.KeyboardEvent;
+  if (typeof OriginalKeyboardEvent !== "function") return;
+  const prototype = OriginalKeyboardEvent.prototype;
+
+  if (typeof prototype.getModifierState === "function") {
+    const probe = new OriginalKeyboardEvent("keydown", {
+      altKey: true,
+      modifierCapsLock: true,
+    });
+    // A conformant implementation keeps the `modifier*` members, matches the
+    // exact names, and reads `AltGraph` from its own member. Probing the
+    // behavior rather than the environment retires this shim on its own once
+    // happy-dom conforms.
+    const isConformant =
+      probe.getModifierState("CapsLock") &&
+      !probe.getModifierState("AltGraph") &&
+      !probe.getModifierState("alt");
+    if (isConformant) return;
+  }
+
+  const initModifiers = new WeakMap<KeyboardEvent, Set<string>>();
+
+  // A Proxy rather than a subclass: events the environment builds from its own
+  // class, such as `document.createEvent("KeyboardEvent")`, keep passing
+  // `instanceof`.
+  const PatchedKeyboardEvent = new Proxy(OriginalKeyboardEvent, {
+    construct(target, args, newTarget) {
+      const event: KeyboardEvent = Reflect.construct(target, args, newTarget);
+      const init: EventModifierInit | undefined = args[1];
+      if (!init) return event;
+      const modifiers = new Set<string>();
+      // A plain get, the way WebIDL reads a dictionary member and the way the
+      // environment itself reads the standard flags, so an inherited member
+      // counts.
+      for (const [modifier, member] of initOnlyModifierMembers) {
+        if (init[member]) {
+          modifiers.add(modifier);
+        }
+      }
+      if (modifiers.size) {
+        initModifiers.set(event, modifiers);
+      }
+      return event;
+    },
+  });
+
+  window.KeyboardEvent = PatchedKeyboardEvent;
+  // An event reports the same constructor the global exposes, so move the
+  // prototype's own pointer to the wrapper as well.
+  prototype.constructor = PatchedKeyboardEvent;
+
+  prototype.getModifierState = function getModifierState(
+    this: KeyboardEvent,
+    key: string,
+  ) {
+    if (!arguments.length) {
+      throw new TypeError(
+        "Failed to execute 'getModifierState' on 'KeyboardEvent': 1 argument required, but only 0 present.",
+      );
+    }
+    const flag = standardModifierFlags.get(key);
+    if (flag) return this[flag];
+    // An event the environment built from its own class has no recorded
+    // initializer, leaving only the standard flags above to report.
+    return initModifiers.get(this)?.has(key) ?? false;
   };
 }
 

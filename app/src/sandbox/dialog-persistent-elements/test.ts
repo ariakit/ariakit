@@ -80,7 +80,7 @@ test("closes on a newly inserted outside element after replacing the dialog", as
   await click(q.button("Add late outside field"));
   await click(q.textbox("Late outside field"));
 
-  await expect.poll(q.dialog.hidden.lazy("Dialog")).not.toBeVisible();
+  await expect.poll(q.dialog.maybe.hidden.lazy("Dialog")).not.toBeVisible();
 });
 
 test("stays open when interacting with a persistent shadow element", async () => {
@@ -131,7 +131,7 @@ test("still closes when interacting outside before the dialog is focused", async
   expect(q.dialog("Dialog")).toBeVisible();
 
   await click(q.textbox("Outside field"));
-  await expect.poll(q.dialog.hidden.lazy("Dialog")).not.toBeVisible();
+  await expect.poll(q.dialog.maybe.hidden.lazy("Dialog")).not.toBeVisible();
 });
 
 test("closes when interacting inside an unrelated shadow root", async () => {
@@ -144,7 +144,7 @@ test("closes when interacting inside an unrelated shadow root", async () => {
     "[data-outside-shadow-field]",
   );
   await click(outsideShadowField || null);
-  await expect.poll(q.dialog.hidden.lazy("Dialog")).not.toBeVisible();
+  await expect.poll(q.dialog.maybe.hidden.lazy("Dialog")).not.toBeVisible();
 });
 
 // Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635034591
@@ -159,7 +159,7 @@ test("closes when interacting with a same-id dialog in another root", async () =
       "[aria-label='Shadow dialog field']",
     );
   await click(shadowDialogField || null);
-  await expect.poll(q.dialog.hidden.lazy("Dialog")).not.toBeVisible();
+  await expect.poll(q.dialog.maybe.hidden.lazy("Dialog")).not.toBeVisible();
 });
 
 // Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
@@ -173,7 +173,7 @@ test("closes on a no-focus outside shadow click", async () => {
       "[data-outside-shadow-button]",
     );
   await click(outsideButton || null);
-  await expect.poll(q.dialog.hidden.lazy("Dialog")).not.toBeVisible();
+  await expect.poll(q.dialog.maybe.hidden.lazy("Dialog")).not.toBeVisible();
 });
 
 // Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742

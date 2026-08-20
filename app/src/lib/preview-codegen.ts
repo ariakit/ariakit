@@ -26,6 +26,11 @@ interface PreviewCodegenResult {
   changed: boolean;
 }
 
+interface PreviewHydrationAdapter {
+  fileExtension: string;
+  generate(importPath: string): string;
+}
+
 const previewCodegenDirs = new Map<string, string>();
 
 export function setPreviewCodegenDir(root: PathInput, codegenDir: string) {
@@ -48,6 +53,28 @@ export function getRelativeImportPath(fromFile: string, toFile: string) {
   return path;
 }
 
+function createWrappedPreviewClientGenerator(hydrationModule: string) {
+  return (importPath: string) =>
+    `import { withPreviewHydration } from ${JSON.stringify(hydrationModule)};\nimport Preview from ${JSON.stringify(importPath)};\n\nexport default withPreviewHydration(Preview);\n`;
+}
+
+const previewHydrationAdapters: Partial<
+  Record<Framework, PreviewHydrationAdapter>
+> = {
+  react: {
+    fileExtension: ".tsx",
+    generate: createWrappedPreviewClientGenerator(
+      "#app/components/preview-hydration.react.tsx",
+    ),
+  },
+  solid: {
+    fileExtension: ".tsx",
+    generate: createWrappedPreviewClientGenerator(
+      "#app/components/preview-hydration.solid.tsx",
+    ),
+  },
+};
+
 function getPascalCase(value: string) {
   return value
     .split(/[^a-zA-Z0-9]+/)
@@ -58,6 +85,17 @@ function getPascalCase(value: string) {
 
 function getFrameworkVariable(framework: Framework) {
   return getPascalCase(framework) || "Preview";
+}
+
+function getPreviewClientFile(
+  previewFile: string,
+  framework: Framework,
+  adapter: PreviewHydrationAdapter,
+) {
+  return join(
+    dirname(previewFile),
+    `preview.client.${framework}${adapter.fileExtension}`,
+  );
 }
 
 export function getPreviewFile(previewsDir: string, id: string) {
@@ -106,12 +144,17 @@ function generatePreviewWrapper(preview: DiscoveredPreview, file: string) {
     const entryFile = preview.entryFiles[framework];
     invariant(entryFile, `Missing ${framework} entry file for ${preview.id}`);
     const variable = getFrameworkVariable(framework);
-    const importPath = getRelativeImportPath(file, entryFile);
+    const adapter = previewHydrationAdapters[framework];
+    const componentFile = adapter
+      ? getPreviewClientFile(file, framework, adapter)
+      : entryFile;
+    const importPath = getRelativeImportPath(file, componentFile);
+    const sourceImportPath = getRelativeImportPath(file, entryFile);
     componentImports.push(
       `import ${variable}Example from ${JSON.stringify(importPath)};`,
     );
     sourceImports.push(
-      `import source${variable} from ${JSON.stringify(`${importPath}?source`)};`,
+      `import source${variable} from ${JSON.stringify(`${sourceImportPath}?source`)};`,
     );
     sourceEntries.push(`  ${JSON.stringify(framework)}: source${variable},`);
     componentEntries.push(
@@ -139,10 +182,7 @@ async function getGeneratedPreviewFiles(dir: string) {
       files.push(...(await getGeneratedPreviewFiles(file)));
       continue;
     }
-    if (
-      entry.isFile() &&
-      (entry.name === "preview.astro" || entry.name === "preview.mdx")
-    ) {
+    if (entry.isFile() && entry.name.startsWith("preview.")) {
       files.push(file);
     }
   }
@@ -182,6 +222,18 @@ export async function writePreviewCodegen({
     const contentFile = getPreviewContentFile(previewsDir, preview.id);
     generatedFiles.add(file);
     generatedFiles.add(contentFile);
+    for (const framework of preview.frameworks) {
+      const adapter = previewHydrationAdapters[framework];
+      if (!adapter) continue;
+      const entryFile = preview.entryFiles[framework];
+      if (!entryFile) continue;
+      const clientFile = getPreviewClientFile(file, framework, adapter);
+      const importPath = getRelativeImportPath(clientFile, entryFile);
+      generatedFiles.add(clientFile);
+      changed =
+        (await writeFileIfChanged(clientFile, adapter.generate(importPath))) ||
+        changed;
+    }
     changed =
       (await writeFileIfChanged(file, generatePreviewWrapper(preview, file))) ||
       changed;

@@ -16,7 +16,9 @@ test("selected tab is restored only after the animation ends", async () => {
   expect(examplesTab).not.toHaveFocus();
   expect(examplesTab).not.toHaveAttribute("data-active-item");
   expect(examplesTab).toHaveAttribute("aria-selected", "true");
-  await expect.poll(q.dialog.hidden.lazy("Pages")).not.toBeInTheDocument();
+  await expect
+    .poll(q.dialog.maybe.hidden.lazy("Pages"))
+    .not.toBeInTheDocument();
   await press.ArrowDown();
   await press.ArrowDown();
   expect(q.tab("Components 16")).toHaveFocus();

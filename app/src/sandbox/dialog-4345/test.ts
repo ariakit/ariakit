@@ -14,7 +14,7 @@ test("scroll lock preserves the html element's inline overflow-y", async () => {
   expect(documentElement).toHaveStyle("overflow-x: hidden");
   expect(documentElement).toHaveStyle("overflow-y: hidden");
   await press.Escape();
-  expect(q.dialog("Dialog")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Dialog")).not.toBeInTheDocument();
   expect(documentElement).toHaveStyle("overflow-y: scroll");
   expect(documentElement).not.toHaveStyle("scrollbar-gutter: stable");
   expect(documentElement).not.toHaveStyle("overflow-x: hidden");
@@ -40,7 +40,7 @@ test("fallback scroll lock also hides the html overflow", async () => {
   expect(body).toHaveStyle("overflow: hidden");
   expect(body).toHaveStyle("padding-right: 1024px");
   await press.Escape();
-  expect(q.dialog("Dialog")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Dialog")).not.toBeInTheDocument();
   expect(documentElement).toHaveStyle("overflow-y: scroll");
   expect(documentElement).not.toHaveStyle("--scrollbar-width: 1024px");
   expect(body).not.toHaveStyle("overflow: hidden");

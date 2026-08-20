@@ -25,6 +25,31 @@ test("press.Enter activates a default button in jsdom", async () => {
   expect(onSubmit).toHaveBeenCalledOnce();
 });
 
+// This click is built and dispatched synchronously rather than through a named
+// dispatcher, so it's the one place the shared initialization can be skipped.
+// jsdom leaves the members it doesn't construct absent, where happy-dom stores
+// its own defaults, and only the initializer makes the two agree.
+test("press.Enter submits with the same pointer members every click reports", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const members: Array<Record<string, unknown>> = [];
+  button.type = "submit";
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+    const { altitudeAngle, azimuthAngle, tiltX, width } = event;
+    members.push({ altitudeAngle, azimuthAngle, tiltX, width });
+  });
+  form.append(input, button);
+  document.body.append(form);
+
+  await press.Enter(input);
+
+  expect(members).toEqual([
+    { altitudeAngle: Math.PI / 2, azimuthAngle: 0, tiltX: 0, width: 1 },
+  ]);
+});
+
 test("press.Enter does not resubmit an image submitter after external validation", async () => {
   const form = document.createElement("form");
   const input = document.createElement("input");

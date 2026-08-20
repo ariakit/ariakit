@@ -1,6 +1,6 @@
 import { matchSorter } from "match-sorter";
 import { useDeferredValue, useMemo, useState } from "react";
-import { Tag, TagInput, TagList, TagOption } from "./tag.react.tsx";
+import { Tag, TagField, TagInput, TagList, TagOption } from "./tag.react.tsx";
 import { users as defaultUsers, getAvatar } from "./users.ts";
 
 export default function Example() {
@@ -41,7 +41,7 @@ export default function Example() {
 
   return (
     <div className="wrapper">
-      <TagList
+      <TagField
         label="Invitees"
         value={value}
         setValue={setValue}
@@ -51,12 +51,14 @@ export default function Example() {
           addEmails(values);
         }}
       >
-        {invitees.map((email) => (
-          <Tag key={email} value={email}>
-            <img src={getAvatar(email)} alt="" className="ak-tag-avatar" />
-            <span className="ak-tag-name">{getUserName(email)}</span>
-          </Tag>
-        ))}
+        <TagList>
+          {invitees.map((email) => (
+            <Tag key={email} value={email}>
+              <img src={getAvatar(email)} alt="" className="ak-tag-avatar" />
+              <span className="ak-tag-name">{getUserName(email)}</span>
+            </Tag>
+          ))}
+        </TagList>
         <TagInput delimiter={null}>
           {isCustomEmail(value) && (
             <TagOption value={value}>
@@ -76,7 +78,7 @@ export default function Example() {
             </TagOption>
           ))}
         </TagInput>
-      </TagList>
+      </TagField>
     </div>
   );
 }

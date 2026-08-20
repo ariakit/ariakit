@@ -31,30 +31,48 @@ test("initial state", async () => {
   expect(q.textbox("Tags")).toBeVisible();
 });
 
+test("renders the tags inside the listbox and the input outside it", async () => {
+  const tagList = q.listbox("Tags");
+  expect(tagList).toContainElement(q.option("JavaScript"));
+  expect(tagList).toContainElement(q.option("React"));
+  expect(tagList).not.toHaveAttribute("aria-owns");
+  // The listbox role accepts only options as children, so the input must be a
+  // sibling of the tag list rather than a descendant of it.
+  expect(tagList).not.toContainElement(q.textbox("Tags"));
+});
+
+test("labels the control, the tag list and the input", async () => {
+  // The tags and the input are separate widgets, so the control groups them
+  // and the label names all three.
+  const control = q.group("Tags");
+  expect(control).toContainElement(q.listbox("Tags"));
+  expect(control).toContainElement(q.textbox("Tags"));
+});
+
 test("click on tag", async () => {
   await click(q.option("JavaScript"));
   expect(q.option("JavaScript")).toHaveFocus();
 });
 
 test("remove tag by clicking on remove button", async () => {
-  const tag = q.option.ensure("JavaScript");
+  const tag = q.option("JavaScript");
   await click(tag.querySelector("[aria-label^=Press]"));
   expect(q.textbox()).toHaveFocus();
-  expect(q.option("JavaScript")).not.toBeInTheDocument();
+  expect(q.option.maybe("JavaScript")).not.toBeInTheDocument();
 });
 
 test("remove tag by pressing Delete", async () => {
   await click(q.option("JavaScript"));
   await press.Delete();
   expect(q.option("React")).toHaveFocus();
-  expect(q.option("JavaScript")).not.toBeInTheDocument();
+  expect(q.option.maybe("JavaScript")).not.toBeInTheDocument();
 });
 
 test("remove tag by pressing Backspace on the tag", async () => {
   await click(q.option("React"));
   await press.Backspace();
   expect(q.option("JavaScript")).toHaveFocus();
-  expect(q.option("React")).not.toBeInTheDocument();
+  expect(q.option.maybe("React")).not.toBeInTheDocument();
 });
 
 test("remove tag by pressing Backspace on the textbox", async () => {
@@ -62,7 +80,7 @@ test("remove tag by pressing Backspace on the textbox", async () => {
   expect(q.option.all()).toHaveLength(2);
   await press.Backspace();
   expect(q.textbox()).toHaveFocus();
-  expect(q.option("React")).not.toBeInTheDocument();
+  expect(q.option.maybe("React")).not.toBeInTheDocument();
   expect(q.option("JavaScript")).toBeInTheDocument();
 });
 
@@ -136,7 +154,7 @@ test("move focus between tag list elements", async () => {
 });
 
 test("undo/redo removing tags", async () => {
-  const tag = q.option.ensure("React");
+  const tag = q.option("React");
   await click(tag.querySelector("[aria-label^=Press]"));
   expect(options()).toEqual(["JavaScript"]);
   expect(q.textbox("Tags")).toHaveFocus();

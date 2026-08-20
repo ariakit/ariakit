@@ -12,7 +12,7 @@ test("keeps the keyboard position when the selection registers late", async () =
   // The absence is asserted after the move so it also proves the move won the
   // race against the fixture's late registration.
   await press.ArrowDown();
-  expect(q.option("Item 24")).not.toBeInTheDocument();
+  expect(q.option.maybe("Item 24")).not.toBeInTheDocument();
   expect(q.option("Item 1")).toHaveAttribute("data-active-item");
 
   await expect

@@ -9,21 +9,21 @@ const cases = [
 describe.each(cases)("%s", (buttonLabel, searchLabel) => {
   test("show/hide on click", async () => {
     const button = q.button(buttonLabel);
-    expect(q.dialog(buttonLabel)).not.toBeInTheDocument();
+    expect(q.dialog.maybe(buttonLabel)).not.toBeInTheDocument();
     await click(button);
     expect(q.dialog(buttonLabel)).toBeVisible();
     expect(q.dialog(buttonLabel)).not.toHaveFocus();
     expect(q.combobox(searchLabel)).toHaveFocus();
     expect(q.option("Paragraph")).not.toHaveFocus();
     await click(button);
-    expect(q.dialog(buttonLabel)).not.toBeInTheDocument();
+    expect(q.dialog.maybe(buttonLabel)).not.toBeInTheDocument();
     expect(button).toHaveFocus();
   });
 
   test("show/hide on enter", async () => {
     const button = q.button(buttonLabel);
     await focus(button);
-    expect(q.dialog(buttonLabel)).not.toBeInTheDocument();
+    expect(q.dialog.maybe(buttonLabel)).not.toBeInTheDocument();
     await press.Enter();
     expect(q.dialog(buttonLabel)).toBeVisible();
     expect(q.dialog(buttonLabel)).not.toHaveFocus();
@@ -32,7 +32,7 @@ describe.each(cases)("%s", (buttonLabel, searchLabel) => {
     await press.ShiftTab();
     expect(button).toHaveFocus();
     await press.Enter();
-    expect(q.dialog(buttonLabel)).not.toBeInTheDocument();
+    expect(q.dialog.maybe(buttonLabel)).not.toBeInTheDocument();
     expect(button).toHaveFocus();
   });
 
@@ -47,7 +47,7 @@ describe.each(cases)("%s", (buttonLabel, searchLabel) => {
     await press.ShiftTab();
     expect(button).toHaveFocus();
     await press.Space();
-    expect(q.dialog(buttonLabel)).not.toBeInTheDocument();
+    expect(q.dialog.maybe(buttonLabel)).not.toBeInTheDocument();
     expect(button).toHaveFocus();
   });
 
@@ -77,11 +77,11 @@ describe.each(cases)("%s", (buttonLabel, searchLabel) => {
     await type("c");
     expect(q.option("Classic")).toHaveFocus();
     await type("o");
-    expect(q.option("Classic")).not.toBeInTheDocument();
+    expect(q.option.maybe("Classic")).not.toBeInTheDocument();
     expect(q.option("Code")).toHaveFocus();
     await type("ver");
     expect(q.combobox(searchLabel)).toHaveValue("cover");
-    expect(q.option("Code")).not.toBeInTheDocument();
+    expect(q.option.maybe("Code")).not.toBeInTheDocument();
     expect(q.option("Cover")).toHaveFocus();
     await press.Escape();
     expect(button).toHaveFocus();

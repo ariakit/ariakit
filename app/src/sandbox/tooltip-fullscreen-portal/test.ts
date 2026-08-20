@@ -15,7 +15,7 @@ test("does not leak duplicate tooltip portal containers in StrictMode", async ()
   );
 
   await click(q.button("Unmount tooltip"));
-  expect(q.tooltip("Tooltip content")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("Tooltip content")).not.toBeInTheDocument();
   expect(q.status("Portal containers")).toHaveTextContent(
     "Portal containers: 0",
   );

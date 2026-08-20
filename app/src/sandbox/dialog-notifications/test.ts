@@ -21,6 +21,6 @@ test("notifications remain interactive while the dialog is modal", async () => {
   expect(q.alert.all()).toHaveLength(0);
   expect(q.dialog("Notification")).toBeVisible();
   await press.Escape();
-  expect(q.dialog("Notification")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Notification")).not.toBeInTheDocument();
   expect(q.button("Show modal")).toHaveFocus();
 });

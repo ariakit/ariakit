@@ -7,7 +7,7 @@ async function hoverOutside() {
 }
 
 test("open dialog with click and hide with esc", async () => {
-  expect(q.dialog("Command Menu")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Command Menu")).not.toBeInTheDocument();
   await click(q.button("Open Command Menu"));
   expect(q.dialog("Command Menu")).toBeVisible();
   expect(q.combobox("Search for apps and commands...")).toHaveFocus();
@@ -15,7 +15,7 @@ test("open dialog with click and hide with esc", async () => {
   expect(q.group("Suggestions")).toBeVisible();
   await press.Escape();
   expect(q.button("Open Command Menu")).toHaveFocus();
-  await expect.poll(q.dialog).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe).not.toBeInTheDocument();
 });
 
 test("open dialog with click and hide by clicking outside", async () => {
@@ -24,7 +24,7 @@ test("open dialog with click and hide by clicking outside", async () => {
   expect(q.combobox("Search for apps and commands...")).toHaveFocus();
   await click(document.body);
   expect(q.button("Open Command Menu")).not.toHaveFocus();
-  await expect.poll(q.dialog).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe).not.toBeInTheDocument();
 });
 
 test("open dialog with enter and hide by pressing enter on esc button", async () => {
@@ -35,7 +35,7 @@ test("open dialog with enter and hide by pressing enter on esc button", async ()
   await press.Tab();
   expect(q.button("Esc")).toHaveFocus();
   await press.Enter();
-  await expect.poll(q.dialog).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe).not.toBeInTheDocument();
 });
 
 test("navigate through items with keyboard", async () => {

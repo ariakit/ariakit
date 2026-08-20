@@ -1,4 +1,4 @@
-import { noop } from "@ariakit/utils";
+import { getDocument, getWindow, noop } from "@ariakit/utils";
 
 export type DirtiableElement = Element & { dirty?: boolean };
 
@@ -12,6 +12,28 @@ export function isHappyDOM(
     : undefined,
 ) {
   return !!win && "happyDOM" in win;
+}
+
+export type OwnerWindowSource = Window | Document | Node | null | undefined;
+
+/**
+ * The window that owns `target`, which is the realm `@testing-library/dom`
+ * builds an event in, or `null` when none can be resolved. Read a constructor
+ * from here rather than from the ambient global whenever the target may live in
+ * a same-origin iframe, because that frame has interfaces of its own.
+ * https://github.com/ariakit/ariakit/issues/7195
+ */
+export function getOwnerWindow(target: OwnerWindowSource) {
+  if (!target) return null;
+  // `getWindow` resolves the realm defensively, because a form exposes its
+  // controls as named properties that override built-ins and a document does
+  // the same for the elements it names. It falls back to the ambient window
+  // rather than reporting failure, so the target's own view is the one that
+  // owns the target's document back. Everything else reports absent, which is
+  // what both callers fall back on.
+  // https://github.com/ariakit/ariakit/issues/7209
+  const view = getWindow(target);
+  return view.document === getDocument(target) ? view : null;
 }
 
 export const isBrowser =

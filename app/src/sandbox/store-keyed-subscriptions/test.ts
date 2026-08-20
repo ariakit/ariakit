@@ -97,13 +97,11 @@ test("supports keyed selector types", () => {
 });
 
 test("runs selectors only for subscribed keys", async () => {
-  const stateCalls = q.status.ensure("useStoreState calls").textContent;
-  const objectCalls = q.status.ensure("useStoreStateObject calls").textContent;
-  const unkeyedCalls = q.status.ensure("Unkeyed selector calls").textContent;
-  const emptyCalls = q.status.ensure("Empty selector calls").textContent;
-  const emptyObjectCalls = q.status.ensure(
-    "Empty object selector calls",
-  ).textContent;
+  const stateCalls = q.status("useStoreState calls").textContent;
+  const objectCalls = q.status("useStoreStateObject calls").textContent;
+  const unkeyedCalls = q.status("Unkeyed selector calls").textContent;
+  const emptyCalls = q.status("Empty selector calls").textContent;
+  const emptyObjectCalls = q.status("Empty object selector calls").textContent;
 
   expect(q.status("Optional value")).toHaveTextContent("none");
   expect(q.status("Optional object direct bar")).toHaveTextContent("none");
@@ -111,17 +109,13 @@ test("runs selectors only for subscribed keys", async () => {
 
   await click(q.button("Update bar"));
 
-  expect(q.status.ensure("useStoreState calls").textContent).toBe(stateCalls);
-  expect(q.status.ensure("useStoreStateObject calls").textContent).toBe(
-    objectCalls,
-  );
-  expect(q.status.ensure("Empty selector calls").textContent).toBe(emptyCalls);
-  expect(q.status.ensure("Empty object selector calls").textContent).toBe(
+  expect(q.status("useStoreState calls").textContent).toBe(stateCalls);
+  expect(q.status("useStoreStateObject calls").textContent).toBe(objectCalls);
+  expect(q.status("Empty selector calls").textContent).toBe(emptyCalls);
+  expect(q.status("Empty object selector calls").textContent).toBe(
     emptyObjectCalls,
   );
-  expect(q.status.ensure("Unkeyed selector calls").textContent).not.toBe(
-    unkeyedCalls,
-  );
+  expect(q.status("Unkeyed selector calls").textContent).not.toBe(unkeyedCalls);
   expect(q.status("Direct bar")).toHaveTextContent("1");
   expect(q.status("Mixed direct bar")).toHaveTextContent("1");
   expect(q.status("Mixed doubled foo")).toHaveTextContent("0");
@@ -130,14 +124,12 @@ test("runs selectors only for subscribed keys", async () => {
 
   await click(q.button("Update foo"));
 
-  expect(q.status.ensure("useStoreState calls").textContent).not.toBe(
-    stateCalls,
-  );
-  expect(q.status.ensure("useStoreStateObject calls").textContent).not.toBe(
+  expect(q.status("useStoreState calls").textContent).not.toBe(stateCalls);
+  expect(q.status("useStoreStateObject calls").textContent).not.toBe(
     objectCalls,
   );
-  expect(q.status.ensure("Empty selector calls").textContent).toBe(emptyCalls);
-  expect(q.status.ensure("Empty object selector calls").textContent).toBe(
+  expect(q.status("Empty selector calls").textContent).toBe(emptyCalls);
+  expect(q.status("Empty object selector calls").textContent).toBe(
     emptyObjectCalls,
   );
   expect(q.status("Selector value")).toHaveTextContent("1");
@@ -198,7 +190,7 @@ test("updates dynamic selector dependencies", async () => {
 
 test("attaches and detaches conditional selector dependencies", async () => {
   const selectorValue = q.status("Conditional selector value");
-  const calls = q.status.ensure("Conditional selector calls");
+  const calls = q.status("Conditional selector calls");
   const pausedCalls = calls.textContent;
 
   expect(selectorValue).toHaveTextContent("paused");

@@ -3,8 +3,8 @@ import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/6986
 test("moves focus through the menu while its store is closed", async () => {
-  const save = q.menuitem.ensure("Save");
-  const close = q.menuitem.ensure("Close");
+  const save = q.menuitem("Save");
+  const close = q.menuitem("Close");
 
   await click(save);
   expect(save).toHaveFocus();

@@ -4,7 +4,7 @@ import { expect, test } from "vitest";
 test("Shift+Tab moves focus back to the checked radio", async () => {
   const option1 = q.radio("Option 1");
   const option2 = q.radio("Option 2");
-  const option3 = q.radio.ensure("Option 3");
+  const option3 = q.radio("Option 3");
 
   await press.Tab();
   expect(option1).toHaveFocus();

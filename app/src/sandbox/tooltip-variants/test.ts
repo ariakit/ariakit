@@ -11,7 +11,7 @@ test("shows the instant tooltip on hover and focus", async () => {
   await hover(anchor);
   expect(q.tooltip("Instant tooltip")).toBeVisible();
   await hoverOutside();
-  expect(q.tooltip("Instant tooltip")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("Instant tooltip")).not.toBeInTheDocument();
   await press.Tab();
   expect(anchor).toHaveFocus();
   expect(q.tooltip("Instant tooltip")).toBeVisible();
@@ -24,7 +24,7 @@ test("keeps the label tooltip open when its anchor is clicked", async () => {
   await click(anchor);
   expect(q.tooltip("Bold label")).toBeVisible();
   await hoverOutside();
-  expect(q.tooltip("Bold label")).not.toBeInTheDocument();
+  expect(q.tooltip.maybe("Bold label")).not.toBeInTheDocument();
 });
 
 test("keeps the hover-triggered tooltip mounted during leave", async () => {
@@ -33,7 +33,9 @@ test("keeps the hover-triggered tooltip mounted during leave", async () => {
   expect(await q.tooltip.wait("Animated tooltip")).toBeVisible();
   await hoverOutside();
   expect(q.tooltip.hidden("Animated tooltip")).toBeVisible();
-  await expect.poll(q.tooltip.lazy("Animated tooltip")).not.toBeInTheDocument();
+  await expect
+    .poll(q.tooltip.maybe.lazy("Animated tooltip"))
+    .not.toBeInTheDocument();
 });
 
 test("keeps the focus-triggered tooltip mounted during leave", async () => {
@@ -45,7 +47,9 @@ test("keeps the focus-triggered tooltip mounted during leave", async () => {
   expect(q.tooltip("Animated tooltip")).toBeVisible();
   await click(q.button("Bold"));
   expect(q.tooltip.hidden("Animated tooltip")).toBeVisible();
-  await expect.poll(q.tooltip.lazy("Animated tooltip")).not.toBeInTheDocument();
+  await expect
+    .poll(q.tooltip.maybe.lazy("Animated tooltip"))
+    .not.toBeInTheDocument();
 });
 
 test("Escape from animated tooltip content restores the anchor", async () => {
@@ -55,5 +59,7 @@ test("Escape from animated tooltip content restores the anchor", async () => {
   await click(q.tooltip("Animated tooltip"));
   await press.Escape();
   expect(anchor).toHaveFocus();
-  await expect.poll(q.tooltip.lazy("Animated tooltip")).not.toBeInTheDocument();
+  await expect
+    .poll(q.tooltip.maybe.lazy("Animated tooltip"))
+    .not.toBeInTheDocument();
 });

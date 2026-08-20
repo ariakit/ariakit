@@ -261,7 +261,7 @@ const title = canUseDOM ? document.title : "";
 function getDocument(node?: Window | Document | Node | null): Document;
 ```
 
-Returns `element.ownerDocument || document`.
+Returns the document `node` belongs to, or the current one when it has none.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
@@ -270,10 +270,12 @@ Returns `element.ownerDocument || document`.
 #### `getWindow`
 
 ```ts
-function getWindow(node?: Window | Document | Node | null): Window;
+function getWindow(
+  node?: Window | Document | Node | null,
+): Window & typeof globalThis;
 ```
 
-Returns `element.ownerDocument.defaultView || window`.
+Returns the window `node` belongs to, or the current one when it has none.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
@@ -728,11 +730,13 @@ fireKeyboardEvent(document.getElementById("id"), "keydown", {
 ```ts
 function fireClickEvent(
   element: Element,
-  eventInit?: PointerEventInit,
+  eventInit?: PointerEventInit | null,
 ): boolean;
 ```
 
 Creates and dispatches a click event.
+
+The event is a `PointerEvent` built by the window that owns the element, the way browsers dispatch it, falling back to a `MouseEvent` where that window has no `PointerEvent`. It reports no pointer behind the click unless the caller passes one, and reports every other pointer attribute at its default value, the way a click always does.
 
 Example:
 

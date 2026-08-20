@@ -7,11 +7,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     const anchor = q.button("Bookmark");
-    // The listener that records pointer modality is installed when the island
-    // hydrates, and Safari's tabindex is applied by a later effect in the same
-    // component, so waiting for it proves the click reaches that listener. It
-    // only proves that while the fixture passes no tabIndex of its own.
-    await test.expect(anchor).toHaveAttribute("tabindex", "0");
 
     // Safari moves focus with Option+Tab instead of Tab when the macOS keyboard
     // navigation setting is off. Clicking first is what makes the regression
@@ -32,9 +27,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     const anchor = q.button("Bookmark");
-    // Same hydration gate as above. Without it a pre-hydration click would
-    // leave the attribute absent for the wrong reason.
-    await test.expect(anchor).toHaveAttribute("tabindex", "0");
 
     await anchor.click();
     await test.expect(anchor).toBeFocused();

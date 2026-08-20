@@ -31,7 +31,7 @@ test("keeps typeahead characters scoped to each composite instance", async () =>
 
     // Cherry must not start with "b", otherwise same-initial looping would
     // reset a leaked buffer and hide the regression.
-    q.button.ensure("Cherry").focus();
+    q.button("Cherry").focus();
     expect(q.button("Cherry")).toHaveFocus();
 
     await typeahead("b");

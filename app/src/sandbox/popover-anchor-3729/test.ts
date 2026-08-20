@@ -5,7 +5,7 @@ import { expect, test } from "vitest";
 test.each(["Disclosure first", "Anchor first"])(
   "keeps the explicit anchor when the %s disclosure is clicked",
   async (label) => {
-    const anchor = q.status.ensure(`${label} current anchor`);
+    const anchor = q.status(`${label} current anchor`);
     expect(anchor).toHaveTextContent("explicit");
 
     await click(q.button(`Open ${label}`));
@@ -17,7 +17,7 @@ test.each(["Disclosure first", "Anchor first"])(
 
 test("falls back to the disclosure when the explicit anchor unmounts", async () => {
   const label = "Disclosure first";
-  const anchor = q.status.ensure(`${label} current anchor`);
+  const anchor = q.status(`${label} current anchor`);
 
   await click(q.button(`Open ${label}`));
   await click(q.button(`Remove ${label} anchor`));
@@ -86,7 +86,7 @@ test.each([
   );
 
   await press("Escape");
-  expect(q.listbox(`${label} Combobox items`)).not.toBeInTheDocument();
+  expect(q.listbox.maybe(`${label} Combobox items`)).not.toBeInTheDocument();
 });
 
 test("uses ComboboxDisclosure when the combobox input unmounts", async () => {

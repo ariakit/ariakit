@@ -120,22 +120,24 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
  * when clicked with a mouse.
  * @see https://ariakit.com/components/tag
  * @example
- * ```jsx {9}
+ * ```jsx {10}
  * <TagProvider>
- *   <TagListLabel>Invitees</TagListLabel>
- *   <TagList>
- *     <TagValues>
- *       {(values) =>
- *         values.map((value) => (
- *           <Tag key={value} value={value}>
- *             {value}
- *             <TagRemove />
- *           </Tag>
- *         ))
- *       }
- *     </TagValues>
+ *   <TagLabel>Invitees</TagLabel>
+ *   <TagControl>
+ *     <TagList style={{ display: "contents" }}>
+ *       <TagValues>
+ *         {(values) =>
+ *           values.map((value) => (
+ *             <Tag key={value} value={value}>
+ *               {value}
+ *               <TagRemove />
+ *             </Tag>
+ *           ))
+ *         }
+ *       </TagValues>
+ *     </TagList>
  *     <TagInput />
- *   </TagList>
+ *   </TagControl>
  * </TagProvider>
  * ```
  */

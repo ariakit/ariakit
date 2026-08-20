@@ -16,7 +16,7 @@ test("disabled menu button does not open its menu on hover", async () => {
   // its portal mounts, which is the wait the test above measures. Cross it to
   // give the assertion below a chance to fail.
   await sleep();
-  expect(q.menu("Hover MenuButton props")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Hover MenuButton props")).not.toBeInTheDocument();
 });
 
 // https://github.com/ariakit/ariakit/issues/7115
@@ -24,14 +24,14 @@ test("disabled rendered button does not open its menu on hover", async () => {
   await hover(q.button("Hover render props"));
   // Same portal-mount wait as the test above.
   await sleep();
-  expect(q.menu("Hover render props")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Hover render props")).not.toBeInTheDocument();
 });
 
 test("public hook keeps the false default when the option is an own undefined value", async () => {
   await hover(q.button("Hover hook undefined"));
   // Same portal-mount wait as the tests above.
   await sleep();
-  expect(q.menu("Hover hook undefined")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Hover hook undefined")).not.toBeInTheDocument();
 });
 
 test("disabled menu button opens its menu on hover when the consumer opts in", async () => {
@@ -49,5 +49,5 @@ test("opting in does not open the menu on hover for a truly disabled button", as
   await hover(q.button("Hover opted in truly disabled"));
   // Same portal-mount wait as the tests above.
   await sleep();
-  expect(q.menu("Hover opted in truly disabled")).not.toBeInTheDocument();
+  expect(q.menu.maybe("Hover opted in truly disabled")).not.toBeInTheDocument();
 });

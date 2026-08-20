@@ -23,8 +23,8 @@ test.each([
   await click(q.button(`Toggle ${label} popover`));
   expect(q.dialog()).toBeVisible();
 
-  const popoverRenders = q.status.ensure(`${label} popover renders`);
-  const disclosureElementRenders = q.status.ensure(
+  const popoverRenders = q.status(`${label} popover renders`);
+  const disclosureElementRenders = q.status(
     `${label} disclosure element renders`,
   );
 
@@ -48,7 +48,7 @@ test("re-renders when the disclosure positioning fallback changes", async () => 
   await click(q.button("Toggle Fallback popover"));
   expect(q.dialog()).toBeVisible();
 
-  const popoverRenders = q.status.ensure("Fallback popover renders");
+  const popoverRenders = q.status("Fallback popover renders");
   await click(q.button("Set Fallback disclosure element"));
   const previousPopoverRenders = popoverRenders.textContent;
 
