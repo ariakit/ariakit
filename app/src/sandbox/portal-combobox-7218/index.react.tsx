@@ -14,7 +14,8 @@ interface CollisionProps {
 
 function createDefaultViewForm() {
   const form = document.createElement("form");
-  form.name = "defaultView";
+  // TODO: Restore the name after https://github.com/ariakit/ariakit/issues/7218
+  form.name = "settingsForm";
   form.setAttribute("aria-label", "Preferences");
   const label = document.createElement("label");
   label.textContent = "Theme";
