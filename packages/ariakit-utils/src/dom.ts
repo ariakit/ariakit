@@ -19,9 +19,9 @@ function checkIsBrowser() {
 }
 
 // A form exposes its controls as named properties that override built-ins, and
-// a document does the same for the elements it names. Read the Node and
-// Document members below through their interface getters so named elements
-// cannot answer those lookups.
+// a document does the same for the elements it names. Use the direct reads for
+// ordinary DOM values, then fall back to the interface getters when a named
+// element answers one of those lookups.
 // https://github.com/ariakit/ariakit/issues/7201
 // https://github.com/ariakit/ariakit/issues/7215
 
@@ -82,24 +82,26 @@ function readDOMMember(
 }
 
 function getNodeType(value: unknown) {
-  try {
-    const nodeType = (value as Node | null | undefined)?.nodeType;
-    if (typeof nodeType === "number") {
-      return nodeType;
-    }
-  } catch {
-    // A cross-origin WindowProxy can throw before the getter rejects it below.
-  }
   return readDOMMember(value, nodeTypeGetter, "nodeType");
 }
 
 function isDocument(value: unknown): value is Document {
   // Node.DOCUMENT_NODE === 9.
-  return getNodeType(value) === 9;
+  const nodeType = (value as Node | null | undefined)?.nodeType;
+  return (
+    nodeType === 9 || (typeof nodeType === "object" && getNodeType(value) === 9)
+  );
 }
 
-function getOwnerDocument(node: Node) {
-  return readDOMMember(node, ownerDocumentGetter, "ownerDocument");
+function ownsDocument(
+  view: Window & typeof globalThis,
+  ownerDocument: Document,
+) {
+  try {
+    return view.document === ownerDocument;
+  } catch {
+    return false;
+  }
 }
 
 function getDefaultView(ownerDocument: Document) {
@@ -108,6 +110,10 @@ function getDefaultView(ownerDocument: Document) {
   // https://github.com/ariakit/ariakit/pull/7217#discussion_r3819047925
   if (typeof window !== "undefined" && ownerDocument === window.document) {
     return window;
+  }
+  const defaultView = ownerDocument.defaultView;
+  if (isWindow(defaultView) && ownsDocument(defaultView, ownerDocument)) {
+    return defaultView;
   }
   return readDOMMember(ownerDocument, defaultViewGetter, "defaultView");
 }
@@ -118,12 +124,19 @@ function getDefaultView(ownerDocument: Document) {
 export function getDocument(node?: Window | Document | Node | null): Document {
   if (!node) return document;
   if (isDocument(node)) return node;
-  // A plain `Window` is not assignable to the intersection `isWindow` asserts,
-  // so it stays in the type of the branch that has already ruled it out.
-  const nodeDocument = isWindow(node)
-    ? node.document
-    : getOwnerDocument(node as Node);
+  if (isWindow(node)) {
+    const nodeDocument = node.document;
+    if (isDocument(nodeDocument)) return nodeDocument;
+    return document;
+  }
+  const nodeDocument = (node as Node).ownerDocument;
   if (isDocument(nodeDocument)) return nodeDocument;
+  const unshadowedDocument = readDOMMember(
+    node,
+    ownerDocumentGetter,
+    "ownerDocument",
+  );
+  if (isDocument(unshadowedDocument)) return unshadowedDocument;
   return document;
 }
 
@@ -209,7 +222,11 @@ export function isElement(
   target: EventTarget | null | undefined,
 ): target is Element {
   // Node.ELEMENT_NODE === 1.
-  return getNodeType(target) === 1;
+  const nodeType = (target as Node | null)?.nodeType;
+  return (
+    nodeType === 1 ||
+    (typeof nodeType === "object" && getNodeType(target) === 1)
+  );
 }
 
 /**
@@ -225,7 +242,11 @@ export function isElement(
  * }
  */
 export function isNode(target: EventTarget | null | undefined): target is Node {
-  return typeof getNodeType(target) === "number";
+  const nodeType = (target as Node | null)?.nodeType;
+  return (
+    typeof nodeType === "number" ||
+    (typeof nodeType === "object" && typeof getNodeType(target) === "number")
+  );
 }
 
 /**

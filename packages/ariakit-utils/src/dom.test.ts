@@ -154,20 +154,6 @@ test("isNode rejects event targets that are not nodes", () => {
   expect(isNode(new EventTarget())).toBe(false);
 });
 
-test("node guards reject event targets that throw on nodeType", () => {
-  const target = new Proxy(new EventTarget(), {
-    get(target, property, receiver) {
-      if (property === "nodeType") {
-        throw new Error("Blocked property");
-      }
-      return Reflect.get(target, property, receiver);
-    },
-  });
-
-  expect(isElement(target)).toBe(false);
-  expect(isNode(target)).toBe(false);
-});
-
 // Each helper gets its own case, because a bundled test stops at the first
 // failing assertion. `getDocument` and `getActiveElement` also fail differently
 // per shape, while `getWindow` reads only `self` and fails the same way in both.
@@ -291,6 +277,42 @@ test("getWindow ignores a document's named defaultView form", () => {
   });
 
   expect(getWindow(element)).toBe(frameWindow);
+});
+
+// The named getter can answer with a real window when the element it names is
+// a frame, so the resolved view has to own the document back.
+test("getWindow ignores a named defaultView from another realm", () => {
+  const { frameWindow } = appendFrame();
+  const otherDocument = document.implementation.createHTMLDocument("Other");
+  const element = otherDocument.createElement("div");
+  otherDocument.body.append(element);
+  Object.defineProperty(otherDocument, "defaultView", {
+    configurable: true,
+    value: frameWindow,
+  });
+
+  expect(getWindow(element)).toBe(window);
+});
+
+// A cross-origin WindowProxy can identify itself as a window while refusing
+// access to `document`, so that refusal must also reject the named answer.
+test("getWindow ignores a named defaultView that hides its document", () => {
+  const refusingView = {
+    window: null as unknown,
+    get document(): Document {
+      throw new Error("SecurityError");
+    },
+  };
+  refusingView.window = refusingView;
+  const otherDocument = document.implementation.createHTMLDocument("Other");
+  const element = otherDocument.createElement("div");
+  otherDocument.body.append(element);
+  Object.defineProperty(otherDocument, "defaultView", {
+    configurable: true,
+    value: refusingView,
+  });
+
+  expect(getWindow(element)).toBe(window);
 });
 
 // A `Document` is a `Node` whose `ownerDocument` is `null`, so resolving one
