@@ -14,6 +14,7 @@ function createIframeButton() {
   iframeWindow.document.body.append(button);
   return {
     container,
+    iframe,
     iframeWindow,
     button,
     [Symbol.dispose]() {
@@ -67,6 +68,23 @@ test("does not hover content inside a hidden iframe ancestor", async () => {
 
   expect(received).toEqual([]);
   expect(button.getClientRects()).toHaveLength(0);
+});
+
+test("does not interact with content inside a pointer-inert iframe", async () => {
+  using fixture = createIframeButton();
+  const { button, container, iframe, iframeWindow } = fixture;
+  container.style.pointerEvents = "none";
+  const received: string[] = [];
+  for (const event of ["pointerover", "pointermove", "pointerdown", "click"]) {
+    button.addEventListener(event, () => received.push(event));
+  }
+
+  await hover(button);
+  await click(button);
+
+  expect(received).toEqual([]);
+  expect(iframeWindow.getComputedStyle(button).pointerEvents).toBe("auto");
+  expect(getComputedStyle(iframe).pointerEvents).toBe("none");
 });
 
 test("applies focus shims in an iframe realm before clicking", async () => {

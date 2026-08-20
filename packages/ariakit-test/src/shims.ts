@@ -143,6 +143,16 @@ export function getElementStyle(element: Element) {
   return ensureBrowserShims(element)?.getComputedStyle(element);
 }
 
+// An iframe's pointer-events value gates inner hit testing but does not inherit
+// into its content document.
+// https://github.com/ariakit/ariakit/pull/7219#discussion_r3820094503
+export function isFramePointerEventsEnabled(element: Element) {
+  const frame = element.ownerDocument.defaultView?.frameElement;
+  if (!frame) return true;
+  if (getElementStyle(frame)?.pointerEvents === "none") return false;
+  return isFramePointerEventsEnabled(frame);
+}
+
 function polyfillClipboardEvent(targetWindow: Window & typeof globalThis) {
   if (typeof targetWindow.ClipboardEvent !== "undefined") return;
   if (typeof targetWindow.Event === "undefined") return;

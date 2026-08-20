@@ -12,7 +12,11 @@ import { focus } from "./focus.ts";
 import { hover } from "./hover.ts";
 import { mouseDown } from "./mouse-down.ts";
 import { mouseUp } from "./mouse-up.ts";
-import { isFocusable, isVisible } from "./shims.ts";
+import {
+  isFocusable,
+  isFramePointerEventsEnabled,
+  isVisible,
+} from "./shims.ts";
 import { sleep } from "./sleep.ts";
 
 function getClosestLabel(element: Element) {
@@ -193,6 +197,7 @@ export function click(
   return wrapAsync(async () => {
     invariant(element, "Unable to click on null element");
     if (!isVisible(element)) return;
+    if (!isFramePointerEventsEnabled(element)) return;
 
     const button = getMouseButton(options);
     const stepOptions = omitButtons(options);

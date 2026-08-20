@@ -2,7 +2,11 @@ import { invariant } from "@ariakit/utils";
 import { getPointerOptions } from "./__mouse.ts";
 import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
-import { getElementStyle, isVisible } from "./shims.ts";
+import {
+  getElementStyle,
+  isFramePointerEventsEnabled,
+  isVisible,
+} from "./shims.ts";
 import { sleep } from "./sleep.ts";
 
 type DocumentWithLastHovered = Document & {
@@ -33,6 +37,7 @@ export function hover(element: Element | null, options?: PointerEventInit) {
     invariant(element, "Unable to hover on null element");
 
     if (!isVisible(element)) return;
+    if (!isFramePointerEventsEnabled(element)) return;
 
     const document = element.ownerDocument as DocumentWithLastHovered;
     const { lastHovered } = document;
