@@ -89,6 +89,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7192
+  //
+  // happy-dom does not reliably reproduce this React portal propagation path,
+  // so this behavior remains browser-only.
   test("keyboard clicks cross a shadow boundary", async ({ page, q }) => {
     const command = q.button("Shadow command");
     const status = q.status();
