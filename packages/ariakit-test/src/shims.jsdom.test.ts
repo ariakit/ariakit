@@ -4,17 +4,20 @@ import { expect, test } from "vitest";
 import { click, dispatch, hover, press } from "./index.ts";
 
 function createIframeButton() {
+  const container = document.createElement("div");
   const iframe = document.createElement("iframe");
-  document.body.append(iframe);
+  container.append(iframe);
+  document.body.append(container);
   const iframeWindow = iframe.contentDocument?.defaultView;
   if (!iframeWindow) throw new Error("Unable to reach the iframe window");
   const button = iframeWindow.document.createElement("button");
   iframeWindow.document.body.append(button);
   return {
+    container,
     iframeWindow,
     button,
     [Symbol.dispose]() {
-      iframe.remove();
+      container.remove();
     },
   };
 }
@@ -51,6 +54,19 @@ test("applies layout shims in an iframe realm before hovering", async () => {
   expect(received).toEqual(["pointerover"]);
   expect(button.getClientRects()[0]).toMatchObject({ width: 1, height: 1 });
   expect(hiddenButton.getClientRects()).toHaveLength(0);
+});
+
+test("does not hover content inside a hidden iframe ancestor", async () => {
+  using fixture = createIframeButton();
+  const { button, container } = fixture;
+  container.style.display = "none";
+  const received: string[] = [];
+  button.addEventListener("pointerover", (event) => received.push(event.type));
+
+  await hover(button);
+
+  expect(received).toEqual([]);
+  expect(button.getClientRects()).toHaveLength(0);
 });
 
 test("applies focus shims in an iframe realm before clicking", async () => {

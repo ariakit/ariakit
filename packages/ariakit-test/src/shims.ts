@@ -51,7 +51,15 @@ function applyBrowserShims(
   ElementConstructor.prototype.getClientRects = function getClientRects() {
     const isHidden = (element: Element) => {
       if (!element.isConnected) return true;
-      if (element.parentElement && isHidden(element.parentElement)) return true;
+      const parent = element.parentElement;
+      if (parent && isHidden(parent)) return true;
+      if (!parent) {
+        const frame = element.ownerDocument.defaultView?.frameElement;
+        if (frame) {
+          ensureBrowserShims(frame);
+          if (frame.getClientRects().length === 0) return true;
+        }
+      }
       if (!(element instanceof HTMLElementConstructor)) return false;
       if (element.hidden) return true;
       const style = targetWindow.getComputedStyle(element);
