@@ -29,9 +29,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7215
-  // happy-dom defines `nodeType` on the form's prototype, so only real browsers
-  // reproduce the named-property override this interaction exercises.
-  test("uses pointer focus on a form that names a nodeType field", async ({
+  // The workaround uses a collision-free DOM field name so pointer focus is
+  // not mistaken for keyboard focus.
+  test("uses pointer focus with the nodeType workaround", async ({
     page,
     q,
   }) => {
@@ -49,6 +49,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await flushFrames(page);
     await test.expect(q.text("Pointer focus")).toBeVisible();
     await test.expect(q.text("Keyboard focus")).not.toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7215
+  test("preserves the nodeType form data key", async ({ q }) => {
+    await q.button("Add node editor").click();
+    await q.textbox("Node type").fill("element");
+    await q.button("Save node").click();
+    await test
+      .expect(q.text('Submitted data: {"nodeType":"element"}'))
+      .toBeVisible();
   });
 
   test("checkbox receives focus on click", async ({ q }) => {

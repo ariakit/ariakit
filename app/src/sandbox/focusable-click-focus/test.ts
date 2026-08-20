@@ -1,4 +1,4 @@
-import { click, press, q } from "@ariakit/test";
+import { click, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/7099
@@ -13,4 +13,12 @@ test("shows focus-visible on a modified navigation key", async () => {
 
   await press.ArrowDown(null, { altKey: true });
   expect(button).toHaveAttribute("data-focus-visible", "true");
+});
+
+// https://github.com/ariakit/ariakit/issues/7215
+test("preserves the nodeType form data key", async () => {
+  await click(q.button("Add node editor"));
+  await type("element", q.textbox("Node type"));
+  await click(q.button("Save node"));
+  expect(q.text('Submitted data: {"nodeType":"element"}')).toBeVisible();
 });
