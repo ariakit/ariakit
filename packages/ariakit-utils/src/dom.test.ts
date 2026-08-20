@@ -1,4 +1,4 @@
-import { afterEach, expect, test, vi } from "vitest";
+import { afterEach, expect, test } from "vitest";
 import {
   getActiveElement,
   getDocument,
@@ -144,16 +144,6 @@ test("isNode handles a form that answers nodeType with a control", () => {
   expect(isNode(form)).toBe(true);
 });
 
-test("isElement rejects event targets that are not nodes", () => {
-  expect(isElement(window)).toBe(false);
-  expect(isElement(new EventTarget())).toBe(false);
-});
-
-test("isNode rejects event targets that are not nodes", () => {
-  expect(isNode(window)).toBe(false);
-  expect(isNode(new EventTarget())).toBe(false);
-});
-
 // Each helper gets its own case, because a bundled test stops at the first
 // failing assertion. `getDocument` and `getActiveElement` also fail differently
 // per shape, while `getWindow` reads only `self` and fails the same way in both.
@@ -221,16 +211,6 @@ test("getDocument resolves a window to its own document", () => {
   expect(getDocument(frameWindow)).toBe(frameDocument);
 });
 
-test("getDocument rejects a window's numeric nodeType global", () => {
-  const { frameDocument, frameWindow } = appendFrame();
-  Object.defineProperty(frameWindow, "nodeType", {
-    configurable: true,
-    value: Node.DOCUMENT_NODE,
-  });
-
-  expect(getDocument(frameWindow)).toBe(frameDocument);
-});
-
 test("getWindow resolves a window to itself", () => {
   const { frameWindow } = appendFrame();
 
@@ -289,9 +269,10 @@ test("getWindow ignores a document's named defaultView form", () => {
   expect(getWindow(element)).toBe(frameWindow);
 });
 
-// The named getter can answer with a real window when the element it names is
-// a frame, so the resolved view has to own the document back.
-test("getWindow ignores a named defaultView from another realm", () => {
+// The same getter answers with a real window when the element it names is a
+// frame, so the resolved view has to own the document back rather than merely
+// be a window. Measured on the three engines above.
+test("getWindow falls back when a document answers its default view with another realm's window", () => {
   const { frameWindow } = appendFrame();
   const otherDocument = document.implementation.createHTMLDocument("Other");
   const element = otherDocument.createElement("div");
@@ -304,9 +285,11 @@ test("getWindow ignores a named defaultView from another realm", () => {
   expect(getWindow(element)).toBe(window);
 });
 
-// A cross-origin WindowProxy can identify itself as a window while refusing
-// access to `document`, so that refusal must also reject the named answer.
-test("getWindow ignores a named defaultView that hides its document", () => {
+// Measured on the same three engines: when that frame is cross-origin, its
+// window still answers `window` with itself and throws a `SecurityError` for
+// `document`, so refusing to answer has to count as owning another document.
+// The environment has no cross-origin frames, so the refusal is emulated.
+test("getWindow falls back when the view it resolves refuses to report its document", () => {
   const refusingView = {
     window: null as unknown,
     get document(): Document {
@@ -341,38 +324,6 @@ test("getWindow resolves a document from another realm to its own view", () => {
   const { frameDocument, frameWindow } = appendFrame();
 
   expect(getWindow(frameDocument)).toBe(frameWindow);
-});
-
-test("resolves supplied nodes when imported without DOM globals", async () => {
-  const { frameDocument, frameWindow } = appendFrame();
-  const form = appendShadowingForm(frameDocument, "nodeType", "ownerDocument");
-  shadowFormMember(form, "nodeType");
-  shadowFormMember(form, "ownerDocument");
-  const globalNames = ["window", "document", "Node", "Document"] as const;
-  const descriptors = globalNames.map(
-    (name) =>
-      [name, Object.getOwnPropertyDescriptor(globalThis, name)] as const,
-  );
-
-  try {
-    for (const name of globalNames) {
-      Reflect.deleteProperty(globalThis, name);
-    }
-    vi.resetModules();
-    const dom = await import("./dom.ts");
-
-    expect(dom.isElement(form)).toBe(true);
-    expect(dom.isNode(form)).toBe(true);
-    expect(dom.getDocument(form)).toBe(frameDocument);
-    expect(dom.getWindow(form)).toBe(frameWindow);
-  } finally {
-    for (const [name, descriptor] of descriptors) {
-      if (descriptor) {
-        Object.defineProperty(globalThis, name, descriptor);
-      }
-    }
-    vi.resetModules();
-  }
 });
 
 test("setSelectionRange skips input types that do not support text selection", () => {

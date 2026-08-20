@@ -19,9 +19,12 @@ function checkIsBrowser() {
 }
 
 // A form exposes its controls as named properties that override built-ins, and
-// a document does the same for the elements it names. Use the direct reads for
-// ordinary DOM values, then fall back to the interface getters when a named
-// element answers one of those lookups.
+// a document does the same for the elements it names, so any member read while
+// resolving a realm can answer with one of those instead: a control named
+// `self` makes a form answer the window test, one named `ownerDocument` makes
+// it answer the document lookup, and a form named `defaultView` makes a
+// document answer the window lookup. The two guards below check what came back
+// rather than trusting the member it came from.
 // https://github.com/ariakit/ariakit/issues/7201
 // https://github.com/ariakit/ariakit/issues/7215
 
@@ -34,64 +37,31 @@ function isWindow(value: unknown): value is Window & typeof globalThis {
   return (value as Window).window === value;
 }
 
-type DOMGetter = (this: unknown) => unknown;
-
-function getDOMGetter(prototype: object | undefined, name: string) {
-  for (
-    let current = prototype;
-    current;
-    current = Object.getPrototypeOf(current)
-  ) {
-    // oxlint-disable-next-line typescript/unbound-method -- called with a receiver
-    const getter = Object.getOwnPropertyDescriptor(current, name)?.get;
-    if (getter) {
-      return getter as DOMGetter;
-    }
-  }
-  return undefined;
-}
-
-const nodePrototype = typeof Node === "undefined" ? undefined : Node.prototype;
-const documentPrototype =
-  typeof Document === "undefined" ? undefined : Document.prototype;
-
-const nodeTypeGetter = getDOMGetter(nodePrototype, "nodeType");
-const ownerDocumentGetter = getDOMGetter(nodePrototype, "ownerDocument");
-const defaultViewGetter = getDOMGetter(documentPrototype, "defaultView");
-
-function readDOMMember(
-  value: unknown,
-  cachedGetter: DOMGetter | undefined,
-  name: string,
-) {
-  if (value === null) return undefined;
-  if (typeof value !== "object" && typeof value !== "function") {
-    return undefined;
-  }
-  const getter =
-    cachedGetter ?? getDOMGetter(Object.getPrototypeOf(value), name);
-  if (!getter) {
-    return Reflect.get(value, name);
-  }
-  try {
-    return getter.call(value);
-  } catch {
-    // Web IDL getters reject values that do not implement their interface.
-    return undefined;
-  }
-}
-
-function getNodeType(value: unknown) {
-  return readDOMMember(value, nodeTypeGetter, "nodeType");
-}
+// Taken from the prototype because a document names its own elements too, so
+// one holding an element named `nodeType` answers that read with it. The getter
+// bypasses that lookup and is brand-checked against the interface rather than
+// the realm, so it still answers for a node belonging to a frame.
+// https://github.com/ariakit/ariakit/pull/7213#discussion_r3816584472
+const nodeTypeGetter =
+  typeof Node === "undefined"
+    ? undefined
+    : // oxlint-disable-next-line typescript/unbound-method -- the receiver is supplied explicitly below
+      Object.getOwnPropertyDescriptor(Node.prototype, "nodeType")?.get;
 
 function isDocument(value: unknown): value is Document {
+  if (!value) return false;
   // Node.DOCUMENT_NODE === 9.
-  const nodeType = (value as Node | null | undefined)?.nodeType;
-  return (
-    (nodeType === 9 && !isWindow(value)) ||
-    (typeof nodeType === "object" && getNodeType(value) === 9)
-  );
+  if (!nodeTypeGetter) return (value as Node).nodeType === 9;
+  try {
+    return nodeTypeGetter.call(value) === 9;
+  } catch {
+    // The brand check rejects anything that is not a node.
+    return false;
+  }
+}
+
+function getDOMProperty(value: object, name: string) {
+  return Reflect.get(Object.getPrototypeOf(value), name, value);
 }
 
 function ownsDocument(
@@ -101,22 +71,10 @@ function ownsDocument(
   try {
     return view.document === ownerDocument;
   } catch {
+    // A cross-origin window answers only an allowlist, which `document` is not
+    // on, so refusing to answer is itself proof that it owns another document.
     return false;
   }
-}
-
-function getDefaultView(ownerDocument: Document) {
-  // Preserve the exact ambient window object; some DOM implementations expose
-  // a different object through the `Document` getter.
-  // https://github.com/ariakit/ariakit/pull/7217#discussion_r3819047925
-  if (typeof window !== "undefined" && ownerDocument === window.document) {
-    return window;
-  }
-  const defaultView = ownerDocument.defaultView;
-  if (isWindow(defaultView) && ownsDocument(defaultView, ownerDocument)) {
-    return defaultView;
-  }
-  return readDOMMember(ownerDocument, defaultViewGetter, "defaultView");
 }
 
 /**
@@ -125,18 +83,10 @@ function getDefaultView(ownerDocument: Document) {
 export function getDocument(node?: Window | Document | Node | null): Document {
   if (!node) return document;
   if (isDocument(node)) return node;
-  if (isWindow(node)) {
-    const nodeDocument = node.document;
-    if (isDocument(nodeDocument)) return nodeDocument;
-    return document;
-  }
+  if (isWindow(node)) return node.document;
   const nodeDocument = (node as Node).ownerDocument;
   if (isDocument(nodeDocument)) return nodeDocument;
-  const unshadowedDocument = readDOMMember(
-    node,
-    ownerDocumentGetter,
-    "ownerDocument",
-  );
+  const unshadowedDocument = getDOMProperty(node, "ownerDocument");
   if (isDocument(unshadowedDocument)) return unshadowedDocument;
   return document;
 }
@@ -150,10 +100,16 @@ export function getWindow(
   if (!node) return self;
   if (isWindow(node)) return node;
   const nodeDocument = getDocument(node);
-  const defaultView = getDefaultView(nodeDocument);
-  if (isWindow(defaultView)) {
+  const { defaultView } = nodeDocument;
+  // Being a window is not enough, because the named getter answers with the
+  // window of an `<iframe name="defaultView">`, which is a real window from
+  // another realm. A window is only this document's view when it owns it back,
+  // and `Window.document` cannot be shadowed the way `Document` members can.
+  if (isWindow(defaultView) && ownsDocument(defaultView, nodeDocument)) {
     return defaultView;
   }
+  const unshadowedView = getDOMProperty(nodeDocument, "defaultView");
+  if (isWindow(unshadowedView)) return unshadowedView;
   return window;
 }
 
@@ -226,7 +182,8 @@ export function isElement(
   const nodeType = (target as Node | null)?.nodeType;
   return (
     nodeType === 1 ||
-    (typeof nodeType === "object" && getNodeType(target) === 1)
+    (typeof nodeType === "object" &&
+      getDOMProperty(target as object, "nodeType") === 1)
   );
 }
 
@@ -246,7 +203,8 @@ export function isNode(target: EventTarget | null | undefined): target is Node {
   const nodeType = (target as Node | null)?.nodeType;
   return (
     typeof nodeType === "number" ||
-    (typeof nodeType === "object" && typeof getNodeType(target) === "number")
+    (typeof nodeType === "object" &&
+      typeof getDOMProperty(target as object, "nodeType") === "number")
   );
 }
 
