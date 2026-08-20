@@ -60,6 +60,8 @@ function isDocument(value: unknown): value is Document {
   }
 }
 
+// Start at the prototype to bypass named properties while keeping `value` as
+// the getter receiver, including for values from another realm.
 function getDOMProperty(value: object, name: string) {
   return Reflect.get(Object.getPrototypeOf(value), name, value);
 }
@@ -179,6 +181,7 @@ export function isElement(
   target: EventTarget | null | undefined,
 ): target is Element {
   // Node.ELEMENT_NODE === 1.
+  // Named-property collisions are objects, so numeric reads stay genuine.
   const nodeType = (target as Node | null)?.nodeType;
   return (
     nodeType === 1 ||
@@ -200,6 +203,7 @@ export function isElement(
  * }
  */
 export function isNode(target: EventTarget | null | undefined): target is Node {
+  // Named-property collisions are objects, so numeric reads stay genuine.
   const nodeType = (target as Node | null)?.nodeType;
   return (
     typeof nodeType === "number" ||
