@@ -259,7 +259,7 @@ const buttonInputTypes = [
 /**
  * Checks if the element is visible or not.
  */
-export function isVisible(element: Element) {
+export function isVisible(element: Element): boolean {
   if (typeof element.checkVisibility === "function") {
     return element.checkVisibility();
   }

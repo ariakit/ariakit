@@ -397,7 +397,7 @@ isButton(document.querySelector("div[role='button']")); // false
 #### `isVisible`
 
 ```ts
-function isVisible(element: Element): any;
+function isVisible(element: Element): boolean;
 ```
 
 Checks if the element is visible or not.
