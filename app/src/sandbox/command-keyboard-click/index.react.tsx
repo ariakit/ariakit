@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import type { Dispatch, MouseEvent, SetStateAction } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 // An event built in another realm fails `instanceof` against every constructor
@@ -28,24 +28,65 @@ function describeClickEvent(event: globalThis.MouseEvent, element: Element) {
   return `${event.constructor.name}, ${realm}, ${pointer}`;
 }
 
-function createClickReporter(setEvents: Dispatch<SetStateAction<string[]>>) {
+function describeClickMetadata(event: globalThis.MouseEvent, element: Element) {
+  const ownerWindow = element.ownerDocument.defaultView;
+  const view =
+    event.view === ownerWindow
+      ? "own window"
+      : event.view
+        ? "other window"
+        : "null";
+  return `view ${view}, composed ${event.composed}`;
+}
+
+function createClickReporter(
+  setEvents: Dispatch<SetStateAction<string[]>>,
+  setMetadata: Dispatch<SetStateAction<string[]>>,
+) {
   return (event: MouseEvent<HTMLElement>) => {
     const description = describeClickEvent(
       event.nativeEvent,
       event.currentTarget,
     );
     setEvents((events) => [...events, description]);
+    const metadata = describeClickMetadata(
+      event.nativeEvent,
+      event.currentTarget,
+    );
+    setMetadata((events) => [...events, metadata]);
   };
 }
 
 export default function Example() {
   const [clickEvents, setClickEvents] = useState<string[]>([]);
+  const [clickMetadata, setClickMetadata] = useState<string[]>([]);
   const [frameClickEvents, setFrameClickEvents] = useState<string[]>([]);
+  const [frameClickMetadata, setFrameClickMetadata] = useState<string[]>([]);
   const [frameBody, setFrameBody] = useState<HTMLElement | null>(null);
+  const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null);
+  const [outerShadowClicks, setOuterShadowClicks] = useState(0);
 
   const setFrame = useCallback((element: HTMLIFrameElement | null) => {
     setFrameBody(element?.contentDocument?.body ?? null);
   }, []);
+
+  const setShadowHost = useCallback((element: HTMLDivElement | null) => {
+    setShadowRoot(
+      element?.shadowRoot ?? element?.attachShadow({ mode: "open" }) ?? null,
+    );
+  }, []);
+
+  useEffect(() => {
+    const host = shadowRoot?.host;
+    const ownerDocument = host?.ownerDocument;
+    if (!host || !ownerDocument) return;
+    const onClick = (event: Event) => {
+      if (!event.composedPath().includes(host)) return;
+      setOuterShadowClicks((count) => count + 1);
+    };
+    ownerDocument.addEventListener("click", onClick);
+    return () => ownerDocument.removeEventListener("click", onClick);
+  }, [shadowRoot]);
 
   return (
     <main>
@@ -58,7 +99,7 @@ export default function Example() {
       <Ariakit.Command
         role="button"
         render={<div />}
-        onClick={createClickReporter(setClickEvents)}
+        onClick={createClickReporter(setClickEvents, setClickMetadata)}
       >
         Report click
       </Ariakit.Command>
@@ -66,6 +107,12 @@ export default function Example() {
       <ul aria-labelledby="document-click-events" aria-live="polite">
         {clickEvents.map((description, index) => (
           <li key={index}>{description}</li>
+        ))}
+      </ul>
+      <h2 id="document-click-metadata">Document click metadata</h2>
+      <ul aria-labelledby="document-click-metadata" aria-live="polite">
+        {clickMetadata.map((metadata, index) => (
+          <li key={index}>{metadata}</li>
         ))}
       </ul>
 
@@ -77,7 +124,10 @@ export default function Example() {
             <Ariakit.Command
               role="button"
               render={<div />}
-              onClick={createClickReporter(setFrameClickEvents)}
+              onClick={createClickReporter(
+                setFrameClickEvents,
+                setFrameClickMetadata,
+              )}
             >
               Frame command
             </Ariakit.Command>,
@@ -90,6 +140,24 @@ export default function Example() {
           <li key={index}>{description}</li>
         ))}
       </ul>
+      <h2 id="frame-click-metadata">Frame click metadata</h2>
+      <ul aria-labelledby="frame-click-metadata" aria-live="polite">
+        {frameClickMetadata.map((metadata, index) => (
+          <li key={index}>{metadata}</li>
+        ))}
+      </ul>
+
+      <h2>Shadow boundary</h2>
+      <div data-shadow-host ref={setShadowHost} />
+      {shadowRoot
+        ? createPortal(
+            <Ariakit.Command role="button" render={<div />}>
+              Shadow command
+            </Ariakit.Command>,
+            shadowRoot,
+          )
+        : null}
+      <p role="status">Outer shadow clicks: {outerShadowClicks}</p>
     </main>
   );
 }

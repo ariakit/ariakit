@@ -1,6 +1,8 @@
 import { focus, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
-import { NO_POINTER_CLICK } from "./no-pointer-click.ts";
+
+const NO_POINTER_CLICK =
+  'PointerEvent, own window, pointerId -1, pointerType ""';
 
 function getClickEvents() {
   return q
