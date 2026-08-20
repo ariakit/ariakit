@@ -2,4 +2,4 @@
 "@ariakit/test": patch
 ---
 
-Fixed `click`, `hover`, `press`, and `dispatch` to apply browser shims in the target element's own realm, so interactions and clipboard events work inside same-origin iframes under jsdom.
+Fixed the test helpers to apply browser shims in the target element's own realm, so pointer, keyboard, and clipboard events reach elements inside same-origin iframes under jsdom instead of being dropped.
