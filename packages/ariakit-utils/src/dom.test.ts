@@ -78,8 +78,36 @@ function appendFrame() {
   if (!frameDocument?.body || !frameDocument.defaultView) {
     throw new Error("Expected a same-origin frame document");
   }
-  return { frameDocument, frameWindow: frameDocument.defaultView };
+  return { iframe, frameDocument, frameWindow: frameDocument.defaultView };
 }
+
+// A browser represents focus inside a frame as the frame element in the parent
+// document, so a caller deciding ownership there must be able to stop at its
+// own document. happy-dom does not propagate the inner focus to the parent, so
+// the frame element is focused explicitly to reach the same state.
+test("getActiveElement resolves through a focused frame unless it is turned off", () => {
+  const { iframe, frameDocument } = appendFrame();
+  const button = frameDocument.createElement("button");
+  frameDocument.body.append(button);
+  iframe.focus();
+  button.focus();
+
+  expect(getActiveElement(document.body)).toBe(button);
+  expect(getActiveElement(document.body, { frame: false })).toBe(iframe);
+});
+
+test("getActiveElement resolves aria-activedescendant only when asked", () => {
+  const composite = document.createElement("div");
+  composite.tabIndex = 0;
+  const item = document.createElement("div");
+  item.id = "active-item";
+  composite.setAttribute("aria-activedescendant", item.id);
+  document.body.append(composite, item);
+  composite.focus();
+
+  expect(getActiveElement(composite)).toBe(composite);
+  expect(getActiveElement(composite, { activeDescendant: true })).toBe(item);
+});
 
 test("getScrollingElement falls back to the element's own document, not the global one", () => {
   const { frameDocument } = appendFrame();

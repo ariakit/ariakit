@@ -59,28 +59,10 @@ export default function Example() {
 // colliding member to decide that.
 function EscapedFocusDialog() {
   const dialog = Ariakit.useDialogStore();
-  const dialogRef = useRef<HTMLDivElement>(null);
   const helpRef = useRef<HTMLButtonElement>(null);
   const [focusHistory, setFocusHistory] = useState<string[]>([]);
   const recordFocus = (name: string) => {
     setFocusHistory((history) => [...history, name]);
-  };
-
-  // TODO: Remove once the dialog reads activeElement through the hardened
-  // accessor.
-  // https://github.com/ariakit/ariakit/issues/7230
-  const hasEscapedFocus = () => {
-    const dialogElement = dialogRef.current;
-    if (!dialogElement) return false;
-    // The `:focus` selector answers the focused element without going through
-    // the member the named form shadows.
-    const focused = dialogElement.ownerDocument.querySelector(":focus");
-    if (!focused) return false;
-    if (dialogElement.contains(focused)) return false;
-    // The disclosure still holds focus on an ordinary open, and the dialog
-    // counts it as its own, so it is not an escape.
-    if (dialog.getState().disclosureElement?.contains(focused)) return false;
-    return true;
   };
 
   return (
@@ -104,10 +86,8 @@ function EscapedFocusDialog() {
           the dialog's own auto-focus is left to move focus for the first time,
           which is not the ordering under test. */}
       <Ariakit.Dialog
-        ref={dialogRef}
         store={dialog}
         aria-label="Filter reports"
-        autoFocusOnShow={() => !hasEscapedFocus()}
         hideOnInteractOutside={false}
         modal={false}
         unmountOnHide

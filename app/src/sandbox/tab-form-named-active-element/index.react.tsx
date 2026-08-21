@@ -41,13 +41,7 @@ export default function Example() {
         onKeyDown={(event) => {
           const section = sections[Number(event.key) - 1];
           if (!section) return;
-          // `select` is `setSelectedId` plus a `move`, so it always follows the
-          // selection with focus. Safe here because the shortcut only fires
-          // while a tab holds focus.
-          // TODO: Restore `setSelectedId` once the store reads activeElement
-          // through the hardened accessor.
-          // https://github.com/ariakit/ariakit/issues/7230
-          tab.select(section.id);
+          tab.setSelectedId(section.id);
         }}
       >
         {sections.map((section) => (

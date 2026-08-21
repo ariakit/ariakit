@@ -319,7 +319,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       capturedDisclosures.add(element);
       store.setDisclosureElement(element);
     };
-    const activeElement = getActiveElement(dialog, true);
+    const activeElement = getActiveElement(dialog, { activeDescendant: true });
     if (!activeElement) return;
     if (activeElement.tagName === "BODY") {
       // Safari fallback: use the last mousedown target when activeElement is
@@ -523,10 +523,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // ownership in the dialog's document, where iframe focus is represented
       // by its frame element.
       // https://github.com/ariakit/ariakit/pull/7048#discussion_r3712331088
-      const documentActiveElement = getDocument(contentElement).activeElement;
-      const activeElement = isElement(documentActiveElement)
-        ? documentActiveElement
-        : null;
+      const activeElement = getActiveElement(contentElement, { frame: false });
       const deepestActiveElement =
         activeElement && getDeepestActiveElement(activeElement);
       if (

@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 const fruits = ["Apple", "Banana", "Cherry", "Grape"];
 
@@ -9,7 +9,6 @@ const fruits = ["Apple", "Banana", "Cherry", "Grape"];
 // focus back to the combobox never runs, and the list keeps DOM focus that
 // belongs on the input.
 export default function Example() {
-  const comboboxRef = useRef<HTMLInputElement>(null);
   const [focusHistory, setFocusHistory] = useState<string[]>([]);
   const recordFocus = (name: string) => {
     setFocusHistory((history) => [...history, name]);
@@ -32,7 +31,6 @@ export default function Example() {
           through the output below instead. */}
       <Ariakit.ComboboxProvider>
         <Ariakit.Combobox
-          ref={comboboxRef}
           aria-label="Fruit"
           onFocus={() => recordFocus("combobox")}
         />
@@ -45,10 +43,6 @@ export default function Example() {
           onFocus={(event) => {
             if (event.target !== event.currentTarget) return;
             recordFocus("list");
-            // TODO: Remove once the list reads activeElement through the
-            // hardened accessor.
-            // https://github.com/ariakit/ariakit/issues/7230
-            queueMicrotask(() => comboboxRef.current?.focus());
           }}
         >
           {fruits.map((fruit) => (
