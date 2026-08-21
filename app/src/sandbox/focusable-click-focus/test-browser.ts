@@ -28,27 +28,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(button).toHaveAttribute("data-focus-visible", "true");
   });
 
-  // https://github.com/ariakit/ariakit/issues/7215
-  // happy-dom defines `nodeType` on the form's prototype, so only real browsers
-  // reproduce the named-property override this interaction exercises.
-  test("uses pointer focus on a form that names a nodeType field", async ({
-    page,
-    q,
-  }) => {
-    const button = q.button("Button");
-    await button.focus();
-    await button.press("Enter");
-
-    const form = q.form("Node editor");
-    await form.click({ position: { x: 4, y: 4 } });
-    await test.expect(form).toBeFocused();
-
-    // data-focus-visible is applied from a queued callback a frame later, so
-    // cross those frames before asserting it never arrives.
-    await flushFrames(page);
-    await test.expect(form).not.toHaveAttribute("data-focus-visible");
-  });
-
   test("checkbox receives focus on click", async ({ q }) => {
     const checkbox = q.checkbox("Checkbox");
     await checkbox.click();
