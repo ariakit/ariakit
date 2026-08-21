@@ -124,12 +124,32 @@ export function getWindow(
   return window;
 }
 
+export interface GetActiveElementOptions {
+  /**
+   * Whether to resolve focus that lives inside a frame into that frame's own
+   * document. Pass `false` to decide ownership in `node`'s document, where
+   * focus inside a frame is represented by the frame element.
+   * @default true
+   */
+  frame?: boolean;
+  /**
+   * Whether to resolve the element referenced by the focused element's
+   * `aria-activedescendant` attribute.
+   * @default false
+   */
+  activeDescendant?: boolean;
+}
+
 /**
- * Returns `element.ownerDocument.activeElement`.
+ * Returns the focused element for `node`'s document, resolving into a focused
+ * frame's own document unless `frame` is `false`.
+ * @example
+ * // Focus inside a frame, as the frame element rather than the inner element.
+ * getActiveElement(document.getElementById("dialog"), { frame: false });
  */
 export function getActiveElement(
   node?: Node | null,
-  activeDescendant = false,
+  { frame = true, activeDescendant = false }: GetActiveElementOptions = {},
 ): HTMLElement | null {
   const ownerDocument = getDocument(node);
   const activeElement = activeElementGetter
@@ -140,11 +160,11 @@ export function getActiveElement(
     // with elements inside of an iframe.
     return null;
   }
-  if (isFrame(activeElement) && activeElement.contentDocument?.body) {
-    return getActiveElement(
-      activeElement.contentDocument.body,
+  if (frame && isFrame(activeElement) && activeElement.contentDocument?.body) {
+    return getActiveElement(activeElement.contentDocument.body, {
+      frame,
       activeDescendant,
-    );
+    });
   }
   if (activeDescendant) {
     const id = activeElement.getAttribute("aria-activedescendant");

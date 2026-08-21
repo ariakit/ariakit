@@ -12,7 +12,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
 import {
-  getDocument,
+  getActiveElement,
   invariant,
   isFocusable,
   isSelfTarget,
@@ -78,7 +78,7 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       if (!isFocusable(compositeElement)) return;
       const list = event.currentTarget;
       queueMicrotask(() => {
-        if (getDocument(list).activeElement !== list) return;
+        if (getActiveElement(list) !== list) return;
         compositeElement.focus();
       });
     });
