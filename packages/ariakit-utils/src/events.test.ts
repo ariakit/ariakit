@@ -297,6 +297,16 @@ test("fireClickEvent builds the event with the element's own window", () => {
   expect(clicked?.ctrlKey).toBe(true);
 });
 
+// https://github.com/ariakit/ariakit/issues/7192
+test("fireClickEvent uses the element's window as the view and composes the click", () => {
+  const { button, view } = appendFrameButton();
+
+  const clicked = captureClick(button, { composed: false, view: window });
+
+  expect(clicked?.view).toBe(view);
+  expect(clicked?.composed).toBe(true);
+});
+
 // jsdom implements `PointerEvent` only from v27, so `jest-environment-jsdom` 30
 // still has none. Activation has to keep working there rather than throwing,
 // dropping only the pointer members.

@@ -39,6 +39,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`canUseDOM`](#canusedom)
   - [`getDocument`](#getdocument)
   - [`getWindow`](#getwindow)
+  - [`GetActiveElementOptions`](#getactiveelementoptions)
   - [`getActiveElement`](#getactiveelement)
   - [`contains`](#contains)
   - [`isElement`](#iselement)
@@ -281,16 +282,47 @@ Returns the window `node` belongs to, or the current one when it has none.
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
+#### `GetActiveElementOptions`
+
+```ts
+interface GetActiveElementOptions {
+  /**
+   * Whether to resolve focus that lives inside a frame into that frame's own
+   * document. Pass `false` to decide ownership in `node`'s document, where
+   * focus inside a frame is represented by the frame element.
+   * @default true
+   */
+  frame?: boolean;
+  /**
+   * Whether to resolve the element referenced by the focused element's
+   * `aria-activedescendant` attribute.
+   * @default false
+   */
+  activeDescendant?: boolean;
+}
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getActiveElement`
 
 ```ts
 function getActiveElement(
   node?: Node | null,
-  activeDescendant = false,
+  { frame = true, activeDescendant = false }: GetActiveElementOptions = {},
 ): HTMLElement | null;
 ```
 
-Returns `element.ownerDocument.activeElement`.
+Returns the focused element for `node`'s document, resolving into a focused frame's own document unless `frame` is `false`.
+
+Example:
+
+```ts
+// Focus inside a frame, as the frame element rather than the inner element.
+getActiveElement(document.getElementById("dialog"), { frame: false });
+```
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
@@ -736,7 +768,7 @@ function fireClickEvent(
 
 Creates and dispatches a click event.
 
-The event is a `PointerEvent` built by the window that owns the element, the way browsers dispatch it, falling back to a `MouseEvent` where that window has no `PointerEvent`. It reports no pointer behind the click unless the caller passes one, and reports every other pointer attribute at its default value, the way a click always does.
+The event is a `PointerEvent` built by the window that owns the element, the way browsers dispatch it, falling back to a `MouseEvent` where that window has no `PointerEvent`. Its `view` is that window and it is composed. It reports no pointer behind the click unless the caller passes one, and reports every other pointer attribute at its default value, the way a click always does.
 
 Example:
 

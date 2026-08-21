@@ -78,8 +78,44 @@ function appendFrame() {
   if (!frameDocument?.body || !frameDocument.defaultView) {
     throw new Error("Expected a same-origin frame document");
   }
-  return { frameDocument, frameWindow: frameDocument.defaultView };
+  return { iframe, frameDocument, frameWindow: frameDocument.defaultView };
 }
+
+// A browser represents focus inside a frame as the frame element in the parent
+// document, so a caller deciding ownership there must be able to stop at its
+// own document. happy-dom does not propagate the inner focus to the parent, so
+// the frame element is focused explicitly to reach the same state.
+test("getActiveElement resolves through a focused frame, carrying the caller's options, unless the frame lookup is turned off", () => {
+  const { iframe, frameDocument } = appendFrame();
+  const button = frameDocument.createElement("button");
+  const item = frameDocument.createElement("div");
+  item.id = "active-item";
+  button.setAttribute("aria-activedescendant", item.id);
+  frameDocument.body.append(button, item);
+  iframe.focus();
+  button.focus();
+
+  expect(getActiveElement(document.body)).toBe(button);
+  expect(getActiveElement(document.body, { frame: false })).toBe(iframe);
+  // The options are rebuilt by hand for the hop, and every member of
+  // `GetActiveElementOptions` is optional, so a dropped one would type-check.
+  expect(getActiveElement(document.body, { activeDescendant: true })).toBe(
+    item,
+  );
+});
+
+test("getActiveElement resolves aria-activedescendant only when asked", () => {
+  const composite = document.createElement("div");
+  composite.tabIndex = 0;
+  const item = document.createElement("div");
+  item.id = "active-item";
+  composite.setAttribute("aria-activedescendant", item.id);
+  document.body.append(composite, item);
+  composite.focus();
+
+  expect(getActiveElement(composite)).toBe(composite);
+  expect(getActiveElement(composite, { activeDescendant: true })).toBe(item);
+});
 
 test("getScrollingElement falls back to the element's own document, not the global one", () => {
   const { frameDocument } = appendFrame();
@@ -96,9 +132,9 @@ test("getScrollingElement falls back to the element's own document, not the glob
 
 // A form's named-element getter overrides built-ins, so a control named after
 // the member a helper reads makes the form answer with that control instead.
-// Measured on Chromium 151, Firefox 153, and WebKit 26.5. happy-dom reproduces
-// it for `self` and `document` but not for members it defines on the prototype
-// chain, so the cases below that need one of those emulate it.
+// happy-dom reproduces that for some names and not others, and implements no
+// document named getter, so the cases it cannot produce use `defineProperty` to
+// stand in for the own property a browser exposes.
 // https://github.com/ariakit/ariakit/issues/7201
 
 function appendShadowingForm(
@@ -115,9 +151,35 @@ function appendShadowingForm(
   return form;
 }
 
+function shadowFormMember(form: HTMLFormElement, name: string) {
+  const control = form.querySelector(`[name="${name}"]`);
+  if (!control) {
+    throw new Error(`Expected a control named ${name}`);
+  }
+  Object.defineProperty(form, name, {
+    configurable: true,
+    value: control,
+  });
+}
+
+// The realm is no longer resolved through a prototype read, so a form whose
+// control is named `ownerDocument` resolves to the ambient document rather than
+// its own. What still has to hold is that the control never stands in for a
+// document, because callers destructure `documentElement` off the result.
+// happy-dom defines `ownerDocument` on the prototype chain, so the browsers'
+// answer for the control is emulated here.
+test("getDocument falls back when a form answers ownerDocument with a control", () => {
+  const form = appendShadowingForm(document, "ownerDocument");
+  shadowFormMember(form, "ownerDocument");
+
+  expect(getDocument(form)).toBe(document);
+});
+
 // Each helper gets its own case, because a bundled test stops at the first
-// failing assertion. `getDocument` and `getActiveElement` also fail differently
-// per shape, while `getWindow` reads only `self` and fails the same way in both.
+// failing assertion. No helper reads `self` or `document` off the value it is
+// handed, since `isWindow` compares identity through `window`, and `.document`
+// is only read once a value is known to be a window; these names guard against
+// a regression to the member reads they replaced.
 const shadowingForms = [
   { controlNames: ["self"], label: "a control named self" },
   {
@@ -188,65 +250,9 @@ test("getWindow resolves a window to itself", () => {
   expect(getWindow(frameWindow)).toBe(frameWindow);
 });
 
-// A document names its own elements the same way, so one that names an element
-// `nodeType` answers that read with the element. Measured on the three engines
-// above; happy-dom implements no document named getter, so it is emulated here.
-// Validating through that read would reject the document every element in it
-// belongs to. https://github.com/ariakit/ariakit/pull/7213#discussion_r3816584472
-test("getDocument resolves an element whose document answers nodeType with an element", () => {
-  const otherDocument = document.implementation.createHTMLDocument("Other");
-  const element = otherDocument.createElement("div");
-  otherDocument.body.append(element);
-  const form = otherDocument.createElement("form");
-  form.name = "nodeType";
-  otherDocument.body.append(form);
-  Object.defineProperty(otherDocument, "nodeType", {
-    configurable: true,
-    value: form,
-  });
-
-  expect(getDocument(element)).toBe(otherDocument);
-});
-
-test("getDocument falls back when a form answers its owner document with a control", () => {
-  const form = document.createElement("form");
-  const control = document.createElement("input");
-  control.name = "ownerDocument";
-  form.append(control);
-  document.body.append(form);
-  // happy-dom overrides only members it does not define on the prototype chain,
-  // so the browsers' answer for the control above is emulated here.
-  Object.defineProperty(form, "ownerDocument", {
-    configurable: true,
-    value: control,
-  });
-
-  expect(getDocument(form)).toBe(document);
-});
-
-test("getWindow falls back when a document answers its default view with an element", () => {
-  const otherDocument = document.implementation.createHTMLDocument("Other");
-  const element = otherDocument.createElement("div");
-  otherDocument.body.append(element);
-  const form = otherDocument.createElement("form");
-  form.name = "defaultView";
-  otherDocument.body.append(form);
-  // `Document` carries the same named-element override, measured on the three
-  // engines above: a form named `defaultView` makes the document answer that
-  // lookup with the form. happy-dom implements no document named getter, so it
-  // is emulated here. This one reaches every caller rather than only the ones
-  // handed a form, because `getWindow` resolves through the document.
-  Object.defineProperty(otherDocument, "defaultView", {
-    configurable: true,
-    value: form,
-  });
-
-  expect(getWindow(element)).toBe(window);
-});
-
-// The same getter answers with a real window when the element it names is a
-// frame, so the resolved view has to own the document back rather than merely
-// be a window. Measured on the three engines above.
+// A document's named getter answers with a real window when the element it
+// names is a frame, so the resolved view has to own the document back rather
+// than merely be a window.
 test("getWindow falls back when a document answers its default view with another realm's window", () => {
   const { frameWindow } = appendFrame();
   const otherDocument = document.implementation.createHTMLDocument("Other");
@@ -260,9 +266,9 @@ test("getWindow falls back when a document answers its default view with another
   expect(getWindow(element)).toBe(window);
 });
 
-// Measured on the same three engines: when that frame is cross-origin, its
-// window still answers `window` with itself and throws a `SecurityError` for
-// `document`, so refusing to answer has to count as owning another document.
+// When that frame is cross-origin, its window still answers `window` with
+// itself and throws a `SecurityError` for `document`, so refusing to answer has
+// to count as owning another document.
 // The environment has no cross-origin frames, so the refusal is emulated.
 test("getWindow falls back when the view it resolves refuses to report its document", () => {
   const refusingView = {
@@ -283,6 +289,24 @@ test("getWindow falls back when the view it resolves refuses to report its docum
   expect(getWindow(element)).toBe(window);
 });
 
+// Validating through the read a named element answers would reject the document
+// every element in it belongs to, which is why `isDocument` takes the accessor.
+// https://github.com/ariakit/ariakit/pull/7213#discussion_r3816584472
+test("getDocument resolves an element whose document answers nodeType with an element", () => {
+  const otherDocument = document.implementation.createHTMLDocument("Other");
+  const element = otherDocument.createElement("div");
+  otherDocument.body.append(element);
+  const form = otherDocument.createElement("form");
+  form.name = "nodeType";
+  otherDocument.body.append(form);
+  Object.defineProperty(otherDocument, "nodeType", {
+    configurable: true,
+    value: form,
+  });
+
+  expect(getDocument(element)).toBe(otherDocument);
+});
+
 // A `Document` is a `Node` whose `ownerDocument` is `null`, so resolving one
 // through that member falls through to the ambient document. Measured on
 // Chromium 151, Firefox 153, and WebKit 26.5: both helpers report the top-level
@@ -299,6 +323,25 @@ test("getWindow resolves a document from another realm to its own view", () => {
   const { frameDocument, frameWindow } = appendFrame();
 
   expect(getWindow(frameDocument)).toBe(frameWindow);
+});
+
+// A named form and the focused element are both elements, so no value tells
+// them apart and `getActiveElement` reads the accessor instead.
+// https://github.com/ariakit/ariakit/issues/7228#issuecomment-5359605589
+test("getActiveElement ignores a document's named activeElement form", () => {
+  const { frameDocument } = appendFrame();
+  const button = frameDocument.createElement("button");
+  frameDocument.body.append(button);
+  const form = frameDocument.createElement("form");
+  form.name = "activeElement";
+  frameDocument.body.append(form);
+  button.focus();
+  Object.defineProperty(frameDocument, "activeElement", {
+    configurable: true,
+    value: form,
+  });
+
+  expect(getActiveElement(button)).toBe(button);
 });
 
 test("setSelectionRange skips input types that do not support text selection", () => {

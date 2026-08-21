@@ -7,7 +7,7 @@ import {
   sync,
 } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
-import { chain, defaultValue } from "@ariakit/utils";
+import { chain, defaultValue, getActiveElement } from "@ariakit/utils";
 import type { SetState } from "@ariakit/utils";
 import type {
   CollectionStore,
@@ -26,7 +26,9 @@ import { createCompositeStore } from "../composite/composite-store.ts";
 import type { SelectStore } from "../select/select-store.ts";
 
 function getFocusedTab(items: TabStoreItem[]) {
-  const activeElement = items[0]?.element?.ownerDocument.activeElement;
+  const element = items[0]?.element;
+  if (!element) return;
+  const activeElement = getActiveElement(element);
   if (!activeElement) return;
   return items.find((item) => item.element === activeElement);
 }
