@@ -18,15 +18,45 @@ function checkIsBrowser() {
   return typeof window !== "undefined" && !!window.document?.createElement;
 }
 
-// A form exposes its controls as named properties that override built-ins, and
-// a document does the same for the elements it names, so any member read while
-// resolving a realm can answer with one of those instead: a control named
-// `self` makes a form answer the window test, one named `ownerDocument` makes
-// it answer the document lookup, and a form named `defaultView` makes a
-// document answer the window lookup. The two guards below check what came back
-// rather than trusting the member it came from.
+// A form exposes its listed controls as named properties that override
+// built-ins, and a document does the same for the elements it names, so a
+// member read on either can answer with an element instead of the value the
+// interface declares. Where the helper can tell from the value that it got an
+// element, it does, and answers safely rather than accurately. An accessor is
+// reserved for the reads where that is impossible.
 // https://github.com/ariakit/ariakit/issues/7201
-// https://github.com/ariakit/ariakit/issues/7215
+
+// The two accessors below sit at different prototype depths, and the depths
+// differ per DOM implementation, so walk the chain rather than read one
+// prototype. Resolved from the live document because `canUseDOM` does not prove
+// the `Node` and `Document` globals exist.
+function lookupGetter(prototype: object, name: string) {
+  let target: object | null = prototype;
+  while (target) {
+    const descriptor = Object.getOwnPropertyDescriptor(target, name);
+    // oxlint-disable-next-line typescript/unbound-method -- the receiver is supplied explicitly at every call site
+    if (descriptor?.get) return descriptor.get;
+    target = Object.getPrototypeOf(target);
+  }
+  return undefined;
+}
+
+// The read that would do the checking is the one a named element answers, so a
+// document naming an element `nodeType` would be rejected as a document and
+// every element in that frame would resolve to the ambient realm.
+// https://github.com/ariakit/ariakit/pull/7213#discussion_r3816584472
+const nodeTypeGetter = canUseDOM
+  ? lookupGetter(Object.getPrototypeOf(window.document), "nodeType")
+  : undefined;
+
+// A named form and the focused element are both elements, so no value tells
+// them apart, and the wrong answer is silent rather than a throw the developer
+// can act on. Other collisions are the application's to fix, by giving the
+// control a different `name` and `id`, since a form matches on either.
+// https://github.com/ariakit/ariakit/issues/7228#issuecomment-5359605589
+const activeElementGetter = canUseDOM
+  ? lookupGetter(Object.getPrototypeOf(window.document), "activeElement")
+  : undefined;
 
 // Typed the way `document.defaultView` is, because the interfaces a caller
 // reads off a window, such as `PointerEvent`, are globals rather than members
@@ -36,17 +66,6 @@ function isWindow(value: unknown): value is Window & typeof globalThis {
   // A window is the only object that is its own `window`.
   return (value as Window).window === value;
 }
-
-// Taken from the prototype because a document names its own elements too, so
-// one holding an element named `nodeType` answers that read with it. The getter
-// bypasses that lookup and is brand-checked against the interface rather than
-// the realm, so it still answers for a node belonging to a frame.
-// https://github.com/ariakit/ariakit/pull/7213#discussion_r3816584472
-const nodeTypeGetter =
-  typeof Node === "undefined"
-    ? undefined
-    : // oxlint-disable-next-line typescript/unbound-method -- the receiver is supplied explicitly below
-      Object.getOwnPropertyDescriptor(Node.prototype, "nodeType")?.get;
 
 function isDocument(value: unknown): value is Document {
   if (!value) return false;
@@ -58,12 +77,6 @@ function isDocument(value: unknown): value is Document {
     // The brand check rejects anything that is not a node.
     return false;
   }
-}
-
-// Start at the prototype to bypass named properties while keeping `value` as
-// the getter receiver, including for values from another realm.
-function getDOMProperty(value: object, name: string) {
-  return Reflect.get(Object.getPrototypeOf(value), name, value);
 }
 
 function ownsDocument(
@@ -88,8 +101,6 @@ export function getDocument(node?: Window | Document | Node | null): Document {
   if (isWindow(node)) return node.document;
   const nodeDocument = (node as Node).ownerDocument;
   if (isDocument(nodeDocument)) return nodeDocument;
-  const unshadowedDocument = getDOMProperty(node, "ownerDocument");
-  if (isDocument(unshadowedDocument)) return unshadowedDocument;
   return document;
 }
 
@@ -106,12 +117,10 @@ export function getWindow(
   // Being a window is not enough, because the named getter answers with the
   // window of an `<iframe name="defaultView">`, which is a real window from
   // another realm. A window is only this document's view when it owns it back,
-  // and `Window.document` cannot be shadowed the way `Document` members can.
+  // and that check reads no member a named element can answer.
   if (isWindow(defaultView) && ownsDocument(defaultView, nodeDocument)) {
     return defaultView;
   }
-  const unshadowedView = getDOMProperty(nodeDocument, "defaultView");
-  if (isWindow(unshadowedView)) return unshadowedView;
   return window;
 }
 
@@ -122,7 +131,10 @@ export function getActiveElement(
   node?: Node | null,
   activeDescendant = false,
 ): HTMLElement | null {
-  const { activeElement } = getDocument(node);
+  const ownerDocument = getDocument(node);
+  const activeElement = activeElementGetter
+    ? (activeElementGetter.call(ownerDocument) as Element | null)
+    : ownerDocument.activeElement;
   if (!activeElement?.nodeName) {
     // In IE11, activeElement might be an empty object if we're interacting
     // with elements inside of an iframe.
@@ -180,14 +192,10 @@ export function contains(parent: Node, child: Node): boolean {
 export function isElement(
   target: EventTarget | null | undefined,
 ): target is Element {
-  // Node.ELEMENT_NODE === 1.
-  // Named-property collisions are objects, so numeric reads stay genuine.
-  const nodeType = (target as Node | null)?.nodeType;
-  return (
-    nodeType === 1 ||
-    (typeof nodeType === "object" &&
-      getDOMProperty(target as object, "nodeType") === 1)
-  );
+  // Reading `nodeType` on a non-node target yields `undefined`. The numeric
+  // literal (Node.ELEMENT_NODE === 1) avoids referencing the `Node` global, so
+  // the guard stays safe even if it's ever evaluated during SSR.
+  return (target as Node | null)?.nodeType === 1;
 }
 
 /**
@@ -203,13 +211,7 @@ export function isElement(
  * }
  */
 export function isNode(target: EventTarget | null | undefined): target is Node {
-  // Named-property collisions are objects, so numeric reads stay genuine.
-  const nodeType = (target as Node | null)?.nodeType;
-  return (
-    typeof nodeType === "number" ||
-    (typeof nodeType === "object" &&
-      typeof getDOMProperty(target as object, "nodeType") === "number")
-  );
+  return typeof (target as Node | null)?.nodeType === "number";
 }
 
 /**
