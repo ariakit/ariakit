@@ -148,7 +148,7 @@ export interface GetActiveElementOptions {
  */
 export function getActiveElement(
   node?: Node | null,
-  options?: GetActiveElementOptions,
+  { frame = true, activeDescendant = false }: GetActiveElementOptions = {},
 ): HTMLElement | null {
   const ownerDocument = getDocument(node);
   const activeElement = activeElementGetter
@@ -159,14 +159,13 @@ export function getActiveElement(
     // with elements inside of an iframe.
     return null;
   }
-  if (
-    options?.frame !== false &&
-    isFrame(activeElement) &&
-    activeElement.contentDocument?.body
-  ) {
-    return getActiveElement(activeElement.contentDocument.body, options);
+  if (frame && isFrame(activeElement) && activeElement.contentDocument?.body) {
+    return getActiveElement(activeElement.contentDocument.body, {
+      frame,
+      activeDescendant,
+    });
   }
-  if (options?.activeDescendant) {
+  if (activeDescendant) {
     const id = activeElement.getAttribute("aria-activedescendant");
     if (id) {
       const element = getDocument(activeElement).getElementById(id);

@@ -88,12 +88,20 @@ function appendFrame() {
 test("getActiveElement resolves through a focused frame unless it is turned off", () => {
   const { iframe, frameDocument } = appendFrame();
   const button = frameDocument.createElement("button");
-  frameDocument.body.append(button);
+  const item = frameDocument.createElement("div");
+  item.id = "active-item";
+  button.setAttribute("aria-activedescendant", item.id);
+  frameDocument.body.append(button, item);
   iframe.focus();
   button.focus();
 
   expect(getActiveElement(document.body)).toBe(button);
   expect(getActiveElement(document.body, { frame: false })).toBe(iframe);
+  // The options are rebuilt by hand for the hop, and every member of
+  // `GetActiveElementOptions` is optional, so a dropped one would type-check.
+  expect(getActiveElement(document.body, { activeDescendant: true })).toBe(
+    item,
+  );
 });
 
 test("getActiveElement resolves aria-activedescendant only when asked", () => {

@@ -311,7 +311,7 @@ interface GetActiveElementOptions {
 ```ts
 function getActiveElement(
   node?: Node | null,
-  options?: GetActiveElementOptions,
+  { frame = true, activeDescendant = false }: GetActiveElementOptions = {},
 ): HTMLElement | null;
 ```
 
