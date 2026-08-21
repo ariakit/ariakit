@@ -315,7 +315,7 @@ function getActiveElement(
 ): HTMLElement | null;
 ```
 
-Returns `element.ownerDocument.activeElement`.
+Returns the focused element for `node`'s document, resolving into a focused frame's own document unless `frame` is `false`.
 
 Example:
 

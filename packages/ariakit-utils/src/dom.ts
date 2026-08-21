@@ -141,7 +141,8 @@ export interface GetActiveElementOptions {
 }
 
 /**
- * Returns `element.ownerDocument.activeElement`.
+ * Returns the focused element for `node`'s document, resolving into a focused
+ * frame's own document unless `frame` is `false`.
  * @example
  * // Focus inside a frame, as the frame element rather than the inner element.
  * getActiveElement(document.getElementById("dialog"), { frame: false });

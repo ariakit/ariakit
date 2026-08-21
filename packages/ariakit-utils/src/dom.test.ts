@@ -85,7 +85,7 @@ function appendFrame() {
 // document, so a caller deciding ownership there must be able to stop at its
 // own document. happy-dom does not propagate the inner focus to the parent, so
 // the frame element is focused explicitly to reach the same state.
-test("getActiveElement resolves through a focused frame unless it is turned off", () => {
+test("getActiveElement resolves through a focused frame, carrying the caller's options, unless the frame lookup is turned off", () => {
   const { iframe, frameDocument } = appendFrame();
   const button = frameDocument.createElement("button");
   const item = frameDocument.createElement("div");
