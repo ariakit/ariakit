@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import type { CSSProperties } from "react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 const branches = [
   "main",
@@ -139,6 +139,10 @@ function SelfFocusingBranchSelect({
   trigger,
 }: SelfFocusingBranchSelectProps) {
   const combobox = Ariakit.useComboboxStore({ virtualFocus: true });
+  const setAnchorElement = useCallback(
+    (element: HTMLElement | null) => combobox.setAnchorElement(element),
+    [combobox],
+  );
   return (
     <Ariakit.ComboboxProvider store={combobox} resetValueOnHide>
       {trigger ? (
@@ -150,7 +154,7 @@ function SelfFocusingBranchSelect({
         <button
           type="button"
           tabIndex={0}
-          ref={combobox.setAnchorElement}
+          ref={setAnchorElement}
           onClick={combobox.show}
         >
           {label}

@@ -328,7 +328,6 @@ export function useUpdateLayoutEffect(
       return effect();
     }
     mounted.current = true;
-    // oxlint-disable-next-line exhaustive-deps
   }, deps);
 
   useSafeLayoutEffect(

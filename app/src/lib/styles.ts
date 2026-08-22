@@ -26,8 +26,9 @@ import {
   toRegexFromWildcard,
 } from "./styles-shared.ts";
 
-// The JSON import keeps its generated literal type, but the resolver needs the
-// public schema shape shared with the build script.
+// `tsconfig.node.json` reaches this file through `vitest.config.ts`, without
+// `app/env.d.ts`, so the JSON import keeps its inferred literal type there and
+// is not assignable to `StylesJson`. The app projects type it as `StylesJson`.
 // oxlint-disable-next-line no-unnecessary-type-assertion
 const styles = stylesRaw as unknown as StylesJson;
 

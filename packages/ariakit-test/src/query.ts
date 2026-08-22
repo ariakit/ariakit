@@ -1,4 +1,3 @@
-// oxlint-disable unbound-method typescript/no-unnecessary-type-parameters
 import { invariant } from "@ariakit/utils";
 import type {
   ByRoleMatcher,

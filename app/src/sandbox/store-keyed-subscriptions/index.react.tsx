@@ -98,11 +98,13 @@ interface SelectorProps extends StoreProps {
 
 function KeyedSelectors({ store, calls }: SelectorProps) {
   const value = useStoreState(store, ["foo"], (state) => {
+    // oxlint-disable-next-line react/immutability -- selector call counter
     calls.state += 1;
     return state.foo;
   });
   const object = useStoreStateObject(store, ["foo"], {
     value: (state) => {
+      // oxlint-disable-next-line react/immutability -- selector call counter
       calls.object += 1;
       return state.foo;
     },
@@ -134,6 +136,7 @@ function KeyedSelectors({ store, calls }: SelectorProps) {
 
 function EmptySelector({ store, calls }: SelectorProps) {
   useStoreState(store, [], () => {
+    // oxlint-disable-next-line react/immutability -- selector call counter
     calls.empty += 1;
     return null;
   });
@@ -142,6 +145,7 @@ function EmptySelector({ store, calls }: SelectorProps) {
 
 function UnkeyedSelector({ store, calls }: SelectorProps) {
   useStoreState(store, (state) => {
+    // oxlint-disable-next-line react/immutability -- selector call counter
     calls.unkeyed += 1;
     return state.foo;
   });
@@ -151,6 +155,7 @@ function UnkeyedSelector({ store, calls }: SelectorProps) {
 function EmptyObjectSelector({ store, calls }: SelectorProps) {
   useStoreStateObject(store, [], {
     value: () => {
+      // oxlint-disable-next-line react/immutability -- selector call counter
       calls.emptyObject += 1;
       return null;
     },
@@ -158,9 +163,27 @@ function EmptyObjectSelector({ store, calls }: SelectorProps) {
   return null;
 }
 
+function SparseKeySelectors({ store }: StoreProps) {
+  const keys = Array<keyof TestState>(1);
+  const value = useStoreState(store, keys, (state) => state.foo);
+  const object = useStoreStateObject(store, keys, {
+    value: (state) => state.foo,
+  });
+
+  return (
+    <p>
+      Sparse selector values:{" "}
+      <output aria-label="Sparse selector values">
+        {value}:{object.value}
+      </output>
+    </p>
+  );
+}
+
 function ConditionalSelector({ store, calls }: SelectorProps) {
   const [enabled, setEnabled] = useState(false);
   const value = useStoreState(store, enabled ? ["foo"] : [], (state) => {
+    // oxlint-disable-next-line react/immutability -- selector call counter
     calls.conditional += 1;
     return enabled ? state.foo : null;
   });
@@ -437,20 +460,23 @@ export default function Example() {
     emptyObject: 0,
     conditional: 0,
   });
+  // oxlint-disable-next-line react/refs -- selector call instrumentation
+  const selectorCalls = calls.current;
 
   return (
     <>
-      <KeyedSelectors store={store} calls={calls.current} />
-      <UnkeyedSelector store={store} calls={calls.current} />
-      <EmptySelector store={store} calls={calls.current} />
-      <EmptyObjectSelector store={store} calls={calls.current} />
-      <ConditionalSelector store={store} calls={calls.current} />
+      <KeyedSelectors store={store} calls={selectorCalls} />
+      <UnkeyedSelector store={store} calls={selectorCalls} />
+      <EmptySelector store={store} calls={selectorCalls} />
+      <EmptyObjectSelector store={store} calls={selectorCalls} />
+      <SparseKeySelectors store={store} />
+      <ConditionalSelector store={store} calls={selectorCalls} />
       <DirectValues store={store} />
       <MixedValues store={store} />
       <DynamicSelectors store={store} />
       <OptionalSelector store={store} />
       <StorePropsSetter store={store} />
-      <Controls store={store} calls={calls.current} />
+      <Controls store={store} calls={selectorCalls} />
     </>
   );
 }

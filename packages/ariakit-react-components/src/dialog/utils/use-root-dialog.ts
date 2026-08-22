@@ -47,7 +47,6 @@ export function useRootDialog({
     const observer = new MutationObserver(() => flushSync(retry));
     observer.observe(body, { attributeFilter: [attribute] });
     return () => observer.disconnect();
-    // oxlint-disable-next-line exhaustive-deps
   }, [updated, enabled, contentId, contentElement, isRootDialog, attribute]);
 
   return isRootDialog;

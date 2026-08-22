@@ -77,6 +77,8 @@ function useControlState(form: FormStore, name: string) {
 
     return (state: Pick<FormStoreState, "items">) => {
       if (state.items !== prevItems) {
+        // These assignments maintain a selector-local cache for item scans.
+        // oxlint-disable-next-line react/immutability
         prevItems = state.items;
         prevIds = getControlItemIds(state.items, name);
       }
