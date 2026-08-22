@@ -105,12 +105,14 @@ export function useFormStoreProps<T extends FormStoreHookStore>(
   useStoreProps(collectionStore, props, "touched", "setTouched");
 
   const useValue = useCallback<FormStore["useValue"]>(
+    // oxlint-disable-next-line react/hooks -- public hook method
     (name) => useFormValue(collectionStore, name),
     [collectionStore],
   );
 
   const useValidate = useCallback<FormStore["useValidate"]>(
     (callback) => {
+      // oxlint-disable-next-line react/hooks -- public hook method
       useFormValidate(collectionStore, callback);
     },
     [collectionStore],
@@ -118,6 +120,7 @@ export function useFormStoreProps<T extends FormStoreHookStore>(
 
   const useSubmit = useCallback<FormStore["useSubmit"]>(
     (callback) => {
+      // oxlint-disable-next-line react/hooks -- public hook method
       useFormSubmit(collectionStore, callback);
     },
     [collectionStore],
