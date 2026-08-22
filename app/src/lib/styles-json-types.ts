@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
-/** JSON shape for `#app/styles/styles.json` (shared by `env.d.ts` and `styles.ts`). */
+/** JSON shape for `#app/styles/styles.json`. */
 
 export type StyleType = "utility" | "variant" | "at-property";
 

@@ -8,7 +8,9 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
-import stylesRaw from "#app/styles/styles.json" with { type: "json" };
+/// <reference path="./styles-json.d.ts" />
+
+import styles from "#app/styles/styles.json" with { type: "json" };
 import type {
   AtPropertyDef,
   ModuleJson,
@@ -16,7 +18,6 @@ import type {
   StyleDef,
   StyleDependency,
   StyleType,
-  StylesJson,
   UtilityDef,
   VariantDef,
 } from "./styles-json-types.ts";
@@ -25,12 +26,6 @@ import {
   splitVariantSegments,
   toRegexFromWildcard,
 } from "./styles-shared.ts";
-
-// `tsconfig.node.json` reaches this file through `vitest.config.ts`, without
-// `app/env.d.ts`, so the JSON import keeps its inferred literal type there and
-// is not assignable to `StylesJson`. The app projects type it as `StylesJson`.
-// oxlint-disable-next-line no-unnecessary-type-assertion
-const styles = stylesRaw as unknown as StylesJson;
 
 export type {
   AtPropertyDef,

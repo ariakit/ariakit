@@ -89,5 +89,14 @@ export default defineConfig({
         "react/immutability": "off",
       },
     },
+    {
+      // The reference keeps the ambient JSON schema visible to TypeScript
+      // programs that exclude the app directory.
+      // https://github.com/ariakit/ariakit/issues/7254
+      files: ["app/src/lib/styles.ts"],
+      rules: {
+        "triple-slash-reference": ["error", { path: "always" }],
+      },
+    },
   ],
 });
