@@ -165,6 +165,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
       focus: true,
       scrollIntoView,
     });
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- store invalidation signal
   }, [store, moves, focusOnMove, compositeElement, present, scrollIntoView]);
 
   // If composite.move(null) has been called, the composite container should

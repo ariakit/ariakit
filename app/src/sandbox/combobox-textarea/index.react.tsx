@@ -43,6 +43,7 @@ export default function Example() {
   // the textarea value have shifted the trigger character.
   React.useEffect(() => {
     return combobox.render();
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- textarea layout signal
   }, [combobox, value]);
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {

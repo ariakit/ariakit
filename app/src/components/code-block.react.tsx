@@ -248,6 +248,7 @@ export function CodeBlockPreviewIframe({
 
   React.useEffect(() => {
     setLoaded(false);
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- iframe lifecycle signal
   }, [previewUrl, setLoaded]);
 
   React.useEffect(() => {
@@ -457,6 +458,7 @@ export function CodeBlockPreviewIframe({
         true,
       );
     };
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- iframe lifecycle signal
   }, [previewUrl, clickAndWait, scrollTop, fullscreen, setLoaded]);
 
   return (

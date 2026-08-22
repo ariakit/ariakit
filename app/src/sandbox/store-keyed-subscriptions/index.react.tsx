@@ -314,6 +314,7 @@ function StorePropsSetter({ store }: StoreProps) {
     // The count is observable only after useStoreProps updates subscriptions.
     // oxlint-disable-next-line react/set-state-in-effect
     setActiveSubscriptions(getActiveSubscriptions());
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- subscription commit signal
   }, [activeSetter, getActiveSubscriptions]);
 
   return (

@@ -681,6 +681,7 @@ export function useCollectionRenderer<T extends Item = any>({
       // oxlint-disable-next-line react/set-state-in-effect
       setData(nextData);
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- element registration signal
   }, [elementsUpdated, itemSize, baseId, items, data, computeData]);
 
   const [ownScroller, ownScrollerRef, ownScrollerController] = useScroller(
@@ -757,6 +758,7 @@ export function useCollectionRenderer<T extends Item = any>({
     });
     // oxlint-disable-next-line exhaustive-deps
   }, [
+    // oxlint-disable-next-line react/memo-dependencies -- element registration signal
     elementsUpdated,
     scroller,
     scrollerRef,
