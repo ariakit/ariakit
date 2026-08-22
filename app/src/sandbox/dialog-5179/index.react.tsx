@@ -6,6 +6,8 @@ import { createRoot } from "react-dom/client";
 
 function ReactPortal({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
+  // The portal target is available only after client hydration.
+  // oxlint-disable-next-line react/set-state-in-effect
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;
   return createPortal(children, document.body);

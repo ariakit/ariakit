@@ -27,17 +27,18 @@ export function CopyCode({
   ...props
 }: CopyCodeProps) {
   const [state, setState] = useState<"idle" | "copied">("idle");
+  const [previousText, setPreviousText] = useState(text);
+
+  if (previousText !== text) {
+    setPreviousText(text);
+    setState("idle");
+  }
 
   useEffect(() => {
     if (state !== "copied") return;
     const timeout = setTimeout(() => setState("idle"), 1500);
     return () => clearTimeout(timeout);
   }, [state]);
-
-  // Reset state when text changes
-  useEffect(() => {
-    setState("idle");
-  }, [text]);
 
   return (
     <Tooltip

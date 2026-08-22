@@ -119,6 +119,8 @@ function useAutoFocusOnHide({
   // Resets autoFocusOnHide
   useEffect(() => {
     if (!mounted) {
+      // Synchronize focus history with the external hovercard store.
+      // oxlint-disable-next-line react/set-state-in-effect
       setAutoFocusOnHide(false);
     }
   }, [mounted]);
