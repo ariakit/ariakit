@@ -4,6 +4,8 @@ import "./style.css";
 
 function useLoaded() {
   const [loaded, setLoaded] = useState(false);
+  // This client-only state distinguishes hydrated UI from its server fallback.
+  // oxlint-disable-next-line react/set-state-in-effect
   useEffect(() => setLoaded(true), []);
   return loaded;
 }

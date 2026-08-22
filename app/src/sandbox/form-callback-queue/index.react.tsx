@@ -85,6 +85,8 @@ export default function Example() {
   });
 
   useEffect(() => {
+    // Mount after effects register initial callbacks to test queue updates.
+    // oxlint-disable-next-line react/set-state-in-effect
     setShowEmail(true);
   }, []);
 

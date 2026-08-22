@@ -536,6 +536,8 @@ function ControllerLifetimeRenderer() {
   useEffect(() => {
     const element = document.createElement("div");
     scrollElementRef.current = new WeakRef(element);
+    // The client-only element must be created after the document exists.
+    // oxlint-disable-next-line react/set-state-in-effect
     setScrollElement(() => () => {
       if (element.isConnected) {
         return element;

@@ -311,6 +311,8 @@ function StorePropsSetter({ store }: StoreProps) {
   useStoreProps(nanStore, nanStoreProps, "value", "setValue");
 
   useEffect(() => {
+    // The count is observable only after useStoreProps updates subscriptions.
+    // oxlint-disable-next-line react/set-state-in-effect
     setActiveSubscriptions(getActiveSubscriptions());
   }, [activeSetter, getActiveSubscriptions]);
 
@@ -364,6 +366,8 @@ function Controls({ store, calls }: SelectorProps) {
   const [hydrated, setHydrated] = useState(false);
   const [, forceUpdate] = useReducer((count: number) => count + 1, 0);
 
+  // Ignore subscription calls made while the fixture hydrates.
+  // oxlint-disable-next-line react/set-state-in-effect
   useEffect(() => setHydrated(true), []);
 
   const getCallCount = (key: keyof SelectorCalls) =>

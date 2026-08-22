@@ -92,6 +92,8 @@ function RemountingFruitItems({ idPrefix }: FruitItemsProps) {
 
   useEffect(() => {
     if (!mounted) return;
+    // Remount when the external combobox store starts a mounted cycle.
+    // oxlint-disable-next-line react/set-state-in-effect
     setGeneration((value) => value + 1);
   }, [mounted]);
 

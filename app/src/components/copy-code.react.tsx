@@ -19,6 +19,11 @@ interface CopyCodeProps extends ComponentProps<"button"> {
   title?: string;
 }
 
+interface CopyState {
+  text: string;
+  status: "idle" | "copied";
+}
+
 export function CopyCode({
   text,
   children,
@@ -26,22 +31,26 @@ export function CopyCode({
   title = label,
   ...props
 }: CopyCodeProps) {
-  const [state, setState] = useState<"idle" | "copied">("idle");
+  const [copyState, setCopyState] = useState<CopyState>({
+    text,
+    status: "idle",
+  });
+
+  if (copyState.text !== text) {
+    setCopyState({ text, status: "idle" });
+  }
 
   useEffect(() => {
-    if (state !== "copied") return;
-    const timeout = setTimeout(() => setState("idle"), 1500);
+    if (copyState.status !== "copied") return;
+    const timeout = setTimeout(() => {
+      setCopyState({ text, status: "idle" });
+    }, 1500);
     return () => clearTimeout(timeout);
-  }, [state]);
-
-  // Reset state when text changes
-  useEffect(() => {
-    setState("idle");
-  }, [text]);
+  }, [copyState.status, text]);
 
   return (
     <Tooltip
-      title={state === "idle" ? title : "Copied"}
+      title={copyState.status === "idle" ? title : "Copied"}
       placement="left"
       className="not-data-open:transition-none"
     >
@@ -54,16 +63,19 @@ export function CopyCode({
         onClick={async (event) => {
           props.onClick?.(event);
           if (event.defaultPrevented) return;
-          if (state !== "idle") return;
+          if (copyState.status !== "idle") return;
           try {
             await navigator.clipboard.writeText(text);
           } catch {
             return;
           }
-          setState("copied");
+          setCopyState((currentState) => {
+            if (currentState.text !== text) return currentState;
+            return { text, status: "copied" };
+          });
         }}
       >
-        {state === "copied" ? (
+        {copyState.status === "copied" ? (
           <Icon
             key="check"
             name="check"

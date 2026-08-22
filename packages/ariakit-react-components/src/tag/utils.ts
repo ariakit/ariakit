@@ -55,6 +55,8 @@ export function useTouchDevice() {
   const [touchDevice, setTouchDevice] = useState(false);
 
   useEffect(() => {
+    // Detect touch capability only after the client has mounted.
+    // oxlint-disable-next-line react/set-state-in-effect
     setTouchDevice(isTouchDevice());
   }, []);
 

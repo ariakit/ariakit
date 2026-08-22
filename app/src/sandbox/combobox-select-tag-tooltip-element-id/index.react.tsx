@@ -113,6 +113,7 @@ function TooltipExample() {
 
   // Switch after initialization so this covers the legacy label behavior
   // without triggering its creation-time deprecation warning.
+  // oxlint-disable-next-line react/set-state-in-effect
   useEffect(() => setType("label"), []);
 
   return (

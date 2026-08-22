@@ -19,7 +19,6 @@ export default defineConfig({
     "react/memo-dependencies": "off",
     "react/purity": "off",
     "react/refs": "off",
-    "react/set-state-in-effect": "off",
     // Type-only exports are incorrectly reported as missing.
     // https://github.com/oxc-project/oxc/issues/13258
     "import/namespace": "off",

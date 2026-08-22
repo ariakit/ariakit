@@ -677,6 +677,8 @@ export function useCollectionRenderer<T extends Item = any>({
     if (!items) return;
     const nextData = computeData(data, baseId, items);
     if (nextData) {
+      // Measurement data changes only after rendered elements are measured.
+      // oxlint-disable-next-line react/set-state-in-effect
       setData(nextData);
     }
   }, [elementsUpdated, itemSize, baseId, items, data, computeData]);
