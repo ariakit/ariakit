@@ -8,7 +8,8 @@ interface MenuProps {
 
 function InstrumentedMenu({ store }: MenuProps) {
   const renderCount = useRef(0);
-  renderCount.current += 1;
+  // oxlint-disable-next-line react/refs -- render-count instrumentation
+  const currentRenderCount = ++renderCount.current;
 
   const props = useMenu({
     store,
@@ -22,7 +23,7 @@ function InstrumentedMenu({ store }: MenuProps) {
         <Ariakit.MenuItem>Share</Ariakit.MenuItem>
         <Ariakit.MenuItem>Delete</Ariakit.MenuItem>
       </Ariakit.Role>
-      <output aria-label="Menu renders">{renderCount.current}</output>
+      <output aria-label="Menu renders">{currentRenderCount}</output>
     </>
   );
 }
@@ -30,9 +31,10 @@ function InstrumentedMenu({ store }: MenuProps) {
 function RenderedItemsRenders({ store }: MenuProps) {
   const renderCount = useRef(0);
   Ariakit.useStoreState(store, "renderedItems");
-  renderCount.current += 1;
+  // oxlint-disable-next-line react/refs -- render-count instrumentation
+  const currentRenderCount = ++renderCount.current;
   return (
-    <output aria-label="Rendered items renders">{renderCount.current}</output>
+    <output aria-label="Rendered items renders">{currentRenderCount}</output>
   );
 }
 

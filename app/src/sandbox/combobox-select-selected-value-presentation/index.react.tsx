@@ -359,13 +359,14 @@ function Fixture({
 
 function RenderCountedComboboxItem() {
   const renderCount = useRef(0);
-  renderCount.current += 1;
+  // oxlint-disable-next-line react/refs -- render-count instrumentation
+  const currentRenderCount = ++renderCount.current;
   const props = useComboboxItem({
     value: "Apple",
     children: "Apple",
     style: { display: "block", padding: "4px 8px" },
   });
-  return <Ariakit.Role {...props} data-render-count={renderCount.current} />;
+  return <Ariakit.Role {...props} data-render-count={currentRenderCount} />;
 }
 
 function ItemRenderCountFixture() {

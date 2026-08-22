@@ -80,20 +80,23 @@ function hasSameStoreKeys(
 function useStableStoreKeys<K extends StoreKey>(
   keys: readonly K[] | null,
 ): K[] | null {
-  const keysRef = React.useRef<K[] | null>(null);
-  const currentKeys = keysRef.current;
+  const [stableKeys, setStableKeys] = React.useState<K[] | null>(() =>
+    keys === null ? null : [...keys],
+  );
 
   if (keys === null) {
-    keysRef.current = null;
+    if (stableKeys !== null) {
+      setStableKeys(null);
+    }
     return null;
   }
 
-  if (hasSameStoreKeys(currentKeys, keys)) {
-    return currentKeys;
+  if (hasSameStoreKeys(stableKeys, keys)) {
+    return stableKeys;
   }
 
   const nextKeys = [...keys];
-  keysRef.current = nextKeys;
+  setStableKeys(nextKeys);
   return nextKeys;
 }
 
