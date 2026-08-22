@@ -70,7 +70,6 @@ function hasSameStoreKeys(
   if (keys?.length !== otherKeys.length) return false;
   for (let index = 0; index < keys.length; index += 1) {
     const key = keys[index];
-    if (key === undefined) return false;
     if (isSameValue(key, otherKeys[index])) continue;
     return false;
   }

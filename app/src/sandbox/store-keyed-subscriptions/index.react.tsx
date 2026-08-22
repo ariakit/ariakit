@@ -163,6 +163,23 @@ function EmptyObjectSelector({ store, calls }: SelectorProps) {
   return null;
 }
 
+function SparseKeySelectors({ store }: StoreProps) {
+  const keys = Array<keyof TestState>(1);
+  const value = useStoreState(store, keys, (state) => state.foo);
+  const object = useStoreStateObject(store, keys, {
+    value: (state) => state.foo,
+  });
+
+  return (
+    <p>
+      Sparse selector values:{" "}
+      <output aria-label="Sparse selector values">
+        {value}:{object.value}
+      </output>
+    </p>
+  );
+}
+
 function ConditionalSelector({ store, calls }: SelectorProps) {
   const [enabled, setEnabled] = useState(false);
   const value = useStoreState(store, enabled ? ["foo"] : [], (state) => {
@@ -452,6 +469,7 @@ export default function Example() {
       <UnkeyedSelector store={store} calls={selectorCalls} />
       <EmptySelector store={store} calls={selectorCalls} />
       <EmptyObjectSelector store={store} calls={selectorCalls} />
+      <SparseKeySelectors store={store} />
       <ConditionalSelector store={store} calls={selectorCalls} />
       <DirectValues store={store} />
       <MixedValues store={store} />

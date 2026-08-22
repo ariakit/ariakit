@@ -17,6 +17,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test
       .expect(q.status("useStoreStateObject calls"))
       .not.toHaveText("0");
+    // https://github.com/ariakit/ariakit/issues/7240
+    await test.expect(q.status("Sparse selector values")).toHaveText("0:0");
     test.expect(hydrationErrors).toEqual([]);
   });
 
