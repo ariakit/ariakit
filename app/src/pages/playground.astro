@@ -13,54 +13,210 @@ import CodeBlockTabs from "#app/components/code-block-tabs.astro";
 import CodeBlock from "#app/components/code-block.astro";
 import example from "#app/components/copy-code.react?raw";
 import { Playground as PlaygroundClient } from "#app/components/playground.react.tsx";
+import * as ButtonReact from "@ariakit/ui/html/button.react.tsx";
+import { button } from "@ariakit/ui/styles/button.ts";
 import Layout from "./_layout.astro";
+
+/**
+ * Decorative state-matrix boxes: they keep the resting button style but
+ * disable the interactive state variants so each box can force a single
+ * state statically, like the legacy ak-button_idle/base: combos
+ * (box-patterns precedent).
+ */
+function fakeButton(props: Parameters<typeof button.html>[0] = {}) {
+  return button.html({
+    $lightnessOffset: false,
+    $hoverOffset: false,
+    $focus: false,
+    $active: false,
+    ...props,
+    class: ["items-center", props.class],
+  });
+}
+
+/**
+ * Bevel-look fake: uses the static ui-bevel utility instead of the cv's
+ * $kind="bevel" (ui-bevel-button) so the box has no hover/active rules and
+ * stays inert like the legacy ak-button-classic_idle. The row's plugin
+ * layer classes set the layer, so the bevel default lighten stays off.
+ */
+function bevelFakeButton(layer: string, state?: string | string[]) {
+  return fakeButton({ class: ["ui-bevel", layer, state] });
+}
+
+// The plugin classes behind each interactive button state, restated as
+// static classes so the boxes render the state permanently. The matrix
+// demos the current system: hover.ts resolves the default offset to state
+// 5 and active.ts presses to 98%/97% at the default depth.
+const hoverState = "ak-layer ak-state-5";
+const focusState = "ak-outline ak-outline-brand outline-2 outline-offset-1";
+const activeState = "origin-bottom scale-x-[98%] scale-y-[97%]";
+// ui-bevel-button's hover/active custom-property overrides (see
+// ariakit.css); `!` so they beat the ui-bevel idle values, which share
+// specificity — the legacy page demoted the idle state with the base:
+// variant instead.
+const bevelHoverState = [
+  hoverState,
+  "[--min-l:0.35]! [--max-l:1]! ak-dark:[--min-l:0.25]!",
+];
+const bevelActiveState = [
+  activeState,
+  "from-(--bg-dark-active)! to-(--bg-light-active)! from-60%!",
+  "[--bg-dark-active:oklch(from_var(--ak-layer)_calc(l_-_0.02)_c_h)]",
+  "[--bg-light-active:oklch(from_var(--ak-layer)_calc(l_+_0.02)_c_h)]",
+  "[--shadow:0_1px_0.5px_1px_var(--shadow-color)]!",
+  "[--highlight:0_0_transparent]!",
+  "ak-dark:[--shadow:0_0.5px_0.5px_var(--shadow-color)]!",
+];
+
+// Layer contexts of the legacy button state-matrix rows. The classes are
+// plugin classes (@ariakit/tailwind), so they're kept verbatim. The white
+// row never had a flat ak-button entry.
+const matrixRows = [
+  { layer: "ak-layer ak-layer-contrast", flat: true },
+  {
+    layer: "ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0",
+    flat: true,
+  },
+  {
+    layer: "ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0",
+    flat: true,
+  },
+  { layer: "ak-layer ak-layer-black", flat: true },
+  { layer: "ak-layer-white", flat: false },
+];
 ---
 
 <Layout>
   <CanvasColorPicker />
 
-  <div class="ak-segmented m-2 w-80 grid grid-flow-col text-sm">
-    <label class="ak-segmented-button">
-      <input name="test" type="radio" />
-      Button
-    </label>
-    <label class="ak-segmented-button">
-      <input name="test" type="radio" />
-      Button
-    </label>
-    <label class="ak-segmented-button">
-      <input name="test" type="radio" />
-      Button
-    </label>
-  </div>
-  <div class="ak-segmented m-2 w-max">
-    <label class="ak-segmented-button">
-      <input name="test" type="radio" />
-      Button
-    </label>
-    <label class="ak-segmented-button">
-      <input name="test" type="radio" checked />
-      Button
-    </label>
-    <label class="ak-segmented-button">
-      <input name="test" type="radio" />
-      Button
-    </label>
-  </div>
-  <div class="ak-segmented m-2 w-max ring ak-frame ak-frame-container/0">
-    <label class="ak-segmented-button">
-      <input name="test" type="radio" />
-      Button
-    </label>
-    <label class="ak-segmented-button">
-      <input name="test" type="radio" checked />
-      Button
-    </label>
-    <label class="ak-segmented-button">
-      <input name="test" type="radio" />
-      Button
-    </label>
-  </div>
+  {/* Legacy ak-segmented equivalent (compare page recipe): pill track
+      darkened like ak-layer-darken-3 (0.6 on the 0-20 variant scale),
+      raised selected glider like ak-layer-lighten-12 (2.4) with the same
+      visible ring in light mode and adaptive ring in dark (ak-edge-0). The
+      legacy rows were radio-label mockups; the ui-selected variant can't
+      see a checked radio hidden inside a label, so the selected button is
+      marked statically with aria-current instead. */}
+  <ButtonReact.ButtonGroup
+    $rounded="full"
+    $darken={0.6}
+    $border
+    className="m-2 w-80 text-sm"
+  >
+    {/* flex-1 splits the fixed-width track evenly, like the legacy
+        grid-flow-col row. Nothing is selected, so there's no selected
+        glider to anchor. */}
+    <ButtonReact.Button
+      $layer="ghost"
+      $px="lg"
+      className="not-ui-selected:ak-ink-70 flex-1"
+    >
+      <ButtonReact.ButtonLabel>Button</ButtonReact.ButtonLabel>
+    </ButtonReact.Button>
+    <ButtonReact.ButtonSeparator />
+    <ButtonReact.Button
+      $layer="ghost"
+      $px="lg"
+      className="not-ui-selected:ak-ink-70 flex-1"
+    >
+      <ButtonReact.ButtonLabel>Button</ButtonReact.ButtonLabel>
+    </ButtonReact.Button>
+    <ButtonReact.ButtonSeparator />
+    <ButtonReact.Button
+      $layer="ghost"
+      $px="lg"
+      className="not-ui-selected:ak-ink-70 flex-1"
+    >
+      <ButtonReact.ButtonLabel>Button</ButtonReact.ButtonLabel>
+    </ButtonReact.Button>
+    <ButtonReact.ButtonGlider $state="hover" />
+    <ButtonReact.ButtonGlider $state="focus" />
+  </ButtonReact.ButtonGroup>
+
+  <ButtonReact.ButtonGroup
+    $rounded="full"
+    $darken={0.6}
+    $border
+    className="m-2 w-max text-sm"
+  >
+    <ButtonReact.Button
+      $layer="ghost"
+      $px="lg"
+      className="not-ui-selected:ak-ink-70"
+    >
+      <ButtonReact.ButtonLabel>Button</ButtonReact.ButtonLabel>
+    </ButtonReact.Button>
+    <ButtonReact.ButtonSeparator />
+    <ButtonReact.Button
+      $layer="ghost"
+      $px="lg"
+      aria-current="true"
+      className="not-ui-selected:ak-ink-70"
+    >
+      <ButtonReact.ButtonLabel>Button</ButtonReact.ButtonLabel>
+    </ButtonReact.Button>
+    <ButtonReact.ButtonSeparator />
+    <ButtonReact.Button
+      $layer="ghost"
+      $px="lg"
+      className="not-ui-selected:ak-ink-70"
+    >
+      <ButtonReact.ButtonLabel>Button</ButtonReact.ButtonLabel>
+    </ButtonReact.Button>
+    <ButtonReact.ButtonGlider $state="hover" />
+    <ButtonReact.ButtonGlider $state="focus" />
+    <ButtonReact.ButtonGlider
+      $state="selected"
+      $lightnessOffset={false}
+      $lighten={2.4}
+      $borderWeight="normal"
+      className="shadow-sm ak-dark:ak-edge-0"
+    />
+  </ButtonReact.ButtonGroup>
+
+  {/* Squared, zero-padding variant: the legacy row overrode the pill with
+      ring + ak-frame-container/0, so this one keeps the group's default xl
+      radius, drops the track padding, and adds the explicit ring. */}
+  <ButtonReact.ButtonGroup
+    $darken={0.6}
+    $border
+    $p="none"
+    className="m-2 w-max text-sm ring"
+  >
+    <ButtonReact.Button
+      $layer="ghost"
+      $px="lg"
+      className="not-ui-selected:ak-ink-70"
+    >
+      <ButtonReact.ButtonLabel>Button</ButtonReact.ButtonLabel>
+    </ButtonReact.Button>
+    <ButtonReact.ButtonSeparator />
+    <ButtonReact.Button
+      $layer="ghost"
+      $px="lg"
+      aria-current="true"
+      className="not-ui-selected:ak-ink-70"
+    >
+      <ButtonReact.ButtonLabel>Button</ButtonReact.ButtonLabel>
+    </ButtonReact.Button>
+    <ButtonReact.ButtonSeparator />
+    <ButtonReact.Button
+      $layer="ghost"
+      $px="lg"
+      className="not-ui-selected:ak-ink-70"
+    >
+      <ButtonReact.ButtonLabel>Button</ButtonReact.ButtonLabel>
+    </ButtonReact.Button>
+    <ButtonReact.ButtonGlider $state="hover" />
+    <ButtonReact.ButtonGlider $state="focus" />
+    <ButtonReact.ButtonGlider
+      $state="selected"
+      $lightnessOffset={false}
+      $lighten={2.4}
+      $borderWeight="normal"
+      className="shadow-sm ak-dark:ak-edge-0"
+    />
+  </ButtonReact.ButtonGroup>
 
   <div class="my-20">
     <CodeBlockTabs
@@ -99,159 +255,105 @@ export default App;`,
       ]}
     />
   </div>
+  {/* Button state matrix. Real buttons keep the cv's interactive states
+      (legacy plain ak-button paints no idle layer offset, hence
+      $lightnessOffset false on the flat ones); the idle/hover/active/
+      focus/disabled boxes are static fakes with each state forced. */}
   <div class="flex flex-wrap gap-2 p-2 *:h-10">
-    <button class="ak-button ak-layer ak-layer-lighten-6">button</button>
-    <button class="ak-button ak-layer ak-layer-lighten-6" disabled>button</button>
-    <button class="ak-button-classic ak-layer ak-layer-lighten-6 _!h-40 _text-7xl">Open</button>
-    <div class="ak-button-classic_idle ak-layer ak-layer-lighten-6">idle</div>
-    <div class="base:ak-button-classic_idle ak-button-classic_hover ak-layer ak-layer-lighten-6">
+    <button
+      {...button.html({
+        $lightnessOffset: false,
+        class: "items-center ak-layer ak-layer-lighten-6",
+      })}
+    >
+      button
+    </button>
+    <button
+      disabled
+      {...button.html({
+        $lightnessOffset: false,
+        $disabled: true,
+        class: "items-center ak-layer ak-layer-lighten-6",
+      })}
+    >
+      button
+    </button>
+    {/* The bevel kind's default $lighten (1.2) already matches the legacy
+        classic button's ak-layer-lighten-6. The _-prefixed classes are the
+        legacy row's disabled dev toggles, kept as inert scratch state. */}
+    <button
+      {...button.html({
+        $kind: "bevel",
+        class: "items-center _!h-40 _text-7xl",
+      })}
+    >
+      Open
+    </button>
+    <div {...bevelFakeButton("ak-layer ak-layer-lighten-6")}>idle</div>
+    <div {...bevelFakeButton("ak-layer ak-layer-lighten-6", bevelHoverState)}>
       hover
     </div>
-    <div class="base:ak-button-classic_idle ak-button-classic_active ak-layer ak-layer-lighten-6">
+    <div {...bevelFakeButton("ak-layer ak-layer-lighten-6", bevelActiveState)}>
       active
     </div>
-    <div class="base:ak-button-classic_idle ak-button-classic_focus ak-layer ak-layer-lighten-6">
+    <div {...bevelFakeButton("ak-layer ak-layer-lighten-6", focusState)}>
       focus
     </div>
     <div
-      class="base:ak-button-classic_idle ak-button-classic_disabled base:ak-layer"
+      {...fakeButton({
+        $disabled: true,
+        class: "ak-layer ak-layer-lighten-6",
+      })}
     >
       disabled
     </div>
   </div>
 
+  {
+    matrixRows.map(({ layer, flat }) => (
+      <div class="flex flex-wrap gap-2 p-2 *:h-10">
+        {flat && (
+          <button
+            {...button.html({
+              $lightnessOffset: false,
+              class: ["items-center", layer],
+            })}
+          >
+            button
+          </button>
+        )}
+        {/* The row's plugin layer classes set the layer, so the bevel
+            default lighten is turned off to keep a single source. */}
+        <button
+          {...button.html({
+            $kind: "bevel",
+            $lighten: false,
+            class: ["items-center", layer],
+          })}
+        >
+          button
+        </button>
+        <div {...bevelFakeButton(layer)}>idle</div>
+        <div {...bevelFakeButton(layer, bevelHoverState)}>hover</div>
+        <div {...bevelFakeButton(layer, bevelActiveState)}>active</div>
+        <div {...bevelFakeButton(layer, focusState)}>focus</div>
+        <div {...fakeButton({ $disabled: true, class: layer })}>disabled</div>
+      </div>
+    ))
+  }
+
+  {/* Flat (layerless) button states, like the legacy plain ak-button row. */}
   <div class="flex flex-wrap gap-2 p-2 *:h-10">
-    <button class="ak-button ak-layer ak-layer-contrast">button</button>
-    <button class="ak-button-classic ak-layer-contrast">button</button>
-    <div class="ak-button-classic_idle ak-layer-contrast">idle</div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_hover ak-layer-contrast"
+    <button
+      {...button.html({ $lightnessOffset: false, class: "items-center" })}
     >
-      hover
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_active ak-layer-contrast"
-    >
-      active
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_focus ak-layer-contrast"
-    >
-      focus
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_disabled base:ak-layer-contrast"
-    >
-      disabled
-    </div>
-  </div>
-  <div class="flex flex-wrap gap-2 p-2 *:h-10">
-    <button class="ak-button ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0">button</button>
-    <button class="ak-button-classic ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0">button</button>
-    <div class="ak-button-classic_idle ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0">idle</div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_hover ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0"
-    >
-      hover
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_active ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0"
-    >
-      active
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_focus ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0"
-    >
-      focus
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_disabled base:ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0"
-    >
-      disabled
-    </div>
-  </div>
-  <div class="flex flex-wrap gap-2 p-2 *:h-10">
-    <button class="ak-button ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0">button</button>
-    <button class="ak-button-classic ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0">button</button
-    >
-    <div class="ak-button-classic_idle ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0">idle</div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_hover ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0"
-    >
-      hover
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_active ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0"
-    >
-      active
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_focus ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0"
-    >
-      focus
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_disabled base:ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0"
-    >
-      disabled
-    </div>
-  </div>
-  <div class="flex flex-wrap gap-2 p-2 *:h-10">
-    <button class="ak-button ak-layer ak-layer-black">button</button>
-    <button class="ak-button-classic ak-layer-black">button</button>
-    <div class="ak-button-classic_idle ak-layer-black">idle</div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_hover ak-layer-black"
-    >
-      hover
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_active ak-layer-black"
-    >
-      active
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_focus ak-layer-black"
-    >
-      focus
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_disabled base:ak-layer-black"
-    >
-      disabled
-    </div>
-  </div>
-  <div class="flex flex-wrap gap-2 p-2 *:h-10">
-    <button class="ak-button-classic ak-layer-white">button</button>
-    <div class="ak-button-classic_idle ak-layer-white">idle</div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_hover ak-layer-white"
-    >
-      hover
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_active ak-layer-white"
-    >
-      active
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_focus ak-layer-white"
-    >
-      focus
-    </div>
-    <div
-      class="base:ak-button-classic_idle ak-button-classic_disabled base:ak-layer-white"
-    >
-      disabled
-    </div>
-  </div>
-  <div class="flex flex-wrap gap-2 p-2 *:h-10">
-    <button class="ak-button">button</button>
-    <div class="ak-button_idle">idle</div>
-    <div class="base:ak-button_idle ak-button_hover">hover</div>
-    <div class="base:ak-button_idle ak-button_focus">focus</div>
-    <div class="base:ak-button_idle ak-button_active">active</div>
-    <div class="base:ak-button_idle ak-button_disabled">disabled</div>
+      button
+    </button>
+    <div {...fakeButton()}>idle</div>
+    <div {...fakeButton({ class: hoverState })}>hover</div>
+    <div {...fakeButton({ class: focusState })}>focus</div>
+    <div {...fakeButton({ class: activeState })}>active</div>
+    <div {...fakeButton({ $disabled: true })}>disabled</div>
   </div>
 
   <CodeBlockTabs

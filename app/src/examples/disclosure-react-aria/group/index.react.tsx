@@ -1,14 +1,16 @@
+import { Heading } from "@ariakit/ui/html/heading.react.tsx";
+import { Link } from "@ariakit/ui/html/link.react.tsx";
 import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
   DisclosureGroup,
-} from "#app/examples/_lib/react-aria/disclosure.react.tsx";
+} from "@ariakit/ui/react-aria/disclosure.react.tsx";
 
 export default function Example() {
   return (
     <div className="w-140 max-w-[100cqi] grid gap-4">
-      <h2 className="ak-heading text-center">Frequently Asked Questions</h2>
+      <Heading className="text-center">Frequently Asked Questions</Heading>
       <DisclosureGroup>
         <Disclosure>
           <DisclosureButton indicator="plus-end">
@@ -23,7 +25,8 @@ export default function Example() {
             </p>
             <p>
               If you run into any issues with your account, contact us at{" "}
-              <a href="mailto:contact@ariakit.com">contact@ariakit.com</a>.
+              <Link href="mailto:contact@ariakit.com">contact@ariakit.com</Link>
+              .
             </p>
           </DisclosureContent>
         </Disclosure>
@@ -71,7 +74,8 @@ export default function Example() {
               The discount applies only if you upgrade in the same currency as
               your original purchase. If you cannot use the same currency,
               contact us at{" "}
-              <a href="mailto:contact@ariakit.com">contact@ariakit.com</a>.
+              <Link href="mailto:contact@ariakit.com">contact@ariakit.com</Link>
+              .
             </p>
           </DisclosureContent>
         </Disclosure>
@@ -89,7 +93,7 @@ export default function Example() {
               You are not allowed to create a project, site, or template that is
               resold to multiple clients, since that would constitute
               redistribution of the code. For more information, read the{" "}
-              <a href="https://ariakit.com/plus/license">license</a>.
+              <Link href="https://ariakit.com/plus/license">license</Link>.
             </p>
           </DisclosureContent>
         </Disclosure>

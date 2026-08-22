@@ -12,6 +12,7 @@ import ReferenceContent from "#app/components/reference-content.astro";
 import ReferenceItem from "#app/components/reference-item.astro";
 import { getReferenceItems } from "#app/lib/reference.ts";
 import { getReferencePath, referenceURLToPartialPath } from "#app/lib/url.ts";
+import { Prose } from "@ariakit/ui/html/prose.react.tsx";
 import { invariant } from "@ariakit/utils";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
@@ -59,9 +60,9 @@ Astro.locals.reference = reference.id;
 
 {
   item ? (
-    <div class="ak-frame ak-frame-p-2 ak-prose">
+    <Prose className="ak-frame ak-frame-p-2">
       <ReferenceItem reference={reference} {...item} standalone />
-    </div>
+    </Prose>
   ) : (
     <div class="ak-frame ak-frame-p-2 p-0">
       <ReferenceContent reference={reference} compact />

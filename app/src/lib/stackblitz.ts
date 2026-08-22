@@ -3,12 +3,6 @@ import type { Project, ProjectFiles } from "@stackblitz/sdk";
 import _sdk from "@stackblitz/sdk";
 import nextPkg from "../../../nextjs/package.json" with { type: "json" };
 import templatePkg from "../../../templates/react/package.json" with { type: "json" };
-import type { StyleDependency } from "./styles.ts";
-import {
-  getStyleDefinition,
-  getTransitiveStyleDefinitions,
-  styleDefToCss,
-} from "./styles.ts";
 
 const sdk = _sdk as unknown as (typeof _sdk)["default"];
 
@@ -24,7 +18,6 @@ export interface AppStackblitzProps {
   theme?: "light" | "dark";
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
-  styles?: StyleDependency[];
   tsconfig?: Record<string, unknown>;
   nextTsconfig?: Record<string, unknown>;
   initialOpenFile?: string;
@@ -151,6 +144,11 @@ function getTSConfig(overrides?: Record<string, unknown>) {
   return mergeTsConfig(base, overrides);
 }
 
+// TODO: generated projects are not yet viable for examples that import
+// @ariakit/ui: the package is private/unpublished, and this base css lacks
+// the package @source scan plus the ui-* custom variants and --color-brand
+// that app/src/styles/{global,ariakit}.css provide. Both need a portable
+// @ariakit/ui distribution story before the docs examples ship publicly.
 function getBaseCss() {
   return `@import "tailwindcss";
 @import "@ariakit/tailwind";
@@ -214,32 +212,6 @@ export function QueryProvider(props: PropsWithChildren) {
   );
 }
 `;
-}
-
-function getStylesCss(styles?: StyleDependency[]) {
-  if (!styles?.length) return "";
-  const seen = new Set<string>();
-  const chunks: string[] = [];
-
-  const pushDef = (def: ReturnType<typeof getStyleDefinition>) => {
-    if (!def) return;
-    const key = `${def.type}:${def.name}`;
-    if (seen.has(key)) return;
-    seen.add(key);
-    chunks.push(styleDefToCss(def));
-  };
-
-  for (const dep of styles) {
-    const baseDef = getStyleDefinition(dep.name, dep.type);
-    pushDef(baseDef);
-    const transitive = getTransitiveStyleDefinitions(dep);
-    for (const def of transitive) {
-      pushDef(def);
-    }
-  }
-
-  if (!chunks.length) return "";
-  return `\n${chunks.join("\n\n")}\n`;
 }
 
 function buildSourceFiles(exampleName: string, files: Record<string, string>) {
@@ -313,7 +285,6 @@ function getIndexHtml(props: NormalizedProps, exampleName: string) {
 function getViteProject(props: NormalizedProps): ProjectResult {
   const exampleName = getExampleName(props.id);
   const firstFile = getFirstFilename(props.files);
-  const stylesCss = getStylesCss(props.styles);
 
   const hasQuery = hasOwnProperty(props.dependencies, "@tanstack/react-query");
 
@@ -341,8 +312,6 @@ function getViteProject(props: NormalizedProps): ProjectResult {
   });
 
   const tsConfig = getTSConfig(props.tsconfig);
-
-  const stylesContent = `${getBaseCss()}${stylesCss}`;
 
   const indexTsx = `import "./styles.css";
 import { StrictMode } from "react";
@@ -391,7 +360,7 @@ export default defineConfig({
     "vite.config.ts": viteConfig,
     "index.html": getIndexHtml(props, exampleName),
     "index.tsx": indexTsx,
-    "styles.css": stylesContent,
+    "styles.css": getBaseCss(),
     ...sourceFiles,
   };
 
@@ -401,7 +370,6 @@ export default defineConfig({
 function getSolidProject(props: NormalizedProps): ProjectResult {
   const exampleName = getExampleName(props.id);
   const firstFile = getFirstFilename(props.files);
-  const stylesCss = getStylesCss(props.styles);
 
   const packageJson = getPackageJson({
     props,
@@ -433,8 +401,6 @@ function getSolidProject(props: NormalizedProps): ProjectResult {
     props.tsconfig,
   );
 
-  const stylesContent = `${getBaseCss()}${stylesCss}`;
-
   const indexTsx = `import "./styles.css";
 import { render } from "solid-js/web";
 import Example from "./${exampleName}/${firstFile}";
@@ -463,7 +429,7 @@ export default defineConfig({
     "vite.config.ts": viteConfig,
     "index.html": getIndexHtml(props, exampleName),
     "index.tsx": indexTsx,
-    "styles.css": stylesContent,
+    "styles.css": getBaseCss(),
     ...sourceFiles,
   };
 
@@ -473,7 +439,6 @@ export default defineConfig({
 function getNextProject(props: NormalizedProps): ProjectResult {
   const exampleName = getExampleName(props.id);
   const firstFile = getFirstFilename(props.files);
-  const stylesCss = getStylesCss(props.styles);
 
   const packageJson = getPackageJson({
     props,
@@ -507,8 +472,6 @@ function getNextProject(props: NormalizedProps): ProjectResult {
     }),
     props.nextTsconfig,
   );
-
-  const stylesContent = `${getBaseCss()}${stylesCss}`;
 
   const isAppDir = /(page|layout)\.[mc]?[jt]sx?$/.test(firstFile);
   const pagePath = isAppDir ? `previews/${exampleName}` : exampleName;
@@ -608,7 +571,7 @@ export default config;
 `,
     "next.config.js": nextConfig,
     "next-env.d.ts": nextEnv,
-    "app/styles.css": stylesContent,
+    "app/styles.css": getBaseCss(),
     "app/layout.tsx": layoutTsx,
     "app/page.tsx": pageTsx,
     ...sourceFiles,

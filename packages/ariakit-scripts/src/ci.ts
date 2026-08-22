@@ -9,7 +9,6 @@ export const ciWorkflowNames = [
   "plus",
   "release_preview",
   "docs",
-  "build_styles",
   "og_images",
 ] as const;
 
@@ -340,16 +339,6 @@ function addFileReasons(plan: CIPlan, file: string) {
   }
 
   if (
-    file.startsWith("app/src/styles/") ||
-    /^app\/src\/lib\/(?:build-styles|styles(?:-json-types|-shared)?)\.ts$/.test(
-      file,
-    )
-  ) {
-    addReason(plan, "build_styles", `Generated styles input: ${file}`);
-    matched = true;
-  }
-
-  if (
     file.startsWith("app/public/og-image/") ||
     (file.startsWith("app/src/") && !isTestFile(file)) ||
     isPackageRuntimePath(file)
@@ -409,7 +398,6 @@ export function createCIPlan(
     plus: false,
     release_preview: false,
     docs: false,
-    build_styles: false,
     og_images: false,
   };
   const reasons: Record<CIWorkflowName, string[]> = {
@@ -419,7 +407,6 @@ export function createCIPlan(
     plus: [],
     release_preview: [],
     docs: [],
-    build_styles: [],
     og_images: [],
   };
   const plan: CIPlan = {
@@ -653,7 +640,6 @@ function parseCIPlan(value: string) {
       plus: plan.workflows.plus === true,
       release_preview: plan.workflows.release_preview === true,
       docs: plan.workflows.docs === true,
-      build_styles: plan.workflows.build_styles === true,
       og_images: plan.workflows.og_images === true,
     },
   } satisfies CIGatePlan;

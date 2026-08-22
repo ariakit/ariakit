@@ -8,18 +8,26 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { selectItem } from "@ariakit/ui/styles/select.ts";
 import type { HTMLAttributes } from "astro/types";
 
 interface Props extends HTMLAttributes<"option"> {
   label?: string;
 }
 
-const props = Astro.props;
+const { class: className, style, ...props } = Astro.props;
 ---
 
+{/* selectItem matches the legacy ak-option row (its $gap:"sm" resolves to
+    the frame padding, i.e. the legacy gap-2) on the native zero-JS option. */}
 <option
-  class:list={["ak-option flex items-center gap-2", props.class]}
   {...props}
+  {...selectItem.html({
+    class: className,
+    // Astro doesn't merge duplicate style attributes, so the caller style
+    // goes through the cv, which merges it.
+    style,
+  })}
   >{
     Astro.slots.has("default") ? <slot /> : (props.label ?? props.value)
   }</option

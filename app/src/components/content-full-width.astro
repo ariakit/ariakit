@@ -8,6 +8,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Prose } from "@ariakit/ui/html/prose.react.tsx";
 import type { HTMLAttributes } from "astro/types";
 
 interface Props extends HTMLAttributes<"div"> {}
@@ -15,21 +16,26 @@ interface Props extends HTMLAttributes<"div"> {}
 const props = Astro.props;
 ---
 
+{/* The container channels are re-aliased to underscore-free names first:
+    Tailwind turns `_` into a space inside arbitrary values (but not inside
+    arbitrary property declarations), so var(--_container-*) references must
+    not appear in the calc() classes directly. */}
 <div
   data-full-width="true"
   class:list={[
-    "max-w-[calc(100cqi-var(--container-sidebar)-var(--ak-container-p)*2)] my-10",
+    "[--p:var(--_container-padding,0px)] [--full-width-max:var(--_container-max-width)]",
+    "max-w-[calc(100cqi-var(--container-sidebar)-var(--p)*2)] my-10",
     props.class,
   ]}
   {...props}
 >
   <div
-    class="max-w-[calc(var(--ak-container-max-width)-var(--container-sidebar)-var(--ak-container-p))] relative z-1"
+    class="max-w-[calc(var(--full-width-max)-var(--container-sidebar)-var(--p))] relative z-1"
   >
-    <div
-      class="ak-prose w-(--container-wider) max-w-[calc(100cqi-var(--ak-container-p)*2)] relative z-1 ak-layer shadow-(color:--ak-layer) shadow-[0_1rem_1rem_1rem_var(--ak-layer),0_-1rem_1rem_1rem_var(--ak-layer)]"
+    <Prose
+      className="w-(--container-wider) max-w-[calc(100cqi-var(--p)*2)] relative z-1 ak-layer shadow-(color:--ak-layer) shadow-[0_1rem_1rem_1rem_var(--ak-layer),0_-1rem_1rem_1rem_var(--ak-layer)]"
     >
       <slot />
-    </div>
+    </Prose>
   </div>
 </div>
