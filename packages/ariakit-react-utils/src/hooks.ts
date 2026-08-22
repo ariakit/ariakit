@@ -29,11 +29,24 @@ import {
 import { setRef } from "./misc.ts";
 import type { WrapElement } from "./types.ts";
 
+interface ReactWithOptionalHooks {
+  useId?: () => string;
+  useDeferredValue?: <T>(value: T) => T;
+  useInsertionEffect?: (
+    effect: EffectCallback,
+    dependencies?: DependencyList,
+  ) => void;
+}
+
 // See https://github.com/webpack/webpack/issues/14814
-const _React = { ...React };
+const _React: ReactWithOptionalHooks = { ...React };
 const useReactId = _React.useId;
 const useReactDeferredValue = _React.useDeferredValue;
 const useReactInsertionEffect = _React.useInsertionEffect;
+
+// Select once per loaded React version so every render uses the same hook.
+const useEventUpdate =
+  useReactInsertionEffect ?? ((callback: () => void) => callback());
 
 interface MergedRefEffect {
   ref: Ref<any>;
@@ -87,13 +100,9 @@ export function useEvent<T extends AnyFunction>(callback?: T) {
   const ref = useRef<AnyFunction | undefined>(() => {
     throw new Error("Cannot call an event handler while rendering.");
   });
-  if (useReactInsertionEffect) {
-    useReactInsertionEffect(() => {
-      ref.current = callback;
-    });
-  } else {
+  useEventUpdate(() => {
     ref.current = callback;
-  }
+  });
   return useCallback<AnyFunction>((...args) => ref.current?.(...args), []) as T;
 }
 
@@ -161,19 +170,12 @@ export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
         }
       };
     };
-    // oxlint-disable-next-line exhaustive-deps
+    // Variadic refs prevent using an array literal for the dependencies.
+    // oxlint-disable-next-line exhaustive-deps, react/use-memo -- variadic refs
   }, refs);
 }
 
-/**
- * Generates a unique ID. Uses React's useId if available.
- */
-export function useId(defaultId?: string): string | undefined {
-  if (useReactId) {
-    const reactId = useReactId();
-    if (defaultId) return defaultId;
-    return reactId;
-  }
+function useIdPolyfill(defaultId?: string): string | undefined {
   const [id, setId] = useState(defaultId);
   useSafeLayoutEffect(() => {
     if (defaultId || id) return;
@@ -183,19 +185,40 @@ export function useId(defaultId?: string): string | undefined {
   return defaultId || id;
 }
 
+function useReactIdWithDefault(defaultId?: string): string | undefined {
+  // This implementation is selected only when React provides useId.
+  const id = useReactId!();
+  return defaultId || id;
+}
+
+// Select once per loaded React version so every render uses the same hook.
+const useCompatibleId = useReactId ? useReactIdWithDefault : useIdPolyfill;
+
 /**
- * Uses React's useDeferredValue if available.
+ * Generates a unique ID. Uses React's useId if available.
  */
-export function useDeferredValue<T>(value: T): T {
-  if (useReactDeferredValue) {
-    return useReactDeferredValue(value);
-  }
+export function useId(defaultId?: string): string | undefined {
+  return useCompatibleId(defaultId);
+}
+
+function useDeferredValuePolyfill<T>(value: T): T {
   const [deferredValue, setDeferredValue] = useState(value);
   useEffect(() => {
     const raf = requestAnimationFrame(() => setDeferredValue(value));
     return () => cancelAnimationFrame(raf);
   }, [value]);
   return deferredValue;
+}
+
+// Select once per loaded React version so every render uses the same hook.
+const useCompatibleDeferredValue =
+  useReactDeferredValue ?? useDeferredValuePolyfill;
+
+/**
+ * Uses React's useDeferredValue if available.
+ */
+export function useDeferredValue<T>(value: T): T {
+  return useCompatibleDeferredValue(value);
 }
 
 /**
@@ -353,7 +376,8 @@ export function useWrapElement<P>(
       }
       return callback(element);
     },
-    // oxlint-disable-next-line exhaustive-deps
+    // Caller-provided dependencies prevent using an array literal here.
+    // oxlint-disable-next-line exhaustive-deps, react/use-memo -- public deps API
     [...deps, props.wrapElement],
   );
 

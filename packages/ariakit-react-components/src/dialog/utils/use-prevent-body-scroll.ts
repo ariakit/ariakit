@@ -8,6 +8,12 @@ import { useRootDialog } from "./use-root-dialog.ts";
 // Only iOS doesn't respect `overflow: hidden` on document.body.
 const isIOS = isApple() && !isMac();
 
+// Use layout timing to measure and lock before paint. Keep iOS passive
+// because its scroll capture/restore depends on dialog focus timing. isIOS
+// is session-stable, so the hook choice cannot change between renders.
+// https://github.com/ariakit/ariakit/pull/6288
+const useLockEffect = isIOS ? useEffect : useSafeLayoutEffect;
+
 // The CSS global isn't part of the Window type, even though browsers expose
 // it on every window object.
 interface WindowWithCSS extends Window {
@@ -37,12 +43,6 @@ export function usePreventBodyScroll(
     contentId,
     enabled,
   });
-
-  // Use layout timing to measure and lock before paint. Keep iOS passive
-  // because its scroll capture/restore depends on dialog focus timing. isIOS
-  // is session-stable, so the hook choice cannot change between renders.
-  // https://github.com/ariakit/ariakit/pull/6288
-  const useLockEffect = isIOS ? useEffect : useSafeLayoutEffect;
 
   useLockEffect(() => {
     if (!isRootDialog()) return;
