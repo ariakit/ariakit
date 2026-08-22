@@ -14,7 +14,10 @@ test("supports keyed selector types", () => {
   const countStore = createStore({ kind: "count" as const, count: 0 });
   const labelStore = createStore({ kind: "label" as const, label: "" });
 
-  const useCheckTypes = (optionalStore?: typeof store) => {
+  const useCheckTypes = (
+    optionalStore?: typeof store,
+    unionStore: typeof countStore | typeof labelStore = countStore,
+  ) => {
     expectTypeOf(useStoreState(store, "key")).toEqualTypeOf<string>();
     expectTypeOf(
       useStoreState(store, (state) => state.key),
@@ -62,8 +65,6 @@ test("supports keyed selector types", () => {
       derived: string | undefined;
     }>();
 
-    const unionStore: typeof countStore | typeof labelStore =
-      Math.random() > 0.5 ? countStore : labelStore;
     const unionValue = useStoreState(
       unionStore,
       ["kind", "count", "label"],
@@ -92,7 +93,10 @@ test("supports keyed selector types", () => {
   };
 
   expectTypeOf(useCheckTypes).toEqualTypeOf<
-    (optionalStore?: typeof store) => void
+    (
+      optionalStore?: typeof store,
+      unionStore?: typeof countStore | typeof labelStore,
+    ) => void
   >();
 });
 

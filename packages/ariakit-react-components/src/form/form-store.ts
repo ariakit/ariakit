@@ -63,6 +63,7 @@ export function useFormValidate<T extends FormStoreValues = FormStoreValues>(
   const items = useStoreState(store, "items");
   useEffect(
     () => store.onValidate(eventCallback),
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- callback order invalidation
     [store, items, eventCallback],
   );
 }
@@ -90,7 +91,11 @@ export function useFormSubmit<T extends FormStoreValues = FormStoreValues>(
   const eventCallback = useEvent(callback);
   // Same logic as useFormValidate.
   const items = useStoreState(store, "items");
-  useEffect(() => store.onSubmit(eventCallback), [store, items, eventCallback]);
+  useEffect(
+    () => store.onSubmit(eventCallback),
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- callback order invalidation
+    [store, items, eventCallback],
+  );
 }
 
 export function useFormStoreProps<T extends FormStoreHookStore>(

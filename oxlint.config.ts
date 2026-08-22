@@ -14,10 +14,7 @@ export default defineConfig({
   rules: {
     // Adopt these React Compiler checks separately from this update.
     // https://github.com/ariakit/ariakit/issues/7240
-    "react/exhaustive-effect-dependencies": "off",
     "react/immutability": "off",
-    "react/memo-dependencies": "off",
-    "react/purity": "off",
     "react/refs": "off",
     // Type-only exports are incorrectly reported as missing.
     // https://github.com/oxc-project/oxc/issues/13258
