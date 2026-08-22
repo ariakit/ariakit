@@ -227,7 +227,6 @@ function getItemSize(
     if (itemObject.itemSize) {
       return initialSize + itemObject.itemSize * items.length;
     }
-    // oxlint-disable-next-line no-unnecessary-type-arguments
     const totalSize = items.reduce<number>(
       (sum, item) => sum + getItemSize(item, horizontal),
       initialSize,
@@ -242,7 +241,6 @@ function getItemSize(
   // The nested items run along the cross axis, so the item's extent along the
   // measured axis is the largest child extent rather than the sum.
   if (items?.length && !hasSameOrientation) {
-    // oxlint-disable-next-line no-unnecessary-type-arguments
     const maxSize = items.reduce<number>(
       (max, item) => Math.max(max, getItemSize(item, horizontal)),
       0,
@@ -401,6 +399,7 @@ function useScroller(
   });
   // Keep state synchronization and automatic ancestor detection off the
   // layout path.
+  // oxlint-disable-next-line exhaustive-deps
   useEffect(() => {
     if (scrollElement === undefined) {
       inheritedController?.revalidate();
@@ -427,8 +426,7 @@ function useScroller(
     if (nextScroller === scroller) return;
     setScroller(nextScroller);
   });
-  const activeController = scrollElement === undefined ? undefined : controller;
-  return [scroller, scrollerRef, activeController] as const;
+  return [scroller, scrollerRef, controller] as const;
 }
 
 function getRendererOffset(
@@ -489,7 +487,6 @@ function getItemsEnd<T extends Item>(props: {
   const lastItemData = props.data.get(lastItemId);
   if (lastItemData?.end) return lastItemData.end + props.paddingEnd;
   if (!Array.isArray(props.items)) return defaultEnd;
-  // oxlint-disable-next-line no-unnecessary-type-arguments
   const end = props.items.reduce<number>(
     (sum, item) => sum + getItemSize(item, props.horizontal, false),
     0,
@@ -720,7 +717,7 @@ export function useCollectionRenderer<T extends Item = any>({
       ? inheritedScrollerController
       : scrollElementProp === null
         ? undefined
-        : (ownScrollerController ?? undefined);
+        : ownScrollerController;
   const offsetsRef = useRef({ start: 0, end: 0 });
 
   const processVisibleIndices = useCallback(() => {
@@ -770,6 +767,7 @@ export function useCollectionRenderer<T extends Item = any>({
       if (shallowEqual(prevIndices, indices)) return prevIndices;
       return indices;
     });
+    // oxlint-disable-next-line exhaustive-deps
   }, [
     // oxlint-disable-next-line react/memo-dependencies -- element registration signal
     elementsUpdated,

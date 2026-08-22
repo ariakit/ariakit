@@ -13,10 +13,11 @@ async function loadReact(dir: string) {
   const { render } = await import("@ariakit/test/react");
   const { createElement, Suspense } = await import("react");
   const component = await importDefault(`./${dir}/index.react.tsx`);
-  const element = createElement(Suspense, {
-    fallback: null,
-    children: createElement(component),
-  });
+  const element = createElement(
+    Suspense,
+    { fallback: null },
+    createElement(component),
+  );
   const { unmount } = await render(element, { strictMode: true });
   return unmount;
 }

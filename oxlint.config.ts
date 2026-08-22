@@ -1,9 +1,19 @@
 import { defineConfig } from "oxlint";
 
 export default defineConfig({
-  plugins: ["typescript", "import"],
+  // Declaring `react` only in an override would enable just the rules that
+  // the override names, silently disabling every other React rule, including
+  // `react/jsx-key` and `react/no-children-prop`.
+  plugins: ["typescript", "react", "import"],
   options: {
     typeAware: true,
+    // A suppression that stops matching is how lint coverage disappears
+    // unnoticed, so treat an unused directive as an error rather than as
+    // cleanup.
+    reportUnusedDisableDirectives: "error",
+    // Roughly a quarter of the enabled rules are warnings, which would
+    // otherwise never fail CI.
+    denyWarnings: true,
   },
   ignorePatterns: ["website", "**/*.astro"],
   categories: {
@@ -17,8 +27,10 @@ export default defineConfig({
     "import/namespace": "off",
     "no-unsafe-type-assertion": "off",
     "no-unassigned-import": "off",
+    "react-in-jsx-scope": "off",
     "no-shadow": "off",
     "no-underscore-dangle": "off",
+    "iframe-missing-sandbox": "off",
     "consistent-return": "off",
     "no-unnecessary-type-arguments": "off",
     "consistent-type-imports": ["error", { fixStyle: "separate-type-imports" }],
@@ -42,40 +54,32 @@ export default defineConfig({
       },
     },
     {
-      // Disable this rule for the app because some types depend on the app
-      // being built first, and linting may run before the app is built.
+      // We have our own `forwardRef` implementation that doesn't need the `ref`
+      // parameter, which leads to false positives.
+      files: ["packages/ariakit-react-components/src/**/*.{ts,tsx}"],
+      rules: {
+        "forward-ref-uses-ref": "off",
+      },
+    },
+    {
+      // These types are generated into the gitignored `app/.astro` directory,
+      // so CI always lints without them and `astro:content` resolves
+      // `CollectionEntry` to `any`. That widens unions for the first rule and
+      // makes a narrowing assertion look unnecessary for the second.
       files: ["app/src/lib/**/*.ts"],
       rules: {
         "no-redundant-type-constituents": "off",
+        "no-unnecessary-type-assertion": "off",
       },
     },
     {
-      files: [
-        "**/*.react.*",
-        "{examples,nextjs,packages/ariakit-react*,packages/ariakit-test,templates/react}/**/*.{js,jsx,ts,tsx}",
-      ],
-      excludeFiles: ["**/*.solid.*"],
-      plugins: ["typescript", "react", "import"],
+      // Solid reassigns a variable to hold an element reference, which this
+      // rule reads as mutating a value after render. This override disables
+      // nothing else, so add a rule here only once it reports on Solid.
+      // https://github.com/ariakit/ariakit/issues/7250
+      files: ["**/*.solid.*", "packages/ariakit-solid*/**"],
       rules: {
-        "react/exhaustive-effect-dependencies": "warn",
-        "react/hooks": "warn",
-        "react/iframe-missing-sandbox": "off",
-        "react/immutability": "error",
-        "react/memo-dependencies": "warn",
-        "react/purity": "error",
-        "react/react-in-jsx-scope": "off",
-        "react/refs": "error",
-        "react/set-state-in-effect": "error",
-        "react/use-memo": "error",
-      },
-    },
-    {
-      // We have our own `forwardRef` implementation that doesn't need the
-      // `ref` parameter, which leads to false positives.
-      files: ["packages/ariakit-react-components/src/**/*.{ts,tsx}"],
-      plugins: ["typescript", "react", "import"],
-      rules: {
-        "react/forward-ref-uses-ref": "off",
+        "react/immutability": "off",
       },
     },
   ],

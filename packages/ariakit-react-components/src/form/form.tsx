@@ -110,6 +110,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
     if (isTextField(element)) {
       element.select();
     }
+    // oxlint-disable-next-line exhaustive-deps
   }, [autoFocusOnSubmit, submitFailed, items]);
 
   const onSubmitProp = props.onSubmit;
