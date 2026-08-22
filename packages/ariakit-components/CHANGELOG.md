@@ -1,5 +1,10 @@
 # @ariakit/components
 
+## 0.1.11
+
+- Fixed the tab store leaving DOM focus on the previously selected tab when the selected tab changes while a tab holds focus and the document contains a form named `activeElement`.
+- Updated dependencies: `@ariakit/utils@0.2.0`, `@ariakit/store@0.1.9`
+
 ## 0.1.10
 
 ### Composite element state
