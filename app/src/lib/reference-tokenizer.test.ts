@@ -88,10 +88,7 @@ function createRefData(
 }
 
 function makeRef(id: string, data: RefData): CollectionEntry<"references"> {
-  // Oxlint reports this assertion inconsistently depending on the file set.
-  // https://github.com/oxc-project/oxc/issues/21752
-  // https://github.com/oxc-project/tsgolint/issues/1047
-  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- Partial fixture.
+  // Partial fixture: only the members the tokenizer reads are populated.
   return { id, data } as unknown as CollectionEntry<"references">;
 }
 

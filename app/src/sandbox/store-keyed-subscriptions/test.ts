@@ -100,6 +100,11 @@ test("supports keyed selector types", () => {
   >();
 });
 
+// https://github.com/ariakit/ariakit/issues/7240
+test("renders selectors with sparse JavaScript subscription keys", () => {
+  expect(q.status("Sparse selector values")).toHaveTextContent("0:0");
+});
+
 test("runs selectors only for subscribed keys", async () => {
   const stateCalls = q.status("useStoreState calls").textContent;
   const objectCalls = q.status("useStoreStateObject calls").textContent;

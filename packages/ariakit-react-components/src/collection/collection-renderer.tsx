@@ -227,7 +227,6 @@ function getItemSize(
     if (itemObject.itemSize) {
       return initialSize + itemObject.itemSize * items.length;
     }
-    // oxlint-disable-next-line no-unnecessary-type-arguments
     const totalSize = items.reduce<number>(
       (sum, item) => sum + getItemSize(item, horizontal),
       initialSize,
@@ -242,7 +241,6 @@ function getItemSize(
   // The nested items run along the cross axis, so the item's extent along the
   // measured axis is the largest child extent rather than the sum.
   if (items?.length && !hasSameOrientation) {
-    // oxlint-disable-next-line no-unnecessary-type-arguments
     const maxSize = items.reduce<number>(
       (max, item) => Math.max(max, getItemSize(item, horizontal)),
       0,
@@ -324,9 +322,15 @@ function resolveNullScroller() {
 }
 
 interface ScrollerController {
+  disable: () => void;
+  invalidate: () => void;
+  revalidate: () => void;
+  setResolve: (resolve: () => Element | null) => void;
+}
+
+interface ScrollerControllerState {
   revalidated: boolean;
   resolve: () => Element | null;
-  revalidate: () => void;
 }
 
 function useScroller(
@@ -337,52 +341,60 @@ function useScroller(
   const [scroller, setScroller] = useState<Element | null>(null);
   const scrollerRef = useRef<Element | null>(null);
   const publishedScrollerRef = useRef<Element | null>(null);
-  const controllerRef = useRef<ScrollerController | null>(null);
   const autoResolved = useRef(false);
   const previousRendererRef = useRef(rendererRef);
-  const resolveScroller = () => {
-    const renderer = rendererRef?.current;
-    if (!renderer) return null;
-    return getScrollElement(renderer, scrollElement);
-  };
-  let controller = controllerRef.current;
-  if (!controller && scrollElement !== undefined) {
-    const nextController: ScrollerController = {
-      revalidated: false,
-      resolve: resolveNullScroller,
+  const controllerStateRef = useRef<ScrollerControllerState>({
+    revalidated: false,
+    resolve: resolveNullScroller,
+  });
+  const controller = useMemo<ScrollerController>(() => {
+    return {
+      disable: () => {
+        controllerStateRef.current = {
+          revalidated: true,
+          resolve: resolveNullScroller,
+        };
+      },
+      invalidate: () => {
+        controllerStateRef.current = {
+          ...controllerStateRef.current,
+          revalidated: false,
+        };
+      },
       revalidate: () => {
-        if (nextController.revalidated) return;
-        nextController.revalidated = true;
-        const nextScroller = nextController.resolve();
+        const { revalidated, resolve } = controllerStateRef.current;
+        if (revalidated) return;
+        controllerStateRef.current = { revalidated: true, resolve };
+        const nextScroller = resolve();
         scrollerRef.current = nextScroller;
         if (nextScroller === publishedScrollerRef.current) return;
         publishedScrollerRef.current = nextScroller;
         setScroller(nextScroller);
       },
+      setResolve: (nextResolve) => {
+        controllerStateRef.current = {
+          revalidated: false,
+          resolve: nextResolve,
+        };
+      },
     };
-    controllerRef.current = nextController;
-    controller = nextController;
-  }
+  }, []);
+  const resolveScroller = () => {
+    const renderer = rendererRef?.current;
+    if (!renderer) return null;
+    return getScrollElement(renderer, scrollElement);
+  };
   // Explicit refs and resolvers can change without their prop identity
   // changing, so resolve them during each committed layout.
-  // oxlint-disable-next-line exhaustive-deps
   useSafeLayoutEffect(() => {
-    if (inheritedController) {
-      inheritedController.revalidated = false;
-    }
+    inheritedController?.invalidate();
     if (scrollElement === undefined) {
-      if (controller) {
-        controller.revalidated = true;
-        controller.resolve = resolveNullScroller;
-      }
+      controller.disable();
       publishedScrollerRef.current = null;
-      controllerRef.current = null;
       return;
     }
-    if (!controller) return;
     publishedScrollerRef.current = scroller;
-    controller.revalidated = false;
-    controller.resolve = resolveScroller;
+    controller.setResolve(resolveScroller);
     scrollerRef.current = resolveScroller();
   });
   // Keep state synchronization and automatic ancestor detection off the
@@ -407,7 +419,7 @@ function useScroller(
       autoResolved.current = false;
       // Ancestor refs attach after descendant layout effects, so resolve the
       // explicit target again once the entire layout phase has completed.
-      controller?.revalidate();
+      controller.revalidate();
       return;
     }
     const nextScroller = scrollerRef.current;
@@ -475,7 +487,6 @@ function getItemsEnd<T extends Item>(props: {
   const lastItemData = props.data.get(lastItemId);
   if (lastItemData?.end) return lastItemData.end + props.paddingEnd;
   if (!Array.isArray(props.items)) return defaultEnd;
-  // oxlint-disable-next-line no-unnecessary-type-arguments
   const end = props.items.reduce<number>(
     (sum, item) => sum + getItemSize(item, props.horizontal, false),
     0,
@@ -706,7 +717,7 @@ export function useCollectionRenderer<T extends Item = any>({
       ? inheritedScrollerController
       : scrollElementProp === null
         ? undefined
-        : (ownScrollerController ?? undefined);
+        : ownScrollerController;
   const offsetsRef = useRef({ start: 0, end: 0 });
 
   const processVisibleIndices = useCallback(() => {
@@ -923,6 +934,8 @@ export function useCollectionRenderer<T extends Item = any>({
         elementObserver?.unobserve(prevElement);
       }
       updateElements();
+      // Item refs are an imperative DOM registry coordinated by updateElements.
+      // oxlint-disable-next-line react/immutability
       elements.set(element.id, element);
       elementObserver?.observe(element);
     },
@@ -987,6 +1000,8 @@ export function useCollectionRenderer<T extends Item = any>({
     for (const [id, element] of elements) {
       if (renderedIds.has(id)) continue;
       elementObserver?.unobserve(element);
+      // Item cleanup mutates the same imperative DOM registry after commit.
+      // oxlint-disable-next-line react/immutability
       elements.delete(id);
     }
   }, [itemsProps, itemSize, elements, elementObserver]);
