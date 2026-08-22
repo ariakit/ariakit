@@ -420,7 +420,7 @@ export function useStoreProps<
       if (isSameValue(state[key], value)) return;
       setValue(state[key]);
     });
-  }, [store, key, hasSetValue]);
+  }, [store, key, hasSetValue, propsRef]);
 
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {

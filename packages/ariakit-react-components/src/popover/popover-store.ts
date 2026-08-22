@@ -14,7 +14,7 @@ export function usePopoverStoreProps<T extends Core.PopoverStore>(
   update: () => void,
   props: PopoverStoreProps,
 ) {
-  useUpdateEffect(update, [props.popover]);
+  useUpdateEffect(update, [props.popover, update]);
   useStoreProps(store, props, "placement");
   return useDialogStoreProps(store, update, props);
 }

@@ -303,7 +303,8 @@ export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
       return effect();
     }
     mounted.current = true;
-    // oxlint-disable-next-line exhaustive-deps
+    // Caller-provided dependencies prevent using an array literal here.
+    // oxlint-disable-next-line exhaustive-deps -- public deps API
   }, deps);
 
   useEffect(
@@ -328,6 +329,8 @@ export function useUpdateLayoutEffect(
       return effect();
     }
     mounted.current = true;
+    // Caller-provided dependencies prevent using an array literal here.
+    // oxlint-disable-next-line exhaustive-deps -- public deps API
   }, deps);
 
   useSafeLayoutEffect(

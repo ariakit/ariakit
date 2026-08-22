@@ -39,7 +39,7 @@ export function useSelectStoreProps<T extends Core.SelectStore>(
   update: () => void,
   props: SelectStoreProps,
 ) {
-  useUpdateEffect(update, [props.combobox]);
+  useUpdateEffect(update, [props.combobox, update]);
   useStoreProps(store, props, "value", "setValue");
   useStoreProps(store, props, "setValueOnMove");
   return Object.assign(

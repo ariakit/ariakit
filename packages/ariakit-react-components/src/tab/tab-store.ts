@@ -19,7 +19,7 @@ export function useTabStoreProps<T extends Core.TabStore>(
   update: () => void,
   props: TabStoreProps,
 ) {
-  useUpdateEffect(update, [props.composite, props.combobox]);
+  useUpdateEffect(update, [props.composite, props.combobox, update]);
 
   const compositeStore = useCompositeStoreProps(store, update, props);
   useStoreProps(compositeStore, props, "selectedId", "setSelectedId");

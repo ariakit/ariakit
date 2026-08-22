@@ -9,7 +9,7 @@ export function useCollectionStoreProps<T extends Core.CollectionStore>(
   update: () => void,
   props: CollectionStoreProps,
 ) {
-  useUpdateEffect(update, [props.store]);
+  useUpdateEffect(update, [props.store, update]);
   useStoreProps(store, props, "items", "setItems");
   return store;
 }

@@ -33,6 +33,13 @@ export default defineConfig({
     "iframe-missing-sandbox": "off",
     "consistent-return": "off",
     "no-unnecessary-type-arguments": "off",
+    "exhaustive-deps": [
+      "error",
+      {
+        additionalHooks:
+          "(useSafeLayoutEffect|useUpdateEffect|useUpdateLayoutEffect)",
+      },
+    ],
     "consistent-type-imports": ["error", { fixStyle: "separate-type-imports" }],
     "consistent-type-specifier-style": ["error", "prefer-top-level"],
     "no-unused-vars": [
