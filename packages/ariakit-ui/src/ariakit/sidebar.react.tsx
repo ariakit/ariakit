@@ -41,13 +41,18 @@ export function Sidebar({
   const isMobile = useIsMobile();
   const context = React.useContext(SidebarContext);
   const hasSidebarProvider = React.useContext(SidebarProviderContext);
+  // Copy before useMemo; mutating the `side` parameter makes that memo
+  // unpreservable to the React Compiler.
+  const resolvedSide = side ?? context.side;
+  const resolvedCollapsible = collapsible ?? hasSidebarProvider;
 
-  side = side ?? context.side;
-  collapsible = collapsible ?? hasSidebarProvider;
-
-  const contextValue = React.useMemo(() => ({ side }), [side]);
+  const contextValue = React.useMemo(
+    () => ({ side: resolvedSide }),
+    [resolvedSide],
+  );
   const [variantProps, rest] = splitProps(props, sidebar);
-  const isDialog = collapsible === true || (collapsible && isMobile);
+  const isDialog =
+    resolvedCollapsible === true || (resolvedCollapsible && isMobile);
 
   props = {
     ...sidebar.jsx({

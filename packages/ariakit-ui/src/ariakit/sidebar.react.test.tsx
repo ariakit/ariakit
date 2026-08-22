@@ -37,6 +37,9 @@ test("sidebar provider store hides and shows the sidebar", async () => {
   );
   expect(q.dialog()).toBeInTheDocument();
   await click(q.button());
-  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.dialog.maybe()).not.toBeInTheDocument();
   expect(q.button()).toHaveAttribute("aria-expanded", "false");
+  await click(q.button());
+  expect(q.dialog()).toBeInTheDocument();
+  expect(q.button()).toHaveAttribute("aria-expanded", "true");
 });
