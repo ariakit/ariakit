@@ -62,13 +62,20 @@ export default defineConfig({
       },
     },
     {
-      // These types are generated into the gitignored `app/.astro` directory,
-      // so CI always lints without them and `astro:content` resolves
-      // `CollectionEntry` to `any`. That widens unions for the first rule and
-      // makes a narrowing assertion look unnecessary for the second.
+      // Astro generates these types into the gitignored `app/.astro`, so CI
+      // lints without them and `astro:content` resolves `CollectionEntry` to
+      // `any`, which widens every union built from it.
       files: ["app/src/lib/**/*.ts"],
       rules: {
         "no-redundant-type-constituents": "off",
+      },
+    },
+    {
+      // Same missing types, but here they make a narrowing assertion look
+      // unnecessary. This cannot be a directive because the assertion is
+      // needed once the types exist, so the directive would then be unused.
+      files: ["app/src/lib/reference-tokenizer.test.ts"],
+      rules: {
         "no-unnecessary-type-assertion": "off",
       },
     },
