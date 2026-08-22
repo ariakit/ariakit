@@ -25,7 +25,7 @@ export function useRootDialog({
     const id = body.getAttribute(attribute);
     return !id || id === contentId;
     // `updated` changes the callback identity after the observer retries.
-    // oxlint-disable-next-line exhaustive-deps, react/memo-dependencies -- invalidation signal
+    // oxlint-disable-next-line react/memo-dependencies -- invalidation signal
   }, [updated, enabled, contentElement, attribute, contentId]);
 
   // Run in the layout phase so consumers that also moved to the layout phase
@@ -47,7 +47,6 @@ export function useRootDialog({
     const observer = new MutationObserver(() => flushSync(retry));
     observer.observe(body, { attributeFilter: [attribute] });
     return () => observer.disconnect();
-    // oxlint-disable-next-line exhaustive-deps
   }, [updated, enabled, contentId, contentElement, isRootDialog, attribute]);
 
   return isRootDialog;

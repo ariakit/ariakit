@@ -15,7 +15,6 @@ async function loadReact(dir: string) {
   const component = await importDefault(`./${dir}/index.react.tsx`);
   const element = createElement(Suspense, {
     fallback: null,
-    // oxlint-disable-next-line react/no-children-prop -- createElement requires children prop
     children: createElement(component),
   });
   const { unmount } = await render(element, { strictMode: true });

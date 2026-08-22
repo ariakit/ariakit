@@ -171,7 +171,7 @@ export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
       };
     };
     // Variadic refs prevent using an array literal for the dependencies.
-    // oxlint-disable-next-line exhaustive-deps, react/use-memo -- variadic refs
+    // oxlint-disable-next-line react/use-memo -- variadic refs
   }, refs);
 }
 
@@ -303,7 +303,6 @@ export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
       return effect();
     }
     mounted.current = true;
-    // oxlint-disable-next-line exhaustive-deps
   }, deps);
 
   useEffect(
@@ -328,7 +327,6 @@ export function useUpdateLayoutEffect(
       return effect();
     }
     mounted.current = true;
-    // oxlint-disable-next-line exhaustive-deps
   }, deps);
 
   useSafeLayoutEffect(
@@ -377,7 +375,7 @@ export function useWrapElement<P>(
       return callback(element);
     },
     // Caller-provided dependencies prevent using an array literal here.
-    // oxlint-disable-next-line exhaustive-deps, react/use-memo -- public deps API
+    // oxlint-disable-next-line react/use-memo -- public deps API
     [...deps, props.wrapElement],
   );
 

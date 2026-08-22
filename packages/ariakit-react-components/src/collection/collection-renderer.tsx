@@ -388,7 +388,6 @@ function useScroller(
   };
   // Explicit refs and resolvers can change without their prop identity
   // changing, so resolve them during each committed layout.
-  // oxlint-disable-next-line exhaustive-deps
   useSafeLayoutEffect(() => {
     inheritedController?.invalidate();
     if (scrollElement === undefined) {
@@ -402,7 +401,6 @@ function useScroller(
   });
   // Keep state synchronization and automatic ancestor detection off the
   // layout path.
-  // oxlint-disable-next-line exhaustive-deps
   useEffect(() => {
     if (scrollElement === undefined) {
       inheritedController?.revalidate();
@@ -772,7 +770,6 @@ export function useCollectionRenderer<T extends Item = any>({
       if (shallowEqual(prevIndices, indices)) return prevIndices;
       return indices;
     });
-    // oxlint-disable-next-line exhaustive-deps
   }, [
     // oxlint-disable-next-line react/memo-dependencies -- element registration signal
     elementsUpdated,

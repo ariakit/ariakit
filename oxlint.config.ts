@@ -1,7 +1,7 @@
 import { defineConfig } from "oxlint";
 
 export default defineConfig({
-  plugins: ["typescript", "react", "import"],
+  plugins: ["typescript", "import"],
   options: {
     typeAware: true,
   },
@@ -17,10 +17,8 @@ export default defineConfig({
     "import/namespace": "off",
     "no-unsafe-type-assertion": "off",
     "no-unassigned-import": "off",
-    "react-in-jsx-scope": "off",
     "no-shadow": "off",
     "no-underscore-dangle": "off",
-    "iframe-missing-sandbox": "off",
     "consistent-return": "off",
     "no-unnecessary-type-arguments": "off",
     "consistent-type-imports": ["error", { fixStyle: "separate-type-imports" }],
@@ -38,31 +36,9 @@ export default defineConfig({
   },
   overrides: [
     {
-      // React Compiler rules do not model Solid component semantics.
-      files: ["**/*.solid.*"],
-      rules: {
-        "react/exhaustive-effect-dependencies": "off",
-        "react/hooks": "off",
-        "react/immutability": "off",
-        "react/memo-dependencies": "off",
-        "react/purity": "off",
-        "react/refs": "off",
-        "react/set-state-in-effect": "off",
-        "react/use-memo": "off",
-      },
-    },
-    {
       files: ["*.d.ts"],
       rules: {
         "consistent-type-imports": "off",
-      },
-    },
-    {
-      // We have our own `forwardRef` implementation that doesn't need the `ref`
-      // parameter, which leads to false positives.
-      files: ["packages/ariakit-react-components/src/**/*.{ts,tsx}"],
-      rules: {
-        "forward-ref-uses-ref": "off",
       },
     },
     {
@@ -71,6 +47,35 @@ export default defineConfig({
       files: ["app/src/lib/**/*.ts"],
       rules: {
         "no-redundant-type-constituents": "off",
+      },
+    },
+    {
+      files: [
+        "**/*.react.*",
+        "{examples,nextjs,packages/ariakit-react*,packages/ariakit-test,templates/react}/**/*.{js,jsx,ts,tsx}",
+      ],
+      excludeFiles: ["**/*.solid.*"],
+      plugins: ["typescript", "react", "import"],
+      rules: {
+        "react/exhaustive-effect-dependencies": "warn",
+        "react/hooks": "warn",
+        "react/iframe-missing-sandbox": "off",
+        "react/immutability": "error",
+        "react/memo-dependencies": "warn",
+        "react/purity": "error",
+        "react/react-in-jsx-scope": "off",
+        "react/refs": "error",
+        "react/set-state-in-effect": "error",
+        "react/use-memo": "error",
+      },
+    },
+    {
+      // We have our own `forwardRef` implementation that doesn't need the
+      // `ref` parameter, which leads to false positives.
+      files: ["packages/ariakit-react-components/src/**/*.{ts,tsx}"],
+      plugins: ["typescript", "react", "import"],
+      rules: {
+        "react/forward-ref-uses-ref": "off",
       },
     },
   ],
