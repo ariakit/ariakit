@@ -583,7 +583,7 @@ pnpm run sync-astro-types
 
 Without these types, `astro:content` resolves `CollectionEntry` to `any`, which changes the verdict of the type-aware rules. The linter then reports errors in files you did not change:
 
-```
+```text
 app/src/lib/reference-tokenizer.ts:34:27: error typescript(no-redundant-type-constituents): 'any' overrides all other types in this union type.
 ```
 
