@@ -201,7 +201,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
       }
       compositeElement.focus({ preventScroll: true });
     }
-  }, [store, moves, compositeElement]);
+  }, [store, moves, compositeElement, previousElementRef]);
 
   return null;
 });

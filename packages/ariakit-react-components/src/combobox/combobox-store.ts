@@ -37,7 +37,7 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
   update: () => void,
   props: ComboboxStoreProps,
 ) {
-  useUpdateEffect(update, [props.tag]);
+  useUpdateEffect(update, [props.tag, update]);
 
   const inputValueProps = {
     inputValue: props.inputValue ?? props.value,

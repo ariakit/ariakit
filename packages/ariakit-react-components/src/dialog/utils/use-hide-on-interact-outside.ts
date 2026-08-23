@@ -202,7 +202,7 @@ export function useHideOnInteractOutside({
     };
     contentElement.addEventListener("focusin", onFocus, true);
     return () => contentElement.removeEventListener("focusin", onFocus, true);
-  }, [open, domReady, contentElement, store]);
+  }, [open, domReady, contentElement, store, focusedStoreRef]);
 
   const props = {
     store,

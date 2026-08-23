@@ -47,7 +47,15 @@ export function useRootDialog({
     const observer = new MutationObserver(() => flushSync(retry));
     observer.observe(body, { attributeFilter: [attribute] });
     return () => observer.disconnect();
-  }, [updated, enabled, contentId, contentElement, isRootDialog, attribute]);
+  }, [
+    updated,
+    enabled,
+    contentId,
+    contentElement,
+    isRootDialog,
+    attribute,
+    retry,
+  ]);
 
   return isRootDialog;
 }
