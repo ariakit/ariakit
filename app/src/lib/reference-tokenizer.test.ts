@@ -88,8 +88,7 @@ function createRefData(
 }
 
 function makeRef(id: string, data: RefData): CollectionEntry<"references"> {
-  // Partial fixture: only the members the tokenizer reads are populated.
-  return { id, data } as unknown as CollectionEntry<"references">;
+  return { id, collection: "references", data };
 }
 
 function refs(): CollectionEntry<"references">[] {
