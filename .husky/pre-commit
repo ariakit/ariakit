@@ -1,5 +1,1 @@
-# `lint-staged` runs the type-aware linter directly, so it needs the types
-# Astro generates into the gitignored `app/.astro`. Without them `oxlint --fix`
-# can silently rewrite source that is correct once they exist.
-# https://github.com/ariakit/ariakit/issues/7262
-pnpm run sync-astro-types && pnpm exec lint-staged
+pnpm exec lint-staged

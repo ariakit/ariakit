@@ -575,7 +575,7 @@ The first command lints the source and checks its formatting. The second one lin
 pnpm run lint-fix
 ```
 
-The linter is type-aware, so it reads the types that Astro generates into `app/.astro`. That folder is not versioned, and `pnpm install` does not create it. `pnpm run lint` and `pnpm run lint-fix` generate it for you, and so do the Git pre-commit hook, `pnpm run tsc`, and `pnpm run dev-app`. To generate it on its own, run:
+The linter is type-aware, so it reads the types that Astro generates into `app/.astro`. That folder is not versioned, and `pnpm install` does not create it. `pnpm run lint` and `pnpm run lint-fix` generate it for you, and so do `pnpm run tsc` and `pnpm run dev-app`. The Git pre-commit hook generates it too, before it lints the staged files. To generate it on its own, run:
 
 ```bash
 pnpm run sync-astro-types
