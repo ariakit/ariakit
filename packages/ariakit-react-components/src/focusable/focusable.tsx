@@ -43,6 +43,7 @@ const isSafariBrowser = isSafari();
 
 const nativeTabbableMask = 1;
 const supportsDisabledMask = 2;
+const anchorMask = 4;
 const defaultElementCapabilities = nativeTabbableMask | supportsDisabledMask;
 
 const alwaysFocusVisibleInputTypes = [
@@ -107,14 +108,19 @@ function getElementCapabilities(tagName?: string) {
   if (supportsDisabledAttribute(tagName)) {
     capabilities |= supportsDisabledMask;
   }
+  if (tagName === "a") {
+    capabilities |= anchorMask;
+  }
   return capabilities;
 }
 
 interface GetTabIndexParams {
   focusable: boolean;
+  disabled: boolean;
   trulyDisabled: boolean;
   nativeTabbable: boolean;
   supportsDisabled: boolean;
+  anchor: boolean;
   safariTabIndex: boolean;
   tabIndexProp?: number;
 }
@@ -133,9 +139,11 @@ function isNativeSubmitControl(element: HTMLElement) {
 
 function getTabIndex({
   focusable,
+  disabled,
   trulyDisabled,
   nativeTabbable,
   supportsDisabled,
+  anchor,
   safariTabIndex,
   tabIndexProp,
 }: GetTabIndexParams) {
@@ -150,6 +158,11 @@ function getTabIndex({
     return;
   }
   if (nativeTabbable) {
+    // An anchor without an href needs an explicit tab stop when it remains
+    // accessible. This value is redundant but harmless if the href remains.
+    if (anchor && disabled) {
+      return tabIndexProp ?? 0;
+    }
     // On Safari, buttons and button-like inputs (checkboxes, radios, submit,
     // reset, etc.) require an explicit tabIndex to receive focus on mousedown.
     if (safariTabIndex && tabIndexProp == null) {
@@ -449,6 +462,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       focusable && !!(elementCapabilities & nativeTabbableMask);
     const supportsDisabled =
       focusable && !!(elementCapabilities & supportsDisabledMask);
+    const anchor = focusable && !!(elementCapabilities & anchorMask);
 
     // On Safari, buttons and button-like inputs don't receive focus on
     // mousedown. We detect this from the DOM element (not props) so it works
@@ -475,6 +489,8 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       }
       return styleProp;
     }, [trulyDisabled, styleProp]);
+    const role =
+      props.role === undefined && disabled && anchor ? "link" : props.role;
 
     props = {
       "data-focus-visible": (focusable && focusVisible) || undefined,
@@ -484,11 +500,14 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       ...metadataProps,
       ref: useMergeRefs(ref, autoFocusRef, props.ref),
       style,
+      role,
       tabIndex: getTabIndex({
         focusable,
+        disabled,
         trulyDisabled,
         nativeTabbable,
         supportsDisabled,
+        anchor,
         safariTabIndex,
         tabIndexProp: props.tabIndex,
       }),

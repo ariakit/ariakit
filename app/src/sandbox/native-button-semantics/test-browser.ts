@@ -50,17 +50,48 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("preserves custom element semantics", async ({ q }) => {
     await test.expect(q.text("Focusable div")).toHaveAttribute("tabindex", "0");
+    await test.expect(q.button("Disabled button")).toBeDisabled();
+
+    const nestedMenuButton = q.menuitem("Nested menu");
+    await test.expect(nestedMenuButton).toHaveJSProperty("tagName", "DIV");
+    await test.expect(nestedMenuButton).not.toHaveAttribute("type");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7112
+  test("preserves disabled anchor semantics", async ({ q }) => {
     await test
       .expect(q.link("Disabled anchor"))
       .toHaveAttribute("tabindex", "-1");
     await test
       .expect(q.link("Disabled anchor"))
       .not.toHaveAttribute("disabled");
-    await test.expect(q.button("Disabled button")).toBeDisabled();
-
-    const nestedMenuButton = q.menuitem("Nested menu");
-    await test.expect(nestedMenuButton).toHaveJSProperty("tagName", "DIV");
-    await test.expect(nestedMenuButton).not.toHaveAttribute("type");
+    await test
+      .expect(q.link("Disabled accessible anchor"))
+      .toHaveAttribute("tabindex", "0");
+    await test
+      .expect(q.link("Disabled accessible anchor"))
+      .toHaveAttribute("aria-disabled", "true");
+    await test
+      .expect(q.link("Disabled accessible anchor"))
+      .toHaveAttribute("role", "link");
+    await test
+      .expect(q.link("Disabled accessible anchor"))
+      .not.toHaveAttribute("disabled");
+    await test
+      .expect(q.link("Disabled link button"))
+      .toHaveAttribute("role", "link");
+    await test
+      .expect(q.link("Disabled link button"))
+      .toHaveAttribute("href", "#disabled-link-button");
+    await test
+      .expect(q.link("Disabled link button"))
+      .toHaveAttribute("aria-disabled", "true");
+    await test
+      .expect(q.link("Disabled link button"))
+      .toHaveAttribute("tabindex", "-1");
+    await test
+      .expect(q.link("Disabled link button"))
+      .not.toHaveAttribute("disabled");
   });
 
   test("updates custom focusability", async ({ q }) => {

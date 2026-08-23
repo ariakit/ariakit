@@ -49,9 +49,31 @@ test("declares native button types before refs run", () => {
 
 test("preserves custom element semantics", () => {
   expect(q.text("Focusable div")).toHaveAttribute("tabindex", "0");
+  expect(q.button("Disabled button")).toHaveAttribute("disabled");
+});
+
+// https://github.com/ariakit/ariakit/issues/7112
+test("preserves disabled anchor semantics", () => {
   expect(q.link("Disabled anchor")).toHaveAttribute("tabindex", "-1");
   expect(q.link("Disabled anchor")).not.toHaveAttribute("disabled");
-  expect(q.button("Disabled button")).toHaveAttribute("disabled");
+  expect(q.link("Disabled accessible anchor")).toHaveAttribute("tabindex", "0");
+  expect(q.link("Disabled accessible anchor")).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  expect(q.link("Disabled accessible anchor")).toHaveAttribute("role", "link");
+  expect(q.link("Disabled accessible anchor")).not.toHaveAttribute("disabled");
+  expect(q.link("Disabled link button")).toHaveAttribute("role", "link");
+  expect(q.link("Disabled link button")).toHaveAttribute(
+    "href",
+    "#disabled-link-button",
+  );
+  expect(q.link("Disabled link button")).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  expect(q.link("Disabled link button")).toHaveAttribute("tabindex", "-1");
+  expect(q.link("Disabled link button")).not.toHaveAttribute("disabled");
 });
 
 test("updates custom focusability", async () => {

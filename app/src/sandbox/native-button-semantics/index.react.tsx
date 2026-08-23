@@ -36,6 +36,12 @@ function CapabilityFixture({ focusable = true }: CapabilityFixtureProps) {
       <Ariakit.Focusable disabled render={<a href="#disabled-anchor" />}>
         Disabled anchor
       </Ariakit.Focusable>
+      <Ariakit.Focusable disabled accessibleWhenDisabled render={<a />}>
+        Disabled accessible anchor
+      </Ariakit.Focusable>
+      <Ariakit.Button disabled render={<a href="#disabled-link-button" />}>
+        Disabled link button
+      </Ariakit.Button>
       <Ariakit.Focusable disabled render={<button />}>
         Disabled button
       </Ariakit.Focusable>

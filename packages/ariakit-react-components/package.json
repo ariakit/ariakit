@@ -179,6 +179,7 @@
     "./hovercard/hovercard-store": "./src/hovercard/hovercard-store.ts",
     "./hovercard/utils/debug-polygon": "./src/hovercard/utils/debug-polygon.ts",
     "./hovercard/utils/polygon": "./src/hovercard/utils/polygon.ts",
+    "./link/link": "./src/link/link.tsx",
     "./menu/menu": "./src/menu/menu.tsx",
     "./menu/menu-anchor": "./src/menu/menu-anchor.tsx",
     "./menu/menu-arrow": "./src/menu/menu-arrow.tsx",
