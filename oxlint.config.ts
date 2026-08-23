@@ -31,6 +31,9 @@ export default defineConfig({
   // `react/jsx-key` and `react/no-children-prop`.
   plugins: ["typescript", "react", "import"],
   options: {
+    // Type-aware rules resolve `astro:content` through the gitignored
+    // `app/.astro`, so the Lint job runs `astro sync` before linting.
+    // https://github.com/ariakit/ariakit/issues/7255
     typeAware: true,
     // A suppression that stops matching is how lint coverage disappears
     // unnoticed, so treat an unused directive as an error rather than as
@@ -91,24 +94,6 @@ export default defineConfig({
       files: ["packages/ariakit-react-components/src/**/*.{ts,tsx}"],
       rules: {
         "forward-ref-uses-ref": "off",
-      },
-    },
-    {
-      // Astro generates these types into the gitignored `app/.astro`, so CI
-      // lints without them and `astro:content` resolves `CollectionEntry` to
-      // `any`, which widens every union built from it.
-      files: ["app/src/lib/**/*.ts"],
-      rules: {
-        "no-redundant-type-constituents": "off",
-      },
-    },
-    {
-      // Same missing types, but here they make a narrowing assertion look
-      // unnecessary. This cannot be a directive because the assertion is
-      // needed once the types exist, so the directive would then be unused.
-      files: ["app/src/lib/reference-tokenizer.test.ts"],
-      rules: {
-        "no-unnecessary-type-assertion": "off",
       },
     },
     {
