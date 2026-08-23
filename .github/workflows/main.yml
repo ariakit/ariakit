@@ -22,12 +22,6 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
 
-      - name: Sync Astro types
-        # `pnpm run lint` is type-aware and `app/.astro` is gitignored, so
-        # without this step `astro:content` resolves `CollectionEntry` to `any`
-        # and CI lints a weaker type graph than a synced checkout.
-        run: pnpm --fail-if-no-match -F app exec astro sync
-
       - name: Lint
         run: pnpm run lint
 

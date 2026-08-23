@@ -32,8 +32,9 @@ export default defineConfig({
   plugins: ["typescript", "react", "import"],
   options: {
     // Type-aware rules resolve `astro:content` through the gitignored
-    // `app/.astro`, so the Lint job runs `astro sync` before linting.
-    // https://github.com/ariakit/ariakit/issues/7255
+    // `app/.astro`, so the `lint` and `lint-fix` scripts and the `lint-staged`
+    // tasks sync it first. Without it, `--fix` can rewrite source silently.
+    // https://github.com/ariakit/ariakit/issues/7262
     typeAware: true,
     // A suppression that stops matching is how lint coverage disappears
     // unnoticed, so treat an unused directive as an error rather than as

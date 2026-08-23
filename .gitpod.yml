@@ -1,7 +1,7 @@
 # See https://www.gitpod.io/docs/config-gitpod-file
 tasks:
   - name: Development
-    init: pnpm install && gp sync-done install
+    init: pnpm install && pnpm run sync-astro-types && gp sync-done install
     command: pnpm run dev
 
 ports:
