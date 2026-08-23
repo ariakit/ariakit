@@ -106,8 +106,7 @@ export default defineConfig({
     },
     {
       // React Compiler rules assume components re-run, while some other React
-      // rules enforce JSX semantics that Solid doesn't share. Keep this list
-      // audited against every enabled React rule in oxlint.config.test.ts.
+      // rules enforce JSX semantics that Solid doesn't share.
       // https://github.com/ariakit/ariakit/issues/7250
       files: ["**/*.solid.*", "packages/ariakit-solid*/**"],
       rules: disabledReactRules,
