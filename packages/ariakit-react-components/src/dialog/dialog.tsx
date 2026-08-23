@@ -440,9 +440,16 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const dialog = contentElement ?? ref.current;
     if (!dialog) return;
     const persistentElements = getPersistentElementsProp() || [];
+    const root = dialog.getRootNode() as Document | ShadowRoot;
+    // Keep automatic persistence root-scoped. Marking an ancestor shadow host
+    // would also exempt unrelated content inside that host.
+    const notificationElements = root.querySelectorAll<HTMLElement>(
+      "[data-notifications]",
+    );
     const allElements = [
       dialog,
       ...persistentElements,
+      ...notificationElements,
       ...(openingCohortRef.current?.peers || []),
       ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
     ];
@@ -761,6 +768,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       const isValidTarget = () => {
         if (isElement(target) && target.tagName === "BODY") return true;
         if (contains(dialog, target)) return true;
+        if (isElement(target) && isElementInside(target, dialog)) return true;
         if (!disclosureElement) return true;
         if (contains(disclosureElement, target)) return true;
         if (isElement(target) && isElementMarked(target, dialog.id)) {

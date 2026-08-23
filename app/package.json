@@ -50,6 +50,7 @@
     "build-styles": "node src/lib/build-styles.ts"
   },
   "dependencies": {
+    "@ariakit/components": "workspace:*",
     "@ariakit/react": "workspace:*",
     "@ariakit/react-components": "workspace:*",
     "@ariakit/react-store": "workspace:*",

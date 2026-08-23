@@ -129,6 +129,8 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`isSafari`](#issafari)
   - [`isFirefox`](#isfirefox)
   - [`isMac`](#ismac)
+- [Style utilities](#style-utilities)
+  - [`getVisuallyHiddenStyle`](#getvisuallyhiddenstyle)
 - [Type utilities](#type-utilities)
   - [`AnyObject`](#anyobject)
   - [`EmptyObject`](#emptyobject)
@@ -1678,6 +1680,37 @@ function isMac(): boolean;
 ```
 
 Detects Mac computer.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### Style utilities
+
+CSS style helpers.
+
+#### `getVisuallyHiddenStyle`
+
+```ts
+interface VisuallyHiddenStyle {
+  borderWidth: number;
+  clipPath: string;
+  height: string;
+  margin: string;
+  overflow: string;
+  padding: number;
+  position: "absolute";
+  whiteSpace: "nowrap";
+  width: string;
+}
+
+type MergeStyle<T extends object> = Omit<VisuallyHiddenStyle, keyof T> & T;
+
+function getVisuallyHiddenStyle(): VisuallyHiddenStyle;
+function getVisuallyHiddenStyle<T extends object>(style: T): MergeStyle<T>;
+```
+
+Returns styles to visually hide an element while keeping it accessible to screen readers.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>

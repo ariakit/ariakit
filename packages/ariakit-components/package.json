@@ -39,6 +39,7 @@
     "./menu/menu-bar-store": "./src/menu/menu-bar-store.ts",
     "./menu/menu-store": "./src/menu/menu-store.ts",
     "./menubar/menubar-store": "./src/menubar/menubar-store.ts",
+    "./notification/notification-store": "./src/notification/notification-store.ts",
     "./popover/popover-store": "./src/popover/popover-store.ts",
     "./radio/radio-store": "./src/radio/radio-store.ts",
     "./select/select-store": "./src/select/select-store.ts",

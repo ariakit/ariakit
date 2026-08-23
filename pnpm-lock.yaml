@@ -158,6 +158,9 @@ importers:
 
   app:
     dependencies:
+      '@ariakit/components':
+        specifier: workspace:*
+        version: link:../packages/ariakit-components
       '@ariakit/react':
         specifier: workspace:*
         version: link:../packages/ariakit-react
