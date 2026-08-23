@@ -27,7 +27,9 @@ interface CapabilityFixtureProps {
   focusable?: boolean;
 }
 
-function CapabilityFixture({ focusable = true }: CapabilityFixtureProps) {
+export function CapabilityFixture({
+  focusable = true,
+}: CapabilityFixtureProps) {
   return (
     <div>
       <Ariakit.Focusable focusable={focusable} render={<div />}>

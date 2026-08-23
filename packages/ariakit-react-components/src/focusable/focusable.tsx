@@ -29,7 +29,14 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   SyntheticEvent,
 } from "react";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  isValidElement,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { isCompositeMoveKey, trulyDisabledAttribute } from "./__utils.ts";
 import { FocusableContext } from "./focusable-context.tsx";
 
@@ -445,9 +452,12 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     });
 
     // Track only the element capabilities that affect the returned props so
-    // resolving the default native element doesn't require another render.
-    const [elementCapabilities, setElementCapabilities] = useState(
-      defaultElementCapabilities,
+    // resolving the default native element doesn't require another render. A
+    // statically rendered anchor can expose disabled semantics on the server.
+    const [elementCapabilities, setElementCapabilities] = useState(() =>
+      isValidElement(props.render) && props.render.type === "a"
+        ? getElementCapabilities("a")
+        : defaultElementCapabilities,
     );
     useSafeLayoutEffect(() => {
       const element = ref.current;

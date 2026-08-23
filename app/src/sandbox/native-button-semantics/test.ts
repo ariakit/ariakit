@@ -1,9 +1,9 @@
 import { click, focus, press, q } from "@ariakit/test";
-import { act, createElement } from "react";
+import { act, createElement, Fragment } from "react";
 import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { expect, test, vi } from "vitest";
-import { TypeFixture } from "./index.react.tsx";
+import { CapabilityFixture, TypeFixture } from "./index.react.tsx";
 
 function expectSharedButtonTypes(query: ReturnType<typeof q.within>) {
   expect(query.tab("Default tab")).toHaveAttribute("type", "button");
@@ -24,13 +24,23 @@ function expectSharedButtonTypes(query: ReturnType<typeof q.within>) {
   expect(nestedMenuButton).not.toHaveAttribute("type");
 }
 
-function expectServerButtonTypes(query: ReturnType<typeof q.within>) {
+function expectServerElementSemantics(query: ReturnType<typeof q.within>) {
   expectSharedButtonTypes(query);
   const divButton = query.text("Div button");
   expect(divButton).not.toHaveAttribute("type");
+
+  const disabledAnchor = query.link("Disabled anchor");
+  expect(disabledAnchor).toHaveAttribute("role", "link");
+  expect(disabledAnchor).toHaveAttribute("tabindex", "-1");
+  expect(disabledAnchor).not.toHaveAttribute("disabled");
+
+  const accessibleAnchor = query.link("Disabled accessible anchor");
+  expect(accessibleAnchor).toHaveAttribute("role", "link");
+  expect(accessibleAnchor).toHaveAttribute("tabindex", "0");
+  expect(accessibleAnchor).not.toHaveAttribute("disabled");
 }
 
-function expectNativeButtonTypes(query: ReturnType<typeof q.within>) {
+function expectNativeElementSemantics(query: ReturnType<typeof q.within>) {
   expectSharedButtonTypes(query);
   expect(query.tab("Button tab")).toHaveAttribute("type", "button");
   const divButton = query.button("Div button");
@@ -40,7 +50,7 @@ function expectNativeButtonTypes(query: ReturnType<typeof q.within>) {
 }
 
 test("declares native button types before refs run", () => {
-  expectNativeButtonTypes(q);
+  expectNativeElementSemantics(q);
   expect(q.status("Default button ref type")).toHaveTextContent("button");
   expect(q.status("Default command ref type")).toHaveTextContent("button");
   expect(q.status("Default tab ref type")).toHaveTextContent("button");
@@ -97,11 +107,17 @@ test("clears submit focus visibility when focusable is disabled", async () => {
   expect(button).not.toHaveAttribute("data-focus-visible");
 });
 
-test("server markup and hydration use the same native button type", async () => {
+// https://github.com/ariakit/ariakit/issues/7112
+test("server markup and hydration preserve native element semantics", async () => {
   const scope = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };
   const previousActEnvironment = scope.IS_REACT_ACT_ENVIRONMENT;
   scope.IS_REACT_ACT_ENVIRONMENT = true;
-  const element = createElement(TypeFixture, {});
+  const element = createElement(
+    Fragment,
+    {},
+    createElement(TypeFixture, {}),
+    createElement(CapabilityFixture, {}),
+  );
   const container = document.createElement("div");
   const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
   let root: ReturnType<typeof hydrateRoot> | undefined;
@@ -116,14 +132,14 @@ test("server markup and hydration use the same native button type", async () => 
     document.body.appendChild(container);
 
     const containerQuery = q.within(container);
-    expectServerButtonTypes(containerQuery);
+    expectServerElementSemantics(containerQuery);
 
     await act(async () => {
       root = hydrateRoot(container, element);
     });
     expect(consoleError).not.toHaveBeenCalled();
 
-    expectNativeButtonTypes(containerQuery);
+    expectNativeElementSemantics(containerQuery);
   } finally {
     consoleError.mockRestore();
     if (root) {
