@@ -176,7 +176,8 @@ function KeyboardDemo() {
         <div>
           <h2 className="font-semibold text-white">One deliberate tab stop</h2>
           <p className="mt-1 text-sm leading-6 text-slate-400">
-            Start here and press Tab. The ordinary disabled link is skipped,
+            Start here and press Tab. In Safari on macOS, use Option+Tab if Tab
+            skips links and buttons. The ordinary disabled link is skipped,
             while the explainable link stays reachable.
           </p>
         </div>
