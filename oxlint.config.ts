@@ -1,5 +1,30 @@
 import { defineConfig } from "oxlint";
 
+const disabledReactRules = {
+  "react/capitalized-calls": "off",
+  "react/error-boundaries": "off",
+  "react/exhaustive-deps": "off",
+  "react/exhaustive-effect-dependencies": "off",
+  "react/globals": "off",
+  "react/hooks": "off",
+  "react/immutability": "off",
+  "react/incompatible-library": "off",
+  "react/jsx-key": "off",
+  "react/memo-dependencies": "off",
+  "react/no-children-prop": "off",
+  "react/no-namespace": "off",
+  "react/no-unstable-nested-components": "off",
+  "react/preserve-manual-memoization": "off",
+  "react/purity": "off",
+  "react/refs": "off",
+  "react/set-state-in-effect": "off",
+  "react/set-state-in-render": "off",
+  "react/static-components": "off",
+  "react/style-prop-object": "off",
+  "react/use-memo": "off",
+  "react/void-use-memo": "off",
+} as const;
+
 export default defineConfig({
   // Declaring `react` only in an override would enable just the rules that
   // the override names, silently disabling every other React rule, including
@@ -87,14 +112,11 @@ export default defineConfig({
       },
     },
     {
-      // Solid reassigns a variable to hold an element reference, which this
-      // rule reads as mutating a value after render. This override disables
-      // nothing else, so add a rule here only once it reports on Solid.
+      // React Compiler rules assume components re-run, while some other React
+      // rules enforce JSX semantics that Solid doesn't share.
       // https://github.com/ariakit/ariakit/issues/7250
       files: ["**/*.solid.*", "packages/ariakit-solid*/**"],
-      rules: {
-        "react/immutability": "off",
-      },
+      rules: disabledReactRules,
     },
   ],
 });
