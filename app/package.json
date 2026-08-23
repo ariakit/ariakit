@@ -17,6 +17,7 @@
     "dev-stripe": "concurrently -k -r 'pnpm:dev' 'pnpm:listen-*'",
     "dev-stripe-lite": "concurrently -k -r 'pnpm:dev-lite' 'pnpm:listen-*'",
     "wrangler-types": "wrangler types",
+    "sync": "cross-env APP_VITE_CACHE_DIR=node_modules/.vite-sync astro sync",
     "check": "pnpm run wrangler-types && cross-env APP_VITE_CACHE_DIR=node_modules/.vite-check astro check",
     "build": "astro build",
     "build-lite": "cross-env DISABLE_REFERENCE_LINKS=true pnpm run build",

@@ -67,8 +67,8 @@ export default defineConfig({
 
   vite: {
     // TODO: Remove this workaround once Astro isolates optimizer cache writes.
-    // Isolate check/dev optimizer writes so a concurrent check cannot
-    // invalidate the dev server's SSR modules.
+    // Isolate check/sync/dev optimizer writes so a concurrent check or lint
+    // cannot invalidate the dev server's SSR modules.
     // https://github.com/ariakit/ariakit/pull/6418
     cacheDir: viteCacheDir,
     build: {
