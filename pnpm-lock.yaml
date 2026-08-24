@@ -158,6 +158,9 @@ importers:
 
   app:
     dependencies:
+      '@ariakit/components':
+        specifier: workspace:*
+        version: link:../packages/ariakit-components
       '@ariakit/react':
         specifier: workspace:*
         version: link:../packages/ariakit-react
@@ -578,10 +581,16 @@ importers:
       '@floating-ui/dom':
         specifier: ^1.0.0
         version: 1.8.0
+      use-sync-external-store:
+        specifier: ^1.6.0
+        version: 1.6.0(react@19.2.8)
     devDependencies:
       '@ariakit/scripts':
         specifier: workspace:*
         version: link:../ariakit-scripts
+      '@types/use-sync-external-store':
+        specifier: 1.5.0
+        version: 1.5.0
       react:
         specifier: 19.2.8
         version: 19.2.8

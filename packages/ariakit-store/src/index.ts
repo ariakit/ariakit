@@ -114,6 +114,10 @@ function getCleanupPrevState<S extends State>(
 
 const MAX_REPAIR_PASSES = 100;
 
+type AtomicStateSetter = (values: State) => void;
+
+const atomicStateSetters = new WeakMap<Store, AtomicStateSetter>();
+
 function addKeyedListener<S>(
   map: ListenerMap<S>,
   keys: Array<keyof S> | null,
@@ -702,6 +706,50 @@ export function createStore<S extends State>(
     runLiveListeners({ group, getState, prevState, updatedKey });
   };
 
+  const queueBatchUpdate = (updatedKey: UpdatedKey<S>) => {
+    // Skip batch work with no listeners, but refresh the idle baseline after
+    // the outermost update. Reentrant updates retain the outer snapshot for
+    // listeners registered during dispatch.
+    if (!batchListenerGroup.listeners.size) {
+      if (!inDispatch) prevStateBatch = state;
+      return;
+    }
+
+    if (updatedKey instanceof Set) {
+      for (const key of updatedKey) {
+        updatedKeys.add(key);
+      }
+    } else {
+      updatedKeys.add(updatedKey);
+    }
+
+    // Coalesce multiple setStates in the same microtask via a pending flag.
+    // Any setStates queued before the microtask runs share the same flush.
+    if (batchPending) return;
+    batchPending = true;
+    queueMicrotask(() => {
+      batchPending = false;
+      // Take snapshots before running batch listeners. This is necessary
+      // because batch listeners can setState reentrantly: swapping the Set
+      // ensures reentrant updates land in a fresh set that flushes in a new
+      // microtask.
+      const snapshot = state;
+      const updatedKeysSnapshot = updatedKeys;
+      updatedKeys = new Set();
+      const prevStateBatchBefore = prevStateBatch;
+      runListeners(
+        batchListenerGroup,
+        prevStateBatchBefore,
+        updatedKeysSnapshot,
+      );
+      // Start the next batch at the pre-flush snapshot unless reentrant work or
+      // a successor listener already installed a fresher baseline.
+      if (prevStateBatch === prevStateBatchBefore) {
+        prevStateBatch = snapshot;
+      }
+    });
+  };
+
   // `fromStores` marks an update that originated from an extended parent store
   // syncing its value down (set only by storeInit's sync wiring). Such updates
   // must not be fanned back out to the parents, or the two stores would keep
@@ -780,41 +828,35 @@ export function createStore<S extends State>(
       inDispatch = wasInDispatch;
     }
 
-    // Skip batch work with no listeners, but refresh the idle baseline after
-    // the outermost update. Reentrant updates retain the outer snapshot for
-    // listeners registered during dispatch.
-    if (!batchListenerGroup.listeners.size) {
-      if (!inDispatch) prevStateBatch = state;
-      return;
+    queueBatchUpdate(key);
+  };
+
+  const setStateValues: AtomicStateSetter = (values) => {
+    invariant(
+      !stores.length,
+      "Atomic state updates are not supported on extended stores",
+    );
+    const prevState = state;
+    let nextState = state;
+    const changedKeys = new Set<keyof S>();
+    for (const key of getKeys(values)) {
+      if (!hasOwnProperty(state, key)) continue;
+      const nextValue = values[key] as S[typeof key];
+      if (isSameValue(nextValue, state[key])) continue;
+      nextState = { ...nextState, [key]: nextValue };
+      changedKeys.add(key);
     }
+    if (!changedKeys.size) return;
 
-    updatedKeys.add(key);
-
-    // Coalesce multiple setStates in the same microtask via a pending flag.
-    // Any setStates queued before the microtask runs share the same flush.
-    if (batchPending) return;
-    batchPending = true;
-    queueMicrotask(() => {
-      batchPending = false;
-      // Take snapshots before running batch listeners. This is necessary
-      // because batch listeners can setState reentrantly: swapping the Set
-      // ensures reentrant updates land in a fresh set that flushes in a new
-      // microtask.
-      const snapshot = state;
-      const updatedKeysSnapshot = updatedKeys;
-      updatedKeys = new Set();
-      const prevStateBatchBefore = prevStateBatch;
-      runListeners(
-        batchListenerGroup,
-        prevStateBatchBefore,
-        updatedKeysSnapshot,
-      );
-      // Start the next batch at the pre-flush snapshot unless reentrant work or
-      // a successor listener already installed a fresher baseline.
-      if (prevStateBatch === prevStateBatchBefore) {
-        prevStateBatch = snapshot;
-      }
-    });
+    const wasInDispatch = inDispatch;
+    inDispatch = true;
+    state = nextState;
+    try {
+      runListeners(syncListenerGroup, prevState, changedKeys);
+    } finally {
+      inDispatch = wasInDispatch;
+    }
+    queueBatchUpdate(changedKeys);
   };
 
   const finalStore = {
@@ -831,7 +873,21 @@ export function createStore<S extends State>(
     },
   };
 
+  if (!stores.length) {
+    atomicStateSetters.set(finalStore, setStateValues);
+  }
+
   return finalStore;
+}
+
+/** Atomically updates several values in a standalone store. @private */
+export function unstable_setStoreState<T extends Store>(
+  store: T,
+  values: Partial<StoreState<T>>,
+) {
+  const setStateValues = atomicStateSetters.get(store);
+  invariant(setStateValues, "Store does not support atomic state updates");
+  setStateValues(values);
 }
 
 export function setup<T extends Store>(

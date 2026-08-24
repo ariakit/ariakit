@@ -13,6 +13,49 @@ function getTextInput() {
   return input;
 }
 
+test("press infers US keyboard codes without overriding an explicit code", async () => {
+  const input = getTextInput();
+  const events: Array<{ type: string; key: string; code: string }> = [];
+  const recordEvent = (event: KeyboardEvent) => {
+    events.push({ type: event.type, key: event.key, code: event.code });
+  };
+  input.addEventListener("keydown", recordEvent);
+  input.addEventListener("keyup", recordEvent);
+
+  await press("k", input, { metaKey: true });
+  await press("?", input, { ctrlKey: true });
+  await press("k", input, { code: "KeyQ", metaKey: true });
+
+  expect(events).toEqual([
+    { type: "keydown", key: "k", code: "KeyK" },
+    { type: "keyup", key: "k", code: "KeyK" },
+    { type: "keydown", key: "?", code: "Slash" },
+    { type: "keyup", key: "?", code: "Slash" },
+    { type: "keydown", key: "k", code: "KeyQ" },
+    { type: "keyup", key: "k", code: "KeyQ" },
+  ]);
+  expect(input.value).toBe("hello world");
+});
+
+test.each([
+  ["F1", "F1"],
+  ["F24", "F24"],
+  ["PrintScreen", "PrintScreen"],
+  ["ContextMenu", "ContextMenu"],
+  ["constructor", ""],
+])("press infers the code for %s as %s", async (key, expectedCode) => {
+  const button = document.createElement("button");
+  let code = "unset";
+  button.addEventListener("keydown", (event) => {
+    code = event.code;
+  });
+  document.body.append(button);
+
+  await press(key, button);
+
+  expect(code).toBe(expectedCode);
+});
+
 // A scripted click dispatched on a disabled control fires its listeners in jsdom
 // and real browsers; happy-dom drops it, but `dispatch` normalizes that (see
 // dispatch.ts), so these run in the default happy-dom. They guard the disabled

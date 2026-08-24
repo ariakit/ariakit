@@ -42,6 +42,7 @@
     "./popover/popover-store": "./src/popover/popover-store.ts",
     "./radio/radio-store": "./src/radio/radio-store.ts",
     "./select/select-store": "./src/select/select-store.ts",
+    "./shortcut/shortcut-store": "./src/shortcut/shortcut-store.ts",
     "./tab/tab-store": "./src/tab/tab-store.ts",
     "./tag/tag-store": "./src/tag/tag-store.ts",
     "./toolbar/toolbar-store": "./src/toolbar/toolbar-store.ts",

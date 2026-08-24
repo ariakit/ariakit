@@ -70,6 +70,7 @@
     "./role": "./src/role.ts",
     "./select": "./src/select.ts",
     "./separator": "./src/separator.ts",
+    "./shortcut": "./src/shortcut.ts",
     "./store": "./src/store.ts",
     "./tab": "./src/tab.ts",
     "./toolbar": "./src/toolbar.ts",

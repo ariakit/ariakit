@@ -20,6 +20,10 @@ const selectFilename = join(
   process.cwd(),
   "packages/ariakit-react/src/select.ts",
 );
+const shortcutFilename = join(
+  process.cwd(),
+  "packages/ariakit-react/src/shortcut.ts",
+);
 
 function getReference(filename: string, name: string) {
   const reference = getReferences(filename).find((reference) => {
@@ -137,6 +141,52 @@ test("loads Combobox input value metadata", () => {
   expect(value.deprecated).toEqual(
     expect.stringContaining("ComboboxInputValue"),
   );
+});
+
+test("loads Shortcut metadata", () => {
+  for (const name of ["ShortcutProvider", "useShortcutStore"]) {
+    const reference = getReference(shortcutFilename, name);
+    expect(getProp(reference, "enabled").defaultValue).toBe("true");
+    for (const prop of ["platform", "glyphs", "keyNames", "keys", "store"]) {
+      getProp(reference, prop);
+    }
+  }
+
+  const command = getReference(shortcutFilename, "ShortcutCommand");
+  const commandEnabled = getProp(command, "enabled");
+  expect(commandEnabled.description).toContain("aria-disabled");
+  expect(commandEnabled.description).toContain("inert");
+
+  const useCommand = getReference(shortcutFilename, "useShortcutCommand");
+  for (const name of [
+    "command",
+    "keys",
+    "onTrigger",
+    "preventDefault",
+    "scope",
+    "enabled",
+    "enabledInTextbox",
+    "store",
+  ]) {
+    getProp(useCommand, name);
+  }
+
+  const useKeys = getReference(shortcutFilename, "useShortcutKeys");
+  expect(useKeys.description).toContain("effective canonical alternatives");
+  getProp(useKeys, "command");
+  getProp(useKeys, "store");
+
+  const input = getReference(shortcutFilename, "ShortcutInput");
+  expect(getProp(input, "recording").defaultValue).toBe("false");
+  expect(getProp(input, "cancelKeys").defaultValue).toBe('"Escape"');
+  expect(getProp(input, "clearKeys").defaultValue).toBe('"Backspace Delete"');
+
+  const referenceNames = getReferences(shortcutFilename).map(({ name }) => {
+    return name;
+  });
+  expect(referenceNames).not.toContain("useShortcut");
+  expect(referenceNames).not.toContain("useShortcutInput");
+  expect(referenceNames).not.toContain("useShortcutScope");
 });
 
 test("loads Composite element alias metadata", () => {

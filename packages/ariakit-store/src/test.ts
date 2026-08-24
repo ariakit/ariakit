@@ -10,6 +10,7 @@ import {
   subscribe,
   sync,
   throwOnConflictingProps,
+  unstable_setStoreState,
 } from "./index.ts";
 import type { Store, StoreOptions, StoreProps, StoreState } from "./index.ts";
 
@@ -81,6 +82,21 @@ test("preserves the public type surface", () => {
   };
 
   expectTypeOf(expectInvalidStoreTypes).toEqualTypeOf<() => void>();
+});
+
+test("atomically updates several values in a standalone store", () => {
+  const store = createStore({ count: 0, label: "a", open: false });
+  const listener = vi.fn();
+  const unsubscribe = subscribe(store, ["count", "label"], listener);
+
+  unstable_setStoreState(store, { count: 1, label: "b" });
+
+  expect(listener).toHaveBeenCalledOnce();
+  expect(listener).toHaveBeenCalledWith(
+    { count: 1, label: "b", open: false },
+    { count: 0, label: "a", open: false },
+  );
+  unsubscribe();
 });
 
 test("sets known state keys and ignores unknown keys", () => {

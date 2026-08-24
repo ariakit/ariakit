@@ -31,10 +31,12 @@
     "@ariakit/react-utils": "workspace:*",
     "@ariakit/store": "workspace:*",
     "@ariakit/utils": "workspace:*",
-    "@floating-ui/dom": "^1.0.0"
+    "@floating-ui/dom": "^1.0.0",
+    "use-sync-external-store": "^1.6.0"
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
+    "@types/use-sync-external-store": "1.5.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "vitest": "4.1.11"
@@ -246,6 +248,13 @@
     "./select/select-store": "./src/select/select-store.ts",
     "./select/select-value": "./src/select/select-value.tsx",
     "./separator/separator": "./src/separator/separator.tsx",
+    "./shortcut/shortcut": "./src/shortcut/shortcut.tsx",
+    "./shortcut/shortcut-command": "./src/shortcut/shortcut-command.tsx",
+    "./shortcut/shortcut-context": "./src/shortcut/shortcut-context.tsx",
+    "./shortcut/shortcut-input": "./src/shortcut/shortcut-input.tsx",
+    "./shortcut/shortcut-provider": "./src/shortcut/shortcut-provider.tsx",
+    "./shortcut/shortcut-scope": "./src/shortcut/shortcut-scope.tsx",
+    "./shortcut/shortcut-store": "./src/shortcut/shortcut-store.ts",
     "./store": "./src/store.ts",
     "./tab/tab": "./src/tab/tab.tsx",
     "./tab/tab-context": "./src/tab/tab-context.tsx",

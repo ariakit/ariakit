@@ -303,6 +303,70 @@ test("loads Combobox input value metadata", async () => {
   );
 });
 
+test("loads Shortcut metadata", async () => {
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({
+    corePath: join(process.cwd(), "packages/ariakit-react-components"),
+    framework: "react",
+    packagePath: join(process.cwd(), "packages/ariakit-react"),
+  });
+
+  await loader.load(context);
+
+  for (const id of [
+    "react/shortcut/shortcut-provider",
+    "react/shortcut/use-shortcut-store",
+  ]) {
+    const reference = getReference(entries, id);
+    expect(getParamProp(reference, "enabled").defaultValue).toBe("true");
+    for (const name of ["platform", "glyphs", "keyNames", "keys", "store"]) {
+      getParamProp(reference, name);
+    }
+  }
+
+  const command = getReference(entries, "react/shortcut/shortcut-command");
+  const commandEnabled = getParamProp(command, "enabled");
+  expect(commandEnabled.description).toContain("aria-disabled");
+  expect(commandEnabled.description).toContain("inert");
+
+  const useCommand = getReference(
+    entries,
+    "react/shortcut/use-shortcut-command",
+  );
+  for (const name of [
+    "command",
+    "keys",
+    "onTrigger",
+    "preventDefault",
+    "scope",
+    "enabled",
+    "enabledInTextbox",
+    "store",
+  ]) {
+    getParamProp(useCommand, name);
+  }
+
+  const useKeys = getReference(entries, "react/shortcut/use-shortcut-keys");
+  expect(useKeys.description).toContain("effective canonical alternatives");
+  getParamProp(useKeys, "command");
+  getParamProp(useKeys, "store");
+
+  const input = getReference(entries, "react/shortcut/shortcut-input");
+  expect(getParamProp(input, "recording").defaultValue).toBe("false");
+  expect(getParamProp(input, "cancelKeys").defaultValue).toBe('"Escape"');
+  expect(getParamProp(input, "clearKeys").defaultValue).toBe(
+    '"Backspace Delete"',
+  );
+
+  for (const id of [
+    "react/shortcut/use-shortcut",
+    "react/shortcut/use-shortcut-input",
+    "react/shortcut/use-shortcut-scope",
+  ]) {
+    expect(entries.has(id)).toBe(false);
+  }
+});
+
 test("loads Composite element alias metadata", async () => {
   const { context, entries } = getLoaderContext();
   const loader = jsdoc({

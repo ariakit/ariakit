@@ -47,6 +47,55 @@ test("type does not dispatch change after a prevented keydown", async () => {
   expect(onChange).not.toHaveBeenCalled();
 });
 
+test.each([
+  { text: "k", options: { ctrlKey: true } },
+  { text: "k", options: { metaKey: true } },
+  { text: "🙂", options: { metaKey: true } },
+])(
+  "type does not insert text when a command modifier is pressed",
+  async ({ text, options }) => {
+    const input = createInput("draft");
+    const onInput = vi.fn();
+    const onChange = trackChange(input);
+    input.addEventListener("input", onInput);
+    input.setSelectionRange(input.value.length, input.value.length);
+
+    await type(text, input, options);
+    await blur(input);
+
+    expect(input.value).toBe("draft");
+    expect(onInput).not.toHaveBeenCalled();
+    expect(onChange).not.toHaveBeenCalled();
+  },
+);
+
+test.each([{ altKey: true }, { shiftKey: true }])(
+  "type keeps text insertion for non-command modifiers",
+  async (options) => {
+    const input = createInput();
+
+    await type("k", input, options);
+
+    expect(input.value).toBe("k");
+  },
+);
+
+test.each([
+  { char: "\b", options: { metaKey: true }, value: "draf" },
+  { char: "\x7f", options: { ctrlKey: true }, value: "raft" },
+])(
+  "type keeps editing behavior for command-modified control keys",
+  async ({ char, options, value }) => {
+    const input = createInput("draft");
+    const position = char === "\b" ? input.value.length : 0;
+    input.setSelectionRange(position, position);
+
+    await type(char, input, options);
+
+    expect(input.value).toBe(value);
+  },
+);
+
 test("type does not dispatch change after typing on a non-text field", async () => {
   const target = document.createElement("div");
   const onChange = trackChange(target);

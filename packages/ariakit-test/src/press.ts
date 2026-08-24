@@ -33,6 +33,95 @@ const noPointerOptions: PointerEventInit = {
   pointerType: "",
 };
 
+const usKeyCodes: Record<string, string> = {
+  " ": "Space",
+  "!": "Digit1",
+  '"': "Quote",
+  "#": "Digit3",
+  $: "Digit4",
+  "%": "Digit5",
+  "&": "Digit7",
+  "'": "Quote",
+  "(": "Digit9",
+  ")": "Digit0",
+  "*": "Digit8",
+  "+": "Equal",
+  ",": "Comma",
+  "-": "Minus",
+  ".": "Period",
+  "/": "Slash",
+  ":": "Semicolon",
+  ";": "Semicolon",
+  "<": "Comma",
+  "=": "Equal",
+  ">": "Period",
+  "?": "Slash",
+  "@": "Digit2",
+  "[": "BracketLeft",
+  "\\": "Backslash",
+  "]": "BracketRight",
+  "^": "Digit6",
+  _: "Minus",
+  "`": "Backquote",
+  "{": "BracketLeft",
+  "|": "Backslash",
+  "}": "BracketRight",
+  "~": "Backquote",
+};
+
+const directKeyCodes = new Set([
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowUp",
+  "Backspace",
+  "CapsLock",
+  "Delete",
+  "End",
+  "Enter",
+  "Escape",
+  "Home",
+  "Insert",
+  "NumLock",
+  "PageDown",
+  "PageUp",
+  "Pause",
+  "PrintScreen",
+  "ScrollLock",
+  "Tab",
+  "ContextMenu",
+]);
+
+function getUSKeyCode(key: string) {
+  if (key === "Alt") return "AltLeft";
+  if (key === "Control") return "ControlLeft";
+  if (key === "Meta") return "MetaLeft";
+  if (key === "Shift") return "ShiftLeft";
+  if (/^[a-z]$/i.test(key)) {
+    return `Key${key.toUpperCase()}`;
+  }
+  if (/^[0-9]$/.test(key)) {
+    return `Digit${key}`;
+  }
+  if (/^F(?:[1-9]|1[0-9]|2[0-4])$/.test(key)) {
+    return key;
+  }
+  if (directKeyCodes.has(key)) {
+    return key;
+  }
+  if (Object.hasOwn(usKeyCodes, key)) {
+    return usKeyCodes[key];
+  }
+  return undefined;
+}
+
+function inferKeyCode(key: string, options: KeyboardEventInit) {
+  if (options.code !== undefined) return options;
+  const code = getUSKeyCode(key);
+  if (!code) return options;
+  return { ...options, code };
+}
+
 const clickableInputTypes = [
   "button",
   "color",
@@ -475,6 +564,7 @@ async function pressKeyUp({
  * moving focus with `Tab`, activating buttons and submitting forms with `Enter`,
  * clicking buttons, checkboxes, and radios with `Space`, moving the caret with the
  * arrow and `Home`/`End` keys, and typing printable characters into text fields.
+ * When `options.code` is omitted, it is inferred from a US keyboard layout.
  *
  * When no element is passed, the currently focused element is used. Shortcuts such
  * as `press.Enter()` and `press.Tab()` are provided for common keys, and
@@ -501,6 +591,7 @@ export function press(
   options: KeyboardEventInit = {},
 ) {
   return wrapAsync(async () => {
+    options = inferKeyCode(key, options);
     element = getPressTarget(element);
 
     if (!element) return;
@@ -573,6 +664,7 @@ function pressDown(
   options: KeyboardEventInit = {},
 ) {
   return wrapAsync(async () => {
+    options = inferKeyCode(key, options);
     element = getPressTarget(element);
 
     if (!element) return;
@@ -624,6 +716,7 @@ function pressUp(
   options: KeyboardEventInit = {},
 ) {
   return wrapAsync(async () => {
+    options = inferKeyCode(key, options);
     element = getPressTarget(element);
 
     if (!element) return;

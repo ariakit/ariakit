@@ -18,6 +18,11 @@ function getCharCodeFromChar(char: string) {
   return char.charCodeAt(0);
 }
 
+function hasCommandModifier(options: InputEventInit | KeyboardEventInit) {
+  const keyboardOptions = options as KeyboardEventInit;
+  return !!(keyboardOptions.ctrlKey || keyboardOptions.metaKey);
+}
+
 // Email inputs are not considered text fields. They don't work well with the
 // input events dispatched by the type method. So we temporarily make them text
 // inputs.
@@ -39,7 +44,8 @@ function workAroundEmailInput(element: Element) {
  * Special characters map to their keys: `"\b"` is Backspace, `"\x7f"` is Delete,
  * `"\n"` is Enter, and `"\t"` is Tab. When no element is passed, the currently
  * focused element is used. Pass `options` to set event properties such as modifier
- * keys or composition state.
+ * keys or composition state. Control and Meta combinations dispatch keyboard
+ * events without inserting text.
  * @example
  * ```ts
  * await type("Hello", q.textbox());
@@ -66,6 +72,8 @@ export function type(
 
     for (const char of text) {
       const key = getKeyFromChar(char);
+      const commandModified = hasCommandModifier(options);
+      const insertsText = key === char;
       let value = "";
       let inputType = options.isComposing
         ? "insertCompositionText"
@@ -75,7 +83,7 @@ export function type(
       // Keydown may move focus; continue typing at the new active element.
       element = getActiveElement(element) || element;
 
-      if (isTextField(element)) {
+      if (isTextField(element) && (!commandModified || !insertsText)) {
         const input = element as DirtiableElement & TextField;
         const [start, end] = [
           input.selectionStart ?? 0,

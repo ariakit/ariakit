@@ -1153,16 +1153,18 @@ function getFunctionParams(
   const parameters = fn.getParameters();
 
   for (const param of parameters) {
+    const nameNode = param.getNameNode();
+    const isProps =
+      Node.isIdentifier(nameNode) && nameNode.getText() === "props";
     const { description, liveExamples } = getDescriptionAndLiveExamples(param);
     // Skip undocumented params only for regular functions, not for
     // stores/components
-    if (!description && !includeUndocumented) continue;
+    if (!description && !includeUndocumented && !isProps) continue;
     const type = getTypeText(param);
     const deprecated = getDeprecated(param);
     const defaultValue = getDefaultValue(param);
     const examples = getExamples(param);
     const nestedProps = getProps(param);
-    const nameNode = param.getNameNode();
     const paramName = Node.isIdentifier(nameNode)
       ? nameNode.getText()
       : param.getName();
