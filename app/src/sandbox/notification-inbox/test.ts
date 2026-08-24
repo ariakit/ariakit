@@ -67,6 +67,7 @@ const headingContentCases: Array<{
   headingProps: NotificationHeadingProps;
   expectedName: string;
   hasDescription: boolean;
+  itemHeading?: string;
 }> = [
   {
     description: "an empty render element",
@@ -83,26 +84,54 @@ const headingContentCases: Array<{
     hasDescription: true,
   },
   {
-    description: "empty inner HTML",
+    description: "empty inner HTML over a contextual heading",
     headingProps: { dangerouslySetInnerHTML: { __html: "" } },
     expectedName: "report.pdf is ready",
     hasDescription: false,
+    itemHeading: "Contextual heading",
   },
   {
-    description: "inner HTML content",
+    description: "inner HTML content over a contextual heading",
     headingProps: {
       dangerouslySetInnerHTML: { __html: "<strong>Sync complete</strong>" },
     },
     expectedName: "Sync complete",
     hasDescription: true,
+    itemHeading: "Contextual heading",
+  },
+  {
+    description: "empty render-element inner HTML over a contextual heading",
+    headingProps: {
+      render: createElement("h2", {
+        dangerouslySetInnerHTML: { __html: "" },
+      }),
+    },
+    expectedName: "report.pdf is ready",
+    hasDescription: false,
+    itemHeading: "Contextual heading",
+  },
+  {
+    description: "render-element inner HTML over a contextual heading",
+    headingProps: {
+      render: createElement("h2", {
+        dangerouslySetInnerHTML: { __html: "<strong>Upload complete</strong>" },
+      }),
+    },
+    expectedName: "Upload complete",
+    hasDescription: true,
+    itemHeading: "Contextual heading",
   },
 ];
 
 test.each(headingContentCases)(
   "registers $description correctly",
-  async ({ headingProps, expectedName, hasDescription }) => {
+  async ({ headingProps, expectedName, hasDescription, itemHeading }) => {
     const store = createNotificationStore();
-    store.push({ message: "report.pdf is ready", timeout: null });
+    store.push({
+      heading: itemHeading,
+      message: "report.pdf is ready",
+      timeout: null,
+    });
     const { unmount } = await render(
       createElement(NotificationFixture, { store, headingProps }),
     );

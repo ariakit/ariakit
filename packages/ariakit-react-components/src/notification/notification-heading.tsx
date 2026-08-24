@@ -51,6 +51,10 @@ function hasInnerHTML(props: ContentProps) {
   return true;
 }
 
+function hasInnerHTMLValue(props: ContentProps) {
+  return props.dangerouslySetInnerHTML?.__html != null;
+}
+
 function hasPropsContent(props: ContentProps) {
   return (
     hasContent(props.children) ||
@@ -61,9 +65,14 @@ function hasPropsContent(props: ContentProps) {
   );
 }
 
+function getRenderProps(render: unknown) {
+  if (!isValidElement<ContentProps>(render)) return;
+  return render.props;
+}
+
 function hasRenderContent(render: unknown) {
-  if (!isValidElement<ContentProps>(render)) return false;
-  return hasPropsContent(render.props);
+  const props = getRenderProps(render);
+  return !!props && hasPropsContent(props);
 }
 
 /** Returns props to create a NotificationHeading component. */
@@ -74,9 +83,15 @@ export const useNotificationHeading = createHook<
   const item = useContext(NotificationItemContext);
   const setHeadingId = useContext(NotificationHeadingContext);
   const id = useId(props.id);
+  const renderProps = getRenderProps(props.render);
+  const hasAuthoredInnerHTML =
+    hasInnerHTMLValue(props) ||
+    (!!renderProps && hasInnerHTMLValue(renderProps));
   const children = hasOwnProperty(props, "children")
     ? props.children
-    : item?.heading;
+    : hasAuthoredInnerHTML
+      ? undefined
+      : item?.heading;
   const hasHeading =
     hasContent(children) ||
     hasText(props["aria-label"]) ||
