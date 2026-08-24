@@ -106,6 +106,14 @@ test("supports accessible, ARIA, and inactive Focusable states", () => {
   expect(focusableOff).toHaveAttribute("href", "#contract-focusable-off");
   expect(focusableOff).not.toHaveAttribute("aria-disabled");
   expect(focusableOff).not.toHaveAttribute("tabindex");
+
+  const functionRendered = q.link("Function-rendered disabled");
+  expectNoDestination(functionRendered);
+  expect(functionRendered).toHaveAttribute("data-function-render-disabled");
+  expect(functionRendered).toHaveAttribute("role", "link");
+  expect(functionRendered).toHaveAttribute("aria-disabled", "true");
+  expect(functionRendered).toHaveAttribute("tabindex", "0");
+  expect(functionRendered).not.toHaveAttribute("disabled");
 });
 
 test("keeps only the explainable disabled link in the tab order", async () => {
@@ -141,6 +149,7 @@ test("preserves an outer menu item role", async () => {
   await press.Escape();
 });
 
+// https://github.com/ariakit/ariakit/issues/7112
 test("renders final disabled semantics before hydration", async () => {
   const scope = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };
   const previousActEnvironment = scope.IS_REACT_ACT_ENVIRONMENT;
@@ -187,6 +196,22 @@ test("renders final disabled semantics before hydration", async () => {
     expect(conflict).toHaveAttribute("tabindex", "-1");
     expect(conflict).not.toHaveAttribute("disabled");
 
+    const functionSkipped = query.link("Server function-skipped link");
+    expectNoDestination(functionSkipped);
+    expect(functionSkipped).toHaveAttribute("data-server-function-skipped");
+    expect(functionSkipped).toHaveAttribute("role", "link");
+    expect(functionSkipped).toHaveAttribute("aria-disabled", "true");
+    expect(functionSkipped).toHaveAttribute("tabindex", "-1");
+    expect(functionSkipped).not.toHaveAttribute("disabled");
+
+    const functionReachable = query.link("Server function-reachable link");
+    expectNoDestination(functionReachable);
+    expect(functionReachable).toHaveAttribute("data-server-function-reachable");
+    expect(functionReachable).toHaveAttribute("role", "link");
+    expect(functionReachable).toHaveAttribute("aria-disabled", "true");
+    expect(functionReachable).toHaveAttribute("tabindex", "0");
+    expect(functionReachable).not.toHaveAttribute("disabled");
+
     await act(async () => {
       root = hydrateRoot(container, element);
     });
@@ -199,6 +224,20 @@ test("renders final disabled semantics before hydration", async () => {
     expect(query.link("Server-skipped link")).toHaveAttribute("tabindex", "-1");
     expectNoDestination(query.link("Server-reachable link"));
     expect(query.link("Server-reachable link")).toHaveAttribute(
+      "tabindex",
+      "0",
+    );
+    expect(query.link("Server function-skipped link")).toBe(functionSkipped);
+    expectNoDestination(query.link("Server function-skipped link"));
+    expect(query.link("Server function-skipped link")).toHaveAttribute(
+      "tabindex",
+      "-1",
+    );
+    expect(query.link("Server function-reachable link")).toBe(
+      functionReachable,
+    );
+    expectNoDestination(query.link("Server function-reachable link"));
+    expect(query.link("Server function-reachable link")).toHaveAttribute(
       "tabindex",
       "0",
     );

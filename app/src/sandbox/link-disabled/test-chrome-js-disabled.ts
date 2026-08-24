@@ -15,6 +15,7 @@ const destinationAttributes = [
 withFramework(import.meta.dirname, async ({ test }) => {
   test.use({ javaScriptEnabled: false });
 
+  // https://github.com/ariakit/ariakit/issues/7112
   test("serves complete disabled semantics before hydration", async ({
     page,
     q,
@@ -39,6 +40,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(reachable).toHaveAttribute("role", "link");
     await test.expect(reachable).toHaveAttribute("aria-disabled", "true");
     await test.expect(reachable).toHaveAttribute("tabindex", "0");
+
+    const functionRendered = q.link("Function-rendered disabled");
+    for (const attribute of destinationAttributes) {
+      await test.expect(functionRendered).not.toHaveAttribute(attribute);
+    }
+    await test
+      .expect(functionRendered)
+      .toHaveAttribute("data-function-render-disabled");
+    await test.expect(functionRendered).toHaveAttribute("role", "link");
+    await test
+      .expect(functionRendered)
+      .toHaveAttribute("aria-disabled", "true");
+    await test.expect(functionRendered).toHaveAttribute("tabindex", "0");
+    await test.expect(functionRendered).not.toHaveAttribute("disabled");
 
     await q.button("Before links").focus();
     await page.keyboard.press("Tab");

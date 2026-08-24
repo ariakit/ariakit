@@ -52,6 +52,21 @@ export function ServerLinks() {
       <Link href="#conflicting-state" disabled aria-disabled={false}>
         Disabled wins conflicting ARIA
       </Link>
+      <Link
+        href="#server-function-skipped"
+        disabled
+        render={(props) => <a {...props} data-server-function-skipped />}
+      >
+        Server function-skipped link
+      </Link>
+      <Link
+        href="#server-function-reachable"
+        disabled
+        accessibleWhenDisabled
+        render={(props) => <a {...props} data-server-function-reachable />}
+      >
+        Server function-reachable link
+      </Link>
     </>
   );
 }
@@ -419,6 +434,15 @@ function ContractMatrix() {
           className={contractLinkClass}
         >
           Function-rendered anchor
+        </Link>
+        <Link
+          href="#contract-function-disabled"
+          disabled
+          accessibleWhenDisabled
+          render={(props) => <a {...props} data-function-render-disabled />}
+          className={contractLinkClass}
+        >
+          Function-rendered disabled
         </Link>
         <HookLink />
       </div>

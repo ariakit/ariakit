@@ -24,11 +24,7 @@ function expectSharedButtonTypes(query: ReturnType<typeof q.within>) {
   expect(nestedMenuButton).not.toHaveAttribute("type");
 }
 
-function expectServerElementSemantics(query: ReturnType<typeof q.within>) {
-  expectSharedButtonTypes(query);
-  const divButton = query.text("Div button");
-  expect(divButton).not.toHaveAttribute("type");
-
+function expectDisabledAnchorSemantics(query: ReturnType<typeof q.within>) {
   const disabledAnchor = query.link("Disabled anchor");
   expect(disabledAnchor).toHaveAttribute("role", "link");
   expect(disabledAnchor).toHaveAttribute("tabindex", "-1");
@@ -40,6 +36,13 @@ function expectServerElementSemantics(query: ReturnType<typeof q.within>) {
   expect(accessibleAnchor).not.toHaveAttribute("disabled");
 }
 
+function expectServerElementSemantics(query: ReturnType<typeof q.within>) {
+  expectSharedButtonTypes(query);
+  const divButton = query.text("Div button");
+  expect(divButton).not.toHaveAttribute("type");
+  expectDisabledAnchorSemantics(query);
+}
+
 function expectNativeElementSemantics(query: ReturnType<typeof q.within>) {
   expectSharedButtonTypes(query);
   expect(query.tab("Button tab")).toHaveAttribute("type", "button");
@@ -47,6 +50,7 @@ function expectNativeElementSemantics(query: ReturnType<typeof q.within>) {
   expect(divButton).not.toHaveAttribute("type");
   expect(divButton).toHaveAttribute("role", "button");
   expect(divButton).toHaveAttribute("tabindex", "0");
+  expectDisabledAnchorSemantics(query);
 }
 
 test("declares native button types before refs run", () => {
