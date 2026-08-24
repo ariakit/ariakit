@@ -649,7 +649,15 @@ function parseShortcutKeysWithWarnings(
   platform: ShortcutPlatform,
   warnOnInvalid: boolean,
 ): ParsedShortcut[] {
-  const trimmedInput = input.replace(/^ +| +$/g, "");
+  let start = 0;
+  while (input[start] === " ") {
+    start += 1;
+  }
+  let end = input.length;
+  while (end > start && input[end - 1] === " ") {
+    end -= 1;
+  }
+  const trimmedInput = input.slice(start, end);
   if (!trimmedInput) return [];
 
   const parsed: ParsedShortcut[] = [];
