@@ -724,6 +724,32 @@ test("an explicit delegate is authoritative over mounted items", () => {
   expectSelected(harness, ["1", "2", "3", "4", "5"]);
 });
 
+test("delegate ranges return membership keys for unmounted item ids", () => {
+  const selectionKeys = new Map([
+    ["1", "Apple"],
+    ["3", "Cherry"],
+  ]);
+  const rangeDelegate: SelectableRangeDelegate = {
+    getKeysInRange: (fromId, toId) => {
+      if (fromId === "1" && toId === "3") {
+        return ["Apple", "Banana", "Cherry"];
+      }
+      return null;
+    },
+    getOrderedKeys: () => ["Apple", "Banana", "Cherry"],
+  };
+  const harness = createHarness({
+    getSelectionKey: (id) => selectionKeys.get(id),
+    rangeDelegate,
+    renderedIds: ["1", "3"],
+  });
+
+  activate(harness, "1");
+  activate(harness, "3", { shift: true });
+
+  expectSelected(harness, ["Apple", "Banana", "Cherry"]);
+});
+
 test("an explicit delegate is authoritative over registered delegates", () => {
   const rangeDelegate: SelectableRangeDelegate = {
     getKeysInRange: () => ["1", "3", "5"],
@@ -753,9 +779,11 @@ test("replace sequence 9 preserves unmounted values through a modified range", (
       if (fromIndex < 0 || toIndex < 0) return null;
       const startIndex = Math.min(fromIndex, toIndex);
       const endIndex = Math.max(fromIndex, toIndex);
-      return orderedIds.slice(startIndex, endIndex + 1);
+      return orderedIds
+        .slice(startIndex, endIndex + 1)
+        .map((id) => `visible-${id}`);
     },
-    getOrderedKeys: () => ["1", "2", "3", "4"],
+    getOrderedKeys: () => ["visible-1", "visible-2", "visible-3", "visible-4"],
   };
   const harness = createHarness({
     getSelectionKey: (id) => `visible-${id}`,
@@ -780,9 +808,9 @@ test("replace sequence 10 preserves unmounted values on replace", () => {
   const rangeDelegate: SelectableRangeDelegate = {
     getKeysInRange: (fromId, toId) => {
       if (fromId !== toId) return null;
-      return [fromId];
+      return [`visible-${fromId}`];
     },
-    getOrderedKeys: () => ["1", "2", "3", "4"],
+    getOrderedKeys: () => ["visible-1", "visible-2", "visible-3", "visible-4"],
   };
   const harness = createHarness({
     getSelectionKey: (id) => `visible-${id}`,
@@ -830,6 +858,66 @@ test("selectAll preserves registration order between sibling delegates", () => {
 
   harness.controller.selectAll();
   expect(harness.getKeys()).toEqual(["1", "2", "3", "4"]);
+});
+
+test("replace clears known selections across sibling delegates", () => {
+  const harness = createHarness({ keys: ["1", "3"], renderedIds: ["1", "3"] });
+  harness.controller.addRangeDelegate({
+    getKeysInRange: (fromId, toId) => {
+      if (fromId === toId && (fromId === "1" || fromId === "2")) {
+        return [fromId];
+      }
+      return null;
+    },
+    getOrderedKeys: () => ["1", "2"],
+  });
+  harness.controller.addRangeDelegate({
+    getKeysInRange: (fromId, toId) => {
+      if (fromId === toId && (fromId === "3" || fromId === "4")) {
+        return [fromId];
+      }
+      return null;
+    },
+    getOrderedKeys: () => ["3", "4"],
+  });
+
+  activate(harness, "3");
+
+  expect(harness.getKeys()).toEqual(["3"]);
+});
+
+test("replace ranges clear known selections across sibling delegates", () => {
+  const harness = createHarness({
+    keys: ["1", "3"],
+    renderedIds: ["1", "3", "4"],
+  });
+  harness.controller.addRangeDelegate({
+    getKeysInRange: (fromId, toId) => {
+      if (fromId === toId && (fromId === "1" || fromId === "2")) {
+        return [fromId];
+      }
+      return null;
+    },
+    getOrderedKeys: () => ["1", "2"],
+  });
+  harness.controller.addRangeDelegate({
+    getKeysInRange: (fromId, toId) => {
+      const orderedIds = ["3", "4"];
+      const fromIndex = orderedIds.indexOf(fromId);
+      const toIndex = orderedIds.indexOf(toId);
+      if (fromIndex < 0 || toIndex < 0) return null;
+      return orderedIds.slice(
+        Math.min(fromIndex, toIndex),
+        Math.max(fromIndex, toIndex) + 1,
+      );
+    },
+    getOrderedKeys: () => ["3", "4"],
+  });
+  harness.controller.seat("3");
+
+  activate(harness, "4", { shift: true });
+
+  expect(harness.getKeys()).toEqual(["3", "4"]);
 });
 
 test("duplicate delegate registrations clean up independently", () => {

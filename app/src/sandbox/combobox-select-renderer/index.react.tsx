@@ -69,14 +69,14 @@ const horizontalItems = [
 ] satisfies readonly ComboboxRendererItem[];
 
 const automaticRangeItems = [
-  { id: "automatic-range-alpha", value: "Range alpha" },
-  { id: "automatic-range-beta", value: "Range beta" },
+  { id: "automatic-range-alpha", value: "Range alpha", selectable: true },
+  { id: "automatic-range-beta", value: "Range beta", selectable: true },
   {
     id: "automatic-range-unavailable",
     value: "Range unavailable",
     disabled: true,
   },
-  { id: "automatic-range-gamma", value: "Range gamma" },
+  { id: "automatic-range-gamma", value: "Range gamma", selectable: true },
 ] satisfies readonly ComboboxRendererItem[];
 
 const duplicateValueItems = [
@@ -367,10 +367,17 @@ function AutomaticComboboxRangeRenderer() {
         <ComboboxRenderer
           store={store}
           items={automaticRangeItems}
-          initialItems={automaticRangeItems.length}
+          initialItems={1}
+          persistentIndices={[automaticRangeItems.length - 1]}
+          scrollElement={null}
         >
-          {({ value, ...item }) => (
-            <Ariakit.ComboboxItem key={item.id} {...item} value={value} />
+          {({ value, selectable, ...item }) => (
+            <Ariakit.ComboboxItem
+              key={item.id}
+              {...item}
+              value={value}
+              data-range-selectable={selectable || undefined}
+            />
           )}
         </ComboboxRenderer>
       </Ariakit.ComboboxList>
@@ -397,10 +404,17 @@ function AutomaticSelectRangeRenderer() {
         <SelectRenderer
           store={store}
           items={automaticRangeItems}
-          initialItems={automaticRangeItems.length}
+          initialItems={1}
+          persistentIndices={[automaticRangeItems.length - 1]}
+          scrollElement={null}
         >
-          {({ value, ...item }) => (
-            <Ariakit.SelectItem key={item.id} {...item} value={value} />
+          {({ value, selectable, ...item }) => (
+            <Ariakit.SelectItem
+              key={item.id}
+              {...item}
+              value={value}
+              data-range-selectable={selectable || undefined}
+            />
           )}
         </SelectRenderer>
       </Ariakit.SelectList>

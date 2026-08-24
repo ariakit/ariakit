@@ -3,6 +3,7 @@ import { getDocument, getWindow } from "@ariakit/utils";
 
 export interface CollectionRendererRangeItem {
   id: string;
+  selectionKey?: string;
   selectable: boolean;
   items?: readonly CollectionRendererRangeItem[];
 }
@@ -26,10 +27,15 @@ interface NodeRegistration {
 
 interface ResolvedRangeItem {
   id: string;
+  selectionKey: string;
   selectable: boolean;
 }
 
 type ResolveSelectable = (id: string, fallback: boolean) => boolean;
+type ResolveSelectionKey = (
+  id: string,
+  fallbackKey: string,
+) => string | null | undefined;
 
 function addRangeItem(
   rangeItems: ResolvedRangeItem[],
@@ -39,19 +45,29 @@ function addRangeItem(
   const itemIndex = itemIndices.get(item.id);
   if (itemIndex == null) {
     itemIndices.set(item.id, rangeItems.length);
-    rangeItems.push({ id: item.id, selectable: item.selectable });
+    rangeItems.push({
+      id: item.id,
+      selectionKey: item.selectionKey ?? item.id,
+      selectable: item.selectable,
+    });
     return;
   }
   const rangeItem = rangeItems[itemIndex];
   if (!rangeItem) return;
   if (!item.selectable) return;
   if (rangeItem.selectable) return;
-  rangeItems[itemIndex] = { ...rangeItem, selectable: true };
+  rangeItems[itemIndex] = {
+    ...rangeItem,
+    selectionKey: item.selectionKey ?? item.id,
+    selectable: true,
+  };
 }
 
 export function createCollectionRendererRangeTree(
   rootNode: CollectionRendererRangeNode,
   resolveSelectable: ResolveSelectable = (_itemId, fallback) => fallback,
+  resolveSelectionKey: ResolveSelectionKey = (_itemId, fallbackKey) =>
+    fallbackKey,
 ): CollectionRendererRangeTree {
   let nextSequence = 0;
   const registrations = new Map<
@@ -166,14 +182,20 @@ export function createCollectionRendererRangeTree(
       return rangeItems
         .slice(startIndex, endIndex + 1)
         .filter((item) => resolveSelectable(item.id, item.selectable))
-        .map((item) => item.id);
+        .flatMap((item) => {
+          const key = resolveSelectionKey(item.id, item.selectionKey);
+          return key == null ? [] : [key];
+        });
     },
     getOrderedKeys() {
       const rangeItems = resolveItems();
       if (!rangeItems) return null;
       return rangeItems
         .filter((item) => resolveSelectable(item.id, item.selectable))
-        .map((item) => item.id);
+        .flatMap((item) => {
+          const key = resolveSelectionKey(item.id, item.selectionKey);
+          return key == null ? [] : [key];
+        });
     },
   };
 

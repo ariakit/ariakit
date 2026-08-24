@@ -242,6 +242,22 @@ test("keeps order across sparse item arrays", () => {
   ]);
 });
 
+test("locates range endpoints by id and returns selection keys", () => {
+  const root = createRangeNode({
+    items: [
+      { id: "first", selectionKey: "First value", selectable: true },
+      { id: "last", selectionKey: "Last value", selectable: true },
+    ],
+  });
+  const tree = createCollectionRendererRangeTree(root.node);
+
+  expect(tree.delegate.getKeysInRange("first", "last")).toEqual([
+    "First value",
+    "Last value",
+  ]);
+  expect(tree.delegate.getOrderedKeys()).toEqual(["First value", "Last value"]);
+});
+
 test("live opt-ins override item data only while they are registered", () => {
   const root = createRangeNode({
     items: [

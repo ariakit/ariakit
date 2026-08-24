@@ -229,14 +229,20 @@ function getRangeItems(
       : undefined;
     return {
       id,
+      selectionKey:
+        typeof itemObject.value === "string" ? itemObject.value : id,
       selectable: itemObject.selectable === true,
       items: nestedItems,
     };
   });
 }
 
+interface RendererSelectableController extends SelectableController {
+  getSelectionKey(id: string, fallbackKey?: string): string | null | undefined;
+}
+
 interface StoreWithSelection {
-  unstable_selection?: SelectableController;
+  unstable_selection?: RendererSelectableController;
 }
 
 function getItemSize(
@@ -642,8 +648,6 @@ export function useCollectionRenderer<T extends Item = any>({
   const baseId = useId(props.id);
   const selection = (store as StoreWithSelection | undefined)
     ?.unstable_selection;
-  const storeRef = useLiveRef(store);
-  const selectionRef = useLiveRef(selection);
   const rangeItems = useMemo(() => {
     if (!selection) return null;
     if (!baseId) return null;
@@ -663,19 +667,29 @@ export function useCollectionRenderer<T extends Item = any>({
       getParent: () => rangeParentNodeRef.current,
     };
   }, [rangeAnchorIdRef, rangeItemsRef, rangeParentNodeRef]);
+  const resolveRangeSelectable = useEvent((id: string, fallback: boolean) => {
+    if (!selection) return fallback;
+    if (selection.hasOptIn(id)) {
+      return selection.isOptedIn(id);
+    }
+    if (!store?.item(id)) return fallback;
+    return selection.isSelectable(id);
+  });
+  const resolveRangeSelectionKey = useEvent(
+    (id: string, fallbackKey: string) => {
+      if (!selection) return fallbackKey;
+      return selection.getSelectionKey(id, fallbackKey);
+    },
+  );
   const ownRangeTree = useMemo(() => {
-    // The tree stores these callbacks without invoking their live refs.
-    // oxlint-disable-next-line react/refs
-    return createCollectionRendererRangeTree(rangeNode, (id, fallback) => {
-      const currentSelection = selectionRef.current;
-      if (!currentSelection) return fallback;
-      if (currentSelection.hasOptIn(id)) {
-        return currentSelection.isOptedIn(id);
-      }
-      if (!storeRef.current?.item(id)) return fallback;
-      return currentSelection.isSelectable(id);
-    });
-  }, [rangeNode, selectionRef, storeRef]);
+    return createCollectionRendererRangeTree(
+      // The tree stores these callbacks without invoking their live refs.
+      // oxlint-disable-next-line react/refs
+      rangeNode,
+      resolveRangeSelectable,
+      resolveRangeSelectionKey,
+    );
+  }, [rangeNode, resolveRangeSelectable, resolveRangeSelectionKey]);
   const rangeTree = parent?.rangeTree ?? ownRangeTree;
   const isRangeRoot = !parent;
 

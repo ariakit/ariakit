@@ -83,6 +83,70 @@ test.each([
   },
 );
 
+test.each([
+  {
+    char: "\b",
+    expectedValue: "draf",
+    key: "Backspace",
+    modifier: "Control",
+    options: { ctrlKey: true },
+    position: 5,
+  },
+  {
+    char: "\x7f",
+    expectedValue: "draf",
+    key: "Delete",
+    modifier: "Control",
+    options: { ctrlKey: true },
+    position: 4,
+  },
+  {
+    char: "\b",
+    expectedValue: "draf",
+    key: "Backspace",
+    modifier: "Meta",
+    options: { metaKey: true },
+    position: 5,
+  },
+  {
+    char: "\x7f",
+    expectedValue: "draf",
+    key: "Delete",
+    modifier: "Meta",
+    options: { metaKey: true },
+    position: 4,
+  },
+])(
+  "type preserves $modifier+$key deletion",
+  async ({ char, expectedValue, options, position }) => {
+    const input = createInput("draft");
+    const onInput = vi.fn();
+    input.addEventListener("input", onInput);
+    input.setSelectionRange(position, position);
+
+    await type(char, input, options);
+
+    expect(input.value).toBe(expectedValue);
+    expect(onInput).toHaveBeenCalledOnce();
+  },
+);
+
+test.each([
+  { modifier: "Control", options: { ctrlKey: true } },
+  { modifier: "Meta", options: { metaKey: true } },
+])(
+  "type preserves $modifier+Backspace deletion in an email input",
+  async ({ options }) => {
+    const input = createInput("draft");
+    input.type = "email";
+
+    await type("\b", input, options);
+
+    expect(input).toHaveValue("draf");
+    expect(input).toHaveAttribute("type", "email");
+  },
+);
+
 test("type does not dispatch change after typing on a non-text field", async () => {
   const target = document.createElement("div");
   const onChange = trackChange(target);

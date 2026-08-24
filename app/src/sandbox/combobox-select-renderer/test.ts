@@ -37,16 +37,16 @@ for (const renderer of ["ComboboxRenderer", "SelectRenderer"]) {
     });
 
     // https://github.com/ariakit/ariakit/issues/7114
-    test("selects a mounted automatic range without selectable item data", async () => {
+    test("selects an unmounted automatic range from renderer data", async () => {
+      expect(q.option.maybe("Range beta")).not.toBeInTheDocument();
+      expect(q.option.maybe("Range unavailable")).not.toBeInTheDocument();
+
       await click(q.option("Range alpha"));
       await click(q.option("Range gamma"), { shiftKey: true });
 
       expect(q.option("Range alpha")).toHaveAttribute("aria-selected", "true");
       expect(q.option("Range beta")).toHaveAttribute("aria-selected", "true");
-      expect(q.option("Range unavailable")).not.toHaveAttribute(
-        "aria-selected",
-        "true",
-      );
+      expect(q.option.maybe("Range unavailable")).not.toBeInTheDocument();
       expect(q.option("Range gamma")).toHaveAttribute("aria-selected", "true");
       expect(q.status("Automatic renderer selection")).toHaveTextContent(
         "Range alpha, Range beta, Range gamma",

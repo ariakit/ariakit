@@ -70,6 +70,11 @@ export interface SelectableController {
   addRangeDelegate(delegate: SelectableRangeDelegate): () => void;
 }
 
+interface InternalSelectableController extends SelectableController {
+  /** Uses renderer data only when the collection has no item for the ID. */
+  getSelectionKey(id: string, fallbackKey?: string): string | null | undefined;
+}
+
 interface OptInRegistration {
   selectable: boolean;
   token: object;
@@ -82,7 +87,7 @@ interface RangeDelegateRegistration {
 interface ResolvedRange {
   delegate?: SelectableRangeDelegate;
   delegated: boolean;
-  ids: readonly string[] | null;
+  keys: readonly string[] | null;
 }
 
 interface PendingKeysTransition {
@@ -384,9 +389,29 @@ export function createSelectableController(
 
   const getDelegateOrderedKeys = (delegate: SelectableRangeDelegate) => {
     if (typeof delegate.getOrderedKeys !== "function") return;
-    const ids = delegate.getOrderedKeys();
-    if (ids == null) return;
-    return getSelectionKeys(ids);
+    const keys = delegate.getOrderedKeys();
+    if (keys == null) return;
+    return uniqueKeys(keys);
+  };
+
+  const getRegisteredDelegateScope = (
+    requiredDelegate: SelectableRangeDelegate,
+  ) => {
+    let foundRequiredDelegate = false;
+    let orderedKeys: readonly string[] = [];
+    for (const delegate of getRangeDelegates()) {
+      if (delegate === requiredDelegate) {
+        foundRequiredDelegate = true;
+      }
+      const delegateKeys = getDelegateOrderedKeys(delegate);
+      if (!delegateKeys) {
+        if (delegate === requiredDelegate) return;
+        continue;
+      }
+      orderedKeys = addKeys(orderedKeys, delegateKeys);
+    }
+    if (!foundRequiredDelegate) return;
+    return orderedKeys;
   };
 
   const getReplacementScope = (id: string) => {
@@ -398,7 +423,7 @@ export function createSelectableController(
       for (const delegate of getRangeDelegates()) {
         const targetRange = delegate.getKeysInRange(id, id);
         if (targetRange == null) continue;
-        return getDelegateOrderedKeys(delegate);
+        return getRegisteredDelegateScope(delegate);
       }
       return;
     }
@@ -464,32 +489,35 @@ export function createSelectableController(
       return {
         delegate: explicitDelegate,
         delegated: true,
-        ids: explicitDelegate.getKeysInRange(fromId, toId),
+        keys: explicitDelegate.getKeysInRange(fromId, toId),
       };
     }
     if (rangeDelegates.size) {
       for (const delegate of getRangeDelegates()) {
-        const ids = delegate.getKeysInRange(fromId, toId);
-        if (ids == null) continue;
-        return { delegate, delegated: true, ids };
+        const keys = delegate.getKeysInRange(fromId, toId);
+        if (keys == null) continue;
+        return { delegate, delegated: true, keys };
       }
-      return { delegated: true, ids: null };
+      return { delegated: true, keys: null };
     }
     const orderedIds = getRenderedOrderedIds();
     const fromIndex = orderedIds.indexOf(fromId);
     const toIndex = orderedIds.indexOf(toId);
     if (fromIndex < 0 || toIndex < 0) {
-      return { delegated: false, ids: null };
+      return { delegated: false, keys: null };
     }
     const startIndex = Math.min(fromIndex, toIndex);
     const endIndex = Math.max(fromIndex, toIndex);
     const ids = orderedIds.slice(startIndex, endIndex + 1).filter(isSelectable);
-    return { delegated: false, ids };
+    return { delegated: false, keys: getSelectionKeys(ids) };
   };
 
   const getRangeScope = (range: ResolvedRange) => {
     if (range.delegate) {
-      return getDelegateOrderedKeys(range.delegate);
+      if (range.delegate === options.rangeDelegate) {
+        return getDelegateOrderedKeys(range.delegate);
+      }
+      return getRegisteredDelegateScope(range.delegate);
     }
     if (range.delegated) return;
     return getRenderedOrderedSelectionKeys();
@@ -538,7 +566,7 @@ export function createSelectableController(
     }
     baseKeys ??= options.getKeys().slice();
     const range = getRange(resolveTarget(rangeAnchor), targetId);
-    if (range.ids == null) {
+    if (range.keys == null) {
       warnUnresolvedRange();
       const key = getSelectionKey(targetId);
       if (key != null && isSelectable(targetId)) {
@@ -546,7 +574,7 @@ export function createSelectableController(
       }
       return;
     }
-    const rangeKeys = getSelectionKeys(range.ids);
+    const rangeKeys = uniqueKeys(range.keys);
     if (operation === "add") {
       commitKeys(addKeys(baseKeys, rangeKeys));
       return;
@@ -713,8 +741,14 @@ export function createSelectableController(
     return ignoredEvents.has(getEventIdentity(event));
   };
 
-  return {
+  const controller: InternalSelectableController = {
     getMode: () => options.getMode(),
+    getSelectionKey: (id, fallbackKey) => {
+      const key = getSelectionKey(id);
+      if (key != null) return key;
+      if (options.collection.item(id)) return key;
+      return fallbackKey;
+    },
     isSelected,
     isSelectable,
     hasOptIn,
@@ -732,4 +766,5 @@ export function createSelectableController(
     setOptIn,
     addRangeDelegate,
   };
+  return controller;
 }

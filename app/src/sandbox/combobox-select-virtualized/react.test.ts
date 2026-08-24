@@ -98,6 +98,25 @@ test("extends a reverse range across sibling renderers", async () => {
 });
 
 // https://github.com/ariakit/ariakit/issues/7114
+test("reseats the range after editable auto-selection moves", async () => {
+  await click(q.button("Clear"));
+  await click(q.combobox("Multiple countries"));
+  await click(q.option("Argentina"));
+  const search = q.combobox("Search multiple countries");
+  await type("land", search);
+  await expect
+    .poll(q.option.lazy("Finland"))
+    .toHaveAttribute("data-active-item", "true");
+
+  await press.ArrowDown(search, { shiftKey: true });
+
+  const selection = q.status("Virtual selection");
+  expect(selection).toHaveTextContent("Argentina");
+  expect(selection).toHaveTextContent("Finland");
+  expect(selection).toHaveTextContent("Iceland");
+});
+
+// https://github.com/ariakit/ariakit/issues/7114
 test("restores aggregate order after an empty filter", async () => {
   await click(q.button("Clear"));
   await click(q.combobox("Multiple countries"));

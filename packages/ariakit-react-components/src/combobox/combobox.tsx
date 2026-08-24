@@ -450,7 +450,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
             id: nextActiveId,
             value: nextActiveValue,
           };
-          store.move(nextActiveId);
+          store.move(nextActiveId, { anchor: true });
         } else {
           // The same item is already the focused active item, so we skip the
           // move to avoid re-focusing it. Keep activeValue in sync (a no-op

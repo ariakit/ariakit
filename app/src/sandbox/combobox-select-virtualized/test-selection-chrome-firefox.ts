@@ -118,6 +118,27 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7114
+  test("reseats the range after editable auto-selection moves", async ({
+    q,
+  }) => {
+    await q.button("Clear").click();
+    await q.combobox("Multiple countries").click();
+    await q.option("Argentina").click();
+    const search = q.combobox("Search multiple countries");
+    await search.fill("land");
+    await test
+      .expect(q.option("Finland"))
+      .toHaveAttribute("data-active-item", "true");
+
+    await search.press("Shift+ArrowDown");
+
+    const selection = q.status("Virtual selection");
+    await test.expect(selection).toContainText("Argentina");
+    await test.expect(selection).toContainText("Finland");
+    await test.expect(selection).toContainText("Iceland");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7114
   test("restores aggregate order after an empty filter", async ({ q }) => {
     await q.button("Clear").click();
     await q.combobox("Multiple countries").click();

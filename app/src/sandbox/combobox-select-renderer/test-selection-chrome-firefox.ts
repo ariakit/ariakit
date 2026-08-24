@@ -10,9 +10,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
       });
 
       // https://github.com/ariakit/ariakit/issues/7114
-      test("selects a mounted automatic range without selectable item data", async ({
+      test("selects an unmounted automatic range from renderer data", async ({
         q,
       }) => {
+        await test.expect(q.option("Range beta")).toHaveCount(0);
+        await test.expect(q.option("Range unavailable")).toHaveCount(0);
+
         await q.option("Range alpha").click();
         await q.option("Range gamma").click({ modifiers: ["Shift"] });
 
@@ -22,9 +25,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await test
           .expect(q.option("Range beta"))
           .toHaveAttribute("aria-selected", "true");
-        await test
-          .expect(q.option("Range unavailable"))
-          .not.toHaveAttribute("aria-selected", "true");
+        await test.expect(q.option("Range unavailable")).toHaveCount(0);
         await test
           .expect(q.option("Range gamma"))
           .toHaveAttribute("aria-selected", "true");

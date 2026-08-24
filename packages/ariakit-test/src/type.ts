@@ -65,13 +65,16 @@ export function type(
 
     const keyboardOptions = options as KeyboardEventInit;
     const commandModified = keyboardOptions.ctrlKey || keyboardOptions.metaKey;
-    const restoreEmailInput = commandModified
-      ? () => {}
-      : workAroundEmailInput(element);
+    const hasDeletion = text.includes("\b") || text.includes("\x7f");
+    const restoreEmailInput =
+      commandModified && !hasDeletion
+        ? () => {}
+        : workAroundEmailInput(element);
 
     for (const char of text) {
       const key = getKeyFromChar(char);
       const eventOptions = getKeyboardEventOptions(key, keyboardOptions);
+      const deletion = char === "\x7f" || char === "\b";
       let value = "";
       let inputType = options.isComposing
         ? "insertCompositionText"
@@ -81,7 +84,7 @@ export function type(
       // Keydown may move focus; continue typing at the new active element.
       element = getActiveElement(element) || element;
 
-      if (isTextField(element) && !commandModified) {
+      if (isTextField(element) && (!commandModified || deletion)) {
         const input = element as DirtiableElement & TextField;
         const [start, end] = [
           input.selectionStart ?? 0,
