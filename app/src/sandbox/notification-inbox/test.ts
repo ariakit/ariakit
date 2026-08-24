@@ -56,6 +56,23 @@ test("restores a durable conversation from an untimed notification", async () =>
   expect(q.button(/Maya Chen/)).toBeInTheDocument();
 });
 
+// https://github.com/ariakit/ariakit/issues/7235
+test("updates the inbox conversation counts", async () => {
+  const inbox = q.link(/Inbox/);
+  expect(q.text("4 conversations")).toBeVisible();
+  expect(inbox).toHaveTextContent("4");
+
+  for (let index = 0; index < 3; index += 1) {
+    await click(q.button("Move to Trash"));
+  }
+  expect(q.text("1 conversation")).toBeVisible();
+  expect(inbox).toHaveTextContent("1");
+
+  await click(q.button("Receive message"));
+  expect(q.text("2 conversations")).toBeVisible();
+  expect(inbox).toHaveTextContent("2");
+});
+
 test("limits the visual stack and lets the app focus its region", async () => {
   for (let index = 0; index < 4; index += 1) {
     await click(q.button("Receive message"));

@@ -165,6 +165,8 @@ export const useNotification = createHook<TagName, NotificationOptions>(
     const swipeRef = useRef<SwipeState | null>(null);
     const [headingId, setHeadingId] = useState<string>();
     const [messageId, setMessageId] = useState<string>();
+    const ariaLabel = props["aria-label"];
+    const ariaLabelledBy = props["aria-labelledby"];
     const timeout = useStoreState(store, ["timeout"], (state) => {
       if (hasOwnProperty(item, "timeout") && item.timeout !== undefined) {
         return item.timeout;
@@ -192,6 +194,7 @@ export const useNotification = createHook<TagName, NotificationOptions>(
     }, [list, region]);
 
     useSafeLayoutEffect(() => {
+      if (process.env.NODE_ENV === "production") return;
       const element = ref.current;
       if (!element) return;
       queueMicrotask(() => {
@@ -212,11 +215,8 @@ export const useNotification = createHook<TagName, NotificationOptions>(
             element,
           );
         }
-        if (element.hasAttribute("aria-label")) {
-          element.removeAttribute("aria-labelledby");
-        }
       });
-    });
+    }, [timeout, headingId, messageId, ariaLabel, ariaLabelledBy]);
 
     useSafeLayoutEffect(() => {
       const element = ref.current;
@@ -384,7 +384,8 @@ export const useNotification = createHook<TagName, NotificationOptions>(
     const labelledBy =
       props["aria-label"] != null ? undefined : headingId || messageId;
     const describedBy = headingId ? messageId : undefined;
-    const touchAction = getTouchAction(swipeDirection);
+    const touchAction =
+      removeOnSwipeProp === false ? undefined : getTouchAction(swipeDirection);
     const style: CSSProperties = {
       touchAction,
       ...props.style,

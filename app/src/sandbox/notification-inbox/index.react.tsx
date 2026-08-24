@@ -206,7 +206,11 @@ function useRegionHotkey(regionRef: RefObject<HTMLDivElement | null>) {
   }, [regionRef]);
 }
 
-function Sidebar() {
+interface SidebarProps {
+  count: number;
+}
+
+function Sidebar({ count }: SidebarProps) {
   return (
     <aside className="hidden border-e border-black/8 p-4 md:flex md:flex-col ak-dark:border-white/10">
       <div className="flex items-center gap-2 px-2 py-3">
@@ -227,7 +231,12 @@ function Sidebar() {
           href="#inbox"
         >
           <span aria-hidden>✦</span> Inbox
-          <span className="ms-auto ak-badge ak-layer ak-layer-primary">4</span>
+          <span
+            aria-label={`${count} ${count === 1 ? "conversation" : "conversations"} in Inbox`}
+            className="ms-auto ak-badge ak-layer ak-layer-primary"
+          >
+            {count}
+          </span>
         </a>
         <a className="ak-button justify-start" href="#starred">
           <span aria-hidden>☆</span> Starred
@@ -254,12 +263,18 @@ function Sidebar() {
 }
 
 interface MessageListProps {
+  count: number;
   messages: MailMessage[];
   selectedId: string;
   onSelect: (id: string) => void;
 }
 
-function MessageList({ messages, selectedId, onSelect }: MessageListProps) {
+function MessageList({
+  count,
+  messages,
+  selectedId,
+  onSelect,
+}: MessageListProps) {
   return (
     <section id="inbox" aria-labelledby="inbox-heading" className="min-w-0">
       <div className="flex items-center justify-between border-b border-black/8 px-4 py-4 sm:px-6 ak-dark:border-white/10">
@@ -270,7 +285,9 @@ function MessageList({ messages, selectedId, onSelect }: MessageListProps) {
           >
             Inbox
           </h1>
-          <p className="mt-0.5 text-xs ak-ink-2">4 conversations</p>
+          <p className="mt-0.5 text-xs ak-ink-2">
+            {count} {count === 1 ? "conversation" : "conversations"}
+          </p>
         </div>
         <button
           className="ak-button ak-button-square"
@@ -506,7 +523,7 @@ export default function Example() {
     <>
       <div className="min-h-dvh bg-[radial-gradient(circle_at_top_left,oklch(96%_0.035_250),transparent_35%),radial-gradient(circle_at_bottom_right,oklch(97%_0.03_330),transparent_32%)] p-2 sm:p-4 ak-dark:bg-[radial-gradient(circle_at_top_left,oklch(24%_0.04_250),transparent_36%),radial-gradient(circle_at_bottom_right,oklch(21%_0.035_330),transparent_32%)]">
         <main className="mx-auto grid min-h-[calc(100dvh-1rem)] max-w-7xl overflow-hidden ak-frame ak-frame-card/2 ak-frame-p-0 ak-layer ak-layer-lighten-6 ak-frame-bordering shadow-2xl shadow-black/10 md:grid-cols-[15rem_minmax(20rem,0.85fr)_minmax(28rem,1.15fr)] sm:min-h-[calc(100dvh-2rem)] ak-dark:shadow-black/30">
-          <Sidebar />
+          <Sidebar count={messages.length} />
           <div className="min-w-0">
             <header className="flex items-center gap-3 border-b border-black/8 px-4 py-3 sm:px-6 ak-dark:border-white/10">
               <label className="relative min-w-0 flex-1">
@@ -542,6 +559,7 @@ export default function Example() {
               </span>
             </header>
             <MessageList
+              count={messages.length}
               messages={visibleMessages}
               selectedId={selectedId}
               onSelect={setSelectedId}

@@ -9,7 +9,7 @@ import { NotificationMessage } from "@ariakit/react-components/notification/noti
 import { NotificationProvider } from "@ariakit/react-components/notification/notification-provider";
 import { NotificationRegion } from "@ariakit/react-components/notification/notification-region";
 import { useNotificationStore } from "@ariakit/react-components/notification/notification-store";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "#app/icons/icon.react.tsx";
 
 type UploadTone = "info" | "progress" | "success" | "warning" | "danger";
@@ -378,6 +378,15 @@ export default function Example() {
     "all" | "attention"
   >("all");
   const batchCountRef = useRef(0);
+  const searchAnnouncementRef = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    return () => {
+      const timer = searchAnnouncementRef.current;
+      if (timer === undefined) return;
+      window.clearTimeout(timer);
+    };
+  }, []);
 
   const visibleFiles = useMemo(() => filterFiles(search), [search]);
   const transfer = transfers.find((item) => item.id === "design-assets");
@@ -490,10 +499,17 @@ export default function Example() {
 
   const updateSearch = (value: string) => {
     setSearch(value);
-    const resultCount = filterFiles(value).length;
-    notifications.announce(
-      `${resultCount} ${resultCount === 1 ? "file" : "files"} found.`,
-    );
+    const timer = searchAnnouncementRef.current;
+    if (timer !== undefined) {
+      window.clearTimeout(timer);
+    }
+    searchAnnouncementRef.current = window.setTimeout(() => {
+      searchAnnouncementRef.current = undefined;
+      const resultCount = filterFiles(value).length;
+      notifications.announce(
+        `${resultCount} ${resultCount === 1 ? "file" : "files"} found.`,
+      );
+    }, 300);
   };
 
   return (

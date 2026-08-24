@@ -17,6 +17,25 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toContainText("12 files uploaded successfully.");
   });
 
+  // https://github.com/ariakit/ariakit/issues/7235
+  test("debounces search result announcements", async ({ page, q }) => {
+    const search = q.textbox("Search files");
+    const announcements = q
+      .log(undefined, { includeHidden: true })
+      .filter({ hasText: /files? found\./ });
+
+    await search.pressSequentially("archive");
+
+    await test.expect(q.text("1 item")).toBeVisible();
+    await test.expect(announcements).toHaveCount(0);
+    // No DOM state tracks the pending 300ms debounce. Cross it while staying
+    // within the announcer node's separate 350ms lifetime.
+    await page.waitForTimeout(350);
+    await test.expect(announcements).toHaveCount(1);
+    await test.expect(announcements).toHaveText("1 file found.");
+    await test.expect(q.alertdialog()).toHaveCount(1);
+  });
+
   test("limits a burst and filters the stack for attention", async ({ q }) => {
     await q.button("Queue 10 files").click();
 

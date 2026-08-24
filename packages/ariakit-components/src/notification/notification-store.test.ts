@@ -299,6 +299,27 @@ test("supports an empty string authored id", () => {
   expect(store.item("")).toBeNull();
 });
 
+test("preserves required fields at untyped update boundaries", () => {
+  const store = createNotificationStore<{ userId: string }>();
+  const id = store.push({
+    heading: "Saved",
+    message: "The document was saved.",
+    data: { userId: "1" },
+  });
+
+  Reflect.apply(store.update, undefined, [
+    id,
+    { heading: undefined, message: undefined },
+    { announce: false },
+  ]);
+
+  expect(store.item(id)).toMatchObject({
+    message: "The document was saved.",
+    data: { userId: "1" },
+  });
+  expect(store.item(id)?.heading).toBeUndefined();
+});
+
 test("announces record text and only re-announces meaningful updates", () => {
   const store = createNotificationStore<{ progress?: number }>();
   const id = store.push({

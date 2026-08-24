@@ -19,18 +19,22 @@ test("updates one upload notification through completion", async () => {
   );
 });
 
+// https://github.com/ariakit/ariakit/issues/7235
 test("announces search results without adding a card", async () => {
   expect(q.alertdialog.all()).toHaveLength(1);
+
+  const getSearchAnnouncements = () =>
+    q.log.all
+      .hidden()
+      .map((log) => log.textContent)
+      .filter((text) => text?.includes("found."));
 
   await typeText("archive", q.textbox("Search files"));
 
   expect(q.alertdialog.all()).toHaveLength(1);
   expect(q.text("1 item")).toBeVisible();
-  expect(
-    q.log.all
-      .hidden()
-      .some((log) => log.textContent?.includes("1 file found.")),
-  ).toBe(true);
+  expect(getSearchAnnouncements()).toEqual([]);
+  await expect.poll(getSearchAnnouncements).toEqual(["1 file found."]);
 });
 
 test("shows the latest three burst records and filters for attention", async () => {

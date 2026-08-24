@@ -135,6 +135,8 @@ function NotificationCard({
   onActivity,
 }: NotificationCardProps) {
   const data = item.data;
+  const explicitHeadingId =
+    data.policy === "locked" ? "swipe-locked-heading" : undefined;
   const removeOnSwipe =
     data.policy === "locked"
       ? false
@@ -157,6 +159,8 @@ function NotificationCard({
       data-policy={data.policy}
       data-tone={data.tone}
       className="notification-card"
+      aria-label={explicitHeadingId ? "Swipe locked" : undefined}
+      aria-labelledby={explicitHeadingId}
       removeOnSwipe={removeOnSwipe}
       swipeDirection={data.directions}
     >
@@ -177,7 +181,7 @@ function NotificationCard({
             {getGestureLabel(data, direction)}
           </span>
         </div>
-        <NotificationHeading className="card-heading" />
+        <NotificationHeading id={explicitHeadingId} className="card-heading" />
         <NotificationMessage className="card-message" />
         {data.undo && (
           <button

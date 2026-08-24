@@ -38,6 +38,30 @@ test("preserves the notification record and component type contracts", () => {
     // @ts-expect-error TS2561: Did you mean `message`?
     plain.push({ mesage: "Saved." });
 
+    notifications.update("n1", {});
+    notifications.update("n1", {
+      message: "Restored.",
+      heading: undefined,
+      announceMessage: undefined,
+      timeout: undefined,
+      priority: undefined,
+      data: undefined,
+    });
+    strict.update("n1", { data: { userId: "2" } });
+    plain.update("n1", { data: undefined });
+    // @ts-expect-error TS2345: Message cannot be cleared with `undefined`.
+    notifications.update("n1", { message: undefined });
+    // @ts-expect-error TS2345: Optional fields cannot hide an invalid message.
+    notifications.update("n1", { heading: undefined, message: undefined });
+    // @ts-expect-error TS2345: Data is required for this record type.
+    strict.update("n1", { data: undefined });
+    // @ts-expect-error TS2345: Optional fields cannot hide invalid data.
+    strict.update("n1", { heading: undefined, data: undefined });
+    // @ts-expect-error TS2561: Did you mean `message`?
+    notifications.update("n1", { mesage: "Restored." });
+    // @ts-expect-error TS2353: A valid field cannot hide an immutable id.
+    notifications.update("n1", { message: "Restored.", id: "n2" });
+
     createNotificationStore<NotificationData>({ defaultItems: [] });
 
     const seed: NotificationStoreItem<NotificationData>[] = [

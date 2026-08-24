@@ -132,6 +132,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toBeVisible();
 
     const locked = q.alertdialog("Swipe locked");
+    await test.expect(locked).toHaveCSS("touch-action", "auto");
+    await test
+      .expect(locked)
+      .toHaveAttribute("aria-labelledby", "swipe-locked-heading");
+    await test.expect(touchOnly).toHaveCSS("touch-action", "pan-y");
     await startPointerDrag({ deltaX: 72, deltaY: 0, page, target: locked });
     await test.expect(locked).not.toHaveAttribute("data-swiping");
     await page.mouse.up();

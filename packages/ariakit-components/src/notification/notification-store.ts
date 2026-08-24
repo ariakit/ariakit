@@ -41,7 +41,29 @@ export type NotificationPushProps<T = unknown> = Omit<
 
 type NotificationUpdateProps<T = unknown> = Partial<
   Omit<NotificationStoreItemBase, "id" | "createdAt">
-> & { data?: T };
+> & { data?: NotificationStoreItemData<T>["data"] };
+
+type RejectUndefinedProperty<P, K extends PropertyKey> = K extends keyof P
+  ? undefined extends P[K]
+    ? never
+    : unknown
+  : unknown;
+
+type NotificationUpdateValidation<T, P> =
+  Exclude<keyof P, keyof NotificationUpdateProps<T>> extends never
+    ? RejectUndefinedProperty<P, "message"> &
+        ({} extends T ? unknown : RejectUndefinedProperty<P, "data">)
+    : never;
+
+// BivariantCallback erases this generic's supplied-property inference.
+type NotificationUpdate<T> = {
+  bivarianceHack<P extends object>(
+    id: string,
+    partial: P &
+      NoInfer<NotificationUpdateProps<T> & NotificationUpdateValidation<T, P>>,
+    options?: NotificationUpdateOptions,
+  ): void;
+}["bivarianceHack"];
 
 export interface NotificationAnnounceProps {
   message: string;
@@ -330,6 +352,9 @@ export function createNotificationStore<T = unknown>(
         return;
       }
       const nextItem = { ...item, ...partial };
+      if (nextItem.message === undefined) {
+        nextItem.message = item.message;
+      }
       setItems((items) =>
         items.map((currentItem) =>
           currentItem.id === id ? nextItem : currentItem,
@@ -497,13 +522,7 @@ export interface NotificationStoreFunctions<T = unknown> {
       props: NotificationPushProps<T> | ({} extends T ? string : never),
     ) => string
   >;
-  update: BivariantCallback<
-    (
-      id: string,
-      partial: NotificationUpdateProps<T>,
-      options?: NotificationUpdateOptions,
-    ) => void
-  >;
+  update: NotificationUpdate<T>;
   remove: (id: string) => void;
   clear: () => void;
   announce: (props: string | NotificationAnnounceProps) => void;

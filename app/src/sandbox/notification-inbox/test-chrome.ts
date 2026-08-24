@@ -28,4 +28,21 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("Alt+t");
     await test.expect(q.region("Notifications")).toBeFocused();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7235
+  test("updates the inbox conversation counts", async ({ q }) => {
+    const inbox = q.link(/Inbox/);
+    await test.expect(q.text("4 conversations")).toBeVisible();
+    await test.expect(inbox).toContainText("4");
+
+    for (let index = 0; index < 3; index += 1) {
+      await q.button("Move to Trash").click();
+    }
+    await test.expect(q.text("1 conversation")).toBeVisible();
+    await test.expect(inbox).toContainText("1");
+
+    await q.button("Receive message").click();
+    await test.expect(q.text("2 conversations")).toBeVisible();
+    await test.expect(inbox).toContainText("2");
+  });
 });

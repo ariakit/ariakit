@@ -11,6 +11,19 @@ test("keeps the nested action interactive", async () => {
 });
 
 // https://github.com/ariakit/ariakit/issues/7235
+test("preserves explicit labels and native gestures when swipe is disabled", async () => {
+  const locked = q.alertdialog("Swipe locked");
+  const touchOnly = q.alertdialog("Touch only");
+
+  await expect
+    .poll(() => locked.getAttribute("aria-labelledby"))
+    .toBe("swipe-locked-heading");
+  expect(locked).toHaveAttribute("aria-label", "Swipe locked");
+  expect(locked.style.touchAction).toBe("");
+  expect(touchOnly.style.touchAction).toBe("pan-y");
+});
+
+// https://github.com/ariakit/ariakit/issues/7235
 test("advances and restores focus when focused cards are dismissed", async () => {
   const headings = [
     "Logical end",
