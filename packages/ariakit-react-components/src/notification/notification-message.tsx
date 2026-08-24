@@ -6,8 +6,9 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import type { ElementType } from "react";
-import { useContext } from "react";
+import { hasOwnProperty } from "@ariakit/utils";
+import type { ElementType, ReactNode } from "react";
+import { isValidElement, useContext } from "react";
 import {
   NotificationItemContext,
   NotificationMessageContext,
@@ -15,6 +16,20 @@ import {
 
 const TagName = "p" satisfies ElementType;
 type TagName = typeof TagName;
+
+interface ContentProps {
+  children?: ReactNode;
+  dangerouslySetInnerHTML?: { __html: string | TrustedHTML };
+}
+
+function hasInnerHTMLValue(props: ContentProps) {
+  return props.dangerouslySetInnerHTML?.__html != null;
+}
+
+function getRenderProps(render: unknown) {
+  if (!isValidElement<ContentProps>(render)) return;
+  return render.props;
+}
 
 /** Returns props to create a NotificationMessage component. */
 export const useNotificationMessage = createHook<
@@ -24,6 +39,15 @@ export const useNotificationMessage = createHook<
   const item = useContext(NotificationItemContext);
   const setMessageId = useContext(NotificationMessageContext);
   const id = useId(props.id);
+  const renderProps = getRenderProps(props.render);
+  const hasAuthoredInnerHTML =
+    hasInnerHTMLValue(props) ||
+    (!!renderProps && hasInnerHTMLValue(renderProps));
+  const children = hasOwnProperty(props, "children")
+    ? props.children
+    : hasAuthoredInnerHTML
+      ? undefined
+      : item?.message;
 
   useSafeLayoutEffect(() => {
     setMessageId?.(id);
@@ -31,8 +55,9 @@ export const useNotificationMessage = createHook<
   }, [setMessageId, id]);
 
   return {
-    children: item?.message,
+    "aria-label": hasAuthoredInnerHTML ? item?.message : undefined,
     ...props,
+    children,
     id,
   };
 });

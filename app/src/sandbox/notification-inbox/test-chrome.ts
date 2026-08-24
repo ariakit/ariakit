@@ -30,6 +30,29 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(q.alertdialog()).toBeFocused();
   });
 
+  test("releases focus pause across filtered lists", async ({ page, q }) => {
+    const url = new URL(page.url());
+    url.searchParams.set("notification-split", "1");
+    await page.goto(url.toString());
+
+    await q.button("Receive message").click();
+    await q.button("Simulate error").click();
+
+    const region = q.region("Notifications");
+    const notification = q.alertdialog("Message not sent");
+    const dismiss = query(notification).button("Dismiss Message not sent");
+    await dismiss.focus();
+    await test.expect(region).toHaveAttribute("data-paused");
+
+    await page.keyboard.press("Enter");
+
+    await test.expect(notification).toHaveCount(0);
+    await test
+      .expect(q.alertdialog("New message from Priya Shah"))
+      .toBeVisible();
+    await test.expect(region).not.toHaveAttribute("data-paused");
+  });
+
   test("restores a conversation from an untimed notification", async ({
     q,
   }) => {

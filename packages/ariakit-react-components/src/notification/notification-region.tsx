@@ -98,6 +98,8 @@ export const useNotificationRegion = createHook<
   );
 
   const restoreFocus = useEvent(() => {
+    focusReleaseRef.current?.();
+    focusReleaseRef.current = null;
     const finalFocusElement = getElementFromProp(finalFocus);
     if (finalFocusElement?.isConnected) {
       finalFocusElement.focus();

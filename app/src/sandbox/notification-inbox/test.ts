@@ -1,11 +1,15 @@
 import { createNotificationStore } from "@ariakit/components/notification/notification-store";
 import type { NotificationHeadingProps } from "@ariakit/react-components/notification/notification-heading";
+import type { NotificationMessageProps } from "@ariakit/react-components/notification/notification-message";
 import { click, press, q } from "@ariakit/test";
 import { render } from "@ariakit/test/react";
 import { createElement } from "react";
 import { afterEach, expect, test, vi } from "vitest";
 import { inboxNotifications } from "./notifications.ts";
-import { NotificationFixture } from "./test-fixture.react.tsx";
+import {
+  NotificationFixture,
+  SplitNotificationFixture,
+} from "./test-fixture.react.tsx";
 
 afterEach(() => {
   inboxNotifications.clear();
@@ -91,12 +95,12 @@ const headingContentCases: Array<{
     itemHeading: "Contextual heading",
   },
   {
-    description: "inner HTML content over a contextual heading",
+    description: "inner HTML markup without text over a contextual heading",
     headingProps: {
-      dangerouslySetInnerHTML: { __html: "<strong>Sync complete</strong>" },
+      dangerouslySetInnerHTML: { __html: "<span></span>" },
     },
-    expectedName: "Sync complete",
-    hasDescription: true,
+    expectedName: "report.pdf is ready",
+    hasDescription: false,
     itemHeading: "Contextual heading",
   },
   {
@@ -115,6 +119,28 @@ const headingContentCases: Array<{
     headingProps: {
       render: createElement("h2", {
         dangerouslySetInnerHTML: { __html: "<strong>Upload complete</strong>" },
+      }),
+    },
+    expectedName: "report.pdf is ready",
+    hasDescription: false,
+    itemHeading: "Contextual heading",
+  },
+  {
+    description: "explicitly labeled inner HTML",
+    headingProps: {
+      "aria-label": "Sync complete",
+      dangerouslySetInnerHTML: { __html: "<strong>Visible status</strong>" },
+    },
+    expectedName: "Sync complete",
+    hasDescription: true,
+    itemHeading: "Contextual heading",
+  },
+  {
+    description: "explicitly labeled render-element inner HTML",
+    headingProps: {
+      render: createElement("h2", {
+        "aria-label": "Upload complete",
+        dangerouslySetInnerHTML: { __html: "<strong>Visible status</strong>" },
       }),
     },
     expectedName: "Upload complete",
@@ -162,6 +188,66 @@ test("focuses a newly registered notification", async () => {
 
   unmount();
 });
+
+test("releases the focus pause when a filtered list has no successor", async () => {
+  const store = createNotificationStore();
+  store.push({ message: "Second notification", timeout: null });
+  const firstId = store.push({
+    message: "First notification",
+    timeout: null,
+  });
+  const { unmount } = await render(
+    createElement(SplitNotificationFixture, { store }),
+  );
+
+  const notification = q.alertdialog("First notification");
+  notification.focus();
+  await expect.poll(() => store.getState().paused).toBe(true);
+  store.remove(firstId);
+
+  expect(q.alertdialog("Second notification")).toBeVisible();
+  await expect.poll(() => store.getState().paused).toBe(false);
+
+  unmount();
+});
+
+const messageHTMLCases: Array<{
+  description: string;
+  messageProps: NotificationMessageProps;
+}> = [
+  {
+    description: "direct inner HTML",
+    messageProps: {
+      dangerouslySetInnerHTML: { __html: "<strong>Visible message</strong>" },
+    },
+  },
+  {
+    description: "render-element inner HTML",
+    messageProps: {
+      render: createElement("p", {
+        dangerouslySetInnerHTML: { __html: "<strong>Visible message</strong>" },
+      }),
+    },
+  },
+];
+
+test.each(messageHTMLCases)(
+  "uses the record message with $description",
+  async ({ messageProps }) => {
+    const store = createNotificationStore();
+    store.push({ message: "report.pdf is ready", timeout: null });
+    const { unmount } = await render(
+      createElement(NotificationFixture, { store, messageProps }),
+    );
+
+    const notification = q.alertdialog("report.pdf is ready");
+    expect(notification).toHaveTextContent("Visible message");
+    expect(notification).toHaveAttribute("aria-labelledby");
+    expect(notification).not.toHaveAttribute("aria-describedby");
+
+    unmount();
+  },
+);
 
 test("restores a durable conversation from an untimed notification", async () => {
   await click(q.button("Move to Trash"));

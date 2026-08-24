@@ -277,6 +277,12 @@ export function createNotificationStore<T = unknown>(
     notification.setState("items", (items) => {
       const nextItems = applyState(value, items);
       if (nextItems !== items) {
+        const itemIds = new Set(items.map((item) => item.id));
+        for (const item of nextItems) {
+          if (!itemIds.has(item.id)) {
+            resetDeadlineIds.add(item.id);
+          }
+        }
         props.setItems?.(nextItems);
       }
       return nextItems;

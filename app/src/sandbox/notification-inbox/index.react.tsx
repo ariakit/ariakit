@@ -153,13 +153,29 @@ interface NotificationStackProps {
 }
 
 function NotificationStack({ regionRef }: NotificationStackProps) {
-  const [limit] = useState(() => {
-    if (typeof window === "undefined") return 3;
-    const value = new URLSearchParams(window.location.search).get(
-      "notification-limit",
-    );
-    return value === "1" ? 1 : 3;
+  const [{ limit, split }] = useState(() => {
+    if (typeof window === "undefined") return { limit: 3, split: false };
+    const search = new URLSearchParams(window.location.search);
+    return {
+      limit: search.get("notification-limit") === "1" ? 1 : 3,
+      split: search.get("notification-split") === "1",
+    };
   });
+  const filters: Array<{
+    id: string;
+    filter?: (item: NotificationStoreItem<InboxNotificationData>) => boolean;
+  }> = split
+    ? [
+        {
+          id: "default",
+          filter: (item) => item.data?.tone !== "danger",
+        },
+        {
+          id: "danger",
+          filter: (item) => item.data?.tone === "danger",
+        },
+      ]
+    : [{ id: "all" }];
 
   return (
     <NotificationRegion
@@ -180,19 +196,25 @@ function NotificationStack({ regionRef }: NotificationStackProps) {
           </button>
         </span>
       </div>
-      <NotificationList
-        store={inboxNotifications}
-        limit={limit}
-        className="grid gap-2"
-      >
-        {(items) =>
-          items.map((item) => (
-            <NotificationListItem key={item.id}>
-              <InboxNotificationCard item={item} />
-            </NotificationListItem>
-          ))
-        }
-      </NotificationList>
+      <div className="grid gap-2">
+        {filters.map(({ id, filter }) => (
+          <NotificationList
+            key={id}
+            store={inboxNotifications}
+            filter={filter}
+            limit={limit}
+            className="grid gap-2"
+          >
+            {(items) =>
+              items.map((item) => (
+                <NotificationListItem key={item.id}>
+                  <InboxNotificationCard item={item} />
+                </NotificationListItem>
+              ))
+            }
+          </NotificationList>
+        ))}
+      </div>
     </NotificationRegion>
   );
 }

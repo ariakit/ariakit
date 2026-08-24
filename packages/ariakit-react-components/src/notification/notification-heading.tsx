@@ -42,15 +42,6 @@ function hasText(value: string | undefined) {
   return !!value?.trim();
 }
 
-function hasInnerHTML(props: ContentProps) {
-  const html = props.dangerouslySetInnerHTML?.__html;
-  if (html == null) return false;
-  if (typeof html === "string") {
-    return !!html.trim();
-  }
-  return true;
-}
-
 function hasInnerHTMLValue(props: ContentProps) {
   return props.dangerouslySetInnerHTML?.__html != null;
 }
@@ -60,8 +51,7 @@ function hasPropsContent(props: ContentProps) {
     hasContent(props.children) ||
     hasText(props["aria-label"]) ||
     hasText(props["aria-labelledby"]) ||
-    hasText(props.title) ||
-    hasInnerHTML(props)
+    hasText(props.title)
   );
 }
 
@@ -97,7 +87,6 @@ export const useNotificationHeading = createHook<
     hasText(props["aria-label"]) ||
     hasText(props["aria-labelledby"]) ||
     hasText(props.title) ||
-    hasInnerHTML(props) ||
     hasRenderContent(props.render);
 
   useSafeLayoutEffect(() => {
