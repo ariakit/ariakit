@@ -207,8 +207,8 @@ importers:
         specifier: 7.0.2
         version: 7.0.2(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@4.1.11))(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(solid-js@1.9.15)(supports-color@10.2.2)(terser@5.46.0)(yaml@2.9.0)
       '@clerk/astro':
-        specifier: 4.0.16
-        version: 4.0.16(astro@7.2.4(@astrojs/markdown-remark@7.2.4(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: 4.0.17
+        version: 4.0.17(astro@7.2.4(@astrojs/markdown-remark@7.2.4(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@fontsource-variable/inter':
         specifier: 5.3.0
         version: 5.3.0
@@ -2292,8 +2292,8 @@ packages:
     resolution: {integrity: sha512-y7/yvZ2TPAnR9+jnc00klvNNLkJiXFFrQA/hlLCcxA9a2A4zQIOimyFQ9XfwYKiGD1fb5GY8vbKIIgO8d5Tb2A==}
     engines: {node: '>= 20.12.0'}
 
-  '@clerk/astro@4.0.16':
-    resolution: {integrity: sha512-TihjPbWJpja/yl09yAwugxdoDph+xM7n/90cq2ft6etyv6icVVsvhRvKeeO+O/sM5M4vAQXphQzJGjMWdYSsRA==}
+  '@clerk/astro@4.0.17':
+    resolution: {integrity: sha512-TH7SMcEyHG5cVjIKIbkHupSyJ/6QFES1xO0dEdi9OyHHrINY1BlM1SrKVSJFOUVq6xod6wcquN8U3ZORdjN1uA==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       astro: ^5.0.0 || ^6.0.0 || ^7.0.0
@@ -2302,8 +2302,8 @@ packages:
     resolution: {integrity: sha512-zmd0jPyb1iALlmyzyRbgujQXrGqw8sf+VpFjm5GkndpBeq5+9+oH7QgMaFEmWi9oxvTd2sZ+EN+QT4+OXPUnGA==}
     engines: {node: '>=14'}
 
-  '@clerk/backend@3.16.9':
-    resolution: {integrity: sha512-x+kyjPTAMNEJIVuRMEXRSZUJPnB2PAoljSQ5gh/O/nVmRPIF1fU+tMQYEHKiCg3Ab/JUSywOsgamoEufyJj8dA==}
+  '@clerk/backend@3.16.10':
+    resolution: {integrity: sha512-rYGgr3sshL6Jaq5bvw3hGYnvOj31o6Yie/jWYiNUnlET9RFH82GywxWIGv6YVGSdYIFVm6DnaCyKqXc/hff/hA==}
     engines: {node: '>=20.9.0'}
 
   '@clerk/clerk-react@4.32.5':
@@ -2333,8 +2333,8 @@ packages:
       react:
         optional: true
 
-  '@clerk/shared@4.29.2':
-    resolution: {integrity: sha512-9c9Mc1oqumsqo+JY5R37O1ipwcG3RmwPK9oadBLL9E4VxZXthXVaFI9u+1/I4BSFGA/B9BO+17tkVDL4G0Wpbg==}
+  '@clerk/shared@4.29.3':
+    resolution: {integrity: sha512-sc9CNFDR3q+tJ8N5MkGcHGiXlgupQ6DMcZlXdk88kfo1Pl7G9EFK8e4mzp5D9OiYGRJ7rPnZCKiWoyInD59QXw==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
@@ -12653,10 +12653,10 @@ snapshots:
       fast-wrap-ansi: 0.2.0
       sisteransi: 1.0.5
 
-  '@clerk/astro@4.0.16(astro@7.2.4(@astrojs/markdown-remark@7.2.4(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@clerk/astro@4.0.17(astro@7.2.4(@astrojs/markdown-remark@7.2.4(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
-      '@clerk/backend': 3.16.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@clerk/shared': 4.29.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@clerk/backend': 3.16.10(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@clerk/shared': 4.29.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       astro: 7.2.4(@astrojs/markdown-remark@7.2.4(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)
       nanoid: 5.1.6
       nanostores: 1.0.1
@@ -12678,9 +12678,9 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  '@clerk/backend@3.16.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@clerk/backend@3.16.10(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
-      '@clerk/shared': 4.29.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@clerk/shared': 4.29.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       standardwebhooks: 1.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -12728,7 +12728,7 @@ snapshots:
     optionalDependencies:
       react: 18.3.1
 
-  '@clerk/shared@4.29.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@clerk/shared@4.29.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@tanstack/query-core': 5.101.4
       dequal: 2.0.3
