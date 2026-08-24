@@ -15,6 +15,9 @@ export type SelectableBehavior = "toggle" | "replace";
  * Supplies complete selection geometry for a collection. Delegate answers are
  * authoritative and are not filtered through the mounted opt-in registry.
  * Returning `null` refuses an operation that cannot be resolved safely.
+ * Registered delegates can be combined only when both endpoints produce a
+ * key for their singleton range. A non-selectable endpoint can still anchor a
+ * range that one delegate resolves by itself.
  */
 export interface SelectableRangeDelegate {
   /** Keys from `fromId` to `toId`, inclusive, in logical order. */
@@ -88,6 +91,7 @@ interface ResolvedRange {
   delegate?: SelectableRangeDelegate;
   delegated: boolean;
   keys: readonly string[] | null;
+  scope?: readonly string[];
 }
 
 interface PendingKeysTransition {
@@ -414,6 +418,42 @@ export function createSelectableController(
     return orderedKeys;
   };
 
+  const getRegisteredDelegateRange = (fromId: string, toId: string) => {
+    let fromDelegate: SelectableRangeDelegate | undefined;
+    let fromKey: string | undefined;
+    let toDelegate: SelectableRangeDelegate | undefined;
+    let toKey: string | undefined;
+    let orderedKeys: readonly string[] = [];
+    for (const delegate of getRangeDelegates()) {
+      const delegateKeys = getDelegateOrderedKeys(delegate);
+      if (!delegateKeys) return;
+      const delegateKeySet = new Set(delegateKeys);
+      if (fromKey == null) {
+        const keys = delegate.getKeysInRange(fromId, fromId);
+        fromKey = keys?.find((key) => delegateKeySet.has(key));
+        if (fromKey != null) fromDelegate = delegate;
+      }
+      if (toKey == null) {
+        const keys = delegate.getKeysInRange(toId, toId);
+        toKey = keys?.find((key) => delegateKeySet.has(key));
+        if (toKey != null) toDelegate = delegate;
+      }
+      orderedKeys = addKeys(orderedKeys, delegateKeys);
+    }
+    if (fromKey == null || toKey == null) return;
+    if (fromDelegate === toDelegate) return;
+    const fromIndex = orderedKeys.indexOf(fromKey);
+    const toIndex = orderedKeys.indexOf(toKey);
+    if (fromIndex < 0 || toIndex < 0) return;
+    const startIndex = Math.min(fromIndex, toIndex);
+    const endIndex = Math.max(fromIndex, toIndex);
+    return {
+      delegated: true,
+      keys: orderedKeys.slice(startIndex, endIndex + 1),
+      scope: orderedKeys,
+    } satisfies ResolvedRange;
+  };
+
   const getReplacementScope = (id: string) => {
     const explicitDelegate = options.rangeDelegate;
     if (explicitDelegate) {
@@ -498,6 +538,8 @@ export function createSelectableController(
         if (keys == null) continue;
         return { delegate, delegated: true, keys };
       }
+      const range = getRegisteredDelegateRange(fromId, toId);
+      if (range) return range;
       return { delegated: true, keys: null };
     }
     const orderedIds = getRenderedOrderedIds();
@@ -513,6 +555,7 @@ export function createSelectableController(
   };
 
   const getRangeScope = (range: ResolvedRange) => {
+    if (range.scope) return range.scope;
     if (range.delegate) {
       if (range.delegate === options.rangeDelegate) {
         return getDelegateOrderedKeys(range.delegate);
@@ -523,12 +566,30 @@ export function createSelectableController(
     return getRenderedOrderedSelectionKeys();
   };
 
+  const hasDelegatedEndpoint = (id: string) => {
+    const explicitDelegate = options.rangeDelegate;
+    if (explicitDelegate) {
+      return explicitDelegate.getKeysInRange(id, id) != null;
+    }
+    for (const delegate of getRangeDelegates()) {
+      if (delegate.getKeysInRange(id, id) != null) return true;
+    }
+    return false;
+  };
+
   const resolveAnchor = (fromId: string | null | undefined) => {
-    if (anchorId && options.collection.item(anchorId)) return anchorId;
+    if (
+      anchorId &&
+      (options.collection.item(anchorId) || hasDelegatedEndpoint(anchorId))
+    ) {
+      return anchorId;
+    }
     const cursorId = fromId === undefined ? options.getCursorId() : fromId;
     if (cursorId == null) return;
     const targetId = resolveTarget(cursorId);
-    if (!options.collection.item(targetId)) return;
+    if (!options.collection.item(targetId) && !hasDelegatedEndpoint(targetId)) {
+      return;
+    }
     anchorId = targetId;
     return targetId;
   };

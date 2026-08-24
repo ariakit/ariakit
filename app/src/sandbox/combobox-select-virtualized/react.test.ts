@@ -108,12 +108,12 @@ test("reseats the range after editable auto-selection moves", async () => {
     .poll(q.option.lazy("Finland"))
     .toHaveAttribute("data-active-item", "true");
 
-  await press.ArrowDown(search, { shiftKey: true });
+  await click(q.option("Thailand"), { shiftKey: true });
 
   const selection = q.status("Virtual selection");
-  expect(selection).toHaveTextContent("Argentina");
-  expect(selection).toHaveTextContent("Finland");
-  expect(selection).toHaveTextContent("Iceland");
+  expect(selection).toHaveTextContent(
+    /^7 selected: Argentina, Finland, Iceland, Ireland, Netherlands, Poland, Thailand$/,
+  );
 });
 
 // https://github.com/ariakit/ariakit/issues/7114

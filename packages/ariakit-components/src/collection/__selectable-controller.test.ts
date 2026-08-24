@@ -93,6 +93,7 @@ function createHarness(options: HarnessOptions = {}) {
     },
     getKeys: () => keys,
     getWrites: () => writes,
+    registerItem: collection.registerItem,
     setBehavior(nextBehavior: SelectableBehavior) {
       behavior = nextBehavior;
     },
@@ -918,6 +919,154 @@ test("replace ranges clear known selections across sibling delegates", () => {
   activate(harness, "4", { shift: true });
 
   expect(harness.getKeys()).toEqual(["3", "4"]);
+});
+
+test("ranges span sibling delegates in registration order", () => {
+  const selectionKeys = new Map([
+    ["first-id", "Apple"],
+    ["last-id", "Date"],
+  ]);
+  const harness = createHarness({
+    getSelectionKey: (id) => selectionKeys.get(id),
+    items: [{ id: "first-id" }, { id: "last-id" }],
+  });
+  harness.controller.addRangeDelegate({
+    getKeysInRange: (fromId, toId) => {
+      if (fromId === toId && fromId === "first-id") return ["Apple"];
+      return null;
+    },
+    getOrderedKeys: () => ["Apple", "Banana"],
+  });
+  harness.controller.addRangeDelegate({
+    getKeysInRange: (fromId, toId) => {
+      if (fromId === toId && toId === "last-id") return ["Date"];
+      return null;
+    },
+    getOrderedKeys: () => ["Carrot", "Date"],
+  });
+
+  activate(harness, "first-id");
+  activate(harness, "last-id", { shift: true });
+
+  expect(harness.getKeys()).toEqual(["Apple", "Banana", "Carrot", "Date"]);
+
+  harness.controller.deselectAll();
+  activate(harness, "last-id");
+  activate(harness, "first-id", { shift: true });
+
+  expect(harness.getKeys()).toEqual(["Apple", "Banana", "Carrot", "Date"]);
+});
+
+test("cross-delegate ranges refuse non-selectable endpoints safely", () => {
+  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  const selectionKeys = new Map([["last-id", "Date"]]);
+  const harness = createHarness({
+    getSelectionKey: (id) => selectionKeys.get(id),
+    items: [{ id: "last-id" }],
+    keys: ["Kept"],
+  });
+  harness.controller.addRangeDelegate({
+    getKeysInRange: (fromId, toId) => {
+      if (fromId === toId && fromId === "separator-id") return [];
+      return null;
+    },
+    getOrderedKeys: () => ["Apple", "Banana"],
+  });
+  harness.controller.addRangeDelegate({
+    getKeysInRange: (fromId, toId) => {
+      if (fromId === toId && toId === "last-id") return ["Date"];
+      return null;
+    },
+    getOrderedKeys: () => ["Carrot", "Date"],
+  });
+  harness.controller.seat("separator-id");
+
+  activate(harness, "last-id", { shift: true });
+
+  expect(harness.getKeys()).toEqual(["Kept", "Date"]);
+  expect(warn).toHaveBeenCalledWith(
+    expect.stringMatching(/could not be resolved/),
+  );
+});
+
+test("registered delegates retain explicit range refusals", () => {
+  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  const harness = createHarness({
+    items: [{ id: "first" }, { id: "last" }],
+    keys: ["Kept"],
+  });
+  harness.controller.addRangeDelegate({
+    getKeysInRange: (fromId, toId) => {
+      if (fromId === toId) return [fromId];
+      return null;
+    },
+    getOrderedKeys: () => ["first", "last"],
+  });
+  harness.controller.seat("first");
+
+  activate(harness, "last", { shift: true });
+
+  expect(harness.getKeys()).toEqual(["Kept", "last"]);
+  expect(warn).toHaveBeenCalledWith(
+    expect.stringMatching(/could not be resolved/),
+  );
+});
+
+test("one delegate resolves ranges from non-selectable anchors", () => {
+  const selectionKeys = new Map([["last-id", "Banana"]]);
+  const harness = createHarness({
+    getSelectionKey: (id) => selectionKeys.get(id),
+    items: [{ id: "last-id" }],
+  });
+  harness.controller.addRangeDelegate({
+    getKeysInRange: (fromId, toId) => {
+      if (fromId === toId && fromId === "separator-id") return [];
+      if (fromId === "separator-id" && toId === "last-id") {
+        return ["Banana"];
+      }
+      return null;
+    },
+    getOrderedKeys: () => ["Apple", "Banana"],
+  });
+  harness.controller.seat("separator-id");
+
+  activate(harness, "last-id", { shift: true });
+
+  expect(harness.getKeys()).toEqual(["Banana"]);
+});
+
+test("delegated anchors survive mounted item unregistration", () => {
+  const selectionKeys = new Map([
+    ["first-id", "Apple"],
+    ["last-id", "Cherry"],
+  ]);
+  const harness = createHarness({
+    getSelectionKey: (id) => selectionKeys.get(id),
+    items: [],
+  });
+  const removeFirst = harness.registerItem({ id: "first-id" });
+  const removeLast = harness.registerItem({ id: "last-id" });
+  harness.controller.addRangeDelegate({
+    getKeysInRange: (fromId, toId) => {
+      const ids = ["first-id", "middle-id", "last-id"];
+      const keys = ["Apple", "Banana", "Cherry"];
+      const fromIndex = ids.indexOf(fromId);
+      const toIndex = ids.indexOf(toId);
+      if (fromIndex < 0 || toIndex < 0) return null;
+      return keys.slice(
+        Math.min(fromIndex, toIndex),
+        Math.max(fromIndex, toIndex) + 1,
+      );
+    },
+    getOrderedKeys: () => ["Apple", "Banana", "Cherry"],
+  });
+
+  activate(harness, "first-id");
+  removeFirst();
+  activate(harness, "last-id", { shift: true });
+
+  expect(harness.getKeys()).toEqual(["Apple", "Banana", "Cherry"]);
+  removeLast();
 });
 
 test("duplicate delegate registrations clean up independently", () => {

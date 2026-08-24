@@ -133,9 +133,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await search.press("Shift+ArrowDown");
 
     const selection = q.status("Virtual selection");
-    await test.expect(selection).toContainText("Argentina");
-    await test.expect(selection).toContainText("Finland");
-    await test.expect(selection).toContainText("Iceland");
+    await test
+      .expect(selection)
+      .toHaveText("3 selected: Argentina, Finland, Iceland");
   });
 
   // https://github.com/ariakit/ariakit/issues/7114
