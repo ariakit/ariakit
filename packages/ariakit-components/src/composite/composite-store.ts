@@ -832,6 +832,8 @@ export interface CompositeStoreFunctions<
    *   [`setActiveId`](https://ariakit.com/reference/use-composite-store#setactiveid)
    *   function instead.
    *
+   * Selection options have no effect on a plain Composite store.
+   *
    * Live examples:
    * - [Select Grid](https://ariakit.com/examples/select-grid)
    * @example
@@ -841,8 +843,15 @@ export interface CompositeStoreFunctions<
    * store.move("item-1");
    * // Moves focus to the next item
    * store.move(store.next());
+   * @param options.extend Extends selection from the current active item when
+   * the store carries selection. This is a no-op on a plain Composite store.
+   * @param options.anchor Seats the selection anchor on the destination when the
+   * store carries selection. This is a no-op on a plain Composite store.
    */
-  move: (id?: string | null) => void;
+  move: (
+    id?: string | null,
+    options?: { extend?: boolean; anchor?: boolean },
+  ) => void;
   /**
    * Returns the id of the next enabled item based on the current
    * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)

@@ -37,3 +37,51 @@ test("keeps select and combobox element state separate", () => {
   stopSelect();
   stopCombobox();
 });
+
+// https://github.com/ariakit/ariakit/issues/7114
+test("owns multi-value selection independently from a connected combobox", () => {
+  const items = [
+    { id: "first-apple", value: "Apple" },
+    { id: "second-apple", value: "Apple" },
+    { id: "banana", value: "Banana", disabled: true },
+    { id: "cherry", value: "Cherry" },
+  ];
+  const combobox = createComboboxStore<string[]>({
+    defaultSelectedValue: [],
+  });
+  const select = createSelectStore<string[]>({
+    combobox,
+    defaultItems: items,
+    defaultValue: [],
+  });
+  const stopCombobox = init(combobox);
+  const stopSelect = init(select);
+
+  expect(select.unstable_selection).toBeDefined();
+  expect(select.unstable_selection).not.toBe(combobox.unstable_selection);
+  const selection = select.unstable_selection;
+  if (!selection) return;
+
+  select.setState("renderedItems", items);
+  select.move("first-apple", { anchor: true });
+  select.move("cherry", { extend: true });
+
+  expect(select.getState().value).toEqual(["Apple", "Cherry"]);
+  expect(combobox.getState().selectedValue).toEqual([]);
+  expect(selection.isSelected("first-apple")).toBe(true);
+  expect(selection.isSelected("second-apple")).toBe(true);
+  expect(selection.isSelectable("banana")).toBe(false);
+
+  select.setValue(["Cherry"]);
+  expect(selection.isSelected("first-apple")).toBe(false);
+  expect(selection.isSelected("cherry")).toBe(true);
+
+  stopSelect();
+  stopCombobox();
+});
+
+// https://github.com/ariakit/ariakit/issues/7114
+test("keeps selection disabled for an initially single-value select", () => {
+  const select = createSelectStore({ defaultValue: "Apple" });
+  expect(select.unstable_selection).toBeUndefined();
+});

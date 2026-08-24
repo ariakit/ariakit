@@ -47,6 +47,42 @@ test("type does not dispatch change after a prevented keydown", async () => {
   expect(onChange).not.toHaveBeenCalled();
 });
 
+test.each([
+  { modifier: "Control", options: { ctrlKey: true } },
+  { modifier: "Meta", options: { metaKey: true } },
+])(
+  "type dispatches $modifier key events without inserting text",
+  async ({ options }) => {
+    const input = createInput("draft");
+    const events: Array<Record<string, unknown>> = [];
+    const onInput = vi.fn();
+    const onChange = trackChange(input);
+    const recordEvent = (event: KeyboardEvent) => {
+      events.push({
+        type: event.type,
+        code: event.code,
+        commandModified: event.ctrlKey || event.metaKey,
+      });
+    };
+    input.addEventListener("keydown", recordEvent);
+    input.addEventListener("keypress", recordEvent);
+    input.addEventListener("keyup", recordEvent);
+    input.addEventListener("input", onInput);
+    input.setSelectionRange(input.value.length, input.value.length);
+
+    await type("k", input, options);
+    await blur(input);
+
+    expect(events).toEqual([
+      { type: "keydown", code: "KeyK", commandModified: true },
+      { type: "keyup", code: "KeyK", commandModified: true },
+    ]);
+    expect(input.value).toBe("draft");
+    expect(onInput).not.toHaveBeenCalled();
+    expect(onChange).not.toHaveBeenCalled();
+  },
+);
+
 test("type does not dispatch change after typing on a non-text field", async () => {
   const target = document.createElement("div");
   const onChange = trackChange(target);

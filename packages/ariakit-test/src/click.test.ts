@@ -32,6 +32,29 @@ function recordEvents(element: Element) {
   return events;
 }
 
+test("click carries the Meta modifier through the gesture", async () => {
+  const button = document.createElement("button");
+  const events: Array<Record<string, unknown>> = [];
+  const types = ["pointerdown", "mousedown", "pointerup", "mouseup", "click"];
+  for (const type of types) {
+    button.addEventListener(type, (event) => {
+      const mouseEvent = event as MouseEvent;
+      events.push({
+        type,
+        metaKey: mouseEvent.metaKey,
+        meta: mouseEvent.getModifierState("Meta"),
+      });
+    });
+  }
+  document.body.append(button);
+
+  await click(button, { metaKey: true });
+
+  expect(events).toEqual(
+    types.map((type) => ({ type, metaKey: true, meta: true })),
+  );
+});
+
 test("shift-click exposes updated selectedOptions on change", async () => {
   document.body.innerHTML = `
     <label for="fruits">Fruits</label>

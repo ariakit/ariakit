@@ -30,6 +30,47 @@ export function isSelfTarget(
   return event.target === event.currentTarget;
 }
 
+/**
+ * Checks whether the event represents a contiguous range-selection gesture.
+ *
+ * On Apple platforms, Command+Shift is a non-contiguous Command activation,
+ * not a range gesture.
+ */
+export function isRangeSelectionEvent(
+  event: Pick<MouseEvent, "metaKey" | "shiftKey">,
+) {
+  if (!event.shiftKey) return false;
+  if (isApple() && event.metaKey) return false;
+  return true;
+}
+
+/**
+ * Checks whether the event uses the platform's non-contiguous selection
+ * modifier.
+ */
+export function isNonContiguousSelectionEvent(
+  event: Pick<MouseEvent, "ctrlKey" | "metaKey">,
+) {
+  return isApple() ? event.metaKey : event.ctrlKey;
+}
+
+/**
+ * Checks whether the event represents a range gesture that keeps selections
+ * outside the range.
+ */
+export function isAdditiveSelectionEvent(
+  event: Pick<MouseEvent, "ctrlKey" | "metaKey" | "shiftKey">,
+) {
+  return isRangeSelectionEvent(event) && isNonContiguousSelectionEvent(event);
+}
+
+/**
+ * Checks whether the click was synthesized without a pointing-device click.
+ */
+export function isVirtualClick(event: Pick<MouseEvent, "detail">) {
+  return event.detail === 0;
+}
+
 function isActivatableNavigationTarget(element: EventTarget | null) {
   if (!isElement(element)) return false;
   const target = element as

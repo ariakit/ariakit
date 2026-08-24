@@ -1,5 +1,7 @@
-import { createStore, init } from "@ariakit/store";
-import { expect, test } from "vitest";
+import { createStore, init, sync } from "@ariakit/store";
+import { UndoManager } from "@ariakit/utils";
+import { expect, test, vi } from "vitest";
+import { createTagStore } from "../tag/tag-store.ts";
 import { createComboboxStore } from "./combobox-store.ts";
 
 test("throws on cross-alias defaults with connected stores", () => {
@@ -490,6 +492,146 @@ test("does not set the selected value when moving on a multi-selectable store", 
 
   expect(store.getState().selectedValue).toEqual(["Apple"]);
   stop();
+});
+
+// https://github.com/ariakit/ariakit/issues/7114
+test("binds selection membership to multi-selectable values", () => {
+  const store = createComboboxStore<string[]>({
+    defaultItems: [
+      { id: "first-apple", value: "Apple" },
+      { id: "second-apple", value: "Apple" },
+      { id: "banana", value: "Banana" },
+    ],
+    defaultSelectedValue: [],
+  });
+  const stop = init(store);
+  const selection = store.unstable_selection;
+  expect(selection).toBeDefined();
+  if (!selection) return;
+
+  selection.select("first-apple");
+  selection.select("second-apple");
+
+  expect(store.getState().selectedValue).toEqual(["Apple"]);
+  expect(selection.isSelected("first-apple")).toBe(true);
+  expect(selection.isSelected("second-apple")).toBe(true);
+
+  store.setSelectedValue(["Banana"]);
+  expect(selection.isSelected("first-apple")).toBe(false);
+  expect(selection.isSelected("banana")).toBe(true);
+  stop();
+});
+
+// https://github.com/ariakit/ariakit/issues/7114
+test("commits a multi-value range in one selected value update", () => {
+  const items = Array.from({ length: 10 }, (_, index) => ({
+    id: `${index + 1}`,
+    value: `${index + 1}`,
+  }));
+  const store = createComboboxStore<string[]>({
+    defaultItems: items,
+    defaultSelectedValue: [],
+  });
+  const stop = init(store);
+  const selection = store.unstable_selection;
+  expect(selection).toBeDefined();
+  if (!selection) return;
+  store.setState("renderedItems", items);
+
+  const listener = vi.fn();
+  const stopSync = sync(store, ["selectedValue"], listener);
+  listener.mockClear();
+
+  store.move("1", { anchor: true });
+  store.move("10", { extend: true });
+
+  expect(store.getState().selectedValue).toEqual(
+    items.map((item) => item.value),
+  );
+  expect(listener).toHaveBeenCalledOnce();
+  stopSync();
+  stop();
+});
+
+// https://github.com/ariakit/ariakit/issues/7114
+test("commits a tag-connected range as one undo entry", async () => {
+  while (UndoManager.canUndo()) {
+    await UndoManager.undo();
+  }
+
+  const items = Array.from({ length: 10 }, (_, index) => ({
+    id: `${index + 1}`,
+    value: `${index + 1}`,
+  }));
+  const tag = createTagStore({ defaultValues: [] });
+  const store = createComboboxStore<string[]>({
+    defaultItems: items,
+    defaultSelectedValue: [],
+    tag,
+  });
+  const stopTag = init(tag);
+  const stop = init(store);
+  const setTagValues = vi.spyOn(tag, "setValues");
+  const selectedValueListener = vi.fn();
+  const stopSelectedValueSync = sync(
+    store,
+    ["selectedValue"],
+    selectedValueListener,
+  );
+  setTagValues.mockClear();
+  selectedValueListener.mockClear();
+  store.setState("renderedItems", items);
+
+  store.move("1", { anchor: true });
+  store.move("10", { extend: true });
+  await Promise.resolve();
+
+  const values = items.map((item) => item.value);
+  expect(store.getState().selectedValue).toEqual(values);
+  expect(tag.getState().values).toEqual(values);
+  expect(setTagValues).toHaveBeenCalledOnce();
+  expect(selectedValueListener).toHaveBeenCalledOnce();
+  expect(UndoManager.canUndo()).toBe(true);
+
+  await UndoManager.undo();
+  expect(store.getState().selectedValue).toEqual([]);
+  expect(tag.getState().values).toEqual([]);
+  expect(UndoManager.canUndo()).toBe(false);
+
+  stopSelectedValueSync();
+  stop();
+  stopTag();
+});
+
+// https://github.com/ariakit/ariakit/issues/7114
+test("excludes disabled values from a multi-value range", () => {
+  const items = [
+    { id: "apple", value: "Apple" },
+    { id: "banana", value: "Banana", disabled: true },
+    { id: "orange", value: "Orange" },
+  ];
+  const store = createComboboxStore<string[]>({
+    defaultItems: items,
+    defaultSelectedValue: [],
+  });
+  const stop = init(store);
+  const selection = store.unstable_selection;
+  expect(selection).toBeDefined();
+  if (!selection) return;
+  store.setState("renderedItems", items);
+
+  store.move("apple", { anchor: true });
+  store.move("orange", { extend: true });
+
+  expect(store.getState().selectedValue).toEqual(["Apple", "Orange"]);
+  expect(selection.isSelectable("banana")).toBe(false);
+  stop();
+});
+
+// https://github.com/ariakit/ariakit/issues/7114
+test("keeps selection disabled for initially single-value stores", () => {
+  const store = createComboboxStore({ defaultSelectedValue: "Apple" });
+  expect(store.unstable_selection).toBeUndefined();
 });
 
 test("sets the selected value on open moves only when enabled", async () => {

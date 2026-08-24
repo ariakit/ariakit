@@ -10,7 +10,10 @@ import {
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { toArray, defaultValue } from "@ariakit/utils";
 import type { PickRequired, SetState } from "@ariakit/utils";
+import { createSelectableController } from "../collection/__selectable-controller.ts";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
+import type { SelectableController } from "../composite/composite-selectable-store.ts";
+import { createSelectableMove } from "../composite/composite-selectable-store.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreItem,
@@ -127,6 +130,33 @@ export function createSelectStore({
 
   const select = createStore(initialState, composite, popover, store);
 
+  const multiSelectable = Array.isArray(initialState.value);
+  const selection = multiSelectable
+    ? createSelectableController({
+        collection: composite,
+        getBehavior: () => "toggle",
+        getCursorId: () => composite.getState().activeId,
+        getKeys: () => {
+          const { value } = select.getState();
+          return Array.isArray(value) ? value : [];
+        },
+        getMode: () =>
+          Array.isArray(select.getState().value) ? "multiple" : "single",
+        getSelectionKey: (id) => {
+          const item = composite.item(id);
+          if (item?.disabled) return;
+          return item?.value;
+        },
+        requireOptIn: false,
+        setKeys: (keys) => select.setState("value", keys),
+        subscribeKeys: (listener) =>
+          sync(select, ["value"], (state) => {
+            const keys = Array.isArray(state.value) ? state.value : [];
+            listener(keys);
+          }),
+      })
+    : undefined;
+
   // Initialize an unset value from the first enabled item.
   setup(select, () =>
     sync(select, ["value", "items"], (state) => {
@@ -191,6 +221,10 @@ export function createSelectStore({
     ...popover,
     ...select,
     combobox,
+    unstable_selection: selection,
+    move: selection
+      ? createSelectableMove(composite, selection)
+      : composite.move,
     setValue: (value) => select.setState("value", value),
     setLabelElement: (element) => {
       select.setState("labelElement", element);
@@ -254,6 +288,8 @@ export interface SelectStoreFunctions<
     Pick<SelectStoreOptions<T>, "combobox">,
     CompositeStoreFunctions<SelectStoreItem>,
     PopoverStoreFunctions {
+  /** @private The shared selection engine for multi-selectable stores. */
+  unstable_selection?: SelectableController;
   /**
    * Sets the [`value`](https://ariakit.com/reference/select-provider#value)
    * state.

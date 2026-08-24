@@ -54,6 +54,8 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`getPopupRole`](#getpopuprole)
   - [`getItemRoleByPopupRole`](#getitemrolebypopuprole)
   - [`getPopupItemRole`](#getpopupitemrole)
+  - [`supportsAriaMultiselectable`](#supportsariamultiselectable)
+  - [`getSelectionAttributeByRole`](#getselectionattributebyrole)
   - [`scrollIntoViewIfNeeded`](#scrollintoviewifneeded)
   - [`getScrollingElement`](#getscrollingelement)
   - [`isPartiallyHidden`](#ispartiallyhidden)
@@ -62,6 +64,10 @@ This package is ESM-only and exposes a single public entrypoint.
 - [Event utilities](#event-utilities)
   - [`isPortalEvent`](#isportalevent)
   - [`isSelfTarget`](#isselftarget)
+  - [`isRangeSelectionEvent`](#israngeselectionevent)
+  - [`isNonContiguousSelectionEvent`](#isnoncontiguousselectionevent)
+  - [`isAdditiveSelectionEvent`](#isadditiveselectionevent)
+  - [`isVirtualClick`](#isvirtualclick)
   - [`isOpeningInNewTab`](#isopeninginnewtab)
   - [`isDownloading`](#isdownloading)
   - [`fireEvent`](#fireevent)
@@ -542,6 +548,32 @@ Returns the item role attribute based on the popup's role.
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
+#### `supportsAriaMultiselectable`
+
+```ts
+function supportsAriaMultiselectable(role?: AriaRole | null): boolean;
+```
+
+Checks whether a collection role should expose `aria-multiselectable`.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `getSelectionAttributeByRole`
+
+```ts
+function getSelectionAttributeByRole(
+  role?: AriaRole | null,
+): "aria-checked" | "aria-selected" | undefined;
+```
+
+Returns the ARIA attribute that represents selection for the given role.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `scrollIntoViewIfNeeded`
 
 ```ts
@@ -638,6 +670,62 @@ function isSelfTarget(event: Pick<Event, "target" | "currentTarget">): boolean;
 ```
 
 Returns `true` if `event.target` and `event.currentTarget` are the same.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `isRangeSelectionEvent`
+
+```ts
+function isRangeSelectionEvent(
+  event: Pick<MouseEvent, "metaKey" | "shiftKey">,
+): boolean;
+```
+
+Checks whether the event represents a contiguous range-selection gesture.
+
+On Apple platforms, Command+Shift is a non-contiguous Command activation, not a range gesture.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `isNonContiguousSelectionEvent`
+
+```ts
+function isNonContiguousSelectionEvent(
+  event: Pick<MouseEvent, "ctrlKey" | "metaKey">,
+): boolean;
+```
+
+Checks whether the event uses the platform's non-contiguous selection modifier.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `isAdditiveSelectionEvent`
+
+```ts
+function isAdditiveSelectionEvent(
+  event: Pick<MouseEvent, "ctrlKey" | "metaKey" | "shiftKey">,
+): boolean;
+```
+
+Checks whether the event represents a range gesture that keeps selections outside the range.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `isVirtualClick`
+
+```ts
+function isVirtualClick(event: Pick<MouseEvent, "detail">): boolean;
+```
+
+Checks whether the click was synthesized without a pointing-device click.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>

@@ -1,4 +1,5 @@
 import { getActiveElement, isTextField, isFocusable } from "@ariakit/utils";
+import { getKeyboardEventOptions } from "./__keyboard.ts";
 import type { DirtiableElement, TextField } from "./__utils.ts";
 import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
@@ -62,20 +63,25 @@ export function type(
 
     await focus(element);
 
-    const restoreEmailInput = workAroundEmailInput(element);
+    const keyboardOptions = options as KeyboardEventInit;
+    const commandModified = keyboardOptions.ctrlKey || keyboardOptions.metaKey;
+    const restoreEmailInput = commandModified
+      ? () => {}
+      : workAroundEmailInput(element);
 
     for (const char of text) {
       const key = getKeyFromChar(char);
+      const eventOptions = getKeyboardEventOptions(key, keyboardOptions);
       let value = "";
       let inputType = options.isComposing
         ? "insertCompositionText"
         : "insertText";
-      let defaultAllowed = await dispatch.keyDown(element, { key, ...options });
+      let defaultAllowed = await dispatch.keyDown(element, eventOptions);
 
       // Keydown may move focus; continue typing at the new active element.
       element = getActiveElement(element) || element;
 
-      if (isTextField(element)) {
+      if (isTextField(element) && !commandModified) {
         const input = element as DirtiableElement & TextField;
         const [start, end] = [
           input.selectionStart ?? 0,
@@ -113,9 +119,8 @@ export function type(
         if (defaultAllowed && !input.readOnly) {
           if (inputType === "insertText") {
             defaultAllowed = await dispatch.keyPress(input, {
-              key,
               charCode: getCharCodeFromChar(char),
-              ...options,
+              ...eventOptions,
             });
           }
           if (inputType === "insertCompositionText") {
@@ -148,7 +153,7 @@ export function type(
       // a cheap settle keeps typing fast without a per-character wall delay.
       await settle();
 
-      await dispatch.keyUp(element, { key, ...options });
+      await dispatch.keyUp(element, eventOptions);
 
       await settle();
     }

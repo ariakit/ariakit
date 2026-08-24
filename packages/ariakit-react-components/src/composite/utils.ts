@@ -16,6 +16,16 @@ export const groupItemsByRows = Core.groupItemsByRows;
 
 const unmountingItems = new WeakSet<Element>();
 
+export function isFocusLoopEnabled(
+  focusLoop: CompositeStoreState["focusLoop"],
+  axis?: "horizontal" | "vertical",
+) {
+  if (!focusLoop) return false;
+  if (axis === "vertical") return focusLoop !== "horizontal";
+  if (axis === "horizontal") return focusLoop !== "vertical";
+  return false;
+}
+
 /** Marks the brief window between a focused item's ref cleanup and removal. */
 export function markItemUnmounting(element: Element) {
   if (getActiveElement(element) !== element) return;

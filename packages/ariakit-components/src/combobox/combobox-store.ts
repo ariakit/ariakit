@@ -10,6 +10,9 @@ import {
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { chain, defaultValue, isSafari, isTouchDevice } from "@ariakit/utils";
 import type { PickRequired, SetState } from "@ariakit/utils";
+import { createSelectableController } from "../collection/__selectable-controller.ts";
+import type { SelectableController } from "../composite/composite-selectable-store.ts";
+import { createSelectableMove } from "../composite/composite-selectable-store.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreItem,
@@ -475,11 +478,46 @@ export function createComboboxStore({
     combobox.setState(key, value);
   };
 
+  const selection = multiSelectable
+    ? createSelectableController({
+        collection: composite,
+        getBehavior: () => "toggle",
+        getCursorId: () => composite.getState().activeId,
+        getKeys: () => {
+          const { selectedValue } = combobox.getState();
+          return Array.isArray(selectedValue) ? selectedValue : [];
+        },
+        getMode: () =>
+          Array.isArray(combobox.getState().selectedValue)
+            ? "multiple"
+            : "single",
+        getSelectionKey: (id) => {
+          const item = composite.item(id);
+          if (item?.disabled) return;
+          return item?.value;
+        },
+        requireOptIn: false,
+        resolveTarget: (id) => id,
+        setKeys: (keys) => setState("selectedValue", keys),
+        subscribeKeys: (listener) =>
+          sync(combobox, ["selectedValue"], (state) => {
+            const keys = Array.isArray(state.selectedValue)
+              ? state.selectedValue
+              : [];
+            listener(keys);
+          }),
+      })
+    : undefined;
+
   return {
     ...popover,
     ...composite,
     ...combobox,
     setState,
+    unstable_selection: selection,
+    move: selection
+      ? createSelectableMove(composite, selection)
+      : composite.move,
     tag,
     setInputValue,
     resetInputValue,
@@ -662,6 +700,8 @@ export interface ComboboxStoreFunctions<
     Pick<ComboboxStoreOptions<T>, "tag">,
     CompositeStoreFunctions<ComboboxStoreItem>,
     PopoverStoreFunctions {
+  /** @private The shared selection engine for multi-selectable stores. */
+  unstable_selection?: SelectableController;
   /**
    * Sets the
    * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)

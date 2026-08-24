@@ -89,6 +89,17 @@ This attribute is also applied to the [`Combobox`](/reference/combobox/) compone
 }
 ```
 
+### `[data-selected]`
+
+The `data-selected` attribute is applied to selected items that use the `CompositeSelectable` behavior. It is available for every role, including roles that do not support `aria-selected` or `aria-checked`.
+
+```css
+.item[data-selected] {
+  background-color: hsl(204 100% 40%);
+  color: white;
+}
+```
+
 ### `[data-autofill]`
 
 The `data-autofill` attribute is applied to the [Select](/components/select/) component when it's used within a form and the value has been autofilled by the browser.

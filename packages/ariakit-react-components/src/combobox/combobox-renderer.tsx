@@ -1,7 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import { createElement, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { toArray } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo } from "react";
 import type {
@@ -16,6 +15,10 @@ import {
   getCompositeRendererItemId,
   useCompositeRenderer,
 } from "../composite/composite-renderer.tsx";
+import {
+  defaultSelectedValuePersistenceLimit,
+  getPersistentSelectedValues,
+} from "./__combobox-renderer.ts";
 import { useComboboxContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
@@ -76,9 +79,9 @@ function findIndicesByValues(
 
 function findIndicesByValue(
   items: readonly Item[],
-  selectedValue: ComboboxStoreSelectedValue,
+  selectedValues: readonly string[],
 ): number[] {
-  const remainingValues = new Set(toArray(selectedValue));
+  const remainingValues = new Set(selectedValues);
   return findIndicesByValues(items, remainingValues);
 }
 
@@ -87,6 +90,7 @@ function useComboboxRenderer<T extends Item = any>({
   persistentIndices: persistentIndicesProp,
   items: itemsProp,
   selectedValue: selectedValueProp,
+  selectedValuePersistenceLimit = defaultSelectedValuePersistenceLimit,
   ...props
 }: ComboboxRendererProps<T>) {
   const context = useComboboxContext();
@@ -109,8 +113,13 @@ function useComboboxRenderer<T extends Item = any>({
     if (selectedValue == null) return [];
     if (typeof items === "number") return [];
     if (!items.length) return [];
-    return findIndicesByValue(items, selectedValue);
-  }, [items, selectedValue]);
+    const persistentSelectedValues = getPersistentSelectedValues(
+      selectedValue,
+      selectedValuePersistenceLimit,
+    );
+    if (!persistentSelectedValues.length) return [];
+    return findIndicesByValue(items, persistentSelectedValues);
+  }, [items, selectedValue, selectedValuePersistenceLimit]);
 
   const persistentIndices = useMemo(() => {
     if (persistentIndicesProp) {
@@ -164,6 +173,15 @@ export interface ComboboxRendererOptions<T extends Item = any> extends Omit<
    * provided, the selected value will be read from the store.
    */
   selectedValue?: ComboboxStoreSelectedValue;
+  /**
+   * The maximum number of selected values to render when they are outside the
+   * viewport. The last N entries in the selected-value array are retained.
+   * Values are rounded down and clamped at zero, while `NaN` uses the default.
+   * Pass `Infinity` to disable the limit. Explicit `persistentIndices` aren't
+   * affected by this limit.
+   * @default 32
+   */
+  selectedValuePersistenceLimit?: number;
 }
 
 export interface ComboboxRendererProps<T extends Item = any> extends Props<

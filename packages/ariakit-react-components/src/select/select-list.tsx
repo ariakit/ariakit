@@ -12,10 +12,21 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { isSelfTarget, invariant } from "@ariakit/utils";
+import {
+  isSelfTarget,
+  invariant,
+  supportsAriaMultiselectable,
+} from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { CompositeOptions } from "../composite/composite.tsx";
@@ -137,20 +148,24 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     const hasCombobox = !!store.combobox;
     composite = composite ?? (!hasCombobox && childStore !== store);
 
+    if (composite) {
+      props = {
+        role: "listbox",
+        ...props,
+      };
+    }
+
+    const ref = useRef<HTMLType>(null);
+    const role = useAttribute(ref, "role", props.role);
+    const ariaMultiSelectable =
+      multiSelectable && supportsAriaMultiselectable(role) ? true : undefined;
+
     const [, setElement] = useTransactionState(
       composite ? store.setListElement : null,
     );
 
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
-
-    if (composite) {
-      props = {
-        role: "listbox",
-        "aria-multiselectable": multiSelectable || undefined,
-        ...props,
-      };
-    }
 
     const labelElement = useStoreState(store, ["labelElement"], (state) =>
       headingId ? null : state.labelElement,
@@ -160,10 +175,11 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
 
     props = {
       "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
+      "aria-multiselectable": ariaMultiSelectable,
       hidden,
       ...props,
       id,
-      ref: useMergeRefs(setElement, props.ref),
+      ref: useMergeRefs(setElement, ref, props.ref),
       style,
       onKeyDown,
     };

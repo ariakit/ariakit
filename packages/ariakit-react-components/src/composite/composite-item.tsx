@@ -1,3 +1,4 @@
+import type { SelectableController } from "@ariakit/components/composite/composite-selectable-store";
 import { useStoreStateObject } from "@ariakit/react-store";
 import {
   useBooleanEvent,
@@ -22,6 +23,7 @@ import {
   isTextbox,
   isTextField,
   isPortalEvent,
+  isRangeSelectionEvent,
   isSelfTarget,
   disabledFromProps,
   warnOnce,
@@ -48,6 +50,7 @@ import type { CompositeStore, CompositeStoreState } from "./composite-store.ts";
 import {
   focusSilently,
   getEnabledItem,
+  isFocusLoopEnabled,
   isItem,
   markItemMounted,
   markItemUnmounting,
@@ -58,6 +61,26 @@ import {
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+type NavigationKey =
+  | "ArrowUp"
+  | "ArrowRight"
+  | "ArrowDown"
+  | "ArrowLeft"
+  | "Home"
+  | "End"
+  | "PageUp"
+  | "PageDown";
+
+interface MoveOptions {
+  focusLoop?: false;
+}
+
+type MoveAction = (options?: MoveOptions) => string | null | undefined;
+
+interface StoreWithSelection {
+  unstable_selection?: SelectableController;
+}
 
 function isEditableElement(element: HTMLElement) {
   if (isTextbox(element)) return true;
@@ -93,6 +116,7 @@ function findNextPageItemId(
   element: Element,
   store?: CompositeStore,
   next?: CompositeStore["next"],
+  options?: MoveOptions,
   pageUp = false,
 ) {
   if (!store) return;
@@ -107,7 +131,7 @@ function findNextPageItemId(
   // the next page offset.
   for (let i = 0; i < renderedItems.length; i += 1) {
     const previousId = id;
-    id = next(i);
+    id = next({ ...options, skip: i });
     if (!id) break;
     if (id === previousId) continue;
     const itemElement = getEnabledItem(store, id)?.element;
@@ -461,7 +485,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         if (!isTextField(state.compositeElement)) return true;
         return false;
       };
-      const keyMap = {
+      const keyMap: Record<NavigationKey, MoveAction | false> = {
         ArrowUp: (isGrid || isVertical) && store.up,
         ArrowRight: (isGrid || isHorizontal) && store.next,
         ArrowDown: (isGrid || isVertical) && store.down,
@@ -480,14 +504,20 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           }
           return store?.next(-1);
         },
-        PageUp: () => {
-          return findNextPageItemId(currentTarget, store, store?.up, true);
+        PageUp: (options) => {
+          return findNextPageItemId(
+            currentTarget,
+            store,
+            store?.up,
+            options,
+            true,
+          );
         },
-        PageDown: () => {
-          return findNextPageItemId(currentTarget, store, store?.down);
+        PageDown: (options) => {
+          return findNextPageItemId(currentTarget, store, store?.down, options);
         },
       };
-      const action = keyMap[event.key as keyof typeof keyMap];
+      const action = keyMap[event.key as NavigationKey];
       if (action) {
         // If the composite item is a textbox, we'll only move focus to the
         // previous/next composite items when the cursor is at the beginning or
@@ -504,11 +534,31 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
             if (selection.end !== valueLength) return;
           } else if ((isLeft || isUp) && selection.start !== 0) return;
         }
-        const nextId = action();
-        if (preventScrollOnKeyDownProp(event) || nextId !== undefined) {
+        const selection = (store as StoreWithSelection).unstable_selection;
+        const extend =
+          selection?.getMode() === "multiple" && isRangeSelectionEvent(event);
+        const nextId = action(extend ? { focusLoop: false } : undefined);
+        const loopAxis =
+          event.key === "ArrowUp" ||
+          event.key === "ArrowDown" ||
+          event.key === "PageUp" ||
+          event.key === "PageDown"
+            ? "vertical"
+            : event.key === "ArrowLeft" || event.key === "ArrowRight"
+              ? "horizontal"
+              : undefined;
+        const suppressed =
+          extend &&
+          nextId === undefined &&
+          isFocusLoopEnabled(state.focusLoop, loopAxis);
+        if (
+          preventScrollOnKeyDownProp(event) ||
+          nextId !== undefined ||
+          suppressed
+        ) {
           if (!moveOnKeyPressProp(event)) return;
           event.preventDefault();
-          store.move(nextId);
+          store.move(nextId, { extend, anchor: true });
         }
       }
     });

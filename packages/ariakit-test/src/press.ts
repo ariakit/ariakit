@@ -6,6 +6,7 @@ import {
   isFocusable,
 } from "@ariakit/utils";
 import { initEvent } from "./__init-event.ts";
+import { getKeyboardEventOptions } from "./__keyboard.ts";
 import {
   flushMicrotasks,
   isHappyDOM,
@@ -437,9 +438,10 @@ async function pressKeyDown(
   key: string,
   options: KeyboardEventInit,
 ) {
-  const defaultAllowed = await dispatch.keyDown(element, { key, ...options });
+  const eventOptions = getKeyboardEventOptions(key, options);
+  const defaultAllowed = await dispatch.keyDown(element, eventOptions);
   if (defaultAllowed && key in keyDownMap && !options.metaKey) {
-    await keyDownMap[key]?.(element, options);
+    await keyDownMap[key]?.(element, eventOptions);
   }
   return defaultAllowed;
 }
@@ -461,11 +463,12 @@ async function pressKeyUp({
   options,
   defaultAllowed = true,
 }: PressKeyUpParams) {
-  if (!(await dispatch.keyUp(element, { key, ...options }))) {
+  const eventOptions = getKeyboardEventOptions(key, options);
+  if (!(await dispatch.keyUp(element, eventOptions))) {
     defaultAllowed = false;
   }
   if (defaultAllowed && key in keyUpMap && !options.metaKey) {
-    await keyUpMap[key]?.(element, options);
+    await keyUpMap[key]?.(element, eventOptions);
   }
 }
 

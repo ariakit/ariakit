@@ -121,6 +121,8 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
 
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
 
+    const selection = store.unstable_selection;
+
     const onClickProp = props.onClick;
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
     const hideOnClickProp = useBooleanEvent(hideOnClick);
@@ -131,13 +133,25 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
       if (isDownloading(event)) return;
       if (isOpeningInNewTab(event)) return;
       if (setValueOnClickProp(event) && value != null) {
-        store?.setValue((prevValue) => {
-          if (!Array.isArray(prevValue)) return value;
-          if (prevValue.includes(value)) {
-            return prevValue.filter((v) => v !== value);
+        if (selection && multiSelectable && id) {
+          // A composed selection behavior runs after this host handler.
+          if (!selection.hasOptIn(id)) {
+            selection.activate(id, event);
           }
-          return [...prevValue, value];
-        });
+        } else {
+          store.setValue((prevValue) => {
+            if (!Array.isArray(prevValue)) return value;
+            if (prevValue.includes(value)) {
+              return prevValue.filter((selectedValue) => {
+                return selectedValue !== value;
+              });
+            }
+            return [...prevValue, value];
+          });
+          selection?.ignore(event);
+        }
+      } else {
+        selection?.ignore(event);
       }
       if (hideOnClickProp(event)) {
         store?.hide();

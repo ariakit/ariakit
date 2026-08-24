@@ -336,6 +336,50 @@ test("loads Composite element alias metadata", async () => {
   );
 });
 
+test("loads Composite selection metadata without publishing selectable references", async () => {
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({
+    corePath: join(process.cwd(), "packages/ariakit-react-components"),
+    framework: "react",
+    packagePath: join(process.cwd(), "packages/ariakit-react"),
+  });
+
+  await loader.load(context);
+
+  const item = getReference(entries, "react/composite/composite-item");
+  const id = getParamProp(item, "id");
+  expect.soft(id.description.toLowerCase()).toContain("stable");
+  expect.soft(id.description.toLowerCase()).toContain("remount");
+
+  const store = getReference(entries, "react/composite/use-composite-store");
+  const move = getReturnProp(store, "move");
+  expect.soft(move.type).toContain("options?:");
+  expect.soft(move.type).toContain("extend?: boolean");
+  expect.soft(move.type).toContain("anchor?: boolean");
+  expect.soft(move.description).toMatch(/no(?: effect|-op)/i);
+  expect.soft(move.description.toLowerCase()).toContain("plain composite");
+
+  const comboboxStore = getReference(
+    entries,
+    "react/combobox/use-combobox-store",
+  );
+  const comboboxStoreFunctions =
+    comboboxStore.returnValue?.props?.map((prop) => prop.name) ?? [];
+  expect.soft(comboboxStoreFunctions).not.toContain("selection");
+  expect.soft(comboboxStoreFunctions).not.toContain("unstable_selection");
+
+  const selectStore = getReference(entries, "react/select/use-select-store");
+  const selectStoreFunctions =
+    selectStore.returnValue?.props?.map((prop) => prop.name) ?? [];
+  expect.soft(selectStoreFunctions).not.toContain("selection");
+  expect.soft(selectStoreFunctions).not.toContain("unstable_selection");
+
+  const selectableReferenceIds = [...entries.keys()].filter((id) => {
+    return id.includes("composite-selectable");
+  });
+  expect.soft(selectableReferenceIds).toEqual([]);
+});
+
 test("loads Select deprecation metadata", async () => {
   const { context, entries } = getLoaderContext();
   const loader = jsdoc({

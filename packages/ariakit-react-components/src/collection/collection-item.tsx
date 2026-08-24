@@ -105,6 +105,9 @@ export interface CollectionItemOptions<
    * store and for the element's `id` attribute. If not provided, a unique ID
    * will be automatically generated.
    *
+   * When this item is used as a selection key, pass a stable ID from your data.
+   * An automatically generated ID can change when the item remounts.
+   *
    * Live examples:
    * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
    * - [Tab with React Router](https://ariakit.com/examples/tab-react-router)

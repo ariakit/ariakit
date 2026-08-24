@@ -161,6 +161,38 @@ test("loads Composite element alias metadata", () => {
   );
 });
 
+test("loads Composite selection metadata without publishing selectable references", () => {
+  const item = getReference(compositeFilename, "CompositeItem");
+  const id = getProp(item, "id");
+  expect.soft(id.description.toLowerCase()).toContain("stable");
+  expect.soft(id.description.toLowerCase()).toContain("remount");
+
+  const store = getReference(compositeFilename, "useCompositeStore");
+  const move = getReturnProp(store, "move");
+  expect.soft(move.type).toContain("options?:");
+  expect.soft(move.type).toContain("extend?: boolean");
+  expect.soft(move.type).toContain("anchor?: boolean");
+  expect.soft(move.description).toMatch(/no(?: effect|-op)/i);
+  expect.soft(move.description.toLowerCase()).toContain("plain composite");
+
+  const comboboxStore = getReference(comboboxFilename, "useComboboxStore");
+  const comboboxStoreFunctions =
+    comboboxStore.returnProps?.map((prop) => prop.name) ?? [];
+  expect.soft(comboboxStoreFunctions).not.toContain("selection");
+  expect.soft(comboboxStoreFunctions).not.toContain("unstable_selection");
+
+  const selectStore = getReference(selectFilename, "useSelectStore");
+  const selectStoreFunctions =
+    selectStore.returnProps?.map((prop) => prop.name) ?? [];
+  expect.soft(selectStoreFunctions).not.toContain("selection");
+  expect.soft(selectStoreFunctions).not.toContain("unstable_selection");
+
+  const selectableReferences = getReferences(compositeFilename).filter(
+    (reference) => reference.name.includes("CompositeSelectable"),
+  );
+  expect.soft(selectableReferences).toEqual([]);
+});
+
 test("loads Select deprecation metadata", () => {
   const replacements = {
     Select: "ComboboxSelect",

@@ -30,6 +30,7 @@
     "./collection/collection-store": "./src/collection/collection-store.ts",
     "./combobox/combobox-store": "./src/combobox/combobox-store.ts",
     "./composite/composite-overflow-store": "./src/composite/composite-overflow-store.ts",
+    "./composite/composite-selectable-store": "./src/composite/composite-selectable-store.ts",
     "./composite/composite-store": "./src/composite/composite-store.ts",
     "./dialog/dialog-store": "./src/dialog/dialog-store.ts",
     "./disclosure/disclosure-store": "./src/disclosure/disclosure-store.ts",

@@ -1,9 +1,11 @@
+import type { SelectableController } from "@ariakit/components/composite/composite-selectable-store";
 import { useStoreState } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
   useForceUpdate,
   useId,
+  useLiveRef,
   useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
@@ -28,6 +30,7 @@ import type {
 } from "react";
 import {
   createContext,
+  isValidElement,
   useCallback,
   useContext,
   useEffect,
@@ -36,6 +39,12 @@ import {
   useState,
 } from "react";
 import { flushSync } from "react-dom";
+import type {
+  CollectionRendererRangeItem,
+  CollectionRendererRangeNode,
+  CollectionRendererRangeTree,
+} from "./__collection-renderer-selection.ts";
+import { createCollectionRendererRangeTree } from "./__collection-renderer-selection.ts";
 import { useCollectionContext } from "./collection-context.tsx";
 import type {
   CollectionStore,
@@ -72,8 +81,10 @@ interface ItemObject extends AnyObject, NestedRendererItemProps {
    */
   style?: CSSProperties;
   /**
-   * A list of nested items. Passing this property will help measure the item
-   * size.
+   * A list of nested items. In a selectable renderer tree, parent data must
+   * include this list when the entire child renderer may be unmounted.
+   * Otherwise, that branch is absent from ranges and select-all while it is
+   * unmounted. The list also helps calculate the item size.
    */
   items?: Item[];
   /**
@@ -81,6 +92,10 @@ interface ItemObject extends AnyObject, NestedRendererItemProps {
    * on the collection store and can be used to calculate the item size.
    */
   element?: HTMLElement | null;
+  /**
+   * Whether this item takes part in selection ranges when it is not mounted.
+   */
+  selectable?: boolean;
 }
 
 type Item =
@@ -120,6 +135,8 @@ interface CollectionRendererContextValue {
   store: CollectionRendererOptions["store"];
   orientation: CollectionRendererOptions["orientation"];
   overscan: CollectionRendererOptions["overscan"];
+  rangeNode: CollectionRendererRangeNode;
+  rangeTree: CollectionRendererRangeTree;
   scroller?: Element | null;
   scrollerRef?: RefObject<Element | null>;
   scrollerController?: ScrollerController;
@@ -128,6 +145,7 @@ interface CollectionRendererContextValue {
 
 const CollectionRendererContext =
   createContext<CollectionRendererContextValue | null>(null);
+const CollectionRendererRangeAnchorContext = createContext<string | null>(null);
 const nullScrollerRef: RefObject<Element | null> = { current: null };
 
 function createTask() {
@@ -196,6 +214,29 @@ function getItem<T extends Item = any>(
   if (!item) return null;
   if (typeof item === "object") return item as RawItemProps<T>;
   return { value: item } as unknown as RawItemProps<T>;
+}
+
+function getRangeItems(
+  items: readonly Item[],
+  baseId: string,
+): CollectionRendererRangeItem[] {
+  return Array.from({ length: items.length }, (_, index) => {
+    const item = items[index];
+    const id = getItemId(item, index, baseId);
+    const itemObject = getItemObject(item);
+    const nestedItems = itemObject.items
+      ? getRangeItems(itemObject.items, id)
+      : undefined;
+    return {
+      id,
+      selectable: itemObject.selectable === true,
+      items: nestedItems,
+    };
+  });
+}
+
+interface StoreWithSelection {
+  unstable_selection?: SelectableController;
 }
 
 function getItemSize(
@@ -585,6 +626,7 @@ export function useCollectionRenderer<T extends Item = any>({
 
   const contextParent = useContext(CollectionRendererContext);
   const parent = store && contextParent?.store !== store ? null : contextParent;
+  const rangeAnchorId = useContext(CollectionRendererRangeAnchorContext);
 
   const parentData = parent?.childrenData;
   const orientation = orientationProp ?? parent?.orientation ?? "vertical";
@@ -598,6 +640,51 @@ export function useCollectionRenderer<T extends Item = any>({
 
   const ref = useRef<HTMLType>(null);
   const baseId = useId(props.id);
+  const selection = (store as StoreWithSelection | undefined)
+    ?.unstable_selection;
+  const selectionRef = useLiveRef(selection);
+  const rangeItems = useMemo(() => {
+    if (!selection) return null;
+    if (!baseId) return null;
+    if (typeof items === "number") return items ? null : [];
+    return getRangeItems(items, baseId);
+  }, [selection, baseId, items]);
+  const rangeItemsRef = useLiveRef(rangeItems);
+  const rangeParentNodeRef = useLiveRef(parent?.rangeNode ?? null);
+  const rangeAnchorIdRef = useLiveRef(
+    parent ? (rangeAnchorId ?? baseId ?? null) : null,
+  );
+  const rangeNode = useMemo<CollectionRendererRangeNode>(() => {
+    return {
+      getAnchorId: () => rangeAnchorIdRef.current,
+      getElement: () => ref.current,
+      getItems: () => rangeItemsRef.current,
+      getParent: () => rangeParentNodeRef.current,
+    };
+  }, [rangeAnchorIdRef, rangeItemsRef, rangeParentNodeRef]);
+  const ownRangeTree = useMemo(() => {
+    // The tree stores these callbacks without invoking their live refs.
+    // oxlint-disable-next-line react/refs
+    return createCollectionRendererRangeTree(rangeNode, (id, fallback) => {
+      const currentSelection = selectionRef.current;
+      if (!currentSelection?.hasOptIn(id)) return fallback;
+      return currentSelection.isOptedIn(id);
+    });
+  }, [rangeNode, selectionRef]);
+  const rangeTree = parent?.rangeTree ?? ownRangeTree;
+  const isRangeRoot = !parent;
+
+  useSafeLayoutEffect(() => {
+    if (!selection) return;
+    return rangeTree.addNode(rangeNode);
+  }, [selection, rangeTree, rangeNode]);
+
+  useSafeLayoutEffect(() => {
+    if (!selection) return;
+    if (!isRangeRoot) return;
+    return selection.addRangeDelegate(rangeTree.delegate);
+  }, [selection, isRangeRoot, rangeTree]);
+
   const horizontal = orientation === "horizontal";
   const elements = useMemo(() => new Map<string, HTMLElement>(), []);
   const [elementsUpdated, updateElements] = useForceUpdate();
@@ -1007,7 +1094,19 @@ export function useCollectionRenderer<T extends Item = any>({
   }, [itemsProps, itemSize, elements, elementObserver]);
 
   const children = itemsProps?.map((itemProps) => {
-    return renderItem?.(itemProps);
+    const child = renderItem?.(itemProps);
+    if (!selection) return child;
+    const key = isValidElement(child)
+      ? (child.key ?? itemProps.id)
+      : itemProps.id;
+    return (
+      <CollectionRendererRangeAnchorContext.Provider
+        key={key}
+        value={itemProps.id}
+      >
+        {child}
+      </CollectionRendererRangeAnchorContext.Provider>
+    );
   });
 
   const styleProp = props.style;
@@ -1033,6 +1132,8 @@ export function useCollectionRenderer<T extends Item = any>({
       store,
       orientation,
       overscan,
+      rangeNode,
+      rangeTree,
       scroller: contextScroller,
       scrollerRef: contextScrollerRef,
       scrollerController,
@@ -1042,6 +1143,8 @@ export function useCollectionRenderer<T extends Item = any>({
       store,
       orientation,
       overscan,
+      rangeNode,
+      rangeTree,
       contextScroller,
       contextScrollerRef,
       scrollerController,
@@ -1125,10 +1228,13 @@ export interface CollectionRendererOptions<
    *   `height` properties are explicitly provided here, they will be used to
    *   calculate the item's size. This is useful when rendering items with known
    *   variable sizes.
-   * - `items`: An array of items to be rendered as children of this item. This
-   *   is useful when rendering nested items. This property is recommended when
-   *   rendering nested items because it will help the parent renderer calculate
-   *   the size and position of the nested items.
+   * - `items`: An array of items to be rendered as children of this item. In a
+   *   selectable renderer tree, parent data must include it when the entire
+   *   child renderer may be unmounted. Otherwise, that branch is absent from
+   *   ranges and select-all while it is unmounted. This data also helps the
+   *   parent renderer calculate size and position.
+   * - `selectable`: Set to `true` when an unmounted item should take part in
+   *   selection ranges and select-all operations.
    *
    * Also, When rendering nested renderers, you can optionally include props
    * like `gap`, `orientation`, `itemSize`, `estimatedItemSize`, `padding`,

@@ -37,7 +37,7 @@ test("dispatch.keyDown preserves provided keyboard strings", async () => {
   }
 });
 
-test("press uses an empty string for omitted keyboard code", async () => {
+test("press populates an omitted keyboard code", async () => {
   const button = document.createElement("button");
   document.body.append(button);
   let key: string | undefined;
@@ -49,7 +49,7 @@ test("press uses an empty string for omitted keyboard code", async () => {
   try {
     await press("m", button);
     expect(key).toBe("m");
-    expect(code).toBe("");
+    expect(code).toBe("KeyM");
   } finally {
     button.remove();
   }

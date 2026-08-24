@@ -1,5 +1,7 @@
+import type { SelectableController } from "@ariakit/components/composite/composite-selectable-store";
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useBooleanEvent,
   useEvent,
   useMergeRefs,
@@ -23,6 +25,11 @@ import {
   hasFocus,
   invariant,
   isFocusable,
+  isElement,
+  isNonContiguousSelectionEvent,
+  isRangeSelectionEvent,
+  isTextbox,
+  supportsAriaMultiselectable,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
@@ -45,6 +52,7 @@ import {
   getEnabledItem,
   groupItemsByRows,
   isItem,
+  isFocusLoopEnabled,
   ownsFocus,
   silentlyFocused,
   usePresentItem,
@@ -53,6 +61,26 @@ import {
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+type NavigationKey =
+  | "ArrowUp"
+  | "ArrowRight"
+  | "ArrowDown"
+  | "ArrowLeft"
+  | "Home"
+  | "End"
+  | "PageUp"
+  | "PageDown";
+
+interface MoveOptions {
+  focusLoop?: false;
+}
+
+type MoveAction = (options?: MoveOptions) => string | null | undefined;
+
+interface StoreWithSelection {
+  unstable_selection?: SelectableController;
+}
 
 function isGrid(items: CompositeStoreItem[]) {
   return items.some((item) => !!item.rowId);
@@ -71,6 +99,17 @@ function isModifierKey(event: KeyboardEvent | ReactKeyboardEvent) {
     event.key === "Alt" ||
     event.key === "Meta"
   );
+}
+
+function isEditableTarget(event: ReactKeyboardEvent<HTMLElement>) {
+  if (!isElement(event.target)) return false;
+  let element: Element | null = event.target;
+  while (element) {
+    if (isTextbox(element as HTMLElement)) return true;
+    if (element === event.currentTarget) return false;
+    element = element.parentElement;
+  }
+  return false;
 }
 
 function useKeyboardEventProxy(
@@ -240,6 +279,10 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     const ref = useRef<HTMLType>(null);
     const previousElementRef = useRef<HTMLElement | null>(null);
     const present = usePresentItem(store);
+    const selection = (store as StoreWithSelection | undefined)
+      ?.unstable_selection;
+    const selectableMode = useStoreState(store, () => selection?.getMode());
+    const role = useAttribute(selection ? ref : null, "role", props.role);
 
     const [, setCompositeElement] = useTransactionState(
       composite ? store.setCompositeElement : null,
@@ -451,8 +494,16 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (event.nativeEvent.isComposing) return;
       if (event.defaultPrevented) return;
       if (!store) return;
+      const multipleSelection = selection?.getMode() === "multiple";
+      const selectAll =
+        event.key.toLowerCase() === "a" && isNonContiguousSelectionEvent(event);
+      if (multipleSelection && selectAll && !isEditableTarget(event)) {
+        event.preventDefault();
+        selection.selectAll();
+        return;
+      }
       if (!isSelfTarget(event)) return;
-      const { orientation, items, renderedItems, activeId, rtl } =
+      const { orientation, items, renderedItems, activeId, rtl, focusLoop } =
         store.getState();
       const activeItem = getEnabledItem(store, activeId);
       if (activeItem?.element?.isConnected) return;
@@ -470,9 +521,13 @@ export const useComposite = createHook<TagName, CompositeOptions>(
         event.key === "Home" ||
         event.key === "End";
       if (isHorizontalKey && isTextField(event.currentTarget)) return;
-      const up = () => {
+      const up: MoveAction = (options) => {
         if (elementlessActiveItem) {
-          return store.up({ activeId, renderedItems: movementItems });
+          return store.up({
+            activeId,
+            renderedItems: movementItems,
+            ...options,
+          });
         }
         if (grid) {
           const item = findFirstEnabledItemInTheLastRow(renderedItems);
@@ -480,25 +535,37 @@ export const useComposite = createHook<TagName, CompositeOptions>(
         }
         return store?.last();
       };
-      const right = () => {
+      const right: MoveAction = (options) => {
         if (elementlessActiveItem) {
-          return store.next({ activeId, renderedItems: movementItems });
+          return store.next({
+            activeId,
+            renderedItems: movementItems,
+            ...options,
+          });
         }
         return rtl ? store.last() : store.first();
       };
-      const down = () => {
+      const down: MoveAction = (options) => {
         if (elementlessActiveItem) {
-          return store.down({ activeId, renderedItems: movementItems });
+          return store.down({
+            activeId,
+            renderedItems: movementItems,
+            ...options,
+          });
         }
         return store.first();
       };
-      const left = () => {
+      const left: MoveAction = (options) => {
         if (elementlessActiveItem) {
-          return store.previous({ activeId, renderedItems: movementItems });
+          return store.previous({
+            activeId,
+            renderedItems: movementItems,
+            ...options,
+          });
         }
         return rtl ? store.first() : store.last();
       };
-      const keyMap = {
+      const keyMap: Record<NavigationKey, MoveAction | false> = {
         ArrowUp: (grid || isVertical) && up,
         ArrowRight: (grid || isHorizontal) && right,
         ArrowDown: (grid || isVertical) && down,
@@ -508,13 +575,22 @@ export const useComposite = createHook<TagName, CompositeOptions>(
         PageUp: store.first,
         PageDown: store.last,
       };
-      const action = keyMap[event.key as keyof typeof keyMap];
+      const action = keyMap[event.key as NavigationKey];
       if (action) {
-        const id = action();
-        if (id !== undefined) {
+        const extend = multipleSelection && isRangeSelectionEvent(event);
+        const id = action(extend ? { focusLoop: false } : undefined);
+        const loopAxis =
+          event.key === "ArrowUp" || event.key === "ArrowDown"
+            ? "vertical"
+            : event.key === "ArrowLeft" || event.key === "ArrowRight"
+              ? "horizontal"
+              : undefined;
+        const suppressed =
+          extend && id === undefined && isFocusLoopEnabled(focusLoop, loopAxis);
+        if (id !== undefined || suppressed) {
           if (!moveOnKeyPressProp(event)) return;
           event.preventDefault();
-          store.move(id);
+          store.move(id, { extend, anchor: true });
         }
       }
     });
@@ -551,6 +627,10 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     props = {
       "aria-activedescendant": activeDescendant,
+      "aria-multiselectable":
+        selectableMode === "multiple" && supportsAriaMultiselectable(role)
+          ? true
+          : undefined,
       ...props,
       ref: useMergeRefs(ref, setCompositeElement, props.ref),
       onKeyDownCapture,

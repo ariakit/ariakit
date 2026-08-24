@@ -405,6 +405,36 @@ export function getPopupItemRole(
 }
 
 /**
+ * Checks whether a collection role should expose `aria-multiselectable`.
+ */
+export function supportsAriaMultiselectable(role?: AriaRole | null) {
+  if (role === "grid") return true;
+  if (role === "listbox") return true;
+  if (role === "tree") return true;
+  if (role === "treegrid") return true;
+  return false;
+}
+
+/**
+ * Returns the ARIA attribute that represents selection for the given role.
+ */
+export function getSelectionAttributeByRole(role?: AriaRole | null) {
+  if (role === "checkbox") return "aria-checked";
+  if (role === "menuitemcheckbox") return "aria-checked";
+  if (role === "menuitemradio") return "aria-checked";
+  if (role === "radio") return "aria-checked";
+  if (role === "switch") return "aria-checked";
+  if (role === "columnheader") return "aria-selected";
+  if (role === "gridcell") return "aria-selected";
+  if (role === "option") return "aria-selected";
+  if (role === "row") return "aria-selected";
+  if (role === "rowheader") return "aria-selected";
+  if (role === "tab") return "aria-selected";
+  if (role === "treeitem") return "aria-selected";
+  return undefined;
+}
+
+/**
  * Calls `element.scrollIntoView()` if the element is hidden or partly hidden in
  * the viewport.
  */

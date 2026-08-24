@@ -123,6 +123,8 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     const autoFocusSelectedItem = !!selectElement;
 
     const selectMode = !!selectElement;
+    const automaticSelection = selectMode && multiSelectable;
+    const selection = store.unstable_selection;
     const disabled = disabledFromProps(props);
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
@@ -163,13 +165,29 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
           if (resetValueOnSelectProp(event)) {
             store?.resetInputValue();
           }
-          store?.setSelectedValue((prevValue) => {
-            if (!Array.isArray(prevValue)) return value;
-            if (prevValue.includes(value)) {
-              return prevValue.filter((v) => v !== value);
+          if (selection && multiSelectable && id) {
+            // A composed selection behavior runs after this host handler.
+            if (!selection.hasOptIn(id)) {
+              if (automaticSelection) {
+                selection.activate(id, event);
+              } else {
+                selection.toggle(id);
+              }
             }
-            return [...prevValue, value];
-          });
+          } else {
+            store?.setSelectedValue((prevValue) => {
+              if (!Array.isArray(prevValue)) return value;
+              if (prevValue.includes(value)) {
+                return prevValue.filter(
+                  (selectedValue) => selectedValue !== value,
+                );
+              }
+              return [...prevValue, value];
+            });
+            selection?.ignore(event);
+          }
+        } else {
+          selection?.ignore(event);
         }
         if (setValueOnClickProp(event)) {
           store?.setInputValue(value);

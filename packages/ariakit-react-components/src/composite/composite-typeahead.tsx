@@ -186,7 +186,7 @@ export const useCompositeTypeahead = createHook<
       itemTextStartsWith(item, typeaheadState.chars),
     );
     if (item) {
-      store.move(item.id);
+      store.move(item.id, { anchor: true });
     } else {
       clearChars(typeaheadState);
     }

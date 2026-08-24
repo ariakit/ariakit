@@ -13,6 +13,79 @@ function getTextInput() {
   return input;
 }
 
+test.each([
+  { key: "a", code: "KeyA" },
+  { key: "A", code: "KeyA" },
+  { key: "1", code: "Digit1" },
+  { key: "!", code: "Digit1" },
+  { key: " ", code: "Space" },
+  { key: "?", code: "Slash" },
+  { key: "ArrowDown", code: "ArrowDown" },
+])("press populates $code for the $key key", async ({ key, code }) => {
+  const button = document.createElement("button");
+  const events: Array<{ type: string; code: string }> = [];
+  const recordEvent = (event: KeyboardEvent) => {
+    events.push({ type: event.type, code: event.code });
+  };
+  button.addEventListener("keydown", recordEvent);
+  button.addEventListener("keyup", recordEvent);
+  document.body.append(button);
+
+  await press(key, button);
+
+  expect(events).toEqual([
+    { type: "keydown", code },
+    { type: "keyup", code },
+  ]);
+});
+
+test("press preserves an explicit keyboard code", async () => {
+  const button = document.createElement("button");
+  const codes: string[] = [];
+  button.addEventListener("keydown", (event) => codes.push(event.code));
+  button.addEventListener("keyup", (event) => codes.push(event.code));
+  document.body.append(button);
+
+  await press("a", button, { code: "KeyQ" });
+
+  expect(codes).toEqual(["KeyQ", "KeyQ"]);
+});
+
+test("press.down and press.up populate keyboard codes", async () => {
+  const button = document.createElement("button");
+  const codes: string[] = [];
+  button.addEventListener("keydown", (event) => codes.push(event.code));
+  button.addEventListener("keyup", (event) => codes.push(event.code));
+  document.body.append(button);
+
+  await press.down("a", button);
+  await press.up("a", button);
+
+  expect(codes).toEqual(["KeyA", "KeyA"]);
+});
+
+test("press passes Meta to a text field without inserting text", async () => {
+  const input = getTextInput();
+  const events: Array<Record<string, unknown>> = [];
+  const recordEvent = (event: KeyboardEvent) => {
+    events.push({
+      type: event.type,
+      code: event.code,
+      metaKey: event.metaKey,
+    });
+  };
+  input.addEventListener("keydown", recordEvent);
+  input.addEventListener("keyup", recordEvent);
+
+  await press("k", input, { metaKey: true });
+
+  expect(events).toEqual([
+    { type: "keydown", code: "KeyK", metaKey: true },
+    { type: "keyup", code: "KeyK", metaKey: true },
+  ]);
+  expect(input.value).toBe("hello world");
+});
+
 // A scripted click dispatched on a disabled control fires its listeners in jsdom
 // and real browsers; happy-dom drops it, but `dispatch` normalizes that (see
 // dispatch.ts), so these run in the default happy-dom. They guard the disabled
