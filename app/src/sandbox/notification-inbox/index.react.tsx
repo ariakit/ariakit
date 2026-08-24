@@ -118,9 +118,7 @@ function InboxNotificationCard({ item }: InboxNotificationCardProps) {
         className={`mt-1 size-2.5 rounded-full ${toneClassNames[tone]}`}
       />
       <div className="min-w-0">
-        {item.heading && (
-          <NotificationHeading className="truncate font-semibold tracking-tight" />
-        )}
+        <NotificationHeading className="truncate font-semibold tracking-tight" />
         {tone === "warning" ? (
           <NotificationMessage className="mt-0.5 text-sm ak-ink-2">
             <strong>3 messages</strong> moved to Trash.
@@ -155,6 +153,14 @@ interface NotificationStackProps {
 }
 
 function NotificationStack({ regionRef }: NotificationStackProps) {
+  const [limit] = useState(() => {
+    if (typeof window === "undefined") return 3;
+    const value = new URLSearchParams(window.location.search).get(
+      "notification-limit",
+    );
+    return value === "1" ? 1 : 3;
+  });
+
   return (
     <NotificationRegion
       ref={regionRef}
@@ -176,7 +182,7 @@ function NotificationStack({ regionRef }: NotificationStackProps) {
       </div>
       <NotificationList
         store={inboxNotifications}
-        limit={3}
+        limit={limit}
         className="grid gap-2"
       >
         {(items) =>

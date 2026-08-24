@@ -1,6 +1,11 @@
+import { createNotificationStore } from "@ariakit/components/notification/notification-store";
+import type { NotificationHeadingProps } from "@ariakit/react-components/notification/notification-heading";
 import { click, press, q } from "@ariakit/test";
+import { render } from "@ariakit/test/react";
+import { createElement } from "react";
 import { afterEach, expect, test, vi } from "vitest";
 import { inboxNotifications } from "./notifications.ts";
+import { NotificationFixture } from "./test-fixture.react.tsx";
 
 afterEach(() => {
   inboxNotifications.clear();
@@ -38,6 +43,95 @@ test("renders a headingless notification without a duplicate description", async
 
   await click(q.button("Dismiss Draft saved."));
   expect(q.alertdialog.maybe("Draft saved.")).not.toBeInTheDocument();
+});
+
+test("preserves an explicit heading label", async () => {
+  const store = createNotificationStore();
+  store.push({ message: "report.pdf is ready", timeout: null });
+  const { unmount } = await render(
+    createElement(NotificationFixture, {
+      store,
+      headingProps: { "aria-label": "Upload complete" },
+    }),
+  );
+
+  const notification = q.alertdialog("Upload complete");
+  expect(notification).toHaveAttribute("aria-labelledby");
+  expect(notification).toHaveAttribute("aria-describedby");
+
+  unmount();
+});
+
+const headingContentCases: Array<{
+  description: string;
+  headingProps: NotificationHeadingProps;
+  expectedName: string;
+  hasDescription: boolean;
+}> = [
+  {
+    description: "an empty render element",
+    headingProps: { render: createElement("h2") },
+    expectedName: "report.pdf is ready",
+    hasDescription: false,
+  },
+  {
+    description: "render-element content",
+    headingProps: {
+      render: createElement("h2", null, "Upload complete"),
+    },
+    expectedName: "Upload complete",
+    hasDescription: true,
+  },
+  {
+    description: "empty inner HTML",
+    headingProps: { dangerouslySetInnerHTML: { __html: "" } },
+    expectedName: "report.pdf is ready",
+    hasDescription: false,
+  },
+  {
+    description: "inner HTML content",
+    headingProps: {
+      dangerouslySetInnerHTML: { __html: "<strong>Sync complete</strong>" },
+    },
+    expectedName: "Sync complete",
+    hasDescription: true,
+  },
+];
+
+test.each(headingContentCases)(
+  "registers $description correctly",
+  async ({ headingProps, expectedName, hasDescription }) => {
+    const store = createNotificationStore();
+    store.push({ message: "report.pdf is ready", timeout: null });
+    const { unmount } = await render(
+      createElement(NotificationFixture, { store, headingProps }),
+    );
+
+    const notification = q.alertdialog(expectedName);
+    if (hasDescription) {
+      expect(notification).toHaveAttribute("aria-describedby");
+    } else {
+      expect(notification).not.toHaveAttribute("aria-describedby");
+    }
+
+    unmount();
+  },
+);
+
+test("focuses a newly registered notification", async () => {
+  const store = createNotificationStore();
+  store.push({ message: "Older replacement", timeout: null });
+  store.push({ message: "Focused notification", timeout: null });
+  const { unmount } = await render(
+    createElement(NotificationFixture, { store }),
+  );
+
+  const notification = q.alertdialog("Focused notification");
+  await click(q.within(notification).button("Dismiss Focused notification"));
+
+  expect(q.alertdialog("Older replacement")).toHaveFocus();
+
+  unmount();
 });
 
 test("restores a durable conversation from an untimed notification", async () => {

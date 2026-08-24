@@ -74,22 +74,20 @@ export function useNotificationList<
 
       queueMicrotask(() => {
         if (elementsRef.current.has(element) || element.isConnected) return;
+        const isCurrentElement = (currentElement: HTMLElement) =>
+          elementsRef.current.has(currentElement) && currentElement.isConnected;
         const nextElement = previousOrder
           .slice(index + 1)
-          .find(
-            (currentElement) =>
-              elementsRef.current.has(currentElement) &&
-              currentElement.isConnected,
-          );
+          .find(isCurrentElement);
         const previousElement = previousOrder
           .slice(0, index)
           .reverse()
-          .find(
-            (currentElement) =>
-              elementsRef.current.has(currentElement) &&
-              currentElement.isConnected,
-          );
-        const focusElement = nextElement || previousElement;
+          .find(isCurrentElement);
+        const newElement = sortBasedOnDOMPosition(
+          Array.from(elementsRef.current),
+          (currentElement) => currentElement,
+        ).find((currentElement) => currentElement.isConnected);
+        const focusElement = nextElement || previousElement || newElement;
         if (focusElement) {
           focusElement.focus();
         } else {

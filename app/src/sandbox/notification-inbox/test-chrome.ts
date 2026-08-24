@@ -1,6 +1,35 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFramework(import.meta.dirname, async ({ test, query }) => {
+  test("names a message-only notification", async ({ q }) => {
+    await q.button("Save draft").click();
+
+    const notification = q.alertdialog("Draft saved.");
+    await test.expect(notification).toBeVisible();
+    await test.expect(notification).toHaveAttribute("aria-labelledby");
+    await test.expect(notification).not.toHaveAttribute("aria-describedby");
+  });
+
+  test("focuses a newly revealed one-card notification", async ({
+    page,
+    q,
+  }) => {
+    const url = new URL(page.url());
+    url.searchParams.set("notification-limit", "1");
+    await page.goto(url.toString());
+
+    await q.button("Receive message").click();
+    await q.button("Receive message").click();
+
+    const notification = q.alertdialog();
+    await test.expect(notification).toHaveCount(1);
+    await query(notification)
+      .button(/^Dismiss /)
+      .click();
+
+    await test.expect(q.alertdialog()).toBeFocused();
+  });
+
   test("restores a conversation from an untimed notification", async ({
     q,
   }) => {
