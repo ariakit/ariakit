@@ -2,9 +2,26 @@ import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/7114
-  test("selects an automatic pointer range", async ({ q }) => {
+  test("selects an automatic pointer range without selecting text", async ({
+    page,
+    q,
+  }) => {
     await q.combobox("Field kit gear").click();
     await q.option("Compass").click();
+    // Headless engines do not consistently reproduce OS drag selection, so
+    // seed the real DOM Selection that the pointer Shift cleanup must clear.
+    await q
+      .heading("Pack a field kit by range", { level: 1 })
+      .evaluate((element) => {
+        const selection = element.ownerDocument.getSelection();
+        const range = element.ownerDocument.createRange();
+        range.selectNodeContents(element);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      });
+    await test.expect
+      .poll(() => page.evaluate(() => window.getSelection()?.toString() ?? ""))
+      .not.toBe("");
     await q.option("Emergency radio").click({ modifiers: ["Shift"] });
 
     await test
@@ -24,6 +41,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toHaveText(
         "6 packed: Field notebook, Water filter, Compass, Headlamp, First-aid kit, Emergency radio",
       );
+    await test.expect
+      .poll(() => page.evaluate(() => window.getSelection()?.toString() ?? ""))
+      .toBe("");
   });
 
   // https://github.com/ariakit/ariakit/issues/7114

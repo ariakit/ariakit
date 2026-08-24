@@ -27,6 +27,7 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
+import { clearTextSelectionOnShiftClick } from "../composite/utils.ts";
 import { getScrollItemIntoView } from "./__utils.ts";
 import {
   ComboboxItemCheckedContext,
@@ -169,7 +170,9 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
             // A composed selection behavior runs after this host handler.
             if (!selection.hasOptIn(id)) {
               if (automaticSelection) {
+                const canMutate = selection.getMode() !== "none";
                 selection.activate(id, event);
+                if (canMutate) clearTextSelectionOnShiftClick(event);
               } else {
                 selection.toggle(id);
               }

@@ -24,6 +24,7 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
+import { clearTextSelectionOnShiftClick } from "../composite/utils.ts";
 import {
   SelectItemCheckedContext,
   useSelectScopedContext,
@@ -136,7 +137,9 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
         if (selection && multiSelectable && id && store.item(id)) {
           // A composed selection behavior runs after this host handler.
           if (!selection.hasOptIn(id)) {
+            const canMutate = selection.getMode() !== "none";
             selection.activate(id, event);
+            if (canMutate) clearTextSelectionOnShiftClick(event);
           }
         } else {
           store.setValue((prevValue) => {

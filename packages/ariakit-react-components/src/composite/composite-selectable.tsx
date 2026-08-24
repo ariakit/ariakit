@@ -11,14 +11,12 @@ import {
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
 import {
-  getDocument,
   getSelectionAttributeByRole,
   getWindow,
   invariant,
   isDownloading,
   isOpeningInNewTab,
   isSelfTarget,
-  isVirtualClick,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
@@ -31,6 +29,7 @@ import type {
 import { useRef } from "react";
 import { useCompositeScopedContext } from "./composite-context.tsx";
 import type { CompositeSelectableStore } from "./composite-selectable-store.ts";
+import { clearTextSelectionOnShiftClick } from "./utils.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -162,9 +161,7 @@ export const useCompositeSelectable = createHook<
 
     // Pointer Shift selection can leave a browser text selection behind. The
     // click must finish first so CompositeItem can focus and update activeId.
-    if (canMutate && event.shiftKey && !isVirtualClick(event)) {
-      getDocument(event.currentTarget).getSelection()?.removeAllRanges();
-    }
+    if (canMutate) clearTextSelectionOnShiftClick(event);
   });
 
   const hostProvidesSelectionAttribute =

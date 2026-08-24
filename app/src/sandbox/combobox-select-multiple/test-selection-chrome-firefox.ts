@@ -22,9 +22,24 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7114
-  test("automatically extends a Shift-click range", async ({ q }) => {
+  test("automatically extends a Shift-click range without selecting text", async ({
+    page,
+    q,
+  }) => {
     await q.combobox("Favorite food").click();
     await q.option("Candy").click();
+    // Headless engines do not consistently reproduce OS drag selection, so
+    // seed the real DOM Selection that the pointer Shift cleanup must clear.
+    await q.heading("Select with ranges", { level: 1 }).evaluate((element) => {
+      const selection = element.ownerDocument.getSelection();
+      const range = element.ownerDocument.createRange();
+      range.selectNodeContents(element);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    });
+    await test.expect
+      .poll(() => page.evaluate(() => window.getSelection()?.toString() ?? ""))
+      .not.toBe("");
     await q.option("Chocolate").click({ modifiers: ["Shift"] });
 
     await test
@@ -36,5 +51,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test
       .expect(q.option("Cherry"))
       .toHaveAttribute("aria-selected", "true");
+    await test.expect
+      .poll(() => page.evaluate(() => window.getSelection()?.toString() ?? ""))
+      .toBe("");
   });
 });

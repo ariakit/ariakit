@@ -5,8 +5,10 @@ import {
   getActiveElement,
   getDocument,
   isTextField,
+  isVirtualClick,
   isVisible,
 } from "@ariakit/utils";
+import type { MouseEvent } from "react";
 import { useCallback, useRef } from "react";
 import type { CompositeStore, CompositeStoreState } from "./composite-store.ts";
 
@@ -15,6 +17,12 @@ export const findFirstEnabledItem = Core.findFirstEnabledItem;
 export const groupItemsByRows = Core.groupItemsByRows;
 
 const unmountingItems = new WeakSet<Element>();
+
+export function clearTextSelectionOnShiftClick(event: MouseEvent<HTMLElement>) {
+  if (!event.shiftKey) return;
+  if (isVirtualClick(event)) return;
+  getDocument(event.currentTarget).getSelection()?.removeAllRanges();
+}
 
 export function isFocusLoopEnabled(
   focusLoop: CompositeStoreState["focusLoop"],
