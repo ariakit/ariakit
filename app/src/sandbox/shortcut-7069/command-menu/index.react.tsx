@@ -249,7 +249,13 @@ function ResilienceLab({ store }: ResilienceLabProps) {
             >
               <span className="resilience-reference-dot" />
               Disabled reference
-              <InheritedShortcutPreview alwaysVisible />
+              <span className="shortcut-hint">
+                <Ariakit.Shortcut
+                  alwaysVisible
+                  data-disabled-explicit-shortcut=""
+                  keys="F9"
+                />
+              </span>
             </Ariakit.ShortcutCommand>
           </div>
           <div className="resilience-result-line">

@@ -78,6 +78,10 @@ test("falls back from disabled and inert command references", async () => {
     "Same-name command references",
   );
   expect(q.button(/^Disabled reference/)).toBeDisabled();
+  const disabledShortcut = document.querySelector<HTMLElement>(
+    "[data-disabled-explicit-shortcut]",
+  );
+  expect(disabledShortcut?.style.visibility).toBe("hidden");
   expect(q.text("Inert reference")).toBeVisible();
   const separator = q.text("or");
   expect(separator).toBeVisible();

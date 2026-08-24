@@ -92,9 +92,7 @@ function useShortcutProps({
   const [element, setElement] = useState<HTMLType | null>(null);
   const origin = getDocumentOrigin(element);
   const inheritedCommand =
-    keysProp === undefined &&
-    commandProp === undefined &&
-    commandContext !== null
+    commandProp === undefined && commandContext !== null
       ? commandContext
       : null;
   const store = storeProp ?? inheritedCommand?.store ?? context;

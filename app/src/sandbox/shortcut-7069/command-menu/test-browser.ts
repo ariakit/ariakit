@@ -98,6 +98,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(q.group("Same-name command references"))
       .toHaveAccessibleName("Same-name command references");
     await test.expect(q.button(/^Disabled reference/)).toBeDisabled();
+    await test
+      .expect(page.locator("[data-disabled-explicit-shortcut]"))
+      .toHaveCSS("visibility", "hidden");
     await test.expect(q.text(/^Inert reference/)).toBeVisible();
     await test.expect(q.text("or")).toBeVisible();
     await test.expect(q.text("or")).not.toHaveAttribute("aria-hidden", "true");
