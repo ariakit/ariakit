@@ -68,6 +68,17 @@ const horizontalItems = [
   { id: "cherry", value: "cherry", label: "Cherry" },
 ] satisfies readonly ComboboxRendererItem[];
 
+const automaticRangeItems = [
+  { id: "automatic-range-alpha", value: "Range alpha" },
+  { id: "automatic-range-beta", value: "Range beta" },
+  {
+    id: "automatic-range-unavailable",
+    value: "Range unavailable",
+    disabled: true,
+  },
+  { id: "automatic-range-gamma", value: "Range gamma" },
+] satisfies readonly ComboboxRendererItem[];
+
 const duplicateValueItems = [
   {
     id: "duplicate-value-group",
@@ -333,6 +344,79 @@ function SelectHorizontalRenderer() {
         </Ariakit.SelectPopover>
       </Ariakit.SelectProvider>
     </section>
+  );
+}
+
+function AutomaticComboboxRangeRenderer() {
+  const store = Ariakit.useComboboxStore({
+    defaultOpen: true,
+    defaultSelectedValue: [] as string[],
+  });
+  const selectedValue = Ariakit.useStoreState(store, "selectedValue");
+  return (
+    <section>
+      <Ariakit.ComboboxSelect
+        store={store}
+        aria-label="Automatic renderer control"
+      />
+      <Ariakit.ComboboxList
+        store={store}
+        alwaysVisible
+        aria-label="Automatic renderer range"
+      >
+        <ComboboxRenderer
+          store={store}
+          items={automaticRangeItems}
+          initialItems={automaticRangeItems.length}
+        >
+          {({ value, ...item }) => (
+            <Ariakit.ComboboxItem key={item.id} {...item} value={value} />
+          )}
+        </ComboboxRenderer>
+      </Ariakit.ComboboxList>
+      <p role="status" aria-label="Automatic renderer selection">
+        {selectedValue.join(", ") || "No automatic items selected"}
+      </p>
+    </section>
+  );
+}
+
+function AutomaticSelectRangeRenderer() {
+  const store = Ariakit.useSelectStore({
+    defaultOpen: true,
+    defaultValue: [] as string[],
+  });
+  const value = Ariakit.useStoreState(store, "value");
+  return (
+    <section>
+      <Ariakit.SelectList
+        store={store}
+        alwaysVisible
+        aria-label="Automatic renderer range"
+      >
+        <SelectRenderer
+          store={store}
+          items={automaticRangeItems}
+          initialItems={automaticRangeItems.length}
+        >
+          {({ value, ...item }) => (
+            <Ariakit.SelectItem key={item.id} {...item} value={value} />
+          )}
+        </SelectRenderer>
+      </Ariakit.SelectList>
+      <p role="status" aria-label="Automatic renderer selection">
+        {value.join(", ") || "No automatic items selected"}
+      </p>
+    </section>
+  );
+}
+
+function AutomaticRangeRenderer() {
+  const selectRenderer = useContext(RendererModeContext);
+  return selectRenderer ? (
+    <AutomaticSelectRangeRenderer />
+  ) : (
+    <AutomaticComboboxRangeRenderer />
   );
 }
 
@@ -780,6 +864,7 @@ export default function Example() {
       <RendererModeContext.Provider value={selectRenderer}>
         {selectRenderer ? <SelectGroupedRenderer /> : <GroupedRenderer />}
         {selectRenderer ? <SelectHorizontalRenderer /> : <HorizontalRenderer />}
+        <AutomaticRangeRenderer />
         <DuplicateValueRenderer />
         <AsyncRenderer />
         <NestedAutoRenderer />

@@ -642,6 +642,7 @@ export function useCollectionRenderer<T extends Item = any>({
   const baseId = useId(props.id);
   const selection = (store as StoreWithSelection | undefined)
     ?.unstable_selection;
+  const storeRef = useLiveRef(store);
   const selectionRef = useLiveRef(selection);
   const rangeItems = useMemo(() => {
     if (!selection) return null;
@@ -667,10 +668,14 @@ export function useCollectionRenderer<T extends Item = any>({
     // oxlint-disable-next-line react/refs
     return createCollectionRendererRangeTree(rangeNode, (id, fallback) => {
       const currentSelection = selectionRef.current;
-      if (!currentSelection?.hasOptIn(id)) return fallback;
-      return currentSelection.isOptedIn(id);
+      if (!currentSelection) return fallback;
+      if (currentSelection.hasOptIn(id)) {
+        return currentSelection.isOptedIn(id);
+      }
+      if (!storeRef.current?.item(id)) return fallback;
+      return currentSelection.isSelectable(id);
     });
-  }, [rangeNode, selectionRef]);
+  }, [rangeNode, selectionRef, storeRef]);
   const rangeTree = parent?.rangeTree ?? ownRangeTree;
   const isRangeRoot = !parent;
 

@@ -35,6 +35,23 @@ for (const renderer of ["ComboboxRenderer", "SelectRenderer"]) {
       // offsetting by `top` instead.
       expect(q.option("Cherry")).toHaveStyle({ left: "192px", top: "0px" });
     });
+
+    // https://github.com/ariakit/ariakit/issues/7114
+    test("selects a mounted automatic range without selectable item data", async () => {
+      await click(q.option("Range alpha"));
+      await click(q.option("Range gamma"), { shiftKey: true });
+
+      expect(q.option("Range alpha")).toHaveAttribute("aria-selected", "true");
+      expect(q.option("Range beta")).toHaveAttribute("aria-selected", "true");
+      expect(q.option("Range unavailable")).not.toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+      expect(q.option("Range gamma")).toHaveAttribute("aria-selected", "true");
+      expect(q.status("Automatic renderer selection")).toHaveTextContent(
+        "Range alpha, Range beta, Range gamma",
+      );
+    });
   });
 }
 
