@@ -47,7 +47,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
   // https://github.com/ariakit/ariakit/issues/7114
   test("selects all off-window values from selectable renderer data", async ({
-    page,
     q,
   }) => {
     const select = q.combobox("Multiple countries");
@@ -56,11 +55,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(options.option("Zambia")).toBeVisible();
     test.expect(await options.option().count()).toBeLessThan(64);
 
-    const isMac = await page.evaluate(() =>
-      navigator.platform.startsWith("Mac"),
-    );
-    const modifier = isMac ? "Meta" : "Control";
-    await select.press(`${modifier}+A`);
+    await select.press("ControlOrMeta+A");
     await test.expect(select).toHaveText("64 countries selected");
     const selection = q.status("Virtual selection");
     await test
@@ -123,10 +118,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7114
-  test("restores aggregate order after an empty filter", async ({
-    page,
-    q,
-  }) => {
+  test("restores aggregate order after an empty filter", async ({ q }) => {
     await q.button("Clear").click();
     await q.combobox("Multiple countries").click();
     const search = q.combobox("Search multiple countries");
@@ -137,11 +129,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(q.option("Zambia")).toBeVisible();
 
     const select = q.combobox("Multiple countries");
-    const isMac = await page.evaluate(() =>
-      navigator.platform.startsWith("Mac"),
-    );
-    const modifier = isMac ? "Meta" : "Control";
-    await select.press(`${modifier}+A`);
+    await select.press("ControlOrMeta+A");
     await test.expect(select).toHaveText("64 countries selected");
     await test
       .expect(q.status("Virtual selection"))

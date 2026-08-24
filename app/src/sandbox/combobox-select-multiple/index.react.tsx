@@ -98,7 +98,9 @@ export default function Example() {
               </p>
               <div className="ak-frame ak-frame-container/1 ak-layer ak-layer-darken-3 mt-2 grid gap-3 p-4">
                 <Boxes aria-hidden className="ak-ink-50 size-8" />
-                <p className="text-sm font-semibold">34 ordered values</p>
+                <p className="text-sm font-semibold">
+                  {list.length} ordered values
+                </p>
                 <p className="ak-ink-70 text-sm">
                   Range order follows the registered collection, independent of
                   the order in which values were selected.
