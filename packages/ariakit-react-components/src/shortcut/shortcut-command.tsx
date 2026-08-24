@@ -241,7 +241,9 @@ const useShortcutCommand = createHook<TagName, ShortcutCommandOptions>(
     const inScope = commandState?.inScope ?? true;
     const ariaKeyShortcuts = platform
       ? (commandState?.ariaKeyShortcuts ??
-        (commandEnabled ? fallbackKeys[0] : undefined))
+        (commandEnabled && fallbackKeys.length
+          ? fallbackKeys.join(" ")
+          : undefined))
       : undefined;
 
     const onClickProp = props.onClick;

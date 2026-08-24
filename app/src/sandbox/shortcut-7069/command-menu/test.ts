@@ -77,6 +77,10 @@ test("falls back from disabled and inert command references", async () => {
   expect(q.group("Same-name command references")).toHaveAccessibleName(
     "Same-name command references",
   );
+  expect(q.button("Live reference")).toHaveAttribute(
+    "aria-keyshortcuts",
+    "R F2",
+  );
   expect(q.button(/^Disabled reference/)).toBeDisabled();
   const disabledShortcut = document.querySelector<HTMLElement>(
     "[data-disabled-explicit-shortcut]",

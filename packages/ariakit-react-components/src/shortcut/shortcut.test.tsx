@@ -375,13 +375,13 @@ test("renders nested key elements and command ARIA", async () => {
       glyphs={{ Control: "Ctrl" }}
       keyNames={{ Control: "Control key" }}
     >
-      <ShortcutCommand keys="Control+K">
+      <ShortcutCommand keys="Control+K Alt+K">
         Open <Shortcut />
       </ShortcutCommand>
     </ShortcutProvider>,
   );
   const button = getButton(container, "Open");
-  expect(button.getAttribute("aria-keyshortcuts")).toBe("Control+K");
+  expect(button.getAttribute("aria-keyshortcuts")).toBe("Control+K Alt+K");
   const shortcut = button.querySelector("kbd");
   expect(shortcut?.hasAttribute("aria-label")).toBe(false);
   expect(shortcut?.getAttribute("aria-hidden")).toBe("true");
@@ -1291,12 +1291,12 @@ test("omits automatic output during SSR and renders explicit output", () => {
 
   const explicit = renderServer(
     <ShortcutProvider platform="windows">
-      <ShortcutCommand keys="Control+K">
+      <ShortcutCommand keys="Control+K Alt+K">
         Open <Shortcut />
       </ShortcutCommand>
     </ShortcutProvider>,
   );
-  expect(explicit).toContain('aria-keyshortcuts="Control+K"');
+  expect(explicit).toContain('aria-keyshortcuts="Control+K Alt+K"');
   expect(explicit).toContain("<kbd");
 });
 

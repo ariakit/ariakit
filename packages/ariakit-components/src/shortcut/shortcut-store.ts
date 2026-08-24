@@ -1907,7 +1907,7 @@ function getCommandState(
       keys,
       enabled,
       inScope,
-      ariaKeyShortcuts: enabled ? keys[0] : undefined,
+      ariaKeyShortcuts: enabled && keys.length ? keys.join(" ") : undefined,
     };
   }
   const group = getNamedCommandGroup(
@@ -1932,7 +1932,8 @@ function getCommandState(
     keys: group.keys,
     enabled,
     inScope,
-    ariaKeyShortcuts: enabled ? group.keys[0] : undefined,
+    ariaKeyShortcuts:
+      enabled && group.keys.length ? group.keys.join(" ") : undefined,
   };
 }
 
@@ -1951,7 +1952,8 @@ function getNamedCommandState(
     keys: group.keys,
     enabled,
     inScope: getScopeMatch(runtime, group.scope, currentOrigin) != null,
-    ariaKeyShortcuts: enabled ? group.keys[0] : undefined,
+    ariaKeyShortcuts:
+      enabled && group.keys.length ? group.keys.join(" ") : undefined,
   };
 }
 

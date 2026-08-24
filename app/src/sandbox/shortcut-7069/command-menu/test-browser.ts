@@ -97,6 +97,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test
       .expect(q.group("Same-name command references"))
       .toHaveAccessibleName("Same-name command references");
+    await test
+      .expect(q.button("Live reference"))
+      .toHaveAttribute("aria-keyshortcuts", "R F2");
     await test.expect(q.button(/^Disabled reference/)).toBeDisabled();
     await test
       .expect(page.locator("[data-disabled-explicit-shortcut]"))
