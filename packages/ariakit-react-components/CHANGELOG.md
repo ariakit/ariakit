@@ -1,5 +1,107 @@
 # @ariakit/react-components
 
+## 0.5.0
+
+### `TagList` renders the listbox element
+
+**BREAKING** if you're rendering `TagInput` or any other element inside `TagList`.
+
+The `TagList` component now renders the listbox element itself. Previously it rendered a separate, visually empty element that referenced the tags with `aria-owns`, which Safari does not support well.
+
+Because the `listbox` role accepts only options as children, `TagInput` must now be rendered as a sibling of `TagList`. The new `TagControl` component wraps both and is styled as the input field, and a `display: contents` style on `TagList` keeps the tags and the input on a single shared layout.
+
+Before:
+
+```tsx
+<TagList className="tag-list">
+  {values.map((value) => (
+    <Tag key={value} value={value}>
+      {value}
+    </Tag>
+  ))}
+  <TagInput />
+</TagList>
+```
+
+After:
+
+```tsx
+<TagControl className="tag-list">
+  <TagList style={{ display: "contents" }}>
+    {values.map((value) => (
+      <Tag key={value} value={value}>
+        {value}
+      </Tag>
+    ))}
+  </TagList>
+  <TagInput />
+</TagControl>
+```
+
+`TagControl` takes over the two behaviors that used to live on `TagList`: clicking the field focuses the input, and the undo and redo shortcuts are handled there. Both now cover the tags and the input from a single element, so render a `TagControl` if you rely on either.
+
+Because the tags and the input are separate widgets for assistive technologies, `TagControl` renders a `group` element that keeps them together, and the tag label component, renamed to `TagLabel` in this release, names the group along with the tag list and the input.
+
+`TagInput` no longer inherits the store from `TagList`. It inherits it from `TagControl` instead, so pass the `store` prop to `TagControl` when you're not using `TagProvider`.
+
+The tags must also be direct children of `TagList` now. `aria-owns` referenced them by id, so any element between `TagList` and the tags used to be irrelevant. Such an element can now stop assistive technologies from seeing the tags as options of the listbox.
+
+### Renamed `TagListLabel` to `TagLabel`
+
+**BREAKING** if you're using the `TagListLabel` component.
+
+The label doesn't belong to the tag list alone. It labels the `TagInput` element and provides the accessible name for both the listbox element rendered by `TagList` and the group element rendered by `TagControl`, so it's now called `TagLabel` and its module moved to `@ariakit/react-components/tag/tag-label`.
+
+Before:
+
+```tsx
+import { TagListLabel } from "@ariakit/react-components/tag/tag-list-label";
+
+<TagListLabel>Invitees</TagListLabel>;
+```
+
+After:
+
+```tsx
+import { TagLabel } from "@ariakit/react-components/tag/tag-label";
+
+<TagLabel>Invitees</TagLabel>;
+```
+
+The `useTagListLabel` hook and the `TagListLabelOptions` and `TagListLabelProps` types were renamed to `useTagLabel`, `TagLabelOptions` and `TagLabelProps` as well.
+
+### Keyboard activation dispatches a `PointerEvent`
+
+The click that [`Command`](https://ariakit.com/reference/command) synthesizes for `Enter` and `Space` on an element that isn't natively clickable is now a `PointerEvent` built by the window that owns the element, reporting `pointerId: -1` and an empty `pointerType`. That is what Chromium, Firefox, and WebKit dispatch for a click no pointer caused, so a handler reading `event.pointerType` or checking `event instanceof PointerEvent` now sees the same shape it sees on a native button.
+
+```tsx
+<Ariakit.Button
+  render={<div />}
+  onClick={(event) => {
+    // After Enter or Space: was false, now true.
+    event.nativeEvent instanceof PointerEvent;
+  }}
+/>
+```
+
+This reaches every component built on [`Command`](https://ariakit.com/reference/command): [`Button`](https://ariakit.com/reference/button), [`Checkbox`](https://ariakit.com/reference/checkbox), [`Radio`](https://ariakit.com/reference/radio), [`CompositeItem`](https://ariakit.com/reference/composite-item), [`MenuItem`](https://ariakit.com/reference/menu-item), [`MenuItemCheckbox`](https://ariakit.com/reference/menu-item-checkbox), [`MenuItemRadio`](https://ariakit.com/reference/menu-item-radio), [`ComboboxItem`](https://ariakit.com/reference/combobox-item), [`SelectItem`](https://ariakit.com/reference/select-item), [`Tab`](https://ariakit.com/reference/tab), [`ToolbarItem`](https://ariakit.com/reference/toolbar-item), [`ToolbarContainer`](https://ariakit.com/reference/toolbar-container), [`Disclosure`](https://ariakit.com/reference/disclosure), [`DialogDisclosure`](https://ariakit.com/reference/dialog-disclosure), [`DialogDismiss`](https://ariakit.com/reference/dialog-dismiss), [`PopoverDisclosure`](https://ariakit.com/reference/popover-disclosure), [`PopoverDismiss`](https://ariakit.com/reference/popover-dismiss), [`HovercardDisclosure`](https://ariakit.com/reference/hovercard-disclosure), [`HovercardDismiss`](https://ariakit.com/reference/hovercard-dismiss), [`MenuButton`](https://ariakit.com/reference/menu-button), [`MenuDismiss`](https://ariakit.com/reference/menu-dismiss), [`Select`](https://ariakit.com/reference/select), [`SelectDismiss`](https://ariakit.com/reference/select-dismiss), [`ComboboxSelect`](https://ariakit.com/reference/combobox-select), [`ComboboxCancel`](https://ariakit.com/reference/combobox-cancel), [`ComboboxDisclosure`](https://ariakit.com/reference/combobox-disclosure), [`ComboboxDismiss`](https://ariakit.com/reference/combobox-dismiss), [`FormSubmit`](https://ariakit.com/reference/form-submit), [`FormReset`](https://ariakit.com/reference/form-reset), [`FormPush`](https://ariakit.com/reference/form-push), [`FormRemove`](https://ariakit.com/reference/form-remove), [`FormCheckbox`](https://ariakit.com/reference/form-checkbox), and [`FormRadio`](https://ariakit.com/reference/form-radio).
+
+### Other updates
+
+- Fixed [`ComboboxItem`](https://ariakit.com/reference/combobox-item) so an explicit [`focusOnHover`](https://ariakit.com/reference/combobox-item#focusonhover) boolean or callback value neither activates an item on hover nor clears the active item on hover end while the combobox is closed.
+- Fixed [`ComboboxList`](https://ariakit.com/reference/combobox-list) and [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover), which builds on it, not moving focus back to the combobox when the list itself receives focus and the document contains a form named `activeElement`.
+- Fixed keyboard activation on non-native [`Command`](https://ariakit.com/reference/command) elements and components built on [`Command`](https://ariakit.com/reference/command), such as [`Button`](https://ariakit.com/reference/button), so their synthetic clicks use the element's owner window for `view` and are composed.
+- Fixed [`Composite`](https://ariakit.com/reference/composite) and components built on it, such as [`Menu`](https://ariakit.com/reference/menu) and [`Toolbar`](https://ariakit.com/reference/toolbar), building the events they synthesize with the outer window's constructors, so an item inside a same-origin iframe received events that failed `instanceof` against that frame's own interfaces.
+- Fixed [`Portal`](https://ariakit.com/reference/portal) and components built on it, such as [`Tooltip`](https://ariakit.com/reference/tooltip), as well as [`Combobox`](https://ariakit.com/reference/combobox), when the document contains a form named `defaultView`.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog) throwing instead of opening when it renders a form with a control named `self`, `document`, or `ownerDocument`, and on Safari throwing before the dialog was ever opened, so the page failed without anyone interacting with it.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog) and components built on it, such as [`Popover`](https://ariakit.com/reference/popover) and [`Menu`](https://ariakit.com/reference/menu), pulling focus back from an element the application focused outside them during placement when the document contains a form named `activeElement`.
+- Fixed [`Focusable`](https://ariakit.com/reference/focusable) and components built on it, such as [`Tab`](https://ariakit.com/reference/tab) and [`Button`](https://ariakit.com/reference/button), so a middle click no longer opens the destination of a [`disabled`](https://ariakit.com/reference/focusable#disabled) element rendered as a link, including one kept reachable by [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled), which [`Tab`](https://ariakit.com/reference/tab) enables by default.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog) and components built on it, such as [`Popover`](https://ariakit.com/reference/popover) and [`Menu`](https://ariakit.com/reference/menu), failing to return focus to the element that opened it when the document contains a form named `activeElement`.
+- Fixed [`SelectItem`](https://ariakit.com/reference/select-item) so an authored [`focusOnHover`](https://ariakit.com/reference/select-item#focusonhover) callback no longer runs while the select is closed, keeping its side effects from activating an item, changing the value, or moving focus in a collapsed always-visible [`SelectList`](https://ariakit.com/reference/select-list). Thanks to [@waterWang](https://github.com/waterWang).
+- Fixed [`Tab`](https://ariakit.com/reference/tab) not receiving DOM focus when the selected tab changes while another tab holds focus and the document contains a form named `activeElement`.
+- Fixed [`TooltipAnchor`](https://ariakit.com/reference/tooltip-anchor), [`HovercardAnchor`](https://ariakit.com/reference/hovercard-anchor), and [`MenuButton`](https://ariakit.com/reference/menu-button) to respect the resolved [`disabled`](https://ariakit.com/reference/focusable#disabled) and [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled) state on hover in any composition order. Thanks to [@btzr-io](https://github.com/btzr-io) and [@mayank99](https://github.com/mayank99).
+- Updated dependencies: `@ariakit/utils@0.2.0`, `@ariakit/components@0.1.11`, `@ariakit/react-store@0.1.10`, `@ariakit/react-utils@0.2.5`, `@ariakit/store@0.1.9`
+
 ## 0.4.1
 
 ### Composite element state

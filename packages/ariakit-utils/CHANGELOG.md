@@ -1,5 +1,45 @@
 # @ariakit/utils
 
+## 0.2.0
+
+### `getActiveElement` takes an options object
+
+**BREAKING** if you're passing a second argument to `getActiveElement`.
+
+The second parameter is now an options object. Alongside `activeDescendant`, it accepts `frame`, which controls whether focus that lives inside a frame is resolved into that frame's document. It defaults to `true`, which is the previous behavior.
+
+Before:
+
+```ts
+getActiveElement(element, true);
+```
+
+After:
+
+```ts
+getActiveElement(element, { activeDescendant: true });
+```
+
+Pass `frame: false` to stop the lookup at the given node's own document, which is what a caller needs when it decides ownership there, where focus inside a frame is represented by the frame element:
+
+```ts
+getActiveElement(element, { frame: false });
+```
+
+### `fireClickEvent` dispatches a `PointerEvent`
+
+`fireClickEvent` now builds a `PointerEvent` from the window that owns the element, the way browsers dispatch a click, and reports `pointerId: -1` with an empty `pointerType` unless the caller passes a pointer. It previously built a `MouseEvent` from the ambient global, which dropped the pointer members its `PointerEventInit` parameter accepted and put the event in the wrong realm for an element inside a same-origin iframe. Where the environment has no `PointerEvent`, it still builds a `MouseEvent`, so activation keeps working and only the pointer members are dropped.
+
+Every pointer attribute other than `pointerId` and `pointerType`, such as `pressure`, `width`, `tiltX`, `isPrimary`, and `persistentDeviceId`, is reported at its default value even when the caller passes it, which is what Pointer Events requires of a click.
+
+### Other updates
+
+- Fixed `fireClickEvent` so clicks use the target element's owner window for `view` and are composed.
+- Fixed `getDocument` and `getWindow` reporting the ambient document and window for a document that belongs to another realm, such as the one inside a same-origin iframe.
+- Fixed `fireEvent`, `fireBlurEvent`, `fireFocusEvent`, and `fireKeyboardEvent` building their events with the ambient window's constructors rather than those of the window that owns the element, so an event dispatched into a same-origin iframe belongs to that frame.
+- Fixed `getActiveElement` reporting a form instead of the focused element when the document contains a form named `activeElement`.
+- Fixed `getDocument` and `getWindow` trusting a member that a form or a document can answer with one of its own elements, so they now check what came back and fall back instead of returning a value of the wrong type, and typed `getWindow`'s result the way `document.defaultView` is so the interfaces a window carries can be read off it.
+
 ## 0.1.6
 
 - Fixed components such as [`Button`](https://ariakit.com/reference/button) and [`Checkbox`](https://ariakit.com/reference/checkbox) copying inherited enumerable `Object.prototype` properties onto the element they render.
