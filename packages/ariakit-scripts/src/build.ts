@@ -228,8 +228,8 @@ async function updatePackageExports(
 // Resolve the explicit entry file names for a package, or null to export every
 // public file. Reads `options` (from the CLI) first, then falls back to the
 // `--entries`/`--index-only` markers in the package's own `build` script, so
-// that `clean` — which lint-staged runs without those flags — applies the same
-// entrypoints as `build`.
+// that `clean` — which the pre-commit hook runs without those flags — applies
+// the same entrypoints as `build`.
 function getConfiguredEntryNames(
   packageJson: PackageJson,
   options: BuildOptions,

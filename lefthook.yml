@@ -1,0 +1,36 @@
+# https://lefthook.dev/configuration/
+
+# Bash-like globs, so a pattern matches files at any depth. The default
+# `gobwas` matcher resolves `**/package.json` against nested files only, which
+# would skip the file at the repository root.
+glob_matcher: doublestar
+
+pre-commit:
+  # `clean` rewrites the package exports that the type-aware linter resolves,
+  # so it has to finish first, and a failed job has to stop the ones after it.
+  piped: true
+  jobs:
+    - name: clean
+      glob: "**/package.json"
+      run: pnpm -r run --if-present clean
+      stage_fixed: true
+
+    - name: lint
+      glob: "**/*.{js,ts,tsx,md,mdx,json}"
+      group:
+        piped: true
+        jobs:
+          # Type-aware rules resolve `astro:content` through the gitignored
+          # `app/.astro`, so the types come first. Without them, `--fix` can
+          # rewrite source silently.
+          # https://github.com/ariakit/ariakit/issues/7262
+          - name: sync-astro-types
+            run: pnpm run sync-astro-types
+          # Lefthook runs jobs with the ambient `PATH`, which does not include
+          # `node_modules/.bin`, so the workspace binaries need `pnpm exec`.
+          - name: oxlint
+            run: pnpm exec oxlint --disable-nested-config --fix --no-error-on-unmatched-pattern {staged_files}
+            stage_fixed: true
+          - name: oxfmt
+            run: pnpm exec oxfmt --no-error-on-unmatched-pattern {staged_files}
+            stage_fixed: true

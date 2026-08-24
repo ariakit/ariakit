@@ -44,8 +44,7 @@
     "docs": "pnpm -F './packages/*' run --if-present docs",
     "changeset": "changeset",
     "version": "changeset version && pnpm install --lockfile-only --ignore-scripts",
-    "publish": "pnpm run build && changeset publish",
-    "prepare": "husky"
+    "publish": "pnpm run build && changeset publish"
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
@@ -69,9 +68,8 @@
     "fs-extra": "11.4.0",
     "glob": "13.0.6",
     "happy-dom": "20.11.6",
-    "husky": "9.1.7",
     "jsdom": "30.0.1",
-    "lint-staged": "17.3.0",
+    "lefthook": "2.1.10",
     "open-cli": "9.0.0",
     "oxfmt": "0.64.0",
     "oxlint": "1.79.0",
@@ -90,14 +88,6 @@
     "vite-plugin-solid": "2.11.14",
     "vitest": "4.1.11",
     "vitest-fail-on-console": "0.10.1"
-  },
-  "lint-staged": {
-    "package.json": "pnpm -r run --if-present clean",
-    "*.{js,ts,tsx,md,mdx,json}": [
-      "pnpm run sync-astro-types",
-      "oxlint --disable-nested-config --fix --no-error-on-unmatched-pattern",
-      "oxfmt --no-error-on-unmatched-pattern"
-    ]
   },
   "devEngines": {
     "runtime": {

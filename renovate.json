@@ -92,7 +92,7 @@
       "allowedVersions": "/^24\\./"
     },
     {
-      "matchPackageNames": ["lint-staged", "vite", "/^@vitejs/"],
+      "matchPackageNames": ["lefthook", "vite", "/^@vitejs/"],
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
       "automergeType": "pr",
