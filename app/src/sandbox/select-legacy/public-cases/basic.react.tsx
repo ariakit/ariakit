@@ -40,6 +40,18 @@ export function LegacyPublicSelectMultipleCase() {
   );
 }
 
+export function LegacyPublicSelectMultipleUnregisteredCase() {
+  return (
+    <Ariakit.SelectProvider defaultValue={["Apple"]}>
+      <Ariakit.SelectList alwaysVisible aria-label="Unregistered select items">
+        <Ariakit.SelectItem shouldRegisterItem={false} value="Cake">
+          Cake
+        </Ariakit.SelectItem>
+      </Ariakit.SelectList>
+    </Ariakit.SelectProvider>
+  );
+}
+
 export function LegacyPublicSelectFormCase() {
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

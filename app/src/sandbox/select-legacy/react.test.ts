@@ -92,3 +92,21 @@ describe.each([
     expect(q.listbox()).toHaveAttribute("aria-multiselectable", "true");
   });
 });
+
+// https://github.com/ariakit/ariakit/issues/7114
+test("keeps an unregistered multi-value SelectItem clickable", async () => {
+  await click(q.button("Show public-select-multiple-unregistered"));
+  const item = q.option("Cake");
+  expect(item).toHaveAttribute("aria-selected", "false");
+  await click(item);
+  expect(item).toHaveAttribute("aria-selected", "true");
+});
+
+// https://github.com/ariakit/ariakit/issues/7114
+test("keeps an unregistered multi-value ComboboxItem clickable", async () => {
+  await click(q.button("Show public-combobox-multiple-unregistered"));
+  const item = q.option("Cake");
+  expect(item).toHaveAttribute("aria-selected", "false");
+  await click(item);
+  expect(item).toHaveAttribute("aria-selected", "true");
+});

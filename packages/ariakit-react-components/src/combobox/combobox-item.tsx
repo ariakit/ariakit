@@ -165,7 +165,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
           if (resetValueOnSelectProp(event)) {
             store?.resetInputValue();
           }
-          if (selection && multiSelectable && id) {
+          if (selection && multiSelectable && id && store.item(id)) {
             // A composed selection behavior runs after this host handler.
             if (!selection.hasOptIn(id)) {
               if (automaticSelection) {

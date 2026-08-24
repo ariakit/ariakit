@@ -208,3 +208,18 @@ export function LegacyPublicComboboxMultipleStoreCase() {
     </>
   );
 }
+
+export function LegacyPublicComboboxMultipleUnregisteredCase() {
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue={["Apple"]}>
+      <Ariakit.ComboboxList
+        alwaysVisible
+        aria-label="Unregistered combobox items"
+      >
+        <Ariakit.ComboboxItem shouldRegisterItem={false} value="Cake">
+          Cake
+        </Ariakit.ComboboxItem>
+      </Ariakit.ComboboxList>
+    </Ariakit.ComboboxProvider>
+  );
+}

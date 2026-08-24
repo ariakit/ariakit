@@ -6,6 +6,7 @@ import {
   LegacyPublicSelectFormDisabledCase,
   LegacyPublicSelectItemsUnmountCase,
   LegacyPublicSelectMultipleCase,
+  LegacyPublicSelectMultipleUnregisteredCase,
   LegacyPublicSelectValuelessItemsCase,
 } from "./basic.react.tsx";
 import {
@@ -30,6 +31,7 @@ import {
 import {
   LegacyPublicComboboxMultipleSelectCase,
   LegacyPublicComboboxMultipleStoreCase,
+  LegacyPublicComboboxMultipleUnregisteredCase,
   LegacyPublicFormSelectCase,
   LegacyPublicSelectMenuDefaultOpenCase,
   LegacyPublicToolbarSelectCase,
@@ -40,6 +42,8 @@ import {
 export const legacyPublicSelectCases = {
   "public-select": LegacyPublicSelectCase,
   "public-select-multiple": LegacyPublicSelectMultipleCase,
+  "public-select-multiple-unregistered":
+    LegacyPublicSelectMultipleUnregisteredCase,
   "public-select-form": LegacyPublicSelectFormCase,
   "public-select-autofill": LegacyPublicSelectAutofillCase,
   "public-select-form-disabled": LegacyPublicSelectFormDisabledCase,
@@ -68,6 +72,8 @@ export const legacyPublicSelectCases = {
   "public-form-select": LegacyPublicFormSelectCase,
   "public-combobox-multiple-select": LegacyPublicComboboxMultipleSelectCase,
   "public-combobox-multiple-store": LegacyPublicComboboxMultipleStoreCase,
+  "public-combobox-multiple-unregistered":
+    LegacyPublicComboboxMultipleUnregisteredCase,
 } as const;
 
 export type LegacyPublicSelectCaseName = keyof typeof legacyPublicSelectCases;

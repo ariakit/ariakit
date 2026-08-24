@@ -133,7 +133,7 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
       if (isDownloading(event)) return;
       if (isOpeningInNewTab(event)) return;
       if (setValueOnClickProp(event) && value != null) {
-        if (selection && multiSelectable && id) {
+        if (selection && multiSelectable && id && store.item(id)) {
           // A composed selection behavior runs after this host handler.
           if (!selection.hasOptIn(id)) {
             selection.activate(id, event);
