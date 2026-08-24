@@ -34,15 +34,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const inbox = q.link(/Inbox/);
     await test.expect(q.text("4 conversations")).toBeVisible();
     await test.expect(inbox).toContainText("4");
+    await test.expect(inbox).toHaveAccessibleName("Inbox, 4 conversations");
 
     for (let index = 0; index < 3; index += 1) {
       await q.button("Move to Trash").click();
     }
     await test.expect(q.text("1 conversation")).toBeVisible();
     await test.expect(inbox).toContainText("1");
+    await test.expect(inbox).toHaveAccessibleName("Inbox, 1 conversation");
 
     await q.button("Receive message").click();
     await test.expect(q.text("2 conversations")).toBeVisible();
     await test.expect(inbox).toContainText("2");
+    await test.expect(inbox).toHaveAccessibleName("Inbox, 2 conversations");
   });
 });

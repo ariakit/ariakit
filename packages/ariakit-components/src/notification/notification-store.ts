@@ -351,7 +351,12 @@ export function createNotificationStore<T = unknown>(
         }
         return;
       }
-      const nextItem = { ...item, ...partial };
+      const nextItem = {
+        ...item,
+        ...partial,
+        id: item.id,
+        createdAt: item.createdAt,
+      };
       if (nextItem.message === undefined) {
         nextItem.message = item.message;
       }

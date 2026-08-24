@@ -320,6 +320,27 @@ test("preserves required fields at untyped update boundaries", () => {
   expect(store.item(id)?.heading).toBeUndefined();
 });
 
+test("preserves identity fields at untyped update boundaries", () => {
+  const store = createNotificationStore({ timeout: 100 });
+  const id = store.push("Saved");
+  const item = store.item(id);
+  if (!item) throw new Error("Missing notification item");
+  const unrender = store.unstable_renderItem(id);
+
+  Reflect.apply(store.update, undefined, [
+    id,
+    { id: "n2", createdAt: -1 },
+    { announce: false },
+  ]);
+
+  expect(store.item(id)).toMatchObject({ id, createdAt: item.createdAt });
+  expect(store.item("n2")).toBeNull();
+
+  vi.advanceTimersByTime(100);
+  expect(store.item(id)).toBeNull();
+  unrender();
+});
+
 test("announces record text and only re-announces meaningful updates", () => {
   const store = createNotificationStore<{ progress?: number }>();
   const id = store.push({

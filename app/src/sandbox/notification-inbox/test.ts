@@ -61,16 +61,23 @@ test("updates the inbox conversation counts", async () => {
   const inbox = q.link(/Inbox/);
   expect(q.text("4 conversations")).toBeVisible();
   expect(inbox).toHaveTextContent("4");
+  expect(inbox).toHaveAccessibleName("Inbox, 4 conversations");
+  expect(inbox.querySelector(".ak-badge")).toHaveAttribute(
+    "aria-hidden",
+    "true",
+  );
 
   for (let index = 0; index < 3; index += 1) {
     await click(q.button("Move to Trash"));
   }
   expect(q.text("1 conversation")).toBeVisible();
   expect(inbox).toHaveTextContent("1");
+  expect(inbox).toHaveAccessibleName("Inbox, 1 conversation");
 
   await click(q.button("Receive message"));
   expect(q.text("2 conversations")).toBeVisible();
   expect(inbox).toHaveTextContent("2");
+  expect(inbox).toHaveAccessibleName("Inbox, 2 conversations");
 });
 
 test("limits the visual stack and lets the app focus its region", async () => {

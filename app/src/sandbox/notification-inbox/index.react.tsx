@@ -227,12 +227,15 @@ function Sidebar({ count }: SidebarProps) {
       </button>
       <nav aria-label="Mailbox" className="mt-6 grid gap-1 text-sm">
         <a
+          aria-label={`Inbox, ${count} ${
+            count === 1 ? "conversation" : "conversations"
+          }`}
           className="ak-button justify-start ak-layer ak-layer-mix-10"
           href="#inbox"
         >
           <span aria-hidden>✦</span> Inbox
           <span
-            aria-label={`${count} ${count === 1 ? "conversation" : "conversations"} in Inbox`}
+            aria-hidden
             className="ms-auto ak-badge ak-layer ak-layer-primary"
           >
             {count}
