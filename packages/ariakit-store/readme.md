@@ -31,6 +31,7 @@ This package is ESM-only and exposes a single public entrypoint.
 ## API reference
 
 - [`createStore`](#createstore)
+- [`unstable_setStoreState`](#unstablesetstorestate)
 - [`setup`](#setup)
 - [`init`](#init)
 - [`subscribe`](#subscribe)
@@ -56,6 +57,21 @@ function createStore<S extends State>(
 ```
 
 Creates a store.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `unstable_setStoreState`
+
+```ts
+function unstable_setStoreState<T extends Store>(
+  store: T,
+  values: Partial<StoreState<T>>,
+): void;
+```
+
+Atomically updates several values in a standalone store.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>

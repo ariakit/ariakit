@@ -253,7 +253,7 @@ function press(
 ): Promise<void>;
 ```
 
-Presses a key on an element, simulating a real user keyboard interaction. Fires `keydown` and `keyup` and applies the browser's default behavior for that key — moving focus with `Tab`, activating buttons and submitting forms with `Enter`, clicking buttons, checkboxes, and radios with `Space`, moving the caret with the arrow and `Home`/`End` keys, and typing printable characters into text fields.
+Presses a key on an element, simulating a real user keyboard interaction. Fires `keydown` and `keyup` and applies the browser's default behavior for that key — moving focus with `Tab`, activating buttons and submitting forms with `Enter`, clicking buttons, checkboxes, and radios with `Space`, moving the caret with the arrow and `Home`/`End` keys, and typing printable characters into text fields. When `options.code` is omitted, it is inferred from a US keyboard layout.
 
 When no element is passed, the currently focused element is used. Shortcuts such as `press.Enter()` and `press.Tab()` are provided for common keys, and `press.ShiftTab()` moves focus backwards.
 
@@ -449,7 +449,7 @@ function type(
 
 Types text into an element, simulating a real user pressing each key. Focuses the element, then for each character fires `keydown`, updates the value and caret position of text fields through an `input` event (preceded by `keypress` when inserting a printable character), and fires `keyup`.
 
-Special characters map to their keys: `"\b"` is Backspace, `"\x7f"` is Delete, `"\n"` is Enter, and `"\t"` is Tab. When no element is passed, the currently focused element is used. Pass `options` to set event properties such as modifier keys or composition state.
+Special characters map to their keys: `"\b"` is Backspace, `"\x7f"` is Delete, `"\n"` is Enter, and `"\t"` is Tab. When no element is passed, the currently focused element is used. Pass `options` to set event properties such as modifier keys or composition state. Control and Meta combinations dispatch keyboard events without inserting text.
 
 Example:
 
