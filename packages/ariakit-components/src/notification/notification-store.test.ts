@@ -377,6 +377,24 @@ test("resets an off-screen deadline when the same id is pushed", () => {
   expect(store.item("n1")).toBeNull();
 });
 
+test("starts a new deadline when a rendered id is reinserted", () => {
+  const store = createNotificationStore({
+    defaultItems: [createItem("n1", 100)],
+  });
+  store.unstable_renderItem("n1");
+
+  vi.advanceTimersByTime(25);
+  store.remove("n1");
+  expect(store.getState().unstable_renderedIds).toEqual(["n1"]);
+
+  store.push({ id: "n1", message: "Replacement", timeout: 100 });
+
+  vi.advanceTimersByTime(99);
+  expect(store.item("n1")).not.toBeNull();
+  vi.advanceTimersByTime(1);
+  expect(store.item("n1")).toBeNull();
+});
+
 test("resets or cancels an off-screen deadline when timeout changes", () => {
   const store = createNotificationStore({
     defaultItems: [createItem("n1", 100), createItem("n2", 100)],

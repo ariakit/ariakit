@@ -311,9 +311,7 @@ export function createNotificationStore<T = unknown>(
       const index = notification
         .getState()
         .items.findIndex((currentItem) => currentItem.id === id);
-      if (index >= 0) {
-        resetDeadlineIds.add(id);
-      }
+      resetDeadlineIds.add(id);
       setItems((items) => {
         if (index < 0) return [...items, item];
         const nextItems = items.slice();
