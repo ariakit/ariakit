@@ -340,18 +340,22 @@ export const CommandMenuFooter = forwardRef<
       )}
     >
       <div className="flex items-center gap-1">
-        <kbd className="ak-kbd" aria-label="Up Arrow">
+        <kbd className="ak-kbd">
+          <Ariakit.VisuallyHidden>Up Arrow</Ariakit.VisuallyHidden>
           <ArrowIcon direction="up" />
         </kbd>
-        <kbd className="ak-kbd" aria-label="Down Arrow">
+        <kbd className="ak-kbd">
+          <Ariakit.VisuallyHidden>Down Arrow</Ariakit.VisuallyHidden>
           <ArrowIcon direction="down" />
         </kbd>
         {isGrid && (
           <>
-            <kbd className="ak-kbd" aria-label="Left Arrow">
+            <kbd className="ak-kbd">
+              <Ariakit.VisuallyHidden>Left Arrow</Ariakit.VisuallyHidden>
               <ArrowIcon direction="left" />
             </kbd>
-            <kbd className="ak-kbd" aria-label="Right Arrow">
+            <kbd className="ak-kbd">
+              <Ariakit.VisuallyHidden>Right Arrow</Ariakit.VisuallyHidden>
               <ArrowIcon direction="right" />
             </kbd>
           </>
@@ -365,7 +369,8 @@ export const CommandMenuFooter = forwardRef<
         </div>
       )}
       <div className="flex items-center gap-1">
-        <kbd className="ak-kbd" aria-label="Enter">
+        <kbd className="ak-kbd">
+          <Ariakit.VisuallyHidden>Enter</Ariakit.VisuallyHidden>
           <ReturnIcon />
         </kbd>
         to select
