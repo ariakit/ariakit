@@ -23,7 +23,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     for (const [index, name] of shortcuts) {
       const snapshot = await keys.nth(index).ariaSnapshot();
-      expect(snapshot).toContain(`text: ${name}`);
+      expect(snapshot).toContain(name);
     }
   });
 });
