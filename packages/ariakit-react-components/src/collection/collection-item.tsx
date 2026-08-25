@@ -50,8 +50,9 @@ export const useCollectionItem = createHook<TagName, CollectionItemOptions>(
       if (!id) return;
       if (!element) return;
       if (!shouldRegisterItem) return;
-      // With render composition, outer components register after rendered ones.
-      // Their item fields take precedence when the store merges registrations.
+      // When composed items mount together, outer registrations run last. Their
+      // fields take precedence over rendered components in the initial merge.
+      // https://github.com/ariakit/ariakit/pull/7286#discussion_r3853776494
       const item = getItem({ id, element });
       return store?.renderItem(item);
     }, [id, shouldRegisterItem, getItem, store]);
