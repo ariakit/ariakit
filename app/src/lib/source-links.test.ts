@@ -28,6 +28,8 @@ test("anchors every source link on a line that opens a declaration", () => {
   expect(references.length).toBeGreaterThan(0);
   const stale: string[] = [];
   for (const [, file, line] of references) {
+    // Both groups are required by the pattern, so this only narrows the type.
+    if (!file || !line) continue;
     const source = readFileSync(join(rootDir, file), { encoding: "utf8" });
     const target = source.split("\n")[Number(line) - 1]?.trim();
     if (!target || /^(\/\/|\/\*|\*)/.test(target)) {
