@@ -10,6 +10,8 @@
  */
 import ChipLink from "#app/components/chip-link.astro";
 import CodeBlockTabs from "#app/components/code-block-tabs.astro";
+import { ContentListDisclosure } from "#app/components/content-list-disclosure.react.tsx";
+import ContentListItemBody from "#app/components/content-list-item-body.astro";
 import { PageCard } from "#app/components/page-card.react.tsx";
 import { Playground } from "#app/components/playground.react.tsx";
 import SourceLinks, {
@@ -89,7 +91,7 @@ import { input, inputPlaceholder } from "@ariakit/ui/styles/input.ts";
 import { kbd } from "@ariakit/ui/styles/kbd.ts";
 import { layer } from "@ariakit/ui/styles/layer.ts";
 import { link } from "@ariakit/ui/styles/link.ts";
-import { list, listItem, listItemCheck } from "@ariakit/ui/styles/list.ts";
+import { list, listItem } from "@ariakit/ui/styles/list.ts";
 import { option } from "@ariakit/ui/styles/option.ts";
 import {
   popover,
@@ -256,6 +258,16 @@ const codeViewTabProps = button.html({
     "not-ui-selected:ak-ink-70",
     "ui-selected:ak-layer-lighten-12 ui-selected:ak-frame-bordering ui-selected:ak-edge-10 ui-selected:shadow-sm",
   ],
+});
+
+// The list-row button from the checklist example: the button cv is layered
+// onto the item through its class and style, and it restates the item frame
+// values so the two systems agree.
+const listRowButton = button.html({
+  $p: "var(--list-item-padding)",
+  $rounded: "xl",
+  $lightnessOffset: false,
+  class: "justify-start text-wrap font-normal",
 });
 
 const tabVariants = [
@@ -633,6 +645,7 @@ function getExampleSource(source: string, line: number): SourceReference {
         <ChipLink href="#building-blocks">Building blocks</ChipLink>
         <ChipLink href="#data-display">Data display</ChipLink>
         <ChipLink href="#content">Content</ChipLink>
+        <ChipLink href="#lists">Lists</ChipLink>
         <ChipLink href="#overlays">Overlays</ChipLink>
         {
           exampleGroups.map(({ id, title }) => (
@@ -1001,7 +1014,7 @@ function getExampleSource(source: string, line: number): SourceReference {
             file: "packages/ariakit-ui/src/ariakit/glider.react.tsx",
             line: 15,
           },
-          { file: "packages/ariakit-ui/src/styles/button.ts", line: 98 },
+          { file: "packages/ariakit-ui/src/styles/button.ts", line: 97 },
         ]}
       />
     </section>
@@ -1486,8 +1499,8 @@ function getExampleSource(source: string, line: number): SourceReference {
       <header class="gallery-section-header">
         <h2 {...heading.html({ $level: 2 })}>Content surfaces</h2>
         <p>
-          Typography, links, containers, lists, code tabs and card-shaped
-          buttons as they appear in the documentation app.
+          Typography, links, containers, code tabs and card-shaped buttons as
+          they appear in the documentation app.
         </p>
       </header>
 
@@ -1517,35 +1530,6 @@ function getExampleSource(source: string, line: number): SourceReference {
                 line: 34,
               },
               { file: "app/src/components/inline-link.react.tsx", line: 30 },
-            ]}
-          />
-        </article>
-
-        <article class="gallery-sample">
-          <h3>Lists and progress markers</h3>
-          <ol {...list.html({ $ordered: true })}>
-            <li {...listItem.html()}>Install the package</li>
-            <li {...listItem.html({ $check: true })}>
-              <span {...listItemCheck.html({ $checked: true })}>✓</span>
-              Configure the styles
-            </li>
-            <li {...listItem.html({ $check: true })}>
-              <span {...listItemCheck.html({ $progress: 0.65 })}>
-                <span {...progressCircularFill.html({})}></span>
-              </span>
-              Review the gallery
-            </li>
-          </ol>
-          <SourceLinks
-            sources={[
-              {
-                file: "app/src/examples/disclosure/checklist/index.react.tsx",
-                line: 89,
-              },
-              {
-                file: "app/src/examples/disclosure/checklist/index.react.tsx",
-                line: 95,
-              },
             ]}
           />
         </article>
@@ -1602,6 +1586,342 @@ export default function Example() {
           ]}
         />
       </article>
+    </section>
+
+    <section id="lists" class="gallery-section">
+      <header class="gallery-section-header">
+        <h2 {...heading.html({ $level: 2 })}>Lists</h2>
+        <p>
+          The list root publishes the marker, rhythm and connector channels that
+          its rows read. Bullets and numbers, blocks and sections rhythm,
+          nesting, check states, prose integration and disclosure rows all come
+          from that one recipe.
+        </p>
+      </header>
+
+      <div class="gallery-grid">
+        <article class="gallery-sample">
+          <h3>Inline rows</h3>
+          <ul {...list.html({})}>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                Unordered rows put a short dash in the gutter
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                Text that wraps to a second line stays clear of the marker column,
+                because the item reserves it with its own start padding
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                Rows without block children keep the tight inline rhythm
+              </ContentListItemBody>
+            </li>
+          </ul>
+          <ol {...list.html({ $ordered: true })}>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                Ordered rows show a numbered chip instead
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                The number comes from the list counter, so no row carries an index
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                Inline rows draw no connector segments
+              </ContentListItemBody>
+            </li>
+          </ol>
+          <code>list · list $ordered</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Blocks mode</h3>
+          <ol {...list.html({ $ordered: true })}>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                <p><strong>Install the package</strong></p>
+                <p>
+                  A block child opens the gap and gives every row a roomier
+                  frame.
+                </p>
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                <p><strong>Configure the styles</strong></p>
+                <p>Ordered blocks also grow a connector between the numbers.</p>
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                <p><strong>Review the gallery</strong></p>
+                <p>The final segment fades out and stops at its own row.</p>
+              </ContentListItemBody>
+            </li>
+          </ol>
+          <ul {...list.html({})}>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                <p><strong>Unordered blocks</strong></p>
+                <p>They share the rhythm, but they connect no rows.</p>
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                <p><strong>Same channels</strong></p>
+                <p>Only the list kind decides whether a connector paints.</p>
+              </ContentListItemBody>
+            </li>
+          </ul>
+          <code>ui-list-blocks · listItemConnector</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Sections mode</h3>
+          <ul {...list.html({})}>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                <h4 {...heading.html({ $level: 4 })}>Heading children</h4>
+                <p>A heading child opens the gap to the full list rhythm.</p>
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                <h4 {...heading.html({ $level: 4 })}>Precedence</h4>
+                <p>Sections mode wins when a list matches blocks mode too.</p>
+              </ContentListItemBody>
+            </li>
+          </ul>
+          <code>ui-list-sections</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Nested lists</h3>
+          <ol {...list.html({ $ordered: true })}>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                Ordered parent row
+                <ul {...list.html({})}>
+                  <li {...listItem.html({})}>
+                    <ContentListItemBody>
+                      A nested list tightens its own base gap
+                    </ContentListItemBody>
+                  </li>
+                  <li {...listItem.html({})}>
+                    <ContentListItemBody>
+                      It also resets the marker channels, so the parent kind
+                      does not leak in
+                    </ContentListItemBody>
+                  </li>
+                </ul>
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                The parent counter continues past the nested rows
+              </ContentListItemBody>
+            </li>
+          </ol>
+          <ol {...list.html({ $ordered: true })}>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                <p><strong>Nested rows in blocks mode</strong></p>
+                <ol {...list.html({ $ordered: true })}>
+                  <li {...listItem.html({})}>
+                    <ContentListItemBody>
+                      <p>The nested rows connect to each other</p>
+                    </ContentListItemBody>
+                  </li>
+                  <li {...listItem.html({})}>
+                    <ContentListItemBody>
+                      <p>Only the nested list's own last row fades out</p>
+                    </ContentListItemBody>
+                  </li>
+                </ol>
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                <p>The outer segment reaches this row unbroken</p>
+              </ContentListItemBody>
+            </li>
+          </ol>
+          <code>ui-list · $ordered false · ui-list-last-row</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Check and progress markers</h3>
+          <ul {...list.html({})}>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                A plain bullet
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody checked={false}>
+                An empty check slot
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody progress={0.65}>
+                A progress arc around the slot
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody checked>
+                A completed row
+              </ContentListItemBody>
+            </li>
+          </ul>
+          <ol {...list.html({ $ordered: true })}>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                A plain number
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody progress={0.4}>
+                The arc rings the number instead of hiding it
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody checked>
+                A completed row replaces the number
+              </ContentListItemBody>
+            </li>
+          </ol>
+          <code>listItemMarker $checked · $progress</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Inside prose</h3>
+          <div {...prose.html({})}>
+            <p>
+              A list composed inside prose reads the prose gap and ink, so it
+              keeps the surrounding rhythm without extra props.
+            </p>
+            <ul {...list.html({})}>
+              <li {...listItem.html({})}>
+                <ContentListItemBody>
+                  The base gap follows <code>--prose-gap</code>
+                </ContentListItemBody>
+              </li>
+              <li {...listItem.html({})}>
+                <ContentListItemBody>
+                  The rows re-derive the prose ink so they stay readable on layered
+                  surfaces
+                </ContentListItemBody>
+              </li>
+            </ul>
+            <p>Prose resumes after the list at the same rhythm.</p>
+          </div>
+          <code>ui-prose · --prose-gap</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Geometry knobs</h3>
+          <ul {...list.html({ $gap: 1, $itemPadding: 0 })}>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                A dense list packs the rows
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                <code>$gap</code> and <code>$itemPadding</code> drive the spacing
+              </ContentListItemBody>
+            </li>
+          </ul>
+          <ul {...list.html({ $gap: 6, $leading: "normal" })}>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                A roomy list opens the rows
+              </ContentListItemBody>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                <code>$leading</code> also resizes the marker and the gutter
+              </ContentListItemBody>
+            </li>
+          </ul>
+          <code>list $gap · $leading · $itemPadding</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Interactive rows</h3>
+          <ul {...list.html({ $gap: 0, $itemPadding: 1 })}>
+            <li>
+              <a
+                href="#lists"
+                {...listItem.html({
+                  class: listRowButton.class,
+                  style: listRowButton.style,
+                })}
+              >
+                <ContentListItemBody checked>
+                  A row that composes with the button recipe
+                </ContentListItemBody>
+              </a>
+            </li>
+            <li>
+              <a
+                href="#lists"
+                {...listItem.html({
+                  class: listRowButton.class,
+                  style: listRowButton.style,
+                })}
+              >
+                <ContentListItemBody checked={false}>
+                  The item keeps its frame while the button adds the states
+                </ContentListItemBody>
+              </a>
+            </li>
+          </ul>
+          <code>listItem + button</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Disclosure rows</h3>
+          <ol {...list.html({ $ordered: true })}>
+            <li>
+              <ContentListDisclosure client:load label="Open the first step">
+                <p>
+                  The connector belongs to the disclosure root, so it runs behind
+                  the open content and still reaches the next row.
+                </p>
+              </ContentListDisclosure>
+            </li>
+            <li>
+              <ContentListDisclosure client:load label="Open the second step">
+                <p>Closed rows keep the same segment as plain rows.</p>
+              </ContentListDisclosure>
+            </li>
+            <li {...listItem.html({})}>
+              <ContentListItemBody>
+                <p>A plain row closes the list, and its segment fades out.</p>
+              </ContentListItemBody>
+            </li>
+          </ol>
+          <code>listDisclosure · Disclosure decoration</code>
+        </article>
+      </div>
+
+      <SourceLinks
+        sources={[
+          { file: "packages/ariakit-ui/src/styles/list.ts", line: 12 },
+          { file: "packages/ariakit-ui/src/styles/list.ts", line: 142 },
+          { file: "packages/ariakit-ui/src/styles/list.ts", line: 167 },
+          { file: "packages/ariakit-ui/src/styles/list.ts", line: 271 },
+          { file: "packages/ariakit-ui/src/html/list.react.tsx", line: 58 },
+          { file: "app/src/styles/ariakit.css", line: 188 },
+        ]}
+      />
     </section>
 
     <section id="overlays" class="gallery-section">

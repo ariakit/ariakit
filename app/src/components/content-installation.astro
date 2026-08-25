@@ -19,6 +19,7 @@ import { invariant } from "@ariakit/utils";
 import ContentCodeBlock from "./content-code-block.astro";
 import ContentLink from "./content-link.astro";
 import { ContentListDisclosure } from "./content-list-disclosure.react.tsx";
+import ContentListItemBody from "./content-list-item-body.astro";
 import ContentList from "./content-list.astro";
 import ContentParagraph from "./content-paragraph.astro";
 
@@ -131,68 +132,74 @@ const frameworkDependenciesHtml = Object.entries(frameworkDependencies)
   {
     devDependenciesHtml && (
       <li {...listItem.html({})}>
-        <ContentParagraph>
-          <strong>Install development dependencies</strong>
-        </ContentParagraph>
-        <ContentParagraph>
-          This example uses <Fragment set:html={devDependenciesHtml} />
-        </ContentParagraph>
-        <ContentCodeBlock
-          set:html={`<code class="language-sh">npm install --save-dev ${devDependenciesKeys}</code>`}
-        />
+        <ContentListItemBody>
+          <ContentParagraph>
+            <strong>Install development dependencies</strong>
+          </ContentParagraph>
+          <ContentParagraph>
+            This example uses <Fragment set:html={devDependenciesHtml} />
+          </ContentParagraph>
+          <ContentCodeBlock
+            set:html={`<code class="language-sh">npm install --save-dev ${devDependenciesKeys}</code>`}
+          />
+        </ContentListItemBody>
       </li>
     )
   }
   {
     dependenciesHtml && (
       <li {...listItem.html({})}>
-        <ContentParagraph>
-          <strong>Install dependencies</strong>
-        </ContentParagraph>
-        <ContentParagraph>
-          This example uses <Fragment set:html={dependenciesHtml} />
-        </ContentParagraph>
-        <ContentCodeBlock
-          set:html={`<code class="language-sh">npm install ${dependenciesKeys}</code>`}
-        />
+        <ContentListItemBody>
+          <ContentParagraph>
+            <strong>Install dependencies</strong>
+          </ContentParagraph>
+          <ContentParagraph>
+            This example uses <Fragment set:html={dependenciesHtml} />
+          </ContentParagraph>
+          <ContentCodeBlock
+            set:html={`<code class="language-sh">npm install ${dependenciesKeys}</code>`}
+          />
+        </ContentListItemBody>
       </li>
     )
   }
 
   <li {...listItem.html({})}>
-    <ContentParagraph
-      ><strong>Copy the code into your project</strong></ContentParagraph
-    >
-    {/* Both chips are static button lookalikes: they keep the resting button
-        style but disable the interactive state variants so they stay
-        hover-inert like the legacy ak-button_idle utility. */}
-    <ContentParagraph
-      >Click the <span
-        {...button.html({
-          $size: "sm",
-          $p: "none",
-          $gap: "none",
-          $hoverOffset: false,
-          $focus: false,
-          $active: false,
-          class: "inline-flex items-center gap-2 px-2 py-0.5 ak-frame-border",
-        })}
-        ><Icon name="code" />Code</span
-      > button on an example in the gallery above to view its source code. Then,
-      click the{" "}
-      <span
-        {...button.html({
-          $size: "xs",
-          $p: "none",
-          $gap: "none",
-          $hoverOffset: false,
-          $focus: false,
-          $active: false,
-          class: "inline-flex items-center aspect-square h-7 ak-frame-border",
-        })}
+    <ContentListItemBody>
+      <ContentParagraph
+        ><strong>Copy the code into your project</strong></ContentParagraph
       >
-        <Icon name="copy" /><span class="sr-only">Copy code</span>
-      </span> button on any file to copy its code.</ContentParagraph
-    >
+      {/* Both chips are static button lookalikes: they keep the resting button
+          style but disable the interactive state variants so they stay
+          hover-inert like the legacy ak-button_idle utility. */}
+      <ContentParagraph
+        >Click the <span
+          {...button.html({
+            $size: "sm",
+            $p: "none",
+            $gap: "none",
+            $hoverOffset: false,
+            $focus: false,
+            $active: false,
+            class: "inline-flex items-center gap-2 px-2 py-0.5 ak-frame-border",
+          })}
+          ><Icon name="code" />Code</span
+        > button on an example in the gallery above to view its source code. Then,
+        click the{" "}
+        <span
+          {...button.html({
+            $size: "xs",
+            $p: "none",
+            $gap: "none",
+            $hoverOffset: false,
+            $focus: false,
+            $active: false,
+            class: "inline-flex items-center aspect-square h-7 ak-frame-border",
+          })}
+        >
+          <Icon name="copy" /><span class="sr-only">Copy code</span>
+        </span> button on any file to copy its code.</ContentParagraph
+      >
+    </ContentListItemBody>
   </li>
 </ContentList>

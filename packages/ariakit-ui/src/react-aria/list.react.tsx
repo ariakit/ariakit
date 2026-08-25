@@ -9,7 +9,9 @@ import {
   listDisclosureButton,
   listDisclosureContentBody,
   listItem,
-  listItemCheck,
+  listItemConnector,
+  listItemContent,
+  listItemMarker,
 } from "../styles/list.ts";
 import { progressCircularFill } from "../styles/progress.ts";
 import type {
@@ -58,58 +60,91 @@ export function List({ ordered, ...props }: ListProps) {
 export interface ListItemProps
   extends
     React.ComponentProps<"li">,
-    // The checked and progress props compute this variant along with the
-    // check child, so they stay in sync.
-    Omit<VariantProps<typeof listItem>, "$check">,
-    Pick<ListItemCheckProps, "checked" | "progress"> {
+    VariantProps<typeof listItem>,
+    Pick<ListItemMarkerProps, "checked" | "progress"> {
   render?: React.ReactElement;
 }
 
+/**
+ * List item that must be a child of `List`. It renders its own `ListItemMarker`
+ * and `ListItemConnector`, which are absolutely positioned in the gutter the
+ * item reserves through its start padding, and wraps its children in a
+ * `ListItemContent` so the first of them keeps `:first-child` despite the two
+ * elements in front of it.
+ */
 export function ListItem({
   checked,
   progress,
   render,
   ...props
 }: ListItemProps): React.ReactElement {
-  const hasCheck = checked != null || progress != null;
   const [variantProps, rest] = splitProps(props, listItem);
   return createRender("li", render, {
-    ...listItem.jsx({ $check: hasCheck, ...variantProps }),
+    ...listItem.jsx(variantProps),
     ...rest,
     children: (
       <>
-        {hasCheck && <ListItemCheck checked={checked} progress={progress} />}
-        {rest.children}
+        <ListItemMarker checked={checked} progress={progress} />
+        <ListItemConnector />
+        <ListItemContent>{rest.children}</ListItemContent>
       </>
     ),
   });
 }
 
-export interface ListItemCheckProps
+export interface ListItemContentProps
+  extends React.ComponentProps<"span">, VariantProps<typeof listItemContent> {}
+
+/**
+ * Wrapper for a row's own children. It generates no box, so the children lay
+ * out exactly as they would directly in the row, but it keeps the marker and
+ * the connector that precede them from taking `:first-child` away from the
+ * first of them. Render it as a `span`: the block-mode variants detect block
+ * children with `:has(:where(p, div, ...))`, so a `div` would put every list
+ * into blocks mode.
+ */
+export function ListItemContent(props: ListItemContentProps) {
+  const [variantProps, rest] = splitProps(props, listItemContent);
+  return <span {...listItemContent.jsx(variantProps)} {...rest} />;
+}
+
+export interface ListItemMarkerProps
   extends
     React.ComponentProps<"span">,
     // The checked and progress props compute these variants along with the
     // aria label and the icon or arc children, so they stay in sync.
-    Omit<VariantProps<typeof listItemCheck>, "$checked" | "$progress"> {
+    Omit<
+      VariantProps<typeof listItemMarker>,
+      "$check" | "$checked" | "$progress"
+    > {
   /** Progress between `0` and `1` shown as a circular arc. */
   progress?: number;
   /** Whether the check is checked. Defaults to `true` if `progress` is `1`. */
   checked?: boolean;
 }
 
-export function ListItemCheck({
+/**
+ * Marker rendered in a list item's gutter: a bullet in unordered lists, a
+ * numbered chip in ordered ones, and a check slot when `checked` or `progress`
+ * is set.
+ */
+export function ListItemMarker({
   progress,
   checked,
   ...props
-}: ListItemCheckProps) {
+}: ListItemMarkerProps) {
+  const hasCheck = checked != null || progress != null;
   const completed = progress === 1 || !!checked;
-  const [variantProps, rest] = splitProps(props, listItemCheck);
+  const [variantProps, rest] = splitProps(props, listItemMarker);
   return (
     <span
-      role="img"
-      aria-label={completed ? "Checked" : "Unchecked"}
-      {...listItemCheck.jsx({
-        $checked: completed,
+      // Bullets and numbers repeat what the list element already conveys, so
+      // only the check slot exposes a state.
+      aria-hidden={hasCheck ? undefined : true}
+      role={hasCheck ? "img" : undefined}
+      aria-label={hasCheck ? (completed ? "Checked" : "Unchecked") : undefined}
+      {...listItemMarker.jsx({
+        $checked: hasCheck ? completed : undefined,
         $progress: completed ? undefined : progress,
         ...variantProps,
       })}
@@ -125,6 +160,23 @@ export function ListItemCheck({
   );
 }
 
+export interface ListItemConnectorProps
+  extends
+    React.ComponentProps<"span">,
+    VariantProps<typeof listItemConnector> {}
+
+/**
+ * Vertical segment joining a row's marker to the next row's. It only becomes
+ * visible in ordered lists that are in blocks mode, where the list gives it a
+ * width.
+ */
+export function ListItemConnector(props: ListItemConnectorProps) {
+  const [variantProps, rest] = splitProps(props, listItemConnector);
+  return (
+    <span aria-hidden {...listItemConnector.jsx(variantProps)} {...rest} />
+  );
+}
+
 export interface ListDisclosureProps
   extends DisclosureProps, VariantProps<typeof listDisclosure> {
   button?: React.ReactNode | ListDisclosureButtonProps;
@@ -132,11 +184,15 @@ export interface ListDisclosureProps
 }
 
 /**
- * Disclosure adapted for lists, integrating with `ListItem` visuals.
+ * Disclosure adapted for lists, integrating with `ListItem` visuals. Like
+ * `ListItem`, it belongs to a row of a `List`, so its connector can tell
+ * whether that row closes the list.
  * @example
- * <ListDisclosure button="Item">
- *   Details
- * </ListDisclosure>
+ * <List ordered>
+ *   <li>
+ *     <ListDisclosure button="Item">Details</ListDisclosure>
+ *   </li>
+ * </List>
  */
 export function ListDisclosure(props: ListDisclosureProps) {
   const [variantProps, rest] = splitProps(props, listDisclosure);
@@ -146,6 +202,15 @@ export function ListDisclosure(props: ListDisclosureProps) {
     <Disclosure
       {...listDisclosure.jsx(variantProps)}
       {...rest}
+      // The connector has to span the whole row, open content included, so it
+      // goes on the disclosure root instead of on the button. A caller's own
+      // decoration keeps its place alongside it.
+      decoration={
+        <>
+          {rest.decoration}
+          <ListItemConnector />
+        </>
+      }
       // A nullish check, not truthiness: falsy labels like {0} must still
       // render through ListDisclosureButton so its indicator defaults apply.
       button={rest.button != null ? button : undefined}
@@ -157,10 +222,8 @@ export function ListDisclosure(props: ListDisclosureProps) {
 export interface ListDisclosureButtonProps
   extends
     DisclosureButtonProps,
-    // The checked and progress props compute this variant along with the
-    // check child, so they stay in sync.
-    Omit<VariantProps<typeof listDisclosureButton>, "$check">,
-    Pick<ListItemCheckProps, "checked" | "progress"> {}
+    VariantProps<typeof listDisclosureButton>,
+    Pick<ListItemMarkerProps, "checked" | "progress"> {}
 
 export function ListDisclosureButton({
   checked,
@@ -168,16 +231,15 @@ export function ListDisclosureButton({
   indicator = "chevron-down-next",
   ...props
 }: ListDisclosureButtonProps) {
-  const hasCheck = checked != null || progress != null;
   const [variantProps, rest] = splitProps(props, listDisclosureButton);
   return (
     <DisclosureButton
       indicator={indicator}
-      {...listDisclosureButton.jsx({ $check: hasCheck, ...variantProps })}
+      {...listDisclosureButton.jsx(variantProps)}
       {...rest}
     >
-      {hasCheck && <ListItemCheck checked={checked} progress={progress} />}
-      {rest.children}
+      <ListItemMarker checked={checked} progress={progress} />
+      <ListItemContent>{rest.children}</ListItemContent>
     </DisclosureButton>
   );
 }

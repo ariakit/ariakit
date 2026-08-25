@@ -14,3 +14,16 @@ test("renders falsy labels so the accessible name survives", async () => {
   );
   expect(q.button()).toHaveAccessibleName("0");
 });
+
+// The decoration exists for absolutely positioned elements that must span the
+// whole disclosure, so it has to be the root's own child, alongside the
+// button and the content rather than inside either of them.
+test("renders the decoration as the root's last child", async () => {
+  await render(
+    <Disclosure button="Open" decoration={<span data-testid="decoration" />}>
+      content
+    </Disclosure>,
+  );
+  const decoration = q.button("Open")?.parentElement?.lastElementChild;
+  expect(decoration).toHaveAttribute("data-testid", "decoration");
+});

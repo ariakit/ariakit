@@ -1,0 +1,67 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import {
+  listItemConnector,
+  listItemContent,
+  listItemMarker,
+} from "@ariakit/ui/styles/list.ts";
+import { progressCircularFill } from "@ariakit/ui/styles/progress.ts";
+
+interface Props {
+  /** Progress between `0` and `1` shown as a circular arc. */
+  progress?: number;
+  /** Whether the check is checked. Defaults to `true` if `progress` is `1`. */
+  checked?: boolean;
+}
+
+const { checked, progress } = Astro.props;
+
+const hasCheck = checked != null || progress != null;
+const completed = progress === 1 || !!checked;
+---
+
+{/* The astro counterpart of what the ListItem component renders inside a row:
+    the marker, the connector, and the box-less content wrapper that keeps the
+    first slotted child matching :first-child. Keep it in sync with
+    @ariakit/ui/html/list.react.tsx. */}
+<span
+  aria-hidden={hasCheck ? undefined : "true"}
+  role={hasCheck ? "img" : undefined}
+  aria-label={hasCheck ? (completed ? "Checked" : "Unchecked") : undefined}
+  {...listItemMarker.html({
+    $checked: hasCheck ? completed : undefined,
+    $progress: completed ? undefined : progress,
+  })}
+>
+  {
+    completed ? (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-check"
+        aria-hidden="true"
+      >
+        <path d="M20 6 9 17l-5-5" />
+      </svg>
+    ) : progress != null ? (
+      <span aria-hidden="true" {...progressCircularFill.html({})} />
+    ) : null
+  }
+</span>
+<span aria-hidden="true" {...listItemConnector.html({})}></span>
+<span {...listItemContent.html({})}><slot /></span>
