@@ -40,7 +40,7 @@ export default defineConfig({
   snapshotPathTemplate: "{testDir}/{testFileDir}/__snapshots__/{arg}{ext}",
   webServer: [
     {
-      command: `pnpm run preview-lite --port ${port}`,
+      command: `pnpm run preview --port ${port}`,
       env: {
         APP_INSPECTOR_PORT: String(inspectorPort),
         CLOUDFLARE_INCLUDE_PROCESS_ENV: "true",

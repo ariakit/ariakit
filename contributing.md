@@ -544,6 +544,8 @@ pnpm run build-app-lite
 pnpm -F app run test-chrome my-component
 ```
 
+Lite mode is selected during the build. `pnpm run preview-app-lite` builds the lite app before previewing it. After `pnpm run build-app-lite`, use `pnpm run preview-app` to preview the existing build without rebuilding it.
+
 You can also run the tests in headed mode:
 
 ```bash
