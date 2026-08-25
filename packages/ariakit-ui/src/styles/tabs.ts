@@ -7,7 +7,6 @@ import {
   buttonSeparator,
   buttonSlot,
 } from "./button.ts";
-import { folder } from "./folder.ts";
 import { frame } from "./frame.ts";
 import { layer } from "./layer.ts";
 
@@ -23,7 +22,7 @@ export const tabs = cv({
 });
 
 export const tab = cv({
-  extend: [button, folder],
+  extend: [button],
   class: [
     "ui-selected:ak-layer",
     "not-ui-selected:bg-transparent",
@@ -34,6 +33,7 @@ export const tab = cv({
   variants: {
     $kind: {
       folder: [
+        "ui-folder",
         "[--tab-radius:var(--ak-frame-radius)]",
         "[:first-child>&]:nth-[1_of_&]:ui-selected:before:[--ak-frame-radius:min(var(--tab-radius),var(--fp)/2)]",
         "[.tabs:not(:has(.glider))_&]:pb-[calc(var(--py)+var(--inset-padding,0px)+var(--fb))]",
@@ -75,11 +75,12 @@ export const tabSeparator = cv({
 });
 
 export const tabGlider = cv({
-  extend: [buttonGlider, folder],
+  extend: [buttonGlider],
   class: "duration-(--duration-tabs)!",
   variants: {
     $kind: {
       folder: [
+        "ui-folder",
         "m-(--inset-padding) mb-0 [--tab-radius:var(--ak-frame-radius)]",
         "inset-s-[anchor(start)] bottom-[anchor(bottom)] w-[calc(anchor-size()-var(--inset-padding)*2)] h-[calc(anchor-size()-var(--inset-padding))]",
         "supports-anchor:[.control:has(~&)]:ui-selected:bg-transparent",
@@ -105,9 +106,10 @@ export const tabGlider = cv({
     },
   },
   defaultVariants: {
-    $lightnessOffset(defaultValue) {
-      return defaultValue ?? true;
-    },
+    // The glider paints the surface of the selected tab, so it has to sit on
+    // the same layer offset as `tab` rather than the deeper offset a
+    // standalone selected glider uses.
+    $lightnessOffset: true,
     $border: "inherit",
     $borderType(defaultValue, variants) {
       if (variants.$kind === "folder") return "unset";

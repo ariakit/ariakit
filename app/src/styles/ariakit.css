@@ -181,6 +181,16 @@
   }
 }
 
+/* The row that closes a list, published by the list root on its own last li.
+   Reading it as a channel rather than counting DOM depth keeps the connector
+   correct wherever a row puts it, and a nested list resets the flag on itself
+   before re-publishing it on its own last row. */
+@custom-variant ui-list-last-row {
+  @container style(--list-last-row: 1) {
+    @slot;
+  }
+}
+
 /* Sidebar collapse flag published by the sidebar root and read by
    descendants (such as nav labels) through container style queries. */
 @custom-variant ui-sidebar-collapsed {
@@ -399,6 +409,80 @@
       --bg-dark-active: oklch(from var(--ak-layer) calc(l - 0.02) c h);
       --bg-light-active: oklch(from var(--ak-layer) calc(l + 0.02) c h);
       --shadow: 0 0.5px 0.5px var(--shadow-color);
+    }
+  }
+}
+
+/**
+ * Curves the bottom outer corners of a selected element like a folder tab so it
+ * merges into the panel below. Each corner is drawn by a pseudo element that
+ * stacks two radial gradients: the layer with its edge, and the parent backdrop
+ * that fills the notch left beside the curve.
+ *
+ * Tailwind emits this utility ahead of the frame border widths, so the bottom
+ * border reset has to be important to survive a bordered frame. The ui-selected
+ * declarations need no such help: their `:is()` selector already outranks the
+ * single-class utilities they override.
+ */
+@utility ui-folder {
+  position: relative;
+  border-bottom-width: 0 !important;
+  /* The curves are painted outside the element, so only the bottom edge,
+     where the panel takes over, may clip. */
+  clip-path: inset(-4rem -4rem 0 -4rem);
+
+  &::before,
+  &::after {
+    position: absolute;
+    bottom: 0;
+    border-style: none;
+    background-repeat: no-repeat;
+  }
+
+  @variant ui-selected {
+    --folder-edge: var(--ak-edge);
+    --folder-ring: var(--ak-frame-ring, 0px);
+    --folder-border: var(--ak-frame-border, 0px);
+    --folder-bordering: calc(var(--ak-frame-border, 0px) + var(--ak-frame-ring, 0px));
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+
+    &::before,
+    &::after {
+      /* Overlap neighboring color stops by a hair so the bands blend instead
+         of showing an aliased seam. */
+      --folder-smoothness: min(0.2px, var(--folder-bordering));
+      --folder-inner: var(--ak-frame-radius, 0px);
+      --folder-inner-border: calc(var(--folder-inner) - var(--folder-smoothness));
+      --folder-inner-bg: calc(var(--folder-inner) + var(--folder-smoothness));
+      --folder-outer: calc(var(--folder-inner) - var(--folder-bordering));
+      --folder-outer-border: calc(var(--folder-outer) + var(--folder-smoothness));
+      --folder-outer-bg: calc(var(--folder-outer) - var(--folder-smoothness));
+      --folder-transparent: transparent var(--folder-outer-bg);
+      --folder-border: var(--folder-edge) var(--folder-outer-border), var(--folder-edge) var(--folder-inner-border);
+      --folder-bg: var(--ak-layer) var(--folder-inner-bg);
+      --folder-gradient: var(--folder-transparent), var(--folder-border), var(--folder-bg);
+      --folder-backdrop-ring: calc(var(--folder-outer-border) + var(--folder-ring));
+      --folder-backdrop: transparent var(--folder-outer-border), var(--ak-layer-parent) var(--folder-outer-border), var(--ak-layer-parent) var(--folder-backdrop-ring), var(--ak-layer) var(--folder-backdrop-ring);
+      content: "";
+      pointer-events: none;
+      width: var(--ak-frame-radius);
+      height: var(--ak-frame-radius);
+      transition-property: --ak-frame-radius;
+      transition-duration: var(--duration-tabs);
+      transition-timing-function: var(--ease-tabs);
+    }
+
+    &::before {
+      inset-inline-end: 100%;
+      background-image: radial-gradient(circle at 0 0, var(--folder-gradient)),
+        radial-gradient(circle at 0 0, var(--folder-backdrop));
+    }
+
+    &::after {
+      inset-inline-start: 100%;
+      background-image: radial-gradient(circle at 100% 0, var(--folder-gradient)),
+        radial-gradient(circle at 100% 0, var(--folder-backdrop));
     }
   }
 }

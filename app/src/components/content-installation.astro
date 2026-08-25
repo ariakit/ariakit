@@ -13,8 +13,8 @@ import { getFramework } from "#app/lib/frameworks.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
 import { badge, badgeLabel } from "@ariakit/ui/styles/badge.ts";
+import { ListItem } from "@ariakit/ui/html/list.react.tsx";
 import { button } from "@ariakit/ui/styles/button.ts";
-import { listItem } from "@ariakit/ui/styles/list.ts";
 import { invariant } from "@ariakit/utils";
 import ContentCodeBlock from "./content-code-block.astro";
 import ContentLink from "./content-link.astro";
@@ -130,7 +130,7 @@ const frameworkDependenciesHtml = Object.entries(frameworkDependencies)
   </li>
   {
     devDependenciesHtml && (
-      <li {...listItem.html({})}>
+      <ListItem>
         <ContentParagraph>
           <strong>Install development dependencies</strong>
         </ContentParagraph>
@@ -140,12 +140,12 @@ const frameworkDependenciesHtml = Object.entries(frameworkDependencies)
         <ContentCodeBlock
           set:html={`<code class="language-sh">npm install --save-dev ${devDependenciesKeys}</code>`}
         />
-      </li>
+      </ListItem>
     )
   }
   {
     dependenciesHtml && (
-      <li {...listItem.html({})}>
+      <ListItem>
         <ContentParagraph>
           <strong>Install dependencies</strong>
         </ContentParagraph>
@@ -155,11 +155,11 @@ const frameworkDependenciesHtml = Object.entries(frameworkDependencies)
         <ContentCodeBlock
           set:html={`<code class="language-sh">npm install ${dependenciesKeys}</code>`}
         />
-      </li>
+      </ListItem>
     )
   }
 
-  <li {...listItem.html({})}>
+  <ListItem>
     <ContentParagraph
       ><strong>Copy the code into your project</strong></ContentParagraph
     >
@@ -194,5 +194,5 @@ const frameworkDependenciesHtml = Object.entries(frameworkDependencies)
         <Icon name="copy" /><span class="sr-only">Copy code</span>
       </span> button on any file to copy its code.</ContentParagraph
     >
-  </li>
+  </ListItem>
 </ContentList>

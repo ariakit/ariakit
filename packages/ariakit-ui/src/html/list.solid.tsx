@@ -2,7 +2,13 @@ import type { VariantProps } from "clava";
 import type { ComponentProps } from "solid-js";
 import { Show, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { list, listItem, listItemCheck } from "../styles/list.ts";
+import {
+  list,
+  listItem,
+  listItemConnector,
+  listItemContent,
+  listItemMarker,
+} from "../styles/list.ts";
 import { progressCircularFill } from "../styles/progress.ts";
 
 // The `$ordered` variant is computed from the `ordered` prop, so it's
@@ -44,61 +50,69 @@ export function List(props: ListProps) {
   );
 }
 
-// The `$check` variant is computed from the `checked` and `progress` props,
-// so it's omitted from the public props and must not be part of the split
-// keys.
-const listItemPropKeys = listItem.html.propKeys.filter(
-  (key) => key !== "$check",
-);
-
 export interface ListItemProps
   extends
     ComponentProps<"li">,
-    // The checked and progress props compute this variant along with the
-    // check child, so they stay in sync.
-    Omit<VariantProps<typeof listItem>, "$check">,
-    Pick<ListItemCheckProps, "checked" | "progress"> {}
+    VariantProps<typeof listItem>,
+    Pick<ListItemMarkerProps, "checked" | "progress"> {}
 
 /**
- * List item that must be a child of `List`. Passing `checked` or `progress`
- * renders a `ListItemCheck` marker before the children.
+ * List item that must be a child of `List`. It renders its own `ListItemMarker`
+ * and `ListItemConnector`, which are absolutely positioned in the gutter the
+ * item reserves through its start padding, and wraps its children in a
+ * `ListItemContent` so the first of them keeps `:first-child` despite the two
+ * elements in front of it.
  */
 export function ListItem(props: ListItemProps) {
   const [localProps, variantProps, rest] = splitProps(
     props,
     ["children", "checked", "progress"],
-    listItemPropKeys,
+    listItem.html.propKeys,
   );
-  // Accessor rather than a plain const so the derived state stays reactive
-  // when checked or progress change.
-  const hasCheck = () =>
-    localProps.checked != null || localProps.progress != null;
   return (
-    <li {...listItem.html({ $check: hasCheck(), ...variantProps })} {...rest}>
-      <Show when={hasCheck()}>
-        <ListItemCheck
-          checked={localProps.checked}
-          progress={localProps.progress}
-        />
-      </Show>
-      {localProps.children}
+    <li {...listItem.html(variantProps)} {...rest}>
+      <ListItemMarker
+        checked={localProps.checked}
+        progress={localProps.progress}
+      />
+      <ListItemConnector />
+      <ListItemContent>{localProps.children}</ListItemContent>
     </li>
   );
 }
 
-// The `$checked` and `$progress` variants are computed from the `checked`
-// and `progress` props, so they're omitted from the public props and must
-// not be part of the split keys.
-const listItemCheckPropKeys = listItemCheck.html.propKeys.filter(
-  (key) => key !== "$checked" && key !== "$progress",
+export interface ListItemContentProps
+  extends ComponentProps<"span">, VariantProps<typeof listItemContent> {}
+
+/**
+ * Wrapper for a row's own children. It generates no box, so the children lay
+ * out exactly as they would directly in the row, but it keeps the marker and
+ * the connector that precede them from taking `:first-child` away from the
+ * first of them. Render it as a `span`: the block-mode variants detect block
+ * children with `:has(:where(p, div, ...))`, so a `div` would put every list
+ * into blocks mode.
+ */
+export function ListItemContent(props: ListItemContentProps) {
+  const [variantProps, rest] = splitProps(props, listItemContent.html.propKeys);
+  return <span {...listItemContent.html(variantProps)} {...rest} />;
+}
+
+// The `$check`, `$checked` and `$progress` variants are computed from the
+// `checked` and `progress` props, so they're omitted from the public props
+// and must not be part of the split keys.
+const listItemMarkerPropKeys = listItemMarker.html.propKeys.filter(
+  (key) => key !== "$check" && key !== "$checked" && key !== "$progress",
 );
 
-export interface ListItemCheckProps
+export interface ListItemMarkerProps
   extends
     ComponentProps<"span">,
     // The checked and progress props compute these variants along with the
     // aria label and the icon or arc children, so they stay in sync.
-    Omit<VariantProps<typeof listItemCheck>, "$checked" | "$progress"> {
+    Omit<
+      VariantProps<typeof listItemMarker>,
+      "$check" | "$checked" | "$progress"
+    > {
   /** Progress between `0` and `1` shown as a circular arc. */
   progress?: number;
   /** Whether the check is checked. Defaults to `true` if `progress` is `1`. */
@@ -106,24 +120,32 @@ export interface ListItemCheckProps
 }
 
 /**
- * Check marker showing a checked icon or a circular progress arc. Must live
- * inside a `ListItem`, which renders it when `checked` or `progress` is set.
+ * Marker rendered in a list item's gutter: a bullet in unordered lists, a
+ * numbered chip in ordered ones, and a check slot when `checked` or `progress`
+ * is set.
  */
-export function ListItemCheck(props: ListItemCheckProps) {
+export function ListItemMarker(props: ListItemMarkerProps) {
   const [localProps, variantProps, rest] = splitProps(
     props,
     ["children", "checked", "progress"],
-    listItemCheckPropKeys,
+    listItemMarkerPropKeys,
   );
-  // Accessor rather than a plain const so the derived state stays reactive
+  // Accessors rather than plain consts so the derived state stays reactive
   // when checked or progress change.
+  const hasCheck = () =>
+    localProps.checked != null || localProps.progress != null;
   const completed = () => localProps.progress === 1 || !!localProps.checked;
   return (
     <span
-      role="img"
-      aria-label={completed() ? "Checked" : "Unchecked"}
-      {...listItemCheck.html({
-        $checked: completed(),
+      // Bullets and numbers repeat what the list element already conveys, so
+      // only the check slot exposes a state.
+      aria-hidden={hasCheck() ? undefined : "true"}
+      role={hasCheck() ? "img" : undefined}
+      aria-label={
+        hasCheck() ? (completed() ? "Checked" : "Unchecked") : undefined
+      }
+      {...listItemMarker.html({
+        $checked: hasCheck() ? completed() : undefined,
         $progress: completed() ? undefined : localProps.progress,
         ...variantProps,
       })}
@@ -141,6 +163,28 @@ export function ListItemCheck(props: ListItemCheckProps) {
       </Show>
       {localProps.children}
     </span>
+  );
+}
+
+export interface ListItemConnectorProps
+  extends ComponentProps<"span">, VariantProps<typeof listItemConnector> {}
+
+/**
+ * Vertical segment joining a row's marker to the next row's. It only becomes
+ * visible in ordered lists that are in blocks mode, where the list gives it a
+ * width.
+ */
+export function ListItemConnector(props: ListItemConnectorProps) {
+  const [variantProps, rest] = splitProps(
+    props,
+    listItemConnector.html.propKeys,
+  );
+  return (
+    <span
+      aria-hidden="true"
+      {...listItemConnector.html(variantProps)}
+      {...rest}
+    />
   );
 }
 
