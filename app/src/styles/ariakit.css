@@ -181,6 +181,16 @@
   }
 }
 
+/* The row that closes a list, published by the list root on its own last li.
+   Reading it as a channel rather than counting DOM depth keeps the connector
+   correct wherever a row puts it, and a nested list resets the flag on itself
+   before re-publishing it on its own last row. */
+@custom-variant ui-list-last-row {
+  @container style(--list-last-row: 1) {
+    @slot;
+  }
+}
+
 /* Sidebar collapse flag published by the sidebar root and read by
    descendants (such as nav labels) through container style queries. */
 @custom-variant ui-sidebar-collapsed {

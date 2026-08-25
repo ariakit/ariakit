@@ -2,7 +2,13 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { CheckIcon } from "lucide-react";
 import type { ComponentProps } from "react";
-import { list, listItem, listItemCheck } from "../styles/list.ts";
+import {
+  list,
+  listItem,
+  listItemConnector,
+  listItemContent,
+  listItemMarker,
+} from "../styles/list.ts";
 import { progressCircularFill } from "../styles/progress.ts";
 
 export interface ListProps
@@ -39,32 +45,53 @@ export function List({ ordered, ...props }: ListProps) {
 export interface ListItemProps
   extends
     ComponentProps<"li">,
-    // The checked and progress props compute this variant along with the
-    // check child, so they stay in sync.
-    Omit<VariantProps<typeof listItem>, "$check">,
-    Pick<ListItemCheckProps, "checked" | "progress"> {}
+    VariantProps<typeof listItem>,
+    Pick<ListItemMarkerProps, "checked" | "progress"> {}
 
 /**
- * List item that must be a child of `List`. Passing `checked` or `progress`
- * renders a `ListItemCheck` marker before the children.
+ * List item that must be a child of `List`. It renders its own `ListItemMarker`
+ * and `ListItemConnector`, which are absolutely positioned in the gutter the
+ * item reserves through its start padding, and wraps its children in a
+ * `ListItemContent` so the first of them keeps `:first-child` despite the two
+ * elements in front of it.
  */
 export function ListItem({ checked, progress, ...props }: ListItemProps) {
-  const hasCheck = checked != null || progress != null;
   const [variantProps, rest] = splitProps(props, listItem);
   return (
-    <li {...listItem.jsx({ $check: hasCheck, ...variantProps })} {...rest}>
-      {hasCheck && <ListItemCheck checked={checked} progress={progress} />}
-      {rest.children}
+    <li {...listItem.jsx(variantProps)} {...rest}>
+      <ListItemMarker checked={checked} progress={progress} />
+      <ListItemConnector />
+      <ListItemContent>{rest.children}</ListItemContent>
     </li>
   );
 }
 
-export interface ListItemCheckProps
+export interface ListItemContentProps
+  extends ComponentProps<"span">, VariantProps<typeof listItemContent> {}
+
+/**
+ * Wrapper for a row's own children. It generates no box, so the children lay
+ * out exactly as they would directly in the row, but it keeps the marker and
+ * the connector that precede them from taking `:first-child` away from the
+ * first of them. Render it as a `span`: the block-mode variants detect block
+ * children with `:has(:where(p, div, ...))`, so a `div` would put every list
+ * into blocks mode. The app mirrors this markup in
+ * `app/src/components/content-list-item-body.astro` — keep them in sync.
+ */
+export function ListItemContent(props: ListItemContentProps) {
+  const [variantProps, rest] = splitProps(props, listItemContent);
+  return <span {...listItemContent.jsx(variantProps)} {...rest} />;
+}
+
+export interface ListItemMarkerProps
   extends
     ComponentProps<"span">,
     // The checked and progress props compute these variants along with the
     // aria label and the icon or arc children, so they stay in sync.
-    Omit<VariantProps<typeof listItemCheck>, "$checked" | "$progress"> {
+    Omit<
+      VariantProps<typeof listItemMarker>,
+      "$check" | "$checked" | "$progress"
+    > {
   /** Progress between `0` and `1` shown as a circular arc. */
   progress?: number;
   /** Whether the check is checked. Defaults to `true` if `progress` is `1`. */
@@ -72,24 +99,28 @@ export interface ListItemCheckProps
 }
 
 /**
- * Check marker showing a checked icon or a circular progress arc. Must live
- * inside a `ListItem`, which renders it when `checked` or `progress` is set.
- * The app inlines this markup as an html string in
- * `app/src/components/content-list-item.astro` — keep them in sync.
+ * Marker rendered in a list item's gutter: a bullet in unordered lists, a
+ * numbered chip in ordered ones, and a check slot when `checked` or `progress`
+ * is set. The app mirrors this markup in
+ * `app/src/components/content-list-item-body.astro` — keep them in sync.
  */
-export function ListItemCheck({
+export function ListItemMarker({
   progress,
   checked,
   ...props
-}: ListItemCheckProps) {
+}: ListItemMarkerProps) {
+  const hasCheck = checked != null || progress != null;
   const completed = progress === 1 || !!checked;
-  const [variantProps, rest] = splitProps(props, listItemCheck);
+  const [variantProps, rest] = splitProps(props, listItemMarker);
   return (
     <span
-      role="img"
-      aria-label={completed ? "Checked" : "Unchecked"}
-      {...listItemCheck.jsx({
-        $checked: completed,
+      // Bullets and numbers repeat what the list element already conveys, so
+      // only the check slot exposes a state.
+      aria-hidden={hasCheck ? undefined : true}
+      role={hasCheck ? "img" : undefined}
+      aria-label={hasCheck ? (completed ? "Checked" : "Unchecked") : undefined}
+      {...listItemMarker.jsx({
+        $checked: hasCheck ? completed : undefined,
         $progress: completed ? undefined : progress,
         ...variantProps,
       })}
@@ -102,5 +133,21 @@ export function ListItemCheck({
       ) : null}
       {rest.children}
     </span>
+  );
+}
+
+export interface ListItemConnectorProps
+  extends ComponentProps<"span">, VariantProps<typeof listItemConnector> {}
+
+/**
+ * Vertical segment joining a row's marker to the next row's. It only becomes
+ * visible in ordered lists that are in blocks mode, where the list gives it a
+ * width. The app mirrors this markup in
+ * `app/src/components/content-list-item-body.astro` — keep them in sync.
+ */
+export function ListItemConnector(props: ListItemConnectorProps) {
+  const [variantProps, rest] = splitProps(props, listItemConnector);
+  return (
+    <span aria-hidden {...listItemConnector.jsx(variantProps)} {...rest} />
   );
 }

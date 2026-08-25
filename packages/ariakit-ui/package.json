@@ -35,8 +35,5 @@
     "react-aria-components": "1.19.0",
     "react-dom": "19.2.8",
     "solid-js": "1.9.14"
-  },
-  "devDependencies": {
-    "@ariakit/test": "workspace:*"
   }
 }

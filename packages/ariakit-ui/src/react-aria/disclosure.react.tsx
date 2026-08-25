@@ -24,6 +24,15 @@ export interface DisclosureProps
   /** Custom content element or props to render a `DisclosureContent`. */
   content?: React.ReactElement | DisclosureContentProps;
   /**
+   * Element rendered as the root's last child, after the content. Reserved
+   * for absolutely positioned decorations that have to span the whole
+   * disclosure, including its open content. It follows the content, so a
+   * custom content element that stretches to the frame edges no longer counts
+   * as the root's last child. `ListDisclosure` fills this slot on every
+   * instance, so that applies there whether or not the caller passes one.
+   */
+  decoration?: React.ReactNode;
+  /**
    * Applies a split layout that visually separates button and content areas.
    */
   split?: boolean;
@@ -51,6 +60,7 @@ export function Disclosure({
   split,
   button,
   content,
+  decoration,
   children,
   ...props
 }: DisclosureProps) {
@@ -77,6 +87,7 @@ export function Disclosure({
       ) : (
         children
       )}
+      {decoration}
     </rac.Disclosure>
   );
 }

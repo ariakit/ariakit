@@ -813,10 +813,6 @@ importers:
       solid-js:
         specifier: 1.9.14
         version: 1.9.14
-    devDependencies:
-      '@ariakit/test':
-        specifier: workspace:*
-        version: link:../ariakit-test
 
   packages/ariakit-utils:
     devDependencies:
