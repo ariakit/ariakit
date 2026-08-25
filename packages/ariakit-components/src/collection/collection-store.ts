@@ -291,6 +291,8 @@ export function createCollectionStore<
         }
         return nextItems;
       });
+      // Unregistering reverses this merge: it restores the previous item, or
+      // removes the item when this registration introduced it.
       const unmergeItem = () => {
         if (registeredItems) {
           if (previousRegisteredItem) {

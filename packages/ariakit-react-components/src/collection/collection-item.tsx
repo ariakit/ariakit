@@ -50,6 +50,8 @@ export const useCollectionItem = createHook<TagName, CollectionItemOptions>(
       if (!id) return;
       if (!element) return;
       if (!shouldRegisterItem) return;
+      // With render composition, outer components register after rendered ones.
+      // Their item fields take precedence when the store merges registrations.
       const item = getItem({ id, element });
       return store?.renderItem(item);
     }, [id, shouldRegisterItem, getItem, store]);
