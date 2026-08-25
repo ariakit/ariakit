@@ -17,7 +17,7 @@ for (const trigger of ["click", "Enter", "Space"] as const) {
   });
 }
 
-test("traps focus inside the dialog", async () => {
+test("keeps focus on the only dialog button with synthetic Tab", async () => {
   await click(q.button("Show modal"));
   expect(q.button("OK")).toHaveFocus();
 

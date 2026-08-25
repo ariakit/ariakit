@@ -221,8 +221,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     portal,
     props.portalRef,
   );
-  // Sets preserveTabOrder to true only if the dialog is not a modal and is
-  // open.
+  // Modal dialogs don't use tab-order sentinels to match native <dialog>.
+  // Tab may reach browser UI instead of cycling inside, which is intentional.
+  // https://github.com/ariakit/ariakit/issues/7092#issuecomment-5227754640
   const preserveTabOrderProp = props.preserveTabOrder;
   const preserveTabOrder = useStoreState(
     store,
