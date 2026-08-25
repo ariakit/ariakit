@@ -8,7 +8,7 @@ export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
   update: () => void,
   props: DisclosureStoreProps,
 ) {
-  useUpdateEffect(update, [props.store, props.disclosure]);
+  useUpdateEffect(update, [props.store, props.disclosure, update]);
   useStoreProps(store, props, "open", "setOpen");
   useStoreProps(store, props, "mounted", "setMounted");
   useStoreProps(store, props, "animated");

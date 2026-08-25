@@ -11,6 +11,8 @@ allowBuilds:
   "@clerk/shared": false
   core-js: false
   esbuild: true
+  # Lefthook installs the Git hooks from its postinstall script.
+  lefthook: true
   msw: false
   sharp: true
   workerd: true

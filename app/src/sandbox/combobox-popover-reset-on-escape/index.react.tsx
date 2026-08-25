@@ -211,7 +211,8 @@ function RenderCounted() {
     selectOnMove: true,
   });
   const renderCount = useRef(0);
-  renderCount.current += 1;
+  // oxlint-disable-next-line react/refs -- render-count instrumentation
+  const currentRenderCount = ++renderCount.current;
 
   const props = useComboboxPopover({
     store,
@@ -228,7 +229,7 @@ function RenderCounted() {
         <Ariakit.ComboboxSelectedValue />
       </Ariakit.ComboboxSelect>
       <output aria-label="Render counted popover renders">
-        {renderCount.current}
+        {currentRenderCount}
       </output>
       <button
         type="button"

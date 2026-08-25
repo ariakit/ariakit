@@ -50,18 +50,22 @@ interface FixtureProps {
 }
 
 function Fixture({ label, lateItems }: FixtureProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpenState] = useState(false);
   const [showLateItems, setShowLateItems] = useState(false);
 
   useEffect(() => {
     if (!lateItems) return;
-    if (!open) {
-      setShowLateItems(false);
-      return;
-    }
+    if (!open) return;
     const timeout = window.setTimeout(() => setShowLateItems(true), 750);
     return () => window.clearTimeout(timeout);
   }, [lateItems, open]);
+
+  const setOpen = (nextOpen: boolean) => {
+    setOpenState(nextOpen);
+    if (!nextOpen) {
+      setShowLateItems(false);
+    }
+  };
 
   const renderedItems = lateItems && !showLateItems ? items.slice(0, 4) : items;
 

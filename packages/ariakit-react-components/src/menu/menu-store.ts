@@ -26,7 +26,12 @@ export function useMenuStoreProps<T extends Core.MenuStore>(
   update: () => void,
   props: MenuStoreProps,
 ) {
-  useUpdateEffect(update, [props.combobox, props.parent, props.menubar]);
+  useUpdateEffect(update, [
+    props.combobox,
+    props.parent,
+    props.menubar,
+    update,
+  ]);
   useStoreProps(store, props, "values", "setValues");
   return Object.assign(
     useHovercardStoreProps(

@@ -119,6 +119,8 @@ function useAutoFocusOnHide({
   // Resets autoFocusOnHide
   useEffect(() => {
     if (!mounted) {
+      // Synchronize focus history with the external hovercard store.
+      // oxlint-disable-next-line react/set-state-in-effect
       setAutoFocusOnHide(false);
     }
   }, [mounted]);
@@ -348,7 +350,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       const element = ref.current;
       if (!element) return;
       return registerOnParent?.(element);
-    }, [modal, portal, mounted, domReady]);
+    }, [modal, portal, mounted, domReady, registerOnParent]);
 
     const registerNestedHovercard = useCallback(
       (element: HTMLElement) => {

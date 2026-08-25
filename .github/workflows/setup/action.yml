@@ -20,6 +20,14 @@ runs:
       with:
         node-version-file: package.json
 
+    - name: Disable Git hooks
+      shell: bash
+      # Dedicated jobs lint, format, and test every change, so the pre-commit
+      # hook is not necessary in CI. The jobs that commit generated files
+      # install only part of the workspace. The hook's jobs need all of it, so
+      # the hook fails the commit.
+      run: echo "LEFTHOOK=0" >> "$GITHUB_ENV"
+
     - name: Allow partial install
       if: inputs.filters != '' || inputs.install != 'true'
       shell: bash

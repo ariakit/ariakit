@@ -12,7 +12,6 @@
     "build-app": "pnpm -F nextjs run build-worker && pnpm -F app run build",
     "build-app-lite": "pnpm -F nextjs run build-worker && pnpm -F app run build-lite",
     "preview-app": "conc -r 'pnpm -F app run preview' 'pnpm -F nextjs run preview'",
-    "preview-app-lite": "cross-env DISABLE_REFERENCE_LINKS=true pnpm run preview-app",
     "react18": "ariakit react18",
     "test": "vitest",
     "bench": "vitest bench --config vitest.bench.config.ts",
@@ -30,8 +29,9 @@
     "test-android-headed": "pnpm -F app test-android-headed",
     "coverage": "pnpm test --coverage",
     "postcoverage": "open-cli coverage/index.html",
-    "lint": "oxlint --disable-nested-config && oxfmt --check",
-    "lint-fix": "oxlint --disable-nested-config --fix && oxfmt",
+    "sync-astro-types": "pnpm --fail-if-no-match -F app run sync",
+    "lint": "pnpm run sync-astro-types && oxlint --disable-nested-config && oxfmt --check",
+    "lint-fix": "pnpm run sync-astro-types && oxlint --disable-nested-config --fix && oxfmt",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "wrangler-types": "pnpm -F app run wrangler-types",
     "tsc": "pnpm -F app run check && tsc -b",
@@ -43,14 +43,13 @@
     "docs": "pnpm -F './packages/*' run --if-present docs",
     "changeset": "changeset",
     "version": "changeset version && pnpm install --lockfile-only --ignore-scripts",
-    "publish": "pnpm run build && changeset publish",
-    "prepare": "husky"
+    "publish": "pnpm run build && changeset publish"
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
     "@ariakit/test": "workspace:*",
     "@changesets/apply-release-plan": "8.0.0",
-    "@changesets/cli": "3.0.0",
+    "@changesets/cli": "3.0.1",
     "@changesets/types": "7.0.0",
     "@testing-library/jest-dom": "7.0.1",
     "@types/cross-spawn": "6.0.6",
@@ -58,7 +57,7 @@
     "@types/node": "24.13.3",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
-    "@vitejs/plugin-react": "6.0.5",
+    "@vitejs/plugin-react": "6.1.0",
     "@vitest/coverage-v8": "4.1.11",
     "chalk": "6.0.0",
     "chokidar": "5.0.0",
@@ -67,10 +66,9 @@
     "cross-spawn": "7.0.6",
     "fs-extra": "11.4.0",
     "glob": "13.0.6",
-    "happy-dom": "20.11.2",
-    "husky": "9.1.7",
+    "happy-dom": "20.11.6",
     "jsdom": "30.0.1",
-    "lint-staged": "17.3.0",
+    "lefthook": "2.1.10",
     "open-cli": "9.0.0",
     "oxfmt": "0.64.0",
     "oxlint": "1.79.0",
@@ -85,17 +83,10 @@
     "tsup": "8.5.1",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
-    "vite": "8.2.1",
+    "vite": "8.2.2",
     "vite-plugin-solid": "2.11.14",
     "vitest": "4.1.11",
     "vitest-fail-on-console": "0.10.1"
-  },
-  "lint-staged": {
-    "package.json": "pnpm -r run --if-present clean",
-    "*.{js,ts,tsx,md,mdx,json}": [
-      "oxlint --disable-nested-config --fix --no-error-on-unmatched-pattern",
-      "oxfmt --no-error-on-unmatched-pattern"
-    ]
   },
   "devEngines": {
     "runtime": {

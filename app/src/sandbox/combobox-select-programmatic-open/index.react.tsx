@@ -5,9 +5,17 @@ import { vegetables } from "../combobox-select-default-open/vegetables.ts";
 const firstOptions = vegetables.slice(0, 4);
 
 export default function Example() {
-  const store = Ariakit.useComboboxStore({ defaultSelectedValue: "Onion" });
-  const open = Ariakit.useStoreState(store, "open");
   const [options, setOptions] = useState(firstOptions);
+  const store = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Onion",
+    // Restores the short list on close so the preview can be replayed by hand
+    // without reloading the page.
+    setOpen(open) {
+      if (!open) {
+        setOptions(firstOptions);
+      }
+    },
+  });
 
   // A global shortcut opens the picker programmatically, leaving focus wherever
   // the user left it, so the open never passes through the select.
@@ -22,13 +30,6 @@ export default function Example() {
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [store]);
-
-  // Restores the short list on close so the preview can be replayed by hand
-  // without reloading the page.
-  useEffect(() => {
-    if (open) return;
-    setOptions(firstOptions);
-  }, [open]);
 
   // The selected Onion is among the remaining options, so the opening
   // presentation only has something to target once they register.

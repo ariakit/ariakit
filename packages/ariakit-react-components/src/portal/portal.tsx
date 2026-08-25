@@ -170,7 +170,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
         portalEl.remove();
       }
     };
-  }, [portal, portalElement, context]);
+  }, [portal, portalElement, context, portalRefProp]);
 
   // Re-fire the portalRef against the same portal node when only its identity
   // changes (e.g. an inline callback on a parent re-render), mirroring how

@@ -28,6 +28,7 @@ This guide covers more advanced topics. Pick the topics based on your needs.
 
 16. [Versioning](#versioning)
 17. [Writing end-to-end tests](#writing-end-to-end-tests)
+18. [Linting and formatting](#linting-and-formatting)
 
 <br>
 
@@ -467,7 +468,7 @@ When you're ready to submit a pull request, you can follow these naming conventi
 - Pull request titles use the [Imperative Mood](https://en.wikipedia.org/wiki/Imperative_mood) (e.g., `Add something`, `Fix something`).
 - [Changesets](#versioning) use past tense verbs (e.g., `Added something`, `Fixed something`).
 
-Open the pull request from a branch on `ariakit/ariakit`. GitHub will automatically lint, build, and test your changes. If you see an ❌, it's most likely a bug in your code. Please, inspect the logs through the GitHub UI to find the cause.
+Open the pull request from a branch on `ariakit/ariakit`. GitHub will automatically lint, build, and test your changes. If you see an ❌, it's most likely a bug in your code. Please, inspect the logs through the GitHub UI to find the cause. You can run the same lint step locally before you push, as described on [Linting and formatting](#linting-and-formatting).
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -543,6 +544,8 @@ pnpm run build-app-lite
 pnpm -F app run test-chrome my-component
 ```
 
+Lite mode is selected during the build. After `pnpm run build-app-lite`, use `pnpm run preview-app` to preview the lite build.
+
 You can also run the tests in headed mode:
 
 ```bash
@@ -554,6 +557,39 @@ Or in debug mode:
 ```bash
 pnpm -F app run test --project=chrome --debug my-component
 ```
+
+<div align="right">
+    <a href="#advanced-tutorial">&uarr; back to top</a></b>
+</div>
+
+## Linting and formatting
+
+GitHub lints every pull request and checks its formatting. To run the same checks locally, use these commands from the project's root directory:
+
+```bash
+pnpm run lint
+pnpm run lint-css
+```
+
+The first command lints the source and checks its formatting. The second one lints the stylesheets. To apply the fixes that the first one can apply automatically, run:
+
+```bash
+pnpm run lint-fix
+```
+
+The linter is type-aware, so it reads the types that Astro generates into `app/.astro`. That folder is not versioned, and `pnpm install` does not create it. `pnpm run lint` and `pnpm run lint-fix` generate it for you, and so do `pnpm run tsc` and `pnpm run dev-app`. The Git pre-commit hook generates it too, before it lints the staged files. To generate it on its own, run:
+
+```bash
+pnpm run sync-astro-types
+```
+
+Without these types, `astro:content` resolves `CollectionEntry` to `any`, which changes the verdict of the type-aware rules. The linter then reports errors in files you did not change:
+
+```text
+app/src/lib/reference-tokenizer.ts:34:27: error typescript(no-redundant-type-constituents): 'any' overrides all other types in this union type.
+```
+
+Your editor reads the same configuration. The recommended [oxc extension](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode) applies the same automatic fixes when you save a file, so generate the types after you install the dependencies. Without them, a save can remove code that the missing types make look unnecessary.
 
 <div align="right">
     <a href="#advanced-tutorial">&uarr; back to top</a></b>

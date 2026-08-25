@@ -9,7 +9,7 @@ export function useCheckboxStoreProps<T extends Core.CheckboxStore>(
   update: () => void,
   props: CheckboxStoreProps,
 ) {
-  useUpdateEffect(update, [props.store]);
+  useUpdateEffect(update, [props.store, update]);
   useStoreProps(store, props, "value", "setValue");
   return store;
 }

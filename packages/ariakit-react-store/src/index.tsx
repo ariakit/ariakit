@@ -70,7 +70,6 @@ function hasSameStoreKeys(
   if (keys?.length !== otherKeys.length) return false;
   for (let index = 0; index < keys.length; index += 1) {
     const key = keys[index];
-    if (key === undefined) return false;
     if (isSameValue(key, otherKeys[index])) continue;
     return false;
   }
@@ -80,20 +79,23 @@ function hasSameStoreKeys(
 function useStableStoreKeys<K extends StoreKey>(
   keys: readonly K[] | null,
 ): K[] | null {
-  const keysRef = React.useRef<K[] | null>(null);
-  const currentKeys = keysRef.current;
+  const [stableKeys, setStableKeys] = React.useState<K[] | null>(() =>
+    keys === null ? null : [...keys],
+  );
 
   if (keys === null) {
-    keysRef.current = null;
+    if (stableKeys !== null) {
+      setStableKeys(null);
+    }
     return null;
   }
 
-  if (hasSameStoreKeys(currentKeys, keys)) {
-    return currentKeys;
+  if (hasSameStoreKeys(stableKeys, keys)) {
+    return stableKeys;
   }
 
   const nextKeys = [...keys];
-  keysRef.current = nextKeys;
+  setStableKeys(nextKeys);
   return nextKeys;
 }
 
@@ -418,7 +420,7 @@ export function useStoreProps<
       if (isSameValue(state[key], value)) return;
       setValue(state[key]);
     });
-  }, [store, key, hasSetValue]);
+  }, [store, key, hasSetValue, propsRef]);
 
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {
@@ -447,6 +449,7 @@ export function useStore<T extends CoreStore, P>(
   useSafeLayoutEffect(() => init(store), [store]);
 
   const useState: UseState<StoreState<T>> = React.useCallback<AnyFunction>(
+    // oxlint-disable-next-line react/hooks -- public hook method
     (keyOrSelector) => useStoreState(store, keyOrSelector),
     [store],
   );

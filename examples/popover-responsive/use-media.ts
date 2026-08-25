@@ -15,6 +15,8 @@ export default function useMedia(query: string, defaultState?: boolean) {
 
   useEffect(() => {
     const mql = window.matchMedia(query);
+    // Synchronize state with the browser's MediaQueryList.
+    // oxlint-disable-next-line react/set-state-in-effect
     setMatches(mql.matches);
     const onChange = () => setMatches(mql.matches);
     mql.addEventListener("change", onChange);

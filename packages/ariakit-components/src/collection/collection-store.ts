@@ -291,6 +291,9 @@ export function createCollectionStore<
         }
         return nextItems;
       });
+      // Same-ID registrations must clean up in reverse order: each cleanup
+      // restores the item it replaced or removes the item it introduced.
+      // https://github.com/ariakit/ariakit/pull/7286#discussion_r3853776498
       const unmergeItem = () => {
         if (registeredItems) {
           if (previousRegisteredItem) {

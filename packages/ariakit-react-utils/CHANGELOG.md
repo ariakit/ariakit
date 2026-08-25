@@ -1,5 +1,9 @@
 # @ariakit/react-utils
 
+## 0.2.5
+
+- Updated dependencies: `@ariakit/utils@0.2.0`, `@ariakit/store@0.1.9`
+
 ## 0.2.4
 
 - Updated components created with `forwardRef` to drop props holding `undefined`, so passing one behaves the same as omitting it.

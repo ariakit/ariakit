@@ -30,7 +30,8 @@ function InstrumentedPopover({
   const renderCount = useRef(0);
   const firstDisclosureRef = useRef<HTMLSpanElement>(null);
   const secondDisclosureRef = useRef<HTMLSpanElement>(null);
-  renderCount.current += 1;
+  // oxlint-disable-next-line react/refs -- render-count instrumentation
+  const currentRenderCount = ++renderCount.current;
 
   const props = usePopover({
     store,
@@ -52,7 +53,7 @@ function InstrumentedPopover({
       </Ariakit.PopoverDisclosure>
       <Ariakit.Role {...props}>
         <output aria-label={`${label} popover renders`}>
-          {renderCount.current}
+          {currentRenderCount}
         </output>
         <DisclosureElementRenders label={label} store={store} />
         <Ariakit.Button
@@ -86,10 +87,11 @@ function DisclosureElementRenders({
 }: DisclosureElementRendersProps) {
   const renderCount = useRef(0);
   Ariakit.useStoreState(store, "disclosureElement");
-  renderCount.current += 1;
+  // oxlint-disable-next-line react/refs -- render-count instrumentation
+  const currentRenderCount = ++renderCount.current;
   return (
     <output aria-label={`${label} disclosure element renders`}>
-      {renderCount.current}
+      {currentRenderCount}
     </output>
   );
 }

@@ -65,5 +65,7 @@ function usePrevious<T>(value: T) {
   useEffect(() => {
     ref.current = value;
   }, [value]);
+  // The animation compares the current selection with the last committed one.
+  // oxlint-disable-next-line react/refs
   return ref.current;
 }

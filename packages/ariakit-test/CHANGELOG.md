@@ -1,5 +1,154 @@
 # @ariakit/test
 
+## 0.8.0
+
+### Test queries ensure matches by default
+
+**BREAKING** if you use `q` or `query` methods that may not find an element, or if you use their `.ensure` variants.
+
+Single-element queries now throw when no matching element is found. The `.ensure` variant has been removed, and the new `.maybe` variant returns `null` when no element is found. Collection queries such as `.all()` continue to return an empty array when there are no matches.
+
+Before:
+
+```ts
+const saveButton = q.button.ensure("Save");
+const optionalDialog = q.dialog("Settings");
+```
+
+After:
+
+```ts
+const saveButton = q.button("Save");
+const optionalDialog = q.dialog.maybe("Settings");
+```
+
+### Removed the `PointerEvent` fallback
+
+**BREAKING** if your tests, or the code they exercise, reference the `PointerEvent` global, narrow a `pointer*` event with `instanceof MouseEvent`, or read `pageX`, `pageY`, `offsetX`, `offsetY`, or `which` from one, on jsdom below v27, such as the jsdom 26 that `jest-environment-jsdom` 30 depends on.
+
+Importing `@ariakit/test` used to install a `PointerEvent` constructor when the environment had none, which it had done since a time when jsdom implemented no such constructor. jsdom implements it from v27 on, and happy-dom implements it too, so the fallback no longer served the environments it was written for. Environments that implement `PointerEvent` are unaffected.
+
+Where the constructor is missing, the global is now absent again, so building one by hand throws. Dispatch the event by name instead, which reports the same members and works in every environment.
+
+Before:
+
+```ts
+await dispatch(q.button(), new PointerEvent("pointerdown", { pointerId: 7 }));
+```
+
+After:
+
+```ts
+await dispatch.pointerDown(q.button(), { pointerId: 7 });
+```
+
+The helpers themselves keep working there, and every event they fire carries the same mouse, modifier, and pointer members it carries anywhere else. `click`, `auxclick`, and `contextmenu` are built from `MouseEvent` there rather than `PointerEvent`, so they keep the computed members too. The `pointer*` events come from `Event`, so `pageX`, `pageY`, `offsetX`, `offsetY`, and `which` are undefined on those. The [readme](https://github.com/ariakit/ariakit/blob/main/packages/ariakit-test/readme.md#test-environment) documents the expected environment.
+
+### `click` supports non-primary mouse buttons
+
+Passing `button` to `click` now simulates that mouse button through the whole interaction. Activation behavior runs on `click`, so a non-primary button fires `auxclick` instead and never activates labels or `option` elements, and the secondary button also fires `contextmenu` while it is held down.
+
+```ts
+await click(q.link("Ariakit"), { button: 1 });
+```
+
+Chromium and WebKit keep firing `auxclick` on disabled controls, so `click` does too, even though it still suppresses `click` there. Firefox is the exception and fires neither.
+
+`mouseDown` and `mouseUp` accept `button` the same way. Every helper that presses a button, which means `click`, `tap`, `mouseDown`, and `select`, now reports the button being held down in the `buttons` property on `pointerdown` and `mousedown` instead of always reporting `0`. Pass `buttons` to `mouseDown` and `mouseUp` yourself to describe a chorded gesture, such as pressing the secondary button while the primary one is still held, then releasing it with the primary one still down.
+
+`click`, `tap`, `rightClick`, and `select` run every step from one init, where a single `buttons` cannot describe the move, the press, and the release at once, so they ignore an explicit value and derive each step instead. `rightClick` keeps firing the same sequence.
+
+### Added `dispatch.auxClick`
+
+`dispatch` now fires `auxclick` by name, like every other event it builds. `@testing-library/dom` has no `auxclick` entry in its event map, so firing that event previously meant building it by hand and passing it to `dispatch(element, event)`.
+
+```ts
+await dispatch.auxClick(q.link("Ariakit"), { button: 1 });
+```
+
+### Chorded button changes fire `pointermove`
+
+`mouseDown` and `mouseUp` now follow Pointer Events for a chorded gesture, where a button changes state while another one stays held down. No `pointerdown` or `pointerup` fires in that case, so the change rides on `pointermove` and only the compatibility `mousedown` and `mouseup` fire for each button. Describe the gesture by passing `buttons` yourself, as before.
+
+```ts
+// The primary button stays held while the secondary one is pressed, so this
+// fires `pointermove` instead of `pointerdown`, and `mousedown` still fires.
+await mouseDown(q.button("Resize"), { button: 2, buttons: 3 });
+// The primary button is still held after the release, so this fires
+// `pointermove` instead of `pointerup`, and `mouseup` still fires.
+await mouseUp(q.button("Resize"), { button: 2, buttons: 1 });
+```
+
+A canceled `pointerdown` also keeps suppressing the compatibility mouse events until the gesture ends, so a chorded press and release in between fire none either. Both sequences match what Chromium, Firefox, and WebKit produce for the same gesture.
+
+### Composition dispatchers report `data`, `view`, and `detail`
+
+`dispatch.compositionStart`, `dispatch.compositionUpdate`, and `dispatch.compositionEnd` now report the members `CompositionEvent` defines, so a listener reading `data` receives the composed text instead of `undefined`, along with the `view` and `detail` the interface inherits from `UIEvent`.
+
+`type` composes text through `dispatch.compositionUpdate` when you pass `isComposing`, so an IME-aware listener now reads each character it simulates.
+
+This affected happy-dom, whose `CompositionEvent` is an alias for `Event`, and not jsdom or real browsers, which implement the interface themselves.
+
+### Events dispatched inside a same-origin iframe are initialized
+
+`dispatch` builds an event with the constructors of the window that owns its target, so an event dispatched at an element inside an iframe belongs to that frame. The initialization then tested it against the outer window's constructors, matched none of them, and skipped every member it assigns.
+
+A keyboard or mouse event reached its listeners with the modifier state its own constructor happened to store, rather than the one the dispatch described. The events already recognized by their type, which are the pointer and click families along with the drag events and `wheel`, were unaffected.
+
+This affected any environment that gives a frame its own constructors, including jsdom and real browsers, but not happy-dom, whose frames share the parent's.
+
+### Pointer events report the contact, pressure, and pointer a real device reports
+
+A listener on the pointer events that `hover`, `mouseDown`, `mouseUp`, and the `click`, `tap`, `rightClick`, and `select` gestures fire read `width: 0`, `height: 0`, `isPrimary: false`, and whatever transducer angle the environment happened to pick, a combination no pointing device produces. Pointer Events sizes the contact of a device that reports no geometry of its own, like a mouse, as 1 by 1, requires the altitude of a transducer perpendicular to the screen from a device that reports no tilt, and treats a lone pointer as the primary pointer of its type.
+
+Those events now report the values Chromium, Firefox, and WebKit all report for one ordinary click, including the pressure Pointer Events defines for a device with no pressure sensor: `0.5` while a button is held down and `0` otherwise. A chorded release keeps `0.5` while another button stays held, because the pointer is still in the active buttons state, which is what Firefox and WebKit report. Chromium derives that one from the button being released and reports `0`.
+
+```ts
+q.button("Resize").addEventListener("pointerdown", (event) => {
+  event.width; // 1
+  event.height; // 1
+  event.pressure; // 0.5
+  event.isPrimary; // true
+  event.altitudeAngle; // Math.PI / 2
+});
+
+await mouseDown(q.button("Resize"));
+```
+
+Values passed to a helper still win. `dispatch` sizes and angles a pointer event it builds by name the same way, because those describe a pointer at rest, and leaves the pressure and the primary pointer to the helper that knows which gesture fires the event.
+
+### `click`, `auxclick`, and `contextmenu` are dispatched as `PointerEvent`
+
+Pointer Events defines these three events as `PointerEvent`, and Chromium, Firefox, and WebKit all dispatch them that way, but the test environment built them as `MouseEvent`. A listener could not check `event instanceof PointerEvent`, and pointer properties such as `pointerType` were missing even though the `pointerdown` and `pointerup` of the same gesture reported them. TypeScript types all three events as `PointerEvent`, so reading `pointerType` in a listener type-checked and then returned `undefined`.
+
+`click`, `tap`, `rightClick`, and `select` now carry the `pointerId` and `pointerType` they simulate through to the event that ends the gesture, including the click a label forwards to its control. The attributes describing the contact itself, such as `pressure` and `tiltX`, stay at their default values there, the way browsers reset them, so a pen press reporting `tiltX: 30` still ends in a `click` reporting `tiltX: 0`.
+
+```ts
+q.link("Ariakit").addEventListener("auxclick", (event) => {
+  event.pointerType; // "pen"
+});
+
+await click(q.link("Ariakit"), { button: 1, pointerType: "pen" });
+```
+
+`press.Enter` and `press.Space` fire the same `PointerEvent`, but report no pointer behind it, with `pointerId: -1` and an empty `pointerType`. That is what every engine reports for a click no pointer caused.
+
+`button` and `buttons` keep their mouse-event semantics on these three events, as Pointer Events requires, so assertions on them are unaffected.
+
+### Other updates
+
+- Fixed `@ariakit/test` clipboard event dispatch so caller-supplied `clipboardData` is preserved by named dispatchers and caller-built events in environments without native clipboard event support.
+- Fixed named mouse and pointer events in `@ariakit/test` to derive `pageX` and `pageY` from the client coordinates and target window scroll, and derive `which` from `button`, matching browser-generated events even when the environment provides no `MouseEvent` base.
+- Fixed mouse events in the test environment to expose `getModifierState` for `Alt`, `Control`, `Meta`, and `Shift`, plus the `x` and `y` aliases of `clientX` and `clientY`, so a listener reading modifier state no longer throws a `TypeError` on an event passed to `dispatch(element, event)` or on the `auxclick` that `rightClick` and `click` with a non-primary `button` fire.
+- Fixed `dispatch` to expose only event names it can build, preventing the unsupported `doubleClick` alias from being typed or installed at runtime.
+- Fixed click-family gesture helpers to reset `isPrimary` on their terminal events, fixed `click` to carry modifiers, coordinates, and `detail` to the click a label forwards to its control, and fixed `press.Enter` to carry `modifier*` values such as `modifierCapsLock` to a form's implicit submit-button click.
+- Fixed keyboard events in the test environment so `getModifierState` matches the exact modifier names in UI Events and reports the `modifier*` members the event was built with, such as `AltGraph` and `CapsLock`, instead of reading `AltGraph` from `Alt` and matching a name like `shift` case-insensitively.
+- Fixed `getModifierState` on keyboard and mouse events created by `dispatch`, and by the helpers built on it such as `press` and `click`, to report `false` for modifier names it doesn't recognize. `Object.prototype` member names such as `constructor`, `toString`, and `hasOwnProperty` used to report `true`.
+- Fixed named pointer events in `@ariakit/test` to derive `tiltX` and `tiltY` from `altitudeAngle` and `azimuthAngle`, and vice versa, so listeners no longer receive contradictory orientations when callers provide only one pair.
+- Fixed `dispatch.wheel` and the drag dispatchers such as `dispatch.dragStart` and `dispatch.drop` to apply the `MouseEventInit` and modifier init members that `WheelEvent` and `DragEvent` accept in browsers, where both derive from `MouseEvent`, so a listener reading `ctrlKey` or `clientX` no longer receives `undefined` and calling `getModifierState` no longer throws a `TypeError`.
+- Fixed the `auxclick` that `rightClick` and `click` with a non-primary `button` fire to report the same modifier state as the rest of the gesture, so `modifier*` init members such as `modifierCapsLock` and `modifierAltGraph` now reach `getModifierState` on every mouse event the gesture produces.
+- Updated dependencies: `@ariakit/utils@0.2.0`
+
 ## 0.7.4
 
 - Updated dependencies: `@ariakit/utils@0.1.6`

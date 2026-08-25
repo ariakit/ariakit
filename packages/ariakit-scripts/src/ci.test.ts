@@ -83,14 +83,14 @@ test("selects CI from reviewed root dependency updates", () => {
         "package.json",
         {
           devDependencies: {
-            "lint-staged": "17.1.1",
+            lefthook: "2.1.9",
             oxfmt: "0.59.0",
             vitest: "4.1.9",
           },
         },
         {
           devDependencies: {
-            "lint-staged": "17.2.0",
+            lefthook: "2.1.10",
             oxfmt: "0.60.0",
             vitest: "4.1.10",
           },

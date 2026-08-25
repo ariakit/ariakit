@@ -24,7 +24,9 @@ type StoreInit = () => () => void;
 // change; sync fires immediately on registration and synchronously on every
 // change; batch fires immediately on registration, then microtask-coalesced
 // on subsequent changes. See the storeSubscribe/storeSync/storeBatch
-// implementations in createStore.
+// implementations in createStore. The keys also narrow the listener state.
+// Include a key only when its changes should trigger the listener. Read other
+// state with store.getState() inside the listener.
 type StoreSubscribe<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 type StoreSync<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 type StoreBatch<S = State, K extends keyof S = keyof S> = Sync<S, K>;

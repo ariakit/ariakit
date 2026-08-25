@@ -63,6 +63,7 @@ export function useFormValidate<T extends FormStoreValues = FormStoreValues>(
   const items = useStoreState(store, "items");
   useEffect(
     () => store.onValidate(eventCallback),
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- callback order invalidation
     [store, items, eventCallback],
   );
 }
@@ -90,7 +91,11 @@ export function useFormSubmit<T extends FormStoreValues = FormStoreValues>(
   const eventCallback = useEvent(callback);
   // Same logic as useFormValidate.
   const items = useStoreState(store, "items");
-  useEffect(() => store.onSubmit(eventCallback), [store, items, eventCallback]);
+  useEffect(
+    () => store.onSubmit(eventCallback),
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- callback order invalidation
+    [store, items, eventCallback],
+  );
 }
 
 export function useFormStoreProps<T extends FormStoreHookStore>(
@@ -105,12 +110,14 @@ export function useFormStoreProps<T extends FormStoreHookStore>(
   useStoreProps(collectionStore, props, "touched", "setTouched");
 
   const useValue = useCallback<FormStore["useValue"]>(
+    // oxlint-disable-next-line react/hooks -- public hook method
     (name) => useFormValue(collectionStore, name),
     [collectionStore],
   );
 
   const useValidate = useCallback<FormStore["useValidate"]>(
     (callback) => {
+      // oxlint-disable-next-line react/hooks -- public hook method
       useFormValidate(collectionStore, callback);
     },
     [collectionStore],
@@ -118,6 +125,7 @@ export function useFormStoreProps<T extends FormStoreHookStore>(
 
   const useSubmit = useCallback<FormStore["useSubmit"]>(
     (callback) => {
+      // oxlint-disable-next-line react/hooks -- public hook method
       useFormSubmit(collectionStore, callback);
     },
     [collectionStore],
