@@ -139,20 +139,24 @@ export const ComboboxPopover = React.forwardRef<
       {mounted && props.children}
       <div className="popover-footer">
         <div className="shortcut">
-          <kbd className="kbd" role="img" aria-label="Up Arrow">
+          <kbd className="kbd">
+            <Ariakit.VisuallyHidden>Up Arrow</Ariakit.VisuallyHidden>
             <ArrowIcon direction="up" />
           </kbd>
-          <kbd className="kbd" role="img" aria-label="Down Arrow">
+          <kbd className="kbd">
+            <Ariakit.VisuallyHidden>Down Arrow</Ariakit.VisuallyHidden>
             <ArrowIcon direction="down" />
           </kbd>
           to navigate
         </div>
         {!isInputActive && (
           <div className="shortcut">
-            <kbd className="kbd" role="img" aria-label="Left Arrow">
+            <kbd className="kbd">
+              <Ariakit.VisuallyHidden>Left Arrow</Ariakit.VisuallyHidden>
               <ArrowIcon direction="left" />
             </kbd>
-            <kbd className="kbd" role="img" aria-label="Right Arrow">
+            <kbd className="kbd">
+              <Ariakit.VisuallyHidden>Right Arrow</Ariakit.VisuallyHidden>
               <ArrowIcon direction="right" />
             </kbd>
             to switch tabs
@@ -160,7 +164,8 @@ export const ComboboxPopover = React.forwardRef<
         )}
         {!isInputActive && (
           <div className="shortcut">
-            <kbd className="kbd" role="img" aria-label="Enter">
+            <kbd className="kbd">
+              <Ariakit.VisuallyHidden>Enter</Ariakit.VisuallyHidden>
               <ReturnIcon />
             </kbd>
             to select
