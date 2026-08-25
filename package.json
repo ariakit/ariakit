@@ -12,7 +12,6 @@
     "build-app": "pnpm -F nextjs run build-worker && pnpm -F app run build",
     "build-app-lite": "pnpm -F nextjs run build-worker && pnpm -F app run build-lite",
     "preview-app": "conc -r 'pnpm -F app run preview' 'pnpm -F nextjs run preview'",
-    "preview-app-lite": "pnpm run build-app-lite && pnpm run preview-app",
     "react18": "ariakit react18",
     "test": "vitest",
     "bench": "vitest bench --config vitest.bench.config.ts",
