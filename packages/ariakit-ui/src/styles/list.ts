@@ -172,8 +172,9 @@ export const listItemMarker = cv({
     // number, the check icon and the progress arc all live. The bullet below
     // reshapes it through these same properties, so its variant rules win by
     // stylesheet order instead of colliding with a shorthand.
-    "[--list-marker-size:calc(var(--list-leading)-0.2em*2)]",
-    "top-(--ak-frame-padding) inset-s-(--ak-frame-padding) m-[0.2em]",
+    "[--list-marker-inset:0.2em]",
+    "[--list-marker-size:calc(var(--list-leading)-var(--list-marker-inset)*2)]",
+    "top-(--ak-frame-padding) inset-s-(--ak-frame-padding) m-(--list-marker-inset)",
     "w-(--list-marker-size) h-(--list-marker-size) rounded-full",
     // The marker owns the list counter because it's the element that shows
     // it: an element's counter-increment applies before its own ::before
