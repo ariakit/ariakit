@@ -6,8 +6,8 @@ import { layer } from "./layer.ts";
 // Marker surfaces on the $lightnessOffset scale: legacy ak-layer-12 for the
 // ordered chip, ak-layer-6 for the unordered check slot. An unordered bullet
 // is a bare line with no surface of its own, so it gets none.
-const ORDERED_MARKER_LIGHTNESS = 2.4;
-const UNORDERED_CHECK_LIGHTNESS = 1.2;
+const ORDERED_MARKER_LIGHTNESS = 2.5;
+const UNORDERED_CHECK_LIGHTNESS = 1;
 
 // Line heights the $leading names map to, matching the Tailwind tokens.
 const LEADING_VALUES = {
@@ -35,11 +35,11 @@ export const list = cv({
     // mode, so the flag both the segment and the disclosure read derives
     // from those two rather than being set from the $ordered branch.
     "[--list-connector:calc(var(--list-ol,0)*var(--list-blocks,0))]",
-    // Geometry shared by rows, markers, and connectors.
+    // Rhythm derived from the knobs above, shared across subtrees: the root
+    // lays itself out with --list-gap, while items and disclosure bodies
+    // space their block children with --list-item-gap.
     "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
     "[--list-item-gap:calc(var(--list-gap)+var(--list-item-padding)*0.5)]",
-    "[--list-item-ps:calc(var(--list-leading)+(--spacing(1.5)))]",
-    "[--list-marker-center:calc(var(--list-leading)*0.5)]",
     // Inside prose the base gap follows the prose rhythm, like legacy
     // ak-prose setting ak-list-gap on descendant lists.
     "ui-prose:[--list-gap-base:var(--prose-gap)]",
@@ -125,6 +125,10 @@ const listRow = cv({
   extend: [frame],
   class: [
     "relative leading-(--list-leading)",
+    // The marker column a row reserves, and the row's own start padding that
+    // clears it. Rows are the only readers, so they derive both from the
+    // list's --list-leading instead of the list publishing them.
+    "[--list-item-ps:calc(var(--list-leading)+(--spacing(1.5)))]",
     "[--list-item-base-ps:calc(var(--ak-frame-padding)+var(--list-item-ps))]",
   ],
   defaultVariants: {
@@ -288,6 +292,9 @@ export const listItemConnector = cv({
     // it overflows the item into the list gap.
     "absolute pointer-events-none z-2",
     "[--list-connector-gap:--spacing(1)]",
+    // Where the marker's disc centers on the line, which is what the segment
+    // aligns to. Derived here because the segment is its only reader.
+    "[--list-marker-center:calc(var(--list-leading)*0.5)]",
     // The segment has no width of its own until the list says connectors
     // join its rows.
     "[--list-connector-width:calc(var(--list-connector,0)*1px)]",
