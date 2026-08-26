@@ -17,32 +17,29 @@ const LEADING_VALUES = {
 export const list = cv({
   class: [
     "grid gap-(--list-gap) leading-(--list-leading) [counter-reset:list]",
+    "[--list-gap-base:--spacing(4)]",
+    "[--list-item-padding:--spacing(1)]",
+    "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
+    "[--list-item-gap:calc(var(--list-gap)+var(--list-item-padding)*0.5)]",
+    // TODO: I think we should deal with prose later.
+    "ui-prose:[--list-gap-base:var(--prose-gap)]",
+    // Nested lists tighten the base gap. This rule beats the prose rhythm
+    // above because ui-list registers after ui-prose. An explicit $gap still
+    // wins, because $gap writes an inline style.
+    // TODO: How would a consumer set a gap on the list but still benefit from
+    // this nested list tightening? A consumer may want to set a default gap,
+    // but still don't know if the list is nested or not. Also, wouldn't this be
+    // simpler with something like `[&_&]:...`? Same for item padding?
+    "ui-list:[--list-gap-base:--spacing(2)]",
     // Descendants and nested lists read these flags through container style
     // queries. Custom properties inherit, so each list declares the off
     // values to clear the flags of the list around it.
     "[--list:1] [--list-blocks:0] [--list-last-row:0]",
     // Marks the row that closes this list, where the connector fades out.
     "[&>li:last-of-type]:[--list-last-row:1]",
-    // These two defaults must be classes, not $gap/$itemPadding defaults. The
-    // mode variants below re-derive them in CSS, which cannot override an
-    // inline style.
-    "[--list-gap-base:--spacing(4)]",
-    "[--list-item-padding:--spacing(1)]",
     // Connectors join rows only in an ordered list in blocks mode. The
     // connector segment and the disclosure indent both read this flag.
     "[--list-connector:calc(var(--list-ol,0)*var(--list-blocks,0))]",
-    // --list-gap spaces the rows. --list-item-gap spaces block children
-    // inside a row and inside a disclosure body.
-    "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
-    "[--list-item-gap:calc(var(--list-gap)+var(--list-item-padding)*0.5)]",
-    "ui-prose:[--list-gap-base:var(--prose-gap)]",
-    // Lists inside prose re-derive the prose ink, so the text stays readable
-    // inside layered children. prose.ts repeats the same pair for paragraphs.
-    "ui-prose:ak-dark:ak-ink-75 ui-prose:ak-light:ak-ink-90",
-    // Nested lists tighten the base gap. This rule beats the prose rhythm
-    // above because ui-list registers after ui-prose. An explicit $gap still
-    // wins, because $gap writes an inline style.
-    "ui-list:[--list-gap-base:--spacing(2)]",
     // ui-list-blocks matches a list that contains a block element, or a list
     // inside an ancestor list in blocks mode.
     "ui-list-blocks:[--list-blocks:1]",
@@ -53,14 +50,14 @@ export const list = cv({
     "ui-list-sections:[--list-gap:calc(var(--list-gap-base)*1-var(--list-item-padding))]",
   ],
   variants: {
-    // The false branch is the only reset of --list-ol and --list-ul, so a
-    // nested list stops inheriting the kind of the list around it.
     /**
      * Whether the list is ordered. Ordered lists number their items and, in
      * blocks mode, connect them with connector segments.
      */
     $ordered: {
       true: "[--list-ol:1] [--list-ul:0]",
+      // The only reset of --list-ol and --list-ul, so a nested list stops
+      // inheriting the kind of the list around it.
       false: "[--list-ol:0] [--list-ul:1]",
     },
     /**
@@ -78,6 +75,9 @@ export const list = cv({
      * `normal` and `relaxed` token names, numbers scaling the spacing token
      * like the Tailwind leading scale, or any length.
      */
+    // TODO: Do we really need this? Can't we just let the consumer set the
+    // line-height with whatever they want, and use `1lh` for any derived
+    // calculations?
     $leading(value?: keyof typeof LEADING_VALUES | (string & {}) | number) {
       if (value == null) return;
       const multiplier =
@@ -139,15 +139,15 @@ export const listItem = cv({
 
 export const listItemContent = cv({
   // The marker must precede the row's own children. After them, Firefox and
-  // Safari read a nested list's counter instead of this list's. The marker
-  // then holds :first-child, so the row's first real child fires the not-first
-  // margin in heading.ts. This wrapper gives :first-child back, and
-  // display: contents generates no box, so the children lay out as they would
-  // in the row itself.
+  // Safari read a nested list's counter instead of this list's. The marker then
+  // holds :first-child, so the row's first real child fires the not-first
+  // margin in heading.ts. This wrapper gives :first-child back, and display:
+  // contents generates no box, so the children lay out as they would in the row
+  // itself.
   //
-  // Keep this a span. The block-mode variants match
-  // :has(:where(p, div, details, h1, h2, h3, h4)), so a div would put every
-  // list and every item into blocks mode.
+  // Keep this a span. The block-mode variants match :has(:where(p, div,
+  // details, h1, h2, h3, h4)), so a div would put every list and every item
+  // into blocks mode.
   class: "contents",
 });
 
@@ -165,18 +165,12 @@ export const listItemMarker = cv({
     "[--list-marker-size:calc(var(--list-leading)-var(--list-marker-inset)*2)]",
     "top-(--ak-frame-padding) inset-s-(--ak-frame-padding) m-(--list-marker-inset)",
     "w-(--list-marker-size) h-(--list-marker-size) rounded-full",
-    // The marker owns the counter because the marker shows it:
-    // counter-increment applies before the element's own ::before reads it.
     "ui-list-ol:[counter-increment:list]",
     "ui-list-ol:before:content-[counter(list)]",
-    // The number covers the whole disc, so the number stays centered under
-    // the progress arc.
     "ui-list-ol:before:absolute ui-list-ol:before:inset-0",
     "ui-list-ol:before:text-center ui-list-ol:before:font-semibold",
     "ui-list-ol:before:leading-(--list-marker-size)",
     "ui-list-ol:before:[font-size-adjust:0.45]",
-    // The circular progress fill child reads this. Ordered markers draw a
-    // thin ring around the number, unordered ones a thick donut.
     "ui-list-ol:[--progress-thickness:0.15em]",
     "ui-list-ul:[--progress-thickness:calc(30%+0.25%*var(--contrast,0))]",
   ],
@@ -188,8 +182,6 @@ export const listItemMarker = cv({
      */
     $check: {
       false: [
-        // An unordered bullet is a short line drawn with the marker's bottom
-        // border, so these rules flatten the disc box instead of filling it.
         "ui-list-ul:top-[calc(var(--list-leading)*0.5+var(--ak-frame-padding))]",
         "ui-list-ul:inset-s-[calc(var(--list-leading)*0.25+var(--ak-frame-padding))]",
         "ui-list-ul:w-[calc(var(--list-leading)*0.5)] ui-list-ul:h-auto",
@@ -220,10 +212,14 @@ export const listItemMarker = cv({
     // The marker paints its own disc, so it must not open a frame context
     // that would rewrite the padding it positions itself against.
     $frame: false,
-    // A plain bullet has no check state. Without this, the false branch would
-    // give every marker the implicit boolean default and paint empty ring
-    // slots on plain bullets.
-    $checked: undefined,
+    $checked(_defaultValue, variants) {
+      // A full arc reads as complete, so a marker gets the completed state
+      // from $progress alone.
+      if (Number(variants.$progress) === 1) return true;
+      // Undefined clears the implicit boolean default. Without it, the false
+      // branch would paint empty ring slots on plain bullets.
+      return undefined;
+    },
     $check(defaultValue, variants) {
       if (variants.$checked != null) return true;
       if (variants.$progress != null) return true;
@@ -268,6 +264,7 @@ export const listItemConnector = cv({
     // The segment runs from under the marker to the next row's marker, so it
     // overflows the row into the list gap.
     "absolute pointer-events-none z-2",
+    // Set this on the list to move every segment away from its marker.
     "[--list-connector-gap:--spacing(1)]",
     // Where the marker's disc centers on the line. The segment aligns to it.
     "[--list-marker-center:calc(var(--list-leading)*0.5)]",
@@ -304,11 +301,7 @@ export const listDisclosure = cv({
 });
 
 export const listDisclosureButton = cv({
-  class: [
-    "leading-(--list-leading)",
-    // The button indents past the marker column like a plain item.
-    "[--disclosure-ps:var(--list-item-base-ps)]",
-  ],
+  class: "leading-(--list-leading) [--disclosure-ps:var(--list-item-base-ps)]",
 });
 
 export const listDisclosureContentBody = cv({
