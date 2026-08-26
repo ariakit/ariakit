@@ -5,7 +5,7 @@ import { frame } from "./frame.ts";
 export const sidebar = cv({
   extend: [frame],
   class: [
-    "fixed start-0 top-0 z-10 flex flex-col overflow-clip border-e",
+    "fixed inset-s-0 top-0 z-10 flex flex-col overflow-clip border-e",
     // The frame radius stays dialog-sized for nested covers, but the
     // sidebar itself is square.
     "rounded-none",
@@ -25,14 +25,8 @@ export const sidebar = cv({
      * same variant so only one inline-size rule is ever emitted.
      */
     $collapsed: {
-      true: [
-        "[--sidebar-collapsed:1]",
-        "[inline-size:var(--sidebar-min-width)]",
-      ],
-      false: [
-        "[--sidebar-collapsed:0]",
-        "[inline-size:var(--sidebar-max-width)]",
-      ],
+      true: "[--sidebar-collapsed:1] w-(--sidebar-min-width)",
+      false: "[--sidebar-collapsed:0] w-(--sidebar-max-width)",
     },
     /**
      * Sizes the sidebar against its positioning context instead of the app
@@ -41,8 +35,8 @@ export const sidebar = cv({
      * emitted.
      */
     $fullHeight: {
-      true: "[block-size:100%]",
-      false: "[block-size:100cqb]",
+      true: "h-full",
+      false: "h-[100cqb]",
     },
     /**
      * Sets the expanded width. Numbers scale the spacing token.
@@ -67,7 +61,7 @@ export const sidebar = cv({
     $collapsed: false,
     $fullHeight: false,
     // The surface sits slightly off the canvas like the legacy ak-layer-3.
-    $lightnessOffset: 0.6,
+    $lightnessOffset: 0.5,
     // Legacy ak-frame-dialog/2, tightening to /1 when collapsed.
     $rounded: "2xl",
     $p(defaultValue, variants) {

@@ -91,6 +91,28 @@ Style values have no such limit. That is where named constants belong, which is 
 
 Name a value only when two places read it, or when the number needs explaining. A single-use literal reads better inline, and reaching for a round number often removes the need for a name at all.
 
+## Prefer the named utility to an arbitrary property
+
+An arbitrary property such as `[block-size:100%]` always emits, whatever you put in it. The named utility goes through Tailwind's scale, so it stays readable and keeps working when the theme changes.
+
+```ts
+// Instead of these
+"[inline-size:var(--sidebar-min-width)]";
+"[block-size:100%]";
+
+// write these
+"w-(--sidebar-min-width)";
+"h-full";
+```
+
+Where two core utilities do the same thing, follow the folder. It writes `inset-s-*`, not the older `start-*`.
+
+Keep the value in brackets when the utility has no bare form for it. `h-[100cqb]` works and `h-100cqb` does not, and the failure is silent: Tailwind emits nothing and the element quietly falls back to its content size.
+
+That silence is the reason to check a converted class in the browser. Toggle it off and confirm the computed value changes.
+
+Converting a declaration also moves the property name. Anything that names the old one, such as a `transition-*` list or `will-change`, has to move with it.
+
 ## Deciding where a custom property lives
 
 The root publishes state, and values derived from its own knobs that more than one descendant subtree reads. Everything else belongs on the component that consumes it.
@@ -219,6 +241,18 @@ A unitless `line-height` inherits as a ratio, so a child with a larger font size
 ```
 
 `em` and `lh` inside an unregistered custom property resolve where the property is used, not where it is declared. Check the element that finally spends the value when a property crosses component boundaries.
+
+## Lightness values
+
+`$lightnessOffset`, `$lightnessPush`, `$lighten` and `$darken` run on a scale of 5 per step, so `1` is a 5% shift and `0.5` is 2.5%.
+
+Stay on multiples of `0.5`. A value such as `0.6` or `2.4` says nothing the nearest half step does not, and it makes two components that should sit on the same surface look accidentally different.
+
+```ts
+defaultVariants: {
+  $lightnessOffset: 0.5,
+},
+```
 
 ## Types
 
