@@ -56,6 +56,8 @@ $rounded: {
 },
 ```
 
+Do not reach for the per-component theme tokens, `--radius-field`, `--spacing-card` and the rest. They are on their way out, and frame's own scale already covers them. `--radius-field` is `var(--radius-lg)`, so write `$rounded: "lg"`. `--spacing-field` is `0.75em`, which is `calc(var(--spacing) * 3)`, so write `$p: 3`, which also keeps tracking `--spacing` if a theme moves it.
+
 Extend `frame` even when the element must not open a frame context. `$frame: false` only drops the `ak-frame` class; every border variant stays available.
 
 ```ts
