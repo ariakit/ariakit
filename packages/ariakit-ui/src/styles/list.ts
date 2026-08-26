@@ -197,10 +197,10 @@ export const listItemMarker = cv({
       // A completed marker paints the brand color straight, without the
       // neutral surface underneath it.
       if (variants.$checked === true) return defaultValue;
-      // --list-ol and --list-ul are 1/0 flags on the list root. No variant
-      // can gate this value, because $lightnessOffset writes an inline style,
-      // so the calc picks the surface per list kind. Both flags fall back to
-      // 0, so a marker outside a list stays on the plain layer.
+      // --list-ol and --list-ul are 1/0 flags on the list root. No variant can
+      // gate this value, because $lightnessOffset writes an inline style, so
+      // the calc picks the surface per list kind. Both flags fall back to 0, so
+      // a marker outside a list stays on the plain layer.
       return (
         defaultValue ??
         (variants.$checked === false
