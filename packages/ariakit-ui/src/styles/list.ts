@@ -31,9 +31,10 @@ export const list = cv({
     // its default lives in defaultVariants instead.
     "[--list-gap-base:--spacing(4)]",
     "[--list-item-padding:--spacing(1)]",
-    // Connector segments stay collapsed until blocks mode enables them for
-    // ordered lists.
-    "[--list-connector-width:0px] [--list-connector:0]",
+    // Connector segments only join the rows of an ordered list in blocks
+    // mode, so the flag both the segment and the disclosure read derives
+    // from those two rather than being set from the $ordered branch.
+    "[--list-connector:calc(var(--list-ol,0)*var(--list-blocks,0))]",
     // Geometry shared by rows, markers, and connectors.
     "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
     "[--list-item-gap:calc(var(--list-gap)+var(--list-item-padding)*0.5)]",
@@ -67,11 +68,7 @@ export const list = cv({
      * value keeps nested lists from inheriting an ancestor's flags.
      */
     $ordered: {
-      true: [
-        "[--list-ol:1] [--list-ul:0]",
-        "ui-list-blocks:[--list-connector-width:1px]",
-        "ui-list-blocks:[--list-connector:1]",
-      ],
+      true: "[--list-ol:1] [--list-ul:0]",
       false: "[--list-ol:0] [--list-ul:1]",
     },
     /**
@@ -290,6 +287,9 @@ export const listItemConnector = cv({
     // it overflows the item into the list gap.
     "absolute pointer-events-none z-2",
     "[--list-connector-gap:--spacing(1)]",
+    // The segment has no width of its own until the list says connectors
+    // join its rows.
+    "[--list-connector-width:calc(var(--list-connector,0)*1px)]",
     "[--list-connector-top:calc(var(--list-leading)+var(--list-connector-gap)+var(--ak-frame-padding))]",
     "w-(--list-connector-width)",
     "top-(--list-connector-top)",
@@ -303,9 +303,9 @@ export const listItemConnector = cv({
     "ui-list-last-row:h-[calc(100%-var(--list-connector-top))]",
   ],
   defaultVariants: {
-    // The segment only ever shows in an ordered blocks-mode list, where
-    // --list-connector-width gives it a width, so it paints the ordered
-    // chip's surface outright instead of reading it back from the list.
+    // --list-connector already collapses the segment everywhere but an
+    // ordered blocks-mode list, so it paints the ordered chip's surface
+    // outright instead of reading it back from the list.
     $lightnessOffset: ORDERED_MARKER_LIGHTNESS,
   },
 });
