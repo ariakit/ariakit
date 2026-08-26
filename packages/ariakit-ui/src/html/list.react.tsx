@@ -12,11 +12,7 @@ import {
 import { progressCircularFill } from "../styles/progress.ts";
 
 export interface ListProps
-  extends
-    ComponentProps<"ol">,
-    // The ordered prop computes this variant along with the element, so they
-    // stay in sync.
-    Omit<VariantProps<typeof list>, "$ordered"> {
+  extends ComponentProps<"ol">, Omit<VariantProps<typeof list>, "$ordered"> {
   /** Renders an ordered list (<ol>) when true; unordered (<ul>) when false. */
   ordered?: boolean;
 }
@@ -86,8 +82,6 @@ export function ListItemContent(props: ListItemContentProps) {
 export interface ListItemMarkerProps
   extends
     ComponentProps<"span">,
-    // The checked and progress props compute these variants along with the
-    // aria label and the icon or arc children, so they stay in sync.
     Omit<
       VariantProps<typeof listItemMarker>,
       "$check" | "$checked" | "$progress"
@@ -129,7 +123,7 @@ export function ListItemMarker({
       {completed ? (
         <CheckIcon />
       ) : progress != null ? (
-        <span aria-hidden {...progressCircularFill.jsx({})} />
+        <span {...progressCircularFill.jsx({})} />
       ) : null}
       {rest.children}
     </span>
@@ -142,12 +136,9 @@ export interface ListItemConnectorProps
 /**
  * Vertical segment joining a row's marker to the next row's. It only becomes
  * visible in ordered lists that are in blocks mode, where the list gives it a
- * width. The app mirrors this markup in
- * `app/src/components/content-list-item-body.astro` — keep them in sync.
+ * width.
  */
 export function ListItemConnector(props: ListItemConnectorProps) {
   const [variantProps, rest] = splitProps(props, listItemConnector);
-  return (
-    <span aria-hidden {...listItemConnector.jsx(variantProps)} {...rest} />
-  );
+  return <span {...listItemConnector.jsx(variantProps)} {...rest} />;
 }

@@ -30,8 +30,6 @@ import {
 export interface ListProps
   extends
     React.ComponentProps<"ol">,
-    // The ordered prop computes this variant along with the element, so they
-    // stay in sync.
     Omit<VariantProps<typeof list>, "$ordered"> {
   /** Renders an ordered list (<ol>) when true; unordered (<ul>) when false. */
   ordered?: boolean;
@@ -101,8 +99,6 @@ export function ListItemContent(props: ListItemContentProps) {
 export interface ListItemMarkerProps
   extends
     React.ComponentProps<"span">,
-    // The checked and progress props compute these variants along with the
-    // aria label and the icon or arc children, so they stay in sync.
     Omit<
       VariantProps<typeof listItemMarker>,
       "$check" | "$checked" | "$progress"
@@ -143,7 +139,7 @@ export function ListItemMarker({
       {completed ? (
         <CheckIcon />
       ) : progress != null ? (
-        <span aria-hidden {...progressCircularFill.jsx({})} />
+        <span {...progressCircularFill.jsx({})} />
       ) : null}
       {rest.children}
     </span>
@@ -162,9 +158,7 @@ export interface ListItemConnectorProps
  */
 export function ListItemConnector(props: ListItemConnectorProps) {
   const [variantProps, rest] = splitProps(props, listItemConnector);
-  return (
-    <span aria-hidden {...listItemConnector.jsx(variantProps)} {...rest} />
-  );
+  return <span {...listItemConnector.jsx(variantProps)} {...rest} />;
 }
 
 export interface ListDisclosureProps
