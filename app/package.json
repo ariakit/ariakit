@@ -65,7 +65,6 @@
     "@fontsource-variable/inter": "5.3.0",
     "@radix-ui/react-popover": "1.1.23",
     "@radix-ui/react-select": "2.3.7",
-    "@react-aria/utils": "3.34.1",
     "@shikijs/langs": "4.4.3",
     "@shikijs/themes": "4.4.3",
     "@stackblitz/sdk": "1.11.1",

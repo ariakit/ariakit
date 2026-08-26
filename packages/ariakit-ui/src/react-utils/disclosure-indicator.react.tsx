@@ -12,10 +12,6 @@ export type DisclosureIndicator =
   | "plus-next"
   | "plus-end";
 
-/**
- * Renders the disclosure button's open/close indicator, shared by the
- * ariakit and react-aria disclosure flavors so the two never drift.
- */
 export function renderIndicator(indicator: DisclosureIndicator) {
   const className = indicator.endsWith("-end") ? "ms-auto" : undefined;
   if (indicator.startsWith("plus")) {

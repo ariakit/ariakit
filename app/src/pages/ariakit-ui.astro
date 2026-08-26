@@ -39,13 +39,6 @@ import DisclosureIcon from "#app/examples/disclosure/icon/index.react.tsx";
 import DisclosureDefault from "#app/examples/disclosure/index.react.tsx";
 import DisclosureNavigation from "#app/examples/disclosure/navigation/index.react.tsx";
 import DisclosureNested from "#app/examples/disclosure/nested/index.react.tsx";
-import ReactAriaDisclosureChecklist from "#app/examples/disclosure-react-aria/checklist/index.react.tsx";
-import ReactAriaDisclosureDescription from "#app/examples/disclosure-react-aria/description/index.react.tsx";
-import ReactAriaDisclosureGroup from "#app/examples/disclosure-react-aria/group/index.react.tsx";
-import ReactAriaDisclosureIconDescription from "#app/examples/disclosure-react-aria/icon-description/index.react.tsx";
-import ReactAriaDisclosureIcon from "#app/examples/disclosure-react-aria/icon/index.react.tsx";
-import ReactAriaDisclosureDefault from "#app/examples/disclosure-react-aria/index.react.tsx";
-import ReactAriaDisclosureNested from "#app/examples/disclosure-react-aria/nested/index.react.tsx";
 import PopoverComponent from "#app/examples/popover/_component/index.react.tsx";
 import {
   badge,
@@ -531,7 +524,7 @@ const exampleGroups = [
   },
   {
     id: "disclosure",
-    title: "Ariakit disclosures",
+    title: "Disclosures",
     description:
       "All disclosure, list, progress, table, select, nav and sidebar compositions using the Ariakit wrappers.",
     items: [
@@ -550,46 +543,6 @@ const exampleGroups = [
       ],
       ["Navigation", "disclosure/navigation", 134, DisclosureNavigation],
       ["Nested", "disclosure/nested", 18, DisclosureNested],
-    ],
-  },
-  {
-    id: "react-aria-disclosure",
-    title: "React Aria disclosures",
-    description:
-      "The matching React Aria wrapper surface, kept separate so wrapper-specific output remains visible.",
-    items: [
-      [
-        "Default",
-        "disclosure-react-aria/index.react.tsx",
-        10,
-        ReactAriaDisclosureDefault,
-      ],
-      [
-        "Checklist",
-        "disclosure-react-aria/checklist",
-        90,
-        ReactAriaDisclosureChecklist,
-      ],
-      [
-        "Description",
-        "disclosure-react-aria/description",
-        31,
-        ReactAriaDisclosureDescription,
-      ],
-      [
-        "Group",
-        "disclosure-react-aria/group",
-        14,
-        ReactAriaDisclosureGroup,
-      ],
-      ["Icon", "disclosure-react-aria/icon", 11, ReactAriaDisclosureIcon],
-      [
-        "Icon and description",
-        "disclosure-react-aria/icon-description",
-        11,
-        ReactAriaDisclosureIconDescription,
-      ],
-      ["Nested", "disclosure-react-aria/nested", 18, ReactAriaDisclosureNested],
     ],
   },
 ] as const;
