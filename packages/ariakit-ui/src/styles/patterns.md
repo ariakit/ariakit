@@ -14,7 +14,7 @@ Extend the primitive that owns the variants you need, then set defaults, instead
 const progressBase = cv({
   extend: [frame],
   defaultVariants: {
-    $lightnessOffset: TRACK_LIGHTNESS,
+    $lightnessOffset: 2,
     $borderWeight: "adaptive",
     // A border would grow the track, so the edge is a ring drawn inside it.
     $borderType: "inset",
@@ -43,6 +43,8 @@ export const listItemMarker = cv({
 ```
 
 Reach for a raw class only when a variant cannot express the rule. The two real cases are map variants (they emit a class, so they cannot be gated by a CSS condition) and any rule that must depend on CSS state.
+
+Do not restate what a utility already does either. Tailwind's `before:` and `after:` variants set `content` to `""` themselves, so `after:content-['']` next to any other `after:*` class is dead weight.
 
 ## Variants write inline styles, classes carry CSS conditions
 
@@ -86,6 +88,8 @@ Tailwind scans source text and generates a class only if it finds the candidate 
 ```
 
 Style values have no such limit. That is where named constants belong, which is another reason to prefer the `calc()` in a computed default over a class per state.
+
+Name a value only when two places read it, or when the number needs explaining. A single-use literal reads better inline, and reaching for a round number often removes the need for a name at all.
 
 ## Deciding where a custom property lives
 
