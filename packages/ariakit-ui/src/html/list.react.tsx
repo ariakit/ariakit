@@ -82,10 +82,7 @@ export function ListItemContent(props: ListItemContentProps) {
 export interface ListItemMarkerProps
   extends
     ComponentProps<"span">,
-    Omit<
-      VariantProps<typeof listItemMarker>,
-      "$check" | "$checked" | "$progress"
-    > {
+    Omit<VariantProps<typeof listItemMarker>, "$checked" | "$progress"> {
   /** Progress between `0` and `1` shown as a circular arc. */
   progress?: number;
   /** Whether the check is checked. Defaults to `true` if `progress` is `1`. */

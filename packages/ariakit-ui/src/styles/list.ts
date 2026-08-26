@@ -16,25 +16,22 @@ const LEADING_VALUES = {
 
 export const list = cv({
   class: [
-    "grid gap-(--list-gap) leading-(--list-leading) [counter-reset:list]",
-    "[--list-gap-base:--spacing(4)]",
+    "list grid gap-(--list-gap) [counter-reset:list]",
+    "[--list-gap-base:var(--list-gap-root,--spacing(4))]",
     "[--list-item-padding:--spacing(1)]",
     "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
     "[--list-item-gap:calc(var(--list-gap)+var(--list-item-padding)*0.5)]",
-    // TODO: I think we should deal with prose later.
-    "ui-prose:[--list-gap-base:var(--prose-gap)]",
-    // Nested lists tighten the base gap. This rule beats the prose rhythm
-    // above because ui-list registers after ui-prose. An explicit $gap still
-    // wins, because $gap writes an inline style.
-    // TODO: How would a consumer set a gap on the list but still benefit from
-    // this nested list tightening? A consumer may want to set a default gap,
-    // but still don't know if the list is nested or not. Also, wouldn't this be
-    // simpler with something like `[&_&]:...`? Same for item padding?
-    "ui-list:[--list-gap-base:--spacing(2)]",
+    // Inside prose the rhythm comes from prose, but an explicit $gap still
+    // wins because every branch reads --list-gap-root first.
+    "ui-prose:[--list-gap-base:var(--list-gap-root,var(--prose-gap))]",
+    // A list inside a list halves the gap it would otherwise use, so $gap set
+    // once on the outermost list still tightens as lists nest. This selector
+    // beats the two above on specificity, not on registration order.
+    "[:is(&_&)]:[--list-gap-base:calc(var(--list-gap-root,--spacing(4))*0.5)]",
     // Descendants and nested lists read these flags through container style
     // queries. Custom properties inherit, so each list declares the off
     // values to clear the flags of the list around it.
-    "[--list:1] [--list-blocks:0] [--list-last-row:0]",
+    "[--list-blocks:0] [--list-last-row:0]",
     // Marks the row that closes this list, where the connector fades out.
     "[&>li:last-of-type]:[--list-last-row:1]",
     // Connectors join rows only in an ordered list in blocks mode. The
@@ -61,13 +58,13 @@ export const list = cv({
       false: "[--list-ol:0] [--list-ul:1]",
     },
     /**
-     * Sets the base gap between items before the mode formulas apply.
-     * Numbers scale the spacing token.
+     * Sets the base gap between items before the mode formulas apply. A
+     * nested list halves it. Numbers scale the spacing token.
      */
     $gap(value?: (string & {}) | number) {
       if (value == null) return;
       return {
-        style: { "--list-gap-base": getSpacingValue(value) },
+        style: { "--list-gap-root": getSpacingValue(value) },
       };
     },
     /**
@@ -75,9 +72,6 @@ export const list = cv({
      * `normal` and `relaxed` token names, numbers scaling the spacing token
      * like the Tailwind leading scale, or any length.
      */
-    // TODO: Do we really need this? Can't we just let the consumer set the
-    // line-height with whatever they want, and use `1lh` for any derived
-    // calculations?
     $leading(value?: keyof typeof LEADING_VALUES | (string & {}) | number) {
       if (value == null) return;
       const multiplier =
@@ -85,11 +79,9 @@ export const list = cv({
           ? LEADING_VALUES[value as keyof typeof LEADING_VALUES]
           : null;
       const leading =
-        multiplier == null
-          ? getSpacingValue(value)
-          : `calc(1em * ${multiplier})`;
+        multiplier == null ? getSpacingValue(value) : `${multiplier}`;
       return {
-        style: { "--list-leading": leading },
+        style: { lineHeight: leading },
       };
     },
     /**
@@ -113,9 +105,9 @@ export const list = cv({
 const listRow = cv({
   extend: [frame],
   class: [
-    "relative leading-(--list-leading)",
+    "relative",
     // The marker column is one line wide, plus a gap before the text.
-    "[--list-item-ps:calc(var(--list-leading)+(--spacing(1.5)))]",
+    "[--list-item-ps:calc(1lh+(--spacing(1.5)))]",
     "[--list-item-base-ps:calc(var(--ak-frame-padding)+var(--list-item-ps))]",
   ],
   defaultVariants: {
@@ -162,7 +154,7 @@ export const listItemMarker = cv({
     // reshapes the disc through these same longhand properties and wins by
     // stylesheet order.
     "[--list-marker-inset:0.2em]",
-    "[--list-marker-size:calc(var(--list-leading)-var(--list-marker-inset)*2)]",
+    "[--list-marker-size:calc(1lh-var(--list-marker-inset)*2)]",
     "top-(--ak-frame-padding) inset-s-(--ak-frame-padding) m-(--list-marker-inset)",
     "w-(--list-marker-size) h-(--list-marker-size) rounded-full",
     "ui-list-ol:[counter-increment:list]",
@@ -176,24 +168,19 @@ export const listItemMarker = cv({
   ],
   variants: {
     /**
-     * Whether the marker is a check slot rather than a plain bullet. It
-     * defaults to whether `$checked` or `$progress` is set, so hosts that
-     * render a check only need to pass the check state.
-     */
-    $check: {
-      false: [
-        "ui-list-ul:top-[calc(var(--list-leading)*0.5+var(--ak-frame-padding))]",
-        "ui-list-ul:inset-s-[calc(var(--list-leading)*0.25+var(--ak-frame-padding))]",
-        "ui-list-ul:w-[calc(var(--list-leading)*0.5)] ui-list-ul:h-auto",
-        "ui-list-ul:m-0 ui-list-ul:rounded-none ui-list-ul:border-b",
-      ],
-    },
-    /**
-     * Whether the check is marked as done. Unchecked unordered markers read
-     * as empty ring slots; unchecked ordered ones keep the numbered chip so
-     * the number shows under the progress arc.
+     * The marker's check state. `"none"` is a plain bullet or number with no
+     * check at all, `false` an empty slot, `true` a completed one. Defaults
+     * to `"none"`, or to a value derived from `$progress` when that is set.
      */
     $checked: {
+      none: [
+        // An unordered bullet is a short line drawn with the marker's bottom
+        // border, so these rules flatten the disc box instead of filling it.
+        "ui-list-ul:top-[calc(0.5lh+var(--ak-frame-padding))]",
+        "ui-list-ul:inset-s-[calc(0.25lh+var(--ak-frame-padding))]",
+        "ui-list-ul:w-[0.5lh] ui-list-ul:h-auto",
+        "ui-list-ul:m-0 ui-list-ul:rounded-none ui-list-ul:border-b",
+      ],
       true: "before:hidden",
       false: "ui-list-ul:ring ui-list-ul:ring-inset",
     },
@@ -212,48 +199,41 @@ export const listItemMarker = cv({
     // The marker paints its own disc, so it must not open a frame context
     // that would rewrite the padding it positions itself against.
     $frame: false,
+    // $progress alone puts the marker in a check slot, and a full arc
+    // completes it.
     $checked(_defaultValue, variants) {
-      // A full arc reads as complete, so a marker gets the completed state
-      // from $progress alone.
-      if (Number(variants.$progress) === 1) return true;
-      // Undefined clears the implicit boolean default. Without it, the false
-      // branch would paint empty ring slots on plain bullets.
-      return undefined;
-    },
-    $check(defaultValue, variants) {
-      if (variants.$checked != null) return true;
-      if (variants.$progress != null) return true;
-      return defaultValue;
+      if (variants.$progress == null) return "none";
+      return Number(variants.$progress) === 1;
     },
     $layer(defaultValue, variants) {
-      if (!variants.$checked) return defaultValue;
+      if (variants.$checked !== true) return defaultValue;
       // Replace only layer's own default. A more specific value, from an
       // extender or a color, was asked for deliberately.
       if (defaultValue !== true) return defaultValue;
       return "brand";
     },
     $contrast(defaultValue, variants) {
-      if (!variants.$checked) return defaultValue;
+      if (variants.$checked !== true) return defaultValue;
       return defaultValue ?? 50;
     },
     $lightnessOffset(defaultValue, variants) {
       // A completed marker paints the brand color straight, without the
       // neutral surface underneath it.
-      if (variants.$checked) return defaultValue;
+      if (variants.$checked === true) return defaultValue;
       // --list-ol and --list-ul are 1/0 flags on the list root. No variant
       // can gate this value, because $lightnessOffset writes an inline style,
       // so the calc picks the surface per list kind. Both flags fall back to
       // 0, so a marker outside a list stays on the plain layer.
       return (
         defaultValue ??
-        (variants.$check
+        (variants.$checked === false
           ? `calc(var(--list-ol, 0) * ${ORDERED_MARKER_LIGHTNESS} + var(--list-ul, 0) * ${UNORDERED_CHECK_LIGHTNESS})`
           : `calc(var(--list-ol, 0) * ${ORDERED_MARKER_LIGHTNESS})`)
       );
     },
     $borderWeight(defaultValue, variants) {
-      if (variants.$checked) return defaultValue;
-      return defaultValue ?? (variants.$check ? 25 : "bold");
+      if (variants.$checked === true) return defaultValue;
+      return defaultValue ?? (variants.$checked === false ? 25 : "bold");
     },
   },
 });
@@ -264,14 +244,13 @@ export const listItemConnector = cv({
     // The segment runs from under the marker to the next row's marker, so it
     // overflows the row into the list gap.
     "absolute pointer-events-none z-2",
-    // Set this on the list to move every segment away from its marker.
     "[--list-connector-gap:--spacing(1)]",
     // Where the marker's disc centers on the line. The segment aligns to it.
-    "[--list-marker-center:calc(var(--list-leading)*0.5)]",
+    "[--list-marker-center:0.5lh]",
     // --list-connector is 1 only in an ordered blocks-mode list, so the
     // segment collapses to zero width everywhere else.
     "[--list-connector-width:calc(var(--list-connector,0)*1px)]",
-    "[--list-connector-top:calc(var(--list-leading)+var(--list-connector-gap)+var(--ak-frame-padding))]",
+    "[--list-connector-top:calc(1lh+var(--list-connector-gap)+var(--ak-frame-padding))]",
     "w-(--list-connector-width)",
     "top-(--list-connector-top)",
     "inset-s-[calc(var(--list-marker-center)-var(--list-connector-width)/2+var(--ak-frame-padding))]",
@@ -301,7 +280,7 @@ export const listDisclosure = cv({
 });
 
 export const listDisclosureButton = cv({
-  class: "leading-(--list-leading) [--disclosure-ps:var(--list-item-base-ps)]",
+  class: "[--disclosure-ps:var(--list-item-base-ps)]",
 });
 
 export const listDisclosureContentBody = cv({
@@ -309,6 +288,6 @@ export const listDisclosureContentBody = cv({
     "grid gap-(--list-item-gap)",
     // The ui-list prefix makes this win over the disclosure body's own
     // padding-block-start by stylesheet order.
-    "ui-list:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
+    "[.list_&]:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
   ],
 });
