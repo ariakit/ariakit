@@ -3,6 +3,12 @@ import { getSpacingValue } from "../utils/styles.ts";
 import { frame } from "./frame.ts";
 import { layer } from "./layer.ts";
 
+// Marker surfaces on the $lightnessOffset scale: legacy ak-layer-12 for the
+// ordered chip, ak-layer-6 for the unordered check slot. An unordered bullet
+// is a bare line with no surface of its own, so it gets none.
+const ORDERED_MARKER_LIGHTNESS = 2.4;
+const UNORDERED_CHECK_LIGHTNESS = 1.2;
+
 // Line heights the $leading names map to, matching the Tailwind tokens.
 const LEADING_VALUES = {
   normal: 1.5,
@@ -63,22 +69,10 @@ export const list = cv({
     $ordered: {
       true: [
         "[--list-ol:1] [--list-ul:0]",
-        // Marker surfaces, as lightness offsets the marker feeds to the
-        // layer primitive. Ordered lists paint the same chip for the plain
-        // number and for the check slot around it. The offsets stay literal
-        // here rather than moving to a shared constant: Tailwind only
-        // generates an arbitrary property it can find verbatim in the source,
-        // so an interpolated class name emits no CSS at all.
-        "[--list-marker-lightness:2.4] [--list-check-lightness:2.4]",
         "ui-list-blocks:[--list-connector-width:1px]",
         "ui-list-blocks:[--list-connector:1]",
       ],
-      false: [
-        "[--list-ol:0] [--list-ul:1]",
-        // Unordered bullets are a bare line with no surface of their own,
-        // so only the check slot paints one.
-        "[--list-marker-lightness:0] [--list-check-lightness:1.2]",
-      ],
+      false: "[--list-ol:0] [--list-ul:1]",
     },
     /**
      * Sets the base gap between items before the mode formulas apply.
@@ -182,7 +176,7 @@ export const listItemMarker = cv({
     // reshapes it through these same properties, so its variant rules win by
     // stylesheet order instead of colliding with a shorthand.
     "[--list-marker-size:calc(var(--list-leading)-0.2em*2)]",
-    "top-(--ak-frame-padding) start-(--ak-frame-padding) m-[0.2em]",
+    "top-(--ak-frame-padding) inset-s-(--ak-frame-padding) m-[0.2em]",
     "w-(--list-marker-size) h-(--list-marker-size) rounded-full",
     // The marker owns the list counter because it's the element that shows
     // it: an element's counter-increment applies before its own ::before
@@ -212,7 +206,7 @@ export const listItemMarker = cv({
         // bottom border, so they flatten the disc box instead of filling
         // it.
         "ui-list-ul:top-[calc(var(--list-leading)*0.5+var(--ak-frame-padding))]",
-        "ui-list-ul:start-[calc(var(--list-leading)*0.25+var(--ak-frame-padding))]",
+        "ui-list-ul:inset-s-[calc(var(--list-leading)*0.25+var(--ak-frame-padding))]",
         "ui-list-ul:w-[calc(var(--list-leading)*0.5)] ui-list-ul:h-auto",
         "ui-list-ul:m-0 ui-list-ul:rounded-none ui-list-ul:border-b",
       ],
@@ -269,14 +263,16 @@ export const listItemMarker = cv({
       // A completed marker paints the brand color straight, without the
       // neutral surface underneath it.
       if (variants.$checked) return defaultValue;
-      // Legacy ak-layer-6 and ak-layer-12, published by the list so the
-      // marker doesn't have to branch on the list kind in CSS. The
-      // fallbacks keep a marker outside a list on the plain layer.
+      // --list-ol and --list-ul are 1/0 flags on the list root, so
+      // multiplying by them picks the surface for the current list kind
+      // without a class per kind, which an inline style could not gate on
+      // anyway. Both fall back to 0, leaving a stray marker outside a list
+      // on the plain layer.
       return (
         defaultValue ??
         (variants.$check
-          ? "var(--list-check-lightness, 0)"
-          : "var(--list-marker-lightness, 0)")
+          ? `calc(var(--list-ol, 0) * ${ORDERED_MARKER_LIGHTNESS} + var(--list-ul, 0) * ${UNORDERED_CHECK_LIGHTNESS})`
+          : `calc(var(--list-ol, 0) * ${ORDERED_MARKER_LIGHTNESS})`)
       );
     },
     $borderWeight(defaultValue, variants) {
@@ -297,7 +293,7 @@ export const listItemConnector = cv({
     "[--list-connector-top:calc(var(--list-leading)+var(--list-connector-gap)+var(--ak-frame-padding))]",
     "w-(--list-connector-width)",
     "top-(--list-connector-top)",
-    "start-[calc(var(--list-marker-center)-var(--list-connector-width)/2+var(--ak-frame-padding))]",
+    "inset-s-[calc(var(--list-marker-center)-var(--list-connector-width)/2+var(--ak-frame-padding))]",
     "h-[calc(100%+max(0px,var(--list-gap))+max(var(--list-gap),var(--ak-frame-padding))-var(--list-connector-gap)-var(--list-connector-top))]",
     // The final segment fades out and stops at its own row's height.
     "ui-list-last-row:bg-transparent ui-list-last-row:bg-linear-to-b",
@@ -307,10 +303,10 @@ export const listItemConnector = cv({
     "ui-list-last-row:h-[calc(100%-var(--list-connector-top))]",
   ],
   defaultVariants: {
-    // The segment grows out of the ordered chip, so it reads the same channel
-    // the chip does rather than repeating its value, and falls back to the
-    // plain layer outside a list exactly like the marker does.
-    $lightnessOffset: "var(--list-marker-lightness, 0)",
+    // The segment only ever shows in an ordered blocks-mode list, where
+    // --list-connector-width gives it a width, so it paints the ordered
+    // chip's surface outright instead of reading it back from the list.
+    $lightnessOffset: ORDERED_MARKER_LIGHTNESS,
   },
 });
 
@@ -337,6 +333,6 @@ export const listDisclosureContentBody = cv({
     "grid gap-(--list-item-gap)",
     // The ui-list prefix makes this padding win over the disclosure body's
     // own padding-block-start by stylesheet order.
-    "ui-list:[padding-block-start:calc(var(--list-item-gap)-var(--ak-frame-padding))]",
+    "ui-list:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
   ],
 });

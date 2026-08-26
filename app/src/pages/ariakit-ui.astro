@@ -1550,8 +1550,8 @@ export default function Example() {
       <header class="gallery-section-header">
         <h2 {...heading.html({ $level: 2 })}>Lists</h2>
         <p>
-          The list root publishes the marker, rhythm and connector channels that
-          its rows read. Bullets and numbers, blocks and sections rhythm,
+          The list root publishes the kind flags, rhythm and connector
+          channels that its rows read. Bullets and numbers, blocks and sections rhythm,
           nesting, check states, prose integration and disclosure rows all come
           from that one recipe.
         </p>
@@ -1641,7 +1641,7 @@ export default function Example() {
               <ul {...list.html({})}>
                 <ListItem>A nested list tightens its own base gap</ListItem>
                 <ListItem>
-                  It also resets the marker channels, so the parent kind does
+                  It also resets the list kind flags, so the parent kind does
                   not leak in
                 </ListItem>
               </ul>
