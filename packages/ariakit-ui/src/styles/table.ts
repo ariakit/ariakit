@@ -24,8 +24,8 @@ function isBorderKeyword(value: TableBorderValue): value is TableBorderKeyword {
   return Object.hasOwn(BORDER_CHANNELS, value);
 }
 
-// A keyword only picks sides, so it keeps the default width. Anything else
-// is the width itself, on every side.
+// A keyword only picks sides, so it keeps the default width. Anything else is
+// the width itself, on every side.
 function getBorderWidth(value: TableBorderValue) {
   if (typeof value === "number") return `${value}px`;
   if (typeof value === "string" && !isBorderKeyword(value)) return value;
@@ -49,31 +49,29 @@ function getTableBorderStyle(value?: TableBorderValue) {
   return { style };
 }
 
-// Border variants shared by the table (cell borders) and the container
-// (outer borders). Spread into each cv rather than extended: an extended
-// $border does not replace frame's own, so both would run and frame's would
-// write a nonsense --border-width from a side keyword.
+// Border variants shared by the table (cell borders) and the container (outer
+// borders). Spread into each cv rather than extended: an extended $border does
+// not replace frame's own, so both would run and frame's would write a nonsense
+// --border-width from a side keyword.
 const tableBorderVariants = {
   /**
    * Publishes the border widths that the cells and the container read. The
-   * cells draw the grid lines through their own pseudo-elements, so this
-   * sets inherited channels rather than a border on the element it is
-   * passed to.
+   * cells draw the grid lines through their own pseudo-elements, so this sets
+   * inherited channels rather than a border on the element it is passed to.
    *
-   * Use `true` for 1px on every side, `"inline"` or `"block"` for one axis,
-   * a single side such as `"block-end"`, a number for a width in pixels, or
-   * any length.
+   * Use `true` for 1px on every side, `"inline"` or `"block"` for one axis, a
+   * single side such as `"block-end"`, a number for a width in pixels, or any
+   * length.
    */
   $border(value?: TableBorderValue) {
     return getTableBorderStyle(value);
   },
   /**
-   * Pulls the column dividers back from the top and bottom of each row by
-   * this much, so they read as separate strokes instead of one unbroken
-   * line. The rows above and below a line each pull back, so the break
-   * where a row border crosses is twice this value, while the gap at the
-   * table's own top and bottom edge is one. Numbers scale the spacing
-   * token.
+   * Pulls the column dividers back from the top and bottom of each row by this
+   * much, so they read as separate strokes instead of one unbroken line. The
+   * rows above and below a line each pull back, so the break where a row border
+   * crosses is twice this value, while the gap at the table's own top and
+   * bottom edge is one. Numbers scale the spacing token.
    */
   $borderInset(value?: string | number) {
     if (value == null) return;
@@ -95,17 +93,17 @@ export const table = cv({
   variants: {
     ...tableBorderVariants,
     /**
-     * Sets the border radius. `field` uses the `--radius-field` token, and
-     * the frame scale, `xs` through `full`, stays available.
+     * Sets the border radius. `field` uses the `--radius-field` token, and the
+     * frame scale, `xs` through `full`, stays available.
      */
     $rounded: {
       field: "ak-frame-(--radius-field)",
     },
     /**
      * Overrides the cells' inline padding. A number scales the spacing token
-     * and resolves in each cell, so a smaller header row takes
-     * proportionally less and its text stops lining up with the column below
-     * it. Pass a length to keep the columns aligned.
+     * and resolves in each cell, so a smaller header row takes proportionally
+     * less and its text stops lining up with the column below it. Pass a length
+     * to keep the columns aligned.
      */
     $px(value?: string | number) {
       if (value == null) return;
@@ -114,9 +112,8 @@ export const table = cv({
       };
     },
     /**
-     * Overrides the cells' block padding. A number scales the spacing token
-     * and resolves in each cell, so a smaller header row takes
-     * proportionally less.
+     * Overrides the cells' block padding. A number scales the spacing token and
+     * resolves in each cell, so a smaller header row takes proportionally less.
      */
     $py(value?: string | number) {
       if (value == null) return;
@@ -151,8 +148,8 @@ export const tableContainer = cv({
     ...tableBorderVariants,
   },
   defaultVariants: {
-    // The channel borders replace the frame border machinery, whose
-    // computed default would otherwise react to the truthy $border.
+    // The channel borders replace the frame border machinery, whose computed
+    // default would otherwise react to the truthy $border.
     $borderType: "unset",
     $rounded: "xl",
     $p: "none",
@@ -162,8 +159,8 @@ export const tableContainer = cv({
 export const tableScroller = cv({
   class: [
     "max-h-[inherit] overflow-auto",
-    // Scrollbars follow the surface even when the theme differs from the
-    // system scheme.
+    // Scrollbars follow the surface even when the theme differs from the system
+    // scheme.
     "ak-dark:scheme-dark ak-light:scheme-light",
   ],
 });
@@ -172,8 +169,8 @@ export const tableRowGroup = cv({
   extend: [layer],
   class: [
     "relative",
-    // Edge flags read by the rows so the cell pseudos skip the block
-    // borders at the very top and bottom of the table.
+    // Edge flags read by the rows so the cell pseudos skip the block borders at
+    // the very top and bottom of the table.
     "[&:is(thead):first-of-type]:[--table-rowgroup-first:1]",
     "[:not(:has(thead))>&:first-child]:[--table-rowgroup-first:1]",
     "[&:is(tfoot):last-of-type]:[--table-rowgroup-last:1]",
@@ -212,8 +209,8 @@ export const tableRow = cv({
   ],
   variants: {
     /**
-     * Tints the row on hover. The z bumps keep the hovered row's cell
-     * pseudos above the neighbors' borders.
+     * Tints the row on hover. The z bumps keep the hovered row's cell pseudos
+     * above the neighbors' borders.
      */
     $hover: "hover:ak-state-3 hover:z-2 hover:*:z-2",
   },
@@ -225,8 +222,8 @@ export const tableCell = cv({
     "relative z-1",
     "px-(--table-px,var(--ak-frame-padding,0px))",
     "py-(--table-py,var(--ak-frame-padding,0px))",
-    // The ::after pseudo draws the block borders, skipped at the table's
-    // first and last rows through the inherited edge flags.
+    // The ::after pseudo draws the block borders, skipped at the table's first
+    // and last rows through the inherited edge flags.
     "after:absolute after:-z-1 after:pointer-events-none",
     "after:ak-layer after:inset-x-0 after:inset-bs-0",
     "after:border-bs-[calc(var(--table-border-bs,0px)*(1-var(--table-row-first,0)))]",
