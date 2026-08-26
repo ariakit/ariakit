@@ -8,12 +8,6 @@ import { layer } from "./layer.ts";
 const ORDERED_MARKER_LIGHTNESS = 2.5;
 const UNORDERED_CHECK_LIGHTNESS = 1;
 
-// Line heights for the $leading names, from the Tailwind leading scale.
-const LEADING_VALUES = {
-  normal: 1.5,
-  relaxed: 1.625,
-};
-
 export const list = cv({
   class: [
     "list grid gap-(--list-gap) [counter-reset:list]",
@@ -21,12 +15,9 @@ export const list = cv({
     "[--list-item-padding:--spacing(1)]",
     "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
     "[--list-item-gap:calc(var(--list-gap)+var(--list-item-padding)*0.5)]",
-    // Inside prose the rhythm comes from prose, but an explicit $gap still
-    // wins because every branch reads --list-gap-root first.
-    "ui-prose:[--list-gap-base:var(--list-gap-root,var(--prose-gap))]",
     // A list inside a list halves the gap it would otherwise use, so $gap set
     // once on the outermost list still tightens as lists nest. This selector
-    // beats the two above on specificity, not on registration order.
+    // beats the rule above on specificity, not on stylesheet order.
     "[:is(&_&)]:[--list-gap-base:calc(var(--list-gap-root,--spacing(4))*0.5)]",
     // Descendants and nested lists read these flags through container style
     // queries. Custom properties inherit, so each list declares the off
@@ -61,33 +52,16 @@ export const list = cv({
      * Sets the base gap between items before the mode formulas apply. A
      * nested list halves it. Numbers scale the spacing token.
      */
-    $gap(value?: (string & {}) | number) {
+    $gap(value?: string | number) {
       if (value == null) return;
       return {
         style: { "--list-gap-root": getSpacingValue(value) },
       };
     },
     /**
-     * Sets the line height the item geometry derives from. Accepts the
-     * `normal` and `relaxed` token names, numbers scaling the spacing token
-     * like the Tailwind leading scale, or any length.
-     */
-    $leading(value?: keyof typeof LEADING_VALUES | (string & {}) | number) {
-      if (value == null) return;
-      const multiplier =
-        typeof value === "string" && Object.hasOwn(LEADING_VALUES, value)
-          ? LEADING_VALUES[value as keyof typeof LEADING_VALUES]
-          : null;
-      const leading =
-        multiplier == null ? getSpacingValue(value) : `${multiplier}`;
-      return {
-        style: { lineHeight: leading },
-      };
-    },
-    /**
      * Sets the item frame padding. Numbers scale the spacing token.
      */
-    $itemPadding(value?: (string & {}) | number) {
+    $itemPadding(value?: string | number) {
       if (value == null) return;
       return {
         style: { "--list-item-padding": getSpacingValue(value) },
@@ -96,7 +70,6 @@ export const list = cv({
   },
   defaultVariants: {
     $ordered: false,
-    $leading: "relaxed",
   },
 });
 
@@ -106,6 +79,10 @@ const listRow = cv({
   extend: [frame],
   class: [
     "relative",
+    // A row freezes the line height it inherits into a length, so every
+    // child keeps it. Without this a heading child scales the ratio by its
+    // own font size, and its first line stops lining up with the marker.
+    "leading-[1lh]",
     // The marker column is one line wide, plus a gap before the text.
     "[--list-item-ps:calc(1lh+(--spacing(1.5)))]",
     "[--list-item-base-ps:calc(var(--ak-frame-padding)+var(--list-item-ps))]",
@@ -286,8 +263,6 @@ export const listDisclosureButton = cv({
 export const listDisclosureContentBody = cv({
   class: [
     "grid gap-(--list-item-gap)",
-    // The ui-list prefix makes this win over the disclosure body's own
-    // padding-block-start by stylesheet order.
-    "[.list_&]:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
+    "in-[.list]:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
   ],
 });

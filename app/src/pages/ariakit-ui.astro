@@ -29,9 +29,9 @@ import ComboboxCustomItems from "#app/examples/combobox-group/custom-items/index
 import ComboboxDefault from "#app/examples/combobox-group/index.react.tsx";
 import ComboboxStickyLabels from "#app/examples/combobox-group/sticky-group-labels/index.react.tsx";
 import DialogFramerMotion from "#app/examples/dialog-framer-motion/index.react.tsx";
+import DisclosureComponent from "#app/examples/disclosure/_component/index.react.tsx";
 import DisclosureActions from "#app/examples/disclosure/actions/index.react.tsx";
 import DisclosureChecklist from "#app/examples/disclosure/checklist/index.react.tsx";
-import DisclosureComponent from "#app/examples/disclosure/_component/index.react.tsx";
 import DisclosureDescription from "#app/examples/disclosure/description/index.react.tsx";
 import DisclosureGroup from "#app/examples/disclosure/group/index.react.tsx";
 import DisclosureIconDescription from "#app/examples/disclosure/icon-description/index.react.tsx";
@@ -41,10 +41,12 @@ import DisclosureNavigation from "#app/examples/disclosure/navigation/index.reac
 import DisclosureNested from "#app/examples/disclosure/nested/index.react.tsx";
 import PopoverComponent from "#app/examples/popover/_component/index.react.tsx";
 import {
-  badge,
-  badgeLabel,
-  badgeSlot,
-} from "@ariakit/ui/styles/badge.ts";
+  ListItem,
+  ListItemConnector,
+  ListItemContent,
+  ListItemMarker,
+} from "@ariakit/ui/html/list.react.tsx";
+import { badge, badgeLabel, badgeSlot } from "@ariakit/ui/styles/badge.ts";
 import {
   button,
   buttonContent,
@@ -83,12 +85,6 @@ import { input, inputPlaceholder } from "@ariakit/ui/styles/input.ts";
 import { kbd } from "@ariakit/ui/styles/kbd.ts";
 import { layer } from "@ariakit/ui/styles/layer.ts";
 import { link } from "@ariakit/ui/styles/link.ts";
-import {
-  ListItem,
-  ListItemConnector,
-  ListItemContent,
-  ListItemMarker,
-} from "@ariakit/ui/html/list.react.tsx";
 import { list, listItem } from "@ariakit/ui/styles/list.ts";
 import { option } from "@ariakit/ui/styles/option.ts";
 import {
@@ -228,8 +224,7 @@ const buttonSamples = [
   },
   {
     label: "Card action",
-    detail:
-      '$rounded="xl" $p={4} $gap="none" $activeDepth={4} $focus={false}',
+    detail: '$rounded="xl" $p={4} $gap="none" $activeDepth={4} $focus={false}',
     attrs: button.html({
       $rounded: "xl",
       $p: 4,
@@ -508,12 +503,7 @@ const exampleGroups = [
       "The input, option and popover style recipes used by the combobox-group examples.",
     items: [
       ["Default", "combobox-group/index.react.tsx", 32, ComboboxDefault],
-      [
-        "Custom items",
-        "combobox-group/custom-items",
-        39,
-        ComboboxCustomItems,
-      ],
+      ["Custom items", "combobox-group/custom-items", 39, ComboboxCustomItems],
       [
         "Sticky labels",
         "combobox-group/sticky-group-labels",
@@ -548,9 +538,7 @@ const exampleGroups = [
 ] as const;
 
 function getExampleSource(source: string, line: number): SourceReference {
-  const file = source.endsWith(".tsx")
-    ? source
-    : `${source}/index.react.tsx`;
+  const file = source.endsWith(".tsx") ? source : `${source}/index.react.tsx`;
   return {
     file: `app/src/examples/${file}`,
     line,
@@ -693,8 +681,8 @@ function getExampleSource(source: string, line: number): SourceReference {
       <header class="gallery-section-header">
         <h2 {...heading.html({ $level: 2 })}>Controls and status</h2>
         <p>
-          Unique control props and class overrides used by layouts, admin,
-          Plus, content tools and examples.
+          Unique control props and class overrides used by layouts, admin, Plus,
+          content tools and examples.
         </p>
       </header>
 
@@ -956,11 +944,10 @@ function getExampleSource(source: string, line: number): SourceReference {
           })}
         >
           <button aria-selected="false" {...button.html()}>Back</button>
-          <div {...buttonSeparator.html({ $kind: "slash" })} />
+          <div {...buttonSeparator.html({ $kind: "slash" })}></div>
           <button aria-selected="true" {...button.html()}>Forward</button>
-          <div
-            {...buttonGlider.html({ $kind: "bevel", $state: "selected" })}
-          />
+          <div {...buttonGlider.html({ $kind: "bevel", $state: "selected" })}>
+          </div>
         </div>
         <code>ButtonGroup + ButtonSeparator + ButtonGlider aliases</code>
       </article>
@@ -983,8 +970,8 @@ function getExampleSource(source: string, line: number): SourceReference {
         <h2 {...heading.html({ $level: 2 })}>Layers, frames and controls</h2>
         <p>
           Low-level recipes that are normally inherited through higher-level
-          components, rendered directly so their channels and subcomponents
-          can be inspected in isolation.
+          components, rendered directly so their channels and subcomponents can
+          be inspected in isolation.
         </p>
       </header>
 
@@ -1100,9 +1087,9 @@ function getExampleSource(source: string, line: number): SourceReference {
               })}
             >
               <div {...control.html()}>One</div>
-              <div {...controlSeparator.html({ $kind: "pipe" })} />
+              <div {...controlSeparator.html({ $kind: "pipe" })}></div>
               <div {...control.html()}>Two</div>
-              <div {...controlSeparator.html({ $kind: "slash" })} />
+              <div {...controlSeparator.html({ $kind: "slash" })}></div>
               <div {...control.html()}>Three</div>
             </div>
             <div
@@ -1114,13 +1101,14 @@ function getExampleSource(source: string, line: number): SourceReference {
               })}
             >
               <div {...control.html()}>Start</div>
-              <div {...controlSeparator.html({ $kind: "chevron" })} />
+              <div {...controlSeparator.html({ $kind: "chevron" })}></div>
               <div {...control.html()}>Review</div>
-              <div {...controlSeparator.html({ $kind: "chevron" })} />
+              <div {...controlSeparator.html({ $kind: "chevron" })}></div>
               <div {...control.html()}>Ship</div>
             </div>
           </div>
-          <code>horizontal/stretch layouts · pipe/slash/chevron separators</code>
+          <code>horizontal/stretch layouts · pipe/slash/chevron separators</code
+          >
         </article>
 
         <article class="gallery-sample">
@@ -1176,8 +1164,7 @@ function getExampleSource(source: string, line: number): SourceReference {
             <div
               {...option.html({
                 $hoverOffset: false,
-                class:
-                  "min-w-0 max-w-full data-active-item:ak-state-6",
+                class: "min-w-0 max-w-full data-active-item:ak-state-6",
               })}
               data-active-item
             >
@@ -1244,7 +1231,7 @@ function getExampleSource(source: string, line: number): SourceReference {
                 role="progressbar"
                 aria-valuenow="25"
               >
-                <span {...progressFill.html()} />
+                <span {...progressFill.html()}></span>
               </div>
             </div>
             <div class="grid gap-2">
@@ -1256,7 +1243,7 @@ function getExampleSource(source: string, line: number): SourceReference {
                 role="progressbar"
                 aria-valuenow="65"
               >
-                <span {...progressFill.html({ $layer: "success" })} />
+                <span {...progressFill.html({ $layer: "success" })}></span>
               </div>
             </div>
             <div class="flex flex-wrap gap-5">
@@ -1448,7 +1435,10 @@ function getExampleSource(source: string, line: number): SourceReference {
           { file: "packages/ariakit-ui/src/styles/badge.ts", line: 5 },
           { file: "packages/ariakit-ui/src/styles/text.ts", line: 11 },
           { file: "packages/ariakit-ui/src/styles/table.ts", line: 71 },
-          { file: "app/src/examples/disclosure/actions/index.react.tsx", line: 133 },
+          {
+            file: "app/src/examples/disclosure/actions/index.react.tsx",
+            line: 133,
+          },
         ]}
       />
     </section>
@@ -1472,8 +1462,8 @@ function getExampleSource(source: string, line: number): SourceReference {
             <h3>Prose and links</h3>
             <p>
               Ariakit components are unstyled by default. The
-              <a {...link.html()} href="#content"> styling layer</a> composes
-              reusable Clava recipes with local utility overrides.
+              <a {...link.html()} href="#content"> styling layer</a> composes reusable
+              Clava recipes with local utility overrides.
             </p>
             <blockquote>
               This block uses the same prose recipe as reference pages,
@@ -1550,8 +1540,8 @@ export default function Example() {
       <header class="gallery-section-header">
         <h2 {...heading.html({ $level: 2 })}>Lists</h2>
         <p>
-          The list root publishes the kind flags, rhythm and connector
-          channels that its rows read. Bullets and numbers, blocks and sections rhythm,
+          The list root publishes the kind flags, rhythm and connector channels
+          that its rows read. Bullets and numbers, blocks and sections rhythm,
           nesting, check states, prose integration and disclosure rows all come
           from that one recipe.
         </p>
@@ -1561,9 +1551,7 @@ export default function Example() {
         <article class="gallery-sample">
           <h3>Inline rows</h3>
           <ul {...list.html({})}>
-            <ListItem>
-              Unordered rows put a short dash in the gutter
-            </ListItem>
+            <ListItem> Unordered rows put a short dash in the gutter </ListItem>
             <ListItem>
               Text that wraps to a second line stays clear of the marker column,
               because the item reserves it with its own start padding
@@ -1573,15 +1561,11 @@ export default function Example() {
             </ListItem>
           </ul>
           <ol {...list.html({ $ordered: true })}>
-            <ListItem>
-              Ordered rows show a numbered chip instead
-            </ListItem>
+            <ListItem> Ordered rows show a numbered chip instead </ListItem>
             <ListItem>
               The number comes from the list counter, so no row carries an index
             </ListItem>
-            <ListItem>
-              Inline rows draw no connector segments
-            </ListItem>
+            <ListItem> Inline rows draw no connector segments </ListItem>
           </ol>
           <code>list · list $ordered</code>
         </article>
@@ -1592,8 +1576,7 @@ export default function Example() {
             <ListItem>
               <p><strong>Install the package</strong></p>
               <p>
-                A block child opens the gap and gives every row a roomier
-                frame.
+                A block child opens the gap and gives every row a roomier frame.
               </p>
             </ListItem>
             <ListItem>
@@ -1646,7 +1629,9 @@ export default function Example() {
                 </ListItem>
               </ul>
             </ListItem>
-            <ListItem>The parent counter continues past the nested rows</ListItem>
+            <ListItem
+              >The parent counter continues past the nested rows</ListItem
+            >
           </ol>
           <ol {...list.html({ $ordered: true })}>
             <ListItem>
@@ -1670,29 +1655,19 @@ export default function Example() {
         <article class="gallery-sample">
           <h3>Check and progress markers</h3>
           <ul {...list.html({})}>
-            <ListItem>
-              A plain bullet
-            </ListItem>
-            <ListItem checked={false}>
-              An empty check slot
-            </ListItem>
+            <ListItem> A plain bullet </ListItem>
+            <ListItem checked={false}> An empty check slot </ListItem>
             <ListItem progress={0.65}>
               A progress arc around the slot
             </ListItem>
-            <ListItem checked>
-              A completed row
-            </ListItem>
+            <ListItem checked> A completed row </ListItem>
           </ul>
           <ol {...list.html({ $ordered: true })}>
-            <ListItem>
-              A plain number
-            </ListItem>
+            <ListItem> A plain number </ListItem>
             <ListItem progress={0.4}>
               The arc rings the number instead of hiding it
             </ListItem>
-            <ListItem checked>
-              A completed row replaces the number
-            </ListItem>
+            <ListItem checked> A completed row replaces the number </ListItem>
           </ol>
           <code>listItemMarker $checked · $progress</code>
         </article>
@@ -1709,8 +1684,8 @@ export default function Example() {
                 The base gap follows <code>--prose-gap</code>
               </ListItem>
               <ListItem>
-                The rows re-derive the prose ink so they stay readable on layered
-                surfaces
+                The rows re-derive the prose ink so they stay readable on
+                layered surfaces
               </ListItem>
             </ul>
             <p>Prose resumes after the list at the same rhythm.</p>
@@ -1721,22 +1696,18 @@ export default function Example() {
         <article class="gallery-sample">
           <h3>Geometry knobs</h3>
           <ul {...list.html({ $gap: 1, $itemPadding: 0 })}>
-            <ListItem>
-              A dense list packs the rows
-            </ListItem>
+            <ListItem> A dense list packs the rows </ListItem>
             <ListItem>
               <code>$gap</code> and <code>$itemPadding</code> drive the spacing
             </ListItem>
           </ul>
-          <ul {...list.html({ $gap: 6, $leading: "normal" })}>
+          <ul {...list.html({ $gap: 6, class: "leading-relaxed" })}>
+            <ListItem> A roomy list opens the rows </ListItem>
             <ListItem>
-              A roomy list opens the rows
-            </ListItem>
-            <ListItem>
-              <code>$leading</code> also resizes the marker and the gutter
+              the line height resizes the marker and the gutter with it
             </ListItem>
           </ul>
-          <code>list $gap · $leading · $itemPadding</code>
+          <code>list $gap · $itemPadding · leading-*</code>
         </article>
 
         <article class="gallery-sample">
@@ -1782,8 +1753,8 @@ export default function Example() {
             <li>
               <ContentListDisclosure client:load label="Open the first step">
                 <p>
-                  The connector belongs to the disclosure root, so it runs behind
-                  the open content and still reaches the next row.
+                  The connector belongs to the disclosure root, so it runs
+                  behind the open content and still reaches the next row.
                 </p>
               </ContentListDisclosure>
             </li>
@@ -1861,12 +1832,15 @@ export default function Example() {
 
         <article class="gallery-sample gallery-overlay-stage">
           <h3>Dialog</h3>
-          <div class="relative grid place-items-center min-h-64 overflow-hidden rounded-xl">
+          <div
+            class="relative grid place-items-center min-h-64 overflow-hidden rounded-xl"
+          >
             <div
               {...dialogBackdrop.html({
                 class: "absolute inset-0",
               })}
-            ></div>
+            >
+            </div>
             <section
               {...dialog.html({
                 $state: "none",
