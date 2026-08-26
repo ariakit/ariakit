@@ -30,7 +30,7 @@ export const list = cv({
     // Geometry shared by rows, markers, and connectors.
     "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
     "[--list-item-gap:calc(var(--list-gap)+var(--list-item-padding)*0.5)]",
-    "[--list-item-ps:calc(var(--list-leading)+--spacing(1.5))]",
+    "[--list-item-ps:calc(var(--list-leading)+(--spacing(1.5)))]",
     "[--list-marker-center:calc(var(--list-leading)*0.5)]",
     // Inside prose the base gap follows the prose rhythm, like legacy
     // ak-prose setting ak-list-gap on descendant lists.
