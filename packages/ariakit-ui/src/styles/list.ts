@@ -2,6 +2,7 @@ import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { frame } from "./frame.ts";
 import { layer } from "./layer.ts";
+import { progressBase } from "./progress.ts";
 
 // Line heights the $leading names map to, matching the Tailwind tokens.
 const LEADING_VALUES = {
@@ -19,10 +20,11 @@ export const list = cv({
     // The row that closes this list, for the connector that fades out there.
     // Publishing it as a channel keeps the connector's own depth irrelevant.
     "[&>li:last-of-type]:[--list-last-row:1]",
-    // Knob defaults as classes so the variants can override them with
-    // inline styles and mode variants can re-derive them below.
+    // These two knob defaults have to be classes, not $gap/$itemPadding
+    // defaults: the mode variants below re-derive them in CSS, which they
+    // could not do against an inline style. $leading needs no such rule, so
+    // its default lives in defaultVariants instead.
     "[--list-gap-base:--spacing(4)]",
-    "[--list-leading:calc(1em*1.625)]",
     "[--list-item-padding:--spacing(1)]",
     // Connector segments stay collapsed until blocks mode enables them for
     // ordered lists.
@@ -64,7 +66,10 @@ export const list = cv({
         "[--list-ol:1] [--list-ul:0]",
         // Marker surfaces, as lightness offsets the marker feeds to the
         // layer primitive. Ordered lists paint the same chip for the plain
-        // number and for the check slot around it.
+        // number and for the check slot around it. The offsets stay literal
+        // here rather than moving to a shared constant: Tailwind only
+        // generates an arbitrary property it can find verbatim in the source,
+        // so an interpolated class name emits no CSS at all.
         "[--list-marker-lightness:2.4] [--list-check-lightness:2.4]",
         "ui-list-blocks:[--list-connector-width:1px]",
         "ui-list-blocks:[--list-connector:1]",
@@ -117,6 +122,9 @@ export const list = cv({
   },
   defaultVariants: {
     $ordered: false,
+    // Legacy leading-relaxed. No mode variant re-derives --list-leading, so
+    // the default is a variant call rather than a class.
+    $leading: "relaxed",
   },
 });
 
@@ -165,7 +173,10 @@ export const listItemContent = cv({
 });
 
 export const listItemMarker = cv({
-  extend: [frame],
+  // progressBase, not a local copy of it: the marker hosts a
+  // progressCircularFill child and already drives --progress-thickness below,
+  // so $value and $thickness come from the same primitive the fill reads.
+  extend: [frame, progressBase],
   class: [
     // The marker overlays the gutter the item reserves through its start
     // padding, so it never joins the item's own flow.
@@ -196,7 +207,7 @@ export const listItemMarker = cv({
   variants: {
     /**
      * Whether the marker is a check slot rather than a plain bullet. It
-     * defaults to whether `$checked` or `$progress` is set, so hosts that
+     * defaults to whether `$checked` or `$value` is set, so hosts that
      * render a check only need to pass the check state.
      */
     $check: {
@@ -219,16 +230,6 @@ export const listItemMarker = cv({
       true: "before:hidden",
       false: "ui-list-ul:ring ui-list-ul:ring-inset",
     },
-    /**
-     * Sets the progress between `0` and `1` shown by the circular fill
-     * child.
-     */
-    $progress(value?: number | string) {
-      if (value == null) return;
-      return {
-        style: { "--progress-value": `${value}` },
-      };
-    },
   },
   defaultVariants: {
     // The marker paints its own disc, so it must not open a frame context
@@ -240,14 +241,19 @@ export const listItemMarker = cv({
     $checked: undefined,
     $check(defaultValue, variants) {
       if (variants.$checked != null) return true;
-      if (variants.$progress != null) return true;
+      if (variants.$value != null) return true;
       return defaultValue;
     },
     $layer(defaultValue, variants) {
-      return variants.$checked ? "brand" : defaultValue;
+      if (!variants.$checked) return defaultValue;
+      // Only replace layer's own $layer: true default; anything more
+      // specific, from an extender or a color, was asked for deliberately.
+      if (defaultValue !== true) return defaultValue;
+      return "brand";
     },
     $contrast(defaultValue, variants) {
-      return variants.$checked ? 50 : defaultValue;
+      if (!variants.$checked) return defaultValue;
+      return defaultValue ?? 50;
     },
     $lightnessOffset(defaultValue, variants) {
       // A completed marker paints the brand color straight, without the
@@ -256,14 +262,17 @@ export const listItemMarker = cv({
       // Legacy ak-layer-6 and ak-layer-12, published by the list so the
       // marker doesn't have to branch on the list kind in CSS. The
       // fallbacks keep a marker outside a list on the plain layer.
-      return variants.$check
-        ? "var(--list-check-lightness, 0)"
-        : "var(--list-marker-lightness, 0)";
+      return (
+        defaultValue ??
+        (variants.$check
+          ? "var(--list-check-lightness, 0)"
+          : "var(--list-marker-lightness, 0)")
+      );
     },
     $borderWeight(defaultValue, variants) {
       if (variants.$checked) return defaultValue;
       // Legacy ak-edge-25 for the empty ring, ak-edge-40 for the bullet.
-      return variants.$check ? 25 : "bold";
+      return defaultValue ?? (variants.$check ? 25 : "bold");
     },
   },
 });
@@ -289,8 +298,9 @@ export const listItemConnector = cv({
   ],
   defaultVariants: {
     // The segment grows out of the ordered chip, so it reads the same channel
-    // the chip does rather than repeating its value.
-    $lightnessOffset: "var(--list-marker-lightness, 2.4)",
+    // the chip does rather than repeating its value, and falls back to the
+    // plain layer outside a list exactly like the marker does.
+    $lightnessOffset: "var(--list-marker-lightness, 0)",
   },
 });
 

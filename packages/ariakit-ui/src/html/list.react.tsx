@@ -84,7 +84,7 @@ export interface ListItemMarkerProps
     ComponentProps<"span">,
     Omit<
       VariantProps<typeof listItemMarker>,
-      "$check" | "$checked" | "$progress"
+      "$check" | "$checked" | "$value"
     > {
   /** Progress between `0` and `1` shown as a circular arc. */
   progress?: number;
@@ -115,7 +115,7 @@ export function ListItemMarker({
       aria-label={hasCheck ? (completed ? "Checked" : "Unchecked") : undefined}
       {...listItemMarker.jsx({
         $checked: hasCheck ? completed : undefined,
-        $progress: completed ? undefined : progress,
+        $value: completed ? undefined : progress,
         ...variantProps,
       })}
       {...rest}
