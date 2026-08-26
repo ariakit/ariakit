@@ -283,11 +283,4 @@ export const text = cv({
       };
     },
   },
-  defaultVariants: {
-    // $text({ variants, defaultValue }) {
-    //   // Enable the text system if any text variant is set.
-    //   const hasValue = Object.values(variants).some(Boolean);
-    //   return hasValue ? true : defaultValue;
-    // },
-  },
 });
