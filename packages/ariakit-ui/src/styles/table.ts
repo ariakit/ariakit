@@ -1,6 +1,7 @@
 import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { frame } from "./frame.ts";
+import { hover } from "./hover.ts";
 import { layer } from "./layer.ts";
 
 // A keyword names the sides to draw. The channel suffixes match the Tailwind
@@ -93,13 +94,6 @@ export const table = cv({
   variants: {
     ...tableBorderVariants,
     /**
-     * Sets the border radius. `field` uses the `--radius-field` token, and the
-     * frame scale, `xs` through `full`, stays available.
-     */
-    $rounded: {
-      field: "ak-frame-(--radius-field)",
-    },
-    /**
      * Overrides the cells' inline padding. A number scales the spacing token
      * and resolves in each cell, so a smaller header row takes proportionally
      * less and its text stops lining up with the column below it. Pass a length
@@ -129,8 +123,8 @@ export const table = cv({
     // The cells draw the grid lines from the $border channels, so frame's
     // computed border type must not react to the truthy $border.
     $borderType: "unset",
-    $rounded: "field",
-    $p: "var(--spacing-field)",
+    $rounded: "lg",
+    $p: 3,
   },
 });
 
@@ -201,7 +195,7 @@ export const tableFoot = cv({
 });
 
 export const tableRow = cv({
-  extend: [layer],
+  extend: [layer, hover],
   class: [
     // Rows at the group edges forward the flags to their cells.
     "first-of-type:[--table-row-first:var(--table-rowgroup-first,0)]",
@@ -209,10 +203,16 @@ export const tableRow = cv({
   ],
   variants: {
     /**
-     * Tints the row on hover. The z bumps keep the hovered row's cell pseudos
-     * above the neighbors' borders.
+     * Tints the row on hover, through `$hoverOffset`. The z bumps keep the
+     * hovered row's cell pseudos above the neighbors' borders.
      */
-    $hover: "hover:ak-state-3 hover:z-2 hover:*:z-2",
+    $hover: "ui-hover:z-2 ui-hover:*:z-2",
+  },
+  defaultVariants: {
+    $hoverOffset(defaultValue, variants) {
+      if (!variants.$hover) return defaultValue;
+      return defaultValue ?? 0.5;
+    },
   },
 });
 

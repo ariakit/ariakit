@@ -44,14 +44,16 @@ export const tableContainer = cv({
 });
 ```
 
-A map merges instead, so a new key joins the primitive's scale rather than replacing it. A caller can still pass `"2xl"` here and get frame's own class.
+A map merges instead, so a new key joins the primitive's scale rather than replacing it, and a key of the same name shadows only that one.
 
 ```ts
-export const table = cv({
-  extend: [frame],
-  variants: { $rounded: { field: "ak-frame-(--radius-field)" } },
-  defaultVariants: { $rounded: "field" },
-});
+// controlSlot adds `auto` to frame's radius scale and redefines two of its
+// keys. A caller can still pass "2xl" and get frame's own class.
+$rounded: {
+  none: "",
+  auto: "ak-frame-m-(--my)",
+  full: "rounded-full",
+},
 ```
 
 Extend `frame` even when the element must not open a frame context. `$frame: false` only drops the `ak-frame` class; every border variant stays available.
