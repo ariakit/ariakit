@@ -1377,12 +1377,12 @@ function getExampleSource(source: string, line: number): SourceReference {
         <div
           {...tableContainer.html({
             $border: true,
-            $borderGap: 1,
+            $borderInset: 1,
             $layer: true,
           })}
         >
           <div {...tableScroller.html()}>
-            <table {...table.html({ $border: "y", $p: 3 })}>
+            <table {...table.html({ $border: "block", $p: 3 })}>
               <thead {...tableHead.html({ $sticky: "top" })}>
                 <tr {...tableRow.html()}>
                   <th {...tableCell.html({ $header: "column" })}>Component</th>
@@ -1434,7 +1434,7 @@ function getExampleSource(source: string, line: number): SourceReference {
           { file: "packages/ariakit-ui/src/styles/select.ts", line: 7 },
           { file: "packages/ariakit-ui/src/styles/badge.ts", line: 5 },
           { file: "packages/ariakit-ui/src/styles/text.ts", line: 11 },
-          { file: "packages/ariakit-ui/src/styles/table.ts", line: 71 },
+          { file: "packages/ariakit-ui/src/styles/table.ts", line: 58 },
           {
             file: "app/src/examples/disclosure/actions/index.react.tsx",
             line: 133,

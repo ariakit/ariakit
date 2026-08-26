@@ -31,6 +31,29 @@ When two components share a set of defaults, put them on a private base and exte
 
 Keep one path from a component to each primitive. A component that extends both `frame` and a base that also extends `layer` emits the layer classes twice, because every extend contributes its own full output.
 
+A variant reached through `extend` never replaces a primitive's variant of the same name. Both run. To give a name a different meaning, the component has to declare it in its own `variants`, which a shared object can do through a spread. A function declared there replaces whatever the primitive had; a map merges key by key, so a new key joins the scale instead of hiding it.
+
+```ts
+// $border here publishes width channels for the cells. Extended, it would
+// run alongside frame's $border, which would read a side keyword as a width.
+export const tableContainer = cv({
+  extend: [frame],
+  variants: {
+    ...tableBorderVariants,
+  },
+});
+```
+
+A map merges instead, so a new key joins the primitive's scale rather than replacing it. A caller can still pass `"2xl"` here and get frame's own class.
+
+```ts
+export const table = cv({
+  extend: [frame],
+  variants: { $rounded: { field: "ak-frame-(--radius-field)" } },
+  defaultVariants: { $rounded: "field" },
+});
+```
+
 Extend `frame` even when the element must not open a frame context. `$frame: false` only drops the `ak-frame` class; every border variant stays available.
 
 ```ts
@@ -105,6 +128,22 @@ An arbitrary property such as `[block-size:100%]` always emits, whatever you put
 "h-full";
 ```
 
+The `(--var)` shorthand takes a fallback, and a leading `-` negates it, so an arbitrary property that only wrapped a channel almost always has a utility form.
+
+```ts
+// Instead of these
+"[inset-block:var(--table-border-inset,0px)]";
+"[inset-inline-start:calc(var(--table-border-s,0px)*-1)]";
+
+// write these
+"inset-y-(--table-border-inset,0px)";
+"-inset-s-(--table-border-s,0px)";
+```
+
+Add a `length:` hint where the utility also takes a colour, or Tailwind reads the channel as one: `border-s-(length:--table-border-s,0px)`, `ring-(length:--border-width)`.
+
+Logical utilities are not the ones with logical-sounding names. `inset-x` and `inset-y` are `inset-inline` and `inset-block`; `border-s`, `border-e`, `border-bs` and `border-be` are the logical border widths, while `border-t` and `border-b` are physical.
+
 Where two core utilities do the same thing, follow the folder. It writes `inset-s-*`, not the older `start-*`.
 
 Keep the value in brackets when the utility has no bare form for it. `h-[100cqb]` works and `h-100cqb` does not, and the failure is silent: Tailwind emits nothing and the element quietly falls back to its content size.
@@ -170,7 +209,7 @@ $layer(defaultValue, variants) {
 Three things worth knowing about how clava resolves these.
 
 - Computed defaults see each other's results. Declaration order does not matter, because the refine chain re-runs until values settle.
-- The `variants` snapshot contains only the variants that cv declares itself.
+- The `variants` snapshot carries every variant with a resolved value, including ones inherited through `extend`. `control` reads `variants.$p` this way and never declares `$p` itself.
 - A prop the caller passed always wins over a computed default.
 
 ## Prefer an explicit state to `undefined`
@@ -242,11 +281,15 @@ A unitless `line-height` inherits as a ratio, so a child with a larger font size
 
 `em` and `lh` inside an unregistered custom property resolve where the property is used, not where it is declared. Check the element that finally spends the value when a property crosses component boundaries.
 
+Registration reverses that. A property registered with a `<length>` syntax, such as `--ak-frame-padding`, computes to a fixed length where it is declared, so its `em` stops tracking the font size of whatever finally spends it. That is the difference between the table's `$px`/`$py` and its `$p`: the per-axis channels are unregistered, so a smaller header row takes proportionally smaller padding and stops lining up with the column below it, while `$p` goes through the frame's registered channel and every cell gets the same length. Two properties that look interchangeable are not if only one of them is registered.
+
 ## Lightness values
 
 `$lightnessOffset`, `$lightnessPush`, `$lighten` and `$darken` run on a scale of 5 per step, so `1` is a 5% shift and `0.5` is 2.5%.
 
 Stay on multiples of `0.5`. A value such as `0.6` or `2.4` says nothing the nearest half step does not, and it makes two components that should sit on the same surface look accidentally different.
+
+A raw `ak-layer-N` converts to `$lightnessOffset: N / 5`, so `ak-layer-3` is `0.6` and `ak-layer-12` is `2.4`. Snap the result onto a half step and compare the two surfaces in the browser.
 
 ```ts
 defaultVariants: {
@@ -268,6 +311,8 @@ $gap(value?: (string & {}) | number)
 // Right.
 $gap(value?: string | number)
 ```
+
+Spell side and axis values the way CSS does. `"block-end"` reads on its own; `"b"` needs the reader to know whether it means block or bottom. Abbreviations belong on the custom properties, where matching the utility that spends them is what helps: `--table-border-bs` next to `border-bs-*`.
 
 Route spacing props through `getSpacingValue`, and colour or scale props through `getScaledStyleClass`, `getLightnessStyleClass` or `getChromaStyleClass` in `../utils/styles.ts`.
 
