@@ -11,11 +11,14 @@ These files ship to people who paste them into their own applications. That audi
 Extend the primitive that owns the variants you need, then set defaults, instead of writing `ak-*` classes by hand.
 
 ```ts
-export const progress = cv({
-  extend: [frame, progressBase],
+const progressBase = cv({
+  extend: [frame],
   defaultVariants: {
-    $lightnessOffset: 2.4,
+    $lightnessOffset: TRACK_LIGHTNESS,
     $borderWeight: "adaptive",
+    // A border would grow the track, so the edge is a ring drawn inside it.
+    $borderType: "inset",
+    $border: true,
     $rounded: "full",
     $p: "none",
   },
@@ -23,6 +26,10 @@ export const progress = cv({
 ```
 
 `frame` extends `layer`, so extending `frame` gives you the whole colour system plus borders, radius, padding and margin.
+
+When two components share a set of defaults, put them on a private base and extend that. `progress` and `progressCircular` both extend `progressBase`.
+
+Keep one path from a component to each primitive. A component that extends both `frame` and a base that also extends `layer` emits the layer classes twice, because every extend contributes its own full output.
 
 Extend `frame` even when the element must not open a frame context. `$frame: false` only drops the `ak-frame` class; every border variant stays available.
 

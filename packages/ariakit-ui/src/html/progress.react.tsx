@@ -28,7 +28,7 @@ export function Progress({ value, children, ...props }: ProgressProps) {
       {...progress.jsx({ ...variantProps, $value: value ?? 0 })}
       {...rest}
     >
-      <div {...progressFill.jsx({})} />
+      <div {...progressFill.jsx()} />
       {children}
     </div>
   );
@@ -60,7 +60,7 @@ export function ProgressCircular({
       {...progressCircular.jsx({ ...variantProps, $value: value ?? 0 })}
       {...rest}
     >
-      <div {...progressCircularFill.jsx({})} />
+      <div {...progressCircularFill.jsx()} />
       {children}
     </div>
   );

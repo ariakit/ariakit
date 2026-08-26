@@ -1,14 +1,15 @@
 import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { frame } from "./frame.ts";
-import { layer } from "./layer.ts";
 
 const progressBase = cv({
+  extend: [frame],
+  class: "relative",
   variants: {
     /**
-     * Sets the progress between `0` and `1`. The value lives in a registered
-     * custom property that inherits, so the fill element can read and
-     * transition it.
+     * Sets the progress between `0` and `1`. The value goes to
+     * `--progress-value`, which must be registered as an inheriting
+     * `<number>` so the fill can transition it.
      */
     $value(value?: number | string) {
       if (value == null) return;
@@ -17,104 +18,87 @@ const progressBase = cv({
       };
     },
     /**
-     * Sets the track thickness. Numbers scale the spacing token.
+     * Sets the track thickness: the bar height, or the ring width when
+     * circular. Numbers scale the spacing token.
      */
-    $thickness(value?: (string & {}) | number) {
+    $thickness(value?: string | number) {
       if (value == null) return;
       return {
         style: { "--progress-thickness": getSpacingValue(value) },
       };
     },
   },
-});
-
-export const progress = cv({
-  extend: [frame, progressBase],
-  class: [
-    "relative block overflow-clip ring ring-inset",
-    // Full width so the track doesn't collapse inside flex parents;
-    // constrain with max-w-* since a plain w-* utility loses to it by
-    // stylesheet order.
-    "w-full",
-    "[--progress-thickness:--spacing(2)] h-(--progress-thickness)",
-    "[--progress-ring:var(--ak-edge)]",
-    // Native <progress> element support, mirroring the wrapper structure.
-    "[&::-webkit-progress-bar]:ak-frame [&::-webkit-progress-bar]:ak-layer",
-    "[&::-webkit-progress-bar]:ring-(--progress-ring)",
-    "[&::-webkit-progress-bar]:ring [&::-webkit-progress-bar]:ring-inset",
-    "[&::-webkit-progress-value]:ak-layer",
-    "[&::-webkit-progress-value]:ak-layer-brand",
-    "[&::-webkit-progress-value]:ak-layer-contrast",
-    "[&::-webkit-progress-value]:ak-layer-contrast-50",
-    "[&::-webkit-progress-value]:ak-frame",
-    "[&::-webkit-progress-value]:block [&::-webkit-progress-value]:h-full",
-    "[&::-webkit-progress-value]:starting:w-0!",
-    "[&::-webkit-progress-value]:transition-[width]",
-    "[&::-webkit-progress-value]:duration-1000",
-    "motion-reduce:[&::-webkit-progress-value]:duration-0",
-  ],
   defaultVariants: {
-    // The track sits well off the surface like the legacy ak-layer-12.
-    $lightnessOffset: 2.4,
+    $lightnessOffset: 2,
     $borderWeight: "adaptive",
+    // A border would grow the track, so the edge is a ring drawn inside it.
+    $borderType: "inset",
+    $border: true,
     $rounded: "full",
     $forceRounded: true,
     $p: "none",
+    $thickness: 2,
   },
 });
 
-export const progressFill = cv({
-  extend: [frame],
+export const progress = cv({
+  extend: [progressBase],
+  class: "block overflow-clip h-(--progress-thickness) w-full",
+});
+
+export const progressCircular = cv({
+  extend: [progressBase],
   class: [
-    "block h-full w-[calc(var(--progress-value)*100%)]",
-    // Animate from empty on first paint; the registered property makes the
-    // width calc transition smoothly.
-    "starting:w-0! transition-[width] duration-1000 motion-reduce:duration-0",
+    "size-full",
+    // ak-layer on the ::after below recomputes --ak-layer-parent and --ak-edge
+    // for the pseudo-element, so the disc reads both from copies taken here.
+    "[--progress-layer-parent:var(--ak-layer-parent)]",
+    "[--progress-edge:var(--ak-edge)]",
+    // The ::after disc paints the parent layer back over the center, leaving
+    // only the ring-shaped track visible.
+    "after:absolute after:rounded-full",
+    "after:ak-layer after:ak-layer-color-(--progress-layer-parent)",
+    "after:ring-(length:--border-width) after:ring-(--progress-edge)",
+    "after:inset-(--progress-thickness)",
   ],
+});
+
+const progressFillBase = cv({
+  extend: [frame],
+  // The fill animates toward each new value.
+  class: "duration-1000 motion-reduce:duration-0",
   defaultVariants: {
     $layer: "brand",
     $contrast: 50,
   },
 });
 
-export const progressCircular = cv({
-  extend: [frame, progressBase],
+export const progressFill = cv({
+  extend: [progressFillBase],
   class: [
-    "relative size-full ring ring-inset",
-    "[--progress-thickness:--spacing(2)]",
-    "[--progress-layer-parent:var(--ak-layer-parent)]",
-    "[--progress-ring:var(--ak-edge)]",
-    // The ::after disc paints the parent layer back over the center, leaving
-    // only the ring-shaped track visible.
-    "after:content-[''] after:absolute after:rounded-full after:ring",
-    "after:ak-layer after:ak-layer-color-(--progress-layer-parent)",
-    "after:ring-(--progress-ring) after:inset-(--progress-thickness)",
+    "block h-full w-[calc(var(--progress-value)*100%)]",
+    // Animate from empty on first paint; the registered property makes the
+    // width calc transition smoothly.
+    "starting:w-0! transition-[width]",
   ],
-  defaultVariants: {
-    $lightnessOffset: 2.4,
-    $borderWeight: "adaptive",
-    $rounded: "full",
-    $forceRounded: true,
-    $p: "none",
-  },
 });
 
 export const progressCircularFill = cv({
-  extend: [layer],
+  extend: [progressFillBase],
   class: [
     "absolute inset-0 rounded-full bg-transparent",
     // Transitioning the registered value property animates the conic sweep.
-    "transition-[--progress-value] duration-1000 motion-reduce:duration-0",
-    "starting:[--progress-value:0]!",
+    "transition-[--progress-value] starting:[--progress-value:0]!",
     // The feather offsets soften the conic edge and the mask edge by a
     // fraction so the arc doesn't alias.
     "[--feather-px:0.5px] [--feather-deg:1deg]",
     "bg-[conic-gradient(from_0deg,var(--ak-layer)_0turn,var(--ak-layer)_calc(var(--progress-value)*1turn-var(--feather-deg)),transparent_calc(var(--progress-value)*1turn+var(--feather-deg)),transparent_1turn)]",
     // Mask everything but the outer ring so the conic reads as an arc.
-    "[mask-image:radial-gradient(farthest-side,transparent_calc(100%-var(--progress-thickness)-var(--feather-px)),#000_calc(100%-var(--progress-thickness)+var(--feather-px)))]",
+    "mask-[radial-gradient(farthest-side,transparent_calc(100%-var(--progress-thickness)-var(--feather-px)),#000_calc(100%-var(--progress-thickness)+var(--feather-px)))]",
   ],
   defaultVariants: {
-    $layer: "brand",
-    $contrast: 50,
+    // The arc paints its own background and rounds itself, so it must not open
+    // a frame context that would round it again.
+    $frame: false,
   },
 });
