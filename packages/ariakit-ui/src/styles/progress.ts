@@ -3,9 +3,7 @@ import { getSpacingValue } from "../utils/styles.ts";
 import { frame } from "./frame.ts";
 import { layer } from "./layer.ts";
 
-// Progress plumbing shared by the bars, the circular track, and any host that
-// paints a circular fill child, such as the list item marker.
-export const progressBase = cv({
+const progressBase = cv({
   variants: {
     /**
      * Sets the progress between `0` and `1`. The value lives in a registered

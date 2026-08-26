@@ -2,7 +2,6 @@ import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { frame } from "./frame.ts";
 import { layer } from "./layer.ts";
-import { progressBase } from "./progress.ts";
 
 // Line heights the $leading names map to, matching the Tailwind tokens.
 const LEADING_VALUES = {
@@ -173,10 +172,7 @@ export const listItemContent = cv({
 });
 
 export const listItemMarker = cv({
-  // progressBase, not a local copy of it: the marker hosts a
-  // progressCircularFill child and already drives --progress-thickness below,
-  // so $value and $thickness come from the same primitive the fill reads.
-  extend: [frame, progressBase],
+  extend: [frame],
   class: [
     // The marker overlays the gutter the item reserves through its start
     // padding, so it never joins the item's own flow.
@@ -207,7 +203,7 @@ export const listItemMarker = cv({
   variants: {
     /**
      * Whether the marker is a check slot rather than a plain bullet. It
-     * defaults to whether `$checked` or `$value` is set, so hosts that
+     * defaults to whether `$checked` or `$progress` is set, so hosts that
      * render a check only need to pass the check state.
      */
     $check: {
@@ -230,6 +226,20 @@ export const listItemMarker = cv({
       true: "before:hidden",
       false: "ui-list-ul:ring ui-list-ul:ring-inset",
     },
+    // Writes progressBase's own --progress-value channel, which the
+    // progressCircularFill child reads. Declared here rather than through
+    // extend: [progressBase], whose $value name says nothing on a marker,
+    // where an ordered row already shows a number.
+    /**
+     * Sets the progress between `0` and `1` shown by the circular fill
+     * child.
+     */
+    $progress(value?: number | string) {
+      if (value == null) return;
+      return {
+        style: { "--progress-value": `${value}` },
+      };
+    },
   },
   defaultVariants: {
     // The marker paints its own disc, so it must not open a frame context
@@ -241,7 +251,7 @@ export const listItemMarker = cv({
     $checked: undefined,
     $check(defaultValue, variants) {
       if (variants.$checked != null) return true;
-      if (variants.$value != null) return true;
+      if (variants.$progress != null) return true;
       return defaultValue;
     },
     $layer(defaultValue, variants) {
