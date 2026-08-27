@@ -124,7 +124,7 @@
     "@types/pluralize": "0.0.33",
     "@types/pngjs": "6.0.5",
     "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.4",
+    "@types/react-dom": "19.2.5",
     "@types/textarea-caret": "3.0.4",
     "concurrently": "10.0.5",
     "cross-env": "10.1.0",
