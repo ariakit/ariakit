@@ -87,6 +87,7 @@ export default defineConfig({
       include: [
         "astro/virtual-modules/transitions.js",
         "astro/actions/runtime/entrypoints/server.js",
+        "astro/app/manifest",
         "astro/zod",
         "astro-remote",
       ],
