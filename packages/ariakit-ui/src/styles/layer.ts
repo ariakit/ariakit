@@ -63,10 +63,16 @@ export const layer = cv({
      *
      * If you want the opposite effect, where the offset increases as contrast
      * goes up, use `$lightnessPush` instead.
+     *
+     * Set it to `0` to pin the layer to its parent's lightness. That still
+     * marks the layer as modified, which `false` does not.
      */
     $lightnessOffset(value?: string | number | boolean) {
       return getLightnessStyleClass({
         value,
+        // 0 is a real offset here, not an absent one: it is the only way to
+        // ask for the parent's lightness explicitly.
+        allowZero: true,
         property: "--layer-lightness-offset",
         class: "ak-layer-offset-(--layer-lightness-offset)",
       });

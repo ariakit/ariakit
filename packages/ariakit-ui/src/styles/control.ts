@@ -355,7 +355,7 @@ export const controlSeparator = cv({
     "[.vertical>&]:hidden",
     // The layer only gives the edge color a surface to resolve against. The
     // rule drawn by the border is the only thing the separator paints.
-    "ak-layer-0 bg-transparent flex items-center justify-center pointer-events-none",
+    "bg-transparent flex items-center justify-center pointer-events-none",
     "transition-[border-color] duration-200 ease-out",
     "[--border-width:calc(var(--width)*1px)]",
     "h-(--size) border-e-(length:--border-width) -mx-[calc((var(--ak-frame-padding,0px)+var(--border-width))/2)]",
@@ -391,6 +391,9 @@ export const controlSeparator = cv({
     },
   },
   defaultVariants: {
+    // Pin the layer to the surface around it rather than leaving it unset:
+    // the edge color reads the same surface the separator sits on.
+    $lightnessOffset: 0,
     $size: "md",
     $width: 1,
     $kind: "pipe",
