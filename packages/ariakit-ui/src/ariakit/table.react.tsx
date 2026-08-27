@@ -45,18 +45,10 @@ const TableRowGroupContext = React.createContext<TableRowGroupKind>("body");
 
 export interface TableProps<K extends keyof any>
   extends React.ComponentProps<"table">, VariantProps<typeof table> {
-  /**
-   * Custom container element or props to render a `TableContainer`, the box
-   * that rounds the corners, draws the outer border and bounds the scroller.
-   * Set to `false` to render the table without it, which drops all three.
-   */
-  container?: React.ReactElement | TableContainerProps | false;
-  /**
-   * Custom scroller element or props to render a `TableScroller`. Set to
-   * `false` to remove the scroll area, and with it the scrollport a sticky row
-   * group pins against.
-   */
-  scroller?: React.ReactElement | TableScrollerProps | false;
+  /** Custom container element or props to render a `TableContainer`. */
+  container?: React.ReactElement | TableContainerProps;
+  /** Custom scroller element or props to render a `TableScroller`. */
+  scroller?: React.ReactElement | TableScrollerProps;
   /** Custom head row group element or props to render a `TableRowGroup`. */
   head?: React.ReactElement | TableRowGroupProps;
   /** Custom body row group element or props to render a `TableRowGroup`. */
@@ -77,8 +69,9 @@ export interface TableProps<K extends keyof any>
 }
 
 /**
- * Composable table with declarative rows, wrapped in a `TableContainer` and a
- * `TableScroller`. Either wrapper takes `false`.
+ * Composable table with declarative rows, always wrapped in a `TableContainer`
+ * and a `TableScroller`. Pass `container` or `scroller` to configure them, or
+ * compose the parts by hand for a table without them.
  * @example
  * <Table>
  *   <TableRowGroup group="head">
@@ -116,13 +109,8 @@ export function Table<K extends keyof any>({
   ...props
 }: TableProps<K>) {
   const [variantProps, rest] = splitProps(props, table);
-  // Guarded here rather than in createRender, which turns a non-object into
-  // children: other callers pass a boolean through and dereference the
-  // element it returns.
-  const containerEl =
-    container === false ? null : createRender(TableContainer, container);
-  const scrollerEl =
-    scroller === false ? null : createRender(TableScroller, scroller);
+  const containerEl = createRender(TableContainer, container);
+  const scrollerEl = createRender(TableScroller, scroller);
   const headEl = createRender(TableRowGroup, head, { group: "head" });
   const bodyEl = createRender(TableRowGroup, body);
   const footEl = createRender(TableRowGroup, foot, { group: "foot" });
@@ -189,46 +177,35 @@ export function Table<K extends keyof any>({
     );
   };
 
-  const tableElement = (
-    <table {...table.jsx(variantProps)} {...rest}>
-      {rows?.length ? (
-        <>
-          {!!headRows?.length && (
-            <ak.Role render={headEl}>
-              {headRows.map((row, index) => renderRow(row, index))}
-            </ak.Role>
+  return (
+    <ak.Role render={containerEl}>
+      <ak.Role render={scrollerEl}>
+        <table {...table.jsx(variantProps)} {...rest}>
+          {rows?.length ? (
+            <>
+              {!!headRows?.length && (
+                <ak.Role render={headEl}>
+                  {headRows.map((row, index) => renderRow(row, index))}
+                </ak.Role>
+              )}
+              {!!(bodyRows?.length || children) && (
+                <ak.Role render={bodyEl}>
+                  {bodyRows?.map((row, index) => renderRow(row, index))}
+                  {children}
+                </ak.Role>
+              )}
+              {!!footRows?.length && (
+                <ak.Role render={footEl}>
+                  {footRows.map((row, index) => renderRow(row, index))}
+                </ak.Role>
+              )}
+            </>
+          ) : (
+            children
           )}
-          {!!(bodyRows?.length || children) && (
-            <ak.Role render={bodyEl}>
-              {bodyRows?.map((row, index) => renderRow(row, index))}
-              {children}
-            </ak.Role>
-          )}
-          {!!footRows?.length && (
-            <ak.Role render={footEl}>
-              {footRows.map((row, index) => renderRow(row, index))}
-            </ak.Role>
-          )}
-        </>
-      ) : (
-        children
-      )}
-    </table>
-  );
-
-  // Each wrapper is gated on its own prop: the scroller's max-height comes
-  // from its direct parent, so without the container it reads whatever the
-  // caller wrapped the table in, which may well be bounded.
-  const scrolledElement = scrollerEl ? (
-    <ak.Role render={scrollerEl}>{tableElement}</ak.Role>
-  ) : (
-    tableElement
-  );
-
-  return containerEl ? (
-    <ak.Role render={containerEl}>{scrolledElement}</ak.Role>
-  ) : (
-    scrolledElement
+        </table>
+      </ak.Role>
+    </ak.Role>
   );
 }
 
