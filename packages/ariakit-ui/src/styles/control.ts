@@ -1,4 +1,4 @@
-import { cv } from "clava";
+import { cv, cx } from "clava";
 import type { VariantProps } from "clava";
 import { includes } from "../utils/includes.ts";
 import { frame, isFrameBorderColor } from "./frame.ts";
@@ -344,10 +344,10 @@ export const controlDescription = cv({
 // grows. A chevron is two strokes meeting at a corner, which reads lighter,
 // so it starts higher and falls faster. Both stay positive only across the
 // widths $width offers.
-const separatorEdge = [
+const separatorEdge = cx(
   "ak-edge-alpha-[calc((24-var(--width)*6)/100)]",
   "[.chevron]:ak-edge-alpha-[calc((64-var(--width)*12)/100)]",
-];
+);
 
 export const controlSeparator = cv({
   extend: [layer],

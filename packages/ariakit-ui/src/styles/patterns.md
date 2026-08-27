@@ -117,6 +117,17 @@ Tailwind scans source text and generates a class only if it finds the candidate 
 
 Style values have no such limit. That is where named constants belong, which is another reason to prefer the `calc()` in a computed default over a class per state.
 
+The editor needs the same thing through a different door. Tailwind IntelliSense only looks inside the calls listed in `tailwindCSS.classFunctions`, which this repo sets to `cv`, `clsx`, `cx`, `twMerge` and `twJoin`. A list inside a `cv()` config is covered, but the moment you hoist one out to share it between variants it becomes a plain array and loses completion, hover and the class-name diagnostics. Wrap it in `cx()` to get them back.
+
+```ts
+const gliderCover = cx(
+  "m-(--inset-padding)",
+  "inset-s-[anchor(start)] bottom-[anchor(bottom)]",
+);
+```
+
+`cx` joins its arguments and does nothing else, so the emitted class string is unchanged. Nest the result where the array used to be spread: spreading a string spreads its characters.
+
 Name a value only when two places read it, or when the number needs explaining. A single-use literal reads better inline, and reaching for a round number often removes the need for a name at all.
 
 ## Prefer the named utility to an arbitrary property
@@ -145,11 +156,21 @@ The `(--var)` shorthand takes a fallback, and a leading `-` negates it, so an ar
 "-inset-s-(--table-border-s,0px)";
 ```
 
+That negating prefix wraps the whole value in another `calc(... * -1)`. Over a channel it costs nothing, but over a `calc()` you are already writing it just nests. Put the sign in the expression instead.
+
+```ts
+// emits margin-inline-end: calc(calc(var(--inset-padding) * 2) * -1)
+"-me-[calc(var(--inset-padding)*2)]";
+
+// emits margin-inline-end: calc(-2 * var(--inset-padding))
+"me-[calc(-2*var(--inset-padding))]";
+```
+
 Add a `length:` hint where the utility also takes a colour, or Tailwind reads the channel as one: `border-s-(length:--table-border-s,0px)`, `ring-(length:--border-width)`.
 
 Logical utilities are not the ones with logical-sounding names. `inset-x` and `inset-y` are `inset-inline` and `inset-block`; `border-s`, `border-e`, `border-bs` and `border-be` are the logical border widths, while `border-t` and `border-b` are physical.
 
-Where two core utilities do the same thing, follow the folder. It writes `inset-s-*`, not the older `start-*`.
+Where two core utilities do the same thing, follow the folder. It writes `inset-s-*`, not the older `start-*`. An old spelling survives a copy-paste, so check the lines you move as well as the ones you write.
 
 Keep the value in brackets when the utility has no bare form for it. `h-[100cqb]` works and `h-100cqb` does not, and the failure is silent: Tailwind emits nothing and the element quietly falls back to its content size.
 
