@@ -42,24 +42,27 @@ export const prose = cv({
     "[&_:where(code):not(:where(pre_code))]:font-mono",
     "[&_:where(code):not(:where(pre_code))]:text-inherit",
     "[&_:where(code):not(:where(pre_code))]:[font-size-adjust:0.48]",
-    // Legacy ak-kbd, mirroring styles/kbd.ts so plain kbd markup matches the
-    // Kbd component. Keep the two class lists in sync.
-    "[&_:where(kbd)]:ak-layer [&_:where(kbd)]:ak-layer-9",
+    // A key cap for plain kbd markup, mirroring styles/kbd.ts so it matches
+    // the Kbd component. That file explains how the cap is built and spells
+    // `ak-layer-10` as a $lightnessOffset. Keep the two lists in sync.
+    "[&_:where(kbd)]:ak-layer [&_:where(kbd)]:ak-layer-10",
     "[&_:where(kbd)]:ak-edge-100 [&_:where(kbd)]:ak-edge-lighten-60",
-    "[&_:where(kbd)]:ak-dark:ak-edge-16",
-    "[&_:where(kbd)]:font-sans [&_:where(kbd)]:p-[0.1em_0.25em]",
-    "[&_:where(kbd)]:[font-size-adjust:0.49]",
-    "[&_:where(kbd)]:rounded-[0.27em_0.27em_0.34em_0.34em]",
-    "[&_:where(kbd)]:ak-dark:rounded-b-[0.4em]",
-    "[&_:where(kbd)]:border-[max(1px,0.067em)_0_max(1px,0.15em)]",
-    "[&_:where(kbd)]:ak-dark:border-[0_0_max(1px,0.2em)]",
-    "[&_:where(kbd)]:border-[white_transparent_var(--ak-edge)]",
-    "[&_:where(kbd)]:ak-dark:border-b-[oklch(from_var(--ak-layer)_calc(l-0.08)_c_h)]",
+    "[&_:where(kbd)]:font-sans [&_:where(kbd)]:[font-size-adjust:0.49]",
+    "[&_:where(kbd)]:px-[0.25em] [&_:where(kbd)]:py-[0.1em]",
+    "[&_:where(kbd)]:border-t-[max(1px,0.067em)] [&_:where(kbd)]:border-x-0",
+    "[&_:where(kbd)]:border-b-[max(1px,0.15em)]",
+    "[&_:where(kbd)]:border-t-white [&_:where(kbd)]:border-b-(--ak-edge)",
+    "[&_:where(kbd)]:rounded-t-[0.27em] [&_:where(kbd)]:rounded-b-[0.34em]",
     "[&_:where(kbd)]:bg-linear-to-b [&_:where(kbd)]:from-transparent",
     "[&_:where(kbd)]:to-[oklch(from_var(--ak-layer)_calc(l+0.05)_c_h)]",
+    "[&_:where(kbd)]:shadow-[0_0_0_max(1px,0.034em)_var(--ak-edge)]",
+    "[&_:where(kbd)]:ak-dark:ak-edge-16",
+    "[&_:where(kbd)]:ak-dark:border-t-0",
+    "[&_:where(kbd)]:ak-dark:border-b-[max(1px,0.2em)]",
+    "[&_:where(kbd)]:ak-dark:border-b-[oklch(from_var(--ak-layer)_calc(l-0.08)_c_h)]",
+    "[&_:where(kbd)]:ak-dark:rounded-b-[0.4em]",
     "[&_:where(kbd)]:ak-dark:to-[oklch(from_var(--ak-layer)_calc(l+0.08)_c_h)]",
-    "[&_:where(kbd)]:[box-shadow:0_0_0_max(1px,0.034em)_var(--ak-edge)]",
-    "[&_:where(kbd)]:ak-dark:[box-shadow:0_min(-1px,-0.06em)_var(--ak-edge),0_0_0_max(1px,0.06em)_var(--ak-edge)]",
+    "[&_:where(kbd)]:ak-dark:shadow-[0_min(-1px,-0.06em)_var(--ak-edge),0_0_0_max(1px,0.06em)_var(--ak-edge)]",
     // Legacy ak-separator: a dashed rule whose margins extend the rhythm gap
     // by half on both sides.
     "[&_:where(hr)]:ak-layer [&_:where(hr)]:ak-edge-20",
