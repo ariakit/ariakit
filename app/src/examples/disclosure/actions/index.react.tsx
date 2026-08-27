@@ -131,7 +131,7 @@ function OrderCard({ order }: OrderCardProps) {
 
   const table = (
     <Table<"Item" | "Price">
-      $border="block"
+      $borderBlock
       $px="var(--disclosure-padding)"
       head={{ className: "ak-layer ak-layer-0" }}
       rows={[

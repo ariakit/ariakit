@@ -107,9 +107,9 @@ export default function Example() {
               <h4 className="text-sm ak-ink-60">Recent charges</h4>
             </div>
             <Table<"date" | "description" | "amount">
-              $border="block"
+              $borderBlock
               $px="var(--disclosure-padding)"
-              container={{ className: "rounded-none", $border: "block-start" }}
+              container={{ className: "rounded-none", $borderBlockStart: true }}
               rows={[
                 {
                   group: "head",

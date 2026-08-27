@@ -316,7 +316,9 @@ $gap(value?: (string & {}) | number)
 $gap(value?: string | number)
 ```
 
-Spell side and axis values the way CSS does. `"block-end"` reads on its own; `"b"` needs the reader to know whether it means block or bottom. Abbreviations belong on the custom properties, where matching the utility that spends them is what helps: `--table-border-bs` next to `border-bs-*`.
+Give each side its own prop rather than overloading one prop with side keywords. `$border`, `$borderBlock` and `$borderBlockEnd` spell themselves, mix widths that a single keyword cannot, and read in the order CSS does. Declare the narrow ones after the broad one and clava layers them whatever order the caller passes.
+
+Abbreviations belong on the custom properties, where matching the utility that spends them is what helps: `--table-border-bs` next to `border-bs-*`.
 
 Route spacing props through `getSpacingValue`, and colour or scale props through `getScaledStyleClass`, `getLightnessStyleClass` or `getChromaStyleClass` in `../utils/styles.ts`.
 

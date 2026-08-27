@@ -1382,7 +1382,7 @@ function getExampleSource(source: string, line: number): SourceReference {
           })}
         >
           <div {...tableScroller.html()}>
-            <table {...table.html({ $border: "block", $p: 3 })}>
+            <table {...table.html({ $borderBlock: true, $p: 3 })}>
               <thead {...tableHead.html({ $sticky: "top" })}>
                 <tr {...tableRow.html()}>
                   <th {...tableCell.html({ $header: "column" })}>Component</th>

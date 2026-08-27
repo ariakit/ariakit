@@ -4,45 +4,22 @@ import { frame } from "./frame.ts";
 import { hover } from "./hover.ts";
 import { layer } from "./layer.ts";
 
-// A keyword names the sides to draw. The channel suffixes match the Tailwind
-// border utilities that spend them, so --table-border-bs pairs with
-// border-bs-*.
-const BORDER_CHANNELS = {
-  "inline-start": ["s"],
-  "inline-end": ["e"],
-  "block-start": ["bs"],
-  "block-end": ["be"],
-  inline: ["s", "e"],
-  block: ["bs", "be"],
-} as const;
+// Widths the cell pseudos and the container borders read. The custom
+// properties inherit, so setting them on either element reaches the cells. The
+// channel suffixes match the Tailwind border utilities that spend them, so
+// --table-border-bs pairs with border-bs-*.
+type TableBorderValue = boolean | string | number;
 
-type TableBorderKeyword = keyof typeof BORDER_CHANNELS;
-
-type TableBorderValue = boolean | TableBorderKeyword | (string & {}) | number;
-
-function isBorderKeyword(value: TableBorderValue): value is TableBorderKeyword {
-  if (typeof value !== "string") return false;
-  return Object.hasOwn(BORDER_CHANNELS, value);
-}
-
-// A keyword only picks sides, so it keeps the default width. Anything else is
-// the width itself, on every side.
-function getBorderWidth(value: TableBorderValue) {
-  if (typeof value === "number") return `${value}px`;
-  if (typeof value === "string" && !isBorderKeyword(value)) return value;
-  return "1px";
-}
-
-// Writes the width channels the cell pseudos and the container borders
-// read. The custom properties inherit, so setting them on either element
-// reaches the cells.
-function getTableBorderStyle(value?: TableBorderValue) {
+function getBorderStyle(channels: readonly string[], value?: TableBorderValue) {
   if (value == null) return;
-  if (value === false) return;
-  const width = getBorderWidth(value);
-  const channels = isBorderKeyword(value)
-    ? BORDER_CHANNELS[value]
-    : [...BORDER_CHANNELS.inline, ...BORDER_CHANNELS.block];
+  const width =
+    value === false
+      ? "0px"
+      : value === true
+        ? "1px"
+        : typeof value === "number"
+          ? `${value}px`
+          : value;
   const style: Record<string, string> = {};
   for (const channel of channels) {
     style[`--table-border-${channel}`] = width;
@@ -52,20 +29,56 @@ function getTableBorderStyle(value?: TableBorderValue) {
 
 // Border variants shared by the table (cell borders) and the container (outer
 // borders). Spread into each cv rather than extended: an extended $border does
-// not replace frame's own, so both would run and frame's would write a nonsense
-// --border-width from a side keyword.
+// not replace frame's own, so both would run and the two meanings would fight.
+//
+// The side variants are declared after $border, so a narrower one always wins
+// over a broader one whatever order the caller passes them in.
 const tableBorderVariants = {
   /**
-   * Publishes the border widths that the cells and the container read. The
+   * Draws borders between cells, and around the container when set on it. The
    * cells draw the grid lines through their own pseudo-elements, so this sets
    * inherited channels rather than a border on the element it is passed to.
    *
-   * Use `true` for 1px on every side, `"inline"` or `"block"` for one axis, a
-   * single side such as `"block-end"`, a number for a width in pixels, or any
-   * length.
+   * Use `true` for 1px, a number for a width in pixels, or any length.
    */
   $border(value?: TableBorderValue) {
-    return getTableBorderStyle(value);
+    return getBorderStyle(["s", "e", "bs", "be"], value);
+  },
+  /**
+   * Overrides `$border` on the inline axis, the borders between columns.
+   */
+  $borderInline(value?: TableBorderValue) {
+    return getBorderStyle(["s", "e"], value);
+  },
+  /**
+   * Overrides `$border` on the block axis, the borders between rows.
+   */
+  $borderBlock(value?: TableBorderValue) {
+    return getBorderStyle(["bs", "be"], value);
+  },
+  /**
+   * Overrides the inline axis on the leading side only.
+   */
+  $borderInlineStart(value?: TableBorderValue) {
+    return getBorderStyle(["s"], value);
+  },
+  /**
+   * Overrides the inline axis on the trailing side only.
+   */
+  $borderInlineEnd(value?: TableBorderValue) {
+    return getBorderStyle(["e"], value);
+  },
+  /**
+   * Overrides the block axis on the leading side only.
+   */
+  $borderBlockStart(value?: TableBorderValue) {
+    return getBorderStyle(["bs"], value);
+  },
+  /**
+   * Overrides the block axis on the trailing side only.
+   */
+  $borderBlockEnd(value?: TableBorderValue) {
+    return getBorderStyle(["be"], value);
   },
   /**
    * Pulls the column dividers back from the top and bottom of each row by this
@@ -86,6 +99,10 @@ export const table = cv({
   extend: [frame],
   class: [
     "relative w-full border-separate border-spacing-0 overflow-x-hidden",
+    // A copy of this element's resolved border color for the cells to paint
+    // with. Each cell pseudo carries ak-layer, which recomputes --ak-edge from
+    // the pseudo's own layer, so the color variants stop here without it.
+    "[--table-edge:var(--ak-edge)]",
     // The cells spend --ak-frame-padding as their own padding, so $p sets it
     // here and the table element itself stays unpadded. Only the ! beats a
     // padding declared on the same element.
@@ -117,9 +134,6 @@ export const table = cv({
     },
   },
   defaultVariants: {
-    // The row groups, rows and cells paint. The table is the region behind
-    // them.
-    $layer: false,
     // The cells draw the grid lines from the $border channels, so frame's
     // computed border type must not react to the truthy $border.
     $borderType: "unset",
@@ -226,12 +240,17 @@ export const tableCell = cv({
     // and last rows through the inherited edge flags.
     "after:absolute after:-z-1 after:pointer-events-none",
     "after:ak-layer after:inset-x-0 after:inset-bs-0",
+    // Both pseudos paint with the table's copy, and fall back to the edge
+    // ak-layer just computed here, which is what a cell outside a table draws.
+    // The copy only wins because Tailwind emits border-color after ak-layer.
+    "after:border-(--table-edge,var(--ak-edge))",
     "after:border-bs-[calc(var(--table-border-bs,0px)*(1-var(--table-row-first,0)))]",
     "after:border-be-[calc(var(--table-border-be,0px)*(1-var(--table-row-last,0)))]",
     "after:inset-be-[calc(var(--table-border-be,0px)*(1-var(--table-row-last,0))*-1)]",
     // The ::before pseudo draws the inline borders between columns.
     "before:absolute before:-z-1 before:pointer-events-none",
     "before:ak-layer before:inset-x-0",
+    "before:border-(--table-edge,var(--ak-edge))",
     "before:inset-y-(--table-border-inset,0px)",
     "not-first:before:border-s-(length:--table-border-s,0px)",
     "not-first:before:-inset-s-(--table-border-s,0px)",
