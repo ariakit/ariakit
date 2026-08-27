@@ -47,7 +47,8 @@ export interface TableProps
   extends ComponentProps<"table">, VariantProps<typeof table> {}
 
 /**
- * Renders a styled `<table>` element. Compose
+ * Renders a styled `<table>` element. It cannot round its own corners, because
+ * overflow does not apply to a table box, so compose
  * `TableContainer > TableScroller > Table` for the framed look with rounded
  * corners and outer borders.
  */

@@ -98,7 +98,7 @@ const tableBorderVariants = {
 export const table = cv({
   extend: [frame],
   class: [
-    "relative w-full border-separate border-spacing-0 overflow-x-hidden",
+    "relative w-full border-separate border-spacing-0",
     // A copy of this element's resolved border color for the cells to paint
     // with. Each cell pseudo carries ak-layer, which recomputes --ak-edge from
     // the pseudo's own layer, so the color variants stop here without it.
@@ -137,7 +137,6 @@ export const table = cv({
     // The cells draw the grid lines from the $border channels, so frame's
     // computed border type must not react to the truthy $border.
     $borderType: "unset",
-    $rounded: "lg",
     $p: 3,
   },
 });
@@ -145,6 +144,8 @@ export const table = cv({
 export const tableContainer = cv({
   extend: [frame],
   class: [
+    // What rounds the table: overflow does not apply to a table box, so a
+    // radius on the table itself is painted over by the corner cells.
     "overflow-clip",
     // The outer borders follow the same channels as the cell borders.
     "border-s-(length:--table-border-s,0px)",
