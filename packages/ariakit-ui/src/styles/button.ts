@@ -20,22 +20,29 @@ export const button = cv({
   extend: [control, gliderAnchor, hover, focus, active],
   class: [
     "transition-[color] not-[a]:cursor-default not-[button]:select-none",
-    // Only apply cursor-pointer to submit buttons that are not disabled
+    // A pointer cursor promises navigation or submission, so only a submit
+    // button, a form's lone button, and a button inside a link opt in.
+    // Everything else is a command and keeps the arrow.
     "[&:where([type='submit'],form_button:only-of-type,a_&)]:not-ui-disabled:cursor-pointer",
-    // Adjust the font weight based on the global contrast setting.
+    // --contrast runs 0-100, so the weight runs 500 to 600 with it.
     "font-[calc(500+var(--contrast))]",
-    // Runtime-disabled buttons (a script toggling :disabled after render,
-    // like the admin submit buttons) gray out through the CSS-driven
-    // variant, mirroring the $disabled prop's visual classes. The prop
-    // remains the render-time source of truth: it also drops the state
-    // variants via refine, which CSS cannot. This lives on button, not
-    // control, so options keep their deliberately softer disabled look.
-    "ui-disabled:cursor-not-allowed! ui-disabled:border-transparent!",
-    "ui-disabled:ring-transparent! ui-disabled:inset-shadow-none!",
-    "ui-disabled:shadow-none! ui-disabled:bg-none! ui-disabled:ak-ink-0!",
-    "ui-disabled:*:ak-ink-0!",
+    // A script can flip :disabled after render, so the disabled look also has
+    // to exist as a CSS rule. These mirror control's $disabled classes and
+    // have to stay in step with them. The prop remains the render-time source
+    // of truth: it additionally drops the hover and active variants, which
+    // CSS cannot do.
+    "ui-disabled:cursor-not-allowed!",
+    "ui-disabled:border-(--disabled-border,transparent)!",
+    "ui-disabled:ring-(--disabled-border,transparent)!",
+    "ui-disabled:inset-shadow-none! ui-disabled:shadow-none!",
+    "ui-disabled:bg-none! ui-disabled:ak-ink-0! ui-disabled:*:ak-ink-0!",
   ],
   variants: {
+    /**
+     * Sets the button's surface. `bevel` raises it with the gradient and
+     * inner shadow of a classic push button, while `flat` paints the layer on
+     * its own.
+     */
     $kind: {
       flat: "",
       bevel: "ui-bevel-button",
@@ -44,24 +51,21 @@ export const button = cv({
   defaultVariants: {
     $kind: "flat",
     $gapY: "none",
-    $lightnessOffset(defaultValue, variants) {
-      if (variants.$kind === "bevel") {
-        return defaultValue ?? false;
-      }
-      return defaultValue ?? true;
-    },
-    $lighten(defaultValue, variants) {
-      if (variants.$kind === "bevel") {
-        // The legacy classic button lightens its base layer
-        // (ak-layer-lighten-6) so it stands out from the parent layer,
-        // especially in dark mode where the bevel gradient alone is subtle.
-        return defaultValue ?? 1.2;
-      }
-      return defaultValue;
-    },
     $hoverOffset: true,
     $focus: true,
     $active: true,
+    $lightnessOffset(defaultValue, variants) {
+      // A bevel replaces the flat lift with its own gradient plus the
+      // explicit lighten below.
+      if (variants.$kind === "bevel") return defaultValue ?? false;
+      return defaultValue ?? true;
+    },
+    $lighten(defaultValue, variants) {
+      if (variants.$kind !== "bevel") return defaultValue;
+      // The gradient alone is subtle on dark surfaces, so the base layer
+      // lifts to keep the button distinct from the surface behind it.
+      return defaultValue ?? true;
+    },
   },
   refine({ variants, setVariants }) {
     if (!variants.$disabled) return;

@@ -24,9 +24,7 @@ export const option = cv({
   ],
   defaultVariants: {
     $rounded: "lg",
-    // One step over the $hoverOffset default, matching legacy ak-option's
-    // ak-state-6 hover.
-    $hoverOffset: 1.2,
+    $hoverOffset: true,
     $active: true,
     $gapY: "none",
   },

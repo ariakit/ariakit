@@ -115,6 +115,8 @@ Tailwind scans source text and generates a class only if it finds the candidate 
 `[--list-marker-lightness:${ORDERED_MARKER_LIGHTNESS}]`;
 ```
 
+The scan does not know what is code. A class name written in a comment generates CSS exactly like one on an element, so a note such as `// only apply cursor-pointer here` ships a stray `.cursor-pointer` rule. The same goes for any Markdown or fixture the source globs happen to cover: keep documentation out of them, or its examples become real rules.
+
 Style values have no such limit. That is where named constants belong, which is another reason to prefer the `calc()` in a computed default over a class per state.
 
 The editor needs the same thing through a different door. Tailwind IntelliSense only looks inside the calls listed in `tailwindCSS.classFunctions`, which this repo sets to `cv`, `clsx`, `cx`, `twMerge` and `twJoin`. A list inside a `cv()` config is covered, but the moment you hoist one out to share it between variants it becomes a plain array and loses completion, hover and the class-name diagnostics. Wrap it in `cx()` to get them back.
@@ -316,6 +318,8 @@ Registration reverses that. A property registered with a `<length>` syntax, such
 Stay on multiples of `0.5`. A value such as `0.6` or `2.4` says nothing the nearest half step does not, and it makes two components that should sit on the same surface look accidentally different.
 
 A raw `ak-layer-N` converts to `$lightnessOffset: N / 5`, so `ak-layer-3` is `0.6` and `ak-layer-12` is `2.4`. Snap the result onto a half step and compare the two surfaces in the browser.
+
+One step is what `true` already means on all four, so write `true` rather than `1`. That leaves a number in a default only where someone chose a distance other than one step, which is the thing worth reading.
 
 ```ts
 defaultVariants: {

@@ -76,9 +76,9 @@ export const popover = cv({
     $rounded: "2xl",
     $forceRounded: true,
     $p: 4,
-    // Popovers always float above content, so they lighten like the legacy
-    // ak-layer-lighten-6 instead of using the adaptive offset.
-    $lighten: 1.2,
+    // Popovers always float above the content, so they lift unconditionally
+    // instead of taking the adaptive offset.
+    $lighten: true,
   },
 });
 

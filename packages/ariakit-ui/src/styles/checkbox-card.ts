@@ -46,11 +46,10 @@ export const checkboxCard = cv({
     $rounded: "xl",
     $p: 3,
     $border: true,
-    // Cards are content surfaces: always lighten like the legacy
-    // ak-checkbox-card (ak-layer-lighten-6) instead of using the adaptive
-    // lightness offset, which darkens the card on light backgrounds.
+    // Cards are content surfaces: they lift unconditionally instead of
+    // taking the adaptive offset, which darkens a card on a light layer.
     $lightnessOffset: false,
-    $lighten: 1.2,
+    $lighten: true,
   },
 });
 
@@ -90,9 +89,7 @@ export const checkboxCardCheck = cv({
     "group-ui-checked-within/checkbox:*:block!",
   ],
   defaultVariants: {
-    // 1.2 on the variant scale (0-20 ≈ 0-1 lightness) matches the legacy
-    // ak-layer-darken-6 utility (6% on the 0-100 plugin scale).
-    $darken: 1.2,
+    $darken: true,
     $border: true,
     $borderType: "auto",
     $rounded: "full",
