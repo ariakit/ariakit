@@ -1,4 +1,4 @@
-import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
 import {
   Popover,
   PopoverArrow,
@@ -6,7 +6,7 @@ import {
   PopoverDisclosure,
   PopoverHeading,
   PopoverProvider,
-} from "@ariakit/ui/ariakit/popover.react.tsx";
+} from "@ariakit/ui/components/popover.ariakit.react.tsx";
 
 export default function Example() {
   return (

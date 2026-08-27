@@ -13,8 +13,8 @@ import {
   TooltipArrow,
   TooltipProvider,
   Tooltip as UiTooltip,
-} from "@ariakit/ui/ariakit/tooltip.react.tsx";
-import type { TooltipProps as UiTooltipProps } from "@ariakit/ui/ariakit/tooltip.react.tsx";
+} from "@ariakit/ui/components/tooltip.ariakit.react.tsx";
+import type { TooltipProps as UiTooltipProps } from "@ariakit/ui/components/tooltip.ariakit.react.tsx";
 import { clsx } from "clsx";
 import type { ReactElement, ReactNode } from "react";
 import { getPortalRoot } from "../lib/get-portal-root.ts";

@@ -1,6 +1,6 @@
 import { Group, GroupLabel } from "@ariakit/react";
-import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
-import { Input } from "@ariakit/ui/ariakit/input.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
+import { Input } from "@ariakit/ui/components/input.ariakit.react.tsx";
 import { heading } from "@ariakit/ui/styles/heading.ts";
 import {
   CheckboxCard,

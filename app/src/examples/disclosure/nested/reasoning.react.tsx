@@ -2,13 +2,13 @@ import type {
   DisclosureButtonProps,
   DisclosureContentProps,
   DisclosureProps,
-} from "@ariakit/ui/ariakit/disclosure.react.tsx";
+} from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
 import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
   DisclosureContentBody,
-} from "@ariakit/ui/ariakit/disclosure.react.tsx";
+} from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
 import { createRender } from "@ariakit/ui/react-utils/create-render.react.ts";
 import { clsx } from "clsx";
 import { createContext, useContext } from "react";

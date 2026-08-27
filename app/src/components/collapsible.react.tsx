@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
 import { button } from "@ariakit/ui/styles/button.ts";
 import { clsx } from "clsx";
 import * as React from "react";

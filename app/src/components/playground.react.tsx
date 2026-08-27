@@ -13,11 +13,11 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-} from "@ariakit/ui/ariakit/tabs.react.tsx";
+} from "@ariakit/ui/components/tabs.ariakit.react.tsx";
 import type {
   TabListProps,
   TabsProps,
-} from "@ariakit/ui/ariakit/tabs.react.tsx";
+} from "@ariakit/ui/components/tabs.ariakit.react.tsx";
 import { clsx } from "clsx";
 import type { PropsWithChildren } from "react";
 

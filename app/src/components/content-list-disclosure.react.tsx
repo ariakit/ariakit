@@ -7,11 +7,11 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { ListDisclosureProps } from "@ariakit/ui/ariakit/list.react.tsx";
+import type { ListDisclosureProps } from "@ariakit/ui/components/list.ariakit.react.tsx";
 import {
   ListDisclosure,
   ListDisclosureButton,
-} from "@ariakit/ui/ariakit/list.react.tsx";
+} from "@ariakit/ui/components/list.ariakit.react.tsx";
 import type * as React from "react";
 
 export interface ContentListDisclosureProps extends Omit<

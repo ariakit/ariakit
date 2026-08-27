@@ -8,9 +8,9 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as ak from "@ariakit/react";
-import { Link } from "@ariakit/ui/ariakit/link.react.tsx";
-import type { TabProps } from "@ariakit/ui/ariakit/tabs.react.tsx";
-import { Tab, TabList } from "@ariakit/ui/ariakit/tabs.react.tsx";
+import { Link } from "@ariakit/ui/components/link.ariakit.react.tsx";
+import type { TabProps } from "@ariakit/ui/components/tabs.ariakit.react.tsx";
+import { Tab, TabList } from "@ariakit/ui/components/tabs.ariakit.react.tsx";
 import { button as buttonStyle } from "@ariakit/ui/styles/button.ts";
 import {
   tab as tabStyle,

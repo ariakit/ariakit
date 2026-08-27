@@ -1,10 +1,10 @@
 import * as Ariakit from "@ariakit/react";
-import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
 import {
   Dialog,
   DialogDismiss,
   DialogHeading,
-} from "@ariakit/ui/ariakit/dialog.react.tsx";
+} from "@ariakit/ui/components/dialog.ariakit.react.tsx";
 import { dialogBackdrop } from "@ariakit/ui/styles/dialog.ts";
 import { AnimatePresence, motion } from "motion/react";
 

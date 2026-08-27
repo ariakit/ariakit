@@ -22,13 +22,13 @@ import type {
   DisclosureContentBodyProps,
   DisclosureContentProps,
   DisclosureProps,
-} from "./disclosure.react.tsx";
+} from "./disclosure.ariakit.react.tsx";
 import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
   DisclosureContentBody,
-} from "./disclosure.react.tsx";
+} from "./disclosure.ariakit.react.tsx";
 
 export interface NavProps
   extends ak.RoleProps<"nav">, VariantProps<typeof nav> {

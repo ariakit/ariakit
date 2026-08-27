@@ -8,8 +8,11 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
-import { Badge, BadgeLabel } from "@ariakit/ui/ariakit/badge.react.tsx";
-import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
+import {
+  Badge,
+  BadgeLabel,
+} from "@ariakit/ui/components/badge.ariakit.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
 import { clsx } from "clsx";
 import * as React from "react";
 

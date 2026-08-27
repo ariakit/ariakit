@@ -45,7 +45,7 @@ import {
   ListItemConnector,
   ListItemContent,
   ListItemMarker,
-} from "@ariakit/ui/html/list.react.tsx";
+} from "@ariakit/ui/components/list.ariakit.react.tsx";
 import { badge, badgeLabel, badgeSlot } from "@ariakit/ui/styles/badge.ts";
 import {
   button,
@@ -880,7 +880,7 @@ function getExampleSource(source: string, line: number): SourceReference {
       <SourceLinks
         sources={[
           { file: "packages/ariakit-ui/src/styles/tabs.ts", line: 14 },
-          { file: "packages/ariakit-ui/src/ariakit/tabs.react.tsx", line: 62 },
+          { file: "packages/ariakit-ui/src/components/tabs.ariakit.react.tsx", line: 62 },
           { file: "app/src/components/playground.react.tsx", line: 35 },
           { file: "app/src/components/code-block.react.tsx", line: 893 },
         ]}
@@ -956,7 +956,7 @@ function getExampleSource(source: string, line: number): SourceReference {
         sources={[
           { file: "packages/ariakit-ui/src/styles/glider.ts", line: 5 },
           {
-            file: "packages/ariakit-ui/src/ariakit/glider.react.tsx",
+            file: "packages/ariakit-ui/src/components/glider.ariakit.react.tsx",
             line: 15,
           },
           { file: "packages/ariakit-ui/src/styles/button.ts", line: 97 },
@@ -1513,7 +1513,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               filename: "index.tsx",
               filenameIcon: "react",
               lineNumbers: true,
-              code: `import { Button } from "@ariakit/ui/ariakit/button.react";
+              code: `import { Button } from "@ariakit/ui/components/button.ariakit.react";
 
 export default function Example() {
   return <Button $kind="bevel">Open</Button>;
@@ -1777,7 +1777,7 @@ export default function Example() {
           { file: "packages/ariakit-ui/src/styles/list.ts", line: 142 },
           { file: "packages/ariakit-ui/src/styles/list.ts", line: 167 },
           { file: "packages/ariakit-ui/src/styles/list.ts", line: 271 },
-          { file: "packages/ariakit-ui/src/html/list.react.tsx", line: 58 },
+          { file: "packages/ariakit-ui/src/components/list.ariakit.react.tsx", line: 58 },
           { file: "app/src/styles/ariakit.css", line: 188 },
         ]}
       />

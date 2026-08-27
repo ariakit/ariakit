@@ -5,12 +5,12 @@ import {
   NavIcon,
   NavLink,
   NavList,
-} from "@ariakit/ui/ariakit/nav.react.tsx";
+} from "@ariakit/ui/components/nav.ariakit.react.tsx";
 import {
   Sidebar,
   SidebarBody,
   SidebarHeader,
-} from "@ariakit/ui/ariakit/sidebar.react.tsx";
+} from "@ariakit/ui/components/sidebar.ariakit.react.tsx";
 import { button } from "@ariakit/ui/styles/button.ts";
 import { navButton, navButtonContent } from "@ariakit/ui/styles/nav.ts";
 import { clsx } from "clsx";

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as ak from "@ariakit/react";
-import { Prose } from "@ariakit/ui/ariakit/prose.react.tsx";
+import { Prose } from "@ariakit/ui/components/prose.ariakit.react.tsx";
 import { link } from "@ariakit/ui/styles/link.ts";
 import { popover } from "@ariakit/ui/styles/popover.ts";
 import { invariant } from "@ariakit/utils";

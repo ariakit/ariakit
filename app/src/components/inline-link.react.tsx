@@ -7,8 +7,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Link } from "@ariakit/ui/ariakit/link.react.tsx";
-import type { LinkProps } from "@ariakit/ui/ariakit/link.react.tsx";
+import { Link } from "@ariakit/ui/components/link.ariakit.react.tsx";
+import type { LinkProps } from "@ariakit/ui/components/link.ariakit.react.tsx";
 import type { ReactNode } from "react";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { InlineFragment } from "./inline-fragment.react.tsx";

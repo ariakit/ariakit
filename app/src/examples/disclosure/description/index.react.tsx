@@ -1,10 +1,13 @@
-import { Badge, BadgeLabel } from "@ariakit/ui/ariakit/badge.react.tsx";
-import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
+import {
+  Badge,
+  BadgeLabel,
+} from "@ariakit/ui/components/badge.ariakit.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
 import {
   Disclosure,
   DisclosureButton,
-} from "@ariakit/ui/ariakit/disclosure.react.tsx";
-import { Table } from "@ariakit/ui/ariakit/table.react.tsx";
+} from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
+import { Table } from "@ariakit/ui/components/table.ariakit.react.tsx";
 import { heading } from "@ariakit/ui/styles/heading.ts";
 
 function formatDate(isoString: string) {

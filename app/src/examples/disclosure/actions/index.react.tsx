@@ -1,8 +1,17 @@
-import { Badge, BadgeLabel } from "@ariakit/ui/ariakit/badge.react.tsx";
-import { Disclosure } from "@ariakit/ui/ariakit/disclosure.react.tsx";
-import { Link } from "@ariakit/ui/ariakit/link.react.tsx";
-import { Select, SelectItem } from "@ariakit/ui/ariakit/select.react.tsx";
-import { Table, TableCell } from "@ariakit/ui/ariakit/table.react.tsx";
+import {
+  Badge,
+  BadgeLabel,
+} from "@ariakit/ui/components/badge.ariakit.react.tsx";
+import { Disclosure } from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
+import { Link } from "@ariakit/ui/components/link.ariakit.react.tsx";
+import {
+  Select,
+  SelectItem,
+} from "@ariakit/ui/components/select.ariakit.react.tsx";
+import {
+  Table,
+  TableCell,
+} from "@ariakit/ui/components/table.ariakit.react.tsx";
 import { heading } from "@ariakit/ui/styles/heading.ts";
 import { clsx } from "clsx";
 import * as icons from "lucide-react";

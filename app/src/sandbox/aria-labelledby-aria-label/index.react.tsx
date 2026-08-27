@@ -3,33 +3,33 @@ import { TagControl } from "@ariakit/react-components/tag/tag-control";
 import { TagLabel } from "@ariakit/react-components/tag/tag-label";
 import { TagList } from "@ariakit/react-components/tag/tag-list";
 import { TagProvider } from "@ariakit/react-components/tag/tag-provider";
-import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
 import {
   Dialog,
   DialogDisclosure,
   DialogDismiss,
   DialogHeading,
   DialogProvider,
-} from "@ariakit/ui/ariakit/dialog.react.tsx";
+} from "@ariakit/ui/components/dialog.ariakit.react.tsx";
 import {
   SelectButton,
   SelectItem,
   SelectLabel,
   SelectPopover,
   SelectProvider,
-} from "@ariakit/ui/ariakit/select.react.tsx";
+} from "@ariakit/ui/components/select.ariakit.react.tsx";
 import {
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-} from "@ariakit/ui/ariakit/tabs.react.tsx";
+} from "@ariakit/ui/components/tabs.ariakit.react.tsx";
 import {
   Tooltip,
   TooltipAnchor,
   TooltipProvider,
-} from "@ariakit/ui/ariakit/tooltip.react.tsx";
+} from "@ariakit/ui/components/tooltip.ariakit.react.tsx";
 import { input } from "@ariakit/ui/styles/input.ts";
 
 export default function Example() {

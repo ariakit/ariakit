@@ -1,4 +1,4 @@
-import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
 import { clsx } from "clsx";
 import { forwardRef, useMemo } from "react";
 import { Icon } from "#app/icons/icon.react.tsx";

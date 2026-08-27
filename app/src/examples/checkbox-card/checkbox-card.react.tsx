@@ -5,14 +5,14 @@ import type {
   CheckboxCardContentProps as CheckboxCardContentBaseProps,
   CheckboxCardDescriptionProps as CheckboxCardDescriptionBaseProps,
   CheckboxCardLabelProps as CheckboxCardLabelBaseProps,
-} from "@ariakit/ui/ariakit/checkbox-card.react.tsx";
+} from "@ariakit/ui/components/checkbox-card.ariakit.react.tsx";
 import {
   CheckboxCard as CheckboxCardBase,
   CheckboxCardCheck as CheckboxCardCheckBase,
   CheckboxCardContent as CheckboxCardContentBase,
   CheckboxCardDescription as CheckboxCardDescriptionBase,
   CheckboxCardLabel as CheckboxCardLabelBase,
-} from "@ariakit/ui/ariakit/checkbox-card.react.tsx";
+} from "@ariakit/ui/components/checkbox-card.ariakit.react.tsx";
 import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox-card.ts";
 import { clsx } from "clsx";
 import type { ComponentProps } from "react";

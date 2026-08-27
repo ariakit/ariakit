@@ -1,18 +1,36 @@
+import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { CheckIcon } from "lucide-react";
-import type { ComponentProps } from "react";
+import type * as React from "react";
+import { createRender } from "../react-utils/create-render.react.ts";
 import {
   list,
+  listDisclosure,
+  listDisclosureButton,
+  listDisclosureContentBody,
   listItem,
   listItemConnector,
   listItemContent,
   listItemMarker,
 } from "../styles/list.ts";
 import { progressCircularFill } from "../styles/progress.ts";
+import type {
+  DisclosureButtonProps,
+  DisclosureContentProps,
+  DisclosureProps,
+} from "./disclosure.ariakit.react.tsx";
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosureContent,
+  DisclosureContentBody,
+} from "./disclosure.ariakit.react.tsx";
 
 export interface ListProps
-  extends ComponentProps<"ol">, Omit<VariantProps<typeof list>, "$ordered"> {
+  extends
+    React.ComponentProps<"ol">,
+    Omit<VariantProps<typeof list>, "$ordered"> {
   /** Renders an ordered list (<ol>) when true; unordered (<ul>) when false. */
   ordered?: boolean;
 }
@@ -40,7 +58,7 @@ export function List({ ordered, ...props }: ListProps) {
 
 export interface ListItemProps
   extends
-    ComponentProps<"li">,
+    ak.RoleProps<"li">,
     VariantProps<typeof listItem>,
     Pick<ListItemMarkerProps, "checked" | "progress"> {}
 
@@ -54,16 +72,16 @@ export interface ListItemProps
 export function ListItem({ checked, progress, ...props }: ListItemProps) {
   const [variantProps, rest] = splitProps(props, listItem);
   return (
-    <li {...listItem.jsx(variantProps)} {...rest}>
+    <ak.Role.li {...listItem.jsx(variantProps)} {...rest}>
       <ListItemMarker checked={checked} progress={progress} />
       <ListItemConnector />
       <ListItemContent>{rest.children}</ListItemContent>
-    </li>
+    </ak.Role.li>
   );
 }
 
 export interface ListItemContentProps
-  extends ComponentProps<"span">, VariantProps<typeof listItemContent> {}
+  extends React.ComponentProps<"span">, VariantProps<typeof listItemContent> {}
 
 /**
  * Wrapper for a row's own children. It generates no box, so the children lay
@@ -71,8 +89,7 @@ export interface ListItemContentProps
  * the connector that precede them from taking `:first-child` away from the
  * first of them. Render it as a `span`: the block-mode variants detect block
  * children with `:has(:where(p, div, ...))`, so a `div` would put every list
- * into blocks mode. The app mirrors this markup in
- * `app/src/components/content-list-item-body.astro` — keep them in sync.
+ * into blocks mode.
  */
 export function ListItemContent(props: ListItemContentProps) {
   const [variantProps, rest] = splitProps(props, listItemContent);
@@ -81,7 +98,7 @@ export function ListItemContent(props: ListItemContentProps) {
 
 export interface ListItemMarkerProps
   extends
-    ComponentProps<"span">,
+    React.ComponentProps<"span">,
     Omit<VariantProps<typeof listItemMarker>, "$checked" | "$progress"> {
   /** Progress between `0` and `1` shown as a circular arc. */
   progress?: number;
@@ -92,8 +109,7 @@ export interface ListItemMarkerProps
 /**
  * Marker rendered in a list item's gutter: a bullet in unordered lists, a
  * numbered chip in ordered ones, and a check slot when `checked` or `progress`
- * is set. The app mirrors this markup in
- * `app/src/components/content-list-item-body.astro` — keep them in sync.
+ * is set.
  */
 export function ListItemMarker({
   progress,
@@ -128,7 +144,9 @@ export function ListItemMarker({
 }
 
 export interface ListItemConnectorProps
-  extends ComponentProps<"span">, VariantProps<typeof listItemConnector> {}
+  extends
+    React.ComponentProps<"span">,
+    VariantProps<typeof listItemConnector> {}
 
 /**
  * Vertical segment joining a row's marker to the next row's. It only becomes
@@ -138,4 +156,95 @@ export interface ListItemConnectorProps
 export function ListItemConnector(props: ListItemConnectorProps) {
   const [variantProps, rest] = splitProps(props, listItemConnector);
   return <span {...listItemConnector.jsx(variantProps)} {...rest} />;
+}
+
+export interface ListDisclosureProps
+  extends DisclosureProps, VariantProps<typeof listDisclosure> {
+  button?: React.ReactNode | ListDisclosureButtonProps;
+  content?: React.ReactElement | ListDisclosureContentProps;
+}
+
+/**
+ * Disclosure adapted for lists, integrating with `ListItem` visuals. Like
+ * `ListItem`, it belongs to a row of a `List`, so its connector can tell
+ * whether that row closes the list.
+ * @example
+ * <List ordered>
+ *   <li>
+ *     <ListDisclosure button="Item">Details</ListDisclosure>
+ *   </li>
+ * </List>
+ */
+export function ListDisclosure(props: ListDisclosureProps) {
+  const [variantProps, rest] = splitProps(props, listDisclosure);
+  const button = createRender(ListDisclosureButton, rest.button);
+  const content = createRender(ListDisclosureContent, rest.content);
+  return (
+    <Disclosure
+      {...listDisclosure.jsx(variantProps)}
+      {...rest}
+      // The connector has to span the whole row, open content included, so it
+      // goes on the disclosure root instead of on the button. A caller's own
+      // decoration keeps its place alongside it.
+      decoration={
+        <>
+          {rest.decoration}
+          <ListItemConnector />
+        </>
+      }
+      // A nullish check, not truthiness: falsy labels like {0} must still
+      // render through ListDisclosureButton so its indicator defaults apply.
+      button={rest.button != null ? button : undefined}
+      content={content}
+    />
+  );
+}
+
+export interface ListDisclosureButtonProps
+  extends
+    DisclosureButtonProps,
+    VariantProps<typeof listDisclosureButton>,
+    Pick<ListItemMarkerProps, "checked" | "progress"> {}
+
+export function ListDisclosureButton({
+  checked,
+  progress,
+  indicator = "chevron-down-next",
+  ...props
+}: ListDisclosureButtonProps) {
+  const [variantProps, rest] = splitProps(props, listDisclosureButton);
+  return (
+    <DisclosureButton
+      indicator={indicator}
+      {...listDisclosureButton.jsx(variantProps)}
+      {...rest}
+    >
+      <ListItemMarker checked={checked} progress={progress} />
+      <ListItemContent>{rest.children}</ListItemContent>
+    </DisclosureButton>
+  );
+}
+
+export interface ListDisclosureContentProps extends DisclosureContentProps {}
+
+export function ListDisclosureContent(props: ListDisclosureContentProps) {
+  const body = createRender(ListDisclosureContentBody, props.body);
+  return <DisclosureContent {...props} body={body} />;
+}
+
+export interface ListDisclosureContentBodyProps
+  extends
+    React.ComponentProps<"div">,
+    VariantProps<typeof listDisclosureContentBody> {}
+
+export function ListDisclosureContentBody(
+  props: ListDisclosureContentBodyProps,
+) {
+  const [variantProps, rest] = splitProps(props, listDisclosureContentBody);
+  return (
+    <DisclosureContentBody
+      {...listDisclosureContentBody.jsx(variantProps)}
+      {...rest}
+    />
+  );
 }

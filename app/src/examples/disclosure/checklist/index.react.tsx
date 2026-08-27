@@ -1,11 +1,11 @@
-import type { ListDisclosureProps } from "@ariakit/ui/ariakit/list.react.tsx";
+import type { ListDisclosureProps } from "@ariakit/ui/components/list.ariakit.react.tsx";
 import {
   List,
   ListDisclosure,
   ListDisclosureButton,
   ListItem,
-} from "@ariakit/ui/ariakit/list.react.tsx";
-import { Progress } from "@ariakit/ui/ariakit/progress.react.tsx";
+} from "@ariakit/ui/components/list.ariakit.react.tsx";
+import { Progress } from "@ariakit/ui/components/progress.ariakit.react.tsx";
 import { button } from "@ariakit/ui/styles/button.ts";
 import { useState } from "react";
 

@@ -11,12 +11,12 @@ import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
-} from "@ariakit/ui/ariakit/disclosure.react.tsx";
+} from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
 import type {
   DisclosureButtonProps,
   DisclosureContentProps,
   DisclosureProps,
-} from "@ariakit/ui/ariakit/disclosure.react.tsx";
+} from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
 import { container } from "@ariakit/ui/styles/container.ts";
 import { clsx } from "clsx";
 import type * as React from "react";

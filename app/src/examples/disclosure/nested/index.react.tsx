@@ -1,4 +1,4 @@
-import { List, ListItem } from "@ariakit/ui/ariakit/list.react.tsx";
+import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react.tsx";
 import { Reasoning } from "./reasoning.react.tsx";
 
 export default function Example() {

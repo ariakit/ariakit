@@ -3,8 +3,8 @@ import {
   DisclosureButton,
   DisclosureContent,
   DisclosureGroup,
-} from "@ariakit/ui/ariakit/disclosure.react.tsx";
-import { Link } from "@ariakit/ui/ariakit/link.react.tsx";
+} from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
+import { Link } from "@ariakit/ui/components/link.ariakit.react.tsx";
 import { heading } from "@ariakit/ui/styles/heading.ts";
 
 export default function Example() {
