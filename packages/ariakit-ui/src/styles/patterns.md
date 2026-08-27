@@ -44,13 +44,14 @@ export const tableContainer = cv({
 });
 ```
 
-A map merges instead, so a new key joins the primitive's scale rather than replacing it, and a key of the same name shadows only that one.
+Two maps merge instead, so a new key joins the primitive's scale rather than replacing it. A key of the same name does not shadow the primitive's, though: both entries emit. Declare one only to add to what the primitive already does for that key.
 
 ```ts
-// controlSlot adds `auto` to frame's radius scale and redefines two of its
-// keys. A caller can still pass "2xl" and get frame's own class.
+// controlSlot adds `auto` to frame's radius scale, and its `full` emits next
+// to frame's own `ak-frame-full`, which is the point: the frame radius
+// shrinks to stay concentric, and `rounded-full` sorts later and restores the
+// pill. A caller can still pass "2xl" and get frame's own class.
 $rounded: {
-  none: "",
   auto: "ak-frame-m-(--my)",
   full: "rounded-full",
 },

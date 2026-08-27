@@ -1,29 +1,40 @@
 import { cv } from "clava";
+import type { VariantProps } from "clava";
+import { includes } from "../utils/includes.ts";
 import { frame, isFrameBorderColor } from "./frame.ts";
+import { layer } from "./layer.ts";
 import { text } from "./text.ts";
+
+// A control and a control group set their font size the same way, and every
+// other measurement in this file derives from it through 1cap, 1em and 1lh.
+const fontSizeVariants = {
+  /**
+   * Sets the element’s font size. This affects the entire element, including
+   * the gap, padding, and icon size. Use `auto` to inherit the parent’s font
+   * size.
+   * @default "auto"
+   */
+  $size: {
+    auto: "",
+    xs: "text-xs",
+    sm: "text-sm",
+    md: "text-base",
+    lg: "text-lg",
+    xl: "text-xl",
+  },
+};
 
 export const control = cv({
   extend: [frame, text],
   class: [
     "control group/control relative flex justify-center",
-    // font sidebearing
-    "[--sb:0.15em]",
+    // The blank space a font builds into a glyph's advance width. Gaps and slot
+    // margins subtract it so a slot sits optically, not geometrically, beside
+    // the text.
+    "[--sidebearing:0.15em]",
   ],
   variants: {
-    /**
-     * Sets the element’s font size. This affects the entire element, including
-     * the gap, padding, and icon size. Use `auto` to inherit the parent’s font
-     * size.
-     * @default "auto"
-     */
-    $size: {
-      auto: "",
-      xs: "text-xs",
-      sm: "text-sm",
-      md: "text-base",
-      lg: "text-lg",
-      xl: "text-xl",
-    },
+    ...fontSizeVariants,
     /**
      * Sets the gap between the element's content and its siblings.
      * @default "md"
@@ -31,9 +42,9 @@ export const control = cv({
     $gap: {
       none: "",
       sm: "[--gap:var(--py)] gap-(--gap)",
-      md: "[--gap:calc(var(--px)-var(--sb))] gap-(--gap)",
-      lg: "[--gap:calc(var(--px))] gap-(--gap)",
-      xl: "[--gap:calc(var(--px)+var(--sb))] gap-(--gap)",
+      md: "[--gap:calc(var(--px)-var(--sidebearing))] gap-(--gap)",
+      lg: "[--gap:var(--px)] gap-(--gap)",
+      xl: "[--gap:calc(var(--px)+var(--sidebearing))] gap-(--gap)",
     },
     /**
      * Sets the vertical gap between the element's label and description.
@@ -44,11 +55,10 @@ export const control = cv({
       auto: "[--gap-y:calc(var(--gap)/4)] gap-y-(--gap-y)",
     },
     /**
-     * Sets the element’s horizontal padding. Rounded elements often look best
-     * with more padding.
+     * Sets how much horizontal padding the element adds on top of its frame
+     * padding. Rounded elements often look best with more padding.
      */
     $px: {
-      none: "",
       sm: "[--px-scale:0]",
       md: "[--px-scale:0.5]",
       lg: "[--px-scale:0.75]",
@@ -59,9 +69,9 @@ export const control = cv({
      */
     $disabled: [
       "disabled cursor-not-allowed!",
-      // The border wipe reads an overridable channel: card-like extenders
-      // set --disabled-border to keep a faint edge, while buttons fall back
-      // to transparent.
+      // The border wipe reads an overridable channel: card-like extenders set
+      // --disabled-border to keep a faint edge, while buttons fall back to
+      // transparent.
       "border-(--disabled-border,transparent)! ring-(--disabled-border,transparent)!",
       "inset-shadow-none! shadow-none!",
       "bg-none! ak-ink-0! *:ak-ink-0!",
@@ -73,8 +83,10 @@ export const control = cv({
     $gap: "md",
     $gapY: "auto",
     $p: 2,
+    // Without frame padding there is nothing for the scale to add to, and
+    // refine emits no padding formula to spend it on.
     $px(defaultValue, variants) {
-      if (variants.$p === "none") return "none";
+      if (variants.$p === "none") return;
       return defaultValue ?? "md";
     },
   },
@@ -82,19 +94,38 @@ export const control = cv({
     if (variants.$disabled) {
       setVariants({ $invert: false });
     }
-    if (variants.$p !== "none") {
-      addClass([
-        "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
-        "[--py:calc(var(--ak-frame-padding,0px))]",
-        // The resolved paddings get their own properties so extending
-        // styles can reference the formula without restating it.
-        "[--control-px:calc(var(--px)+var(--inset-padding,0px))]",
-        "px-(--control-px)",
-        "py-[calc(var(--py)+var(--inset-padding,0px))]",
-      ]);
-    }
+    if (variants.$p === "none") return;
+    addClass([
+      "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
+      "[--py:var(--ak-frame-padding,0px)]",
+      // The resolved paddings get their own properties so extending
+      // styles can reference the formula without restating it.
+      "[--control-px:calc(var(--px)+var(--inset-padding,0px))]",
+      "px-(--control-px)",
+      "py-[calc(var(--py)+var(--inset-padding,0px))]",
+    ]);
   },
 });
+
+// Sizes a badge or an avatar is bumped past. Those kinds paint their own
+// surface, which needs room around the content before it reads as a shape
+// rather than a tight box.
+const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
+
+// Layer variants that repaint the slot. Each emits nothing for a falsy
+// value, so the same test decides whether the slot paints at all.
+const LAYER_MODIFIERS = [
+  "$lightnessOffset",
+  "$lightnessPush",
+  "$lighten",
+  "$darken",
+  "$mix",
+  "$contrast",
+  "$saturate",
+  "$desaturate",
+  "$chroma",
+  "$hue",
+] as const satisfies (keyof VariantProps<typeof layer>)[];
 
 export const controlSlot = cv({
   extend: [frame],
@@ -127,13 +158,13 @@ export const controlSlot = cv({
     $mx: {
       unset: "",
       closeGap: "[&+*]:-ms-1 [*:has(+&)]:-me-1",
-      xs: "[&+*]:-ms-(--sb) [*:has(+&)]:-me-(--sb)",
-      sm: "[&+*]:-ms-(--sb) [*:has(+&)]:-me-(--sb)",
+      xs: "[&+*]:-ms-(--sidebearing) [*:has(+&)]:-me-(--sidebearing)",
+      sm: "[&+*]:-ms-(--sidebearing) [*:has(+&)]:-me-(--sidebearing)",
       md: "",
       lg: "",
-      xl: "[&+*]:ms-(--sb) [*:has(+&)]:me-(--sb)",
+      xl: "[&+*]:ms-(--sidebearing) [*:has(+&)]:me-(--sidebearing)",
       "2xl": "[&+*]:ms-(--py) [*:has(+&)]:me-(--py)",
-      full: " [&+*]:ms-[1cap] [*:has(+&)]:me-[1cap]",
+      full: "[&+*]:ms-[1cap] [*:has(+&)]:me-[1cap]",
     },
     /**
      * Sets the slot padding.
@@ -153,8 +184,9 @@ export const controlSlot = cv({
      * radius.
      */
     $rounded: {
-      none: "",
       auto: "ak-frame-m-(--my)",
+      // The frame radius shrinks to stay concentric with the parent, which a
+      // pill must not do. This later-sorted utility restores the full radius.
       full: "rounded-full",
     },
     /**
@@ -176,7 +208,7 @@ export const controlSlot = cv({
      */
     $floating: [
       "m-0! absolute top-0 inset-e-0 -translate-y-1/2 translate-x-[calc(var(--size)/2)] border",
-      "group-has-[&]/control:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
+      "in-[.control]:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
     ],
     /**
      * Increases the element’s size by a specified number of rows. This is
@@ -185,42 +217,47 @@ export const controlSlot = cv({
      * it as `1` if you want the slot to match the first row’s size and align
      * with it.
      */
-    $rowSpan: (value: number) => ({
-      style: { "--row-span": `${value}` },
-    }),
+    $rowSpan(value?: number) {
+      if (value == null) return;
+      return {
+        style: { "--row-span": `${value}` },
+      };
+    },
   },
   defaultVariants: {
     $kind: "icon",
     $size: "md",
     $layer(defaultValue, variants) {
-      if (variants.$kind === "badge" && defaultValue === true) {
-        return "brand";
-      }
-      return defaultValue;
+      if (variants.$kind !== "badge") return defaultValue;
+      // Replace only layer's own default. A more specific value, from an
+      // extender or a color, was asked for deliberately.
+      if (defaultValue !== true) return defaultValue;
+      return "brand";
     },
     $lightnessOffset(defaultValue, variants) {
-      if (variants.$kind === "avatar") {
-        return defaultValue ?? true;
-      }
-      return defaultValue;
+      if (variants.$kind !== "avatar") return defaultValue;
+      return defaultValue ?? true;
     },
-    $rounded: (defaultValue, variants) => {
+    $rounded(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
       if (variants.$floating) return "full";
       if (variants.$kind === "avatar") return "full";
-      return defaultValue ?? "auto";
+      return "auto";
     },
     $p(defaultValue, variants) {
       // Only badges get the default horizontal padding: the $p values pad the
       // x axis for text content, while avatar children (images) must fill the
       // whole slot, or the round clip turns them into straight-sided slabs.
-      if (variants.$kind === "badge") return variants.$size;
+      if (variants.$kind === "badge") return defaultValue ?? variants.$size;
       return defaultValue ?? "unset";
     },
     $rowSpan: 1,
-    $mx: (_, variants) => variants.$size,
+    $mx(defaultValue, variants) {
+      return defaultValue ?? variants.$size;
+    },
     $square(defaultValue, variants) {
-      if (variants.$kind === "icon") return true;
-      if (variants.$kind === "avatar") return true;
+      if (variants.$kind === "icon") return defaultValue ?? true;
+      if (variants.$kind === "avatar") return defaultValue ?? true;
       return defaultValue;
     },
     $borderColor(defaultValue, variants) {
@@ -230,31 +267,15 @@ export const controlSlot = cv({
       return defaultValue ?? variants.$layer;
     },
   },
-  refine: ({ variants, setVariants, addClass }) => {
-    const mdOrLess = [undefined, "none", "xs", "sm", "md"];
-    const lgOrLess = [...mdOrLess, "lg"];
-    let $size = variants.$size;
-
-    // When a background is set, we adjust the slot’s size and padding to give
-    // it room to breathe.
+  refine({ variants, setVariants, addClass }) {
     if (variants.$kind === "badge" || variants.$kind === "avatar") {
-      $size = mdOrLess.includes($size) ? "lg" : $size;
       addClass([
-        "group-[.disabled]/control:ak-layer-darken-6",
+        "group-[.disabled]/control:ak-layer-darken-5",
         "group-[.disabled]/control:ak-ink-0",
       ]);
-    }
-
-    if (variants.$kind === "badge") {
-      $size = lgOrLess.includes($size) ? "xl" : $size;
-    }
-
-    if (variants.$kind === "avatar") {
-      $size = lgOrLess.includes($size) ? "xl" : $size;
-    }
-
-    if ($size !== variants.$size) {
-      setVariants({ $size });
+      if (includes(PADDED_SLOT_SIZES, variants.$size)) {
+        setVariants({ $size: "xl" });
+      }
     }
 
     // Slots only paint their own background when a layer modifier requires
@@ -266,16 +287,7 @@ export const controlSlot = cv({
       variants.$kind === "avatar" ||
       variants.$floating ||
       typeof variants.$layer === "string" ||
-      variants.$lightnessOffset ||
-      variants.$lightnessPush ||
-      variants.$lighten ||
-      variants.$darken ||
-      variants.$mix ||
-      variants.$contrast ||
-      variants.$saturate ||
-      variants.$desaturate ||
-      variants.$chroma != null ||
-      variants.$hue != null;
+      LAYER_MODIFIERS.some((modifier) => !!variants[modifier]);
     if (!paints) {
       addClass("bg-transparent");
     }
@@ -308,12 +320,18 @@ export const controlLabel = cv({
 
 export const controlDescription = cv({
   extend: [text],
-  class:
-    "ms-0! ak-ink-70 basis-full font-normal text-[0.875em] group-[.disabled]/control:ak-ink-0",
+  class: [
+    // A description placed right after a slot picks up the side-bearing
+    // margin the slot's $mx puts on its next sibling. On a full-width row of
+    // its own that margin reads as a stray indent.
+    "ms-0!",
+    "ak-ink-70 basis-full font-normal text-[0.875em]",
+    "group-[.disabled]/control:ak-ink-0",
+  ],
   variants: {
     $truncate: "truncate",
-    $lineClamp: (value: number | false) => {
-      if (value === false) return;
+    $lineClamp(value?: number | false) {
+      if (!value) return;
       return {
         style: { "--line-clamp": `${value}` },
         class: "line-clamp-(--line-clamp)",
@@ -322,9 +340,21 @@ export const controlDescription = cv({
   },
 });
 
+// A thicker rule reads as a heavier divider, so its alpha falls as --width
+// grows. A chevron is two strokes meeting at a corner, which reads lighter,
+// so it starts higher and falls faster. Both stay positive only across the
+// widths $width offers.
+const separatorEdge = [
+  "ak-edge-alpha-[calc((24-var(--width)*6)/100)]",
+  "[.chevron]:ak-edge-alpha-[calc((64-var(--width)*12)/100)]",
+];
+
 export const controlSeparator = cv({
+  extend: [layer],
   class: [
     "[.vertical>&]:hidden",
+    // The layer only gives the edge color a surface to resolve against. The
+    // rule drawn by the border is the only thing the separator paints.
     "ak-layer-0 bg-transparent flex items-center justify-center pointer-events-none",
     "transition-[border-color] duration-200 ease-out",
     "[--border-width:calc(var(--width)*1px)]",
@@ -340,11 +370,13 @@ export const controlSeparator = cv({
       ],
     },
     $size: {
-      xs: "[--size:1cap] self-center ak-layer ak-edge-alpha-[calc((24-var(--width)*6)/100)] [.chevron]:ak-edge-alpha-[calc((64-var(--width)*12)/100)]",
-      sm: "[--size:1em] self-center ak-layer ak-edge-alpha-[calc((24-var(--width)*6)/100)] [.chevron]:ak-edge-alpha-[calc((64-var(--width)*12)/100)]",
-      md: "[--size:1lh] self-center ak-layer ak-edge-alpha-[calc((24-var(--width)*6)/100)] [.chevron]:ak-edge-alpha-[calc((64-var(--width)*12)/100)]",
-      lg: "self-stretch ak-layer",
-      full: "self-stretch ak-layer -my-(--ak-frame-padding,0px) mx-0",
+      xs: ["[--size:1cap] self-center", separatorEdge],
+      sm: ["[--size:1em] self-center", separatorEdge],
+      md: ["[--size:1lh] self-center", separatorEdge],
+      // A stretched rule runs the whole row, where the plain edge alpha
+      // already reads clearly enough.
+      lg: "self-stretch",
+      full: "self-stretch -my-(--ak-frame-padding,0px) mx-0",
     },
     $shy: [
       "in-[.control-group:hover:not(:has(:hover))]:delay-150",
@@ -363,19 +395,15 @@ export const controlSeparator = cv({
     $width: 1,
     $kind: "pipe",
     $shy(defaultValue, variants) {
-      if (variants.$kind !== "chevron" && variants.$size !== "full") {
-        return true;
-      }
-      return defaultValue;
+      if (variants.$kind === "chevron") return defaultValue;
+      if (variants.$size === "full") return defaultValue;
+      return defaultValue ?? true;
     },
   },
   refine({ variants, setVariants }) {
-    if (
-      variants.$kind === "chevron" &&
-      (variants.$size === "lg" || variants.$size === "full")
-    ) {
-      setVariants({ $size: "md" });
-    }
+    if (variants.$kind !== "chevron") return;
+    if (variants.$size !== "lg" && variants.$size !== "full") return;
+    setVariants({ $size: "md" });
   },
 });
 
@@ -383,14 +411,7 @@ export const controlGroup = cv({
   extend: [frame],
   class: ["control-group"],
   variants: {
-    $size: {
-      auto: "",
-      xs: "text-xs",
-      sm: "text-sm",
-      md: "text-base",
-      lg: "text-lg",
-      xl: "text-xl",
-    },
+    ...fontSizeVariants,
     $layout: {
       none: "",
       wrap: "flex flex-wrap",
@@ -414,17 +435,17 @@ export const controlGroup = cv({
     },
   },
   defaultVariants: {
+    $size: "auto",
     $rounded: "xl",
     $layout: "horizontal",
     $p: 1,
     $gap: "auto",
   },
-  refine: ({ variants, addClass }) => {
-    if (variants.$p === "none") {
-      addClass([
-        "[&>.control:not(:nth-child(1_of_.control))]:rounded-s-none",
-        "[&>.control:not(:nth-last-child(1_of_.control))]:rounded-e-none",
-      ]);
-    }
+  refine({ variants, addClass }) {
+    if (variants.$p !== "none") return;
+    addClass([
+      "[&>.control:not(:nth-child(1_of_.control))]:rounded-s-none",
+      "[&>.control:not(:nth-last-child(1_of_.control))]:rounded-e-none",
+    ]);
   },
 });
