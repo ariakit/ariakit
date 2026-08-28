@@ -28,7 +28,14 @@ function GoToFile() {
   return (
     <Ariakit.ComboboxProvider inputValue={value} setInputValue={setValue}>
       <Ariakit.Combobox aria-label="Go to file" />
-      <Ariakit.ComboboxPopover gutter={4} aria-label="Go to file results">
+      {/* TODO: ComboboxList injects role="listbox" here, so the popup role has
+          to be set explicitly. Remove once the nested list can take over the
+          popup role. https://github.com/ariakit/ariakit/issues/7302 */}
+      <Ariakit.ComboboxPopover
+        role="dialog"
+        gutter={4}
+        aria-label="Go to file results"
+      >
         {/* A tree may only own treeitem and group children, so the live count
             has to stay outside the nested list. */}
         <div role="status">
@@ -53,7 +60,14 @@ function RunCommand() {
   return (
     <Ariakit.ComboboxProvider>
       <Ariakit.Combobox aria-label="Run command" />
-      <Ariakit.ComboboxPopover gutter={4} aria-label="Command results">
+      {/* TODO: ComboboxList injects role="listbox" here, so the popup role has
+          to be set explicitly. Remove once the nested list can take over the
+          popup role. https://github.com/ariakit/ariakit/issues/7302 */}
+      <Ariakit.ComboboxPopover
+        role="dialog"
+        gutter={4}
+        aria-label="Command results"
+      >
         <Ariakit.ComboboxList role="menu" aria-label="Commands">
           {commands.map((command) => (
             <Ariakit.ComboboxItem key={command} value={command} />
@@ -84,7 +98,15 @@ function FruitSearch() {
   return (
     <Ariakit.ComboboxProvider>
       <Ariakit.Combobox aria-label="Search fruits" />
-      <Ariakit.ComboboxPopover gutter={4} aria-label="Fruit results">
+      {/* TODO: The unrelated listbox below makes ComboboxList drop its own
+          role, so the popup role has to be set explicitly. Remove once that
+          listbox stops taking over the popup role.
+          https://github.com/ariakit/ariakit/issues/7302 */}
+      <Ariakit.ComboboxPopover
+        role="listbox"
+        gutter={4}
+        aria-label="Fruit results"
+      >
         {fruits.map((fruit) => (
           <Ariakit.ComboboxItem key={fruit} value={fruit} />
         ))}
