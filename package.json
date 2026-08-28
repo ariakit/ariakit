@@ -56,7 +56,7 @@
     "@types/fs-extra": "11.0.4",
     "@types/node": "24.13.3",
     "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.4",
+    "@types/react-dom": "19.2.5",
     "@vitejs/plugin-react": "6.1.0",
     "@vitest/coverage-v8": "4.1.11",
     "chalk": "6.0.0",
@@ -70,8 +70,8 @@
     "jsdom": "30.0.1",
     "lefthook": "2.1.10",
     "open-cli": "9.0.0",
-    "oxfmt": "0.64.0",
-    "oxlint": "1.79.0",
+    "oxfmt": "0.65.0",
+    "oxlint": "1.80.0",
     "oxlint-tsgolint": "7.0.2001",
     "pkg-pr-new": "0.0.88",
     "react": "19.2.8",
@@ -95,5 +95,5 @@
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@11.22.0"
+  "packageManager": "pnpm@11.24.0"
 }
