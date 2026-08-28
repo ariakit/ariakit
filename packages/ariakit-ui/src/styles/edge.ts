@@ -17,12 +17,15 @@ const EDGE_COLOR_VALUES = [
 
 export type EdgeColorValues = (typeof EDGE_COLOR_VALUES)[number];
 
-export type EdgeWeightValues =
-  | "adaptive"
-  | "light"
-  | "normal"
-  | "medium"
-  | "bold";
+const EDGE_WEIGHT_VALUES = [
+  "adaptive",
+  "light",
+  "normal",
+  "medium",
+  "bold",
+] as const;
+
+export type EdgeWeightValues = (typeof EDGE_WEIGHT_VALUES)[number];
 
 /**
  * Checks whether a value is one of the named colors accepted by the
@@ -62,25 +65,25 @@ export const edge = cv({
      * always replace the default instead of fighting it by stylesheet
      * order.
      */
-    $edgeWeight(value?: EdgeWeightValues | "unset" | number) {
+    $edgeWeight(value?: EdgeWeightValues | "unset" | (string & {}) | number) {
       if (value == null) return;
       if (value === "unset") return;
-      if (typeof value === "number") {
-        return getScaledStyleClass({
-          value,
-          allowZero: true,
-          property: "--edge-alpha",
-          class: "ak-edge-alpha-(--edge-alpha)",
-        });
+      if (includes(EDGE_WEIGHT_VALUES, value)) {
+        const valueMap = {
+          adaptive: "ak-edge-0",
+          light: "ak-edge-5",
+          normal: "ak-edge-10",
+          medium: "ak-edge-20",
+          bold: "ak-edge-40",
+        } satisfies Record<EdgeWeightValues, string>;
+        return valueMap[value];
       }
-      const valueMap = {
-        adaptive: "ak-edge-0",
-        light: "ak-edge-5",
-        normal: "ak-edge-10",
-        medium: "ak-edge-20",
-        bold: "ak-edge-40",
-      } satisfies Record<EdgeWeightValues, string>;
-      return valueMap[value];
+      return getScaledStyleClass({
+        value,
+        allowZero: true,
+        property: "--edge-alpha",
+        class: "ak-edge-alpha-(--edge-alpha)",
+      });
     },
     /**
      * Uses very dark edges on low-dark layers, typically for native-app-like

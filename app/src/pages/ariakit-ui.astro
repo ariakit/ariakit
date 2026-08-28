@@ -1375,6 +1375,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               <kbd {...kbd.html({ $layer: "danger" })}>Del</kbd>
               <kbd {...kbd.html({ $edge: "brand" })}>Tab</kbd>
               <kbd {...kbd.html({ $edgeWeight: 40 })}>⇧</kbd>
+              <kbd {...kbd.html({ $edgeWeight: "adaptive" })}>⌥</kbd>
               <kbd {...kbd.html({ $edgeHue: "green", $edgeChroma: "vivid" })}>
                 ↵
               </kbd>
@@ -1382,7 +1383,8 @@ function getExampleSource(source: string, line: number): SourceReference {
             </div>
             <code>
               kbd · default · $layer=brand/danger · $edge=brand · $edgeWeight=40
-              · $edgeHue/$edgeChroma · $lightnessOffset=5
+              · $edgeWeight=adaptive · $edgeHue/$edgeChroma ·
+              $lightnessOffset=5 — every one holds in both schemes
             </code>
           </div>
         </article>

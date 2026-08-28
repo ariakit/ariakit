@@ -27,10 +27,14 @@ export const kbd = cv({
     "to-[oklch(from_var(--ak-layer)_calc(l+0.05)_c_h)]",
     // The sides carry no border, so a hairline ring closes the shape.
     "shadow-[0_0_0_max(1px,0.034em)_var(--ak-edge)]",
+    // The edge alpha differs between the two schemes, so it travels as a
+    // channel in the 0-100 units $edgeWeight takes. The default below spends
+    // it, which leaves a caller's own $edgeWeight replacing that default
+    // outright rather than competing with a class in one scheme only.
+    "[--kbd-edge-alpha:100] ak-dark:[--kbd-edge-alpha:16]",
     // A dark cap catches no light on top, so the highlight goes and the lip
     // carries the depth on its own: thicker, darker than the face instead of
     // edge-colored, over a fainter ring lifted clear of the cap.
-    "ak-dark:ak-edge-16",
     "ak-dark:border-t-0 ak-dark:border-b-[max(1px,0.2em)]",
     "ak-dark:border-b-[oklch(from_var(--ak-layer)_calc(l-0.08)_c_h)]",
     "ak-dark:rounded-b-[0.4em]",
@@ -39,11 +43,9 @@ export const kbd = cv({
   ],
   defaultVariants: {
     $lightnessOffset: 2,
-    // The lip and the ring are drawn in the edge color, opaque and lightened
-    // so the cap reads as a raised object rather than an outlined box. The
-    // `ak-dark:ak-edge-16` class above still wins on a dark cap: it sets the
-    // resolved alpha, not the channel this writes as an inline style.
-    $edgeWeight: 100,
+    // The lip and the ring are opaque and lightened so the cap reads as a
+    // raised object rather than an outlined box.
+    $edgeWeight: "var(--kbd-edge-alpha)",
     $edgeLighten: 60,
   },
 });
