@@ -1369,6 +1369,21 @@ function getExampleSource(source: string, line: number): SourceReference {
               <kbd {...kbd.html()}>⌘</kbd><kbd {...kbd.html()}>K</kbd>
               <span class="ak-ink-70 text-sm">Keyboard shortcut</span>
             </div>
+            <div class="flex flex-wrap gap-2 items-center">
+              <kbd {...kbd.html()}>Esc</kbd>
+              <kbd {...kbd.html({ $layer: "brand" })}>⌘</kbd>
+              <kbd {...kbd.html({ $layer: "danger" })}>Del</kbd>
+              <kbd {...kbd.html({ $edge: "brand" })}>Tab</kbd>
+              <kbd {...kbd.html({ $edgeWeight: 40 })}>⇧</kbd>
+              <kbd {...kbd.html({ $edgeHue: "green", $edgeChroma: "vivid" })}>
+                ↵
+              </kbd>
+              <kbd {...kbd.html({ $lightnessOffset: 5 })}>Fn</kbd>
+            </div>
+            <code>
+              kbd · default · $layer=brand/danger · $edge=brand · $edgeWeight=40
+              · $edgeHue/$edgeChroma · $lightnessOffset=5
+            </code>
           </div>
         </article>
       </div>

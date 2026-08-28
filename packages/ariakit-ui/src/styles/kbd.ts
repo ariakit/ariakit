@@ -1,16 +1,14 @@
 import { cv } from "clava";
-import { layer } from "./layer.ts";
+import { edge } from "./edge.ts";
 
 // A key cap, drawn in em so it scales with the text it sits in. The prose
 // style in prose.ts mirrors this recipe as descendant styles for plain kbd
-// markup, spelling $lightnessOffset as `ak-layer-10`. Keep the two in sync.
+// markup, where the variants below can only be spelled as classes:
+// $lightnessOffset is `ak-layer-10`, $edgeWeight is `ak-edge-100` and
+// $edgeLighten is `ak-edge-lighten-60`. Keep the two in sync.
 export const kbd = cv({
-  extend: [layer],
+  extend: [edge],
   class: [
-    // The lip and the ring below are drawn in the edge color, opaque and
-    // lightened so the cap reads as a raised object rather than an outlined
-    // box.
-    "ak-edge-100 ak-edge-lighten-60",
     // A kbd element is monospace by default, but a key label is UI text.
     // The adjust pins its x-height, so the label keeps one optical size
     // whatever font the surrounding text uses.
@@ -41,5 +39,11 @@ export const kbd = cv({
   ],
   defaultVariants: {
     $lightnessOffset: 2,
+    // The lip and the ring are drawn in the edge color, opaque and lightened
+    // so the cap reads as a raised object rather than an outlined box. The
+    // `ak-dark:ak-edge-16` class above still wins on a dark cap: it sets the
+    // resolved alpha, not the channel this writes as an inline style.
+    $edgeWeight: 100,
+    $edgeLighten: 60,
   },
 });
