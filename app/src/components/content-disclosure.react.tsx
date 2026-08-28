@@ -18,6 +18,7 @@ import type {
   DisclosureProps,
 } from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
 import { container } from "@ariakit/ui/styles/container.ts";
+import { proseColumn } from "@ariakit/ui/styles/prose.ts";
 import { clsx } from "clsx";
 import type * as React from "react";
 import { containerSizeContent } from "#app/lib/container-size.ts";
@@ -95,13 +96,10 @@ export function ContentDisclosureContent({
   ...props
 }: ContentDisclosureContentProps) {
   if (prose) {
-    // The body is the prose gap column, like the legacy ak-prose-content div
-    // inside the details element.
+    // The body is the rhythm column alone. It sits inside a page-level
+    // prose, so it must keep inheriting that font size rather than set one.
     return (
-      <DisclosureContent
-        body={{ className: "flex flex-col gap-(--prose-gap)" }}
-        {...props}
-      />
+      <DisclosureContent body={{ className: proseColumn().class }} {...props} />
     );
   }
   return (

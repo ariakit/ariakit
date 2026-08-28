@@ -13,6 +13,11 @@ export const list = cv({
   class: [
     "list grid gap-(--list-gap) [counter-reset:list]",
     "[--list-gap-base:var(--list-gap-root,--spacing(4))]",
+    // Inside prose the rhythm comes from prose, but an explicit $gap still
+    // wins because it is an inline style. This ties the line above on
+    // specificity and beats it on order; the nested rule below outranks
+    // both, so a nested list keeps halving.
+    "in-[.prose]:[--list-gap-base:var(--list-gap-root,var(--prose-gap))]",
     "[--list-item-padding:--spacing(1)]",
     "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
     "[--list-item-gap:calc(var(--list-gap)+var(--list-item-padding)*0.5)]",

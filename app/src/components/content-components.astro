@@ -8,6 +8,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Code } from "@ariakit/ui/components/code.ariakit.react.tsx";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react.tsx";
 import { ListItem } from "@ariakit/ui/components/list.ariakit.react.tsx";
 import ContentAdmonition from "./content-admonition.astro";
 import ContentCodeBlock from "./content-code-block.astro";
@@ -31,6 +33,8 @@ export const components = {
   ul: ContentList,
   ol: ContentList,
   li: ListItem,
+  kbd: Kbd,
+  inlinecode: Code,
   admonition: ContentAdmonition,
   hr: ContentSeparator,
   details: ContentDisclosure,

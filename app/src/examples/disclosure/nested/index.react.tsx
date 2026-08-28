@@ -1,3 +1,4 @@
+import { Code } from "@ariakit/ui/components/code.ariakit.react.tsx";
 import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react.tsx";
 import { Reasoning } from "./reasoning.react.tsx";
 
@@ -58,7 +59,7 @@ export default function Example() {
           </p>
           <p>
             I will need a boolean state variable, let's call it{" "}
-            <code>isOpen</code>, initialized to <code>false</code>. A user
+            <Code>isOpen</Code>, initialized to <Code>false</Code>. A user
             clicking the trigger element (e.g., a "..." icon button) will toggle
             this state.
           </p>
@@ -70,12 +71,12 @@ export default function Example() {
             </ListItem>
             <ListItem>
               The trigger button that the user interacts with. Its{" "}
-              <code>onClick</code> handler will manage the <code>isOpen</code>{" "}
+              <Code>onClick</Code> handler will manage the <Code>isOpen</Code>{" "}
               state.
             </ListItem>
             <ListItem>
               The menu panel, which will be rendered conditionally based on the{" "}
-              <code>isOpen</code> state. It will be positioned absolutely
+              <Code>isOpen</Code> state. It will be positioned absolutely
               relative to the container.
             </ListItem>
             <ListItem>
@@ -86,8 +87,8 @@ export default function Example() {
           </List>
           <p>
             The component's props interface will therefore need to accept
-            handlers for these actions, such as an <code>onEdit</code> function
-            and an <code>onDelete</code> function.
+            handlers for these actions, such as an <Code>onEdit</Code> function
+            and an <Code>onDelete</Code> function.
           </p>
         </Reasoning>
         <p>
@@ -108,8 +109,8 @@ export default function Example() {
               <p>
                 When the menu is open, I'll attach a global event listener to
                 the document to listen for clicks. If a click occurs outside the
-                component's boundaries, I will set <code>isOpen</code> to{" "}
-                <code>false</code>. This requires a way to reference the
+                component's boundaries, I will set <Code>isOpen</Code> to{" "}
+                <Code>false</Code>. This requires a way to reference the
                 component's main DOM element to perform this check.
               </p>
             </ListItem>
@@ -127,7 +128,7 @@ export default function Example() {
           </List>
           <p>
             It's critical that these global event listeners are only active when
-            the dropdown is open. They must be added when <code>isOpen</code>{" "}
+            the dropdown is open. They must be added when <Code>isOpen</Code>{" "}
             becomes true and, importantly, removed (cleaned up) when it becomes
             false or when the component is removed from the UI, to prevent
             memory leaks.
@@ -141,21 +142,21 @@ export default function Example() {
           </p>
           <List>
             <ListItem>
-              The trigger button needs <code>aria-haspopup="true"</code> to
+              The trigger button needs <Code>aria-haspopup="true"</Code> to
               indicate it controls a menu.
             </ListItem>
             <ListItem>
-              The button also needs <code>aria-expanded</code>, which will be
-              dynamically set to match the <code>isOpen</code> state. This tells
+              The button also needs <Code>aria-expanded</Code>, which will be
+              dynamically set to match the <Code>isOpen</Code> state. This tells
               assistive tech whether the menu it controls is currently visible.
             </ListItem>
             <ListItem>
               The list of actions should be wrapped in an element with{" "}
-              <code>role="menu"</code>.
+              <Code>role="menu"</Code>.
             </ListItem>
             <ListItem>
               Each individual, clickable action within the list should have a{" "}
-              <code>role="menuitem"</code>. Using a <code>&lt;button&gt;</code>{" "}
+              <Code>role="menuitem"</Code>. Using a <Code>&lt;button&gt;</Code>{" "}
               for each is semantically correct.
             </ListItem>
           </List>

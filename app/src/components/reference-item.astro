@@ -13,6 +13,7 @@ import {
   type ReferenceItem as ReferenceSectionItem,
 } from "#app/lib/reference.ts";
 import { getReferencePath } from "#app/lib/url.ts";
+import { code } from "@ariakit/ui/styles/code.ts";
 import { container } from "@ariakit/ui/styles/container.ts";
 import type { ComponentProps } from "astro/types";
 import { getEntry } from "astro:content";
@@ -78,10 +79,10 @@ const ex = await getEntry("examples", "checkbox-card");
     {
       path ? (
         <ContentLink href={path} reference={false}>
-          <code>{name}</code>
+          <code {...code.html()}>{name}</code>
         </ContentLink>
       ) : (
-        <code>{name}</code>
+        <code {...code.html()}>{name}</code>
       )
     }
   </h5>

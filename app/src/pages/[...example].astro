@@ -18,7 +18,7 @@ import Meta from "#app/components/meta.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { containerSizeContent } from "#app/lib/container-size.ts";
-import { proseElements, tagChip } from "#app/lib/page-intro.ts";
+import { tagChip } from "#app/lib/page-intro.ts";
 import { descriptionToText } from "#app/lib/content.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import Layout from "#app/pages/_layout.astro";
@@ -88,14 +88,11 @@ const descriptionText = await descriptionToText(description?.body, framework);
         >
           {
             Description && (
-              <div
-                class:list={[
-                  "ak-ink-70 text-lg/[1.8] [&_p]:ak-ink-70 [&_a]:not-hover:ak-ink-70! [&_code]:ring-0",
-                  proseElements,
-                ]}
+              <Prose
+                className="ak-ink-70 text-lg/[1.8] [&_p]:ak-ink-70 [&_a]:not-hover:ak-ink-70! [&_code]:ring-0"
               >
                 <Description {framework} {components} />
-              </div>
+              </Prose>
             )
           }
           {

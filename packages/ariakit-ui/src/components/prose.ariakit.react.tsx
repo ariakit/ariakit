@@ -8,7 +8,8 @@ export interface ProseProps
 
 /**
  * Renders a long-form content container that spaces its children on a shared
- * vertical rhythm and styles plain inline markup (code, kbd, strong, hr).
+ * vertical rhythm and styles the plain markup that has no component of its
+ * own (paragraphs and strong emphasis).
  */
 export function Prose(props: ProseProps) {
   const [variantProps, rest] = splitProps(props, prose);

@@ -27,8 +27,8 @@ const {
 // The cv is spread on the raw tag rather than rendering the List component so
 // the element and its props passthrough stay in astro. The list spread below
 // is the element's single class/style source, so the container channel is
-// folded into it. Inside prose, the list gap and ink derive from the prose
-// channels automatically via the cv's ui-prose rules.
+// folded into it. Inside prose, the list gap follows the prose rhythm
+// through the `in-[.prose]` rule in the list style.
 // The caller style also goes through the cv chain: Astro doesn't merge
 // duplicate style attributes.
 const containerProps = container.html({

@@ -13,6 +13,7 @@ import type { IconName } from "#app/icons/icon.react.tsx";
 import { AdmonitionTypeSchema } from "#app/lib/schemas.ts";
 import type { AdmonitionType } from "#app/lib/schemas.ts";
 import { container } from "@ariakit/ui/styles/container.ts";
+import { proseColumn } from "@ariakit/ui/styles/prose.ts";
 import type { HTMLAttributes } from "astro/types";
 import { clsx } from "clsx";
 
@@ -80,7 +81,7 @@ const titleContent =
   })}
   {...props}
 >
-  <div class="flex flex-col gap-(--prose-gap) text-base/relaxed">
+  <div {...proseColumn.html({ class: "text-base/relaxed" })}>
     <div class:list={["font-medium ak-text ak-text-color-(--color) flex gap-2"]}>
       <Icon
         name={icon}

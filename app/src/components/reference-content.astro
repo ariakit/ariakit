@@ -17,6 +17,7 @@ import ContentParagraph from "#app/components/content-paragraph.astro";
 import ContentSeparator from "#app/components/content-separator.astro";
 import Markdown from "#app/components/markdown.astro";
 import ReferenceItem from "#app/components/reference-item.astro";
+import { code } from "@ariakit/ui/styles/code.ts";
 import {
   ReferenceLabel,
   getReferenceLabelText,
@@ -223,7 +224,7 @@ function canRenderSeparator(sectionDiff: number, itemDiff: number) {
                                 item: item.id,
                               })}
                             >
-                              <code>{item.name}</code>
+                              <code {...code.html()}>{item.name}</code>
                             </ContentLink>
                           ))}
                         </ContentParagraph>
@@ -260,7 +261,7 @@ function canRenderSeparator(sectionDiff: number, itemDiff: number) {
                                       item: item.id,
                                     })}
                                   >
-                                    <code>{item.name}</code>
+                                    <code {...code.html()}>{item.name}</code>
                                   </ContentLink>
                                 ))}
                               </ContentParagraph>

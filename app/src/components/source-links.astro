@@ -9,6 +9,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { basename, resolve } from "node:path";
+import { code } from "@ariakit/ui/styles/code.ts";
 
 export interface SourceReference {
   file: string;
@@ -43,7 +44,7 @@ function getCursorUrl({ file, line }: SourceReference) {
         title={`Open ${source.file}:${source.line} in Cursor`}
       >
         <span aria-hidden="true">&#8599;</span>
-        <code>{source.label ?? `${source.file}:${source.line}`}</code>
+        <code {...code.html()}>{source.label ?? `${source.file}:${source.line}`}</code>
       </a>
     ))
   }

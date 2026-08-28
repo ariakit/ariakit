@@ -127,14 +127,6 @@
   }
 }
 
-/* Prose flag published by the prose root and read by descendant components
-   (such as lists) through container style queries. */
-@custom-variant ui-prose {
-  @container style(--prose: 1) {
-    @slot;
-  }
-}
-
 /* List state channels: the list root publishes its flags as custom
    properties, and items and markers react through container style queries. */
 @custom-variant ui-list-ol {

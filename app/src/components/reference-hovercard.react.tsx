@@ -8,9 +8,10 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as ak from "@ariakit/react";
-import { Prose } from "@ariakit/ui/components/prose.ariakit.react.tsx";
+import { code } from "@ariakit/ui/styles/code.ts";
 import { link } from "@ariakit/ui/styles/link.ts";
 import { popover } from "@ariakit/ui/styles/popover.ts";
+import { proseColumn } from "@ariakit/ui/styles/prose.ts";
 import { invariant } from "@ariakit/utils";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { clsx } from "clsx";
@@ -114,7 +115,7 @@ export function ReferenceHovercardAnchor({
         {inCodeBlock ? (
           children
         ) : (
-          <code className="text-inherit!">{children}</code>
+          <code {...code.jsx({ class: "text-inherit!" })}>{children}</code>
         )}
       </ak.HovercardAnchor>
       <ReferenceHovercard inHovercard={inHovercard} />
@@ -205,7 +206,13 @@ export function ReferenceHovercard({
           {data ? (
             <div dangerouslySetInnerHTML={{ __html: data }} />
           ) : (
-            <Prose className="ak-frame ak-frame-p-2 animate-pulse">
+            <div
+              {...proseColumn.jsx({
+                // The loaded partial is a real prose, so the skeleton keeps its
+                // font size: --prose-gap is an em and resolves against it.
+                class: "ak-frame ak-frame-p-2 animate-pulse text-base/relaxed",
+              })}
+            >
               <div className="ak-layer ak-layer-12 w-32 h-7 ak-frame"></div>
               <div className="flex flex-col gap-3">
                 <div className="ak-layer ak-layer-6 w-full h-4 rounded-sm"></div>
@@ -216,7 +223,7 @@ export function ReferenceHovercard({
                 <div className="ak-layer ak-layer-6 w-full h-4 rounded-sm"></div>
                 <div className="ak-layer ak-layer-6 w-1/2 h-4 rounded-sm"></div>
               </div>
-            </Prose>
+            </div>
           )}
         </div>
       </div>

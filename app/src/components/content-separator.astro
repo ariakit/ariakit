@@ -10,21 +10,33 @@
  */
 import { containerSizeContent } from "#app/lib/container-size.ts";
 import { container } from "@ariakit/ui/styles/container.ts";
+import { separator } from "@ariakit/ui/styles/separator.ts";
 import type { HTMLAttributes } from "astro/types";
+import type { VariantProps } from "clava";
 
-interface Props extends HTMLAttributes<"hr"> {}
+type SeparatorVariants = VariantProps<typeof separator>;
 
-const { class: className, style, ...props } = Astro.props;
+interface Props extends HTMLAttributes<"hr">, SeparatorVariants {}
+
+// The app does not depend on clava, so the variants are named here rather
+// than split off with splitProps. Add a name here when separator.ts gains a
+// variant, or it will land on the element as an attribute.
+const {
+  $line,
+  $gap,
+  class: className,
+  style,
+  ...props
+} = Astro.props;
 ---
 
 <hr
   {...container.html({
     $size: containerSizeContent,
     $p: "none",
-    class: className,
-    // Astro doesn't merge duplicate style attributes, so the caller style
-    // goes through the cv, which merges it.
-    style,
+    // Astro doesn't merge duplicate class or style attributes, so the caller
+    // values go through the cv chain, which merges them.
+    ...separator.html({ $line, $gap, class: className, style }),
   })}
   {...props}
 />

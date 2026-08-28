@@ -13,6 +13,7 @@ import { getFramework } from "#app/lib/frameworks.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
 import { badge, badgeLabel } from "@ariakit/ui/styles/badge.ts";
+import { code } from "@ariakit/ui/styles/code.ts";
 import { ListItem } from "@ariakit/ui/components/list.ariakit.react.tsx";
 import { button } from "@ariakit/ui/styles/button.ts";
 import { invariant } from "@ariakit/utils";
@@ -67,19 +68,25 @@ for (const source of sources) {
   }
 }
 
+// These chips are interpolated into a set:html string, so the recipe is
+// serialized rather than spread onto an element.
+const codeAttributes = code.html();
+const codeChip = (text: string) =>
+  `<code class="${codeAttributes.class}" style="${codeAttributes.style}">${text}</code>`;
+
 const dependenciesKeys = Object.keys(dependencies).join(" ");
 const devDependenciesKeys = Object.keys(devDependencies).join(" ");
 
 const dependenciesHtml = Object.entries(dependencies)
-  .map(([key, value]) => `<code>${key}@${value.replace(/^[~^]/, "")}</code>`)
+  .map(([key, value]) => codeChip(`${key}@${value.replace(/^[~^]/, "")}`))
   .join(" ");
 
 const devDependenciesHtml = Object.entries(devDependencies)
-  .map(([key, value]) => `<code>${key}@${value.replace(/^[~^]/, "")}</code>`)
+  .map(([key, value]) => codeChip(`${key}@${value.replace(/^[~^]/, "")}`))
   .join(" ");
 
 const frameworkDependenciesHtml = Object.entries(frameworkDependencies)
-  .map(([key, value]) => `<code>${key}@${value.replace(/^[~^]/, "")}</code>`)
+  .map(([key, value]) => codeChip(`${key}@${value.replace(/^[~^]/, "")}`))
   .join(" ");
 ---
 

@@ -32,7 +32,7 @@ import TimelineAnchor from "#app/components/timeline-anchor.astro";
 import TimelineAnimate from "#app/components/timeline-animate.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { containerSizeContent } from "#app/lib/container-size.ts";
-import { proseElements, tagChip } from "#app/lib/page-intro.ts";
+import { tagChip } from "#app/lib/page-intro.ts";
 import { descriptionToText } from "#app/lib/content.ts";
 import { trimRight } from "#app/lib/string.ts";
 import { mapTags } from "#app/lib/tags.ts";
@@ -233,15 +233,12 @@ const apiHeading = heading.html({
         >
           {
             Description && (
-              <div
-                class:list={[
-                  "ak-ink-70 text-lg/[1.8] [&_p]:ak-ink-70 [&_a]:not-hover:ak-ink-70! [&_code]:ring-0 relative",
-                  proseElements,
-                ]}
+              <Prose
+                className="ak-ink-70 text-lg/[1.8] [&_p]:ak-ink-70 [&_a]:not-hover:ak-ink-70! [&_code]:ring-0 relative"
               >
                 <Description {framework} {components} />
                 <BoxPatternsRightOnly />
-              </div>
+              </Prose>
             )
           }
           {

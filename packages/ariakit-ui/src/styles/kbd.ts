@@ -1,12 +1,7 @@
 import { cv } from "clava";
 import { edge } from "./edge.ts";
 
-// A key cap, drawn in em so it scales with the text it sits in. The prose
-// style in prose.ts mirrors this recipe as descendant styles for plain kbd
-// markup, where the variants below can only be spelled as classes:
-// $lightnessOffset is `ak-layer-10`, $edgeLighten is `ak-edge-lighten-60`,
-// and the $edgeWeight channel is `ak-edge-100` with `ak-dark:ak-edge-16`.
-// Keep the two in sync.
+// A key cap, drawn in em so it scales with the text it sits in.
 export const kbd = cv({
   extend: [edge],
   class: [

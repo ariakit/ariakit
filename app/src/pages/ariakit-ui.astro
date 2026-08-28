@@ -58,6 +58,7 @@ import {
   buttonSlot,
 } from "@ariakit/ui/styles/button.ts";
 import { container } from "@ariakit/ui/styles/container.ts";
+import { code } from "@ariakit/ui/styles/code.ts";
 import {
   control,
   controlContent,
@@ -579,7 +580,7 @@ function getExampleSource(source: string, line: number): SourceReference {
       </h1>
       <p class="text-lg ak-ink-70">
         Direct style calls, framework-wrapper output, local class overrides and
-        every example composition that resolves to <code>@ariakit/ui</code>.
+        every example composition that resolves to <code {...code.html()}>@ariakit/ui</code>.
         Interactive surfaces are also rendered statically below so their styles
         stay visible without opening them.
       </p>
@@ -633,7 +634,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               <span slot="badge">7</span>
             </ChipLink>
           </div>
-          <code>buttonLabel + buttonSlot $kind="badge" + aria-current</code>
+          <code {...code.html()}>buttonLabel + buttonSlot $kind="badge" + aria-current</code>
           <SourceLinks
             sources={[
               { file: "app/src/pages/[...collection].astro", line: 252 },
@@ -666,7 +667,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               <button aria-selected="true" {...codeViewTabProps}>Code</button>
             </div>
           </div>
-          <code>ghost button base + forced selected/idle app overrides</code>
+          <code {...code.html()}>ghost button base + forced selected/idle app overrides</code>
           <SourceLinks
             sources={[
               { file: "app/src/components/code-block.react.tsx", line: 740 },
@@ -695,7 +696,7 @@ function getExampleSource(source: string, line: number): SourceReference {
                   {label}
                 </button>
               </div>
-              <code>{detail}</code>
+              <code {...code.html()}>{detail}</code>
               <SourceLinks {sources} />
             </article>
           ))
@@ -731,7 +732,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               <span {...badgeLabel.html()}>No license</span>
             </span>
           </div>
-          <code>brand dashed · green slot · yellow auto</code>
+          <code {...code.html()}>brand dashed · green slot · yellow auto</code>
           <SourceLinks
             sources={[
               { file: "app/src/pages/_layout.astro", line: 117 },
@@ -772,7 +773,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               </kbd>
             </div>
           </div>
-          <code>default · $p=1 · $p=2/$edgeWeight=15 + kbd</code>
+          <code {...code.html()}>default · $p=1 · $p=2/$edgeWeight=15 + kbd</code>
           <SourceLinks
             sources={[
               { file: "app/src/pages/admin/promos.astro", line: 102 },
@@ -791,7 +792,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               <option {...selectItem.html()} value="vue">Vue</option>
             </select>
           </div>
-          <code>select.html + selectItem.html</code>
+          <code {...code.html()}>select.html + selectItem.html</code>
           <SourceLinks
             sources={[{ file: "app/src/components/select.astro", line: 29 }]}
           />
@@ -825,7 +826,7 @@ function getExampleSource(source: string, line: number): SourceReference {
             <article class="gallery-sample">
               <header class="gallery-sample-header">
                 <h3>{variant.title}</h3>
-                <code>{variant.detail}</code>
+                <code {...code.html()}>{variant.detail}</code>
               </header>
               <div {...tabs.html(variant.tabsProps)}>
                 <div {...tabList.html(variant.tabListProps)}>
@@ -904,7 +905,7 @@ function getExampleSource(source: string, line: number): SourceReference {
             <article class="gallery-sample">
               <header class="gallery-sample-header">
                 <h3>{variant.title}</h3>
-                <code>{variant.detail}</code>
+                <code {...code.html()}>{variant.detail}</code>
               </header>
               <div
                 {...gliderGroup.html({
@@ -949,7 +950,7 @@ function getExampleSource(source: string, line: number): SourceReference {
           <div {...buttonGlider.html({ $kind: "bevel", $state: "selected" })}>
           </div>
         </div>
-        <code>ButtonGroup + ButtonSeparator + ButtonGlider aliases</code>
+        <code {...code.html()}>ButtonGroup + ButtonSeparator + ButtonGlider aliases</code>
       </article>
 
       <SourceLinks
@@ -982,7 +983,7 @@ function getExampleSource(source: string, line: number): SourceReference {
             layerVariants.map(({ label, detail, attrs }) => (
               <div {...attrs}>
                 <span class="text">{label}</span>
-                <code>{detail}</code>
+                <code {...code.html()}>{detail}</code>
               </div>
             ))
           }
@@ -1001,7 +1002,7 @@ function getExampleSource(source: string, line: number): SourceReference {
             frameVariants.map(({ label, detail, attrs }) => (
               <div {...attrs}>
                 <strong>{label}</strong>
-                <code>{detail}</code>
+                <code {...code.html()}>{detail}</code>
               </div>
             ))
           }
@@ -1071,7 +1072,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               <span {...controlSlot.html({ $kind: "shortcut" })}>⌘K</span>
             </div>
           </div>
-          <code>
+          <code {...code.html()}>
             Control + Slot(icon/avatar/badge/shortcut) + Content + Label +
             Description
           </code>
@@ -1108,7 +1109,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               <div {...control.html()}>Ship</div>
             </div>
           </div>
-          <code>horizontal/stretch layouts · pipe/slash/chevron separators</code
+          <code {...code.html()}>horizontal/stretch layouts · pipe/slash/chevron separators</code
           >
         </article>
 
@@ -1156,7 +1157,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               </span>
             </button>
           </div>
-          <code>Content · Label · Description · four Slot kinds · bevel</code>
+          <code {...code.html()}>Content · Label · Description · four Slot kinds · bevel</code>
         </article>
 
         <article class="gallery-sample">
@@ -1191,7 +1192,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               </span>
             </label>
           </div>
-          <code>option active/disabled · radio checked/description</code>
+          <code {...code.html()}>option active/disabled · radio checked/description</code>
         </article>
       </div>
 
@@ -1270,7 +1271,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               }
             </div>
           </div>
-          <code>Progress/Fill · Circular/CircularFill · value/thickness</code>
+          <code {...code.html()}>Progress/Fill · Circular/CircularFill · value/thickness</code>
         </article>
 
         <article class="gallery-sample">
@@ -1296,7 +1297,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               </div>
             </div>
           </div>
-          <code>Button/Icon/ValueLabel/Arrow + Popover/Item/ItemCheck</code>
+          <code {...code.html()}>Button/Icon/ValueLabel/Arrow + Popover/Item/ItemCheck</code>
         </article>
 
         <article class="gallery-sample">
@@ -1337,7 +1338,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               <span {...badgeLabel.html()}>Danger</span>
             </span>
           </div>
-          <code>layer · size · rounded · inset/dashed/dotted · Slot/Label</code>
+          <code {...code.html()}>layer · size · rounded · inset/dashed/dotted · Slot/Label</code>
         </article>
 
         <article class="gallery-sample">
@@ -1381,7 +1382,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               </kbd>
               <kbd {...kbd.html({ $lightnessOffset: 5 })}>Fn</kbd>
             </div>
-            <code>
+            <code {...code.html()}>
               kbd · default · $layer=brand/danger · $edge=brand · $edgeWeight=40
               · $edgeWeight=adaptive · $edgeHue/$edgeChroma ·
               $lightnessOffset=5 — every one holds in both schemes
@@ -1440,7 +1441,7 @@ function getExampleSource(source: string, line: number): SourceReference {
             </table>
           </div>
         </div>
-        <code>
+        <code {...code.html()}>
           Container/Scroller/Table · Head/Foot/RowGroup · Row/Cell · sticky,
           hover, header, numeric
         </code>
@@ -1487,7 +1488,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               This block uses the same prose recipe as reference pages,
               disclosures and hover cards.
             </blockquote>
-            <pre><code>pnpm add @ariakit/ui</code></pre>
+            <pre><code {...code.html()}>pnpm add @ariakit/ui</code></pre>
           </div>
           <SourceLinks
             sources={[
@@ -1585,7 +1586,7 @@ export default function Example() {
             </ListItem>
             <ListItem> Inline rows draw no connector segments </ListItem>
           </ol>
-          <code>list · list $ordered</code>
+          <code {...code.html()}>list · list $ordered</code>
         </article>
 
         <article class="gallery-sample">
@@ -1616,7 +1617,7 @@ export default function Example() {
               <p>Only the list kind decides whether a connector paints.</p>
             </ListItem>
           </ul>
-          <code>ui-list-blocks · listItemConnector</code>
+          <code {...code.html()}>ui-list-blocks · listItemConnector</code>
         </article>
 
         <article class="gallery-sample">
@@ -1631,7 +1632,7 @@ export default function Example() {
               <p>Sections mode wins when a list matches blocks mode too.</p>
             </ListItem>
           </ul>
-          <code>ui-list-sections</code>
+          <code {...code.html()}>ui-list-sections</code>
         </article>
 
         <article class="gallery-sample">
@@ -1667,7 +1668,7 @@ export default function Example() {
               <p>The outer segment reaches this row unbroken</p>
             </ListItem>
           </ol>
-          <code>$ordered false · ui-list-last-row</code>
+          <code {...code.html()}>$ordered false · ui-list-last-row</code>
         </article>
 
         <article class="gallery-sample">
@@ -1687,28 +1688,28 @@ export default function Example() {
             </ListItem>
             <ListItem checked> A completed row replaces the number </ListItem>
           </ol>
-          <code>listItemMarker $checked · $progress</code>
+          <code {...code.html()}>listItemMarker $checked · $progress</code>
         </article>
 
         <article class="gallery-sample">
           <h3>Inside prose</h3>
           <div {...prose.html({})}>
             <p>
-              A list composed inside prose reads the prose gap and ink, so it
-              keeps the surrounding rhythm without extra props.
+              A list composed inside prose reads the prose gap, so it keeps
+              the surrounding rhythm without extra props.
             </p>
             <ul {...list.html({})}>
               <ListItem>
-                The base gap follows <code>--prose-gap</code>
+                The base gap follows <code {...code.html()}>--prose-gap</code>
               </ListItem>
               <ListItem>
-                The rows re-derive the prose ink so they stay readable on
-                layered surfaces
+                An explicit <code {...code.html()}>$gap</code> still wins, because a variant
+                writes an inline style
               </ListItem>
             </ul>
             <p>Prose resumes after the list at the same rhythm.</p>
           </div>
-          <code>ui-prose · --prose-gap</code>
+          <code {...code.html()}>in-[.prose] · --prose-gap</code>
         </article>
 
         <article class="gallery-sample">
@@ -1716,7 +1717,7 @@ export default function Example() {
           <ul {...list.html({ $gap: 1, $itemPadding: 0 })}>
             <ListItem> A dense list packs the rows </ListItem>
             <ListItem>
-              <code>$gap</code> and <code>$itemPadding</code> drive the spacing
+              <code {...code.html()}>$gap</code> and <code {...code.html()}>$itemPadding</code> drive the spacing
             </ListItem>
           </ul>
           <ul {...list.html({ $gap: 6, class: "leading-relaxed" })}>
@@ -1725,7 +1726,7 @@ export default function Example() {
               the line height resizes the marker and the gutter with it
             </ListItem>
           </ul>
-          <code>list $gap · $itemPadding · leading-*</code>
+          <code {...code.html()}>list $gap · $itemPadding · leading-*</code>
         </article>
 
         <article class="gallery-sample">
@@ -1762,7 +1763,7 @@ export default function Example() {
               </a>
             </li>
           </ul>
-          <code>listItem + button</code>
+          <code {...code.html()}>listItem + button</code>
         </article>
 
         <article class="gallery-sample">
@@ -1785,7 +1786,7 @@ export default function Example() {
               <p>A plain row closes the list, and its segment fades out.</p>
             </ListItem>
           </ol>
-          <code>listDisclosure · Disclosure decoration</code>
+          <code {...code.html()}>listDisclosure · Disclosure decoration</code>
         </article>
       </div>
 
