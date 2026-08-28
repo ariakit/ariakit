@@ -19,6 +19,18 @@ test("show context menu and hide it by clicking outside", async () => {
   expect(q.menu.maybe()).not.toBeInTheDocument();
 });
 
+// The dialog names the focused control as a fallback disclosure, but that
+// control isn't a menu button and can't be assumed to close the menu, so the
+// menu keeps the fallback dismiss button that assistive technology relies on.
+// https://github.com/ariakit/ariakit/issues/4270
+test("context menu opened from a focused control keeps a dismiss button", async () => {
+  await click(q.button("Open menu"));
+  await expect.poll(q.menu).toBeVisible();
+  expect(q.within(q.menu()).button("Dismiss popup")).toBeInTheDocument();
+  // The captured control doesn't join the modal context either.
+  expect(q.button.maybe("Open menu")).not.toBeInTheDocument();
+});
+
 test("navigate through context menu with keyboard", async () => {
   await rightClick(q.text("Right click here"));
   await expect.poll(q.menu).toHaveFocus();

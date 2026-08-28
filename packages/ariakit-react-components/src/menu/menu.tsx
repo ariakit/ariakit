@@ -15,6 +15,7 @@ import {
 import type { ElementType, MutableRefObject } from "react";
 import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
+import { isCapturedDisclosure } from "../dialog/utils/__captured-disclosures.ts";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
 import { useMenuProviderContext } from "./menu-context.tsx";
@@ -24,6 +25,29 @@ import { useMenuList } from "./menu-list.tsx";
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+interface PersistentDisclosureState {
+  disclosureElement: HTMLElement | null;
+  contentElement: HTMLElement | null;
+}
+
+/**
+ * Returns the menu button when it can join the modal context of a modal menu.
+ * It must be an element the application named, since a disclosure the dialog
+ * captured only happened to have focus and can't be assumed to close the menu.
+ * It must also live outside the menu, otherwise the menu would become an
+ * ancestor of one of its own persistent elements, which the dialog reads as a
+ * nested dialog. The connected check mirrors the dialog's own definition of a
+ * named disclosure.
+ */
+function getPersistentDisclosure(state: PersistentDisclosureState) {
+  const { disclosureElement, contentElement } = state;
+  if (!disclosureElement) return null;
+  if (!disclosureElement.isConnected) return null;
+  if (isCapturedDisclosure(disclosureElement)) return null;
+  if (contentElement?.contains(disclosureElement)) return null;
+  return disclosureElement;
+}
 
 /**
  * Returns props to create a `Menu` component.
@@ -47,6 +71,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   autoFocusOnShow = true,
   hideOnHoverOutside,
   alwaysVisible,
+  getPersistentElements,
   ...props
 }) {
   const context = useMenuProviderContext();
@@ -157,6 +182,16 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     (state) => state.disclosureElement || state.anchorElement,
   );
 
+  // Modal menus keep their menu button in the modal context so that it stays
+  // out of the `inert` subtree. Chromium refuses to read an `inert` element as
+  // the menu's `aria-labelledby` target, and the button doubles as the way out
+  // of the menu. https://github.com/ariakit/ariakit/issues/4270
+  const persistentDisclosure = useStoreState(
+    store,
+    ["disclosureElement", "contentElement"],
+    getPersistentDisclosure,
+  );
+
   const contentElement = useStoreState(
     store.combobox || store,
     "contentElement",
@@ -231,6 +266,24 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
       });
       return false;
     },
+    // Read the disclosure live rather than through the render above, because
+    // the dialog collects persistent elements from an effect that doesn't run
+    // again when the disclosure changes.
+    getPersistentElements() {
+      const elements = getPersistentElements?.() || [];
+      if (!modal) return elements;
+      const state = store?.getState();
+      if (!state) return elements;
+      const disclosureElement = getPersistentDisclosure(state);
+      if (!disclosureElement) return elements;
+      return [...elements, disclosureElement];
+    },
+    // Menus with a menu button rely on it to close them, so the dialog doesn't
+    // need to prepend its own hidden dismiss button, which would be exposed as
+    // a `button` owned by the element with the `menu` role. Menus without one
+    // keep it. The dialog ignores this for non-modal menus, which never get a
+    // hidden dismiss button in the first place.
+    unstable_hiddenDismiss: !persistentDisclosure,
     modal,
     portal,
     backdrop: hasParentMenu ? false : props.backdrop,
@@ -273,7 +326,39 @@ export const Menu = createDialogComponent(
 );
 
 export interface MenuOptions<T extends ElementType = TagName>
-  extends MenuListOptions<T>, Omit<HovercardOptions<T>, "store"> {}
+  extends MenuListOptions<T>, Omit<HovercardOptions<T>, "store"> {
+  /**
+   * Determines whether the menu is modal. Modal menus have distinct states and
+   * behaviors:
+   * - The [`portal`](https://ariakit.com/reference/menu#portal) and
+   *   [`preventBodyScroll`](https://ariakit.com/reference/menu#preventbodyscroll)
+   *   props are set to `true`. They can still be manually set to `false`.
+   * - When using the [`Heading`](https://ariakit.com/reference/heading) or
+   *   [`MenuHeading`](https://ariakit.com/reference/menu-heading) components
+   *   within the menu, their level will be reset so they start with `h1`.
+   * - The [`MenuButton`](https://ariakit.com/reference/menu-button) component,
+   *   or any other element assigned with
+   *   [`setDisclosureElement`](https://ariakit.com/reference/use-menu-store#setdisclosureelement),
+   *   is part of the modal context, so it can still label the menu and close
+   *   it. Because of that, no visually hidden dismiss button is rendered
+   *   inside the menu, where the ARIA menu pattern doesn't allow a `button`.
+   *   Menus opened without such an element, such as context menus, still get
+   *   one. If the element doesn't close the menu, because
+   *   [`toggleOnClick`](https://ariakit.com/reference/menu-button#toggleonclick)
+   *   is `false` or because it only shows the menu, render your own dismiss
+   *   control as a menu item, composing
+   *   [`MenuItem`](https://ariakit.com/reference/menu-item) with
+   *   [`MenuDismiss`](https://ariakit.com/reference/menu-dismiss), so that
+   *   assistive technology can still leave the menu.
+   * - When the menu is open, the element tree outside of both the menu and its
+   *   menu button will be inert.
+   *
+   * Live examples:
+   * - [Context menu](https://ariakit.com/examples/menu-context-menu)
+   * @default false
+   */
+  modal?: boolean;
+}
 
 export type MenuProps<T extends ElementType = TagName> = Props<
   T,
