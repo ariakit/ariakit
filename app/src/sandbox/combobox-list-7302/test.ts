@@ -58,3 +58,28 @@ test("unrelated listbox does not take the popup role", async () => {
   expect(popover).toContainElement(q.option("Apple"));
   expect(popover).toContainElement(q.listbox("Recently used"));
 });
+
+// https://github.com/ariakit/ariakit/issues/7302
+test("popover sharing an element with a list keeps the popup role", async () => {
+  const combobox = q.combobox("Search tags");
+  await click(combobox);
+
+  const popover = q.listbox("Tag results");
+  expect(combobox).toHaveAttribute("aria-haspopup", "listbox");
+  expect(popover).toContainElement(q.option("Design"));
+});
+
+// https://github.com/ariakit/ariakit/issues/7302
+test("nested list owns the popup role on a shared element", async () => {
+  const combobox = q.combobox("Search issues");
+  await click(combobox);
+
+  const popover = q.dialog("Issue results");
+  await expect
+    .poll(() => combobox.getAttribute("aria-haspopup"))
+    .toBe("dialog");
+
+  const list = q.listbox("Issues");
+  expect(popover).toContainElement(list);
+  expect(list).toContainElement(q.option("Bug report"));
+});

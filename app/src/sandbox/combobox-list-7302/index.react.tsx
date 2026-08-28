@@ -28,14 +28,7 @@ function GoToFile() {
   return (
     <Ariakit.ComboboxProvider inputValue={value} setInputValue={setValue}>
       <Ariakit.Combobox aria-label="Go to file" />
-      {/* TODO: ComboboxList injects role="listbox" here, so the popup role has
-          to be set explicitly. Remove once the nested list can take over the
-          popup role. https://github.com/ariakit/ariakit/issues/7302 */}
-      <Ariakit.ComboboxPopover
-        role="dialog"
-        gutter={4}
-        aria-label="Go to file results"
-      >
+      <Ariakit.ComboboxPopover gutter={4} aria-label="Go to file results">
         {/* A tree may only own treeitem and group children, so the live count
             has to stay outside the nested list. */}
         <div role="status">
@@ -60,14 +53,7 @@ function RunCommand() {
   return (
     <Ariakit.ComboboxProvider>
       <Ariakit.Combobox aria-label="Run command" />
-      {/* TODO: ComboboxList injects role="listbox" here, so the popup role has
-          to be set explicitly. Remove once the nested list can take over the
-          popup role. https://github.com/ariakit/ariakit/issues/7302 */}
-      <Ariakit.ComboboxPopover
-        role="dialog"
-        gutter={4}
-        aria-label="Command results"
-      >
+      <Ariakit.ComboboxPopover gutter={4} aria-label="Command results">
         <Ariakit.ComboboxList role="menu" aria-label="Commands">
           {commands.map((command) => (
             <Ariakit.ComboboxItem key={command} value={command} />
@@ -98,19 +84,51 @@ function FruitSearch() {
   return (
     <Ariakit.ComboboxProvider>
       <Ariakit.Combobox aria-label="Search fruits" />
-      {/* TODO: The unrelated listbox below makes ComboboxList drop its own
-          role, so the popup role has to be set explicitly. Remove once that
-          listbox stops taking over the popup role.
-          https://github.com/ariakit/ariakit/issues/7302 */}
-      <Ariakit.ComboboxPopover
-        role="listbox"
-        gutter={4}
-        aria-label="Fruit results"
-      >
+      <Ariakit.ComboboxPopover gutter={4} aria-label="Fruit results">
         {fruits.map((fruit) => (
           <Ariakit.ComboboxItem key={fruit} value={fruit} />
         ))}
         <RecentlyUsed />
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
+// A wrapper that fixes the popover composition usually renders the list through
+// the popover, so both share one element and only one of them may carry the
+// popup role.
+function SearchTags() {
+  return (
+    <Ariakit.ComboboxProvider>
+      <Ariakit.Combobox aria-label="Search tags" />
+      <Ariakit.ComboboxPopover
+        gutter={4}
+        aria-label="Tag results"
+        render={<Ariakit.ComboboxList />}
+      >
+        <Ariakit.ComboboxItem value="Design" />
+        <Ariakit.ComboboxItem value="Docs" />
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
+// The same shared element, but with a real nested list inside it. That list
+// must take the popup role from both hooks that share the outer element.
+function SearchIssues() {
+  return (
+    <Ariakit.ComboboxProvider>
+      <Ariakit.Combobox aria-label="Search issues" />
+      <Ariakit.ComboboxPopover
+        gutter={4}
+        aria-label="Issue results"
+        render={<Ariakit.ComboboxList />}
+      >
+        <div role="status">2 issues</div>
+        <Ariakit.ComboboxList aria-label="Issues">
+          <Ariakit.ComboboxItem value="Bug report" />
+          <Ariakit.ComboboxItem value="Feature request" />
+        </Ariakit.ComboboxList>
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
   );
@@ -122,6 +140,8 @@ export default function Example() {
       <GoToFile />
       <RunCommand />
       <FruitSearch />
+      <SearchTags />
+      <SearchIssues />
     </>
   );
 }

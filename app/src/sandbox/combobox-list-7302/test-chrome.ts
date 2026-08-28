@@ -51,4 +51,30 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(query(popover).option("Apple")).toBeVisible();
     await test.expect(query(popover).listbox("Recently used")).toBeVisible();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7302
+  test("popover sharing an element with a list keeps the popup role", async ({
+    q,
+  }) => {
+    const combobox = q.combobox("Search tags");
+    await combobox.click();
+
+    const popover = q.listbox("Tag results");
+    await test.expect(popover).toBeVisible();
+    await test.expect(combobox).toHaveAttribute("aria-haspopup", "listbox");
+    await test.expect(query(popover).option("Design")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7302
+  test("nested list owns the popup role on a shared element", async ({ q }) => {
+    const combobox = q.combobox("Search issues");
+    await combobox.click();
+
+    const popover = q.dialog("Issue results");
+    await test.expect(popover).toBeVisible();
+    await test.expect(combobox).toHaveAttribute("aria-haspopup", "dialog");
+
+    const list = query(popover).listbox("Issues");
+    await test.expect(query(list).option("Bug report")).toBeVisible();
+  });
 });
