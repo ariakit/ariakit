@@ -30,7 +30,7 @@ const progressBase = cv({
   },
   defaultVariants: {
     $lightnessOffset: 2,
-    $borderWeight: "adaptive",
+    $edgeWeight: "adaptive",
     // A border would grow the track, so the edge is a ring drawn inside it.
     $borderType: "inset",
     $border: true,

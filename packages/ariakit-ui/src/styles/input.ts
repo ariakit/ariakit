@@ -42,7 +42,7 @@ export const input = cv({
     // Inputs want a stronger edge than the named border weights provide
     // (between medium and bold). A variant default, not a base class, so
     // instance weights replace it instead of losing by stylesheet order.
-    $borderWeight: 30,
+    $edgeWeight: 30,
   },
 });
 

@@ -1,5 +1,6 @@
 import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
+import { edge } from "./edge.ts";
 import { frame } from "./frame.ts";
 import { layer } from "./layer.ts";
 
@@ -121,7 +122,7 @@ export const listItemContent = cv({
 });
 
 export const listItemMarker = cv({
-  extend: [frame],
+  extend: [edge],
   class: [
     // The marker overlays the gutter that the start padding reserves, so the
     // marker stays out of the row's own flow.
@@ -173,9 +174,6 @@ export const listItemMarker = cv({
     },
   },
   defaultVariants: {
-    // The marker paints its own disc, so it must not open a frame context
-    // that would rewrite the padding it positions itself against.
-    $frame: false,
     // $progress alone puts the marker in a check slot, and a full arc
     // completes it.
     $checked(_defaultValue, variants) {
@@ -208,7 +206,7 @@ export const listItemMarker = cv({
           : `calc(var(--list-ol, 0) * ${ORDERED_MARKER_LIGHTNESS})`)
       );
     },
-    $borderWeight(defaultValue, variants) {
+    $edgeWeight(defaultValue, variants) {
       if (variants.$checked === true) return defaultValue;
       return defaultValue ?? (variants.$checked === false ? 25 : "bold");
     },

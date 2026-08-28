@@ -291,11 +291,11 @@ const tabVariants = [
   },
   {
     title: "Brand border and square panel",
-    detail: '$border={3} $borderColor="brand" $borderRaw $roundedTop={false}',
+    detail: '$border={3} $edge="brand" $edgeRaw $roundedTop={false}',
     tabsProps: {
       $border: 3,
-      $borderColor: "brand",
-      $borderRaw: true,
+      $edge: "brand",
+      $edgeRaw: true,
       $rounded: "xl",
       $p: 1,
     },
@@ -442,27 +442,27 @@ const frameVariants = [
   },
   {
     label: "Inset brand",
-    detail: '$borderType="inset" $borderColor="brand"',
+    detail: '$borderType="inset" $edge="brand"',
     attrs: frame.html({
       $frame: true,
       $rounded: "2xl",
       $p: 3,
       $border: 2,
       $borderType: "inset",
-      $borderColor: "brand",
+      $edge: "brand",
       class: "gallery-frame-sample",
     }),
   },
   {
     label: "Dashed danger",
-    detail: '$borderType="dashed" $borderColor="danger"',
+    detail: '$borderType="dashed" $edge="danger"',
     attrs: frame.html({
       $frame: true,
       $rounded: "xl",
       $p: 3,
       $border: 2,
       $borderType: "dashed",
-      $borderColor: "danger",
+      $edge: "danger",
       class: "gallery-frame-sample",
     }),
   },
@@ -713,7 +713,7 @@ function getExampleSource(source: string, line: number): SourceReference {
                 $rounded: "lg",
                 $p: 2,
                 $borderType: "dashed",
-                $borderWeight: "medium",
+                $edgeWeight: "medium",
               })}
             >
               <span {...badgeLabel.html()}>Plus</span>
@@ -760,7 +760,7 @@ function getExampleSource(source: string, line: number): SourceReference {
             <div
               {...input.html({
                 $p: 2,
-                $borderWeight: 15,
+                $edgeWeight: 15,
                 class: "flex h-10 gap-2 items-center text-start w-full text-sm",
               })}
             >
@@ -772,7 +772,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               </kbd>
             </div>
           </div>
-          <code>default · $p=1 · $p=2/$borderWeight=15 + kbd</code>
+          <code>default · $p=1 · $p=2/$edgeWeight=15 + kbd</code>
           <SourceLinks
             sources={[
               { file: "app/src/pages/admin/promos.astro", line: 102 },
@@ -879,7 +879,7 @@ function getExampleSource(source: string, line: number): SourceReference {
       </div>
       <SourceLinks
         sources={[
-          { file: "packages/ariakit-ui/src/styles/tabs.ts", line: 14 },
+          { file: "packages/ariakit-ui/src/styles/tabs.ts", line: 12 },
           { file: "packages/ariakit-ui/src/components/tabs.ariakit.react.tsx", line: 62 },
           { file: "app/src/components/playground.react.tsx", line: 35 },
           { file: "app/src/components/code-block.react.tsx", line: 893 },
@@ -1008,7 +1008,8 @@ function getExampleSource(source: string, line: number): SourceReference {
         </div>
         <SourceLinks
           sources={[
-            { file: "packages/ariakit-ui/src/styles/frame.ts", line: 38 },
+            { file: "packages/ariakit-ui/src/styles/frame.ts", line: 6 },
+            { file: "packages/ariakit-ui/src/styles/edge.ts", line: 40 },
           ]}
         />
       </article>
@@ -1196,7 +1197,7 @@ function getExampleSource(source: string, line: number): SourceReference {
 
       <SourceLinks
         sources={[
-          { file: "packages/ariakit-ui/src/styles/control.ts", line: 5 },
+          { file: "packages/ariakit-ui/src/styles/control.ts", line: 28 },
           { file: "packages/ariakit-ui/src/styles/button.ts", line: 19 },
           { file: "packages/ariakit-ui/src/styles/option.ts", line: 6 },
           { file: "packages/ariakit-ui/src/styles/radio.ts", line: 4 },
@@ -1329,7 +1330,7 @@ function getExampleSource(source: string, line: number): SourceReference {
             <span
               {...badge.html({
                 $layer: "danger",
-                $borderWeight: "bold",
+                $edgeWeight: "bold",
                 $rounded: "md",
               })}
             >
@@ -1774,9 +1775,9 @@ export default function Example() {
       <SourceLinks
         sources={[
           { file: "packages/ariakit-ui/src/styles/list.ts", line: 12 },
-          { file: "packages/ariakit-ui/src/styles/list.ts", line: 142 },
-          { file: "packages/ariakit-ui/src/styles/list.ts", line: 167 },
-          { file: "packages/ariakit-ui/src/styles/list.ts", line: 271 },
+          { file: "packages/ariakit-ui/src/styles/list.ts", line: 124 },
+          { file: "packages/ariakit-ui/src/styles/list.ts", line: 216 },
+          { file: "packages/ariakit-ui/src/styles/list.ts", line: 247 },
           { file: "packages/ariakit-ui/src/components/list.ariakit.react.tsx", line: 58 },
           { file: "app/src/styles/ariakit.css", line: 188 },
         ]}

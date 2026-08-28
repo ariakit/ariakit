@@ -1,42 +1,9 @@
 import { cv } from "clava";
-import { includes } from "../utils/includes.ts";
-import {
-  CHROMA_VALUES,
-  HUE_VALUES,
-  getScaledStyleClass,
-  getSpacingValue,
-} from "../utils/styles.ts";
-import type { ChromaValues, ColorValues, HueValues } from "../utils/styles.ts";
-import { layer } from "./layer.ts";
-
-const FRAME_BORDER_COLOR_VALUES = [
-  "brand",
-  "success",
-  "warning",
-  "danger",
-] as const satisfies readonly ColorValues[];
-
-export type FrameBorderColorValues = (typeof FRAME_BORDER_COLOR_VALUES)[number];
-
-export type FrameBorderWeightValues =
-  | "adaptive"
-  | "light"
-  | "normal"
-  | "medium"
-  | "bold";
-
-/**
- * Checks whether a value is one of the named colors accepted by the frame's
- * `$borderColor` variant.
- */
-export function isFrameBorderColor(
-  value: unknown,
-): value is FrameBorderColorValues {
-  return includes(FRAME_BORDER_COLOR_VALUES, value);
-}
+import { getSpacingValue } from "../utils/styles.ts";
+import { edge } from "./edge.ts";
 
 export const frame = cv({
-  extend: [layer],
+  extend: [edge],
   variants: {
     /**
      * Enables the frame system, which allows you to set the element's radius,
@@ -138,55 +105,6 @@ export const frame = cv({
       };
     },
     /**
-     * Sets the border color. By default, it's based on the layer's background
-     * color.
-     */
-    $borderColor: {
-      unset: "",
-      brand: "ak-edge-brand",
-      success: "ak-edge-success",
-      warning: "ak-edge-warning",
-      danger: "ak-edge-danger",
-    } satisfies Record<FrameBorderColorValues | "unset", string>,
-    /**
-     * Applies the border color exactly as specified, without the default alpha
-     * and lightness adjustments.
-     */
-    $borderRaw: "ak-edge-raw",
-    /**
-     * Sets the border opacity. Accepts a named weight or a numeric value
-     * (0-100). Setting it to `adaptive` makes the border appear only in
-     * high-contrast mode. A single overridable channel: instance values
-     * always replace the default instead of fighting it by stylesheet
-     * order.
-     */
-    $borderWeight(value?: FrameBorderWeightValues | "unset" | number) {
-      if (value == null) return;
-      if (value === "unset") return;
-      if (typeof value === "number") {
-        return getScaledStyleClass({
-          value,
-          allowZero: true,
-          property: "--border-alpha",
-          class: "ak-edge-alpha-(--border-alpha)",
-        });
-      }
-      const valueMap = {
-        adaptive: "ak-edge-0",
-        light: "ak-edge-5",
-        normal: "ak-edge-10",
-        medium: "ak-edge-20",
-        bold: "ak-edge-40",
-      } satisfies Record<FrameBorderWeightValues, string>;
-      return valueMap[value];
-    },
-    /**
-     * Uses very dark borders on low-dark layers, typically for native-app-like
-     * interfaces with dark surfaces and black or nearly black dividers.
-     */
-    $borderDark:
-      "ak-dark-low:ak-edge-push-[-0.28] ak-dark-low:ak-edge-alpha-[calc((1-l)*(1-l))]",
-    /**
      * Specifies how the border is rendered. Setting it to `auto` uses either a
      * border or a ring, depending on the parent layer's lightness.
      */
@@ -215,183 +133,6 @@ export const frame = cv({
       }
       return { style: { "--border-width": `${value}px` } };
     },
-    /**
-     * Pushes the border lightness away from the current color to create
-     * contrast. By default, it's set to `100` (full contrast). Set it to `0`,
-     * or use `$borderRaw` (which sets both alpha and lightness), to use the
-     * exact lightness of the base border color.
-     */
-    $borderPush(value?: string | number) {
-      return getScaledStyleClass({
-        value,
-        property: "--border-push",
-        class: "ak-edge-push-(--border-push)",
-      });
-    },
-    /**
-     * Lightens the border color by the specified amount (0-100).
-     */
-    $borderLighten(value?: string | number) {
-      return getScaledStyleClass({
-        value,
-        property: "--border-lighten",
-        class: "ak-edge-lighten-(--border-lighten)",
-      });
-    },
-    /**
-     * Darkens the border color by the specified amount (0-100).
-     */
-    $borderDarken(value?: string | number) {
-      return getScaledStyleClass({
-        value,
-        property: "--border-darken",
-        class: "ak-edge-darken-(--border-darken)",
-      });
-    },
-    /**
-     * Sets the minimum lightness (0-100) of the border color after all other
-     * border variants have been applied.
-     */
-    $borderLightnessMin(value?: string | number) {
-      return getScaledStyleClass({
-        value,
-        property: "--border-lightness-min",
-        class: "ak-edge-min-(--border-lightness-min)",
-      });
-    },
-    /**
-     * Sets the maximum lightness (0-100) of the border color after all other
-     * border variants have been applied.
-     */
-    $borderLightnessMax(value?: string | number) {
-      return getScaledStyleClass({
-        value,
-        property: "--border-lightness-max",
-        class: "ak-edge-max-(--border-lightness-max)",
-      });
-    },
-    /**
-     * Sets the absolute chroma (0-40) of the border color. Higher values mean
-     * more saturated colors. Accepts either a named chroma like `"muted"`
-     * (`5`), `"balanced"` (`15`), `"vivid"` (`22`), or `"neon"` (`32`), or a
-     * numeric value like `40`.
-     */
-    $borderChroma(value?: ChromaValues | (string & {}) | number) {
-      if (!value) return;
-      if (includes(CHROMA_VALUES, value)) {
-        const valueMap = {
-          muted: "ak-edge-muted",
-          balanced: "ak-edge-balanced",
-          vivid: "ak-edge-vivid",
-          neon: "ak-edge-neon",
-        } satisfies Record<ChromaValues, string>;
-        return valueMap[value];
-      }
-      return getScaledStyleClass({
-        value,
-        property: "--border-chroma",
-        class: "ak-edge-c-(--border-chroma)",
-      });
-    },
-    /**
-     * Increases the border chroma by the specified amount (0-40).
-     */
-    $borderSaturate(value?: string | number) {
-      return getScaledStyleClass({
-        value,
-        property: "--border-saturate",
-        class: "ak-edge-saturate-(--border-saturate)",
-      });
-    },
-    /**
-     * Decreases the border chroma by the specified amount (0-40).
-     */
-    $borderDesaturate(value?: string | number) {
-      return getScaledStyleClass({
-        value,
-        property: "--border-desaturate",
-        class: "ak-edge-desaturate-(--border-desaturate)",
-      });
-    },
-    /**
-     * Sets the minimum chroma (0-40) of the border color after all other
-     * border variants have been applied.
-     */
-    $borderChromaMin(value?: ChromaValues | (string & {}) | number) {
-      if (!value) return;
-      if (includes(CHROMA_VALUES, value)) {
-        const valueMap = {
-          muted: "ak-edge-min-c-muted",
-          balanced: "ak-edge-min-c-balanced",
-          vivid: "ak-edge-min-c-vivid",
-          neon: "ak-edge-min-c-neon",
-        } satisfies Record<ChromaValues, string>;
-        return valueMap[value];
-      }
-      return getScaledStyleClass({
-        value,
-        property: "--border-chroma-min",
-        class: "ak-edge-min-c-(--border-chroma-min)",
-      });
-    },
-    /**
-     * Sets the maximum chroma (0-40) of the border color after all other
-     * border variants have been applied.
-     */
-    $borderChromaMax(value?: ChromaValues | (string & {}) | number) {
-      if (!value) return;
-      if (includes(CHROMA_VALUES, value)) {
-        const valueMap = {
-          muted: "ak-edge-max-c-muted",
-          balanced: "ak-edge-max-c-balanced",
-          vivid: "ak-edge-max-c-vivid",
-          neon: "ak-edge-max-c-neon",
-        } satisfies Record<ChromaValues, string>;
-        return valueMap[value];
-      }
-      return getScaledStyleClass({
-        value,
-        property: "--border-chroma-max",
-        class: "ak-edge-max-c-(--border-chroma-max)",
-      });
-    },
-    /**
-     * Sets the exact hue of the border color. Accepts a named hue like
-     * `"red"` or `"blue"`, a color harmony like `"complementary"`, or a degree
-     * value like `240`.
-     */
-    $borderHue(value?: HueValues | (string & {}) | number) {
-      if (!value) return;
-      if (includes(HUE_VALUES, value)) {
-        const valueMap = {
-          red: "ak-edge-red",
-          orange: "ak-edge-orange",
-          yellow: "ak-edge-yellow",
-          green: "ak-edge-green",
-          cyan: "ak-edge-cyan",
-          blue: "ak-edge-blue",
-          magenta: "ak-edge-magenta",
-          complementary: "ak-edge-complementary",
-          split1: "ak-edge-split1",
-          split2: "ak-edge-split2",
-          analogous1: "ak-edge-analogous1",
-          analogous2: "ak-edge-analogous2",
-          triadic1: "ak-edge-triadic1",
-          triadic2: "ak-edge-triadic2",
-          tetradic1: "ak-edge-tetradic1",
-          tetradic2: "ak-edge-tetradic2",
-          tetradic3: "ak-edge-tetradic3",
-          square1: "ak-edge-square1",
-          square2: "ak-edge-square2",
-          square3: "ak-edge-square3",
-        } satisfies Record<HueValues, string>;
-        return valueMap[value];
-      }
-      return {
-        class: "ak-edge-h-(--border-hue)",
-        style: { "--border-hue": `${value}` },
-      };
-    },
   },
   defaultVariants: {
     $frame: true,
@@ -409,13 +150,16 @@ export const frame = cv({
       }
       return defaultValue;
     },
-    $borderColor(defaultValue, variants) {
+    // These two clear variants declared by `edge`. They belong here because a
+    // computed default only sees the variants its own component declares or
+    // extends, so in `edge` they could not read $border.
+    $edge(defaultValue, variants) {
       if (variants.$border === "inherit") {
         return "unset";
       }
       return defaultValue;
     },
-    $borderWeight(defaultValue, variants) {
+    $edgeWeight(defaultValue, variants) {
       if (variants.$border === "inherit") {
         return "unset";
       }

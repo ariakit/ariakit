@@ -65,8 +65,8 @@ export function Playground({ children }: PropsWithChildren) {
       <PlaygroundTabs $border={4} />
       <PlaygroundTabs tabListProps={{ $p: 1 }} />
       <PlaygroundTabs $border={3} tabListProps={{ $p: 1 }} />
-      <PlaygroundTabs $borderColor="brand" $borderRaw />
-      <PlaygroundTabs $borderColor="brand" $border={3} />
+      <PlaygroundTabs $edge="brand" $edgeRaw />
+      <PlaygroundTabs $edge="brand" $border={3} />
       {children}
     </div>
   );

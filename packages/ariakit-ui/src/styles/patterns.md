@@ -2,7 +2,7 @@
 
 How the style files in this folder are built, and the rules that decide the shape of a change.
 
-`layer.ts`, `frame.ts`, `text.ts` and `hover.ts` are the primitives. `list.ts` is the reference composite: it was rebuilt against every rule below, so when a rule is unclear, read that file.
+`layer.ts`, `edge.ts`, `frame.ts`, `text.ts` and `hover.ts` are the primitives. `list.ts` is the reference composite: it was rebuilt against every rule below, so when a rule is unclear, read that file.
 
 These files ship to people who paste them into their own applications. That audience shapes several rules here, especially the ones about comments.
 
@@ -15,7 +15,7 @@ const progressBase = cv({
   extend: [frame],
   defaultVariants: {
     $lightnessOffset: 2,
-    $borderWeight: "adaptive",
+    $edgeWeight: "adaptive",
     // A border would grow the track, so the edge is a ring drawn inside it.
     $borderType: "inset",
     $border: true,
@@ -25,11 +25,13 @@ const progressBase = cv({
 });
 ```
 
-`frame` extends `layer`, so extending `frame` gives you the whole colour system plus borders, radius, padding and margin.
+`frame` extends `edge`, which extends `layer`, so extending `frame` gives you the whole colour system plus borders, radius, padding and margin.
+
+`edge` owns the hairline colour that borders, rings, shadows and dividers all read. It extends `layer`, because the colour it tunes is derived by the layer utility on the same element and none of its channels inherit, so an element with no layer of its own gets nothing from them. Extend `edge` when an element needs those colours without frame geometry.
 
 When two components share a set of defaults, put them on a private base and extend that. `progress` and `progressCircular` both extend `progressBase`.
 
-Keep one path from a component to each primitive. A component that extends both `frame` and a base that also extends `layer` emits the layer classes twice, because every extend contributes its own full output.
+Keep one path from a component to each primitive. A component that extends both `frame` and a base that also extends `layer` emits the layer classes twice, because every extend contributes its own full output. The chain makes that trap deeper, not shallower: anything reaching `frame` already has `edge` and `layer`, so `extend: [edge, button]` emits both sets twice.
 
 A variant reached through `extend` never replaces a primitive's variant of the same name. Both run. To give a name a different meaning, the component has to declare it in its own `variants`, which a shared object can do through a spread. A function declared there replaces whatever the primitive had; a map merges key by key, so a new key joins the scale instead of hiding it.
 
@@ -59,13 +61,24 @@ $rounded: {
 
 Do not reach for the per-component theme tokens, `--radius-field`, `--spacing-card` and the rest. They are on their way out, and frame's own scale already covers them. `--radius-field` is `var(--radius-lg)`, so write `$rounded: "lg"`. `--spacing-field` is `0.75em`, which is `calc(var(--spacing) * 3)`, so write `$p: 3`, which also keeps tracking `--spacing` if a theme moves it.
 
-Extend `frame` even when the element must not open a frame context. `$frame: false` only drops the `ak-frame` class; every border variant stays available.
+An element that paints in the edge colour but takes no frame geometry extends `edge` instead. It gets the colour channels, and the layer they resolve against, without eleven frame props that do nothing for it.
 
 ```ts
-// listItemMarker sets $frame: false, yet still extends frame, because it
-// paints its bullet border and its empty ring with frame's $borderWeight.
+// listItemMarker paints its bullet border and its empty ring with
+// $edgeWeight, and positions itself against a frame padding it must not
+// rewrite, so it takes the colours and none of the geometry.
 export const listItemMarker = cv({
-  extend: [frame],
+  extend: [edge],
+});
+```
+
+Keep `$frame: false` for the other case: an element that does take frame geometry from a shared base, but must not open a frame context of its own. `$frame: false` only drops the `ak-frame` class; every other frame variant stays available.
+
+```ts
+// progressCircularFill shares progressFillBase with the linear fill, and
+// paints its own background and radius, so it must not round itself twice.
+export const progressCircularFill = cv({
+  extend: [progressFillBase],
   defaultVariants: { $frame: false /* ... */ },
 });
 ```
@@ -216,7 +229,7 @@ Put a default in `defaultVariants` unless a CSS rule has to re-derive it. A mode
 Computed defaults take `(defaultValue, variants)`. Honour `defaultValue`, so an extender can still set its own.
 
 ```ts
-$borderWeight(defaultValue, variants) {
+$edgeWeight(defaultValue, variants) {
   if (variants.$checked === true) return defaultValue;
   return defaultValue ?? (variants.$checked === false ? 25 : "bold");
 },

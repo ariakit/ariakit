@@ -1,10 +1,9 @@
 import { cv } from "clava";
 import { button } from "./button.ts";
 import { frame } from "./frame.ts";
-import { layer } from "./layer.ts";
 
 export const popover = cv({
-  extend: [layer, frame],
+  extend: [frame],
   class: [
     "z-10",
     "[transition-property:overlay,display,scale,opacity] transition-discrete",

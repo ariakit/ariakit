@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@ariakit/react": "workspace:*",
-    "clava": "0.6.0",
+    "clava": "0.6.2",
     "clsx": "2.1.1",
     "lucide-react": "1.26.0",
     "react": "19.2.8",

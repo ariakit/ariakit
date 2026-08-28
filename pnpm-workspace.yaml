@@ -17,6 +17,9 @@ allowBuilds:
   sharp: true
   workerd: true
 
+minimumReleaseAgeExclude:
+  - clava@0.6.2
+
 overrides:
   "@ariakit/components": "workspace:*"
   "@ariakit/react": "workspace:*"

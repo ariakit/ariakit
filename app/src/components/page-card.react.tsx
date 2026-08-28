@@ -86,7 +86,7 @@ export function PageCard({
                 $p={1.5}
                 $px="sm"
                 $borderType="dashed"
-                $borderWeight="medium"
+                $edgeWeight="medium"
                 className="absolute top-(--padding) end-(--padding)"
               >
                 <BadgeLabel>Plus</BadgeLabel>

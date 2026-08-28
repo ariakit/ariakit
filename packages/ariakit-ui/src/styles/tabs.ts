@@ -8,10 +8,9 @@ import {
   buttonSlot,
 } from "./button.ts";
 import { frame } from "./frame.ts";
-import { layer } from "./layer.ts";
 
 export const tabs = cv({
-  extend: [layer, frame],
+  extend: [frame],
   class: [
     "tabs [--fp:var(--ak-frame-padding,0px)] [--fr:var(--ak-frame-radius,0px)] [--fri:var(--ak-frame-ring,0px)] [--fbo:var(--ak-frame-border,0px)] [--fb:calc(var(--fbo)+var(--fri))]",
   ],
@@ -115,11 +114,11 @@ export const tabGlider = cv({
       if (variants.$kind === "folder") return "unset";
       return defaultValue;
     },
-    $borderColor(defaultValue, variants) {
+    $edge(defaultValue, variants) {
       if (variants.$kind === "folder") return "unset";
       return defaultValue;
     },
-    $borderWeight(defaultValue, variants) {
+    $edgeWeight(defaultValue, variants) {
       if (variants.$kind === "folder") return "unset";
       return defaultValue;
     },

@@ -1,7 +1,8 @@
 import { cv, cx } from "clava";
 import type { VariantProps } from "clava";
 import { includes } from "../utils/includes.ts";
-import { frame, isFrameBorderColor } from "./frame.ts";
+import { isEdgeColor } from "./edge.ts";
+import { frame } from "./frame.ts";
 import { layer } from "./layer.ts";
 import { text } from "./text.ts";
 
@@ -260,10 +261,10 @@ export const controlSlot = cv({
       if (variants.$kind === "avatar") return defaultValue ?? true;
       return defaultValue;
     },
-    $borderColor(defaultValue, variants) {
+    $edge(defaultValue, variants) {
       if (variants.$kind !== "badge") return defaultValue;
       if (typeof variants.$layer !== "string") return defaultValue;
-      if (!isFrameBorderColor(variants.$layer)) return defaultValue;
+      if (!isEdgeColor(variants.$layer)) return defaultValue;
       return defaultValue ?? variants.$layer;
     },
   },

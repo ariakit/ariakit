@@ -1,7 +1,7 @@
 import { cv } from "clava";
 import type { VariantProps } from "clava";
 import { control, controlLabel, controlSlot } from "./control.ts";
-import { isFrameBorderColor } from "./frame.ts";
+import { isEdgeColor } from "./edge.ts";
 import type { layer } from "./layer.ts";
 
 /**
@@ -24,15 +24,15 @@ export const badge = cv({
     $gap: "lg",
     $border: true,
     $borderType: "inset",
-    $borderWeight(defaultValue, variants) {
+    $edgeWeight(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
       // A colored badge carries a visible tinted ring. A plain one keeps the
       // adaptive hairline, which shows up only in high-contrast mode.
       if (isColoredLayer(variants.$layer)) return "medium";
       return "adaptive";
     },
-    $borderColor(defaultValue, variants) {
-      if (!isFrameBorderColor(variants.$layer)) return defaultValue;
+    $edge(defaultValue, variants) {
+      if (!isEdgeColor(variants.$layer)) return defaultValue;
       return defaultValue ?? variants.$layer;
     },
     $lightnessOffset(defaultValue, variants) {

@@ -124,7 +124,7 @@ export const glider = cv({
       if (variants.$state === "hover") return defaultValue ?? "unset";
       return defaultValue ?? "ring";
     },
-    $borderWeight(defaultValue, variants) {
+    $edgeWeight(defaultValue, variants) {
       if (variants.$state !== "selected") return defaultValue;
       return defaultValue ?? "adaptive";
     },
