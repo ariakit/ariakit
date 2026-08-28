@@ -28,8 +28,12 @@ export default function Example() {
   return (
     <Ariakit.MenuProvider>
       {/* Rendered before the menu button so that it doesn't take over the
-          first Shift+Tab stop from the open menu. */}
-      <button ref={persistentRef}>Refresh</button>
+          first Shift+Tab stop from the open menu. Safari leaves a plain button
+          out of the tab order without an explicit tab index, and this one has
+          no Ariakit component to supply it. */}
+      <button ref={persistentRef} tabIndex={0}>
+        Refresh
+      </button>
       <Ariakit.MenuButton>Actions</Ariakit.MenuButton>
       <Menu persistentRef={persistentRef}>
         <Ariakit.MenuItem>Edit</Ariakit.MenuItem>
