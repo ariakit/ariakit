@@ -1,4 +1,4 @@
-import { cv, cx } from "clava";
+import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 
 /**
@@ -22,17 +22,6 @@ export const proseColumn = cv({
   },
 });
 
-// Styles the plain markup an author writes inline, for the elements this
-// folder has no component for. Both halves of every selector sit in
-// `:where()`, so these rules carry no specificity and a class on the element
-// always replaces them.
-const proseElements = cx(
-  // Paragraphs re-derive the ink so they stay readable inside a child that
-  // paints its own surface.
-  "[:where(&)_:where(p)]:ak-dark:ak-ink-75 [:where(&)_:where(p)]:ak-light:ak-ink-90",
-  "[:where(&)_:where(strong)]:ak-ink-100 [:where(&)_:where(strong)]:font-medium",
-);
-
 export const prose = cv({
   extend: [proseColumn],
   class: [
@@ -45,6 +34,12 @@ export const prose = cv({
     // `text-2xl` from a caller loses to `text-base`. Override with a
     // variant-prefixed size such as `@5xl:text-lg/loose`.
     "text-base/relaxed ak-dark:ak-ink-75 ak-light:ak-ink-90",
-    proseElements,
+    // The plain markup an author writes inline, for the elements this folder
+    // has no component for. The whole selector sits in `:where()`, so these
+    // rules carry no specificity and a class on the element always wins.
+    // Paragraphs re-derive the ink so they stay readable inside a child that
+    // paints its own surface.
+    "[:where(&_p)]:ak-dark:ak-ink-75 [:where(&_p)]:ak-light:ak-ink-90",
+    "[:where(&_strong)]:ak-ink-100 [:where(&_strong)]:font-medium",
   ],
 });
