@@ -11,7 +11,12 @@ import {
 } from "../popover/popover-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
-export const ComboboxListRoleContext = createContext<string | undefined | null>(
+interface ComboboxListRole {
+  store: ComboboxStore;
+  role: string | undefined;
+}
+
+export const ComboboxListRoleContext = createContext<ComboboxListRole | null>(
   null,
 );
 

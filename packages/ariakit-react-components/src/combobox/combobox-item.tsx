@@ -55,7 +55,7 @@ function isSelected(
 /**
  * Returns the role for a combobox item based on the popup role.
  */
-function getItemRole(popupRole?: string | null) {
+function getItemRole(popupRole?: string) {
   return getItemRoleByPopupRole(popupRole) ?? "option";
 }
 
@@ -142,8 +142,8 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     setValueOnClick = setValueOnClick ?? (!selectMode && !multiSelectable);
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
     preventScrollOnKeyDown = preventScrollOnKeyDown ?? selectMode;
-    const popupRole = useContext(ComboboxListRoleContext);
-    const role = getItemRole(popupRole);
+    const listRole = useContext(ComboboxListRoleContext);
+    const role = getItemRole(listRole?.role);
 
     const onClickProp = props.onClick;
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);

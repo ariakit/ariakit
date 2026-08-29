@@ -44,9 +44,9 @@ export const useComboboxGroup = createHook<TagName, ComboboxGroupOptions>(
     );
 
     const contentElement = useStoreState(store, "contentElement");
-    const contextRole = useContext(ComboboxListRoleContext);
+    const listRole = useContext(ComboboxListRoleContext);
     const popupRole =
-      contextRole === null ? getPopupRole(contentElement) : contextRole;
+      listRole?.store === store ? listRole.role : getPopupRole(contentElement);
 
     if (popupRole === "grid") {
       props = { role: "rowgroup", ...props };

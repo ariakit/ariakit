@@ -94,6 +94,7 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     );
 
     const role = useAttribute(ref, "role", props.role);
+    const listRole = useMemo(() => ({ store, role }), [store, role]);
     const isCompositeRole =
       role === "listbox" || role === "tree" || role === "grid";
     const ariaMultiSelectable = isCompositeRole
@@ -149,14 +150,14 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
         <ComboboxScopedContextProvider value={store}>
           <ComboboxHeadingContext.Provider value={headingContext}>
             <DialogHeadingContext.Provider value={setHeadingId}>
-              <ComboboxListRoleContext.Provider value={role}>
+              <ComboboxListRoleContext.Provider value={listRole}>
                 {element}
               </ComboboxListRoleContext.Provider>
             </DialogHeadingContext.Provider>
           </ComboboxHeadingContext.Provider>
         </ComboboxScopedContextProvider>
       ),
-      [store, role, headingContext],
+      [store, listRole, headingContext],
     );
 
     // When nesting ComboboxList elements, the content element should be

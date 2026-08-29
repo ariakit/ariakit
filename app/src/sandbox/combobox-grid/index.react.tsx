@@ -1,5 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-import { ComboboxListRoleContext } from "@ariakit/react-components/combobox/combobox-context";
 import { useComboboxGroup } from "@ariakit/react-components/combobox/combobox-group";
 import { useComboboxRow } from "@ariakit/react-components/combobox/combobox-row";
 
@@ -40,61 +39,14 @@ function HookGrid() {
   );
 }
 
-function SelectHookRoles({
-  store,
-  testId = "select-hook-roles",
-}: {
-  store: Ariakit.ComboboxStore;
-  testId?: string;
-}) {
-  const groupProps = useComboboxGroup({ store });
-  const rowProps = useComboboxRow({ store });
-
+function NestedHookGrid() {
   return (
-    <span
-      data-testid={testId}
-      data-group-role={groupProps.role}
-      data-row-role={rowProps.role}
-    />
-  );
-}
-
-function SelectHookGrid() {
-  const store = Ariakit.useComboboxStore();
-
-  return (
-    <>
-      <Ariakit.ComboboxLabel store={store} className="label">
-        Select direction
-      </Ariakit.ComboboxLabel>
-      <Ariakit.ComboboxSelect store={store} className="combobox">
-        Choose direction
-        <SelectHookRoles store={store} />
-        <ComboboxListRoleContext.Provider value={undefined}>
-          <SelectHookRoles store={store} testId="pending-list-hook-roles" />
-        </ComboboxListRoleContext.Provider>
-      </Ariakit.ComboboxSelect>
-      <Ariakit.ComboboxPopover
-        store={store}
-        role="grid"
-        aria-label="Select hook directions"
-        gutter={4}
-        className="popover"
-      >
-        <Ariakit.ComboboxRow className="combobox-row">
-          <Ariakit.ComboboxItem
-            role="gridcell"
-            className="combobox-item"
-            value="West"
-          />
-          <Ariakit.ComboboxItem
-            role="gridcell"
-            className="combobox-item"
-            value="East"
-          />
-        </Ariakit.ComboboxRow>
+    <Ariakit.ComboboxProvider defaultOpen>
+      <Ariakit.Combobox aria-label="Outer command" />
+      <Ariakit.ComboboxPopover role="dialog" aria-label="Outer commands">
+        <HookGrid />
       </Ariakit.ComboboxPopover>
-    </>
+    </Ariakit.ComboboxProvider>
   );
 }
 
@@ -190,8 +142,7 @@ export default function Example() {
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
 
-      <HookGrid />
-      <SelectHookGrid />
+      <NestedHookGrid />
     </>
   );
 }
