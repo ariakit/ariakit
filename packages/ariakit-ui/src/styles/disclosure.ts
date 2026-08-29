@@ -51,8 +51,7 @@ export const disclosure = cv({
   variants: {
     /**
      * Applies a split layout that visually separates the button and content
-     * areas: the content gets its own top border and padding, and hover
-     * feedback moves from the whole disclosure to the button. The explicit
+     * areas: the content gets its own top border and padding. The explicit
      * false value keeps nested disclosures from inheriting an ancestor's
      * split flag.
      */
@@ -60,12 +59,6 @@ export const disclosure = cv({
       true: "[--disclosure-split:1]",
       false: "[--disclosure-split:0]",
     },
-    /**
-     * Highlights the whole disclosure while its button is hovered. Split
-     * layouts turn this off and highlight the button instead.
-     */
-    $hoverHighlight:
-      "ui-disclosure-hover:ak-layer ui-disclosure-hover:ak-state-6",
     /**
      * Sets the size of the button's icon slot and publishes it so the
      * button gap and the content indentation align with it. It must live on
@@ -78,15 +71,6 @@ export const disclosure = cv({
       return {
         style: { "--disclosure-icon-size": getSpacingValue(value) },
       };
-    },
-  },
-  defaultVariants: {
-    // A computed default rather than a CSS rule: a style query matches the
-    // nearest ancestor container, never the element that sets the property,
-    // so the root cannot gate this on its own split flag.
-    $hoverHighlight(defaultValue, variants) {
-      if (variants.$split) return false;
-      return defaultValue ?? true;
     },
   },
 });
@@ -117,10 +101,6 @@ export const disclosureButton = cv({
     // rounded-[inherit] above would otherwise win over rounded-b-none by
     // stylesheet order in rounded groups.
     "ui-disclosure-group:ui-disclosure-open:rounded-b-none",
-    // Split moves hover feedback onto the button; the ghost layer's
-    // bg-transparent must be restored for the state paint to show.
-    "ui-disclosure-split:ui-hover:bg-(--ak-layer)",
-    "ui-disclosure-split:ui-hover:ak-state-6",
   ],
   variants: {
     /**
@@ -153,11 +133,9 @@ export const disclosureButton = cv({
     },
   },
   defaultVariants: {
-    // The button is a transparent region of the disclosure surface; hover
-    // paints the root (or the button itself when split) via the classes
-    // above.
-    $layer: "ghost",
-    $hoverOffset: false,
+    // The button covers the disclosure surface and paints the same layer, so
+    // it is invisible until the control's own hover offset lifts it.
+    $lightnessOffset: false,
     // The button padding follows the disclosure frame it covers.
     $p: "var(--disclosure-padding)",
     // The auto gap keeps the indicator close to the label; the control's

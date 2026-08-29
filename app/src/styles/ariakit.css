@@ -99,9 +99,9 @@
   initial-value: 0;
 }
 
-/* Disclosure state channels: the root publishes open/group/split flags as
-   custom properties, and descendants react through container style queries,
-   like the legacy ak-disclosure-* variants. */
+/* Disclosure state channels: the root publishes open and group flags as
+   custom properties, and descendants react through container style
+   queries. */
 @custom-variant ui-disclosure-open {
   @container style(--disclosure-open: 1) {
     @slot;
@@ -110,19 +110,6 @@
 
 @custom-variant ui-disclosure-group {
   @container style(--disclosure-group: 1) {
-    @slot;
-  }
-}
-
-@custom-variant ui-disclosure-split {
-  @container style(--disclosure-split: 1) {
-    @slot;
-  }
-}
-
-@custom-variant ui-disclosure-hover {
-  &:has(> :where(summary, button, [data-disclosure-button]):hover),
-  &:where(summary, button, [data-disclosure-button]):hover {
     @slot;
   }
 }
