@@ -153,10 +153,12 @@ An arbitrary property such as `[block-size:100%]` always emits, whatever you put
 // Instead of these
 "[inline-size:var(--sidebar-min-width)]";
 "[block-size:100%]";
+"[transition-behavior:allow-discrete]";
 
 // write these
 "w-(--sidebar-min-width)";
 "h-full";
+"transition-discrete";
 ```
 
 The `(--var)` shorthand takes a fallback, and a leading `-` negates it, so an arbitrary property that only wrapped a channel almost always has a utility form.
@@ -171,7 +173,17 @@ The `(--var)` shorthand takes a fallback, and a leading `-` negates it, so an ar
 "-inset-s-(--table-border-s,0px)";
 ```
 
-That negating prefix wraps the whole value in another `calc(... * -1)`. Over a channel it costs nothing, but over a `calc()` you are already writing it just nests. Put the sign in the expression instead.
+That negating prefix wraps the whole value in another `calc(... * -1)`. Keep it over a scale step or a channel, where there is nothing to put a sign on: `-inset-4`, `-inset-s-(--table-border-s,0px)`. Once the value is in brackets, put the sign in the value.
+
+```ts
+// emits margin-top: calc(0.1875rem * -1)
+"-mt-[0.1875rem]";
+
+// emits margin-top: -0.1875rem
+"mt-[-0.1875rem]";
+```
+
+Over a `calc()` you are already writing, the wrapper just nests.
 
 ```ts
 // emits margin-inline-end: calc(calc(var(--inset-padding) * 2) * -1)
@@ -188,6 +200,8 @@ Logical utilities are not the ones with logical-sounding names. `inset-x` and `i
 Where two core utilities do the same thing, follow the folder. It writes `inset-s-*`, not the older `start-*`. An old spelling survives a copy-paste, so check the lines you move as well as the ones you write.
 
 Keep the value in brackets when the utility has no bare form for it. `h-[100cqb]` works and `h-100cqb` does not, and the failure is silent: Tailwind emits nothing and the element quietly falls back to its content size.
+
+Bare forms belong to a utility, not to a value. One line box is `h-lh`, `min-h-lh` or `max-h-lh`, while `w-lh` and `size-lh` emit nothing, so a line-sized square stays `size-[1lh]`. It is the single line only: `h-2lh` emits nothing either.
 
 That silence is the reason to check a converted class in the browser. Toggle it off and confirm the computed value changes.
 

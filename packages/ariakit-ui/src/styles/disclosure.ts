@@ -171,7 +171,7 @@ export const disclosureButton = cv({
 // The icon slot consumes the size the root's $iconSize publishes.
 export const disclosureIcon = cv({
   class: [
-    "min-h-[1lh] size-(--disclosure-icon-size) flex-none",
+    "min-h-lh size-(--disclosure-icon-size) flex-none",
     "self-start [&>svg]:size-full",
   ],
 });
@@ -228,7 +228,7 @@ export const disclosureContent = cv({
     // A disclosure nested in the content is not a member of the group around
     // it, so the flag stops here.
     "[--disclosure-group:0]",
-    "[transition-behavior:allow-discrete]",
+    "transition-discrete",
     "[interpolate-size:allow-keywords]",
     // Only animate when the browser can interpolate to max-content.
     "supports-[interpolate-size:allow-keywords]:duration-(--disclosure-duration)",
@@ -293,9 +293,9 @@ export const disclosureContentBody = cv({
 
 export const disclosureActions = cv({
   class: [
-    "h-[1lh] relative -mt-[0.1875rem] ms-auto",
+    "h-lh relative mt-[-0.1875rem] ms-auto",
     // Extend the hit area so the actions stay clickable without growing the
     // row.
-    "before:absolute before:-inset-4 before:start-0",
+    "before:absolute before:-inset-4 before:inset-s-0",
   ],
 });
