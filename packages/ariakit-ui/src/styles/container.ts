@@ -10,13 +10,12 @@ export const containerSize = cv({
      * Sets the container’s maximum width. Accepts a `--container-*` theme
      * token name like `"default"` or `"7xl"`, or a raw length or expression
      * like `"64rem"` or `"calc(100% - 2rem)"`. Token names resolve at
-     * runtime, so the token must be emitted as a CSS variable (for example
-     * via `@theme static`); build-time-only tokens (`@theme inline`) and
-     * Tailwind functions like `--spacing()` are not available here — pass
-     * the equivalent raw expression instead. The value is written to an
-     * inherited custom property, so it can be set on an ancestor to size
-     * several nested containers at once. Use `"none"` to reset an inherited
-     * size.
+     * runtime, so the token has to reach the page as a real CSS variable.
+     * Tokens the build substitutes, and Tailwind functions like `--spacing()`,
+     * are not available here — pass the equivalent raw expression instead.
+     * The value is written to an inherited custom property, so it can be set
+     * on an ancestor to size several nested containers at once. Use `"none"`
+     * to reset an inherited size.
      */
     $size(value?: "none" | (string & {})) {
       if (!value) return;

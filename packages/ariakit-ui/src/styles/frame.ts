@@ -34,8 +34,8 @@ export const frame = cv({
      * when used together with `$cover` and determines how the current frame's
      * corners are rounded. Usually, this doesn't need to be set explicitly if
      * the element is already the first child in the current HTML tree. This is
-     * useful when you render another hidden or absolutely positioned element as
-     * the first child instead.
+     * useful when you render another element as the first child instead, one
+     * that is not shown or is absolutely positioned.
      */
     $frameStart: "ak-frame-start",
     /**
@@ -43,8 +43,8 @@ export const frame = cv({
      * used together with `$cover` and determines how the current frame's
      * corners are rounded. Usually, this doesn't need to be set explicitly if
      * the element is already the last child in the current HTML tree. This is
-     * useful when you render another hidden or absolutely positioned element as
-     * the last child instead.
+     * useful when you render another element as the last child instead, one
+     * that is not shown or is absolutely positioned.
      */
     $frameEnd: "ak-frame-end",
     /**
@@ -57,7 +57,7 @@ export const frame = cv({
     $rounded: {
       unset: "",
       // A string value, not false: a "false" branch would give frame and
-      // every extender an implicit static default, which deadens downstream
+      // every extender an implicit constant default, which deadens downstream
       // computed fallbacks like the glider's and the control slot's.
       none: "ak-frame-none",
       xs: "ak-frame-xs",

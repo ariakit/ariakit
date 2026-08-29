@@ -5,8 +5,8 @@ import { text } from "./text.ts";
 export const link = cv({
   extend: [text, focus],
   class: [
-    // Grow the hit target and focus outline past the text line without
-    // affecting layout.
+    // Grow the hit target and its focus indicator past the text line
+    // without affecting layout.
     "-mt-1 -mb-1.5 pt-1 pb-1.5 rounded-sm",
     "font-medium underline decoration-1 underline-offset-[0.25em]",
     "ui-hover:decoration-[3px]",
@@ -20,8 +20,8 @@ export const link = cv({
   defaultVariants: {
     $text: "brand",
     $focus: true,
-    // The built-in top and bottom padding already keeps the outline away
-    // from the text, like the legacy ak-link.
+    // The built-in top and bottom padding already keeps the focus indicator
+    // away from the text, like the legacy ak-link.
     $focusOffset: "none",
   },
 });

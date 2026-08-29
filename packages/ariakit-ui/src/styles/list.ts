@@ -14,8 +14,8 @@ export const list = cv({
     "list grid gap-(--list-gap) [counter-reset:list]",
     "[--list-gap-base:var(--list-gap-root,--spacing(4))]",
     // Inside prose the rhythm comes from prose, but an explicit $gap still
-    // wins because it is an inline style. This ties the line above on
-    // specificity and beats it on order; the nested rule below outranks
+    // wins because it lands in the style attribute. This ties the line above
+    // on specificity and beats it on order; the nested rule below outranks
     // both, so a nested list keeps halving.
     "in-[.prose]:[--list-gap-base:var(--list-gap-root,var(--prose-gap))]",
     "[--list-item-padding:--spacing(1)]",
@@ -201,9 +201,9 @@ export const listItemMarker = cv({
       // neutral surface underneath it.
       if (variants.$checked === true) return defaultValue;
       // --list-ol and --list-ul are 1/0 flags on the list root. No variant can
-      // gate this value, because $lightnessOffset writes an inline style, so
-      // the calc picks the surface per list kind. Both flags fall back to 0, so
-      // a marker outside a list stays on the plain layer.
+      // gate this value, because $lightnessOffset writes to the style
+      // attribute, so the calc picks the surface per list kind. Both flags fall
+      // back to 0, so a marker outside a list stays on the plain layer.
       return (
         defaultValue ??
         (variants.$checked === false

@@ -7,13 +7,13 @@ export const nav = cv({
     // State flag read by descendants through container style queries, used
     // to deterministically override disclosure rules by stacking variants.
     "[--nav:1]",
-    // Gap default the variant overrides with an inline style.
+    // Gap default the variant overrides through the style attribute.
     "[--nav-gap:--spacing(1)]",
   ],
   variants: {
     /**
      * Sets the breathing room between links: it grows the link hit areas
-     * while the visible highlight pill stays inset by half of it. Numbers
+     * while the painted highlight pill stays inset by half of it. Numbers
      * scale the spacing token.
      */
     $gap(value?: (string & {}) | number) {
@@ -68,7 +68,7 @@ export const navLink = cv({
     // after the control's py shorthand, so the longhands win.
     "[--nav-link-py:calc(var(--disclosure-padding,var(--ak-frame-padding))-(1lh-1em)/2+var(--nav-gap))]",
     "pt-(--nav-link-py) pb-(--nav-link-py)",
-    // The visible highlight is a pill drawn by the ::before pseudo, inset
+    // The painted highlight is a pill drawn by the ::before pseudo, inset
     // by half the nav gap while the link box keeps the full hit area. It
     // paints the element's own state-adjusted layer color, so the element
     // itself goes transparent for the pill to read as the surface.

@@ -26,8 +26,8 @@ export const badge = cv({
     $borderType: "inset",
     $edgeWeight(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
-      // A colored badge carries a visible tinted ring. A plain one keeps the
-      // adaptive hairline, which shows up only in high-contrast mode.
+      // A colored badge carries a tinted ring that always shows. A plain one
+      // keeps the adaptive hairline, which shows up only in high-contrast mode.
       if (isColoredLayer(variants.$layer)) return "medium";
       return "adaptive";
     },

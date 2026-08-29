@@ -1,7 +1,7 @@
 import { cv } from "clava";
 import { edge } from "./edge.ts";
 
-// An inline code chip, drawn in em so it scales with the text it sits in.
+// A code chip drawn in em, so it scales with the text it sits in.
 export const code = cv({
   extend: [edge],
   class: [

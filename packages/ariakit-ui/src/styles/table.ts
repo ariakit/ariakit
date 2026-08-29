@@ -45,7 +45,8 @@ const tableBorderVariants = {
     return getBorderStyle(["s", "e", "bs", "be"], value);
   },
   /**
-   * Overrides `$border` on the inline axis, the borders between columns.
+   * Overrides `$border` on the inline-start and inline-end sides, the
+   * borders between columns.
    */
   $borderInline(value?: TableBorderValue) {
     return getBorderStyle(["s", "e"], value);
@@ -57,13 +58,13 @@ const tableBorderVariants = {
     return getBorderStyle(["bs", "be"], value);
   },
   /**
-   * Overrides the inline axis on the leading side only.
+   * Overrides the inline-start side only.
    */
   $borderInlineStart(value?: TableBorderValue) {
     return getBorderStyle(["s"], value);
   },
   /**
-   * Overrides the inline axis on the trailing side only.
+   * Overrides the inline-end side only.
    */
   $borderInlineEnd(value?: TableBorderValue) {
     return getBorderStyle(["e"], value);
@@ -111,7 +112,7 @@ export const table = cv({
   variants: {
     ...tableBorderVariants,
     /**
-     * Overrides the cells' inline padding. A number scales the spacing token
+     * Overrides the cells' padding-inline. A number scales the spacing token
      * and resolves in each cell, so a smaller header row takes proportionally
      * less and its text stops lining up with the column below it. Pass a length
      * to keep the columns aligned.
@@ -187,7 +188,7 @@ export const tableRowGroup = cv({
   ],
   variants: {
     /**
-     * Keeps the row group visible while the scroller scrolls.
+     * Keeps the row group on screen while the scroller scrolls.
      */
     $sticky: {
       top: "z-3 sticky top-0",
@@ -248,7 +249,7 @@ export const tableCell = cv({
     "after:border-bs-[calc(var(--table-border-bs,0px)*(1-var(--table-row-first,0)))]",
     "after:border-be-[calc(var(--table-border-be,0px)*(1-var(--table-row-last,0)))]",
     "after:inset-be-[calc(var(--table-border-be,0px)*(1-var(--table-row-last,0))*-1)]",
-    // The ::before pseudo draws the inline borders between columns.
+    // The ::before pseudo draws the borders between columns.
     "before:absolute before:-z-1 before:pointer-events-none",
     "before:ak-layer before:inset-x-0",
     "before:border-(--table-edge,var(--ak-edge))",

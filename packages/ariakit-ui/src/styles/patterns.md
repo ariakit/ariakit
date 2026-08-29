@@ -128,7 +128,9 @@ Tailwind scans source text and generates a class only if it finds the candidate 
 `[--list-marker-lightness:${ORDERED_MARKER_LIGHTNESS}]`;
 ```
 
-The scan does not know what is code. A class name written in a comment generates CSS exactly like one on an element, so a note such as `// only apply cursor-pointer here` ships a stray `.cursor-pointer` rule. The same goes for any Markdown or fixture the source globs happen to cover: keep documentation out of them, or its examples become real rules.
+The scan does not know what is code. A class name written in a comment generates CSS exactly like one on an element, so a note such as `// only apply cursor-pointer here` ships a stray `.cursor-pointer` rule. The same goes for any Markdown or fixture the source globs happen to cover; this file is excluded from the app's scan for that reason.
+
+Ordinary prose trips this far more often than a quoted class name does. `inline`, `static`, `visible`, `hidden`, `outline`, `collapse`, `transform`, `transition`, `table` and `container` are all real utilities, so a comment that uses one as an English word ships its rule. Reach for another word, or name the family with a trailing `-*`: the scan drops the whole token, so `transition-*` and `ak-text-*` describe a group without shipping one.
 
 Style values have no such limit. That is where named constants belong, which is another reason to prefer the `calc()` in a computed default over a class per state.
 

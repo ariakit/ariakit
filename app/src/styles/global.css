@@ -11,6 +11,9 @@
 
 @source "../../../packages/ariakit-ui/src/**";
 @source not "../sandbox/ariakit-tailwind*";
+/* patterns.md documents the style folder in class names, so scanning it
+   would turn every example it gives into a real rule. */
+@source not "../../../packages/ariakit-ui/src/**/*.md";
 
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);

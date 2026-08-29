@@ -11,12 +11,12 @@ export const sidebar = cv({
     // This wins over the frame radius by stylesheet order.
     "rounded-none",
     "transition-[width,padding,inset] transition-discrete duration-300",
-    // Lets the collapse animate to and from keyword widths such as auto.
+    // Lets the sidebar animate to and from keyword widths such as auto.
     "[interpolate-size:allow-keywords]",
     // Sections apply their own frame, which rewrites --ak-frame-padding, so
     // they read the sidebar's own padding from this copy.
     "[--sidebar-gap:var(--ak-frame-padding)]",
-    // Descendants that fade with the collapse match this duration.
+    // Descendants that fade as the sidebar collapses match this duration.
     "[--sidebar-duration:var(--tw-duration)]",
   ],
   variants: {

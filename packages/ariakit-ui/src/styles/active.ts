@@ -36,7 +36,7 @@ export const active = cv({
   },
   defaultVariants: {
     $activeDepth: 5,
-    // defaultValue first so extending components can set their own static
+    // defaultValue first so extending components can set their own constant
     // depth defaults without them being swallowed by $activeDepth.
     $activeDepthX: (defaultValue, variants) =>
       defaultValue ?? variants.$activeDepth,

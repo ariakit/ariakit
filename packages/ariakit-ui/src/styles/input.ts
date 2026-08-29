@@ -18,7 +18,7 @@ export const input = cv({
     "ak-light:ak-layer-lighten-6",
     "ak-dark:not-hover:not-focus-within:ak-layer-darken-3",
     "ak-dark:ui-disabled-within:not-focus-within:ak-layer-darken-3",
-    // Only transition into the hover state; snapping back on hover-out
+    // Only animate into the hover state; snapping back on hover-out
     // keeps the field from feeling laggy, like the legacy ak-input. Plain
     // hover, not ui-hover: fields are not command-like, and ui-hover's
     // nested-interactive exclusion would suppress feedback on wrappers

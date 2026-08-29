@@ -19,15 +19,16 @@ export const checkboxCard = cv({
     // The check paints itself with the card's edge color. It cannot read
     // --ak-edge directly, because its own layer publishes one.
     "[--checkbox-card-edge:var(--ak-edge)]",
-    // Only the hidden input carries the checked and disabled state, never the
+    // Only the input itself carries the checked and disabled state, never the
     // label around it, so the card's own states come from the -within
     // variants.
     "not-ui-disabled-within:ui-checked-within:ak-edge-brand",
     "not-ui-disabled-within:ui-checked-within:ak-edge-raw",
     "not-ui-disabled-within:ui-checked-within:ak-layer-brand",
     "not-ui-disabled-within:ui-checked-within:ak-layer-mix-20",
-    // $lighten below writes an inline style, which no class can override, so
-    // the checked layer drops the lift through the plugin's own class.
+    // $lighten below writes to the style attribute, which no class can
+    // override, so the checked layer drops the lift through the plugin's own
+    // class.
     "not-ui-disabled-within:ui-checked-within:ak-layer-lighten-0",
   ],
   variants: {
@@ -36,7 +37,7 @@ export const checkboxCard = cv({
      * focus, and how thick it should be.
      */
     $focus: {
-      // Focus lands on the hidden input, so every step repeats the ring
+      // Focus lands on the input itself, so every step repeats the ring
       // `focus` already draws with the -within trigger. Both maps emit, so
       // keep this scale in step with that one.
       1: "ui-focus-visible-within:outline",
@@ -49,7 +50,7 @@ export const checkboxCard = cv({
      * @default "card"
      */
     $gapY: {
-      // Wrapped rows sit closer together than inline siblings. Defining
+      // Wrapped rows sit closer together than siblings on one line. Defining
       // --gap-y here also reaches the content wrapper, whose gap-y-(--gap-y)
       // is inert without it.
       card: "[--gap-y:calc(var(--py)/2)] gap-y-(--gap-y)",

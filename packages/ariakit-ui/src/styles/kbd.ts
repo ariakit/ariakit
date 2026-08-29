@@ -16,8 +16,8 @@ export const kbd = cv({
     "leading-none",
     "px-[0.25em] py-[0.1em]",
     // Light falls from above: a white hairline across the top, a thick lip
-    // along the bottom, nothing on the sides. Each max() keeps its side
-    // visible once the em value drops below a pixel.
+    // along the bottom, nothing on the sides. Each max() keeps its side from
+    // vanishing once the em value drops below a pixel.
     "border-t-[max(1px,0.067em)] border-x-0 border-b-[max(1px,0.15em)]",
     // The lip is the face in shadow, in both schemes, so it follows the layer
     // rather than the edge. That leaves the edge to the ring alone. A light

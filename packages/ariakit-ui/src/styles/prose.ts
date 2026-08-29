@@ -31,8 +31,8 @@ export const prose = cv({
     "prose",
     // The typographic origin: descendants size themselves in em and lh
     // against this. Font-size utilities sort alphabetically, so a plain
-    // `text-2xl` from a caller loses to `text-base`. Override with a
-    // variant-prefixed size such as `@5xl:text-lg/loose`.
+    // `text-*` size from a caller loses to the one set here. Override with a
+    // variant-prefixed size instead.
     "text-base/relaxed ak-dark:ak-ink-75 ak-light:ak-ink-90",
     // The plain markup an author writes inline, for the elements this folder
     // has no component for. The whole selector sits in `:where()`, so these

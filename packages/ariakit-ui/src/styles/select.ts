@@ -32,14 +32,14 @@ export const selectPopover = cv({
   class: [
     "outline-none",
     // Anchor-position fallbacks for the native [popover] path; Ariakit
-    // positions with inline styles that win over these.
+    // positions through the style attribute, which wins over these.
     "top-[calc(anchor(bottom)+--spacing(1))]",
     "[inset-inline-start:calc(anchor(start)---spacing(1))]",
     "[position-try-fallbacks:flip-block,flip-inline]",
   ],
   defaultVariants: {
-    // Legacy ak-frame-container/container on the canvas layer: a compact
-    // list container rather than the dialog-scale popover surface.
+    // A compact list container on the canvas layer, rather than the
+    // dialog-scale popover surface.
     $rounded: "xl",
     $p: 1,
     $layer: "canvas",

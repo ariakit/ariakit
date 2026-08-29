@@ -5,7 +5,7 @@ export const radio = cv({
   extend: [button],
   class: [
     "[&_input]:sr-only",
-    // Focus lands on the visually hidden input, so the ring must come from
+    // Focus lands on the input itself, so the ring must come from
     // the -within variant, like the checkbox card's.
     "ui-focus-visible-within:outline-2",
     // The indicator dot is a bordered circle drawn with a ::before element,
@@ -15,9 +15,9 @@ export const radio = cv({
     "before:border-current before:bg-clip-content before:p-0.5",
     "before:ak-ink-50",
     // Checked fills the center pad with the current color. The legacy fill
-    // used bg-current, which ak-text silently kills with an !important
-    // transparent background-color, so the fill is a currentColor gradient
-    // image instead, clipped to the content box by bg-clip-content.
+    // used bg-current, which the ak-text-* utilities silently kill with an
+    // !important transparent background-color, so the fill is a currentColor
+    // gradient image instead, clipped to the content box by bg-clip-content.
     "ui-checked-within:before:ak-text",
     "ui-checked-within:before:bg-linear-to-b",
     "ui-checked-within:before:from-current ui-checked-within:before:to-current",

@@ -10,9 +10,9 @@ export const popover = cv({
     // Popover edges adapt to the theme: a ring reads better over light
     // content, a border over dark.
     "ak-light:ring ak-light:border-none ak-dark:ak-frame-border",
-    // Scale from the anchor side when Ariakit provides the transform
-    // origin; the invalid var() fallback leaves the default center origin
-    // for native popovers.
+    // Scale from the anchor side when Ariakit provides the
+    // `transform-origin`; the invalid var() fallback leaves the default
+    // center origin for native popovers.
     "origin-(--popover-transform-origin)",
   ],
   variants: {
@@ -31,7 +31,7 @@ export const popover = cv({
      * Selects how the open state is detected for the enter and leave
      * transitions. `auto` targets native `dialog` and `[popover]` elements
      * via the `open:` pseudo state, `data` targets Ariakit components via
-     * the `data-open` attribute, and `none` renders a static surface with
+     * the `data-open` attribute, and `none` renders a plain surface with
      * no transitions, for previews and thumbnails.
      */
     $state: {
@@ -44,9 +44,9 @@ export const popover = cv({
         "[&:is(dialog,[popover])]:open:starting:scale-95",
         "[&:is(dialog,[popover])]:open:starting:opacity-0",
         // The backdrop is a native top-layer pseudo-element, so its rules
-        // only exist on this channel. The discrete transition and starting
-        // opacity make the fades the legacy transition-property list
-        // declared actually run.
+        // only exist on this channel. Discrete behavior and a starting
+        // opacity are what make the fades the legacy transition-property
+        // list declared actually run.
         "[&:is(dialog,[popover])]:backdrop:[transition-property:overlay,display,opacity]",
         "[&:is(dialog,[popover])]:backdrop:transition-discrete",
         "[&:is(dialog,[popover])]:open:backdrop:duration-250",

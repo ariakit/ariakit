@@ -9,7 +9,7 @@ const progressBase = cv({
     /**
      * Sets the progress between `0` and `1`. The value goes to
      * `--progress-value`, which must be registered as an inheriting
-     * `<number>` so the fill can transition it.
+     * `<number>` so the fill can animate it.
      */
     $value(value?: number | string) {
       if (value == null) return;
@@ -78,7 +78,7 @@ export const progressFill = cv({
   class: [
     "block h-full w-[calc(var(--progress-value)*100%)]",
     // Animate from empty on first paint; the registered property makes the
-    // width calc transition smoothly.
+    // width calc interpolate smoothly.
     "starting:w-0! transition-[width]",
   ],
 });
