@@ -20,10 +20,9 @@ export default function Example() {
         alert(formData.getAll("interests"));
       }}
     >
-      {/* The form's flex gap owns the vertical rhythm, so the heading's own
-          flow margin is dropped; ! because the cv's margin would win the
-          cascade over a plain override. */}
-      <h2 {...heading.jsx({ $level: 2, className: "mb-0!" })}>Register</h2>
+      {/* The form's flex gap owns the vertical rhythm, so the heading drops
+          its own flow margin. */}
+      <h2 {...heading.jsx({ $level: 2, className: "mb-0" })}>Register</h2>
       <label className="flex flex-col gap-2">
         <div>Name</div>
         <Input placeholder="John Doe" />

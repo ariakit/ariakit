@@ -62,12 +62,10 @@ function getCodeBlockCode(example: ReferenceSectionItem["examples"][number]) {
 const ex = await getEntry("examples", "checkbox-card");
 ---
 
-{/* ContentHeading applies the heading cv itself now. Its own margins would
-    win the cascade over plain overrides, hence the importants. */}
 <ContentHeading
   as="div"
   id={!standalone ? id : undefined}
-  class="flex gap-2 items-center mb-0! mt-0! flex-wrap"
+  class="flex gap-2 items-center mb-0 mt-0 flex-wrap"
 >
   <h5
     class:list={[
