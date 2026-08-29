@@ -25,7 +25,6 @@ import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
   ComboboxHeadingContext,
   ComboboxListRoleContext,
-  ComboboxNestedListContext,
   ComboboxScopedContextProvider,
   useComboboxContext,
   useComboboxScopedContext,
@@ -101,11 +100,8 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       ? multiSelectable || undefined
       : undefined;
 
-    const parentList = useContext(ComboboxNestedListContext);
-    // A list for another store is a separate popup that happens to render
-    // inside this one, so it does not own the outer list's popup role.
-    const registerInParentList = scopedContextSameStore ? parentList : null;
-    const [nestedListCount, setNestedListCount] = useState(0);
+    const [hasNestedList, setHasNestedList] = useState(false);
+    const contentElement = useStoreState(store, "contentElement");
     const parentHeadingContext = useContext(ComboboxHeadingContext);
     const headingState = useState<string>();
     const [headingId, setHeadingId] = parentHeadingContext || headingState;
@@ -116,31 +112,22 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     // We support nested <ComboboxList> elements (usually in the form of
     // ComboboxPopover>ComboboxList). The innermost list owns the popup role,
     // whichever role that is, so an outer list must not render one of its own.
-    // Nested lists register through context so that only a real ComboboxList
-    // suppresses the role, not any descendant with a popup role attribute.
-    const registerNestedList = useEvent((element: Element) => {
-      // ComboboxPopover is built on this same hook, so a ComboboxList passed to
-      // its render prop shares this element rather than nesting inside it.
-      if (element === ref.current) return;
-      setNestedListCount((count) => count + 1);
-      // Both hooks install their own context, so a nested list only reaches the
-      // inner one. Forwarding stops the outer hook from rendering a popup role
-      // on the shared element.
-      const unregisterFromParentList = registerInParentList?.(element);
-      return () => {
-        setNestedListCount((count) => count - 1);
-        unregisterFromParentList?.();
-      };
-    });
-
     useSafeLayoutEffect(() => {
-      if (!registerInParentList) return;
+      if (!mounted) return;
       const element = ref.current;
       if (!element) return;
-      return registerInParentList(element);
-    }, [registerInParentList]);
+      if (contentElement !== element) return;
+      const update = () => {
+        setHasNestedList(!!element.querySelector("[data-combobox-list]"));
+      };
+      // The marker is static, so it can only come and go with its element.
+      const observer = new MutationObserver(update);
+      observer.observe(element, { subtree: true, childList: true });
+      update();
+      return () => observer.disconnect();
+    }, [mounted, contentElement]);
 
-    if (!nestedListCount) {
+    if (!hasNestedList) {
       props = {
         role: "listbox",
         "aria-multiselectable": ariaMultiSelectable,
@@ -156,18 +143,16 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       props,
       (element) => (
         <ComboboxScopedContextProvider value={store}>
-          <ComboboxNestedListContext.Provider value={registerNestedList}>
-            <ComboboxHeadingContext.Provider value={headingContext}>
-              <DialogHeadingContext.Provider value={setHeadingId}>
-                <ComboboxListRoleContext.Provider value={role}>
-                  {element}
-                </ComboboxListRoleContext.Provider>
-              </DialogHeadingContext.Provider>
-            </ComboboxHeadingContext.Provider>
-          </ComboboxNestedListContext.Provider>
+          <ComboboxHeadingContext.Provider value={headingContext}>
+            <DialogHeadingContext.Provider value={setHeadingId}>
+              <ComboboxListRoleContext.Provider value={role}>
+                {element}
+              </ComboboxListRoleContext.Provider>
+            </DialogHeadingContext.Provider>
+          </ComboboxHeadingContext.Provider>
         </ComboboxScopedContextProvider>
       ),
-      [store, role, headingContext, registerNestedList],
+      [store, role, headingContext],
     );
 
     // When nesting ComboboxList elements, the content element should be
@@ -188,6 +173,9 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     const labelId = headingId || labelElement?.id;
 
     props = {
+      // Marks a real ComboboxList, so the query above matches only these and
+      // not any other descendant that happens to carry a popup role.
+      "data-combobox-list": "",
       "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       hidden,
       ...props,
