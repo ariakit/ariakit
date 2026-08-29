@@ -23,10 +23,16 @@ test("show context menu and hide it by clicking outside", async () => {
 // control isn't a menu button and can't be assumed to close the menu, so the
 // menu keeps the fallback dismiss button that assistive technology relies on.
 // https://github.com/ariakit/ariakit/issues/4270
-test("context menu opened from a focused control keeps a dismiss button", async () => {
+// https://github.com/ariakit/ariakit/issues/7310
+test("context menu keeps a dismiss button outside the menu", async () => {
   await click(q.button("Open menu"));
   await expect.poll(q.menu).toBeVisible();
-  expect(q.within(q.menu()).button("Dismiss popup")).toBeInTheDocument();
+  const dismiss = q.button("Dismiss popup");
+  expect(dismiss).toBeInTheDocument();
+  // The ARIA menu pattern doesn't allow a `button` among the menu's owned
+  // elements, so the dismiss button renders next to the menu instead.
+  expect(q.menu()).not.toContainElement(dismiss);
+  expect(q.within(q.menu()).button.all()).toHaveLength(0);
   // The captured control doesn't join the modal context either.
   expect(q.button.maybe("Open menu")).not.toBeInTheDocument();
 });

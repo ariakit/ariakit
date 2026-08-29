@@ -261,11 +261,10 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
       if (!persistentDisclosure) return elements;
       return [...elements, persistentDisclosure];
     },
-    // Menus with a menu button rely on it to close them, so the dialog doesn't
-    // need to prepend its own hidden dismiss button, which would be exposed as
-    // a `button` owned by the element with the `menu` role. Menus without one
-    // keep it. The dialog ignores this for non-modal menus, which never get a
-    // hidden dismiss button in the first place.
+    // The menu button is already in the modal context and already closes the
+    // menu, so a second dismiss affordance would be redundant. Menus without
+    // one keep the dialog's, which renders next to the menu. The dialog
+    // ignores this for non-modal menus, which never get one anyway.
     unstable_hiddenDismiss: !persistentDisclosure,
     // The dialog collects persistent elements from an effect that doesn't
     // otherwise depend on the disclosure, so swapping one connected disclosure
@@ -330,10 +329,10 @@ export interface MenuOptions<T extends ElementType = TagName>
    *   or any other element assigned with
    *   [`setDisclosureElement`](https://ariakit.com/reference/use-menu-store#setdisclosureelement),
    *   is part of the modal context, so it can still label the menu and close
-   *   it. Because of that, no visually hidden dismiss button is rendered
-   *   inside the menu, where the ARIA menu pattern doesn't allow a `button`.
-   *   Menus opened without such an element, such as context menus, still get
-   *   one. If the element doesn't close the menu, because
+   *   it, and no visually hidden dismiss button is rendered for it. Menus
+   *   opened without such an element, such as context menus, get one next to
+   *   the menu, never inside it, where the ARIA menu pattern doesn't allow a
+   *   `button`. If the element doesn't close the menu, because
    *   [`toggleOnClick`](https://ariakit.com/reference/menu-button#toggleonclick)
    *   is `false` or because it only shows the menu, render your own dismiss
    *   control as a menu item, composing

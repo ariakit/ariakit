@@ -1,4 +1,5 @@
 import { contains, getAllTabbableIn, chain, noop } from "@ariakit/utils";
+import { isHiddenDismiss } from "./__is-hidden-dismiss.ts";
 import { hideElementFromAccessibilityTree } from "./disable-accessibility-tree-outside.ts";
 import { isBackdrop } from "./is-backdrop.ts";
 import { isFocusTrap } from "./is-focus-trap.ts";
@@ -68,6 +69,12 @@ function addDisabledElementCleanup({
   // Ignore focus trap elements connected to any of the dialog elements. See
   // dialog-menu "move back to menu button with Shift+Tab" test.
   if (isFocusTrap(element, ...ids)) return;
+  // The hidden dismiss button renders next to the dialog, so it has to stay
+  // operable for the assistive technology users it exists for. A dialog only
+  // reaches its own button here after refreshing its tree snapshot, which the
+  // snapshot taken on open predates.
+  // https://github.com/ariakit/ariakit/issues/7310
+  if (isHiddenDismiss(element, ...ids)) return;
   cleanups.push(disableTree(element, elements));
 }
 
