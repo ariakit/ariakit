@@ -13,7 +13,7 @@ function NestedListbox() {
         role="listbox"
         aria-label="Inner list"
       >
-        <Ariakit.Role {...itemProps} />
+        <Ariakit.Role {...itemProps} role="option" />
       </Ariakit.ComboboxPopover>
     </>
   );
@@ -31,7 +31,7 @@ function StandaloneMenu() {
         role="menu"
         aria-label="Standalone menu"
       >
-        <Ariakit.Role {...itemProps} />
+        <Ariakit.Role {...itemProps} role="menuitem" />
       </Ariakit.ComboboxPopover>
     </>
   );
