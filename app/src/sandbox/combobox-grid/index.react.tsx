@@ -71,24 +71,27 @@ export default function Example() {
           Grouped direction
         </Ariakit.ComboboxLabel>
         <Ariakit.Combobox className="combobox" />
-        <Ariakit.ComboboxPopover gutter={4} className="popover">
-          <div role="status">2 results</div>
-          <Ariakit.ComboboxList role="grid" aria-label="Grouped directions">
-            <Ariakit.ComboboxGroup>
-              <Ariakit.ComboboxRow className="combobox-row">
-                <Ariakit.ComboboxItem
-                  role="gridcell"
-                  className="combobox-item"
-                  value="North West"
-                />
-                <Ariakit.ComboboxItem
-                  role="gridcell"
-                  className="combobox-item"
-                  value="North East"
-                />
-              </Ariakit.ComboboxRow>
-            </Ariakit.ComboboxGroup>
-          </Ariakit.ComboboxList>
+        <div role="status">2 results</div>
+        <Ariakit.ComboboxPopover
+          role="grid"
+          aria-label="Grouped directions"
+          gutter={4}
+          className="popover"
+        >
+          <Ariakit.ComboboxGroup>
+            <Ariakit.ComboboxRow className="combobox-row">
+              <Ariakit.ComboboxItem
+                role="gridcell"
+                className="combobox-item"
+                value="North West"
+              />
+              <Ariakit.ComboboxItem
+                role="gridcell"
+                className="combobox-item"
+                value="North East"
+              />
+            </Ariakit.ComboboxRow>
+          </Ariakit.ComboboxGroup>
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
     </>
