@@ -1173,7 +1173,7 @@ export interface DialogOptions<T extends ElementType = TagName>
   /**
    * @private
    */
-  unstable_treeSnapshotKey?: string | number | boolean | null;
+  unstable_treeSnapshotKey?: Element | string | number | boolean | null;
 }
 
 export type DialogProps<T extends ElementType = TagName> = Props<

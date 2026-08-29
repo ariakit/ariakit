@@ -15,4 +15,4 @@ If that element doesn't close the menu, because [`toggleOnClick`](https://ariaki
 <Ariakit.MenuItem render={<Ariakit.MenuDismiss />}>Close</Ariakit.MenuItem>
 ```
 
-Thanks to [@afercia](https://github.com/afercia) for reporting the issue and diagnosing the cause, and [@snowystinger](https://github.com/snowystinger) for investigating the browser behavior.
+Thanks to [@afercia](https://github.com/afercia) for reporting the issue and diagnosing the cause, [@ciampo](https://github.com/ciampo) for establishing that the fix had to keep working with modal menus, [@mxp-qk](https://github.com/mxp-qk) for reporting it independently with a reproduction and the same diagnosis, [@snowystinger](https://github.com/snowystinger) and [@nataliadiak](https://github.com/nataliadiak) for investigating the browser behavior, [@ashleyryan](https://github.com/ashleyryan) for reporting it again, [@LFDanLu](https://github.com/LFDanLu) for filing the Chromium bug and proposing this approach, and [@dilipom13](https://github.com/dilipom13) for an independent implementation attempt downstream.

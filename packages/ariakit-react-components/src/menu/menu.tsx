@@ -26,29 +26,6 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-interface PersistentDisclosureState {
-  disclosureElement: HTMLElement | null;
-  contentElement: HTMLElement | null;
-}
-
-/**
- * Returns the menu button when it can join the modal context of a modal menu.
- * It must be an element the application named, since a disclosure the dialog
- * captured only happened to have focus and can't be assumed to close the menu.
- * It must also live outside the menu, otherwise the menu would become an
- * ancestor of one of its own persistent elements, which the dialog reads as a
- * nested dialog. The connected check mirrors the dialog's own definition of a
- * named disclosure.
- */
-function getPersistentDisclosure(state: PersistentDisclosureState) {
-  const { disclosureElement, contentElement } = state;
-  if (!disclosureElement) return null;
-  if (!disclosureElement.isConnected) return null;
-  if (isCapturedDisclosure(disclosureElement)) return null;
-  if (contentElement?.contains(disclosureElement)) return null;
-  return disclosureElement;
-}
-
 /**
  * Returns props to create a `Menu` component.
  * @see https://ariakit.com/components/menu
@@ -186,10 +163,22 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   // out of the `inert` subtree. Chromium refuses to read an `inert` element as
   // the menu's `aria-labelledby` target, and the button doubles as the way out
   // of the menu. https://github.com/ariakit/ariakit/issues/4270
+  // The button has to be an element the application named, since a disclosure
+  // the dialog captured only happened to have focus and can't be assumed to
+  // close the menu. It also has to be connected, mirroring the dialog's own
+  // definition of a named disclosure, and live outside the menu, otherwise the
+  // menu would become an ancestor of one of its own persistent elements, which
+  // the dialog reads as a nested dialog.
   const persistentDisclosure = useStoreState(
     store,
     ["disclosureElement", "contentElement"],
-    getPersistentDisclosure,
+    (state) => {
+      const { disclosureElement, contentElement } = state;
+      if (!disclosureElement?.isConnected) return null;
+      if (isCapturedDisclosure(disclosureElement)) return null;
+      if (contentElement?.contains(disclosureElement)) return null;
+      return disclosureElement;
+    },
   );
 
   const contentElement = useStoreState(
@@ -266,17 +255,11 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
       });
       return false;
     },
-    // Read the disclosure live rather than through the render above, because
-    // the dialog collects persistent elements from an effect that doesn't run
-    // again when the disclosure changes.
     getPersistentElements() {
       const elements = getPersistentElements?.() || [];
       if (!modal) return elements;
-      const state = store?.getState();
-      if (!state) return elements;
-      const disclosureElement = getPersistentDisclosure(state);
-      if (!disclosureElement) return elements;
-      return [...elements, disclosureElement];
+      if (!persistentDisclosure) return elements;
+      return [...elements, persistentDisclosure];
     },
     // Menus with a menu button rely on it to close them, so the dialog doesn't
     // need to prepend its own hidden dismiss button, which would be exposed as
@@ -284,6 +267,13 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     // keep it. The dialog ignores this for non-modal menus, which never get a
     // hidden dismiss button in the first place.
     unstable_hiddenDismiss: !persistentDisclosure,
+    // The dialog collects persistent elements from an effect that doesn't
+    // otherwise depend on the disclosure, so swapping one connected disclosure
+    // for another would leave the old one in the modal context and the new one
+    // inert. Refresh the tree whenever the element changes. Only modal menus
+    // contribute the disclosure, so leave the non-modal marking pass alone.
+    // https://github.com/ariakit/ariakit/pull/7303#discussion_r3884581660
+    unstable_treeSnapshotKey: modal ? persistentDisclosure : null,
     modal,
     portal,
     backdrop: hasParentMenu ? false : props.backdrop,
