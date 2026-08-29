@@ -14,6 +14,7 @@ export default function Example() {
         Initial disclosure
       </Ariakit.MenuButton>
       <button
+        id="replacement-disclosure"
         type="button"
         className="ak-button"
         onClick={(event) => menu.setDisclosureElement(event.currentTarget)}
