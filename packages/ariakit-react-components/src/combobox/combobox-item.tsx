@@ -142,8 +142,8 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     setValueOnClick = setValueOnClick ?? (!selectMode && !multiSelectable);
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
     preventScrollOnKeyDown = preventScrollOnKeyDown ?? selectMode;
-    const popupRole = useContext(ComboboxListRoleContext);
-    const role = getItemRole(popupRole);
+    const listRole = useContext(ComboboxListRoleContext);
+    const role = getItemRole(listRole?.role);
 
     const onClickProp = props.onClick;
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
