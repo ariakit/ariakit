@@ -30,6 +30,9 @@ export const disclosure = cv({
     // descendants that do: --tw-duration does not inherit, so it has to be
     // copied into a plain custom property to reach them, and a caller can
     // retime the whole disclosure by passing another duration-* utility.
+    // Zeroing it here is also what honours reduced motion for the whole
+    // subtree: no disclosure animation carries meaning the end state does not
+    // already carry, so every descendant that spends this channel stops.
     "transition-none duration-300 motion-reduce:duration-0",
     "[--disclosure-duration:var(--tw-duration)]",
     // State flags read by descendants through container style queries, and
@@ -93,6 +96,10 @@ export const disclosureButton = cv({
   class: [
     "overflow-clip w-full justify-start text-wrap text-start",
     "transition-[border-radius]",
+    // The corner transition runs at half speed and waits for the content to
+    // collapse before restoring the bottom corners.
+    "duration-[calc(var(--disclosure-duration)*0.5)]",
+    "delay-[calc(var(--disclosure-duration)/1.5)]",
     // Guides and icons indent the start padding through --disclosure-ps;
     // the fallback is the control's own resolved padding so this longhand
     // wins over the control px shorthand without changing anything until a
@@ -102,10 +109,6 @@ export const disclosureButton = cv({
     // instead of the control padding, so the content body's indent formula
     // (icon size plus twice the padding) lines up with the label.
     "[@container_style(--disclosure-icon-size)]:ps-(--disclosure-ps,var(--disclosure-padding))",
-    // The corner transition runs at half speed and waits for the content to
-    // collapse before restoring the bottom corners.
-    "duration-[calc(var(--disclosure-duration)*0.5)]",
-    "delay-[calc(var(--disclosure-duration)/1.5)]",
     "ui-disclosure-group:rounded-[inherit]",
     // An icon slot sets the gap that aligns content with the label.
     "[@container_style(--disclosure-icon-size)]:gap-(--disclosure-padding)",
@@ -210,6 +213,7 @@ export const disclosurePlus = cv({
     "w-[1lh] rounded-full",
     "transition-[rotate,background-size,opacity]",
     "[--plus-line-thickness:2px]",
+    // The line collapses in a third of the time the rotation takes.
     "duration-[var(--disclosure-duration),calc(var(--disclosure-duration)/3)]",
     // The crosshair is two currentColor gradient lines; open collapses the
     // horizontal one and rotates the remaining line for a plus → minus feel.

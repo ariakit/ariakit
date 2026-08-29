@@ -19,7 +19,7 @@ import { hover } from "./hover.ts";
 export const button = cv({
   extend: [control, gliderAnchor, hover, focus, active],
   class: [
-    "transition-[color] not-[a]:cursor-default not-[button]:select-none",
+    "not-[a]:cursor-default not-[button]:select-none",
     // A pointer cursor promises navigation or submission, so only a submit
     // button, a form's lone button, and a button inside a link opt in.
     // Everything else is a command and keeps the arrow.
