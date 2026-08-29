@@ -13,6 +13,7 @@ import type { Props } from "@ariakit/react-utils";
 import {
   disabledFromProps,
   getItemRoleByPopupRole,
+  getPopupRole,
   hasFocus,
   isTextField,
   isDownloading,
@@ -93,6 +94,8 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     );
 
     const id = useId(props.id);
+    const listRole = useContext(ComboboxListRoleContext);
+    const listRoleMatchesStore = listRole?.store === store;
 
     const {
       resetValueOnSelectState,
@@ -100,6 +103,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       selected,
       autoFocusSelected,
       selectElement,
+      contentElement,
     } = useStoreStateObject(store, ["selectedValue"], {
       resetValueOnSelectState: "resetValueOnSelect",
       multiSelectable(state) {
@@ -116,6 +120,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         return state.selectedValue[state.selectedValue.length - 1] === value;
       },
       selectElement: "selectElement",
+      contentElement: "contentElement",
     });
 
     // The selected item marks the initial presentation target. Derive the
@@ -142,8 +147,12 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     setValueOnClick = setValueOnClick ?? (!selectMode && !multiSelectable);
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
     preventScrollOnKeyDown = preventScrollOnKeyDown ?? selectMode;
-    const listRole = useContext(ComboboxListRoleContext);
-    const role = getItemRole(listRole?.role);
+    const popupRole = listRoleMatchesStore
+      ? listRole?.role
+      : getPopupRole(contentElement);
+    const role = getItemRole(
+      typeof popupRole === "string" ? popupRole : undefined,
+    );
 
     const onClickProp = props.onClick;
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
