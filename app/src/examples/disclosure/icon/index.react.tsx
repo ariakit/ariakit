@@ -11,7 +11,10 @@ export default function Example() {
       <Disclosure
         defaultOpen
         $iconSize={5}
-        className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering"
+        $rounded="xl"
+        $p={4}
+        $lighten
+        $border
       >
         <DisclosureButton
           icon={<icons.Rocket className="ak-text ak-text-brand" />}

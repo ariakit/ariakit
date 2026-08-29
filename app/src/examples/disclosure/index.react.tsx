@@ -7,10 +7,7 @@ import {
 export default function Example() {
   return (
     <div className="w-100 max-w-[100cqi]">
-      <Disclosure
-        defaultOpen
-        className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering"
-      >
+      <Disclosure defaultOpen $rounded="xl" $p={4} $lighten $border>
         <DisclosureButton>How do I get started?</DisclosureButton>
         <DisclosureContent prose>
           <p>

@@ -180,7 +180,11 @@ function OrderCard({ order }: OrderCardProps) {
       key={order.id}
       split
       button={{ actions, description, children: order.customer.name }}
-      className="ak-frame ak-frame-card/card ak-frame-bordering ak-layer ak-layer-lighten-6 @container"
+      $rounded="xl"
+      $p={4}
+      $lighten
+      $border
+      className="@container"
     >
       <div className="grid @xl:grid-cols-2 ak-frame ak-frame-cover ak-frame-p-0 text-sm">
         <section className="grid gap-3 @xl:border-e ak-layer @max-xl:border-b">

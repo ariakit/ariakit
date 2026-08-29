@@ -117,6 +117,9 @@ export function NavDisclosure(props: NavDisclosureProps) {
   return (
     <Disclosure
       split
+      // A nav row is a field-sized frame with control-sized padding.
+      $rounded="lg"
+      $p={2}
       {...navDisclosure.jsx(variantProps)}
       {...rest}
       button={button}

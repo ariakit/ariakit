@@ -162,7 +162,7 @@ export function DisclosureButton({
         data-open={isOpen || undefined}
         {...disclosureButton.jsx({
           ...variantProps,
-          // Taller buttons press deeper, like the legacy ak-command-depth-2.
+          // A button with a description is taller, so it presses deeper.
           $activeDepth:
             variantProps.$activeDepth ?? (description ? 2 : undefined),
           $activeDepthX:
@@ -209,7 +209,7 @@ export function DisclosureContent({
   ...props
 }: DisclosureContentProps) {
   const [variantProps, rest] = splitProps(props, disclosureContent);
-  const bodyEl = createRender(DisclosureContentBody, body, { prose });
+  const bodyEl = createRender(DisclosureContentBody, body, { $prose: prose });
   return (
     <ak.DisclosureContent
       {...disclosureContent.jsx({

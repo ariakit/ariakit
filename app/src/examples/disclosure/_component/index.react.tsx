@@ -15,11 +15,14 @@ export default function Example() {
       <ak.DisclosureProvider defaultOpen>
         <div
           {...disclosure.jsx({
+            $rounded: "xl",
+            $p: 4,
+            $lighten: true,
+            $border: true,
             // The plain wrapper reads the open state from the Ariakit
             // content's data-open attribute and forwards it to the open
             // channel the disclosure styles publish for descendants.
-            className:
-              "has-data-open:[--disclosure-open:1] ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card ak-frame-bordering",
+            className: "has-data-open:[--disclosure-open:1]",
           })}
         >
           <ak.Disclosure {...disclosureButton.jsx({})}>

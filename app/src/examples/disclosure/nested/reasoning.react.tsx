@@ -29,13 +29,17 @@ export function Reasoning(props: ReasoningProps) {
       )}
     >
       <Disclosure
+        $rounded={nested ? "lg" : "xl"}
+        $p={nested ? 3 : 4}
+        $lighten={!nested}
+        $border={!nested}
         {...props}
         button={button}
         content={content}
         className={clsx(
-          nested
-            ? "ak-frame ak-frame-field/3 data-open:ak-layer data-open:ak-layer-6"
-            : "ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering",
+          // A nested step only paints a surface once it is open, which no
+          // variant can express: the flag lives on the element itself.
+          nested && "data-open:ak-layer data-open:ak-layer-6",
           props.className,
         )}
       />
@@ -58,10 +62,9 @@ export interface ReasoningContentProps extends DisclosureContentProps {}
 export function ReasoningContent(props: ReasoningContentProps) {
   const nested = useContext(NestedReasoningContext);
   const body = createRender(DisclosureContentBody, props.body, {
-    // Legacy prose + ak-prose-text-sm: the prose prop applies the
-    // frame-capped rhythm; the /relaxed modifier keeps the prose
-    // line-height ratio like the legacy leading channel.
-    prose: true,
+    // The /relaxed modifier keeps the prose line-height ratio at the
+    // smaller font size.
+    $prose: true,
     className: "text-sm/relaxed",
   });
   return (

@@ -8,11 +8,7 @@ import * as icons from "lucide-react";
 export default function Example() {
   return (
     <div className="w-100 max-w-[100cqi]">
-      <Disclosure
-        split
-        $iconSize={5}
-        className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering"
-      >
+      <Disclosure split $iconSize={5} $rounded="xl" $p={4} $lighten $border>
         <DisclosureButton
           icon={<icons.Rocket className="ak-text ak-text-brand" />}
           description="Account, email, setup"

@@ -74,7 +74,11 @@ export default function Example() {
       <Disclosure
         split
         button={button}
-        className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering @container"
+        $rounded="xl"
+        $p={4}
+        $lighten
+        $border
+        className="@container"
       >
         <div className="grid @2xl:grid-cols-[max-content_1fr] ak-frame ak-frame-cover ak-frame-p-0 text-sm">
           <section className="ak-layer ak-frame ak-frame-none/(--disclosure-padding) grid gap-4 @2xl:border-e @max-2xl:border-b">

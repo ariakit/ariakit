@@ -51,14 +51,16 @@ export function ContentDisclosure({
 }: ContentDisclosureProps) {
   return (
     <Disclosure
+      $rounded={prose ? "xl" : "lg"}
+      $p={prose ? 4 : 3}
+      $lightnessOffset={prose ? 0.5 : undefined}
       button={
         <ContentDisclosureButton prose={prose}>{label}</ContentDisclosureButton>
       }
       content={<ContentDisclosureContent prose={prose} />}
       {...props}
       className={clsx(
-        "ak-frame",
-        prose ? "ak-frame-card/card ak-layer-3 ring" : "ak-frame-field/field",
+        prose && "ring",
         containerProps.className,
         props.className,
       )}

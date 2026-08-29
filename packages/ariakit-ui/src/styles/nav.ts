@@ -114,6 +114,10 @@ export const navButton = cv({
   class: [
     "justify-start overflow-clip whitespace-normal text-start",
     "transition-[gap,width,height,padding] transition-discrete delay-0",
+    // The disclosure button delays its own transition, and an arbitrary
+    // delay value sorts after a bare one, so the stacked form is what
+    // actually holds these transitions at zero.
+    "ui-nav:delay-0",
     "[transition-duration:var(--sidebar-duration)]",
     "[interpolate-size:allow-keywords]",
     // The gap tracks the icon optical rhythm; both forms are needed so it
@@ -151,8 +155,6 @@ export const navButtonContent = cv({
 
 export const navDisclosure = cv({
   class: [
-    // Legacy ak-frame-field/2: field radius with control-sized padding.
-    "ak-frame ak-frame-(--radius-field) ak-frame-p-2",
     // Nav icons size the disclosure icon slot when an ancestor sets them.
     "[@container_style(--nav-icon-size)]:[--disclosure-icon-size:var(--nav-icon-size)]",
   ],

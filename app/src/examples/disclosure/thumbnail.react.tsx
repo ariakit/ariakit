@@ -16,15 +16,16 @@ export default function Thumbnail() {
         // the disclosure styles publish for descendants.
         data-open
         {...disclosure.jsx({
-          className:
-            "ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering",
+          $rounded: "xl",
+          $p: 4,
+          $lighten: true,
+          $border: true,
         })}
       >
         <div
           {...disclosureButton.jsx({
             // Decorative preview: the interactive state variants are
-            // disabled so the fake button stays inert, like the legacy
-            // idle-only utilities.
+            // disabled so the fake button stays inert.
             $focus: false,
             $active: false,
           })}
