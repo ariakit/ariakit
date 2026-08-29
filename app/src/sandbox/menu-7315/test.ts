@@ -14,5 +14,5 @@ test("does not keep the previous disclosure label", async () => {
   expect(q.status("Current disclosure")).toHaveTextContent(
     "Replacement disclosure",
   );
-  expect(menu).not.toHaveAttribute("aria-labelledby", "initial-disclosure");
+  expect(menu).not.toHaveAttribute("aria-labelledby");
 });

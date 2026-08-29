@@ -16,8 +16,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test
       .expect(q.status("Current disclosure"))
       .toHaveText("Replacement disclosure");
-    await test
-      .expect(menu)
-      .not.toHaveAttribute("aria-labelledby", "initial-disclosure");
+    await test.expect(menu).not.toHaveAttribute("aria-labelledby");
   });
 });
