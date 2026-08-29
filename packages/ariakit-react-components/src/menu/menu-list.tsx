@@ -38,18 +38,13 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
   const contentElement = useStoreState(store, "contentElement");
 
   useEffect(() => {
-    const disclosure = disclosureElement;
-    if (!disclosure) return;
     const menu = contentElement;
     if (!menu) return;
     const menuLabel = label || menu.hasAttribute("aria-label");
-    if (menuLabel) {
-      // The label depends on attributes of the rendered menu and disclosure.
-      // oxlint-disable-next-line react/set-state-in-effect
-      setId(undefined);
-    } else if (disclosure.id) {
-      setId(disclosure.id);
-    }
+    const nextId = menuLabel ? undefined : disclosureElement?.id || undefined;
+    // The label depends on attributes of the rendered menu and disclosure.
+    // oxlint-disable-next-line react/set-state-in-effect
+    setId(nextId);
   }, [label, disclosureElement, contentElement]);
 
   return id;
