@@ -2,7 +2,12 @@ import * as Ariakit from "@ariakit/react";
 import { useComboboxGroup } from "@ariakit/react-components/combobox/combobox-group";
 import { useComboboxRow } from "@ariakit/react-components/combobox/combobox-row";
 
-function HookGrid() {
+interface HookGridProps {
+  label: string;
+  popupLabel: string;
+}
+
+function HookGrid({ label, popupLabel }: HookGridProps) {
   const store = Ariakit.useComboboxStore();
   const groupProps = useComboboxGroup({ store });
   const rowProps = useComboboxRow({ store });
@@ -10,13 +15,13 @@ function HookGrid() {
   return (
     <>
       <Ariakit.ComboboxLabel store={store} className="label">
-        Hook direction
+        {label}
       </Ariakit.ComboboxLabel>
       <Ariakit.Combobox store={store} className="combobox" />
       <Ariakit.ComboboxPopover
         store={store}
         role="grid"
-        aria-label="Hook directions"
+        aria-label={popupLabel}
         gutter={4}
         className="popover"
       >
@@ -44,7 +49,10 @@ function NestedHookGrid() {
     <Ariakit.ComboboxProvider defaultOpen>
       <Ariakit.Combobox aria-label="Outer command" />
       <Ariakit.ComboboxPopover role="dialog" aria-label="Outer commands">
-        <HookGrid />
+        <HookGrid
+          label="Nested hook direction"
+          popupLabel="Nested hook directions"
+        />
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
   );
@@ -142,6 +150,7 @@ export default function Example() {
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
 
+      <HookGrid label="Hook direction" popupLabel="Hook directions" />
       <NestedHookGrid />
     </>
   );

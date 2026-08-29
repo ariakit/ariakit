@@ -73,9 +73,19 @@ test("uses the nested grid role for groups and rows", async () => {
 });
 
 // Reproduces https://github.com/ariakit/ariakit/issues/7305
-test("preserves grid roles for explicit-store hooks under another popup", async () => {
+test("preserves grid roles with explicit-store hooks", async () => {
   await click(q.combobox("Hook direction"));
   const grid = q.grid("Hook directions");
+  const gridQuery = q.within(grid);
+  expect(gridQuery.rowgroup()).toBeInTheDocument();
+  expect(gridQuery.row()).toBeInTheDocument();
+  expect(gridQuery.gridcell.all()).toHaveLength(2);
+});
+
+// Reproduces https://github.com/ariakit/ariakit/issues/7305
+test("preserves grid roles for explicit-store hooks under another popup", async () => {
+  await click(q.combobox("Nested hook direction"));
+  const grid = q.grid("Nested hook directions");
   const gridQuery = q.within(grid);
   expect(gridQuery.rowgroup()).toBeInTheDocument();
   expect(gridQuery.row()).toBeInTheDocument();
