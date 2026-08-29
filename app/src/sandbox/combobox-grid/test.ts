@@ -71,3 +71,24 @@ test("uses the nested grid role for groups and rows", async () => {
   expect(gridQuery.row()).toBeInTheDocument();
   expect(gridQuery.gridcell.all()).toHaveLength(2);
 });
+
+test("preserves grid roles with explicit-store hooks", async () => {
+  await click(q.combobox("Hook direction"));
+  const grid = q.grid("Hook directions");
+  const gridQuery = q.within(grid);
+  expect(gridQuery.rowgroup()).toBeInTheDocument();
+  expect(gridQuery.row()).toBeInTheDocument();
+  expect(gridQuery.gridcell.all()).toHaveLength(2);
+});
+
+test("preserves grid roles for hooks under select scope", () => {
+  const roles = document.querySelector("[data-testid=select-hook-roles]");
+  expect(roles).toHaveAttribute("data-group-role", "rowgroup");
+  expect(roles).toHaveAttribute("data-row-role", "row");
+});
+
+test("does not fall back while a nested list role is pending", () => {
+  const roles = document.querySelector("[data-testid=pending-list-hook-roles]");
+  expect(roles).toHaveAttribute("data-group-role", "group");
+  expect(roles).toHaveAttribute("data-row-role", "presentation");
+});

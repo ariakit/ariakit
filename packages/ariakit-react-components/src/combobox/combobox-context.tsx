@@ -11,8 +11,8 @@ import {
 } from "../popover/popover-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
-export const ComboboxListRoleContext = createContext<string | undefined>(
-  undefined,
+export const ComboboxListRoleContext = createContext<string | undefined | null>(
+  null,
 );
 
 const ctx = createStoreContext<ComboboxStore>(
