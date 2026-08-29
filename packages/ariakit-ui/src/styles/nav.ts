@@ -123,8 +123,8 @@ export const navButton = cv({
     // The gap tracks the icon optical rhythm; both forms are needed so it
     // deterministically beats the control gap and the disclosure's
     // icon-size gap by variant stacking.
-    "ui-nav:gap-[calc(0.75em+1px)]",
-    "ui-nav:[@container_style(--disclosure-icon-size)]:gap-[calc(0.75em+1px)]",
+    "ui-nav:gap-[calc(--spacing(3)+1px)]",
+    "ui-nav:[@container_style(--disclosure-icon-size)]:gap-[calc(--spacing(3)+1px)]",
     // Collapsing squares the button around the icon and hides the rest.
     "[--nav-button-size:calc(var(--sidebar-min-width)_-_--spacing(2))]",
     "ui-sidebar-collapsed:size-(--nav-button-size)",

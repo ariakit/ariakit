@@ -4,10 +4,11 @@ import { getSpacingValue } from "../utils/styles.ts";
 /**
  * Lays children out on a shared vertical rhythm. The gap is declared as well
  * as spent, so a nested column resets the gap of the one around it instead
- * of inheriting it, and an em keeps it proportional to the text it holds.
+ * of inheriting it. The spacing step is em-based, so the rhythm stays
+ * proportional to the text the column holds.
  */
 export const proseColumn = cv({
-  class: "flex flex-col gap-(--prose-gap) [--prose-gap:1.25em]",
+  class: "flex flex-col gap-(--prose-gap) [--prose-gap:--spacing(5)]",
   variants: {
     /**
      * Sets the gap between the children that drives the vertical rhythm.

@@ -14,7 +14,7 @@ export const kbd = cv({
     // half again taller than it is wide, so pin it and let the padding set
     // the space on both axes.
     "leading-none",
-    "px-[0.25em] py-[0.1em]",
+    "px-1 py-[0.1em]",
     // Light falls from above: a white hairline across the top, a thick lip
     // along the bottom, nothing on the sides. Each max() keeps its side from
     // vanishing once the em value drops below a pixel.

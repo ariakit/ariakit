@@ -9,7 +9,7 @@ export const code = cv({
     // text. The adjust pins its x-height, so the chip keeps one optical size
     // whatever font surrounds it.
     "font-mono [font-size-adjust:0.48]",
-    "px-[0.25em] py-[0.18em] rounded ring",
+    "px-1 py-[0.18em] rounded ring",
     // The layer sets a text color on the element it paints. Inheriting it
     // back keeps the chip text on the surrounding ink rather than the chip
     // layer's own.

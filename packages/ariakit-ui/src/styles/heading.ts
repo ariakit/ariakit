@@ -21,7 +21,7 @@ export const heading = cv({
     // utilities directly. A channel utility sorts before every literal one,
     // so a caller's own mt-* or mb-* wins without an important flag.
     "mt-(--heading-mt) mb-(--heading-mb)",
-    "[--heading-mt:1em] [--heading-mb:0.5em]",
+    "[--heading-mt:--spacing(4)] [--heading-mb:--spacing(2)]",
     // A heading with nothing before it has nothing to sit away from.
     "first:[--heading-mt:0px]",
     // A heading directly under another sits closer to it than to body text.

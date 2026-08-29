@@ -10,7 +10,7 @@ export const radio = cv({
     "ui-focus-visible-within:outline-2",
     // The indicator dot is a bordered circle drawn with a ::before element,
     // centered on the text row like the legacy items-center button layout.
-    "before:content-[''] before:size-[1em] before:flex-none",
+    "before:content-[''] before:size-4 before:flex-none",
     "before:self-center before:rounded-full before:border-2",
     "before:border-current before:bg-clip-content before:p-0.5",
     "before:ak-ink-50",

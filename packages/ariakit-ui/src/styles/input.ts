@@ -1,48 +1,72 @@
 import { cv } from "clava";
+import { focus } from "./focus.ts";
 import { frame } from "./frame.ts";
 import { text } from "./text.ts";
 
 export const input = cv({
-  extend: [frame, text],
+  extend: [frame, text, focus],
   class: [
-    "max-w-full cursor-text leading-[1em]",
-    // The focus ring is nudged inside the border so the two read as a
-    // single edge, and it responds to focus-within because the class often
-    // sits on a wrapper around the actual input.
-    "ak-outline ak-outline-brand -outline-offset-1 focus-within:outline-2",
-    // Fields sit slightly raised on light layers and slightly recessed on
-    // dark ones, where hover and focus restore the base layer instead of
-    // shifting it further. Plain not-hover, not the ui-hover idiom: a
-    // multi-rule custom variant can't be negated, so not-ui-hover never
-    // compiles. Disabled fields keep the recessed layer regardless.
-    "ak-light:ak-layer-lighten-6",
-    "ak-dark:not-hover:not-focus-within:ak-layer-darken-3",
-    "ak-dark:ui-disabled-within:not-focus-within:ak-layer-darken-3",
-    // Only animate into the hover state; snapping back on hover-out
-    // keeps the field from feeling laggy, like the legacy ak-input. Plain
-    // hover, not ui-hover: fields are not command-like, and ui-hover's
-    // nested-interactive exclusion would suppress feedback on wrappers
-    // whose form holds the input next to a submit button.
+    "max-w-full cursor-text",
+    // Only animate into the hover state; snapping back on hover-out keeps
+    // the field from feeling laggy.
     "hover:transition-[background-color]",
-    "ak-light:hover:ak-state-3",
-    // Normalize text metrics whether the class sits on the input itself or
-    // on a wrapper element with the input inside.
-    "[&:is(input)]:box-content [&:is(input)]:h-[1em]",
-    "[&_input]:-my-[0.25em] [&_input]:box-content [&_input]:h-[1.5em]",
+    // Plain hover, not ui-hover: fields are not command-like, and ui-hover's
+    // nested-interactive exclusion would suppress feedback on a wrapper
+    // whose form holds the input next to a submit button. The disabled
+    // exclusion it builds in has to be spelled out in exchange, which works
+    // here only because ui-disabled-within is a single selector list.
+    "not-ui-disabled-within:hover:ak-state-2.5",
+    // The row is one tight line plus the frame padding, whether the class
+    // sits on the input itself or on a wrapper around it. Six steps of box
+    // minus two one-step margins lands the nested input on the same 4-step
+    // row as the self case, so a change to one number needs the others.
+    "leading-4",
+    "[input]:box-content [input]:h-4",
+    "[&_input]:-my-1 [&_input]:box-content [&_input]:h-6",
     "[&_input]:outline-none",
     "placeholder:ak-ink-0 [&_input]:placeholder:ak-ink-0",
   ],
+  variants: {
+    /**
+     * Whether to show a focus ring when the field, or the input inside it,
+     * takes focus, and how thick the ring should be.
+     */
+    $focus(value?: 1 | 2 | 3 | boolean) {
+      if (!value) return;
+      // A function replaces the inherited scale instead of emitting beside
+      // it. focus-within, because the class often sits on a wrapper around
+      // the real input, and plain focus rather than focus-visible, so a
+      // field built from a button or a wrapper rings on a pointer too.
+      if (value === 1) return "focus-within:outline";
+      if (value === 3) return "focus-within:outline-3";
+      return "focus-within:outline-2";
+    },
+    /**
+     * Extends the focus ring offsets with `inset`, which tucks the ring
+     * inside the border so the two read as a single edge.
+     */
+    $focusOffset: {
+      inset: "-outline-offset-1",
+    },
+  },
   defaultVariants: {
     $rounded: "lg",
     $p: 3,
     $border: true,
-    // Always a real border like the legacy ak-frame-border, so the field
-    // geometry doesn't change between light and dark themes.
+    // Always a real border rather than a ring, so the field geometry stays
+    // the same on light and dark layers.
     $borderType: "border",
     // Inputs want a stronger edge than the named border weights provide
     // (between medium and bold). A variant default, not a base class, so
     // instance weights replace it instead of losing by stylesheet order.
     $edgeWeight: 30,
+    // A field sinks into the surrounding surface where a button rises off
+    // it, so the offset runs the other way: lighter on light layers, darker
+    // on dark ones. Hover then spends ak-state in the button direction,
+    // which pulls the field back toward the layer around it.
+    $lightnessOffset: -1,
+    $focus: true,
+    $focusOffset: "inset",
   },
 });
 
