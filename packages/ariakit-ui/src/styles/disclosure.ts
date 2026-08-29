@@ -60,6 +60,16 @@ export const disclosure = cv({
       false: "[--disclosure-split:0]",
     },
     /**
+     * Keeps the content's own top padding, which is what holds it away from
+     * the button. A split layout implies it. Set it on any other layout that
+     * spaces the content itself: the button then stops painting a hover ramp
+     * across its bottom padding, because there is nothing left to soften.
+     */
+    $contentPadding: {
+      true: "[--disclosure-content-padding:1]",
+      false: "[--disclosure-content-padding:0]",
+    },
+    /**
      * Sets the size of the button's icon slot and publishes it so the
      * button gap and the content indentation align with it. It must live on
      * the root: the consumers are container style queries, which read the
@@ -73,15 +83,24 @@ export const disclosure = cv({
       };
     },
   },
+  defaultVariants: {
+    // The map's false key gives this an implicit static default, so `??`
+    // never fires and the value has to be tested instead.
+    $contentPadding(defaultValue, variants) {
+      if (defaultValue) return defaultValue;
+      return !!variants.$split;
+    },
+  },
 });
 
 export const disclosureButton = cv({
   extend: [button],
   class: [
     "overflow-clip w-full justify-start text-wrap text-start",
-    "transition-[border-radius]",
-    // The corner transition runs at half speed and waits for the content to
-    // collapse before restoring the bottom corners.
+    "transition-[border-radius,--tw-gradient-from-position]",
+    // Only a split disclosure moves its corners, but every disclosure moves
+    // the hover ramp below. Both run at half speed and wait for the content
+    // to finish closing before they come back.
     "duration-[calc(var(--disclosure-duration)*0.5)]",
     "delay-[calc(var(--disclosure-duration)/1.5)]",
     // Guides and icons indent the start padding through --disclosure-ps;
@@ -96,11 +115,11 @@ export const disclosureButton = cv({
     "ui-disclosure-group:rounded-[inherit]",
     // An icon slot sets the gap that aligns content with the label.
     "[@container_style(--disclosure-icon-size)]:gap-(--disclosure-padding)",
-    "ui-disclosure-open:rounded-b-none ui-disclosure-open:delay-0",
-    // The stacked form must repeat the corner reset: the single-variant
-    // rounded-[inherit] above would otherwise win over rounded-b-none by
-    // stylesheet order in rounded groups.
-    "ui-disclosure-group:ui-disclosure-open:rounded-b-none",
+    "ui-disclosure-open:delay-0",
+    // Only a split disclosure draws a rule under the button, so only there do
+    // the bottom corners square off. Written out as a style query, it sorts
+    // after every named variant and so beats the inherited radius above.
+    "[@container_style(--disclosure-split:_1)]:ui-disclosure-open:rounded-b-none",
   ],
   variants: {
     /**
@@ -146,6 +165,30 @@ export const disclosureButton = cv({
     $focusOffset: "inset",
     // Wide press target: scales less horizontally than it does vertically.
     $activeDepthX: 3,
+  },
+  refine({ variants, addClass }) {
+    // The ramp repaints the hover surface, so it runs only where the button
+    // paints a flat one of its own: a bevel spends the same gradient
+    // channels, and a ghost button has nothing to fade.
+    if (variants.$kind === "bevel") return;
+    if (variants.$layer === "ghost") return;
+    addClass([
+      // When the content spaces itself there is nothing to soften, so the
+      // ramp collapses to zero and the paint stays a flat fill. Otherwise the
+      // button's own bottom padding is all that sits between its label and
+      // the first line of the content, and the paint ramps out across twice
+      // that, so the fade is already under way before it reaches the gap and
+      // the boundary itself carries no step.
+      "[--disclosure-hover-fade:calc(var(--py,0px)*2*var(--disclosure-open,0)*(1-var(--disclosure-content-padding,0)))]",
+      // The stop sits outside the hover variants so that hovering only
+      // switches the paint on, without animating the ramp in with it. Opening
+      // and closing move it, on the schedule the corners above already use.
+      "from-[calc(100%-var(--disclosure-hover-fade))]",
+      // The layer paints an opaque background that the last stop would sit
+      // under, so the fill has to be handed over to the gradient entirely.
+      "ui-hover:bg-transparent ui-hover:bg-linear-to-b",
+      "ui-hover:from-(--ak-layer) ui-hover:to-transparent",
+    ]);
   },
 });
 
@@ -258,7 +301,7 @@ export const disclosureContentBody = cv({
     "p-(--ak-frame-padding)",
     "ps-(--disclosure-ps,var(--ak-frame-padding))",
     // Split adds the separating padding and border between button and body.
-    "pbs-[calc(var(--ak-frame-padding)*var(--disclosure-split,0))]",
+    "pbs-[calc(var(--ak-frame-padding)*var(--disclosure-content-padding,0))]",
     "border-bs-[calc(var(--disclosure-border)*var(--disclosure-split,0))]",
   ],
   variants: {

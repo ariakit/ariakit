@@ -116,7 +116,9 @@ export function NavDisclosure(props: NavDisclosureProps) {
   const content = createRender(NavDisclosureContent, rest.content);
   return (
     <Disclosure
-      split
+      // The row and its content are already spaced apart, so the button needs
+      // no hover ramp between them.
+      $contentPadding
       // A nav row is a field-sized frame with control-sized padding.
       $rounded="lg"
       $p={2}
