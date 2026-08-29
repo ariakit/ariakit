@@ -77,4 +77,23 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const list = query(popover).listbox("Issues");
     await test.expect(query(list).option("Bug report")).toBeVisible();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7302
+  // https://github.com/ariakit/ariakit/pull/7304#discussion_r3884213906
+  test("portaled list for the same store does not take the popup role", async ({
+    q,
+  }) => {
+    const combobox = q.combobox("Search docs");
+    await combobox.click();
+
+    const popover = q.listbox("Doc results");
+    await test.expect(popover).toBeVisible();
+    await test.expect(combobox).toHaveAttribute("aria-haspopup", "listbox");
+    await test.expect(query(popover).option("Getting started")).toBeVisible();
+
+    // The pinned list reaches this store through context, but it renders
+    // outside the popup, so it must not take the popup role from it.
+    await test.expect(q.listbox("Pinned docs")).toBeVisible();
+    await test.expect(query(popover).listbox("Pinned docs")).toHaveCount(0);
+  });
 });

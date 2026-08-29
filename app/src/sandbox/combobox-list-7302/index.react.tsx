@@ -1,5 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 
 interface FileEntry {
   id: string;
@@ -134,6 +135,31 @@ function SearchIssues() {
   );
 }
 
+// A list for the same store can be rendered outside the popup, for example
+// into a side panel. It is not inside the popup, so it does not take the popup
+// role and the popover keeps owning its own items.
+function SearchDocs() {
+  const [panel, setPanel] = useState<HTMLElement | null>(null);
+
+  return (
+    <Ariakit.ComboboxProvider>
+      <Ariakit.Combobox aria-label="Search docs" />
+      <Ariakit.ComboboxPopover gutter={4} aria-label="Doc results">
+        <Ariakit.ComboboxItem value="Getting started" />
+        <Ariakit.ComboboxItem value="Styling" />
+        {panel &&
+          createPortal(
+            <Ariakit.ComboboxList aria-label="Pinned docs">
+              <Ariakit.ComboboxItem value="Changelog" />
+            </Ariakit.ComboboxList>,
+            panel,
+          )}
+      </Ariakit.ComboboxPopover>
+      <div ref={setPanel} />
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -142,6 +168,7 @@ export default function Example() {
       <FruitSearch />
       <SearchTags />
       <SearchIssues />
+      <SearchDocs />
     </>
   );
 }

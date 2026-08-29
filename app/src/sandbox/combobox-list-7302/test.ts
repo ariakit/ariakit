@@ -7,11 +7,7 @@ test("nested tree list owns the popup role", async () => {
   await click(combobox);
 
   const popover = q.dialog("Go to file results");
-  // ComboboxList resolves the popup role asynchronously, so aria-haspopup can
-  // still be catching up when the popover opens.
-  await expect
-    .poll(() => combobox.getAttribute("aria-haspopup"))
-    .toBe("dialog");
+  expect(combobox).toHaveAttribute("aria-haspopup", "dialog");
 
   const tree = q.tree("Files");
   expect(popover).toContainElement(tree);
@@ -39,9 +35,7 @@ test("nested menu list owns the popup role", async () => {
   await click(combobox);
 
   const popover = q.dialog("Command results");
-  await expect
-    .poll(() => combobox.getAttribute("aria-haspopup"))
-    .toBe("dialog");
+  expect(combobox).toHaveAttribute("aria-haspopup", "dialog");
 
   const menu = q.menu("Commands");
   expect(popover).toContainElement(menu);
@@ -75,11 +69,26 @@ test("nested list owns the popup role on a shared element", async () => {
   await click(combobox);
 
   const popover = q.dialog("Issue results");
-  await expect
-    .poll(() => combobox.getAttribute("aria-haspopup"))
-    .toBe("dialog");
+  expect(combobox).toHaveAttribute("aria-haspopup", "dialog");
 
   const list = q.listbox("Issues");
   expect(popover).toContainElement(list);
   expect(list).toContainElement(q.option("Bug report"));
+});
+
+// https://github.com/ariakit/ariakit/issues/7302
+// https://github.com/ariakit/ariakit/pull/7304#discussion_r3884213906
+test("portaled list for the same store does not take the popup role", async () => {
+  const combobox = q.combobox("Search docs");
+  await click(combobox);
+
+  const popover = q.listbox("Doc results");
+  expect(combobox).toHaveAttribute("aria-haspopup", "listbox");
+  expect(popover).toContainElement(q.option("Getting started"));
+
+  // The pinned list reaches this store through context, but it renders outside
+  // the popup, so it must not take the popup role from it.
+  const pinned = q.listbox("Pinned docs");
+  expect(popover).not.toContainElement(pinned);
+  expect(pinned).toContainElement(q.option("Changelog"));
 });
