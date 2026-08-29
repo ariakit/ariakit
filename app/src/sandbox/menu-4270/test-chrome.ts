@@ -14,10 +14,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(menu).toBeVisible();
     await test.expect(query(menu).menuitem()).toHaveCount(3);
     await test.expect(query(menu).button()).toHaveCount(0);
-    // The menu button is in the modal context and closes the menu, so the
-    // fallback dismiss button isn't rendered next to the menu either.
+    // The fallback dismiss button is still rendered, next to the menu rather
+    // than inside it, so the menu owns only its own items.
     // https://github.com/ariakit/ariakit/issues/7310
-    await test.expect(q.button("Dismiss popup")).toHaveCount(0);
+    await test.expect(q.button("Dismiss popup")).toBeVisible();
 
     await test.expect
       .poll(async () => (await readMenu())?.childRoles)

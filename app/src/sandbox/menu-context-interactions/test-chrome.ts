@@ -5,9 +5,9 @@ import {
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
-  // The dialog names the focused control as a fallback disclosure, but that
-  // control isn't a menu button and can't be assumed to close the menu, so the
-  // menu keeps the fallback dismiss button. It renders next to the menu, where
+  // The dialog names the focused control as a fallback disclosure, but a
+  // captured control can't be assumed to close the menu, so it doesn't join the
+  // modal context. The fallback dismiss button renders next to the menu, where
   // the ARIA menu pattern doesn't forbid it, so the menu still owns only its
   // own items. Safari reaches the capture through a different branch, since it
   // leaves `BODY` as the active element for a native button without an

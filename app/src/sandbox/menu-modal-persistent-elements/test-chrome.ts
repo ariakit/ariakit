@@ -1,4 +1,7 @@
-import { createMenuAccessibilityReader } from "#app/test-utils/accessibility.ts";
+import {
+  createDismissAccessibilityReader,
+  createMenuAccessibilityReader,
+} from "#app/test-utils/accessibility.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -8,16 +11,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/7303#discussion_r3884581660
   test("swapping the disclosure keeps the menu named", async ({ page, q }) => {
     const readMenu = await createMenuAccessibilityReader(page);
+    const readDismissExposed = await createDismissAccessibilityReader(page);
 
     await q.button("Actions").click();
     await test.expect(q.menu()).toBeVisible();
     await test.expect
       .poll(async () => (await readMenu())?.name)
       .toBe("Actions");
+    await test.expect.poll(readDismissExposed).toBe(true);
 
     await q.menuitem("Use other trigger").click();
 
     await test.expect(q.menu()).toBeVisible();
     await test.expect.poll(async () => (await readMenu())?.name).toBe("Other");
+
+    // The swap is the one pass that walks the tree while the fallback dismiss
+    // button already exists, since the snapshot taken on open predates it. The
+    // walk has to leave the button alone, or the menu loses the only way out
+    // assistive technology can reach. Assert this after the name has flipped,
+    // so the walk has already run.
+    // https://github.com/ariakit/ariakit/issues/7310
+    await test.expect.poll(readDismissExposed).toBe(true);
   });
 });

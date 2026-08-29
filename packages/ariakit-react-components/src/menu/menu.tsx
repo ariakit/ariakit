@@ -261,11 +261,6 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
       if (!persistentDisclosure) return elements;
       return [...elements, persistentDisclosure];
     },
-    // The menu button is already in the modal context and already closes the
-    // menu, so a second dismiss affordance would be redundant. Menus without
-    // one keep the dialog's, which renders next to the menu. The dialog
-    // ignores this for non-modal menus, which never get one anyway.
-    unstable_hiddenDismiss: !persistentDisclosure,
     // The dialog collects persistent elements from an effect that doesn't
     // otherwise depend on the disclosure, so swapping one connected disclosure
     // for another would leave the old one in the modal context and the new one
@@ -328,17 +323,11 @@ export interface MenuOptions<T extends ElementType = TagName>
    * - The [`MenuButton`](https://ariakit.com/reference/menu-button) component,
    *   or any other element assigned with
    *   [`setDisclosureElement`](https://ariakit.com/reference/use-menu-store#setdisclosureelement),
-   *   is part of the modal context, so it can still label the menu and close
-   *   it, and no visually hidden dismiss button is rendered for it. Menus
-   *   opened without such an element, such as context menus, get one next to
-   *   the menu, never inside it, where the ARIA menu pattern doesn't allow a
-   *   `button`. If the element doesn't close the menu, because
-   *   [`toggleOnClick`](https://ariakit.com/reference/menu-button#toggleonclick)
-   *   is `false` or because it only shows the menu, render your own dismiss
-   *   control as a menu item, composing
-   *   [`MenuItem`](https://ariakit.com/reference/menu-item) with
-   *   [`MenuDismiss`](https://ariakit.com/reference/menu-dismiss), so that
-   *   assistive technology can still leave the menu.
+   *   is part of the modal context, so it can still label the menu.
+   * - A visually hidden dismiss button is rendered next to the menu, never
+   *   inside it, where the ARIA menu pattern doesn't allow a `button`, unless
+   *   the menu already renders a
+   *   [`MenuDismiss`](https://ariakit.com/reference/menu-dismiss) element.
    * - When the menu is open, the element tree outside of both the menu and its
    *   menu button will be inert.
    *

@@ -19,9 +19,9 @@ test("show context menu and hide it by clicking outside", async () => {
   expect(q.menu.maybe()).not.toBeInTheDocument();
 });
 
-// The dialog names the focused control as a fallback disclosure, but that
-// control isn't a menu button and can't be assumed to close the menu, so the
-// menu keeps the fallback dismiss button that assistive technology relies on.
+// The dialog names the focused control as a fallback disclosure, but a
+// captured control can't be assumed to close the menu, so it doesn't join the
+// modal context.
 // https://github.com/ariakit/ariakit/issues/4270
 // https://github.com/ariakit/ariakit/issues/7310
 test("context menu keeps a dismiss button outside the menu", async () => {

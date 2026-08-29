@@ -17,4 +17,11 @@ test("swapping the disclosure moves it into the modal context", async () => {
   expect(q.menu()).toBeVisible();
   expect(q.button.maybe("Other")).toBeInTheDocument();
   expect(q.button.maybe("Actions")).not.toBeInTheDocument();
+
+  // The swap is the one pass that walks the tree while the fallback dismiss
+  // button already exists, since the snapshot taken on open predates it. The
+  // walk has to leave the button alone, or the menu loses the only way out
+  // assistive technology can reach.
+  // https://github.com/ariakit/ariakit/issues/7310
+  expect(q.button.maybe("Dismiss popup")).toBeInTheDocument();
 });

@@ -188,7 +188,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   initialFocus,
   finalFocus,
   unmountOnHide,
-  unstable_hiddenDismiss = true,
   unstable_treeSnapshotKey,
   ...props
 }) {
@@ -370,9 +369,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const dialog = ref.current;
     const needsDismiss = () => {
       if (!modal) return false;
-      // Composed components opt out when the modal context already gives users
-      // another way to close the dialog.
-      if (!unstable_hiddenDismiss) return false;
       // A closing dialog is inert, but the button renders next to it, so it
       // has to stop being exposed on its own. This covers the mounted state
       // too, which stays true through the exit animation.
@@ -383,7 +379,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       return !dialog.querySelector("[data-dialog-dismiss]");
     };
     setNeedsHiddenDismiss(needsDismiss());
-  }, [modal, unstable_hiddenDismiss, open, domReady]);
+  }, [modal, open, domReady]);
 
   // TODO: Move this behavior into DisclosureContent.
   // Keep closing animated content inert until its mounted state ends.
@@ -1208,14 +1204,6 @@ export interface DialogOptions<T extends ElementType = TagName>
    *   will be focused again.
    */
   finalFocus?: HTMLElement | RefObject<HTMLElement | null> | null;
-  /**
-   * Whether a modal dialog should render a visually hidden dismiss button when
-   * no [`DialogDismiss`](https://ariakit.com/reference/dialog-dismiss) element
-   * is rendered inside it.
-   * @private
-   * @default true
-   */
-  unstable_hiddenDismiss?: boolean;
   /**
    * @private
    */
