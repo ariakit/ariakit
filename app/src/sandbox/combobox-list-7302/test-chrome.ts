@@ -1,0 +1,99 @@
+import { withFramework } from "#app/test-utils/preview.ts";
+
+withFramework(import.meta.dirname, async ({ test, query }) => {
+  // https://github.com/ariakit/ariakit/issues/7302
+  test("nested tree list owns the popup role", async ({ q }) => {
+    const combobox = q.combobox("Go to file");
+    await combobox.click();
+
+    const popover = q.dialog("Go to file results");
+    await test.expect(popover).toBeVisible();
+    await test.expect(combobox).toHaveAttribute("aria-haspopup", "dialog");
+
+    const tree = query(popover).tree("Files");
+    await test.expect(query(tree).treeitem()).toHaveCount(4);
+    await test.expect(query(popover).status()).toHaveText("4 of 4 files");
+
+    // The nested list re-renders on every keystroke, so the popup role must
+    // survive both a filtered and an empty result set.
+    await combobox.fill("app");
+    await test.expect(query(popover).status()).toHaveText("1 of 4 files");
+    await test.expect(query(tree).treeitem("app.tsx")).toBeVisible();
+    await test.expect(combobox).toHaveAttribute("aria-haspopup", "dialog");
+
+    await combobox.fill("appzzz");
+    await test.expect(query(popover).status()).toHaveText("0 of 4 files");
+    await test.expect(query(tree).treeitem()).toHaveCount(0);
+    await test.expect(combobox).toHaveAttribute("aria-haspopup", "dialog");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7302
+  test("nested menu list owns the popup role", async ({ q }) => {
+    const combobox = q.combobox("Run command");
+    await combobox.click();
+
+    const popover = q.dialog("Command results");
+    await test.expect(popover).toBeVisible();
+    await test.expect(combobox).toHaveAttribute("aria-haspopup", "dialog");
+
+    const menu = query(popover).menu("Commands");
+    await test.expect(query(menu).menuitem()).toHaveCount(3);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7302
+  test("unrelated listbox does not take the popup role", async ({ q }) => {
+    const combobox = q.combobox("Search fruits");
+    await combobox.click();
+
+    const popover = q.listbox("Fruit results");
+    await test.expect(popover).toBeVisible();
+    await test.expect(combobox).toHaveAttribute("aria-haspopup", "listbox");
+    await test.expect(query(popover).option("Apple")).toBeVisible();
+    await test.expect(query(popover).listbox("Recently used")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7302
+  test("popover sharing an element with a list keeps the popup role", async ({
+    q,
+  }) => {
+    const combobox = q.combobox("Search tags");
+    await combobox.click();
+
+    const popover = q.listbox("Tag results");
+    await test.expect(popover).toBeVisible();
+    await test.expect(combobox).toHaveAttribute("aria-haspopup", "listbox");
+    await test.expect(query(popover).option("Design")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7302
+  test("nested list owns the popup role on a shared element", async ({ q }) => {
+    const combobox = q.combobox("Search issues");
+    await combobox.click();
+
+    const popover = q.dialog("Issue results");
+    await test.expect(popover).toBeVisible();
+    await test.expect(combobox).toHaveAttribute("aria-haspopup", "dialog");
+
+    const list = query(popover).listbox("Issues");
+    await test.expect(query(list).option("Bug report")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7302
+  // https://github.com/ariakit/ariakit/pull/7304#discussion_r3884213906
+  test("portaled list for the same store does not take the popup role", async ({
+    q,
+  }) => {
+    const combobox = q.combobox("Search docs");
+    await combobox.click();
+
+    const popover = q.listbox("Doc results");
+    await test.expect(popover).toBeVisible();
+    await test.expect(combobox).toHaveAttribute("aria-haspopup", "listbox");
+    await test.expect(query(popover).option("Getting started")).toBeVisible();
+
+    // The pinned list reaches this store through context, but it renders
+    // outside the popup, so it must not take the popup role from it.
+    await test.expect(q.listbox("Pinned docs")).toBeVisible();
+    await test.expect(query(popover).listbox("Pinned docs")).toHaveCount(0);
+  });
+});

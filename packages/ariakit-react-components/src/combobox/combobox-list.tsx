@@ -101,7 +101,7 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       ? multiSelectable || undefined
       : undefined;
 
-    const [hasListboxInside, setHasListboxInside] = useState(false);
+    const [hasNestedList, setHasNestedList] = useState(false);
     const contentElement = useStoreState(store, "contentElement");
     const parentHeadingContext = useContext(ComboboxHeadingContext);
     const headingState = useState<string>();
@@ -111,28 +111,24 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       [headingId, setHeadingId],
     );
     // We support nested <ComboboxList> elements (usually in the form of
-    // ComboboxPopover>ComboboxList), but we can't have nested listbox roles, so
-    // we check here if there's already a listbox element inside the current
-    // element.
+    // ComboboxPopover>ComboboxList). The innermost list owns the popup role,
+    // whichever role that is, so an outer list must not render one of its own.
     useSafeLayoutEffect(() => {
       if (!mounted) return;
       const element = ref.current;
       if (!element) return;
       if (contentElement !== element) return;
-      const callback = () => {
-        setHasListboxInside(!!element.querySelector("[role='listbox']"));
+      const update = () => {
+        setHasNestedList(!!element.querySelector("[data-combobox-list]"));
       };
-      const observer = new MutationObserver(callback);
-      observer.observe(element, {
-        subtree: true,
-        childList: true,
-        attributeFilter: ["role"],
-      });
-      callback();
+      // The marker is static, so it can only come and go with its element.
+      const observer = new MutationObserver(update);
+      observer.observe(element, { subtree: true, childList: true });
+      update();
       return () => observer.disconnect();
     }, [mounted, contentElement]);
 
-    if (!hasListboxInside) {
+    if (!hasNestedList) {
       props = {
         role: "listbox",
         "aria-multiselectable": ariaMultiSelectable,
@@ -178,6 +174,9 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     const labelId = headingId || labelElement?.id;
 
     props = {
+      // Marks a real ComboboxList, so the query above matches only these and
+      // not any other descendant that happens to carry a popup role.
+      "data-combobox-list": "",
       "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       hidden,
       ...props,
