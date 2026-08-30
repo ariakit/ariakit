@@ -49,7 +49,11 @@ export const PriceDataSchema = z.object({
   product: z.string(),
   amount: z.number(),
   currency: z.string(),
-  taxBehavior: z.enum(["exclusive", "inclusive", "unspecified"]),
+  // Stripe types `tax_behavior` as an open union so new API values don't break
+  // the build. Nothing matches it against literals: it's only compared with the
+  // live Stripe value in stripe.ts and passed back, so it's carried as-is.
+  // https://github.com/stripe/stripe-node/blob/v22.6.0/src/resources/Prices.ts#L611-L615
+  taxBehavior: z.string(),
 });
 export type PriceData = z.infer<typeof PriceDataSchema>;
 
