@@ -2,11 +2,9 @@ import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
   // Gaining or losing the backdrop must only mount or unmount the backdrop.
-  // The backdrop renders as a sibling before the dialog, so rendering that
-  // sibling only while the prop is truthy moves the dialog to another position
-  // among its parent's children, and React remounts everything inside it.
   // https://github.com/ariakit/ariakit/issues/7335
   test("backdrop toggle keeps the contents of a modal dialog", async ({
+    page,
     q,
   }) => {
     await q.button("Compose").click();
@@ -18,10 +16,19 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(query(dialog).status()).toHaveText("Attachments: 2");
     await test.expect(q.presentation()).toBeVisible();
 
+    const dialogId = await dialog.getAttribute("id");
+    // Guards the selector below against a missing id.
+    test.expect(dialogId).toBeTruthy();
     await query(dialog).checkbox("Dim the background").click();
     // Role queries skip elements hidden from the accessibility tree, so this
     // asserts that no backdrop is shown, not that no element is mounted.
     await test.expect(q.presentation()).toHaveCount(0);
+    // Losing the backdrop has to unmount it, not just hide it. This passes
+    // before the fix too, and rules out the userland workaround's shape, which
+    // keeps a hidden backdrop mounted.
+    await test
+      .expect(page.locator(`[data-backdrop="${dialogId}"]`))
+      .toHaveCount(0);
     await test.expect(query(dialog).textbox("Message")).toHaveValue("Ship it");
     await test.expect(query(dialog).status()).toHaveText("Attachments: 2");
 
@@ -31,10 +38,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(query(dialog).status()).toHaveText("Attachments: 2");
   });
 
-  // Changing the backdrop's own appearance re-renders the dialog with a new
-  // backdrop element while the backdrop stays truthy, so the number of children
-  // never changes. This passes today: it's the control that tells the
-  // falsy/truthy boundary apart from an ordinary re-render.
+  // Keeps the backdrop truthy, so this passes before the fix too: it's the
+  // control that separates the falsy/truthy boundary from an ordinary
+  // re-render.
   // https://github.com/ariakit/ariakit/issues/7335
   test("changing the backdrop's appearance keeps the contents", async ({
     q,
@@ -52,8 +58,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(query(dialog).status()).toHaveText("Attachments: 1");
   });
 
-  // A dialog that renders inline is reconciled among its own parent's children
-  // rather than the portal's, so it needs the same stable position.
+  // The same toggle on an inline, non-modal dialog.
   // https://github.com/ariakit/ariakit/issues/7335
   test("backdrop toggle keeps the contents of an inline dialog", async ({
     q,

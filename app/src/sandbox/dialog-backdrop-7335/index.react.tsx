@@ -42,9 +42,7 @@ export default function Example() {
       */}
       <ComposeDialog />
       {/*
-        The same setting on a dialog that renders inline rather than in a
-        portal, so the dialog element is reconciled among its own parent's
-        children instead of the portal's.
+        The same setting on an inline, non-modal dialog.
         https://github.com/ariakit/ariakit/issues/7335
       */}
       <QuickNoteDialog />
@@ -60,17 +58,14 @@ function ComposeDialog() {
       <Ariakit.DialogDisclosure>Compose</Ariakit.DialogDisclosure>
       <Ariakit.Dialog
         className="dialog"
-        // TODO: Remove this workaround once the fix ships. The sandbox stops
-        // reproducing the bug while it is applied.
-        // https://github.com/ariakit/ariakit/issues/7335
         backdrop={
-          <div
-            className={highContrast ? "backdrop backdrop-high" : "backdrop"}
-            // Leave the property out while the backdrop is on. An explicit
-            // `display: undefined` would override the `display: none` Ariakit
-            // sets while the dialog is closed.
-            style={dimmed ? undefined : { display: "none" }}
-          />
+          dimmed ? (
+            <div
+              className={highContrast ? "backdrop backdrop-high" : "backdrop"}
+            />
+          ) : (
+            false
+          )
         }
       >
         <Ariakit.DialogHeading>Compose</Ariakit.DialogHeading>
@@ -80,10 +75,8 @@ function ComposeDialog() {
         <Attachments />
         <DimBackground checked={dimmed} onChange={setDimmed} />
         {/*
-          Turning this on re-renders the dialog with a new backdrop element
-          while the backdrop stays truthy, so the wrapper's shape doesn't
-          change. It's the control that tells the falsy/truthy boundary apart
-          from an ordinary re-render.
+          Turning this on keeps the backdrop truthy, which is the control that
+          separates the falsy/truthy boundary from an ordinary re-render.
         */}
         <label>
           <input
@@ -108,14 +101,7 @@ function QuickNoteDialog() {
         modal={false}
         portal={false}
         className="dialog"
-        // TODO: Remove this workaround once the fix ships.
-        // https://github.com/ariakit/ariakit/issues/7335
-        backdrop={
-          <div
-            className="backdrop"
-            style={dimmed ? undefined : { display: "none" }}
-          />
-        }
+        backdrop={dimmed ? <div className="backdrop" /> : false}
       >
         <Ariakit.DialogHeading>Quick note</Ariakit.DialogHeading>
         <label>

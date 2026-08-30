@@ -1,10 +1,7 @@
 import { click, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// Gaining or losing the backdrop must only mount or unmount the backdrop. The
-// backdrop renders as a sibling before the dialog, so rendering that sibling
-// only while the prop is truthy moves the dialog to another position among its
-// parent's children, and React remounts everything inside it.
+// Gaining or losing the backdrop must only mount or unmount the backdrop.
 // https://github.com/ariakit/ariakit/issues/7335
 test("backdrop toggle keeps the contents of a modal dialog", async () => {
   await click(q.button("Compose"));
@@ -20,6 +17,14 @@ test("backdrop toggle keeps the contents of a modal dialog", async () => {
   // Role queries skip elements hidden from the accessibility tree, so this
   // asserts that no backdrop is shown, not that no element is mounted.
   expect(q.presentation.maybe()).not.toBeInTheDocument();
+  // Guards the selector below against a missing id.
+  expect(dialog.id).toBeTruthy();
+  // Losing the backdrop has to unmount it, not just hide it. This passes before
+  // the fix too, and rules out the userland workaround's shape, which keeps a
+  // hidden backdrop mounted.
+  expect(
+    document.querySelectorAll(`[data-backdrop="${dialog.id}"]`),
+  ).toHaveLength(0);
   expect(q.textbox("Message")).toHaveValue("Ship it");
   expect(q.status()).toHaveTextContent("Attachments: 2");
   expect(q.dialog("Compose")).toBe(dialog);
@@ -31,10 +36,8 @@ test("backdrop toggle keeps the contents of a modal dialog", async () => {
   expect(q.dialog("Compose")).toBe(dialog);
 });
 
-// Changing the backdrop's own appearance re-renders the dialog with a new
-// backdrop element while the backdrop stays truthy, so the number of children
-// never changes. This passes today: it's the control that tells the
-// falsy/truthy boundary apart from an ordinary re-render.
+// Keeps the backdrop truthy, so this passes before the fix too: it's the
+// control that separates the falsy/truthy boundary from an ordinary re-render.
 // https://github.com/ariakit/ariakit/issues/7335
 test("changing the backdrop's appearance keeps the contents", async () => {
   await click(q.button("Compose"));
@@ -51,8 +54,7 @@ test("changing the backdrop's appearance keeps the contents", async () => {
   expect(q.dialog("Compose")).toBe(dialog);
 });
 
-// A dialog that renders inline is reconciled among its own parent's children
-// rather than the portal's, so it needs the same stable position.
+// The same toggle on an inline, non-modal dialog.
 // https://github.com/ariakit/ariakit/issues/7335
 test("backdrop toggle keeps the contents of an inline dialog", async () => {
   await click(q.button("Quick note"));
