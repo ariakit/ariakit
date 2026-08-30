@@ -1,6 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-import { forwardRef } from "react";
-import type { ComponentPropsWithoutRef } from "react";
 
 // Regression fixture for https://github.com/ariakit/ariakit/issues/7344. The
 // backdrop is fixed and covers the viewport, so the dialog has to be
@@ -28,23 +26,6 @@ const css = `
   }
 `;
 
-// TODO: Remove this workaround once the backdrop applies the attribute on its
-// own. https://github.com/ariakit/ariakit/issues/7344
-// The dialog still hides the backdrop through the inline `display: none` style
-// it computes, so mirror that decision into the attribute. Keep the component
-// outside `Example` so its identity stays stable across renders.
-const Backdrop = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<"div">>(
-  function Backdrop({ hidden, ...props }, ref) {
-    return (
-      <div
-        {...props}
-        ref={ref}
-        hidden={hidden ?? props.style?.display === "none"}
-      />
-    );
-  },
-);
-
 export default function Example() {
   const dialog = Ariakit.useDialogStore();
   return (
@@ -53,7 +34,7 @@ export default function Example() {
       <Ariakit.Button onClick={dialog.show}>Show dialog</Ariakit.Button>
       <Ariakit.Dialog
         store={dialog}
-        backdrop={<Backdrop className="backdrop" />}
+        backdrop={<div className="backdrop" />}
         className="dialog"
       >
         <Ariakit.DialogHeading>Success</Ariakit.DialogHeading>

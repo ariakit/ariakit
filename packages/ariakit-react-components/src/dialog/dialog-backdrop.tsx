@@ -57,7 +57,13 @@ export function DialogBackdrop({
     role: "presentation",
     "data-backdrop": contentElement?.id || "",
     alwaysVisible,
-    hidden: hidden != null ? hidden : undefined,
+    // Omit the key when the dialog didn't receive `hidden`. An own key holding
+    // `undefined` would win the spread over the hidden state that the hook
+    // computes, and then get dropped, leaving the backdrop with `display: none`
+    // and no `hidden` attribute. Component boundaries drop undefined props for
+    // this reason, but this hook call isn't one.
+    // https://github.com/ariakit/ariakit/issues/7344
+    ...(hidden != null && { hidden }),
     style: {
       position: "fixed",
       top: 0,
