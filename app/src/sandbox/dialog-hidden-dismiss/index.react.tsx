@@ -64,6 +64,13 @@ export default function Example() {
         <Ariakit.DialogDisclosure>Compose</Ariakit.DialogDisclosure>
         <Ariakit.Dialog>
           <Ariakit.DialogHeading>Compose</Ariakit.DialogHeading>
+          {/*
+            TODO: Remove once the fix lands. Supplies the dismiss control the
+            dialog is denied. https://github.com/ariakit/ariakit/issues/7321
+          */}
+          <Ariakit.VisuallyHidden
+            render={<Ariakit.DialogDismiss tabIndex={-1} />}
+          />
           <Ariakit.PopoverProvider>
             <Ariakit.PopoverDisclosure>Formatting</Ariakit.PopoverDisclosure>
             <Ariakit.Popover>
@@ -104,6 +111,17 @@ export default function Example() {
       <Ariakit.MenuProvider>
         <Ariakit.MenuButton>Tools</Ariakit.MenuButton>
         <Ariakit.Menu modal>
+          {/*
+            TODO: Remove once the fix lands. This one has to go inside the
+            menu: a modal menu makes everything outside it inert except its own
+            menu button, which carries no dismiss mark. So it costs the menu
+            the button-free owned elements it gained in
+            https://github.com/ariakit/ariakit/pull/7303
+            https://github.com/ariakit/ariakit/issues/7321
+          */}
+          <Ariakit.VisuallyHidden
+            render={<Ariakit.MenuDismiss tabIndex={-1} />}
+          />
           <Ariakit.MenuItem>Inspect</Ariakit.MenuItem>
           <Ariakit.MenuProvider>
             <Ariakit.MenuButton render={<Ariakit.MenuItem />}>
@@ -155,7 +173,17 @@ function ActivityBody() {
           <Ariakit.DialogDismiss>Close</Ariakit.DialogDismiss>
         </>
       ) : (
-        <button onClick={() => setLoaded(true)}>Load entries</button>
+        <>
+          <button onClick={() => setLoaded(true)}>Load entries</button>
+          {/*
+            TODO: Remove once the fix lands. Stands in for the fallback while
+            the dialog has no dismiss control of its own.
+            https://github.com/ariakit/ariakit/issues/7321
+          */}
+          <Ariakit.VisuallyHidden
+            render={<Ariakit.DialogDismiss tabIndex={-1} />}
+          />
+        </>
       )}
     </div>
   );
@@ -167,7 +195,19 @@ function ActivityBody() {
 function RemovePhotoBody() {
   const [removing, setRemoving] = useState(false);
   if (removing) {
-    return <p>Removing the photo. This can't be undone.</p>;
+    return (
+      <>
+        <p>Removing the photo. This can't be undone.</p>
+        {/*
+          TODO: Remove once the fix lands. Stands in for the fallback while the
+          dialog has no dismiss control of its own.
+          https://github.com/ariakit/ariakit/issues/7321
+        */}
+        <Ariakit.VisuallyHidden
+          render={<Ariakit.DialogDismiss tabIndex={-1} />}
+        />
+      </>
+    );
   }
   return (
     <>
