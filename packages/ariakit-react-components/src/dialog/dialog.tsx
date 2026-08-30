@@ -848,8 +848,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   props = useWrapElement(
     props,
     // The button toggles inside a wrapper that's always rendered, rather than
-    // by swapping the returned element, so gaining or losing it doesn't shift
-    // the dialog's index and remount everything inside it.
+    // by swapping the returned element, so gaining or losing it doesn't remount
+    // the dialog.
     // https://github.com/ariakit/ariakit/issues/7335
     (element) => (
       <>
@@ -873,10 +873,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // Wraps the dialog with a backdrop element if the backdrop prop is truthy.
   props = useWrapElement(
     props,
-    (element) => {
-      if (!backdrop) return element;
-      return (
-        <>
+    // The backdrop toggles inside a wrapper that's always rendered. Returning
+    // the bare element in one branch and a fragment in the other would change
+    // the element type in the dialog's slot and remount everything inside it.
+    // https://github.com/ariakit/ariakit/issues/7335
+    (element) => (
+      <>
+        {!!backdrop && (
           <DialogBackdrop
             store={store}
             backdrop={backdrop}
@@ -884,10 +887,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
             hidden={hiddenProp}
             alwaysVisible={alwaysVisible}
           />
-          {element}
-        </>
-      );
-    },
+        )}
+        {element}
+      </>
+    ),
     [store, backdrop, hiddenProp, alwaysVisible],
   );
 
