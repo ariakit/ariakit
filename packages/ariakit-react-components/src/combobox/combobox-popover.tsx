@@ -11,7 +11,7 @@ import { sync } from "@ariakit/store";
 import { getDocument, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent as ReactKeyboardEvent } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { createDialogComponent } from "../dialog/dialog.tsx";
@@ -63,6 +63,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     resetOnEscape,
     autoFocusOnHide = true,
     hideOnInteractOutside = true,
+    unstable_treeSnapshotKey,
     ...props
   }) {
     const context = useComboboxProviderContext();
@@ -137,12 +138,21 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
 
     // When new tags are rendered while the combobox popover is open, they will
     // be considered nested popups, and therefore the popover won't hide when
-    // interacting with them. We use the treeSnapshotKey to force the popover to
-    // take a new snapshot of the tree when new items are rendered.
-    const treeSnapshotKey = useStoreState(
+    // interacting with them. This feeds the tree snapshot key below, which
+    // forces the popover to take a new snapshot when new items are rendered.
+    const tagKey = useStoreState(
       store.tag,
       ["renderedItems"],
       (state) => state?.renderedItems.length,
+    );
+
+    // The dialog compares this by identity, so a caller's own key can travel
+    // alongside ours instead of replacing it, the same way the menu carries one
+    // alongside the key it sets for its disclosure.
+    // https://github.com/ariakit/ariakit/issues/7330
+    const treeSnapshotKey = useMemo(
+      () => [unstable_treeSnapshotKey, tagKey],
+      [unstable_treeSnapshotKey, tagKey],
     );
 
     props = useComboboxList({
@@ -222,8 +232,8 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       initialFocus: hasSelect ? inputElement : undefined,
       finalFocus: selectElement || compositeElement,
       preserveTabOrderAnchor: null,
-      unstable_treeSnapshotKey: treeSnapshotKey,
       ...props,
+      unstable_treeSnapshotKey: treeSnapshotKey,
       hideOnEscape,
       onClose,
       // When the combobox popover is modal, we make sure to include the
