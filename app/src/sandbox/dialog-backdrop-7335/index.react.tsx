@@ -60,14 +60,17 @@ function ComposeDialog() {
       <Ariakit.DialogDisclosure>Compose</Ariakit.DialogDisclosure>
       <Ariakit.Dialog
         className="dialog"
+        // TODO: Remove this workaround once the fix ships. The sandbox stops
+        // reproducing the bug while it is applied.
+        // https://github.com/ariakit/ariakit/issues/7335
         backdrop={
-          dimmed ? (
-            <div
-              className={highContrast ? "backdrop backdrop-high" : "backdrop"}
-            />
-          ) : (
-            false
-          )
+          <div
+            className={highContrast ? "backdrop backdrop-high" : "backdrop"}
+            // Leave the property out while the backdrop is on. An explicit
+            // `display: undefined` would override the `display: none` Ariakit
+            // sets while the dialog is closed.
+            style={dimmed ? undefined : { display: "none" }}
+          />
         }
       >
         <Ariakit.DialogHeading>Compose</Ariakit.DialogHeading>
@@ -78,8 +81,8 @@ function ComposeDialog() {
         <DimBackground checked={dimmed} onChange={setDimmed} />
         {/*
           Turning this on re-renders the dialog with a new backdrop element
-          while the backdrop stays truthy, so the number of children never
-          changes. It's the control that tells the falsy/truthy boundary apart
+          while the backdrop stays truthy, so the wrapper's shape doesn't
+          change. It's the control that tells the falsy/truthy boundary apart
           from an ordinary re-render.
         */}
         <label>
@@ -105,7 +108,14 @@ function QuickNoteDialog() {
         modal={false}
         portal={false}
         className="dialog"
-        backdrop={dimmed ? <div className="backdrop" /> : false}
+        // TODO: Remove this workaround once the fix ships.
+        // https://github.com/ariakit/ariakit/issues/7335
+        backdrop={
+          <div
+            className="backdrop"
+            style={dimmed ? undefined : { display: "none" }}
+          />
+        }
       >
         <Ariakit.DialogHeading>Quick note</Ariakit.DialogHeading>
         <label>
