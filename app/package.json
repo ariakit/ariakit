@@ -76,7 +76,7 @@
     "@tailwindcss/vite": "4.3.3",
     "@tanstack/react-query": "5.102.7",
     "@wordpress/components": "40.0.0",
-    "astro": "7.2.8",
+    "astro": "7.2.9",
     "astro-remote": "0.3.4",
     "canvas-confetti": "1.9.4",
     "clsx": "2.1.1",
