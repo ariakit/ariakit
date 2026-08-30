@@ -201,7 +201,10 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     // update the combobox store.
     props = useWrapElement(
       props,
-      // Keep the control in the same slot when the native select toggles.
+      // The native select toggles inside a wrapper that's always rendered.
+      // Returning the bare element in one branch and a fragment in the other
+      // would remount the control and everything inside it.
+      // https://github.com/ariakit/ariakit/issues/7346
       (element) => (
         <>
           {!!name && (
