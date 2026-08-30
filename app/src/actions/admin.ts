@@ -25,7 +25,7 @@ import { formatCurrency } from "#app/lib/locale.ts";
 import { createLogger } from "#app/lib/logger.ts";
 import { objectId } from "#app/lib/object.ts";
 import type { PlusType, PriceData } from "#app/lib/schemas.ts";
-import { PlusTypeSchema } from "#app/lib/schemas.ts";
+import { PlusTypeSchema, PriceDataSchema } from "#app/lib/schemas.ts";
 import {
   createSalePromo,
   expanded,
@@ -113,7 +113,9 @@ async function syncPrices() {
       product: price.product.id,
       currency: price.currency,
       amount: price.unit_amount || 0,
-      taxBehavior: price.tax_behavior || "exclusive",
+      taxBehavior: PriceDataSchema.shape.taxBehavior.parse(
+        price.tax_behavior || "exclusive",
+      ),
     });
     const productType = price.product.metadata.plusType;
     if (productType !== priceType) {
@@ -184,7 +186,9 @@ async function syncPrices() {
         product: price.product.id,
         currency: price.currency,
         amount: price.unit_amount || defaultPrice.amount,
-        taxBehavior: price.tax_behavior || "exclusive",
+        taxBehavior: PriceDataSchema.shape.taxBehavior.parse(
+          price.tax_behavior || "exclusive",
+        ),
       });
     }
   }
@@ -338,7 +342,9 @@ async function setPrice(input: SetPriceInput) {
       product: objectId(price.product),
       amount: price.unit_amount ?? amountWithCents,
       currency: price.currency,
-      taxBehavior: price.tax_behavior || taxBehavior,
+      taxBehavior: PriceDataSchema.shape.taxBehavior.parse(
+        price.tax_behavior || taxBehavior,
+      ),
     });
   };
   const deactivatePrice = async (priceId: string) => {

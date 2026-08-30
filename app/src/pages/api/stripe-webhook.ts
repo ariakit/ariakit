@@ -20,6 +20,7 @@ import {
 import { createLogger } from "#app/lib/logger.ts";
 import { objectId } from "#app/lib/object.ts";
 import { badRequest, internalServerError, ok } from "#app/lib/response.ts";
+import { PriceDataSchema } from "#app/lib/schemas.ts";
 import {
   getPromotionCoupon,
   getStripeClient,
@@ -136,7 +137,9 @@ export const POST: APIRoute = async (context) => {
       product: objectId(price.product),
       amount: price.unit_amount,
       currency: price.currency,
-      taxBehavior: price.tax_behavior ?? "unspecified",
+      taxBehavior: PriceDataSchema.shape.taxBehavior.parse(
+        price.tax_behavior ?? "unspecified",
+      ),
     });
     logger.info("Price stored in KV store", key);
     return ok();
