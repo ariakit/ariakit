@@ -1,11 +1,21 @@
 import * as Ariakit from "@ariakit/react";
 import type { RefObject } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+
+interface MenuProps extends Ariakit.MenuProps {
+  persistentRef: RefObject<HTMLElement | null>;
+  extraRef: RefObject<HTMLElement | null>;
+  extraPersistent: boolean;
+  treeSnapshotKey: number;
+}
 
 function Menu({
   persistentRef,
+  extraRef,
+  extraPersistent,
+  treeSnapshotKey,
   ...props
-}: Ariakit.MenuProps & { persistentRef: RefObject<HTMLElement | null> }) {
+}: MenuProps) {
   const store = Ariakit.useMenuContext();
   return (
     <Ariakit.Menu
@@ -15,14 +25,27 @@ function Menu({
         const disclosureElement = store?.getState().disclosureElement;
         if (disclosureElement) elements.push(disclosureElement);
         if (persistentRef.current) elements.push(persistentRef.current);
+        if (extraPersistent && extraRef.current) {
+          elements.push(extraRef.current);
+        }
         return elements;
       }}
+      // An application that returns different elements over time has to tell
+      // the dialog when to read them again. The menu contributes its own key
+      // for the disclosure, so this one has to survive alongside it.
+      // https://github.com/ariakit/ariakit/pull/7303#discussion_r3887846878
+      unstable_treeSnapshotKey={treeSnapshotKey}
       {...props}
     />
   );
 }
 
-function MenuItems({ otherRef }: { otherRef: RefObject<HTMLElement | null> }) {
+interface MenuItemsProps {
+  otherRef: RefObject<HTMLElement | null>;
+  onAddExtra: () => void;
+}
+
+function MenuItems({ otherRef, onAddExtra }: MenuItemsProps) {
   const store = Ariakit.useMenuContext();
   return (
     <>
@@ -42,6 +65,12 @@ function MenuItems({ otherRef }: { otherRef: RefObject<HTMLElement | null> }) {
       >
         Use other trigger
       </Ariakit.MenuItem>
+      {/* Makes an element that was already outside the menu persistent while
+          the menu stays open, so the dialog has to read the persistent
+          elements again to release it from the `inert` subtree. */}
+      <Ariakit.MenuItem hideOnClick={false} onClick={onAddExtra}>
+        Add extra
+      </Ariakit.MenuItem>
     </>
   );
 }
@@ -49,6 +78,14 @@ function MenuItems({ otherRef }: { otherRef: RefObject<HTMLElement | null> }) {
 export default function Example() {
   const persistentRef = useRef<HTMLButtonElement>(null);
   const otherRef = useRef<HTMLButtonElement>(null);
+  const extraRef = useRef<HTMLButtonElement>(null);
+  const [extraPersistent, setExtraPersistent] = useState(false);
+  const [treeSnapshotKey, setTreeSnapshotKey] = useState(0);
+
+  const addExtra = () => {
+    setExtraPersistent(true);
+    setTreeSnapshotKey((key) => key + 1);
+  };
 
   return (
     <Ariakit.MenuProvider>
@@ -64,9 +101,17 @@ export default function Example() {
       <button ref={persistentRef} tabIndex={0}>
         Refresh
       </button>
+      <button ref={extraRef} tabIndex={0}>
+        Extra
+      </button>
       <Ariakit.MenuButton>Actions</Ariakit.MenuButton>
-      <Menu persistentRef={persistentRef}>
-        <MenuItems otherRef={otherRef} />
+      <Menu
+        persistentRef={persistentRef}
+        extraRef={extraRef}
+        extraPersistent={extraPersistent}
+        treeSnapshotKey={treeSnapshotKey}
+      >
+        <MenuItems otherRef={otherRef} onAddExtra={addExtra} />
       </Menu>
     </Ariakit.MenuProvider>
   );

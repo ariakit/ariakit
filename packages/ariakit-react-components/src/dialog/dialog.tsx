@@ -1045,9 +1045,7 @@ export interface DialogOptions<T extends ElementType = TagName>
    * - A visually hidden dismiss button will be rendered next to the dialog if
    *   the [`DialogDismiss`](https://ariakit.com/reference/dialog-dismiss)
    *   component hasn't been used. This allows screen reader users to close the
-   *   dialog. It's rendered next to the dialog rather than inside it so that a
-   *   dialog whose role doesn't allow a `button` among its owned elements,
-   *   such as `menu`, doesn't get one.
+   *   dialog.
    * - When the dialog is open, element tree outside it will be inert.
    *
    * Live examples:
@@ -1205,9 +1203,12 @@ export interface DialogOptions<T extends ElementType = TagName>
    */
   finalFocus?: HTMLElement | RefObject<HTMLElement | null> | null;
   /**
+   * An opaque value that makes the dialog take a new snapshot of the element
+   * tree and mark it again. It's only ever compared by identity, so composed
+   * components can combine several sources into one value.
    * @private
    */
-  unstable_treeSnapshotKey?: Element | string | number | boolean | null;
+  unstable_treeSnapshotKey?: unknown;
 }
 
 export type DialogProps<T extends ElementType = TagName> = Props<

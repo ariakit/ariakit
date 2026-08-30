@@ -25,3 +25,19 @@ test("swapping the disclosure moves it into the modal context", async () => {
   // https://github.com/ariakit/ariakit/issues/7310
   expect(q.button.maybe("Dismiss popup")).toBeInTheDocument();
 });
+
+// The menu sets its own tree snapshot key for the disclosure. A caller that
+// returns different persistent elements over time sets one too, and the menu
+// has to carry it along rather than replace it, or the dialog never reads the
+// persistent elements again.
+// https://github.com/ariakit/ariakit/pull/7303#discussion_r3887846878
+test("caller's tree snapshot key still refreshes persistent elements", async () => {
+  await click(q.button("Actions"));
+  expect(q.menu()).toBeVisible();
+  expect(q.button.maybe("Extra")).not.toBeInTheDocument();
+
+  await click(q.menuitem("Add extra"));
+
+  expect(q.menu()).toBeVisible();
+  expect(q.button.maybe("Extra")).toBeInTheDocument();
+});

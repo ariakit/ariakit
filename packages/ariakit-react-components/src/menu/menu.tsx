@@ -49,6 +49,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   hideOnHoverOutside,
   alwaysVisible,
   getPersistentElements,
+  unstable_treeSnapshotKey,
   ...props
 }) {
   const context = useMenuProviderContext();
@@ -181,6 +182,22 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     },
   );
 
+  // The dialog collects persistent elements from an effect that doesn't
+  // otherwise depend on the disclosure, so swapping one connected disclosure
+  // for another would leave the old one in the modal context and the new one
+  // inert. Refresh the tree whenever the element changes, and only for modal
+  // menus, which are the ones that contribute it.
+  // https://github.com/ariakit/ariakit/pull/7303#discussion_r3884581660
+  const disclosureKey = modal ? persistentDisclosure : null;
+  // The dialog compares this by identity, so a caller's own key can travel
+  // alongside ours instead of being replaced by it. The ternary above has to
+  // gate the dependency rather than sit inside the value, which is never read.
+  // https://github.com/ariakit/ariakit/pull/7303#discussion_r3887846878
+  const treeSnapshotKey = useMemo(
+    () => [unstable_treeSnapshotKey, disclosureKey],
+    [unstable_treeSnapshotKey, disclosureKey],
+  );
+
   const contentElement = useStoreState(
     store.combobox || store,
     "contentElement",
@@ -261,13 +278,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
       if (!persistentDisclosure) return elements;
       return [...elements, persistentDisclosure];
     },
-    // The dialog collects persistent elements from an effect that doesn't
-    // otherwise depend on the disclosure, so swapping one connected disclosure
-    // for another would leave the old one in the modal context and the new one
-    // inert. Refresh the tree whenever the element changes. Only modal menus
-    // contribute the disclosure, so leave the non-modal marking pass alone.
-    // https://github.com/ariakit/ariakit/pull/7303#discussion_r3884581660
-    unstable_treeSnapshotKey: modal ? persistentDisclosure : null,
+    unstable_treeSnapshotKey: treeSnapshotKey,
     modal,
     portal,
     backdrop: hasParentMenu ? false : props.backdrop,
@@ -324,10 +335,9 @@ export interface MenuOptions<T extends ElementType = TagName>
    *   or any other element assigned with
    *   [`setDisclosureElement`](https://ariakit.com/reference/use-menu-store#setdisclosureelement),
    *   is part of the modal context, so it can still label the menu.
-   * - A visually hidden dismiss button is rendered next to the menu, never
-   *   inside it, where the ARIA menu pattern doesn't allow a `button`, unless
-   *   the menu already renders a
-   *   [`MenuDismiss`](https://ariakit.com/reference/menu-dismiss) element.
+   * - A visually hidden dismiss button will be rendered next to the menu if
+   *   the [`MenuDismiss`](https://ariakit.com/reference/menu-dismiss) component
+   *   hasn't been used. This allows screen reader users to close the menu.
    * - When the menu is open, the element tree outside of both the menu and its
    *   menu button will be inert.
    *
