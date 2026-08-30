@@ -29,9 +29,10 @@ function Field({ combobox = false, initiallyNamed = false }: FieldProps) {
     defaultSelectedValue: "Apple",
   });
   const [included, setIncluded] = useState(initiallyNamed);
+  const [fieldName, setFieldName] = useState("fruit");
   const [submitted, setSubmitted] = useState("Not submitted");
   const label = `${combobox ? "Combobox" : "Select"} ${initiallyNamed ? "named" : "unnamed"}`;
-  const name = included ? "fruit" : undefined;
+  const name = included ? fieldName : undefined;
   const popupProps = {
     "aria-label": label,
     role: "dialog",
@@ -49,7 +50,7 @@ function Field({ combobox = false, initiallyNamed = false }: FieldProps) {
       onSubmit={(event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const fruit = data.get("fruit");
+        const fruit = data.get(fieldName);
         setSubmitted(typeof fruit === "string" ? fruit : "Omitted");
       }}
     >
@@ -91,6 +92,9 @@ function Field({ combobox = false, initiallyNamed = false }: FieldProps) {
           </Ariakit.Select>
         </Ariakit.SelectProvider>
       )}
+      <Ariakit.Button onClick={() => setFieldName("produce")}>
+        Rename {label}
+      </Ariakit.Button>
       <Ariakit.Button type="submit">Submit {label}</Ariakit.Button>
       <output aria-label={`${label} submission`}>{submitted}</output>
     </form>
