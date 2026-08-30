@@ -198,10 +198,10 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   // onChange event is triggered and we set the autofill state to true.
   props = useWrapElement(
     props,
-    (element) => {
-      if (!name) return element;
-      return (
-        <>
+    // Keep the control in the same slot when the native select toggles.
+    (element) => (
+      <>
+        {!!name && (
           <select
             style={getVisuallyHiddenStyle()}
             tabIndex={-1}
@@ -245,10 +245,10 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
               </option>
             ))}
           </select>
-          {element}
-        </>
-      );
-    },
+        )}
+        {element}
+      </>
+    ),
     [
       store,
       label,

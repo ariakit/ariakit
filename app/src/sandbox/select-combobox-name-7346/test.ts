@@ -28,6 +28,9 @@ for (const label of [
       expect(q.textbox("Note")).toHaveValue("Buy ripe fruit");
       expect(q.status("Attachments")).toHaveTextContent("Attachments: 1");
       expect(q.dialog(label)).toBe(dialog);
+      expect(q.form(label).querySelectorAll("select")).toHaveLength(
+        included ? 1 : 0,
+      );
       await click(q.button(`Submit ${label}`));
       expect(q.status(`${label} submission`)).toHaveTextContent(
         included ? "Apple" : "Omitted",

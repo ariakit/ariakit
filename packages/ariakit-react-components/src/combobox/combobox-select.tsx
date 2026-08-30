@@ -201,10 +201,10 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     // update the combobox store.
     props = useWrapElement(
       props,
-      (element) => {
-        if (!name) return element;
-        return (
-          <>
+      // Keep the control in the same slot when the native select toggles.
+      (element) => (
+        <>
+          {!!name && (
             <select
               style={getVisuallyHiddenStyle()}
               tabIndex={-1}
@@ -246,10 +246,10 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
                 </option>
               ))}
             </select>
-            {element}
-          </>
-        );
-      },
+          )}
+          {element}
+        </>
+      ),
       [
         store,
         label,

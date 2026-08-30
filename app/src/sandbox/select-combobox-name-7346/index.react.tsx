@@ -32,9 +32,6 @@ function Field({ combobox = false, initiallyNamed = false }: FieldProps) {
   const [submitted, setSubmitted] = useState("Not submitted");
   const label = `${combobox ? "Combobox" : "Select"} ${initiallyNamed ? "named" : "unnamed"}`;
   const name = included ? "fruit" : undefined;
-  const selectValue = Ariakit.useStoreState(select, "value");
-  const comboboxValue = Ariakit.useStoreState(comboboxStore, "selectedValue");
-  const value = combobox ? comboboxValue : selectValue;
   const popupProps = {
     "aria-label": label,
     role: "dialog",
@@ -65,12 +62,9 @@ function Field({ combobox = false, initiallyNamed = false }: FieldProps) {
         />
         Include {label}
       </label>
-      {/* TODO: Remove after upgrading to the fixed version.
-      https://github.com/ariakit/ariakit/issues/7346 */}
-      <input type="hidden" name={name} value={value} />
       {combobox ? (
         <Ariakit.ComboboxProvider store={comboboxStore}>
-          <Ariakit.ComboboxSelect aria-label={label}>
+          <Ariakit.ComboboxSelect name={name} aria-label={label}>
             <Ariakit.ComboboxSelectedValue />
             {/* The portal keeps the popup outside the button in the DOM,
             while its React state belongs to the select's rendered subtree. */}
@@ -85,7 +79,7 @@ function Field({ combobox = false, initiallyNamed = false }: FieldProps) {
         </Ariakit.ComboboxProvider>
       ) : (
         <Ariakit.SelectProvider store={select}>
-          <Ariakit.Select aria-label={label}>
+          <Ariakit.Select name={name} aria-label={label}>
             <Ariakit.SelectValue />
             <Ariakit.SelectPopover store={select} {...popupProps}>
               <Ariakit.SelectList>

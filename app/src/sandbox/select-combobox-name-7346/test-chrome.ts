@@ -28,6 +28,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           .expect(query(dialog).textbox("Note"))
           .toHaveValue("Buy ripe fruit");
         await test.expect(query(dialog).status()).toHaveText("Attachments: 1");
+        await test
+          .expect(q.form(label).locator("select"))
+          .toHaveCount(included ? 1 : 0);
         await q.button(`Submit ${label}`).click();
         await test
           .expect(q.status(`${label} submission`))
