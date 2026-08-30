@@ -119,6 +119,18 @@ function isElementInDialog(
   return isElementInside(element, dialog);
 }
 
+// PopoverDismiss, MenuDismiss and friends all render DialogDismiss, and a
+// nested popup renders inline and stays rendered while closed, so its dismiss
+// sits in this dialog's subtree even though it closes a different popup.
+// https://github.com/ariakit/ariakit/issues/7321
+function hasOwnDismiss(dialog: Element) {
+  const dismisses = dialog.querySelectorAll("[data-dialog-dismiss]");
+  for (const dismiss of dismisses) {
+    if (dismiss.closest("[data-dialog]") === dialog) return true;
+  }
+  return false;
+}
+
 function getElementFromProp(
   prop?: HTMLElement | RefObject<HTMLElement | null> | null,
   focusable = false,
@@ -366,20 +378,25 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const [needsHiddenDismiss, setNeedsHiddenDismiss] = useState(false);
 
   useSafeLayoutEffect(() => {
-    const dialog = ref.current;
-    const needsDismiss = () => {
-      if (!modal) return false;
-      // A closing dialog is inert, but the button renders next to it, so it
-      // has to stop being exposed on its own. This covers the mounted state
-      // too, which stays true through the exit animation.
-      if (!open) return false;
-      if (!domReady) return false;
-      if (!dialog) return false;
-      // A rendered DialogDismiss already serves the same purpose.
-      return !dialog.querySelector("[data-dialog-dismiss]");
+    // A closing dialog is inert, but the button renders next to it, so it has
+    // to stop being exposed on its own. This covers the mounted state too,
+    // which stays true through the exit animation.
+    const exposed = modal && open && domReady;
+    if (!exposed || !contentElement) {
+      setNeedsHiddenDismiss(false);
+      return;
+    }
+    const update = () => {
+      setNeedsHiddenDismiss(!hasOwnDismiss(contentElement));
     };
-    setNeedsHiddenDismiss(needsDismiss());
-  }, [modal, open, domReady]);
+    update();
+    // A dismiss button can mount or unmount while the dialog stays open. The
+    // fallback renders next to the dialog, so adding it can't retrigger this.
+    const { MutationObserver } = getWindow(contentElement);
+    const observer = new MutationObserver(update);
+    observer.observe(contentElement, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [modal, open, domReady, contentElement]);
 
   // TODO: Move this behavior into DisclosureContent.
   // Keep closing animated content inert until its mounted state ends.
@@ -830,10 +847,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // owned element of the dialog's own role.
   props = useWrapElement(
     props,
-    (element) => {
-      if (!needsHiddenDismiss) return element;
-      return (
-        <>
+    // The button toggles inside a wrapper that's always rendered, rather than
+    // by swapping the returned element, so gaining or losing it doesn't shift
+    // the dialog's index and remount everything inside it.
+    // https://github.com/ariakit/ariakit/issues/7335
+    (element) => (
+      <>
+        {needsHiddenDismiss && (
           <button
             type="button"
             tabIndex={-1}
@@ -843,10 +863,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
           >
             Dismiss popup
           </button>
-          {element}
-        </>
-      );
-    },
+        )}
+        {element}
+      </>
+    ),
     [needsHiddenDismiss, id, store],
   );
 

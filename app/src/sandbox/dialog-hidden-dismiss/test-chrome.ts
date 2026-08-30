@@ -107,4 +107,104 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(query(dialog).button()).toHaveCount(1);
     await test.expect(query(dialog).button("Done")).toBeVisible();
   });
+
+  // A nested popover renders inline inside the dialog and stays rendered while
+  // closed, so its dismiss button is in the dialog's subtree before the user
+  // opens the popover. It closes the popover, so the dialog still needs its own
+  // fallback. https://github.com/ariakit/ariakit/issues/7321
+  test("dismiss owned by a nested popup doesn't replace the hidden one", async ({
+    q,
+  }) => {
+    await q.button("Compose").click();
+    const dialog = q.dialog("Compose");
+    await test.expect(dialog).toBeVisible();
+    await test
+      .expect(query(dialog).button("Close formatting", { includeHidden: true }))
+      .toHaveCount(1);
+    await test.expect(q.button("Dismiss popup")).toBeVisible();
+
+    await q.button("Formatting").press("Enter");
+    await test.expect(q.dialog("Formatting")).toBeVisible();
+    // The popover being open is when its dismiss button is on screen, and the
+    // dialog still has no dismiss of its own.
+    await test.expect(q.button("Dismiss popup")).toBeVisible();
+
+    await q.button("Close formatting").press("Enter");
+    await test.expect(q.dialog("Formatting")).toBeHidden();
+    await test.expect(dialog).toBeVisible();
+    await test.expect(q.button("Dismiss popup")).toBeVisible();
+  });
+
+  // A dismiss button the dialog does own is still its own when a nested popup's
+  // comes first in document order, and when it sits in a wrapper element rather
+  // than directly under the dialog.
+  // https://github.com/ariakit/ariakit/issues/7321
+  test("dialog owning a dismiss after a nested popup's gets no hidden one", async ({
+    q,
+  }) => {
+    await q.button("Share").click();
+    const dialog = q.dialog("Share");
+    await test.expect(dialog).toBeVisible();
+    await test
+      .expect(
+        query(dialog).button("Close permissions", { includeHidden: true }),
+      )
+      .toHaveCount(1);
+    await test.expect(query(dialog).button("Cancel")).toBeVisible();
+    await test.expect(q.button("Dismiss popup")).toHaveCount(0);
+  });
+
+  // The same composition through the menu modules. A submenu is never modal, so
+  // it renders inline inside the modal menu, and its dismiss button closes the
+  // submenu alone. https://github.com/ariakit/ariakit/issues/7321
+  test("dismiss owned by a submenu doesn't replace the hidden one", async ({
+    q,
+  }) => {
+    await q.button("Tools").click();
+    const menu = q.menu("Tools");
+    await test.expect(menu).toBeVisible();
+    await test
+      .expect(query(menu).button("Close submenu", { includeHidden: true }))
+      .toHaveCount(1);
+    await test.expect(q.button("Dismiss popup")).toBeVisible();
+
+    // Same again once the submenu is open, which is when its dismiss button is
+    // on screen and the modal menu still has no dismiss of its own.
+    await q.menuitem("More").press("Enter");
+    await test.expect(q.menu("More")).toBeVisible();
+    await test.expect(q.button("Dismiss popup")).toBeVisible();
+  });
+
+  // Whether the dialog needs the fallback can change while it stays open. A
+  // dialog that loads its content gains a dismiss control, and the fallback has
+  // to step aside instead of leaving two of them behind.
+  // https://github.com/ariakit/ariakit/issues/7321
+  test("dismiss mounted while the dialog is open replaces the hidden one", async ({
+    q,
+  }) => {
+    await q.button("Activity").click();
+    const dialog = q.dialog("Activity");
+    await test.expect(dialog).toBeVisible();
+    await test.expect(q.button("Dismiss popup")).toBeVisible();
+
+    await q.button("Load entries").press("Enter");
+    await test.expect(query(dialog).button("Close")).toBeVisible();
+    await test.expect(q.button("Dismiss popup")).toHaveCount(0);
+  });
+
+  // The other direction: a dialog that starts a task it can't cancel loses the
+  // dismiss control it had, and the fallback has to come back.
+  // https://github.com/ariakit/ariakit/issues/7321
+  test("dismiss unmounted while the dialog is open brings the hidden one back", async ({
+    q,
+  }) => {
+    await q.button("Remove photo").click();
+    const dialog = q.dialog("Remove photo");
+    await test.expect(dialog).toBeVisible();
+    await test.expect(q.button("Dismiss popup")).toHaveCount(0);
+
+    await q.button("Remove").press("Enter");
+    await test.expect(query(dialog).button("Keep photo")).toHaveCount(0);
+    await test.expect(q.button("Dismiss popup")).toBeVisible();
+  });
 });
