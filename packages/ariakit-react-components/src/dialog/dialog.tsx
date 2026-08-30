@@ -64,7 +64,6 @@ import {
   isCapturedDisclosure,
 } from "./utils/__captured-disclosures.ts";
 import { isHiddenDismiss } from "./utils/__is-hidden-dismiss.ts";
-import { hasOwnDismiss } from "./utils/__own-dismiss.ts";
 import {
   disableTree,
   markAndDisableTreeOutside,
@@ -118,6 +117,18 @@ function isElementInDialog(
   if (contains(dialog, element)) return true;
   if (disclosureElement && contains(disclosureElement, element)) return true;
   return isElementInside(element, dialog);
+}
+
+// PopoverDismiss, MenuDismiss and friends all render DialogDismiss, and a
+// nested popup renders inline and stays rendered while closed, so its dismiss
+// sits in this dialog's subtree even though it closes a different popup.
+// https://github.com/ariakit/ariakit/issues/7321
+function hasOwnDismiss(dialog: Element) {
+  const dismisses = dialog.querySelectorAll("[data-dialog-dismiss]");
+  for (const dismiss of dismisses) {
+    if (dismiss.closest("[data-dialog]") === dialog) return true;
+  }
+  return false;
 }
 
 function getElementFromProp(
