@@ -13,6 +13,16 @@ export default function Example() {
   const [inviteLinkVisible, setInviteLinkVisible] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [treeSnapshotKey, setTreeSnapshotKey] = useState(0);
+  // TODO: Remove once https://github.com/ariakit/ariakit/issues/7330 is fixed.
+  // The popup passes its own tag-count key before the caller's props, so this
+  // key replaces it and has to carry the count itself.
+  const tag = Ariakit.useTagStore({ values, setValues });
+  const renderedTagCount = Ariakit.useStoreState(
+    tag,
+    ["renderedItems"],
+    (state) => state.renderedItems.length,
+  );
+  const snapshotKey = `${treeSnapshotKey}:${renderedTagCount}`;
 
   const showInviteLink = () => {
     setInviteLinkVisible(true);
@@ -34,7 +44,7 @@ export default function Example() {
           <span role="status">{linkCopied && "Link copied"}</span>
         </div>
       )}
-      <Ariakit.TagProvider values={values} setValues={setValues}>
+      <Ariakit.TagProvider store={tag}>
         <Ariakit.TagLabel className="ak-tag-list-label">
           Invitees
         </Ariakit.TagLabel>
@@ -68,7 +78,7 @@ export default function Example() {
               // tree again. The popup contributes its own key for newly
               // rendered tags, so this one has to travel alongside it.
               // https://github.com/ariakit/ariakit/issues/7330
-              unstable_treeSnapshotKey={treeSnapshotKey}
+              unstable_treeSnapshotKey={snapshotKey}
             >
               {people.map((person) => (
                 <Ariakit.ComboboxItem

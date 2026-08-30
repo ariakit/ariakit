@@ -6,3 +6,4 @@ export * from "@ariakit/react-components/tag/tag-label";
 export * from "@ariakit/react-components/tag/tag-list";
 export * from "@ariakit/react-components/tag/tag-provider";
 export * from "@ariakit/react-components/tag/tag-remove";
+export * from "@ariakit/react-components/tag/tag-store";
