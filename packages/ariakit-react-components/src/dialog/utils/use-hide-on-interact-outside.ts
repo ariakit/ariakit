@@ -11,6 +11,7 @@ import type { MutableRefObject } from "react";
 import { useEffect, useRef } from "react";
 import type { DialogStore } from "../dialog-store.ts";
 import type { DialogOptions } from "../dialog.tsx";
+import { isHiddenDismiss } from "./__is-hidden-dismiss.ts";
 import { isElementInside, isElementMarked } from "./mark-tree-outside.ts";
 import type { EventTargets } from "./use-previous-mouse-down-ref.ts";
 import {
@@ -75,6 +76,7 @@ function isElementWithinDialog(
   if (contains(contentElement, target)) return true;
   if (isDisclosure(disclosureElement, target)) return true;
   if (target.hasAttribute("data-focus-trap")) return true;
+  if (isHiddenDismiss(target, contentElement.id)) return true;
   return isElementInside(target, contentElement);
 }
 

@@ -49,6 +49,7 @@ import { useFocusable } from "../focusable/focusable.tsx";
 import { HeadingLevel } from "../heading/heading-level.tsx";
 import type { PortalOptions } from "../portal/portal.tsx";
 import { usePortal } from "../portal/portal.tsx";
+import { getVisuallyHiddenStyle } from "../visually-hidden/visually-hidden.tsx";
 import { DialogBackdrop } from "./dialog-backdrop.tsx";
 import {
   DialogDescriptionContext,
@@ -59,6 +60,11 @@ import {
 import type { DialogStore } from "./dialog-store.ts";
 import { useDialogStore } from "./dialog-store.ts";
 import {
+  captureDisclosure,
+  isCapturedDisclosure,
+} from "./utils/__captured-disclosures.ts";
+import { isHiddenDismiss } from "./utils/__is-hidden-dismiss.ts";
+import {
   disableTree,
   markAndDisableTreeOutside,
 } from "./utils/disable-tree.ts";
@@ -68,7 +74,6 @@ import {
   markTreeInside,
   markTreeOutside,
 } from "./utils/mark-tree-outside.ts";
-import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.ts";
 import { supportsInert } from "./utils/supports-inert.ts";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.ts";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.tsx";
@@ -82,20 +87,14 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 const isSafariBrowser = isSafari();
 const openModalPortals = new WeakSet<HTMLElement>();
 
-// Elements a dialog captured because nothing named an opener. They stand for
-// nothing the application asked for, so a later open may replace them. Tracked
-// on the element rather than per dialog or per store, because both the dialog
-// and the store it derives are replaced when its component remounts, while the
-// store the application owns keeps the value. A mark is never dropped, since
-// two dialogs can share an element and one clearing it would leave the other
-// reading its own fallback as a name.
-// https://github.com/ariakit/ariakit/issues/7095
-const capturedDisclosures = new WeakSet<Element>();
-
 function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   const activeElement = getActiveElement(dialog);
   if (!activeElement) return false;
   if (dialog && contains(dialog, activeElement)) return false;
+  // The hidden dismiss button renders next to the dialog, so activating it
+  // would otherwise read as focus having moved somewhere else entirely, and
+  // the dialog would skip restoring focus to its disclosure.
+  if (isHiddenDismiss(activeElement, dialog?.id)) return false;
   if (isFocusable(activeElement)) return true;
   return false;
 }
@@ -309,15 +308,15 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const hasNamedDisclosure = () => {
       const { disclosureElement } = store.getState();
       if (!disclosureElement) return false;
-      if (capturedDisclosures.has(disclosureElement)) return false;
+      if (isCapturedDisclosure(disclosureElement)) return false;
       if (!disclosureElement.isConnected) return false;
       // The disclosure element can't be inside the dialog.
       if (dialog && contains(dialog, disclosureElement)) return false;
       return true;
     };
     if (hasNamedDisclosure()) return;
-    const captureDisclosure = (element: HTMLElement) => {
-      capturedDisclosures.add(element);
+    const setCapturedDisclosure = (element: HTMLElement) => {
+      captureDisclosure(element);
       store.setDisclosureElement(element);
     };
     const activeElement = getActiveElement(dialog, { activeDescendant: true });
@@ -330,12 +329,12 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       if (!fallback?.isConnected) return;
       if (!isFocusable(fallback)) return;
       if (dialog && contains(dialog, fallback)) return;
-      captureDisclosure(fallback as HTMLElement);
+      setCapturedDisclosure(fallback as HTMLElement);
       return;
     }
     // The disclosure element can't be inside the dialog.
     if (dialog && contains(dialog, activeElement)) return;
-    captureDisclosure(activeElement);
+    setCapturedDisclosure(activeElement);
   }, [store, open]);
 
   // Sets --dialog-viewport-height CSS variable to the height of the visual
@@ -359,20 +358,28 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     };
   }, [mounted, domReady]);
 
-  // Renders a hidden dismiss button at the top of the modal dialog element. So
-  // that screen reader users aren't trapped in the dialog when there's no
-  // visible dismiss button.
-  useEffect(() => {
-    if (!modal) return;
-    if (!mounted) return;
-    if (!domReady) return;
+  // A modal dialog gets a hidden dismiss button so that screen reader users
+  // aren't trapped in it when there's no visible dismiss button. It renders
+  // next to the dialog rather than inside it, because the dialog element can
+  // carry a role that doesn't allow a `button` among its owned elements, like
+  // `menu`. https://github.com/ariakit/ariakit/issues/7310
+  const [needsHiddenDismiss, setNeedsHiddenDismiss] = useState(false);
+
+  useSafeLayoutEffect(() => {
     const dialog = ref.current;
-    if (!dialog) return;
-    // If there's already a DialogDismiss component, it does nothing.
-    const existingDismiss = dialog.querySelector("[data-dialog-dismiss]");
-    if (existingDismiss) return;
-    return prependHiddenDismiss(dialog, store.hide);
-  }, [store, modal, mounted, domReady]);
+    const needsDismiss = () => {
+      if (!modal) return false;
+      // A closing dialog is inert, but the button renders next to it, so it
+      // has to stop being exposed on its own. This covers the mounted state
+      // too, which stays true through the exit animation.
+      if (!open) return false;
+      if (!domReady) return false;
+      if (!dialog) return false;
+      // A rendered DialogDismiss already serves the same purpose.
+      return !dialog.querySelector("[data-dialog-dismiss]");
+    };
+    setNeedsHiddenDismiss(needsDismiss());
+  }, [modal, open, domReady]);
 
   // TODO: Move this behavior into DisclosureContent.
   // Keep closing animated content inert until its mounted state ends.
@@ -767,6 +774,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         if (isElement(target) && isElementMarked(target, dialog.id)) {
           return true;
         }
+        // The hidden dismiss button belongs to this dialog even though it
+        // renders next to it, so Escape still closes from there.
+        if (isElement(target) && isHiddenDismiss(target, dialog.id)) {
+          return true;
+        }
         return false;
       };
       if (!isValidTarget()) return;
@@ -812,6 +824,31 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   const hiddenProp = props.hidden;
   const alwaysVisible = props.alwaysVisible;
+
+  // Renders the hidden dismiss button right before the dialog, the way the
+  // backdrop and the focus traps are rendered, so that it never becomes an
+  // owned element of the dialog's own role.
+  props = useWrapElement(
+    props,
+    (element) => {
+      if (!needsHiddenDismiss) return element;
+      return (
+        <>
+          <button
+            type="button"
+            tabIndex={-1}
+            data-dialog-hidden-dismiss={id || ""}
+            style={getVisuallyHiddenStyle()}
+            onClick={store.hide}
+          >
+            Dismiss popup
+          </button>
+          {element}
+        </>
+      );
+    },
+    [needsHiddenDismiss, id, store],
+  );
 
   // Wraps the dialog with a backdrop element if the backdrop prop is truthy.
   props = useWrapElement(
@@ -1005,9 +1042,10 @@ export interface DialogOptions<T extends ElementType = TagName>
    *   [`DialogHeading`](https://ariakit.com/reference/dialog-heading)
    *   components within the dialog, their level will be reset so they start
    *   with `h1`.
-   * - A visually hidden dismiss button will be rendered if the
-   *   [`DialogDismiss`](https://ariakit.com/reference/dialog-dismiss) component
-   *   hasn't been used. This allows screen reader users to close the dialog.
+   * - A visually hidden dismiss button will be rendered next to the dialog if
+   *   the [`DialogDismiss`](https://ariakit.com/reference/dialog-dismiss)
+   *   component hasn't been used. This allows screen reader users to close the
+   *   dialog.
    * - When the dialog is open, element tree outside it will be inert.
    *
    * Live examples:
@@ -1165,9 +1203,12 @@ export interface DialogOptions<T extends ElementType = TagName>
    */
   finalFocus?: HTMLElement | RefObject<HTMLElement | null> | null;
   /**
+   * An opaque value that makes the dialog take a new snapshot of the element
+   * tree and mark it again. It's only ever compared by identity, so composed
+   * components can combine several sources into one value.
    * @private
    */
-  unstable_treeSnapshotKey?: string | number | boolean | null;
+  unstable_treeSnapshotKey?: unknown;
 }
 
 export type DialogProps<T extends ElementType = TagName> = Props<

@@ -14,6 +14,17 @@ export default function Example() {
       }}
     >
       Right click here
+      {/* Context menus are also opened from the keyboard, from a control that
+          keeps focus while the menu opens. */}
+      <button
+        onClick={(event) => {
+          const rect = event.currentTarget.getBoundingClientRect();
+          setAnchorRect({ x: rect.left, y: rect.bottom });
+          menu.show();
+        }}
+      >
+        Open menu
+      </button>
       <Ariakit.Menu
         store={menu}
         modal

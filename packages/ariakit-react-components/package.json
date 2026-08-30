@@ -121,7 +121,6 @@
     "./dialog/utils/is-focus-trap": "./src/dialog/utils/is-focus-trap.ts",
     "./dialog/utils/mark-tree-outside": "./src/dialog/utils/mark-tree-outside.ts",
     "./dialog/utils/orchestrate": "./src/dialog/utils/orchestrate.ts",
-    "./dialog/utils/prepend-hidden-dismiss": "./src/dialog/utils/prepend-hidden-dismiss.ts",
     "./dialog/utils/supports-inert": "./src/dialog/utils/supports-inert.ts",
     "./dialog/utils/tree-cleanup": "./src/dialog/utils/tree-cleanup.ts",
     "./dialog/utils/use-hide-on-interact-outside": "./src/dialog/utils/use-hide-on-interact-outside.ts",
