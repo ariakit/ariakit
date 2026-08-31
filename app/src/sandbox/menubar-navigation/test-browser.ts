@@ -190,4 +190,32 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("ArrowDown");
     await expect(q.menuitem("Archives")).toBeFocused();
   });
+
+  // Arrowing into the menu records a move on the shared menu store. The menu
+  // itself unmounts on the way to Contact and comes back with a null active
+  // item, while that store lives on in the menubar's provider. That stale move
+  // and that active item are the container-focus request being replayed.
+  // Focusing a menubar item doesn't record a move, so opening one alone doesn't
+  // arm this.
+  // https://github.com/ariakit/ariakit/issues/7360
+  test("keeps focus on the menu item when the shared menu is mounted again", async ({
+    page,
+    browserName,
+  }) => {
+    const q = query(page);
+    await pressTab(page, browserName);
+    await expect(q.menuitem("Services")).toBeFocused();
+    await expect(q.menu("Services")).toBeVisible();
+
+    await page.keyboard.press("ArrowDown");
+    await expect(q.menuitem("Web Development")).toBeFocused();
+
+    await page.keyboard.press("ArrowLeft");
+    await expect(q.menuitem("Contact")).toBeFocused();
+    await expect(q.menu("Services")).not.toBeVisible();
+
+    await page.keyboard.press("ArrowRight");
+    await expect(q.menu("Services")).toBeVisible();
+    await expect(q.menuitem("Services")).toBeFocused();
+  });
 });
