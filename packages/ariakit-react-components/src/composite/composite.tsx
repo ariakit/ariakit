@@ -611,10 +611,15 @@ export interface CompositeOptions<
    * needs to be set to `false` when merging various composite widgets where
    * only one should function in that manner.
    *
-   * If disabled, this component will stop managing focus and keyboard
-   * navigation for its items and itself. Additionally, composite ARIA
-   * attributes won't be applied. These responsibilities should be taken over by
-   * another composite component.
+   * If `false`, this component disables its
+   * [`focusOnMove`](https://ariakit.com/reference/composite#focusonmove)
+   * behavior and stops applying composite ARIA attributes. Another composite
+   * component should take over these responsibilities.
+   *
+   * Keyboard navigation on items remains active and can still change the
+   * active item. To disable arrow-key navigation, set
+   * [`moveOnKeyPress`](https://ariakit.com/reference/composite#moveonkeypress)
+   * to `false` on this component and its items.
    *
    * **Note**: In most cases, this prop doesn't need to be set manually. For
    * example, when composing [Menu with
@@ -637,8 +642,8 @@ export interface CompositeOptions<
    * arrow keys are pressed, given that the composite element is focused and
    * there's no active item.
    *
-   * **Note**: To entirely disable focus moving within a composite widget, you
-   * can use the
+   * **Note**: To control automatic focus movement when navigating through items,
+   * use the
    * [`focusOnMove`](https://ariakit.com/reference/composite#focusonmove) prop
    * instead. If you want to control the behavior _only when arrow keys are
    * pressed_, where
@@ -664,10 +669,8 @@ export interface CompositeOptions<
    * [`move`](https://ariakit.com/reference/use-composite-store#move) method
    * directly.
    *
-   * Unlike the
-   * [`composite`](https://ariakit.com/reference/composite#composite-1) prop,
-   * this option doesn't disable the entire composite widget behavior. It only
-   * stops this component from managing focus when navigating through items.
+   * Disabling this option doesn't disable keyboard navigation or other
+   * composite behavior, such as applying composite ARIA attributes.
    *
    * **Note**: If you want to control the behavior only _when arrow keys are
    * pressed_, use the
