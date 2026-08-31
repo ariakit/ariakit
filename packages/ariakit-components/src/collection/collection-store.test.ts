@@ -866,3 +866,31 @@ test("updates rendered items after sorting a large collection", async () => {
     stop();
   }
 });
+
+test("publishes rendered items before the next animation frame", async () => {
+  const store = createCollectionStore();
+  const stop = init(store);
+  const first = document.createElement("button");
+  const second = document.createElement("button");
+  document.body.append(first, second);
+
+  try {
+    store.renderItem({ id: "second", element: second });
+    store.renderItem({ id: "first", element: first });
+
+    // Both registrations share the microtask queued by the first one, and the
+    // sort publishes inside it, so one await is enough and the second is
+    // margin. Awaiting microtasks rather than polling is what makes this fail
+    // when the publish waits for an animation frame, which is the delay behind
+    // https://github.com/ariakit/ariakit/issues/3914.
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(store.getState().renderedItems.map((item) => item.id)).toEqual([
+      "first",
+      "second",
+    ]);
+  } finally {
+    stop();
+  }
+});

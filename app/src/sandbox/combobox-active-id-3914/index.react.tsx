@@ -34,13 +34,6 @@ function ListCombobox() {
     (country) => getItemId("list-item", country) === activeId,
   );
 
-  // TODO: Remove when https://github.com/ariakit/ariakit/issues/3914 is fixed.
-  // `autoSelect` picks its target from `renderedItems`, which the store only
-  // publishes on the next animation frame, so after a keystroke it re-asserts
-  // the previous list's first item. Feeding it the current matches instead
-  // keeps the highlight on the option users already see.
-  const firstMatchId = matches[0] ? getItemId("list-item", matches[0]) : null;
-
   return (
     <div className="wrapper">
       <Ariakit.ComboboxProvider
@@ -52,7 +45,6 @@ function ListCombobox() {
         <Ariakit.ComboboxLabel>Country</Ariakit.ComboboxLabel>
         <Ariakit.Combobox
           autoSelect
-          getAutoSelectId={() => firstMatchId}
           placeholder="e.g., Andorra"
           className="combobox"
         />
@@ -99,10 +91,6 @@ function VirtualizedCombobox() {
 
   const activeCountry = matches.find((item) => item.id === activeId)?.value;
 
-  // TODO: Remove when https://github.com/ariakit/ariakit/issues/3914 is fixed.
-  // Same workaround as the plain list above.
-  const firstMatchId = matches[0]?.id ?? null;
-
   return (
     <div className="wrapper">
       <Ariakit.ComboboxSelectLabel store={combobox}>
@@ -127,7 +115,6 @@ function VirtualizedCombobox() {
           <Ariakit.ComboboxInput
             store={combobox}
             autoSelect
-            getAutoSelectId={() => firstMatchId}
             aria-label="Search virtualized countries"
             placeholder="Search..."
             className="combobox"

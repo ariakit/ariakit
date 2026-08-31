@@ -240,11 +240,11 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         isTabbable(state) {
           if (!state) return true;
           // The composite element is published in a layout effect, one commit
-          // after the items mount, while rendered items are only published on
-          // the next animation frame. Both are empty before hydration and on
-          // the first commit, which is when items must keep their native tab
-          // order. Both conditions are necessary: a composite store may never
-          // get a composite element, and its items must still roam.
+          // after the items mount, while rendered items are published once the
+          // items' registration effects flush. Both are empty before hydration
+          // and on the first commit, which is when items must keep their native
+          // tab order. Both conditions are necessary: a composite store may
+          // never get a composite element, and its items must still roam.
           if (!state.compositeElement && !state.renderedItems.length) {
             return true;
           }
