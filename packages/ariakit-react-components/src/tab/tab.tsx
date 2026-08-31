@@ -205,6 +205,17 @@ export interface TabOptions<
    */
   store?: TabStore;
   /**
+   * Indicates whether the tab should be focusable even when it is
+   * [`disabled`](https://ariakit.com/reference/focusable#disabled). A disabled
+   * tab stays focusable by default, and a selected tab always does.
+   *
+   * Learn more on [Focusability of disabled
+   * controls](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#focusabilityofdisabledcontrols).
+   *
+   * Live examples:
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    * @default true
    */
   accessibleWhenDisabled?: CompositeItemOptions["accessibleWhenDisabled"];

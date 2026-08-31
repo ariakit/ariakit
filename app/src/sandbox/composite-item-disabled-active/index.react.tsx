@@ -1,47 +1,15 @@
 import * as Ariakit from "@ariakit/react";
 import { useId, useState } from "react";
 
-// TODO: Remove this workaround once
-// https://github.com/ariakit/ariakit/issues/7359 is fixed. Keeping the item
-// accessible while it holds DOM focus stops the native `disabled` attribute
-// from moving focus to the body. It is deliberately not applied to the virtual
-// focus, opt out, and initially disabled sections, which must keep their
-// current behavior.
-function SelfDisablingItem(props: Ariakit.CompositeItemProps) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <Ariakit.CompositeItem
-      {...props}
-      accessibleWhenDisabled={focused}
-      onFocus={(event) => {
-        props.onFocus?.(event);
-        setFocused(true);
-      }}
-      onBlur={(event) => {
-        props.onBlur?.(event);
-        const { currentTarget } = event;
-        // Firefox fires focusout when the window loses focus while the element
-        // still holds DOM focus. Releasing the workaround then would apply the
-        // native attribute to the focused element and drop focus to the body
-        // once the window comes back.
-        if (currentTarget.contains(currentTarget.ownerDocument.activeElement)) {
-          return;
-        }
-        setFocused(false);
-      }}
-    />
-  );
-}
-
 function RovingComposite() {
   const [read, setRead] = useState(false);
   return (
     <Ariakit.CompositeProvider>
       <Ariakit.Composite role="toolbar" aria-label="Roving message actions">
         <Ariakit.CompositeItem>Roving reply</Ariakit.CompositeItem>
-        <SelfDisablingItem disabled={read} onClick={() => setRead(true)}>
+        <Ariakit.CompositeItem disabled={read} onClick={() => setRead(true)}>
           Roving mark as read
-        </SelfDisablingItem>
+        </Ariakit.CompositeItem>
         <Ariakit.CompositeItem>Roving archive</Ariakit.CompositeItem>
       </Ariakit.Composite>
     </Ariakit.CompositeProvider>
@@ -70,9 +38,9 @@ function ControlledComposite() {
     <Ariakit.CompositeProvider activeId={activeId} setActiveId={setActiveId}>
       <Ariakit.Composite role="toolbar" aria-label="Controlled message actions">
         <Ariakit.CompositeItem>Controlled reply</Ariakit.CompositeItem>
-        <SelfDisablingItem disabled={read} onClick={() => setRead(true)}>
+        <Ariakit.CompositeItem disabled={read} onClick={() => setRead(true)}>
           Controlled mark as read
-        </SelfDisablingItem>
+        </Ariakit.CompositeItem>
         <Ariakit.CompositeItem>Controlled archive</Ariakit.CompositeItem>
       </Ariakit.Composite>
     </Ariakit.CompositeProvider>
@@ -85,13 +53,61 @@ function NativeControlComposite() {
     <Ariakit.CompositeProvider>
       <Ariakit.Composite role="toolbar" aria-label="Native message actions">
         <Ariakit.CompositeItem>Native reply</Ariakit.CompositeItem>
-        <SelfDisablingItem
+        <Ariakit.CompositeItem
           render={<input type="checkbox" />}
           aria-label="Native mark as read"
           disabled={locked}
           onChange={() => setLocked(true)}
         />
         <Ariakit.CompositeItem>Native archive</Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+// An item that is not natively focusable loses its `tabindex` instead of
+// gaining the native `disabled` attribute, which drops focus the same way. This
+// is the shape components like MenuItem and ComboboxItem render.
+function NonNativeComposite() {
+  const [read, setRead] = useState(false);
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite role="toolbar" aria-label="Non-native message actions">
+        <Ariakit.CompositeItem render={<div />} role="button">
+          Non-native reply
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem
+          render={<div />}
+          role="button"
+          disabled={read}
+          onClick={() => setRead(true)}
+        >
+          Non-native mark as read
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem render={<div />} role="button">
+          Non-native archive
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+// A composing Focusable can supply `accessibleWhenDisabled` through context, so
+// the item must not resolve the option to `false` on its own and block it.
+function InheritedComposite() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite role="toolbar" aria-label="Inherited message actions">
+        <Ariakit.CompositeItem>Inherited reply</Ariakit.CompositeItem>
+        <Ariakit.Focusable
+          accessibleWhenDisabled
+          render={
+            <Ariakit.CompositeItem disabled>
+              Inherited mark as read
+            </Ariakit.CompositeItem>
+          }
+        />
+        <Ariakit.CompositeItem>Inherited archive</Ariakit.CompositeItem>
       </Ariakit.Composite>
     </Ariakit.CompositeProvider>
   );
@@ -156,6 +172,8 @@ export default function Example() {
       <VirtualFocusComposite />
       <ControlledComposite />
       <NativeControlComposite />
+      <NonNativeComposite />
+      <InheritedComposite />
       <OptOutComposite />
       <InitiallyDisabledComposite />
     </main>

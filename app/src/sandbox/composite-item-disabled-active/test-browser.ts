@@ -127,6 +127,36 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.button("Native archive")).toBeFocused();
   });
 
+  // An item that is not natively focusable keeps its focus through the item's
+  // `tabindex` rather than through the absence of a native `disabled`
+  // attribute, so it loses focus by a different mechanism.
+  // https://github.com/ariakit/ariakit/issues/7359
+  test("keeps roving focus on a non-native item that disables itself", async ({
+    page,
+    q,
+  }) => {
+    const markAsRead = q.button("Non-native mark as read");
+    const archive = q.button("Non-native archive");
+
+    await q.button("Non-native reply").click();
+    await page.keyboard.press("ArrowRight");
+    await test.expect(markAsRead).toBeFocused();
+
+    await page.keyboard.press("Enter");
+    await test.expect(markAsRead).toHaveAttribute("aria-disabled", "true");
+    // Same engine blur frame as the roving test above, crossed because focus
+    // here is state that must not change.
+    await flushFrames(page);
+    await test.expect(markAsRead).toBeFocused();
+    await test.expect(markAsRead).toHaveAttribute("tabindex", "0");
+
+    await page.keyboard.press("ArrowRight");
+    await test.expect(archive).toBeFocused();
+
+    // Once the item no longer holds focus, it drops out of the focus order.
+    await test.expect(markAsRead).not.toHaveAttribute("tabindex");
+  });
+
   // https://github.com/ariakit/ariakit/issues/7359
   test("honors an explicit accessibleWhenDisabled opt out", async ({
     page,

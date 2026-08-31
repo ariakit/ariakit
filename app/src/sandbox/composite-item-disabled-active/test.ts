@@ -86,6 +86,45 @@ test("keeps focus on a native control that disables itself", async () => {
   expect(q.button("Native archive")).toHaveFocus();
 });
 
+// An item that is not natively focusable loses its `tabindex` rather than
+// gaining the native `disabled` attribute, so it drops out of the focus order
+// by a different mechanism.
+// https://github.com/ariakit/ariakit/issues/7359
+test("keeps roving focus on a non-native item that disables itself", async () => {
+  const markAsRead = q.button("Non-native mark as read");
+  const archive = q.button("Non-native archive");
+
+  await click(q.button("Non-native reply"));
+  await press.ArrowRight();
+  expect(markAsRead).toHaveFocus();
+
+  await press.Enter();
+  expect(markAsRead).toHaveFocus();
+  expect(markAsRead).toHaveAttribute("aria-disabled", "true");
+  expect(markAsRead).toHaveAttribute("tabindex", "0");
+
+  await press.ArrowRight();
+  expect(archive).toHaveFocus();
+
+  // Once the item no longer holds focus, it drops out of the focus order.
+  expect(markAsRead).not.toHaveAttribute("tabindex");
+});
+
+// The item derives the option only when it is disabled and focused, and falls
+// back to undefined rather than false so a composing Focusable can still supply
+// it through context.
+// https://github.com/ariakit/ariakit/issues/7359
+test("keeps an inherited accessibleWhenDisabled working", async () => {
+  const markAsRead = q.button("Inherited mark as read");
+
+  // The item is never focused here, so the derivation contributes nothing and
+  // the inherited value is the only thing that can keep it out of the native
+  // disabled state. Arrow navigation still skips it, because the collection is
+  // registered from the raw prop: https://github.com/ariakit/ariakit/issues/7364
+  expect(markAsRead).toHaveAttribute("aria-disabled", "true");
+  expect(markAsRead).not.toBeDisabled();
+});
+
 // https://github.com/ariakit/ariakit/issues/7359
 test("honors an explicit accessibleWhenDisabled opt out", async () => {
   const reply = q.button("Opt out reply");

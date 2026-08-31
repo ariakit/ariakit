@@ -33,7 +33,7 @@ import type {
   KeyboardEvent,
   SyntheticEvent,
 } from "react";
-import { useCallback, useContext, useMemo, useRef } from "react";
+import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
@@ -177,7 +177,17 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     }, []);
     const row = useContext(CompositeRowContext);
     const disabled = disabledFromProps(props);
-    const trulyDisabled = disabled && !props.accessibleWhenDisabled;
+    // Marking a focused item truly disabled removes it from the focus order,
+    // through the native `disabled` attribute on a button or input and through
+    // the `tabindex` on anything else, and the browser then moves focus to the
+    // body, which stops arrow keys from reaching the composite. Keep the item
+    // accessible while it holds focus, and let it become truly disabled once
+    // focus moves away. An explicit `accessibleWhenDisabled={false}` opts out.
+    // https://github.com/ariakit/ariakit/issues/7359
+    const [focused, setFocused] = useState(false);
+    const accessibleWhenDisabled =
+      props.accessibleWhenDisabled ?? (disabled && focused ? true : undefined);
+    const trulyDisabled = disabled && !accessibleWhenDisabled;
     // Snapshot before the props object is replaced below (useCollectionItem
     // consumes this prop), so the onFocus handler can read it at event time.
     const shouldRegisterItem = props.shouldRegisterItem;
@@ -314,15 +324,23 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       // When using aria-activedescendant, we want to make sure that the
       // composite container receives focus, not the composite item.
       if (!virtualFocus) {
-        // DOM focus moved with preventScroll, so a marked item still needs the
-        // widget's presentation even without the virtual-focus handoff below.
-        if (isSelfTarget(event) && store.item(id)) {
-          present({
-            id,
-            markedOnly: true,
-            requireFocus: true,
-            scrollIntoView,
-          });
+        if (isSelfTarget(event)) {
+          // Only roving focus leaves DOM focus on the item itself. With virtual
+          // focus the composite element holds it, so the item never needs to
+          // stay accessible while disabled.
+          // https://github.com/ariakit/ariakit/issues/7359
+          setFocused(true);
+          // DOM focus moved with preventScroll, so a marked item still needs
+          // the widget's presentation even without the virtual-focus handoff
+          // below.
+          if (store.item(id)) {
+            present({
+              id,
+              markedOnly: true,
+              requireFocus: true,
+              scrollIntoView,
+            });
+          }
         }
         return;
       }
@@ -418,6 +436,19 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         if (!state.virtualFocus) return;
         redirectFocusToCompositeElement(relatedTarget, nextCompositeElement);
       });
+    });
+
+    const onBlurProp = props.onBlur;
+
+    const onBlur = useEvent((event: FocusEvent<HTMLType>) => {
+      onBlurProp?.(event);
+      // Firefox fires focusout when the window loses focus, while the element
+      // still holds DOM focus. Releasing the item then would apply the native
+      // attribute to the focused element and drop focus to the body once the
+      // window comes back.
+      // https://github.com/ariakit/ariakit/issues/7359
+      if (getActiveElement(event.currentTarget) === event.currentTarget) return;
+      setFocused(false);
     });
 
     const onBlurCaptureProp = props.onBlurCapture;
@@ -534,7 +565,9 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       id,
       ref: useMergeRefs(ref, markUnmountingRef, props.ref),
       tabIndex: isTabbable ? props.tabIndex : -1,
+      accessibleWhenDisabled,
       onFocus,
+      onBlur,
       onBlurCapture,
       onKeyDown,
     };
@@ -597,6 +630,26 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    * components' context will be used.
    */
   store?: CompositeStore;
+  /**
+   * Indicates whether the item should be focusable even when it is
+   * [`disabled`](https://ariakit.com/reference/focusable#disabled). See
+   * [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled)
+   * for why this matters for discoverability.
+   *
+   * An item that becomes disabled while it holds focus behaves as if this prop
+   * were enabled, until focus moves elsewhere. This keeps focus on the item
+   * instead of letting it fall back to the body, which would stop arrow keys
+   * from reaching the composite widget. Set this prop to `false` to opt out.
+   *
+   * Learn more on [Focusability of disabled
+   * controls](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#focusabilityofdisabledcontrols).
+   *
+   * Live examples:
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
+   */
+  accessibleWhenDisabled?: CommandOptions<T>["accessibleWhenDisabled"];
   /**
    * Determines how the item is scrolled into view when it's presented.
    * @private
