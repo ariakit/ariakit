@@ -17,20 +17,6 @@ const SetPlacementContext = React.createContext<
   Dispatch<SetStateAction<Ariakit.MenuProviderProps["placement"]>>
 >(() => {});
 
-// TODO: Remove once https://github.com/ariakit/ariakit/issues/7360 is fixed.
-// The recorded move count is what the menu carries out again when it comes
-// back, so clear it once the menu goes away. A move issued later, while it is
-// still away, is pending and has to survive.
-function ForgetRecordedMoves() {
-  const menu = Ariakit.useMenuContext();
-  const mounted = Ariakit.useStoreState(menu, "mounted");
-  React.useEffect(() => {
-    if (mounted) return;
-    menu?.setState("moves", 0);
-  }, [mounted, menu]);
-  return null;
-}
-
 export interface MenubarProps extends Ariakit.MenubarProps {}
 
 export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
@@ -54,7 +40,6 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
               showTimeout={100}
               hideTimeout={250}
             >
-              <ForgetRecordedMoves />
               {props.children}
               <Ariakit.Menu
                 // This menu component is shared across all menus in the

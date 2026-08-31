@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 // Taller than a viewport, so the toolbar after it starts out of view from the
 // controls above.
@@ -24,16 +24,6 @@ export default function Example() {
   const store = Ariakit.useCompositeStore();
   const [expanded, setExpanded] = useState(true);
   const [handedOff, setHandedOff] = useState(false);
-
-  // TODO: Remove once https://github.com/ariakit/ariakit/issues/7360 is fixed.
-  // The recorded move count is what the toolbar carries out again when it comes
-  // back, so clear it once the toolbar goes away. A move issued later, while it
-  // is still away, is pending and has to survive, so `away` stays one dependency.
-  const away = !expanded || handedOff;
-  useEffect(() => {
-    if (!away) return;
-    store.setState("moves", 0);
-  }, [away, store]);
 
   return (
     <main style={{ display: "grid", gap: 16, justifyItems: "start" }}>
