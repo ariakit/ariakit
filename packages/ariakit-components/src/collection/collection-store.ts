@@ -211,20 +211,24 @@ export function createCollectionStore<
 
   setup(privateStore, () => {
     return batch(privateStore, ["renderedItems"], (state) => {
-      let firstRun = true;
-
-      let raf = requestAnimationFrame(() => {
-        const { renderedItems } = collection.getState();
-        // Bail out if the rendered items haven't changed. This is important
-        // because the following lines can cause this function to be called
-        // again.
-        if (state.renderedItems === renderedItems) return;
+      // Publish before the next paint. Waiting for an animation frame used to
+      // let the browser paint the new items next to state derived from the
+      // previous ones, such as the Combobox auto-selected item.
+      // https://github.com/ariakit/ariakit/issues/3914
+      //
+      // sortItems writes back into this store, which can re-enter this
+      // listener on the next microtask, so skip the array already published.
+      if (state.renderedItems !== collection.getState().renderedItems) {
         sortItems(state.renderedItems);
-      });
-
-      if (typeof IntersectionObserver !== "function") {
-        return () => cancelAnimationFrame(raf);
       }
+
+      if (typeof IntersectionObserver !== "function") return;
+
+      // Scrolling fires this observer constantly, so its re-sort keeps the
+      // animation frame that the publish above no longer needs.
+      // https://github.com/ariakit/ariakit/issues/3285
+      let firstRun = true;
+      let raf = 0;
 
       const ioCallback: IntersectionObserverCallback = () => {
         if (firstRun) {
