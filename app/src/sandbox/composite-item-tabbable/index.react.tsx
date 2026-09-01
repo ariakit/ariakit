@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { forwardRef } from "react";
+import { useState } from "react";
 
 const seededItems = [{ id: "seeded-drafts" }, { id: "seeded-sent" }];
 
@@ -71,15 +71,6 @@ function RovingListbox() {
   );
 }
 
-const MetadataProbe = forwardRef<HTMLButtonElement, Ariakit.CommandProps>(
-  function MetadataProbe({ onLoadedMetadataCapture, ...props }, ref) {
-    const metadataCount = onLoadedMetadataCapture
-      ? Object.getOwnPropertySymbols(onLoadedMetadataCapture).length
-      : 0;
-    return <button ref={ref} {...props} data-metadata-count={metadataCount} />;
-  },
-);
-
 function InheritedAccessibleDisabledListbox() {
   return (
     <Ariakit.CompositeProvider>
@@ -100,14 +91,62 @@ function InheritedAccessibleDisabledListbox() {
         <Ariakit.CompositeItem id="inherited-three" role="option">
           Inherited three
         </Ariakit.CompositeItem>
-        <Ariakit.CompositeItem
-          role="option"
-          render={<Ariakit.Command render={<MetadataProbe />} />}
-        >
-          Metadata command
-        </Ariakit.CompositeItem>
       </Ariakit.Composite>
     </Ariakit.CompositeProvider>
+  );
+}
+
+function AccessibleDisabledOverrideListbox() {
+  const [accessible, setAccessible] = useState(false);
+  const [renderAsLink, setRenderAsLink] = useState(false);
+  return (
+    <>
+      <button type="button" onClick={() => setAccessible(!accessible)}>
+        Make override {accessible ? "inaccessible" : "accessible"}
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          setAccessible(!renderAsLink);
+          setRenderAsLink(!renderAsLink);
+        }}
+      >
+        Replace with {renderAsLink ? "inaccessible div" : "accessible link"}
+      </button>
+      <Ariakit.CompositeProvider>
+        <Ariakit.Composite
+          role="listbox"
+          aria-label="Accessible disabled override"
+        >
+          <Ariakit.CompositeItem id="override-one" role="option">
+            Override one
+          </Ariakit.CompositeItem>
+          <Ariakit.Focusable
+            disabled
+            accessibleWhenDisabled
+            render={
+              <Ariakit.CompositeItem
+                id="override-two"
+                role="option"
+                render={
+                  <Ariakit.Focusable
+                    accessibleWhenDisabled={accessible}
+                    render={
+                      renderAsLink ? <a href="#override-two" /> : undefined
+                    }
+                  />
+                }
+              />
+            }
+          >
+            Override two
+          </Ariakit.Focusable>
+          <Ariakit.CompositeItem id="override-three" role="option">
+            Override three
+          </Ariakit.CompositeItem>
+        </Ariakit.Composite>
+      </Ariakit.CompositeProvider>
+    </>
   );
 }
 
@@ -120,6 +159,7 @@ export default function Example() {
       <SeededListbox />
       <RovingListbox />
       <InheritedAccessibleDisabledListbox />
+      <AccessibleDisabledOverrideListbox />
     </>
   );
 }

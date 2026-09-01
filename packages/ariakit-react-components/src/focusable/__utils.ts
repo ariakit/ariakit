@@ -1,26 +1,3 @@
-import type { AnyFunction } from "@ariakit/utils";
-
-export const accessibleWhenDisabledSymbol = Symbol("accessibleWhenDisabled");
-
-interface AccessibleWhenDisabledProps {
-  accessibleWhenDisabled?: boolean;
-  onLoadedMetadataCapture?: AnyFunction & {
-    [accessibleWhenDisabledSymbol]?: boolean;
-  };
-}
-
-// Reads the direct or inherited value without replacing the metadata carrier.
-// `useCompositeItem` runs before its own `useFocusable` call, and a replacement
-// would prevent a composed `useCommand` from propagating its marker.
-export function accessibleWhenDisabledFromProps(
-  props: AccessibleWhenDisabledProps,
-) {
-  return (
-    props.accessibleWhenDisabled ??
-    props.onLoadedMetadataCapture?.[accessibleWhenDisabledSymbol]
-  );
-}
-
 // Internal marker Focusable stamps on an element it resolved as disabled with
 // no way to reach it by keyboard. Metadata props only reach inner components,
 // so a hook that runs before its own useFocusable call has to read the element
