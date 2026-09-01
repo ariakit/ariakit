@@ -153,8 +153,8 @@ interface CompositeFocusOnMoveProps {
  * item. This lives in a separate memoized component so moving through items
  * doesn't re-render the whole composite component, and composite re-renders
  * don't re-render this component. It's only rendered when the `composite` prop
- * is enabled, so the `moves` subscription doesn't run for non-composite
- * widgets.
+ * is enabled, so this render-driving subscription doesn't run for
+ * non-composite widgets. The store hook tracks move requests separately.
  */
 const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   store,
