@@ -1,5 +1,5 @@
 import type { Page } from "@ariakit/test/playwright";
-import { expect, query } from "@ariakit/test/playwright";
+import { expect } from "@ariakit/test/playwright";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -10,8 +10,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     return isMac ? "Meta" : "Control";
   };
 
-  test("click on link with mouse", async ({ page }) => {
-    const q = query(page);
+  test("click on link with mouse", async ({ page, q }) => {
     await q.combobox("Links").click();
     await expect(q.listbox()).toBeVisible();
     await q.option("Ariakit.com").click();
@@ -20,10 +19,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("click on link with middle button", async ({
     page,
+    q,
     context,
     browserName,
   }) => {
-    const q = query(page);
     await q.combobox("Links").click();
     await expect(q.listbox()).toBeVisible();
     await expect(q.combobox("Links")).toHaveValue("");
@@ -41,8 +40,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     }
   });
 
-  test("click on link with cmd/ctrl", async ({ page, context }) => {
-    const q = query(page);
+  test("click on link with cmd/ctrl", async ({ page, q, context }) => {
     await q.combobox("Links").click();
     await expect(q.listbox()).toBeVisible();
     const modifier = await getClickModifier(page);
@@ -57,13 +55,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("click on link with cmd/ctrl + enter", async ({
     page,
+    q,
     context,
     browserName,
   }) => {
     // Chrome and Firefox can take a while to materialize the modifier+Enter
     // tab under CI load.
     test.slow();
-    const q = query(page);
     const combobox = q.combobox("Links");
     await combobox.click();
     await expect(q.listbox()).toBeVisible();
@@ -98,14 +96,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     }
   });
 
-  test("click on target blank link", async ({ page, context }) => {
+  test("click on target blank link", async ({ q, context }) => {
     // Keep popup creation independent of the external site's availability.
     await context.route(
       "https://bsky.app/profile/ariakit.com",
       (route) => route.fulfill({ body: "" }),
       { times: 1 },
     );
-    const q = query(page);
     await q.combobox("Links").click();
     await expect(q.listbox()).toBeVisible();
     await expect(q.combobox("Links")).toHaveValue("");
@@ -118,8 +115,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(newPage).toHaveURL("https://bsky.app/profile/ariakit.com");
   });
 
-  test("https://github.com/ariakit/ariakit/issues/2056", async ({ page }) => {
-    const q = query(page);
+  test("https://github.com/ariakit/ariakit/issues/2056", async ({
+    page,
+    q,
+  }) => {
     await q.combobox("Links").click();
     await expect(q.listbox()).toBeVisible();
     // Hover here is important to reproduce the issue.

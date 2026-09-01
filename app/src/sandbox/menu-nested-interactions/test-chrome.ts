@@ -1,9 +1,11 @@
-import { expect, query } from "@ariakit/test/playwright";
+import { expect } from "@ariakit/test/playwright";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("https://github.com/ariakit/ariakit/issues/4247", async ({ page }) => {
-    const q = query(page);
+  test("https://github.com/ariakit/ariakit/issues/4247", async ({
+    page,
+    q,
+  }) => {
     await q.button("Edit").click();
     await expect(q.menu("Edit")).toBeVisible();
     await q.menuitem("Find").hover();

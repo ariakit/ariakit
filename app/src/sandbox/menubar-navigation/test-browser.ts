@@ -1,5 +1,5 @@
 import type { Page } from "@ariakit/test/playwright";
-import { expect, query } from "@ariakit/test/playwright";
+import { expect } from "@ariakit/test/playwright";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 function pressTab(page: Page, browserName: string, shift = false) {
@@ -15,8 +15,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("show menus by hovering over items without moving focus", async ({
     page,
+    q,
   }) => {
-    const q = query(page);
     const body = page.locator("body");
 
     await q.menuitem("Services").hover();
@@ -46,8 +46,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(body).toBeFocused();
   });
 
-  test("show menus by hovering over items and subitems", async ({ page }) => {
-    const q = query(page);
+  test("show menus by hovering over items and subitems", async ({
+    page,
+    q,
+  }) => {
     await q.menuitem("Services").hover();
     await q.menuitem("Web Development").hover();
     await expect(q.menu("Services")).not.toBeFocused();
@@ -64,8 +66,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.menu("Company")).not.toBeVisible();
   });
 
-  test("show menus by focusing on items", async ({ page, browserName }) => {
-    const q = query(page);
+  test("show menus by focusing on items", async ({ page, q, browserName }) => {
     await pressTab(page, browserName);
     await expect(q.menuitem("Services")).toBeFocused();
     await expect(q.menu("Services")).toBeVisible();
@@ -81,8 +82,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.menu("Company")).not.toBeVisible();
   });
 
-  test("show menus by tabbing through items", async ({ page, browserName }) => {
-    const q = query(page);
+  test("show menus by tabbing through items", async ({
+    page,
+    q,
+    browserName,
+  }) => {
     await pressTab(page, browserName);
     await expect(q.menuitem("Services")).toBeFocused();
     await pressTab(page, browserName);
@@ -131,8 +135,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("moving between menus with arrow keys after hovering over subitems", async ({
     page,
+    q,
   }) => {
-    const q = query(page);
     await q.menuitem("Blog").hover();
     await q.menuitem("Tech").hover();
     await page.keyboard.press("ArrowRight");
@@ -141,9 +145,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.menuitem("Company")).not.toBeFocused();
   });
 
-  test("click on menuitem links", async ({ page, browserName }) => {
-    const q = query(page);
-
+  test("click on menuitem links", async ({ page, q, browserName }) => {
     await q.menuitem("Services").hover();
     await expect(q.menu("Services")).toBeVisible();
     await q.menuitem("Services").click();
@@ -175,9 +177,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.menuitem("Services")).toBeFocused();
   });
 
-  test("moving between menu items with arrow keys", async ({ page }) => {
-    const q = query(page);
-
+  test("moving between menu items with arrow keys", async ({ page, q }) => {
     await q.menuitem("Blog").click();
     await expect(q.menu("Blog")).toBeVisible();
 
@@ -200,9 +200,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/7360
   test("keeps focus on the menu item when the shared menu is mounted again", async ({
     page,
+    q,
     browserName,
   }) => {
-    const q = query(page);
     await pressTab(page, browserName);
     await expect(q.menuitem("Services")).toBeFocused();
     await expect(q.menu("Services")).toBeVisible();

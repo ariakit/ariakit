@@ -37,9 +37,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       const tabs = [`${name} 1`, `${name} 2`];
 
       for (const tab of tabs) {
-        test(`Restore scroll on ${tab}`, async ({ page }) => {
-          const q = query(page);
-
+        test(`Restore scroll on ${tab}`, async ({ page, q }) => {
           await q.tab(tab).click();
           await expect(q.tabpanel(tab)).toBeVisible();
 
@@ -63,9 +61,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       const tabs = [`${name} 1`, `${name} 2`];
 
       for (const tab of tabs) {
-        test(`Reset scroll on ${tab}`, async ({ page }) => {
-          const q = query(page);
-
+        test(`Reset scroll on ${tab}`, async ({ page, q }) => {
           await q.tab(tab).click();
           await expect(q.tabpanel(tab)).toBeVisible();
 
