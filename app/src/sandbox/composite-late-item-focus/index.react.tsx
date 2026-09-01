@@ -3,6 +3,9 @@ import { useState } from "react";
 
 export default function Example() {
   const store = Ariakit.useCompositeStore();
+  const pendingStore = Ariakit.useCompositeStore();
+  const initialPendingStore = Ariakit.useCompositeStore();
+  const initialPendingTabStore = Ariakit.useTabStore();
   const scrollStore = Ariakit.useCompositeStore({
     defaultActiveId: "late-scroll",
     virtualFocus: false,
@@ -18,6 +21,11 @@ export default function Example() {
   const [showLateItem, setShowLateItem] = useState(false);
   const [showLateScrollItem, setShowLateScrollItem] = useState(false);
   const [showVirtualLateItem, setShowVirtualLateItem] = useState(false);
+  const [showPendingComposite, setShowPendingComposite] = useState(true);
+  const [showInitialPendingComposite, setShowInitialPendingComposite] =
+    useState(false);
+  const [showInitialPendingTabList, setShowInitialPendingTabList] =
+    useState(false);
 
   return (
     <>
@@ -98,6 +106,129 @@ export default function Example() {
       >
         Mount virtual late item
       </button>
+      <section>
+        <h2>Pending move target</h2>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => pendingStore.move("unavailable")}
+        >
+          Focus unavailable action
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => pendingStore.move(null)}
+        >
+          Focus pending toolbar
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => pendingStore.move("pending-bold")}
+        >
+          Focus pending bold action
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => pendingStore.setActiveId(null)}
+        >
+          Target pending toolbar
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => pendingStore.setActiveId("pending-bold")}
+        >
+          Target bold action
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => setShowPendingComposite((show) => !show)}
+        >
+          {showPendingComposite
+            ? "Hide pending toolbar"
+            : "Show pending toolbar"}
+        </button>
+        {showPendingComposite && (
+          <Ariakit.Composite
+            aria-label="Pending actions"
+            role="toolbar"
+            store={pendingStore}
+          >
+            <Ariakit.CompositeItem id="pending-bold">
+              Bold action
+            </Ariakit.CompositeItem>
+          </Ariakit.Composite>
+        )}
+        <h3>Initial pending move target</h3>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => {
+            initialPendingStore.move("initial-unavailable");
+            initialPendingStore.setActiveId(null);
+          }}
+        >
+          Queue initial unavailable action
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => {
+            initialPendingStore.move(null);
+            initialPendingStore.setActiveId("initial-bold");
+          }}
+        >
+          Queue initial toolbar
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => setShowInitialPendingComposite(true)}
+        >
+          Show initially hidden toolbar
+        </button>
+        {showInitialPendingComposite && (
+          <Ariakit.Composite
+            aria-label="Initially hidden actions"
+            role="toolbar"
+            store={initialPendingStore}
+          >
+            <Ariakit.CompositeItem id="initial-bold">
+              Initial bold action
+            </Ariakit.CompositeItem>
+          </Ariakit.Composite>
+        )}
+        <h3>Initial pending derived move target</h3>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => {
+            initialPendingTabStore.move(null);
+            initialPendingTabStore.setActiveId("initial-tab");
+          }}
+        >
+          Queue initial tab list
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => setShowInitialPendingTabList(true)}
+        >
+          Show initially hidden tab list
+        </button>
+        {showInitialPendingTabList && (
+          <Ariakit.TabList
+            aria-label="Initially hidden tabs"
+            store={initialPendingTabStore}
+          >
+            <Ariakit.Tab id="initial-tab">Initial tab</Ariakit.Tab>
+          </Ariakit.TabList>
+        )}
+      </section>
     </>
   );
 }
