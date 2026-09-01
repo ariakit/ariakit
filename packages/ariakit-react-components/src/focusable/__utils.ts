@@ -9,6 +9,9 @@ interface AccessibleWhenDisabledProps {
   };
 }
 
+// Reads the direct or inherited value without replacing the metadata carrier.
+// `useCompositeItem` runs before its own `useFocusable` call, and a replacement
+// would prevent a composed `useCommand` from propagating its marker.
 export function accessibleWhenDisabledFromProps(
   props: AccessibleWhenDisabledProps,
 ) {

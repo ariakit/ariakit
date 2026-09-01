@@ -59,7 +59,10 @@ test("moves to an accessible disabled item inherited through composition", async
   expect(accessibleDisabledItem).toHaveFocus();
 });
 
-// https://github.com/ariakit/ariakit/issues/7364
+// `useCompositeItem` must read the `accessibleWhenDisabled` metadata without
+// replacing the carrier, or a composed `Command` loses its own marker. No
+// user-facing behavior exposes this because `useCommand` returns on
+// `defaultPrevented` before checking the marker, so `MetadataProbe` counts it.
 test("preserves command metadata on composed items", () => {
   expect(q.option("Metadata command")).toHaveAttribute(
     "data-metadata-count",
