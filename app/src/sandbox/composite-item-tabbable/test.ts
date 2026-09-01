@@ -59,42 +59,20 @@ test("moves to an accessible disabled item inherited through composition", async
   expect(accessibleDisabledItem).toHaveFocus();
 });
 
-// https://github.com/ariakit/ariakit/pull/7376#discussion_r3900272358
-test("honors an inner accessible disabled override", async () => {
-  const firstItem = q.option("Override one");
-  const overrideItem = q.option("Override two");
-  const lastItem = q.option("Override three");
+// `useCompositeItem` must read the `accessibleWhenDisabled` metadata without
+// replacing the carrier, or a composed `Command` loses its own marker. No
+// user-facing behavior exposes this because `useCommand` returns on
+// `defaultPrevented` before checking the marker, so `MetadataProbe` counts it.
+test("preserves command metadata on composed items", () => {
+  expect(q.option("Metadata command")).toHaveAttribute(
+    "data-metadata-count",
+    "1",
+  );
+});
 
-  await click(firstItem);
+// https://github.com/ariakit/ariakit/pull/7376#discussion_r3900826323
+test("skips a disabled item with an inactive Focusable", async () => {
+  await click(q.option("Inactive one"));
   await press.ArrowRight();
-  expect(lastItem).toHaveFocus();
-
-  await click(q.button("Make override accessible"));
-  await click(firstItem);
-  await press.ArrowRight();
-  expect(overrideItem).toHaveFocus();
-
-  await click(q.button("Replace with accessible link"));
-  const accessibleLinkItem = q.option("Override two");
-  expect(accessibleLinkItem).toHaveAttribute("href", "#override-two");
-  await click(firstItem);
-  await press.ArrowRight();
-  expect(accessibleLinkItem).toHaveFocus();
-
-  await click(q.button("Make override inaccessible"));
-  await click(firstItem);
-  await press.ArrowRight();
-  expect(lastItem).toHaveFocus();
-
-  await click(q.button("Make override accessible"));
-  await click(firstItem);
-  await press.ArrowRight();
-  expect(q.option("Override two")).toHaveFocus();
-
-  await click(q.button("Replace with inaccessible div"));
-  const inaccessibleDivItem = q.option("Override two");
-  expect(inaccessibleDivItem).not.toHaveAttribute("href");
-  await click(firstItem);
-  await press.ArrowRight();
-  expect(lastItem).toHaveFocus();
+  expect(q.option("Inactive three")).toHaveFocus();
 });

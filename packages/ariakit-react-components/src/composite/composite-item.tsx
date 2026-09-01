@@ -1,6 +1,5 @@
 import { useStoreStateObject } from "@ariakit/react-store";
 import {
-  useAttribute,
   useBooleanEvent,
   useEvent,
   useId,
@@ -34,16 +33,13 @@ import type {
   KeyboardEvent,
   SyntheticEvent,
 } from "react";
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useMemo, useRef } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
-import {
-  trulyDisabledAttribute,
-  trulyDisabledFromElement,
-} from "../focusable/__utils.ts";
+import { accessibleWhenDisabledFromProps } from "../focusable/__utils.ts";
 import {
   CompositeItemContext,
   CompositeRowContext,
@@ -171,6 +167,8 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     const context = useCompositeScopedContext();
     store = store || context;
 
+    const accessibleWhenDisabled = accessibleWhenDisabledFromProps(props);
+
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
     const mountedElementRef = useRef<HTMLType>(null);
@@ -182,18 +180,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     }, []);
     const row = useContext(CompositeRowContext);
     const disabled = disabledFromProps(props);
-    const trulyDisabled = disabled && !props.accessibleWhenDisabled;
-    const observeRenderedState = disabled || props.render != null;
-    const [renderedElement, setRenderedElement] = useState<HTMLType | null>(
-      null,
-    );
-    // Re-register when a composed Focusable changes the final disabled state
-    // or replaces the rendered element.
-    // https://github.com/ariakit/ariakit/pull/7376#discussion_r3900272358
-    const renderedTrulyDisabled = useAttribute(
-      observeRenderedState ? renderedElement : null,
-      trulyDisabledAttribute,
-    );
+    const trulyDisabled = disabled && !accessibleWhenDisabled;
     // Snapshot before the props object is replaced below (useCollectionItem
     // consumes this prop), so the onFocus handler can read it at event time.
     const shouldRegisterItem = props.shouldRegisterItem;
@@ -283,16 +270,12 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
-        const element = item.element || renderedElement;
-        const itemDisabled = element
-          ? trulyDisabledFromElement(element)
-          : renderedTrulyDisabled === "true" || trulyDisabled;
         const nextItem = {
           ...item,
           id: id || item.id,
           rowId,
-          disabled: itemDisabled,
-          children: element?.textContent,
+          disabled: trulyDisabled,
+          children: item.element?.textContent,
           typeaheadText,
         };
         if (getItemProp) {
@@ -300,15 +283,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         }
         return nextItem;
       },
-      [
-        id,
-        rowId,
-        trulyDisabled,
-        renderedElement,
-        renderedTrulyDisabled,
-        typeaheadText,
-        getItemProp,
-      ],
+      [id, rowId, trulyDisabled, typeaheadText, getItemProp],
     );
 
     const onFocusProp = props.onFocus;
@@ -560,12 +535,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       "data-active-item": isActiveItem || undefined,
       ...props,
       id,
-      ref: useMergeRefs(
-        ref,
-        markUnmountingRef,
-        observeRenderedState ? setRenderedElement : null,
-        props.ref,
-      ),
+      ref: useMergeRefs(ref, markUnmountingRef, props.ref),
       tabIndex: isTabbable ? props.tabIndex : -1,
       onFocus,
       onBlurCapture,
