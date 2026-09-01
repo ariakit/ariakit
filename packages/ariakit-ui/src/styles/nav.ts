@@ -46,12 +46,11 @@ export const navGroup = cv({
 });
 
 // The icon keeps the line height while expanded so the label aligns, and
-// squares to the icon size when the sidebar collapses. Standalone nav rows
-// (such as a sidebar brand link) consume this directly, like the legacy
-// public ak-nav-icon utility.
+// squares to the icon size when the sidebar collapses. A standalone nav row,
+// such as a sidebar brand link, can use it on its own.
 export const navIcon = cv({
   class: [
-    "h-[1lh] w-(--nav-icon-size) flex-none self-start transition-[height]",
+    "h-lh w-(--nav-icon-size) flex-none self-start transition-[height]",
     "[&_svg]:size-full",
     "ui-sidebar-collapsed:size-(--nav-icon-size)",
   ],
@@ -68,32 +67,24 @@ export const navLink = cv({
     // after the control's py shorthand, so the longhands win.
     "[--nav-link-py:calc(var(--disclosure-padding,var(--ak-frame-padding))-(1lh-1em)/2+var(--nav-gap))]",
     "pt-(--nav-link-py) pb-(--nav-link-py)",
-    // The painted highlight is a pill drawn by the ::before pseudo, inset
-    // by half the nav gap while the link box keeps the full hit area. It
-    // paints the element's own state-adjusted layer color, so the element
-    // itself goes transparent for the pill to read as the surface.
-    // Hovering paints the pill unless the link is current.
+    // Hovering and being current both paint a pill behind the row, inset by
+    // half the nav gap so the hit areas keep touching where the paint does
+    // not. The geometry is unconditional and only the paint is stateful, so
+    // the two states cannot drift apart.
+    "before:absolute before:-z-1 before:inset-x-0 before:rounded-[inherit]",
+    "before:inset-y-[calc(var(--nav-gap)*0.5)]",
+    // Each state paints the element's own state-adjusted layer color onto
+    // the pill, so the element itself goes transparent and the pill is what
+    // reads as the surface. Hovering paints unless the link is current.
     "ui-hover:not-ui-nav-current:bg-transparent",
-    "ui-hover:not-ui-nav-current:before:content-['']",
-    "ui-hover:not-ui-nav-current:before:absolute",
-    "ui-hover:not-ui-nav-current:before:-z-1",
-    "ui-hover:not-ui-nav-current:before:inset-x-0",
-    "ui-hover:not-ui-nav-current:before:[inset-block:calc(var(--nav-gap)*0.5)]",
-    "ui-hover:not-ui-nav-current:before:rounded-[inherit]",
     "ui-hover:not-ui-nav-current:before:ak-layer",
     "ui-hover:not-ui-nav-current:before:ak-layer-color-(--ak-layer)",
     "ui-hover:ak-ink-100",
-    // The current link holds a raised pill with an inset ring.
+    // The current link holds a raised pill outlined from the inside.
     "ui-nav-current:bg-transparent",
-    "ui-nav-current:before:content-['']",
-    "ui-nav-current:before:absolute",
-    "ui-nav-current:before:-z-1",
-    "ui-nav-current:before:inset-x-0",
-    "ui-nav-current:before:[inset-block:calc(var(--nav-gap)*0.5)]",
-    "ui-nav-current:before:rounded-[inherit]",
     "ui-nav-current:before:ak-layer",
     "ui-nav-current:before:ak-layer-color-(--ak-layer)",
-    "ui-nav-current:ak-layer ui-nav-current:ak-layer-6",
+    "ui-nav-current:ak-layer ui-nav-current:ak-layer-5",
     "ui-nav-current:ak-ink-100",
     "ui-nav-current:before:ak-edge-0",
     "ui-nav-current:before:ring ui-nav-current:before:ring-inset",
@@ -102,8 +93,8 @@ export const navLink = cv({
     "ui-nav-current:ui-hover:ak-state-0",
   ],
   defaultVariants: {
-    // Idle links sit flush with the surface like the legacy trailing
-    // ak-layer; hover and current still paint their own states.
+    // Idle links sit flush with the surface around them; hover and current
+    // still paint their own states.
     $lightnessOffset: false,
   },
 });
@@ -118,6 +109,9 @@ export const navButton = cv({
     // delay value sorts after a bare one, so the stacked form is what
     // actually holds these transitions at zero.
     "ui-nav:delay-0",
+    // An arbitrary property, not duration-*: the disclosure button sets its
+    // own duration-[calc(...)], which sorts later and would otherwise halve
+    // every timing above. Arbitrary properties sort after all of them.
     "[transition-duration:var(--sidebar-duration)]",
     "[interpolate-size:allow-keywords]",
     // The gap tracks the icon optical rhythm; both forms are needed so it
@@ -131,8 +125,7 @@ export const navButton = cv({
     "ui-nav:ui-sidebar-collapsed:gap-0",
     "ui-nav:ui-sidebar-collapsed:[@container_style(--disclosure-icon-size)]:gap-0",
     "[--nav-button-p:calc((var(--nav-button-size)-var(--nav-icon-size,var(--disclosure-icon-size)))*0.5)]",
-    // The shorthand sorts after every plain padding rule on the button,
-    // like the legacy single padding declaration.
+    // The shorthand sorts after every plain padding rule on the button.
     "ui-sidebar-collapsed:p-(--nav-button-p)",
     "ui-sidebar-collapsed:[&_[data-disclosure-indicator]]:opacity-0",
   ],
@@ -143,13 +136,13 @@ export const navButton = cv({
 export const navButtonContent = cv({
   class: [
     "block overflow-hidden transition-[translate,height,opacity]",
-    "[transition-behavior:allow-discrete]",
+    "transition-discrete",
     "[interpolate-size:allow-keywords]",
-    "[transition-duration:var(--sidebar-duration)]",
-    "[transition-delay:0ms,var(--sidebar-duration),0ms]",
-    "ui-sidebar-collapsed:h-[1lh] ui-sidebar-collapsed:opacity-0",
+    "duration-(--sidebar-duration)",
+    "delay-[0ms,var(--sidebar-duration),0ms]",
+    "ui-sidebar-collapsed:h-lh ui-sidebar-collapsed:opacity-0",
     "ui-sidebar-collapsed:delay-0",
-    "ui-sidebar-collapsed:[transition-duration:var(--sidebar-duration),0ms,var(--sidebar-duration)]",
+    "ui-sidebar-collapsed:duration-[var(--sidebar-duration),0ms,var(--sidebar-duration)]",
   ],
 });
 
@@ -177,6 +170,6 @@ export const navDisclosureContentBody = cv({
     "ak-frame-p-(--nav-body-padding)",
     // The ui-nav stacking sorts this after the disclosure body's own
     // padding-inline-start rule.
-    "ui-nav:[padding-inline-start:var(--disclosure-ps)]",
+    "ui-nav:ps-(--disclosure-ps)",
   ],
 });
