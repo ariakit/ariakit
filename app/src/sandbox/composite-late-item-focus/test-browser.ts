@@ -1,4 +1,4 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/6832
@@ -87,5 +87,35 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .poll(() => composite.evaluate((element) => element.scrollTop))
       .toBeGreaterThan(0);
     await test.expect(composite).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7378
+  test("does not redirect a pending item move to the composite", async ({
+    q,
+  }) => {
+    await q.button("Focus unavailable action").click();
+    await q.button("Target pending toolbar").click();
+    await q.button("Hide pending toolbar").click();
+    await q.button("Show pending toolbar").click();
+
+    await test.expect(q.button("Hide pending toolbar")).toBeFocused();
+    await test.expect(q.toolbar("Pending actions")).not.toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7378
+  test("does not redirect a pending composite move to an item", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Hide pending toolbar").click();
+    await q.button("Focus pending toolbar").click();
+    await q.button("Target bold action").click();
+    await q.button("Show pending toolbar").click();
+
+    // The item registers in a passive effect, and no state exposes when a
+    // stale pending presentation would move focus afterward.
+    await flushFrames(page);
+    await test.expect(q.button("Hide pending toolbar")).toBeFocused();
+    await test.expect(q.button("Bold action")).not.toBeFocused();
   });
 });

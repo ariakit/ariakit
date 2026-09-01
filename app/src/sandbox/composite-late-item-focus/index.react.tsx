@@ -3,6 +3,7 @@ import { useState } from "react";
 
 export default function Example() {
   const store = Ariakit.useCompositeStore();
+  const pendingStore = Ariakit.useCompositeStore();
   const scrollStore = Ariakit.useCompositeStore({
     defaultActiveId: "late-scroll",
     virtualFocus: false,
@@ -18,6 +19,7 @@ export default function Example() {
   const [showLateItem, setShowLateItem] = useState(false);
   const [showLateScrollItem, setShowLateScrollItem] = useState(false);
   const [showVirtualLateItem, setShowVirtualLateItem] = useState(false);
+  const [showPendingComposite, setShowPendingComposite] = useState(true);
 
   return (
     <>
@@ -98,6 +100,57 @@ export default function Example() {
       >
         Mount virtual late item
       </button>
+      <section>
+        <h2>Pending move target</h2>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => pendingStore.move("unavailable")}
+        >
+          Focus unavailable action
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => pendingStore.move(null)}
+        >
+          Focus pending toolbar
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => pendingStore.setActiveId(null)}
+        >
+          Target pending toolbar
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => pendingStore.setActiveId("pending-bold")}
+        >
+          Target bold action
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => setShowPendingComposite((show) => !show)}
+        >
+          {showPendingComposite
+            ? "Hide pending toolbar"
+            : "Show pending toolbar"}
+        </button>
+        {showPendingComposite && (
+          <Ariakit.Composite
+            aria-label="Pending actions"
+            role="toolbar"
+            store={pendingStore}
+          >
+            <Ariakit.CompositeItem id="pending-bold">
+              Bold action
+            </Ariakit.CompositeItem>
+          </Ariakit.Composite>
+        )}
+      </section>
     </>
   );
 }
