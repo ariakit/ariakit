@@ -70,6 +70,31 @@ function RovingListbox() {
   );
 }
 
+function InheritedAccessibleDisabledListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite
+        role="listbox"
+        aria-label="Inherited accessible disabled"
+      >
+        <Ariakit.CompositeItem id="inherited-one" role="option">
+          Inherited one
+        </Ariakit.CompositeItem>
+        <Ariakit.Focusable
+          disabled
+          accessibleWhenDisabled
+          render={<Ariakit.CompositeItem id="inherited-two" role="option" />}
+        >
+          Inherited two
+        </Ariakit.Focusable>
+        <Ariakit.CompositeItem id="inherited-three" role="option">
+          Inherited three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -78,6 +103,7 @@ export default function Example() {
       <UnsupportedVirtualFocusListbox />
       <SeededListbox />
       <RovingListbox />
+      <InheritedAccessibleDisabledListbox />
     </>
   );
 }

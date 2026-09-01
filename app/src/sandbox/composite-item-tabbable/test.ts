@@ -45,3 +45,16 @@ test("does not redirect focus to a non-focusable virtual focus owner", async () 
   expect(consoleWarn).toHaveBeenCalledTimes(1);
   expect(consoleWarn).toHaveBeenCalledWith(virtualFocusWarning);
 });
+
+// https://github.com/ariakit/ariakit/issues/7364
+test("moves to an accessible disabled item inherited through composition", async () => {
+  await click(q.option("Inherited one"));
+  expect(q.option("Inherited one")).toHaveFocus();
+
+  const accessibleDisabledItem = q.option("Inherited two");
+  expect(accessibleDisabledItem).toHaveAttribute("aria-disabled", "true");
+  expect(accessibleDisabledItem).not.toHaveAttribute("disabled");
+
+  await press.ArrowRight();
+  expect(accessibleDisabledItem).toHaveFocus();
+});
