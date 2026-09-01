@@ -193,6 +193,74 @@ function RenderedInactiveFocusableListbox() {
   );
 }
 
+function StyledDisabledListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite role="listbox" aria-label="Styled disabled">
+        <Ariakit.CompositeItem role="option">Styled one</Ariakit.CompositeItem>
+        <Ariakit.CompositeItem
+          disabled
+          role="option"
+          render={<button type="button" data-truly-disabled={false} />}
+        >
+          Styled two
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">
+          Styled three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function DirectAccessibleInactiveListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite role="listbox" aria-label="Direct accessible inactive">
+        <Ariakit.CompositeItem role="option">
+          Direct accessible inactive one
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem
+          disabled
+          focusable={false}
+          accessibleWhenDisabled
+          role="option"
+        >
+          Direct accessible inactive two
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">
+          Direct accessible inactive three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function InheritedAccessibleInactiveListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite
+        role="listbox"
+        aria-label="Inherited accessible inactive"
+      >
+        <Ariakit.CompositeItem role="option">
+          Inherited accessible inactive one
+        </Ariakit.CompositeItem>
+        <Ariakit.Focusable
+          disabled
+          accessibleWhenDisabled
+          render={<Ariakit.CompositeItem focusable={false} role="option" />}
+        >
+          Inherited accessible inactive two
+        </Ariakit.Focusable>
+        <Ariakit.CompositeItem role="option">
+          Inherited accessible inactive three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -206,6 +274,9 @@ export default function Example() {
       <NestedDisabledOverrideListbox />
       <InactiveFocusableListbox />
       <RenderedInactiveFocusableListbox />
+      <StyledDisabledListbox />
+      <DirectAccessibleInactiveListbox />
+      <InheritedAccessibleInactiveListbox />
     </>
   );
 }

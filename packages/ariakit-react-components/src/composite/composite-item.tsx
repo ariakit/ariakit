@@ -41,7 +41,7 @@ import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
 import {
   accessibleWhenDisabledFromProps,
-  trulyDisabledFromElement,
+  resolvedTrulyDisabledFromElement,
 } from "../focusable/__utils.ts";
 import {
   CompositeItemContext,
@@ -275,7 +275,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
         const renderedTrulyDisabled = item.element
-          ? trulyDisabledFromElement(item.element)
+          ? resolvedTrulyDisabledFromElement(item.element)
           : undefined;
         const itemDisabled =
           inactiveDisabled || (renderedTrulyDisabled ?? trulyDisabled);

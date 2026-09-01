@@ -21,25 +21,24 @@ export function accessibleWhenDisabledFromProps(
   );
 }
 
-// Internal marker Focusable stamps on an element it resolved as disabled with
-// no way to reach it by keyboard. Metadata props only reach inner components,
-// so a hook that runs before its own useFocusable call has to read the element
-// to learn what a component composed with `render` below it resolved. Neither
-// `pointer-events` nor `tabIndex` can stand in for it: consumers routinely
-// override the former, and roving tabindex makes the latter meaningless on
-// composite items.
-// https://github.com/ariakit/ariakit/issues/7116
 export const trulyDisabledAttribute = "data-truly-disabled";
 
-/**
- * Returns whether the innermost active Focusable resolved this element as
- * disabled and not keyboard accessible. An absent marker means no active
- * disabled Focusable resolved the state.
- */
 export function trulyDisabledFromElement(element: Element) {
-  const value = element.getAttribute(trulyDisabledAttribute);
-  if (value === "true") return true;
-  if (value === "false") return false;
+  return element.getAttribute(trulyDisabledAttribute) === "true";
+}
+
+// Keep data-truly-disabled true-only because consumers may set it to false for
+// their own styling. This reserved marker carries the separate false signal
+// that CompositeItem needs from a composing Focusable rendered below it.
+// https://github.com/ariakit/ariakit/pull/7376#discussion_r3902848381
+export const accessibleDisabledAttribute =
+  "data-ariakit-focusable-accessible-when-disabled";
+
+export function resolvedTrulyDisabledFromElement(element: Element) {
+  if (trulyDisabledFromElement(element)) return true;
+  if (element.getAttribute(accessibleDisabledAttribute) === "true") {
+    return false;
+  }
   return undefined;
 }
 

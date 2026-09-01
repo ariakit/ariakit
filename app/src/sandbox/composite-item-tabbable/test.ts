@@ -47,6 +47,7 @@ test("does not redirect focus to a non-focusable virtual focus owner", async () 
 });
 
 // https://github.com/ariakit/ariakit/issues/7364
+// https://github.com/ariakit/ariakit/pull/7376#discussion_r3902850820
 test("moves to an accessible disabled item inherited through composition", async () => {
   await click(q.option("Inherited one"));
   expect(q.option("Inherited one")).toHaveFocus();
@@ -54,17 +55,20 @@ test("moves to an accessible disabled item inherited through composition", async
   const accessibleDisabledItem = q.option("Inherited two");
   expect(accessibleDisabledItem).toHaveAttribute("aria-disabled", "true");
   expect(accessibleDisabledItem).not.toHaveAttribute("disabled");
+  expect(accessibleDisabledItem).not.toHaveAttribute("data-truly-disabled");
 
   await press.ArrowRight();
   expect(accessibleDisabledItem).toHaveFocus();
 });
 
 // https://github.com/ariakit/ariakit/issues/7384
+// https://github.com/ariakit/ariakit/pull/7376#discussion_r3902850820
 test("moves to an accessible disabled item resolved below it", async () => {
   await click(q.option("Rendered one"));
   const accessibleDisabledItem = q.option("Rendered two");
   expect(accessibleDisabledItem).toHaveAttribute("aria-disabled", "true");
   expect(accessibleDisabledItem).not.toHaveAttribute("disabled");
+  expect(accessibleDisabledItem).not.toHaveAttribute("data-truly-disabled");
   await press.ArrowRight();
   expect(accessibleDisabledItem).toHaveFocus();
 });
@@ -89,4 +93,25 @@ test("skips a disabled item with an inactive Focusable below it", async () => {
   await click(q.option("Rendered inactive one"));
   await press.ArrowRight();
   expect(q.option("Rendered inactive three")).toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/pull/7376#discussion_r3902848381
+test("skips a disabled item with a consumer false attribute", async () => {
+  await click(q.option("Styled one"));
+  await press.ArrowRight();
+  expect(q.option("Styled three")).toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/pull/7376#discussion_r3902849677
+test("skips a directly disabled item with an inactive accessible Focusable", async () => {
+  await click(q.option("Direct accessible inactive one"));
+  await press.ArrowRight();
+  expect(q.option("Direct accessible inactive three")).toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/pull/7376#discussion_r3902849677
+test("skips an inherited disabled item with an inactive accessible Focusable", async () => {
+  await click(q.option("Inherited accessible inactive one"));
+  await press.ArrowRight();
+  expect(q.option("Inherited accessible inactive three")).toHaveFocus();
 });
