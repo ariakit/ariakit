@@ -119,46 +119,54 @@ type PresentItem = ReturnType<typeof usePresentItem>;
 
 interface MoveRequest {
   /**
-   * The `CompositeFocusOnMove` instance that has claimed the current move, or
-   * `null` while no instance has.
+   * The `CompositeFocusOnMove` instance that consumed the current move, or
+   * `null` while none has.
    */
-  claimedBy: object | null;
+  consumedBy: object | null;
 }
 
 /**
- * Tracks, per store, which instance has claimed the current move. This has to
+ * Tracks, per store, which instance has consumed the current move. This has to
  * outlive the component: `moves` only counts requests, so a fresh instance
- * reading a nonzero count can't tell a request still waiting for a composite
- * element from one an earlier instance already acted on.
+ * reading a nonzero count can't tell a request still waiting, for its item or
+ * for a composite element, from one an earlier instance already acted on.
  */
 const moveRequests = new WeakMap<CompositeStore, MoveRequest>();
 
 function getMoveRequest(store: CompositeStore) {
   const cached = moveRequests.get(store);
   if (cached) return cached;
-  const request: MoveRequest = { claimedBy: null };
+  const request: MoveRequest = { consumedBy: null };
   moveRequests.set(store, request);
   // Every change to the count starts a new request, including the resets that
-  // cancel a pending one, so it goes back to being unclaimed.
+  // cancel a pending one, so it goes back to being unconsumed.
   sync(store, ["moves"], () => {
-    request.claimedBy = null;
+    request.consumedBy = null;
   });
   return request;
 }
 
 /**
- * Whether `instance` may act on the store's current move, claiming it when it
- * may. The claim is per component instance rather than per composite element,
- * because switching the `composite` prop off and on again mounts a fresh
- * instance while the element itself survives. Both effects claim before the
- * guard that decides whether they act, so a request one of them read is never
- * left unclaimed for a later instance to act on.
+ * Whether `instance` may act on the store's current move. An unconsumed request
+ * is available to whichever instance is around; a consumed one stays with the
+ * instance that consumed it, so its own effects can still run again.
  */
-function claimMove(store: CompositeStore, instance: object) {
-  const request = getMoveRequest(store);
-  if (request.claimedBy && request.claimedBy !== instance) return false;
-  request.claimedBy = instance;
-  return true;
+function mayActOnMove(store: CompositeStore, instance: object) {
+  const { consumedBy } = getMoveRequest(store);
+  return !consumedBy || consumedBy === instance;
+}
+
+/**
+ * Records that `instance` consumed the store's move `moves`, so no later
+ * instance replays it. It is per component instance rather than per composite
+ * element, because switching the `composite` prop off and on again mounts a
+ * fresh instance while the element itself survives. A consumption that arrives
+ * after the count has moved on is dropped, resets included, because it settles
+ * the request the count held when it started.
+ */
+function consumeMove(store: CompositeStore, instance: object, moves: number) {
+  if (store.getState().moves !== moves) return;
+  getMoveRequest(store).consumedBy = instance;
 }
 
 interface CompositeFocusOnMoveProps {
@@ -204,7 +212,8 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   useEffect(() => {
     if (!moves) return;
     if (!focusOnMove) return;
-    if (!claimMove(store, instanceRef.current)) return;
+    const instance = instanceRef.current;
+    if (!mayActOnMove(store, instance)) return;
     const { activeId } = store.getState();
     if (activeId == null) return;
     // A programmatic move made while focus is already outside keeps its
@@ -215,6 +224,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
       requireFocus: ownsFocus(store),
       focus: true,
       scrollIntoView,
+      onConsume: () => consumeMove(store, instance, moves),
     });
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- store invalidation signal
   }, [store, moves, focusOnMove, compositeElement, present, scrollIntoView]);
@@ -224,10 +234,14 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   useSafeLayoutEffect(() => {
     if (!moves) return;
     if (!compositeElement) return;
-    if (!claimMove(store, instanceRef.current)) return;
+    const instance = instanceRef.current;
+    if (!mayActOnMove(store, instance)) return;
     const { activeId } = store.getState();
     const isSelfActive = activeId === null;
     if (!isSelfActive) return;
+    // This branch has nothing left to wait for, so it consumes the request
+    // here rather than reporting back the way a presentation does.
+    consumeMove(store, instance, moves);
     const previousElement = previousElementRef.current;
     // We have to clean up the previous element ref so an additional blur
     // event is not fired on it, for example, when looping through items while
