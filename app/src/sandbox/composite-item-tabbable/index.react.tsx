@@ -106,6 +106,7 @@ function RenderedAccessibleDisabledListbox() {
           Rendered one
         </Ariakit.CompositeItem>
         <Ariakit.CompositeItem
+          accessibleWhenDisabled
           disabled
           role="option"
           render={<Ariakit.Focusable accessibleWhenDisabled />}
@@ -130,6 +131,7 @@ function NestedDisabledOverrideListbox() {
           accessibleWhenDisabled
           render={
             <Ariakit.CompositeItem
+              accessibleWhenDisabled={false}
               role="option"
               render={
                 <Ariakit.Focusable
