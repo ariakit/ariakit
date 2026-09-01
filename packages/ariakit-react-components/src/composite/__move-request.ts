@@ -1,13 +1,15 @@
 import type * as Core from "@ariakit/components/composite/composite-store";
 import { sync } from "@ariakit/store";
 
+const cancelled = Symbol("cancelled");
+
 interface MoveRequest {
   /**
    * The `CompositeFocusOnMove` instance that consumed the current move, or
    * `null` while none has.
    */
   consumedBy: object | null;
-  targetId: Core.CompositeStoreState["activeId"];
+  targetId: Core.CompositeStoreState["activeId"] | typeof cancelled;
 }
 
 /**
@@ -36,7 +38,7 @@ export function getMoveRequest(store: Core.CompositeStore) {
     if (state.activeId !== prevState.activeId) {
       // `move` writes `activeId` before `moves`, so its count update replaces
       // this cancellation with the requested target.
-      request.targetId = undefined;
+      request.targetId = cancelled;
     }
   });
   return request;
