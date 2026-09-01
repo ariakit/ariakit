@@ -118,4 +118,30 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.button("Hide pending toolbar")).toBeFocused();
     await test.expect(q.button("Bold action")).not.toBeFocused();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7378
+  test("does not redirect an item move before the first composite mount", async ({
+    q,
+  }) => {
+    await q.button("Queue initial unavailable action").click();
+    await q.button("Show initially hidden toolbar").click();
+
+    await test.expect(q.button("Show initially hidden toolbar")).toBeFocused();
+    await test.expect(q.toolbar("Initially hidden actions")).not.toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7378
+  test("does not redirect a composite move before the first composite mount", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Queue initial toolbar").click();
+    await q.button("Show initially hidden toolbar").click();
+
+    // The item registers in a passive effect, and no state exposes when a
+    // stale pending presentation would move focus afterward.
+    await flushFrames(page);
+    await test.expect(q.button("Show initially hidden toolbar")).toBeFocused();
+    await test.expect(q.button("Initial bold action")).not.toBeFocused();
+  });
 });

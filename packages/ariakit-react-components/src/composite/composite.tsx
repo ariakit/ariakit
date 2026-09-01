@@ -40,7 +40,11 @@ import {
   CompositeScopedContextProvider,
   useCompositeProviderContext,
 } from "./composite-context.tsx";
-import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
+import type {
+  CompositeStore,
+  CompositeStoreItem,
+  CompositeStoreState,
+} from "./composite-store.ts";
 import {
   findFirstEnabledItem,
   getEnabledItem,
@@ -123,25 +127,48 @@ interface MoveRequest {
    * `null` while none has.
    */
   consumedBy: object | null;
+  targetId: CompositeStoreState["activeId"];
+}
+
+interface CoreMoveRequest {
+  moves: number;
+  requested: boolean;
+  targetId: CompositeStoreState["activeId"];
+}
+
+function getCoreMoveRequest(store: CompositeStore) {
+  return (
+    store as CompositeStore & {
+      __unstableCompositeMoveRequest?: CoreMoveRequest;
+    }
+  ).__unstableCompositeMoveRequest;
 }
 
 /**
- * Tracks, per store, which instance has consumed the current move. This has to
- * outlive the component: `moves` only counts requests, so a fresh instance
- * reading a nonzero count can't tell a request still waiting, for its item or
- * for a composite element, from one an earlier instance already acted on.
+ * Tracks the current move per store. This has to outlive the component:
+ * `moves` only counts requests, so a fresh instance can't tell whether a move
+ * was consumed or what target a pending move asked for.
  */
 const moveRequests = new WeakMap<CompositeStore, MoveRequest>();
 
 function getMoveRequest(store: CompositeStore) {
   const cached = moveRequests.get(store);
   if (cached) return cached;
-  const request: MoveRequest = { consumedBy: null };
+  const request: MoveRequest = {
+    consumedBy: null,
+    targetId: store.getState().activeId,
+  };
   moveRequests.set(store, request);
   // Every change to the count starts a new request, including the resets that
-  // cancel a pending one, so it goes back to being unconsumed.
-  sync(store, ["moves"], () => {
+  // cancel a pending one. A direct `move` records its target in the core store;
+  // a counter propagated from another store uses the active id at this instant.
+  sync(store, ["moves"], (state) => {
     request.consumedBy = null;
+    const coreRequest = getCoreMoveRequest(store);
+    request.targetId =
+      coreRequest?.requested && coreRequest.moves === state.moves
+        ? coreRequest.targetId
+        : store.getState().activeId;
   });
   return request;
 }
@@ -210,12 +237,14 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
 
   // Present the active item.
   useEffect(() => {
+    const moveRequest = getMoveRequest(store);
     if (!moves) return;
     if (!focusOnMove) return;
     const instance = instanceRef.current;
     if (!mayActOnMove(store, instance)) return;
     const { activeId } = store.getState();
     if (activeId == null) return;
+    if (activeId !== moveRequest.targetId) return;
     // A programmatic move made while focus is already outside keeps its
     // focusOnMove behavior. If focus starts inside, the presentation is
     // abandoned once the user moves it elsewhere.
@@ -232,6 +261,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   // If composite.move(null) has been called, the composite container should
   // receive focus.
   useSafeLayoutEffect(() => {
+    const moveRequest = getMoveRequest(store);
     if (!moves) return;
     if (!compositeElement) return;
     const instance = instanceRef.current;
@@ -239,6 +269,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
     const { activeId } = store.getState();
     const isSelfActive = activeId === null;
     if (!isSelfActive) return;
+    if (activeId !== moveRequest.targetId) return;
     // This branch has nothing left to wait for, so it consumes the request
     // here rather than reporting back the way a presentation does.
     consumeMove(store, instance, moves);

@@ -4,6 +4,7 @@ import { useState } from "react";
 export default function Example() {
   const store = Ariakit.useCompositeStore();
   const pendingStore = Ariakit.useCompositeStore();
+  const initialPendingStore = Ariakit.useCompositeStore();
   const scrollStore = Ariakit.useCompositeStore({
     defaultActiveId: "late-scroll",
     virtualFocus: false,
@@ -20,6 +21,8 @@ export default function Example() {
   const [showLateScrollItem, setShowLateScrollItem] = useState(false);
   const [showVirtualLateItem, setShowVirtualLateItem] = useState(false);
   const [showPendingComposite, setShowPendingComposite] = useState(true);
+  const [showInitialPendingComposite, setShowInitialPendingComposite] =
+    useState(false);
 
   return (
     <>
@@ -139,16 +142,56 @@ export default function Example() {
             ? "Hide pending toolbar"
             : "Show pending toolbar"}
         </button>
-        <Ariakit.Composite
-          aria-label="Pending actions"
-          hidden={!showPendingComposite}
-          role="toolbar"
-          store={pendingStore}
+        {showPendingComposite && (
+          <Ariakit.Composite
+            aria-label="Pending actions"
+            role="toolbar"
+            store={pendingStore}
+          >
+            <Ariakit.CompositeItem id="pending-bold">
+              Bold action
+            </Ariakit.CompositeItem>
+          </Ariakit.Composite>
+        )}
+        <h3>Initial pending move target</h3>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => {
+            initialPendingStore.move("initial-unavailable");
+            initialPendingStore.setActiveId(null);
+          }}
         >
-          <Ariakit.CompositeItem id="pending-bold">
-            Bold action
-          </Ariakit.CompositeItem>
-        </Ariakit.Composite>
+          Queue initial unavailable action
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => {
+            initialPendingStore.move(null);
+            initialPendingStore.setActiveId("initial-bold");
+          }}
+        >
+          Queue initial toolbar
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => setShowInitialPendingComposite(true)}
+        >
+          Show initially hidden toolbar
+        </button>
+        {showInitialPendingComposite && (
+          <Ariakit.Composite
+            aria-label="Initially hidden actions"
+            role="toolbar"
+            store={initialPendingStore}
+          >
+            <Ariakit.CompositeItem id="initial-bold">
+              Initial bold action
+            </Ariakit.CompositeItem>
+          </Ariakit.Composite>
+        )}
       </section>
     </>
   );
