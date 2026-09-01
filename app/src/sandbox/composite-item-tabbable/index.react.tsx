@@ -83,7 +83,13 @@ function InheritedAccessibleDisabledListbox() {
         <Ariakit.Focusable
           disabled
           accessibleWhenDisabled
-          render={<Ariakit.CompositeItem id="inherited-two" role="option" />}
+          render={
+            <Ariakit.CompositeItem
+              id="inherited-two"
+              role="option"
+              accessibleWhenDisabled
+            />
+          }
         >
           Inherited two
         </Ariakit.Focusable>
