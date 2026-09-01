@@ -32,7 +32,7 @@ export function trulyDisabledFromElement(element: Element) {
 // that CompositeItem needs from a composing Focusable rendered below it.
 // https://github.com/ariakit/ariakit/pull/7376#discussion_r3902848381
 export const accessibleDisabledAttribute =
-  "data-ariakit-focusable-accessible-when-disabled";
+  "data-focusable-accessible-when-disabled";
 
 export function resolvedTrulyDisabledFromElement(element: Element) {
   if (trulyDisabledFromElement(element)) return true;
