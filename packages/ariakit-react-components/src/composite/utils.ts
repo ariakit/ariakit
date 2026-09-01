@@ -103,6 +103,13 @@ export interface PresentItemParams {
    * @private
    */
   scrollIntoView?: (element: HTMLElement) => void;
+  /**
+   * Called at most once, when this presentation is finished with the request:
+   * by carrying it out, or by giving up on it. An uncalled `onConsume` means
+   * the request is still waiting, so a caller that cancels can hand it on.
+   * @private
+   */
+  onConsume?: () => void;
 }
 
 /**
@@ -117,6 +124,7 @@ function presentItem({
   markedOnly,
   requireFocus,
   scrollIntoView,
+  onConsume,
 }: PresentItemParams) {
   let element: HTMLElement | null = null;
   let resolvedId: string | undefined;
@@ -211,10 +219,24 @@ function presentItem({
     removeFocusListeners?.();
     unsubscribe?.();
   };
+  let consumed = false;
+  const consume = () => {
+    if (consumed) return;
+    consumed = true;
+    onConsume?.();
+  };
+  // `settle` consumes the request; `cancel` hands it on. A presentation the
+  // caller already cancelled has handed its request on, so settling it
+  // afterwards must not take it back.
+  const settle = () => {
+    if (done) return;
+    consume();
+    return cancel();
+  };
   const present = () => {
     if (done) return;
     const state = store.getState();
-    if (abandonedByState(state)) return cancel();
+    if (abandonedByState(state)) return settle();
     let restoreFocus = false;
     if (!element) {
       // The item may not have rendered yet, so keep waiting for it.
@@ -230,7 +252,7 @@ function presentItem({
       // wake may still beat passive item registration.
       // https://github.com/ariakit/ariakit/pull/7030#discussion_r3703432937
       element = resolveElement(state);
-      if (!element) return cancel();
+      if (!element) return settle();
     }
     // Removing the focused node parks focus on `body`; restore only when ref
     // cleanup identified removal. Explicit blur stays latched until this
@@ -239,7 +261,7 @@ function presentItem({
     if (restoreFocus) {
       focused = false;
     } else if (!stillOwnsFocus(element)) {
-      return cancel();
+      return settle();
     }
     // Only the focus half is withheld: a list that is already on screen still
     // scrolls to the item the user just made active.
@@ -251,10 +273,13 @@ function presentItem({
     // focus it still owes would land on the wrong one.
     if (focusWithheld) {
       const { activeId } = state;
-      if (activeId != null && activeId !== resolvedId) return cancel();
+      if (activeId != null && activeId !== resolvedId) return settle();
     }
     if (focus && !focused && !focusWithheld) {
       focused = true;
+      // Recorded before the focus call, so a handler that reaches back into the
+      // store and starts a new request doesn't get this one's consumption.
+      consume();
       focusLeftElement = false;
       const itemElement = element;
       removeFocusListeners?.();
@@ -283,7 +308,7 @@ function presentItem({
       // A withheld request still owes focus, so keep it pending. Only a
       // request with nothing left to give is finished here.
       if (focusWithheld) return;
-      return cancel();
+      return settle();
     }
     // The item can't be shown yet: a popup that is still hidden while closed,
     // or one that hasn't been positioned yet, would be scrolled to no visible
@@ -295,7 +320,7 @@ function presentItem({
     // repeats a nearest-edge scroll, since a closed popup never takes the
     // centering branch, so it settles unless something else moved the list.
     if (!focusWithheld) {
-      cancel();
+      settle();
     }
     if (scrollIntoView) {
       scrollIntoView(element);
@@ -316,7 +341,9 @@ function presentItem({
   ] as Array<keyof CompositeStoreState>;
   unsubscribe = subscribe(store, keys, present);
   present();
-  return cancel;
+  // `settle` rides along so a caller that is retiring this presentation, rather
+  // than handing its request on, can say so.
+  return Object.assign(cancel, { settle });
 }
 
 /**
@@ -330,7 +357,7 @@ function presentItem({
  * See https://github.com/ariakit/ariakit/pull/7029
  */
 export function usePresentItem(store?: CompositeStore) {
-  const cancelRef = useRef<(() => void) | null>(null);
+  const cancelRef = useRef<ReturnType<typeof presentItem> | null>(null);
   const ownerRef = useRef(store);
   const cancel = useCallback(() => {
     cancelRef.current?.();
@@ -340,12 +367,15 @@ export function usePresentItem(store?: CompositeStore) {
     (params: Omit<PresentItemParams, "store">) => {
       if (!store) return;
       if (ownerRef.current !== store) return;
-      cancel();
+      // A presentation this call replaces is retired rather than handed on:
+      // whatever asked for the new one is the current intent.
+      cancelRef.current?.settle();
+      cancelRef.current = null;
       const cancelCurrent = presentItem({ store, ...params });
       cancelRef.current = cancelCurrent;
       return cancelCurrent;
     },
-    [store, cancel],
+    [store],
   );
   useSafeLayoutEffect(() => {
     ownerRef.current = store;
