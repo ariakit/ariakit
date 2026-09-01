@@ -6,10 +6,9 @@ const cases = [
   ["Store", "Store Add block", "Search store blocks"],
 ] as const;
 
-withFramework(import.meta.dirname, async ({ query, test }) => {
+withFramework(import.meta.dirname, async ({ test }) => {
   for (const [name, buttonLabel, searchLabel] of cases) {
-    test(`auto select first option with ${name}`, async ({ page }) => {
-      const q = query(page);
+    test(`auto select first option with ${name}`, async ({ q }) => {
       await q.button(buttonLabel).click();
       await expect(q.dialog(buttonLabel)).toBeVisible();
       await q.combobox(searchLabel).fill("a");
@@ -17,8 +16,10 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     });
   }
 
-  test("https://github.com/ariakit/ariakit/issues/4324", async ({ page }) => {
-    const q = query(page);
+  test("https://github.com/ariakit/ariakit/issues/4324", async ({
+    page,
+    q,
+  }) => {
     const button = q.button("Provider Add block");
     const dialog = q.dialog("Provider Add block");
     await button.click();
