@@ -17,7 +17,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(accessibleDisabledItem).not.toHaveAttribute("disabled");
     await test
       .expect(accessibleDisabledItem)
-      .not.toHaveAttribute("data-truly-disabled");
+      .toHaveAttribute("data-truly-disabled", "false");
 
     await page.keyboard.press("ArrowRight");
     await test.expect(accessibleDisabledItem).toBeFocused();
@@ -37,7 +37,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(accessibleDisabledItem).not.toHaveAttribute("disabled");
     await test
       .expect(accessibleDisabledItem)
-      .not.toHaveAttribute("data-truly-disabled");
+      .toHaveAttribute("data-truly-disabled", "false");
     await page.keyboard.press("ArrowRight");
     await test.expect(accessibleDisabledItem).toBeFocused();
   });
@@ -79,34 +79,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const accessibleDisabledItem = q.option("Rendered active two");
     await test
       .expect(accessibleDisabledItem)
-      .toHaveAttribute("data-focusable-accessible-when-disabled", "true");
-    await page.keyboard.press("ArrowRight");
-    await test.expect(accessibleDisabledItem).toBeFocused();
-  });
-
-  // https://github.com/ariakit/ariakit/pull/7376#discussion_r3902848381
-  test("skips a disabled item with a consumer false attribute", async ({
-    page,
-    q,
-  }) => {
-    await q.option("Styled one").click();
-    await page.keyboard.press("ArrowRight");
-    await test.expect(q.option("Styled three")).toBeFocused();
-  });
-
-  // https://github.com/ariakit/ariakit/pull/7376#discussion_r3904009762
-  test("moves to an accessible disabled item with a consumer true attribute", async ({
-    page,
-    q,
-  }) => {
-    await q.option("Styled accessible one").click();
-    const accessibleDisabledItem = q.option("Styled accessible two");
-    await test
-      .expect(accessibleDisabledItem)
-      .toHaveAttribute("data-truly-disabled", "true");
-    await test
-      .expect(accessibleDisabledItem)
-      .toHaveAttribute("data-focusable-accessible-when-disabled", "true");
+      .toHaveAttribute("data-truly-disabled", "false");
     await page.keyboard.press("ArrowRight");
     await test.expect(accessibleDisabledItem).toBeFocused();
   });

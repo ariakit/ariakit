@@ -32,7 +32,6 @@ import type {
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   accessibleWhenDisabledSymbol,
-  accessibleDisabledAttribute,
   isCompositeMoveKey,
   trulyDisabledAttribute,
 } from "./__utils.ts";
@@ -496,12 +495,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         tabIndexProp: props.tabIndex,
       }),
       disabled: supportsDisabled && trulyDisabled ? true : undefined,
-      // Placed after the spread so the innermost active Focusable decides. An
-      // inactive layer removes outer values so CompositeItem can fall back to
-      // its own disabled state.
-      [trulyDisabledAttribute]: trulyDisabled || undefined,
-      [accessibleDisabledAttribute]:
-        disabled && !trulyDisabled ? true : undefined,
+      // Placed after the spread so the innermost active Focusable writes its
+      // exact result. An inactive layer removes outer values so CompositeItem
+      // can fall back to its own disabled state.
+      [trulyDisabledAttribute]: disabled ? trulyDisabled : undefined,
       // TODO: Add contentEditable coverage.
       contentEditable: disabled ? undefined : props.contentEditable,
       onKeyPressCapture,

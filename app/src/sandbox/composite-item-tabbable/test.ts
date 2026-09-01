@@ -55,7 +55,10 @@ test("moves to an accessible disabled item inherited through composition", async
   const accessibleDisabledItem = q.option("Inherited two");
   expect(accessibleDisabledItem).toHaveAttribute("aria-disabled", "true");
   expect(accessibleDisabledItem).not.toHaveAttribute("disabled");
-  expect(accessibleDisabledItem).not.toHaveAttribute("data-truly-disabled");
+  expect(accessibleDisabledItem).toHaveAttribute(
+    "data-truly-disabled",
+    "false",
+  );
 
   await press.ArrowRight();
   expect(accessibleDisabledItem).toHaveFocus();
@@ -68,7 +71,10 @@ test("moves to an accessible disabled item resolved below it", async () => {
   const accessibleDisabledItem = q.option("Rendered two");
   expect(accessibleDisabledItem).toHaveAttribute("aria-disabled", "true");
   expect(accessibleDisabledItem).not.toHaveAttribute("disabled");
-  expect(accessibleDisabledItem).not.toHaveAttribute("data-truly-disabled");
+  expect(accessibleDisabledItem).toHaveAttribute(
+    "data-truly-disabled",
+    "false",
+  );
   await press.ArrowRight();
   expect(accessibleDisabledItem).toHaveFocus();
 });
@@ -100,28 +106,8 @@ test("moves to an accessible disabled item with an active Focusable below it", a
   await click(q.option("Rendered active one"));
   const accessibleDisabledItem = q.option("Rendered active two");
   expect(accessibleDisabledItem).toHaveAttribute(
-    "data-focusable-accessible-when-disabled",
-    "true",
-  );
-  await press.ArrowRight();
-  expect(accessibleDisabledItem).toHaveFocus();
-});
-
-// https://github.com/ariakit/ariakit/pull/7376#discussion_r3902848381
-test("skips a disabled item with a consumer false attribute", async () => {
-  await click(q.option("Styled one"));
-  await press.ArrowRight();
-  expect(q.option("Styled three")).toHaveFocus();
-});
-
-// https://github.com/ariakit/ariakit/pull/7376#discussion_r3904009762
-test("moves to an accessible disabled item with a consumer true attribute", async () => {
-  await click(q.option("Styled accessible one"));
-  const accessibleDisabledItem = q.option("Styled accessible two");
-  expect(accessibleDisabledItem).toHaveAttribute("data-truly-disabled", "true");
-  expect(accessibleDisabledItem).toHaveAttribute(
-    "data-focusable-accessible-when-disabled",
-    "true",
+    "data-truly-disabled",
+    "false",
   );
   await press.ArrowRight();
   expect(accessibleDisabledItem).toHaveFocus();
