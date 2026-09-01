@@ -306,6 +306,17 @@ Three things worth knowing about how clava resolves these.
 - The `variants` snapshot carries every variant with a resolved value, including ones inherited through `extend`. `control` reads `variants.$p` this way and never declares `$p` itself.
 - A prop the caller passed always wins over a computed default.
 
+`refine` is the way past that last one. It runs after the defaults settle, it runs for every component that reaches the one declaring it through `extend`, and its `setVariants` replaces the caller's value rather than falling back to it. Reach for it when one variant has to switch another one off, which a computed default cannot do.
+
+```ts
+// The highlight paints the element itself, so the ring variants have nothing
+// left to draw, whoever asked for them.
+refine({ variants, setVariants }) {
+  if (!variants.$focusHighlight) return;
+  setVariants({ $focus: false, $focusColor: "unset", $focusOffset: "none" });
+},
+```
+
 ## Prefer an explicit state to `undefined`
 
 A variant map with a `false` key gets an implicit static default of `false`. When a component has three states, name the third rather than clearing the default and deriving a second boolean variant from it.
