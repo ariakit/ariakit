@@ -213,6 +213,29 @@ function StyledDisabledListbox() {
   );
 }
 
+function StyledAccessibleDisabledListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite role="listbox" aria-label="Styled accessible disabled">
+        <Ariakit.CompositeItem role="option">
+          Styled accessible one
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem
+          disabled
+          accessibleWhenDisabled
+          role="option"
+          render={<button type="button" data-truly-disabled={true} />}
+        >
+          Styled accessible two
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">
+          Styled accessible three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
 function DirectAccessibleInactiveListbox() {
   return (
     <Ariakit.CompositeProvider>
@@ -275,6 +298,7 @@ export default function Example() {
       <InactiveFocusableListbox />
       <RenderedInactiveFocusableListbox />
       <StyledDisabledListbox />
+      <StyledAccessibleDisabledListbox />
       <DirectAccessibleInactiveListbox />
       <InheritedAccessibleInactiveListbox />
     </>

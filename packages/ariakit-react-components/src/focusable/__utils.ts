@@ -27,18 +27,18 @@ export function trulyDisabledFromElement(element: Element) {
   return element.getAttribute(trulyDisabledAttribute) === "true";
 }
 
-// Keep data-truly-disabled true-only because consumers may set it to false for
-// their own styling. This reserved marker carries the separate false signal
-// that CompositeItem needs from a composing Focusable rendered below it.
-// https://github.com/ariakit/ariakit/pull/7376#discussion_r3902848381
+// Consumers may set data-truly-disabled to true or false for their own styling.
+// This reserved marker carries the accessible-disabled result and takes
+// precedence when both attributes are present.
+// https://github.com/ariakit/ariakit/pull/7376#discussion_r3904009762
 export const accessibleDisabledAttribute =
   "data-focusable-accessible-when-disabled";
 
 export function resolvedTrulyDisabledFromElement(element: Element) {
-  if (trulyDisabledFromElement(element)) return true;
   if (element.getAttribute(accessibleDisabledAttribute) === "true") {
     return false;
   }
+  if (trulyDisabledFromElement(element)) return true;
   return undefined;
 }
 
