@@ -1229,6 +1229,7 @@ export interface DialogOptions<T extends ElementType = TagName>
    * An opaque value that makes the dialog take a new snapshot of the element
    * tree and mark it again. It's only ever compared by identity, so composed
    * components can combine several sources into one value.
+   * @deprecated
    * @private
    */
   unstable_treeSnapshotKey?: unknown;
