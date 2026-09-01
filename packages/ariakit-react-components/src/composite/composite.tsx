@@ -12,7 +12,6 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { sync } from "@ariakit/store";
 import {
   flatten2DArray,
   reverseArray,
@@ -36,6 +35,7 @@ import type {
 import { useEffect, useRef } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
+import { getMoveRequest } from "./__move-request.ts";
 import {
   CompositeScopedContextProvider,
   useCompositeProviderContext,
@@ -117,35 +117,6 @@ function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
 
 type PresentItem = ReturnType<typeof usePresentItem>;
 
-interface MoveRequest {
-  /**
-   * The `CompositeFocusOnMove` instance that consumed the current move, or
-   * `null` while none has.
-   */
-  consumedBy: object | null;
-}
-
-/**
- * Tracks, per store, which instance has consumed the current move. This has to
- * outlive the component: `moves` only counts requests, so a fresh instance
- * reading a nonzero count can't tell a request still waiting, for its item or
- * for a composite element, from one an earlier instance already acted on.
- */
-const moveRequests = new WeakMap<CompositeStore, MoveRequest>();
-
-function getMoveRequest(store: CompositeStore) {
-  const cached = moveRequests.get(store);
-  if (cached) return cached;
-  const request: MoveRequest = { consumedBy: null };
-  moveRequests.set(store, request);
-  // Every change to the count starts a new request, including the resets that
-  // cancel a pending one, so it goes back to being unconsumed.
-  sync(store, ["moves"], () => {
-    request.consumedBy = null;
-  });
-  return request;
-}
-
 /**
  * Whether `instance` may act on the store's current move. An unconsumed request
  * is available to whichever instance is around; a consumed one stays with the
@@ -182,8 +153,8 @@ interface CompositeFocusOnMoveProps {
  * item. This lives in a separate memoized component so moving through items
  * doesn't re-render the whole composite component, and composite re-renders
  * don't re-render this component. It's only rendered when the `composite` prop
- * is enabled, so the `moves` subscription doesn't run for non-composite
- * widgets.
+ * is enabled, so this render-driving subscription doesn't run for
+ * non-composite widgets. The store hook tracks move requests separately.
  */
 const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   store,
@@ -210,12 +181,14 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
 
   // Present the active item.
   useEffect(() => {
+    const moveRequest = getMoveRequest(store);
     if (!moves) return;
     if (!focusOnMove) return;
     const instance = instanceRef.current;
     if (!mayActOnMove(store, instance)) return;
     const { activeId } = store.getState();
     if (activeId == null) return;
+    if (activeId !== moveRequest.targetId) return;
     // A programmatic move made while focus is already outside keeps its
     // focusOnMove behavior. If focus starts inside, the presentation is
     // abandoned once the user moves it elsewhere.
@@ -232,6 +205,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   // If composite.move(null) has been called, the composite container should
   // receive focus.
   useSafeLayoutEffect(() => {
+    const moveRequest = getMoveRequest(store);
     if (!moves) return;
     if (!compositeElement) return;
     const instance = instanceRef.current;
@@ -239,6 +213,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
     const { activeId } = store.getState();
     const isSelfActive = activeId === null;
     if (!isSelfActive) return;
+    if (activeId !== moveRequest.targetId) return;
     // This branch has nothing left to wait for, so it consumes the request
     // here rather than reporting back the way a presentation does.
     consumeMove(store, instance, moves);
