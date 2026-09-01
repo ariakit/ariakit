@@ -390,8 +390,11 @@
   position: relative;
   border-bottom-width: 0 !important;
   /* The curves are painted outside the element, so only the bottom edge,
-     where the panel takes over, may clip. */
-  clip-path: inset(-4rem -4rem 0 -4rem);
+     where the panel takes over, may clip. The cut sits a pixel past that edge
+     because a clip path is antialiased where it falls while a background is
+     snapped to the pixel grid, so cutting on the edge itself shaves a hair off
+     the tab and lets the panel border below show through as a seam. */
+  clip-path: inset(-4rem -4rem -1px -4rem);
 
   &::before,
   &::after {
