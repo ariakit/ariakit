@@ -5,10 +5,6 @@ import { frameBase } from "./frame.ts";
 
 export const nav = cv({
   class: [
-    // The marker the nav rows select on to beat the disclosure rules they
-    // override. A plain class rather than a flag, so `.nav &` wins on
-    // specificity and a consumer installs no custom variant for it.
-    "nav",
     // Gap default the variant overrides through the style attribute.
     "[--nav-gap:--spacing(1)]",
   ],
@@ -139,9 +135,9 @@ export const navDisclosureContent = cv({
   class: [
     "ui-sidebar-collapsed:h-0 ui-sidebar-collapsed:w-0",
     // Indent past the icon. The style query asks whether the disclosure set
-    // an icon slot, and the marker sorts this after the disclosure content's
-    // own icon-size indent rule.
-    "[.nav_&]:[@container_style(--disclosure-icon-size)]:[--disclosure-ps:calc(var(--disclosure-icon-size)+var(--disclosure-padding)+1px)]",
+    // an icon slot; important because the disclosure content sets its own
+    // indent from the same query, which no variant turns off.
+    "[@container_style(--disclosure-icon-size)]:[--disclosure-ps:calc(var(--disclosure-icon-size)+var(--disclosure-padding)+1px)]!",
   ],
 });
 

@@ -344,16 +344,19 @@ For cross-component selection, give the root a plain marker class and select on 
 "in-[.list]:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
 ```
 
-Which spelling depends on what the rule has to beat. `in-[.list]:` compiles to `:where(:is(.list)) &`, so the ancestor contributes no specificity and the rule still wins only by sorting later, which is enough for scoping. `[.nav_&]:` compiles to `.nav &`, which outweighs a plain utility on the same element, so reach for that one when the rule exists to override another.
+Which spelling depends on what the rule has to beat. `in-[.list]:` compiles to `:where(:is(.list)) &`, so the ancestor contributes no specificity and the rule wins only by sorting later. `[.list_&]:` compiles to `.list &`, which outweighs a plain utility on the same element. Both beat a published flag plus a `@custom-variant`, which a consumer has to install and which sorts by the order the variants happened to be registered in.
+
+A marker earns its place when a component genuinely reads as one thing inside another. When the only job is to win a conflict on the element the component already owns, `!` says that directly and asks nothing of the markup.
 
 ```ts
-// Scoping: nothing on the row competes for this padding.
+// Scoping: the row reads its rhythm from the list around it.
 "in-[.list]:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
-// Overriding: the disclosure button sets its own gap on this element.
-"[.nav_&]:gap-[calc(--spacing(3)+1px)]",
+// Overriding: the disclosure button underneath sets its own gap on this
+// element, from a style query no variant turns off.
+"gap-[calc(--spacing(3)+1px)]!",
 ```
 
-Either spelling beats a published flag plus a `@custom-variant`, which a consumer has to install and which sorts by the order the variants happened to be registered in.
+`nav` carried a marker for a while so its rows could outrank the disclosure rules they cover. Every one of those rules turned out to sit on the component's own element, so each became an `!` and the marker went away with them.
 
 An attribute selector in a variant position wants a variant, not brackets. Brackets there hold an arbitrary _selector_, and a bare one is a type selector, so `**:[data-open]:opacity-0` compiles to `:is(& *):is(data-open)` and matches no element ever. Write `**:data-open:opacity-0`.
 
