@@ -19,11 +19,17 @@ const paragraphs = Array.from({ length: 24 }, (_, index) => index + 1);
  * focus and keyboard navigation for it. The toolbar stops moving focus
  * meanwhile, so a focus command issued while it is handed off has to wait until
  * the toolbar is a composite again.
+ *
+ * The highlight tool stands in for a tool the app loads on demand. Asking for
+ * it before it arrives records a move for an item that has not registered yet,
+ * which is the same kind of pending request as a focus command issued while the
+ * toolbar is away: it has to be carried out once its item shows up.
  */
 export default function Example() {
   const store = Ariakit.useCompositeStore();
   const [expanded, setExpanded] = useState(true);
   const [handedOff, setHandedOff] = useState(false);
+  const [highlightLoaded, setHighlightLoaded] = useState(false);
 
   return (
     <main style={{ display: "grid", gap: 16, justifyItems: "start" }}>
@@ -42,6 +48,20 @@ export default function Example() {
         </button>
         <button type="button" tabIndex={0} onClick={() => store.move(null)}>
           Focus toolbar
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => store.move("highlight")}
+        >
+          Focus highlight tool
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => setHighlightLoaded(true)}
+        >
+          Load highlight tool
         </button>
         <label>
           <input
@@ -74,6 +94,11 @@ export default function Example() {
           <Ariakit.CompositeItem id="underline">
             Underline
           </Ariakit.CompositeItem>
+          {highlightLoaded && (
+            <Ariakit.CompositeItem id="highlight">
+              Highlight
+            </Ariakit.CompositeItem>
+          )}
         </Ariakit.Composite>
       )}
     </main>

@@ -41,6 +41,20 @@ async function takeBack() {
   expect(handOffControl()).not.toBeChecked();
 }
 
+/**
+ * Asks for a tool that has not loaded yet. The move counts as a request like
+ * any other, but nothing can carry it out until the item registers.
+ */
+async function askForHighlight() {
+  await click(q.button("Focus highlight tool"));
+  expect(q.button.maybe("Highlight")).not.toBeInTheDocument();
+}
+
+async function loadHighlight() {
+  await click(q.button("Load highlight tool"));
+  expect(q.button("Highlight")).toBeInTheDocument();
+}
+
 // Pins the harness: with no move behind it, nothing in the library asks for
 // focus here.
 test("keeps focus when an untouched toolbar comes back", async () => {
@@ -103,7 +117,7 @@ test("keeps focus when composite behavior comes back", async () => {
 // takes focus once the toolbar is a composite again. The move comes from the
 // arrow key, which still moves the active item meanwhile; only focus stops
 // following it.
-// https://github.com/ariakit/ariakit/issues/7363
+// Related: https://github.com/ariakit/ariakit/issues/7363
 test("focuses a newly moved item when composite behavior comes back", async () => {
   await moveToSecondItem();
   await handOff();
@@ -142,4 +156,45 @@ test("focuses the toolbar when a focus command runs while it is handed off", asy
   await takeBack();
 
   expect(q.toolbar("Formatting")).toHaveFocus();
+});
+
+// Pins the third kind of pending move, the one waiting on its item rather than
+// on the toolbar: with nothing replacing the toolbar meanwhile, the request is
+// carried out when the tool loads.
+test("focuses a tool that loads after being asked for", async () => {
+  await askForHighlight();
+
+  await loadHighlight();
+
+  expect(q.button("Highlight")).toHaveFocus();
+});
+
+// The third thing a pending move can do: be given up on. Picking another tool
+// makes the toolbar abandon the request for the one that never arrived, and a
+// request it gave up on is spent rather than still waiting, so it is not left
+// behind for a later instance to carry out.
+// https://github.com/ariakit/ariakit/issues/7360
+test("keeps focus when composite behavior comes back after an abandoned request", async () => {
+  await askForHighlight();
+  await click(q.button("Bold"));
+  expect(q.button("Bold")).toHaveFocus();
+
+  await handOff();
+  await takeBack();
+
+  expect(handOffControl()).toHaveFocus();
+});
+
+// The same pending move, across the handoff that replaces what would carry it
+// out. Only the handoff is exercised here: collapsing also points the store at
+// the toolbar container, which retires the request instead of leaving it
+// pending.
+test("focuses a tool that loads after composite behavior comes back", async () => {
+  await askForHighlight();
+  await handOff();
+  await takeBack();
+
+  await loadHighlight();
+
+  expect(q.button("Highlight")).toHaveFocus();
 });

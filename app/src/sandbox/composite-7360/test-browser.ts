@@ -1,18 +1,16 @@
-import type { query } from "@ariakit/test/playwright";
 import type { Page } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 import { recordScrollEvents } from "#app/test-utils/scroll.ts";
 
-type Query = ReturnType<typeof query>;
-
-withFramework(import.meta.dirname, async ({ test }) => {
+withFramework(import.meta.dirname, async ({ test, query }) => {
   /**
    * Moves the active item with the keyboard. The move is what arms the replay:
    * it leaves a move count behind that a fresh effect instance reads as a focus
    * request to carry out when the toolbar comes back, whether it comes back by
    * mounting again or by becoming a composite again.
    */
-  const moveToSecondItem = async (q: Query, page: Page) => {
+  const moveToSecondItem = async (page: Page) => {
+    const q = query(page);
     await q.button("Bold").click();
     await page.keyboard.press("ArrowRight");
     await test.expect(q.button("Italic")).toBeFocused();
@@ -24,13 +22,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   };
 
-  const handOffControl = (q: Query) =>
-    q.checkbox("Hand off composite behavior");
+  const handOffControl = (page: Page) =>
+    query(page).checkbox("Hand off composite behavior");
 
   /** Hands composite behavior over and rests the page at its origin. */
-  const handOff = async (q: Query, page: Page) => {
-    await handOffControl(q).click();
-    await test.expect(handOffControl(q)).toBeChecked();
+  const handOff = async (page: Page) => {
+    await handOffControl(page).click();
+    await test.expect(handOffControl(page)).toBeChecked();
     await scrollToTop(page);
   };
 
@@ -38,9 +36,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
    * Takes composite behavior back and settles the point where a focus or scroll
    * request would land.
    */
-  const takeBackAndSettle = async (q: Query, page: Page) => {
-    await handOffControl(q).click();
-    await test.expect(handOffControl(q)).not.toBeChecked();
+  const takeBackAndSettle = async (page: Page) => {
+    await handOffControl(page).click();
+    await test.expect(handOffControl(page)).not.toBeChecked();
     // Same checkpoint as `expandAndSettle`, reached through the `composite`
     // prop instead of a mount.
     await flushFrames(page);
@@ -51,7 +49,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
    * toolbar from there, so the page rests at its origin with the toggle holding
    * focus and the toolbar unmounted.
    */
-  const collapseFromTop = async (q: Query, page: Page) => {
+  const collapseFromTop = async (page: Page) => {
+    const q = query(page);
     await scrollToTop(page);
     await q.button("Collapse toolbar").click();
     await test.expect(q.toolbar("Formatting")).toBeHidden();
@@ -61,13 +60,31 @@ withFramework(import.meta.dirname, async ({ test }) => {
    * Brings the toolbar back and settles the point where a focus or scroll
    * request would land.
    */
-  const expandAndSettle = async (q: Query, page: Page) => {
+  const expandAndSettle = async (page: Page) => {
+    const q = query(page);
     await q.button("Expand toolbar").click();
     await test.expect(q.toolbar("Formatting")).toBeVisible();
     // Focus staying put and the page not moving have no positive state to wait
     // on, and the effect that would disturb either runs a commit after the
     // toolbar appears, once its element reaches the store.
     await flushFrames(page);
+  };
+
+  /**
+   * Asks for a tool that has not loaded yet. The move counts as a request like
+   * any other, but nothing can carry it out until the item registers.
+   */
+  const askForHighlight = async (page: Page) => {
+    const q = query(page);
+    await scrollToTop(page);
+    await q.button("Focus highlight tool").click();
+    await test.expect(q.button("Highlight")).toBeHidden();
+  };
+
+  const loadHighlight = async (page: Page) => {
+    const q = query(page);
+    await q.button("Load highlight tool").click();
+    await test.expect(q.button("Highlight")).toBeVisible();
   };
 
   // Pins the harness: with no move behind it, nothing in the library asks for
@@ -77,10 +94,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    await collapseFromTop(q, page);
+    await collapseFromTop(page);
     const scroll = await recordScrollEvents(page);
 
-    await expandAndSettle(q, page);
+    await expandAndSettle(page);
 
     await test.expect(q.button("Collapse toolbar")).toBeFocused();
     test.expect(await page.evaluate(() => window.scrollY)).toBe(0);
@@ -92,11 +109,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    await moveToSecondItem(q, page);
-    await collapseFromTop(q, page);
+    await moveToSecondItem(page);
+    await collapseFromTop(page);
     const scroll = await recordScrollEvents(page);
 
-    await expandAndSettle(q, page);
+    await expandAndSettle(page);
 
     await test.expect(q.button("Collapse toolbar")).toBeFocused();
     test.expect(await page.evaluate(() => window.scrollY)).toBe(0);
@@ -108,12 +125,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    await moveToSecondItem(q, page);
-    await collapseFromTop(q, page);
+    await moveToSecondItem(page);
+    await collapseFromTop(page);
     const scroll = await recordScrollEvents(page);
 
     for (let cycle = 0; cycle < 3; cycle += 1) {
-      await expandAndSettle(q, page);
+      await expandAndSettle(page);
       await test.expect(q.button("Collapse toolbar")).toBeFocused();
       await q.button("Collapse toolbar").click();
       await test.expect(q.toolbar("Formatting")).toBeHidden();
@@ -129,14 +146,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // it isn't what the tests below observe.
   test("keeps focus and page position when untouched composite behavior comes back", async ({
     page,
-    q,
   }) => {
-    await handOff(q, page);
+    await handOff(page);
     const scroll = await recordScrollEvents(page);
 
-    await takeBackAndSettle(q, page);
+    await takeBackAndSettle(page);
 
-    await test.expect(handOffControl(q)).toBeFocused();
+    await test.expect(handOffControl(page)).toBeFocused();
     test.expect(await page.evaluate(() => window.scrollY)).toBe(0);
     test.expect(await scroll.events()).not.toContain("document");
   });
@@ -148,15 +164,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/7360
   test("keeps focus and page position when composite behavior comes back", async ({
     page,
-    q,
   }) => {
-    await moveToSecondItem(q, page);
-    await handOff(q, page);
+    await moveToSecondItem(page);
+    await handOff(page);
     const scroll = await recordScrollEvents(page);
 
-    await takeBackAndSettle(q, page);
+    await takeBackAndSettle(page);
 
-    await test.expect(handOffControl(q)).toBeFocused();
+    await test.expect(handOffControl(page)).toBeFocused();
     test.expect(await page.evaluate(() => window.scrollY)).toBe(0);
     test.expect(await scroll.events()).not.toContain("document");
   });
@@ -166,18 +181,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // takes focus once the toolbar is a composite again. The move comes from the
   // arrow key, which still moves the active item meanwhile; only focus stops
   // following it.
-  // https://github.com/ariakit/ariakit/issues/7363
+  // Related: https://github.com/ariakit/ariakit/issues/7363
   test("focuses a newly moved item when composite behavior comes back", async ({
     page,
     q,
   }) => {
-    await moveToSecondItem(q, page);
-    await handOffControl(q).click();
-    await test.expect(handOffControl(q)).toBeChecked();
+    await moveToSecondItem(page);
+    await handOffControl(page).click();
+    await test.expect(handOffControl(page)).toBeChecked();
 
     await q.button("Italic").click();
     await page.keyboard.press("ArrowRight");
-    await takeBackAndSettle(q, page);
+    await takeBackAndSettle(page);
 
     await test.expect(q.button("Underline")).toBeFocused();
   });
@@ -202,8 +217,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    await moveToSecondItem(q, page);
-    await collapseFromTop(q, page);
+    await moveToSecondItem(page);
+    await collapseFromTop(page);
 
     await q.button("Focus toolbar").click();
     await q.button("Expand toolbar").click();
@@ -215,15 +230,71 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // The same pending move, but with the toolbar mounted the whole time and only
   // its `composite` prop switching off and back on.
   test("focuses the toolbar when a focus command runs while it is handed off", async ({
+    page,
     q,
   }) => {
-    await handOffControl(q).click();
-    await test.expect(handOffControl(q)).toBeChecked();
+    await handOffControl(page).click();
+    await test.expect(handOffControl(page)).toBeChecked();
 
     await q.button("Focus toolbar").click();
-    await handOffControl(q).click();
+    await handOffControl(page).click();
 
-    await test.expect(handOffControl(q)).not.toBeChecked();
+    await test.expect(handOffControl(page)).not.toBeChecked();
     await test.expect(q.toolbar("Formatting")).toBeFocused();
+  });
+
+  // Pins the third kind of pending move, the one waiting on its item rather
+  // than on the toolbar: with nothing replacing the toolbar meanwhile, the
+  // request is carried out when the tool loads.
+  test("focuses a tool that loads after being asked for", async ({
+    page,
+    q,
+  }) => {
+    await askForHighlight(page);
+
+    await loadHighlight(page);
+
+    await test.expect(q.button("Highlight")).toBeFocused();
+    await test.expect(q.button("Highlight")).toBeInViewport();
+  });
+
+  // The third thing a pending move can do: be given up on. Picking another tool
+  // makes the toolbar abandon the request for the one that never arrived, and a
+  // request it gave up on is spent rather than still waiting, so it is not left
+  // behind for a later instance to carry out.
+  // https://github.com/ariakit/ariakit/issues/7360
+  test("keeps focus and page position when composite behavior comes back after an abandoned request", async ({
+    page,
+    q,
+  }) => {
+    await askForHighlight(page);
+    await q.button("Bold").click();
+    await test.expect(q.button("Bold")).toBeFocused();
+    await handOff(page);
+    const scroll = await recordScrollEvents(page);
+
+    await takeBackAndSettle(page);
+
+    await test.expect(handOffControl(page)).toBeFocused();
+    test.expect(await page.evaluate(() => window.scrollY)).toBe(0);
+    test.expect(await scroll.events()).not.toContain("document");
+  });
+
+  // The same pending move, across the handoff that replaces what would carry it
+  // out. Only the handoff is exercised here: collapsing also points the store
+  // at the toolbar container, which retires the request instead of leaving it
+  // pending.
+  test("focuses a tool that loads after composite behavior comes back", async ({
+    page,
+    q,
+  }) => {
+    await askForHighlight(page);
+    await handOff(page);
+    await takeBackAndSettle(page);
+
+    await loadHighlight(page);
+
+    await test.expect(q.button("Highlight")).toBeFocused();
+    await test.expect(q.button("Highlight")).toBeInViewport();
   });
 });
