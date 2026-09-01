@@ -602,6 +602,7 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
   store?: CompositeStore;
   /**
    * Determines how the item is scrolled into view when it's presented.
+   * @deprecated
    * @private
    */
   unstable_scrollIntoView?: (element: HTMLElement) => void;

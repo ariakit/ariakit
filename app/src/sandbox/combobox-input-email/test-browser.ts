@@ -1,10 +1,11 @@
-import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("combobox should not throw when input type=email", async ({ page }) => {
-    const q = query(page);
+  test("combobox should not throw when input type=email", async ({
+    page,
+    q,
+  }) => {
     const combobox = q.combobox("Email");
     await combobox.click();
 
@@ -24,8 +25,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/3086
   test("moves focus back to the email input when typing on an item", async ({
     page,
+    q,
   }) => {
-    const q = query(page);
     const combobox = q.combobox("Real focus email");
     await combobox.click();
     await combobox.fill("e");

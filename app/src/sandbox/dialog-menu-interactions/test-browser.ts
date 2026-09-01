@@ -9,8 +9,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     return page.locator(`[data-backdrop="${id}"]`);
   };
 
-  test("open/close menu by clicking on menu button", async ({ page }) => {
-    const q = query(page);
+  test("open/close menu by clicking on menu button", async ({ q }) => {
     await q.button("View recipe").click();
     await q.button("Share").click();
     await expect(q.menu()).toBeVisible();
@@ -18,8 +17,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.menu()).not.toBeVisible();
   });
 
-  test("dragging the cursor to outside the dialog", async ({ page }) => {
-    const q = query(page);
+  test("dragging the cursor to outside the dialog", async ({ page, q }) => {
     await q.button("View recipe").click();
     await expect(q.dialog()).toBeVisible();
     await q.dialog().dragTo(await backdrop(page), {
@@ -28,8 +26,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.dialog()).toBeVisible();
   });
 
-  test("dragging the cursor to outside the menu", async ({ page }) => {
-    const q = query(page);
+  test("dragging the cursor to outside the menu", async ({ q }) => {
     await q.button("View recipe").click();
     await q.button("Share").click();
     await expect(q.dialog()).toBeVisible();
@@ -39,8 +36,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.menu()).toBeVisible();
   });
 
-  test("dragging the cursor to outside both", async ({ page }) => {
-    const q = query(page);
+  test("dragging the cursor to outside both", async ({ page, q }) => {
     await q.button("View recipe").click();
     await q.button("Share").click();
     await expect(q.dialog()).toBeVisible();

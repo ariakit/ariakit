@@ -1,12 +1,11 @@
-import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test("re-open submenu and shift-tab back to the parent menu", async ({
     page,
+    q,
   }) => {
-    const q = query(page);
     await q.menuitem("File").click();
     await q.menuitem("Share").hover();
     await q.menuitem("Notes").hover();

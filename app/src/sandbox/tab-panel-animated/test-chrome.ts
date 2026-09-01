@@ -1,4 +1,3 @@
-import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
@@ -9,9 +8,7 @@ const tab3 = "Explore";
 withFramework(import.meta.dirname, async ({ test }) => {
   test.describe.configure({ retries: 2 });
 
-  test("switch tabs", async ({ page }) => {
-    const q = query(page);
-
+  test("switch tabs", async ({ page, q }) => {
     await expect(q.tab(tab1)).toHaveAttribute("aria-selected", "true");
     await expect(q.tabpanel(tab1)).toBeVisible();
 
