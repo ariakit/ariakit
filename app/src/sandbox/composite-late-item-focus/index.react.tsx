@@ -125,6 +125,13 @@ export default function Example() {
         <button
           type="button"
           tabIndex={0}
+          onClick={() => pendingStore.move("pending-bold")}
+        >
+          Focus pending bold action
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
           onClick={() => pendingStore.setActiveId(null)}
         >
           Target pending toolbar

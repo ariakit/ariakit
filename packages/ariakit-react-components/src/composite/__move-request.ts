@@ -27,11 +27,17 @@ export function getMoveRequest(store: Core.CompositeStore) {
     targetId: store.getState().activeId,
   };
   moveRequests.set(key, request);
-  // `move` writes `activeId` before `moves`, so the active id at this point is
-  // the target of this request, including moves propagated from another store.
-  sync(store, ["moves"], () => {
-    request.consumedBy = null;
-    request.targetId = store.getState().activeId;
+  sync(store, ["moves", "activeId"], (state, prevState) => {
+    if (state.moves !== prevState.moves) {
+      request.consumedBy = null;
+      request.targetId = state.activeId;
+      return;
+    }
+    if (state.activeId !== prevState.activeId) {
+      // `move` writes `activeId` before `moves`, so its count update replaces
+      // this cancellation with the requested target.
+      request.targetId = undefined;
+    }
   });
   return request;
 }

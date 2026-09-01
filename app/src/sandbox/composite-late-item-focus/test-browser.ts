@@ -120,6 +120,38 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7378
+  test("does not replay a pending composite move after the active id cycles", async ({
+    q,
+  }) => {
+    await q.button("Hide pending toolbar").click();
+    await q.button("Focus pending toolbar").click();
+    await q.button("Target bold action").click();
+    await q.button("Target pending toolbar").click();
+    await q.button("Show pending toolbar").click();
+
+    await test.expect(q.button("Hide pending toolbar")).toBeFocused();
+    await test.expect(q.toolbar("Pending actions")).not.toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7378
+  test("does not replay a pending item move after the active id cycles", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Hide pending toolbar").click();
+    await q.button("Focus pending bold action").click();
+    await q.button("Target pending toolbar").click();
+    await q.button("Target bold action").click();
+    await q.button("Show pending toolbar").click();
+
+    // The item registers in a passive effect, and no state exposes when a
+    // stale pending presentation would move focus afterward.
+    await flushFrames(page);
+    await test.expect(q.button("Hide pending toolbar")).toBeFocused();
+    await test.expect(q.button("Bold action")).not.toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7378
   test("does not redirect an item move before the first composite mount", async ({
     q,
   }) => {
