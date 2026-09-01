@@ -1,9 +1,71 @@
 import { cv } from "clava";
+import { includes } from "../utils/includes.ts";
 import { getSpacingValue } from "../utils/styles.ts";
 import { edge } from "./edge.ts";
 
-export const frame = cv({
-  extend: [edge],
+const ROUNDED_VALUES = [
+  "none",
+  "xs",
+  "sm",
+  "md",
+  "lg",
+  "xl",
+  "2xl",
+  "3xl",
+  "4xl",
+  "full",
+] as const;
+
+export type FrameRoundedValue = (typeof ROUNDED_VALUES)[number] | "unset";
+
+/**
+ * Resolves a `$rounded` value to its class, or to the radius channel when the
+ * value is a length or an expression rather than a named step.
+ *
+ * A component that declares its own `$rounded` replaces this one rather than
+ * merging with it, so call this for every value it does not handle itself, or
+ * the named steps stop working on that component.
+ */
+export function getFrameRoundedClass(
+  value?: FrameRoundedValue | (string & {}),
+) {
+  if (value == null) return;
+  // "unset" rather than false: a false branch would give frame and every
+  // extender an implicit constant default, which deadens downstream computed
+  // fallbacks like the glider's and the control slot's.
+  if (value === "unset") return;
+  if (includes(ROUNDED_VALUES, value)) {
+    const valueMap = {
+      none: "ak-frame-none",
+      xs: "ak-frame-xs",
+      sm: "ak-frame-sm",
+      md: "ak-frame-md",
+      lg: "ak-frame-lg",
+      xl: "ak-frame-xl",
+      "2xl": "ak-frame-2xl",
+      "3xl": "ak-frame-3xl",
+      "4xl": "ak-frame-4xl",
+      full: "ak-frame-full",
+    } satisfies Record<Exclude<FrameRoundedValue, "unset">, string>;
+    return valueMap[value];
+  }
+  // A bare word is a scale key that some component added, and one this
+  // component did not declare has nothing to say here. Only a length, a
+  // percentage or an expression is a radius to spend.
+  if (!/[(.\d%]/.test(value)) return;
+  return {
+    class: "ak-frame-(--frame-radius)",
+    style: { "--frame-radius": value },
+  };
+}
+
+/**
+ * The frame geometry on its own: radius, padding, margin, borders and the
+ * concentric-radius layout, with no colour behind it. Extend this when an
+ * element takes frame geometry but paints nothing, so it does not open a
+ * layer it has no use for. Most components want `frame`.
+ */
+export const frameBase = cv({
   variants: {
     /**
      * Enables the frame system, which allows you to set the element's radius,
@@ -48,27 +110,15 @@ export const frame = cv({
      */
     $frameEnd: "ak-frame-end",
     /**
-     * Sets the default border radius for the element. If the frame is nested,
-     * this value will be adjusted to stay concentric with the parent unless
-     * `$forceRounded` is used or the parent padding plus the child margin is at
-     * least 1rem, in which case the concentric effect is not visually
-     * meaningful.
+     * Sets the default border radius for the element. Takes a named step from
+     * `none` to `4xl`, `full`, or any length or expression such as
+     * `var(--my-radius)`. If the frame is nested, this value will be adjusted
+     * to stay concentric with the parent unless `$forceRounded` is used or the
+     * parent padding plus the child margin is at least 1rem, in which case the
+     * concentric effect is not visually meaningful.
      */
-    $rounded: {
-      unset: "",
-      // A string value, not false: a "false" branch would give frame and
-      // every extender an implicit constant default, which deadens downstream
-      // computed fallbacks like the glider's and the control slot's.
-      none: "ak-frame-none",
-      xs: "ak-frame-xs",
-      sm: "ak-frame-sm",
-      md: "ak-frame-md",
-      lg: "ak-frame-lg",
-      xl: "ak-frame-xl",
-      "2xl": "ak-frame-2xl",
-      "3xl": "ak-frame-3xl",
-      "4xl": "ak-frame-4xl",
-      full: "ak-frame-full",
+    $rounded(value?: FrameRoundedValue | (string & {})) {
+      return getFrameRoundedClass(value);
     },
     /**
      * Forces the element to use the `$rounded` value exactly for its radius,
@@ -150,9 +200,21 @@ export const frame = cv({
       }
       return defaultValue;
     },
-    // These two clear variants declared by `edge`. They belong here because a
-    // computed default only sees the variants its own component declares or
-    // extends, so in `edge` they could not read $border.
+  },
+});
+
+/**
+ * The frame geometry plus the edge colours it paints with, and the layer
+ * those colours resolve against. This is the frame primitive components
+ * normally extend.
+ */
+export const frame = cv({
+  extend: [edge, frameBase],
+  defaultVariants: {
+    // These two clear variants declared by `edge`. They belong here rather
+    // than in `edge` because a computed default only sees the variants its
+    // own component declares or extends, so in `edge` they could not read
+    // $border.
     $edge(defaultValue, variants) {
       if (variants.$border === "inherit") {
         return "unset";

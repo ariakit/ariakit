@@ -17,6 +17,8 @@ import {
   navList,
 } from "../styles/nav.ts";
 import { isCurrentPage } from "../utils/is-current-page.ts";
+import type { ButtonProps } from "./button.ariakit.react.tsx";
+import { Button } from "./button.ariakit.react.tsx";
 import type {
   DisclosureButtonProps,
   DisclosureContentBodyProps,
@@ -131,6 +133,37 @@ export function NavDisclosure(props: NavDisclosureProps) {
   );
 }
 
+export interface NavButtonProps
+  extends ButtonProps, VariantProps<typeof navButton> {}
+
+/**
+ * Renders a nav row that is not a disclosure, such as a sidebar brand row or
+ * a single link that collapses with the sidebar. Wrap the label in
+ * `NavButtonContent` so it fades on collapse the way a disclosure row's does,
+ * and use the `render` prop for a row that should be an anchor.
+ */
+export function NavButton(props: NavButtonProps) {
+  const [variantProps, rest] = splitProps(props, navButton);
+  return (
+    <Button
+      $rounded="lg"
+      // The row sits flush with the surface around it, like a nav link.
+      $lightnessOffset={false}
+      {...navButton.jsx(variantProps)}
+      {...rest}
+    />
+  );
+}
+
+export interface NavButtonContentProps extends ak.RoleProps<"span"> {}
+
+/**
+ * The label of a nav row, which collapses along with the sidebar.
+ */
+export function NavButtonContent(props: NavButtonContentProps) {
+  return <ak.Role.span {...navButtonContent.jsx({})} {...props} />;
+}
+
 export interface NavDisclosureButtonProps
   extends DisclosureButtonProps, VariantProps<typeof navButton> {}
 
@@ -141,22 +174,25 @@ export function NavDisclosureButton(props: NavDisclosureButtonProps) {
       indicator="chevron-right-end"
       // The nav row spaces its icon and label through its own gap classes.
       $gap="none"
+      // The row animates its own collapse, so the button's corner and hover
+      // ramp timings would only compete with it.
+      $transition={false}
       {...navButton.jsx(variantProps)}
       {...rest}
     >
-      <span {...navButtonContent.jsx({})}>{rest.children}</span>
+      <NavButtonContent>{rest.children}</NavButtonContent>
     </DisclosureButton>
   );
 }
 
 export interface NavDisclosureContentProps
   extends DisclosureContentProps, VariantProps<typeof navDisclosureContent> {
-  body?: React.ReactElement | NavDisclosureBodyProps;
+  body?: React.ReactElement | NavDisclosureContentBodyProps;
 }
 
 export function NavDisclosureContent(props: NavDisclosureContentProps) {
   const [variantProps, rest] = splitProps(props, navDisclosureContent);
-  const body = createRender(NavDisclosureBody, rest.body);
+  const body = createRender(NavDisclosureContentBody, rest.body);
   return (
     <DisclosureContent
       guide
@@ -167,12 +203,12 @@ export function NavDisclosureContent(props: NavDisclosureContentProps) {
   );
 }
 
-export interface NavDisclosureBodyProps
+export interface NavDisclosureContentBodyProps
   extends
     DisclosureContentBodyProps,
     VariantProps<typeof navDisclosureContentBody> {}
 
-export function NavDisclosureBody(props: NavDisclosureBodyProps) {
+export function NavDisclosureContentBody(props: NavDisclosureContentBodyProps) {
   const [variantProps, rest] = splitProps(props, navDisclosureContentBody);
   return (
     <DisclosureContentBody

@@ -48,16 +48,29 @@ export const tableContainer = cv({
 
 Two maps merge instead, so a new key joins the primitive's scale rather than replacing it. A key of the same name does not shadow the primitive's, though: both entries emit. Declare one only to add to what the primitive already does for that key.
 
+That merge is map to map, and only that. An extender's map replaces a primitive's function, and so does an extender's function, so a scale another component re-declares cannot simply be turned into one. `frame`'s `$rounded` was, to let it take a computed radius, and every named step went quiet on the components that add a key to it. Nothing failed loudly: `$rounded: "lg"` on a control slot just stopped emitting.
+
+To let a scale take an arbitrary value, publish its resolver beside it and have every component that re-declares the name call the resolver for what it does not handle itself.
+
 ```ts
-// controlSlot adds `auto` to frame's radius scale, and its `full` emits next
-// to frame's own `ak-frame-full`, which is the point: the frame radius
-// shrinks to stay concentric, and `rounded-full` sorts later and restores the
-// pill. A caller can still pass "2xl" and get frame's own class.
-$rounded: {
-  auto: "ak-frame-m-(--my)",
-  full: "rounded-full",
+// frame.ts publishes both the scale and the way to resolve it.
+export function getFrameRoundedClass(value?: FrameRoundedValue | (string & {})) {
+  /* a named step, otherwise the radius channel */
+}
+
+// controlSlot adds `auto`, and spells out that its `full` is a pill on top of
+// frame's own radius: the frame radius shrinks to stay concentric, and
+// `rounded-full` sorts later and restores it.
+$rounded(value?: FrameRoundedValue | "auto" | (string & {})) {
+  if (value === "auto") return "ak-frame-m-(--my)";
+  if (value === "full") return "ak-frame-full rounded-full";
+  return getFrameRoundedClass(value);
 },
 ```
+
+Two things the resolver owes its callers. It has to ignore a bare word it does not recognise, because that word is another component's scale key rather than a value: without the guard, `$rounded: "auto"` on a component with no `auto` quietly emits `border-radius: auto`. And whatever the primitive's map used to contribute alongside an extender's key has to be spelled out by hand, since nothing merges any more.
+
+The documentation goes the same way. A variant declared as a function replaces the primitive's JSDoc along with its behaviour, and the editor then shows only what the component wrote. A comment opening "Extends the control's radius values with `auto`" is accurate for a map, where both entries survive, and misleading for a function, where it is now the whole contract and leaves a reader no reason to think a named step or a length still works. Restate the full contract on every variant declared as a function.
 
 Do not reach for the per-component theme tokens, `--radius-field`, `--spacing-card` and the rest. They are on their way out, and frame's own scale already covers them. `--radius-field` is `var(--radius-lg)`, so write `$rounded: "lg"`. `--spacing-field` is `0.75em`, which is `calc(var(--spacing) * 3)`, so write `$p: 3`, which also keeps tracking `--spacing` if a theme moves it.
 
@@ -71,6 +84,19 @@ export const listItemMarker = cv({
   extend: [edge],
 });
 ```
+
+The mirror case extends `frameBase`, which is `frame` with `edge` taken out from under it. An element that takes radius, padding or margin but paints nothing has no use for the layer `frame` would open, and where something above it already opened one, extending `frame` is the double-emit trap again.
+
+```ts
+// navDisclosureContentBody sits inside a disclosure body that already
+// carries ak-layer, and paints nothing itself.
+export const navDisclosureContentBody = cv({
+  extend: [frameBase],
+  defaultVariants: { $forceRounded: true, $p: "var(--nav-body-padding)" },
+});
+```
+
+`$rounded` is a map of named steps, so a radius derived in CSS has no variant to pass through and still goes on by hand as `ak-frame-(--my-radius)`.
 
 Keep `$frame: false` for the other case: an element that does take frame geometry from a shared base, but must not open a frame context of its own. `$frame: false` only drops the `ak-frame` class; every other frame variant stays available.
 
@@ -209,6 +235,17 @@ That silence is the reason to check a converted class in the browser. Toggle it 
 
 Converting a declaration also moves the property name. Anything that names the old one, such as a `transition-*` list or `will-change`, has to move with it.
 
+It moves the rule's sort position too. An arbitrary property sorts after every named utility, so one that was quietly winning a conflict starts losing it the moment it becomes the utility it always meant. Either leave the arbitrary property alone or mark the utility `!`, and say which in a comment.
+
+```ts
+// The disclosure button underneath sets its own duration-* with an
+// arbitrary value, which sorts later and would otherwise halve every
+// timing above.
+"duration-(--sidebar-duration)!";
+```
+
+Tailwind IntelliSense offers these conversions, and it reads one declaration at a time. It knows nothing about the rule that used to lose to this one, and nothing about what a bare selector means in a variant, so open the page after accepting one.
+
 ## Deciding where a custom property lives
 
 The root publishes state, and values derived from its own knobs that more than one descendant subtree reads. Everything else belongs on the component that consumes it.
@@ -307,7 +344,18 @@ For cross-component selection, give the root a plain marker class and select on 
 "in-[.list]:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
 ```
 
-Both idioms also win on specificity rather than on the order in which variants were registered, which removes a dependency that breaks silently when rules move.
+Which spelling depends on what the rule has to beat. `in-[.list]:` compiles to `:where(:is(.list)) &`, so the ancestor contributes no specificity and the rule still wins only by sorting later, which is enough for scoping. `[.nav_&]:` compiles to `.nav &`, which outweighs a plain utility on the same element, so reach for that one when the rule exists to override another.
+
+```ts
+// Scoping: nothing on the row competes for this padding.
+"in-[.list]:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
+// Overriding: the disclosure button sets its own gap on this element.
+"[.nav_&]:gap-[calc(--spacing(3)+1px)]",
+```
+
+Either spelling beats a published flag plus a `@custom-variant`, which a consumer has to install and which sorts by the order the variants happened to be registered in.
+
+An attribute selector in a variant position wants a variant, not brackets. Brackets there hold an arbitrary _selector_, and a bare one is a type selector, so `**:[data-open]:opacity-0` compiles to `:is(& *):is(data-open)` and matches no element ever. Write `**:data-open:opacity-0`.
 
 Use a root-relative selector when the target element is markup the component does not own.
 
@@ -406,3 +454,5 @@ node --experimental-strip-types script.ts   # call cv.jsx({...}) and diff classN
 Confirm anything that depends on CSS semantics in a real browser, not by reasoning. Container queries, specificity, inheritance direction and unit resolution have all produced surprises here.
 
 When a change should be comment-only or output-neutral, prove it: diff with comment lines excluded, or compare computed values on the page.
+
+To find out whether a rule wins on specificity or only because Tailwind sorted it later, copy the rule it beats and append the copy after it. If the copy takes over, the win was positional. Put the copy inside `@layer utilities`: an unlayered rule beats every layered one whatever its specificity, so testing outside the layer says yes to everything.

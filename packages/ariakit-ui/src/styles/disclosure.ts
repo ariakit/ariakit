@@ -2,7 +2,8 @@ import { cv, cx } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { button } from "./button.ts";
 import { edge } from "./edge.ts";
-import { frame } from "./frame.ts";
+import type { FrameRoundedValue } from "./frame.ts";
+import { frame, getFrameRoundedClass } from "./frame.ts";
 import { prose } from "./prose.ts";
 
 export const disclosureGroup = cv({
@@ -97,12 +98,6 @@ export const disclosureButton = cv({
   extend: [button],
   class: [
     "overflow-clip w-full justify-start text-wrap text-start",
-    "transition-[border-radius,--tw-gradient-from-position]",
-    // Only a split disclosure moves its corners, but every disclosure moves
-    // the hover ramp below. Both run at half speed and wait for the content
-    // to finish closing before they come back.
-    "duration-[calc(var(--disclosure-duration)*0.5)]",
-    "delay-[calc(var(--disclosure-duration)/1.5)]",
     // Guides and icons indent the start padding through --disclosure-ps;
     // the fallback is the control's own resolved padding so this longhand
     // wins over the control px shorthand without changing anything until a
@@ -115,7 +110,6 @@ export const disclosureButton = cv({
     "ui-disclosure-group:rounded-[inherit]",
     // An icon slot sets the gap that aligns content with the label.
     "[@container_style(--disclosure-icon-size)]:gap-(--disclosure-padding)",
-    "ui-disclosure-open:delay-0",
     // Only a split disclosure draws a rule under the button, so only there do
     // the bottom corners square off. Written out as a style query, it sorts
     // after every named variant and so beats the inherited radius above.
@@ -123,14 +117,31 @@ export const disclosureButton = cv({
   ],
   variants: {
     /**
-     * Extends the control's radius values with `auto`, which stays
-     * concentric with the disclosure frame minus its border.
+     * Whether the button animates its own corners and hover ramp. Set it to
+     * `false` on a row that runs timings of its own, such as a nav row in a
+     * collapsing sidebar, so the two do not have to fight over the cascade.
      */
-    $rounded: {
-      auto: [
+    $transition: [
+      "transition-[border-radius,--tw-gradient-from-position]",
+      // Only a split disclosure moves its corners, but every disclosure moves
+      // the hover ramp below. Both run at half speed and wait for the content
+      // to finish closing before they come back.
+      "duration-[calc(var(--disclosure-duration)*0.5)]",
+      "delay-[calc(var(--disclosure-duration)/1.5)]",
+      "ui-disclosure-open:delay-0",
+    ],
+    /**
+     * Sets the button's border radius. Takes a named step from `none` to
+     * `4xl`, `full`, any length or expression such as `var(--my-radius)`, or
+     * `auto`, which stays concentric with the disclosure frame minus its
+     * border.
+     */
+    $rounded(value?: FrameRoundedValue | "auto" | (string & {})) {
+      if (value !== "auto") return getFrameRoundedClass(value);
+      return [
         "[--disclosure-button-radius:calc(var(--disclosure-radius)-var(--disclosure-border))]",
         "ak-frame-(--disclosure-button-radius)",
-      ],
+      ];
     },
     /**
      * Extends the control's gap values with `auto`, which follows the
@@ -152,6 +163,7 @@ export const disclosureButton = cv({
     },
   },
   defaultVariants: {
+    $transition: true,
     // The button covers the disclosure surface and paints the same layer, so
     // it is invisible until the control's own hover offset lifts it.
     $lightnessOffset: false,

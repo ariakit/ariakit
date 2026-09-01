@@ -11,6 +11,7 @@
 import ChipLink from "#app/components/chip-link.astro";
 import CodeBlockTabs from "#app/components/code-block-tabs.astro";
 import { ContentListDisclosure } from "#app/components/content-list-disclosure.react.tsx";
+import { NavCollapsibleSidebar } from "#app/components/nav-collapsible-sidebar.react.tsx";
 import { PageCard } from "#app/components/page-card.react.tsx";
 import { Playground } from "#app/components/playground.react.tsx";
 import SourceLinks, {
@@ -87,6 +88,13 @@ import { kbd } from "@ariakit/ui/styles/kbd.ts";
 import { layer } from "@ariakit/ui/styles/layer.ts";
 import { link } from "@ariakit/ui/styles/link.ts";
 import { list, listItem } from "@ariakit/ui/styles/list.ts";
+import {
+  nav,
+  navGroup,
+  navIcon,
+  navLink,
+  navList,
+} from "@ariakit/ui/styles/nav.ts";
 import { option } from "@ariakit/ui/styles/option.ts";
 import {
   popover,
@@ -554,6 +562,20 @@ function getExampleSource(source: string, line: number): SourceReference {
       container-type: inline-size;
     }
 
+    /* The sidebar inside is absolutely positioned, so the stage carries the
+       box: an explicit width, and size containment for its 100cqb height. */
+    .nav-sidebar-stage {
+      position: relative;
+      width: min(20rem, 100%);
+      height: 17rem;
+      container-type: size;
+      overflow: hidden;
+    }
+
+    .nav-sidebar-stage .fixed {
+      position: absolute;
+    }
+
     .gallery-example[data-source="disclosure/navigation"]
       .gallery-example-stage {
       position: relative;
@@ -593,6 +615,7 @@ function getExampleSource(source: string, line: number): SourceReference {
         <ChipLink href="#data-display">Data display</ChipLink>
         <ChipLink href="#content">Content</ChipLink>
         <ChipLink href="#lists">Lists</ChipLink>
+        <ChipLink href="#nav">Nav</ChipLink>
         <ChipLink href="#overlays">Overlays</ChipLink>
         {
           exampleGroups.map(({ id, title }) => (
@@ -1798,6 +1821,124 @@ export default function Example() {
           { file: "packages/ariakit-ui/src/styles/list.ts", line: 247 },
           { file: "packages/ariakit-ui/src/components/list.ariakit.react.tsx", line: 58 },
           { file: "app/src/styles/ariakit.css", line: 188 },
+        ]}
+      />
+    </section>
+
+    <section id="nav" class="gallery-section">
+      <header class="gallery-section-header">
+        <h2 {...heading.html({ $level: 2 })}>Nav</h2>
+        <p>
+          The nav root carries the marker class the rows select on, plus the
+          gap and icon-size channels they read. Rows paint a pill on hover and
+          while current, groups label a run of rows, and the icon slot keeps
+          the line height so labels stay aligned. The collapsing sidebar
+          composition lives in the Navigation example below.
+        </p>
+      </header>
+
+      <div class="gallery-grid">
+        <article class="gallery-sample">
+          <h3>Rows and states</h3>
+          <nav {...nav.html()}>
+            <ul {...navList.html()}>
+              <li><a {...navLink.html()} href="#nav">Overview</a></li>
+              <li>
+                <a {...navLink.html()} href="#nav" aria-current="page">
+                  Current row
+                </a>
+              </li>
+              <li><a {...navLink.html()} href="#nav">Another row</a></li>
+              <li>
+                <a {...navLink.html()} href="#nav" aria-disabled="true">
+                  Disabled row
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <code {...code.html()}>nav · navList · navLink aria-current</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Icons and groups</h3>
+          <nav {...nav.html({ $iconSize: 5 })}>
+            <ul {...navList.html()}>
+              <li {...navGroup.html()}>
+                <div class="ak-ink-60 text-sm font-medium px-2 py-1">
+                  Getting started
+                </div>
+                <ul {...navList.html()}>
+                  <li>
+                    <a {...navLink.html()} href="#nav">
+                      <span {...navIcon.html()}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round" /></svg>
+                      </span>
+                      Installation
+                    </a>
+                  </li>
+                  <li>
+                    <a {...navLink.html()} href="#nav">
+                      <span {...navIcon.html()}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round" /></svg>
+                      </span>
+                      A label long enough to wrap onto a second line, so the
+                      icon column stays put
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav>
+          <code {...code.html()}>nav $iconSize · navGroup · navIcon</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Gap</h3>
+          <nav {...nav.html({ $gap: 0 })}>
+            <ul {...navList.html()}>
+              <li><a {...navLink.html()} href="#nav">Rows touch at gap 0</a></li>
+              <li>
+                <a {...navLink.html()} href="#nav" aria-current="page">
+                  The pill fills the row
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <nav {...nav.html({ $gap: 3 })}>
+            <ul {...navList.html()}>
+              <li>
+                <a {...navLink.html()} href="#nav">A wider gap grows hit areas</a>
+              </li>
+              <li>
+                <a {...navLink.html()} href="#nav" aria-current="page">
+                  and insets the pill by half of it
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <code {...code.html()}>nav $gap</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Collapsible sidebar</h3>
+          <p class="ak-ink-60 text-sm">
+            The Nav components inside a Sidebar. Collapsing squares each row
+            around its icon, fades the label and the indicator, and closes the
+            gap, all off the one <code {...code.html()}>--sidebar-collapsed</code>
+            flag the sidebar publishes to its descendants.
+          </p>
+          <NavCollapsibleSidebar client:load />
+          <code {...code.html()}>Sidebar collapsed · Nav · NavDisclosure · NavLink</code>
+        </article>
+
+      </div>
+
+      <SourceLinks
+        sources={[
+          { file: "packages/ariakit-ui/src/styles/sidebar.ts", line: 28 },
+          { file: "packages/ariakit-ui/src/styles/nav.ts", line: 6 },
+          { file: "packages/ariakit-ui/src/styles/nav.ts", line: 61 },
+          { file: "packages/ariakit-ui/src/components/nav.ariakit.react.tsx", line: 38 },
         ]}
       />
     </section>

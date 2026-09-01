@@ -169,14 +169,6 @@
   }
 }
 
-/* Nav flag published by the nav root; stacking it lets nav rules sort
-   after the disclosure rules they override. */
-@custom-variant ui-nav {
-  @container style(--nav: 1) {
-    @slot;
-  }
-}
-
 @custom-variant ui-nav-current {
   &:where([aria-current="true"], [aria-current="page"]) {
     @slot;

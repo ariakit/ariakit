@@ -1,22 +1,22 @@
 import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { button } from "./button.ts";
+import { frameBase } from "./frame.ts";
 
 export const nav = cv({
   class: [
-    // State flag read by descendants through container style queries, used
-    // to deterministically override disclosure rules by stacking variants.
-    "[--nav:1]",
+    // The marker the nav rows select on to beat the disclosure rules they
+    // override. A plain class rather than a flag, so `.nav &` wins on
+    // specificity and a consumer installs no custom variant for it.
+    "nav",
     // Gap default the variant overrides through the style attribute.
     "[--nav-gap:--spacing(1)]",
   ],
   variants: {
     /**
-     * Sets the breathing room between links: it grows the link hit areas
-     * while the painted highlight pill stays inset by half of it. Numbers
-     * scale the spacing token.
+     * Sets the space between rows. Numbers scale the spacing token.
      */
-    $gap(value?: (string & {}) | number) {
+    $gap(value?: string | number) {
       if (value == null) return;
       return {
         style: { "--nav-gap": getSpacingValue(value) },
@@ -28,7 +28,7 @@ export const nav = cv({
      * are container style queries, which read the nearest ancestor
      * container. Numbers scale the spacing token.
      */
-    $iconSize(value?: (string & {}) | number) {
+    $iconSize(value?: string | number) {
       if (value == null) return;
       return {
         style: { "--nav-icon-size": getSpacingValue(value) },
@@ -38,58 +38,39 @@ export const nav = cv({
 });
 
 export const navList = cv({
-  class: "grid",
+  class: "grid gap-(--nav-gap)",
 });
 
 export const navGroup = cv({
   class: "grid",
 });
 
-// The icon keeps the line height while expanded so the label aligns, and
-// squares to the icon size when the sidebar collapses. A standalone nav row,
-// such as a sidebar brand link, can use it on its own.
+// The icon slot is icon-size wide and never shorter than the line, so the
+// label lines up with it and the box stays put when the sidebar collapses.
+// This is the same box a disclosure row's icon slot takes. A standalone nav
+// row, such as a sidebar brand link, can use it on its own.
 export const navIcon = cv({
   class: [
-    "h-lh w-(--nav-icon-size) flex-none self-start transition-[height]",
+    "min-h-lh size-(--nav-icon-size) flex-none self-start",
     "[&_svg]:size-full",
-    "ui-sidebar-collapsed:size-(--nav-icon-size)",
   ],
 });
 
 export const navLink = cv({
   extend: [button],
   class: [
-    "z-1 justify-start text-wrap",
+    "justify-start text-wrap",
     "ak-dark:ak-ink-70",
     // Links read as plain rows until they're current.
     "not-ui-nav-current:font-normal",
-    // The block padding absorbs the nav gap so hit areas touch; pt/pb sort
-    // after the control's py shorthand, so the longhands win.
-    "[--nav-link-py:calc(var(--disclosure-padding,var(--ak-frame-padding))-(1lh-1em)/2+var(--nav-gap))]",
-    "pt-(--nav-link-py) pb-(--nav-link-py)",
-    // Hovering and being current both paint a pill behind the row, inset by
-    // half the nav gap so the hit areas keep touching where the paint does
-    // not. The geometry is unconditional and only the paint is stateful, so
-    // the two states cannot drift apart.
-    "before:absolute before:-z-1 before:inset-x-0 before:rounded-[inherit]",
-    "before:inset-y-[calc(var(--nav-gap)*0.5)]",
-    // Each state paints the element's own state-adjusted layer color onto
-    // the pill, so the element itself goes transparent and the pill is what
-    // reads as the surface. Hovering paints unless the link is current.
-    "ui-hover:not-ui-nav-current:bg-transparent",
-    "ui-hover:not-ui-nav-current:before:ak-layer",
-    "ui-hover:not-ui-nav-current:before:ak-layer-color-(--ak-layer)",
     "ui-hover:ak-ink-100",
-    // The current link holds a raised pill outlined from the inside.
-    "ui-nav-current:bg-transparent",
-    "ui-nav-current:before:ak-layer",
-    "ui-nav-current:before:ak-layer-color-(--ak-layer)",
+    // The current link holds a raised surface outlined from the inside.
     "ui-nav-current:ak-layer ui-nav-current:ak-layer-5",
     "ui-nav-current:ak-ink-100",
-    "ui-nav-current:before:ak-edge-0",
-    "ui-nav-current:before:ring ui-nav-current:before:ring-inset",
-    // The stacked form suppresses the hover state paint on current links;
-    // it sorts after the single-variant hover state above.
+    "ui-nav-current:ak-edge-0",
+    "ui-nav-current:ring ui-nav-current:ring-inset",
+    // A current link is already lifted, so hovering must not lift it again.
+    // The stacked form sorts after the button's own single-variant hover.
     "ui-nav-current:ui-hover:ak-state-0",
   ],
   defaultVariants: {
@@ -99,40 +80,41 @@ export const navLink = cv({
   },
 });
 
-// The additions layered onto a disclosure button (or a plain link) to make
-// it a nav row that collapses with the sidebar.
+// The additions layered onto a disclosure button, or onto a plain link such
+// as a sidebar brand row, to make it a nav row that collapses with the
+// sidebar. Not disclosure-specific, which is why it is not named for one.
 export const navButton = cv({
   class: [
     "justify-start overflow-clip whitespace-normal text-start",
     "transition-[gap,width,height,padding] transition-discrete delay-0",
-    // The disclosure button delays its own transition, and an arbitrary
-    // delay value sorts after a bare one, so the stacked form is what
-    // actually holds these transitions at zero.
-    "ui-nav:delay-0",
-    // An arbitrary property, not duration-*: the disclosure button sets its
-    // own duration-[calc(...)], which sorts later and would otherwise halve
-    // every timing above. Arbitrary properties sort after all of them.
-    "[transition-duration:var(--sidebar-duration)]",
+    "duration-(--sidebar-duration)",
     "[interpolate-size:allow-keywords]",
-    // The gap tracks the icon optical rhythm; both forms are needed so it
-    // deterministically beats the control gap and the disclosure's
-    // icon-size gap by variant stacking.
-    "ui-nav:gap-[calc(--spacing(3)+1px)]",
-    "ui-nav:[@container_style(--disclosure-icon-size)]:gap-[calc(--spacing(3)+1px)]",
+    // The gap tracks the icon optical rhythm. Important because a disclosure
+    // button sets its own icon-size gap from a style query, which no variant
+    // turns off and which sorts after any plain gap here.
+    "gap-[calc(--spacing(3)+1px)]!",
     // Collapsing squares the button around the icon and hides the rest.
-    "[--nav-button-size:calc(var(--sidebar-min-width)_-_--spacing(2))]",
+    "[--nav-button-size:calc(var(--sidebar-min-width)-(--spacing(2)))]",
     "ui-sidebar-collapsed:size-(--nav-button-size)",
-    "ui-nav:ui-sidebar-collapsed:gap-0",
-    "ui-nav:ui-sidebar-collapsed:[@container_style(--disclosure-icon-size)]:gap-0",
-    "[--nav-button-p:calc((var(--nav-button-size)-var(--nav-icon-size,var(--disclosure-icon-size)))*0.5)]",
-    // The shorthand sorts after every plain padding rule on the button.
-    "ui-sidebar-collapsed:p-(--nav-button-p)",
-    "ui-sidebar-collapsed:[&_[data-disclosure-indicator]]:opacity-0",
+    "ui-sidebar-collapsed:gap-0!",
+    // An icon slot is icon-size wide and never shorter than the line, so the
+    // square centres it with a different padding per axis. Padding is in the
+    // transition above, and nothing about the icon itself changes, so both
+    // directions stay smooth.
+    "[--nav-button-px:calc((var(--nav-button-size)-var(--nav-icon-size,var(--disclosure-icon-size)))*0.5)]",
+    "[--nav-button-py:calc((var(--nav-button-size)-max(1lh,var(--nav-icon-size,var(--disclosure-icon-size))))*0.5)]",
+    // Important, so the icon keeps equal padding on both sides: a disclosure
+    // button spends its start padding on a ps-* longhand, and a longhand
+    // sorts after the px shorthand.
+    "ui-sidebar-collapsed:px-(--nav-button-px)!",
+    "ui-sidebar-collapsed:py-(--nav-button-py)!",
+    "ui-sidebar-collapsed:**:data-disclosure-indicator:opacity-0",
   ],
 });
 
-// The label collapses along with the sidebar, staging its height and
-// opacity transitions so the text fades before the width animates.
+// The label collapses along with the sidebar, staging its height and opacity
+// so the text fades before the width animates. It pairs with navButton, on a
+// disclosure row or a plain link alike.
 export const navButtonContent = cv({
   class: [
     "block overflow-hidden transition-[translate,height,opacity]",
@@ -156,20 +138,24 @@ export const navDisclosure = cv({
 export const navDisclosureContent = cv({
   class: [
     "ui-sidebar-collapsed:h-0 ui-sidebar-collapsed:w-0",
-    // Indent past the icon; the ui-nav stacking sorts this after the
-    // disclosure content's own icon-size indent rule.
-    "ui-nav:[@container_style(--disclosure-icon-size)]:[--disclosure-ps:calc(var(--disclosure-icon-size)+var(--disclosure-padding)+1px)]",
+    // Indent past the icon. The style query asks whether the disclosure set
+    // an icon slot, and the marker sorts this after the disclosure content's
+    // own icon-size indent rule.
+    "[.nav_&]:[@container_style(--disclosure-icon-size)]:[--disclosure-ps:calc(var(--disclosure-icon-size)+var(--disclosure-padding)+1px)]",
   ],
 });
 
 export const navDisclosureContentBody = cv({
+  // frameBase, not frame: the body takes the padding and radius and paints
+  // nothing, so it must not open a layer of its own.
+  extend: [frameBase],
   class: [
     "[--nav-body-padding:calc(var(--nav-gap)*0.5)]",
     "[--nav-body-radius:calc(var(--disclosure-radius)+var(--nav-body-padding))]",
-    "ak-frame ak-frame-force ak-frame-(--nav-body-radius)",
-    "ak-frame-p-(--nav-body-padding)",
-    // The ui-nav stacking sorts this after the disclosure body's own
-    // padding-inline-start rule.
-    "ui-nav:ps-(--disclosure-ps)",
   ],
+  defaultVariants: {
+    $forceRounded: true,
+    $rounded: "var(--nav-body-radius)",
+    $p: "var(--nav-body-padding)",
+  },
 });

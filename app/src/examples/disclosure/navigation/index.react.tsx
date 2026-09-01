@@ -1,5 +1,7 @@
 import {
   Nav,
+  NavButton,
+  NavButtonContent,
   NavDisclosure,
   NavDisclosureButton,
   NavIcon,
@@ -11,27 +13,14 @@ import {
   SidebarBody,
   SidebarHeader,
 } from "@ariakit/ui/components/sidebar.ariakit.react.tsx";
-import { button } from "@ariakit/ui/styles/button.ts";
-import { navButton, navButtonContent } from "@ariakit/ui/styles/nav.ts";
 import { clsx } from "clsx";
 import * as icons from "lucide-react";
 import type { CSSProperties } from "react";
 import { useSyncExternalStore } from "react";
 
-// Legacy ak-nav-button on a plain link: the nav row additions are layered
-// onto the button cv. The row gap is restated because the ui-nav-gated gap
-// rules only fire under a Nav root, and plain ak-button paints no idle layer
-// offset.
-const brandLink = button.jsx({
-  // Legacy ak-nav-button rows sit on the field radius.
-  $rounded: "lg",
-  $lightnessOffset: false,
-  className: clsx(navButton.jsx({}).className, "gap-[calc(0.75em+1px)]"),
-});
-
-// Legacy ak-nav-icon-6: the icon-size channel the NavIcon child reads.
+// The icon-size channel the NavIcon child reads. The brand row sets its own
+// because it sits above the Nav that publishes it for the rows below.
 const brandLinkStyle = {
-  ...brandLink.style,
   "--nav-icon-size": "calc(var(--spacing) * 6)",
 } as CSSProperties;
 
@@ -133,12 +122,12 @@ export default function Example() {
       <div />
       <Sidebar>
         <SidebarHeader>
-          <a href="" {...brandLink} style={brandLinkStyle}>
+          <NavButton render={<a href="" />} style={brandLinkStyle}>
             <NavIcon className="rounded p-1 ak-layer ak-layer-brand ak-layer-contrast block">
               <icons.Triangle size={20} strokeWidth={2} />
             </NavIcon>
-            <span {...navButtonContent.jsx({})}>Acme Corp</span>
-          </a>
+            <NavButtonContent>Acme Corp</NavButtonContent>
+          </NavButton>
         </SidebarHeader>
 
         <SidebarBody>

@@ -2,7 +2,8 @@ import { cv, cx } from "clava";
 import type { VariantProps } from "clava";
 import { includes } from "../utils/includes.ts";
 import { isEdgeColor } from "./edge.ts";
-import { frame } from "./frame.ts";
+import type { FrameRoundedValue } from "./frame.ts";
+import { frame, getFrameRoundedClass } from "./frame.ts";
 import { layer } from "./layer.ts";
 import { text } from "./text.ts";
 
@@ -181,14 +182,18 @@ export const controlSlot = cv({
       full: "px-[calc(var(--size)*0.25)]",
     },
     /**
-     * Sets the element’s border radius. Use `auto` for a concentric border
-     * radius.
+     * Sets the element’s border radius. Takes a named step from `none` to
+     * `4xl`, `full`, any length or expression such as `var(--my-radius)`, or
+     * `auto` for a radius concentric with the parent frame. A nested frame
+     * adjusts a named step to stay concentric with its parent unless
+     * `$forceRounded` is used.
      */
-    $rounded: {
-      auto: "ak-frame-m-(--my)",
+    $rounded(value?: FrameRoundedValue | "auto" | (string & {})) {
+      if (value === "auto") return "ak-frame-m-(--my)";
       // The frame radius shrinks to stay concentric with the parent, which a
-      // pill must not do. This later-sorted utility restores the full radius.
-      full: "rounded-full",
+      // pill must not do. The later-sorted utility restores the full radius.
+      if (value === "full") return "ak-frame-full rounded-full";
+      return getFrameRoundedClass(value);
     },
     /**
      * Sets the element’s kind. When you use the `badge` kind, wrap the text in
