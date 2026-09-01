@@ -139,17 +139,16 @@ export default function Example() {
             ? "Hide pending toolbar"
             : "Show pending toolbar"}
         </button>
-        {showPendingComposite && (
-          <Ariakit.Composite
-            aria-label="Pending actions"
-            role="toolbar"
-            store={pendingStore}
-          >
-            <Ariakit.CompositeItem id="pending-bold">
-              Bold action
-            </Ariakit.CompositeItem>
-          </Ariakit.Composite>
-        )}
+        <Ariakit.Composite
+          aria-label="Pending actions"
+          hidden={!showPendingComposite}
+          role="toolbar"
+          store={pendingStore}
+        >
+          <Ariakit.CompositeItem id="pending-bold">
+            Bold action
+          </Ariakit.CompositeItem>
+        </Ariakit.Composite>
       </section>
     </>
   );
