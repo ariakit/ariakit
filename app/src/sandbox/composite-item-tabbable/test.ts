@@ -95,6 +95,18 @@ test("skips a disabled item with an inactive Focusable below it", async () => {
   expect(q.option("Rendered inactive three")).toHaveFocus();
 });
 
+// https://github.com/ariakit/ariakit/pull/7376#discussion_r3904362936
+test("moves to an accessible disabled item with an active Focusable below it", async () => {
+  await click(q.option("Rendered active one"));
+  const accessibleDisabledItem = q.option("Rendered active two");
+  expect(accessibleDisabledItem).toHaveAttribute(
+    "data-focusable-accessible-when-disabled",
+    "true",
+  );
+  await press.ArrowRight();
+  expect(accessibleDisabledItem).toHaveFocus();
+});
+
 // https://github.com/ariakit/ariakit/pull/7376#discussion_r3902848381
 test("skips a disabled item with a consumer false attribute", async () => {
   await click(q.option("Styled one"));

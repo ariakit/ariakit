@@ -70,6 +70,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.option("Rendered inactive three")).toBeFocused();
   });
 
+  // https://github.com/ariakit/ariakit/pull/7376#discussion_r3904362936
+  test("moves to an accessible disabled item with an active Focusable below it", async ({
+    page,
+    q,
+  }) => {
+    await q.option("Rendered active one").click();
+    const accessibleDisabledItem = q.option("Rendered active two");
+    await test
+      .expect(accessibleDisabledItem)
+      .toHaveAttribute("data-focusable-accessible-when-disabled", "true");
+    await page.keyboard.press("ArrowRight");
+    await test.expect(accessibleDisabledItem).toBeFocused();
+  });
+
   // https://github.com/ariakit/ariakit/pull/7376#discussion_r3902848381
   test("skips a disabled item with a consumer false attribute", async ({
     page,

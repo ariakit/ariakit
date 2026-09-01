@@ -278,7 +278,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           ? resolvedTrulyDisabledFromElement(item.element)
           : undefined;
         const itemDisabled =
-          inactiveDisabled || (renderedTrulyDisabled ?? trulyDisabled);
+          renderedTrulyDisabled ?? (inactiveDisabled || trulyDisabled);
         const nextItem = {
           ...item,
           id: id || item.id,

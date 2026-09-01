@@ -193,6 +193,31 @@ function RenderedInactiveFocusableListbox() {
   );
 }
 
+function RenderedActiveFocusableListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite role="listbox" aria-label="Rendered active focusable">
+        <Ariakit.CompositeItem role="option">
+          Rendered active one
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem
+          disabled
+          focusable={false}
+          role="option"
+          render={
+            <Ariakit.Focusable disabled focusable accessibleWhenDisabled />
+          }
+        >
+          Rendered active two
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">
+          Rendered active three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
 function StyledDisabledListbox() {
   return (
     <Ariakit.CompositeProvider>
@@ -297,6 +322,7 @@ export default function Example() {
       <NestedDisabledOverrideListbox />
       <InactiveFocusableListbox />
       <RenderedInactiveFocusableListbox />
+      <RenderedActiveFocusableListbox />
       <StyledDisabledListbox />
       <StyledAccessibleDisabledListbox />
       <DirectAccessibleInactiveListbox />
