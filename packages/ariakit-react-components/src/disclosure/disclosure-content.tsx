@@ -331,6 +331,7 @@ export interface DisclosureContentOptions<
    * taken into account when computing the animation timeout, such as the
    * dialog's backdrop element, which may be animated while the dialog itself
    * is not.
+   * @deprecated
    * @private
    */
   unstable_otherElementRef?: RefObject<HTMLElement | null>;

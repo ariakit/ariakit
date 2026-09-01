@@ -339,6 +339,7 @@ export interface MenuButtonOptions<T extends ElementType = TagName>
    * when it is, opting in leaves the menu reachable by pointer users alone,
    * because a disabled menu button never opens its menu from the keyboard.
    * @default false
+   * @deprecated
    * @private
    */
   unstable_showOnHoverWhenDisabled?: HovercardAnchorOptions<T>["unstable_showOnHoverWhenDisabled"];
