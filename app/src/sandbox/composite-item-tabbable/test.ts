@@ -59,15 +59,22 @@ test("moves to an accessible disabled item inherited through composition", async
   expect(accessibleDisabledItem).toHaveFocus();
 });
 
-// `useCompositeItem` must read the `accessibleWhenDisabled` metadata without
-// replacing the carrier, or a composed `Command` loses its own marker. No
-// user-facing behavior exposes this because `useCommand` returns on
-// `defaultPrevented` before checking the marker, so `MetadataProbe` counts it.
-test("preserves command metadata on composed items", () => {
-  expect(q.option("Metadata command")).toHaveAttribute(
-    "data-metadata-count",
-    "1",
-  );
+// https://github.com/ariakit/ariakit/issues/7384
+test("moves to an accessible disabled item resolved below it", async () => {
+  await click(q.option("Rendered one"));
+  const accessibleDisabledItem = q.option("Rendered two");
+  expect(accessibleDisabledItem).toHaveAttribute("aria-disabled", "true");
+  expect(accessibleDisabledItem).not.toHaveAttribute("disabled");
+  await press.ArrowRight();
+  expect(accessibleDisabledItem).toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/pull/7376#discussion_r3901879752
+test("skips a disabled item resolved below it", async () => {
+  await click(q.option("Nested one"));
+  expect(q.option("Nested two")).toHaveAttribute("disabled");
+  await press.ArrowRight();
+  expect(q.option("Nested three")).toHaveFocus();
 });
 
 // https://github.com/ariakit/ariakit/pull/7376#discussion_r3900826323

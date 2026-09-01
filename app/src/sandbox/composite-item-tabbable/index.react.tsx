@@ -1,5 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-import { forwardRef } from "react";
 
 const seededItems = [{ id: "seeded-drafts" }, { id: "seeded-sent" }];
 
@@ -71,15 +70,6 @@ function RovingListbox() {
   );
 }
 
-const MetadataProbe = forwardRef<HTMLButtonElement, Ariakit.CommandProps>(
-  function MetadataProbe({ onLoadedMetadataCapture, ...props }, ref) {
-    const metadataCount = onLoadedMetadataCapture
-      ? Object.getOwnPropertySymbols(onLoadedMetadataCapture).length
-      : 0;
-    return <button ref={ref} {...props} data-metadata-count={metadataCount} />;
-  },
-);
-
 function InheritedAccessibleDisabledListbox() {
   return (
     <Ariakit.CompositeProvider>
@@ -100,11 +90,60 @@ function InheritedAccessibleDisabledListbox() {
         <Ariakit.CompositeItem id="inherited-three" role="option">
           Inherited three
         </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function RenderedAccessibleDisabledListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite
+        role="listbox"
+        aria-label="Rendered accessible disabled"
+      >
+        <Ariakit.CompositeItem role="option">
+          Rendered one
+        </Ariakit.CompositeItem>
         <Ariakit.CompositeItem
+          disabled
           role="option"
-          render={<Ariakit.Command render={<MetadataProbe />} />}
+          render={<Ariakit.Focusable accessibleWhenDisabled />}
         >
-          Metadata command
+          Rendered two
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">
+          Rendered three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function NestedDisabledOverrideListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite role="listbox" aria-label="Nested disabled override">
+        <Ariakit.CompositeItem role="option">Nested one</Ariakit.CompositeItem>
+        <Ariakit.Focusable
+          disabled
+          accessibleWhenDisabled
+          render={
+            <Ariakit.CompositeItem
+              role="option"
+              render={
+                <Ariakit.Focusable
+                  accessibleWhenDisabled={false}
+                  render={<button type="button" />}
+                />
+              }
+            />
+          }
+        >
+          Nested two
+        </Ariakit.Focusable>
+        <Ariakit.CompositeItem role="option">
+          Nested three
         </Ariakit.CompositeItem>
       </Ariakit.Composite>
     </Ariakit.CompositeProvider>
@@ -138,6 +177,8 @@ export default function Example() {
       <SeededListbox />
       <RovingListbox />
       <InheritedAccessibleDisabledListbox />
+      <RenderedAccessibleDisabledListbox />
+      <NestedDisabledOverrideListbox />
       <InactiveFocusableListbox />
     </>
   );
