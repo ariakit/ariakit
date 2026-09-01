@@ -1,5 +1,34 @@
 # @ariakit/react
 
+## 0.4.39
+
+### Modal popups render their fallback dismiss button next to the popup
+
+A modal [`Dialog`](https://ariakit.com/reference/dialog) with no [`DialogDismiss`](https://ariakit.com/reference/dialog-dismiss) renders a visually hidden dismiss button, so that assistive technology users who can't press Escape or click outside aren't trapped. That button used to be the first child of the popup element. It now renders next to it, still inside the modal context.
+
+This means a popup whose role doesn't allow a `button` among its owned elements no longer has one. It applies to every component built on [`Dialog`](https://ariakit.com/reference/dialog), including [`SelectPopover`](https://ariakit.com/reference/select-popover) and [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover), which render with `role="listbox"` by default.
+
+The button is still visually hidden and still isn't reachable with Tab, so this is only visible to code that looks for it in the DOM, such as a CSS selector matching the popup's first child, or a test that queries for a button within the popup.
+
+Thanks to [@afercia](https://github.com/afercia) for reporting the issue.
+
+### Other updates
+
+- Fixed [`Combobox`](https://ariakit.com/reference/combobox) with [`autoSelect`](https://ariakit.com/reference/combobox#autoselect) keeping the previously active option highlighted for one frame after the filtered list changes. The same fix applies to all components built on [`CollectionItem`](https://ariakit.com/reference/collection-item), such as [`SelectItem`](https://ariakit.com/reference/select-item) and [`MenuItem`](https://ariakit.com/reference/menu-item). Thanks to [@ItaiYosephi](https://github.com/ItaiYosephi).
+- Fixed [`ComboboxItem`](https://ariakit.com/reference/combobox-item) to resolve its automatic role from its own explicit combobox store.
+- Fixed [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) rendering an invalid `listbox` role around a nested [`ComboboxList`](https://ariakit.com/reference/combobox-list) that carries a different popup role, and dropping its own role when an unrelated element with `role="listbox"` renders inside it.
+- Fixed [`ComboboxGroup`](https://ariakit.com/reference/combobox-group) and [`ComboboxRow`](https://ariakit.com/reference/combobox-row) to use `rowgroup` and `row` roles when the nearest [`ComboboxList`](https://ariakit.com/reference/combobox-list) is a grid.
+- Fixed [`CompositeItem`](https://ariakit.com/reference/composite-item) and components built on it, such as [`MenuItem`](https://ariakit.com/reference/menu-item) and [`ComboboxItem`](https://ariakit.com/reference/combobox-item), to honor the innermost [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled) value during keyboard navigation.
+- Fixed [`Composite`](https://ariakit.com/reference/composite) carrying out a pending [`move`](https://ariakit.com/reference/use-composite-store#move) request after [`setActiveId`](https://ariakit.com/reference/use-composite-store#setactiveid) changes the active item, including when a later update sets the active item back to the one the request asked for. This affects all components built on [`Composite`](https://ariakit.com/reference/composite), including [`Toolbar`](https://ariakit.com/reference/toolbar) and [`Menubar`](https://ariakit.com/reference/menubar).
+- Fixed [`Composite`](https://ariakit.com/reference/composite) replaying an earlier [`move`](https://ariakit.com/reference/use-composite-store#move) call, taking focus and scrolling the page, when it is mounted again or when the [`composite`](https://ariakit.com/reference/composite#composite-1) prop switches back on. This also applies to all components built on it, such as [`Menu`](https://ariakit.com/reference/menu) and [`Toolbar`](https://ariakit.com/reference/toolbar).
+- Fixed the element rendered by the [`backdrop`](https://ariakit.com/reference/dialog#backdrop) prop on [`Dialog`](https://ariakit.com/reference/dialog), and every component built on it such as [`Popover`](https://ariakit.com/reference/popover) and [`Menu`](https://ariakit.com/reference/menu), never receiving the `hidden` attribute while it was hidden.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog), and every component built on it such as [`Popover`](https://ariakit.com/reference/popover) and [`Menu`](https://ariakit.com/reference/menu), recreating its contents when the [`backdrop`](https://ariakit.com/reference/dialog#backdrop) prop changed between a falsy and a truthy value.
+- Fixed modal [`Dialog`](https://ariakit.com/reference/dialog), and every component built on it such as [`Menu`](https://ariakit.com/reference/menu), skipping the fallback dismiss button when a popup nested inside it renders a dismiss button of its own, and not updating the fallback when a [`DialogDismiss`](https://ariakit.com/reference/dialog-dismiss) mounts or unmounts while the dialog stays open.
+- Fixed [`Menu`](https://ariakit.com/reference/menu) to remove `aria-labelledby` when its disclosure is replaced by an element without an `id`.
+- Fixed modal [`Menu`](https://ariakit.com/reference/menu) losing the accessible name provided by its [`MenuButton`](https://ariakit.com/reference/menu-button), and exposing a `button` among the owned elements of the element with `role="menu"`. Thanks to [@afercia](https://github.com/afercia), [@ciampo](https://github.com/ciampo), [@mxp-qk](https://github.com/mxp-qk), [@snowystinger](https://github.com/snowystinger), [@ashleyryan](https://github.com/ashleyryan), [@LFDanLu](https://github.com/LFDanLu), [@nataliadiak](https://github.com/nataliadiak), and [@dilipom13](https://github.com/dilipom13).
+- Fixed [`Select`](https://ariakit.com/reference/select) and [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) losing descendant state when the `name` prop changes between empty and nonempty.
+- Updated dependencies: `@ariakit/react-components@0.6.0`
+
 ## 0.4.38
 
 ### Keyboard activation dispatches a `PointerEvent`
