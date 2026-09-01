@@ -106,7 +106,6 @@ function RenderedAccessibleDisabledListbox() {
           Rendered one
         </Ariakit.CompositeItem>
         <Ariakit.CompositeItem
-          accessibleWhenDisabled
           disabled
           role="option"
           render={<Ariakit.Focusable accessibleWhenDisabled />}
@@ -131,7 +130,6 @@ function NestedDisabledOverrideListbox() {
           accessibleWhenDisabled
           render={
             <Ariakit.CompositeItem
-              accessibleWhenDisabled={false}
               role="option"
               render={
                 <Ariakit.Focusable
@@ -170,6 +168,31 @@ function InactiveFocusableListbox() {
   );
 }
 
+function RenderedInactiveFocusableListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite
+        role="listbox"
+        aria-label="Rendered inactive focusable"
+      >
+        <Ariakit.CompositeItem role="option">
+          Rendered inactive one
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem
+          disabled
+          role="option"
+          render={<Ariakit.Focusable focusable={false} />}
+        >
+          Rendered inactive two
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">
+          Rendered inactive three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -182,6 +205,7 @@ export default function Example() {
       <RenderedAccessibleDisabledListbox />
       <NestedDisabledOverrideListbox />
       <InactiveFocusableListbox />
+      <RenderedInactiveFocusableListbox />
     </>
   );
 }

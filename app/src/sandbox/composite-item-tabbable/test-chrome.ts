@@ -51,4 +51,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("ArrowRight");
     await test.expect(q.option("Inactive three")).toBeFocused();
   });
+
+  // https://github.com/ariakit/ariakit/pull/7376#discussion_r3901879752
+  test("skips a disabled item with an inactive Focusable below it", async ({
+    page,
+    q,
+  }) => {
+    await q.option("Rendered inactive one").click();
+    await page.keyboard.press("ArrowRight");
+    await test.expect(q.option("Rendered inactive three")).toBeFocused();
+  });
 });

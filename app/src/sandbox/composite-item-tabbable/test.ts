@@ -83,3 +83,10 @@ test("skips a disabled item with an inactive Focusable", async () => {
   await press.ArrowRight();
   expect(q.option("Inactive three")).toHaveFocus();
 });
+
+// https://github.com/ariakit/ariakit/pull/7376#discussion_r3901879752
+test("skips a disabled item with an inactive Focusable below it", async () => {
+  await click(q.option("Rendered inactive one"));
+  await press.ArrowRight();
+  expect(q.option("Rendered inactive three")).toHaveFocus();
+});

@@ -495,12 +495,11 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         tabIndexProp: props.tabIndex,
       }),
       disabled: supportsDisabled && trulyDisabled ? true : undefined,
-      // Placed after the spread, like the props above, so the innermost
-      // Focusable decides. Only an active Focusable stamps: with
-      // `focusable={false}` this layer resolves nothing, and an outer trigger
-      // may still keep the element keyboard reachable, so the trigger checks
-      // its own `focusable` prop for that case instead.
-      [trulyDisabledAttribute]: trulyDisabled || undefined,
+      // Placed after the spread, like the props above, so the innermost active
+      // Focusable decides. A disabled layer stamps its exact resolution. With
+      // `focusable={false}`, this layer resolves nothing and removes an outer
+      // marker, so the outer component can fall back to its own disabled state.
+      [trulyDisabledAttribute]: disabled ? trulyDisabled : undefined,
       // TODO: Add contentEditable coverage.
       contentEditable: disabled ? undefined : props.contentEditable,
       onKeyPressCapture,

@@ -32,13 +32,15 @@ export function accessibleWhenDisabledFromProps(
 export const trulyDisabledAttribute = "data-truly-disabled";
 
 /**
- * Checks whether Focusable resolved this element as disabled and not keyboard
- * accessible, based on the attribute it stamps on it. Only the exact stamped
- * value counts: a render component may emit the same attribute with a false
- * value for its own styling, which React renders as `"false"`.
+ * Returns whether the innermost active Focusable resolved this element as
+ * disabled and not keyboard accessible. An absent marker means no active
+ * disabled Focusable resolved the state.
  */
 export function trulyDisabledFromElement(element: Element) {
-  return element.getAttribute(trulyDisabledAttribute) === "true";
+  const value = element.getAttribute(trulyDisabledAttribute);
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return undefined;
 }
 
 // Keys that composite widgets move focus with. They're never typing, so they
