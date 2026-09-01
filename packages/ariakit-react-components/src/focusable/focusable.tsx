@@ -30,14 +30,16 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { isCompositeMoveKey, trulyDisabledAttribute } from "./__utils.ts";
+import {
+  accessibleWhenDisabledSymbol,
+  isCompositeMoveKey,
+  trulyDisabledAttribute,
+} from "./__utils.ts";
 import { FocusableContext } from "./focusable-context.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-
-const accessibleWhenDisabledSymbol = Symbol("accessibleWhenDisabled");
 
 const isSafariBrowser = isSafari();
 

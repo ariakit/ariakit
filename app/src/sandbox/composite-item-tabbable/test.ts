@@ -58,3 +58,11 @@ test("moves to an accessible disabled item inherited through composition", async
   await press.ArrowRight();
   expect(accessibleDisabledItem).toHaveFocus();
 });
+
+// https://github.com/ariakit/ariakit/issues/7364
+test("preserves command metadata on composed items", () => {
+  expect(q.option("Metadata command")).toHaveAttribute(
+    "data-metadata-count",
+    "1",
+  );
+});

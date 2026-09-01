@@ -39,6 +39,7 @@ import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
+import { accessibleWhenDisabledFromProps } from "../focusable/__utils.ts";
 import {
   CompositeItemContext,
   CompositeRowContext,
@@ -166,6 +167,8 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     const context = useCompositeScopedContext();
     store = store || context;
 
+    const accessibleWhenDisabled = accessibleWhenDisabledFromProps(props);
+
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
     const mountedElementRef = useRef<HTMLType>(null);
@@ -177,7 +180,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     }, []);
     const row = useContext(CompositeRowContext);
     const disabled = disabledFromProps(props);
-    const trulyDisabled = disabled && !props.accessibleWhenDisabled;
+    const trulyDisabled = disabled && !accessibleWhenDisabled;
     // Snapshot before the props object is replaced below (useCollectionItem
     // consumes this prop), so the onFocus handler can read it at event time.
     const shouldRegisterItem = props.shouldRegisterItem;
