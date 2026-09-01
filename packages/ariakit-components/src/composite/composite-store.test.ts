@@ -10,38 +10,6 @@ function createComposite(items: CompositeStoreItem[]) {
   return store;
 }
 
-function getMoveTarget(store: ReturnType<typeof createCompositeStore>) {
-  // @ts-expect-error Internal
-  return store.__unstableCompositeMoveRequest?.targetId;
-}
-
-test("preserves the target of each move", () => {
-  const store = createCompositeStore();
-
-  store.move(null);
-  store.setActiveId("item");
-  expect(getMoveTarget(store)).toBe(null);
-
-  store.move("other");
-  store.setActiveId(null);
-  expect(getMoveTarget(store)).toBe("other");
-});
-
-test("uses the active item for a propagated move count", () => {
-  const source = createStore({ activeId: "old", moves: 0 });
-  const store = createCompositeStore({ store: source });
-  const destroy = init(store);
-
-  store.move("old");
-  source.setState("moves", 0);
-  source.setState("activeId", "new");
-  source.setState("moves", 1);
-
-  expect(store.getState()).toMatchObject({ activeId: "new", moves: 1 });
-  expect(getMoveTarget(store)).toBe("new");
-  destroy();
-});
-
 test("moves through enabled items in one-dimensional composites", () => {
   const store = createComposite([
     { id: "one" },

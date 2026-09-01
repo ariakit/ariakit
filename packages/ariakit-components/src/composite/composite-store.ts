@@ -17,13 +17,6 @@ import { createCollectionStore } from "../collection/collection-store.ts";
 type Orientation = "horizontal" | "vertical" | "both";
 type CompositeStoreDirection = "next" | "previous" | "up" | "down";
 
-interface CompositeMoveRequest {
-  moves: number;
-  requested: boolean;
-  requesting: boolean;
-  targetId: CompositeStoreState["activeId"];
-}
-
 interface NextOptions extends Pick<
   Partial<CompositeStoreState>,
   | "activeId"
@@ -328,24 +321,7 @@ export function createCompositeStore<
     focusShift: defaultValue(props.focusShift, syncState?.focusShift, false),
   };
 
-  const moveRequest: CompositeMoveRequest = {
-    moves: initialState.moves,
-    requested: false,
-    requesting: false,
-    targetId: initialState.activeId,
-  };
-
   const composite = createStore(initialState, collection, props.store);
-
-  setup(composite, () =>
-    sync(composite, ["moves"], (state, prevState) => {
-      if (state.moves === prevState.moves) return;
-      moveRequest.moves = state.moves;
-      if (moveRequest.requesting) return;
-      moveRequest.requested = false;
-      moveRequest.targetId = composite.getState().activeId;
-    }),
-  );
 
   // Alias synchronization starts at initialization. Writes made before then by
   // connected stores with only deprecated keys are intentionally unsupported.
@@ -584,19 +560,8 @@ export function createCompositeStore<
 
     move: (id) => {
       if (id === undefined) return;
-      moveRequest.requested = true;
-      moveRequest.requesting = true;
-      moveRequest.targetId = id;
-      try {
-        composite.setState("activeId", id);
-        composite.setState("moves", (moves) => {
-          const nextMoves = moves + 1;
-          moveRequest.moves = nextMoves;
-          return nextMoves;
-        });
-      } finally {
-        moveRequest.requesting = false;
-      }
+      composite.setState("activeId", id);
+      composite.setState("moves", (moves) => moves + 1);
     },
 
     first: () => findFirstEnabledItem(composite.getState().renderedItems)?.id,
@@ -606,9 +571,6 @@ export function createCompositeStore<
     previous: (options) => getNextIdFromOptions("previous", options),
     down: (options) => getNextIdFromOptions("down", options),
     up: (options) => getNextIdFromOptions("up", options),
-
-    // @ts-expect-error Internal
-    __unstableCompositeMoveRequest: moveRequest,
   };
 }
 

@@ -5,6 +5,7 @@ export default function Example() {
   const store = Ariakit.useCompositeStore();
   const pendingStore = Ariakit.useCompositeStore();
   const initialPendingStore = Ariakit.useCompositeStore();
+  const initialPendingTabStore = Ariakit.useTabStore();
   const scrollStore = Ariakit.useCompositeStore({
     defaultActiveId: "late-scroll",
     virtualFocus: false,
@@ -22,6 +23,8 @@ export default function Example() {
   const [showVirtualLateItem, setShowVirtualLateItem] = useState(false);
   const [showPendingComposite, setShowPendingComposite] = useState(true);
   const [showInitialPendingComposite, setShowInitialPendingComposite] =
+    useState(false);
+  const [showInitialPendingTabList, setShowInitialPendingTabList] =
     useState(false);
 
   return (
@@ -191,6 +194,32 @@ export default function Example() {
               Initial bold action
             </Ariakit.CompositeItem>
           </Ariakit.Composite>
+        )}
+        <h3>Initial pending derived move target</h3>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => {
+            initialPendingTabStore.move(null);
+            initialPendingTabStore.setActiveId("initial-tab");
+          }}
+        >
+          Queue initial tab list
+        </button>
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => setShowInitialPendingTabList(true)}
+        >
+          Show initially hidden tab list
+        </button>
+        {showInitialPendingTabList && (
+          <Ariakit.TabList
+            aria-label="Initially hidden tabs"
+            store={initialPendingTabStore}
+          >
+            <Ariakit.Tab id="initial-tab">Initial tab</Ariakit.Tab>
+          </Ariakit.TabList>
         )}
       </section>
     </>

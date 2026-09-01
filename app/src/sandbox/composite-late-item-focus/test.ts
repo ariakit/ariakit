@@ -80,3 +80,12 @@ test("does not redirect a composite move before the first composite mount", asyn
   expect(q.button("Show initially hidden toolbar")).toHaveFocus();
   expect(q.button("Initial bold action")).not.toHaveFocus();
 });
+
+// https://github.com/ariakit/ariakit/issues/7378
+test("does not redirect a derived composite move before the first mount", async () => {
+  await click(q.button("Queue initial tab list"));
+  await click(q.button("Show initially hidden tab list"));
+
+  expect(q.button("Show initially hidden tab list")).toHaveFocus();
+  expect(q.tab("Initial tab")).not.toHaveFocus();
+});

@@ -12,7 +12,6 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { sync } from "@ariakit/store";
 import {
   flatten2DArray,
   reverseArray,
@@ -36,15 +35,12 @@ import type {
 import { useEffect, useRef } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
+import { getMoveRequest } from "./__move-request.ts";
 import {
   CompositeScopedContextProvider,
   useCompositeProviderContext,
 } from "./composite-context.tsx";
-import type {
-  CompositeStore,
-  CompositeStoreItem,
-  CompositeStoreState,
-} from "./composite-store.ts";
+import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 import {
   findFirstEnabledItem,
   getEnabledItem,
@@ -120,58 +116,6 @@ function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
 }
 
 type PresentItem = ReturnType<typeof usePresentItem>;
-
-interface MoveRequest {
-  /**
-   * The `CompositeFocusOnMove` instance that consumed the current move, or
-   * `null` while none has.
-   */
-  consumedBy: object | null;
-  targetId: CompositeStoreState["activeId"];
-}
-
-interface CoreMoveRequest {
-  moves: number;
-  requested: boolean;
-  targetId: CompositeStoreState["activeId"];
-}
-
-function getCoreMoveRequest(store: CompositeStore) {
-  return (
-    store as CompositeStore & {
-      __unstableCompositeMoveRequest?: CoreMoveRequest;
-    }
-  ).__unstableCompositeMoveRequest;
-}
-
-/**
- * Tracks the current move per store. This has to outlive the component:
- * `moves` only counts requests, so a fresh instance can't tell whether a move
- * was consumed or what target a pending move asked for.
- */
-const moveRequests = new WeakMap<CompositeStore, MoveRequest>();
-
-function getMoveRequest(store: CompositeStore) {
-  const cached = moveRequests.get(store);
-  if (cached) return cached;
-  const request: MoveRequest = {
-    consumedBy: null,
-    targetId: store.getState().activeId,
-  };
-  moveRequests.set(store, request);
-  // Every change to the count starts a new request, including the resets that
-  // cancel a pending one. A direct `move` records its target in the core store;
-  // a counter propagated from another store uses the active id at this instant.
-  sync(store, ["moves"], (state) => {
-    request.consumedBy = null;
-    const coreRequest = getCoreMoveRequest(store);
-    request.targetId =
-      coreRequest?.requested && coreRequest.moves === state.moves
-        ? coreRequest.targetId
-        : store.getState().activeId;
-  });
-  return request;
-}
 
 /**
  * Whether `instance` may act on the store's current move. An unconsumed request
