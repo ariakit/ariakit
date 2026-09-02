@@ -2,13 +2,15 @@ import { cv, cx } from "clava";
 import { controlGroup, controlSeparator } from "./control.ts";
 import { frame } from "./frame.ts";
 
-// A bevel or flat glider covers the whole control it follows, inset on every
-// side by the padding the group publishes.
-const gliderCover = cx(
-  "m-(--inset-padding)",
-  "inset-s-[anchor(start)] bottom-[anchor(bottom)]",
-  "w-[calc(anchor-size()-var(--inset-padding)*2)]",
-  "h-[calc(anchor-size()-var(--inset-padding)*2)]",
+// A flat, bevel or folder glider takes the box of the control it follows,
+// so the glider and everything the control paints for itself land on the
+// same rectangle. A cover may reach past the control's bottom edge by
+// --glider-reach; the selected folder glider uses it to meet the panel.
+export const gliderCover = cx(
+  "inset-s-[anchor(start)]",
+  "bottom-[calc(anchor(bottom)-var(--glider-reach,0px))]",
+  "w-[anchor-size()]",
+  "h-[calc(anchor-size()+var(--glider-reach,0px))]",
 );
 
 export const glider = cv({
@@ -33,14 +35,14 @@ export const glider = cv({
         // The group is the containing block, and an element cannot anchor
         // its own absolutely positioned children, so the group's edge is a
         // plain inset rather than an anchor() on its name.
-        "not-[.vertical>&]:inset-s-[calc(anchor(start)+var(--inset-padding))]",
+        "not-[.vertical>&]:inset-s-[anchor(start)]",
         "not-[.vertical>&]:bottom-0",
-        "not-[.vertical>&]:w-[calc(anchor-size()-var(--inset-padding)*2)]",
+        "not-[.vertical>&]:w-[anchor-size()]",
         "not-[.vertical>&]:h-(--glider-bar)",
         "[.vertical>&]:inset-e-0",
-        "[.vertical>&]:bottom-[calc(anchor(bottom)+var(--inset-padding))]",
+        "[.vertical>&]:bottom-[anchor(bottom)]",
         "[.vertical>&]:w-(--glider-bar)",
-        "[.vertical>&]:h-[calc(anchor-size()-var(--inset-padding)*2)]",
+        "[.vertical>&]:h-[anchor-size()]",
       ],
     },
     /**
@@ -53,11 +55,22 @@ export const glider = cv({
       hover: [
         "[position-anchor:--glider-hover] ease-linear",
         "[.control:has(~&)]:ui-hover:[--glider-hover:--glider-hover]",
+        // A selected glider covers the same box, and hovering the selected
+        // control must not change it, so the hover glider sits under the
+        // selected one. Both are below zero; this sorts after the base value.
+        "-z-2",
+        // The pointer is crossing the gap between two controls, so the glider
+        // waits on the last one for the next instead of leaving at once.
         "in-[.glider-group:hover:not(:has(:hover))]:delay-250",
-        "in-[.glider-group:not(:hover)]:hidden",
-        // The glider sits behind the control it covers, so the control has
-        // to stop painting its own surface or it hides the glider.
-        "supports-anchor:[.control:has(~&)]:ui-hover:bg-transparent",
+        // With nothing under the pointer the anchor is gone, and a glider that
+        // stayed would fall to a point at the group's start. It leaves instead,
+        // after the delay above, and comes back in place on the next control.
+        "in-[.glider-group:not(:has(:hover))]:hidden",
+        // The glider sits behind the control it covers, so the control has to
+        // stop painting its own surface or it hides the glider. A control's
+        // own hover paint can carry more variants than this rule and outrank
+        // it (a tab's does), so the surface wipe is marked important.
+        "supports-anchor:[.control:has(~&)]:ui-hover:bg-transparent!",
         "supports-anchor:[.control:has(~&)]:ui-hover:border-transparent",
         "supports-anchor:[.control:has(~&)]:ui-hover:befter:hidden",
       ],
@@ -80,8 +93,10 @@ export const glider = cv({
      * Animates the glider as it travels between controls.
      */
     $animated: [
-      "transition-[inset-inline,border-color,height,width,outline]",
-      "[.vertical>&]:transition-[inset-block,border-color,height,width,outline]",
+      // display is on the list so a leaving hover glider can wait out its
+      // delay first; the discrete behaviour is what lets display take part.
+      "transition-[inset-inline,border-color,height,width,outline,display]",
+      "[.vertical>&]:transition-[inset-block,border-color,height,width,outline,display]",
       "duration-100 transition-discrete",
       "[.vertical>&]:duration-50",
     ],
@@ -101,6 +116,21 @@ export const glider = cv({
       if (variants.$kind === "bar") return false;
       return defaultValue;
     },
+    $layer(defaultValue, variants) {
+      if (variants.$state !== "focus") return defaultValue;
+      // A bar is the indicator itself and keeps its fill.
+      if (variants.$kind === "bar") return defaultValue;
+      // A focus cover draws its indicator and paints nothing. It keeps the
+      // layer, which colours the indicator, and replaces only layer's own
+      // default: a colour asked for by an extender or a caller stays.
+      if (defaultValue !== true) return defaultValue;
+      return "ghost";
+    },
+    // A glider's lift counts from the group's surface, which is where a
+    // control in a glider group rests. A hover glider takes the one step a
+    // hovered control takes, and a selected glider one more. Controls that
+    // lift at rest pass that lift on to their gliders, or the hover glider
+    // paints the colour they already have.
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
       if (variants.$state === "hover") return true;
@@ -120,12 +150,13 @@ export const glider = cv({
       return defaultValue ?? true;
     },
     $borderType(defaultValue, variants) {
-      // Hover feedback is a flat layer with no border semantics. The ring
-      // class must not be emitted here, or it picks up a bordered group's
-      // inherited --border-width. Selected and focus gliders keep the ring so
-      // the adaptive high-contrast edge can use the group's width.
-      if (variants.$state === "hover") return defaultValue ?? "unset";
-      return defaultValue ?? "ring";
+      // Hover and focus feedback have no edge. The ring-* class must not be
+      // emitted for them, or it picks up a bordered group's inherited
+      // --border-width and draws a hairline beside the focus indicator. A
+      // selected glider keeps the ring-* so the adaptive high-contrast edge
+      // can use the group's width.
+      if (variants.$state === "selected") return defaultValue ?? "ring";
+      return defaultValue ?? "unset";
     },
     $edgeWeight(defaultValue, variants) {
       if (variants.$state !== "selected") return defaultValue;
@@ -145,32 +176,14 @@ export const gliderAnchor = cv({
   },
 });
 
-export const gliderSeparator = cv({
-  extend: [controlSeparator],
-  // Both this margin and the one controlSeparator sets target margin-inline
-  // at the same specificity, so this one wins only because it sorts later.
-  class:
-    "separator -mx-[calc(var(--inset-padding,0px)*1.5+var(--border-width,0px)/2)]",
-});
+export const gliderSeparator = controlSeparator;
 
 export const gliderGroup = cv({
   extend: [controlGroup],
-  class: [
-    "glider-group relative z-1",
-    "not-[.vertical]:has-[>.glider]:[&>.control:not(:nth-last-child(1_of_.control)):not(:has(+.separator))]:me-[calc(-2*var(--inset-padding))]",
-    "[.vertical]:has-[>.glider]:[&>.control:not(:nth-last-child(1_of_.control))]:mb-[calc(-2*var(--inset-padding))]",
-    "supports-anchor:has-[>.glider]:[--inset-padding:var(--ak-frame-padding,0px)]",
-  ],
+  // The gliders paint behind the controls, below zero on the z axis, so the
+  // group opens a stacking context to keep them in front of its own surface.
+  class: "glider-group relative z-1",
   style: {
-    anchorName: "--glider-group",
-    anchorScope:
-      "--glider-group, --glider-hover, --glider-focus, --glider-selected",
-  },
-  refine({ variants, addClass }) {
-    // A gapless group has only its padding to separate its controls, so it
-    // keeps it. With a gap, the glider's own inset already provides that
-    // space and the padding would double it.
-    if (variants.$gap === "none") return;
-    addClass("supports-anchor:has-[>.glider]:p-0");
+    anchorScope: "--glider-hover, --glider-focus, --glider-selected",
   },
 });

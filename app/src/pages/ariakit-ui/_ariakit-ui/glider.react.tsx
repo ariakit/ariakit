@@ -201,7 +201,7 @@ export function GliderSection() {
       <Sample
         title="Group geometry"
         code='GliderGroup $gap="none" | "sm" · $p="none" · $rounded="full" · $size'
-        description="A gapless group keeps its padding to separate the buttons. With a gap the glider's own inset provides the space."
+        description="The group's padding and gap space the buttons, and a glider covers the button it follows."
       >
         <Stage direction="column">
           <DemoGroup $gap="none" />

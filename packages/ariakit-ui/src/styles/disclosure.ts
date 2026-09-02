@@ -102,7 +102,7 @@ export const disclosureButton = cv({
     // the fallback is the control's own resolved padding so this longhand
     // wins over the control px shorthand without changing anything until a
     // guide or icon sets the indent.
-    "ps-(--disclosure-ps,var(--control-px))",
+    "ps-(--disclosure-ps,var(--px))",
     // With an icon, the start padding falls back to the frame padding
     // instead of the control padding, so the content body's indent formula
     // (icon size plus twice the padding) lines up with the label.

@@ -422,12 +422,6 @@
 @utility ui-folder {
   position: relative;
   border-bottom-width: 0 !important;
-  /* The curves are painted outside the element, so only the bottom edge,
-     where the panel takes over, may clip. The cut sits a pixel past that edge
-     because a clip path is antialiased where it falls while a background is
-     snapped to the pixel grid, so cutting on the edge itself shaves a hair off
-     the tab and lets the panel border below show through as a seam. */
-  clip-path: inset(-4rem -4rem -1px -4rem);
 
   &::before,
   &::after {
@@ -438,6 +432,15 @@
   }
 
   @variant ui-selected {
+    /* Only a selected folder paints curves outside its box and covers the
+       seam, so only it clips: the curves may spill anywhere but the bottom
+       edge, where the panel takes over. An unselected tab ends a padding
+       above the seam and keeps its whole focus ring. The cut sits a pixel
+       past the bottom edge because a clip path is antialiased where it
+       falls while a background is snapped to the pixel grid, so cutting on
+       the edge itself shaves a hair off the tab and lets the panel border
+       below show through as a seam. */
+    clip-path: inset(-4rem -4rem -1px -4rem);
     --folder-edge: var(--ak-edge);
     --folder-ring: var(--ak-frame-ring, 0px);
     --folder-border: var(--ak-frame-border, 0px);

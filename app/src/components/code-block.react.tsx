@@ -264,7 +264,7 @@ function CodeBlockTab(props: TabProps) {
       $layer="var(--tab-bg)"
       $lightnessOffset={false}
       {...props}
-      className={clsx("h-full items-center", props.className)}
+      className={clsx("items-center", props.className)}
     />
   );
 }
@@ -892,14 +892,7 @@ export function CodeBlockTabs({
                       "[--tab-bg:var(--ak-layer-parent)]",
                     )}
                   >
-                    <TabList
-                      // The cv's default negative margin overlays the tabs
-                      // root's border, but this list is nested inside the
-                      // fixed-height topbar, where it would leak 1px past
-                      // the strip and double the panel divider.
-                      $m="none"
-                      className={clsx(hasToolbar && "sm:ak-frame-p-1")}
-                    >
+                    <TabList className={clsx(hasToolbar && "sm:ak-frame-p-1")}>
                       {tabs.map((tab) => (
                         <CodeBlockTab
                           key={tab.filename}

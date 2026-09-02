@@ -460,8 +460,8 @@ export function ButtonSection() {
 
       <Sample
         title="With a glider"
-        code='ButtonGroup > Button aria-selected + ButtonGlider $kind="bevel" $state="selected"'
-        description="The glider anchors to the selected button and travels when the selection moves. Click to move it."
+        code='ButtonGroup > Button $lightnessOffset={false} aria-selected + ButtonGlider $kind="bevel" $state="selected"'
+        description="The buttons rest on the group's surface, so a glider's lift reads as a state: hover one step up, selected two. The glider anchors to the selected button and travels when the selection moves. Click to move it."
       >
         <SelectableGroup>
           {(selected, select) => (
@@ -470,6 +470,7 @@ export function ButtonSection() {
                 {["Back", "Forward", "Reload"].map((label, index) => (
                   <Button
                     key={label}
+                    $lightnessOffset={false}
                     aria-selected={selected === index}
                     onClick={() => select(index)}
                   >
@@ -483,6 +484,7 @@ export function ButtonSection() {
                   <React.Fragment key={label}>
                     {index > 0 && <ButtonSeparator $kind="slash" />}
                     <Button
+                      $lightnessOffset={false}
                       aria-selected={selected === index}
                       onClick={() => select(index)}
                     >

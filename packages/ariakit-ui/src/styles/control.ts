@@ -100,11 +100,7 @@ export const control = cv({
     addClass([
       "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
       "[--py:var(--ak-frame-padding,0px)]",
-      // The resolved paddings get their own properties so extending
-      // styles can reference the formula without restating it.
-      "[--control-px:calc(var(--px)+var(--inset-padding,0px))]",
-      "px-(--control-px)",
-      "py-[calc(var(--py)+var(--inset-padding,0px))]",
+      "px-(--px) py-(--py)",
     ]);
   },
 });
@@ -426,11 +422,7 @@ export const controlGroup = cv({
       wrap: "flex flex-wrap",
       stretch:
         "flex w-full [&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow",
-      horizontal: [
-        "flex",
-        "[&>.control:not(:nth-child(1_of_.control))]:-ms-[calc(var(--ak-frame-border)/2)]",
-        "[&>.control:not(:nth-last-child(1_of_.control))]:-me-[calc(var(--ak-frame-border)/2)]",
-      ],
+      horizontal: "flex",
       vertical: "vertical flex flex-col [&>.control]:justify-start",
     },
     $gap: {
@@ -451,6 +443,14 @@ export const controlGroup = cv({
     $gap: "auto",
   },
   refine({ variants, addClass }) {
+    if (variants.$gap === "none" && variants.$layout === "horizontal") {
+      // Bordered controls share an edge only when nothing separates them,
+      // so each pulls half its edge into its neighbour in a gapless row.
+      addClass([
+        "[&>.control:not(:nth-child(1_of_.control))]:-ms-[calc(var(--ak-frame-border)/2)]",
+        "[&>.control:not(:nth-last-child(1_of_.control))]:-me-[calc(var(--ak-frame-border)/2)]",
+      ]);
+    }
     if (variants.$p !== "none") return;
     addClass([
       "[&>.control:not(:nth-child(1_of_.control))]:rounded-s-none",

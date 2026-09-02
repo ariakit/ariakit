@@ -174,8 +174,8 @@ The editor needs the same thing through a different door. Tailwind IntelliSense 
 
 ```ts
 const gliderCover = cx(
-  "m-(--inset-padding)",
   "inset-s-[anchor(start)] bottom-[anchor(bottom)]",
+  "w-[anchor-size()] h-[anchor-size()]",
 );
 ```
 
