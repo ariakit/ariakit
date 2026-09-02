@@ -28,11 +28,52 @@ export const tabs = cv({
   },
 });
 
+// A folder tab drops its bottom corners and merges into the panel below when
+// selected, and paints its hover as an inset rectangle otherwise.
+const tabFolder = cx(
+  "ui-folder",
+  // The curves rewrite the radius on the pseudo-elements that draw them, so
+  // the tab's own radius travels under another name.
+  "[--tab-radius:var(--ak-frame-radius)]",
+  // The first tab's start curve would poke out of the root, so it shrinks
+  // to fit inside the root's padding.
+  "[:first-child>&]:nth-[1_of_&]:ui-selected:before:[--ak-frame-radius:min(var(--tab-radius),var(--tabs-padding)/2)]",
+  // Without a glider the selected tab paints its own surface, and it grows
+  // by the root's edge width to cover the panel's top edge.
+  "[.tabs:not(:has(.glider))_&]:pb-[calc(var(--py)+var(--inset-padding,0px)+var(--tabs-bordering))]",
+  // An unselected tab has no edge of its own, hovered or not.
+  "not-ui-selected:border-transparent not-ui-selected:ring-0",
+  "not-ui-selected:ui-hover:border-transparent",
+  // A folder tab has no bottom corners to round, so its hover paints on an
+  // inset rectangle drawn by ::after rather than on the tab. The tab still
+  // resolves the hovered layer color, and the overlay reads it as its
+  // parent layer.
+  "not-ui-selected:ui-hover:bg-transparent",
+  "not-ui-selected:ui-hover:after:absolute not-ui-selected:ui-hover:after:-z-1",
+  "not-ui-selected:ui-hover:after:ak-layer",
+  "not-ui-selected:ui-hover:after:ak-layer-color-(--ak-layer-parent)",
+  // The overlay keeps one visual inset from the tab's outer edge. Its
+  // containing box is already inside that edge, except at the bottom, where
+  // the folder shape has none, and except when the edge is a ring-*, which
+  // takes no space.
+  "not-ui-selected:ui-hover:after:[--inset:max(0px,0.2em+var(--group-gap)/2-var(--tabs-padding)/2)]",
+  "not-ui-selected:ui-hover:after:[--inset-x:calc(var(--inset)+var(--tabs-ring))]",
+  "not-ui-selected:ui-hover:after:[--inset-b:calc(var(--inset)+var(--tabs-bordering))]",
+  "not-ui-selected:ui-hover:after:top-(--inset-x)",
+  "not-ui-selected:ui-hover:after:bottom-(--inset-b)",
+  "not-ui-selected:ui-hover:after:inset-x-(--inset-x)",
+  // The corners stay concentric with the tab's.
+  "not-ui-selected:ui-hover:after:[--round-t:calc(var(--ak-frame-radius)-var(--tabs-border)-var(--inset-x))]",
+  "not-ui-selected:ui-hover:after:[--round-b:calc(var(--ak-frame-radius)-var(--inset-b))]",
+  "not-ui-selected:ui-hover:after:rounded-t-(--round-t)",
+  "not-ui-selected:ui-hover:after:rounded-b-(--round-b)",
+);
+
 export const tab = cv({
   extend: [button],
   class: [
-    // Only the selected tab paints. The others keep their layer, which the
-    // hover overlay below reads, and show the surface behind them.
+    // Only the selected tab paints at rest. The others keep their layer,
+    // which their hover paint reads, and show the surface behind them.
     "not-ui-selected:bg-transparent",
     // The selected tab already reads as active, so hovering it must not
     // shift its layer the way a button hover does.
@@ -40,57 +81,34 @@ export const tab = cv({
   ],
   variants: {
     /**
-     * Adds `folder` to the button's `flat` and `bevel`. A folder tab drops
-     * its bottom corners and merges into the panel below when selected, and
-     * paints its hover as an inset rectangle otherwise.
+     * Sets how the tab paints. A `flat` tab is a plain button that lifts off
+     * the strip when selected, a `bevel` tab raises the selected tab with the
+     * gradient and inner shadow of a push button, and a `folder` tab drops
+     * its bottom corners and merges into the panel below. Whatever the kind,
+     * an unselected tab shows the surface behind it until hovered.
      */
-    $kind: {
-      folder: [
-        "ui-folder",
-        // The curves rewrite the radius on the pseudo-elements that draw
-        // them, so the tab's own radius travels under another name.
-        "[--tab-radius:var(--ak-frame-radius)]",
-        // The first tab's start curve would poke out of the root, so it
-        // shrinks to fit inside the root's padding.
-        "[:first-child>&]:nth-[1_of_&]:ui-selected:before:[--ak-frame-radius:min(var(--tab-radius),var(--tabs-padding)/2)]",
-        // Without a glider the selected tab paints its own surface, and it
-        // grows by the root's edge width to cover the panel's top edge.
-        "[.tabs:not(:has(.glider))_&]:pb-[calc(var(--py)+var(--inset-padding,0px)+var(--tabs-bordering))]",
-        // An unselected tab has no edge of its own, hovered or not.
-        "not-ui-selected:border-transparent not-ui-selected:ring-0",
-        "not-ui-selected:ui-hover:border-transparent",
-        // A folder tab has no bottom corners to round, so its hover paints on
-        // an inset rectangle drawn by ::after rather than on the tab. The tab
-        // still resolves the hovered layer color, and the overlay reads it
-        // as its parent layer.
-        "not-ui-selected:ui-hover:bg-transparent",
-        "not-ui-selected:ui-hover:after:absolute not-ui-selected:ui-hover:after:-z-1",
-        "not-ui-selected:ui-hover:after:ak-layer",
-        "not-ui-selected:ui-hover:after:ak-layer-color-(--ak-layer-parent)",
-        // The overlay keeps one visual inset from the tab's outer edge. Its
-        // containing box is already inside that edge, except at the bottom,
-        // where the folder shape has none, and except when the edge is a
-        // ring-*, which takes no space.
-        "not-ui-selected:ui-hover:after:[--inset:max(0px,0.2em+var(--group-gap)/2-var(--tabs-padding)/2)]",
-        "not-ui-selected:ui-hover:after:[--inset-x:calc(var(--inset)+var(--tabs-ring))]",
-        "not-ui-selected:ui-hover:after:[--inset-b:calc(var(--inset)+var(--tabs-bordering))]",
-        "not-ui-selected:ui-hover:after:top-(--inset-x)",
-        "not-ui-selected:ui-hover:after:bottom-(--inset-b)",
-        "not-ui-selected:ui-hover:after:inset-x-(--inset-x)",
-        // The corners stay concentric with the tab's.
-        "not-ui-selected:ui-hover:after:[--round-t:calc(var(--ak-frame-radius)-var(--tabs-border)-var(--inset-x))]",
-        "not-ui-selected:ui-hover:after:[--round-b:calc(var(--ak-frame-radius)-var(--inset-b))]",
-        "not-ui-selected:ui-hover:after:rounded-t-(--round-t)",
-        "not-ui-selected:ui-hover:after:rounded-b-(--round-b)",
-      ],
+    $kind(value?: "flat" | "bevel" | "folder") {
+      if (value === "folder") return tabFolder;
+      // The transparent background hides the layer the hover shifts, so the
+      // hover paints it back.
+      const hoverPaint = "not-ui-selected:ui-hover:bg-(--ak-layer)";
+      if (value === "bevel") {
+        return [hoverPaint, "ui-selected:ui-bevel-button"];
+      }
+      if (value === "flat") return hoverPaint;
+      return;
     },
   },
   defaultVariants: {
     $kind: "folder",
     // The radius comes from the frame nesting, concentric with the strip.
     $rounded: "unset",
-    // The edge is the root's, so the selected tab merges with the panel.
-    $border: "inherit",
+    // A folder tab takes the root's edge, so the selected one merges with
+    // the panel. The other kinds have none, like the button they are.
+    $border(defaultValue, variants) {
+      if (variants.$kind !== "folder") return defaultValue;
+      return defaultValue ?? "inherit";
+    },
   },
 });
 
@@ -146,27 +164,48 @@ export const tabGlider = cv({
         "rounded-none",
         tabGliderClip,
       ],
-      focus: ["[--inset:0.2em]", tabGliderClip],
+      focus: [
+        "[--inset:0.2em]",
+        tabGliderClip,
+        // The clip cuts everything past the inset, the focus indicator
+        // included, so the indicator moves inside it by its own 2px width.
+        // The glider's outline-offset-1 is the rule this one has to beat.
+        "outline-offset-[calc(-1*(var(--inset)+2px))]!",
+      ],
     },
   },
   defaultVariants: {
+    $kind: "folder",
     // The glider paints the selected tab's surface, so it sits on the tab's
     // layer offset rather than the deeper one a selected glider takes.
     $lightnessOffset: true,
-    // The edge is the root's, as on the tab. Frame leaves the edge variants
-    // unset for it.
-    $border: "inherit",
+    // A folder glider takes the root's edge, as the tab does, and frame
+    // leaves the edge variants unset for it. The other kinds keep the
+    // glider's own ring.
+    $border(defaultValue, variants) {
+      if (variants.$kind !== "folder") return defaultValue;
+      return defaultValue ?? "inherit";
+    },
+  },
+  refine({ variants, setVariants }) {
+    if (variants.$state !== "focus") return;
+    // The focus glider draws its indicator and paints nothing, whatever the
+    // surface above asked for.
+    setVariants({ $lightnessOffset: false });
   },
 });
 
 export const tabList = cv({
   extend: [buttonGroup],
   class: [
-    // The strip ends flat where the panel begins.
-    "rounded-b-none! pb-0",
-    // A tab's end curve is painted past its box. When the tabs fill the
-    // strip, this spacer keeps the last one inside the scroll clip.
-    "after:w-[calc((var(--tabs-radius)-var(--tabs-padding))*2)]",
+    // The strip ends flat where the panel begins. Folder tabs reach down to
+    // it, so the strip drops its bottom padding for them, and keeps it for
+    // the other kinds, which float in the strip as buttons do.
+    "rounded-b-none! has-[.ui-folder]:pb-0",
+    // A tab's end curve is painted past its box. This spacer keeps the last
+    // one inside the scroll clip, whether the tabs fill the strip or
+    // overflow it, so it must not give way to them.
+    "after:w-[calc((var(--tabs-radius)-var(--tabs-padding))*2)] after:shrink-0",
     // Trailing tabs stay reachable by pointer when the strip overflows.
     "overflow-x-auto overflow-y-clip overscroll-x-contain [scrollbar-width:none]",
     // Tabs sit flush unless a working glider spaces them.

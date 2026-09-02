@@ -30,11 +30,14 @@ export const glider = cv({
         // scaling the bar thickness, or high-contrast mode inflates the bar
         // from 2px to 42px.
         "[--glider-bar:calc(--spacing(0.5)+(--spacing(0.1))*var(--contrast)/100)]",
+        // The group is the containing block, and an element cannot anchor
+        // its own absolutely positioned children, so the group's edge is a
+        // plain inset rather than an anchor() on its name.
         "not-[.vertical>&]:inset-s-[calc(anchor(start)+var(--inset-padding))]",
-        "not-[.vertical>&]:bottom-[anchor(--glider-group_bottom)]",
+        "not-[.vertical>&]:bottom-0",
         "not-[.vertical>&]:w-[calc(anchor-size()-var(--inset-padding)*2)]",
         "not-[.vertical>&]:h-(--glider-bar)",
-        "[.vertical>&]:inset-e-[anchor(--glider-group_end)]",
+        "[.vertical>&]:inset-e-0",
         "[.vertical>&]:bottom-[calc(anchor(bottom)+var(--inset-padding))]",
         "[.vertical>&]:w-(--glider-bar)",
         "[.vertical>&]:h-[calc(anchor-size()-var(--inset-padding)*2)]",
