@@ -373,10 +373,13 @@ An attribute selector in a variant position wants a variant, not brackets. Brack
 
 An overlay's open state comes through `ui-open:` and `ui-closed:`, which read the native `open` attribute, the popover pseudo-classes and Ariakit's `data-open` alike, so a style never has to know which kind of element it landed on. The closed variant excludes every one of those, so an element carrying none of them is closed: static markup declares `data-open` to render open. `transition-none` is the switch for the motion, and it only works because the transition is written as a utility, which sorts before it. An arbitrary property would sort after it and win.
 
+The backdrop goes the same way. `ui-backdrop:` reaches the native `::backdrop` and the element Ariakit renders as the dialog's previous sibling alike, so the dialog styles its own backdrop and no backdrop style exists on its own. Put the open variants before it, as in `ui-open:starting:ui-backdrop:opacity-0`: Tailwind applies variants left to right, and the other order wraps `::backdrop` in `:is()`, which is invalid, so the rule drops without a word.
+
 ```ts
-// One list for a native <dialog> and an Ariakit Dialog alike.
+// One list for a native <dialog> and an Ariakit Dialog alike, backdrop included.
 "ui-open:starting:scale-95 ui-open:starting:opacity-0",
 "ui-closed:duration-250 ui-closed:scale-95 ui-closed:opacity-0",
+"ui-open:starting:ui-backdrop:opacity-0 ui-closed:ui-backdrop:opacity-0",
 ```
 
 Use a root-relative selector when the target element is markup the component does not own.

@@ -251,6 +251,17 @@
   }
 }
 
+/* The backdrop, whichever way it is rendered: the native ::backdrop, or the
+   element Ariakit renders as the previous sibling of the dialog, or of a
+   wrapper around it. Put the open variants before this one: the other order
+   wraps ::backdrop in :is(), which is invalid, and the rule drops. */
+@custom-variant ui-backdrop {
+  &::backdrop,
+  :where([data-backdrop]):has(+ &, + * &) {
+    @slot;
+  }
+}
+
 @custom-variant ui-checked {
   &:is(:checked, [aria-checked="true"]) {
     @slot;

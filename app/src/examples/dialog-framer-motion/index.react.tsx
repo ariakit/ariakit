@@ -5,7 +5,6 @@ import {
   DialogDismiss,
   DialogHeading,
 } from "@ariakit/ui/components/dialog.ariakit.react.tsx";
-import { dialogBackdrop } from "@ariakit/ui/styles/dialog.ts";
 import { AnimatePresence, motion } from "motion/react";
 
 export default function Example() {
@@ -22,11 +21,11 @@ export default function Example() {
             store={dialog}
             alwaysVisible
             // Motion drives the enter and leave animations, so the cv's own
-            // transitions are switched off on both elements.
-            className="flex flex-col items-start gap-4 transition-none"
+            // transitions are switched off on the dialog and, through
+            // ui-backdrop, on the backdrop element.
+            className="flex flex-col items-start gap-4 transition-none ui-backdrop:transition-none"
             backdrop={
               <motion.div
-                {...dialogBackdrop.jsx({ className: "transition-none" })}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

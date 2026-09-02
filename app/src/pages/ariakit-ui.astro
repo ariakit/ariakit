@@ -71,7 +71,6 @@ import {
 } from "@ariakit/ui/styles/control.ts";
 import {
   dialog,
-  dialogBackdrop,
   dialogDescription,
   dialogDismiss,
   dialogHeading,
@@ -1995,17 +1994,12 @@ export default function Example() {
           <div
             class="relative grid place-items-center min-h-64 overflow-hidden rounded-xl"
           >
-            <div
-              data-open
-              {...dialogBackdrop.html({
-                class: "absolute inset-0 transition-none",
-              })}
-            >
-            </div>
+            <div data-backdrop class="absolute inset-0"></div>
             <section
               data-open
               {...dialog.html({
-                class: "flex flex-col items-start gap-4 transition-none",
+                class:
+                  "flex flex-col items-start gap-4 transition-none ui-backdrop:transition-none",
                 style: {
                   position: "relative",
                   inset: "auto",

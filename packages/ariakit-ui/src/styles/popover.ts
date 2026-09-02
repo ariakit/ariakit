@@ -19,13 +19,13 @@ export const popover = cv({
     "ui-open:duration-(--duration-overshoot) ui-open:ease-overshoot",
     "ui-open:starting:scale-95 ui-open:starting:opacity-0",
     "ui-closed:duration-250 ui-closed:scale-95 ui-closed:opacity-0",
-    // The backdrop is a native top-layer pseudo-element, so its rules only
-    // exist on this channel. The discrete behavior and the starting opacity
-    // are what make the fade its own transition-property list declares
-    // actually run.
-    "backdrop:transition-[overlay,display,opacity] backdrop:transition-discrete",
-    "backdrop:duration-250 backdrop:ease-[ease]",
-    "ui-open:starting:backdrop:opacity-0 ui-closed:backdrop:opacity-0",
+    // ui-backdrop reaches the native ::backdrop and the element Ariakit
+    // renders before the dialog alike. Opacity only: the dialog's own display
+    // and overlay transitions keep a native backdrop rendered through the
+    // leave, and a display transition on the Ariakit element would keep it
+    // over the page after Ariakit hides it.
+    "ui-backdrop:transition-opacity ui-backdrop:duration-250 ui-backdrop:ease-[ease]",
+    "ui-open:starting:ui-backdrop:opacity-0 ui-closed:ui-backdrop:opacity-0",
     // Scale from the anchor side when Ariakit provides the
     // `transform-origin`; the invalid var() fallback leaves the default
     // center origin for native popovers.

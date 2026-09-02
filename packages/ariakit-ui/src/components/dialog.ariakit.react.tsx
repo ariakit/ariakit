@@ -4,7 +4,6 @@ import { splitProps } from "clava";
 import type { ComponentProps } from "react";
 import {
   dialog,
-  dialogBackdrop,
   dialogDescription,
   dialogDisclosure,
   dialogDismiss,
@@ -42,17 +41,7 @@ export interface DialogProps
  */
 export function Dialog(props: DialogProps) {
   const [variantProps, rest] = splitProps(props, dialog);
-  // Ariakit renders its backdrop as a real element, so the styled backdrop
-  // comes from the backdrop prop rather than the native ::backdrop channel —
-  // but only for modal dialogs, and an explicit backdrop prop in rest still
-  // wins.
-  return (
-    <ak.Dialog
-      backdrop={(rest.modal ?? true) && <div {...dialogBackdrop.jsx({})} />}
-      {...dialog.jsx(variantProps)}
-      {...rest}
-    />
-  );
+  return <ak.Dialog {...dialog.jsx(variantProps)} {...rest} />;
 }
 
 export interface DialogHeadingProps

@@ -1,6 +1,5 @@
 import { cv } from "clava";
 import { button } from "./button.ts";
-import { layer } from "./layer.ts";
 import { popover, popoverDescription, popoverScroll } from "./popover.ts";
 
 export const dialog = cv({
@@ -19,21 +18,10 @@ export const dialog = cv({
     // keyboard shrinks the dialog instead of covering it. A native dialog has
     // no such measurement and takes the dynamic viewport.
     "max-h-[calc(var(--dialog-viewport-height,100dvh)-var(--dialog-inset)*2)]",
-    "backdrop:backdrop-blur-xs",
-  ],
-});
-
-export const dialogBackdrop = cv({
-  extend: [layer],
-  class: [
-    // A translucent wash of the surface it covers. The layer paints that same
-    // colour opaque, and these only win over it by sorting later.
-    "bg-(--ak-layer)/10 ak-dark:bg-(--ak-layer)/30",
-    "backdrop-blur-xs",
-    // The fade the native ::backdrop takes in popover, on the element Ariakit
-    // renders in its place and marks with data-open like the dialog.
-    "transition-opacity duration-250 ease-[ease]",
-    "ui-open:starting:opacity-0 ui-closed:opacity-0",
+    // A translucent wash of the surface behind the dialog, through the same
+    // channel as the fade: the native ::backdrop and Ariakit's element alike.
+    "ui-backdrop:bg-(--ak-layer)/10 ak-dark:ui-backdrop:bg-(--ak-layer)/30",
+    "ui-backdrop:backdrop-blur-xs",
   ],
 });
 
