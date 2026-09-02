@@ -1,0 +1,36 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { heading } from "@ariakit/ui/styles/heading.ts";
+import { text } from "@ariakit/ui/styles/text.ts";
+import type { GallerySectionId } from "./sections.ts";
+import { getGallerySection } from "./sections.ts";
+
+interface Props {
+  id: GallerySectionId;
+}
+
+const { id } = Astro.props;
+const { title, description, group } = getGallerySection(id);
+const headingId = `${id}-heading`;
+---
+
+<section id={id} aria-labelledby={headingId} class="grid gap-8">
+  <header class="grid max-w-3xl gap-3">
+    <p {...text.html({ $text: "brand", class: "text-sm font-medium" })}>
+      {group.title}
+    </p>
+    <h1 id={headingId} {...heading.html({ class: "mt-0 mb-0 text-balance" })}>
+      {title}
+    </h1>
+    <p class="ak-ink-70 text-lg text-pretty">{description}</p>
+  </header>
+  <slot />
+</section>
