@@ -235,12 +235,15 @@ export function SelectItem({
       <CheckIcon />
     </span>
   );
+  const iconElement = icon != null && (
+    <span {...selectIcon.jsx({})}>{icon}</span>
+  );
   return (
     <ak.ComboboxItem {...selectItem.jsx(variantProps)} {...rest}>
       {checkmark === "before" && check}
-      {checkmark !== "before" && icon}
+      {checkmark !== "before" && iconElement}
       <span {...selectValueLabel.jsx({})}>{rest.children || rest.value}</span>
-      {checkmark === "before" && icon}
+      {checkmark === "before" && iconElement}
       {checkmark === "after" && check}
     </ak.ComboboxItem>
   );
