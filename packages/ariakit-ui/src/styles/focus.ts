@@ -63,3 +63,24 @@ export const focus = cv({
     setVariants({ $focus: false, $focusColor: "unset", $focusOffset: "none" });
   },
 });
+
+/**
+ * The ring for a control whose focus lands on an input inside it, such as a
+ * label around an sr-only radio or checkbox. Extend it beside `focus`, or a
+ * primitive that reaches `focus`: both `$focus` maps emit, so keep this
+ * scale in step with the one above.
+ */
+export const focusWithin = cv({
+  variants: {
+    /**
+     * Whether to show a focus ring when an input inside the element receives
+     * keyboard focus, and how thick it should be.
+     */
+    $focus: {
+      1: "ui-focus-visible-within:outline",
+      true: "ui-focus-visible-within:outline-2",
+      2: "ui-focus-visible-within:outline-2",
+      3: "ui-focus-visible-within:outline-3",
+    },
+  },
+});

@@ -7,9 +7,12 @@ import {
   buttonLabel,
   buttonSlot,
 } from "./button.ts";
+import { focusWithin } from "./focus.ts";
 
 export const checkboxCard = cv({
-  extend: [button],
+  // Focus lands on the input inside the label, so the ring comes from the
+  // -within trigger.
+  extend: [button, focusWithin],
   class: [
     "group/checkbox",
     // A wrapping row, so a description placed directly inside the card falls
@@ -32,19 +35,6 @@ export const checkboxCard = cv({
     "not-ui-disabled-within:ui-checked-within:ak-layer-lighten-0",
   ],
   variants: {
-    /**
-     * Whether to show a focus ring when the card's input receives keyboard
-     * focus, and how thick it should be.
-     */
-    $focus: {
-      // Focus lands on the input itself, so every step repeats the ring
-      // `focus` already draws with the -within trigger. Both maps emit, so
-      // keep this scale in step with that one.
-      1: "ui-focus-visible-within:outline",
-      true: "ui-focus-visible-within:outline-2",
-      2: "ui-focus-visible-within:outline-2",
-      3: "ui-focus-visible-within:outline-3",
-    },
     /**
      * Sets the vertical gap between the element's label and description.
      * @default "card"

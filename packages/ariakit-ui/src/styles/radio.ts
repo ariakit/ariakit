@@ -1,39 +1,41 @@
 import { cv } from "clava";
 import { button, buttonDescription, buttonLabel } from "./button.ts";
+import { focusWithin } from "./focus.ts";
 
 export const radio = cv({
-  extend: [button],
+  // Focus lands on the input inside the label, so the ring comes from the
+  // -within trigger.
+  extend: [button, focusWithin],
   class: [
     "[&_input]:sr-only",
-    // Focus lands on the input itself, so the ring must come from
-    // the -within variant, like the checkbox card's.
-    "ui-focus-visible-within:outline-2",
-    // The indicator dot is a bordered circle drawn with a ::before element,
-    // centered on the text row like the legacy items-center button layout.
-    "before:content-[''] before:size-4 before:flex-none",
-    "before:self-center before:rounded-full before:border-2",
-    "before:border-current before:bg-clip-content before:p-0.5",
+    // A radio is a text row, not a button: the dot and the label start at
+    // the edge instead of centering in the row.
+    "justify-start",
+    // The dot is a bordered circle drawn by ::before. The padding is the gap
+    // between the ring and the fill, which bg-clip-content keeps clear.
+    "before:size-4 before:flex-none before:self-center",
+    "before:rounded-full before:border-2 before:border-current",
+    "before:p-0.5 before:bg-clip-content",
     "before:ak-ink-50",
-    // Checked fills the center pad with the current color. The legacy fill
-    // used bg-current, which the ak-text-* utilities silently kill with an
-    // !important transparent background-color, so the fill is a currentColor
-    // gradient image instead, clipped to the content box by bg-clip-content.
+    // Only the input carries the checked and disabled state, never the label
+    // around it, so the dot's own states come from the -within variants.
+    // ak-text forces an !important transparent background-color, which a
+    // plain background in currentColor never gets past, so the fill is a
+    // gradient image in that color instead.
     "ui-checked-within:before:ak-text",
     "ui-checked-within:before:bg-linear-to-b",
     "ui-checked-within:before:from-current ui-checked-within:before:to-current",
-    // Disabled checked dots stay filled but grey out with the label ink
-    // instead of keeping the brand color.
+    // A disabled radio keeps its dot, in the ink's grey rather than the brand.
     "not-ui-disabled-within:ui-checked-within:before:ak-text-brand",
-    // The ghost layer's bg-transparent would also suppress the hover state
-    // paint; radios have no hover glider, so restore the layer color while
-    // hovered like the legacy ak-radio_hover does. Skipped when disabled so
-    // gradient or image parents don't get a flat rectangle painted on top.
+    // The ghost layer keeps the background transparent, which also hides the
+    // hover shift ak-state-* writes into --ak-layer, so hover paints the
+    // channel by hand. Not when disabled: a flat rectangle would land on a
+    // gradient or image behind the radio.
     "not-ui-disabled-within:ui-hover:bg-(--ak-layer)",
   ],
   defaultVariants: {
-    // Radios sit flat on the surrounding layer like the legacy ak-radio
-    // (a bare ak-button_idle): no painted background until hovered, and the
-    // dot inks compute against the parent layer.
+    // Radios lie flat on the surface around them: nothing is painted until
+    // hovered, and the dot's inks resolve against the parent layer.
     $layer: "ghost",
   },
 });

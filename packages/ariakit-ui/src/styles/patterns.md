@@ -72,6 +72,16 @@ Two things the resolver owes its callers. It has to ignore a bare word it does n
 
 The documentation goes the same way. A variant declared as a function replaces the primitive's JSDoc along with its behaviour, and the editor then shows only what the component wrote. A comment opening "Extends the control's radius values with `auto`" is accurate for a map, where both entries survive, and misleading for a function, where it is now the whole contract and leaves a reader no reason to think a named step or a length still works. Restate the full contract on every variant declared as a function.
 
+That is also how one knob gets a second trigger. `focusWithin` re-declares `$focus` with the `-within` trigger, and a label around an sr-only input extends it beside `button`. Both maps emit for the caller's one value, and the ring the label itself can never show costs a dead rule rather than a conflict. Keep the two scales in step, since nothing checks that they are.
+
+```ts
+// Focus lands on the input inside the label, so the ring comes from the
+// -within trigger.
+export const radio = cv({
+  extend: [button, focusWithin],
+});
+```
+
 Do not reach for the per-component theme tokens, `--radius-field`, `--spacing-card` and the rest. They are on their way out, and frame's own scale already covers them. `--radius-field` is `var(--radius-lg)`, so write `$rounded: "lg"`. `--spacing-field` is `0.75em`, which is `calc(var(--spacing) * 3)`, so write `$p: 3`, which also keeps tracking `--spacing` if a theme moves it.
 
 An element that paints in the edge colour but takes no frame geometry extends `edge` instead. It gets the colour channels, and the layer they resolve against, without eleven frame props that do nothing for it.
