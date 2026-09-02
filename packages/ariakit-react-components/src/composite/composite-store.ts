@@ -9,6 +9,7 @@ import type {
   CollectionStoreState,
 } from "../collection/collection-store.ts";
 import { useCollectionStoreProps } from "../collection/collection-store.ts";
+import { getMoveRequest } from "./__move-request.ts";
 
 export function useCompositeStoreOptions<T extends Core.CompositeStoreOptions>(
   props: T,
@@ -23,6 +24,7 @@ export function useCompositeStoreProps<T extends Core.CompositeStore>(
   props: CompositeStoreProps,
 ) {
   store = useCollectionStoreProps(store, update, props);
+  getMoveRequest(store);
   useStoreProps(store, props, "activeId", "setActiveId");
   const focusOrderProps = {
     compositeElementInFocusOrder:

@@ -40,3 +40,76 @@ test("only focuses the latest item after rapid unresolved moves", async () => {
   expect(q.button("Late")).not.toHaveFocus();
   expect(q.button("Later")).toHaveFocus();
 });
+
+// https://github.com/ariakit/ariakit/issues/7378
+test("does not redirect a pending item move to the composite", async () => {
+  await click(q.button("Focus unavailable action"));
+  await click(q.button("Target pending toolbar"));
+  await click(q.button("Hide pending toolbar"));
+  await click(q.button("Show pending toolbar"));
+
+  expect(q.button("Hide pending toolbar")).toHaveFocus();
+  expect(q.toolbar("Pending actions")).not.toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/issues/7378
+test("does not redirect a pending composite move to an item", async () => {
+  await click(q.button("Hide pending toolbar"));
+  await click(q.button("Focus pending toolbar"));
+  await click(q.button("Target bold action"));
+  await click(q.button("Show pending toolbar"));
+
+  expect(q.button("Hide pending toolbar")).toHaveFocus();
+  expect(q.button("Bold action")).not.toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/issues/7378
+test("does not replay a pending composite move after the active id cycles", async () => {
+  await click(q.button("Hide pending toolbar"));
+  await click(q.button("Focus pending toolbar"));
+  await click(q.button("Target bold action"));
+  await click(q.button("Target pending toolbar"));
+  await click(q.button("Show pending toolbar"));
+
+  expect(q.button("Hide pending toolbar")).toHaveFocus();
+  expect(q.toolbar("Pending actions")).not.toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/issues/7378
+test("does not replay a pending item move after the active id cycles", async () => {
+  await click(q.button("Hide pending toolbar"));
+  await click(q.button("Focus pending bold action"));
+  await click(q.button("Target pending toolbar"));
+  await click(q.button("Target bold action"));
+  await click(q.button("Show pending toolbar"));
+
+  expect(q.button("Hide pending toolbar")).toHaveFocus();
+  expect(q.button("Bold action")).not.toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/issues/7378
+test("does not redirect an item move before the first composite mount", async () => {
+  await click(q.button("Queue initial unavailable action"));
+  await click(q.button("Show initially hidden toolbar"));
+
+  expect(q.button("Show initially hidden toolbar")).toHaveFocus();
+  expect(q.toolbar("Initially hidden actions")).not.toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/issues/7378
+test("does not redirect a composite move before the first composite mount", async () => {
+  await click(q.button("Queue initial toolbar"));
+  await click(q.button("Show initially hidden toolbar"));
+
+  expect(q.button("Show initially hidden toolbar")).toHaveFocus();
+  expect(q.button("Initial bold action")).not.toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/issues/7378
+test("does not redirect a derived composite move before the first mount", async () => {
+  await click(q.button("Queue initial tab list"));
+  await click(q.button("Show initially hidden tab list"));
+
+  expect(q.button("Show initially hidden tab list")).toHaveFocus();
+  expect(q.tab("Initial tab")).not.toHaveFocus();
+});

@@ -196,6 +196,7 @@ export interface HovercardTriggerOptions<
    * never shows the content on hover, since the content would then be
    * reachable by pointer users alone; this prop can't turn that back on.
    * @default true
+   * @deprecated
    * @private
    */
   unstable_showOnHoverWhenDisabled?: BooleanOrCallback<

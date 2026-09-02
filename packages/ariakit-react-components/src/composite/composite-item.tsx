@@ -40,6 +40,10 @@ import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
 import {
+  accessibleWhenDisabledFromProps,
+  resolvedTrulyDisabledFromElement,
+} from "../focusable/__utils.ts";
+import {
   CompositeItemContext,
   CompositeRowContext,
   useCompositeScopedContext,
@@ -166,6 +170,8 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     const context = useCompositeScopedContext();
     store = store || context;
 
+    const accessibleWhenDisabled = accessibleWhenDisabledFromProps(props);
+
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
     const mountedElementRef = useRef<HTMLType>(null);
@@ -177,7 +183,8 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     }, []);
     const row = useContext(CompositeRowContext);
     const disabled = disabledFromProps(props);
-    const trulyDisabled = disabled && !props.accessibleWhenDisabled;
+    const trulyDisabled = disabled && !accessibleWhenDisabled;
+    const inactiveDisabled = disabled && props.focusable === false;
     // Snapshot before the props object is replaced below (useCollectionItem
     // consumes this prop), so the onFocus handler can read it at event time.
     const shouldRegisterItem = props.shouldRegisterItem;
@@ -240,11 +247,11 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         isTabbable(state) {
           if (!state) return true;
           // The composite element is published in a layout effect, one commit
-          // after the items mount, while rendered items are only published on
-          // the next animation frame. Both are empty before hydration and on
-          // the first commit, which is when items must keep their native tab
-          // order. Both conditions are necessary: a composite store may never
-          // get a composite element, and its items must still roam.
+          // after the items mount, while rendered items are published once the
+          // items' registration effects flush. Both are empty before hydration
+          // and on the first commit, which is when items must keep their native
+          // tab order. Both conditions are necessary: a composite store may
+          // never get a composite element, and its items must still roam.
           if (!state.compositeElement && !state.renderedItems.length) {
             return true;
           }
@@ -267,11 +274,16 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
+        const renderedTrulyDisabled = item.element
+          ? resolvedTrulyDisabledFromElement(item.element)
+          : undefined;
+        const itemDisabled =
+          renderedTrulyDisabled ?? (inactiveDisabled || trulyDisabled);
         const nextItem = {
           ...item,
           id: id || item.id,
           rowId,
-          disabled: trulyDisabled,
+          disabled: itemDisabled,
           children: item.element?.textContent,
           typeaheadText,
         };
@@ -280,7 +292,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         }
         return nextItem;
       },
-      [id, rowId, trulyDisabled, typeaheadText, getItemProp],
+      [id, rowId, inactiveDisabled, trulyDisabled, typeaheadText, getItemProp],
     );
 
     const onFocusProp = props.onFocus;
@@ -599,6 +611,7 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
   store?: CompositeStore;
   /**
    * Determines how the item is scrolled into view when it's presented.
+   * @deprecated
    * @private
    */
   unstable_scrollIntoView?: (element: HTMLElement) => void;

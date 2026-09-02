@@ -1,11 +1,12 @@
-import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/3274
-  test("keeps the select open when the viewport resizes", async ({ page }) => {
-    const q = query(page);
+  test("keeps the select open when the viewport resizes", async ({
+    page,
+    q,
+  }) => {
     const select = q.combobox("Language");
     const input = q.combobox("Search languages");
     const dialog = q.dialog("Languages");

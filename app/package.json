@@ -56,12 +56,12 @@
     "@ariakit/ui": "workspace:*",
     "@ariakit/utils": "workspace:*",
     "@astrojs/check": "0.9.10",
-    "@astrojs/cloudflare": "14.2.4",
+    "@astrojs/cloudflare": "14.2.5",
     "@astrojs/markdown-remark": "7.2.4",
     "@astrojs/mdx": "7.0.8",
     "@astrojs/react": "6.0.4",
     "@astrojs/solid-js": "7.0.2",
-    "@clerk/astro": "4.0.19",
+    "@clerk/astro": "4.0.20",
     "@fontsource-variable/inter": "5.3.0",
     "@radix-ui/react-popover": "1.1.23",
     "@radix-ui/react-select": "2.3.7",
@@ -70,9 +70,9 @@
     "@stackblitz/sdk": "1.11.1",
     "@stripe/stripe-js": "9.14.0",
     "@tailwindcss/vite": "4.3.3",
-    "@tanstack/react-query": "5.102.3",
-    "@wordpress/components": "39.0.0",
-    "astro": "7.2.6",
+    "@tanstack/react-query": "5.102.8",
+    "@wordpress/components": "40.0.0",
+    "astro": "7.2.9",
     "astro-remote": "0.3.4",
     "canvas-confetti": "1.9.4",
     "clsx": "2.1.1",
@@ -83,7 +83,7 @@
     "import-meta-resolve": "4.2.0",
     "kleur": "4.1.5",
     "lodash-es": "4.18.1",
-    "lucide-react": "1.34.0",
+    "lucide-react": "1.37.0",
     "match-sorter": "8.3.0",
     "motion": "13.1.1",
     "parse-numeric-range": "1.3.0",
@@ -97,7 +97,7 @@
     "rehype-parse": "9.0.1",
     "shiki": "4.4.3",
     "solid-js": "1.9.15",
-    "stripe": "22.5.0",
+    "stripe": "22.6.0",
     "tailwindcss": "4.3.3",
     "textarea-caret": "3.1.0",
     "ts-morph": "28.0.0",
@@ -105,7 +105,7 @@
     "unified": "11.0.5",
     "unist-util-visit": "5.1.0",
     "use-local-storage-state": "20.0.0",
-    "zod": "4.4.3"
+    "zod": "4.5.4"
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
@@ -129,6 +129,6 @@
     "rimraf": "6.1.3",
     "vite": "8.2.2",
     "vitest": "4.1.11",
-    "wrangler": "4.125.0"
+    "wrangler": "4.127.1"
   }
 }

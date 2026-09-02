@@ -30,14 +30,16 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { isCompositeMoveKey, trulyDisabledAttribute } from "./__utils.ts";
+import {
+  accessibleWhenDisabledSymbol,
+  isCompositeMoveKey,
+  trulyDisabledAttribute,
+} from "./__utils.ts";
 import { FocusableContext } from "./focusable-context.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-
-const accessibleWhenDisabledSymbol = Symbol("accessibleWhenDisabled");
 
 const isSafariBrowser = isSafari();
 
@@ -493,12 +495,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         tabIndexProp: props.tabIndex,
       }),
       disabled: supportsDisabled && trulyDisabled ? true : undefined,
-      // Placed after the spread, like the props above, so the innermost
-      // Focusable decides. Only an active Focusable stamps: with
-      // `focusable={false}` this layer resolves nothing, and an outer trigger
-      // may still keep the element keyboard reachable, so the trigger checks
-      // its own `focusable` prop for that case instead.
-      [trulyDisabledAttribute]: trulyDisabled || undefined,
+      // Placed after the spread so the innermost active Focusable writes its
+      // exact result. An inactive layer removes outer values so CompositeItem
+      // can fall back to its own disabled state.
+      [trulyDisabledAttribute]: disabled ? trulyDisabled : undefined,
       // TODO: Add contentEditable coverage.
       contentEditable: disabled ? undefined : props.contentEditable,
       onKeyPressCapture,

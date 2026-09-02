@@ -1,11 +1,11 @@
-import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("https://github.com/ariakit/ariakit/issues/3941", async ({ page }) => {
-    const q = query(page);
-
+  test("https://github.com/ariakit/ariakit/issues/3941", async ({
+    page,
+    q,
+  }) => {
     await q.combobox().click();
     await expect(q.dialog()).toBeVisible();
 

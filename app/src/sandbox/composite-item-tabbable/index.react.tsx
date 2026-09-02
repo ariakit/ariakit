@@ -70,6 +70,202 @@ function RovingListbox() {
   );
 }
 
+function InheritedAccessibleDisabledListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite
+        role="listbox"
+        aria-label="Inherited accessible disabled"
+      >
+        <Ariakit.CompositeItem id="inherited-one" role="option">
+          Inherited one
+        </Ariakit.CompositeItem>
+        <Ariakit.Focusable
+          disabled
+          accessibleWhenDisabled
+          render={<Ariakit.CompositeItem id="inherited-two" role="option" />}
+        >
+          Inherited two
+        </Ariakit.Focusable>
+        <Ariakit.CompositeItem id="inherited-three" role="option">
+          Inherited three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function RenderedAccessibleDisabledListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite
+        role="listbox"
+        aria-label="Rendered accessible disabled"
+      >
+        <Ariakit.CompositeItem role="option">
+          Rendered one
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem
+          disabled
+          role="option"
+          render={<Ariakit.Focusable accessibleWhenDisabled />}
+        >
+          Rendered two
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">
+          Rendered three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function NestedDisabledOverrideListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite role="listbox" aria-label="Nested disabled override">
+        <Ariakit.CompositeItem role="option">Nested one</Ariakit.CompositeItem>
+        <Ariakit.Focusable
+          disabled
+          accessibleWhenDisabled
+          render={
+            <Ariakit.CompositeItem
+              role="option"
+              render={
+                <Ariakit.Focusable
+                  accessibleWhenDisabled={false}
+                  render={<button type="button" />}
+                />
+              }
+            />
+          }
+        >
+          Nested two
+        </Ariakit.Focusable>
+        <Ariakit.CompositeItem role="option">
+          Nested three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function InactiveFocusableListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite role="listbox" aria-label="Inactive focusable">
+        <Ariakit.CompositeItem role="option">
+          Inactive one
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem disabled focusable={false} role="option">
+          Inactive two
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">
+          Inactive three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function RenderedInactiveFocusableListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite
+        role="listbox"
+        aria-label="Rendered inactive focusable"
+      >
+        <Ariakit.CompositeItem role="option">
+          Rendered inactive one
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem
+          disabled
+          role="option"
+          render={<Ariakit.Focusable focusable={false} />}
+        >
+          Rendered inactive two
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">
+          Rendered inactive three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function RenderedActiveFocusableListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite role="listbox" aria-label="Rendered active focusable">
+        <Ariakit.CompositeItem role="option">
+          Rendered active one
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem
+          disabled
+          focusable={false}
+          role="option"
+          render={
+            <Ariakit.Focusable disabled focusable accessibleWhenDisabled />
+          }
+        >
+          Rendered active two
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">
+          Rendered active three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function DirectAccessibleInactiveListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite role="listbox" aria-label="Direct accessible inactive">
+        <Ariakit.CompositeItem role="option">
+          Direct accessible inactive one
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem
+          disabled
+          focusable={false}
+          accessibleWhenDisabled
+          role="option"
+        >
+          Direct accessible inactive two
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">
+          Direct accessible inactive three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function InheritedAccessibleInactiveListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite
+        role="listbox"
+        aria-label="Inherited accessible inactive"
+      >
+        <Ariakit.CompositeItem role="option">
+          Inherited accessible inactive one
+        </Ariakit.CompositeItem>
+        <Ariakit.Focusable
+          disabled
+          accessibleWhenDisabled
+          render={<Ariakit.CompositeItem focusable={false} role="option" />}
+        >
+          Inherited accessible inactive two
+        </Ariakit.Focusable>
+        <Ariakit.CompositeItem role="option">
+          Inherited accessible inactive three
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -78,6 +274,14 @@ export default function Example() {
       <UnsupportedVirtualFocusListbox />
       <SeededListbox />
       <RovingListbox />
+      <InheritedAccessibleDisabledListbox />
+      <RenderedAccessibleDisabledListbox />
+      <NestedDisabledOverrideListbox />
+      <InactiveFocusableListbox />
+      <RenderedInactiveFocusableListbox />
+      <RenderedActiveFocusableListbox />
+      <DirectAccessibleInactiveListbox />
+      <InheritedAccessibleInactiveListbox />
     </>
   );
 }

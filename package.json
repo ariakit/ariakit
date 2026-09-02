@@ -57,7 +57,7 @@
     "@types/node": "24.13.3",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
-    "@vitejs/plugin-react": "6.1.0",
+    "@vitejs/plugin-react": "6.1.1",
     "@vitest/coverage-v8": "4.1.11",
     "chalk": "6.0.0",
     "chokidar": "5.0.0",
@@ -66,9 +66,9 @@
     "cross-spawn": "7.0.6",
     "fs-extra": "11.4.0",
     "glob": "13.0.6",
-    "happy-dom": "20.11.6",
+    "happy-dom": "20.11.15",
     "jsdom": "30.0.1",
-    "lefthook": "2.1.10",
+    "lefthook": "2.1.12",
     "open-cli": "9.0.0",
     "oxfmt": "0.65.0",
     "oxlint": "1.80.0",
@@ -95,5 +95,5 @@
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@11.24.0"
+  "packageManager": "pnpm@11.25.0"
 }

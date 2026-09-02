@@ -35,6 +35,7 @@ import type {
 import { useEffect, useRef } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
+import { getMoveRequest } from "./__move-request.ts";
 import {
   CompositeScopedContextProvider,
   useCompositeProviderContext,
@@ -116,6 +117,29 @@ function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
 
 type PresentItem = ReturnType<typeof usePresentItem>;
 
+/**
+ * Whether `instance` may act on the store's current move. An unconsumed request
+ * is available to whichever instance is around; a consumed one stays with the
+ * instance that consumed it, so its own effects can still run again.
+ */
+function mayActOnMove(store: CompositeStore, instance: object) {
+  const { consumedBy } = getMoveRequest(store);
+  return !consumedBy || consumedBy === instance;
+}
+
+/**
+ * Records that `instance` consumed the store's move `moves`, so no later
+ * instance replays it. It is per component instance rather than per composite
+ * element, because switching the `composite` prop off and on again mounts a
+ * fresh instance while the element itself survives. A consumption that arrives
+ * after the count has moved on is dropped, resets included, because it settles
+ * the request the count held when it started.
+ */
+function consumeMove(store: CompositeStore, instance: object, moves: number) {
+  if (store.getState().moves !== moves) return;
+  getMoveRequest(store).consumedBy = instance;
+}
+
 interface CompositeFocusOnMoveProps {
   store: CompositeStore;
   focusOnMove?: boolean;
@@ -129,8 +153,8 @@ interface CompositeFocusOnMoveProps {
  * item. This lives in a separate memoized component so moving through items
  * doesn't re-render the whole composite component, and composite re-renders
  * don't re-render this component. It's only rendered when the `composite` prop
- * is enabled, so the `moves` subscription doesn't run for non-composite
- * widgets.
+ * is enabled, so this render-driving subscription doesn't run for
+ * non-composite widgets. The store hook tracks move requests separately.
  */
 const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   store,
@@ -149,13 +173,22 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   // `false` to `true` after a `move(null)` call. The composite element rarely
   // changes, so this doesn't add renders while navigating.
   const compositeElement = useStoreState(store, "compositeElement");
+  // Identifies this instance to the store's move request. A ref survives the
+  // effect re-runs of the same instance, including StrictMode's double
+  // invocation, but not a remount, which is exactly the distinction the request
+  // needs.
+  const instanceRef = useRef({});
 
   // Present the active item.
   useEffect(() => {
+    const moveRequest = getMoveRequest(store);
     if (!moves) return;
     if (!focusOnMove) return;
+    const instance = instanceRef.current;
+    if (!mayActOnMove(store, instance)) return;
     const { activeId } = store.getState();
     if (activeId == null) return;
+    if (activeId !== moveRequest.targetId) return;
     // A programmatic move made while focus is already outside keeps its
     // focusOnMove behavior. If focus starts inside, the presentation is
     // abandoned once the user moves it elsewhere.
@@ -164,6 +197,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
       requireFocus: ownsFocus(store),
       focus: true,
       scrollIntoView,
+      onConsume: () => consumeMove(store, instance, moves),
     });
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- store invalidation signal
   }, [store, moves, focusOnMove, compositeElement, present, scrollIntoView]);
@@ -171,11 +205,18 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   // If composite.move(null) has been called, the composite container should
   // receive focus.
   useSafeLayoutEffect(() => {
+    const moveRequest = getMoveRequest(store);
     if (!moves) return;
     if (!compositeElement) return;
+    const instance = instanceRef.current;
+    if (!mayActOnMove(store, instance)) return;
     const { activeId } = store.getState();
     const isSelfActive = activeId === null;
     if (!isSelfActive) return;
+    if (activeId !== moveRequest.targetId) return;
+    // This branch has nothing left to wait for, so it consumes the request
+    // here rather than reporting back the way a presentation does.
+    consumeMove(store, instance, moves);
     const previousElement = previousElementRef.current;
     // We have to clean up the previous element ref so an additional blur
     // event is not fired on it, for example, when looping through items while
@@ -603,6 +644,7 @@ export interface CompositeOptions<
   store?: CompositeStore;
   /**
    * Determines how an item is scrolled into view when it's presented.
+   * @deprecated
    * @private
    */
   unstable_scrollIntoView?: (element: HTMLElement) => void;
@@ -611,10 +653,15 @@ export interface CompositeOptions<
    * needs to be set to `false` when merging various composite widgets where
    * only one should function in that manner.
    *
-   * If disabled, this component will stop managing focus and keyboard
-   * navigation for its items and itself. Additionally, composite ARIA
-   * attributes won't be applied. These responsibilities should be taken over by
-   * another composite component.
+   * If `false`, this component disables its
+   * [`focusOnMove`](https://ariakit.com/reference/composite#focusonmove)
+   * behavior and stops applying composite ARIA attributes. Another composite
+   * component should take over these responsibilities.
+   *
+   * Keyboard navigation on items remains active and can still change the
+   * active item. To disable arrow-key navigation, set
+   * [`moveOnKeyPress`](https://ariakit.com/reference/composite#moveonkeypress)
+   * to `false` on this component and its items.
    *
    * **Note**: In most cases, this prop doesn't need to be set manually. For
    * example, when composing [Menu with
@@ -637,8 +684,8 @@ export interface CompositeOptions<
    * arrow keys are pressed, given that the composite element is focused and
    * there's no active item.
    *
-   * **Note**: To entirely disable focus moving within a composite widget, you
-   * can use the
+   * **Note**: To control automatic focus movement when navigating through items,
+   * use the
    * [`focusOnMove`](https://ariakit.com/reference/composite#focusonmove) prop
    * instead. If you want to control the behavior _only when arrow keys are
    * pressed_, where
@@ -664,10 +711,8 @@ export interface CompositeOptions<
    * [`move`](https://ariakit.com/reference/use-composite-store#move) method
    * directly.
    *
-   * Unlike the
-   * [`composite`](https://ariakit.com/reference/composite#composite-1) prop,
-   * this option doesn't disable the entire composite widget behavior. It only
-   * stops this component from managing focus when navigating through items.
+   * Disabling this option doesn't disable keyboard navigation or other
+   * composite behavior, such as applying composite ARIA attributes.
    *
    * **Note**: If you want to control the behavior only _when arrow keys are
    * pressed_, use the

@@ -3,9 +3,13 @@ import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { getPopupRole, invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
+import { useContext } from "react";
 import type { CompositeRowOptions } from "../composite/composite-row.tsx";
 import { useCompositeRow } from "../composite/composite-row.tsx";
-import { useComboboxScopedContext } from "./combobox-context.tsx";
+import {
+  ComboboxListRoleContext,
+  useComboboxScopedContext,
+} from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -39,7 +43,9 @@ export const useComboboxRow = createHook<TagName, ComboboxRowOptions>(
     );
 
     const contentElement = useStoreState(store, "contentElement");
-    const popupRole = getPopupRole(contentElement);
+    const listRole = useContext(ComboboxListRoleContext);
+    const popupRole =
+      listRole?.store === store ? listRole.role : getPopupRole(contentElement);
     const role = popupRole === "grid" ? "row" : "presentation";
 
     props = { role, ...props };
