@@ -8,12 +8,14 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Code } from "@ariakit/ui/components/code.ariakit.react.tsx";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react.tsx";
+import { ListItem } from "@ariakit/ui/components/list.ariakit.react.tsx";
 import ContentAdmonition from "./content-admonition.astro";
 import ContentCodeBlock from "./content-code-block.astro";
 import ContentDisclosure from "./content-disclosure.astro";
 import ContentHeading from "./content-heading.astro";
 import ContentLink from "./content-link.astro";
-import ContentListItem from "./content-list-item.astro";
 import ContentList from "./content-list.astro";
 import ContentParagraph from "./content-paragraph.astro";
 import ContentSeparator from "./content-separator.astro";
@@ -30,7 +32,13 @@ export const components = {
   h6: ContentHeading,
   ul: ContentList,
   ol: ContentList,
-  li: ContentListItem,
+  li: ListItem,
+  inlinecode: Code,
+  // Reached by the reference pages, which swap components into already
+  // rendered html by tag name. An mdx file writes <Kbd> and imports it: a tag
+  // an author writes out compiles to a plain string tag, so it never looks at
+  // this map, which only receives the elements markdown generates.
+  kbd: Kbd,
   admonition: ContentAdmonition,
   hr: ContentSeparator,
   details: ContentDisclosure,

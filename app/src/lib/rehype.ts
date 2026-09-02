@@ -12,6 +12,22 @@ import { toText } from "hast-util-to-text";
 import { visit } from "unist-util-visit";
 import { encodeBase64 } from "./base64.ts";
 
+/**
+ * Renames inline code to its own tag so a component can be mapped to it. A
+ * fenced block is a `code` inside a `pre`, and the code block component
+ * reconstructs it by parsing its own rendered slot, so that one has to stay
+ * the native element.
+ */
+export function rehypeInlineCode() {
+  return (tree: Root) => {
+    visit(tree, "element", (node, _index, parent) => {
+      if (node.tagName !== "code") return;
+      if (parent?.type === "element" && parent.tagName === "pre") return;
+      node.tagName = "inlinecode";
+    });
+  };
+}
+
 interface RehypeAsTagNameOptions {
   tags: string[];
 }

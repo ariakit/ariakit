@@ -1,8 +1,14 @@
 import {
+  Badge,
+  BadgeLabel,
+} from "@ariakit/ui/components/badge.ariakit.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
+import {
   Disclosure,
   DisclosureButton,
-} from "#app/examples/_lib/ariakit/disclosure.react.tsx";
-import { Table } from "#app/examples/_lib/ariakit/table.react.tsx";
+} from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
+import { Table } from "@ariakit/ui/components/table.ariakit.react.tsx";
+import { heading } from "@ariakit/ui/styles/heading.ts";
 
 function formatDate(isoString: string) {
   const date = new Date(isoString);
@@ -44,9 +50,9 @@ export default function Example() {
     <>
       <span className="flex items-center gap-2">
         <span>Expires 10/27</span>
-        <span className="ak-badge-primary">
-          <span>Default</span>
-        </span>
+        <Badge render={<span />} $layer="brand">
+          <BadgeLabel>Default</BadgeLabel>
+        </Badge>
       </span>
       <span>Last used Sep 6, 2025</span>
     </>
@@ -64,14 +70,18 @@ export default function Example() {
 
   return (
     <div className="w-200 max-w-[100cqi] grid gap-4">
-      <h2 className="ak-heading text-center">Payment methods</h2>
+      <h2 {...heading.jsx({ className: "text-center" })}>Payment methods</h2>
       <Disclosure
         split
         button={button}
-        className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering @container"
+        $rounded="xl"
+        $p={4}
+        $lighten
+        $border
+        className="@container"
       >
         <div className="grid @2xl:grid-cols-[max-content_1fr] ak-frame ak-frame-cover ak-frame-p-0 text-sm">
-          <section className="ak-layer ak-frame ak-frame-none/(--ak-disclosure-padding) grid gap-4 @2xl:border-e @max-2xl:border-b">
+          <section className="ak-layer ak-frame ak-frame-none/(--disclosure-padding) grid gap-4 @2xl:border-e @max-2xl:border-b">
             <div className="grid gap-1">
               <h4 className="text-sm ak-ink-60">Card details</h4>
               <div>
@@ -93,23 +103,20 @@ export default function Example() {
             <div className="grid gap-2">
               <h4 className="text-sm ak-ink-60">Actions</h4>
               <div className="flex flex-wrap gap-2">
-                <button className="ak-button ak-layer ak-layer-6">Edit</button>
-                <button className="ak-button ak-layer ak-layer-6">
-                  Remove
-                </button>
-                <button className="ak-button ak-layer ak-layer-6">
-                  Make default
-                </button>
+                <Button>Edit</Button>
+                <Button>Remove</Button>
+                <Button>Make default</Button>
               </div>
             </div>
           </section>
           <section className="grid content-start">
-            <div className="p-(--ak-disclosure-padding)">
+            <div className="p-(--disclosure-padding)">
               <h4 className="text-sm ak-ink-60">Recent charges</h4>
             </div>
             <Table<"date" | "description" | "amount">
-              className="ak-table-border-y ak-table-px-(--ak-disclosure-padding)"
-              container={{ className: "rounded-none ak-table-border-t" }}
+              $borderBlock
+              $px="var(--disclosure-padding)"
+              container={{ className: "rounded-none", $borderBlockStart: true }}
               rows={[
                 {
                   group: "head",

@@ -1,17 +1,17 @@
-import { clsx } from "clsx";
-import { createContext, useContext } from "react";
 import type {
   DisclosureButtonProps,
   DisclosureContentProps,
   DisclosureProps,
-} from "#app/examples/_lib/ariakit/disclosure.react.tsx";
+} from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
 import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
   DisclosureContentBody,
-} from "#app/examples/_lib/ariakit/disclosure.react.tsx";
-import { createRender } from "#app/examples/_lib/react-utils/create-render.react.ts";
+} from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
+import { createRender } from "@ariakit/ui/react-utils/create-render.react.ts";
+import { clsx } from "clsx";
+import { createContext, useContext } from "react";
 
 const NestedReasoningContext = createContext(false);
 
@@ -25,17 +25,21 @@ export function Reasoning(props: ReasoningProps) {
     <div
       className={clsx(
         nested &&
-          "ak-frame ak-frame-cover ak-frame-p-1 -my-[calc(var(--ak-disclosure-padding)*0.6)]",
+          "ak-frame ak-frame-cover ak-frame-p-1 -my-[calc(var(--disclosure-padding)*0.6)]",
       )}
     >
       <Disclosure
+        $rounded={nested ? "lg" : "xl"}
+        $p={nested ? 3 : 4}
+        $lighten={!nested}
+        $border={!nested}
         {...props}
         button={button}
         content={content}
         className={clsx(
-          nested
-            ? "ak-frame ak-frame-field/3 data-open:ak-layer data-open:ak-layer-6"
-            : "ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering",
+          // A nested step only paints a surface once it is open, which no
+          // variant can express: the flag lives on the element itself.
+          nested && "data-open:ak-layer data-open:ak-layer-6",
           props.className,
         )}
       />
@@ -58,16 +62,20 @@ export interface ReasoningContentProps extends DisclosureContentProps {}
 export function ReasoningContent(props: ReasoningContentProps) {
   const nested = useContext(NestedReasoningContext);
   const body = createRender(DisclosureContentBody, props.body, {
-    className: "ak-prose-text-sm",
+    // The /relaxed modifier keeps the prose line-height ratio at the
+    // smaller font size.
+    $prose: true,
+    className: "text-sm/relaxed",
   });
   return (
     <NestedReasoningContext.Provider value={true}>
       <DisclosureContent
-        prose
         {...props}
         body={body}
         className={clsx(
-          !nested && "data-open:max-h-140 overflow-y-auto",
+          // The important cap beats the cv's own open max-h-max channels,
+          // which land later in the stylesheet.
+          !nested && "data-open:max-h-140! overflow-y-auto",
           props.className,
         )}
       />

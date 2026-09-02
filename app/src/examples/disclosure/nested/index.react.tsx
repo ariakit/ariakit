@@ -1,3 +1,5 @@
+import { Code } from "@ariakit/ui/components/code.ariakit.react.tsx";
+import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react.tsx";
 import { Reasoning } from "./reasoning.react.tsx";
 
 export default function Example() {
@@ -14,8 +16,8 @@ export default function Example() {
             The user's prompt contains three key concepts that I need to
             synthesize:
           </p>
-          <ol>
-            <li>
+          <List ordered>
+            <ListItem>
               <p>
                 <strong>The UI Pattern: Dropdown</strong>
               </p>
@@ -24,8 +26,8 @@ export default function Example() {
                 toggled into view by a user action, typically a click on a
                 button or icon. It will contain a list of actions.
               </p>
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               <p>
                 <strong>The Context: User Management</strong>
               </p>
@@ -36,8 +38,8 @@ export default function Example() {
                 row in a user table. Actions will likely include things like
                 "Edit User," "Change Role," or "Delete User."
               </p>
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               <p>
                 <strong>The Implementation Goal: Component</strong>
               </p>
@@ -47,8 +49,8 @@ export default function Example() {
                 framework. I will assume a React-like environment for my
                 reasoning process.
               </p>
-            </li>
-          </ol>
+            </ListItem>
+          </List>
         </Reasoning>
         <Reasoning button="State and Structural Planning">
           <p>
@@ -57,36 +59,36 @@ export default function Example() {
           </p>
           <p>
             I will need a boolean state variable, let's call it{" "}
-            <code>isOpen</code>, initialized to <code>false</code>. A user
+            <Code>isOpen</Code>, initialized to <Code>false</Code>. A user
             clicking the trigger element (e.g., a "..." icon button) will toggle
             this state.
           </p>
           <p>The component's structure will consist of:</p>
-          <ul>
-            <li>
+          <List>
+            <ListItem>
               A container element to hold everything and establish a positional
               context.
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               The trigger button that the user interacts with. Its{" "}
-              <code>onClick</code> handler will manage the <code>isOpen</code>{" "}
+              <Code>onClick</Code> handler will manage the <Code>isOpen</Code>{" "}
               state.
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               The menu panel, which will be rendered conditionally based on the{" "}
-              <code>isOpen</code> state. It will be positioned absolutely
+              <Code>isOpen</Code> state. It will be positioned absolutely
               relative to the container.
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               Inside the menu, a list of action items. These items should not be
               hardcoded; they should be generated based on props passed into the
               component to make it reusable.
-            </li>
-          </ul>
+            </ListItem>
+          </List>
           <p>
             The component's props interface will therefore need to accept
-            handlers for these actions, such as an <code>onEdit</code> function
-            and an <code>onDelete</code> function.
+            handlers for these actions, such as an <Code>onEdit</Code> function
+            and an <Code>onDelete</Code> function.
           </p>
         </Reasoning>
         <p>
@@ -99,20 +101,20 @@ export default function Example() {
             To improve usability, the dropdown must close automatically in
             response to certain events. I'll need to manage these side effects.
           </p>
-          <ol>
-            <li>
+          <List ordered>
+            <ListItem>
               <p>
                 <strong>Clicking Outside</strong>
               </p>
               <p>
                 When the menu is open, I'll attach a global event listener to
                 the document to listen for clicks. If a click occurs outside the
-                component's boundaries, I will set <code>isOpen</code> to{" "}
-                <code>false</code>. This requires a way to reference the
+                component's boundaries, I will set <Code>isOpen</Code> to{" "}
+                <Code>false</Code>. This requires a way to reference the
                 component's main DOM element to perform this check.
               </p>
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               <p>
                 <strong>Pressing the Escape Key</strong>
               </p>
@@ -122,11 +124,11 @@ export default function Example() {
                 close. This is a standard and expected behavior for modal-like
                 elements.
               </p>
-            </li>
-          </ol>
+            </ListItem>
+          </List>
           <p>
             It's critical that these global event listeners are only active when
-            the dropdown is open. They must be added when <code>isOpen</code>{" "}
+            the dropdown is open. They must be added when <Code>isOpen</Code>{" "}
             becomes true and, importantly, removed (cleaned up) when it becomes
             false or when the component is removed from the UI, to prevent
             memory leaks.
@@ -138,26 +140,26 @@ export default function Example() {
             incorporate ARIA attributes to provide semantic meaning for screen
             readers and other assistive technologies.
           </p>
-          <ul>
-            <li>
-              The trigger button needs <code>aria-haspopup="true"</code> to
+          <List>
+            <ListItem>
+              The trigger button needs <Code>aria-haspopup="true"</Code> to
               indicate it controls a menu.
-            </li>
-            <li>
-              The button also needs <code>aria-expanded</code>, which will be
-              dynamically set to match the <code>isOpen</code> state. This tells
+            </ListItem>
+            <ListItem>
+              The button also needs <Code>aria-expanded</Code>, which will be
+              dynamically set to match the <Code>isOpen</Code> state. This tells
               assistive tech whether the menu it controls is currently visible.
-            </li>
-            <li>
+            </ListItem>
+            <ListItem>
               The list of actions should be wrapped in an element with{" "}
-              <code>role="menu"</code>.
-            </li>
-            <li>
+              <Code>role="menu"</Code>.
+            </ListItem>
+            <ListItem>
               Each individual, clickable action within the list should have a{" "}
-              <code>role="menuitem"</code>. Using a <code>&lt;button&gt;</code>{" "}
+              <Code>role="menuitem"</Code>. Using a <Code>&lt;button&gt;</Code>{" "}
               for each is semantically correct.
-            </li>
-          </ul>
+            </ListItem>
+          </List>
           <p>
             This semantic structure ensures the component can be understood and
             navigated by all users, not just those who can see its visual

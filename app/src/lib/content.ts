@@ -15,7 +15,7 @@ import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
 import { getFramework, isFramework } from "./frameworks.ts";
-import { rehypeAsTagName } from "./rehype.ts";
+import { rehypeAsTagName, rehypeInlineCode } from "./rehype.ts";
 import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
@@ -135,6 +135,7 @@ async function getMarkdownRenderer() {
   }
   markdownRenderer = await createUnifiedProcessor({
     rehypePlugins: [
+      rehypeInlineCode as RehypePlugin,
       [
         rehypeAsTagName as RehypePlugin,
         { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },

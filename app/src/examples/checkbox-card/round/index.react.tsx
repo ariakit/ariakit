@@ -27,7 +27,7 @@ export default function Example() {
       <CheckboxCardGrid
         value={values}
         setValue={setValues}
-        className="w-150 max-w-[100cqi] flex flex-wrap gap-2 p-2 justify-center"
+        className="w-150 max-w-[100cqi] flex! flex-wrap gap-2! p-2 justify-center"
       >
         {Object.entries(interests).map(([key, interest]) => (
           <CheckboxCard

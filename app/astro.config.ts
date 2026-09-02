@@ -23,6 +23,7 @@ import { previewIntegration } from "./src/lib/preview-integration.ts";
 import {
   rehypeAdmonitions,
   rehypeAsTagName,
+  rehypeInlineCode,
   rehypePreviousCode,
 } from "./src/lib/rehype.ts";
 import { sourcePlugin } from "./src/lib/source-plugin.ts";
@@ -99,6 +100,7 @@ export default defineConfig({
     processor: unified({
       rehypePlugins: [
         rehypeHeadingIds,
+        rehypeInlineCode,
         rehypePreviousCode,
         rehypeAdmonitions,
         [rehypeAutolinkHeadings, { behavior: "wrap" }],

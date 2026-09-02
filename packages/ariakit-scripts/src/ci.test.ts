@@ -53,7 +53,6 @@ test("keeps core checks on every pull request", () => {
     plus: false,
     release_preview: false,
     docs: false,
-    build_styles: false,
     og_images: false,
   });
 });
@@ -475,7 +474,6 @@ test("runs app, performance, docs, release, and website checks for package code"
     plus: true,
     release_preview: true,
     docs: true,
-    build_styles: false,
     og_images: true,
   });
 });
@@ -507,13 +505,11 @@ test("falls back to full CI for unknown non-documentation paths", () => {
 });
 
 test("runs generated asset workflows only for their inputs", () => {
-  const stylesPlan = createCIPlan(["app/src/styles/ak-button.css"]);
-  expect(stylesPlan.workflows.build_styles).toBe(true);
+  const stylesPlan = createCIPlan(["app/src/styles/button.css"]);
   expect(stylesPlan.workflows.og_images).toBe(true);
 
   const ogPlan = createCIPlan(["app/src/pages/og-image/api.ts"]);
   expect(ogPlan.workflows.og_images).toBe(true);
-  expect(ogPlan.workflows.build_styles).toBe(false);
 });
 
 test("runs OG generation for package runtime imported by the renderer", () => {

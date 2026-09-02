@@ -8,41 +8,23 @@
  */
 @import "@ariakit/tailwind";
 
-@import "./ak-aurora.css";
-@import "./ak-icon.css";
-@import "./ak-badge.css";
-@import "./ak-command.css";
-@import "./ak-button.css";
-@import "./ak-checkbox.css";
-@import "./ak-radio.css";
-@import "./ak-option.css";
-@import "./ak-tab.css";
-@import "./ak-popover.css";
-@import "./ak-dialog.css";
-@import "./ak-disclosure.css";
-@import "./ak-nav.css";
-@import "./ak-tooltip.css";
-@import "./ak-select.css";
-@import "./ak-container.css";
-@import "./ak-input.css";
-@import "./ak-kbd.css";
-@import "./ak-link.css";
-@import "./ak-progress.css";
-@import "./ak-list.css";
-@import "./ak-heading.css";
-@import "./ak-segmented.css";
-@import "./ak-table.css";
-@import "./ak-sidebar.css";
-@import "./ak-prose.css";
-
 @theme {
-  --spacing: 0.25rem;
-  --spacing-px: 1px;
-  --radius: 0.25rem;
-
   --color-canvas: oklch(99.33% 0.0011 197.14);
+  /* Kept for pages inherited from main that still use the legacy `primary`
+     color name. Branch-owned code uses `brand` instead. */
   --color-primary: oklch(56.7% 0.154556 248.5156);
   --color-secondary: oklch(65.59% 0.2118 354.31);
+  --color-success: var(--color-green-700);
+  --color-warning: var(--color-yellow-500);
+  --color-danger: var(--color-red-600);
+
+  --font-sans:
+    "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --radius: 0.25em;
+  --spacing: 0.25em;
+  --spacing-px: 1px;
 
   --radius-container: var(--radius-xl);
   --spacing-container: --spacing(1);
@@ -65,9 +47,32 @@
   --radius-badge: var(--radius-full);
   --spacing-badge: --spacing(1.5);
 
-  --font-sans:
-    "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --duration-tabs: 100ms;
+  --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
+
+  --duration-overshoot: 500ms;
+  /* Curve from easingwizard.com. Popovers, dialogs and tooltips enter on it,
+     so it lives here rather than inline: a Tailwind theme token is the only
+     way to write the value once and still have `ease-overshoot` compile. */
+  --ease-overshoot: linear(
+    0,
+    0.008 1.1%,
+    0.031 2.2%,
+    0.129 4.8%,
+    0.257 7.2%,
+    0.671 14.2%,
+    0.789 16.5%,
+    0.881 18.6%,
+    0.957 20.7%,
+    1.019 22.9%,
+    1.063 25.1%,
+    1.094 27.4%,
+    1.114 30.7%,
+    1.112 34.5%,
+    1.018 49.9%,
+    0.99 59.1%,
+    1
+  );
 }
 
 @theme inline {
@@ -86,5 +91,369 @@
 :root {
   @variant dark {
     --color-canvas: oklch(16.34% 0.0091 264.28);
+    --color-success: var(--color-green-700);
+    --color-warning: var(--color-yellow-400);
+    --color-danger: var(--color-red-400);
+  }
+}
+
+/* Registered so the @ariakit/ui progress fills can transition it: the width
+   calc and the conic sweep both read this inherited number. */
+@property --progress-value {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* Disclosure state channels: the root publishes open and group flags as
+   custom properties, and descendants react through container style
+   queries. */
+@custom-variant ui-disclosure-open {
+  @container style(--disclosure-open: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disclosure-group {
+  @container style(--disclosure-group: 1) {
+    @slot;
+  }
+}
+
+/* List state channels: the list root publishes its flags as custom
+   properties, and items and markers react through container style queries. */
+@custom-variant ui-list-ol {
+  @container style(--list-ol: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-ul {
+  @container style(--list-ul: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-item-blocks {
+  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-blocks {
+  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+    @slot;
+  }
+  @container style(--list-blocks: 1) {
+    @slot;
+  }
+}
+
+/* Registered after ui-list-blocks so the sections gap wins when a list
+   matches both. */
+@custom-variant ui-list-sections {
+  &:has(:where(h1, h2, h3, h4)) {
+    @slot;
+  }
+}
+
+/* The row that closes a list, published by the list root on its own last li.
+   Reading it as a channel rather than counting DOM depth keeps the connector
+   correct wherever a row puts it, and a nested list resets the flag on itself
+   before re-publishing it on its own last row. */
+@custom-variant ui-list-last-row {
+  @container style(--list-last-row: 1) {
+    @slot;
+  }
+}
+
+/* Sidebar collapse flag published by the sidebar root and read by
+   descendants (such as nav labels) through container style queries. */
+@custom-variant ui-sidebar-collapsed {
+  @container style(--sidebar-collapsed: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-nav-current {
+  &:where([aria-current="true"], [aria-current="page"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disabled {
+  &:is(:disabled, [aria-disabled="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disabled-within {
+  &:is(:disabled, [aria-disabled="true"]),
+  &:has(:is(:disabled, [aria-disabled="true"])) {
+    @slot;
+  }
+}
+
+@custom-variant ui-active {
+  &:is(:active) {
+    @variant not-ui-disabled {
+      @slot;
+    }
+  }
+}
+
+@custom-variant ui-hover {
+  @variant hover {
+    @variant not-ui-disabled {
+      /* Hovering a nested interactive element (a select inside a split
+         disclosure row, for example) must not light up the host, which
+         would falsely signal that a click activates it. Same exclusions as
+         the legacy ak-command-hover. */
+      &:not(:has(button:hover), :has(*:hover > button)) {
+        @slot;
+      }
+    }
+  }
+}
+
+@custom-variant ui-focus {
+  &:focus {
+    @slot;
+  }
+}
+
+@custom-variant ui-focus-visible {
+  &:is(:focus-visible, [data-focus-visible]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-focus-visible-within {
+  &:is(:focus-visible, [data-focus-visible]),
+  &:has(:is(:focus-visible, [data-focus-visible])) {
+    @slot;
+  }
+}
+
+@custom-variant ui-checked {
+  &:is(:checked, [aria-checked="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-checked-within {
+  &:is(:checked, [aria-checked="true"]),
+  &:has(:checked, [aria-checked="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-selected {
+  &:is(
+    :checked,
+    .selected,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-selected-within {
+  &:is(
+    :checked,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ),
+  &:has(
+    :checked,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-hover {
+  :hover:not(:disabled, [aria-disabled="true"]) + &,
+  &:has(+ :hover:not(:disabled, [aria-disabled="true"])) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-selected {
+  :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+    + &,
+  &:has(
+    + :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-focus-visible {
+  :focus-visible + &,
+  &:has(+ :focus-visible) {
+    @slot;
+  }
+}
+
+@custom-variant befter {
+  &::before,
+  &::after {
+    @slot;
+  }
+}
+
+@custom-variant supports-anchor {
+  @supports (anchor-name: --a) {
+    @slot;
+  }
+}
+
+@custom-variant supports-corner-shape {
+  @supports (corner-shape: squircle) {
+    @slot;
+  }
+}
+
+@custom-variant ui-text {
+  &.text:not(.ak-layer), & .text:not(.ak-layer), & svg {
+    @slot;
+  }
+}
+
+
+@utility ui-bevel {
+  --min-l: 0.25;
+  --max-l: 1;
+  --bg-dark-l: calc(l - 0.02 - 0.1 * c);
+  --bg-light-l: calc(l + 0.01);
+  --bg-dark: oklch(from var(--ak-layer) clamp(var(--min-l), var(--bg-dark-l), var(--max-l)) c h);
+  --bg-light: oklch(from var(--ak-layer) clamp(var(--min-l), var(--bg-light-l), var(--max-l)) c h);
+  --shadow-color: oklch(from var(--bg-dark) calc(l - 0.15) c h);
+  --shadow: 0 -0.5px 0.5px 1px var(--shadow-color);
+  --highlight: 0 2px 0.5px oklch(from var(--bg-dark) calc(l + 0.2) calc(c / 2) h);
+  --inset-shadow: var(--shadow), inset var(--highlight);
+  @apply inset-shadow-(--inset-shadow) from-(--bg-dark) to-(--bg-light) bg-linear-to-b from-50% bg-clip-padding outline-offset-1;
+  @variant ak-dark {
+    --min-l: 0.15;
+    --max-l: 0.85;
+    --bg-dark-l: l;
+    --shadow: 0 -0.5px 0.5px var(--shadow-color);
+    --highlight: 0 1.5px 0.5px oklch(from var(--bg-dark) calc(l + 0.1) c h);
+  }
+}
+
+@utility ui-bevel-button {
+  @apply ui-bevel;
+  @variant ui-hover {
+    --min-l: 0.35;
+    --max-l: 1;
+    @variant ak-dark {
+      --min-l: 0.25;
+    }
+  }
+  @variant ui-active {
+    --bg-dark-active: oklch(from var(--ak-layer) calc(l - 0.02) c h);
+    --bg-light-active: oklch(from var(--ak-layer) calc(l + 0.02) c h);
+    --shadow: 0 1px 0.5px 1px var(--shadow-color);
+    --highlight: 0 0 transparent;
+    @apply from-(--bg-dark-active) to-(--bg-light-active) from-60%;
+    @variant ak-dark {
+      --bg-dark-active: oklch(from var(--ak-layer) calc(l - 0.02) c h);
+      --bg-light-active: oklch(from var(--ak-layer) calc(l + 0.02) c h);
+      --shadow: 0 0.5px 0.5px var(--shadow-color);
+    }
+  }
+}
+
+/**
+ * Curves the bottom outer corners of a selected element like a folder tab so it
+ * merges into the panel below. Each corner is drawn by a pseudo element that
+ * stacks two radial gradients: the layer with its edge, and the parent backdrop
+ * that fills the notch left beside the curve.
+ *
+ * Tailwind emits this utility ahead of the frame border widths, so the bottom
+ * border reset has to be important to survive a bordered frame. The ui-selected
+ * declarations need no such help: their `:is()` selector already outranks the
+ * single-class utilities they override.
+ */
+@utility ui-folder {
+  position: relative;
+  border-bottom-width: 0 !important;
+  /* The curves are painted outside the element, so only the bottom edge,
+     where the panel takes over, may clip. The cut sits a pixel past that edge
+     because a clip path is antialiased where it falls while a background is
+     snapped to the pixel grid, so cutting on the edge itself shaves a hair off
+     the tab and lets the panel border below show through as a seam. */
+  clip-path: inset(-4rem -4rem -1px -4rem);
+
+  &::before,
+  &::after {
+    position: absolute;
+    bottom: 0;
+    border-style: none;
+    background-repeat: no-repeat;
+  }
+
+  @variant ui-selected {
+    --folder-edge: var(--ak-edge);
+    --folder-ring: var(--ak-frame-ring, 0px);
+    --folder-border: var(--ak-frame-border, 0px);
+    --folder-bordering: calc(var(--ak-frame-border, 0px) + var(--ak-frame-ring, 0px));
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+
+    &::before,
+    &::after {
+      /* Overlap neighboring color stops by a hair so the bands blend instead
+         of showing an aliased seam. */
+      --folder-smoothness: min(0.2px, var(--folder-bordering));
+      --folder-inner: var(--ak-frame-radius, 0px);
+      --folder-inner-border: calc(var(--folder-inner) - var(--folder-smoothness));
+      --folder-inner-bg: calc(var(--folder-inner) + var(--folder-smoothness));
+      --folder-outer: calc(var(--folder-inner) - var(--folder-bordering));
+      --folder-outer-border: calc(var(--folder-outer) + var(--folder-smoothness));
+      --folder-outer-bg: calc(var(--folder-outer) - var(--folder-smoothness));
+      --folder-transparent: transparent var(--folder-outer-bg);
+      --folder-border: var(--folder-edge) var(--folder-outer-border), var(--folder-edge) var(--folder-inner-border);
+      --folder-bg: var(--ak-layer) var(--folder-inner-bg);
+      --folder-gradient: var(--folder-transparent), var(--folder-border), var(--folder-bg);
+      --folder-backdrop-ring: calc(var(--folder-outer-border) + var(--folder-ring));
+      --folder-backdrop: transparent var(--folder-outer-border), var(--ak-layer-parent) var(--folder-outer-border), var(--ak-layer-parent) var(--folder-backdrop-ring), var(--ak-layer) var(--folder-backdrop-ring);
+      content: "";
+      pointer-events: none;
+      width: var(--ak-frame-radius);
+      height: var(--ak-frame-radius);
+      transition-property: --ak-frame-radius;
+      transition-duration: var(--duration-tabs);
+      transition-timing-function: var(--ease-tabs);
+    }
+
+    &::before {
+      inset-inline-end: 100%;
+      background-image: radial-gradient(circle at 0 0, var(--folder-gradient)),
+        radial-gradient(circle at 0 0, var(--folder-backdrop));
+    }
+
+    &::after {
+      inset-inline-start: 100%;
+      background-image: radial-gradient(circle at 100% 0, var(--folder-gradient)),
+        radial-gradient(circle at 100% 0, var(--folder-backdrop));
+    }
   }
 }

@@ -17,6 +17,7 @@ import ContentParagraph from "#app/components/content-paragraph.astro";
 import ContentSeparator from "#app/components/content-separator.astro";
 import Markdown from "#app/components/markdown.astro";
 import ReferenceItem from "#app/components/reference-item.astro";
+import { code } from "@ariakit/ui/styles/code.ts";
 import {
   ReferenceLabel,
   getReferenceLabelText,
@@ -148,7 +149,8 @@ function canRenderSeparator(sectionDiff: number, itemDiff: number) {
   <div class:list={[inHovercard ? "py-4" : "py-8 @default:pt-16"]}>
     <ContainerRightMenu>
       <Fragment slot="prose">
-        <ContentHeading as="h3" class="mt-0 mb-8 ak-heading-2">
+        {/* $level keeps the legacy ak-heading-2 size on the h3. */}
+        <ContentHeading as="h3" $level={2} class="mt-0 mb-8">
           <ReferenceLabel symbols kind={kind} set:text={name} />
         </ContentHeading>
       </Fragment>
@@ -185,7 +187,8 @@ function canRenderSeparator(sectionDiff: number, itemDiff: number) {
                   <ContentHeading
                     as="h4"
                     id={section.id}
-                    class="ak-heading-3 mb-0"
+                    $level={3}
+                    class="mb-0"
                   >
                     <ContentLink href={`#${section.id}`}>
                       {section.title}
@@ -215,7 +218,7 @@ function canRenderSeparator(sectionDiff: number, itemDiff: number) {
                                 item: item.id,
                               })}
                             >
-                              <code>{item.name}</code>
+                              <code {...code.html()}>{item.name}</code>
                             </ContentLink>
                           ))}
                         </ContentParagraph>
@@ -252,7 +255,7 @@ function canRenderSeparator(sectionDiff: number, itemDiff: number) {
                                       item: item.id,
                                     })}
                                   >
-                                    <code>{item.name}</code>
+                                    <code {...code.html()}>{item.name}</code>
                                   </ContentLink>
                                 ))}
                               </ContentParagraph>

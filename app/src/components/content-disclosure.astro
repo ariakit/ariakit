@@ -8,26 +8,33 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { HTMLAttributes } from "astro/types";
+import type { ComponentProps } from "react";
+import { ContentDisclosure } from "./content-disclosure.react.tsx";
 
-interface Props extends HTMLAttributes<"details"> {}
+interface Props
+  extends Omit<
+    ComponentProps<typeof ContentDisclosure>,
+    "label" | "prose" | "className" | "children" | "open" | "setOpen"
+  > {
+  class?: string;
+  /** Mirrors the native `<details open>` attribute. */
+  open?: boolean | string | null;
+}
 
-const props = Astro.props;
+const { class: className, open, ...props } = Astro.props;
+
+// Markdown `<details open>` arrives as an empty string; treat any non-null,
+// non-false value as the native boolean attribute would.
+const defaultOpen = open != null && open !== false ? true : undefined;
 ---
 
-<details
-  class:list={[
-    "ak-disclosure ak-frame ak-frame-card/card ak-layer ak-layer-3 ring",
-    "ak-container-size-[calc(min(theme(--container-content),100%)+var(--ak-frame-padding)*2)]/0",
-    "ak-container",
-    props.class,
-  ]}
+<ContentDisclosure
+  client:visible={{ rootMargin: "50%" }}
+  prose
+  className={className}
+  defaultOpen={defaultOpen}
   {...props}
 >
-  <summary class="before:ak-disclosure-chevron-right">
-    <slot name="summary" />
-  </summary>
-  <div class="ak-prose-content">
-    <slot />
-  </div>
-</details>
+  <Fragment slot="label"><slot name="summary" /></Fragment>
+  <slot />
+</ContentDisclosure>

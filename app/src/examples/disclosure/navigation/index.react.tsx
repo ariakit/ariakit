@@ -1,18 +1,28 @@
-import { clsx } from "clsx";
-import * as icons from "lucide-react";
-import { useSyncExternalStore } from "react";
 import {
   Nav,
+  NavButton,
+  NavButtonContent,
   NavDisclosure,
   NavDisclosureButton,
+  NavIcon,
   NavLink,
   NavList,
-} from "#app/examples/_lib/ariakit/nav.react.tsx";
+} from "@ariakit/ui/components/nav.ariakit.react.tsx";
 import {
   Sidebar,
   SidebarBody,
   SidebarHeader,
-} from "#app/examples/_lib/ariakit/sidebar.react.tsx";
+} from "@ariakit/ui/components/sidebar.ariakit.react.tsx";
+import { clsx } from "clsx";
+import * as icons from "lucide-react";
+import type { CSSProperties } from "react";
+import { useSyncExternalStore } from "react";
+
+// The icon-size channel the NavIcon child reads. The brand row sets its own
+// because it sits above the Nav that publishes it for the rows below.
+const brandLinkStyle = {
+  "--nav-icon-size": "calc(var(--spacing) * 6)",
+} as CSSProperties;
 
 const links = [
   {
@@ -110,18 +120,18 @@ export default function Example() {
       )}
     >
       <div />
-      <Sidebar className="ak-nav-icon-4">
+      <Sidebar>
         <SidebarHeader>
-          <a href="" className="ak-nav-button ak-nav-icon-6">
-            <span className="ak-nav-icon rounded p-1 flex-none ak-layer ak-layer-primary ak-layer-contrast block">
+          <NavButton render={<a href="" />} style={brandLinkStyle}>
+            <NavIcon className="rounded p-1 ak-layer ak-layer-brand ak-layer-contrast block">
               <icons.Triangle size={20} strokeWidth={2} />
-            </span>
-            <span className="ak-nav-button-content">Acme Corp</span>
-          </a>
+            </NavIcon>
+            <NavButtonContent>Acme Corp</NavButtonContent>
+          </NavButton>
         </SidebarHeader>
 
         <SidebarBody>
-          <Nav>
+          <Nav $iconSize={4}>
             {links.map((link) => (
               <NavDisclosure
                 key={link.label}

@@ -22,7 +22,6 @@ jobs:
       plus: ${{ steps.plan.outputs.plus }}
       release_preview: ${{ steps.plan.outputs.release_preview }}
       docs: ${{ steps.plan.outputs.docs }}
-      build_styles: ${{ steps.plan.outputs.build_styles }}
       og_images: ${{ steps.plan.outputs.og_images }}
       plan: ${{ steps.plan.outputs.plan }}
     steps:
@@ -103,15 +102,6 @@ jobs:
     uses: ./.github/workflows/docs.yml
     secrets: inherit
 
-  build_styles:
-    name: Build styles
-    needs: plan
-    if: needs.plan.outputs.build_styles == 'true'
-    permissions:
-      contents: read
-    uses: ./.github/workflows/build-styles.yml
-    secrets: inherit
-
   og_images:
     name: OG images
     needs: plan
@@ -132,7 +122,6 @@ jobs:
       - plus
       - release_preview
       - docs
-      - build_styles
       - og_images
     runs-on: ubuntu-latest
     permissions:

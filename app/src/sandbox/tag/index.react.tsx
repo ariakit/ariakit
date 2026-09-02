@@ -1,3 +1,4 @@
+import { input } from "@ariakit/ui/styles/input.ts";
 import { useState } from "react";
 import * as Ariakit from "./ariakit-experimental.react.ts";
 
@@ -6,17 +7,17 @@ export default function Example() {
   return (
     <div className="wrapper">
       <Ariakit.TagProvider values={values} setValues={setValues}>
-        <Ariakit.TagLabel className="ak-tag-list-label">Tags</Ariakit.TagLabel>
-        <Ariakit.TagControl className="ak-tag-list ak-input ak-focusable">
+        <Ariakit.TagLabel>Tags</Ariakit.TagLabel>
+        <Ariakit.TagControl {...input.jsx()}>
           <Ariakit.TagList style={{ display: "contents" }}>
             {values.map((value) => (
-              <Ariakit.Tag key={value} value={value} className="ak-tag">
+              <Ariakit.Tag key={value} value={value}>
                 {value}
-                <Ariakit.TagRemove className="ak-tag-remove" />
+                <Ariakit.TagRemove />
               </Ariakit.Tag>
             ))}
           </Ariakit.TagList>
-          <Ariakit.TagInput className="ak-tag-input" />
+          <Ariakit.TagInput />
         </Ariakit.TagControl>
       </Ariakit.TagProvider>
     </div>
