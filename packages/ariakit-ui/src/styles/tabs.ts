@@ -28,10 +28,20 @@ export const tabs = cv({
   },
 });
 
+// An unselected folder tab, or a glider covering one, floats one strip
+// padding above the seam, inside the corner the panel draws there, so its
+// bottom corners take the radius a frame nested that deep would: its own,
+// less that padding. A selected folder has no bottom corners at all.
+const tabFloatCorners = cx(
+  "[--tab-radius-b:max(0px,calc(var(--ak-frame-radius)-var(--tabs-float,0px)))]",
+  "not-ui-selected:rounded-b-(--tab-radius-b)",
+);
+
 // A folder tab drops its bottom corners and merges into the panel below when
 // selected. Unselected, it is a button in the strip.
 const tabFolder = cx(
   "ui-folder",
+  tabFloatCorners,
   // The curves rewrite the radius on the pseudo-elements that draw them, so
   // the tab's own radius travels under another name.
   "[--tab-radius:var(--ak-frame-radius)]",
@@ -112,6 +122,7 @@ export const tabGlider = cv({
       folder: [
         "ui-folder",
         gliderCover,
+        tabFloatCorners,
         // The curves rewrite the radius on the pseudo-elements that draw
         // them, so the glider's own radius travels under another name.
         "[--tab-radius:var(--ak-frame-radius)]",
@@ -162,7 +173,8 @@ export const tabList = cv({
     // pads that much more below the tabs and every tab ends one padding
     // above the line the seam draws. A selected folder reaches through that
     // room to the seam: the tab itself, or a working selected glider.
-    "[--tabs-dock:calc(var(--ak-frame-padding)+var(--tabs-bordering))]",
+    "[--tabs-float:var(--ak-frame-padding)]",
+    "[--tabs-dock:calc(var(--tabs-float)+var(--tabs-bordering))]",
     "pb-(--tabs-dock)",
     "[--tab-reach:var(--tabs-dock)]",
     "supports-anchor:has-[>.glider.selected]:[--tab-reach:0px]",
