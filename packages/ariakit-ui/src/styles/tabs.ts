@@ -1,4 +1,4 @@
-import { cv } from "clava";
+import { cv, cx } from "clava";
 import {
   button,
   buttonGlider,
@@ -12,10 +12,18 @@ import { frame } from "./frame.ts";
 export const tabs = cv({
   extend: [frame],
   class: [
-    "tabs [--fp:var(--ak-frame-padding,0px)] [--fr:var(--ak-frame-radius,0px)] [--fri:var(--ak-frame-ring,0px)] [--fbo:var(--ak-frame-border,0px)] [--fb:calc(var(--fbo)+var(--fri))]",
+    "tabs",
+    // The tabs, the glider and the panel all read the root's geometry. The
+    // padding and the radius inherit, but every frame on the way down
+    // rewrites them, and the edge widths never inherit at all.
+    "[--tabs-padding:var(--ak-frame-padding)]",
+    "[--tabs-radius:var(--ak-frame-radius)]",
+    "[--tabs-border:var(--ak-frame-border)]",
+    "[--tabs-ring:var(--ak-frame-ring)]",
+    // The edge width, whichever of the two the adaptive edge picked.
+    "[--tabs-bordering:calc(var(--tabs-border)+var(--tabs-ring))]",
   ],
   defaultVariants: {
-    $borderType: "auto",
     $border: true,
   },
 });
@@ -23,44 +31,65 @@ export const tabs = cv({
 export const tab = cv({
   extend: [button],
   class: [
-    "ui-selected:ak-layer",
+    // Only the selected tab paints. The others keep their layer, which the
+    // hover overlay below reads, and show the surface behind them.
     "not-ui-selected:bg-transparent",
-    // The selected tab already reads as active; hovering it must not shift
-    // its layer like an ordinary button hover would.
+    // The selected tab already reads as active, so hovering it must not
+    // shift its layer the way a button hover does.
     "ui-selected:ui-hover:ak-state-0",
   ],
   variants: {
+    /**
+     * Adds `folder` to the button's `flat` and `bevel`. A folder tab drops
+     * its bottom corners and merges into the panel below when selected, and
+     * paints its hover as an inset rectangle otherwise.
+     */
     $kind: {
       folder: [
         "ui-folder",
+        // The curves rewrite the radius on the pseudo-elements that draw
+        // them, so the tab's own radius travels under another name.
         "[--tab-radius:var(--ak-frame-radius)]",
-        "[:first-child>&]:nth-[1_of_&]:ui-selected:before:[--ak-frame-radius:min(var(--tab-radius),var(--fp)/2)]",
-        "[.tabs:not(:has(.glider))_&]:pb-[calc(var(--py)+var(--inset-padding,0px)+var(--fb))]",
+        // The first tab's start curve would poke out of the root, so it
+        // shrinks to fit inside the root's padding.
+        "[:first-child>&]:nth-[1_of_&]:ui-selected:before:[--ak-frame-radius:min(var(--tab-radius),var(--tabs-padding)/2)]",
+        // Without a glider the selected tab paints its own surface, and it
+        // grows by the root's edge width to cover the panel's top edge.
+        "[.tabs:not(:has(.glider))_&]:pb-[calc(var(--py)+var(--inset-padding,0px)+var(--tabs-bordering))]",
+        // An unselected tab has no edge of its own, hovered or not.
         "not-ui-selected:border-transparent not-ui-selected:ring-0",
         "not-ui-selected:ui-hover:border-transparent",
+        // A folder tab has no bottom corners to round, so its hover paints on
+        // an inset rectangle drawn by ::after rather than on the tab. The tab
+        // still resolves the hovered layer color, and the overlay reads it
+        // as its parent layer.
         "not-ui-selected:ui-hover:bg-transparent",
-        "not-ui-selected:ui-hover:after:-z-1",
-        "not-ui-selected:ui-hover:after:absolute",
-        "not-ui-selected:ui-hover:after:inset-0",
-        "not-ui-selected:ui-hover:after:ak-layer not-ui-selected:ui-hover:after:ak-layer-color-(--ak-layer-parent)",
-        "not-ui-selected:ui-hover:after:[--inset:max(0px,0.2em+var(--group-gap)/2-var(--fp)/2)]",
-        "not-ui-selected:ui-hover:after:[--inset-x:calc(var(--inset)+var(--fri))]",
-        "not-ui-selected:ui-hover:after:[--inset-b:calc(var(--inset)+var(--fb))]",
-        "not-ui-selected:ui-hover:after:[--inset-t:min(var(--inset-x),var(--inset-b))]",
-        "not-ui-selected:ui-hover:after:[--round-t:calc(var(--ak-frame-radius)-var(--fbo)-var(--inset-t))]",
-        "not-ui-selected:ui-hover:after:[--round-b:calc(var(--ak-frame-radius)-var(--inset-b))]",
-        "not-ui-selected:ui-hover:after:top-(--inset-t)",
+        "not-ui-selected:ui-hover:after:absolute not-ui-selected:ui-hover:after:-z-1",
+        "not-ui-selected:ui-hover:after:ak-layer",
+        "not-ui-selected:ui-hover:after:ak-layer-color-(--ak-layer-parent)",
+        // The overlay keeps one visual inset from the tab's outer edge. Its
+        // containing box is already inside that edge, except at the bottom,
+        // where the folder shape has none, and except when the edge is a
+        // ring-*, which takes no space.
+        "not-ui-selected:ui-hover:after:[--inset:max(0px,0.2em+var(--group-gap)/2-var(--tabs-padding)/2)]",
+        "not-ui-selected:ui-hover:after:[--inset-x:calc(var(--inset)+var(--tabs-ring))]",
+        "not-ui-selected:ui-hover:after:[--inset-b:calc(var(--inset)+var(--tabs-bordering))]",
+        "not-ui-selected:ui-hover:after:top-(--inset-x)",
         "not-ui-selected:ui-hover:after:bottom-(--inset-b)",
         "not-ui-selected:ui-hover:after:inset-x-(--inset-x)",
+        // The corners stay concentric with the tab's.
+        "not-ui-selected:ui-hover:after:[--round-t:calc(var(--ak-frame-radius)-var(--tabs-border)-var(--inset-x))]",
+        "not-ui-selected:ui-hover:after:[--round-b:calc(var(--ak-frame-radius)-var(--inset-b))]",
         "not-ui-selected:ui-hover:after:rounded-t-(--round-t)",
         "not-ui-selected:ui-hover:after:rounded-b-(--round-b)",
       ],
     },
   },
   defaultVariants: {
-    $lightnessOffset: true,
     $kind: "folder",
+    // The radius comes from the frame nesting, concentric with the strip.
     $rounded: "unset",
+    // The edge is the root's, so the selected tab merges with the panel.
     $border: "inherit",
   },
 });
@@ -69,102 +98,125 @@ export const tabSlot = buttonSlot;
 
 export const tabLabel = buttonLabel;
 
-export const tabSeparator = cv({
-  extend: [buttonSeparator],
-});
+export const tabSeparator = buttonSeparator;
+
+// A hover or focus glider is clipped to an inset rectangle, like the hover a
+// folder tab paints for itself.
+const tabGliderClip = cx(
+  "[--round-t:calc(var(--ak-frame-radius)-var(--inset))]",
+  "[--round-b:calc(var(--ak-frame-radius)-var(--inset)-var(--tabs-padding))]",
+  "[clip-path:inset(var(--inset)_round_var(--round-t)_var(--round-t)_var(--round-b)_var(--round-b))]",
+);
 
 export const tabGlider = cv({
   extend: [buttonGlider],
+  // The glider's own duration-* has a vertical variant that sorts after this
+  // one and would otherwise win in a vertical strip.
   class: "duration-(--duration-tabs)!",
   variants: {
+    /**
+     * Adds `folder` to the glider's `flat`, `bevel` and `bar`: the glider
+     * takes the shape of a selected folder tab, curves included, and reaches
+     * down to the panel.
+     */
     $kind: {
       folder: [
         "ui-folder",
-        "m-(--inset-padding) mb-0 [--tab-radius:var(--ak-frame-radius)]",
-        "inset-s-[anchor(start)] bottom-[anchor(bottom)] w-[calc(anchor-size()-var(--inset-padding)*2)] h-[calc(anchor-size()-var(--inset-padding))]",
-        "supports-anchor:[.control:has(~&)]:ui-selected:bg-transparent",
-        "supports-anchor:[.control:has(~&)]:ui-selected:border-transparent",
-        "supports-anchor:[.control:has(~&)]:ui-selected:ring-transparent",
-        "[.glider-group:has(&)_.control]:ui-selected:nth-[1_of_.control]:[&~.glider]:before:[--ak-frame-radius:min(var(--tab-radius),var(--fp)*0.5)]",
+        // The curves rewrite the radius on the pseudo-elements that draw
+        // them, so the glider's own radius travels under another name.
+        "[--tab-radius:var(--ak-frame-radius)]",
+        // The cover geometry, except that the bottom edge stays on the tab's:
+        // the height loses one inset rather than two.
+        "m-(--inset-padding) mb-0",
+        "inset-s-[anchor(start)] bottom-[anchor(bottom)]",
+        "w-[calc(anchor-size()-var(--inset-padding)*2)]",
+        "h-[calc(anchor-size()-var(--inset-padding))]",
+        // With the first tab selected, the start curve shrinks to fit the
+        // root's padding, as the tab's own does.
+        "[.glider-group:has(&)_.control]:ui-selected:nth-[1_of_.control]:[&~.glider]:before:[--ak-frame-radius:min(var(--tab-radius),var(--tabs-padding)/2)]",
       ],
     },
     $state: {
+      // The glider's own selected state clears the covered tab's edge as a
+      // border-*, and the edge a tab inherits may be a ring-* instead.
+      selected:
+        "supports-anchor:[.control:has(~&)]:ui-selected:ring-transparent",
       hover: [
-        "[--inset:max(0px,0.2em-var(--fp)/2)] rounded-none",
-        "[--inset-x:calc(var(--inset)+var(--fb))]",
-        "[--inset-b:calc(var(--inset)+var(--fb))]",
-        "[--inset-t:min(var(--inset-x),var(--inset-b))]",
-        "[--round-t:calc(var(--ak-frame-radius)-var(--inset-t))]",
-        "[--round-b:calc(var(--ak-frame-radius)-var(--inset-b)-var(--fp))]",
-        "[clip-path:inset(var(--inset-t)_var(--inset-x)_var(--inset-b)_round_var(--round-t)_var(--round-t)_var(--round-b)_var(--round-b))]",
+        "[--inset:calc(max(0px,0.2em-var(--tabs-padding)/2)+var(--tabs-bordering))]",
+        "rounded-none",
+        tabGliderClip,
       ],
-      focus: [
-        "[--inset:calc(0.2em)]",
-        "[clip-path:inset(var(--inset)_var(--inset)_calc(var(--inset))_round_calc(var(--ak-frame-radius)-var(--inset))_calc(var(--ak-frame-radius)-var(--inset))_calc(var(--ak-frame-radius)-var(--inset)-var(--fp))_calc(var(--ak-frame-radius)-var(--inset)-var(--fp)))]",
-      ],
+      focus: ["[--inset:0.2em]", tabGliderClip],
     },
   },
   defaultVariants: {
-    // The glider paints the surface of the selected tab, so it has to sit on
-    // the same layer offset as `tab` rather than the deeper offset a
-    // standalone selected glider uses.
+    // The glider paints the selected tab's surface, so it sits on the tab's
+    // layer offset rather than the deeper one a selected glider takes.
     $lightnessOffset: true,
+    // The edge is the root's, as on the tab. Frame leaves the edge variants
+    // unset for it.
     $border: "inherit",
-    $borderType(defaultValue, variants) {
-      if (variants.$kind === "folder") return "unset";
-      return defaultValue;
-    },
-    $edge(defaultValue, variants) {
-      if (variants.$kind === "folder") return "unset";
-      return defaultValue;
-    },
-    $edgeWeight(defaultValue, variants) {
-      if (variants.$kind === "folder") return "unset";
-      return defaultValue;
-    },
   },
 });
 
 export const tabList = cv({
   extend: [buttonGroup],
   class: [
+    // The strip ends flat where the panel begins.
     "rounded-b-none! pb-0",
-    "after:w-[calc((var(--fr)-var(--fp))*2)]",
-    // Legacy ak-tab-list scroller: trailing tabs must stay reachable by
-    // pointer when the strip overflows on narrow viewports.
+    // A tab's end curve is painted past its box. When the tabs fill the
+    // strip, this spacer keeps the last one inside the scroll clip.
+    "after:w-[calc((var(--tabs-radius)-var(--tabs-padding))*2)]",
+    // Trailing tabs stay reachable by pointer when the strip overflows.
     "overflow-x-auto overflow-y-clip overscroll-x-contain [scrollbar-width:none]",
-    "bg-transparent not-has-[.glider]:gap-0 not-supports-anchor:gap-0",
+    // Tabs sit flush unless a working glider spaces them.
+    "not-has-[.glider]:gap-0 not-supports-anchor:gap-0",
   ],
   defaultVariants: {
+    // The root's surface shows through the strip.
+    $layer: "ghost",
     $cover: true,
     $p: "unset",
     $rounded: "unset",
-    $m: "calc(var(--fbo)*-1)",
+    // A cover child overhangs the root's padding by its own edge width. The
+    // strip has no edge, so it takes the root's to line up with the panel.
+    $m: "calc(-1 * var(--tabs-border))",
   },
 });
 
 export const tabPanels = cv({
   extend: [frame],
   class: [
-    "relative panel ease-tabs -mt-(--ak-frame-border) overflow-clip",
-    "[.tabs:has(:first-child>.control[aria-selected='false']:nth-child(1_of_.control))_&]:starting:rounded-ss-[min(var(--tab-radius,var(--ak-frame-radius,0px)),var(--fp)*0.5)]!",
-    "[.tabs:has(:first-child>.control[aria-selected='true']:nth-child(1_of_.control))_&]:starting:rounded-ss-(--tab-radius,var(--ak-frame-radius,0px))!",
+    "relative overflow-clip",
+    // The panel's top edge tucks under the strip, where the selected tab or
+    // the glider covers it.
+    "-mt-(--ak-frame-border)",
+    // With the first tab selected, the start corner shrinks to meet that
+    // tab's curve, which fits inside the root's padding. The starting values
+    // give the corner the other state's radius to animate from.
+    "[.tabs:has(:first-child>.control[aria-selected='true']:nth-child(1_of_.control))_&]:rounded-ss-[min(var(--ak-frame-radius),var(--tabs-padding)/2)]",
+    "[.tabs:has(:first-child>.control[aria-selected='true']:nth-child(1_of_.control))_&]:starting:rounded-ss-(--ak-frame-radius)!",
+    "[.tabs:has(:first-child>.control[aria-selected='false']:nth-child(1_of_.control))_&]:starting:rounded-ss-[min(var(--ak-frame-radius),var(--tabs-padding)/2)]!",
+    // The corner animates only beside a selected glider, whose travel it
+    // follows. Without anchor support the glider is not shown.
+    "ease-tabs",
     "supports-anchor:[.tabs:has(.glider.selected)_&]:transition-[border-radius]",
     "supports-anchor:[.tabs:has(.glider.selected)_&]:duration-(--duration-tabs)",
-    "[.tabs:has(:first-child>.control[aria-selected='true']:nth-child(1_of_.control))_&]:rounded-ss-[min(var(--tab-radius,var(--ak-frame-radius,0px)),var(--fp)*0.5)]",
   ],
   variants: {
-    $roundedTop: {
-      false: "",
-      true: "rounded-t-(--ak-frame-radius)",
-      auto: "[--tab-radius:var(--ak-frame-radius)] rounded-t-(--tab-radius)",
-    },
+    /**
+     * Whether the top corners keep the frame radius. The strip above paints
+     * nothing, so they show. A strip that paints its own surface wants them
+     * square.
+     */
+    $roundedTop: "rounded-t-(--ak-frame-radius)",
   },
   defaultVariants: {
-    $roundedTop: "auto",
+    $roundedTop: true,
     $lightnessOffset: true,
     $p: 3,
     $cover: true,
+    // The edge is the root's, as on the tab.
     $border: "inherit",
   },
 });
