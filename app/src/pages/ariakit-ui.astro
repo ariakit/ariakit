@@ -1997,6 +1997,7 @@ export default function Example() {
           >
             <div
               {...dialogBackdrop.html({
+                $state: "none",
                 class: "absolute inset-0",
               })}
             >
@@ -2004,8 +2005,7 @@ export default function Example() {
             <section
               {...dialog.html({
                 $state: "none",
-                class:
-                  "flex flex-col items-start gap-4 max-w-100 transition-none",
+                class: "flex flex-col items-start gap-4 transition-none",
                 style: {
                   position: "relative",
                   inset: "auto",

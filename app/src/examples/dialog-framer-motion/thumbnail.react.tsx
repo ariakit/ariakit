@@ -20,7 +20,7 @@ export default function Thumbnail() {
         // wins over the cv's fixed positioning by stylesheet order, like the
         // legacy ak-dialog_idle override.
         $state: "none",
-        className: "max-w-100 static flex flex-col gap-4 items-start",
+        className: "static flex flex-col gap-4 items-start",
       })}
     >
       <div className="text-lg font-medium">Motion</div>
