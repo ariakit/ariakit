@@ -6,18 +6,22 @@ import { popover, popoverDescription, popoverScroll } from "./popover.ts";
 export const dialog = cv({
   extend: [popover],
   class: [
-    "[--inset:--spacing(3)]",
-    "fixed inset-(--inset) m-auto h-fit",
-    "max-h-[calc(100dvh-var(--inset)*2)]",
+    // A class rather than a variant, so a breakpoint can still move it: an
+    // inline style from a variant is out of reach of any media query.
+    "[--dialog-inset:--spacing(3)]",
+    "fixed inset-(--dialog-inset) m-auto h-fit",
+    // Ariakit measures the visual viewport into this property, so a virtual
+    // keyboard shrinks the dialog instead of covering it. A native dialog has
+    // no such measurement and takes the dynamic viewport.
+    "max-h-[calc(var(--dialog-viewport-height,100dvh)-var(--dialog-inset)*2)]",
     "backdrop:backdrop-blur-xs",
-    // The native backdrop hosts the scroll when the dialog outgrows the
-    // viewport, like the legacy ak-dialog.
-    "backdrop:overflow-auto backdrop:overscroll-contain",
   ],
 });
 
 export const dialogBackdrop = cv({
   extend: [layer],
+  // A translucent wash of the surface it covers. The layer paints that same
+  // colour opaque, and these only win over it by sorting later.
   class: ["bg-(--ak-layer)/10 ak-dark:bg-(--ak-layer)/30", "backdrop-blur-xs"],
 });
 
