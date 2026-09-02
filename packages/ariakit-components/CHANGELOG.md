@@ -1,5 +1,9 @@
 # @ariakit/components
 
+## 0.1.12
+
+- Fixed collection stores delaying their rendered items until the next animation frame. Thanks to [@ItaiYosephi](https://github.com/ItaiYosephi).
+
 ## 0.1.11
 
 - Fixed the tab store leaving DOM focus on the previously selected tab when the selected tab changes while a tab holds focus and the document contains a form named `activeElement`.
