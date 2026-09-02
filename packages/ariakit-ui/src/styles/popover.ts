@@ -1,15 +1,15 @@
 import { cv } from "clava";
 import { button } from "./button.ts";
-import { frame } from "./frame.ts";
+import { frame, frameBase } from "./frame.ts";
 
 export const popover = cv({
   extend: [frame],
   class: [
     "z-10",
+    // An arbitrary property rather than the transition-* utility, which
+    // also emits a default duration and easing. Every state below sets its
+    // own, so those defaults would only be there to be overwritten.
     "[transition-property:overlay,display,scale,opacity] transition-discrete",
-    // Popover edges adapt to the theme: a ring reads better over light
-    // content, a border over dark.
-    "ak-light:ring ak-light:border-none ak-dark:ak-frame-border",
     // Scale from the anchor side when Ariakit provides the
     // `transform-origin`; the invalid var() fallback leaves the default
     // center origin for native popovers.
@@ -36,31 +36,29 @@ export const popover = cv({
      */
     $state: {
       none: "",
-      // The enter easing overshoots slightly; curve from easingwizard.com.
-      // Inlined twice because Tailwind only picks up literal candidates.
       auto: [
-        "[&:is(dialog,[popover])]:open:duration-500",
-        "[&:is(dialog,[popover])]:open:ease-[linear(0,0.008_1.1%,0.031_2.2%,0.129_4.8%,0.257_7.2%,0.671_14.2%,0.789_16.5%,0.881_18.6%,0.957_20.7%,1.019_22.9%,1.063_25.1%,1.094_27.4%,1.114_30.7%,1.112_34.5%,1.018_49.9%,0.99_59.1%,1)]",
-        "[&:is(dialog,[popover])]:open:starting:scale-95",
-        "[&:is(dialog,[popover])]:open:starting:opacity-0",
+        "[dialog,[popover]]:open:duration-(--duration-overshoot)",
+        "[dialog,[popover]]:open:ease-overshoot",
+        "[dialog,[popover]]:open:starting:scale-95",
+        "[dialog,[popover]]:open:starting:opacity-0",
         // The backdrop is a native top-layer pseudo-element, so its rules
-        // only exist on this channel. Discrete behavior and a starting
-        // opacity are what make the fades the legacy transition-property
-        // list declared actually run.
-        "[&:is(dialog,[popover])]:backdrop:[transition-property:overlay,display,opacity]",
-        "[&:is(dialog,[popover])]:backdrop:transition-discrete",
-        "[&:is(dialog,[popover])]:open:backdrop:duration-250",
-        "[&:is(dialog,[popover])]:open:backdrop:opacity-100",
-        "[&:is(dialog,[popover])]:open:starting:backdrop:opacity-0",
-        "[&:is(dialog,[popover])]:not-open:duration-250",
-        "[&:is(dialog,[popover])]:not-open:scale-95",
-        "[&:is(dialog,[popover])]:not-open:opacity-0",
-        "[&:is(dialog,[popover])]:not-open:backdrop:duration-250",
-        "[&:is(dialog,[popover])]:not-open:backdrop:opacity-0",
+        // only exist on this channel. The discrete behavior and the
+        // starting opacity are what make the fade its own
+        // transition-property list declares actually run.
+        "[dialog,[popover]]:backdrop:[transition-property:overlay,display,opacity]",
+        "[dialog,[popover]]:backdrop:transition-discrete",
+        "[dialog,[popover]]:open:backdrop:duration-250",
+        "[dialog,[popover]]:open:backdrop:opacity-100",
+        "[dialog,[popover]]:open:starting:backdrop:opacity-0",
+        "[dialog,[popover]]:not-open:duration-250",
+        "[dialog,[popover]]:not-open:scale-95",
+        "[dialog,[popover]]:not-open:opacity-0",
+        "[dialog,[popover]]:not-open:backdrop:duration-250",
+        "[dialog,[popover]]:not-open:backdrop:opacity-0",
       ],
       data: [
-        "data-open:duration-500",
-        "data-open:ease-[linear(0,0.008_1.1%,0.031_2.2%,0.129_4.8%,0.257_7.2%,0.671_14.2%,0.789_16.5%,0.881_18.6%,0.957_20.7%,1.019_22.9%,1.063_25.1%,1.094_27.4%,1.114_30.7%,1.112_34.5%,1.018_49.9%,0.99_59.1%,1)]",
+        "data-open:duration-(--duration-overshoot)",
+        "data-open:ease-overshoot",
         "data-open:starting:scale-95",
         "data-open:starting:opacity-0",
         "not-data-open:duration-250",
@@ -78,6 +76,9 @@ export const popover = cv({
     // Popovers always float above the content, so they lift unconditionally
     // instead of taking the adaptive offset.
     $lighten: true,
+    // A lifted surface, so the adaptive edge resolves to a border over dark
+    // content and a ring over light content.
+    $border: true,
   },
 });
 
@@ -85,14 +86,13 @@ export const popoverDisclosure = cv({
   extend: [button],
 });
 
+// A viewport into the popover surface rather than a surface of its own, so
+// it takes the frame geometry without the layer and edge that come with it.
 export const popoverScroll = cv({
-  extend: [frame],
+  extend: [frameBase],
   class: "overflow-auto overscroll-contain",
   defaultVariants: {
     $cover: true,
-    // The scroll area is a viewport into the popover surface, not a new
-    // layer like the legacy ak-popover-scroll.
-    $layer: false,
   },
 });
 

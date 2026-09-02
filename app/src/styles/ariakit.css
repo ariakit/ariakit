@@ -51,20 +51,26 @@
   --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
 
   --duration-overshoot: 500ms;
+  /* Curve from easingwizard.com. Popovers, dialogs and tooltips enter on it,
+     so it lives here rather than inline: a Tailwind theme token is the only
+     way to write the value once and still have `ease-overshoot` compile. */
   --ease-overshoot: linear(
     0,
-    0.402 7.4%,
-    0.711 15.3%,
-    0.929 23.7%,
-    1.008 28.2%,
-    1.067 33%,
-    1.099 36.9%,
-    1.12 41%,
-    1.13 45.4%,
-    1.13 50.1%,
-    1.111 58.5%,
-    1.019 83.2%,
-    1.004 91.3%,
+    0.008 1.1%,
+    0.031 2.2%,
+    0.129 4.8%,
+    0.257 7.2%,
+    0.671 14.2%,
+    0.789 16.5%,
+    0.881 18.6%,
+    0.957 20.7%,
+    1.019 22.9%,
+    1.063 25.1%,
+    1.094 27.4%,
+    1.114 30.7%,
+    1.112 34.5%,
+    1.018 49.9%,
+    0.99 59.1%,
     1
   );
 }
