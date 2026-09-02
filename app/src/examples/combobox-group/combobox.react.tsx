@@ -31,8 +31,6 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           gutter={8}
           overflowPadding={16}
           {...popover.jsx({
-            // Ariakit exposes the open state through the data-open attribute.
-            $state: "data",
             // Container-sized frame, like the legacy
             // ak-frame-container/container.
             $rounded: "xl",

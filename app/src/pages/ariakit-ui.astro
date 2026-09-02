@@ -1305,7 +1305,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               <span {...selectValueLabel.html()}>Honeycrisp apple</span>
               <span {...selectArrow.html()} aria-hidden="true">⌄</span>
             </button>
-            <div {...selectPopover.html({ $state: "none" })}>
+            <div data-open {...selectPopover.html({ class: "transition-none" })}>
               <div {...selectItem.html()} role="option" aria-selected="true">
                 <span {...selectItemCheck.html()} aria-hidden="true">✓</span>
                 <span {...selectValueLabel.html()}>Honeycrisp apple</span>
@@ -1961,10 +1961,10 @@ export default function Example() {
             Popover disclosure
           </button>
           <div
+            data-open
             {...popover.html({
-              $state: "none",
               $shadow: "md",
-              class: "relative z-0 max-w-80",
+              class: "relative z-0 max-w-80 transition-none",
             })}
           >
             <div
@@ -1996,15 +1996,15 @@ export default function Example() {
             class="relative grid place-items-center min-h-64 overflow-hidden rounded-xl"
           >
             <div
+              data-open
               {...dialogBackdrop.html({
-                $state: "none",
-                class: "absolute inset-0",
+                class: "absolute inset-0 transition-none",
               })}
             >
             </div>
             <section
+              data-open
               {...dialog.html({
-                $state: "none",
                 class: "flex flex-col items-start gap-4 transition-none",
                 style: {
                   position: "relative",
@@ -2033,9 +2033,9 @@ export default function Example() {
         <article class="gallery-sample gallery-overlay-stage">
           <h3>Select popover</h3>
           <div
+            data-open
             {...selectPopover.html({
-              $state: "none",
-              class: "relative! inset-auto! top-auto! start-auto!",
+              class: "relative! inset-auto! top-auto! start-auto! transition-none",
             })}
           >
             <div {...selectItem.html()} aria-selected="true">
@@ -2062,9 +2062,9 @@ export default function Example() {
           <div class="gallery-stage">
             <button {...button.html()}>Anchor</button>
             <div
+              data-open
               {...tooltip.html({
-                $state: "none",
-                class: "relative z-0 max-w-80",
+                class: "relative z-0 max-w-80 transition-none",
               })}
             >
               Tooltip label

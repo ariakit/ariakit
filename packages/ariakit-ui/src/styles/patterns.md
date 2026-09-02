@@ -371,6 +371,14 @@ A marker earns its place when a component genuinely reads as one thing inside an
 
 An attribute selector in a variant position wants a variant, not brackets. Brackets there hold an arbitrary _selector_, and a bare one is a type selector, so `**:[data-open]:opacity-0` compiles to `:is(& *):is(data-open)` and matches no element ever. Write `**:data-open:opacity-0`.
 
+An overlay's open state comes through `ui-open:` and `ui-closed:`, which read the native `open` attribute, the popover pseudo-classes and Ariakit's `data-open` alike, so a style never has to know which kind of element it landed on. The closed variant excludes every one of those, so an element carrying none of them is closed: static markup declares `data-open` to render open. `transition-none` is the switch for the motion, and it only works because the transition is written as a utility, which sorts before it. An arbitrary property would sort after it and win.
+
+```ts
+// One list for a native <dialog> and an Ariakit Dialog alike.
+"ui-open:starting:scale-95 ui-open:starting:opacity-0",
+"ui-closed:duration-250 ui-closed:scale-95 ui-closed:opacity-0",
+```
+
 Use a root-relative selector when the target element is markup the component does not own.
 
 ```ts

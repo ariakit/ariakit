@@ -235,6 +235,22 @@
   }
 }
 
+/* Open state, whichever way it arrives: the native open attribute and popover
+   pseudo-classes, or the data-open attribute Ariakit sets. The closed variant
+   excludes all of them, so it never hides an open Ariakit element. Static
+   markup declares data-open to render open. */
+@custom-variant ui-open {
+  &:is([open], :popover-open, :open, [data-open]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-closed {
+  &:not(:is([open], :popover-open, :open, [data-open])) {
+    @slot;
+  }
+}
+
 @custom-variant ui-checked {
   &:is(:checked, [aria-checked="true"]) {
     @slot;

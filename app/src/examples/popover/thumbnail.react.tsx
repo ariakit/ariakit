@@ -21,10 +21,11 @@ export default function Thumbnail() {
     <div className="flex flex-col gap-4 items-center">
       <div {...fakeButton({ className: "relative" })}>Accept invite</div>
       <div
+        data-open
         {...popover.jsx({
-          // Static preview: no open/close transitions.
-          $state: "none",
-          className: "relative max-w-80 flex flex-col gap-2",
+          // Static preview: data-open renders it open and transition-none
+          // keeps it from fading in on load.
+          className: "relative max-w-80 flex flex-col gap-2 transition-none",
         })}
       >
         <PlaceholderPopoverArrow position="bottom" />

@@ -40,18 +40,7 @@ export interface PopoverProps
  */
 export function Popover(props: PopoverProps) {
   const [variantProps, rest] = splitProps(props, popover);
-  // Ariakit communicates the open state through the data-open attribute
-  // rather than the native open pseudo state. An explicit $state prop still
-  // wins, e.g. "none" for static previews.
-  return (
-    <ak.Popover
-      {...popover.jsx({
-        ...variantProps,
-        $state: variantProps.$state ?? "data",
-      })}
-      {...rest}
-    />
-  );
+  return <ak.Popover {...popover.jsx(variantProps)} {...rest} />;
 }
 
 export interface PopoverArrowProps extends ak.PopoverArrowProps {}

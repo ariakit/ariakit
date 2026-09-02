@@ -200,16 +200,11 @@ export interface SelectPopoverProps
  */
 export function SelectPopover(props: SelectPopoverProps) {
   const [variantProps, rest] = splitProps(props, selectPopover);
-  // Ariakit signals the open state through data-open; an explicit $state
-  // prop still wins.
   return (
     <ak.ComboboxPopover
       gutter={8}
       shift={-3}
-      {...selectPopover.jsx({
-        ...variantProps,
-        $state: variantProps.$state ?? "data",
-      })}
+      {...selectPopover.jsx(variantProps)}
       {...rest}
     />
   );

@@ -42,23 +42,14 @@ export interface DialogProps
  */
 export function Dialog(props: DialogProps) {
   const [variantProps, rest] = splitProps(props, dialog);
-  // Ariakit communicates the open state through the data-open attribute
-  // rather than the native open pseudo state. An explicit $state prop still
-  // wins, e.g. "none" for static previews. Ariakit renders its backdrop as
-  // a real element, so the styled backdrop comes from the backdrop prop
-  // rather than the native ::backdrop channel — but only for modal dialogs,
-  // and an explicit backdrop prop in rest still wins. The backdrop follows
-  // the dialog's state, so "none" switches both fades off together.
-  const state = variantProps.$state ?? "data";
-  const backdropState = state === "none" ? "none" : "data";
+  // Ariakit renders its backdrop as a real element, so the styled backdrop
+  // comes from the backdrop prop rather than the native ::backdrop channel —
+  // but only for modal dialogs, and an explicit backdrop prop in rest still
+  // wins.
   return (
     <ak.Dialog
-      backdrop={
-        (rest.modal ?? true) && (
-          <div {...dialogBackdrop.jsx({ $state: backdropState })} />
-        )
-      }
-      {...dialog.jsx({ ...variantProps, $state: state })}
+      backdrop={(rest.modal ?? true) && <div {...dialogBackdrop.jsx({})} />}
+      {...dialog.jsx(variantProps)}
       {...rest}
     />
   );

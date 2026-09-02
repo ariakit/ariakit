@@ -22,12 +22,11 @@ export default function Example() {
             store={dialog}
             alwaysVisible
             // Motion drives the enter and leave animations, so the cv's own
-            // open/close transitions are turned off on both elements.
-            $state="none"
+            // transitions are switched off on both elements.
             className="flex flex-col items-start gap-4 transition-none"
             backdrop={
               <motion.div
-                {...dialogBackdrop.jsx({ $state: "none" })}
+                {...dialogBackdrop.jsx({ className: "transition-none" })}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

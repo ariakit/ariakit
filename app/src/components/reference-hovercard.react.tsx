@@ -184,7 +184,6 @@ export function ReferenceHovercard({
       portalElement={portalElement}
       {...props}
       {...popover.jsx({
-        $state: "data",
         $p: "none",
         // Nested hovercards keep the parent dialog's layer color instead of
         // lightening again, like the legacy ak-layer-lighten-0 override.

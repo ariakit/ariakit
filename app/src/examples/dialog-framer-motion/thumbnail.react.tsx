@@ -15,12 +15,12 @@ const fakeButtonProps = button.jsx({
 export default function Thumbnail() {
   return (
     <div
+      data-open
       {...dialog.jsx({
-        // Static preview: no open/close transitions. The plain static class
-        // wins over the cv's fixed positioning by stylesheet order, like the
-        // legacy ak-dialog_idle override.
-        $state: "none",
-        className: "static flex flex-col gap-4 items-start",
+        // Static preview: data-open renders it open and transition-none
+        // keeps it from fading in on load. The plain static class wins over
+        // the cv's fixed positioning by stylesheet order.
+        className: "static flex flex-col gap-4 items-start transition-none",
       })}
     >
       <div className="text-lg font-medium">Motion</div>

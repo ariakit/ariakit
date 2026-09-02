@@ -23,13 +23,14 @@ export default function Thumbnail() {
         <PlaceholderText>e.g., John Doe</PlaceholderText>
       </div>
       <div
+        data-open
         {...popover.jsx({
-          // Static preview: no open/close transitions. The frame matches the
-          // migrated combobox popover (legacy ak-frame-container/container).
-          $state: "none",
+          // Static preview: data-open renders it open and transition-none
+          // keeps it from fading in on load. The frame matches the migrated
+          // combobox popover (legacy ak-frame-container/container).
           $rounded: "xl",
           $p: 1,
-          className: "w-66 max-w-full",
+          className: "w-66 max-w-full transition-none",
         })}
       >
         <div className="ak-frame ak-frame-container/2 text-sm ak-ink-60 font-medium">

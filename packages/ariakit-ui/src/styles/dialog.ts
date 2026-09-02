@@ -30,29 +30,11 @@ export const dialogBackdrop = cv({
     // colour opaque, and these only win over it by sorting later.
     "bg-(--ak-layer)/10 ak-dark:bg-(--ak-layer)/30",
     "backdrop-blur-xs",
+    // The fade the native ::backdrop takes in popover, on the element Ariakit
+    // renders in its place and marks with data-open like the dialog.
+    "transition-opacity duration-250 ease-[ease]",
+    "ui-open:starting:opacity-0 ui-closed:opacity-0",
   ],
-  variants: {
-    /**
-     * Selects how the open state is detected for the fade. `data` follows the
-     * `data-open` attribute Ariakit sets on the backdrop element it renders,
-     * and `none` renders a plain wash with no transition, for previews and
-     * for backdrops another library animates.
-     */
-    $state: {
-      none: "",
-      data: [
-        // The fade the native ::backdrop takes in popover, on the element
-        // Ariakit renders in its place. The arbitrary property keeps the
-        // browser's default easing, the way that channel does.
-        "[transition-property:opacity] duration-250",
-        "data-open:starting:opacity-0",
-        "not-data-open:opacity-0",
-      ],
-    },
-  },
-  defaultVariants: {
-    $state: "data",
-  },
 });
 
 export const dialogDisclosure = cv({

@@ -29,18 +29,7 @@ export interface TooltipProps
  */
 export function Tooltip(props: TooltipProps) {
   const [variantProps, rest] = splitProps(props, tooltip);
-  // Ariakit communicates the open state through the data-open attribute
-  // rather than the native open pseudo state. An explicit $state prop still
-  // wins, e.g. "none" for static previews.
-  return (
-    <ak.Tooltip
-      {...tooltip.jsx({
-        ...variantProps,
-        $state: variantProps.$state ?? "data",
-      })}
-      {...rest}
-    />
-  );
+  return <ak.Tooltip {...tooltip.jsx(variantProps)} {...rest} />;
 }
 
 export interface TooltipArrowProps extends ak.TooltipArrowProps {}
