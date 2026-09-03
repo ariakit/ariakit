@@ -5,12 +5,14 @@ import { frame } from "./frame.ts";
 // A flat, bevel or folder glider takes the box of the control it follows,
 // so the glider and everything the control paints for itself land on the
 // same rectangle. A cover may reach past the control's bottom edge by
-// --glider-reach; the selected folder glider uses it to meet the panel.
+// --glider-reach; the selected folder glider uses it to meet the panel. A
+// frame margin insets the cover on every side, and the frame already takes
+// that margin off the nested radius, so an inset cover stays concentric.
 export const gliderCover = cx(
   "inset-s-[anchor(start)]",
   "bottom-[calc(anchor(bottom)-var(--glider-reach,0px))]",
-  "w-[anchor-size()]",
-  "h-[calc(anchor-size()+var(--glider-reach,0px))]",
+  "w-[calc(anchor-size()-var(--ak-frame-margin)*2)]",
+  "h-[calc(anchor-size()+var(--glider-reach,0px)-var(--ak-frame-margin)*2)]",
 );
 
 export const glider = cv({

@@ -66,13 +66,7 @@ function DemoTabs({
   const baseId = React.useId();
   const getId = (index: number) => `${baseId}-${index}`;
   return (
-    <Tabs
-      $rounded="xl"
-      $p={1}
-      defaultSelectedId={getId(selected)}
-      {...props}
-      className={`overflow-clip ${props.className ?? ""}`}
-    >
+    <Tabs $rounded="xl" $p={1} defaultSelectedId={getId(selected)} {...props}>
       <TabList {...listProps}>
         {tabLabels.map((label, index) => (
           <React.Fragment key={label}>
@@ -123,6 +117,26 @@ export function TabsSection() {
         <Stage direction="column">
           <DemoTabs />
           <DemoTabs selected={1} listProps={{ $p: 1 }} />
+        </Stage>
+      </Sample>
+
+      <Sample
+        title="No padding"
+        code='Tabs $p="none"'
+        description="The strip covers the root and takes the root's padding as its own. With none, the tabs sit on the root's edge: a selected first tab takes the root's corner and the panel squares its own to meet it."
+      >
+        <Stage direction="column">
+          <DemoTabs $p="none" />
+          <DemoTabs $p="none" selected={1} />
+          <DemoTabs
+            $p="none"
+            selected={2}
+            gliders={[
+              { $kind: "folder", $state: "selected" },
+              { $kind: "folder", $state: "hover" },
+            ]}
+          />
+          <DemoTabs $p="none" tabProps={{ $kind: "flat" }} />
         </Stage>
       </Sample>
 
@@ -272,7 +286,7 @@ export function TabsSection() {
         <Stage direction="column">
           <DemoTabs listProps={{ $size: "sm", $p: 1 }} />
           <DemoTabs listProps={{ $size: "lg" }} selected={1} />
-          <Tabs $rounded="xl" $p={1} className="overflow-clip">
+          <Tabs $rounded="xl" $p={1}>
             <TabList $p={1}>
               <Tab>
                 <TabLabel>Enabled</TabLabel>
@@ -301,7 +315,7 @@ export function TabsSection() {
       <Sample
         title="Overflow"
         code="A strip with more tabs than fit"
-        description="Trailing tabs stay reachable by pointer when the strip overflows, and the last tab's curve stays inside the clip."
+        description="Trailing tabs stay reachable by pointer when the strip overflows, and the last tab's curve stays inside the clip. The panel squares a top corner while tabs continue past that side."
       >
         <div className="max-w-sm">
           <DemoTabs tabLabels={manyLabels} selected={3} listProps={{ $p: 1 }} />
@@ -314,7 +328,7 @@ export function TabsSection() {
         description="The strip can build its tabs from an array of labels or a record of ids to props."
       >
         <Stage direction="column">
-          <Tabs $rounded="xl" $p={1} className="overflow-clip">
+          <Tabs $rounded="xl" $p={1}>
             <TabList tabs={["Preview", "Code", "Usage"]} />
             <TabPanels>
               <TabPanel single>
@@ -322,12 +336,7 @@ export function TabsSection() {
               </TabPanel>
             </TabPanels>
           </Tabs>
-          <Tabs
-            $rounded="xl"
-            $p={1}
-            defaultSelectedId="code"
-            className="overflow-clip"
-          >
+          <Tabs $rounded="xl" $p={1} defaultSelectedId="code">
             <TabList
               tabs={{
                 preview: "Preview",

@@ -105,6 +105,61 @@
   initial-value: 0;
 }
 
+/* How round each top corner of a tab panel is, 0 to 1. Registered so the
+   scroll-driven animation below can interpolate them; where it does not run
+   they keep the corner whole. */
+@property --tabs-round-s {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --tabs-round-e {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+@keyframes ui-tabs-round-s {
+  from {
+    --tabs-round-s: 1;
+  }
+  to {
+    --tabs-round-s: 0;
+  }
+}
+
+@keyframes ui-tabs-round-e {
+  from {
+    --tabs-round-e: 0;
+  }
+  to {
+    --tabs-round-e: 1;
+  }
+}
+
+/**
+ * Squares a tab panel's top corner while the strip's content continues past
+ * that side. The panel follows the strip's scroll timeline, which the tabs
+ * root scopes as --tabs-scroll, and each flag changes over one frame radius
+ * of scroll at its own end of the range. A strip that cannot scroll has no
+ * active timeline and leaves both corners whole. So do browsers without
+ * scroll-driven animations: the gate keeps a zero-duration animation from
+ * running the keyframes to their end. The longhands are used because the
+ * shorthand would reset the timeline and the range.
+ */
+@utility ui-tabs-round {
+  @supports (animation-timeline: scroll()) {
+    animation-name: ui-tabs-round-s, ui-tabs-round-e;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --tabs-scroll, --tabs-scroll;
+    animation-range:
+      0 var(--ak-frame-radius),
+      calc(100% - var(--ak-frame-radius)) 100%;
+  }
+}
+
 /* The marks the choice box cuts out of its own text color: lucide's check
    and minus paths, drawn heavier than the icon stroke because the mask
    renders at about 11px in a 1em box. Published once here and read through
