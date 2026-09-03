@@ -6,6 +6,17 @@ import { withFramework } from "#app/test-utils/preview.ts";
 // the color, so Chrome keeps the OKLCH channels and serializes an unpainted
 // element as `oklch(<l> <c> <h> / 0)`.
 const UNPAINTED = /\/ 0\)$/;
+// A painted translucent layer keeps a fractional alpha. An opaque one drops
+// the alpha component entirely.
+const TRANSLUCENT = /\/ 0\.\d+\)$/;
+
+// The controls have no `ak-layer-transparent`, so they paint either way. An
+// unpainted one means the layer color itself resolved transparent, which would
+// make the comparison that follows pass with both buttons see-through.
+async function getPaintedBackgroundColor(locator: Locator) {
+  await expect(locator).not.toHaveCSS("background-color", UNPAINTED);
+  return getBackgroundColor(locator);
+}
 
 function getBackgroundColor(locator: Locator) {
   return locator.evaluate((element) => {
@@ -26,7 +37,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
       "background-color",
       UNPAINTED,
     );
-    const painted = await getBackgroundColor(q.button("Modified control"));
+    const painted = await getPaintedBackgroundColor(
+      q.button("Modified control"),
+    );
     await expect(q.button("Modified ghost")).toHaveCSS(
       "background-color",
       painted,
@@ -47,7 +60,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       "background-color",
       UNPAINTED,
     );
-    const painted = await getBackgroundColor(q.button("Mix control"));
+    const painted = await getPaintedBackgroundColor(q.button("Mix control"));
     await expect(q.button("Mix ghost")).toHaveCSS("background-color", painted);
   });
 
@@ -59,7 +72,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
       "background-color",
       UNPAINTED,
     );
-    const painted = await getBackgroundColor(q.button("Contrast control"));
+    const painted = await getPaintedBackgroundColor(
+      q.button("Contrast control"),
+    );
     await expect(q.button("Contrast ghost")).toHaveCSS(
       "background-color",
       painted,
@@ -69,7 +84,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("keeps a translucent layer translucent once it paints", async ({
     q,
   }) => {
-    const painted = await getBackgroundColor(q.button("Translucent control"));
+    const control = q.button("Translucent control");
+    // Both buttons take their alpha from the same fixture color, so a collapse
+    // would move them together and the comparison below would still hold.
+    // This rejects a collapse in either direction.
+    await expect(control).toHaveCSS("background-color", TRANSLUCENT);
+    const painted = await getBackgroundColor(control);
     await expect(q.button("Translucent ghost")).toHaveCSS(
       "background-color",
       painted,
@@ -89,7 +109,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // Retry until the hover state paints, so the reference read below cannot
     // capture the resting color.
     await expect(control).not.toHaveCSS("background-color", resting);
-    const hovered = await getBackgroundColor(control);
+    const hovered = await getPaintedBackgroundColor(control);
 
     await ghost.hover();
     await expect(ghost).toHaveCSS("background-color", hovered);
@@ -107,7 +127,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // Both buttons read the same state, so wait for it before the reference
     // read below.
     await expect(control).toHaveAttribute("aria-pressed", "true");
-    const pressed = await getBackgroundColor(control);
+    const pressed = await getPaintedBackgroundColor(control);
     await expect(ghost).toHaveCSS("background-color", pressed);
   });
 
