@@ -40,7 +40,7 @@ const layers = [
   { label: "Danger", props: { $layer: "danger" } },
   { label: "Custom", props: { $layer: "#635bff" } },
   { label: "Inverted", props: { $invert: true } },
-  { label: "Ghost", props: { $layer: "ghost" } },
+  { label: "Lifted", props: { $lightnessOffset: true } },
 ] satisfies readonly { label: string; props: ButtonProps }[];
 
 const sizes = ["xs", "sm", "md", "lg", "xl"] as const;
@@ -78,8 +78,8 @@ export function ButtonSection() {
       <Sample
         wide
         title="Kinds and layers"
-        code='$kind="flat" | "bevel" · $layer · $invert'
-        description="A flat button paints its layer and lifts on hover. A bevel raises it with a gradient and an inner shadow. Both take every layer color."
+        code='$kind="flat" | "bevel" · $layer · $invert · $lightnessOffset'
+        description="A flat button shows the surface behind it until hovered. A layer of its own, or a lightness offset, paints it at rest. A bevel raises it with a gradient and an inner shadow. Both take every layer color."
       >
         <Labeled label="Flat">
           <KindRow kind="flat" />
@@ -331,7 +331,7 @@ export function ButtonSection() {
               <icons.Plus />
             </ButtonSlot>
           </Button>
-          <Button aria-label="Close" $layer="ghost" $size="sm">
+          <Button aria-label="Close" $size="sm">
             <ButtonSlot>
               <icons.X />
             </ButtonSlot>
@@ -460,8 +460,8 @@ export function ButtonSection() {
 
       <Sample
         title="With a glider"
-        code='ButtonGroup > Button $lightnessOffset={false} aria-selected + ButtonGlider $kind="bevel" $state="selected"'
-        description="The buttons rest on the group's surface, so a glider's lift reads as a state: hover one step up, selected two. The glider anchors to the selected button and travels when the selection moves. Click to move it."
+        code='ButtonGroup > Button aria-selected + ButtonGlider $kind="bevel" $state="selected"'
+        description="The buttons are see-through and rest on the group's surface, so a glider's lift reads as a state: hover one step up, selected two. The glider anchors to the selected button and travels when the selection moves. Click to move it."
       >
         <SelectableGroup>
           {(selected, select) => (
@@ -470,7 +470,6 @@ export function ButtonSection() {
                 {["Back", "Forward", "Reload"].map((label, index) => (
                   <Button
                     key={label}
-                    $lightnessOffset={false}
                     aria-selected={selected === index}
                     onClick={() => select(index)}
                   >
@@ -484,7 +483,6 @@ export function ButtonSection() {
                   <React.Fragment key={label}>
                     {index > 0 && <ButtonSeparator $kind="slash" />}
                     <Button
-                      $lightnessOffset={false}
                       aria-selected={selected === index}
                       onClick={() => select(index)}
                     >

@@ -58,7 +58,6 @@ function DemoGroup({
         <React.Fragment key={label}>
           {separators && index > 0 && <GliderSeparator />}
           <Button
-            $lightnessOffset={false}
             aria-selected={selected === index}
             onClick={() => setSelected(index)}
             {...buttonProps}
@@ -148,10 +147,7 @@ export function GliderSection() {
           <DemoGroup
             $layout="vertical"
             gliders={[{ $kind: "bar", $state: "selected" }]}
-            buttonProps={{
-              $lightnessOffset: false,
-              className: "justify-start",
-            }}
+            buttonProps={{ className: "justify-start" }}
           />
           <DemoGroup
             $layout="vertical"
@@ -160,19 +156,13 @@ export function GliderSection() {
               { $kind: "flat", $state: "selected" },
               { $kind: "flat", $state: "hover" },
             ]}
-            buttonProps={{
-              $lightnessOffset: false,
-              className: "justify-start",
-            }}
+            buttonProps={{ className: "justify-start" }}
           />
           <DemoGroup
             $layout="vertical"
             defaultSelected={2}
             gliders={[{ $kind: "bevel", $state: "selected" }]}
-            buttonProps={{
-              $lightnessOffset: false,
-              className: "justify-start",
-            }}
+            buttonProps={{ className: "justify-start" }}
           />
         </Stage>
       </Sample>

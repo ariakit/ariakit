@@ -341,14 +341,10 @@ const apiHeading = heading.html({
                 keyframes={`from { opacity: 0; display: none; margin-bottom: 1.5rem; }`}
                 href={`/${framework}/components/${entry.id}/#api`}
                 {...button.html({
-                  $layer: "ghost",
-                  // The ghost layer's bg-transparent beats the layer paint,
-                  // so the default hover offset would be invisible; the
-                  // important layer classes repaint on hover like the legacy
-                  // ak-layer ak-state-6 hover.
+                  // The legacy state-6 hover in place of the button's offset.
                   $hoverOffset: false,
                   class:
-                    "text-sm ak-text ak-text-25 ak-text-primary ms-3 justify-self-start items-center ui-hover:ak-layer! ui-hover:ak-state-6",
+                    "text-sm ak-text ak-text-25 ak-text-primary ms-3 justify-self-start items-center ui-hover:ak-state-6",
                 })}
               >
                 <span>

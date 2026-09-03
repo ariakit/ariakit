@@ -27,17 +27,7 @@ export const radio = cv({
     "ui-checked-within:before:from-current ui-checked-within:before:to-current",
     // A disabled radio keeps its dot, in the ink's grey rather than the brand.
     "not-ui-disabled-within:ui-checked-within:before:ak-text-brand",
-    // The ghost layer keeps the background transparent, which also hides the
-    // hover shift ak-state-* writes into --ak-layer, so hover paints the
-    // channel by hand. Not when disabled: a flat rectangle would land on a
-    // gradient or image behind the radio.
-    "not-ui-disabled-within:ui-hover:bg-(--ak-layer)",
   ],
-  defaultVariants: {
-    // Radios lie flat on the surface around them: nothing is painted until
-    // hovered, and the dot's inks resolve against the parent layer.
-    $layer: "ghost",
-  },
 });
 
 export const radioLabel = buttonLabel;

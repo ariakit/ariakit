@@ -41,7 +41,7 @@ export function BadgeSection() {
     <Samples>
       <Sample
         title="Layers"
-        code='$layer="brand" | "success" | "var(--color-green-500)" | "ghost"'
+        code='$layer="brand" | "success" | "var(--color-green-500)" | "transparent"'
         description="A plain badge lifts off its surface. A colored badge tints toward its color, keeps a tinted ring and saturates its text."
       >
         <Stage>
@@ -59,8 +59,8 @@ export function BadgeSection() {
           <Badge $layer="#635bff">
             <BadgeLabel>Custom</BadgeLabel>
           </Badge>
-          <Badge $layer="ghost">
-            <BadgeLabel>Ghost</BadgeLabel>
+          <Badge $layer="transparent">
+            <BadgeLabel>Transparent</BadgeLabel>
           </Badge>
           <Badge $invert>
             <BadgeLabel>Inverted</BadgeLabel>

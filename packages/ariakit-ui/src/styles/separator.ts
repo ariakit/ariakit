@@ -41,8 +41,8 @@ export const separator = cv({
   },
   defaultVariants: {
     // The layer is here to give the edge color a surface to resolve against,
-    // not to paint one, so the ghost keeps the background off.
-    $layer: "ghost",
+    // not to paint one.
+    $layer: "transparent",
     $edgeWeight: "medium",
     $line: "dashed",
   },

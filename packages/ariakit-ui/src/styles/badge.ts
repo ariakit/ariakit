@@ -5,12 +5,12 @@ import { isEdgeColor } from "./edge.ts";
 import type { layer } from "./layer.ts";
 
 /**
- * Checks whether a `$layer` value tints the badge. `"ghost"` is the one
- * string the layer accepts that is not a color: it clears the layer instead
- * of coloring it, so a ghost badge takes the plain treatment.
+ * Checks whether a `$layer` value tints the badge. `"transparent"` is the one
+ * string the layer accepts that is not a color: it keeps the layer without
+ * coloring it, so a transparent badge takes the plain treatment.
  */
 function isColoredLayer(value: VariantProps<typeof layer>["$layer"]) {
-  return typeof value === "string" && value !== "ghost";
+  return typeof value === "string" && value !== "transparent";
 }
 
 export const badge = cv({
@@ -36,11 +36,13 @@ export const badge = cv({
       return defaultValue ?? variants.$layer;
     },
     $lightnessOffset(defaultValue, variants) {
-      // A colored badge paints its own color, so it must not shift off it.
-      // A plain badge has no color of its own and lifts off the surface it
-      // sits on instead.
-      if (isColoredLayer(variants.$layer)) return defaultValue ?? false;
-      return defaultValue ?? true;
+      if (defaultValue != null) return defaultValue;
+      // A colored badge paints its own color, so it must not shift off it,
+      // and a transparent one has nothing to lift off. A plain badge has no
+      // color of its own and lifts off the surface it sits on instead.
+      if (isColoredLayer(variants.$layer)) return false;
+      if (variants.$layer === "transparent") return false;
+      return true;
     },
     $mix(defaultValue, variants) {
       if (!isColoredLayer(variants.$layer)) return defaultValue;

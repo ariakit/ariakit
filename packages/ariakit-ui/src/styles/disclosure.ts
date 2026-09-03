@@ -164,9 +164,6 @@ export const disclosureButton = cv({
   },
   defaultVariants: {
     $transition: true,
-    // The button covers the disclosure surface and paints the same layer, so
-    // it is invisible until the control's own hover offset lifts it.
-    $lightnessOffset: false,
     // The button padding follows the disclosure frame it covers.
     $p: "var(--disclosure-padding)",
     // The auto gap keeps the indicator close to the label; the control's
@@ -180,10 +177,8 @@ export const disclosureButton = cv({
   },
   refine({ variants, addClass }) {
     // The ramp repaints the hover surface, so it runs only where the button
-    // paints a flat one of its own: a bevel spends the same gradient
-    // channels, and a ghost button has nothing to fade.
+    // paints a flat one: a bevel spends the same gradient channels.
     if (variants.$kind === "bevel") return;
-    if (variants.$layer === "ghost") return;
     addClass([
       // When the content spaces itself there is nothing to soften, so the
       // ramp collapses to zero and the paint stays a flat fill. Otherwise the

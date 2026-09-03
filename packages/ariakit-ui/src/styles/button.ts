@@ -50,15 +50,23 @@ export const button = cv({
   },
   defaultVariants: {
     $kind: "flat",
+    // A button opens a layer for its content and its states rather than to
+    // paint a surface of its own, so it shows the surface behind it until
+    // hovered, and a glider can travel behind it. A layer of its own, or a
+    // lift, paints it at rest.
+    $layer: "transparent",
     $gapY: "none",
     $hoverOffset: true,
     $focus: true,
     $active: true,
     $lightnessOffset(defaultValue, variants) {
-      // A bevel replaces the flat lift with its own gradient plus the
-      // explicit lighten below.
-      if (variants.$kind === "bevel") return defaultValue ?? false;
-      return defaultValue ?? true;
+      if (defaultValue != null) return defaultValue;
+      // A see-through button has nothing to lift off, and a bevel replaces
+      // the flat lift with its own gradient plus the explicit lighten below.
+      // A button with a layer of its own lifts off the surface around it.
+      if (variants.$layer === "transparent") return false;
+      if (variants.$kind === "bevel") return false;
+      return true;
     },
     $lighten(defaultValue, variants) {
       if (variants.$kind !== "bevel") return defaultValue;

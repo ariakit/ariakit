@@ -23,18 +23,22 @@ export const layer = cv({
      *   its parent.
      * - If set to a color, the element will have that color as its base
      *   background color.
+     * - If set to `"transparent"`, the element keeps the layer as the color
+     *   context for its text, its edges and its descendants, but paints no
+     *   background until another layer variant, or a state such as hover,
+     *   moves the color.
      *
      * Set to `false` to disable the layer system.
      */
-    $layer(value?: "ghost" | ColorValues | (string & {}) | boolean) {
+    $layer(value?: "transparent" | ColorValues | (string & {}) | boolean) {
       if (!value) return;
       if (value === true) {
         return "ak-layer";
       }
-      const mapValues = [...COLOR_VALUES, "ghost"] as const;
+      const mapValues = [...COLOR_VALUES, "transparent"] as const;
       if (includes(mapValues, value)) {
         const colorMap = {
-          ghost: "ak-layer bg-transparent",
+          transparent: "ak-layer ak-layer-transparent",
           canvas: "ak-layer ak-layer-canvas",
           brand: "ak-layer ak-layer-brand",
           secondary: "ak-layer ak-layer-secondary",
@@ -313,25 +317,5 @@ export const layer = cv({
       if (variants.$invert) return 96;
       return defaultValue;
     },
-  },
-  refine({ variants, setVariants }) {
-    if (variants.$layer !== "ghost") return;
-    setVariants({
-      $invert: false,
-      $lightnessOffset: false,
-      $lightnessPush: false,
-      $lighten: false,
-      $darken: false,
-      $lightnessMin: null,
-      $lightnessMax: null,
-      $chroma: undefined,
-      $chromaMin: undefined,
-      $chromaMax: undefined,
-      $saturate: false,
-      $desaturate: false,
-      $hue: undefined,
-      $contrast: false,
-      $mix: false,
-    });
   },
 });

@@ -88,8 +88,8 @@ export function CodeSection() {
               edge
             </Code>
           </Labeled>
-          <Labeled label="Ghost">
-            <Code $layer="ghost">ghost</Code>
+          <Labeled label="Transparent">
+            <Code $layer="transparent">transparent</Code>
           </Labeled>
         </Stage>
       </Sample>

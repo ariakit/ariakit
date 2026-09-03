@@ -124,7 +124,7 @@ export const glider = cv({
       // layer, which colours the indicator, and replaces only layer's own
       // default: a colour asked for by an extender or a caller stays.
       if (defaultValue !== true) return defaultValue;
-      return "ghost";
+      return "transparent";
     },
     // A glider's lift counts from the group's surface, which is where a
     // control in a glider group rests. A hover glider takes the one step a

@@ -737,11 +737,10 @@ export function CodeBlockTabs({
   );
   // The view switcher can't be a single style variant: it renders as a
   // segmented control at @lg and as bare square icon buttons below that, so
-  // each responsive half is spelled out with plugin utilities over a ghost
-  // button base. The layer classes take ! to beat the ghost bg-transparent.
+  // each responsive half is spelled out with plugin utilities over a
+  // see-through button base.
   const viewTabProps = buttonStyle.jsx({
-    $layer: "ghost",
-    // The explicit hover classes below replace the offset so the two don't
+    // The explicit hover class below replaces the offset so the two don't
     // fight over the same state utility.
     $hoverOffset: false,
     // Reduced padding like the legacy segmented button, which multiplied
@@ -751,8 +750,7 @@ export function CodeBlockTabs({
     $p: "0.375em",
     class: clsx(
       "items-center",
-      "ui-hover:ak-layer! ui-hover:ak-state-6",
-      "ui-selected:ak-layer!",
+      "ui-hover:ak-state-6",
       // Segmented look on the @lg pill track: the selected tab raises like
       // the legacy anchor-positioned indicator.
       "@lg:not-ui-selected:ak-ink-70",

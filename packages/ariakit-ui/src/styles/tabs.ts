@@ -90,6 +90,10 @@ export const tab = cv({
   },
   defaultVariants: {
     $kind: "folder",
+    // The selected tab sits one step off the strip. The other tabs take the
+    // same lift and blank it, as the classes above do, so their hover paints
+    // the lifted colour one step further.
+    $lightnessOffset: true,
     // The radius comes from the frame nesting, concentric with the strip.
     $rounded: "unset",
     // A folder tab takes the root's edge, so the selected one merges with
@@ -144,12 +148,14 @@ export const tabGlider = cv({
   defaultVariants: {
     $kind: "folder",
     // The glider's own lifts arrive as the default value, and the tab scheme
-    // replaces them for the covers: the glider paints the selected tab's
-    // surface, which sits one step off the strip rather than the two a
+    // replaces them for the painted covers: the glider paints the selected
+    // tab's surface, which sits one step off the strip rather than the two a
     // selected glider takes, and a hovered tab paints one step past that. A
-    // bar carries its colour another way and keeps the glider's value.
+    // bar carries its colour another way, and a focus cover only draws its
+    // ring, so both keep the glider's value.
     $lightnessOffset(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
+      if (variants.$state === "focus") return defaultValue;
       if (variants.$state === "hover") return 2;
       return true;
     },
@@ -183,11 +189,11 @@ export const tabList = cv({
     // overflow it, so it must not give way to them.
     "after:w-[calc((var(--tabs-radius)-var(--tabs-padding))*2)] after:shrink-0",
     // Trailing tabs stay reachable by pointer when the strip overflows.
-    "overflow-x-auto overflow-y-clip overscroll-x-contain [scrollbar-width:none]",
+    "overflow-x-auto overflow-y-clip overscroll-x-contain scrollbar-none",
   ],
   defaultVariants: {
     // The root's surface shows through the strip.
-    $layer: "ghost",
+    $layer: "transparent",
     $cover: true,
     $p: "unset",
     $rounded: "unset",

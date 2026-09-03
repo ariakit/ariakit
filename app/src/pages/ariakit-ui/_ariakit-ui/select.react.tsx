@@ -207,7 +207,7 @@ export function SelectSection() {
 
       <Sample
         title="Kinds, sizes and layers"
-        code='$kind="bevel" · $size · $rounded="full" · $layer="brand" · disabled'
+        code='$kind="bevel" · $size · $rounded="full" · $layer="brand" · $lightnessOffset · disabled'
         description="The button is a Button, so every button knob applies."
       >
         <Stage>
@@ -220,7 +220,7 @@ export function SelectSection() {
             $kind="bevel"
           />
           <Select items={fruits} defaultValue="Apple" $layer="brand" />
-          <Select items={fruits} defaultValue="Apple" $layer="ghost" />
+          <Select items={fruits} defaultValue="Apple" $lightnessOffset />
           <Select items={fruits} defaultValue="Apple" disabled />
         </Stage>
       </Sample>

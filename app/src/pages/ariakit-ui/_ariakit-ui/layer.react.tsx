@@ -68,8 +68,8 @@ export function LayerSection() {
       <Sample
         wide
         title="Colors"
-        code='$layer="brand" | "#635bff" | "ghost" | true'
-        description="A theme name paints the layer with that color, a string with any CSS color. Ghost keeps the color system on with a transparent background, and true inherits the parent color unchanged."
+        code='$layer="brand" | "#635bff" | "transparent" | true'
+        description="A theme name paints the layer with that color, a string with any CSS color. Transparent keeps the color context and paints nothing until a layer variant or a state moves the color, and true inherits the parent color unchanged."
       >
         <SwatchGrid>
           {COLOR_VALUES.map((color) => (
@@ -86,7 +86,11 @@ export function LayerSection() {
             code='$layer="var(--color-teal-500)"'
             $layer="var(--color-teal-500)"
           />
-          <Swatch label="Ghost" code='$layer="ghost"' $layer="ghost" />
+          <Swatch
+            label="Transparent"
+            code='$layer="transparent"'
+            $layer="transparent"
+          />
           <Swatch label="Inherit" code="$layer" />
         </SwatchGrid>
       </Sample>

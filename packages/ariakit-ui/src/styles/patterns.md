@@ -439,6 +439,30 @@ defaultVariants: {
 },
 ```
 
+## Transparent layers
+
+A control opens a layer for its text, its edges and its slots, and not always to paint a surface. Give such a layer `$layer: "transparent"`. It emits `ak-layer ak-layer-transparent`, which paints nothing until a layer variant or a state moves the colour. A lift, a hover offset or a selected colour still shows, and a control with none of them at rest stays see-through, so a glider can travel behind it. `button` defaults to it.
+
+```ts
+defaultVariants: {
+  // The layer gives the edge colour a surface to resolve against, not a
+  // surface to paint.
+  $layer: "transparent",
+},
+```
+
+Every layer variant counts as a colour change, `$lightnessOffset: 0` included, so a lift in a component's defaults would paint a transparent layer at rest. A lift default exists to make a surface visible, and a transparent layer has none, so the computed default that sets it returns `false` for a transparent layer, as `button`, `badge` and `code` do. Check `defaultValue` first, so an extender that wants the lift on a transparent layer can restate it: `tab` does, for the selected tab.
+
+```ts
+$lightnessOffset(defaultValue, variants) {
+  if (defaultValue != null) return defaultValue;
+  if (variants.$layer === "transparent") return false;
+  return true;
+},
+```
+
+Keep `bg-transparent` for a paint that has to go under one condition the layer variants cannot express, and pair it with the rule that paints the layer back. The unselected tab does this: it keeps the lift for its selected state, blanks it with `not-ui-selected:bg-transparent`, and paints `--ak-layer` back on hover.
+
 ## Types
 
 Use `(string & {})` only when the union also has string literals that must stay in autocomplete.

@@ -1,5 +1,4 @@
 import { cv, cx } from "clava";
-import type { VariantProps } from "clava";
 import { includes } from "../utils/includes.ts";
 import { isEdgeColor } from "./edge.ts";
 import type { FrameRoundedValue } from "./frame.ts";
@@ -110,21 +109,6 @@ export const control = cv({
 // rather than a tight box.
 const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
 
-// Layer variants that repaint the slot. Each emits nothing for a falsy
-// value, so the same test decides whether the slot paints at all.
-const LAYER_MODIFIERS = [
-  "$lightnessOffset",
-  "$lightnessPush",
-  "$lighten",
-  "$darken",
-  "$mix",
-  "$contrast",
-  "$saturate",
-  "$desaturate",
-  "$chroma",
-  "$hue",
-] as const satisfies (keyof VariantProps<typeof layer>)[];
-
 export const controlSlot = cv({
   extend: [frame],
   class: [
@@ -230,11 +214,18 @@ export const controlSlot = cv({
     $kind: "icon",
     $size: "md",
     $layer(defaultValue, variants) {
-      if (variants.$kind !== "badge") return defaultValue;
       // Replace only layer's own default. A more specific value, from an
       // extender or a color, was asked for deliberately.
       if (defaultValue !== true) return defaultValue;
-      return "brand";
+      if (variants.$kind === "badge") return "brand";
+      // A badge, an avatar and a floating slot are surfaces of their own and
+      // paint the layer they open. Any other slot opens one only to give its
+      // icon a color context, and paints it when a layer variant moves the
+      // color. Otherwise the control's own surface shows through: a
+      // see-through control, or one standing aside for a glider.
+      if (variants.$kind === "avatar") return true;
+      if (variants.$floating) return true;
+      return "transparent";
     },
     $lightnessOffset(defaultValue, variants) {
       if (variants.$kind !== "avatar") return defaultValue;
@@ -270,28 +261,15 @@ export const controlSlot = cv({
     },
   },
   refine({ variants, setVariants, addClass }) {
-    if (variants.$kind === "badge" || variants.$kind === "avatar") {
-      addClass([
-        "group-[.disabled]/control:ak-layer-darken-5",
-        "group-[.disabled]/control:ak-ink-0",
-      ]);
-      if (includes(PADDED_SLOT_SIZES, variants.$size)) {
-        setVariants({ $size: "xl" });
-      }
-    }
-
-    // Slots only paint their own background when a layer modifier requires
-    // it. Otherwise the control's actual background must show through, which
-    // may differ from the layer color (ghost controls, controls made
-    // transparent so a glider behind them is visible).
-    const paints =
-      variants.$kind === "badge" ||
-      variants.$kind === "avatar" ||
-      variants.$floating ||
-      typeof variants.$layer === "string" ||
-      LAYER_MODIFIERS.some((modifier) => !!variants[modifier]);
-    if (!paints) {
-      addClass("bg-transparent");
+    const paintsSurface =
+      variants.$kind === "badge" || variants.$kind === "avatar";
+    if (!paintsSurface) return;
+    addClass([
+      "group-[.disabled]/control:ak-layer-darken-5",
+      "group-[.disabled]/control:ak-ink-0",
+    ]);
+    if (includes(PADDED_SLOT_SIZES, variants.$size)) {
+      setVariants({ $size: "xl" });
     }
   },
 });

@@ -361,7 +361,7 @@ export function ControlSection() {
 
       <Sample
         title="Layers"
-        code='Control $layer="brand" | "danger" | "ghost" · $invert'
+        code='Control $layer="brand" | "danger" | "transparent" · $invert'
         description="A control takes every layer color, and its slots read the same layer for their surfaces."
       >
         <Stage>
@@ -382,9 +382,9 @@ export function ControlSection() {
             </ControlSlot>
             inverted
           </Control>
-          <Labeled label="Ghost">
-            <Control $layer="ghost" $border>
-              ghost
+          <Labeled label="Transparent">
+            <Control $layer="transparent" $border>
+              transparent
             </Control>
           </Labeled>
         </Stage>
