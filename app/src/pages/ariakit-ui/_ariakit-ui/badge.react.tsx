@@ -15,6 +15,7 @@ import {
 import {
   Button,
   ButtonSlot,
+  ButtonLabel,
 } from "@ariakit/ui/components/button.ariakit.react.tsx";
 import { Heading } from "@ariakit/ui/components/heading.ariakit.react.tsx";
 import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
@@ -242,7 +243,7 @@ export function BadgeSection() {
             </Badge>
           </span>
           <Button>
-            Inbox
+            <ButtonLabel>Inbox</ButtonLabel>
             <ButtonSlot $kind="badge" $layer="brand">
               v0.2
             </ButtonSlot>
@@ -251,7 +252,7 @@ export function BadgeSection() {
             <ButtonSlot>
               <icons.Bell />
             </ButtonSlot>
-            Alerts
+            <ButtonLabel>Alerts</ButtonLabel>
             <ButtonSlot $kind="badge" $layer="danger">
               3
             </ButtonSlot>

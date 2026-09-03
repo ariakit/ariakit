@@ -186,10 +186,10 @@ export function ButtonSection() {
             <ButtonSlot>
               <icons.Download />
             </ButtonSlot>
-            Download
+            <ButtonLabel>Download</ButtonLabel>
           </Button>
           <Button>
-            Next
+            <ButtonLabel>Next</ButtonLabel>
             <ButtonSlot>
               <icons.ArrowRight />
             </ButtonSlot>
@@ -198,7 +198,7 @@ export function ButtonSection() {
             <ButtonSlot $kind="avatar" $layer="brand">
               DH
             </ButtonSlot>
-            Diego Haz
+            <ButtonLabel>Diego Haz</ButtonLabel>
           </Button>
           <Button>
             <ButtonSlot $kind="avatar">
@@ -207,31 +207,31 @@ export function ButtonSection() {
                 src="https://api.dicebear.com/9.x/shapes/svg?seed=ariakit"
               />
             </ButtonSlot>
-            Avatar image
+            <ButtonLabel>Avatar image</ButtonLabel>
           </Button>
           <Button>
-            Inbox
+            <ButtonLabel>Inbox</ButtonLabel>
             <ButtonSlot $kind="badge">12</ButtonSlot>
           </Button>
           <Button>
-            Alerts
+            <ButtonLabel>Alerts</ButtonLabel>
             <ButtonSlot $kind="badge" $layer="danger">
               3
             </ButtonSlot>
           </Button>
           <Button>
-            Search
+            <ButtonLabel>Search</ButtonLabel>
             <ButtonSlot $kind="shortcut">⌘K</ButtonSlot>
           </Button>
           <Button>
-            Save
+            <ButtonLabel>Save</ButtonLabel>
             <ButtonSlot $kind="shortcut">
               <Kbd>⌘</Kbd>
               <Kbd>S</Kbd>
             </ButtonSlot>
           </Button>
           <Button className="relative">
-            Floating badge
+            <ButtonLabel>Floating badge</ButtonLabel>
             <ButtonSlot $kind="badge" $layer="success" $floating>
               New
             </ButtonSlot>
@@ -347,7 +347,7 @@ export function ButtonSection() {
             </ButtonSlot>
           </Button>
           <Button render={<a href="#button" />}>
-            Anchor button
+            <ButtonLabel>Anchor button</ButtonLabel>
             <ButtonSlot>
               <icons.ArrowUpRight />
             </ButtonSlot>

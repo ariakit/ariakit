@@ -11,7 +11,10 @@ import {
   Badge,
   BadgeLabel,
 } from "@ariakit/ui/components/badge.ariakit.react.tsx";
-import { ButtonSlot } from "@ariakit/ui/components/button.ariakit.react.tsx";
+import {
+  ButtonLabel,
+  ButtonSlot,
+} from "@ariakit/ui/components/button.ariakit.react.tsx";
 import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
 import {
   Nav,
@@ -111,7 +114,7 @@ export function NavSection() {
                   <NavIcon>
                     <icons.FileCode strokeWidth={1.5} />
                   </NavIcon>
-                  Components
+                  <ButtonLabel>Components</ButtonLabel>
                   <ButtonSlot $kind="badge" $layer="brand" className="ms-auto">
                     12
                   </ButtonSlot>

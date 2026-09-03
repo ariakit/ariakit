@@ -304,6 +304,29 @@
   }
 }
 
+/* A sibling on either side is selected, adjacent or not. A glider reads it
+   to stay out of sight while none of the controls it follows is selected.
+   The selected class is left out: a selected glider carries it itself. */
+@custom-variant ui-sibling-selected {
+  :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+    ~ &,
+  &:has(
+    ~ :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+  ) {
+    @slot;
+  }
+}
+
 @custom-variant ui-adjacent-hover {
   :hover:not(:disabled, [aria-disabled="true"]) + &,
   &:has(+ :hover:not(:disabled, [aria-disabled="true"])) {

@@ -10,6 +10,7 @@
 import {
   Button,
   ButtonSlot,
+  ButtonLabel,
 } from "@ariakit/ui/components/button.ariakit.react.tsx";
 import {
   Nav,
@@ -175,7 +176,7 @@ function CollapsibleSidebar() {
               <ButtonSlot>
                 <icons.Menu />
               </ButtonSlot>
-              Toggle
+              <ButtonLabel>Toggle</ButtonLabel>
             </Button>
           }
         />

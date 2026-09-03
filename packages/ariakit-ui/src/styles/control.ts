@@ -111,7 +111,7 @@ const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
 export const controlSlot = cv({
   extend: [frame],
   class: [
-    "control-slot flex flex-none items-center justify-center",
+    "flex flex-none items-center justify-center",
     "[--my:calc((1lh-var(--size,1lh))/2*var(--row-span))]",
     "[--mx:calc((var(--py)-var(--px))+var(--my))]",
     "min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
@@ -136,23 +136,21 @@ export const controlSlot = cv({
      * slot size. The larger the slot, the larger the margin. Set to `closeGap`
      * to move the slot closer to the control's text.
      *
-     * The margin goes on the label beside the slot, so the label has to be an
-     * element such as `ControlLabel`. A bare text node cannot take it, and
-     * another slot never does: a sibling selector skips the text and would
-     * hand the margin to the next slot instead.
+     * The margin goes on the sibling element beside the slot, so the text
+     * must be wrapped in a label element such as `ControlLabel`. A sibling
+     * selector cannot see a bare text node, and the margin would land on the
+     * next element instead, which may be another slot.
      */
     $mx: {
       unset: "",
-      closeGap:
-        "[&+:not(.control-slot)]:-ms-1 [:not(.control-slot):has(+&)]:-me-1",
-      xs: "[&+:not(.control-slot)]:-ms-(--sidebearing) [:not(.control-slot):has(+&)]:-me-(--sidebearing)",
-      sm: "[&+:not(.control-slot)]:-ms-(--sidebearing) [:not(.control-slot):has(+&)]:-me-(--sidebearing)",
+      closeGap: "[&+*]:-ms-1 [*:has(+&)]:-me-1",
+      xs: "[&+*]:-ms-(--sidebearing) [*:has(+&)]:-me-(--sidebearing)",
+      sm: "[&+*]:-ms-(--sidebearing) [*:has(+&)]:-me-(--sidebearing)",
       md: "",
       lg: "",
-      xl: "[&+:not(.control-slot)]:ms-(--sidebearing) [:not(.control-slot):has(+&)]:me-(--sidebearing)",
-      "2xl":
-        "[&+:not(.control-slot)]:ms-(--py) [:not(.control-slot):has(+&)]:me-(--py)",
-      full: "[&+:not(.control-slot)]:ms-[1cap] [:not(.control-slot):has(+&)]:me-[1cap]",
+      xl: "[&+*]:ms-(--sidebearing) [*:has(+&)]:me-(--sidebearing)",
+      "2xl": "[&+*]:ms-(--py) [*:has(+&)]:me-(--py)",
+      full: "[&+*]:ms-[1cap] [*:has(+&)]:me-[1cap]",
     },
     /**
      * Sets the slot padding.

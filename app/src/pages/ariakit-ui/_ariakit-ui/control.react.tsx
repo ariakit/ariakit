@@ -87,26 +87,26 @@ export function ControlSection() {
             <ControlSlot>
               <icons.Mail />
             </ControlSlot>
-            Icon
+            <ControlLabel>Icon</ControlLabel>
           </Control>
           <Control $layer $border>
             <ControlSlot $kind="avatar" $layer="secondary">
               AK
             </ControlSlot>
-            Avatar
+            <ControlLabel>Avatar</ControlLabel>
           </Control>
           <Control $layer $border>
-            Badge
+            <ControlLabel>Badge</ControlLabel>
             <ControlSlot $kind="badge">42</ControlSlot>
           </Control>
           <Control $layer $border>
-            Brand badge
+            <ControlLabel>Brand badge</ControlLabel>
             <ControlSlot $kind="badge" $layer="brand">
               New
             </ControlSlot>
           </Control>
           <Control $layer $border>
-            Shortcut
+            <ControlLabel>Shortcut</ControlLabel>
             <ControlSlot $kind="shortcut">⌘K</ControlSlot>
           </Control>
         </Stage>
@@ -132,13 +132,13 @@ export function ControlSection() {
             <ControlSlot $mx="closeGap">
               <icons.Star />
             </ControlSlot>
-            Close gap
+            <ControlLabel>Close gap</ControlLabel>
           </Control>
           <Control $layer $border>
             <ControlSlot $mx="xl">
               <icons.Star />
             </ControlSlot>
-            Wide margin
+            <ControlLabel>Wide margin</ControlLabel>
           </Control>
           <Control $layer $border>
             <ControlSlot $kind="badge" $p="xl">
@@ -149,7 +149,7 @@ export function ControlSection() {
             <ControlSlot $kind="avatar" $layer="brand" $rounded="md">
               AK
             </ControlSlot>
-            Square avatar
+            <ControlLabel>Square avatar</ControlLabel>
           </Control>
           <Control $layer $border>
             <ControlSlot $square={false} $kind="badge" $layer="warning">
@@ -170,7 +170,7 @@ export function ControlSection() {
               <ControlSlot>
                 <icons.Sparkles />
               </ControlSlot>
-              Size {size}
+              <ControlLabel>Size {size}</ControlLabel>
               <ControlSlot $kind="badge">9</ControlSlot>
             </Control>
           ))}
@@ -188,7 +188,7 @@ export function ControlSection() {
               <ControlSlot>
                 <icons.Tag />
               </ControlSlot>
-              gap {gap}
+              <ControlLabel>gap {gap}</ControlLabel>
             </Control>
           ))}
         </Stage>
@@ -279,7 +279,7 @@ export function ControlSection() {
             <ControlSlot $kind="avatar" $layer="secondary">
               AK
             </ControlSlot>
-            Aria disabled
+            <ControlLabel>Aria disabled</ControlLabel>
           </Control>
         </Stage>
       </Sample>
@@ -380,7 +380,7 @@ export function ControlSection() {
             <ControlSlot>
               <icons.Circle />
             </ControlSlot>
-            inverted
+            <ControlLabel>inverted</ControlLabel>
           </Control>
           <Labeled label="Transparent">
             <Control $layer="transparent" $border>

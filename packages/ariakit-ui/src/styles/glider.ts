@@ -85,10 +85,8 @@ export const glider = cv({
         "[position-anchor:--glider-selected] selected",
         "[.control:has(~&)]:ui-selected:[--glider-selected:--glider-selected]",
         // With no control selected there is no anchor to land on, and the
-        // glider would stay as a blank square at the group's start. The
-        // selector list mirrors the ui-selected variant in
-        // app/src/styles/ariakit.css.
-        "in-[.glider-group:not(:has(.control:is(:checked,.selected,[aria-checked='true'],[aria-selected='true'],[aria-current]:not([aria-current='false']))))]:hidden",
+        // glider would stay as a blank square at the group's start.
+        "not-ui-sibling-selected:hidden",
         "supports-anchor:[.control:has(~&)]:ui-selected:bg-transparent",
         "supports-anchor:[.control:has(~&)]:ui-selected:border-transparent",
         "supports-anchor:[.control:has(~&)]:ui-selected:befter:hidden",
