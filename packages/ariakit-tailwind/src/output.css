@@ -213,18 +213,15 @@
 
 @utility ak-layer-mix-color-* {
   --_ak-layer-mix-color: --value(--color-*, [*]);
-  --_ak-lm: 1;
 }
 
 @utility ak-layer-mix-amount-* {
   --_ak-layer-mix-amount: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") * 1%);
   --_ak-layer-mix-amount: --value([*]);
-  --_ak-lm: 1;
 }
 
 @utility ak-layer-mix-method-* {
   --_ak-layer-mix-method: --value(--mix-*, [*]);
-  --_ak-lm: 1;
 }
 
 @utility ak-layer-lighten-* {
@@ -318,7 +315,6 @@
 @utility ak-layer-contrast-* {
   --_ak-layer-idle-contrast-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
   --_ak-layer-idle-contrast-lightness: --value([*]);
-  --_ak-lm: 1;
 }
 
 @utility ak-layer-max-* {

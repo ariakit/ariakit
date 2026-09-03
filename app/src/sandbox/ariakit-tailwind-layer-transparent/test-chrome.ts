@@ -39,6 +39,33 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.button("Resting ghost")).toHaveCSS("border-top-color", edge);
   });
 
+  // https://github.com/ariakit/ariakit/issues/7392
+  test("stays unpainted until ak-layer-mix joins the mix longhands", async ({
+    q,
+  }) => {
+    await expect(q.button("Mix input ghost")).toHaveCSS(
+      "background-color",
+      UNPAINTED,
+    );
+    const painted = await getBackgroundColor(q.button("Mix control"));
+    await expect(q.button("Mix ghost")).toHaveCSS("background-color", painted);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7392
+  test("stays unpainted until ak-layer-contrast joins the contrast amount", async ({
+    q,
+  }) => {
+    await expect(q.button("Contrast input ghost")).toHaveCSS(
+      "background-color",
+      UNPAINTED,
+    );
+    const painted = await getBackgroundColor(q.button("Contrast control"));
+    await expect(q.button("Contrast ghost")).toHaveCSS(
+      "background-color",
+      painted,
+    );
+  });
+
   test("keeps a translucent layer translucent once it paints", async ({
     q,
   }) => {
