@@ -24,6 +24,7 @@ export const badge = cv({
     $gap: "lg",
     $border: true,
     $borderType: "inset",
+    $edgePush: 0,
     $edgeWeight(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
       // A colored badge carries a tinted ring that always shows. A plain one

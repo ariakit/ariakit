@@ -102,6 +102,7 @@ export const edge = cv({
         value,
         property: "--edge-push",
         class: "ak-edge-push-(--edge-push)",
+        allowZero: true,
       });
     },
     /**
