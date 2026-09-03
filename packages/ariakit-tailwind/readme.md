@@ -476,6 +476,23 @@ A layer automatically sets border and ring colors through the shared `--ak-edge`
 
 Use [`ak-edge`](#ak-edge) to fine-tune border and ring colors without touching the layer background.
 
+Some controls open a layer only to give their descendants a color context, not to paint a new surface. `ak-layer` still paints the resolved color, which is invisible against the parent but opaque, so it covers anything drawn behind the control. Add `ak-layer-transparent` when the element must stay see-through until something moves its color:
+
+```html
+<div class="ak-layer relative isolate">
+  <div class="ak-layer ak-layer-10 absolute -z-1 inset-0"></div>
+  <button
+    class="ak-layer ak-layer-transparent hover:ak-state-10 ak-frame ak-frame-field/field"
+  >
+    Lets the surface behind it show through, and paints on hover
+  </button>
+</div>
+```
+
+Every other `ak-layer-*` and `ak-state-*` utility counts as a color change, including under a variant such as `hover:` or `aria-selected:`. Utilities that only constrain the result, such as `ak-layer-min-*` and `ak-layer-max-*`, also make the element paint. Only the background is suppressed: the element still resolves `--ak-text` and `--ak-edge`, so `ak-frame-border` on the same element still draws its edge. Those colors come from the layer the element would have painted, not from whatever now shows through it, so keep the two close in lightness, or set the color context on the element that does the painting.
+
+Do not declare a `--color-transparent` theme key. `ak-layer-*` resolves colors through `--value(--color-*, [color])`, so the key would make `ak-layer-transparent` compile as `ak-layer-<color>` too. The layer would resolve from `transparent`, and because the pipeline keeps the source alpha, the element and every descendant that inherits `--ak-layer` and `--ak-text` would render fully transparent, text included. Tailwind's default theme does not declare it.
+
 Custom backgrounds can read the resolved `--ak-layer` color and `var(--ak-layer-parent, canvas)`. See [Treat color as a material finish](#treat-color-as-a-material-finish) for patterns that stay related to their contrast context.
 
 ### Setting the layer color
@@ -485,6 +502,7 @@ Custom backgrounds can read the resolved `--ak-layer` color and `var(--ak-layer-
 | `ak-layer`                | Required base class. Sets background, text, border, and ring colors.                                                                                                                                                                                                                             |
 | `ak-layer-<color>`        | Sets the layer to a specific color. Accepts any theme color (e.g. `ak-layer-primary`, `ak-layer-blue-500`) or arbitrary value (`ak-layer-[#131418]`).                                                                                                                                            |
 | `ak-layer-color-<color>`  | Explicit color-only alias. Useful for custom properties without a typed arbitrary value hint (`ak-layer-color-(--surface)`).                                                                                                                                                                     |
+| `ak-layer-transparent`    | Paints only while another `ak-layer-*` or `ak-state-*` utility applies, including under a variant. At rest the element keeps its color context for descendants without painting a background, so whatever sits behind it stays visible.                                                          |
 | `ak-layer-<number>`       | Applies an appearance-aware lightness offset relative to the selected source, which defaults to the parent layer (`0`–`100`). This provides separation rather than fixed elevation. Bare `ak-layer` doesn't shift lightness on its own. Arbitrary values are raw, e.g. `ak-layer-[calc(l+0.1)]`. |
 | `ak-layer-offset-<value>` | Explicit lightness-offset alias for `ak-layer-<number>`. Useful for custom properties without a typed arbitrary value hint (`ak-layer-offset-(--depth)`). Arbitrary/custom-property values are raw.                                                                                              |
 | `ak-layer-<chroma>`       | Sets chroma from a named preset, e.g. `ak-layer-vivid`, `ak-layer-muted`. See `--chroma-*` tokens.                                                                                                                                                                                               |
