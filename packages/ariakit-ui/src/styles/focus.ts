@@ -66,8 +66,8 @@ export const focus = cv({
 
 /**
  * The ring for a control whose focus lands on an input inside it, such as a
- * label around an sr-only radio or checkbox. Extend it beside `focus`, or a
- * primitive that reaches `focus`: both `$focus` maps emit, so keep this
+ * choice card around an input kept out of sight. Extend it beside `focus`, or
+ * a primitive that reaches `focus`: both `$focus` maps emit, so keep this
  * scale in step with the one above.
  */
 export const focusWithin = cv({

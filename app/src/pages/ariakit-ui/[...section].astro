@@ -28,7 +28,7 @@ import type { GetStaticPaths } from "astro";
 import {
   BadgeSection,
   ButtonSection,
-  CheckboxCardSection,
+  CheckboxSection,
   CodeSection,
   ContainerSection,
   ControlSection,
@@ -215,8 +215,8 @@ const surfaceClass = [
                 {id === "glider" && <GliderSection client:load />}
                 {id === "badge" && <BadgeSection client:load />}
                 {id === "input" && <InputSection client:load />}
+                {id === "checkbox" && <CheckboxSection client:load />}
                 {id === "radio" && <RadioSection client:load />}
-                {id === "checkbox-card" && <CheckboxCardSection client:load />}
                 {id === "select" && <SelectSection client:load />}
                 {id === "tabs" && <TabsSection client:load />}
                 {id === "disclosure" && <DisclosureSection client:load />}

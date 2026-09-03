@@ -7,12 +7,18 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { ButtonContent } from "@ariakit/ui/components/button.ariakit.react.tsx";
 import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
-import type { RadioProps } from "@ariakit/ui/components/radio.ariakit.react.tsx";
+import type { RadioFieldProps } from "@ariakit/ui/components/radio.ariakit.react.tsx";
 import {
   Radio,
+  RadioCard,
+  RadioCardCheck,
+  RadioCardContent,
+  RadioCardDescription,
+  RadioCardGrid,
+  RadioCardLabel,
   RadioDescription,
+  RadioField,
   RadioGroup,
   RadioLabel,
   RadioProvider,
@@ -47,7 +53,7 @@ const plans = [
 interface PlanGroupProps {
   defaultValue?: string;
   descriptions?: boolean;
-  radioProps?: Partial<RadioProps>;
+  radioProps?: Partial<RadioFieldProps>;
   className?: string;
 }
 
@@ -61,18 +67,41 @@ function PlanGroup({
     <RadioProvider defaultValue={defaultValue}>
       <RadioGroup className={className}>
         {plans.map((plan) => (
-          <Radio key={plan.value} value={plan.value} {...radioProps}>
-            {descriptions ? (
-              <ButtonContent>
-                <RadioLabel>{plan.label}</RadioLabel>
-                <RadioDescription>{plan.description}</RadioDescription>
-              </ButtonContent>
-            ) : (
-              <RadioLabel>{plan.label}</RadioLabel>
+          <RadioField key={plan.value} value={plan.value} {...radioProps}>
+            <RadioLabel>{plan.label}</RadioLabel>
+            {descriptions && (
+              <RadioDescription>{plan.description}</RadioDescription>
             )}
-          </Radio>
+          </RadioField>
         ))}
       </RadioGroup>
+    </RadioProvider>
+  );
+}
+
+interface PlanCardsProps {
+  floating?: boolean;
+  descriptions?: boolean;
+  minItemSize?: string;
+}
+
+function PlanCards({ floating, descriptions, minItemSize }: PlanCardsProps) {
+  return (
+    <RadioProvider defaultValue="pro">
+      <RadioCardGrid aria-label="Plan" $minItemSize={minItemSize}>
+        {plans.map((plan) => (
+          <RadioCard key={plan.value} value={plan.value}>
+            {!floating && <RadioCardCheck />}
+            <RadioCardContent>
+              <RadioCardLabel>{plan.label}</RadioCardLabel>
+              {descriptions && (
+                <RadioCardDescription>{plan.description}</RadioCardDescription>
+              )}
+            </RadioCardContent>
+            {floating && <RadioCardCheck $floating />}
+          </RadioCard>
+        ))}
+      </RadioCardGrid>
     </RadioProvider>
   );
 }
@@ -84,9 +113,9 @@ function ControlledGroup() {
       <RadioProvider value={value} setValue={setValue}>
         <RadioGroup className="grid gap-1">
           {plans.map((plan) => (
-            <Radio key={plan.value} value={plan.value}>
+            <RadioField key={plan.value} value={plan.value}>
               <RadioLabel>{plan.label}</RadioLabel>
-            </Radio>
+            </RadioField>
           ))}
         </RadioGroup>
       </RadioProvider>
@@ -99,42 +128,71 @@ export function RadioSection() {
   return (
     <Samples>
       <Sample
+        title="States"
+        code="RadioProvider > RadioGroup > Radio"
+        description="Native radio inputs drawn by CSS: a disc that fills brand with a dot, and a neutral fill with a dimmed dot when disabled."
+      >
+        <Stage>
+          <RadioProvider defaultValue="on">
+            <RadioGroup className="flex flex-wrap gap-3" aria-label="States">
+              <Radio value="off" aria-label="Off" />
+              <Radio value="on" aria-label="On" />
+              <Radio value="disabled" aria-label="Disabled" disabled />
+            </RadioGroup>
+          </RadioProvider>
+          <RadioProvider defaultValue="on">
+            <RadioGroup
+              className="flex flex-wrap gap-3"
+              aria-label="Checked and disabled"
+            >
+              <Radio value="on" aria-label="On and disabled" disabled />
+            </RadioGroup>
+          </RadioProvider>
+        </Stage>
+      </Sample>
+
+      <Sample
         title="Group"
-        code="RadioProvider > RadioGroup > Radio > RadioLabel"
-        description="A label wraps a hidden input. The dot is drawn by the label and fills brand when the input is checked. Arrow keys move the selection."
+        code="RadioProvider > RadioGroup > RadioField > RadioLabel"
+        description="The input draws its own dot and fills brand when checked. Arrow keys move the selection."
       >
         <PlanGroup />
       </Sample>
 
       <Sample
         title="Descriptions"
-        code="Radio > ButtonContent > RadioLabel + RadioDescription"
-        description="The label and description share the button's content channels."
+        code="RadioField > RadioLabel + RadioDescription"
+        description="The row stacks the label and description under the field's content channels."
       >
         <PlanGroup descriptions />
       </Sample>
 
       <Sample
         title="Disabled"
-        code="Radio disabled"
-        description="A disabled radio keeps its dot in the ink's grey and drops the hover feedback."
+        code="RadioField disabled · RadioGroup disabled"
+        description="A disabled radio keeps its dot on a neutral fill and drops the hover feedback. A group disables every row inside it."
       >
         <RadioProvider defaultValue="pro">
           <RadioGroup className="grid gap-1">
-            <Radio value="hobby">
+            <RadioField value="hobby">
               <RadioLabel>Hobby</RadioLabel>
-            </Radio>
-            <Radio value="pro" disabled>
-              <ButtonContent>
-                <RadioLabel>Pro, checked and disabled</RadioLabel>
-                <RadioDescription>
-                  The dot stays, the brand goes
-                </RadioDescription>
-              </ButtonContent>
-            </Radio>
-            <Radio value="enterprise" disabled>
+            </RadioField>
+            <RadioField value="pro" disabled>
+              <RadioLabel>Pro, checked and disabled</RadioLabel>
+              <RadioDescription>The dot stays, the brand goes</RadioDescription>
+            </RadioField>
+            <RadioField value="enterprise" disabled>
               <RadioLabel>Enterprise, disabled</RadioLabel>
-            </Radio>
+            </RadioField>
+          </RadioGroup>
+        </RadioProvider>
+        <RadioProvider defaultValue="hobby">
+          <RadioGroup disabled className="grid gap-1">
+            {plans.map((plan) => (
+              <RadioField key={plan.value} value={plan.value}>
+                <RadioLabel>{plan.label}</RadioLabel>
+              </RadioField>
+            ))}
           </RadioGroup>
         </RadioProvider>
       </Sample>
@@ -157,18 +215,6 @@ export function RadioSection() {
       </Sample>
 
       <Sample
-        title="Cards"
-        code='Radio $layer $border $rounded="xl" $p={3}'
-        description="A radio takes the button's frame knobs, so it can be a bordered card on its own layer."
-      >
-        <PlanGroup
-          descriptions
-          radioProps={{ $layer: true, $border: true, $rounded: "xl", $p: 3 }}
-          className="grid gap-2"
-        />
-      </Sample>
-
-      <Sample
         title="Controlled"
         code="RadioProvider value setValue"
         description="The selection is owned by the page and echoed below the group."
@@ -177,22 +223,43 @@ export function RadioSection() {
       </Sample>
 
       <Sample
+        wide
+        title="Cards"
+        code="RadioCardGrid > RadioCard > RadioCardCheck + RadioCardContent"
+        description="The card is the same choice card as the checkbox one, with a dot for its mark and one selection per group. The grid is the radio group."
+      >
+        <PlanCards descriptions minItemSize="20rem" />
+      </Sample>
+
+      <Sample
+        wide
+        title="Floating check"
+        code="RadioCardCheck $floating"
+        description="The check becomes a stamp in the top-end corner and shows only on the selected card."
+      >
+        <PlanCards floating descriptions minItemSize="20rem" />
+      </Sample>
+
+      <Sample
         title="On layers"
         code="RadioGroup inside Layer"
-        description="The dot and the hover fill resolve against the layer around them."
+        description="The disc and the row resolve against the layer around them; cards lift off it."
       >
-        <SwatchGrid min="12rem">
+        <SwatchGrid min="13rem">
           <Layer $lightnessOffset={2} className="grid gap-2 rounded-xl p-4">
             <Caption>Offset</Caption>
             <PlanGroup />
+            <PlanCards />
           </Layer>
           <Layer $invert className="grid gap-2 rounded-xl p-4">
             <Caption>Inverted</Caption>
             <PlanGroup />
+            <PlanCards />
           </Layer>
           <Layer $layer="brand" className="grid gap-2 rounded-xl p-4">
             <Caption>Brand</Caption>
             <PlanGroup />
+            <PlanCards />
           </Layer>
         </SwatchGrid>
       </Sample>

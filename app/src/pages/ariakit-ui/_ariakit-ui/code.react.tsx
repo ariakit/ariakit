@@ -122,7 +122,7 @@ export function CodeSection() {
       >
         <p className="max-w-64 text-sm">
           The import path{" "}
-          <Code>@ariakit/ui/components/checkbox-card.ariakit.react.tsx</Code>{" "}
+          <Code>@ariakit/ui/react-utils/disclosure-indicator.react.tsx</Code>{" "}
           wraps onto the next line.
         </p>
       </Sample>

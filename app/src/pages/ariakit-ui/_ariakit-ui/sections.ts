@@ -128,16 +128,16 @@ export const galleryGroups = [
           "A text field that sinks into the surface around it, with edge weights, focus rings and wrapper compositions.",
       },
       {
+        id: "checkbox",
+        title: "Checkbox",
+        description:
+          "A native checkbox drawn by CSS, with mixed and disabled states, label rows with descriptions, and card-shaped labels with a check, slots, descriptions and a grid layout.",
+      },
+      {
         id: "radio",
         title: "Radio",
         description:
-          "A label wrapping a hidden radio input, with a drawn dot, an optional description and disabled and checked states.",
-      },
-      {
-        id: "checkbox-card",
-        title: "Checkbox card",
-        description:
-          "A card-shaped label around a hidden checkbox, with a check indicator, slots, descriptions and a grid layout.",
+          "A native radio drawn by CSS, with groups, descriptions and disabled states, and card-shaped labels with a dot and a grid layout.",
       },
       {
         id: "select",

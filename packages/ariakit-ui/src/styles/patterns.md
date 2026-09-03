@@ -72,12 +72,12 @@ Two things the resolver owes its callers. It has to ignore a bare word it does n
 
 The documentation goes the same way. A variant declared as a function replaces the primitive's JSDoc along with its behaviour, and the editor then shows only what the component wrote. A comment opening "Extends the control's radius values with `auto`" is accurate for a map, where both entries survive, and misleading for a function, where it is now the whole contract and leaves a reader no reason to think a named step or a length still works. Restate the full contract on every variant declared as a function.
 
-That is also how one knob gets a second trigger. `focusWithin` re-declares `$focus` with the `-within` trigger, and a label around an sr-only input extends it beside `button`. Both maps emit for the caller's one value, and the ring the label itself can never show costs a dead rule rather than a conflict. Keep the two scales in step, since nothing checks that they are.
+That is also how one knob gets a second trigger. `focusWithin` re-declares `$focus` with the `-within` trigger, and a card label around an input kept out of sight extends it beside `button`. Both maps emit for the caller's one value, and the ring the label itself can never show costs a dead rule rather than a conflict. Keep the two scales in step, since nothing checks that they are.
 
 ```ts
 // Focus lands on the input inside the label, so the ring comes from the
 // -within trigger.
-export const radio = cv({
+export const choiceCard = cv({
   extend: [button, focusWithin],
 });
 ```

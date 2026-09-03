@@ -5,8 +5,7 @@ import {
   checkboxCardDescription,
   checkboxCardGrid,
   checkboxCardLabel,
-} from "@ariakit/ui/styles/checkbox-card.ts";
-import { CheckIcon } from "lucide-react";
+} from "@ariakit/ui/styles/checkbox.ts";
 import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 
 // Decorative card lookalikes: keep the resting card style but disable the
@@ -37,9 +36,7 @@ export default function Thumbnail() {
         })}
       >
         <div {...fakeCard()}>
-          <div {...checkboxCardCheck.jsx()}>
-            <CheckIcon />
-          </div>
+          <div {...checkboxCardCheck.jsx()} />
           <div {...contentProps}>
             <div {...checkboxCardLabel.jsx()}>Technology</div>
             <PlaceholderText className={descriptionClass}>
@@ -47,24 +44,23 @@ export default function Thumbnail() {
             </PlaceholderText>
           </div>
         </div>
-        <div {...fakeCard()}>
-          {/* A real checked checkbox (visually hidden by the card cv) drives
-              the same ui-checked-within channels as the live component. */}
+        {/* A real checked checkbox (kept out of sight by the card cv) drives
+            the same ui-checked-within and ui-choice-on channels as the live
+            component. The check reads the on state from a label host, and
+            pointer events pass through the label so a click on the tile stays
+            a click on the link around it instead of toggling the input. */}
+        <label {...fakeCard({ className: "pointer-events-none" })}>
           <input type="checkbox" defaultChecked tabIndex={-1} aria-hidden />
-          <div {...checkboxCardCheck.jsx()}>
-            <CheckIcon />
-          </div>
+          <div {...checkboxCardCheck.jsx()} />
           <div {...contentProps}>
             <div {...checkboxCardLabel.jsx()}>Engineering</div>
             <PlaceholderText className={descriptionClass}>
               Designing and solutions.
             </PlaceholderText>
           </div>
-        </div>
+        </label>
         <div {...fakeCard()}>
-          <div {...checkboxCardCheck.jsx()}>
-            <CheckIcon />
-          </div>
+          <div {...checkboxCardCheck.jsx()} />
           <div {...contentProps}>
             <div {...checkboxCardLabel.jsx()}>History</div>
             <PlaceholderText className={descriptionClass}>

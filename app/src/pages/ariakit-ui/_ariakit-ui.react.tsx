@@ -29,8 +29,8 @@ export { ControlSection } from "./_ariakit-ui/control.react.tsx";
 export { GliderSection } from "./_ariakit-ui/glider.react.tsx";
 export { BadgeSection } from "./_ariakit-ui/badge.react.tsx";
 export { InputSection } from "./_ariakit-ui/input.react.tsx";
+export { CheckboxSection } from "./_ariakit-ui/checkbox.react.tsx";
 export { RadioSection } from "./_ariakit-ui/radio.react.tsx";
-export { CheckboxCardSection } from "./_ariakit-ui/checkbox-card.react.tsx";
 export { SelectSection } from "./_ariakit-ui/select.react.tsx";
 
 export { TabsSection } from "./_ariakit-ui/tabs.react.tsx";

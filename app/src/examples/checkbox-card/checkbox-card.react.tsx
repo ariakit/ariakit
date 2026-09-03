@@ -5,15 +5,15 @@ import type {
   CheckboxCardContentProps as CheckboxCardContentBaseProps,
   CheckboxCardDescriptionProps as CheckboxCardDescriptionBaseProps,
   CheckboxCardLabelProps as CheckboxCardLabelBaseProps,
-} from "@ariakit/ui/components/checkbox-card.ariakit.react.tsx";
+} from "@ariakit/ui/components/checkbox.ariakit.react.tsx";
 import {
   CheckboxCard as CheckboxCardBase,
   CheckboxCardCheck as CheckboxCardCheckBase,
   CheckboxCardContent as CheckboxCardContentBase,
   CheckboxCardDescription as CheckboxCardDescriptionBase,
   CheckboxCardLabel as CheckboxCardLabelBase,
-} from "@ariakit/ui/components/checkbox-card.ariakit.react.tsx";
-import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox-card.ts";
+} from "@ariakit/ui/components/checkbox.ariakit.react.tsx";
+import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox.ts";
 import { clsx } from "clsx";
 import type { ComponentProps } from "react";
 
@@ -46,9 +46,9 @@ export function CheckboxCard({
       {...(variant === "round" ? roundVariantProps : undefined)}
       {...props}
       className={clsx(
-        // The vertical marker pairs with the group-[.vertical]/checkbox
+        // The vertical marker pairs with the group-[.vertical]/choice
         // variants on the children below (the card cv already names the
-        // group/checkbox). The plain grid and justify-stretch overrides win
+        // group/choice). The plain grid and justify-stretch overrides win
         // over the cv's flex and justify-start by stylesheet order.
         variant === "vertical" && "vertical grid justify-stretch",
         props.className,
@@ -67,9 +67,9 @@ export function CheckboxCardCheck(props: CheckboxCardCheckProps) {
         // In the vertical layout the check overlays the first row (shared
         // with the image), pinned to the top end like the legacy
         // ak-checkbox-card-check.
-        "group-[.vertical]/checkbox:justify-self-end",
-        "group-[.vertical]/checkbox:col-start-1",
-        "group-[.vertical]/checkbox:row-start-1",
+        "group-[.vertical]/choice:justify-self-end",
+        "group-[.vertical]/choice:col-start-1",
+        "group-[.vertical]/choice:row-start-1",
         props.className,
       )}
     />
@@ -122,8 +122,8 @@ export function CheckboxCardLabel(props: CheckboxCardLabelProps) {
       className={clsx(
         // Vertical cards center the label under the image, like the legacy
         // ak-checkbox-card-label under ak-checkbox-vertical.
-        "group-[.vertical]/checkbox:w-full",
-        "group-[.vertical]/checkbox:text-center",
+        "group-[.vertical]/choice:w-full",
+        "group-[.vertical]/choice:text-center",
         props.className,
       )}
     />
@@ -170,11 +170,11 @@ export function CheckboxCardImage(props: CheckboxCardImageProps) {
         "ak-frame ak-frame-p-2 flex h-full w-20 items-center justify-center",
         // In the vertical layout the image becomes a centered top row shared
         // with the check.
-        "group-[.vertical]/checkbox:w-full",
-        "group-[.vertical]/checkbox:max-w-4/5",
-        "group-[.vertical]/checkbox:justify-self-center",
-        "group-[.vertical]/checkbox:col-start-1",
-        "group-[.vertical]/checkbox:row-start-1",
+        "group-[.vertical]/choice:w-full",
+        "group-[.vertical]/choice:max-w-4/5",
+        "group-[.vertical]/choice:justify-self-center",
+        "group-[.vertical]/choice:col-start-1",
+        "group-[.vertical]/choice:row-start-1",
         props.className,
       )}
     />

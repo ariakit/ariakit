@@ -78,7 +78,7 @@ export const button = cv({
   refine({ variants, setVariants }) {
     if (!variants.$disabled) return;
     // Native buttons suppress these through the :disabled-aware ui-hover and
-    // ui-active variants, but label-based controls such as the checkbox card
+    // ui-active variants, but label-based controls such as the choice card
     // are never :disabled themselves, so drop the state variants here.
     setVariants({
       $hoverOffset: false,

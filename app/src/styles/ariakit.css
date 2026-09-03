@@ -105,6 +105,17 @@
   initial-value: 0;
 }
 
+/* The marks the choice box cuts out of its own text color: lucide's check
+   and minus paths, drawn heavier than the icon stroke because the mask
+   renders at about 11px in a 1em box. Published once here and read through
+   var() by every box, so no element carries the image. Any opaque color
+   works in an alpha mask; the fill you see is the pseudo-element's own
+   background color. */
+:root {
+  --choice-mark-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  --choice-mark-dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+}
+
 /* Disclosure state channels: the root publishes open and group flags as
    custom properties, and descendants react through container style
    queries. */
@@ -271,6 +282,72 @@
 @custom-variant ui-checked-within {
   &:is(:checked, [aria-checked="true"]),
   &:has(:checked, [aria-checked="true"]) {
+    @slot;
+  }
+}
+
+/* Mixed state, whichever way it arrives: the indeterminate flag Ariakit's
+   Checkbox sets on a native input, or aria-checked="mixed" on a custom one.
+   A radio in a group with no selection is :indeterminate as well and must
+   not count; the :where() keeps that exclusion out of the specificity, so
+   these rules stay level with ui-checked and ui-disabled. */
+@custom-variant ui-mixed {
+  &:is([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))) {
+    @slot;
+  }
+}
+
+@custom-variant ui-mixed-within {
+  &:is([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))),
+  &:has([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))) {
+    @slot;
+  }
+}
+
+/* The state of a choice box, read from the element itself or from the host
+   it belongs to: a native input carries :checked, while the box drawn
+   inside a card label, or inside a custom checkbox with aria-checked, reads
+   the state of that host. The same classes then draw both. ui-choice-on
+   covers checked and mixed, which share the fill; ui-choice-mixed swaps the
+   mark. Register ui-choice-disabled last: its edge and ink have to win over
+   the on state at equal specificity. */
+@custom-variant ui-choice-on {
+  &:is(
+    :checked,
+    [aria-checked="true"],
+    [aria-checked="mixed"],
+    :indeterminate:where(:not([type="radio"]))
+  ),
+  :where(
+      label:has(
+        :checked,
+        [aria-checked="true"],
+        [aria-checked="mixed"],
+        :indeterminate:where(:not([type="radio"]))
+      ),
+      [aria-checked="true"],
+      [aria-checked="mixed"]
+    )
+    & {
+    @slot;
+  }
+}
+
+@custom-variant ui-choice-mixed {
+  &:is([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))),
+  :where(
+      label:has([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))),
+      [aria-checked="mixed"]
+    )
+    & {
+    @slot;
+  }
+}
+
+@custom-variant ui-choice-disabled {
+  &:is(:disabled, [aria-disabled="true"]),
+  :where(label:has(:disabled, [aria-disabled="true"]), [aria-disabled="true"])
+    & {
     @slot;
   }
 }
