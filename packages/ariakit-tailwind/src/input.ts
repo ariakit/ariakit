@@ -141,8 +141,18 @@ const utilities = new Set<ReturnType<typeof ak.utility>>();
 
 // `layer-`/`state-` names that must not set the layer-modified flag.
 // `layer-transparent` reads the flag instead of setting it, so stamping it
-// would make it paint unconditionally.
-const UNMODIFIED_LAYER_UTILITIES = new Set(["layer-transparent"]);
+// would make it paint unconditionally. The longhands below are inert until a
+// second utility on the same element reads what they write: the mix values
+// only reach the `layer-mix` and `layer-mix-*` bodies, and the contrast amount
+// is multiplied out unless `layer-contrast` sets a direction.
+// https://github.com/ariakit/ariakit/issues/7392
+const UNMODIFIED_LAYER_UTILITIES = new Set([
+  "layer-transparent",
+  "layer-mix-color-*",
+  "layer-mix-amount-*",
+  "layer-mix-method-*",
+  "layer-contrast-*",
+]);
 
 /**
  * Registers an `ak` utility and stores it for the exported input list.
@@ -1375,8 +1385,9 @@ utility(
 
 // Paints the layer color only while the modified flag is set, so a control
 // that opens a layer just to give its children a color context stays
-// see-through at rest. Every other `layer-*` and `state-*` utility sets that
-// flag; UNMODIFIED_LAYER_UTILITIES keeps `utility()` from setting it here.
+// see-through at rest. Nearly every other `layer-*` and `state-*` utility sets
+// that flag; UNMODIFIED_LAYER_UTILITIES lists the ones that must not, this
+// utility included.
 // Scaling the source alpha rather than replacing it keeps a translucent layer
 // translucent once it paints.
 utility(
