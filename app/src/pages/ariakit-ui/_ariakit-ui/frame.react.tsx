@@ -13,13 +13,7 @@ import { Frame } from "@ariakit/ui/components/frame.ariakit.react.tsx";
 import { Text } from "@ariakit/ui/components/text.ariakit.react.tsx";
 import { clsx } from "clsx";
 import type * as React from "react";
-import {
-  Caption,
-  Placeholder,
-  Sample,
-  Samples,
-  SwatchGrid,
-} from "./gallery.react.tsx";
+import { Caption, Sample, Samples, SwatchGrid } from "./gallery.react.tsx";
 
 const roundedSteps = [
   "none",
@@ -104,9 +98,12 @@ export function FrameSection() {
         <SwatchGrid min="6rem">
           {paddingSteps.map((step) => (
             <Frame key={step} $rounded="xl" $p={step} $border>
-              <Placeholder className="grid min-h-14 place-items-center text-xs">
+              <Frame
+                $lightnessOffset
+                className="grid min-h-14 place-items-center text-xs"
+              >
                 {String(step)}
-              </Placeholder>
+              </Frame>
             </Frame>
           ))}
         </SwatchGrid>

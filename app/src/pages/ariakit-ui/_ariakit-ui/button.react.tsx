@@ -426,7 +426,7 @@ export function ButtonSection() {
       <Sample
         title="Separators"
         code='ButtonSeparator $kind="pipe" | "slash" | "chevron" · $size · $width · $shy'
-        description="Shy separators fade next to a hovered, selected or focused button. Hover the rows to compare."
+        description="Shy separators fade next to a hovered, selected or focused button. Hover the rows to compare. The width row is not shy, so its rules stay put under the pointer."
       >
         <Stage direction="column">
           {separatorKinds.map((kind) => (
