@@ -1,17 +1,6 @@
 import { cv } from "clava";
-import type { VariantProps } from "clava";
 import { control, controlLabel, controlSlot } from "./control.ts";
-import { isEdgeColor } from "./edge.ts";
-import type { layer } from "./layer.ts";
-
-/**
- * Checks whether a `$layer` value tints the badge. `"transparent"` is the one
- * string the layer accepts that is not a color: it keeps the layer without
- * coloring it, so a transparent badge takes the plain treatment.
- */
-function isColoredLayer(value: VariantProps<typeof layer>["$layer"]) {
-  return typeof value === "string" && value !== "transparent";
-}
+import { isLayerColor } from "./layer.ts";
 
 export const badge = cv({
   extend: [control],
@@ -28,24 +17,24 @@ export const badge = cv({
       if (defaultValue != null) return defaultValue;
       // A colored badge carries a tinted ring that always shows. A plain one
       // keeps the adaptive hairline, which shows up only in high-contrast mode.
-      if (isColoredLayer(variants.$layer)) return "medium";
+      if (isLayerColor(variants.$layer)) return "medium";
       return "adaptive";
     },
     $edge(defaultValue, variants) {
-      if (!isEdgeColor(variants.$layer)) return defaultValue;
+      if (!isLayerColor(variants.$layer)) return defaultValue;
       return defaultValue ?? variants.$layer;
     },
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
-      // A colored badge paints its own color, so it must not shift off it,
-      // and a transparent one has nothing to lift off. A plain badge has no
-      // color of its own and lifts off the surface it sits on instead.
-      if (isColoredLayer(variants.$layer)) return false;
+      // A transparent badge has nothing to lift off, and a colored badge
+      // paints its own color, so it must not shift off it. A plain badge has
+      // no color of its own and lifts off the surface it sits on instead.
       if (variants.$layer === "transparent") return false;
+      if (isLayerColor(variants.$layer)) return false;
       return true;
     },
     $mix(defaultValue, variants) {
-      if (!isColoredLayer(variants.$layer)) return defaultValue;
+      if (!isLayerColor(variants.$layer)) return defaultValue;
       // Blend the color back toward the surface behind it, so a colored
       // badge reads as a tint rather than a solid fill.
       return defaultValue ?? 15;
@@ -54,9 +43,21 @@ export const badge = cv({
     $textPush: 60,
     $textWarm: 20,
     $textChroma(defaultValue, variants) {
-      if (!isColoredLayer(variants.$layer)) return defaultValue;
+      if (!isLayerColor(variants.$layer)) return defaultValue;
       return defaultValue ?? "vivid";
     },
+  },
+  refine({ variants, addClass }) {
+    if (!isLayerColor(variants.$layer)) return;
+    if (variants.$edgeRaw) return;
+    if (variants.$edgeLightnessMin != null) return;
+    if (variants.$edgeLightnessMax != null) return;
+    // The tinted edge keeps the color's own lightness, at a fifth of its
+    // alpha over a pale tint of the same hue. A light hue such as yellow all
+    // but vanishes there, so the edge stays at least 40% of the lightness
+    // scale away from the surface, on whichever side the surface is. One
+    // rule for every hue, and no hue is a special case.
+    addClass("ak-light:ak-edge-max-l-60 ak-dark:ak-edge-min-l-60");
   },
 });
 

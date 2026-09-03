@@ -1,4 +1,5 @@
 import { cv } from "clava";
+import type { VariantProps } from "clava";
 import { includes } from "../utils/includes.ts";
 import {
   CHROMA_VALUES,
@@ -12,6 +13,18 @@ import type { ChromaValues, HueValues, ColorValues } from "../utils/styles.ts";
 
 const DEFAULT_MIX_AMOUNT = 50;
 const DEFAULT_CONTRAST_AMOUNT = 25;
+
+/**
+ * Checks whether a `$layer` value colors the layer. `"transparent"` is the
+ * one string the layer accepts that is not a color: it keeps the layer
+ * without coloring it.
+ */
+export function isLayerColor(
+  value: VariantProps<typeof layer>["$layer"],
+): value is ColorValues | (string & {}) {
+  if (typeof value !== "string") return false;
+  return value !== "transparent";
+}
 
 export const layer = cv({
   variants: {

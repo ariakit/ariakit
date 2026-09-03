@@ -31,6 +31,8 @@ interface DemoGroupProps extends GliderGroupProps {
   separators?: boolean;
   /** The initially selected button, or none. */
   defaultSelected?: number;
+  /** Whether clicking the selected button clears the selection. */
+  toggle?: boolean;
   buttonProps?: React.ComponentProps<typeof Button>;
 }
 
@@ -42,6 +44,7 @@ function DemoGroup({
   gliders = [{ $kind: "flat", $state: "selected" }],
   separators,
   defaultSelected = 0,
+  toggle,
   buttonProps,
   className,
   ...props
@@ -59,7 +62,9 @@ function DemoGroup({
           {separators && index > 0 && <GliderSeparator />}
           <Button
             aria-selected={selected === index}
-            onClick={() => setSelected(index)}
+            onClick={() =>
+              setSelected(toggle && selected === index ? -1 : index)
+            }
             {...buttonProps}
           >
             {label}
@@ -132,6 +137,39 @@ export function GliderSection() {
                 { $kind: "bar", $state: "selected" },
                 { $kind: "flat", $state: "hover" },
                 { $kind: "flat", $state: "focus" },
+              ]}
+            />
+          </Labeled>
+        </Stage>
+      </Sample>
+
+      <Sample
+        title="No selection"
+        code='Glider $state="selected" with no selected button'
+        description="A selected glider stays out of sight until a button is selected. Click a button to select it, and click it again to clear the selection."
+      >
+        <Stage direction="column">
+          <Labeled label="Flat">
+            <DemoGroup
+              toggle
+              defaultSelected={-1}
+              gliders={[{ $kind: "flat", $state: "selected" }]}
+            />
+          </Labeled>
+          <Labeled label="Bevel">
+            <DemoGroup
+              toggle
+              defaultSelected={-1}
+              gliders={[{ $kind: "bevel", $state: "selected" }]}
+            />
+          </Labeled>
+          <Labeled label="Bar with a hover cover">
+            <DemoGroup
+              toggle
+              defaultSelected={-1}
+              gliders={[
+                { $kind: "bar", $state: "selected" },
+                { $kind: "flat", $state: "hover" },
               ]}
             />
           </Labeled>

@@ -2,20 +2,14 @@ import { cv } from "clava";
 import { includes } from "../utils/includes.ts";
 import {
   CHROMA_VALUES,
+  COLOR_VALUES,
   HUE_VALUES,
   getScaledStyleClass,
 } from "../utils/styles.ts";
 import type { ChromaValues, ColorValues, HueValues } from "../utils/styles.ts";
 import { layer } from "./layer.ts";
 
-const EDGE_COLOR_VALUES = [
-  "brand",
-  "success",
-  "warning",
-  "danger",
-] as const satisfies readonly ColorValues[];
-
-export type EdgeColorValues = (typeof EDGE_COLOR_VALUES)[number];
+export type EdgeColorValues = ColorValues;
 
 const EDGE_WEIGHT_VALUES = [
   "adaptive",
@@ -32,7 +26,7 @@ export type EdgeWeightValues = (typeof EDGE_WEIGHT_VALUES)[number];
  * `$edge` variant.
  */
 export function isEdgeColor(value: unknown): value is EdgeColorValues {
-  return includes(EDGE_COLOR_VALUES, value);
+  return includes(COLOR_VALUES, value);
 }
 
 // The hairline color these variants tune is derived by the layer utility on
@@ -44,15 +38,28 @@ export const edge = cv({
   variants: {
     /**
      * Sets the edge color. By default, it's based on the layer's background
-     * color.
+     * color. Takes a named color, or any color value such as
+     * `var(--color-green-500)`.
      */
-    $edge: {
-      unset: "",
-      brand: "ak-edge-brand",
-      success: "ak-edge-success",
-      warning: "ak-edge-warning",
-      danger: "ak-edge-danger",
-    } satisfies Record<EdgeColorValues | "unset", string>,
+    $edge(value?: EdgeColorValues | "unset" | (string & {})) {
+      if (value == null) return;
+      if (value === "unset") return;
+      if (isEdgeColor(value)) {
+        const valueMap = {
+          canvas: "ak-edge-canvas",
+          brand: "ak-edge-brand",
+          secondary: "ak-edge-secondary",
+          success: "ak-edge-success",
+          warning: "ak-edge-warning",
+          danger: "ak-edge-danger",
+        } satisfies Record<EdgeColorValues, string>;
+        return valueMap[value];
+      }
+      return {
+        class: "ak-edge-color-(--edge-color)",
+        style: { "--edge-color": value },
+      };
+    },
     /**
      * Applies the edge color exactly as specified, without the default alpha
      * and lightness adjustments.

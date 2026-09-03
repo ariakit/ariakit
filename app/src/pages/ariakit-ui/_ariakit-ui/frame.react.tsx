@@ -164,8 +164,8 @@ export function FrameSection() {
 
       <Sample
         title="Edge colors"
-        code='$edge="brand" | "success" | "warning" | "danger" | $edgeRaw'
-        description="Named edges tint the hairline. Raw applies the color exactly, without the alpha and lightness the edge normally adapts."
+        code='$edge="brand" | "success" | "warning" | "danger" | "var(--color-green-500)" | $edgeRaw'
+        description="Named edges tint the hairline, and any color value does the same. Raw applies the color exactly, without the alpha and lightness the edge normally adapts."
       >
         <SwatchGrid min="6rem">
           {edgeColors.map((color) => (
@@ -177,6 +177,13 @@ export function FrameSection() {
               $edge={color}
             />
           ))}
+          <FrameSwatch
+            label="Green 500"
+            code='$edge="var(--color-green-500)"'
+            $rounded="xl"
+            $border={2}
+            $edge="var(--color-green-500)"
+          />
           {edgeColors.map((color) => (
             <FrameSwatch
               key={`${color}-raw`}
