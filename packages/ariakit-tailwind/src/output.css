@@ -161,6 +161,10 @@
   }
 }
 
+@utility ak-layer-transparent {
+  background-color: oklch(from var(--ak-layer) l c h / calc(alpha * var(--_ak-lm)));
+}
+
 @utility ak-layer-* {
   --_ak-layer-chroma: --value(--chroma-*);
   --_ak-layer-hue: --value(--hue-*);
