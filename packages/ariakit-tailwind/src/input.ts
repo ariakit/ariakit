@@ -139,17 +139,23 @@ const FRAME_PADDING_CAP = "1rem";
 
 const utilities = new Set<ReturnType<typeof ak.utility>>();
 
+// `layer-`/`state-` names that must not set the layer-modified flag.
+// `layer-transparent` reads the flag instead of setting it, so stamping it
+// would make it paint unconditionally.
+const UNMODIFIED_LAYER_UTILITIES = new Set(["layer-transparent"]);
+
 /**
  * Registers an `ak` utility and stores it for the exported input list.
  */
 function utility(...args: Parameters<typeof ak.utility>) {
   const [name, ...children] = args;
-  // Any layer/state modifier preserves the existing global contrast bias.
-  // This flag lets bare nested ak-layer elements skip reapplying that bias.
-  const layerModifier =
-    name.startsWith("layer-") || name.startsWith("state-")
-      ? [set(vars.layerModified, 1)]
-      : [];
+  // Any layer/state modifier preserves the existing global contrast bias. This
+  // flag lets bare nested ak-layer elements skip reapplying that bias, and
+  // ak-layer-transparent reads it to decide whether to paint at all.
+  const modifiesLayer =
+    (name.startsWith("layer-") || name.startsWith("state-")) &&
+    !UNMODIFIED_LAYER_UTILITIES.has(name);
+  const layerModifier = modifiesLayer ? [set(vars.layerModified, 1)] : [];
   const registeredUtility = ak.utility(name, ...children, ...layerModifier);
   utilities.add(registeredUtility);
   return registeredUtility;
@@ -1365,6 +1371,19 @@ utility(
     set(vars.layerParent, inherit(vars.layerParentContext)),
     set(provide(vars.layerTextLContext), vars.layerTextL),
   ]),
+);
+
+// Paints the layer color only while the modified flag is set, so a control
+// that opens a layer just to give its children a color context stays
+// see-through at rest. Every other `layer-*` and `state-*` utility sets that
+// flag; UNMODIFIED_LAYER_UTILITIES keeps `utility()` from setting it here.
+// Scaling the source alpha rather than replacing it keeps a translucent layer
+// translucent once it paints.
+utility(
+  "layer-transparent",
+  set.backgroundColor(
+    fn.oklch(vars.layer, { a: fn.mul(alpha, vars.layerModified) }),
+  ),
 );
 
 function getLayerOffsetDeclarations(arbitraryPattern = "[*]") {
