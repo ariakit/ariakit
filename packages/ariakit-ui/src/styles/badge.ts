@@ -21,7 +21,6 @@ export const badge = cv({
     $size: "xs",
     $p: 1,
     $px: "lg",
-    $gap: "lg",
     $border: true,
     $borderType: "inset",
     $edgePush: 0,
