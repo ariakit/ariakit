@@ -33,6 +33,14 @@ export const tabs = cv({
     // timeline through a scope on the root.
     "[timeline-scope:--tabs-scroll]",
   ],
+  variants: {
+    /**
+     * Paints the root's own edge in transparent while the selected tab and the
+     * panel keep drawing it, for a folder with no card around it. The edge
+     * keeps its width, so the seam and the corners stay where they are.
+     */
+    $edgeHidden: "border-transparent ring-transparent",
+  },
   defaultVariants: {
     $border: true,
   },
@@ -49,9 +57,11 @@ export const tabs = cv({
 // A selected folder's start curve meets the panel's start corner at the
 // root's edge, so it takes the radius the root publishes while the first tab
 // is the selected one. Only a selected folder draws the curve, so the rule
-// needs no first-child test.
+// needs no first-child test. The selected gate matters: the before-* variant
+// gives the pseudo-element content, and one that exists on an unselected tab
+// would carry the small radius over and animate it when the tab is selected.
 const tabStartCurve = cx(
-  "before:[--ak-frame-radius:min(var(--tab-radius),var(--tabs-meet,var(--tab-radius)))]",
+  "ui-selected:before:[--ak-frame-radius:min(var(--tab-radius),var(--tabs-meet,var(--tab-radius)))]",
 );
 
 // The transparent background covers the layer the hover shifts, so a flat or

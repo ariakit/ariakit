@@ -142,11 +142,12 @@ export function TabsSection() {
 
       <Sample
         title="Borders"
-        code="$border={false} · $border · $border={3} · $border={4}"
-        description="The root's edge is the one the tabs and the panel share, so widening it widens the folder seam."
+        code="$border={false} · $edgeHidden · $border={3} · $border={4}"
+        description="The root's edge is the one the tabs and the panel share, so widening it widens the folder seam. Without one the folder is edgeless; $edgeHidden keeps the edge for the selected tab and the panel and hides the root's own."
       >
         <Stage direction="column">
           <DemoTabs $border={false} />
+          <DemoTabs $edgeHidden />
           <DemoTabs selected={1} $border={3} listProps={{ $p: 1 }} />
           <DemoTabs selected={2} $border={4} />
         </Stage>
