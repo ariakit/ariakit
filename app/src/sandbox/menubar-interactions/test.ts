@@ -209,6 +209,20 @@ for (const key of ["ArrowRight", "ArrowLeft"] as const) {
 }
 
 for (const key of ["ArrowDown", "ArrowUp"] as const) {
+  // https://github.com/ariakit/ariakit/issues/7409
+  test(`${key} keeps focus on Rename in a vertical menubar`, async () => {
+    await click(q.checkbox("Vertical menubar"));
+    await click(q.menuitem("Tools"));
+    const input = q.menuitem("Rename") as HTMLInputElement;
+    await click(input);
+    input.setSelectionRange(1, 1);
+    expect(input).toHaveFocus();
+    expect(q.menu("Tools")).toBeVisible();
+    await press[key]();
+    expect(input).toHaveFocus();
+    expect(q.menu("Tools")).toBeVisible();
+  });
+
   for (const name of ["Help", "Action"]) {
     // https://github.com/ariakit/ariakit/issues/7409
     test(`${key} keeps focus on ${name} in a vertical menubar`, async () => {

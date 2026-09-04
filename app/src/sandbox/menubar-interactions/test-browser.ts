@@ -108,6 +108,25 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }
 
   for (const key of ["ArrowDown", "ArrowUp"]) {
+    // https://github.com/ariakit/ariakit/issues/7409
+    test(`${key} keeps focus on Rename in a vertical menubar`, async ({
+      page,
+      q,
+    }) => {
+      await q.checkbox("Vertical menubar").check();
+      await q.menuitem("Tools").click();
+      const input = q.menuitem("Rename");
+      await input.click();
+      await input.evaluate((element: HTMLInputElement) => {
+        element.setSelectionRange(1, 1);
+      });
+      await expect(input).toBeFocused();
+      await expect(q.menu("Tools")).toBeVisible();
+      await page.keyboard.press(key);
+      await expect(input).toBeFocused();
+      await expect(q.menu("Tools")).toBeVisible();
+    });
+
     for (const name of ["Help", "Action"]) {
       // https://github.com/ariakit/ariakit/issues/7409
       test(`${key} keeps focus on ${name} in a vertical menubar`, async ({
