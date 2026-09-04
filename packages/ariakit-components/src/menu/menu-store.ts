@@ -116,6 +116,23 @@ export function createMenuStore({
     }),
   );
 
+  setup(menu, () => {
+    if (!parentIsMenubar) return;
+    if (props.placement !== undefined) return;
+    if (syncState.placement !== undefined) return;
+    if (props.popover) return;
+    // Placement also selects the arrow keys that open and close the menu.
+    return sync(menubar, ["orientation", "rtl"], (state) => {
+      const placement =
+        state.orientation === "vertical"
+          ? state.rtl
+            ? "left-start"
+            : "right-start"
+          : "bottom-start";
+      menu.setState("placement", placement);
+    });
+  });
+
   return {
     ...composite,
     ...hovercard,

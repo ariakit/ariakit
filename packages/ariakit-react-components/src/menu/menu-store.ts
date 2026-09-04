@@ -78,7 +78,16 @@ export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
     menubar: props.menubar !== undefined ? props.menubar : menubar,
     combobox: props.combobox !== undefined ? props.combobox : combobox,
   };
-  const [store, update] = useStore(Core.createMenuStore, props);
+  // A carried placement default must not become an explicit prop on recreation.
+  const [store, update] = useStore(
+    (state) =>
+      Core.createMenuStore({
+        ...state,
+        placement:
+          props.menubar && !props.parent ? props.placement : state.placement,
+      }),
+    props,
+  );
   return useMenuStoreProps(store, update, props);
 }
 
