@@ -22,7 +22,7 @@ export default function Example() {
         dir={rtl ? "rtl" : "ltr"}
         className="flex w-32 flex-col gap-1"
       >
-        <Ariakit.MenuProvider>
+        <Ariakit.MenuProvider placement={rtl ? "left-start" : "right-start"}>
           <Ariakit.MenuItem
             className="menubar-item"
             render={<Ariakit.MenuButton />}
@@ -34,7 +34,7 @@ export default function Example() {
             <Ariakit.MenuItem className="menu-item">Open</Ariakit.MenuItem>
           </Ariakit.Menu>
         </Ariakit.MenuProvider>
-        <Ariakit.MenuProvider>
+        <Ariakit.MenuProvider placement={rtl ? "left-start" : "right-start"}>
           <Ariakit.MenuItem
             className="menubar-item"
             render={<Ariakit.MenuButton />}
