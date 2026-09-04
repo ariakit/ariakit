@@ -1,19 +1,19 @@
-.controls {
+.menu-controls {
   display: grid;
   gap: 1rem;
   font-size: 1rem;
 }
 
-.menubar {
+.menu-controls .menubar {
   display: flex;
   gap: 0.5rem;
 }
 
-.menubar[aria-orientation="vertical"] {
+.menu-controls .menubar[aria-orientation="vertical"] {
   flex-direction: column;
 }
 
-.menu {
+.menu-controls .menu {
   display: grid;
   gap: 0.5rem;
   min-width: 16rem;
@@ -23,15 +23,15 @@
   color: black;
 }
 
-.controls button,
-.menu-item,
-.input {
+.menu-controls button,
+.menu-controls .menu-item,
+.menu-controls .input {
   padding: 0.5rem;
   border: 1px solid;
   border-radius: 0.25rem;
 }
 
-.controls :focus-visible {
+.menu-controls :focus-visible {
   outline: 2px solid royalblue;
   outline-offset: 2px;
 }

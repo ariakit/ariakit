@@ -140,3 +140,87 @@ test("hide on escape", async () => {
   await hover(q.menuitem("View"));
   expect(q.menu.maybe("View")).not.toBeInTheDocument();
 });
+
+for (const name of ["Search", "Rename", "Nested search", "Search blocks"]) {
+  for (const key of ["ArrowRight", "ArrowLeft"] as const) {
+    // https://github.com/ariakit/ariakit/issues/7409
+    test(`${key} moves the caret in ${name}`, async () => {
+      const menuName = name === "Search blocks" ? "Insert" : "Tools";
+      await click(q.menuitem(menuName));
+      const popup =
+        name === "Search blocks" ? q.dialog(menuName) : q.menu(menuName);
+      const input = q.labeled(name) as HTMLInputElement;
+      await click(input);
+      input.setSelectionRange(1, 1);
+      expect(input).toHaveFocus();
+      expect(popup).toBeVisible();
+      await press[key]();
+      expect(input).toHaveFocus();
+      expect(popup).toBeVisible();
+      const position = key === "ArrowRight" ? 2 : 0;
+      expect(input.selectionStart).toBe(position);
+      expect(input.selectionEnd).toBe(position);
+      await press.Escape();
+      expect(popup).not.toBeVisible();
+      expect(q.menuitem(menuName)).toHaveFocus();
+    });
+  }
+}
+
+// https://github.com/ariakit/ariakit/issues/7409
+test("ArrowLeft edits a field in a submenu without closing it", async () => {
+  await click(q.menuitem("Tools"));
+  await click(q.menuitem("More options"));
+  const input = q.textbox("Filter") as HTMLInputElement;
+  await click(input);
+  input.setSelectionRange(1, 1);
+  expect(input).toHaveFocus();
+  expect(q.menu("More options")).toBeVisible();
+  await press.ArrowLeft();
+  expect(input).toHaveFocus();
+  expect(input.selectionStart).toBe(0);
+  expect(q.menu("More options")).toBeVisible();
+});
+
+for (const key of ["ArrowRight", "ArrowLeft"] as const) {
+  for (const target of ["menu", "item", "input edge"]) {
+    // https://github.com/ariakit/ariakit/issues/7409
+    test(`${key} traverses the menubar from ${target}`, async () => {
+      await click(q.menuitem("Tools"));
+      if (target === "item") {
+        await press.ArrowDown();
+        expect(q.menuitem("New document")).toHaveFocus();
+      } else if (target === "input edge") {
+        const input = q.menuitem("Rename") as HTMLInputElement;
+        await click(input);
+        const position = key === "ArrowRight" ? 3 : 0;
+        input.setSelectionRange(position, position);
+        expect(input).toHaveFocus();
+      } else {
+        expect(q.menu("Tools")).toHaveFocus();
+      }
+      await press[key]();
+      const next = key === "ArrowRight" ? "Format" : "Insert";
+      expect(q.menuitem(next)).toHaveFocus();
+      expect(q.menu.maybe("Tools")).not.toBeInTheDocument();
+      expect(next === "Format" ? q.menu(next) : q.dialog(next)).toBeVisible();
+    });
+  }
+}
+
+for (const key of ["ArrowDown", "ArrowUp"] as const) {
+  for (const name of ["Help", "Action"]) {
+    // https://github.com/ariakit/ariakit/issues/7409
+    test(`${key} keeps focus on ${name} in a vertical menubar`, async () => {
+      await click(q.checkbox("Vertical menubar"));
+      await click(q.menuitem("Tools"));
+      const control = name === "Help" ? q.link(name) : q.button(name);
+      await click(control);
+      expect(control).toHaveFocus();
+      expect(q.menu("Tools")).toBeVisible();
+      await press[key]();
+      expect(control).toHaveFocus();
+      expect(q.menu("Tools")).toBeVisible();
+    });
+  }
+}
