@@ -1,0 +1,25 @@
+.menubar-item,
+.menu-item {
+  border-radius: 4px;
+  padding: 8px 16px;
+  text-align: start;
+}
+
+.menubar-item {
+  border: 1px solid #888;
+}
+
+.menu {
+  min-width: 140px;
+  border: 1px solid #888;
+  border-radius: 6px;
+  padding: 4px;
+  background: white;
+  color: black;
+}
+
+.menubar-item:focus-visible,
+.menu-item:focus-visible {
+  outline: 2px solid blue;
+  outline-offset: -2px;
+}
