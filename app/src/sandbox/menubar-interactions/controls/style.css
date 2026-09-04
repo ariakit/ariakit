@@ -1,0 +1,37 @@
+.controls {
+  display: grid;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.menubar {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.menubar[aria-orientation="vertical"] {
+  flex-direction: column;
+}
+
+.menu {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 16rem;
+  padding: 1rem;
+  border: 1px solid;
+  background: white;
+  color: black;
+}
+
+.controls button,
+.menu-item,
+.input {
+  padding: 0.5rem;
+  border: 1px solid;
+  border-radius: 0.25rem;
+}
+
+.controls :focus-visible {
+  outline: 2px solid royalblue;
+  outline-offset: 2px;
+}
