@@ -331,6 +331,28 @@ test("fireClickEvent omits a view that is not a Window instance", () => {
   expect(clicked?.view).toBe(null);
 });
 
+test("fireClickEvent omits a view without a Window constructor", () => {
+  const otherDocument = document.implementation.createHTMLDocument("Other");
+  const button = otherDocument.body.appendChild(
+    otherDocument.createElement("button"),
+  );
+  const view = {
+    document: otherDocument,
+    MouseEvent,
+    PointerEvent,
+  };
+  Object.defineProperty(view, "window", { value: view });
+  Object.defineProperty(otherDocument, "defaultView", {
+    configurable: true,
+    value: view,
+  });
+
+  const clicked = captureClick(button);
+
+  expect(clicked).toBeInstanceOf(PointerEvent);
+  expect(clicked?.view).toBe(null);
+});
+
 // jsdom implements `PointerEvent` only from v27, so `jest-environment-jsdom` 30
 // still has none. Activation has to keep working there rather than throwing,
 // dropping only the pointer members.

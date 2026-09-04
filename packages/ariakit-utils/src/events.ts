@@ -184,7 +184,11 @@ function getClickEventInit(
   eventInit?: PointerEventInit | null,
 ) {
   const init = eventInit ?? {};
-  const eventView = view instanceof view.Window ? view : null;
+  const WindowConstructor = view.Window;
+  const eventView =
+    typeof WindowConstructor === "function" && view instanceof WindowConstructor
+      ? view
+      : null;
   // Proxying a fresh object rather than the caller's, because a trap may not
   // report a value different from a frozen own property of its target, and
   // every member below is layered over whatever the caller froze. Only the
