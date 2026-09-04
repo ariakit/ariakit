@@ -179,8 +179,12 @@ const resetAttributes: Record<ResetAttribute, true> = {
 // pass a live event. Copying it would flatten it to its own properties, which a
 // live event mostly doesn't have, and inheriting from it would break the native
 // getters' brand checks, so the members are layered on with a proxy instead.
-function getClickEventInit(view: Window, eventInit?: PointerEventInit | null) {
+function getClickEventInit(
+  view: Window & typeof globalThis,
+  eventInit?: PointerEventInit | null,
+) {
   const init = eventInit ?? {};
+  const eventView = view instanceof view.Window ? view : null;
   // Proxying a fresh object rather than the caller's, because a trap may not
   // report a value different from a frozen own property of its target, and
   // every member below is layered over whatever the caller froze. Only the
@@ -189,7 +193,7 @@ function getClickEventInit(view: Window, eventInit?: PointerEventInit | null) {
   const target: PointerEventInit = {};
   return new Proxy(target, {
     get(_target, key) {
-      if (key === "view") return view;
+      if (key === "view") return eventView;
       if (key === "composed") return true;
       if (key === "pointerId") return init.pointerId ?? -1;
       if (key === "pointerType") return init.pointerType ?? "";
@@ -208,10 +212,10 @@ function getClickEventInit(view: Window, eventInit?: PointerEventInit | null) {
  *
  * The event is a `PointerEvent` built by the window that owns the element, the
  * way browsers dispatch it, falling back to a `MouseEvent` where that window
- * has no `PointerEvent`. Its `view` is that window and it is composed. It
- * reports no pointer behind the click unless the caller passes one, and reports
- * every other pointer attribute at its default value, the way a click always
- * does.
+ * has no `PointerEvent`. Its `view` is that window when it is a genuine
+ * `Window`, or `null` otherwise, and it is composed. It reports no pointer
+ * behind the click unless the caller passes one, and reports every other
+ * pointer attribute at its default value, the way a click always does.
  * @example
  * fireClickEvent(document.getElementById("id"));
  */
