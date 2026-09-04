@@ -8,6 +8,12 @@ const menuStyle = {
   color: "black",
 };
 
+// TODO: Remove the explicit placement after
+// https://github.com/ariakit/ariakit/issues/7410 is fixed. The key that opens
+// a menu follows the menu placement, so a side placement gives the vertical
+// menubar an opening key and puts the menu beside its item.
+const placement = "right-start";
+
 // A vertical menubar whose entries open menus, like an application sidebar.
 // https://github.com/ariakit/ariakit/issues/7410
 export default function Example() {
@@ -17,7 +23,7 @@ export default function Example() {
       orientation="vertical"
       style={{ display: "grid", width: 120, gap: 2 }}
     >
-      <Ariakit.MenuProvider>
+      <Ariakit.MenuProvider placement={placement}>
         <Ariakit.MenuItem render={<Ariakit.MenuButton />}>
           File
         </Ariakit.MenuItem>
@@ -26,7 +32,7 @@ export default function Example() {
           <Ariakit.MenuItem>Open</Ariakit.MenuItem>
         </Ariakit.Menu>
       </Ariakit.MenuProvider>
-      <Ariakit.MenuProvider>
+      <Ariakit.MenuProvider placement={placement}>
         <Ariakit.MenuItem render={<Ariakit.MenuButton />}>
           Edit
         </Ariakit.MenuItem>
