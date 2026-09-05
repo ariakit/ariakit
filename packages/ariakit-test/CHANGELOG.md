@@ -1,5 +1,9 @@
 # @ariakit/test
 
+## 0.8.1
+
+- Updated dependencies: `@ariakit/utils@0.2.1`
+
 ## 0.8.0
 
 ### Test queries ensure matches by default

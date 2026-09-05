@@ -1,5 +1,11 @@
 # @ariakit/react-components
 
+## 0.6.1
+
+- Fixed [`Command`](https://ariakit.com/reference/command) keyboard activation with `Enter` and `Space` in Vitest's default jsdom environment. This affects all components built on [`Command`](https://ariakit.com/reference/command), including [`Button`](https://ariakit.com/reference/button) and [`MenuButton`](https://ariakit.com/reference/menu-button). Thanks to [@cloud-walker](https://github.com/cloud-walker).
+- Fixed arrow keys in controls inside a [`Menu`](https://ariakit.com/reference/menu) moving focus to another [`Menubar`](https://ariakit.com/reference/menubar) item or closing a submenu instead of preserving focus and text editing.
+- Updated dependencies: `@ariakit/utils@0.2.1`, `@ariakit/components@0.1.13`, `@ariakit/react-store@0.1.11`, `@ariakit/react-utils@0.2.6`, `@ariakit/store@0.1.10`
+
 ## 0.6.0
 
 ### Removed `dialog/utils/prepend-hidden-dismiss`

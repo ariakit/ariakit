@@ -1,5 +1,9 @@
 # @ariakit/components
 
+## 0.1.13
+
+- Updated dependencies: `@ariakit/utils@0.2.1`, `@ariakit/store@0.1.10`
+
 ## 0.1.12
 
 - Fixed collection stores delaying their rendered items until the next animation frame. Thanks to [@ItaiYosephi](https://github.com/ItaiYosephi).
