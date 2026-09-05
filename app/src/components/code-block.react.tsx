@@ -199,7 +199,7 @@ export function CodeBlock({
           // border/ring the tabs style defaults to, and kept square top
           // corners under the opaque tab strip.
           $borderType: "border",
-          $roundedTop: false,
+          $panelRoundedTop: false,
           class: clsx(
             "ak-dark:ak-layer-lighten-3 ak-light:ak-layer-lighten-6 group peer ak-light:ak-edge-15 ak-frame-container/0 relative overflow-clip flex flex-col scroll-my-2",
             collapsed && "has-[[data-expand]:hover]:ak-state-3",

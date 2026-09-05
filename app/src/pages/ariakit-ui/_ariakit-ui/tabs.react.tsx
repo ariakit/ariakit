@@ -265,11 +265,11 @@ export function TabsSection() {
 
       <Sample
         title="Panels"
-        code="Tabs $roundedTop={false} · TabPanels $p={4} · $lighten={false}"
-        description="With $roundedTop off the strip ends at the seam and the panel keeps square top corners. The panel also takes its own padding and lift."
+        code="Tabs $panelRoundedTop={false} · TabPanels $p={4} · $lighten={false}"
+        description="With $panelRoundedTop off the strip ends at the seam and the panel keeps square top corners. The panel also takes its own padding and lift."
       >
         <Stage direction="column">
-          <DemoTabs $roundedTop={false} />
+          <DemoTabs $panelRoundedTop={false} />
           <DemoTabs selected={1} panelsProps={{ $p: 4 }} />
           <DemoTabs
             selected={2}
