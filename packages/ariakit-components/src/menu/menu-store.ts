@@ -109,7 +109,10 @@ export function createMenuStore({
 
   // Without an explicit placement, a menu opens away from the composite that
   // owns its button: below the items of a horizontal parent menu or menubar
-  // and beside the items of a vertical one.
+  // and beside the items of a vertical one. The React useMenuStore hook resets
+  // the carried placement on a store update for the same parent-or-menubar
+  // condition, so keep both in sync.
+  // https://github.com/ariakit/ariakit/pull/7414#discussion_r3940621814
   if (props.placement === undefined) {
     setup(menu, () =>
       sync(parent || menubar, ["orientation"], (state) => {
