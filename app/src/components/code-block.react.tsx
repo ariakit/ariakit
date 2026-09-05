@@ -138,10 +138,8 @@ export function CodeBlock({
   const defaultContent = (
     <div
       {...tabPanelsStyle.jsx({
-        // The legacy panel painted the tabs root color with no lightness
-        // offset and kept square top corners under the opaque tab strip.
-        $lightnessOffset: false,
-        $roundedTop: false,
+        // The legacy panel painted the tabs root color with no lift.
+        $lighten: false,
         $p: "none",
         class: clsx(
           "grid",
@@ -227,9 +225,9 @@ export function CodeBlock({
                   {...tabStyle.jsx({
                     $size: "sm",
                     // Match the panel color exactly (see --tab-bg above);
-                    // the automatic offset would shift it away from it.
+                    // the automatic lift would shift it away from it.
                     $layer: "var(--tab-bg)",
-                    $lightnessOffset: false,
+                    $lighten: false,
                     // The strip is a static stand-in, not a control: keep the
                     // press scale, hover, and focus variants off.
                     $active: false,
@@ -260,9 +258,9 @@ function CodeBlockTab(props: TabProps) {
     <Tab
       $size="sm"
       // Match the panel color exactly (see --tab-bg in CodeBlock); the
-      // automatic offset would shift the selected tab away from it.
+      // automatic lift would shift the selected tab away from it.
       $layer="var(--tab-bg)"
-      $lightnessOffset={false}
+      $lighten={false}
       {...props}
       className={clsx("items-center", props.className)}
     />

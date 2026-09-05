@@ -14,6 +14,10 @@ export const tabs = cv({
   extend: [frame],
   class: [
     "tabs",
+    // A strip thinner than the root's edge reaches over that edge, and so do
+    // the tab and panel edges that land on it. The root clips them all
+    // at its own edge, which stays the one line drawn there.
+    "overflow-clip",
     // The tabs, the glider and the panel all read the root's geometry. The
     // padding and the radius inherit, but every frame on the way down
     // rewrites them, and the edge widths never inherit at all.
@@ -22,6 +26,9 @@ export const tabs = cv({
     "[--tabs-border:var(--ak-frame-border)]",
     // The edge width, whichever of the two the adaptive edge picked.
     "[--tabs-bordering:calc(var(--tabs-border)+var(--ak-frame-ring))]",
+    // The tabs and the gliders read the root's surface too, so they lift off
+    // it as the panel does while the strip under them sinks below it.
+    "[--tabs-layer:var(--ak-layer)]",
     // While the first tab is a selected folder, its start curve and the
     // panel's start corner meet halfway between the root's edge and that
     // tab. A strip thinner than the edge pulls its tabs onto the edge, so
@@ -32,14 +39,18 @@ export const tabs = cv({
     // scrolled-off tab is cut at, and a sibling can only reach that
     // timeline through a scope on the root.
     "[timeline-scope:--tabs-scroll]",
+    // Only a folder's curves meet the panel's top corners, so a panel asked
+    // to round them does so only while the strip has a folder tab or glider.
+    "has-[.ui-folder]:[--tabs-folder:1]",
   ],
   variants: {
     /**
      * Paints the root's own edge in transparent while the selected tab and the
      * panel keep drawing it, for a folder with no card around it. The edge
-     * keeps its width, so the seam and the corners stay where they are.
+     * keeps its width, so the seam and the corners stay where they are, and
+     * the root stops clipping at its edge so the two can draw there.
      */
-    $edgeHidden: "border-transparent ring-transparent",
+    $edgeHidden: "border-transparent ring-transparent overflow-visible",
   },
   defaultVariants: {
     $border: true,
@@ -61,7 +72,7 @@ export const tabs = cv({
 // gives the pseudo-element content, and one that exists on an unselected tab
 // would carry the small radius over and animate it when the tab is selected.
 const tabStartCurve = cx(
-  "ui-selected:before:[--ak-frame-radius:min(var(--tab-radius),var(--tabs-meet,var(--tab-radius)))]",
+  "ui-selected:before:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet,var(--tabs-radius)))]",
 );
 
 // The transparent background covers the layer the hover shifts, so a flat or
@@ -74,9 +85,9 @@ const tabBoxHover = cx("not-ui-selected:ui-hover:bg-(--ak-layer)");
 // inside its box.
 const tabFolder = cx(
   "ui-folder",
-  // The curves rewrite the radius on the pseudo-elements that draw them, so
-  // the tab's own radius travels under another name.
-  "[--tab-radius:var(--ak-frame-radius)]",
+  // The curves take the root's radius, the one the panel's corners have,
+  // rather than the smaller radius the frame nesting gives the tab.
+  "[--folder-radius:var(--tabs-radius)]",
   tabStartCurve,
   // The strip ends a tab one padding above the seam and publishes how far the
   // selected tab reaches to meet it. Only the bottom padding grows, so the
@@ -107,6 +118,13 @@ export const tab = cv({
     // Only the selected tab paints at rest. The others keep their layer,
     // which their hover paint reads, and show the surface behind them.
     "not-ui-selected:bg-transparent",
+    // The defaults below lift the tab two ways, and the state picks one. The
+    // selected tab takes the lighten and drops the offset, so it turns white
+    // on a light surface where the offset would darken. The other tabs take
+    // the offset and drop the lighten, so their hover paints one step past
+    // the offset, as a lifted button's does.
+    "ui-selected:ak-layer-offset-0",
+    "not-ui-selected:ak-layer-lighten-0",
     // The selected tab already reads as active, so hovering it must not
     // shift its layer the way a button hover does.
     "ui-selected:ui-hover:ak-state-0",
@@ -131,9 +149,12 @@ export const tab = cv({
   },
   defaultVariants: {
     $kind: "folder",
-    // The selected tab sits one step off the strip. The other tabs take the
-    // same lift and blank it, as the classes above do, so their hover paints
-    // the lifted colour one step further.
+    // The tab lifts off the root's surface rather than the strip's, so its
+    // selected fill matches the panel, which lifts the same way off the same
+    // surface.
+    $layer: "var(--tabs-layer)",
+    // The two lifts the classes above split between the states.
+    $lighten: true,
     $lightnessOffset: true,
     // The radius comes from the frame nesting, concentric with the strip.
     $rounded: "unset",
@@ -161,15 +182,24 @@ export const tabGlider = cv({
     /**
      * Adds `folder` to the glider's `flat`, `bevel` and `bar`: the glider
      * takes the shape of a selected folder tab, curves included, and reaches
-     * down to the panel.
+     * down to the panel. A `bar` also gives the tab it marks its hover back.
      */
     $kind: {
+      // A bar marks the selected tab without filling it, so that tab keeps
+      // the lift and the hover of an unselected one: the offset and no
+      // lighten, the hover shift the tab zeroes for a filled selection, and
+      // the hover paint the glider's selected wipe takes away.
+      bar: [
+        "supports-anchor:[.control:has(~&)]:ui-selected:ak-layer-offset-(--layer-lightness-offset)",
+        "supports-anchor:[.control:has(~&)]:ui-selected:ak-layer-lighten-0",
+        "supports-anchor:[.control:has(~&)]:ui-selected:ui-hover:ak-state-(--hover-offset)",
+        "supports-anchor:[.control:has(~&)]:ui-selected:ui-hover:bg-(--ak-layer)",
+      ],
       folder: [
         "ui-folder",
         gliderCover,
-        // The curves rewrite the radius on the pseudo-elements that draw
-        // them, so the glider's own radius travels under another name.
-        "[--tab-radius:var(--ak-frame-radius)]",
+        // The curves take the root's radius, as the tab's do.
+        "[--folder-radius:var(--tabs-radius)]",
         tabStartCurve,
         // Only the selected folder glider reaches the seam. A hover or focus
         // glider covers the tab.
@@ -185,17 +215,30 @@ export const tabGlider = cv({
   },
   defaultVariants: {
     $kind: "folder",
+    // A painted cover stands in for the tab, so it lifts off the surface the
+    // tab reads, the root's. A focus cover paints nothing and a bar carries
+    // its colour off the strip, so both keep the glider's layer.
+    $layer(defaultValue, variants) {
+      if (variants.$kind === "bar") return defaultValue;
+      if (variants.$state === "focus") return defaultValue;
+      return "var(--tabs-layer)";
+    },
     // The glider's own lifts arrive as the default value, and the tab scheme
-    // replaces them for the painted covers: the glider paints the selected
-    // tab's surface, which sits one step off the strip rather than the two a
-    // selected glider takes, and a hovered tab paints one step past that. A
-    // bar carries its colour another way, and a focus cover only draws its
-    // ring, so both keep the glider's value.
+    // replaces them for the painted covers: a selected tab lifts with the
+    // lighten below and takes no offset, and a hovered tab paints one step
+    // past its own offset, two off the strip. A bar carries its colour
+    // another way, and a focus cover only draws its ring, so both keep the
+    // glider's values.
     $lightnessOffset(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
       if (variants.$state === "focus") return defaultValue;
       if (variants.$state === "hover") return 2;
-      return true;
+      return false;
+    },
+    $lighten(defaultValue, variants) {
+      if (variants.$kind === "bar") return defaultValue;
+      if (variants.$state !== "selected") return defaultValue;
+      return defaultValue ?? true;
     },
     // A selected folder glider takes the root's edge, as the tab does, and
     // frame leaves the edge variants unset for it. The other kinds keep the
@@ -232,6 +275,12 @@ export const tabList = cv({
     "pb-(--tabs-dock)",
     "[--tab-reach:var(--tabs-dock)]",
     "supports-anchor:has-[>.glider.selected]:[--tab-reach:0px]",
+    // The strip paints its surface as an image, so the paint can stop one
+    // edge width above its bottom. The seam sits in that last row, drawn by
+    // the panel behind the strip, and a colour would cover it.
+    "bg-transparent bg-no-repeat",
+    "bg-[linear-gradient(var(--ak-layer),var(--ak-layer))]",
+    "[background-size:100%_calc(100%-var(--tabs-bordering))]",
     // A folder tab takes the root's edge. A strip thinner than that edge
     // would set the tab's edge beside the root's, so the strip reaches over
     // the root's edge by the difference and the tabs land on it; the margin
@@ -241,23 +290,26 @@ export const tabList = cv({
     // A hovered folder tab, and the glider covering one, paint a pill this
     // far inside the tab's box: past the pull, then a fifth of the font size.
     "[--tab-inset:calc(0.2em+var(--tabs-pull))]",
-    // A tab's end curve is painted past its box. This spacer keeps the last
-    // one inside the scroll clip, whether the tabs fill the strip or
-    // overflow it, so it must not give way to them.
-    "after:w-[calc((var(--tabs-radius)-var(--tabs-padding))*2)] after:shrink-0",
+    // A tab's end curve is painted one root radius past its box. This spacer
+    // keeps the last one inside the scroll clip, whether the tabs fill the
+    // strip or overflow it, so it must not give way to them.
+    "after:w-(--tabs-radius) after:shrink-0",
     // Trailing tabs stay reachable by pointer when the strip overflows.
     "overflow-x-auto overflow-y-clip overscroll-x-contain scrollbar-none",
-    // A tab scrolled into view brings its end curve, painted one tab radius
+    // A tab scrolled into view brings its end curve, painted one root radius
     // past its box. The frame's own scroll padding is the strip's padding,
     // which is thinner, and sorts before this one.
-    "scroll-px-[calc(var(--ak-frame-radius)-var(--tabs-float))]",
+    "scroll-px-(--tabs-radius)",
     // The panel reads this timeline to square the corner a scrolled-off tab
     // is cut at; the root scopes the name for it.
     "[scroll-timeline:--tabs-scroll_inline]",
   ],
   defaultVariants: {
-    // The root's surface shows through the strip.
-    $layer: "transparent",
+    // The strip paints the root's surface half a step darker, a well the tabs
+    // sit in. The selected tab and the panel lift off the root itself, so the
+    // two stand out of the well together.
+    $layer: true,
+    $darken: 0.5,
     $cover: true,
     $p: "unset",
     $rounded: "unset",
@@ -274,31 +326,33 @@ export const tabPanels = cv({
     // The panel's top edge tucks under the strip, where the selected tab or
     // the glider covers it.
     "-mt-(--ak-frame-border)",
-    // Each top corner squares while the strip's content continues past that
-    // side, so a tab cut at the strip's edge meets a straight corner.
-    "ui-tabs-round",
-    // The start corner animates only beside a selected glider, whose travel
-    // it follows. Without anchor support the glider is not shown.
-    "ease-tabs",
-    "supports-anchor:[.tabs:has(.glider.selected)_&]:transition-[border-radius]",
-    "supports-anchor:[.tabs:has(.glider.selected)_&]:duration-(--duration-tabs)",
   ],
   variants: {
     /**
-     * Whether the top corners keep the frame radius. The strip above paints
-     * nothing, so they show. A strip that paints its own surface wants them
-     * square. The start corner shrinks to meet the first tab's curve while
-     * that tab is a selected folder, and either corner squares while the
-     * strip's content continues past its side.
+     * Rounds the top corners under folder tabs, whose curves they meet. The
+     * strip paints its surface down to the seam, so by default the corners
+     * stay square and the strip and the panel read as one card. A strip that
+     * paints nothing can round them: the start corner then shrinks to meet
+     * the first tab's curve while that tab is a selected folder, either
+     * corner squares while the strip's content continues past its side, and
+     * under flat or bevel tabs, or a bar, both stay square.
      */
     $roundedTop: [
-      "rounded-ss-[calc(min(var(--ak-frame-radius),var(--tabs-meet,var(--ak-frame-radius)))*var(--tabs-round-s,1))]",
-      "rounded-se-[calc(var(--ak-frame-radius)*var(--tabs-round-e,1))]",
+      // Each top corner squares while the strip's content continues past
+      // that side, so a tab cut at the strip's edge meets a straight corner.
+      "ui-tabs-round",
+      // The start corner animates only beside a selected glider, whose
+      // travel it follows. Without anchor support the glider is not shown.
+      "ease-tabs",
+      "supports-anchor:[.tabs:has(.glider.selected)_&]:transition-[border-radius]",
+      "supports-anchor:[.tabs:has(.glider.selected)_&]:duration-(--duration-tabs)",
+      "rounded-ss-[calc(min(var(--ak-frame-radius),var(--tabs-meet,var(--ak-frame-radius)))*var(--tabs-round-s,1)*var(--tabs-folder,0))]",
+      "rounded-se-[calc(var(--ak-frame-radius)*var(--tabs-round-e,1)*var(--tabs-folder,0))]",
     ],
   },
   defaultVariants: {
-    $roundedTop: true,
-    $lightnessOffset: true,
+    // The panel lifts as the selected tab does, so the two read as one sheet.
+    $lighten: true,
     $p: 3,
     $cover: true,
     // The edge is the root's, as on the tab.

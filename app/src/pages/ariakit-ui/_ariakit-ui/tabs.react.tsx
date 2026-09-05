@@ -112,7 +112,7 @@ export function TabsSection() {
       <Sample
         title="Folder tabs"
         code='Tabs $rounded="xl" $p={1} > TabList > Tab · TabPanels > TabPanel single'
-        description="The selected tab drops its bottom corners and merges into the panel below. Click through the tabs to watch the corners follow."
+        description="The strip sinks half a step into the root. The selected tab lifts out of it, drops its bottom corners and merges into the panel below. Click through the tabs to watch the corners follow."
       >
         <Stage direction="column">
           <DemoTabs />
@@ -123,7 +123,7 @@ export function TabsSection() {
       <Sample
         title="No padding"
         code='Tabs $p="none"'
-        description="The strip covers the root and takes the root's padding as its own. With none, the tabs sit on the root's edge: a selected first tab takes the root's corner and the panel squares its own to meet it."
+        description="The strip covers the root and takes the root's padding as its own. With none, the tabs sit on the root's edge and a selected first tab takes the root's corner."
       >
         <Stage direction="column">
           <DemoTabs $p="none" />
@@ -168,7 +168,7 @@ export function TabsSection() {
       <Sample
         title="Tab kinds"
         code='Tab $kind="folder" | "flat" | "bevel"'
-        description="A flat or bevel tab is a plain button in the strip, so the panel keeps its top corners."
+        description="A flat or bevel tab is a plain button in the strip."
       >
         <Stage direction="column">
           <DemoTabs tabProps={{ $kind: "flat" }} listProps={{ $p: 1 }} />
@@ -265,15 +265,18 @@ export function TabsSection() {
 
       <Sample
         title="Panels"
-        code="TabPanels $roundedTop={false} · $p={4} · $lightnessOffset={false}"
-        description="The panel squares its top corners when the strip paints its own surface, and takes its own padding and lift."
+        code="TabPanels $roundedTop · $p={4} · $lighten={false}"
+        description="The panel keeps its top corners square under the strip's surface. A strip that paints nothing lets it round them to meet the folder's curves. The panel also takes its own padding and lift."
       >
         <Stage direction="column">
-          <DemoTabs panelsProps={{ $roundedTop: false }} />
+          <DemoTabs
+            panelsProps={{ $roundedTop: true }}
+            listProps={{ $darken: false }}
+          />
           <DemoTabs selected={1} panelsProps={{ $p: 4 }} />
           <DemoTabs
             selected={2}
-            panelsProps={{ $lightnessOffset: false }}
+            panelsProps={{ $lighten: false }}
             $lighten={1.2}
           />
         </Stage>
@@ -316,7 +319,7 @@ export function TabsSection() {
       <Sample
         title="Overflow"
         code="A strip with more tabs than fit"
-        description="Trailing tabs stay reachable by pointer when the strip overflows, and the last tab's curve stays inside the clip. The panel squares a top corner while tabs continue past that side."
+        description="Trailing tabs stay reachable by pointer when the strip overflows, and the last tab's curve stays inside the clip."
       >
         <div className="max-w-sm">
           <DemoTabs tabLabels={manyLabels} selected={3} listProps={{ $p: 1 }} />
