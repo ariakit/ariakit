@@ -107,14 +107,19 @@ export function createMenuStore({
     }),
   );
 
-  setup(menu, () =>
-    sync(parent, ["orientation"], (state) => {
-      menu.setState(
-        "placement",
-        state.orientation === "vertical" ? "right-start" : "bottom-start",
-      );
-    }),
-  );
+  // Without an explicit placement, a menu opens away from the composite that
+  // owns its button: below the items of a horizontal parent menu or menubar
+  // and beside the items of a vertical one.
+  if (props.placement === undefined) {
+    setup(menu, () =>
+      sync(parent || menubar, ["orientation"], (state) => {
+        menu.setState(
+          "placement",
+          state.orientation === "vertical" ? "right-start" : "bottom-start",
+        );
+      }),
+    );
+  }
 
   return {
     ...composite,
