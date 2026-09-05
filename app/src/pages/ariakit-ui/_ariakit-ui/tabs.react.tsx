@@ -265,14 +265,11 @@ export function TabsSection() {
 
       <Sample
         title="Panels"
-        code="TabPanels $roundedTop · $p={4} · $lighten={false}"
-        description="The panel keeps its top corners square under the strip's surface. A strip that paints nothing lets it round them to meet the folder's curves. The panel also takes its own padding and lift."
+        code="Tabs $roundedTop={false} · TabPanels $p={4} · $lighten={false}"
+        description="With $roundedTop off the strip ends at the seam and the panel keeps square top corners. The panel also takes its own padding and lift."
       >
         <Stage direction="column">
-          <DemoTabs
-            panelsProps={{ $roundedTop: true }}
-            listProps={{ $darken: false }}
-          />
+          <DemoTabs $roundedTop={false} />
           <DemoTabs selected={1} panelsProps={{ $p: 4 }} />
           <DemoTabs
             selected={2}

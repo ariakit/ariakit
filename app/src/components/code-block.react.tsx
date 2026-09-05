@@ -196,8 +196,10 @@ export function CodeBlock({
       <div
         {...tabsStyle.jsx({
           // The legacy root drew a plain border rather than the adaptive
-          // border/ring the tabs style defaults to.
+          // border/ring the tabs style defaults to, and kept square top
+          // corners under the opaque tab strip.
           $borderType: "border",
+          $roundedTop: false,
           class: clsx(
             "ak-dark:ak-layer-lighten-3 ak-light:ak-layer-lighten-6 group peer ak-light:ak-edge-15 ak-frame-container/0 relative overflow-clip flex flex-col scroll-my-2",
             collapsed && "has-[[data-expand]:hover]:ak-state-3",
