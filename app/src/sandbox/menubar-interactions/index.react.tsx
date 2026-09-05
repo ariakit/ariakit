@@ -124,9 +124,9 @@ function MenuInteractions() {
   );
 }
 
-function ToolsMenu() {
+function ToolsMenu(props: Ariakit.MenuProviderProps) {
   return (
-    <Ariakit.MenuProvider>
+    <Ariakit.MenuProvider {...props}>
       <Ariakit.MenuItem render={<Ariakit.MenuButton />}>Tools</Ariakit.MenuItem>
       <Ariakit.Menu className="menu" gutter={4}>
         <Ariakit.MenuItem className="menu-item">New document</Ariakit.MenuItem>
@@ -165,6 +165,7 @@ function ToolsMenu() {
 
 function MenuControls() {
   const [vertical, setVertical] = useState(false);
+  const placement = vertical ? "right-start" : "bottom-start";
   return (
     <div className="menu-controls">
       <label>
@@ -179,8 +180,8 @@ function MenuControls() {
         className="menubar"
         orientation={vertical ? "vertical" : "horizontal"}
       >
-        <ToolsMenu />
-        <Ariakit.MenuProvider>
+        <ToolsMenu placement={placement} />
+        <Ariakit.MenuProvider placement={placement}>
           <Ariakit.MenuItem render={<Ariakit.MenuButton />}>
             Format
           </Ariakit.MenuItem>
@@ -191,7 +192,7 @@ function MenuControls() {
           </Ariakit.Menu>
         </Ariakit.MenuProvider>
         <Ariakit.ComboboxProvider defaultValue="abc">
-          <Ariakit.MenuProvider>
+          <Ariakit.MenuProvider placement={placement}>
             <Ariakit.MenuItem render={<Ariakit.MenuButton />}>
               Insert
             </Ariakit.MenuItem>
