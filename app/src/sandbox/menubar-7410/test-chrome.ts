@@ -120,4 +120,38 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.menuitem("Format")).toBeFocused();
     await test.expect(q.menu("Format")).not.toBeVisible();
   });
+
+  // https://github.com/ariakit/ariakit/pull/7414#discussion_r3940228527
+  test("menus keep following a menubar whose store is replaced", async ({
+    page,
+    q,
+  }) => {
+    const menubar = q.menubar("Dockable menubar");
+    const view = q.menuitem("View");
+    const menu = q.menu("View");
+    await test
+      .expect(menubar)
+      .toHaveAttribute("aria-orientation", "horizontal");
+
+    await q.button("Dock to the side").click();
+    await test.expect(menubar).toHaveAttribute("aria-orientation", "vertical");
+
+    await page.keyboard.press("Tab");
+    await test.expect(view).toBeFocused();
+
+    await page.keyboard.press("ArrowRight");
+    await test.expect(menu).toBeVisible();
+    await test.expect(q.menuitem("Zoom in")).toBeFocused();
+
+    await expectGap(view, menu, (anchor, popover) => {
+      return popover.x - (anchor.x + anchor.width - 1);
+    });
+
+    await page.keyboard.press("ArrowLeft");
+    await test.expect(menu).not.toBeVisible();
+    await test.expect(view).toBeFocused();
+
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.menuitem("Help")).toBeFocused();
+  });
 });

@@ -1,4 +1,4 @@
-import { press, q } from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/7410
@@ -72,4 +72,27 @@ test("an explicit placement wins in a right-to-left menubar", async () => {
   await press.ArrowDown();
   expect(q.menuitem("Format")).toHaveFocus();
   expect(q.menu.maybe("Format")).not.toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/pull/7414#discussion_r3940228527
+test("menus keep following a menubar whose store is replaced", async () => {
+  const menubar = q.menubar("Dockable menubar");
+  expect(menubar).toHaveAttribute("aria-orientation", "horizontal");
+
+  await click(q.button("Dock to the side"));
+  expect(menubar).toHaveAttribute("aria-orientation", "vertical");
+
+  await press.Tab();
+  expect(q.menuitem("View")).toHaveFocus();
+
+  await press.ArrowRight();
+  expect(q.menu("View")).toBeVisible();
+  expect(q.menuitem("Zoom in")).toHaveFocus();
+
+  await press.ArrowLeft();
+  expect(q.menu.maybe("View")).not.toBeInTheDocument();
+  expect(q.menuitem("View")).toHaveFocus();
+
+  await press.ArrowDown();
+  expect(q.menuitem("Help")).toHaveFocus();
 });

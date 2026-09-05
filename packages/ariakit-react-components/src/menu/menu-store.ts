@@ -78,7 +78,15 @@ export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
     menubar: props.menubar !== undefined ? props.menubar : menubar,
     combobox: props.combobox !== undefined ? props.combobox : combobox,
   };
-  const [store, update] = useStore(Core.createMenuStore, props);
+  const [store, update] = useStore(
+    // A store update passes the current state as props. Only the placement
+    // that the consumer passed is explicit, so the placement that the core
+    // store derived from a parent or menubar must not carry over.
+    // https://github.com/ariakit/ariakit/pull/7414#discussion_r3940228527
+    (storeProps: MenuStoreProps) =>
+      Core.createMenuStore({ ...storeProps, placement: props.placement }),
+    props,
+  );
   return useMenuStoreProps(store, update, props);
 }
 
