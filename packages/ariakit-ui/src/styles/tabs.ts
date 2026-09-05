@@ -280,7 +280,7 @@ export const tabList = cv({
     // the panel behind the strip, and a colour would cover it.
     "bg-transparent bg-no-repeat",
     "bg-[linear-gradient(var(--ak-layer),var(--ak-layer))]",
-    "[background-size:100%_calc(100%-var(--tabs-bordering))]",
+    "bg-size-[100%_calc(100%-var(--tabs-bordering))]",
     // A folder tab takes the root's edge. A strip thinner than that edge
     // would set the tab's edge beside the root's, so the strip reaches over
     // the root's edge by the difference and the tabs land on it; the margin
