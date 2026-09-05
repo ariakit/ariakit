@@ -110,12 +110,15 @@ const tabFolder = cx(
   // rather than the smaller radius the frame nesting gives the tab.
   "[--folder-radius:var(--tabs-radius)]",
   tabStartCurve,
-  // The strip ends a tab one padding above the seam and publishes how far the
-  // selected tab reaches to meet it. Only the bottom padding grows, so the
+  // The strip ends a tab one padding above the seam, and a selected tab
+  // reaches through that padding and over the panel's edge, as far as the
+  // folder says its own edge needs. Only the bottom padding grows, so the
   // label keeps its place, and the margin gives the room back so the row
-  // keeps its height.
-  "ui-selected:pb-[calc(var(--py)+var(--tab-reach,0px))]",
-  "ui-selected:-mb-(--tab-reach,0px)",
+  // keeps its height. A working selected glider reaches instead of the tab.
+  "[--tab-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
+  "supports-anchor:has-[~.glider.selected]:[--tab-reach:0px]",
+  "ui-selected:pb-[calc(var(--py)+var(--tab-reach))]",
+  "ui-selected:-mb-(--tab-reach)",
   // An unselected tab has no edge of its own, hovered or not.
   "not-ui-selected:border-transparent not-ui-selected:ring-0",
   "not-ui-selected:ui-hover:border-transparent",
@@ -224,9 +227,9 @@ export const tabGlider = cv({
         // The curves take the root's radius, as the tab's do.
         "[--folder-radius:var(--tabs-radius)]",
         tabStartCurve,
-        // Only the selected folder glider reaches the seam. A hover or focus
-        // glider covers the tab.
-        "ui-selected:[--glider-reach:var(--tabs-dock)]",
+        // Only the selected folder glider reaches over the seam, as far as
+        // the tab would. A hover or focus glider covers the tab.
+        "ui-selected:[--glider-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
       ],
     },
     $state: {
@@ -297,14 +300,14 @@ export const tabList = cv({
   class: [
     // The strip ends flat where the panel begins.
     "rounded-b-none!",
-    // The seam tucks into the strip by the root's edge width, so the strip
-    // pads that much more below the tabs and every tab ends one padding
-    // above the line the seam draws. A selected folder reaches through that
-    // room to the seam: the tab itself, or a working selected glider.
+    // The panel's edge tucks into the strip by its width, border or ring, so
+    // the strip pads that much more below the tabs, and the row keeps one
+    // padding above the seam as it keeps one below the root's edge. The
+    // width is the root's, and so is the edge the tab and the panel inherit,
+    // but each of them picks border or ring for itself, so the strip leaves
+    // the reach over the seam to the folder.
     "[--tabs-float:var(--ak-frame-padding)]",
     "[--tabs-dock:calc(var(--tabs-float)+var(--tabs-bordering))]",
-    "[--tab-reach:var(--tabs-dock)]",
-    "supports-anchor:has-[>.glider.selected]:[--tab-reach:0px]",
     // Below the seam the strip runs on under the panel by the notch, so its
     // surface shows through the panel's rounded corners.
     "pb-[calc(var(--tabs-dock)+var(--tabs-notch,0px))]",
@@ -355,10 +358,10 @@ export const tabPanels = cv({
   class: [
     // First in the root's stack, over the strip's surface and under the tabs.
     "relative z-1 overflow-clip",
-    // The panel's top edge tucks under the strip, where the selected tab or
-    // the glider covers it, and the panel runs up over the notch the strip
-    // leaves under its top corners.
-    "-mt-[calc(var(--tabs-notch,0px)+var(--ak-frame-border))]",
+    // The panel's top edge, border or ring, tucks under the strip by its
+    // width, where the selected tab or the glider covers it, and the panel
+    // runs up over the notch the strip leaves under its top corners.
+    "-mt-[calc(var(--tabs-notch,0px)+var(--tabs-bordering))]",
     // The top corners round by the notch the root publishes, which is none
     // under flat or bevel tabs or a bar, or with the root's $roundedTop off.
     // The start corner shrinks to meet the first tab's curve while that tab
