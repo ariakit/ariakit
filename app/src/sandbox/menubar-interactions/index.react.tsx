@@ -1,4 +1,6 @@
-import { Menubar } from "@ariakit/react";
+import * as Ariakit from "@ariakit/react";
+import { useState } from "react";
+import "./style.css";
 import {
   Menu,
   MenuButton,
@@ -9,7 +11,16 @@ import {
 
 export default function Example() {
   return (
-    <Menubar className="menubar">
+    <>
+      <MenuInteractions />
+      <MenuControls />
+    </>
+  );
+}
+
+function MenuInteractions() {
+  return (
+    <Ariakit.Menubar className="menubar">
       <MenuProvider>
         <MenuItem className="menubar-item" render={<MenuButton />}>
           File
@@ -109,6 +120,90 @@ export default function Example() {
           </MenuProvider>
         </Menu>
       </MenuProvider>
-    </Menubar>
+    </Ariakit.Menubar>
+  );
+}
+
+function ToolsMenu() {
+  return (
+    <Ariakit.MenuProvider>
+      <Ariakit.MenuItem render={<Ariakit.MenuButton />}>Tools</Ariakit.MenuItem>
+      <Ariakit.Menu className="menu" gutter={4}>
+        <Ariakit.MenuItem className="menu-item">New document</Ariakit.MenuItem>
+        <input aria-label="Search" defaultValue="abc" className="input" />
+        <Ariakit.MenuItem
+          aria-label="Rename"
+          hideOnClick={false}
+          render={<input defaultValue="abc" className="input" />}
+        />
+        <Ariakit.MenuItem hideOnClick={false}>
+          <input
+            aria-label="Nested search"
+            defaultValue="abc"
+            className="input"
+          />
+        </Ariakit.MenuItem>
+        <a href="#help" tabIndex={0}>
+          Help
+        </a>
+        <button type="button" tabIndex={0}>
+          Action
+        </button>
+        <Ariakit.MenuProvider>
+          <Ariakit.MenuItem render={<Ariakit.MenuButton />}>
+            More options
+          </Ariakit.MenuItem>
+          <Ariakit.Menu className="menu" gutter={4}>
+            <Ariakit.MenuItem>Archive</Ariakit.MenuItem>
+            <input aria-label="Filter" defaultValue="abc" className="input" />
+          </Ariakit.Menu>
+        </Ariakit.MenuProvider>
+      </Ariakit.Menu>
+    </Ariakit.MenuProvider>
+  );
+}
+
+function MenuControls() {
+  const [vertical, setVertical] = useState(false);
+  return (
+    <div className="menu-controls">
+      <label>
+        <input
+          type="checkbox"
+          checked={vertical}
+          onChange={(event) => setVertical(event.currentTarget.checked)}
+        />
+        Vertical menubar
+      </label>
+      <Ariakit.Menubar
+        className="menubar"
+        orientation={vertical ? "vertical" : "horizontal"}
+      >
+        <ToolsMenu />
+        <Ariakit.MenuProvider>
+          <Ariakit.MenuItem render={<Ariakit.MenuButton />}>
+            Format
+          </Ariakit.MenuItem>
+          <Ariakit.Menu className="menu" gutter={4}>
+            <Ariakit.MenuItem className="menu-item">
+              Clear formatting
+            </Ariakit.MenuItem>
+          </Ariakit.Menu>
+        </Ariakit.MenuProvider>
+        <Ariakit.ComboboxProvider defaultValue="abc">
+          <Ariakit.MenuProvider>
+            <Ariakit.MenuItem render={<Ariakit.MenuButton />}>
+              Insert
+            </Ariakit.MenuItem>
+            <Ariakit.Menu className="menu" gutter={4}>
+              <Ariakit.Combobox aria-label="Search blocks" className="input" />
+              <Ariakit.ComboboxList>
+                <Ariakit.ComboboxItem value="Paragraph" className="menu-item" />
+              </Ariakit.ComboboxList>
+            </Ariakit.Menu>
+          </Ariakit.MenuProvider>
+        </Ariakit.ComboboxProvider>
+      </Ariakit.Menubar>
+    </div>
   );
 }

@@ -9,13 +9,20 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { invariant } from "@ariakit/utils";
+import {
+  getTextboxSelection,
+  getTextboxValue,
+  isSelfTarget,
+  isTextbox,
+  invariant,
+} from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
+import { isItem } from "../composite/utils.ts";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
 import { getBasePlacement } from "../popover/__utils.ts";
@@ -97,6 +104,17 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
+      const target = event.target as HTMLElement;
+      if (!isSelfTarget(event) && !isItem(store, target)) return;
+      // Menu traversal must respect text editing just like CompositeItem,
+      // including arrows on the axis that the menu itself does not handle.
+      if (isTextbox(target)) {
+        const selection = getTextboxSelection(target);
+        const isPrevious = event.key === "ArrowLeft" || event.key === "ArrowUp";
+        const isNext = event.key === "ArrowRight" || event.key === "ArrowDown";
+        if (isPrevious && selection.start !== 0) return;
+        if (isNext && selection.end !== getTextboxValue(target).length) return;
+      }
       if (hasParentMenu || (parentMenubar && !isHorizontal)) {
         const hideMap = {
           ArrowRight: () => dir === "left" && !isHorizontal,
