@@ -1,5 +1,11 @@
 # @ariakit/react
 
+## 0.4.40
+
+- Fixed [`Command`](https://ariakit.com/reference/command) keyboard activation with `Enter` and `Space` in Vitest's default jsdom environment. This affects all components built on [`Command`](https://ariakit.com/reference/command), including [`Button`](https://ariakit.com/reference/button) and [`MenuButton`](https://ariakit.com/reference/menu-button). Thanks to [@cloud-walker](https://github.com/cloud-walker).
+- Fixed arrow keys in controls inside a [`Menu`](https://ariakit.com/reference/menu) moving focus to another [`Menubar`](https://ariakit.com/reference/menubar) item or closing a submenu instead of preserving focus and text editing.
+- Updated dependencies: `@ariakit/react-components@0.6.1`
+
 ## 0.4.39
 
 ### Modal popups render their fallback dismiss button next to the popup
