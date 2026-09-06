@@ -1,5 +1,36 @@
 # @ariakit/tailwind
 
+## 0.2.8
+
+### Added `ak-layer-transparent`
+
+The `ak-layer` utility always paints its resolved color. Against the parent layer that paint is invisible, but it is still opaque, so a control that opens a layer only to give its descendants a color context covers whatever is drawn behind it, such as a moving highlight at a negative z-index.
+
+The new `ak-layer-transparent` utility makes that paint conditional. The element paints nothing at rest, and paints the layer color as soon as a modifier applies one, including under a variant such as `hover:` or `aria-selected:`.
+
+```tsx
+<button className="ak-layer ak-layer-transparent hover:ak-state-10">
+  Transparent at rest, painted on hover
+</button>
+```
+
+### Inert layer longhands no longer mark a color change
+
+`ak-layer-mix-color-*`, `ak-layer-mix-amount-*`, and `ak-layer-mix-method-*` only fill in values that the mixing utilities read, and `ak-layer-contrast-*` only fills in the amount that `ak-layer-contrast` reads. Without that partner on the same element, the resolved layer color never moves.
+
+They were still marked as color changes, and that mark is also what makes `ak-layer-transparent` paint. So a nested layer carrying only these longhands reapplied the global contrast bias instead of inheriting its parent color whenever `--contrast` was above `0`, and, with `ak-layer-transparent`, it would have painted a background instead of staying see-through.
+
+```tsx
+<div className="ak-layer">
+  {/* Inherits the parent color, like a bare ak-layer */}
+  <div className="ak-layer ak-layer-mix-color-red-500" />
+  <div className="ak-layer ak-layer-contrast-50" />
+  {/* Still moves the color, and still counts as a color change */}
+  <div className="ak-layer ak-layer-mix ak-layer-mix-color-red-500" />
+  <div className="ak-layer ak-layer-contrast ak-layer-contrast-50" />
+</div>
+```
+
 ## 0.2.7
 
 - Fixed bare `ak-layer` elements to preserve inherited background colors when the global contrast setting increases.
