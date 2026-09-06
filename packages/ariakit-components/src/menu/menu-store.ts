@@ -53,12 +53,27 @@ export function createMenuStore({
       "contentElement",
       "popoverElement",
       "disclosureElement",
+      // The menu is the component that renders the popover in this
+      // composition, so it resolves its own placement below and writes the
+      // current one while positioning. Sharing either would overwrite those
+      // with the values of a combobox that never positions anything.
+      "placement",
+      "currentPlacement",
     ]),
   );
 
   throwOnConflictingProps(props, store);
 
   const syncState = store.getState();
+
+  const parentOrientation = (parent || menubar)?.getState().orientation;
+
+  // A menu opens away from the items of the composite that owns its button, so
+  // a vertical parent menu or menubar places it beside them. Any other
+  // orientation, and no parent menu or menubar at all, keeps it below.
+  // https://github.com/ariakit/ariakit/issues/7410
+  const orientedPlacement =
+    parentOrientation === "vertical" ? "right-start" : "bottom-start";
 
   const composite = createCompositeStore({
     ...props,
@@ -76,7 +91,7 @@ export function createMenuStore({
     placement: defaultValue(
       props.placement,
       syncState.placement,
-      "bottom-start" as const,
+      orientedPlacement,
     ),
     timeout: defaultValue(
       props.timeout,
@@ -106,23 +121,6 @@ export function createMenuStore({
       menu.setState("activeId", null);
     }),
   );
-
-  // Without an explicit placement, a menu opens away from the composite that
-  // owns its button: below the items of a horizontal parent menu or menubar
-  // and beside the items of a vertical one. The React useMenuStore hook resets
-  // the carried placement on a store update for the same parent-or-menubar
-  // condition, so keep both in sync.
-  // https://github.com/ariakit/ariakit/pull/7414#discussion_r3940621814
-  if (props.placement === undefined) {
-    setup(menu, () =>
-      sync(parent || menubar, ["orientation"], (state) => {
-        menu.setState(
-          "placement",
-          state.orientation === "vertical" ? "right-start" : "bottom-start",
-        );
-      }),
-    );
-  }
 
   return {
     ...composite,
@@ -164,7 +162,12 @@ export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
   extends CompositeStoreState, HovercardStoreState {
   /** @default "vertical" */
   orientation: CompositeStoreState["orientation"];
-  /** @default "bottom-start" */
+  /**
+   * The placement of the menu. A menu inside a vertical parent menu or menubar
+   * opens at `right-start` instead, unless it receives a placement of its own,
+   * either as an option or through a linked `store` or `popover` store.
+   * @default "bottom-start"
+   */
   placement: HovercardStoreState["placement"];
   /** @default 0 */
   hideTimeout?: HovercardStoreState["hideTimeout"];
@@ -240,7 +243,8 @@ export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
   /**
    * A reference to a combobox store. This is used when combining the combobox
    * with a menu (e.g., dropdown menu with a search input). The stores will
-   * share the same state.
+   * share the same state, apart from the element references and the placement,
+   * which belong to the popover that the menu renders.
    */
   combobox?: ComboboxStore | null;
   /**

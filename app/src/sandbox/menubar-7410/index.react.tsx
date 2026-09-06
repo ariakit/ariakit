@@ -1,5 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
 
 const menuStyle = {
   display: "grid",
@@ -23,40 +22,6 @@ function MenubarMenu({ label, children, ...props }: MenubarMenuProps) {
       </Ariakit.MenuItem>
       <Ariakit.Menu style={menuStyle}>{children}</Ariakit.Menu>
     </Ariakit.MenuProvider>
-  );
-}
-
-// A menubar that the user docks to the top or to the side of the window. Each
-// dock position keeps its own menubar store, so docking replaces the store of
-// the mounted menubar and recreates the menu stores inside it.
-function DockableMenubar() {
-  const [side, setSide] = useState(false);
-  const topStore = Ariakit.useMenubarStore({ orientation: "horizontal" });
-  const sideStore = Ariakit.useMenubarStore({ orientation: "vertical" });
-  return (
-    <div style={{ display: "grid", gap: 8, alignContent: "start" }}>
-      <Ariakit.Button onClick={() => setSide(!side)}>
-        {side ? "Dock to the top" : "Dock to the side"}
-      </Ariakit.Button>
-      <Ariakit.Menubar
-        aria-label="Dockable menubar"
-        store={side ? sideStore : topStore}
-        style={{
-          display: "grid",
-          gridAutoFlow: side ? "row" : "column",
-          width: side ? 120 : undefined,
-          gap: 2,
-        }}
-      >
-        <MenubarMenu label="View">
-          <Ariakit.MenuItem>Zoom in</Ariakit.MenuItem>
-          <Ariakit.MenuItem>Zoom out</Ariakit.MenuItem>
-        </MenubarMenu>
-        <MenubarMenu label="Help">
-          <Ariakit.MenuItem>About</Ariakit.MenuItem>
-        </MenubarMenu>
-      </Ariakit.Menubar>
-    </div>
   );
 }
 
@@ -101,7 +66,6 @@ export default function Example() {
           </MenubarMenu>
         </Ariakit.Menubar>
       </div>
-      <DockableMenubar />
     </div>
   );
 }
