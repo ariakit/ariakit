@@ -25,7 +25,7 @@
     "@ariakit/test": "latest",
     "@tailwindcss/vite": "4.3.3",
     "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.5",
+    "@types/react-dom": "19.2.6",
     "@vitejs/plugin-react": "6.1.1",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
