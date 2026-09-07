@@ -8,7 +8,7 @@ import type {
  * Besides the standard Changesets `getReleaseLine` and
  * `getDependencyReleaseLine` functions, this module exports a non-standard
  * `getChangelogEntry` hook. It only works because
- * patches/@changesets__apply-release-plan@8.0.0.patch makes upstream's
+ * patches/@changesets__apply-release-plan@8.1.0.patch makes upstream's
  * getChangelogEntry delegate to it instead of rendering the default
  * "### Major/Minor/Patch Changes" sections.
  *
