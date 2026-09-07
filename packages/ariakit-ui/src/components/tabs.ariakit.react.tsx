@@ -20,7 +20,7 @@ export interface TabsProps
     ak.RoleProps,
     Pick<
       TabProviderProps,
-      "selectedId" | "setSelectedId" | "defaultSelectedId"
+      "selectedId" | "setSelectedId" | "defaultSelectedId" | "selectOnMove"
     >,
     VariantProps<typeof tabs> {}
 
@@ -31,6 +31,7 @@ export function Tabs({
   selectedId,
   setSelectedId,
   defaultSelectedId,
+  selectOnMove,
   ...props
 }: TabsProps) {
   const [variantProps, rest] = splitProps(props, tabs);
@@ -39,6 +40,7 @@ export function Tabs({
       selectedId={selectedId}
       setSelectedId={setSelectedId}
       defaultSelectedId={defaultSelectedId}
+      selectOnMove={selectOnMove}
     >
       <ak.Role {...tabs.jsx(variantProps)} {...rest} />
     </TabProvider>

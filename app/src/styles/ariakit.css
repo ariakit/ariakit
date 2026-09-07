@@ -579,6 +579,14 @@
  * stacks two radial gradients: the layer with its edge, and the parent backdrop
  * that fills the notch left beside the curve.
  *
+ * The curves paint the edge in --folder-edge, the frame's edge colour unless
+ * the consumer points it elsewhere, and as wide as the frame's edge plus
+ * --folder-extra. A consumer that thickens its edge inward for keyboard focus
+ * sets both on the folder element: the extra band grows toward the box, and
+ * the curves grow by the same amount, so their outer arc keeps its place. The
+ * extra band is a layer of its own that ends on the seam, where the curve's
+ * foot meets the panel's edge, so it does not run on below it as the box does.
+ *
  * Tailwind emits this utility ahead of the frame border widths, so the bottom
  * border reset has to be important to survive a bordered frame. The ui-selected
  * declarations need no such help: their `:is()` selector already outranks the
@@ -647,10 +655,20 @@
       --folder-gradient: var(--folder-transparent), var(--folder-border), var(--folder-bg);
       --folder-backdrop-ring: calc(var(--folder-outer-border) + var(--folder-ring));
       --folder-backdrop: transparent var(--folder-outer-border), var(--ak-layer-parent) var(--folder-outer-border), var(--ak-layer-parent) var(--folder-backdrop-ring), var(--ak-layer) var(--folder-backdrop-ring);
+      /* The extra band runs from the band's inner edge to --folder-extra
+         further in, over the layer below. It starts a hair before the edge
+         ends, so the two blend, and it has its own hair of smoothness, since
+         an edgeless folder has none. */
+      --folder-extra-smoothness: min(0.2px, var(--folder-extra, 0px));
+      --folder-extra-inner: calc(var(--folder-inner) + var(--folder-extra, 0px));
+      --folder-extra-gradient: transparent calc(var(--folder-inner-border) - var(--folder-extra-smoothness)), var(--folder-edge) var(--folder-inner-border), var(--folder-edge) calc(var(--folder-extra-inner) - var(--folder-extra-smoothness)), transparent calc(var(--folder-extra-inner) + var(--folder-extra-smoothness));
       content: "";
       pointer-events: none;
-      width: var(--folder-radius);
+      width: calc(var(--folder-radius) + var(--folder-extra, 0px));
       height: calc(var(--folder-radius) + var(--folder-over));
+      /* The extra band's layer has no width until the extra is on, and it
+         stops at the seam. */
+      background-size: min(var(--folder-extra, 0px) * 1000000, 100%) var(--folder-radius), auto, auto;
       transition-property: --folder-radius;
       transition-duration: var(--duration-tabs);
       transition-timing-function: var(--ease-tabs);
@@ -658,14 +676,24 @@
 
     &::before {
       inset-inline-end: 100%;
-      background-image: radial-gradient(circle at 0 0, var(--folder-gradient)),
+      background-image: radial-gradient(circle at 0 0, var(--folder-extra-gradient)),
+        radial-gradient(circle at 0 0, var(--folder-gradient)),
         radial-gradient(circle at 0 0, var(--folder-backdrop));
     }
 
     &::after {
       inset-inline-start: 100%;
-      background-image: radial-gradient(circle at 100% 0, var(--folder-gradient)),
+      background-image: radial-gradient(circle at 100% 0, var(--folder-extra-gradient)),
+        radial-gradient(circle at 100% 0, var(--folder-gradient)),
         radial-gradient(circle at 100% 0, var(--folder-backdrop));
+    }
+
+    /* The curves are placed by logical insets while the gradients' centres
+       are physical corners, so a right-to-left folder mirrors each curve in
+       its own box to keep the centre on the corner away from the tab. */
+    &:dir(rtl)::before,
+    &:dir(rtl)::after {
+      transform: scaleX(-1);
     }
   }
 }

@@ -222,7 +222,7 @@ export function TabsSection() {
       <Sample
         title="Hover and focus gliders"
         code='TabGlider $state="hover" · $state="focus"'
-        description="A hover glider paints an inset rectangle under the pointer, and a focus glider draws the ring. Hover and tab through the strips."
+        description="A hover glider paints the pill under the pointer, and a focus glider paints it under keyboard focus. The second strip moves focus without selecting, so the two can part: click a tab and press the arrow keys, and the pill travels while the selected folder stays."
       >
         <Stage direction="column">
           <DemoTabs
@@ -234,11 +234,39 @@ export function TabsSection() {
           />
           <DemoTabs
             selected={1}
+            selectOnMove={false}
             listProps={{ $p: 1 }}
             gliders={[
               { $kind: "folder", $state: "selected" },
               { $kind: "folder", $state: "hover" },
               { $kind: "folder", $state: "focus" },
+            ]}
+          />
+        </Stage>
+      </Sample>
+
+      <Sample
+        title="Focus"
+        code="Tabs selectOnMove={false}"
+        description="Keyboard focus paints a tab's pill, or a flat tab's box, in the brand layer. The selected folder marks focus on its edge instead: the edge turns brand and thickens inward, so the seam and the label stay put. These strips move focus without selecting: click a tab, then press the arrow keys and Enter."
+      >
+        <Stage direction="column">
+          <DemoTabs selectOnMove={false} listProps={{ $p: 1 }} />
+          <DemoTabs selectOnMove={false} $p="none" selected={1} />
+          <DemoTabs
+            selectOnMove={false}
+            selected={2}
+            $edge="brand"
+            $edgeRaw
+            listProps={{ $p: 1 }}
+          />
+          <DemoTabs
+            selectOnMove={false}
+            tabProps={{ $kind: "flat" }}
+            listProps={{ $p: 1 }}
+            gliders={[
+              { $kind: "flat", $state: "selected" },
+              { $kind: "flat", $state: "focus" },
             ]}
           />
         </Stage>

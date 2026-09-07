@@ -102,8 +102,14 @@ const tabStartCurve = cx(
 
 // The transparent background covers the layer the hover shifts, so a flat or
 // bevel tab paints it back on its own box. The extra variant sorts this after
-// the rule at rest.
-const tabBoxHover = cx("not-ui-selected:ui-hover:bg-(--ak-layer)");
+// the rule at rest. Keyboard focus paints the box in the brand layer, selected
+// or not, the way a composite row marks its focused item, and the brand layer
+// gives the label its colour.
+const tabBox = cx(
+  "not-ui-selected:ui-hover:bg-(--ak-layer)",
+  "ui-focus-visible:ak-layer-brand ui-focus-visible:ak-layer-contrast",
+  "not-ui-selected:ui-focus-visible:bg-(--ak-layer)",
+);
 
 // A folder tab drops its bottom corners and merges into the panel below when
 // selected. Unselected, it is a button in the strip, and its hover is a pill
@@ -133,18 +139,44 @@ const tabFolder = cx(
   // An unselected tab has no edge of its own, hovered or not.
   "not-ui-selected:border-transparent not-ui-selected:ring-0",
   "not-ui-selected:ui-hover:border-transparent",
-  // The hover paints the layer the tab resolved as a pill --tab-inset inside
-  // the tab's box, on the pseudo-element the curves leave free while the tab is
-  // not selected. The pseudo-element is placed from the padding box, one edge
-  // width inside the tab's box on every side but the bottom, where a folder has
-  // no edge, and that width does not reach a pseudo-element, so the tab derives
-  // the placement. The corners stay concentric.
+  // The hover and the keyboard focus paint the layer the tab resolved as a
+  // pill --tab-inset inside the tab's box, on the pseudo-element the curves
+  // leave free while the tab is not selected. The pseudo-element is placed
+  // from the padding box, one edge width inside the tab's box on every side
+  // but the bottom, where a folder has no edge, and that width does not reach
+  // a pseudo-element, so the tab derives the placement. The corners stay
+  // concentric. The pill is shaped at rest and painted by the state.
   "[--tab-inset-x:calc(var(--tab-inset)-var(--ak-frame-border))]",
-  "not-ui-selected:ui-hover:after:-z-1",
-  "not-ui-selected:ui-hover:after:inset-(--tab-inset-x)",
-  "not-ui-selected:ui-hover:after:bottom-(--tab-inset)",
+  "not-ui-selected:after:-z-1",
+  "not-ui-selected:after:inset-(--tab-inset-x)",
+  "not-ui-selected:after:bottom-(--tab-inset)",
+  "not-ui-selected:after:rounded-[max(0px,calc(var(--ak-frame-radius)-var(--tab-inset)))]",
   "not-ui-selected:ui-hover:after:bg-(--ak-layer)",
-  "not-ui-selected:ui-hover:after:rounded-[max(0px,calc(var(--ak-frame-radius)-var(--tab-inset)))]",
+  "not-ui-selected:ui-focus-visible:after:bg-(--ak-layer)",
+  // Keyboard focus on an unselected folder paints that pill in the brand
+  // layer, the way a composite row marks its focused item, and the brand
+  // layer gives the label its colour. The contrast keeps the pill apart from
+  // a brand surface behind the strip.
+  "not-ui-selected:ui-focus-visible:ak-layer-brand",
+  "not-ui-selected:ui-focus-visible:ak-layer-contrast",
+  // The selected folder marks keyboard focus on its edge instead, so the seam
+  // stays and nothing crosses it. The edge takes the focus colour and grows by
+  // --tab-focus-extra: to two pixels at least, and by half of itself at least,
+  // so it stands out from an edge that is brand already. The extra width grows
+  // inward, taken from the padding, so the box, the label and the outer
+  // silhouette stay put, and a tab with less padding than that gets a thinner
+  // mark rather than a bigger box. A border grows itself, a ring keeps its
+  // width and gets a border inside it, and the curves widen their band by the
+  // same amount through the folder, which grows them toward the box.
+  "ui-selected:ui-focus-visible:[--tab-focus-extra:min(max(1px,calc(2px-var(--ak-frame-border)-var(--ak-frame-ring)),round(up,calc((var(--ak-frame-border)+var(--ak-frame-ring))/2),1px)),var(--py,0px),var(--px,0px))]",
+  "ui-selected:ui-focus-visible:border-t-[length:calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
+  "ui-selected:ui-focus-visible:border-x-[length:calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
+  "ui-selected:ui-focus-visible:pt-[calc(var(--py,0px)-var(--tab-focus-extra))]",
+  "ui-selected:ui-focus-visible:px-[calc(var(--px,0px)-var(--tab-focus-extra))]",
+  "ui-selected:ui-focus-visible:border-(--ak-outline)",
+  "ui-selected:ui-focus-visible:ring-(--ak-outline)",
+  "ui-selected:ui-focus-visible:[--folder-edge:var(--ak-outline)]",
+  "ui-selected:ui-focus-visible:[--folder-extra:var(--tab-focus-extra)]",
 );
 
 export const tab = cv({
@@ -165,6 +197,11 @@ export const tab = cv({
     // The selected tab already reads as active, so hovering it must not shift
     // its layer the way a button hover does.
     "ui-selected:ui-hover:ak-state-0",
+    // Each kind marks keyboard focus its own way, below, in place of the
+    // button's ring: outside the box, that ring crosses the seam of a selected
+    // folder and is cut by the strip's scroll clip. The browser's own ring
+    // goes with it.
+    "ui-focus-visible:outline-none",
   ],
   variants: {
     /**
@@ -179,9 +216,9 @@ export const tab = cv({
       if (value == null) return;
       if (value === "folder") return tabFolder;
       if (value === "bevel") {
-        return [tabBoxHover, "ui-selected:ui-bevel-button"];
+        return [tabBox, "ui-selected:ui-bevel-button"];
       }
-      return tabBoxHover;
+      return tabBox;
     },
   },
   defaultVariants: {
@@ -195,6 +232,10 @@ export const tab = cv({
     $lightnessOffset: true,
     // The radius comes from the frame nesting, concentric with the strip.
     $rounded: "unset",
+    // The kinds mark keyboard focus themselves, so the button's ring stays
+    // off. Its colour stays on: the selected folder's edge takes it.
+    $focus: false,
+    $focusColor: "brand",
     // A folder tab takes the root's edge, so the selected one merges with the
     // panel. The other kinds have none, like the button they are.
     $border(defaultValue, variants) {
@@ -241,6 +282,20 @@ export const tabGlider = cv({
         // Only the selected folder glider reaches over the seam, as far as the
         // tab would. A hover or focus glider covers the tab.
         "ui-selected:[--glider-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
+        // A selected folder glider marks keyboard focus on the tab it covers
+        // as the tab marks it on itself: the edge takes the focus colour and
+        // grows inward by the same extra width. The glider is sized from the
+        // tab's box and has no padding to give back, so only its edge moves,
+        // and the tab's own mark paints in the same place over it. The colour
+        // is the one the tab's focus reads, from the same utilities.
+        "ak-outline ak-outline-brand",
+        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:[--tab-focus-extra:max(1px,calc(2px-var(--ak-frame-border)-var(--ak-frame-ring)),round(up,calc((var(--ak-frame-border)+var(--ak-frame-ring))/2),1px))]",
+        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:border-t-[length:calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
+        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:border-x-[length:calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
+        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:border-(--ak-outline)",
+        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:ring-(--ak-outline)",
+        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:[--folder-edge:var(--ak-outline)]",
+        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:[--folder-extra:var(--tab-focus-extra)]",
       ],
     },
     $state: {
@@ -254,30 +309,52 @@ export const tabGlider = cv({
         // glider's classes sort by value, not by state.
         "z-3",
       ],
-      focus: "z-3",
+      focus: [
+        "z-3",
+        // A focus glider is the brand pill of the tab it covers rather than the
+        // ring the glider draws elsewhere: it paints the fill, and the covered
+        // tab, which keeps the brand layer for its label, paints no pill or box
+        // of its own. With no tab in focus there is no anchor, so the glider
+        // leaves rather than fall to the group's start.
+        "outline-none",
+        "not-peer-ui-focus-visible:hidden",
+        "supports-anchor:[.control:has(~&)]:not-ui-selected:ui-focus-visible:after:bg-transparent!",
+        "supports-anchor:[.control:has(~&)]:not-ui-selected:ui-focus-visible:bg-transparent!",
+        // The selected folder marks focus on its edge, so the glider leaves it
+        // to the tab, or to the selected glider covering it.
+        "[.ui-folder[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:hidden",
+      ],
       hover: "z-2",
     },
   },
   defaultVariants: {
     $kind: "folder",
     // A painted cover stands in for the tab, so it lifts off the surface the
-    // tab reads, the root's. A focus cover paints nothing and a bar carries its
-    // colour off the strip, so both keep the glider's layer.
+    // tab reads, the root's. A focus cover is the brand pill a focused tab
+    // paints, and a bar carries its colour off the strip, so it keeps the
+    // glider's layer.
     $layer(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
-      if (variants.$state === "focus") return defaultValue;
+      if (variants.$state === "focus") return "brand";
       return "var(--tabs-layer)";
     },
     // The glider's own lifts arrive as the default value, and the tab scheme
     // replaces them for the painted covers: a selected tab lifts with the
-    // lighten below and takes no offset, and a hovered tab paints one step past
-    // its own offset, two off the strip. A bar carries its colour another way,
-    // and a focus cover only draws its ring, so both keep the glider's values.
+    // lighten below and takes no offset, a hovered tab paints one step past its
+    // own offset, two off the strip, and a focused tab paints the brand layer
+    // at its own offset, one off the strip. A bar carries its colour another
+    // way, so it keeps the glider's values.
     $lightnessOffset(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
-      if (variants.$state === "focus") return defaultValue;
+      if (variants.$state === "focus") return true;
       if (variants.$state === "hover") return 2;
       return false;
+    },
+    // The focused tab's pill keeps its contrast with a brand surface behind
+    // the strip, and so does the cover that stands in for it.
+    $contrast(defaultValue, variants) {
+      if (variants.$state !== "focus") return defaultValue;
+      return defaultValue ?? true;
     },
     $lighten(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
@@ -292,14 +369,14 @@ export const tabGlider = cv({
       if (variants.$state !== "selected") return defaultValue;
       return defaultValue ?? "inherit";
     },
-    // A hover glider is the pill a hovered folder tab paints for itself, inset
-    // from the tab's box by the strip's inset. The frame takes the margin off
-    // its nested radius, so the corners stay concentric on their own. A focus
-    // glider keeps the tab's box, as the tab's own focus indicator does, and a
-    // selected glider covers the whole tab.
+    // A hover or focus glider is the pill a hovered or focused folder tab
+    // paints for itself, inset from the tab's box by the strip's inset. The
+    // frame takes the margin off its nested radius, so the corners stay
+    // concentric on their own. A selected glider covers the whole tab.
     $m(defaultValue, variants) {
       if (variants.$kind !== "folder") return defaultValue;
-      if (variants.$state !== "hover") return defaultValue;
+      if (variants.$state === "selected") return defaultValue;
+      if (variants.$state === "none") return defaultValue;
       return defaultValue ?? "var(--tab-inset)";
     },
   },
