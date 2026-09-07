@@ -130,15 +130,6 @@
   initial-value: 0px;
 }
 
-/* The colour of a folder's curves, the frame's edge colour unless the
-   consumer points it elsewhere. Registered so the curves can transition it
-   along with the box's own edge. */
-@property --folder-edge {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: transparent;
-}
-
 @keyframes ui-tabs-round-s {
   from {
     --tabs-round-s: 1;

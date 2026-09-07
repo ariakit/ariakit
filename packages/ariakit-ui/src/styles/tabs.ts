@@ -54,6 +54,12 @@ export const tabs = cv({
     // Only a folder's curves meet the panel's top corners, so the notch below
     // exists only while the strip has a folder tab or a folder glider.
     "has-[.ui-folder]:[--tabs-folder:1]",
+    // A ring folder's box runs two pixels past the seam, one more than the
+    // edge it lands on, for the cut the folder makes there. The strip has to
+    // hold that pixel, or the box hangs out of it, and the strip scrolls it
+    // into view when the tab takes focus and the whole row moves up. A border
+    // folder ends on its edge and needs no room.
+    "[--tabs-over:calc(max(0px,calc(min(var(--tabs-ring)*1000000,2px)-var(--tabs-ring)))*var(--tabs-folder,0))]",
   ],
   variants: {
     /**
@@ -187,13 +193,6 @@ const tabFolder = cx(
   "ui-selected:ui-focus-visible:ring-(--ak-outline)",
   "ui-selected:ui-focus-visible:[--folder-edge:var(--ak-outline)]",
   "ui-selected:ui-focus-visible:[--folder-extra:var(--tab-focus-extra)]",
-  // The edge fades to the focus colour, box and curves together, at the
-  // pace the gliders move. Only while focused: the fade must not run when a
-  // tab is selected, where the curves appear at once.
-  "ui-selected:ui-focus-visible:transition-[border-color,box-shadow]",
-  "ui-selected:ui-focus-visible:duration-(--duration-tabs)",
-  "ui-selected:ui-focus-visible:ease-tabs",
-  "ui-selected:ui-focus-visible:befter:transition-[--folder-radius,--folder-edge]",
 );
 
 export const tab = cv({
@@ -308,10 +307,10 @@ export const tabGlider = cv({
         // or bevel cover, so the focus pill slides under it while the edge
         // below marks the focus. Fifth in the root's stack.
         "ui-selected:z-5",
-        // The edge fades to the focus colour and back, ring and curves with
-        // the box, at the glider's own pace.
-        "ui-selected:transition-[inset-inline,border-color,box-shadow,height,width,outline,display]",
-        "ui-selected:befter:transition-[--folder-radius,--folder-edge]",
+        // The edge turns to the focus colour at once, as the tab's own does
+        // and as the curves do, so the glider's colour transition comes off
+        // its list.
+        "ui-selected:transition-[inset-inline,height,width,outline,display]",
         // A selected folder glider marks keyboard focus on the tab it covers
         // as the tab marks it on itself: the edge takes the focus colour and
         // grows inward by the same extra width. The glider is sized from the
@@ -442,8 +441,9 @@ export const tabList = cv({
     "[--tabs-float:var(--ak-frame-padding)]",
     "[--tabs-dock:calc(var(--tabs-float)+var(--tabs-bordering))]",
     // Below the seam the strip runs on under the panel by the notch, so its
-    // surface shows through the panel's rounded corners.
-    "pb-[calc(var(--tabs-dock)+var(--tabs-notch,0px))]",
+    // surface shows through the panel's rounded corners, and by the pixel a
+    // ring folder's box runs past the seam.
+    "pb-[calc(var(--tabs-dock)+var(--tabs-notch,0px)+var(--tabs-over,0px))]",
     // The panel paints over the strip, so the strip cannot open the stacking
     // context a glider group does, or its tabs could not paint over the panel.
     // The root opens one for all of them instead.
@@ -513,8 +513,9 @@ export const tabPanels = cv({
     "relative z-1 overflow-clip",
     // The panel's top edge, border or ring, tucks under the strip by its width,
     // where the selected tab or the glider covers it, and the panel runs up
-    // over the notch the strip leaves under its top corners.
-    "-mt-[calc(var(--tabs-notch,0px)+var(--tabs-bordering))]",
+    // over the notch the strip leaves under its top corners and over the pixel
+    // the strip keeps for a ring folder's box.
+    "-mt-[calc(var(--tabs-notch,0px)+var(--tabs-bordering)+var(--tabs-over,0px))]",
     // The top corners round by the notch the root publishes, which is none
     // under flat or bevel tabs or a bar, or with the root's $panelRoundedTop
     // off. The start corner shrinks to meet the first tab's curve while that
