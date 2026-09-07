@@ -31,6 +31,10 @@
   border-radius: 0.25rem;
 }
 
+.menu-controls .menu[aria-orientation="horizontal"] {
+  display: flex;
+}
+
 .menu-controls :focus-visible {
   outline: 2px solid royalblue;
   outline-offset: 2px;

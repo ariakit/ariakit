@@ -14,7 +14,50 @@ export default function Example() {
     <>
       <MenuInteractions />
       <MenuControls />
+      <VerticalMenus />
     </>
+  );
+}
+
+function VerticalMenus() {
+  const [horizontal, setHorizontal] = useState(false);
+  return (
+    <div className="menu-controls" dir="rtl">
+      <label>
+        <input
+          type="checkbox"
+          checked={horizontal}
+          onChange={(event) => setHorizontal(event.currentTarget.checked)}
+        />
+        Horizontal menus
+      </label>
+      <Ariakit.Menubar
+        aria-label="Vertical RTL menubar"
+        className="menubar"
+        orientation="vertical"
+        rtl
+      >
+        {["Document", "History", "Zoom"].map((label) => (
+          <Ariakit.MenuProvider
+            key={label}
+            placement="left-start"
+            orientation={horizontal ? "horizontal" : "vertical"}
+          >
+            <Ariakit.MenuItem render={<Ariakit.MenuButton />}>
+              {label}
+            </Ariakit.MenuItem>
+            <Ariakit.Menu className="menu" gutter={4}>
+              <Ariakit.MenuItem className="menu-item">
+                {label} settings
+              </Ariakit.MenuItem>
+              <Ariakit.MenuItem className="menu-item">
+                {label} options
+              </Ariakit.MenuItem>
+            </Ariakit.Menu>
+          </Ariakit.MenuProvider>
+        ))}
+      </Ariakit.Menubar>
+    </div>
   );
 }
 

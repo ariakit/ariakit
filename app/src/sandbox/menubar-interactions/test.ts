@@ -238,3 +238,26 @@ for (const key of ["ArrowDown", "ArrowUp"] as const) {
     });
   }
 }
+
+for (const target of ["menu container", "horizontal menu item"]) {
+  for (const key of ["ArrowDown", "ArrowUp"] as const) {
+    // https://github.com/ariakit/ariakit/issues/7415
+    test(`${key} follows vertical RTL menubar order from the ${target}`, async () => {
+      if (target === "horizontal menu item") {
+        await click(q.checkbox("Horizontal menus"));
+      }
+      await click(q.menuitem("Document"));
+      expect(q.menu("Document")).toHaveFocus();
+      if (target === "horizontal menu item") {
+        await press.ArrowRight();
+        expect(q.menuitem("Document settings")).toHaveFocus();
+      }
+      await press[key]();
+      const next = key === "ArrowDown" ? "History" : "Zoom";
+      expect(q.menuitem(next)).toHaveFocus();
+      expect(q.menu(next)).toBeVisible();
+      expect(q.menuitem(next)).toHaveAttribute("aria-expanded", "true");
+      expect(q.menu.maybe("Document")).not.toBeInTheDocument();
+    });
+  }
+}
