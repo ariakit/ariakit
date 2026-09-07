@@ -321,14 +321,19 @@ export const disclosureContent = cv({
     /**
      * Draws a vertical guide line under the indicator and indents the content
      * to align with the label. It counts on a slot leading the label: a start
-     * indicator or an icon.
+     * indicator or an icon. The line is `1px` wide unless
+     * `--disclosure-guide-width` is set on the root or any ancestor.
      */
     $guide: [
       "[--disclosure-ps:var(--disclosure-lead)]",
-      "before:absolute before:border-e before:ak-layer",
-      "before:inset-y-0",
-      // Down the middle of the leading slot's column, which is one line wide.
-      "before:inset-s-[calc(var(--disclosure-padding)+0.5lh)]",
+      "before:absolute before:inset-y-0 before:ak-layer",
+      // The line is one border, so it takes the layer's edge colour and the
+      // pseudo-element's box is as wide as the line.
+      "before:border-e-(length:--disclosure-guide-width,1px)",
+      // Centred on the leading slot's column, which is one line wide: the box
+      // starts half the line width before the column's middle, so a wider
+      // line stays under the slot.
+      "before:inset-s-[calc(var(--disclosure-padding)+0.5lh-var(--disclosure-guide-width,1px)/2)]",
     ],
   },
 });
