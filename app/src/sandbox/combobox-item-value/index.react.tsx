@@ -24,14 +24,12 @@ function normalize(value: string) {
     .toLowerCase();
 }
 
-// The first syllable is followed by a combining acute accent that
-// normalization removes, and the user value is that syllable's lone medial
-// jamo.
+// The first syllable is followed by a combining acute accent that normalization
+// removes, and the user value is that syllable's lone medial jamo.
 const markedApple = "사\u0301과.txt";
 const medialJamo = "\u1161";
 
-// Overlapping partial matches that together cover every part of the
-// syllable.
+// Overlapping partial matches that together cover every part of the syllable.
 const syllable = "각";
 const partialValues = ["가", "\u1161\u11a8"];
 

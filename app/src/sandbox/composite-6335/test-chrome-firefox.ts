@@ -6,8 +6,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.option("Item 1")).toBeVisible();
     const input = q.spinbutton("Page");
     await input.click();
-    // Clearing the field makes the page number NaN, a transient state while
-    // the user types another page number
+    // Clearing the field makes the page number NaN, a transient state while the
+    // user types another page number
     await input.press("ControlOrMeta+a");
     await input.press("Delete");
     await test.expect(input).toHaveValue("");

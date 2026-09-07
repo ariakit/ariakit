@@ -6,8 +6,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     // When DialogDisclosure uses render={<Button onClick={undefined}>},
     // mergeProps should preserve the internal onClick handler instead of
-    // overwriting it with undefined.
-    // See https://github.com/ariakit/ariakit/issues/5224
+    // overwriting it with undefined. See
+    // https://github.com/ariakit/ariakit/issues/5224
     await q.button("Open dialog").click();
     await test.expect(q.dialog()).toBeVisible();
   });
@@ -16,8 +16,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     // When Button has className="base" and render={<a className={undefined}>},
-    // mergeProps should produce "base" instead of "base undefined".
-    // See https://github.com/ariakit/ariakit/issues/5224
+    // mergeProps should produce "base" instead of "base undefined". See
+    // https://github.com/ariakit/ariakit/issues/5224
     const el = q.text("Check className");
     await test.expect(el).toHaveAttribute("class", "base");
   });

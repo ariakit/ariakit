@@ -691,8 +691,8 @@ export const fn = {
     `style${fn.query(property, value)}`,
 
   /**
-   * Builds an if() conditional expression. No space is allowed between `if`
-   * and the opening parenthesis.
+   * Builds an if() conditional expression. No space is allowed between `if` and
+   * the opening parenthesis.
    */
   if: (
     branches: [condition: string, value: Value][],

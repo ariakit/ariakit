@@ -20,8 +20,8 @@ const lastAction = `Action ${actionCount}`;
 const measureError = "Could not measure the Actions menu";
 
 /**
- * Holds menu positioning open while replacing the focused item's DOM node.
- * The replacement keeps the same id, so it remains the same logical item.
+ * Holds menu positioning open while replacing the focused item's DOM node. The
+ * replacement keeps the same id, so it remains the same logical item.
  */
 function FocusedReplacementMenu() {
   const menu = Ariakit.useMenuStore();

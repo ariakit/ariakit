@@ -12,8 +12,9 @@ const config: NextConfig = {
 
   // Pin the Turbopack root to the monorepo root (the parent of this workspace).
   // Otherwise Next.js walks up the tree collecting every workspace/lockfile and
-  // picks the outermost one as the root. In a git worktree nested under the main
-  // checkout, that outermost match is the main checkout, which is the wrong root.
+  // picks the outermost one as the root. In a git worktree nested under the
+  // main checkout, that outermost match is the main checkout, which is the
+  // wrong root.
   turbopack: {
     root: join(import.meta.dirname, ".."),
   },

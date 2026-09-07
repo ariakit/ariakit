@@ -74,9 +74,8 @@ export interface MenuItemProps extends React.ComponentPropsWithoutRef<
   typeof MotionMenuItem
 > {}
 
-// Instead of using the Ariakit `render` prop, we give control to Motion
-// so it can process the props before we pass the remainder to
-// `Ariakit.MenuItem`.
+// Instead of using the Ariakit `render` prop, we give control to Motion so it
+// can process the props before we pass the remainder to `Ariakit.MenuItem`.
 const MotionMenuItem = motion.create(Ariakit.MenuItem);
 
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(

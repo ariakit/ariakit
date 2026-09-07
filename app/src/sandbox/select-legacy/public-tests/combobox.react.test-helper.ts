@@ -17,8 +17,7 @@ describe.each([
     await click(q.button(`Show ${caseName}`));
   });
 
-  // examples/select-combobox/test.ts
-  // examples/select-combobox-store/test.ts
+  // examples/select-combobox/test.ts examples/select-combobox-store/test.ts
   test("filters and selects through the combined stores", async () => {
     const select = q.combobox(label);
     await click(select);

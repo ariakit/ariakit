@@ -17,8 +17,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(menuButton).toBeFocused();
   });
 
-  // The menu button joins the modal context on its own now, so the elements
-  // the `getPersistentElements` prop returns have to be kept alongside it.
+  // The menu button joins the modal context on its own now, so the elements the
+  // `getPersistentElements` prop returns have to be kept alongside it.
   // https://github.com/ariakit/ariakit/issues/4270
   test("keeps persistent elements the prop returns", async ({ page, q }) => {
     await q.button("Actions").click();
@@ -33,8 +33,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // The menu sets its own tree snapshot key for the disclosure. A caller that
   // returns different persistent elements over time sets one too, and the menu
-  // has to carry it along rather than replace it, or the dialog never reads
-  // the persistent elements again and the new one stays out of the tab order.
+  // has to carry it along rather than replace it, or the dialog never reads the
+  // persistent elements again and the new one stays out of the tab order.
   // https://github.com/ariakit/ariakit/pull/7303#discussion_r3887846878
   test("caller's tree snapshot key still refreshes persistent elements", async ({
     page,

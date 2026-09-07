@@ -246,8 +246,8 @@ function isDisabledByFieldset(element: Element) {
 }
 
 // Browsers never activate a disabled control, so the synthetic Enter/Space
-// activations below skip one. An element that disables itself in its own keydown
-// handler is already disabled by the time the activation runs.
+// activations below skip one. An element that disables itself in its own
+// keydown handler is already disabled by the time the activation runs.
 function isDisabled(element: Element | HTMLButtonElement) {
   if (!("disabled" in element)) return false;
   if (element.disabled) return true;
@@ -406,10 +406,10 @@ const keyUpMap: KeyActionMap = {
       (element instanceof HTMLInputElement &&
         spaceableTypes.includes(element.type));
 
-    // Don't synthesize the click on a disabled control — e.g. a split `press.up`
-    // landing on a control that disabled itself on keydown but is still focused
-    // (the DOM test environments don't blur it the way a real browser does, and
-    // jsdom would otherwise fire the click).
+    // Don't synthesize the click on a disabled control — e.g. a split
+    // `press.up` landing on a control that disabled itself on keydown but is
+    // still focused (the DOM test environments don't blur it the way a real
+    // browser does, and jsdom would otherwise fire the click).
     if (isSpaceable && !isDisabled(element)) {
       await dispatch.click(element, { ...options, ...noPointerOptions });
     }
@@ -470,20 +470,21 @@ async function pressKeyUp({
 }
 
 /**
- * Presses a key on an element, simulating a real user keyboard interaction. Fires
- * `keydown` and `keyup` and applies the browser's default behavior for that key —
- * moving focus with `Tab`, activating buttons and submitting forms with `Enter`,
- * clicking buttons, checkboxes, and radios with `Space`, moving the caret with the
- * arrow and `Home`/`End` keys, and typing printable characters into text fields.
+ * Presses a key on an element, simulating a real user keyboard interaction.
+ * Fires `keydown` and `keyup` and applies the browser's default behavior for
+ * that key — moving focus with `Tab`, activating buttons and submitting forms
+ * with `Enter`, clicking buttons, checkboxes, and radios with `Space`, moving
+ * the caret with the arrow and `Home`/`End` keys, and typing printable
+ * characters into text fields.
  *
- * When no element is passed, the currently focused element is used. Shortcuts such
- * as `press.Enter()` and `press.Tab()` are provided for common keys, and
+ * When no element is passed, the currently focused element is used. Shortcuts
+ * such as `press.Enter()` and `press.Tab()` are provided for common keys, and
  * `press.ShiftTab()` moves focus backwards.
  *
- * Use `press.down` and `press.up` to fire only the keydown or keyup
- * half of a press. Each defaults to the currently focused element, so a key
- * released after focus moved away — for example, an element that disables itself
- * on keydown — lands where a real browser would deliver it.
+ * Use `press.down` and `press.up` to fire only the keydown or keyup half of a
+ * press. Each defaults to the currently focused element, so a key released
+ * after focus moved away — for example, an element that disables itself on
+ * keydown — lands where a real browser would deliver it.
  * @example
  * ```ts
  * await press.Tab();
@@ -551,15 +552,15 @@ export function press(
  * Fires only the `keydown` half of a key press on an element, simulating a real
  * user pressing a key down without releasing it yet. Focuses the element first
  * (since a key press always lands on the focused element) and applies the
- * browser's default keydown behavior for the key, such as moving focus with `Tab`
- * or the caret with the arrow keys. As a low-level half of a press, it fires a
- * raw `keydown` and does not type printable characters into text fields the way
- * the combined `press` does.
+ * browser's default keydown behavior for the key, such as moving focus with
+ * `Tab` or the caret with the arrow keys. As a low-level half of a press, it
+ * fires a raw `keydown` and does not type printable characters into text fields
+ * the way the combined `press` does.
  *
- * When no element is passed, the currently focused element is used. Pair it with
- * `press.up` to drive a press in two steps, which matters when the keydown
- * moves focus — for example, an element that disables itself on keydown blurs to
- * the body, so the later keyup must land there, not on the original element.
+ * When no element is passed, the currently focused element is used. Pair it
+ * with `press.up` to drive a press in two steps, which matters when the keydown
+ * moves focus — for example, an element that disables itself on keydown blurs
+ * to the body, so the later keyup must land there, not on the original element.
  * Shortcuts such as `press.down.Space()` are provided for common keys.
  * @example
  * ```ts
@@ -598,16 +599,16 @@ function pressDown(
 }
 
 /**
- * Fires only the `keyup` half of a key press, simulating a real user releasing a
- * key. Unlike `press.down`, it doesn't move focus: the keyup lands on the
- * passed element or, when none is given, on the currently focused element — which
- * is where a real browser delivers it after the matching `press.down`.
+ * Fires only the `keyup` half of a key press, simulating a real user releasing
+ * a key. Unlike `press.down`, it doesn't move focus: the keyup lands on the
+ * passed element or, when none is given, on the currently focused element —
+ * which is where a real browser delivers it after the matching `press.down`.
  * Applies the browser's default keyup behavior for the key, such as clicking
- * buttons, checkboxes, and radios with `Space`. Because it runs independently of
- * the matching `press.down`, it can't suppress that default based on the keydown's
- * default having been prevented the way the combined `press` does — though it
- * still respects the keyup event's own cancellation and the Meta key. Use the
- * combined `press` when that distinction matters.
+ * buttons, checkboxes, and radios with `Space`. Because it runs independently
+ * of the matching `press.down`, it can't suppress that default based on the
+ * keydown's default having been prevented the way the combined `press` does —
+ * though it still respects the keyup event's own cancellation and the Meta key.
+ * Use the combined `press` when that distinction matters.
  *
  * Shortcuts such as `press.up.Space()` are provided for common keys.
  * @example
@@ -628,10 +629,10 @@ function pressUp(
 
     if (!element) return;
 
-    // No `isPressable` guard here, unlike `press` and `press.down`. A keyup lands
-    // on whatever currently holds focus, which can be an element that just became
-    // unfocusable — e.g. one that disabled itself on the matching keydown but is
-    // still `document.activeElement` until the browser blurs it.
+    // No `isPressable` guard here, unlike `press` and `press.down`. A keyup
+    // lands on whatever currently holds focus, which can be an element that
+    // just became unfocusable — e.g. one that disabled itself on the matching
+    // keydown but is still `document.activeElement` until the browser blurs it.
     await pressKeyUp({ element, key, options });
 
     await sleep();

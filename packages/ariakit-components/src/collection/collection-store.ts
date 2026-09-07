@@ -216,8 +216,8 @@ export function createCollectionStore<
       // previous ones, such as the Combobox auto-selected item.
       // https://github.com/ariakit/ariakit/issues/3914
       //
-      // sortItems writes back into this store, which can re-enter this
-      // listener on the next microtask, so skip the array already published.
+      // sortItems writes back into this store, which can re-enter this listener
+      // on the next microtask, so skip the array already published.
       if (state.renderedItems !== collection.getState().renderedItems) {
         sortItems(state.renderedItems);
       }
@@ -385,8 +385,8 @@ export interface CollectionStoreState<
    */
   items: T[];
   /**
-   * Lists all items, along with their metadata, in the exact order they appear in
-   * the DOM. This state is automatically updated when an item is rendered or
+   * Lists all items, along with their metadata, in the exact order they appear
+   * in the DOM. This state is automatically updated when an item is rendered or
    * unmounted using the
    * [`renderItem`](https://ariakit.com/reference/use-collection-store#renderitem)
    * function.

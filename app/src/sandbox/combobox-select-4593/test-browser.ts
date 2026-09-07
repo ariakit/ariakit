@@ -10,9 +10,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page.on("pageerror", (error) => errors.push(error.message));
     await q.combobox("Favorite fruit").click();
     await test.expect(q.option("Apple")).toBeVisible();
-    // Clicking an item when id={undefined} is passed should not throw
-    // "Maximum call stack size exceeded" due to an infinite event loop between
-    // blur events and focus handling.
+    // Clicking an item when id={undefined} is passed should not throw "Maximum
+    // call stack size exceeded" due to an infinite event loop between blur
+    // events and focus handling.
     await q.option("Banana").click();
     await test.expect(q.combobox("Favorite fruit")).toHaveText("Banana");
     test.expect(errors).toEqual([]);

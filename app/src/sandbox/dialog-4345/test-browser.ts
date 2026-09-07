@@ -10,8 +10,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
       page.evaluate(() => document.documentElement.getAttribute("style") || "");
     const getScrollY = () => page.evaluate(() => window.scrollY);
     await test.expect.poll(getHtmlStyle).toContain("overflow-y: scroll");
-    // Scroll down first so the assertions below also cover the lock keeping
-    // the current scroll position. The button is sticky, so clicking it won't
+    // Scroll down first so the assertions below also cover the lock keeping the
+    // current scroll position. The button is sticky, so clicking it won't
     // scroll the page back into view.
     await page.mouse.move(10, 10);
     await page.mouse.wheel(0, 200);

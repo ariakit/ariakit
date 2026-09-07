@@ -72,11 +72,11 @@ export interface ComboboxItemCheckOptions<
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
-   * hook. This prop doesn't affect the checkmark. It's accepted for
-   * consistency with other Ariakit components and is not passed to the
-   * underlying element. The checked state is derived solely from the
-   * [`checked`](https://ariakit.com/reference/combobox-item-check#checked)
-   * prop or, when it's not provided, from the closest
+   * hook. This prop doesn't affect the checkmark. It's accepted for consistency
+   * with other Ariakit components and is not passed to the underlying element.
+   * The checked state is derived solely from the
+   * [`checked`](https://ariakit.com/reference/combobox-item-check#checked) prop
+   * or, when it's not provided, from the closest
    * [`ComboboxItem`](https://ariakit.com/reference/combobox-item) component.
    */
   store?: ComboboxStore;

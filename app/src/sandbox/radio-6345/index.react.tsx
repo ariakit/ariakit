@@ -5,10 +5,10 @@ import { useState } from "react";
 export default function Example() {
   const [fruit, setFruit] = useState("none");
 
-  // Standard React radio idiom: commit the value only when the radio that
-  // fired the event is checked. Arrow-key selection used to silently defeat
-  // this gate because the forwarded focus event still had checked === false.
-  // See https://github.com/ariakit/ariakit/issues/6345
+  // Standard React radio idiom: commit the value only when the radio that fired
+  // the event is checked. Arrow-key selection used to silently defeat this gate
+  // because the forwarded focus event still had checked === false. See
+  // https://github.com/ariakit/ariakit/issues/6345
   function onChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.checked) {
       setFruit(event.target.value);

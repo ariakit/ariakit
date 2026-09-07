@@ -57,8 +57,7 @@ export interface TagStoreOptions
   extends Core.TagStoreOptions, CompositeStoreOptions<TagStoreItem> {
   /**
    * A callback that gets called when the
-   * [`value`](https://ariakit.com/reference/tag-provider#value) state
-   * changes.
+   * [`value`](https://ariakit.com/reference/tag-provider#value) state changes.
    */
   setValue?: (value: TagStoreState["value"]) => void;
   /**

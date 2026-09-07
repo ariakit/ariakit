@@ -6,9 +6,9 @@ const folders = ["Inbox", "Archive", "Trash"];
 // composite through the dialog keeps the dialog's own tabindex="-1", so the
 // dialog's initial focus falls through to whatever is tabbable inside it. The
 // options are only rendered while the dialog is open, so they mount after the
-// listbox element rather than with it. Nothing is selected up front, so
-// opening the dialog should leave the list without a highlighted option until
-// an arrow key is pressed.
+// listbox element rather than with it. Nothing is selected up front, so opening
+// the dialog should leave the list without a highlighted option until an arrow
+// key is pressed.
 export default function Example() {
   const dialog = Ariakit.useDialogStore();
   const open = Ariakit.useStoreState(dialog, "open");

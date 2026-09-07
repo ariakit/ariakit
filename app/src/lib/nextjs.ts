@@ -20,10 +20,9 @@ const NEXTJS_PRODUCTION_DOMAIN = "nextjs.ariakit.com";
 const NEXTJS_DEFAULT_PORT = "3000";
 
 /**
- * Regex pattern to match Next.js preview URLs.
- * Matches: /{framework}/previews/{example}/ where the first example segment
- * contains "nextjs".
- * Examples:
+ * Regex pattern to match Next.js preview URLs. Matches:
+ * /{framework}/previews/{example}/ where the first example segment contains
+ * "nextjs". Examples:
  * - /react/previews/tab-nextjs/
  * - /react/previews/menu-nextjs-app-router/
  * - /react/previews/menu-nextjs/nested/
@@ -61,7 +60,8 @@ interface GetNextjsUrlFromRequestParams {
  * - ariakit-preview.workers.dev → ariakit-nextjs.workers.dev
  * - next.ariakit.com → nextjs.ariakit.com
  * - ariakit.com and *.ariakit.com → nextjs.ariakit.com
- * - ariakit.org and *.ariakit.org → nextjs.ariakit.com (legacy, redirected during migration)
+ * - ariakit.org and *.ariakit.org → nextjs.ariakit.com (legacy, redirected
+ *   during migration)
  */
 export function getNextjsUrlFromRequest({
   requestUrl,

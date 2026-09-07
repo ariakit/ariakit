@@ -55,8 +55,8 @@ export const useSelectRow = createHook<TagName, SelectRowOptions>(
  * [`SelectItem`](https://ariakit.com/reference/select-item) elements wrapped
  * within this component will automatically receive a
  * [`rowId`](https://ariakit.com/reference/select-item#rowid) prop.
- * @deprecated Use
- * [`ComboboxRow`](https://ariakit.com/reference/combobox-row) instead.
+ * @deprecated Use [`ComboboxRow`](https://ariakit.com/reference/combobox-row)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4-11}

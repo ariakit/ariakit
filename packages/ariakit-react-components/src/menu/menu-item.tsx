@@ -103,8 +103,8 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       if (isDownloading(event)) return;
       if (isOpeningInNewTab(event)) return;
       if (!hideMenu) return;
-      // If this item is also a submenu button or any other disclosure, we
-      // don't want to hide the menu.
+      // If this item is also a submenu button or any other disclosure, we don't
+      // want to hide the menu.
       const popupType = event.currentTarget.getAttribute("aria-haspopup");
       if (popupType && popupType !== "false") return;
       if (!hideOnClickProp(event)) return;
@@ -152,10 +152,10 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
         const { compositeElement, items } = store.getState();
         // Hovering is not a request to move the page or menu; the pointer is
         // already on what the user cares about. Keyboard navigation presents
-        // items through the composite's own scroll step.
-        // If the menu item is also a submenu button, we should move actual DOM
-        // focus to it so that the submenu will not close when the user moves
-        // the cursor back to the menu button.
+        // items through the composite's own scroll step. If the menu item is
+        // also a submenu button, we should move actual DOM focus to it so that
+        // the submenu will not close when the user moves the cursor back to the
+        // menu button.
         if (isWithinMenu) {
           if (event.currentTarget.hasAttribute("aria-expanded")) {
             event.currentTarget.focus({ preventScroll: true });
@@ -187,8 +187,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
 /**
  * Renders a menu item inside
  * [`MenuList`](https://ariakit.com/reference/menu-list) or
- * [`Menu`](https://ariakit.com/reference/menu)
- * components.
+ * [`Menu`](https://ariakit.com/reference/menu) components.
  * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {4-5}
@@ -213,9 +212,8 @@ export interface MenuItemOptions<T extends ElementType = TagName>
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) or
-   * [`useMenubarStore`](https://ariakit.com/reference/use-menubar-store)
-   * hooks. If not provided, the closest
-   * [`Menu`](https://ariakit.com/reference/menu),
+   * [`useMenubarStore`](https://ariakit.com/reference/use-menubar-store) hooks.
+   * If not provided, the closest [`Menu`](https://ariakit.com/reference/menu),
    * [`MenuList`](https://ariakit.com/reference/menu-list),
    * [`Menubar`](https://ariakit.com/reference/menubar), or
    * [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)

@@ -107,10 +107,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/pull/7098#discussion_r3742291859
-  // Withholding belongs to the widget that owns focus. A move made from
-  // outside keeps presenting immediately, so the focus it moves is
-  // attributable to that call instead of landing on whoever is focused when
-  // the list next opens.
+  // Withholding belongs to the widget that owns focus. A move made from outside
+  // keeps presenting immediately, so the focus it moves is attributable to that
+  // call instead of landing on whoever is focused when the list next opens.
   test("a move from outside the widget still presents immediately", async ({
     page,
     q,
@@ -137,9 +136,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/pull/7098#discussion_r3742291859
-  // Once focus is on an option, moving between options is navigation inside
-  // the list, not focus leaving the control, so the focus ring has to keep up
-  // with the active item even though the list is collapsed.
+  // Once focus is on an option, moving between options is navigation inside the
+  // list, not focus leaving the control, so the focus ring has to keep up with
+  // the active item even though the list is collapsed.
   test("arrow keys keep moving focus between options in a collapsed list", async ({
     page,
     q,
@@ -175,9 +174,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await grape.hover();
 
       await test.expect(select).toHaveAttribute("aria-expanded", "false");
-      // Hover activation is committed inside the mousemove handler, so there
-      // is no positive state to wait for. Cross the frames a presentation
-      // would use to reach the item before asserting that none did.
+      // Hover activation is committed inside the mousemove handler, so there is
+      // no positive state to wait for. Cross the frames a presentation would
+      // use to reach the item before asserting that none did.
       await flushFrames(page);
       await test.expect(grape).not.toHaveAttribute("data-active-item");
       await test.expect(other).toBeFocused();
@@ -223,21 +222,20 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await grape.click();
     await test.expect(select).toHaveAttribute("aria-expanded", "false");
     await test.expect(grape).toHaveAttribute("data-active-item");
-    // Clicking an option in an always-visible list leaves DOM focus on it
-    // even as the list collapses, so the hover end below starts from the
-    // option.
+    // Clicking an option in an always-visible list leaves DOM focus on it even
+    // as the list collapses, so the hover end below starts from the option.
     await test.expect(grape).toBeFocused();
 
     // The click's mouseup resets the mouse-movement tracker, and a hover
-    // teleport fires the boundary events before any mousemove, which would
-    // skip the hover-end handler entirely. Move within the option first the
-    // way a real pointer would, so the tracker is armed when it leaves.
+    // teleport fires the boundary events before any mousemove, which would skip
+    // the hover-end handler entirely. Move within the option first the way a
+    // real pointer would, so the tracker is armed when it leaves.
     await grape.hover({ position: { x: 4, y: 4 } });
     await other.hover();
 
-    // Retaining the attribute and focus is an absence-of-change assertion,
-    // and the mouseleave clearing would land within a frame, so cross the
-    // frames before asserting that nothing changed.
+    // Retaining the attribute and focus is an absence-of-change assertion, and
+    // the mouseleave clearing would land within a frame, so cross the frames
+    // before asserting that nothing changed.
     await flushFrames(page);
     await test.expect(grape).toHaveAttribute("data-active-item");
     await test.expect(grape).toBeFocused();
@@ -262,9 +260,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await grape.hover();
 
     await test.expect(select).toHaveAttribute("aria-expanded", "false");
-    // Hover activation is committed inside the mousemove handler, so there
-    // is no positive state to wait for. Cross the frames a presentation
-    // would use to reach the item before asserting that none did.
+    // Hover activation is committed inside the mousemove handler, so there is
+    // no positive state to wait for. Cross the frames a presentation would use
+    // to reach the item before asserting that none did.
     await flushFrames(page);
     await test.expect(grape).not.toHaveAttribute("data-active-item");
     await test.expect(other).toBeFocused();
@@ -291,8 +289,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   // https://github.com/ariakit/ariakit/issues/7118
   // The open state must be re-read after the authored callback runs: this one
   // closes the list from inside the predicate and still returns true, so a
-  // stale pre-check result would activate the item and steal focus right as
-  // the list collapses.
+  // stale pre-check result would activate the item and steal focus right as the
+  // list collapses.
   test("a callback that closes the list on hover activates nothing", async ({
     q,
   }) => {
@@ -329,17 +327,17 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await grape.hover();
 
     await test.expect(select).toHaveAttribute("aria-expanded", "false");
-    // Hover activation is committed inside the mousemove handler, so there
-    // is no positive state to wait for. Cross the frames a presentation
-    // would use to reach the item before asserting that none did.
+    // Hover activation is committed inside the mousemove handler, so there is
+    // no positive state to wait for. Cross the frames a presentation would use
+    // to reach the item before asserting that none did.
     await flushFrames(page);
     await test.expect(grape).not.toHaveAttribute("data-active-item");
     await test.expect(q.status("Fruit focused options")).toHaveText("none");
   });
 
   // https://github.com/ariakit/ariakit/issues/7118
-  // Without ComboboxSelect the default stays false even while the list is
-  // open, so hover only activates an item when the consumer opts in.
+  // Without ComboboxSelect the default stays false even while the list is open,
+  // so hover only activates an item when the consumer opts in.
   test("default hover in an open plain combobox activates nothing", async ({
     page,
     q,
@@ -353,9 +351,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await grape.hover();
 
-    // Hover activation is committed inside the mousemove handler, so there
-    // is no positive state to wait for. Cross the frames a presentation
-    // would use to reach the item before asserting that none did.
+    // Hover activation is committed inside the mousemove handler, so there is
+    // no positive state to wait for. Cross the frames a presentation would use
+    // to reach the item before asserting that none did.
     await flushFrames(page);
     await test.expect(grape).not.toHaveAttribute("data-active-item");
     await test.expect(combobox).toBeFocused();
@@ -371,9 +369,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await combobox.focus();
 
     await test.expect(combobox).toHaveAttribute("aria-expanded", "false");
-    // The composite can present its active item from a queued microtask or
-    // from a passive effect that runs after paint, so cross those frames
-    // before asserting that focus never reached the list.
+    // The composite can present its active item from a queued microtask or from
+    // a passive effect that runs after paint, so cross those frames before
+    // asserting that focus never reached the list.
     await flushFrames(page);
     await test.expect(combobox).toBeFocused();
     await test.expect(q.status("Filter focused options")).toHaveText("none");

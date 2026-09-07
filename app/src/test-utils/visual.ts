@@ -398,9 +398,9 @@ export async function visual(
           await expect(page).toHaveScreenshot(fileSnapshotName, {
             ...screenshotOptions,
           });
-          // Touch the screenshot file so the CI stale-detection step
-          // (which deletes files older than a pre-run marker) knows
-          // this screenshot is still expected by a test.
+          // Touch the screenshot file so the CI stale-detection step (which
+          // deletes files older than a pre-run marker) knows this screenshot is
+          // still expected by a test.
           touchScreenshot(testInfo, fileSnapshotName);
         });
       }

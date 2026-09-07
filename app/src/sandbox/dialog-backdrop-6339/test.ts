@@ -13,9 +13,9 @@ test("backdrop fades out on close when only the backdrop is animated", async () 
   // Focus returns to the disclosure as soon as the dialog closes, so a failure
   // below unambiguously points at the backdrop leave transition.
   expect(q.button("Show dialog")).toHaveFocus();
-  // On close, the backdrop must receive data-leave and remain visible while
-  // its 500ms exit transition runs. Before the fix, the dialog hides instantly
-  // and data-leave is never applied.
+  // On close, the backdrop must receive data-leave and remain visible while its
+  // 500ms exit transition runs. Before the fix, the dialog hides instantly and
+  // data-leave is never applied.
   await expect.poll(() => backdrop.getAttribute("data-leave")).toBe("true");
   expect(backdrop).not.toHaveStyle("display: none");
   await expect.poll(() => backdrop.style.display).toBe("none");

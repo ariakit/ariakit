@@ -4,11 +4,11 @@ import { useState } from "react";
 
 // See https://github.com/ariakit/ariakit/issues/6321
 //
-// PopoverArrow infers its stroke from the popover's computed styles, treating
-// a box-shadow with zero offsets/blur and a positive spread (a Tailwind-style
+// PopoverArrow infers its stroke from the popover's computed styles, treating a
+// box-shadow with zero offsets/blur and a positive spread (a Tailwind-style
 // "ring") as the border. Both halves of that inference are broken:
-// - The ring-width regex rejects any spread whose px text contains the digit
-//   0, so 10px and 0.5px rings are not detected and the arrow renders with no
+// - The ring-width regex rejects any spread whose px text contains the digit 0,
+//   so 10px and 0.5px rings are not detected and the arrow renders with no
 //   stroke at all.
 // - The ring color is never used, so even detected rings (1px) draw the arrow
 //   with the popover's inherited text color instead of the ring color.
@@ -41,15 +41,15 @@ function RingPopover({ label, boxShadow, style }: RingPopoverProps) {
 // `right: 100%` on its arrow element. Later position updates never clear that
 // declaration: they only write `left`, `top`, and the new side. With both
 // `left` and `right` set, RTL over-constrained absolute positioning ignores
-// `left`, so the stale `right: 100%` pins the arrow to the popover's left
-// edge, visually detached from the anchor.
+// `left`, so the stale `right: 100%` pins the arrow to the popover's left edge,
+// visually detached from the anchor.
 //
 // Two user-level triggers change the resolved placement while the popover is
 // open:
 // 1. Scrolling the container so the anchor nears its right edge, which makes
 //    the popover flip above the anchor (browser test).
-// 2. Clicking "Show above", which changes the `placement` prop (also covered
-//    by the happy-dom test, where layout-driven flips can't happen).
+// 2. Clicking "Show above", which changes the `placement` prop (also covered by
+//    the happy-dom test, where layout-driven flips can't happen).
 function RtlPlacementPopover() {
   const [placement, setPlacement] = useState<"right" | "top">("right");
   return (

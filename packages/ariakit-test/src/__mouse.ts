@@ -3,8 +3,8 @@ import type { PointerEventInitWithPersistentDeviceId } from "./__init-event.ts";
 
 // `MouseEvent.buttons` is a bitmask of the buttons currently held down, and its
 // bits are not ordered like `MouseEvent.button`: the secondary button is bit 1
-// while the auxiliary button is bit 2. Pointer Events defines the whole mapping,
-// including the pen eraser.
+// while the auxiliary button is bit 2. Pointer Events defines the whole
+// mapping, including the pen eraser.
 // https://w3c.github.io/pointerevents/#the-buttons-property
 const buttonsByButton: Record<number, number> = {
   0: 1,
@@ -31,8 +31,8 @@ function omit(
 }
 
 // Each phase derives `buttons` from the button it simulates. `mouseDown` and
-// `mouseUp` run a single phase, so an explicit value describes a chord there and
-// wins. A multi-step helper runs every phase from one init, where no single
+// `mouseUp` run a single phase, so an explicit value describes a chord there
+// and wins. A multi-step helper runs every phase from one init, where no single
 // value is right for all of them, so it drops `buttons` with `omitButtons`.
 
 /**
@@ -46,7 +46,8 @@ export function omitButtons(options?: PointerEventInit): PointerEventInit {
 }
 
 // A pointing device with no pressure sensor, which is what these helpers
-// simulate, reports 0.5 while it is in the active buttons state and 0 otherwise.
+// simulate, reports 0.5 while it is in the active buttons state and 0
+// otherwise.
 // https://w3c.github.io/pointerevents/#dom-pointerevent-pressure
 function getPressure(buttons: number) {
   return buttons === 0 ? 0 : 0.5;
@@ -54,11 +55,11 @@ function getPressure(buttons: number) {
 
 // Neither `dispatch` nor the phase builders below can own these, because
 // `click.ts` and `select.ts` build `click`, `auxclick`, and `contextmenu` from
-// the same gesture options, and Pointer Events resets every pointer attribute on
-// those three except `pointerId` and `pointerType`. Unlike the contact size and
-// transducer angle `dispatch` defaults, these two reset to something other than
-// what a gesture derives. Only the helpers that fire pointer events apply them,
-// so the click-family options below never pick them up.
+// the same gesture options, and Pointer Events resets every pointer attribute
+// on those three except `pointerId` and `pointerType`. Unlike the contact size
+// and transducer angle `dispatch` defaults, these two reset to something other
+// than what a gesture derives. Only the helpers that fire pointer events apply
+// them, so the click-family options below never pick them up.
 // https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
 
 /**

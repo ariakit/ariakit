@@ -1,7 +1,7 @@
 // Covers the pointer members a gesture reports: the contact size and transducer
-// angle `dispatch.ts` defaults, and the pressure and primary pointer `__mouse.ts`
-// derives per phase. Both are exercised through the public helpers that fire the
-// events.
+// angle `dispatch.ts` defaults, and the pressure and primary pointer
+// `__mouse.ts` derives per phase. Both are exercised through the public helpers
+// that fire the events.
 import { afterEach, expect, test } from "vitest";
 import { click, hover, mouseDown, mouseUp, q } from "./index.ts";
 
@@ -65,8 +65,8 @@ test("hover reports the same values on the events leaving an element", async () 
   ]);
 });
 
-// A caller passing `buttons` describes a pointer moving with a button held, like
-// a drag, which is in the active buttons state.
+// A caller passing `buttons` describes a pointer moving with a button held,
+// like a drag, which is in the active buttons state.
 test("hover reports pressure while a button stays held", async () => {
   document.body.innerHTML = `<button type="button">Resize</button>`;
 
@@ -118,7 +118,8 @@ test("a chorded release keeps the pressure of the button still held", async () =
   ]);
 });
 
-// This is the pointer sequence all three engines produce for one ordinary click.
+// This is the pointer sequence all three engines produce for one ordinary
+// click.
 test("click reports the values a browser reports through the gesture", async () => {
   document.body.innerHTML = `<button type="button">Submit</button>`;
 
@@ -141,8 +142,8 @@ test("click reports the values a browser reports through the gesture", async () 
 });
 
 // The transducer angle reaches a gesture from the dispatch layer, so one press
-// covers it for every helper. Every engine reports a perpendicular transducer for
-// a mouse.
+// covers it for every helper. Every engine reports a perpendicular transducer
+// for a mouse.
 test("a press reports the transducer angle of a perpendicular pointer", async () => {
   document.body.innerHTML = `<button type="button">Resize</button>`;
 
@@ -187,8 +188,8 @@ test("explicit pointer values win over the simulated ones", async () => {
   ]);
 });
 
-// Zero is a value a pressure-sensitive device reports, so it has to win over the
-// 0.5 the press would otherwise derive.
+// Zero is a value a pressure-sensitive device reports, so it has to win over
+// the 0.5 the press would otherwise derive.
 test("an explicit zero pressure wins over the pressure a press derives", async () => {
   document.body.innerHTML = `<button type="button">Draw</button>`;
 

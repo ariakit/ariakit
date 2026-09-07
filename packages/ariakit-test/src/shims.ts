@@ -84,10 +84,10 @@ function applyBrowserShims() {
     window.alert = () => {};
   }
 
-  // happy-dom diverges from real browsers in a few spec-conformance areas; these
-  // shims patch them for the whole test environment (jsdom already behaves
-  // correctly). Each helper returns a function that restores the original
-  // behavior.
+  // happy-dom diverges from real browsers in a few spec-conformance areas;
+  // these shims patch them for the whole test environment (jsdom already
+  // behaves correctly). Each helper returns a function that restores the
+  // original behavior.
   const restoreHappyDOMShims = isHappyDOM()
     ? [
         patchHappyDOMFormData(),
@@ -331,9 +331,9 @@ function patchHappyDOMAnimationFrame() {
     flushScheduled = false;
     // Snapshot only the handles registered before this frame; a callback added
     // during the flush keeps its entry in `pending` and runs on the next frame.
-    // Re-read each handle from the live map and remove it right before invoking,
-    // so a callback can still cancel another not-yet-run callback in the same
-    // frame (`cancelAnimationFrame` deletes from this same map).
+    // Re-read each handle from the live map and remove it right before
+    // invoking, so a callback can still cancel another not-yet-run callback in
+    // the same frame (`cancelAnimationFrame` deletes from this same map).
     const handles = Array.from(pending.keys());
     const timestamp = window.performance.now();
     for (const handle of handles) {

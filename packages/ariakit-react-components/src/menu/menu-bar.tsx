@@ -45,8 +45,7 @@ export const useMenuBar = createHook<TagName, MenuBarOptions>(
 /**
  * Renders a menu bar that may contain a group of menu items that control other
  * submenus.
- * @deprecated
- * Use [`Menubar`](https://ariakit.com/reference/menubar) instead.
+ * @deprecated Use [`Menubar`](https://ariakit.com/reference/menubar) instead.
  * @example
  * ```jsx
  * <MenuBarProvider>

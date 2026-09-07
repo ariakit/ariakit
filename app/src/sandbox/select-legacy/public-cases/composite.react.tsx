@@ -195,10 +195,10 @@ export function LegacyPublicSelectItemCustomCase() {
   );
 }
 
-// An authored focusOnHover callback with a side effect: the consumer moves
-// the composite from inside the predicate, like the select-grid example does.
-// While the select is collapsed, the callback must not run at all, or the
-// move would still activate the item, commit its value, and steal focus.
+// An authored focusOnHover callback with a side effect: the consumer moves the
+// composite from inside the predicate, like the select-grid example does. While
+// the select is collapsed, the callback must not run at all, or the move would
+// still activate the item, commit its value, and steal focus.
 // https://github.com/ariakit/ariakit/issues/7120
 export function LegacyPublicSelectCollapsedHoverCase() {
   const select = Ariakit.useSelectStore({ defaultValue: "Apple" });

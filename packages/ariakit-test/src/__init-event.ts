@@ -1,10 +1,11 @@
-// Part of this code is based on https://github.com/testing-library/user-event/blob/d7483f049a1ec2ebf1ca1e2c1f4367849fca5997/src/event/createEvent.ts
+// Part of this code is based on
+// https://github.com/testing-library/user-event/blob/d7483f049a1ec2ebf1ca1e2c1f4367849fca5997/src/event/createEvent.ts
 import { getKeys } from "@ariakit/utils";
 import type { OwnerWindowSource } from "./__utils.ts";
 import { getOwnerWindow } from "./__utils.ts";
 
-// Pointer Events Level 4 includes this member in its initializer, but TypeScript
-// 6.0 declares it only on the resulting event.
+// Pointer Events Level 4 includes this member in its initializer, but
+// TypeScript 6.0 declares it only on the resulting event.
 export type PointerEventInitWithPersistentDeviceId = PointerEventInit & {
   persistentDeviceId?: PointerEvent["persistentDeviceId"];
 };
@@ -72,7 +73,8 @@ function sanitizeString(value: string | null | undefined) {
 }
 
 // `PointerEventInit` defaults the contact geometry to 1x1, and Pointer Events
-// requires 1 from a device that doesn't report geometry of its own, like a mouse.
+// requires 1 from a device that doesn't report geometry of its own, like a
+// mouse.
 // https://w3c.github.io/pointerevents/#dom-pointerevent-width
 function sanitizeContactSize(size: number | undefined) {
   return size ?? 1;
@@ -473,7 +475,7 @@ function isUIEvent(event: Event, realm: EventRealm): event is UIEvent {
  * event name may run this, because it overwrites whatever the constructor did
  * with the values in `options`.
  * @param target The node, document, or window the event was built for, whose
- * realm owns the constructors the interface tests run against.
+ *   realm owns the constructors the interface tests run against.
  */
 export function initEvent<T extends Event>(
   event: T,

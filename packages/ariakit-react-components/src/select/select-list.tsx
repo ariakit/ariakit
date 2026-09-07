@@ -184,8 +184,8 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
  *
  * The `aria-labelledby` prop is set to the
  * [`Select`](https://ariakit.com/reference/select) element's `id` by default.
- * @deprecated Use
- * [`ComboboxList`](https://ariakit.com/reference/combobox-list) instead.
+ * @deprecated Use [`ComboboxList`](https://ariakit.com/reference/combobox-list)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5-8}

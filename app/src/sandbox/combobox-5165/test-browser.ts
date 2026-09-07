@@ -33,8 +33,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const combobox = q.combobox();
     await combobox.focus();
 
-    // Scroll programmatically without a wheel event to simulate scrollbar
-    // drag or other non-wheel scroll paths
+    // Scroll programmatically without a wheel event to simulate scrollbar drag
+    // or other non-wheel scroll paths
     await popover.evaluate((el) => {
       el.scrollTop = el.scrollHeight - el.clientHeight - 50;
     });

@@ -233,10 +233,10 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     );
 
     // The current input value may differ from state.inputValue when
-    // autoComplete is either "both" or "inline", in which case it will be
-    // the active item value or a combination of the input value and the active
-    // item value if it's the first item and it's been auto selected. This will
-    // only affect the element's value, not the combobox state.
+    // autoComplete is either "both" or "inline", in which case it will be the
+    // active item value or a combination of the input value and the active item
+    // value if it's the first item and it's been auto selected. This will only
+    // affect the element's value, not the combobox state.
     const inputValue = useMemo(() => {
       if (!inline) return storeInputValue;
       if (!canInline) return storeInputValue;
@@ -316,10 +316,11 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const autoSelectIdRef = useRef<string | null | undefined>(null);
     // Tracks the item (id and value) the autoSelect behavior last moved focus
     // to, so we can tell an already-focused item apart from one that only looks
-    // the same, such as a different value under the same id (e.g. an index-keyed
-    // list after filtering) or an item that became active without focus. This is
-    // distinct from autoSelectIdRef above, which tracks the current target for
-    // the scroll guard. Reset when the popover closes so reopening re-focuses.
+    // the same, such as a different value under the same id (e.g. an
+    // index-keyed list after filtering) or an item that became active without
+    // focus. This is distinct from autoSelectIdRef above, which tracks the
+    // current target for the scroll guard. Reset when the popover closes so
+    // reopening re-focuses.
     const autoSelectMovedRef = useRef<{
       id: string | null;
       value?: string;
@@ -342,10 +343,10 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         userScrolledRef.current = true;
       };
       const onScroll = () => {
-        // Mark any non-programmatic scroll as user-initiated so we don't
-        // reset the scroll position when new items load (e.g., infinite
-        // scroll, scrollbar drag). Programmatic scrolls from scrollIntoView
-        // set isAutoScrollingRef to avoid false positives.
+        // Mark any non-programmatic scroll as user-initiated so we don't reset
+        // the scroll position when new items load (e.g., infinite scroll,
+        // scrollbar drag). Programmatic scrolls from scrollIntoView set
+        // isAutoScrollingRef to avoid false positives.
         if (!isAutoScrollingRef.current) {
           userScrolledRef.current = true;
         }
@@ -466,9 +467,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         if (element && "scrollIntoView" in element) {
           isAutoScrollingRef.current = true;
           element.scrollIntoView({ block: "nearest", inline: "nearest" });
-          // Clear after the browser dispatches the scroll event. Scroll
-          // events fire during the "scroll steps" of the rendering update,
-          // which run before requestAnimationFrame callbacks.
+          // Clear after the browser dispatches the scroll event. Scroll events
+          // fire during the "scroll steps" of the rendering update, which run
+          // before requestAnimationFrame callbacks.
           requestAnimationFrame(() => {
             isAutoScrollingRef.current = false;
           });
@@ -872,8 +873,8 @@ export interface ComboboxOptions<
   /**
    * Whether the items will be filtered based on
    * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
-   * and
-   * whether the input value will temporarily change based on the active item.
+   * and whether the input value will temporarily change based on the active
+   * item.
    *
    * This prop is based on the standard
    * [`aria-autocomplete`](https://w3c.github.io/aria/#aria-autocomplete)
@@ -889,8 +890,7 @@ export interface ComboboxOptions<
    *   behavior.
    * - `both`: indicates that the items will be dynamically rendered based on
    *   [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
-   *   and the
-   *   input value will temporarily change based on the active item. The
+   *   and the input value will temporarily change based on the active item. The
    *   filtering logic must be implemented by the consumer of this component,
    *   whereas Ariakit will automatically provide the inline autocompletion
    *   behavior.
@@ -950,8 +950,8 @@ export interface ComboboxOptions<
    * or [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
    * components should be shown when the input is clicked.
    * @deprecated Use
-   * [`showOnClick`](https://ariakit.com/reference/combobox#showonclick)
-   * instead.
+   *   [`showOnClick`](https://ariakit.com/reference/combobox#showonclick)
+   *   instead.
    * @default true
    */
   showOnMouseDown?: BooleanOrCallback<MouseEvent<HTMLElement>>;
@@ -976,8 +976,8 @@ export interface ComboboxOptions<
    * components should be shown when the user presses the arrow up or down keys
    * while focusing on the combobox input element.
    * @deprecated Use
-   * [`showOnKeyPress`](https://ariakit.com/reference/combobox#showonkeypress)
-   * instead.
+   *   [`showOnKeyPress`](https://ariakit.com/reference/combobox#showonkeypress)
+   *   instead.
    * @default true
    */
   showOnKeyDown?: BooleanOrCallback<ReactKeyboardEvent<HTMLElement>>;
@@ -1000,12 +1000,10 @@ export interface ComboboxOptions<
   /**
    * Whether the combobox
    * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
-   * state
-   * should be updated when the input value changes. This is useful if you want
-   * to customize how the store
+   * state should be updated when the input value changes. This is useful if you
+   * want to customize how the store
    * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
-   * is updated
-   * based on the input element's value.
+   * is updated based on the input element's value.
    *
    * Live examples:
    * - [Textarea with inline
@@ -1016,8 +1014,7 @@ export interface ComboboxOptions<
   /**
    * Whether the combobox
    * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
-   * state
-   * should be updated when the combobox input element gets clicked. This
+   * state should be updated when the combobox input element gets clicked. This
    * usually only applies when
    * [`autoComplete`](https://ariakit.com/reference/combobox#autocomplete) is
    * `both` or `inline`, because the input value will temporarily change based

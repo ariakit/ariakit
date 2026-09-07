@@ -23,8 +23,8 @@ export default function Example() {
     }
   });
 
-  // Surface the number of successful submissions so the success is observable in
-  // the preview (and so tests can wait for the submit to fully settle).
+  // Surface the number of successful submissions so the success is observable
+  // in the preview (and so tests can wait for the submit to fully settle).
   const successCount = ak.useStoreState(form, "submitSucceed");
 
   const [showNickname, setShowNickname] = useState(false);

@@ -344,8 +344,8 @@ export interface ComboboxPopoverOptions<T extends ElementType = TagName>
    * combobox item that starts with the entered characters.
    *
    * Defaults to `false` when a
-   * [`ComboboxInput`](https://ariakit.com/reference/combobox-input) is rendered,
-   * and `true` otherwise.
+   * [`ComboboxInput`](https://ariakit.com/reference/combobox-input) is
+   * rendered, and `true` otherwise.
    */
   typeahead?: CompositeTypeaheadOptions<T>["typeahead"];
   /**
@@ -366,8 +366,8 @@ export interface ComboboxPopoverOptions<T extends ElementType = TagName>
   /**
    * Whether the combobox's
    * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
-   * should be restored to what it was before the first item movement when
-   * the popover accepts Escape and the cancelable close event isn't prevented.
+   * should be restored to what it was before the first item movement when the
+   * popover accepts Escape and the cancelable close event isn't prevented.
    * Selection changes made before any item movement become part of the selected
    * value Escape restores.
    *

@@ -42,8 +42,8 @@ test("renders the tags inside the listbox and the input outside it", async () =>
 });
 
 test("labels the control, the tag list and the input", async () => {
-  // The tags and the input are separate widgets, so the control groups them
-  // and the label names all three.
+  // The tags and the input are separate widgets, so the control groups them and
+  // the label names all three.
   const control = q.group("Tags");
   expect(control).toContainElement(q.listbox("Tags"));
   expect(control).toContainElement(q.textbox("Tags"));

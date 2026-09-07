@@ -8,8 +8,8 @@ test("modal menu exposes only its items to assistive technology", async () => {
   expect(menu).toBeVisible();
   expect(q.within(menu).menuitem.all()).toHaveLength(3);
   expect(q.within(menu).button.all()).toHaveLength(0);
-  // The fallback dismiss button is still rendered, next to the menu rather
-  // than inside it, so the menu owns only its own items.
+  // The fallback dismiss button is still rendered, next to the menu rather than
+  // inside it, so the menu owns only its own items.
   // https://github.com/ariakit/ariakit/issues/7310
   const dismiss = q.button("Dismiss popup");
   expect(menu).not.toContainElement(dismiss);

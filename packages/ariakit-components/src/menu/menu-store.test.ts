@@ -58,10 +58,9 @@ test("keeps an explicit placement in a vertical parent menu", () => {
 
 // A store passed with the `store` or `popover` option carries the placement it
 // already holds, which the derived default must not replace, the same way it
-// gives way to an explicit placement.
-// A popover store is merged below the menu, inside the hovercard store, so it
-// applies its placement while the menu store initializes rather than when the
-// menu store resolves its own.
+// gives way to an explicit placement. A popover store is merged below the menu,
+// inside the hovercard store, so it applies its placement while the menu store
+// initializes rather than when the menu store resolves its own.
 test("keeps the placement of a popover store passed to a submenu", () => {
   const parent = createMenuStore();
   const submenu = createMenuStore({ parent, popover: createPopoverStore() });

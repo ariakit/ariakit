@@ -21,8 +21,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.combobox("Favorite fruit").click();
     await test.expect(q.listbox()).toBeVisible();
     await test.expect(q.combobox("Search fruits")).toBeFocused();
-    // Give a stray redirect a chance to fire before asserting focus stayed
-    // put.
+    // Give a stray redirect a chance to fire before asserting focus stayed put.
     await page.waitForTimeout(200);
     await test.expect(q.combobox("Search fruits")).toBeFocused();
   });

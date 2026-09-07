@@ -61,8 +61,8 @@ export const useComboboxSelectLabel = createHook<
 
 /**
  * Renders a label for the
- * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select)
- * component. Clicking the label moves focus to the select element.
+ * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) component.
+ * Clicking the label moves focus to the select element.
  * @example
  * ```jsx {2}
  * <ComboboxProvider>

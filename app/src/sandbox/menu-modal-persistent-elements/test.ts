@@ -1,8 +1,8 @@
 import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// The dialog collects persistent elements from an effect that doesn't depend
-// on the disclosure, so swapping one connected disclosure for another used to
+// The dialog collects persistent elements from an effect that doesn't depend on
+// the disclosure, so swapping one connected disclosure for another used to
 // leave the old one in the modal context and the new one inert, while
 // `aria-labelledby` already pointed at the new one.
 // https://github.com/ariakit/ariakit/pull/7303#discussion_r3884581660

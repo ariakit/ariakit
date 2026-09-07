@@ -30,15 +30,15 @@ const THRESHOLD_PERCENT = 10;
 const MIN_SIGNIFICANT_DELTA_MS = 5;
 // Require at least 75% of each required round's pairwise raw-sample deltas to
 // support the paired median direction before a browser comparison becomes
-// significant. Threshold-sized changes whose rounds agree on direction but
-// fail this gate are reported as unconfirmed candidates instead.
+// significant. Threshold-sized changes whose rounds agree on direction but fail
+// this gate are reported as unconfirmed candidates instead.
 const RAW_SAMPLE_SUPPORT_QUANTILE = 0.25;
 // Cap the unconfirmed candidate table so a noisy run cannot flood the PR
 // comment; the detailed breakdown still lists every metric.
 const MAX_VISIBLE_CANDIDATE_ROWS = 10;
 // Pooled pairwise raw-sample agreement at or above this percent grades an
-// unconfirmed candidate as medium confidence: close to the 75% per-round
-// raw support gate without meeting it in every round.
+// unconfirmed candidate as medium confidence: close to the 75% per-round raw
+// support gate without meeting it in every round.
 const MEDIUM_CONFIDENCE_PAIRWISE_PERCENT = 70;
 
 type MetricKey = keyof PerfMetrics;
@@ -178,8 +178,8 @@ export interface PerfCompareRunResult {
   markdown: string;
 }
 
-// Metrics shown in the summary table and detailed breakdown. All of them can
-// be flagged as significant or reported as unconfirmed candidates.
+// Metrics shown in the summary table and detailed breakdown. All of them can be
+// flagged as significant or reported as unconfirmed candidates.
 const PRIMARY_METRICS: MetricKey[] = ["scripting", "rendering", "inp", "total"];
 
 const METRIC_LABELS: Record<MetricKey, string> = {
@@ -320,8 +320,8 @@ export function checkNodeBenchmarkResults(
 }
 
 // Discover round files like `baseline-1-worker0.json` and
-// `current-1-worker0.json`. If no numbered rounds are present, fall back to
-// the previous single-run files such as `baseline-worker0.json`.
+// `current-1-worker0.json`. If no numbered rounds are present, fall back to the
+// previous single-run files such as `baseline-worker0.json`.
 function discoverRoundFiles(
   prefix: string,
   options: PerfCompareOptions,
@@ -638,8 +638,8 @@ function computeSignificance({
   }
 
   // Share of all raw sample pairs (baseline x current, pooled across rounds)
-  // that move in the median's direction. 50% means the raw distributions
-  // fully overlap; the per-round raw support gate needs 75%.
+  // that move in the median's direction. 50% means the raw distributions fully
+  // overlap; the per-round raw support gate needs 75%.
   const pairwiseSupportPercent =
     pairwiseCount > 0 ? (pairwiseSupportCount / pairwiseCount) * 100 : 0;
 
@@ -854,8 +854,8 @@ function getSignificanceIcon(row: ComparisonRow, options: PerfCompareOptions) {
 }
 
 // Test files whose rows warrant extra confirmation rounds. Candidates are
-// included so a change that only fails raw sample support gets more data
-// before the final comparison is published.
+// included so a change that only fails raw sample support gets more data before
+// the final comparison is published.
 function getConfirmationFiles(rows: ComparisonRow[]): string[] {
   const files = new Set<string>();
   for (const row of rows) {
@@ -1190,10 +1190,10 @@ function formatSupport(row: ComparisonRow, options: PerfCompareOptions) {
   return `${rounds}, ${raw}, ${pairs}`;
 }
 
-// Candidate confidence comes from the pooled pairwise raw-sample agreement:
-// how many baseline x current sample pairs move in the median's direction.
-// Grade on the rounded value shown in the support diagnostics so a row can
-// never display a percent at the grade boundary with the lower grade.
+// Candidate confidence comes from the pooled pairwise raw-sample agreement: how
+// many baseline x current sample pairs move in the median's direction. Grade on
+// the rounded value shown in the support diagnostics so a row can never display
+// a percent at the grade boundary with the lower grade.
 function getCandidateConfidence(row: ComparisonRow) {
   const percent = Math.round(row.pairwiseSupportPercent);
   if (percent >= MEDIUM_CONFIDENCE_PAIRWISE_PERCENT) {

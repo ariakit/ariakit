@@ -109,9 +109,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
           const nested = q.region(longhand.nested);
           const direct = q.region(longhand.direct);
 
-          // Read this before the loop starts moving `--contrast`. The
-          // contrast pair converges at a high enough `--contrast`, where `50`
-          // and the `25` default resolve to the same color.
+          // Read this before the loop starts moving `--contrast`. The contrast
+          // pair converges at a high enough `--contrast`, where `50` and the
+          // `25` default resolve to the same color.
           const baselineColor = await getBackgroundColor(
             q.region(longhand.baseline),
           );

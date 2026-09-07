@@ -2,8 +2,7 @@ import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // The overflow padding variable is public API and must be exposed on the
-  // wrapper even while the popover is closed and hidden, before it first
-  // opens.
+  // wrapper even while the popover is closed and hidden, before it first opens.
   test("exposes the overflow padding variable on a closed popover", async ({
     page,
   }) => {

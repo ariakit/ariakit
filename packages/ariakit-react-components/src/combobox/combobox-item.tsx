@@ -198,9 +198,9 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       if (!compositeElement) return;
       if (hasFocus(compositeElement)) return;
       // When the combobox is not working with virtual focus, the items will
-      // receive DOM focus. Therefore, pressing printable keys will not fill
-      // the text field. So we need to programmatically focus on the text
-      // field when the user presses printable keys.
+      // receive DOM focus. Therefore, pressing printable keys will not fill the
+      // text field. So we need to programmatically focus on the text field when
+      // the user presses printable keys.
       const printable =
         event.key.length === 1 && !event.ctrlKey && !event.metaKey;
       const pc = !isApple();
@@ -298,10 +298,10 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       store,
       ...props,
       // Disable focusOnHover when the popup is closed, even for authored
-      // values, so pointer hover can't activate an item or move focus while
-      // the combobox is collapsed. The open check comes first so authored
-      // callbacks with side effects don't run at all while closed, and it's
-      // re-read afterwards because the callback itself may close the list.
+      // values, so pointer hover can't activate an item or move focus while the
+      // combobox is collapsed. The open check comes first so authored callbacks
+      // with side effects don't run at all while closed, and it's re-read
+      // afterwards because the callback itself may close the list.
       // https://github.com/ariakit/ariakit/issues/7118
       focusOnHover(event) {
         if (!store.getState().open) return false;
@@ -445,10 +445,10 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    * Defaults to `false`, or `true` when the item is used with a
    * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select).
    *
-   * Regardless of the value, hover has no effect while the combobox is
-   * closed: hovering an item never activates it or moves focus, and moving
-   * the pointer off an item never clears the active item or moves focus back
-   * to the combobox.
+   * Regardless of the value, hover has no effect while the combobox is closed:
+   * hovering an item never activates it or moves focus, and moving the pointer
+   * off an item never clears the active item or moves focus back to the
+   * combobox.
    */
   focusOnHover?: CompositeHoverOptions["focusOnHover"];
 }

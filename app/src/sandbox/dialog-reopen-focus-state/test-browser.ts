@@ -19,8 +19,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
 
     // Revealing the outside field moves focus to a brand-new node outside the
-    // dialog. Because reopening reset the "was focused inside" flag, this counts
-    // as interacting outside and closes the dialog.
+    // dialog. Because reopening reset the "was focused inside" flag, this
+    // counts as interacting outside and closes the dialog.
     await q.button("Reveal outside field").click();
     await test.expect(q.textbox("Dynamic outside field")).toBeFocused();
     await test.expect(q.dialog("Dialog")).not.toBeVisible();

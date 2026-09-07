@@ -38,8 +38,8 @@ export const useSelectSeparator = createHook<TagName, SelectSeparatorOptions>(
  * Renders a divider between
  * [`SelectItem`](https://ariakit.com/reference/select-item) elements.
  * @deprecated Use
- * [`ComboboxGroup`](https://ariakit.com/reference/combobox-group) with CSS
- * borders instead.
+ *   [`ComboboxGroup`](https://ariakit.com/reference/combobox-group) with CSS
+ *   borders instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5}

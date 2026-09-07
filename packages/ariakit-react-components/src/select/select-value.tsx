@@ -16,17 +16,16 @@ type Value = SelectStoreValue;
  * [`fallback`](https://ariakit.com/reference/select-value#fallback) prop to use
  * as a default value if the store's value is an empty string or empty array.
  *
- * The store's
- * [`value`](https://ariakit.com/reference/use-select-store#value) is
- * otherwise rendered as-is.
+ * The store's [`value`](https://ariakit.com/reference/use-select-store#value)
+ * is otherwise rendered as-is.
  *
  * Additionally, it takes a
  * [`children`](https://ariakit.com/reference/select-value#children) function
  * that gets called with the current value as an argument. This is handy for
  * rendering the value in a custom way.
  * @deprecated Use
- * [`ComboboxSelectedValue`](https://ariakit.com/reference/combobox-selected-value)
- * instead.
+ *   [`ComboboxSelectedValue`](https://ariakit.com/reference/combobox-selected-value)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {3}
@@ -104,9 +103,8 @@ export interface SelectValueProps<T extends Value = Value> {
    * The value to use as a default if the store's value is an empty string or
    * empty array.
    *
-   * The store's
-   * [`value`](https://ariakit.com/reference/use-select-store#value) is
-   * otherwise rendered as-is.
+   * The store's [`value`](https://ariakit.com/reference/use-select-store#value)
+   * is otherwise rendered as-is.
    * @default ""
    */
   fallback?: T;

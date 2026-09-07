@@ -38,7 +38,8 @@ test("scanAkTokensInFiles scans from start for each file (lastIndex reset)", () 
   );
   expect(tokens.has("ak-one")).toBe(true);
   expect(tokens.has("ak-two")).toBe(true);
-  // These should be found in the second file even if the regex lastIndex carried over
+  // These should be found in the second file even if the regex lastIndex
+  // carried over
   expect(tokens.has("ak-three")).toBe(true);
   expect(tokens.has("ak-four")).toBe(true);
 });
@@ -350,7 +351,8 @@ test("utilities include variant dependencies via not-* ak prefix", () => {
   const variantDep = idle?.dependencies.find(
     (dep) => dep.type === "variant" && dep.name === "ak-command-disabled",
   );
-  // The nested `@variant not-ak-command-disabled` should resolve as a dependency
+  // The nested `@variant not-ak-command-disabled` should resolve as a
+  // dependency
   expect(variantDep).toEqual({
     type: "variant",
     name: "ak-command-disabled",

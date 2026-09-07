@@ -6,8 +6,8 @@ import type { HeadingLevels } from "./utils.ts";
 /**
  * A component that sets the heading level for its children. It doesn't render
  * any HTML element, just sets the
- * [`level`](https://solid.ariakit.com/reference/heading-level#level) prop on the
- * context.
+ * [`level`](https://solid.ariakit.com/reference/heading-level#level) prop on
+ * the context.
  * @see https://solid.ariakit.com/components/heading
  * @example
  * ```jsx

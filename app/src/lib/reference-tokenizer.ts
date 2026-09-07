@@ -37,7 +37,8 @@ interface NameToReference {
 interface ImportInfo {
   hasAriakitImport: boolean;
   namespaceAliases: Set<string>;
-  namedImports: Map<string, string>; // localName -> exportedName
+  // localName -> exportedName
+  namedImports: Map<string, string>;
 }
 
 interface TokenRange {
@@ -593,8 +594,8 @@ function findTopLevelObjectKeys(
 }
 
 /**
- * Finds state key ranges in useStoreState calls (both string and arrow
- * selector variants).
+ * Finds state key ranges in useStoreState calls (both string and arrow selector
+ * variants).
  */
 function findUseStoreStateStateRanges(
   code: string,
@@ -706,7 +707,8 @@ function findClassTokenRanges(code: string): TokenRange[] {
           if (partText.startsWith("ak-")) {
             ranges.push({ start: partStart, end: partEnd, name: partText });
           }
-          partStart = segmentStart + charIndex + 1; // skip colon
+          // skip colon
+          partStart = segmentStart + charIndex + 1;
         }
       }
 
@@ -759,7 +761,8 @@ function findClassTokenRanges(code: string): TokenRange[] {
       findAkTokensInRange(segmentStart, index);
     }
 
-    return index + 1; // position after closing backtick
+    // position after closing backtick
+    return index + 1;
   };
 
   /**
@@ -1039,8 +1042,8 @@ export function findCodeReferenceAnchors({
 }
 
 /**
- * Uncached implementation of `findCodeReferenceAnchors`. Callers must treat
- * the returned ranges as read-only since the result is memoized.
+ * Uncached implementation of `findCodeReferenceAnchors`. Callers must treat the
+ * returned ranges as read-only since the result is memoized.
  */
 function computeCodeReferenceAnchors({
   code,
@@ -1266,8 +1269,7 @@ function processNamedImports(
 }
 
 /**
- * Processes JSX component tags to create anchors for component names and
- * props.
+ * Processes JSX component tags to create anchors for component names and props.
  */
 function processComponentTags(
   code: string,
@@ -1345,7 +1347,8 @@ function processComponentTags(
     const shouldProcess = isFromAriakit || (!importedSource && !hasAnyImport);
 
     if (shouldProcess) {
-      const start = (compMatch.index || 0) + 1; // after '<'
+      // after '<'
+      const start = (compMatch.index || 0) + 1;
       const end = start + componentName.length;
       anchorComponent(start, end, componentName);
       anchorProps(compMatch.index || 0, componentName);
@@ -1394,7 +1397,8 @@ function processNamespacedCalls(
 
     const targetRef = ref ?? storeRef;
     const labelKind = getLabelKind(targetRef);
-    const start = (callMatch.index || 0) + namespace.length + 1; // after "ns."
+    // after "ns."
+    const start = (callMatch.index || 0) + namespace.length + 1;
     const end = start + funcName.length;
 
     if (targetRef) {
@@ -1635,7 +1639,8 @@ function buildPerLineAnchors(
     lineStarts[lineIndex] = accumulator;
     const line = lines[lineIndex];
     if (line != null) {
-      accumulator += line.length + 1; // include \n
+      // include \n
+      accumulator += line.length + 1;
     }
   }
 

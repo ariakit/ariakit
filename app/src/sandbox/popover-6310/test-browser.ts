@@ -26,8 +26,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toHaveAttribute("tabindex", "-1");
 
     // Reopening must move focus to the visible button again, exactly like the
-    // first open did. Before the fix, focus stayed on the disclosure because the
-    // focusable fallback resolved to the hidden file input.
+    // first open did. Before the fix, focus stayed on the disclosure because
+    // the focusable fallback resolved to the hidden file input.
     await q.button("Attachments").click();
     await test.expect(q.dialog("Attachments")).toBeVisible();
     await test.expect(q.button("Choose file")).toBeFocused();

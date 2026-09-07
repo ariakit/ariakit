@@ -36,9 +36,9 @@ export async function gotoAndSettle(page: Page, url: string) {
 /**
  * Waits for animation frames in the page so effects can settle.
  *
- * Use sparingly. Prefer a retrying assertion against existing observable
- * state. When no such state exists, add a comment explaining why waiting for
- * frames is necessary.
+ * Use sparingly. Prefer a retrying assertion against existing observable state.
+ * When no such state exists, add a comment explaining why waiting for frames is
+ * necessary.
  */
 export function flushFrames(page: Page, frames = 2) {
   return page.evaluate(

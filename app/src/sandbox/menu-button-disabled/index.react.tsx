@@ -2,8 +2,8 @@ import * as Ariakit from "@ariakit/react";
 import { useMenuButton } from "@ariakit/react-components/menu/menu-button";
 
 // The public hook, unlike the component, keeps an own undefined value in the
-// props it spreads, so it must still resolve the false default rather than
-// fall through to the trigger's true default.
+// props it spreads, so it must still resolve the false default rather than fall
+// through to the trigger's true default.
 function HookMenuButton() {
   const store = Ariakit.useMenuStore({ timeout: 0 });
   const props = useMenuButton<"button">({

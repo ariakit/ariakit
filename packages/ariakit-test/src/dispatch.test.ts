@@ -558,8 +558,8 @@ function readPointerMembers(event: PointerEvent) {
 
 // Pointer Events defaults `width` and `height` to 1, and requires 1 from any
 // device with no contact geometry to report, like a mouse. The pressure and the
-// primary pointer stay at their dictionary defaults, because a lone event carries
-// no gesture to derive them from.
+// primary pointer stay at their dictionary defaults, because a lone event
+// carries no gesture to derive them from.
 // https://w3c.github.io/pointerevents/#dom-pointerevent-width
 test("dispatch.pointerDown reports the PointerEventInit defaults for the contact, pressure, and primary pointer", async () => {
   const button = document.createElement("button");
@@ -596,8 +596,8 @@ test("dispatch.pointerDown preserves provided pointer values", async () => {
   }
 });
 
-// Zero is a contact size a digitizer can report, so it has to survive instead of
-// falling back to the default.
+// Zero is a contact size a digitizer can report, so it has to survive instead
+// of falling back to the default.
 test("dispatch.pointerDown preserves a zero contact size", async () => {
   const button = document.createElement("button");
   document.body.append(button);
@@ -719,8 +719,8 @@ test.each([
   },
 );
 
-// Chromium and Firefox preserve both explicit pairs, so conversion only fills
-// a pair the caller omitted completely.
+// Chromium and Firefox preserve both explicit pairs, so conversion only fills a
+// pair the caller omitted completely.
 test("dispatch.pointerDown preserves both provided orientation pairs", async () => {
   const event = await getPointerDownEvent({
     tiltX: 10,

@@ -56,8 +56,8 @@ export function useSelectStoreProps<T extends Core.SelectStore>(
  * Creates a select store to control the state of
  * [Select](https://ariakit.com/components/select) components.
  * @deprecated Use
- * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
- * instead.
+ *   [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx

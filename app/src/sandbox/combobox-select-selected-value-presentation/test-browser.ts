@@ -189,8 +189,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await q.combobox("Render-counted fruit").click();
     await test.expect(q.listbox("Render-counted fruit")).toBeVisible();
     // The open still commits on the next frames, and the absence of an item
-    // render has no positive state to await, so give a stray render a chance
-    // to appear before asserting it never happened.
+    // render has no positive state to await, so give a stray render a chance to
+    // appear before asserting it never happened.
     await flushFrames(page);
 
     await test.expect(item).toHaveAttribute("data-render-count", "2");
@@ -387,7 +387,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
     await test.expect(q.option("Focus target")).toBeFocused();
     // Focus has moved before the pending presentation callback can run. There
-    // is no positive state for its cancellation, so wait through its checkpoint.
+    // is no positive state for its cancellation, so wait through its
+    // checkpoint.
     await flushFrames(page);
     await test.expect(q.option("Focus target")).toBeInViewport();
     await test.expect(q.option("Watermelon")).not.toBeInViewport();
@@ -622,7 +623,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
     await test.expect(q.option("Focus target")).toBeFocused();
     // Focus has moved before the pending presentation callback can run. There
-    // is no positive state for its cancellation, so wait through its checkpoint.
+    // is no positive state for its cancellation, so wait through its
+    // checkpoint.
     await flushFrames(page);
     await test.expect(q.option("Focus target")).toBeInViewport();
     await test.expect(q.option("Watermelon")).not.toBeInViewport();

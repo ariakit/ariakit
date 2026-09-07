@@ -40,8 +40,8 @@ for (const label of [
 }
 
 for (const label of ["Select named", "Combobox named"]) {
-  // Keeps name nonempty, so this passes before the fix too. It distinguishes
-  // a rename from the empty/nonempty boundary that caused the remount.
+  // Keeps name nonempty, so this passes before the fix too. It distinguishes a
+  // rename from the empty/nonempty boundary that caused the remount.
   // https://github.com/ariakit/ariakit/issues/7346
   test(`${label} keeps popup state when name stays nonempty`, async () => {
     await click(q.combobox(label));

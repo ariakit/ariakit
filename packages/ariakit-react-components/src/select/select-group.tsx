@@ -39,7 +39,7 @@ export const useSelectGroup = createHook<TagName, SelectGroupOptions>(
  * [`SelectGroupLabel`](https://ariakit.com/reference/select-group-label) can be
  * rendered as a child to provide a label for the group.
  * @deprecated Use
- * [`ComboboxGroup`](https://ariakit.com/reference/combobox-group) instead.
+ *   [`ComboboxGroup`](https://ariakit.com/reference/combobox-group) instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4-8}

@@ -59,13 +59,13 @@ export interface TooltipStoreState extends HovercardStoreState {
    * Determines whether the tooltip is being used as a label or a description
    * for the anchor element.
    * @deprecated Render a visually hidden label or use the `aria-label` or
-   * `aria-labelledby` attributes on the anchor element instead.
+   *   `aria-labelledby` attributes on the anchor element instead.
    * @default "description"
    */
   type: "label" | "description";
   /**
-   * The amount of time after a tooltip is hidden while all tooltips on the
-   * page can be shown immediately, without waiting for the show timeout.
+   * The amount of time after a tooltip is hidden while all tooltips on the page
+   * can be shown immediately, without waiting for the show timeout.
    * @default 300
    */
   skipTimeout: number;

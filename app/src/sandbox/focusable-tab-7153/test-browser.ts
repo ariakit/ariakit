@@ -36,9 +36,9 @@ async function expectNoNavigation(locator: Locator) {
   const url = page.url();
   // A blocked gesture leaves nothing behind to assert on, so wait out the
   // window in which the browser would have delivered the destination. The
-  // slowest delivery measured across the three engines was 1.4s, so this
-  // budget leaves room for a loaded runner without waiting on the clock for
-  // longer than the gesture can plausibly take.
+  // slowest delivery measured across the three engines was 1.4s, so this budget
+  // leaves room for a loaded runner without waiting on the clock for longer
+  // than the gesture can plausibly take.
   const newTab = page
     .context()
     .waitForEvent("page", { timeout: 5_000 })

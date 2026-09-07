@@ -52,8 +52,8 @@ test("keeps the click family on the closest interface available", async () => {
     expect(event?.button).toBe(0);
     expect(event?.getModifierState("Shift")).toBe(true);
     expect(event?.pointerType).toBe("mouse");
-    // The positive side of the boundary the `pointer*` test pins below, where
-    // a bare `Event` carries no `pageX` at all.
+    // The positive side of the boundary the `pointer*` test pins below, where a
+    // bare `Event` carries no `pageX` at all.
     expect(event?.pageX).toBeDefined();
   } finally {
     button.remove();

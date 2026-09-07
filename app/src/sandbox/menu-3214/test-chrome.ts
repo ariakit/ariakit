@@ -1,8 +1,8 @@
 import { gotoAndSettle, withFramework } from "#app/test-utils/preview.ts";
 
 // React's "Maximum update depth exceeded" error. In production builds React
-// throws the minified variant that links to https://react.dev/errors/185.
-// See https://github.com/ariakit/ariakit/issues/3214.
+// throws the minified variant that links to https://react.dev/errors/185. See
+// https://github.com/ariakit/ariakit/issues/3214.
 const updateDepthError =
   /maximum update depth exceeded|react\.dev\/errors\/185/i;
 

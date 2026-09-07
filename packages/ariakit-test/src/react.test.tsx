@@ -8,8 +8,8 @@ import { type } from "./type.ts";
 afterEach(cleanup);
 
 // These lock in the cheap per-step `settle()` used between an interaction's
-// sub-steps: a component's microtask/rAF-scheduled work must still flush between
-// steps even though there's no wall-clock delay there anymore.
+// sub-steps: a component's microtask/rAF-scheduled work must still flush
+// between steps even though there's no wall-clock delay there anymore.
 
 test("type fires a controlled onChange once per character, in order", async () => {
   const onChange = vi.fn<(value: string) => void>();

@@ -40,7 +40,8 @@ export const useSelectPopover = createHook<TagName, SelectPopoverOptions>(
  * default, but can be overriden by any other valid select popup role
  * (`listbox`, `menu`, `tree`, `grid` or `dialog`).
  * @deprecated Use
- * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) instead.
+ *   [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {3-6}

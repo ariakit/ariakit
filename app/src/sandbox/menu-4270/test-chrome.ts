@@ -38,8 +38,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .poll(async () => (await readMenu())?.name)
       .toBe("Preview");
 
-    // Only the menu button joins the modal context. Everything else outside
-    // the menu keeps being disabled one element at a time.
+    // Only the menu button joins the modal context. Everything else outside the
+    // menu keeps being disabled one element at a time.
     await test.expect(q.button("Publish")).toHaveAttribute("inert", "");
 
     // The browser refuses focus on inert content, so focus stays in the menu

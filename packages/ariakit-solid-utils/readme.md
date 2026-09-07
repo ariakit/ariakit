@@ -200,8 +200,8 @@ const [extractedProps, restProps] = extractPropsWithDefaults(props, {
 ````ts
 type RefStore<T> = {
   /**
-   * The current value of the ref. It is a non-reactive getter, wrapped with
-   * the `untrack` function.
+   * The current value of the ref. It is a non-reactive getter, wrapped with the
+   * `untrack` function.
    *
    * **Important note**: since this is a getter, TypeScript might reflect the
    * wrong type in some cases. For example:
@@ -417,8 +417,8 @@ interface Options {
    * takes in the original component props and gives back a Solid component
    * instance with the props merged.
    *
-   * Check out the [Composition](https://solid.ariakit.com/guide/composition) guide
-   * for more details.
+   * Check out the [Composition](https://solid.ariakit.com/guide/composition)
+   * guide for more details.
    */
   render?: RenderValue<JSX.HTMLAttributes<any>>;
 }

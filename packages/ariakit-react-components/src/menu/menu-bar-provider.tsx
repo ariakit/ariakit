@@ -4,9 +4,9 @@ import { MenubarProvider } from "../menubar/menubar-provider.tsx";
 
 /**
  * Provides a menubar store to MenuBar components.
- * @deprecated
- * Use [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)
- * instead.
+ * @deprecated Use
+ *   [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)
+ *   instead.
  * @example
  * ```jsx
  * <MenuBarProvider>

@@ -92,8 +92,8 @@ function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   if (!activeElement) return false;
   if (dialog && contains(dialog, activeElement)) return false;
   // The hidden dismiss button renders next to the dialog, so activating it
-  // would otherwise read as focus having moved somewhere else entirely, and
-  // the dialog would skip restoring focus to its disclosure.
+  // would otherwise read as focus having moved somewhere else entirely, and the
+  // dialog would skip restoring focus to its disclosure.
   if (isHiddenDismiss(activeElement, dialog?.id)) return false;
   if (isFocusable(activeElement)) return true;
   return false;
@@ -165,8 +165,8 @@ function getLaterOpenModalPortals(dialog: HTMLElement) {
     if (!portalId) continue;
     const portal = root.getElementById(portalId);
     if (!portal || !contains(portal, currentDialog)) continue;
-    // Active portals belong to an established stack. DOM order is only used
-    // to break ties between dialogs opening in the same layout pass.
+    // Active portals belong to an established stack. DOM order is only used to
+    // break ties between dialogs opening in the same layout pass.
     if (openModalPortals.has(portal)) continue;
     portals.push(portal);
   }
@@ -226,14 +226,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   });
 
   // domReady can be also the portal node element so it's updated when the
-  // portal node changes (like in between re-renders), triggering effects
-  // again.
+  // portal node changes (like in between re-renders), triggering effects again.
   const { portalRef, portalNode, domReady } = usePortalRef(
     portal,
     props.portalRef,
   );
-  // Modal dialogs don't use tab-order sentinels to match native <dialog>.
-  // Tab may reach browser UI instead of cycling inside, which is intentional.
+  // Modal dialogs don't use tab-order sentinels to match native <dialog>. Tab
+  // may reach browser UI instead of cycling inside, which is intentional.
   // https://github.com/ariakit/ariakit/issues/7092#issuecomment-5227754640
   const preserveTabOrderProp = props.preserveTabOrder;
   const preserveTabOrder = useStoreState(
@@ -250,10 +249,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
 
   // Tracks whether focus restoration should be skipped after an outside
-  // interaction to match native HTML behavior.
-  // Reset when the dialog opens to avoid stale flags from prevented closes
-  // (e.g., onClose calling event.preventDefault), async closes with
-  // animations, or when autoFocusOnHide is disabled.
+  // interaction to match native HTML behavior. Reset when the dialog opens to
+  // avoid stale flags from prevented closes (e.g., onClose calling
+  // event.preventDefault), async closes with animations, or when
+  // autoFocusOnHide is disabled.
   const interactedOutsideRef = useRef(false);
   const focusedStoreRef = useRef<DialogStore | null>(null);
   useSafeLayoutEffect(() => {
@@ -314,8 +313,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const dialog = ref.current;
     // A disclosure element no capture left behind names the opener
     // deliberately, whether it comes from a Disclosure component or from the
-    // application assigning it before showing the dialog. The capture is only
-    // a fallback for when nothing said otherwise, so it must not overwrite it.
+    // application assigning it before showing the dialog. The capture is only a
+    // fallback for when nothing said otherwise, so it must not overwrite it.
     // https://github.com/ariakit/ariakit/issues/7087
     const hasNamedDisclosure = () => {
       const { disclosureElement } = store.getState();
@@ -398,8 +397,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     return () => observer.disconnect();
   }, [modal, open, domReady, contentElement]);
 
-  // TODO: Move this behavior into DisclosureContent.
-  // Keep closing animated content inert until its mounted state ends.
+  // TODO: Move this behavior into DisclosureContent. Keep closing animated
+  // content inert until its mounted state ends.
   useSafeLayoutEffect(() => {
     if (!supportsInert()) return;
     if (open) return;
@@ -715,8 +714,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const dialog = ref.current;
     if (!mounted) return false;
     if (!dialog) return false;
-    // Ignore the event if the current dialog is marked by another dialog.
-    // This guarantees that only the topmost dialog will close on Escape.
+    // Ignore the event if the current dialog is marked by another dialog. This
+    // guarantees that only the topmost dialog will close on Escape.
     if (isElementMarked(dialog)) return false;
     const accepted = hideOnEscapeProp(event);
     escapeEvents.set(event, {

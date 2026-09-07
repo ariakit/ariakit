@@ -57,9 +57,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await traceImeEvents(page);
 
     // This CDP sequence is derived from a real macOS Korean 2-set trace for
-    // typing t k r h k, which should produce 사과. CDP preserves the final
-    // value, but it still exposes the harmful focus move that makes the native
-    // macOS IME drop the composed 고 syllable and produce 사ㅏ.
+    // typing t k r h k, which should produce 사과. CDP preserves the final value,
+    // but it still exposes the harmful focus move that makes the native macOS
+    // IME drop the composed 고 syllable and produce 사ㅏ.
     await setComposition(cdp, "ㅅ");
     await setComposition(cdp, "사");
     await setComposition(cdp, "삭");

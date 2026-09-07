@@ -14,7 +14,7 @@ export interface UseState<S> {
   /**
    * Re-renders the component when state changes and returns the current state.
    * @deprecated Use
-   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
+   *   [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    * @example
    * const state = store.useState();
    */
@@ -25,7 +25,7 @@ export interface UseState<S> {
    * re-render.
    * @param key The state key.
    * @deprecated Use
-   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
+   *   [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    * @example
    * const foo = store.useState("foo");
    */
@@ -37,7 +37,7 @@ export interface UseState<S> {
    * selector function.
    * @param selector The selector function.
    * @deprecated Use
-   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
+   *   [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    * @example
    * const foo = store.useState((state) => state.foo);
    */
@@ -278,10 +278,10 @@ function getStoreStateObjectKeys(
  * Receives an Ariakit store object (which can be `null` or `undefined`) and
  * returns the current state. Unlike `useStoreState`, this hook receives an
  * object with keys that map to store keys or selector functions. Store keys in
- * the object are always subscribed to. When selector dependency keys are
- * passed as the second argument, they must include every store key read by
- * every selector, or the returned snapshot may stay stale. An empty list means
- * only direct store keys in the object will notify the selectors.
+ * the object are always subscribed to. When selector dependency keys are passed
+ * as the second argument, they must include every store key read by every
+ * selector, or the returned snapshot may stay stale. An empty list means only
+ * direct store keys in the object will notify the selectors.
  * @example
  * Reading direct and derived values with selector dependencies:
  * ```js
@@ -437,7 +437,7 @@ export function useStoreProps<
  * Creates a React store from a core store object and returns a tuple with the
  * store and a function to update the store.
  * @param createStore A function that receives the props and returns a core
- * store object.
+ *   store object.
  * @param props The props to pass to the createStore function.
  */
 export function useStore<T extends CoreStore, P>(
@@ -471,7 +471,7 @@ export type Store<T extends CoreStore = CoreStore> = T & {
    * Re-renders the component when the state changes and returns the current
    * state.
    * @deprecated Use
-   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
+   *   [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    */
   useState: UseState<StoreState<T>>;
 };

@@ -134,8 +134,8 @@ test("getFirstTabbableIn falls back to the first focusable candidate", () => {
 
   setVisible(negative);
 
-  // No tabbable elements: without the fallback we get null; with the
-  // fallback we get the first focusable element.
+  // No tabbable elements: without the fallback we get null; with the fallback
+  // we get the first focusable element.
   expect(getFirstTabbableIn(container)).toBe(null);
   expect(getFirstTabbableIn(container, false, true)).toBe(negative);
 });
@@ -203,8 +203,8 @@ test("getLastTabbableIn fallback returns the last focusable candidate", () => {
   setNotVisible(hidden);
 
   // No tabbable elements (both are tabindex="-1"). The fallback must skip the
-  // trailing non-focusable hidden button and return the last focusable one,
-  // not just the last selector match.
+  // trailing non-focusable hidden button and return the last focusable one, not
+  // just the last selector match.
   expect(getLastTabbableIn(container, false, true)).toBe(visible);
 });
 

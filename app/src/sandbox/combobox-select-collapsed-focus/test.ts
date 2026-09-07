@@ -14,10 +14,10 @@ for (const label of labels) {
     await focus(select);
 
     expect(select).toHaveAttribute("aria-expanded", "false");
-    // The composite can present its active item from a queued microtask or
-    // from a passive effect, and `focus` only flushes microtasks. Cross a
-    // macrotask so a presentation has a chance to run before asserting that
-    // nothing focused an item.
+    // The composite can present its active item from a queued microtask or from
+    // a passive effect, and `focus` only flushes microtasks. Cross a macrotask
+    // so a presentation has a chance to run before asserting that nothing
+    // focused an item.
     await sleep();
     expect(select).toHaveFocus();
     expect(focusedOptions).toHaveTextContent(/^none$/);
@@ -30,8 +30,8 @@ for (const label of labels) {
     expect(select).toHaveAttribute("aria-expanded", "false");
     expect(focusedOptions).toHaveTextContent(/^none$/);
 
-    // Opening the list is what turns its items into focus targets, so this
-    // also shows that the recorder fires when an item really is focused.
+    // Opening the list is what turns its items into focus targets, so this also
+    // shows that the recorder fires when an item really is focused.
     await press("ArrowDown", select);
 
     expect(select).toHaveAttribute("aria-expanded", "true");
@@ -56,8 +56,8 @@ test("opening the collapsed select with a pointer presents its item", async () =
 
 // https://github.com/ariakit/ariakit/issues/7093
 // Focusing the collapsed select leaves a presentation waiting for the list to
-// open. Picking another option before that happens has to retire it, or
-// opening the list would present the option that was active on focus.
+// open. Picking another option before that happens has to retire it, or opening
+// the list would present the option that was active on focus.
 test("picking an option before opening retires the pending presentation", async () => {
   const select = q.combobox("Code");
   await focus(select);
@@ -161,12 +161,12 @@ test("hover end on a collapsed list keeps the active item", async () => {
   await click(grape);
   expect(select).toHaveAttribute("aria-expanded", "false");
   expect(grape).toHaveAttribute("data-active-item");
-  // Clicking an option in an always-visible list leaves DOM focus on it even
-  // as the list collapses, so the hover end below starts from the option.
+  // Clicking an option in an always-visible list leaves DOM focus on it even as
+  // the list collapses, so the hover end below starts from the option.
   expect(grape).toHaveFocus();
 
-  // `hover` settles the DOM before resolving, so the assertions below run
-  // after any clearing the mouseleave handler committed.
+  // `hover` settles the DOM before resolving, so the assertions below run after
+  // any clearing the mouseleave handler committed.
   await hover(other);
 
   expect(grape).toHaveAttribute("data-active-item");
@@ -174,9 +174,9 @@ test("hover end on a collapsed list keeps the active item", async () => {
 });
 
 // https://github.com/ariakit/ariakit/issues/7118
-// The closed gate must keep the authored callback from running at all: this
-// one moves the composite from inside the predicate, so merely invoking it
-// while collapsed would activate the item and steal focus.
+// The closed gate must keep the authored callback from running at all: this one
+// moves the composite from inside the predicate, so merely invoking it while
+// collapsed would activate the item and steal focus.
 test("a side-effectful callback does nothing on a collapsed list", async () => {
   const select = q.combobox("Move hover fruit");
   const list = q.listbox("Move hover fruit options");
@@ -186,8 +186,8 @@ test("a side-effectful callback does nothing on a collapsed list", async () => {
   await click(other);
   expect(other).toHaveFocus();
 
-  // `hover` settles the DOM before resolving, so the assertions below run
-  // after any activation the mousemove handler committed.
+  // `hover` settles the DOM before resolving, so the assertions below run after
+  // any activation the mousemove handler committed.
   await hover(grape);
 
   expect(select).toHaveAttribute("aria-expanded", "false");
@@ -213,9 +213,9 @@ test("a side-effectful callback activates the option once the list opens", async
 
 // https://github.com/ariakit/ariakit/issues/7118
 // The open state must be re-read after the authored callback runs: this one
-// closes the list from inside the predicate and still returns true, so a
-// stale pre-check result would activate the item and steal focus right as
-// the list collapses.
+// closes the list from inside the predicate and still returns true, so a stale
+// pre-check result would activate the item and steal focus right as the list
+// collapses.
 test("a callback that closes the list on hover activates nothing", async () => {
   const select = q.combobox("Hide hover fruit");
   const list = q.listbox("Hide hover fruit options");
@@ -226,8 +226,8 @@ test("a callback that closes the list on hover activates nothing", async () => {
   expect(other).toHaveFocus();
   expect(select).toHaveAttribute("aria-expanded", "true");
 
-  // `hover` settles the DOM before resolving, so the assertions below run
-  // after any activation the mousemove handler committed.
+  // `hover` settles the DOM before resolving, so the assertions below run after
+  // any activation the mousemove handler committed.
   await hover(banana);
 
   expect(select).toHaveAttribute("aria-expanded", "false");
@@ -243,8 +243,8 @@ test("default hover on a collapsed list changes nothing", async () => {
   const list = q.listbox("Fruit options");
   const grape = q.within(list).option("Grape");
 
-  // `hover` settles the DOM before resolving, so the assertions below run
-  // after any activation the mousemove handler committed.
+  // `hover` settles the DOM before resolving, so the assertions below run after
+  // any activation the mousemove handler committed.
   await hover(grape);
 
   expect(select).toHaveAttribute("aria-expanded", "false");
@@ -263,8 +263,8 @@ test("default hover in an open plain combobox activates nothing", async () => {
   await click(combobox);
   expect(combobox).toHaveAttribute("aria-expanded", "true");
 
-  // `hover` settles the DOM before resolving, so the assertions below run
-  // after any activation the mousemove handler committed.
+  // `hover` settles the DOM before resolving, so the assertions below run after
+  // any activation the mousemove handler committed.
   await hover(grape);
 
   expect(grape).not.toHaveAttribute("data-active-item");

@@ -60,8 +60,8 @@ test("waits again after keyboard focus is lost", async () => {
   expect(q.tooltip.maybe("Tooltip content")).not.toBeInTheDocument();
 
   await hoverOutside();
-  // Dispatch directly so the assertion runs before the timeout can expire
-  // when the full suite delays the interaction helper.
+  // Dispatch directly so the assertion runs before the timeout can expire when
+  // the full suite delays the interaction helper.
   await dispatch.mouseOver(anchor);
   await dispatch.mouseEnter(anchor);
   await dispatch.mouseMove(anchor);

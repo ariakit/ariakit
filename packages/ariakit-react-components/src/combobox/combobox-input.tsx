@@ -19,7 +19,8 @@ export const useComboboxInput = useCombobox;
  * When rendered inside a
  * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) with
  * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select), it turns
- * the select into a filterable select and receives focus when the popover opens.
+ * the select into a filterable select and receives focus when the popover
+ * opens.
  * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {4}

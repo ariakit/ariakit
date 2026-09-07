@@ -40,8 +40,8 @@ function hideStore(store: TooltipStore | null) {
   if (!store) return;
   hidingStores.add(store);
   store.hide();
-  // Cleanup runs after `hide()` so controlled `open` props still see this
-  // store in `hidingStores` when their batch microtask forces them open again.
+  // Cleanup runs after `hide()` so controlled `open` props still see this store
+  // in `hidingStores` when their batch microtask forces them open again.
   queueMicrotask(() => hidingStores.delete(store));
 }
 
@@ -106,9 +106,8 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
           // Otherwise, if the current tooltip is closed, we should set a
           // timeout to hide the active tooltip in the global store. This is so
           // we can show other tooltips without a delay when there's already an
-          // active tooltip (see the showOnHover method below).
-          // Read skipTimeout lazily because this sync only subscribes to
-          // mounted.
+          // active tooltip (see the showOnHover method below). Read skipTimeout
+          // lazily because this sync only subscribes to mounted.
           const id = setTimeout(removeStore, store.getState().skipTimeout);
           return () => clearTimeout(id);
         }),

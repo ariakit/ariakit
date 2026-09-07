@@ -117,11 +117,11 @@ export interface PerfMeasureOptions {
   warmup?: number;
   /**
    * Unmeasured setup callback run before every iteration's measured
-   * interaction. For interaction measurements it runs after the iteration
-   * page loads; for page-load measurements it runs on the blank page before
-   * the measured navigation. Useful for getting the page into the state the
-   * measured interaction expects, such as opening a dialog before measuring
-   * how long it takes to close it.
+   * interaction. For interaction measurements it runs after the iteration page
+   * loads; for page-load measurements it runs on the blank page before the
+   * measured navigation. Useful for getting the page into the state the
+   * measured interaction expects, such as opening a dialog before measuring how
+   * long it takes to close it.
    */
   setup?: PerfMeasureCallback;
   /**
@@ -435,9 +435,9 @@ export function isPerfProfileLabel(label: string): boolean {
 
 /**
  * Resolves whether profiling runs in the measured iteration or in separate
- * diagnostic iterations. Env-driven profiling keeps the old quick measured
- * path with profiler overhead; explicit profiling options on regular labels
- * keep timing metrics unprofiled.
+ * diagnostic iterations. Env-driven profiling keeps the old quick measured path
+ * with profiler overhead; explicit profiling options on regular labels keep
+ * timing metrics unprofiled.
  */
 export function getPerfProfileMode({
   label,
@@ -1050,14 +1050,16 @@ async function gotoAndSettle(page: Page, url: string) {
 export interface SettleQuiescentOptions {
   /** Milliseconds between metric polls. */
   pollInterval?: number;
-  /** Minimum tracked-work increase in ms between polls that counts as activity. */
+  /**
+   * Minimum tracked-work increase in ms between polls that counts as activity.
+   */
   epsilon?: number;
   /** Consecutive quiet polls required before the page counts as settled. */
   quietPolls?: number;
   /**
    * Cap in ms on the polling phase, so busy pages cannot stall runs. Polling
-   * runs in whole `pollInterval` steps, so a non-divisible cap is rounded up
-   * to the next whole poll.
+   * runs in whole `pollInterval` steps, so a non-divisible cap is rounded up to
+   * the next whole poll.
    */
   maxWait?: number;
 }
@@ -1253,11 +1255,11 @@ async function measureOnce(
 
 /**
  * Context options mirrored from the test project configuration so iteration
- * contexts match the fixture page environment. `browser.newContext` starts
- * from Playwright's built-in defaults rather than the project's `use` block,
- * so the context-relevant options are forwarded explicitly. Only project-level
- * options are visible here: a per-file `test.use()` override would apply to
- * the fixture page but not to iteration contexts.
+ * contexts match the fixture page environment. `browser.newContext` starts from
+ * Playwright's built-in defaults rather than the project's `use` block, so the
+ * context-relevant options are forwarded explicitly. Only project-level options
+ * are visible here: a per-file `test.use()` override would apply to the fixture
+ * page but not to iteration contexts.
  */
 function getContextOptions(testInfo: TestInfo): BrowserContextOptions {
   const use = testInfo.project.use;
@@ -1291,15 +1293,15 @@ interface MeasureIterationParams {
 }
 
 /**
- * The runner's `screenshot: "only-on-failure"` captures the fixture page,
- * which never receives the interaction; attach the iteration page so failures
- * show the page that was actually measured. Best-effort: the original error
- * matters more than a failed screenshot.
+ * The runner's `screenshot: "only-on-failure"` captures the fixture page, which
+ * never receives the interaction; attach the iteration page so failures show
+ * the page that was actually measured. Best-effort: the original error matters
+ * more than a failed screenshot.
  */
 async function attachFailureScreenshot(testInfo: TestInfo, page: Page) {
   try {
-    // Bound the screenshot so a hung renderer cannot delay the rethrow of
-    // the original, more informative error.
+    // Bound the screenshot so a hung renderer cannot delay the rethrow of the
+    // original, more informative error.
     const body = await page.screenshot({ timeout: 5000 });
     await testInfo.attach("perf-iteration-failure", {
       body,
@@ -1335,10 +1337,10 @@ async function measureIteration(
       }
     };
 
-    // Track durations in thread CPU time instead of wall-clock time so time
-    // the renderer main thread spends preempted by other processes on a
-    // contended runner is not counted. The time domain must be set when the
-    // domain is enabled.
+    // Track durations in thread CPU time instead of wall-clock time so time the
+    // renderer main thread spends preempted by other processes on a contended
+    // runner is not counted. The time domain must be set when the domain is
+    // enabled.
     await cdp.send("Performance.enable", { timeDomain: "threadTicks" });
     if (params.scriptProfile) {
       cdp.on("Debugger.scriptParsed", onScriptParsed);
@@ -1438,8 +1440,8 @@ async function measureIterationWithRetry(
 
 /**
  * Runs the interaction multiple times, discards warm-up runs, and returns the
- * median metrics. Each iteration runs in a fresh browser context so the
- * samples are independent; see `measureIteration`.
+ * median metrics. Each iteration runs in a fresh browser context so the samples
+ * are independent; see `measureIteration`.
  */
 export async function createPerfMeasure(
   page: Page,

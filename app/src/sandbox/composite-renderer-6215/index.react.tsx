@@ -11,10 +11,10 @@ import "./style.css";
 // and detach from the DOM; they must be unobserved, and the observer must be
 // disconnected when the list unmounts, so no detached node is retained.
 //
-// Like the issue's StackBlitz repro, we wrap the global ResizeObserver — calling
-// through to the real one so measurement still happens — to make the otherwise
-// invisible leak observable: the count below is the number of item nodes still
-// observed after they have detached from the document.
+// Like the issue's StackBlitz repro, we wrap the global ResizeObserver —
+// calling through to the real one so measurement still happens — to make the
+// otherwise invisible leak observable: the count below is the number of item
+// nodes still observed after they have detached from the document.
 
 const observedItems = new Set<Element>();
 
@@ -65,7 +65,8 @@ export default function Example() {
   const [detached, setDetached] = useState(0);
 
   // Surface the leak live as the user scrolls. React bails out of re-rendering
-  // when the count is unchanged, so this only re-renders when it actually moves.
+  // when the count is unchanged, so this only re-renders when it actually
+  // moves.
   useEffect(() => {
     let raf = requestAnimationFrame(function tick() {
       setDetached(countDetachedObservedItems());

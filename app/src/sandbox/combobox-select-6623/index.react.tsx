@@ -1,13 +1,12 @@
 import * as Ariakit from "@ariakit/react";
 import { useLayoutEffect, useRef, useState } from "react";
 
-// The app manages the initial focus itself (autoFocusOnShow is disabled on
-// the popover below): the recommended option focuses itself as soon as it
-// mounts, before the browser paints, so there's no focus flicker. With
-// virtualFocus, focusing an option is expected to redirect DOM focus to the
-// listbox and mark the option as active. The explicit tabIndex makes the
-// option focusable on its very first render, which is required for the
-// mount-time focus() call to work.
+// The app manages the initial focus itself (autoFocusOnShow is disabled on the
+// popover below): the recommended option focuses itself as soon as it mounts,
+// before the browser paints, so there's no focus flicker. With virtualFocus,
+// focusing an option is expected to redirect DOM focus to the listbox and mark
+// the option as active. The explicit tabIndex makes the option focusable on its
+// very first render, which is required for the mount-time focus() call to work.
 //
 // The combobox-select-open-page-scroll sandbox has the same self-focusing
 // option and does reproduce a page jump from it.

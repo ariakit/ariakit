@@ -47,6 +47,21 @@ function getReturnProp(reference: Reference, name: string) {
   return prop;
 }
 
+test.each([
+  ["form", "FormField", "FormControl"],
+  ["menu", "MenuBar", "Menubar"],
+  ["menu", "MenuBarProvider", "MenubarProvider"],
+  ["menu", "useMenuBarStore", "useMenubarStore"],
+  ["menu", "useMenuBarContext", "useMenubarContext"],
+])("preserves the deprecation for %s/%s", (module, name, replacement) => {
+  const filename = join(
+    process.cwd(),
+    `packages/ariakit-react/src/${module}.ts`,
+  );
+  const reference = getReference(filename, name);
+  expect(reference.deprecated).toEqual(expect.stringContaining(replacement));
+});
+
 test("does not use non-props function parameters as reference props", () => {
   expect(getReference(formFilename, "useFormValue").props).toEqual([]);
   expect(getReference(formFilename, "useFormValidate").props).toEqual([]);

@@ -6,8 +6,8 @@ import { withFramework } from "#app/test-utils/preview.ts";
 // the color, so Chrome keeps the OKLCH channels and serializes an unpainted
 // element as `oklch(<l> <c> <h> / 0)`.
 const UNPAINTED = /\/ 0\)$/;
-// A painted translucent layer keeps a fractional alpha. An opaque one drops
-// the alpha component entirely.
+// A painted translucent layer keeps a fractional alpha. An opaque one drops the
+// alpha component entirely.
 const TRANSLUCENT = /\/ 0\.\d+\)$/;
 
 // The controls have no `ak-layer-transparent`, so they paint either way. An
@@ -44,8 +44,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
       "background-color",
       painted,
     );
-    // Only the background is gated. Both buttons resolve the same layer, so
-    // the edge the utility leaves alone must still match.
+    // Only the background is gated. Both buttons resolve the same layer, so the
+    // edge the utility leaves alone must still match.
     const edge = await q
       .button("Plain layer")
       .evaluate((element) => window.getComputedStyle(element).borderTopColor);
@@ -86,8 +86,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     const control = q.button("Translucent control");
     // Both buttons take their alpha from the same fixture color, so a collapse
-    // would move them together and the comparison below would still hold.
-    // This rejects a collapse in either direction.
+    // would move them together and the comparison below would still hold. This
+    // rejects a collapse in either direction.
     await expect(control).toHaveCSS("background-color", TRANSLUCENT);
     const painted = await getBackgroundColor(control);
     await expect(q.button("Translucent ghost")).toHaveCSS(
