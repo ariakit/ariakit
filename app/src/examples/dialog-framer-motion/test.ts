@@ -1,3 +1,7 @@
+// @vitest-environment jsdom
+// happy-dom's Element.animate() does not apply animated styles. jsdom keeps
+// Motion on its JavaScript animation path until happy-dom implements them.
+// https://github.com/capricorn86/happy-dom/pull/2335
 import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
@@ -14,7 +18,7 @@ test("show/hide on click", async () => {
 });
 
 test("prevent body scroll", async () => {
-  // happy-dom reports a space-consuming scrollbar and supports
+  // jsdom reports a space-consuming scrollbar and supports
   // scrollbar-gutter, so the scroll lock lands on the html element.
   const { documentElement } = document;
   const lockStyle =

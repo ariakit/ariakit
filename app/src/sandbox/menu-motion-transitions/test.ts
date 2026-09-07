@@ -1,3 +1,7 @@
+// @vitest-environment jsdom
+// Keep Motion on its JavaScript animation path while happy-dom rejects
+// unobserved finished promises when an animation is canceled.
+// https://github.com/capricorn86/happy-dom/issues/2339
 import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
