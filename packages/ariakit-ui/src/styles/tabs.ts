@@ -34,11 +34,12 @@ export const tabs = cv({
     "[--tabs-layer:var(--ak-layer)]",
     // The root does not clip at its edge. The strip reaches over the edge but
     // paints its surface inside it, and a tab or panel edge that lands on the
-    // root's edge draws itself there. The root's border lies on the root's own
-    // surface and its ring on the surface behind the root, so a ring landing
-    // on the root's edge paints that surface under itself first, or the two
-    // translucent rings would stack into a darker line.
-    "[--tabs-ground:var(--ak-layer-parent)]",
+    // root's edge draws itself there. A border covers the root's edge, since
+    // it lies on its own surface. A ring is translucent and lies on nothing
+    // of its own, so a ring landing on the root's ring stacks into a darker
+    // line. That stays: an opaque surface under the ring would cut it off
+    // from a shadow below it, the way a border is, and reading as part of
+    // the shadow is what a ring is for.
     // While the first tab is a selected folder, its start curve and the panel's
     // start corner meet halfway between the root's edge and that tab. A strip
     // thinner than the edge pulls its tabs onto the edge, so the room is the
@@ -99,17 +100,6 @@ const tabStartCurve = cx(
   "ui-selected:before:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet,var(--tabs-radius)))]",
 );
 
-// A selected folder's ring lands on the root's edge while the strip merges
-// the row with it, and a ring lies on nothing of its own, so it paints the
-// surface under the root's edge first, or it would stack on the root's ring:
-// the root's surface under a border, the surface behind the root under a ring.
-// One of the two widths is always zero, so only one shadow paints. The width
-// is the ring's while the row merges with the edge and none otherwise.
-const folderEdgeBacking = cx(
-  "[--folder-backing:min(var(--ak-frame-ring),calc(var(--tabs-merge)*1000000))]",
-  "ui-selected:shadow-[0_0_0_min(var(--folder-backing),calc(var(--tabs-border)*1000000))_var(--tabs-layer),0_0_0_min(var(--folder-backing),calc(var(--tabs-ring)*1000000))_var(--tabs-ground)]",
-);
-
 // The transparent background covers the layer the hover shifts, so a flat or
 // bevel tab paints it back on its own box. The extra variant sorts this after
 // the rule at rest.
@@ -131,10 +121,6 @@ const tabFolder = cx(
   // tab steps back from the start edge the same way.
   "mt-[min(var(--tabs-merge),var(--ak-frame-ring))]",
   "first:ms-[min(var(--tabs-merge),var(--ak-frame-ring))]",
-  folderEdgeBacking,
-  // A working selected glider draws the edge, backing included, instead of
-  // the tab.
-  "supports-anchor:has-[~.glider.selected]:[--folder-backing:0px]",
   // The strip ends a tab one padding above the seam, and a selected tab reaches
   // through that padding and over the panel's edge, as far as the folder says
   // its own edge needs. Only the bottom padding grows, so the label keeps its
@@ -252,7 +238,6 @@ export const tabGlider = cv({
         // The curves take the root's radius, as the tab's do.
         "[--folder-radius:var(--tabs-radius)]",
         tabStartCurve,
-        folderEdgeBacking,
         // Only the selected folder glider reaches over the seam, as far as the
         // tab would. A hover or focus glider covers the tab.
         "ui-selected:[--glider-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
@@ -421,16 +406,6 @@ export const tabPanels = cv({
     "ease-tabs",
     "supports-anchor:[.tabs:has(.glider.selected)_&]:transition-[border-radius]",
     "supports-anchor:[.tabs:has(.glider.selected)_&]:duration-(--duration-tabs)",
-    // The panel's edge lands on the root's edge at its sides and bottom. A
-    // border lies on the panel's own surface and covers the root's edge, but
-    // a ring lies on nothing of its own and would stack on the root's ring, so
-    // a ring paints the surface under the root's edge first: the root's under
-    // a border, the surface behind the root under a ring. One of the two
-    // widths is always zero. The backing for a ring root sits one ring lower,
-    // off the seam at the top, where the panel's ring lies on the strip.
-    "[--panel-backing-border:min(var(--ak-frame-ring),calc(var(--tabs-border)*1000000))]",
-    "[--panel-backing-ring:min(var(--ak-frame-ring),calc(var(--tabs-ring)*1000000))]",
-    "shadow-[0_0_0_var(--panel-backing-border)_var(--tabs-layer),0_var(--panel-backing-ring)_0_var(--panel-backing-ring)_var(--tabs-ground)]",
   ],
   defaultVariants: {
     // The panel lifts as the selected tab does, so the two read as one sheet.
