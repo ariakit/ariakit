@@ -8,9 +8,9 @@ afterEach(() => {
 // Resolving the realm by reading one member is only safe while nothing shadows
 // it. A form exposes its controls as named properties, and browsers let those
 // override built-ins, so a control named `ownerDocument` answers the lookup
-// this
-// helper starts from. Measured on Chromium 151, Firefox 153, and WebKit 26.5;
-// happy-dom defines `ownerDocument` on the prototype chain, so it is emulated.
+// this helper starts from. Measured on Chromium 151, Firefox 153, and WebKit
+// 26.5; happy-dom defines `ownerDocument` on the prototype chain, so it is
+// emulated.
 // https://github.com/ariakit/ariakit/issues/7209
 test("getOwnerWindow resolves a form whose control answers the owner document", () => {
   const form = document.createElement("form");

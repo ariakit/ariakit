@@ -5,7 +5,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   // Modal dialogs keep the fallback dismiss button so that screen reader users
   // aren't trapped in them. It renders next to the dialog rather than inside
   // it, so a dialog element whose role doesn't allow a `button` among its owned
-  // elements doesn't get one. https://github.com/ariakit/ariakit/issues/4270
+  // elements doesn't get one.
+  // https://github.com/ariakit/ariakit/issues/4270
   // https://github.com/ariakit/ariakit/issues/7310
   test("modal dialog without a dismiss element gets a hidden one", async ({
     q,
@@ -20,7 +21,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   // Rendering it next to the dialog puts it outside every "inside the dialog"
   // check, so the dialog has to keep treating it as its own. The modal backdrop
   // absorbs a pointer click on it, so dispatch the click the way assistive
-  // technology activation does. https://github.com/ariakit/ariakit/issues/7310
+  // technology activation does.
+  // https://github.com/ariakit/ariakit/issues/7310
   test("hidden dismiss closes the dialog and restores focus", async ({ q }) => {
     await q.button("Terms").click();
     await test.expect(q.dialog("Terms")).toBeVisible();

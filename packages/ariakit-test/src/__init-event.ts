@@ -74,7 +74,8 @@ function sanitizeString(value: string | null | undefined) {
 
 // `PointerEventInit` defaults the contact geometry to 1x1, and Pointer Events
 // requires 1 from a device that doesn't report geometry of its own, like a
-// mouse. https://w3c.github.io/pointerevents/#dom-pointerevent-width
+// mouse.
+// https://w3c.github.io/pointerevents/#dom-pointerevent-width
 function sanitizeContactSize(size: number | undefined) {
   return size ?? 1;
 }
@@ -206,7 +207,8 @@ function initUIEvent(event: UIEvent, { view, detail }: UIEventInit) {
 // it. `data` is also the only member the interface adds to `UIEvent`. The
 // parameter accepts `InputEventInit` too, because `initEvent` hands every
 // initializer the same options object and that interface declares a nullable
-// `data` of its own. https://w3c.github.io/uievents/#idl-compositionevent
+// `data` of its own.
+// https://w3c.github.io/uievents/#idl-compositionevent
 function initCompositionEvent(
   event: CompositionEvent,
   { data }: CompositionEventInit | InputEventInit,

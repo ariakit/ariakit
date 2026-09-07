@@ -70,7 +70,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("tag list with aria-label has no aria-labelledby", async ({ q }) => {
     // Playwright filters an initially empty display: contents list from default
-    // role queries. https://github.com/ariakit/ariakit/issues/7164
+    // role queries.
+    // https://github.com/ariakit/ariakit/issues/7164
     const listbox = q.listbox("Custom tag list label", {
       includeHidden: true,
     });

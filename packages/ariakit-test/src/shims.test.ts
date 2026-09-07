@@ -605,9 +605,8 @@ test("doesn't submit or reset a form from a click on a disabled submit/reset con
   // Real browsers run the click listeners for a scripted click on a disabled
   // submit/reset control but skip its form-activation behavior — the form is
   // neither submitted nor reset. happy-dom drops the click for both <button>
-  // and
-  // <input> through separate per-class dispatchEvent overrides, so cover both.
-  // Verified on Chromium, Firefox, and WebKit.
+  // and <input> through separate per-class dispatchEvent overrides, so cover
+  // both. Verified on Chromium, Firefox, and WebKit.
   const form = document.createElement("form");
   const controls = (["submit", "reset"] as const).flatMap((type) =>
     ["button", "input"].map((tag) => {

@@ -79,7 +79,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // replaced, so an item that leaves for good has to end the request instead of
   // sending it back to waiting. Otherwise the same item returning later, long
   // after the move that asked for it, would revive the request and scroll the
-  // page to it. https://github.com/ariakit/ariakit/issues/7021
+  // page to it.
+  // https://github.com/ariakit/ariakit/issues/7021
   test("abandons a parked presentation when its item leaves for good", async ({
     page,
     q,

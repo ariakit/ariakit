@@ -84,7 +84,8 @@ test("keeps the popup unplaced while a custom updatePosition is still working", 
 // pins is a scheduling property rather than anything the browser decides: a
 // popup that mounts once its store is already open, with no `Popover` mounted
 // to publish the show transition, must not take focus before its own pass
-// finishes. https://github.com/ariakit/ariakit/pull/7032#discussion_r3703769238
+// finishes.
+// https://github.com/ariakit/ariakit/pull/7032#discussion_r3703769238
 test("keeps focus out of a popup that mounts after its store is open", async () => {
   const trigger = q.button("Late actions");
   await click(trigger);

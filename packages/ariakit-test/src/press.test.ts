@@ -322,7 +322,8 @@ test("press.Enter on a textarea emits an Enter keypress charCode", async () => {
 
 // Keyboard activation still fires a `PointerEvent`, but Chromium, Firefox, and
 // WebKit all report an unset pointer on it, so the click must not claim a mouse
-// pressed the control. https://github.com/ariakit/ariakit/issues/7162
+// pressed the control.
+// https://github.com/ariakit/ariakit/issues/7162
 test("press activates a button with no pointer behind the click", async () => {
   const button = document.createElement("button");
   document.body.append(button);

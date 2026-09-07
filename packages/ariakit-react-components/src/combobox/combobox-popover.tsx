@@ -225,9 +225,9 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       // A select-shaped popup takes focus on every open, including a default or
       // programmatic one: showing it is a request to interact with it, and
       // leaving focus behind would strand the user outside an open listbox.
-      // https://github.com/ariakit/ariakit/issues/7068 Keep this a boolean,
-      // since a callback would always be truthy and defeat the dialog's
-      // early-out for popups that take no focus at all.
+      // https://github.com/ariakit/ariakit/issues/7068
+      // Keep this a boolean, since a callback would always be truthy and defeat
+      // the dialog's early-out for popups that take no focus at all.
       autoFocusOnShow: hasSelect,
       initialFocus: hasSelect ? inputElement : undefined,
       finalFocus: selectElement || compositeElement,

@@ -7,9 +7,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(button).toBeFocused();
   });
 
-  // https://github.com/ariakit/ariakit/issues/7099 Nothing here is a composite,
-  // so this pins the modality rule on a plain Focusable rather than on
-  // composite navigation.
+  // https://github.com/ariakit/ariakit/issues/7099
+  // Nothing here is a composite, so this pins the modality rule on a plain
+  // Focusable rather than on composite navigation.
   test("shows focus-visible on a modified navigation key", async ({
     page,
     q,

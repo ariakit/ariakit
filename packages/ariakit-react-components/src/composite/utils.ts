@@ -349,10 +349,10 @@ function presentItem({
 /**
  * Owns at most one pending presentation for the component's current store.
  * Layout-effect ownership prevents store swaps or unmounts from stranding a
- * request, while newer requests replace older ones.
- * Layout setup runs before child passive effects can request presentation;
- * cleanup clears ownership during unmount before later handlers or microtasks
- * can enqueue work. The initial ref covers the first render before setup.
+ * request, while newer requests replace older ones. Layout setup runs before
+ * child passive effects can request presentation; cleanup clears ownership
+ * during unmount before later handlers or microtasks can enqueue work. The
+ * initial ref covers the first render before setup.
  *
  * See https://github.com/ariakit/ariakit/pull/7029
  */

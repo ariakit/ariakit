@@ -10,7 +10,8 @@ const preventMouseEvents = new WeakMap<Document, boolean>();
  * The happy-dom marker is per-window. A same-origin iframe window created in
  * happy-dom does not expose it, so this returns `false` for that window.
  * Callers that must cover iframe realms must resolve the environment another
- * way. https://github.com/ariakit/ariakit/issues/7283
+ * way.
+ * https://github.com/ariakit/ariakit/issues/7283
  */
 export function isHappyDOM(
   win: Window | null | undefined = typeof window !== "undefined"

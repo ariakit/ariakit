@@ -281,7 +281,8 @@ test("dispatch(element, event) reports the same standard modifiers and x/y as th
 // UI Events specifies one modifier name per `EventModifierInit` member, and an
 // unrecognized name reports false. `modifierHyper` and `modifierSuper` are left
 // out, since no engine reports either; the keyboard parity test below covers
-// them instead. https://w3c.github.io/uievents/#event-modifier-initializers
+// them instead.
+// https://w3c.github.io/uievents/#event-modifier-initializers
 // https://github.com/ariakit/ariakit/issues/7168
 const modifierNameByInitMember = {
   altKey: "Alt",
@@ -364,7 +365,8 @@ test("dispatch.click reports false for modifier names it doesn't recognize", asy
 // Every dispatcher the two interfaces cover is listed, because the set they are
 // selected by mirrors `@testing-library/dom`'s event map by hand. `dragExit` is
 // the exception: browsers never fire it, so it has no typed listener to assert
-// through. https://github.com/ariakit/ariakit/issues/7169
+// through.
+// https://github.com/ariakit/ariakit/issues/7169
 test.each([
   ["wheel", "wheel"],
   ["drag", "drag"],
@@ -618,7 +620,8 @@ function readTransducerAngles(event: PointerEvent) {
 // `initPointerEvent` used to leave these two alone, so they reached the event
 // only through the constructor and took happy-dom's default of 0. Chromium,
 // Firefox, and WebKit all report π/2 and 0 for a mouse, on every pointer event
-// including `click`. https://github.com/ariakit/ariakit/issues/7172
+// including `click`.
+// https://github.com/ariakit/ariakit/issues/7172
 test("dispatch.pointerDown reports the transducer angles of a perpendicular pointer", async () => {
   const button = document.createElement("button");
   document.body.append(button);
@@ -686,7 +689,8 @@ test("dispatch.pointerDown derives tilt from transducer angles", async () => {
 });
 
 // Web IDL converts signed zero to positive zero when it stores the rounded
-// result as a `long`. https://github.com/ariakit/ariakit/issues/7185
+// result as a `long`.
+// https://github.com/ariakit/ariakit/issues/7185
 test("dispatch.pointerDown normalizes rounded tilt to positive zero", async () => {
   const event = await getPointerDownEvent({
     altitudeAngle: 0.5,

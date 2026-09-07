@@ -71,9 +71,9 @@ export function createMenuStore({
   // A menu opens away from the items of the composite that owns its button, so
   // a vertical parent menu or menubar places it beside them. Any other
   // orientation, and no parent menu or menubar at all, keeps it below.
-  // https://github.com/ariakit/ariakit/issues/7410 The annotation is
-  // load-bearing: defaultValue infers through a rest parameter, which widens a
-  // bare literal union to string.
+  // https://github.com/ariakit/ariakit/issues/7410
+  // The annotation is load-bearing: defaultValue infers through a rest
+  // parameter, which widens a bare literal union to string.
   const orientedPlacement: HovercardStoreState["placement"] =
     parentOrientation === "vertical" ? "right-start" : "bottom-start";
 

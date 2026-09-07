@@ -21,7 +21,8 @@ test("show context menu and hide it by clicking outside", async () => {
 
 // The dialog names the focused control as a fallback disclosure, but a captured
 // control can't be assumed to close the menu, so it doesn't join the modal
-// context. https://github.com/ariakit/ariakit/issues/4270
+// context.
+// https://github.com/ariakit/ariakit/issues/4270
 // https://github.com/ariakit/ariakit/issues/7310
 test("context menu keeps a dismiss button outside the menu", async () => {
   await click(q.button("Open menu"));

@@ -111,7 +111,8 @@ test("replaces the fallback after an open that captured nothing", async () => {
 // The popup's own store is derived and gets replaced when its wrapper remounts,
 // while the editor's store carries the opener across. Whatever tracks that the
 // field was only a fallback has to survive that too, or the field stays the
-// opener forever. https://github.com/ariakit/ariakit/issues/7087
+// opener forever.
+// https://github.com/ariakit/ariakit/issues/7087
 test("replaces the fallback after the popup's own store is replaced", async () => {
   const note = q.textbox("Note");
   const title = q.textbox("Title");

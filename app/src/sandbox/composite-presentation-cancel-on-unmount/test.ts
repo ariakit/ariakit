@@ -8,7 +8,8 @@ import { expect, test } from "vitest";
 // both before that microtask, so those two dismissals are not split the same
 // way. A dismissal in a later task behaves alike in both. The outcome asserted
 // in both files is the same either way: nothing may move focus on its own after
-// the panel is dismissed. https://github.com/ariakit/ariakit/issues/7024
+// the panel is dismissed.
+// https://github.com/ariakit/ariakit/issues/7024
 
 /**
  * Reopens the panel, puts DOM focus on a plain button inside it, then loads the

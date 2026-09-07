@@ -52,7 +52,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const label = section.text("Tag label");
     const input = section.textbox("Tag label");
     // Playwright filters an initially empty display: contents list from default
-    // role queries. https://github.com/ariakit/ariakit/issues/7164
+    // role queries.
+    // https://github.com/ariakit/ariakit/issues/7164
     const list = section.listbox("Tag label", { includeHidden: true });
     // The label names the control too, which groups the tag list and the input.
     const control = section.group("Tag label");

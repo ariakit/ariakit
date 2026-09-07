@@ -93,11 +93,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(select).toContainText("Square");
   });
 
-  // https://github.com/ariakit/ariakit/issues/7120 The authored focusOnHover
-  // callback moves the composite from inside the predicate. While the select is
-  // collapsed, the callback must not run at all, or the move would still
-  // activate the item, commit its value, and steal focus from the unrelated
-  // control.
+  // https://github.com/ariakit/ariakit/issues/7120
+  // The authored focusOnHover callback moves the composite from inside the
+  // predicate. While the select is collapsed, the callback must not run at all,
+  // or the move would still activate the item, commit its value, and steal
+  // focus from the unrelated control.
   test("a side-effectful focusOnHover callback does nothing on a collapsed list", async ({
     page,
     q,
@@ -122,8 +122,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(other).toBeFocused();
   });
 
-  // https://github.com/ariakit/ariakit/issues/7120 The gate is about the closed
-  // list: the same side-effectful callback keeps working once the select opens.
+  // https://github.com/ariakit/ariakit/issues/7120
+  // The gate is about the closed list: the same side-effectful callback keeps
+  // working once the select opens.
   test("the same callback activates the option once the select opens", async ({
     q,
   }) => {
@@ -139,9 +140,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(grape).toHaveAttribute("data-active-item");
   });
 
-  // https://github.com/ariakit/ariakit/pull/7121#discussion_r3780074062 The
-  // authored callback closes the select and returns true. Built-in activation
-  // must still stop, or the hovered item would become active in the
+  // https://github.com/ariakit/ariakit/pull/7121#discussion_r3780074062
+  // The authored callback closes the select and returns true. Built-in
+  // activation must still stop, or the hovered item would become active in the
   // just-collapsed list.
   test("built-in activation stops when the callback closes the select", async ({
     q,

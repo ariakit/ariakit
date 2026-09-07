@@ -47,7 +47,8 @@ export function omitButtons(options?: PointerEventInit): PointerEventInit {
 
 // A pointing device with no pressure sensor, which is what these helpers
 // simulate, reports 0.5 while it is in the active buttons state and 0
-// otherwise. https://w3c.github.io/pointerevents/#dom-pointerevent-pressure
+// otherwise.
+// https://w3c.github.io/pointerevents/#dom-pointerevent-pressure
 function getPressure(buttons: number) {
   return buttons === 0 ? 0 : 0.5;
 }
