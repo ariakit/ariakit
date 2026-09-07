@@ -1,7 +1,9 @@
 // @vitest-environment jsdom
-// happy-dom's Element.animate() does not apply animated styles. jsdom keeps
-// Motion on its JavaScript animation path until happy-dom implements them.
+// TODO: Remove this jsdom override once happy-dom applies animated styles
+// and fixes Animation.cancel() rejections. Until then, jsdom keeps Motion
+// on its JavaScript animation path.
 // https://github.com/capricorn86/happy-dom/pull/2335
+// https://github.com/capricorn86/happy-dom/issues/2339
 import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
