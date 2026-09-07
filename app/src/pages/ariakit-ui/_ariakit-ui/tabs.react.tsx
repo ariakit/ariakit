@@ -324,12 +324,10 @@ export function TabsSection() {
                 <TabLabel>Disabled</TabLabel>
               </Tab>
               <Tab>
-                <TabLabel>
-                  <span className="inline-flex items-center gap-1">
-                    <icons.Code className="size-[1em]" />
-                    With icon
-                  </span>
-                </TabLabel>
+                <TabSlot>
+                  <icons.Code className="size-4" />
+                </TabSlot>
+                <TabLabel>With icon</TabLabel>
               </Tab>
             </TabList>
             <TabPanels>
