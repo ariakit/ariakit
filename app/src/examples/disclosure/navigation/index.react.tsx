@@ -123,8 +123,13 @@ export default function Example() {
       <Sidebar>
         <SidebarHeader>
           <NavButton render={<a href="" />} style={brandLinkStyle}>
-            <NavIcon className="rounded p-1 ak-layer ak-layer-brand ak-layer-contrast block">
-              <icons.Triangle size={20} strokeWidth={2} />
+            <NavIcon
+              $rounded="sm"
+              $layer="brand"
+              $contrast
+              className="[--slot-icon-size:--spacing(4)]"
+            >
+              <icons.Triangle strokeWidth={2} />
             </NavIcon>
             <NavButtonContent>Acme Corp</NavButtonContent>
           </NavButton>

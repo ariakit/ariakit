@@ -7,7 +7,6 @@ import type { DisclosureIndicator } from "../react-utils/disclosure-indicator.re
 import { renderIndicator } from "../react-utils/disclosure-indicator.react.tsx";
 import {
   disclosure,
-  disclosureActions,
   disclosureButton,
   disclosureContent,
   disclosureContentBody,
@@ -100,8 +99,6 @@ export function DisclosureGroup(props: DisclosureGroupProps) {
 
 export interface DisclosureButtonProps
   extends ak.DisclosureProps, VariantProps<typeof disclosureButton> {
-  /** Optional right-aligned actions rendered inside the button. */
-  actions?: React.ReactNode;
   /** Secondary text shown below the main label. */
   description?: React.ReactNode;
   /** Custom icon. */
@@ -114,7 +111,6 @@ export interface DisclosureButtonProps
 }
 
 export function DisclosureButton({
-  actions,
   description,
   icon,
   indicator = icon ? "chevron-down-end" : "chevron-right-start",
@@ -125,70 +121,54 @@ export function DisclosureButton({
   const baseId = React.useId();
   const labelId = `${baseId}-label`;
   const descriptionId = `${baseId}-description`;
-  const actionsId = `${baseId}-actions`;
   const [variantProps, rest] = splitProps(props, disclosureButton);
   // A nullish check, not truthiness: falsy labels like {0} must still
   // render, since aria-labelledby references the span when a description
   // exists.
   const labelElement =
-    rest.children != null ? <span id={labelId}>{rest.children}</span> : null;
-  const actionsElement = actions ? (
-    <div
-      id={actionsId}
-      onClick={(event) => event.stopPropagation()}
-      {...disclosureActions.jsx({})}
-    >
-      {actions}
-    </div>
-  ) : null;
-  const labelWrapperElement = (
-    <span className="min-w-0 flex gap-2 items-start">
-      {labelElement}
-      {actionsElement}
-    </span>
-  );
+    rest.children != null ? (
+      <span id={labelId} className="min-w-0">
+        {rest.children}
+      </span>
+    ) : null;
   const iconElement = icon ? (
     <span {...disclosureIcon.jsx({})}>{icon}</span>
   ) : null;
   const indicatorEl = indicator ? renderIndicator(indicator) : null;
   const atStart = indicator ? indicator.endsWith("-start") : false;
   return (
-    <>
-      <ak.Disclosure
-        render={actionsElement ? <div /> : undefined}
-        data-disclosure-button
-        aria-labelledby={description ? labelId : undefined}
-        aria-describedby={description ? descriptionId : undefined}
-        data-open={isOpen || undefined}
-        {...disclosureButton.jsx({
-          ...variantProps,
-          // A button with a description is taller, so it presses deeper.
-          $activeDepth:
-            variantProps.$activeDepth ?? (description ? 2 : undefined),
-          $activeDepthX:
-            variantProps.$activeDepthX ?? (description ? 2 : undefined),
-        })}
-        {...rest}
-      >
-        {atStart && indicatorEl}
-        {iconElement}
-        {description ? (
-          <span className="grid w-full gap-[min(var(--ak-frame-padding)/2,--spacing(2))]">
-            {labelWrapperElement}
-            <span
-              id={descriptionId}
-              className="ak-ink-60 grid gap-[inherit] font-normal text-sm"
-            >
-              {description}
-            </span>
+    <ak.Disclosure
+      data-disclosure-button
+      aria-labelledby={description ? labelId : undefined}
+      aria-describedby={description ? descriptionId : undefined}
+      data-open={isOpen || undefined}
+      {...disclosureButton.jsx({
+        ...variantProps,
+        // A button with a description is taller, so it presses deeper.
+        $activeDepth:
+          variantProps.$activeDepth ?? (description ? 2 : undefined),
+        $activeDepthX:
+          variantProps.$activeDepthX ?? (description ? 2 : undefined),
+      })}
+      {...rest}
+    >
+      {atStart && indicatorEl}
+      {iconElement}
+      {description ? (
+        <span className="grid w-full gap-[min(var(--ak-frame-padding)/2,--spacing(2))]">
+          {labelElement}
+          <span
+            id={descriptionId}
+            className="ak-ink-60 grid gap-[inherit] font-normal text-sm"
+          >
+            {description}
           </span>
-        ) : (
-          labelWrapperElement
-        )}
-        {!atStart && indicatorEl}
-      </ak.Disclosure>
-      {actions && <div aria-owns={actionsId} />}
-    </>
+        </span>
+      ) : (
+        labelElement
+      )}
+      {!atStart && indicatorEl}
+    </ak.Disclosure>
   );
 }
 

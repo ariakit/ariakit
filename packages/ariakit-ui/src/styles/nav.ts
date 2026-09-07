@@ -1,12 +1,15 @@
 import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
-import { button } from "./button.ts";
+import { button, buttonSlot } from "./button.ts";
 import { frameBase } from "./frame.ts";
 
 export const nav = cv({
   class: [
     // Gap default the variant overrides through the style attribute.
     "[--nav-gap:--spacing(1)]",
+    // The gap between a row's icon slot and its label, on a disclosure row
+    // and on a plain row alike.
+    "[--nav-row-gap:--spacing(3)]",
   ],
   variants: {
     /**
@@ -21,8 +24,9 @@ export const nav = cv({
     /**
      * Sets the icon slot size for nav icons and nav disclosures. It must
      * live on the root (or an ancestor such as the sidebar): the consumers
-     * are container style queries, which read the nearest ancestor
-     * container. Numbers scale the spacing token.
+     * read it as an inherited property or through container style queries,
+     * which read the nearest ancestor container. Numbers scale the spacing
+     * token.
      */
     $iconSize(value?: string | number) {
       if (value == null) return;
@@ -41,15 +45,18 @@ export const navGroup = cv({
   class: "grid",
 });
 
-// The icon slot is icon-size wide and never shorter than the line, so the
-// label lines up with it and the box stays put when the sidebar collapses.
-// This is the same box a disclosure row's icon slot takes. A standalone nav
-// row, such as a sidebar brand link, can use it on its own.
+// The icon slot of a nav row, sized by the nav's icon size. It is a control
+// slot, so its outer box is one line square whatever the icon size: that is
+// what keeps a wrapping label aligned to it, and what lets a collapsed row
+// centre it with one padding. A standalone nav row, such as a sidebar brand
+// link, can use it on its own.
 export const navIcon = cv({
-  class: [
-    "min-h-lh size-(--nav-icon-size) flex-none self-start",
-    "[&_svg]:size-full",
-  ],
+  extend: [buttonSlot],
+  class: "[--size:var(--nav-icon-size,1em)]",
+  defaultVariants: {
+    // The size comes from the class above, not from a named step.
+    $size: "unset",
+  },
 });
 
 export const navLink = cv({
@@ -68,11 +75,16 @@ export const navLink = cv({
     // A current link is already lifted, so hovering must not lift it again.
     // The stacked form sorts after the button's own single-variant hover.
     "ui-nav-current:ui-hover:ak-state-0",
+    // The row gap plus the control's extra side padding, which an icon slot
+    // takes off, so a link with an icon lines up with the disclosure rows
+    // around it. $gap is off below, so this is the only gap utility here.
+    "gap-[calc(var(--nav-row-gap,--spacing(3))+var(--px)-var(--py))]",
   ],
   defaultVariants: {
     // Idle links sit flush with the surface around them; hover and current
     // still paint their own states.
     $lightnessOffset: false,
+    $gap: "none",
   },
 });
 
@@ -85,25 +97,26 @@ export const navButton = cv({
     "transition-[gap,width,height,padding] transition-discrete delay-0",
     "duration-(--sidebar-duration)",
     "[interpolate-size:allow-keywords]",
-    // The gap tracks the icon optical rhythm. Important because a disclosure
-    // button sets its own icon-size gap from a style query, which no variant
-    // turns off and which sorts after any plain gap here.
-    "gap-[calc(--spacing(3)+1px)]!",
+    // Every row keeps the one gap, plus the control's extra side padding
+    // that an icon slot takes off, with the nav's default for a row outside
+    // a nav, such as a sidebar brand row. Important, because a disclosure
+    // button spends its own gap channel on the same property.
+    "gap-[calc(var(--nav-row-gap,--spacing(3))+var(--px)-var(--py))]!",
     // Collapsing squares the button around the icon and hides the rest.
     "[--nav-button-size:calc(var(--sidebar-min-width)-(--spacing(2)))]",
     "ui-sidebar-collapsed:size-(--nav-button-size)",
     "ui-sidebar-collapsed:gap-0!",
-    // An icon slot is icon-size wide and never shorter than the line, so the
-    // square centres it with a different padding per axis. Padding is in the
-    // transition above, and nothing about the icon itself changes, so both
-    // directions stay smooth.
-    "[--nav-button-px:calc((var(--nav-button-size)-var(--nav-icon-size,var(--disclosure-icon-size)))*0.5)]",
-    "[--nav-button-py:calc((var(--nav-button-size)-max(1lh,var(--nav-icon-size,var(--disclosure-icon-size))))*0.5)]",
+    // The icon slot's outer box is one line tall and, across, one line less
+    // the control's extra side padding twice, which its margins take off.
+    // So the square centres it with the block padding below, plus that
+    // extra on each side. Padding is in the transition above, and nothing
+    // about the icon itself changes, so both directions stay smooth.
     // Important, so the icon keeps equal padding on both sides: a disclosure
     // button spends its start padding on a ps-* longhand, and a longhand
-    // sorts after the px shorthand.
-    "ui-sidebar-collapsed:px-(--nav-button-px)!",
-    "ui-sidebar-collapsed:py-(--nav-button-py)!",
+    // sorts after the shorthand.
+    "[--nav-button-p:calc((var(--nav-button-size)-1lh)*0.5)]",
+    "ui-sidebar-collapsed:py-(--nav-button-p)!",
+    "ui-sidebar-collapsed:px-[calc(var(--nav-button-p)+var(--px)-var(--py))]!",
     "ui-sidebar-collapsed:**:data-disclosure-indicator:opacity-0",
   ],
 });
@@ -129,16 +142,15 @@ export const navDisclosure = cv({
     // Nav icons size the disclosure icon slot when an ancestor sets them.
     "[@container_style(--nav-icon-size)]:[--disclosure-icon-size:var(--nav-icon-size)]",
   ],
+  style: {
+    // The body indents by the row gap, the same one the button spends. The
+    // style attribute is what beats the disclosure root's own gap.
+    "--disclosure-gap": "var(--nav-row-gap, calc(var(--spacing) * 3))",
+  },
 });
 
 export const navDisclosureContent = cv({
-  class: [
-    "ui-sidebar-collapsed:h-0 ui-sidebar-collapsed:w-0",
-    // Indent past the icon. The style query asks whether the disclosure set
-    // an icon slot; important because the disclosure content sets its own
-    // indent from the same query, which no variant turns off.
-    "[@container_style(--disclosure-icon-size)]:[--disclosure-ps:calc(var(--disclosure-icon-size)+var(--disclosure-padding)+1px)]!",
-  ],
+  class: ["ui-sidebar-collapsed:h-0 ui-sidebar-collapsed:w-0"],
 });
 
 export const navDisclosureContentBody = cv({
@@ -148,6 +160,10 @@ export const navDisclosureContentBody = cv({
   class: [
     "[--nav-body-padding:calc(var(--nav-gap)*0.5)]",
     "[--nav-body-radius:calc(var(--disclosure-radius)+var(--nav-body-padding))]",
+    // The body starts on the row's label. A row's text sits its own control
+    // inset past its pill, so each row pulls its pill back by that inset and
+    // its text lands on the label, however the lists and groups nest.
+    "[&_li>.control]:-ms-(--px)",
   ],
   defaultVariants: {
     $forceRounded: true,

@@ -161,7 +161,7 @@ export const galleryGroups = [
         id: "disclosure",
         title: "Disclosure",
         description:
-          "A button that reveals content, with indicators, icons, descriptions, actions, guides, split layouts and groups.",
+          "A button that reveals content, with indicators, icons, descriptions, guides, split layouts and groups.",
       },
       {
         id: "nav",

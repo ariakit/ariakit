@@ -12,11 +12,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 import checkboxCardForm from "#app/examples/checkbox-card/form/index.react.tsx?source";
-import disclosureActions from "#app/examples/disclosure/actions/index.react.tsx?source";
 import disclosure from "#app/examples/disclosure/index.react.tsx?source";
 import { sourcePlugin } from "./source-plugin.ts";
 import type { Source } from "./source.ts";
 
+const APP_SRC_DIR = join(import.meta.dirname, "../");
 const EXAMPLES_DIR = join(import.meta.dirname, "../examples/");
 
 function normalizeSourcePath(path: string) {
@@ -28,9 +28,19 @@ async function loadSourceFile(file: string) {
   if (typeof plugin.load !== "function") {
     throw new TypeError("Expected source plugin load hook");
   }
-  const code = await Reflect.apply(plugin.load, { addWatchFile() {} }, [
-    `${file}?source`,
-  ]);
+  const context = {
+    addWatchFile() {},
+    // Stands in for Vite's resolver: the plugin treats a #app/* import as a
+    // local file and asks the context for its path. Anything else is a
+    // fixture the stand-in was not written for, so it fails loudly.
+    resolve(id: string) {
+      if (!id.startsWith("#app/")) {
+        throw new Error(`Unexpected import in the fixture: ${id}`);
+      }
+      return { id: join(APP_SRC_DIR, id.slice("#app/".length)) };
+    },
+  };
+  const code = await Reflect.apply(plugin.load, context, [`${file}?source`]);
   if (typeof code !== "string") {
     throw new TypeError("Expected source plugin output");
   }
@@ -98,29 +108,39 @@ test("disclosure source names", () => {
   `);
 });
 
-test("disclosure actions source names include _lib data", () => {
-  const sourceKeys = Object.keys(disclosureActions.sources).map(
-    normalizeSourcePath,
-  );
-  expect(sourceKeys).toMatchInlineSnapshot(`
-    [
-      "disclosure/actions/index.react.tsx",
-      "_lib/data/orders.ts",
-    ]
-  `);
+// An entry outside the examples tree that imports shared _lib data. It has
+// no framework suffix on purpose: framework dependencies resolve from the
+// entry's own directory, and a temporary directory has no node_modules.
+async function withLibImportFixture(run: (source: Source) => void) {
+  const root = await mkdtemp(join(tmpdir(), "ariakit-source-plugin-"));
+  try {
+    const entry = join(root, "index.tsx");
+    await writeFile(
+      entry,
+      'import { orders } from "#app/examples/_lib/data/orders.ts";\n' +
+        "export default orders;\n",
+    );
+    run(await loadSourceFile(entry));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}
+
+test("source names include _lib data", async () => {
+  await withLibImportFixture((source) => {
+    const sourceKeys = Object.keys(source.sources);
+    expect(sourceKeys).toHaveLength(2);
+    expect(sourceKeys[0]).toMatch(/index\.tsx$/);
+    expect(sourceKeys[1]).toBe(join(EXAMPLES_DIR, "_lib/data/orders.ts"));
+  });
 });
 
-test("disclosure actions flattens _lib data files", () => {
-  expect(Object.keys(disclosureActions.files)).toMatchInlineSnapshot(`
-    [
-      "index.tsx",
-      "orders.ts",
-    ]
-  `);
-  // The #app alias import must be rewritten to the flattened sibling file.
-  expect(disclosureActions.files["index.tsx"]?.content).toContain(
-    'from "./orders.ts"',
-  );
+test("flattens _lib data files", async () => {
+  await withLibImportFixture((source) => {
+    expect(Object.keys(source.files)).toEqual(["index.tsx", "orders.ts"]);
+    // The #app alias import must be rewritten to the flattened sibling file.
+    expect(source.files["index.tsx"]?.content).toContain('from "./orders.ts"');
+  });
 });
 
 test("keeps class names in source order", () => {

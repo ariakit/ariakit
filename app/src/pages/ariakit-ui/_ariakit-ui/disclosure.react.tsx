@@ -142,9 +142,9 @@ export function DisclosureSection() {
       </Sample>
 
       <Sample
-        title="Icon, description and actions"
-        code="DisclosureButton icon description actions · Disclosure $iconSize"
-        description="An icon takes the slot the root sizes, a description sits under the label, and actions stay clickable without toggling the row."
+        title="Icon and description"
+        code="DisclosureButton icon description · Disclosure $iconSize"
+        description="An icon takes a control slot beside the label and the body indents to the label. A description sits under the label, and the root can size the slot."
       >
         <Stage direction="column">
           <Disclosure
@@ -185,12 +185,7 @@ export function DisclosureSection() {
             button={
               <DisclosureButton
                 icon={<icons.Users strokeWidth={1.5} />}
-                description="A larger icon slot from the root"
-                actions={
-                  <Button $size="sm" $rounded="md" $p={1} $px="md">
-                    Invite
-                  </Button>
-                }
+                description="A larger icon from the root, centred on its line"
               >
                 Team
               </DisclosureButton>

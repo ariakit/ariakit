@@ -251,12 +251,16 @@ export const listItemConnector = cv({
 
 export const listDisclosure = cv({
   extend: [listRow],
-  class: [
+  // The style attribute, so these win over the disclosure root's own resets.
+  style: {
     // The content indents only when connector segments join the rows.
     // --disclosure-ps replaces the content's padding-inline-start, so the
     // formula re-adds the frame padding.
-    "[--disclosure-ps:calc(var(--ak-frame-padding)+var(--list-item-ps)*var(--list-connector))]",
-  ],
+    "--disclosure-ps":
+      "calc(var(--ak-frame-padding) + var(--list-item-ps) * var(--list-connector))",
+    // A row indents by its marker gutter, never by an icon in its button.
+    "--disclosure-icon": "0",
+  },
 });
 
 export const listDisclosureButton = cv({

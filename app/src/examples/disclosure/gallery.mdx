@@ -4,7 +4,6 @@ import Preview, { source } from "./preview.astro";
 import Description, {
   source as description,
 } from "./description/preview.astro";
-import Actions, { source as actions } from "./actions/preview.astro";
 import Group, { source as group } from "./group/preview.astro";
 import Checklist, { source as checklist } from "./checklist/preview.astro";
 import Nested, { source as nested } from "./nested/preview.astro";
@@ -17,7 +16,6 @@ import Navigation, { source as navigation } from "./navigation/preview.astro";
 export const sources = [
   source,
   description,
-  actions,
   group,
   checklist,
   nested,
@@ -39,9 +37,6 @@ export const sources = [
   </CodeBlockTabs>
   <CodeBlockTabs source={iconDescription}>
     <IconDescription />
-  </CodeBlockTabs>
-  <CodeBlockTabs source={actions}>
-    <Actions />
   </CodeBlockTabs>
   <CodeBlockTabs source={group}>
     <Group />
