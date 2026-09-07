@@ -77,7 +77,7 @@ export const glider = cv({
         "supports-anchor:[.control:has(~&)]:ui-hover:befter:hidden",
       ],
       focus: [
-        "[position-anchor:--glider-focus]",
+        "[position-anchor:--glider-focus] focus",
         "[.control:has(~&)]:ui-focus-visible:[--glider-focus:--glider-focus]",
         "not-peer-ui-focus-visible:outline-none",
         "supports-anchor:[.control:has(~&)]:ui-focus-visible:outline-none",
