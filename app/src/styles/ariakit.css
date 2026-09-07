@@ -669,3 +669,41 @@
     }
   }
 }
+
+/**
+ * Paints a tab strip's surface inside the tabs root's edge. The strip's box
+ * reaches over the root's edge so that its scroll clip spares the tab edges
+ * that land there, and the root does not clip at its edge either, so the strip
+ * cannot paint its whole box. It paints a rounded rectangle one edge width
+ * inside its box instead, cornered like the root's padding box: two
+ * rectangles and two quarter circles, one at each top corner. The circles are
+ * feathered by a fraction of a pixel where they meet the root's border, as the
+ * folder curves are. The bottom corners stay square under the panel.
+ */
+@utility ui-tabs-well {
+  --well-inset: var(--tabs-bordering, 0px);
+  --well-radius: max(0px, calc(var(--tabs-radius, 0px) - var(--tabs-border, 0px)));
+  --well-smoothness: 0.5px;
+  --well-color: var(--ak-layer);
+  --well-corner: var(--well-color) calc(var(--well-radius) - var(--well-smoothness)),
+    transparent calc(var(--well-radius) + var(--well-smoothness));
+  --well-fill: linear-gradient(var(--well-color), var(--well-color));
+  /* The layer utility paints the whole box; the images below paint instead. */
+  background-color: transparent !important;
+  background-image:
+    radial-gradient(circle at 100% 100%, var(--well-corner)),
+    radial-gradient(circle at 0 100%, var(--well-corner)),
+    var(--well-fill),
+    var(--well-fill);
+  background-size:
+    var(--well-radius) var(--well-radius),
+    var(--well-radius) var(--well-radius),
+    calc(100% - 2 * var(--well-inset) - 2 * var(--well-radius)) var(--well-radius),
+    calc(100% - 2 * var(--well-inset)) calc(100% - var(--well-inset) - var(--well-radius));
+  background-position:
+    var(--well-inset) var(--well-inset),
+    calc(100% - var(--well-inset)) var(--well-inset),
+    calc(var(--well-inset) + var(--well-radius)) var(--well-inset),
+    var(--well-inset) calc(var(--well-inset) + var(--well-radius));
+  background-repeat: no-repeat;
+}

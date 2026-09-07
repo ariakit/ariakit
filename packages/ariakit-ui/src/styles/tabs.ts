@@ -14,10 +14,6 @@ export const tabs = cv({
   extend: [frame],
   class: [
     "tabs",
-    // A strip thinner than the root's edge reaches over that edge, and so do
-    // the tab and panel edges that land on it. The root clips them all at its
-    // own edge, which stays the one line drawn there.
-    "overflow-clip",
     // The strip runs under the panel's top corners, so the panel paints over
     // the strip, and the tabs and the gliders paint over the panel so that a
     // selected tab covers the seam. The root keeps that stack to itself: the
@@ -30,11 +26,19 @@ export const tabs = cv({
     "[--tabs-padding:var(--ak-frame-padding)]",
     "[--tabs-radius:var(--ak-frame-radius)]",
     "[--tabs-border:var(--ak-frame-border)]",
+    "[--tabs-ring:var(--ak-frame-ring)]",
     // The edge width, whichever of the two the adaptive edge picked.
-    "[--tabs-bordering:calc(var(--tabs-border)+var(--ak-frame-ring))]",
+    "[--tabs-bordering:calc(var(--tabs-border)+var(--tabs-ring))]",
     // The tabs and the gliders read the root's surface too, so they lift off it
     // as the panel does while the strip under them sinks below it.
     "[--tabs-layer:var(--ak-layer)]",
+    // The root does not clip at its edge. The strip reaches over the edge but
+    // paints its surface inside it, and a tab or panel edge that lands on the
+    // root's edge draws itself there. The root's border lies on the root's own
+    // surface and its ring on the surface behind the root, so a ring landing
+    // on the root's edge paints that surface under itself first, or the two
+    // translucent rings would stack into a darker line.
+    "[--tabs-ground:var(--ak-layer-parent)]",
     // While the first tab is a selected folder, its start curve and the panel's
     // start corner meet halfway between the root's edge and that tab. A strip
     // thinner than the edge pulls its tabs onto the edge, so the room is the
@@ -53,10 +57,9 @@ export const tabs = cv({
     /**
      * Paints the root's own edge in transparent while the selected tab and the
      * panel keep drawing it, for a folder with no card around it. The edge
-     * keeps its width, so the seam and the corners stay where they are, and the
-     * root stops clipping at its edge so the two can draw there.
+     * keeps its width, so the seam and the corners stay where they are.
      */
-    $edgeHidden: "border-transparent ring-transparent overflow-visible",
+    $edgeHidden: "border-transparent ring-transparent",
     /**
      * Rounds the panel's top corners under folder tabs, whose curves they meet.
      * The strip runs one radius under the panel, so its surface shows through
@@ -96,6 +99,17 @@ const tabStartCurve = cx(
   "ui-selected:before:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet,var(--tabs-radius)))]",
 );
 
+// A selected folder's ring lands on the root's edge while the strip merges
+// the row with it, and a ring lies on nothing of its own, so it paints the
+// surface under the root's edge first, or it would stack on the root's ring:
+// the root's surface under a border, the surface behind the root under a ring.
+// One of the two widths is always zero, so only one shadow paints. The width
+// is the ring's while the row merges with the edge and none otherwise.
+const folderEdgeBacking = cx(
+  "[--folder-backing:min(var(--ak-frame-ring),calc(var(--tabs-merge)*1000000))]",
+  "ui-selected:shadow-[0_0_0_min(var(--folder-backing),calc(var(--tabs-border)*1000000))_var(--tabs-layer),0_0_0_min(var(--folder-backing),calc(var(--tabs-ring)*1000000))_var(--tabs-ground)]",
+);
+
 // The transparent background covers the layer the hover shifts, so a flat or
 // bevel tab paints it back on its own box. The extra variant sorts this after
 // the rule at rest.
@@ -110,6 +124,17 @@ const tabFolder = cx(
   // than the smaller radius the frame nesting gives the tab.
   "[--folder-radius:var(--tabs-radius)]",
   tabStartCurve,
+  // The strip merges the row with the root's edge by pulling it up by the
+  // edge's width, where a border, drawn inside the tab's box, lands on the
+  // edge. A ring is drawn outside the box, so a ring tab steps back down by
+  // its ring to land the ring on the edge rather than past it, and a first
+  // tab steps back from the start edge the same way.
+  "mt-[min(var(--tabs-merge),var(--ak-frame-ring))]",
+  "first:ms-[min(var(--tabs-merge),var(--ak-frame-ring))]",
+  folderEdgeBacking,
+  // A working selected glider draws the edge, backing included, instead of
+  // the tab.
+  "supports-anchor:has-[~.glider.selected]:[--folder-backing:0px]",
   // The strip ends a tab one padding above the seam, and a selected tab reaches
   // through that padding and over the panel's edge, as far as the folder says
   // its own edge needs. Only the bottom padding grows, so the label keeps its
@@ -227,6 +252,7 @@ export const tabGlider = cv({
         // The curves take the root's radius, as the tab's do.
         "[--folder-radius:var(--tabs-radius)]",
         tabStartCurve,
+        folderEdgeBacking,
         // Only the selected folder glider reaches over the seam, as far as the
         // tab would. A hover or focus glider covers the tab.
         "ui-selected:[--glider-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
@@ -315,14 +341,33 @@ export const tabList = cv({
     // The root opens one for all of them instead.
     "z-auto",
     // A folder tab takes the root's edge. A strip thinner than that edge would
-    // set the tab's edge beside the root's, so the strip reaches over the
-    // root's edge by the difference and the tabs land on it; the margin default
-    // below spends the pull. Only an edge that takes room counts: an edge drawn
-    // outside the box, as a ring-* is, pulls nothing.
-    "[--tabs-pull:max(0px,calc(var(--tabs-border)-var(--tabs-float)))]",
+    // set the tab's edge beside the root's, so the strip merges the row with
+    // the root's edge: it pulls the row up by the difference and the tabs land
+    // on the edge. Only a folder merges; a flat or bevel strip keeps its tabs
+    // inside the edge. Of that pull, the frame margin below spends only the
+    // part an edge that takes room asks for, a border rather than a ring, so
+    // the radius nested in the strip stays concentric and the seam below keeps
+    // its place.
+    "[--tabs-merge:calc(max(0px,calc(var(--tabs-bordering)-var(--tabs-float)))*var(--tabs-folder,0))]",
+    "[--tabs-pull:calc(max(0px,calc(var(--tabs-border)-var(--tabs-float)))*var(--tabs-folder,0))]",
+    // The strip's box reaches over the root's whole edge, ring included, so
+    // that the scroll clip below never cuts a tab edge that lands on it, and
+    // pads the row back to where the merge puts it. The box ends on the root's
+    // outermost curve, so the clip follows that curve and spares the corner of
+    // a tab that takes it.
+    "-mt-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
+    "-mx-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
+    "pt-[calc(var(--tabs-bordering)+var(--tabs-float)-var(--tabs-merge))]",
+    "px-[calc(var(--tabs-bordering)+var(--tabs-float)-var(--tabs-merge))]",
+    "rounded-ss-[calc(var(--tabs-radius)+var(--tabs-ring))]!",
+    "rounded-se-[calc(var(--tabs-radius)+var(--tabs-ring))]!",
+    // The box reaches over the root's edge, so the strip paints its surface
+    // inside the edge instead of over its whole box, cornered like the root's
+    // inner corners.
+    "ui-tabs-well",
     // A hovered folder tab, and the glider covering one, paint a pill this far
-    // inside the tab's box: past the pull, then a fifth of the font size.
-    "[--tab-inset:calc(0.2em+var(--tabs-pull))]",
+    // inside the tab's box: past the merge, then a fifth of the font size.
+    "[--tab-inset:calc(0.2em+var(--tabs-merge))]",
     // A tab's end curve is painted one root radius past its box. This spacer
     // keeps the last one inside the scroll clip, whether the tabs fill the
     // strip or overflow it, so it must not give way to them.
@@ -347,7 +392,8 @@ export const tabList = cv({
     $p: "unset",
     $rounded: "unset",
     // The cover adds this margin to its stretch and takes it off the radius,
-    // so the strip's corners stay concentric with the root's where it lands.
+    // so the radius nested in the strip stays concentric with the root's where
+    // the row lands. The classes above move the box itself further.
     $m: "calc(-1 * var(--tabs-pull))",
   },
 });
@@ -375,6 +421,16 @@ export const tabPanels = cv({
     "ease-tabs",
     "supports-anchor:[.tabs:has(.glider.selected)_&]:transition-[border-radius]",
     "supports-anchor:[.tabs:has(.glider.selected)_&]:duration-(--duration-tabs)",
+    // The panel's edge lands on the root's edge at its sides and bottom. A
+    // border lies on the panel's own surface and covers the root's edge, but
+    // a ring lies on nothing of its own and would stack on the root's ring, so
+    // a ring paints the surface under the root's edge first: the root's under
+    // a border, the surface behind the root under a ring. One of the two
+    // widths is always zero. The backing for a ring root sits one ring lower,
+    // off the seam at the top, where the panel's ring lies on the strip.
+    "[--panel-backing-border:min(var(--ak-frame-ring),calc(var(--tabs-border)*1000000))]",
+    "[--panel-backing-ring:min(var(--ak-frame-ring),calc(var(--tabs-ring)*1000000))]",
+    "shadow-[0_0_0_var(--panel-backing-border)_var(--tabs-layer),0_var(--panel-backing-ring)_0_var(--panel-backing-ring)_var(--tabs-ground)]",
   ],
   defaultVariants: {
     // The panel lifts as the selected tab does, so the two read as one sheet.

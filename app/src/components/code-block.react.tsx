@@ -201,7 +201,7 @@ export function CodeBlock({
           $borderType: "border",
           $panelRoundedTop: false,
           class: clsx(
-            "ak-dark:ak-layer-lighten-3 ak-light:ak-layer-lighten-6 group peer ak-light:ak-edge-15 ak-frame-container/0 relative overflow-clip flex flex-col scroll-my-2",
+            "ak-dark:ak-layer-lighten-3 ak-light:ak-layer-lighten-6 group peer ak-light:ak-edge-15 ak-frame-container/0 relative flex flex-col scroll-my-2",
             collapsed && "has-[[data-expand]:hover]:ak-state-3",
             collapsibleClassName,
           ),
@@ -215,12 +215,11 @@ export function CodeBlock({
             filename && (
               <div
                 {...tabListStyle.jsx({
-                  // The strip paints its own darkened layer, so the layer
-                  // classes must beat the tab list's base bg-transparent.
-                  // --tab-bg captures the root color (the parent layer at
-                  // this point) so the selected tab can match the panel.
+                  // The strip sinks further into the root than the tabs style
+                  // does. --tab-bg captures the root color (the parent layer
+                  // at this point) so the selected tab can match the panel.
                   class:
-                    "ak-layer! ak-dark:ak-layer-darken-4 ak-light:ak-layer-darken-3 [--tab-bg:var(--ak-layer-parent)]",
+                    "ak-dark:ak-layer-darken-4 ak-light:ak-layer-darken-3 [--tab-bg:var(--ak-layer-parent)]",
                 })}
               >
                 <div
