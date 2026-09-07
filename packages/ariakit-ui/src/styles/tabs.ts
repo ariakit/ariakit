@@ -349,7 +349,19 @@ export const tabGlider = cv({
         // box. With no tab in focus there is no anchor, so the glider leaves
         // rather than fall to the group's start.
         "outline-none",
-        "not-peer-ui-focus-visible:hidden",
+        // Focus moves between tabs through a moment with no tab focused, and
+        // a glider that left the page then could not travel. So the pill is
+        // anchored to the active tab as well, which passes from one tab to
+        // the next in one step, and it stays in the page, unseen rather than
+        // taken out, while no tab has keyboard focus. Its box stays on the
+        // active tab, so it travels when focus moves, appears in place when
+        // focus enters the strip, and goes at once when focus leaves.
+        "[.control[data-active-item]:has(~&)]:[--glider-focus:--glider-focus]",
+        "not-peer-ui-focus-visible:invisible",
+        // The glider's travel stays on the list and its leaving comes off it:
+        // a hover glider waits to leave so the pointer can cross a gap, but
+        // focus leaves the strip in one move, and the pill goes with it.
+        "supports-anchor:transition-[inset-inline,height,width]",
         "supports-anchor:[.control.ui-folder:has(~&)]:not-ui-selected:ui-focus-visible:after:bg-transparent!",
         "supports-anchor:[.control:not(.ui-folder):has(~&)]:ui-focus-visible:bg-transparent!",
         // The label's colour follows the glider on its way, rather than turn
