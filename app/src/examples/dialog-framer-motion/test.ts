@@ -15,7 +15,7 @@ test("show/hide on click", async () => {
   await click(q.button("OK"));
   expect(q.dialog()).toBeVisible();
   expect(q.button("Show modal")).toHaveFocus();
-  await expect.poll(q.dialog.maybe).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe.lazy()).not.toBeInTheDocument();
   expect(q.button("Show modal")).toHaveFocus();
 });
 
@@ -34,6 +34,6 @@ test("prevent body scroll", async () => {
   await press.Enter();
   expect(q.dialog()).toBeVisible();
   expect(documentElement).toHaveStyle(lockStyle);
-  await expect.poll(q.dialog.maybe).not.toBeInTheDocument();
+  await expect.poll(q.dialog.maybe.lazy()).not.toBeInTheDocument();
   expect(documentElement).not.toHaveStyle({ overflowY: "hidden" });
 });

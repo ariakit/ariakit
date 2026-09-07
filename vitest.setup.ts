@@ -1,14 +1,16 @@
-import "@testing-library/jest-dom/vitest";
 import * as matchers from "@testing-library/jest-dom/matchers";
 import { expect } from "vitest";
 import failOnConsole from "vitest-fail-on-console";
 
 failOnConsole();
 
+// The CommonJS declaration exposes a default export absent from the ESM API.
+const { default: _default, ...domMatchers } = matchers;
+
 expect.extend({
-  toHaveFocus(element: HTMLElement, expected, options) {
-    const toHaveFocus = matchers.toHaveFocus.bind(this) as any;
-    const result = toHaveFocus(element, expected, options);
+  ...domMatchers,
+  toHaveFocus(element: HTMLElement) {
+    const result = matchers.toHaveFocus.call(this, element);
     const { activeElement } = element.ownerDocument;
     const activeId = activeElement?.getAttribute("aria-activedescendant");
     return {

@@ -14,7 +14,7 @@ test("shows on hover, hides outside, and immediately reopens", async () => {
   await hover(anchor);
   expect(await q.tooltip.wait("Tooltip content")).toBeVisible();
   await hoverOutside();
-  await expect.poll(q.tooltip.maybe).not.toBeInTheDocument();
+  await expect.poll(q.tooltip.maybe.lazy()).not.toBeInTheDocument();
 
   await hover(anchor);
   expect(q.tooltip("Tooltip content")).toBeVisible();

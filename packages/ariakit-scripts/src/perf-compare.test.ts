@@ -208,14 +208,7 @@ function createBenchmarkReport(
     "packages/ariakit-store/benchmark/store.bench.ts",
   ),
 ) {
-  return {
-    files: [
-      {
-        filepath,
-        groups,
-      },
-    ],
-  };
+  return createBenchmarkReportFromFiles([{ filepath, groups }]);
 }
 
 function createBenchmarkReportFromFiles(
@@ -227,7 +220,25 @@ function createBenchmarkReportFromFiles(
     }>;
   }>,
 ) {
-  return { files };
+  return {
+    testResults: files.map(({ filepath, groups }) => ({
+      name: filepath,
+      assertionResults: groups.flatMap(({ fullName, benchmarks }) => {
+        const ancestorTitles = fullName.split(" > ").slice(1);
+        return benchmarks.map(({ name, hz, mean }) => ({
+          ancestorTitles,
+          title: name,
+          fullName: [...ancestorTitles, name].join(" "),
+          benchmarks: [
+            {
+              name,
+              tasks: [{ name, throughput: { mean: hz }, latency: { mean } }],
+            },
+          ],
+        }));
+      }),
+    })),
+  };
 }
 
 function createStoreBenchmarkReport(hz?: number, mean?: number) {
@@ -467,6 +478,61 @@ test("keeps Vitest benchmark groups distinct in node mode", () => {
   expect(markdown).toContain("| collection > set state |");
 });
 
+test("reads Vitest 5 benchmark tasks and filters their containing test", () => {
+  const dir = createTempDir();
+  const file = "packages/ariakit-store/benchmark/store.bench.ts";
+  const report = {
+    testResults: [
+      {
+        name: `/repo/${file}`,
+        assertionResults: [
+          {
+            ancestorTitles: ["store"],
+            title: "compare implementations",
+            fullName: "store compare implementations",
+            benchmarks: [
+              {
+                name: "comparison",
+                tasks: [
+                  {
+                    name: "cached",
+                    throughput: { mean: 1000 },
+                    latency: { mean: 2 },
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ancestorTitles: [],
+            title: "skipped benchmark",
+            fullName: "skipped benchmark",
+            benchmarks: [],
+          },
+        ],
+      },
+    ],
+  };
+  writeJson(dir, "baseline-1.json", report);
+  writeJson(dir, "current-1.json", report);
+  const reportPath = path.join(dir, resultsDir, "current-1.json");
+  expect(() => checkNodeBenchmarkResults(reportPath, 1)).not.toThrow();
+  expect(() => checkNodeBenchmarkResults(reportPath, 2)).toThrow(/found 1/);
+
+  const markdown = runCompare(dir, { node: true });
+  expect(markdown).toContain(
+    "| store > compare implementations > cached | 1,000 ops/sec |",
+  );
+  expect(readComparisonSummary(dir).rows).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        label: "store > compare implementations > cached",
+        currentBenchmarkPattern: "store > compare implementations",
+      }),
+    ]),
+  );
+});
+
 test("groups Vitest benchmark tables by file in node mode", () => {
   const dir = createTempDir();
   const storeFile = path.join(
@@ -619,9 +685,9 @@ test("writes focused Node confirmation targets with raw benchmark names", () => 
 
   expect(summary.confirmationTargets).toEqual([
     {
-      baselineTestNamePattern: String.raw`^(?:store(?: > | )special(?: > | )other \(fast\)@1\.0\.0|store(?: > | )special(?: > | )set \[state\]@1\.2\.3)$`,
+      baselineTestNamePattern: String.raw`^(?:store > special > other \(fast\)@1\.0\.0|store > special > set \[state\]@1\.2\.3)$`,
       benchmarkCount: 2,
-      currentTestNamePattern: String.raw`^(?:store(?: > | )special(?: > | )other \(fast\)@2\.0\.0|store(?: > | )special(?: > | )set \[state\]@2\.0\.0)$`,
+      currentTestNamePattern: String.raw`^(?:store > special > other \(fast\)@2\.0\.0|store > special > set \[state\]@2\.0\.0)$`,
       file: benchmarkFile,
     },
   ]);
@@ -629,18 +695,24 @@ test("writes focused Node confirmation targets with raw benchmark names", () => 
   if (!target) throw new Error("Missing confirmation target");
   const baselinePattern = new RegExp(target.baselineTestNamePattern);
   const currentPattern = new RegExp(target.currentTestNamePattern);
-  expect(baselinePattern.test("store special set [state]@1.2.3")).toBe(true);
-  expect(baselinePattern.test("store > special set [state]@1.2.3")).toBe(true);
-  expect(baselinePattern.test("store special other (fast)@1.0.0")).toBe(true);
-  expect(baselinePattern.test("collection set [state]@1.2.3")).toBe(false);
-  expect(currentPattern.test("store special set [state]@2.0.0")).toBe(true);
-  expect(currentPattern.test("store special set [state]@1.2.3")).toBe(false);
+  expect(baselinePattern.test("store > special > set [state]@1.2.3")).toBe(
+    true,
+  );
+  expect(baselinePattern.test("store special set [state]@1.2.3")).toBe(false);
+  expect(baselinePattern.test("store > special > other (fast)@1.0.0")).toBe(
+    true,
+  );
+  expect(baselinePattern.test("collection > set [state]@1.2.3")).toBe(false);
+  expect(currentPattern.test("store > special > set [state]@2.0.0")).toBe(true);
+  expect(currentPattern.test("store > special > set [state]@1.2.3")).toBe(
+    false,
+  );
   expect(summary.rows).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
         label: "store > special > set [state]",
-        baselineBenchmarkPattern: String.raw`store(?: > | )special(?: > | )set \[state\]@1\.2\.3`,
-        currentBenchmarkPattern: String.raw`store(?: > | )special(?: > | )set \[state\]@2\.0\.0`,
+        baselineBenchmarkPattern: String.raw`store > special > set \[state\]@1\.2\.3`,
+        currentBenchmarkPattern: String.raw`store > special > set \[state\]@2\.0\.0`,
         significant: true,
       }),
       expect.objectContaining({
