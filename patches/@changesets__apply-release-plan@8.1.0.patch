@@ -1,0 +1,14 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index ffe7f5cc11801bda72789240081ac33762a34dfe..f3e5cf856df0953bbfc6ba1b829af54113c9ae81 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -120,6 +120,9 @@ async function getChangelogEntry(cwd, release, releases, changesets, changelogFu
+ 	});
+ 	const relevantChangesets = changesets.filter((cs) => relevantChangesetIds.has(cs.id));
+ 	changelogLines.patch.push(Promise.resolve(changelogFuncs.getDependencyReleaseLine(relevantChangesets, dependentReleases, changelogOpts)));
++	if (typeof changelogFuncs.getChangelogEntry === "function") {
++		return changelogFuncs.getChangelogEntry(release, changelogLines);
++	}
+ 	const resolvedChangelogLines = {
+ 		major: await Promise.all(changelogLines.major),
+ 		minor: await Promise.all(changelogLines.minor),
