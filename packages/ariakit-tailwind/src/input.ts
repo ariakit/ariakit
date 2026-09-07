@@ -390,8 +390,8 @@ function getResolvedLightnessOffset(
   const boundaryDist = fn.mul(boundaryDelta, direction);
   // Only flip if it produces more distance from the original lightness.
   const shouldFlip = fn.binary(fn.sub(flippedDist, boundaryDist));
-  // When forbidden: blend between boundary and flipped deltas. Using a +
-  // x*(b-a) instead of a*(1-x) + b*x so shouldFlip appears once.
+  // When forbidden: blend between boundary and flipped deltas. Using
+  // `a + x*(b-a)` instead of `a*(1-x) + b*x` so shouldFlip appears once.
   const forbiddenDelta = fn.add(
     boundaryDelta,
     fn.mul(shouldFlip, fn.sub(flippedDelta, boundaryDelta)),

@@ -6,8 +6,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    // Expected values follow the fixed-size formula: paddingStart + itemSize *
-    // index + gap * index.
+    // Expected values follow the fixed-size formula:
+    // `paddingStart + itemSize * index + gap * index`.
     await test.expect(q.button("Measured 1")).toHaveCSS("top", "20px");
     await test.expect(q.button("Measured 2")).toHaveCSS("top", "62px");
     await test.expect(q.button("Fixed 1")).toHaveCSS("top", "20px");
