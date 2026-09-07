@@ -140,7 +140,7 @@ test("open the popover with arrow down after switching tabs", async () => {
   await press.ArrowRight();
   await expect.poll(q.tab.lazy("Examples 31")).toHaveFocus();
   await press.Escape();
-  await expect.poll(q.combobox).toHaveAttribute("data-active-item");
+  await expect.poll(q.combobox.lazy()).toHaveAttribute("data-active-item");
   expect(q.dialog.maybe("Pages")).not.toBeInTheDocument();
   await press.ArrowDown();
   await expect.poll(q.dialog.lazy("Pages")).toBeVisible();

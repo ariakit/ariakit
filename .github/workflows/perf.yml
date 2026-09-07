@@ -734,6 +734,17 @@ jobs:
             "${{ runner.temp }}/perf-node-baseline-build/perf-node-baseline-build.tar.gz" \
             -C "$BASELINE_DIR"
 
+      - name: Align baseline Vitest runtime
+        working-directory: ${{ runner.temp }}/perf-node-baseline
+        run: |
+          # Run the copied benchmark definitions with the same Vitest API and
+          # measurement engine on both revisions, including major upgrades.
+          vitest_version="$(jq -r '.devDependencies.vitest' "$GITHUB_WORKSPACE/package.json")"
+          if [ "$(jq -r '.devDependencies.vitest' package.json)" != "$vitest_version" ]; then
+            pnpm --recursive --include-workspace-root --filter '!website' update \
+              "vitest@$vitest_version" "@vitest/coverage-v8@$vitest_version"
+          fi
+
       - name: Run interleaved benchmarks
         run: |
           mkdir -p .perf-results
@@ -753,7 +764,7 @@ jobs:
               pnpm exec vitest bench \
                 "${bench_args[@]}" \
                 --config vitest.bench.config.ts \
-                --outputJson "$output_file"
+                --reporter=json --outputFile "$output_file"
             ); then
               echo "::warning::Baseline benchmark run failed for round $i; writing an empty baseline."
               baseline_failed=1
@@ -762,7 +773,7 @@ jobs:
               if [ "$baseline_failed" -eq 0 ]; then
                 echo "::warning::No baseline benchmark results for round $i; writing an empty baseline."
               fi
-              printf '{"files":[]}\n' > "$output_file"
+              printf '{"testResults":[]}\n' > "$output_file"
             fi
             if [ "$expected_count" -gt 0 ] && ! pnpm exec ariakit perf-check-node-results "$output_file" "$expected_count"; then
               echo "::endgroup::"
@@ -783,7 +794,7 @@ jobs:
             pnpm exec vitest bench \
               "${bench_args[@]}" \
               --config vitest.bench.config.ts \
-              --outputJson "$output_file"
+              --reporter=json --outputFile "$output_file"
             if [ ! -f "$output_file" ]; then
               echo "Missing current benchmark results at $output_file" >&2
               exit 1

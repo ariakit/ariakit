@@ -1,6 +1,6 @@
 import { createTabStore } from "@ariakit/components/tab/tab-store";
 import { init } from "@ariakit/store";
-import { afterAll, bench, vi } from "vitest";
+import { afterAll, test, vi } from "vitest";
 
 // CI compares these benchmarks across paired baseline/current rounds with a
 // ±10% significance gate (see `ariakit perf-compare --node`). This 1500/400ms
@@ -34,30 +34,26 @@ const stops = Array.from({ length: 64 }, () => {
 let nextId = lastId;
 let sink: unknown;
 
-bench(
-  "render 200 new tab items",
-  () => {
+test("render 200 new tab items", async ({ bench, task }) => {
+  await bench(task.name, () => {
     const store = createTabStore();
     for (const item of items) {
       store.renderItem(item);
     }
     sink = store.item(lastId);
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "move when selected tab follows active tab",
-  async () => {
+test("move when selected tab follows active tab", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     for (const { store } of stops) {
       store.move(nextId);
     }
     await Promise.resolve();
     nextId = nextId === lastId ? previousId : lastId;
     sink = stops[0]?.store.getState().selectedId;
-  },
-  options,
-);
+  }).run(options);
+});
 
 afterAll(() => {
   for (const { stop } of stops) {

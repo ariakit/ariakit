@@ -9,7 +9,7 @@ import {
   subscribe,
   sync,
 } from "@ariakit/store";
-import { bench } from "vitest";
+import { test } from "vitest";
 
 interface BenchmarkItem {
   id: string;
@@ -206,95 +206,76 @@ init(syncedStore);
 init(cascadingStore);
 init(mergedChain.store);
 
-bench(
-  "create store",
-  () => {
+test("create store", async ({ bench, task }) => {
+  await bench(task.name, () => {
     const store = createBenchmarkStore(nextValue());
     consume(store.getState());
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "read state",
-  () => {
+test("read state", async ({ bench, task }) => {
+  await bench(task.name, () => {
     consume(readStore.getState());
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "set state",
-  async () => {
+test("set state", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     updateStore.setState("count", nextValue());
     await flushBatch();
     consume(updateStore.getState().count);
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "set state with selected subscribers",
-  async () => {
+test("set state with selected subscribers", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     selectedSubscribersStore.setState("count", nextValue());
     await flushBatch();
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "set state with unrelated subscribers",
-  async () => {
+test("set state with unrelated subscribers", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     unrelatedSubscribersStore.setState("count", nextValue());
     await flushBatch();
     consume(unrelatedSubscribersStore.getState().count);
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "batch multiple updates",
-  async () => {
+test("batch multiple updates", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     const value = nextValue();
     batchStore.setState("count", value);
     batchStore.setState("value", String(value));
     await flushBatch();
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "set synced child state",
-  async () => {
+test("set synced child state", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     syncedStore.setState("count", nextValue());
     await flushBatch();
     consume(parentStore.getState().count);
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "set synced source state",
-  async () => {
+test("set synced source state", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     parentStore.setState("count", nextValue());
     await flushBatch();
     consume(syncedStore.getState().count);
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "set state with React subscribers",
-  async () => {
+test("set state with React subscribers", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     reactSubscribersStore.setState("count", nextValue());
     await flushBatch();
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "cascade setup listeners",
-  async () => {
+test("cascade setup listeners", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     const value = nextValue();
     cascadingStore.setState("open", value % 2 === 0);
     cascadingStore.setState(
@@ -304,36 +285,30 @@ bench(
     cascadingStore.setState("moves", value);
     await flushBatch();
     consume(cascadingStore.getState().activeValue);
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "create picked store",
-  () => {
+test("create picked store", async ({ bench, task }) => {
+  await bench(task.name, () => {
     const store = createBenchmarkStore(nextValue());
     const pickedStore = pick(store, ["count", "open", "value"]);
     const cleanup = init(pickedStore);
     consume(pickedStore?.getState());
     cleanup?.();
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "initialize merged store chain",
-  () => {
+test("initialize merged store chain", async ({ bench, task }) => {
+  await bench(task.name, () => {
     const { store } = createMergedStoreChain(nextValue());
     const cleanup = init(store);
     consume(store.getState());
     cleanup();
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "merge stores",
-  () => {
+test("merge stores", async ({ bench, task }) => {
+  await bench(task.name, () => {
     const firstStore = createStore({
       ...initialState,
       count: nextValue(),
@@ -345,44 +320,36 @@ bench(
       value: "value",
     });
     consume(mergeStore(firstStore, secondStore).getState());
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "set merged source state",
-  async () => {
+test("set merged source state", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     mergedChain.externalStore.setState("count", nextValue());
     await flushBatch();
     consume(mergedChain.store.getState().count);
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "set merged picked source state",
-  async () => {
+test("set merged picked source state", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     mergedChain.tagStore.setState("value", String(nextValue()));
     await flushBatch();
     consume(mergedChain.store.getState().value);
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "set merged omitted source state",
-  async () => {
+test("set merged omitted source state", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     // Use a non-derived popover key so this isolates omit propagation.
     mergedChain.popoverStore.setState("focused", nextValue() % 2 === 0);
     await flushBatch();
     consume(mergedChain.store.getState().focused);
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "set merged derived state",
-  async () => {
+test("set merged derived state", async ({ bench, task }) => {
+  await bench(task.name, async () => {
     const value = nextValue();
     mergedChain.store.setState("open", value % 2 === 0);
     mergedChain.store.setState(
@@ -392,8 +359,7 @@ bench(
     mergedChain.store.setState("moves", value);
     await flushBatch();
     consume(mergedChain.store.getState().activeValue);
-  },
-  options,
-);
+  }).run(options);
+});
 
 export { sink };

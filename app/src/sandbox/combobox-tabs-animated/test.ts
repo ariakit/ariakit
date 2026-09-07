@@ -16,8 +16,9 @@ test("selected tab is restored only after the animation ends", async () => {
   expect(examplesTab).not.toHaveFocus();
   expect(examplesTab).not.toHaveAttribute("data-active-item");
   expect(examplesTab).toHaveAttribute("aria-selected", "true");
+  // The popover has a 1s exit transition, so polling must allow it to finish.
   await expect
-    .poll(q.dialog.maybe.hidden.lazy("Pages"))
+    .poll(q.dialog.maybe.hidden.lazy("Pages"), { timeout: 2000 })
     .not.toBeInTheDocument();
   await press.ArrowDown();
   await press.ArrowDown();

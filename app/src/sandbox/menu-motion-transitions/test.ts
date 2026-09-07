@@ -14,7 +14,7 @@ test("show/hide on click", async () => {
   await click(q.button("Options"));
   expect(q.button("Options")).toHaveFocus();
   expect(q.menu.hidden()).toBeVisible();
-  await expect.poll(q.menu.maybe).not.toBeInTheDocument();
+  await expect.poll(q.menu.maybe.lazy()).not.toBeInTheDocument();
 });
 
 test("show/hide on enter", async () => {
@@ -27,7 +27,7 @@ test("show/hide on enter", async () => {
   await press.Enter();
   expect(q.button("Options")).toHaveFocus();
   expect(q.menu()).toBeVisible();
-  await expect.poll(q.menu.maybe).not.toBeInTheDocument();
+  await expect.poll(q.menu.maybe.lazy()).not.toBeInTheDocument();
 });
 
 test("show/hide on space", { retry: 2 }, async () => {
@@ -40,7 +40,7 @@ test("show/hide on space", { retry: 2 }, async () => {
   await press.Space();
   expect(q.button("Options")).toHaveFocus();
   expect(q.menu.hidden()).toBeVisible();
-  await expect.poll(q.menu.maybe).not.toBeInTheDocument();
+  await expect.poll(q.menu.maybe.lazy()).not.toBeInTheDocument();
 });
 
 test("hide on esc", async () => {
@@ -49,7 +49,7 @@ test("hide on esc", async () => {
   await press.Escape();
   expect(q.button("Options")).toHaveFocus();
   expect(q.menu()).toBeVisible();
-  await expect.poll(q.menu.maybe).not.toBeInTheDocument();
+  await expect.poll(q.menu.maybe.lazy()).not.toBeInTheDocument();
 });
 
 test("hide on click outside", async () => {
@@ -58,5 +58,5 @@ test("hide on click outside", async () => {
   await click(document.body);
   expect(q.button("Options")).not.toHaveFocus();
   expect(q.menu.hidden()).toBeVisible();
-  await expect.poll(q.menu.maybe).not.toBeInTheDocument();
+  await expect.poll(q.menu.maybe.lazy()).not.toBeInTheDocument();
 });
