@@ -149,7 +149,6 @@ interface BenchmarkReportFile {
 interface BenchmarkReportTest {
   ancestorTitles: string[];
   title: string;
-  fullName: string;
   benchmarks?: { tasks: BenchmarkReportEntry[] }[];
 }
 
@@ -266,6 +265,10 @@ function resultsFromBenchmarkReport(report: BenchmarkReport): PerfResult[] {
   for (const file of report.testResults ?? []) {
     const filePath = normalizeBenchmarkFilePath(file.name);
     for (const test of file.assertionResults) {
+      // Vitest filters use " > ", but JSON fullName joins titles with spaces.
+      const benchmarkPattern = escapeRegExp(
+        [...test.ancestorTitles, test.title].join(" > "),
+      );
       for (const benchmark of test.benchmarks?.flatMap(({ tasks }) => tasks) ??
         []) {
         const name = benchmark.name;
@@ -282,7 +285,7 @@ function resultsFromBenchmarkReport(report: BenchmarkReport): PerfResult[] {
           testFile: filePath,
           testTitle: label,
           label,
-          benchmarkPattern: escapeRegExp(test.fullName),
+          benchmarkPattern,
           metrics,
           raw: [metrics],
         });

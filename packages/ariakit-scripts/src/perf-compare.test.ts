@@ -228,7 +228,7 @@ function createBenchmarkReportFromFiles(
         return benchmarks.map(({ name, hz, mean }) => ({
           ancestorTitles,
           title: name,
-          fullName: [...ancestorTitles, name].join(" > "),
+          fullName: [...ancestorTitles, name].join(" "),
           benchmarks: [
             {
               name,
@@ -489,7 +489,7 @@ test("reads Vitest 5 benchmark tasks and filters their containing test", () => {
           {
             ancestorTitles: ["store"],
             title: "compare implementations",
-            fullName: "store > compare implementations",
+            fullName: "store compare implementations",
             benchmarks: [
               {
                 name: "comparison",
