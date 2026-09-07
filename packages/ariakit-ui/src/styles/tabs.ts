@@ -54,12 +54,12 @@ export const tabs = cv({
     // Only a folder's curves meet the panel's top corners, so the notch below
     // exists only while the strip has a folder tab or a folder glider.
     "has-[.ui-folder]:[--tabs-folder:1]",
-    // A ring folder's box runs two pixels past the seam, one more than the
+    // A ring folder's box runs three pixels past the seam, two more than the
     // edge it lands on, for the cut the folder makes there. The strip has to
-    // hold that pixel, or the box hangs out of it, and the strip scrolls it
+    // hold those pixels, or the box hangs out of it, and the strip scrolls it
     // into view when the tab takes focus and the whole row moves up. A border
     // folder ends on its edge and needs no room.
-    "[--tabs-over:calc(max(0px,calc(min(var(--tabs-ring)*1000000,2px)-var(--tabs-ring)))*var(--tabs-folder,0))]",
+    "[--tabs-over:calc(max(0px,calc(min(var(--tabs-ring)*1000000,3px)-var(--tabs-ring)))*var(--tabs-folder,0))]",
   ],
   variants: {
     /**
@@ -453,7 +453,7 @@ export const tabList = cv({
     "[--tabs-float:var(--ak-frame-padding)]",
     "[--tabs-dock:calc(var(--tabs-float)+var(--tabs-bordering))]",
     // Below the seam the strip runs on under the panel by the notch, so its
-    // surface shows through the panel's rounded corners, and by the pixel a
+    // surface shows through the panel's rounded corners, and by the pixels a
     // ring folder's box runs past the seam.
     "pb-[calc(var(--tabs-dock)+var(--tabs-notch,0px)+var(--tabs-over,0px))]",
     // The panel paints over the strip, so the strip cannot open the stacking
@@ -525,8 +525,8 @@ export const tabPanels = cv({
     "relative z-1 overflow-clip",
     // The panel's top edge, border or ring, tucks under the strip by its width,
     // where the selected tab or the glider covers it, and the panel runs up
-    // over the notch the strip leaves under its top corners and over the pixel
-    // the strip keeps for a ring folder's box.
+    // over the notch the strip leaves under its top corners and over the
+    // pixels the strip keeps for a ring folder's box.
     "-mt-[calc(var(--tabs-notch,0px)+var(--tabs-bordering)+var(--tabs-over,0px))]",
     // The top corners round by the notch the root publishes, which is none
     // under flat or bevel tabs or a bar, or with the root's $panelRoundedTop

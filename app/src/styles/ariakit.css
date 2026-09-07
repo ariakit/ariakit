@@ -612,25 +612,26 @@
        clip path is antialiased where it falls while a background is snapped
        to the pixel grid, and the blur reaches about a pixel on each side, so
        the cut must keep a pixel away from the panel's edge, or a hair of that
-       edge shows through, and a pixel away from the ring's own inner edge at
-       the box's bottom, or a hair of the ring does: the box and the curves
-       run two pixels past the seam, and the cut lands one pixel inside the
+       edge shows through, and two pixels away from the ring's own inner edge
+       at the box's bottom, since the ring is also painted under the box's
+       last pixel, or a hair of the ring does: the box and the curves run
+       three pixels past the seam, and the cut lands two pixels inside the
        box, on the panel's surface, which matches the folder's. A border
        folder ends on the seam with nothing below its box, so it does not cut
        there at all. */
     clip-path: inset(
       -4rem -4rem
-        calc(-4rem + min(var(--folder-ring) * 1000000, 4rem + 1px)) -4rem
+        calc(-4rem + min(var(--folder-ring) * 1000000, 4rem + 2px)) -4rem
     );
     --folder-edge: var(--ak-edge);
     --folder-ring: var(--ak-frame-ring, 0px);
     --folder-border: var(--ak-frame-border, 0px);
     --folder-bordering: calc(var(--ak-frame-border, 0px) + var(--ak-frame-ring, 0px));
-    /* How far the folder's box runs past the seam into the panel: two pixels
-       under a ring, for the cut above, and nothing under a border. The
+    /* How far the folder's box runs past the seam into the panel: three
+       pixels under a ring, for the cut above, and nothing under a border. The
        folder reads its own edge here rather than the seam's, because a frame
        that inherits an edge picks border or ring for itself. */
-    --folder-over: min(var(--folder-ring) * 1000000, 2px);
+    --folder-over: min(var(--folder-ring) * 1000000, 3px);
     /* How far past the seam the box must reach to cover the panel's edge,
        which sits inside the panel's box as a border and outside it as a
        ring. The consumer adds the room between its row and the seam. */
