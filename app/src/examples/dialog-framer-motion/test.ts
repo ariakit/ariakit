@@ -1,3 +1,9 @@
+// @vitest-environment jsdom
+// TODO: Remove this jsdom override once happy-dom applies animated styles
+// and fixes Animation.cancel() rejections. Until then, jsdom keeps Motion
+// on its JavaScript animation path.
+// https://github.com/capricorn86/happy-dom/pull/2335
+// https://github.com/capricorn86/happy-dom/issues/2339
 import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
@@ -14,7 +20,7 @@ test("show/hide on click", async () => {
 });
 
 test("prevent body scroll", async () => {
-  // happy-dom reports a space-consuming scrollbar and supports
+  // jsdom reports a space-consuming scrollbar and supports
   // scrollbar-gutter, so the scroll lock lands on the html element.
   const { documentElement } = document;
   const lockStyle =

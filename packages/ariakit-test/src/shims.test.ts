@@ -4,6 +4,22 @@ import { click } from "./click.ts";
 import { dispatch } from "./dispatch.ts";
 import "./shims.ts";
 
+test.each(["input", "select", "textarea"] as const)(
+  "preserves native validation messages for %s controls",
+  (tag) => {
+    const control = document.createElement(tag);
+    control.required = true;
+    expect(control.validationMessage).not.toBe("");
+    control.disabled = true;
+    expect(control.validationMessage).toBe("");
+    control.disabled = false;
+    control.setCustomValidity("Choose a value");
+    expect(control.validationMessage).toBe("Choose a value");
+    control.setCustomValidity("");
+    expect(control.validationMessage).not.toBe("");
+  },
+);
+
 test("applies the browser shims at import, for the whole environment", () => {
   if (isBrowser) return;
   const connected = document.createElement("button");
