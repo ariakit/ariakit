@@ -141,11 +141,11 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
           },
           ArrowDown: () => {
             if (isMenubarHorizontal) return;
-            return parentMenubar.next();
+            return parentMenubar.down();
           },
           ArrowUp: () => {
             if (isMenubarHorizontal) return;
-            return parentMenubar.previous();
+            return parentMenubar.up();
           },
         };
         const action = keyMap[event.key as keyof typeof keyMap];

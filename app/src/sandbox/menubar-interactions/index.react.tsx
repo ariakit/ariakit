@@ -35,6 +35,7 @@ function VerticalMenus() {
         aria-label="Vertical RTL menubar"
         className="menubar"
         orientation="vertical"
+        rtl
       >
         {["Document", "History", "Zoom"].map((label) => (
           <Ariakit.MenuProvider
