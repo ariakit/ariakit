@@ -32,8 +32,8 @@ test("FormPush keeps focus within the target array, not a sibling sharing the na
 });
 
 test("FormRemove keeps focus within the target array, not a sibling sharing the name prefix", async () => {
-  // Removing from `tags` must move focus to another `tags` field and never
-  // leak into the `tags2` sibling, whose name shares the `tags` prefix.
+  // Removing from `tags` must move focus to another `tags` field and never leak
+  // into the `tags2` sibling, whose name shares the `tags` prefix.
   await click(q.button("Remove tags.0"));
   expect(activeFieldName()).toBe("tags.1");
 });

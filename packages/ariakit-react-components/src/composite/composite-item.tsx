@@ -259,10 +259,10 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           if (!state.renderedItems.length) return true;
           if (tabbable) return true;
           if (state.activeId === null) return false;
-          // If activeId refers to an item that's disabled or not connected to the
-          // DOM, we make all items tabbable so users can tab into the composite
-          // widget. Once the activeId is valid, we restore the roving tabindex. See
-          // https://github.com/ariakit/ariakit/issues/3232
+          // If activeId refers to an item that's disabled or not connected to
+          // the DOM, we make all items tabbable so users can tab into the
+          // composite widget. Once the activeId is valid, we restore the roving
+          // tabindex. See https://github.com/ariakit/ariakit/issues/3232
           // https://github.com/ariakit/ariakit/issues/4129
           const item = store?.item(state.activeId);
           if (item?.disabled) return true;
@@ -375,9 +375,9 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         hasFocusedComposite.current = true;
         // If the previously focused element is a composite or composite item
         // component, we'll transfer focus silently to the composite element.
-        // That's because this is just a transition event, the composite
-        // element was likely already focused, so we're just immediately
-        // returning focus to it when navigating through the items.
+        // That's because this is just a transition event, the composite element
+        // was likely already focused, so we're just immediately returning focus
+        // to it when navigating through the items.
         if (fromComposite) {
           focusSilently(compositeElement);
         }
@@ -401,10 +401,10 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       // disconnected. Wait for a connected element before redirecting focus.
       // https://github.com/ariakit/ariakit/issues/6623
 
-      // Items that opt out of registering themselves in the store never
-      // produce the unregister store update that the scheduled redirect below
-      // relies on to self-clean, so they keep the previous behavior of
-      // dropping the redirect.
+      // Items that opt out of registering themselves in the store never produce
+      // the unregister store update that the scheduled redirect below relies on
+      // to self-clean, so they keep the previous behavior of dropping the
+      // redirect.
       if (shouldRegisterItem === false) return;
       const { currentTarget, relatedTarget } = event;
       const cancelScheduledFocusRedirect = () => {
@@ -413,11 +413,11 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       };
       cancelScheduledFocusRedirect();
       // Subscribe to every store update, not just compositeElement changes, so
-      // the pending redirect is also discarded when the item unmounts without
-      // a composite element ever arriving.
+      // the pending redirect is also discarded when the item unmounts without a
+      // composite element ever arriving.
       cancelScheduledFocusRedirectRef.current = subscribe(store, null, () => {
-        // The redirect is no longer relevant if the item lost DOM focus in
-        // the meantime, including when it was unmounted.
+        // The redirect is no longer relevant if the item lost DOM focus in the
+        // meantime, including when it was unmounted.
         if (getActiveElement(currentTarget) !== currentTarget) {
           cancelScheduledFocusRedirect();
           return;
@@ -635,8 +635,8 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    * Whether the scroll behavior should be prevented when pressing arrow keys on
    * the first or the last items.
    * @deprecated Use CSS
-   * [`scroll-margin`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-margin)
-   * instead.
+   *   [`scroll-margin`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-margin)
+   *   instead.
    * @default false
    */
   preventScrollOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;

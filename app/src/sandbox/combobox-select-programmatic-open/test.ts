@@ -2,8 +2,7 @@ import { click, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // The scroll side of the presentation is browser-only and lives in
-// test-browser.ts.
-// https://github.com/ariakit/ariakit/issues/7068
+// test-browser.ts. https://github.com/ariakit/ariakit/issues/7068
 test("takes focus when opened without focus", async () => {
   expect(document.body).toHaveFocus();
 
@@ -15,8 +14,7 @@ test("takes focus when opened without focus", async () => {
 
 // Focus is asserted only at the end, so the registration assertion above it
 // still runs against the unfixed behavior instead of being skipped by an
-// earlier failure.
-// https://github.com/ariakit/ariakit/issues/7068
+// earlier failure. https://github.com/ariakit/ariakit/issues/7068
 test("keeps focus while options arrive after the open", async () => {
   await press("F2");
   expect(q.listbox()).toBeVisible();

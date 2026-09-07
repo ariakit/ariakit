@@ -158,8 +158,8 @@ export interface CreateTeamParams {
 }
 
 // Clerk enforces unique organization slugs, so deriving one from the checkout
-// session gives retries and concurrent fulfillment an idempotency key.
-// Keep the slug compact while preserving 128 bits of the session hash.
+// session gives retries and concurrent fulfillment an idempotency key. Keep the
+// slug compact while preserving 128 bits of the session hash.
 async function getCheckoutTeamSlug(checkoutSession: string) {
   const data = new TextEncoder().encode(checkoutSession);
   const hash = await crypto.subtle.digest("SHA-256", data);

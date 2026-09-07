@@ -1,12 +1,12 @@
 import * as Ariakit from "@ariakit/react";
 import { useEffect, useState } from "react";
 
-// Reproduces https://github.com/ariakit/ariakit/issues/4345: the page opts
-// into an always-visible scrollbar with an inline overflow-y: scroll on the
-// html element (a common anti-layout-shift technique). Opening a modal dialog
-// must not shift the layout, must still lock the page scroll (the page
-// scrolls through the html element, so hiding the body overflow alone has no
-// effect), and closing it must leave the html inline style exactly as it was.
+// Reproduces https://github.com/ariakit/ariakit/issues/4345: the page opts into
+// an always-visible scrollbar with an inline overflow-y: scroll on the html
+// element (a common anti-layout-shift technique). Opening a modal dialog must
+// not shift the layout, must still lock the page scroll (the page scrolls
+// through the html element, so hiding the body overflow alone has no effect),
+// and closing it must leave the html inline style exactly as it was.
 export default function Example() {
   const [open, setOpen] = useState(false);
 

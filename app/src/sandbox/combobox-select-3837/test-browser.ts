@@ -14,10 +14,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // Floating UI computes for the popover (the `--popover-available-height`
   // variable), which drives the popover max-height and, in a virtualized list,
   // the set of rendered items. With `autoSelect`, every rendered-items change
-  // re-ran the auto-select logic and called `store.move()` on the already-active
-  // item. Because `move()` always bumps the internal `moves` counter, Composite
-  // re-focused the item via `focusIntoView`, bouncing DOM focus off the input
-  // and back. This focus churn dropped characters while typing.
+  // re-ran the auto-select logic and called `store.move()` on the
+  // already-active item. Because `move()` always bumps the internal `moves`
+  // counter, Composite re-focused the item via `focusIntoView`, bouncing DOM
+  // focus off the input and back. This focus churn dropped characters while
+  // typing.
   //
   // We simulate the viewport change deterministically by shrinking the popover
   // through the same `--popover-available-height` variable, then assert that
@@ -43,10 +44,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(renderedBefore).toBeGreaterThan(2);
     test.expect(renderedBefore).toBeLessThan(50);
 
-    // The virtualizer's ResizeObserver ignores its very first callback, so flush
-    // a couple of frames to make sure that first callback has already fired.
-    // Otherwise a fast run could have our resize below swallowed as the ignored
-    // one, and the bug would not reproduce.
+    // The virtualizer's ResizeObserver ignores its very first callback, so
+    // flush a couple of frames to make sure that first callback has already
+    // fired. Otherwise a fast run could have our resize below swallowed as the
+    // ignored one, and the bug would not reproduce.
     await flushFrames(page, 2);
 
     // From now on, count any focus event that lands on an option element.

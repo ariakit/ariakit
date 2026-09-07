@@ -12,8 +12,8 @@ interface MenubarMenuProps extends Ariakit.MenuProviderProps {
   label: string;
 }
 
-// A menubar entry that opens a menu. Rendered inside another menu, it becomes
-// a submenu.
+// A menubar entry that opens a menu. Rendered inside another menu, it becomes a
+// submenu.
 function MenubarMenu({ label, children, ...props }: MenubarMenuProps) {
   return (
     <Ariakit.MenuProvider {...props}>

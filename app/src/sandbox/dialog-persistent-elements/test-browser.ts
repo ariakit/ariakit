@@ -89,7 +89,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
-  // Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635586651
+  // Regression for
+  // https://github.com/ariakit/ariakit/pull/6810#discussion_r3635586651
   test("keeps persistent elements after replacing an open dialog node", async ({
     page,
     q,
@@ -183,7 +184,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).not.toBeVisible();
   });
 
-  // Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635034591
+  // Regression for
+  // https://github.com/ariakit/ariakit/pull/6810#discussion_r3635034591
   test("closes when interacting with a same-id dialog in another root", async ({
     q,
   }) => {
@@ -195,7 +197,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).not.toBeVisible();
   });
 
-  // Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
+  // Regression for
+  // https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
   test("closes on a no-focus outside shadow click", async ({ q }) => {
     await q.button("Open dialog").click();
     await test.expect(q.dialog("Dialog")).toBeVisible();
@@ -204,7 +207,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).not.toBeVisible();
   });
 
-  // Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
+  // Regression for
+  // https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
   test("stays open when dragging from persistent shadow content", async ({
     page,
     q,

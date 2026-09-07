@@ -76,9 +76,9 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   };
 
   // The aria-labelledby prop on MenuList defaults to the MenuButton's id. On
-  // Dialog/Popover/Hovercard/Menu, we need to consider MenuHeading as well
-  // and it should take precedence. That's why we need to destructure this
-  // prop here and check if aria-labelledby is set later.
+  // Dialog/Popover/Hovercard/Menu, we need to consider MenuHeading as well and
+  // it should take precedence. That's why we need to destructure this prop here
+  // and check if aria-labelledby is set later.
   const { "aria-labelledby": ariaLabelledBy, ...menuListProps } = useMenuList({
     store,
     alwaysVisible,
@@ -92,8 +92,8 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
 
   // Resolve the initial focus element inside a selector so the component
   // re-renders only when the resolved element changes, not whenever
-  // `renderedItems` gets a new array identity. Returning `undefined` means
-  // auto focus on show is disabled.
+  // `renderedItems` gets a new array identity. Returning `undefined` means auto
+  // focus on show is disabled.
   const initialFocusElement = useStoreState(
     store,
     ["autoFocusOnShow", "initialFocus", "renderedItems", "compositeElement"],
@@ -142,12 +142,12 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     };
   }, [modal, initialFocusElement]);
 
-  // When the `autoFocusOnShow` prop is set to `true` (default), we'll only
-  // move focus to the menu when there's an initialFocusRef set or the menu is
-  // modal. Otherwise, users would have to manually call
-  // store.setAutoFocusOnShow(true) every time they want to open the menu.
-  // This differs from the usual dialog behavior that would automatically
-  // focus on the dialog container when no initialFocusRef is set.
+  // When the `autoFocusOnShow` prop is set to `true` (default), we'll only move
+  // focus to the menu when there's an initialFocusRef set or the menu is modal.
+  // Otherwise, users would have to manually call store.setAutoFocusOnShow(true)
+  // every time they want to open the menu. This differs from the usual dialog
+  // behavior that would automatically focus on the dialog container when no
+  // initialFocusRef is set.
   const canAutoFocusOnShow = !!initialFocusRef || !!props.initialFocus || modal;
   const autoFocusOnShowProp =
     autoFocusOnShow === false ? false : canAutoFocusOnShow && autoFocusOnShow;
@@ -163,13 +163,13 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   // Modal menus keep their menu button in the modal context so that it stays
   // out of the `inert` subtree. Chromium refuses to read an `inert` element as
   // the menu's `aria-labelledby` target, and the button doubles as the way out
-  // of the menu. https://github.com/ariakit/ariakit/issues/4270
-  // The button has to be an element the application named, since a disclosure
-  // the dialog captured only happened to have focus and can't be assumed to
-  // close the menu. It also has to be connected, mirroring the dialog's own
-  // definition of a named disclosure, and live outside the menu, otherwise the
-  // menu would become an ancestor of one of its own persistent elements, which
-  // the dialog reads as a nested dialog.
+  // of the menu. https://github.com/ariakit/ariakit/issues/4270 The button has
+  // to be an element the application named, since a disclosure the dialog
+  // captured only happened to have focus and can't be assumed to close the
+  // menu. It also has to be connected, mirroring the dialog's own definition of
+  // a named disclosure, and live outside the menu, otherwise the menu would
+  // become an ancestor of one of its own persistent elements, which the dialog
+  // reads as a nested dialog.
   const persistentDisclosure = useStoreState(
     store,
     ["disclosureElement", "contentElement"],
@@ -248,8 +248,8 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
         }
         if (hideOnHoverOutside != null) return hideOnHoverOutside;
         // Hide the menu when hovering outside if it's a submenu in a dropdown
-        // menu or if it's a menu in a menubar and the menu button doesn't
-        // have focus.
+        // menu or if it's a menu in a menubar and the menu button doesn't have
+        // focus.
         if (hasParentMenu) return true;
         if (!parentIsMenubar) return false;
         if (!disclosureElement) return true;
@@ -335,8 +335,8 @@ export interface MenuOptions<T extends ElementType = TagName>
    *   or any other element assigned with
    *   [`setDisclosureElement`](https://ariakit.com/reference/use-menu-store#setdisclosureelement),
    *   is part of the modal context, so it can still label the menu.
-   * - A visually hidden dismiss button will be rendered next to the menu if
-   *   the [`MenuDismiss`](https://ariakit.com/reference/menu-dismiss) component
+   * - A visually hidden dismiss button will be rendered next to the menu if the
+   *   [`MenuDismiss`](https://ariakit.com/reference/menu-dismiss) component
    *   hasn't been used. This allows screen reader users to close the menu.
    * - When the menu is open, the element tree outside of both the menu and its
    *   menu button will be inert.

@@ -22,8 +22,8 @@ type StoreInit = () => () => void;
 // These three are intentionally identical `Sync<S, K>` signatures; they differ
 // only in runtime timing semantics, not in types: subscribe fires after a
 // change; sync fires immediately on registration and synchronously on every
-// change; batch fires immediately on registration, then microtask-coalesced
-// on subsequent changes. See the storeSubscribe/storeSync/storeBatch
+// change; batch fires immediately on registration, then microtask-coalesced on
+// subsequent changes. See the storeSubscribe/storeSync/storeBatch
 // implementations in createStore. The keys also narrow the listener state.
 // Include a key only when its changes should trigger the listener. Read other
 // state with store.getState() inside the listener.
@@ -320,8 +320,8 @@ function notifyStoreListener<S extends State>(
 ) {
   if (group.suspendCounts?.has(listener)) return;
   const { disposables } = group;
-  // Skip the cleanup lookup when no listener has registered a cleanup.
-  // The `.size` gate keeps an empty disposables map off this hot path.
+  // Skip the cleanup lookup when no listener has registered a cleanup. The
+  // `.size` gate keeps an empty disposables map off this hot path.
   const cleanup = disposables.size ? disposables.get(listener) : undefined;
   if (cleanup) {
     disposables.delete(listener);
@@ -716,10 +716,9 @@ export function createStore<S extends State>(
 
     if (isSameValue(nextValue, currentValue)) return;
 
-    // Track the active dispatch so storeBatch can distinguish idle
-    // registration (refresh prevStateBatch) from registration during an
-    // in-flight setState (keep prevStateBatch so the upcoming microtask
-    // reports the correct diff).
+    // Track the active dispatch so storeBatch can distinguish idle registration
+    // (refresh prevStateBatch) from registration during an in-flight setState
+    // (keep prevStateBatch so the upcoming microtask reports the correct diff).
     const wasInDispatch = inDispatch;
     inDispatch = true;
     const prevState = state;
@@ -792,8 +791,8 @@ export function createStore<S extends State>(
 
     updatedKeys.add(key);
 
-    // Coalesce multiple setStates in the same microtask via a pending flag.
-    // Any setStates queued before the microtask runs share the same flush.
+    // Coalesce multiple setStates in the same microtask via a pending flag. Any
+    // setStates queued before the microtask runs share the same flush.
     if (batchPending) return;
     batchPending = true;
     queueMicrotask(() => {
@@ -895,8 +894,8 @@ export function batch<T extends Store, K extends keyof StoreState<T>>(
 ): T extends Store ? ReturnType<StoreBatch<StoreState<T>, K>> : void;
 
 /**
- * Registers a listener function that's called immediately and after a batch
- * of state changes in the store.
+ * Registers a listener function that's called immediately and after a batch of
+ * state changes in the store.
  */
 export function batch(store?: Store, ...args: Parameters<StoreBatch>) {
   if (!store) return;

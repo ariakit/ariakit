@@ -22,9 +22,9 @@ export function useMenuBarStoreProps<T extends Core.MenuBarStore>(
 
 /**
  * Creates a menu bar store.
- * @deprecated
- * Use [`useMenubarStore`](https://ariakit.com/reference/use-menubar-store)
- * instead.
+ * @deprecated Use
+ *   [`useMenubarStore`](https://ariakit.com/reference/use-menubar-store)
+ *   instead.
  * @example
  * ```jsx
  * const menubar = useMenuBarStore();

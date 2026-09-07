@@ -94,9 +94,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // Refusing to present after the panel goes away must not outlive the panel
   // itself, so the two presentations a reopened panel schedules are pinned
-  // here: the one its own focus handler queues, and the one a programmatic
-  // move requests. The scroll is what discriminates, because the entry is
-  // already the active item before either action.
+  // here: the one its own focus handler queues, and the one a programmatic move
+  // requests. The scroll is what discriminates, because the entry is already
+  // the active item before either action.
   test("presents the active item when the reopened panel is focused", async ({
     q,
   }) => {

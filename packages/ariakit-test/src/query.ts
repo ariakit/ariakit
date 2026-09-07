@@ -276,12 +276,12 @@ function createQueryObject(queries = documentQueries): QueryObject {
 }
 
 /**
- * Queries the DOM by ARIA role, accessible name, text, or label, built on top of
- * Testing Library. Call a role method such as `query.button(name)` or
+ * Queries the DOM by ARIA role, accessible name, text, or label, built on top
+ * of Testing Library. Call a role method such as `query.button(name)` or
  * `query.dialog()` to get the matching element, passing a string or `RegExp` to
  * match its accessible name. Queries throw when no matching element is found.
- * Use `query.text()` and `query.labeled()` to query by text content or associated
- * label, and `query.within(element)` to scope queries to a subtree.
+ * Use `query.text()` and `query.labeled()` to query by text content or
+ * associated label, and `query.within(element)` to scope queries to a subtree.
  *
  * Every query also exposes `.lazy` (return a reusable function that runs the
  * query when called), `.all` (return all matches, including an empty array),
@@ -302,8 +302,8 @@ function createQueryObject(queries = documentQueries): QueryObject {
 export const query = createQueryObject();
 
 /**
- * Short alias for `query`. Queries the DOM by ARIA role, accessible name, text, or
- * label.
+ * Short alias for `query`. Queries the DOM by ARIA role, accessible name, text,
+ * or label.
  * @example
  * ```ts
  * const dialog = q.dialog.maybe.lazy("Settings");

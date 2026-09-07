@@ -18,10 +18,10 @@ function isUpdater<T>(value: T | ((prev: T) => T)): value is (prev: T) => T {
  * A hook that creates a state that can be either controlled or uncontrolled.
  * @param state The controlled state value
  * @param setState The controlled state setter function that accepts a direct
- * value
+ *   value
  * @param defaultState The default state value when uncontrolled
  * @returns A tuple containing the current state value and a setter function
- * that supports both direct values and updater functions
+ *   that supports both direct values and updater functions
  */
 export function useControllableState<T>(
   defaultState: T | (() => T),

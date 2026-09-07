@@ -160,8 +160,8 @@ export interface ComboboxRendererOptions<T extends Item = any> extends Omit<
   /**
    * The current selected value of the combobox. This will ensure the item with
    * the given value is rendered even if it's not in the viewport, so it can be
-   * automatically focused when the combobox popover is opened. If not
-   * provided, the selected value will be read from the store.
+   * automatically focused when the combobox popover is opened. If not provided,
+   * the selected value will be read from the store.
    */
   selectedValue?: ComboboxStoreSelectedValue;
 }

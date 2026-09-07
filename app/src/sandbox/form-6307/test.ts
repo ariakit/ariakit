@@ -13,8 +13,9 @@ test("a successful submit does not steal focus on later items changes", async ()
   expect(email).toHaveAttribute("aria-invalid", "true");
 
   // 2. Type a valid value, wait for it to be accepted, then submit again. Wait
-  //    for the successful submission to fully settle (with resetOnSubmit={false}
-  //    the form keeps its values) before touching the form again.
+  //    for the successful submission to fully settle (with
+  //    resetOnSubmit={false} the form keeps its values) before touching the
+  //    form again.
   await type("jane", email);
   expect(email).toHaveAttribute("aria-invalid", "false");
   await click(q.button("Save"));

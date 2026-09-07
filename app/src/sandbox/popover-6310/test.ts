@@ -21,9 +21,9 @@ test("reopened portaled popover focuses the first focusable element when a hidde
   // when no element inside is tabbable, so confirm the disable actually ran.
   expect(q.button.hidden("Choose file")).toHaveAttribute("tabindex", "-1");
 
-  // Reopening must move focus to the visible button again. Before the fix, focus
-  // stayed on the disclosure because the focusable fallback resolved to the
-  // hidden file input and focusing it is a no-op.
+  // Reopening must move focus to the visible button again. Before the fix,
+  // focus stayed on the disclosure because the focusable fallback resolved to
+  // the hidden file input and focusing it is a no-op.
   await click(q.button("Attachments"));
   expect(q.dialog("Attachments")).toBeVisible();
   expect(q.button("Choose file")).toHaveFocus();

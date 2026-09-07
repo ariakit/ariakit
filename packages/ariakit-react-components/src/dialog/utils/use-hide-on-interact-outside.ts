@@ -129,9 +129,9 @@ function useEventOutside({
         callListener(event);
         return;
       }
-      // Clicked on dialog's bounding box
-      // Mouse coordinates are relative to the target's viewport, so compare
-      // them with this dialog only when both belong to the same document.
+      // Clicked on dialog's bounding box Mouse coordinates are relative to the
+      // target's viewport, so compare them with this dialog only when both
+      // belong to the same document.
       if (
         getDocument(composedTarget ?? target) === contentDocument &&
         isMouseEventOnDialog(event, contentElement)
@@ -190,9 +190,9 @@ export function useHideOnInteractOutside({
     contentElement,
   );
   const focusedRef = useRef(false);
-  // Tracks whether the content element has been focused at least once since
-  // the dialog opened. The event listeners below use this to decide whether
-  // the marked-tree check applies. Shared by all event types.
+  // Tracks whether the content element has been focused at least once since the
+  // dialog opened. The event listeners below use this to decide whether the
+  // marked-tree check applies. Shared by all event types.
   useSafeLayoutEffect(() => {
     if (!open) return;
     if (!domReady) return;

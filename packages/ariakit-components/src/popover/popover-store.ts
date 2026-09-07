@@ -154,9 +154,9 @@ export interface PopoverStoreState extends DialogStoreState {
    * asserting it again.
    *
    * Components that move focus or scroll into the popup wait for this to become
-   * `false`, otherwise they act on an element that's still at its
-   * pre-placement origin, or at a position it's about to leave, and drag the
-   * page along with it.
+   * `false`, otherwise they act on an element that's still at its pre-placement
+   * origin, or at a position it's about to leave, and drag the page along with
+   * it.
    * @deprecated
    * @private
    */

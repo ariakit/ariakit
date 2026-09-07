@@ -2,8 +2,8 @@ import * as Ariakit from "@ariakit/react";
 import { useEffect, useRef, useState } from "react";
 
 // Reproduces a dialog that fails to close when, after being reopened, focus
-// lands on freshly added outside content (an async-loaded panel, a toast, etc.).
-// To see the bug:
+// lands on freshly added outside content (an async-loaded panel, a toast,
+// etc.). To see the bug:
 //   1. Open the dialog and focus the field inside it (this marks the dialog as
 //      interacted-with).
 //   2. Close it, then open it again.
@@ -18,8 +18,8 @@ export default function Example() {
   const controlsRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLInputElement>(null);
 
-  // Focus the field as soon as it appears, simulating outside content that grabs
-  // focus while the dialog is open.
+  // Focus the field as soon as it appears, simulating outside content that
+  // grabs focus while the dialog is open.
   useEffect(() => {
     if (!showField) return;
     fieldRef.current?.focus();

@@ -70,8 +70,8 @@ export interface SourceFile {
    */
   dependencies?: Record<string, string>;
   /**
-   * External dev-only dependencies (currently only @types/*) referenced by
-   * this file, keyed by package name with the resolved version as value.
+   * External dev-only dependencies (currently only @types/*) referenced by this
+   * file, keyed by package name with the resolved version as value.
    */
   devDependencies?: Record<string, string>;
 }
@@ -145,8 +145,8 @@ function getOrCreate<K, V>(map: Map<K, V>, key: K, factory: () => V): V {
 }
 
 /**
- * Removes lines that only contain a semicolon, which may be left after
- * deleting import declarations via regex replacements.
+ * Removes lines that only contain a semicolon, which may be left after deleting
+ * import declarations via regex replacements.
  */
 function cleanSemicolonOnlyLines(text: string): string {
   return text.replace(/^[\t ]*;[\t ]*(?:\r?\n|$)/gm, "");
@@ -165,7 +165,9 @@ function cleanupText(text: string): string {
   return collapseExcessBlankLines(cleanSemicolonOnlyLines(text));
 }
 
-/** Extracts the module path from regex match groups (single/double/template). */
+/**
+ * Extracts the module path from regex match groups (single/double/template).
+ */
 function getPathFromGroups(
   groups: RegExpExecArray["groups"],
 ): string | undefined {
@@ -173,8 +175,8 @@ function getPathFromGroups(
 }
 
 /**
- * Determines the quote character used in regex match groups.
- * Defaults to double quote if no match found.
+ * Determines the quote character used in regex match groups. Defaults to double
+ * quote if no match found.
  */
 function getQuoteFromGroups(groups: RegExpExecArray["groups"]): string {
   if (groups?.single != null) return "'";
@@ -191,15 +193,15 @@ function buildModuleSource(path: string, attributes = ""): string {
 }
 
 /**
- * Extracts the comma-separated specifier text inside braces from an
- * import-like declaration string.
+ * Extracts the comma-separated specifier text inside braces from an import-like
+ * declaration string.
  * @example
  * extractSpecifiersInsideBraces('import { A, type B } from "mod";')
  * // Returns "A, type B"
  */
 function extractSpecifiersInsideBraces(matchText: string): string | null {
-  // Match ` from ` followed by a quote to avoid matching "from" inside identifiers
-  // (e.g., `transformFrom`)
+  // Match ` from ` followed by a quote to avoid matching "from" inside
+  // identifiers (e.g., `transformFrom`)
   const fromIndex = matchText.search(/\sfrom\s+['"`]/);
   if (fromIndex < 0) return null;
   const beforeFrom = matchText.slice(0, fromIndex);
@@ -228,8 +230,8 @@ function normalizeSpecifier(specifier: string): string {
 }
 
 /**
- * Parses a named import specifier list, separating runtime and type-only
- * names. Handles inline `type` modifiers.
+ * Parses a named import specifier list, separating runtime and type-only names.
+ * Handles inline `type` modifiers.
  * @example
  * parseNamedSpecifiers("A, type B, C as D")
  * // Returns { runtime: ["A", "C as D"], typeOnly: ["B"] }
@@ -259,8 +261,8 @@ function parseNamedSpecifiers(inside: string): ParsedSpecifiers {
 }
 
 /**
- * Parses a type-only import specifier list (from `import type { ... }`).
- * All specifiers are assumed to be type-only.
+ * Parses a type-only import specifier list (from `import type { ... }`). All
+ * specifiers are assumed to be type-only.
  */
 function parseTypeOnlySpecifiers(inside: string): string[] {
   return inside
@@ -403,8 +405,8 @@ function buildHoistedImports(
  *
  * The specifier list is re-emitted on one line per kind, which deliberately
  * discards the author's original wrapping; any import-attributes clause is
- * carried through verbatim. Restoring the original text here is not the fix
- * for an over-width line.
+ * carried through verbatim. Restoring the original text here is not the fix for
+ * an over-width line.
  */
 function buildRemainingImport(
   remainingRuntime: string[],
@@ -517,8 +519,8 @@ export function mergeImports(
 
   const hoisted = buildHoistedImports(valueNamed, typeNamed);
 
-  // Rewrite originals, retaining only untransformed specifiers.
-  // Removed declarations leave a semicolon marker for the cleanup pass.
+  // Rewrite originals, retaining only untransformed specifiers. Removed
+  // declarations leave a semicolon marker for the cleanup pass.
   let body = content;
 
   const replaceImportDeclarations = (pattern: RegExp, isTypeOnly: boolean) => {
@@ -613,9 +615,9 @@ function insertSorted(array: string[], value: string): void {
 
 /**
  * Computes topological order of a group's members based on internal imports.
- * Files that import other files are placed after their dependencies.
- * Uses Kahn's algorithm with lexical tie-breaker for determinism.
- * Falls back to lexicographic order if a cycle is detected.
+ * Files that import other files are placed after their dependencies. Uses
+ * Kahn's algorithm with lexical tie-breaker for determinism. Falls back to
+ * lexicographic order if a cycle is detected.
  */
 function computeTopologicalOrder(
   files: Record<string, SourceFile>,
@@ -739,8 +741,8 @@ function getStyleKey(dep: StyleDependency): string {
 }
 
 /**
- * Merges multiple style dependency arrays, deduplicating by identity.
- * Returns undefined if no styles remain.
+ * Merges multiple style dependency arrays, deduplicating by identity. Returns
+ * undefined if no styles remain.
  */
 function mergeStyles(
   ...lists: Array<StyleDependency[] | undefined>
@@ -812,9 +814,8 @@ function parseNamespaceTypeImport(stmt: string): [string, string] | null {
 }
 
 /**
- * Hoists import declarations to the top of the content.
- * Deduplicates namespace imports where a value import makes a type import
- * redundant.
+ * Hoists import declarations to the top of the content. Deduplicates namespace
+ * imports where a value import makes a type import redundant.
  */
 export function hoistImports(content: string): string {
   const imports = new Set<string>();

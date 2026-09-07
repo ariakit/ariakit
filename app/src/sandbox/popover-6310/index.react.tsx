@@ -5,8 +5,8 @@ import { useRef } from "react";
 //
 // Reproduces a portaled popover whose content starts with a non-focusable
 // element (the common custom file upload pattern: a `display: none`
-// `<input type="file">` followed by a visible "Choose file" button).
-// To see the bug:
+// `<input type="file">` followed by a visible "Choose file" button). To see the
+// bug:
 //   1. Click "Attachments": the popover opens and "Choose file" is focused
 //      (correct).
 //   2. Click "Attachments" again to close the popover. Closing moves focus to

@@ -78,10 +78,10 @@ export const useHovercardDisclosure = createHook<
         if (anchor && contains(anchor, nextActiveElement)) return;
         if (popover && contains(popover, nextActiveElement)) return;
         if (disclosure && contains(disclosure, nextActiveElement)) return;
-        // When the portal prop is set to true on the Hovercard component,
-        // it's going to render focus trap elements outside of the portal.
-        // These elements may transfer focus to the disclosure button, so we
-        // also ignore them here.
+        // When the portal prop is set to true on the Hovercard component, it's
+        // going to render focus trap elements outside of the portal. These
+        // elements may transfer focus to the disclosure button, so we also
+        // ignore them here.
         if (
           isElement(nextActiveElement) &&
           nextActiveElement.hasAttribute("data-focus-trap")
@@ -111,8 +111,8 @@ export const useHovercardDisclosure = createHook<
   const onClickProp = props.onClick;
 
   // By default, hovercards don't receive focus when they are shown. When the
-  // disclosure element is clicked, though, we want it to behave like a
-  // popover, so we set the autoFocusOnShow prop to true.
+  // disclosure element is clicked, though, we want it to behave like a popover,
+  // so we set the autoFocusOnShow prop to true.
   const onClick = useEvent((event: MouseEvent<HTMLType>) => {
     onClickProp?.(event);
     if (event.defaultPrevented) return;

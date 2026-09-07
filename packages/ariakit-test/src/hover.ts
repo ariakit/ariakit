@@ -14,13 +14,13 @@ function isPointerEventsEnabled(element: Element) {
 
 /**
  * Moves the pointer over an element, simulating a real user hovering it. Fires
- * the relevant `pointer`/`mouse` enter, over, and move events, and dispatches the
- * matching leave events on the previously hovered element.
+ * the relevant `pointer`/`mouse` enter, over, and move events, and dispatches
+ * the matching leave events on the previously hovered element.
  *
- * Hidden elements and elements with `pointer-events: none` are handled the way a
- * browser would. Pass `options` to set event properties such as modifier keys.
- * The pointer events report `pressure: 0`, or `0.5` when you pass `buttons` to
- * describe a move with a button held down, as during a drag.
+ * Hidden elements and elements with `pointer-events: none` are handled the way
+ * a browser would. Pass `options` to set event properties such as modifier
+ * keys. The pointer events report `pressure: 0`, or `0.5` when you pass
+ * `buttons` to describe a move with a button held down, as during a drag.
  * @example
  * ```ts
  * await hover(q.button("More options"));
@@ -64,8 +64,8 @@ export function hover(element: Element | null, options?: PointerEventInit) {
       }
     }
 
-    // Settle between leaving the previously hovered element and entering the new
-    // one — a cheap settle covers the transition's microtask/rAF work.
+    // Settle between leaving the previously hovered element and entering the
+    // new one — a cheap settle covers the transition's microtask/rAF work.
     await settle();
 
     if (pointerEventsEnabled) {

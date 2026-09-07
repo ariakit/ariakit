@@ -2,8 +2,8 @@ import { click, dispatch, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // Number inputs don't expose the text selection API that the type() utility
-// relies on, so fire the input events the browser produces while the user
-// edits the field.
+// relies on, so fire the input events the browser produces while the user edits
+// the field.
 async function setValue(input: HTMLElement, value: string) {
   const inputType = value ? "insertText" : "deleteContentBackward";
   await dispatch.input(input, { target: { value }, inputType });

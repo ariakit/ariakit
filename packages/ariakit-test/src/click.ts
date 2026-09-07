@@ -170,11 +170,11 @@ async function clickOption(
  * (e.g. `{ shiftKey: true }`).
  *
  * Pass `button` to click with another mouse button. Activation behavior runs on
- * `click`, so a non-primary button fires `auxclick` instead and doesn't activate
- * labels or `option` elements, and the secondary button also fires `contextmenu`
- * while it's held down. Each step derives `buttons` from that button, so an
- * explicit `buttons` is ignored here; `mouseDown` and `mouseUp` accept one to
- * describe a chorded gesture.
+ * `click`, so a non-primary button fires `auxclick` instead and doesn't
+ * activate labels or `option` elements, and the secondary button also fires
+ * `contextmenu` while it's held down. Each step derives `buttons` from that
+ * button, so an explicit `buttons` is ignored here; `mouseDown` and `mouseUp`
+ * accept one to describe a chorded gesture.
  * @example
  * ```ts
  * await click(q.button("Submit"));
@@ -199,8 +199,8 @@ export function click(
     await hover(element, getHoverOptions(stepOptions));
     await mouseDown(element, stepOptions);
 
-    // The element may be hidden after hover/mouseDown, so we need to check again
-    // and find the first visible parent.
+    // The element may be hidden after hover/mouseDown, so we need to check
+    // again and find the first visible parent.
     while (!isVisible(element)) {
       if (!element.parentElement) return;
       element = element.parentElement;
@@ -212,9 +212,10 @@ export function click(
     }
 
     if (!tap) {
-      // Press-and-release dwell between mouseDown and mouseUp: let work scheduled
-      // on pointer/mouse down flush (microtask/rAF) before releasing, without a
-      // wall-clock delay. The final settle below keeps the real timer.
+      // Press-and-release dwell between mouseDown and mouseUp: let work
+      // scheduled on pointer/mouse down flush (microtask/rAF) before releasing,
+      // without a wall-clock delay. The final settle below keeps the real
+      // timer.
       await settle();
     }
 

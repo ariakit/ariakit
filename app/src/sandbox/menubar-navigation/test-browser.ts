@@ -196,8 +196,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // item, while that store lives on in the menubar's provider. That stale move
   // and that active item are the container-focus request being replayed.
   // Focusing a menubar item doesn't record a move, so opening one alone doesn't
-  // arm this.
-  // https://github.com/ariakit/ariakit/issues/7360
+  // arm this. https://github.com/ariakit/ariakit/issues/7360
   test("keeps focus on the menu item when the shared menu is mounted again", async ({
     page,
     q,

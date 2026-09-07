@@ -1,10 +1,10 @@
 import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// Each popover has an explicit anchor, so the disclosure element isn't used
-// for positioning. The preserveTabOrder feature, its remaining consumer,
-// takes effect only on non-modal portals, so disclosure element updates must
-// not re-render a modal popover, a plain non-portaled popover, or a portal with
+// Each popover has an explicit anchor, so the disclosure element isn't used for
+// positioning. The preserveTabOrder feature, its remaining consumer, takes
+// effect only on non-modal portals, so disclosure element updates must not
+// re-render a modal popover, a plain non-portaled popover, or a portal with
 // preserveTabOrder disabled. Browser duplicate in test-chrome-firefox.ts.
 test.each([
   {

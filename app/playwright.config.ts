@@ -82,10 +82,10 @@ export default defineConfig({
             launchOptions: {
               args: ["--enable-precise-memory-info"],
             },
-            // Fail a wedged navigation fast instead of letting it consume
-            // the whole test budget; healthy CI page loads finish in a few
-            // seconds. Iteration contexts bound their navigations the same
-            // way in ariakit-scripts perf.ts.
+            // Fail a wedged navigation fast instead of letting it consume the
+            // whole test budget; healthy CI page loads finish in a few seconds.
+            // Iteration contexts bound their navigations the same way in
+            // ariakit-scripts perf.ts.
             navigationTimeout: 30_000,
             // Tracing a retried attempt would add overhead to the retried
             // measurement and distort its metrics.
@@ -96,8 +96,8 @@ export default defineConfig({
           retries: 1,
           // Script-profile tests do over 100s of real work on slow runners.
           // This is headroom over observed durations, not a hang allowance:
-          // navigations are bounded above. CI perf runs pass the same value
-          // via --timeout in perf.yml (PLAYWRIGHT_TEST_TIMEOUT), which takes
+          // navigations are bounded above. CI perf runs pass the same value via
+          // --timeout in perf.yml (PLAYWRIGHT_TEST_TIMEOUT), which takes
           // precedence, so keep the two in sync.
           timeout: 180_000,
         },
@@ -126,8 +126,8 @@ export default defineConfig({
             ...devices["Desktop Safari"],
             launchOptions: {
               slowMo,
-              // Healthy macOS CI launches complete initial page setup within
-              // 24 seconds; fail a wedged WebKit process without waiting for
+              // Healthy macOS CI launches complete initial page setup within 24
+              // seconds; fail a wedged WebKit process without waiting for
               // Playwright's three-minute default.
               timeout: CI ? 45_000 : undefined,
             },

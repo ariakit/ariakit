@@ -16,8 +16,8 @@ test("does not attach an inline portalRef to the removed node when the portal pr
   expect(q.text("Inline portal attach connected: yes")).toBeVisible();
 
   await click(q.button("Disable inline portal"));
-  // The content is rendered in place once the portal is disabled, and the
-  // new inline portalRef must not have fired against the removed node.
+  // The content is rendered in place once the portal is disabled, and the new
+  // inline portalRef must not have fired against the removed node.
   expect(q.text("Inline portal content")).toBeVisible();
   expect(q.text("Inline portal attach connected: yes")).toBeVisible();
 });

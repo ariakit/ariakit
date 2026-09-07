@@ -4,8 +4,7 @@ import { expect, test } from "vitest";
 // Modal dialogs keep the fallback dismiss button so that screen reader users
 // aren't trapped in them. It renders next to the dialog rather than inside it,
 // so a dialog element whose role doesn't allow a `button` among its owned
-// elements doesn't get one.
-// https://github.com/ariakit/ariakit/issues/4270
+// elements doesn't get one. https://github.com/ariakit/ariakit/issues/4270
 // https://github.com/ariakit/ariakit/issues/7310
 test("modal dialog without a dismiss element gets a hidden one", async () => {
   await click(q.button("Terms"));

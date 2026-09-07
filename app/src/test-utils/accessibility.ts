@@ -15,8 +15,8 @@ async function createTreeReader(page: Page) {
 }
 
 /**
- * Returns a function that reads the menu node from Chromium's own
- * accessibility tree, with its accessible name and the roles it owns.
+ * Returns a function that reads the menu node from Chromium's own accessibility
+ * tree, with its accessible name and the roles it owns.
  */
 export async function createMenuAccessibilityReader(page: Page) {
   const readNodes = await createTreeReader(page);
@@ -25,8 +25,8 @@ export async function createMenuAccessibilityReader(page: Page) {
     const menu = nodes.find(
       (node) => node.role?.value === "menu" && !node.ignored,
     );
-    // Returning null instead of throwing keeps `expect.poll` retrying, since
-    // it evaluates the value function outside of its own try/catch.
+    // Returning null instead of throwing keeps `expect.poll` retrying, since it
+    // evaluates the value function outside of its own try/catch.
     if (!menu) return null;
     const nodeById = new Map(nodes.map((node) => [node.nodeId, node]));
     const children =

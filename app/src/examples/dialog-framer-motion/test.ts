@@ -20,8 +20,8 @@ test("show/hide on click", async () => {
 });
 
 test("prevent body scroll", async () => {
-  // jsdom reports a space-consuming scrollbar and supports
-  // scrollbar-gutter, so the scroll lock lands on the html element.
+  // jsdom reports a space-consuming scrollbar and supports scrollbar-gutter, so
+  // the scroll lock lands on the html element.
   const { documentElement } = document;
   const lockStyle =
     "scrollbar-gutter: stable; overflow-x: hidden; overflow-y: hidden";

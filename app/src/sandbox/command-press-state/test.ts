@@ -40,9 +40,9 @@ test("data-active is cleared when focus leaves while Space is held", async () =>
   expect(command).toHaveAttribute("data-active");
 
   // Clicking elsewhere while Space is still held moves focus to the body, so
-  // the keyup lands there and never reaches the command. Losing focus
-  // mid-press must cancel the press, like a native button, instead of leaving
-  // the element stuck looking pressed.
+  // the keyup lands there and never reaches the command. Losing focus mid-press
+  // must cancel the press, like a native button, instead of leaving the element
+  // stuck looking pressed.
   await click(q.text("Outside text"));
   expect(command).not.toHaveFocus();
   expect(command).not.toHaveAttribute("data-active");

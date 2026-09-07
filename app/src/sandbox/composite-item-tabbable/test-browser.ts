@@ -9,8 +9,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("Tab");
     await test.expect(q.option("Starred")).toBeFocused();
 
-    // The containerless store never gets a composite element, so its items
-    // must keep roving tabindex and skip straight to the next widget.
+    // The containerless store never gets a composite element, so its items must
+    // keep roving tabindex and skip straight to the next widget.
     await page.keyboard.press("Tab");
     await test.expect(q.listbox("Virtual focus")).toBeFocused();
 

@@ -27,9 +27,9 @@ function getFrameworkTestIncludes(framework: Framework) {
     const dir = dirname(file);
     return [`${dir}/test.{ts,tsx}`, `${dir}/${framework}.test.{ts,tsx}`];
   });
-  // The first glob covers framework packages except explicit DOM overrides.
-  // The second picks up framework-marked test files in any other package,
-  // like ariakit-test.
+  // The first glob covers framework packages except explicit DOM overrides. The
+  // second picks up framework-marked test files in any other package, like
+  // ariakit-test.
   return [
     `packages/ariakit-${framework}*/src/**/{test,!(*.dom).test}.{ts,tsx}`,
     `packages/*/src/**/*${framework}.test.{ts,tsx}`,

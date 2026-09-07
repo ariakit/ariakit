@@ -31,16 +31,16 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   const open = Ariakit.useStoreState(menu, "open");
   const autoFocusOnShow = Ariakit.useStoreState(menu, "autoFocusOnShow");
 
-  // By default, submenus don't automatically receive focus when they open.
-  // But here we want them to always receive focus.
+  // By default, submenus don't automatically receive focus when they open. But
+  // here we want them to always receive focus.
   React.useLayoutEffect(() => {
     if (!autoFocusOnShow) {
       menu.setAutoFocusOnShow(true);
     }
   }, [autoFocusOnShow, menu]);
 
-  // We only want to delay hiding the menu, so we immediately stop the
-  // animation when it's opening.
+  // We only want to delay hiding the menu, so we immediately stop the animation
+  // when it's opening.
   React.useLayoutEffect(() => {
     if (open) {
       menu.stopAnimation();
@@ -71,10 +71,9 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
         const scrollLeft = Math.abs(parentWrapper.scrollLeft);
         const wrapperOffset = scrollLeft + parentWrapper.clientWidth;
         if (wrapperOffset <= parent.getOffsetRight()) {
-          // Since the submenu is not visible anymore at this point, we want
-          // to hide it completely right away. That's why we syncrhonously
-          // hide it and immediately stops the animation so it's completely
-          // unmounted.
+          // Since the submenu is not visible anymore at this point, we want to
+          // hide it completely right away. That's why we syncrhonously hide it
+          // and immediately stops the animation so it's completely unmounted.
           flushSync(menu.hide);
           menu.stopAnimation();
         }

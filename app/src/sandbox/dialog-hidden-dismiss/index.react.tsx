@@ -140,13 +140,13 @@ export default function Example() {
   );
 }
 
-// The state lives below the dialog, the way content that loads on its own
-// does, so that mounting the dismiss control doesn't render the dialog again.
+// The state lives below the dialog, the way content that loads on its own does,
+// so that mounting the dismiss control doesn't render the dialog again.
 // https://github.com/ariakit/ariakit/issues/7321
 function ActivityBody() {
   const [loaded, setLoaded] = useState(false);
-  // The wrapper outlives the state change, so the dismiss control appears
-  // below the dialog's own children rather than among them.
+  // The wrapper outlives the state change, so the dismiss control appears below
+  // the dialog's own children rather than among them.
   return (
     <div>
       {loaded ? (

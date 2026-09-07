@@ -80,8 +80,8 @@ test("runs animation frame callbacks as a spec-compliant batch", async () => {
 
 test("gives mouse and pointer events the browser's modifier state and x/y", () => {
   // These hold natively in browsers and jsdom (see shims.jsdom.test.ts), so the
-  // assertions are not guarded by `isBrowser`. Dispatching without going through
-  // `dispatch` reaches only the environment shim.
+  // assertions are not guarded by `isBrowser`. Dispatching without going
+  // through `dispatch` reaches only the environment shim.
   const button = document.createElement("button");
   document.body.append(button);
   const received: MouseEvent[] = [];
@@ -124,9 +124,10 @@ test("gives mouse and pointer events the browser's modifier state and x/y", () =
       [false, false, true, true, 0, 0],
       [true, false, true, false, 0, 0],
     ]);
-    // An unrecognized key reports false, the way browsers do. `Object.prototype`
-    // member names are the interesting case: looking them up on a plain object
-    // literal finds an inherited value and reports something other than false.
+    // An unrecognized key reports false, the way browsers do.
+    // `Object.prototype` member names are the interesting case: looking them up
+    // on a plain object literal finds an inherited value and reports something
+    // other than false.
     expect(received[0]?.getModifierState("constructor")).toBe(false);
     expect(received[0]?.getModifierState("Nope")).toBe(false);
   } finally {
@@ -136,8 +137,8 @@ test("gives mouse and pointer events the browser's modifier state and x/y", () =
 
 test("gives keyboard events the browser's exact modifier state", () => {
   // These hold natively in browsers and jsdom (see shims.jsdom.test.ts), so the
-  // assertions are not guarded by `isBrowser`. Dispatching without going through
-  // `press` or `dispatch.keyDown` reaches only the environment shim.
+  // assertions are not guarded by `isBrowser`. Dispatching without going
+  // through `press` or `dispatch.keyDown` reaches only the environment shim.
   const input = document.createElement("input");
   document.body.append(input);
   const received: KeyboardEvent[] = [];
@@ -172,11 +173,11 @@ test("gives keyboard events the browser's exact modifier state", () => {
     expect(received[0]?.getModifierState("alt")).toBe(false);
     expect(received[1]?.getModifierState("altgraph")).toBe(false);
     expect(received[2]?.getModifierState("shift")).toBe(false);
-    // An unrecognized name reports false, the way browsers do. `Object.prototype`
-    // member names are the interesting case: looking them up on a plain object
-    // literal finds an inherited value and reports something other than false.
-    // This event has recorded members, so the name reaches the recorded set
-    // rather than stopping at the standard-flag lookup.
+    // An unrecognized name reports false, the way browsers do.
+    // `Object.prototype` member names are the interesting case: looking them up
+    // on a plain object literal finds an inherited value and reports something
+    // other than false. This event has recorded members, so the name reaches
+    // the recorded set rather than stopping at the standard-flag lookup.
     expect(received[2]?.getModifierState("constructor")).toBe(false);
     expect(received[2]?.getModifierState("Nope")).toBe(false);
   } finally {
@@ -297,11 +298,11 @@ test("cancels a not-yet-run animation frame callback within the same frame", asy
 test("runs the listener for a click dispatched on a disabled button", async () => {
   if (isBrowser) return;
   // happy-dom drops a scripted click on a disabled <button>/<input> entirely.
-  // jsdom and real browsers (verified on Chromium, Firefox, and WebKit) still run
-  // the listeners — only clicks queued from a real user interaction are barred. A
-  // plain button has no activation behavior, so the click just reaches the
-  // listener (the case PR #6271 needed for a disabled `Command`). `dispatch`
-  // normalizes that (see dispatch.ts).
+  // jsdom and real browsers (verified on Chromium, Firefox, and WebKit) still
+  // run the listeners — only clicks queued from a real user interaction are
+  // barred. A plain button has no activation behavior, so the click just
+  // reaches the listener (the case PR #6271 needed for a disabled `Command`).
+  // `dispatch` normalizes that (see dispatch.ts).
   const button = document.createElement("button");
   button.disabled = true;
   let buttonClicks = 0;
@@ -372,10 +373,10 @@ test("toggles a disabled checkbox in either direction for a scripted click", asy
 
 test("reverts a disabled checkbox toggle in either direction when a click listener prevents it", async () => {
   if (isBrowser) return;
-  // The checkbox is toggled before the click listener runs, so the listener sees
-  // the flipped value; preventDefault() then cancels the activation, restoring
-  // the previous checked state and firing no input/change — matching jsdom and
-  // real browsers. Covers both toggle directions.
+  // The checkbox is toggled before the click listener runs, so the listener
+  // sees the flipped value; preventDefault() then cancels the activation,
+  // restoring the previous checked state and firing no input/change — matching
+  // jsdom and real browsers. Covers both toggle directions.
   for (const initiallyChecked of [false, true]) {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -406,9 +407,9 @@ test("reverts a disabled checkbox toggle in either direction when a click listen
 
 test("clears and restores a disabled checkbox's indeterminate state on a scripted click", async () => {
   if (isBrowser) return;
-  // A scripted click on a disabled indeterminate checkbox clears `indeterminate`
-  // (and toggles `checked`) before the click listener runs; preventDefault()
-  // restores both. Verified on Chromium, Firefox, and WebKit.
+  // A scripted click on a disabled indeterminate checkbox clears
+  // `indeterminate` (and toggles `checked`) before the click listener runs;
+  // preventDefault() restores both. Verified on Chromium, Firefox, and WebKit.
   for (const prevent of [false, true]) {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -534,10 +535,10 @@ test("restores a disabled radio group when a click listener prevents the selecti
 test("restores a disabled radio group linked by the form attribute when prevented", async () => {
   if (isBrowser) return;
   // Radios linked to a form by the `form` attribute (instead of nesting) are
-  // still grouped by happy-dom's `checked` setter at the root node — a scope that
-  // differs from the radio's resolved `form`. The snapshot must cover that scope
-  // so preventDefault restores the previously-selected peer rather than leaving
-  // the whole group unchecked.
+  // still grouped by happy-dom's `checked` setter at the root node — a scope
+  // that differs from the radio's resolved `form`. The snapshot must cover that
+  // scope so preventDefault restores the previously-selected peer rather than
+  // leaving the whole group unchecked.
   const form = document.createElement("form");
   form.id = "radio-group-form";
   const selected = document.createElement("input");
@@ -565,10 +566,10 @@ test("restores a disabled radio group linked by the form attribute when prevente
 
 test("reverts only the activation's changes, preserving listener changes to other radios", async () => {
   if (isBrowser) return;
-  // A prevented click reverts only what the activation changed (the clicked radio
-  // and the peer it unchecked), not state a listener changes during the click. A
-  // same-name radio in another scope (a separate group) is flipped by the
-  // listener here and must keep the listener's value after preventDefault.
+  // A prevented click reverts only what the activation changed (the clicked
+  // radio and the peer it unchecked), not state a listener changes during the
+  // click. A same-name radio in another scope (a separate group) is flipped by
+  // the listener here and must keep the listener's value after preventDefault.
   const form = document.createElement("form");
   const selected = document.createElement("input");
   const clicked = document.createElement("input");
@@ -580,8 +581,8 @@ test("reverts only the activation's changes, preserving listener changes to othe
   outside.name = "pick";
   form.append(selected, clicked);
   document.body.append(form, outside);
-  // Select the out-of-form radio first (its root-wide scope would otherwise clear
-  // the in-form one), then the in-form radio, leaving both selected.
+  // Select the out-of-form radio first (its root-wide scope would otherwise
+  // clear the in-form one), then the in-form radio, leaving both selected.
   outside.checked = true;
   selected.checked = true;
   clicked.addEventListener("click", (event) => {
@@ -603,7 +604,8 @@ test("doesn't submit or reset a form from a click on a disabled submit/reset con
   if (isBrowser) return;
   // Real browsers run the click listeners for a scripted click on a disabled
   // submit/reset control but skip its form-activation behavior — the form is
-  // neither submitted nor reset. happy-dom drops the click for both <button> and
+  // neither submitted nor reset. happy-dom drops the click for both <button>
+  // and
   // <input> through separate per-class dispatchEvent overrides, so cover both.
   // Verified on Chromium, Firefox, and WebKit.
   const form = document.createElement("form");

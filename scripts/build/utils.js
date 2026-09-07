@@ -129,8 +129,7 @@ function normalizePath(filePath) {
 }
 
 /**
- * Filters out files starting with __
- * Includes directories and TS/JS files.
+ * Filters out files starting with __ Includes directories and TS/JS files.
  * @param {string} rootPath
  * @param {string} filename
  */

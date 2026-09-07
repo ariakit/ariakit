@@ -15,8 +15,8 @@ export function useCheckboxStoreProps<T extends Core.CheckboxStore>(
 }
 
 /**
- * Creates a checkbox store to conveniently manage a checkbox value,
- * whether it's a string, number, boolean, or an array of strings or numbers.
+ * Creates a checkbox store to conveniently manage a checkbox value, whether
+ * it's a string, number, boolean, or an array of strings or numbers.
  * @see https://ariakit.com/components/checkbox
  * @example
  * ```jsx

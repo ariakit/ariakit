@@ -77,10 +77,10 @@ export interface DialogHeadingOptions<
    * Object returned by the
    * [`useDialogStore`](https://ariakit.com/reference/use-dialog-store) hook.
    *
-   * **Note**: This prop has no effect on this component. The heading is
-   * linked to the closest [`Dialog`](https://ariakit.com/reference/dialog)
-   * component through React context, so it must be rendered inside the dialog
-   * for the `aria-labelledby` prop to be set on the dialog element.
+   * **Note**: This prop has no effect on this component. The heading is linked
+   * to the closest [`Dialog`](https://ariakit.com/reference/dialog) component
+   * through React context, so it must be rendered inside the dialog for the
+   * `aria-labelledby` prop to be set on the dialog element.
    */
   store?: DialogStore;
 }

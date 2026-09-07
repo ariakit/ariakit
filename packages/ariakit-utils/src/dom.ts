@@ -156,8 +156,8 @@ export function getActiveElement(
     ? (activeElementGetter.call(ownerDocument) as Element | null)
     : ownerDocument.activeElement;
   if (!activeElement?.nodeName) {
-    // In IE11, activeElement might be an empty object if we're interacting
-    // with elements inside of an iframe.
+    // In IE11, activeElement might be an empty object if we're interacting with
+    // elements inside of an iframe.
     return null;
   }
   if (frame && isFrame(activeElement) && activeElement.contentDocument?.body) {

@@ -37,10 +37,10 @@ const popoverStyle = {
  *   composite element, so nothing can scroll the page.
  * - The `Combobox` element rendered inside the popup instead of next to the
  *   select. It's the composite element focus is redirected to, and keeping it
- *   in the popup is what leaves the popup's initial focus unresolved so an
- *   item is focused first.
- * - `unmountOnHide`, so that element only mounts as the popup opens. Without
- *   it the popup is already positioned by then and the bug doesn't reproduce.
+ *   in the popup is what leaves the popup's initial focus unresolved so an item
+ *   is focused first.
+ * - `unmountOnHide`, so that element only mounts as the popup opens. Without it
+ *   the popup is already positioned by then and the bug doesn't reproduce.
  */
 function BranchSelect() {
   const [searchValue, setSearchValue] = useState("");
@@ -114,13 +114,14 @@ interface SelfFocusingBranchSelectProps {
 }
 
 /**
- * The {@link BranchSelect} shape, with an option that focuses itself, in the two
- * arrangements that decide what the composite element is when that focus lands.
+ * The {@link BranchSelect} shape, with an option that focuses itself, in the
+ * two arrangements that decide what the composite element is when that focus
+ * lands.
  *
- * With a select trigger, the trigger is the composite element while the popup is
- * unmounted and the search field takes over once it mounts. Without one, nothing
- * is the composite element until the search field registers, which is a commit
- * after the option's mount effect has already run.
+ * With a select trigger, the trigger is the composite element while the popup
+ * is unmounted and the search field takes over once it mounts. Without one,
+ * nothing is the composite element until the search field registers, which is a
+ * commit after the option's mount effect has already run.
  *
  * Either way the popup is still at its pre-placement origin when the composite
  * gets its focus back, and the page moves and stays moved.
@@ -129,8 +130,8 @@ interface SelfFocusingBranchSelectProps {
  * reproduce this. See https://github.com/ariakit/ariakit/issues/6623
  *
  * Two things keep this distinct from {@link BranchSelect} and must not be
- * "restored" to match it: `autoFocusOnShow={false}`, which lets the option's own
- * mount focus win over the dialog's initial focus, and the absence of
+ * "restored" to match it: `autoFocusOnShow={false}`, which lets the option's
+ * own mount focus win over the dialog's initial focus, and the absence of
  * `defaultSelectedValue`, which keeps the store from resolving a selected item
  * that would mask that focus.
  */

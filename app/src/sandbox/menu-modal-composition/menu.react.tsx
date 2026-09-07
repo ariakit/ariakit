@@ -44,7 +44,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   // 1. They are nested in the React tree.
   // 2. They are appended to the body element after the parent dialog is opened.
   // 3. They are referenced in the getPersistentElements prop of the parent
-  //     dialog.
+  //    dialog.
   //
   // By dynamically mounting the menu popover using the mounted state, we're
   // relying on (2). This ensures parent menus won't close when we interact with
@@ -101,8 +101,8 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
                 disclosure &&
                 nativeEvent.composedPath().includes(disclosure)
               ) {
-                // The disclosure isn't in the menu's React subtree, so the
-                // menu can't stop the event at its own boundary.
+                // The disclosure isn't in the menu's React subtree, so the menu
+                // can't stop the event at its own boundary.
                 event.stopPropagation();
               }
               return true;

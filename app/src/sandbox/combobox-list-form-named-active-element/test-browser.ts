@@ -11,8 +11,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const focusHistory = q.status("Focus history");
     await test.expect(focusHistory).toHaveText("none");
 
-    // Click the list's own padding band. A centered click would land on an
-    // item and exercise the composite item redirect instead of the list one.
+    // Click the list's own padding band. A centered click would land on an item
+    // and exercise the composite item redirect instead of the list one.
     await q.listbox("Fruit options").click({ position: { x: 8, y: 8 } });
 
     await test.expect(focusHistory).toHaveText("list → combobox");

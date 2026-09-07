@@ -14,8 +14,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // Focus is asserted only at the end, so the presentation assertion above it
   // still runs against the unfixed behavior instead of being skipped by an
-  // earlier failure.
-  // https://github.com/ariakit/ariakit/issues/7068
+  // earlier failure. https://github.com/ariakit/ariakit/issues/7068
   test("presents options that arrive after the open", async ({ page, q }) => {
     await page.keyboard.press("F2");
     await test.expect(q.listbox()).toBeVisible();
@@ -91,8 +90,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     await page.keyboard.press("F2");
     await test.expect(q.combobox("Vegetable")).toBeFocused();
-    // The presentation is still waiting for its target, which is what makes
-    // the focus move below an abandonment rather than a no-op.
+    // The presentation is still waiting for its target, which is what makes the
+    // focus move below an abandonment rather than a no-op.
     await test.expect(q.option("Onion")).toHaveCount(0);
 
     await q.textbox("Note").click();

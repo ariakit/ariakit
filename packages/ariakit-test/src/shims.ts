@@ -84,10 +84,10 @@ function applyBrowserShims() {
     window.alert = () => {};
   }
 
-  // happy-dom diverges from real browsers in a few spec-conformance areas; these
-  // shims patch them for the whole test environment (jsdom already behaves
-  // correctly). Each helper returns a function that restores the original
-  // behavior.
+  // happy-dom diverges from real browsers in a few spec-conformance areas;
+  // these shims patch them for the whole test environment (jsdom already
+  // behaves correctly). Each helper returns a function that restores the
+  // original behavior.
   const restoreHappyDOMShims = isHappyDOM()
     ? [
         patchHappyDOMFormData(),
@@ -135,8 +135,7 @@ const initOnlyModifierMembers = new Map<string, keyof EventModifierInit>([
 // aliases of `clientX`/`clientY`, which browsers and jsdom provide. A named
 // dispatcher installs both while initializing the event, so only events the
 // caller built reached listeners without them. PointerEvent extends MouseEvent
-// and inherits this patch.
-// https://github.com/ariakit/ariakit/issues/7156
+// and inherits this patch. https://github.com/ariakit/ariakit/issues/7156
 // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/getModifierState
 // https://drafts.csswg.org/cssom-view/#dom-mouseevent-x
 function polyfillMouseEventMembers() {
@@ -146,9 +145,9 @@ function polyfillMouseEventMembers() {
   if (typeof prototype.getModifierState !== "function") {
     // happy-dom's constructor keeps only the standard flags and drops the
     // `modifier*` init members, so this fallback can never report the others.
-    // https://github.com/ariakit/ariakit/issues/7165
-    // Plain assignment matches the writable, enumerable, configurable
-    // descriptor browsers and jsdom give this method.
+    // https://github.com/ariakit/ariakit/issues/7165 Plain assignment matches
+    // the writable, enumerable, configurable descriptor browsers and jsdom give
+    // this method.
     prototype.getModifierState = function getModifierState(
       this: MouseEvent,
       key: string,
@@ -331,9 +330,9 @@ function patchHappyDOMAnimationFrame() {
     flushScheduled = false;
     // Snapshot only the handles registered before this frame; a callback added
     // during the flush keeps its entry in `pending` and runs on the next frame.
-    // Re-read each handle from the live map and remove it right before invoking,
-    // so a callback can still cancel another not-yet-run callback in the same
-    // frame (`cancelAnimationFrame` deletes from this same map).
+    // Re-read each handle from the live map and remove it right before
+    // invoking, so a callback can still cancel another not-yet-run callback in
+    // the same frame (`cancelAnimationFrame` deletes from this same map).
     const handles = Array.from(pending.keys());
     const timestamp = window.performance.now();
     for (const handle of handles) {

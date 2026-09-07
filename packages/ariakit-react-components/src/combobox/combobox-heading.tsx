@@ -53,8 +53,8 @@ export interface ComboboxHeadingOptions<
    * hook.
    *
    * **Note**: This prop has no effect on this component. The heading is linked
-   * to the closest [`ComboboxList`](https://ariakit.com/reference/combobox-list)
-   * or
+   * to the closest
+   * [`ComboboxList`](https://ariakit.com/reference/combobox-list) or
    * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
    * component through React context.
    */

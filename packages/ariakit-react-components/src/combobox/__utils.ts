@@ -69,8 +69,8 @@ function centerItemInScrollport(element: HTMLElement, scrollport: HTMLElement) {
     (elementRightOutside &&
       !elementLeftOutside &&
       elementRect.width < scrollportWidth);
-  // Preserve native inline-nearest behavior without scrolling ancestors
-  // outside the popup.
+  // Preserve native inline-nearest behavior without scrolling ancestors outside
+  // the popup.
   let left = 0;
   if (alignLeft) {
     left = (elementRect.left - scrollportLeft) / scaleX;

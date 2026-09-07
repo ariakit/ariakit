@@ -225,9 +225,9 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       // A select-shaped popup takes focus on every open, including a default or
       // programmatic one: showing it is a request to interact with it, and
       // leaving focus behind would strand the user outside an open listbox.
-      // https://github.com/ariakit/ariakit/issues/7068
-      // Keep this a boolean, since a callback would always be truthy and defeat
-      // the dialog's early-out for popups that take no focus at all.
+      // https://github.com/ariakit/ariakit/issues/7068 Keep this a boolean,
+      // since a callback would always be truthy and defeat the dialog's
+      // early-out for popups that take no focus at all.
       autoFocusOnShow: hasSelect,
       initialFocus: hasSelect ? inputElement : undefined,
       finalFocus: selectElement || compositeElement,
@@ -344,8 +344,8 @@ export interface ComboboxPopoverOptions<T extends ElementType = TagName>
    * combobox item that starts with the entered characters.
    *
    * Defaults to `false` when a
-   * [`ComboboxInput`](https://ariakit.com/reference/combobox-input) is rendered,
-   * and `true` otherwise.
+   * [`ComboboxInput`](https://ariakit.com/reference/combobox-input) is
+   * rendered, and `true` otherwise.
    */
   typeahead?: CompositeTypeaheadOptions<T>["typeahead"];
   /**
@@ -366,8 +366,8 @@ export interface ComboboxPopoverOptions<T extends ElementType = TagName>
   /**
    * Whether the combobox's
    * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
-   * should be restored to what it was before the first item movement when
-   * the popover accepts Escape and the cancelable close event isn't prevented.
+   * should be restored to what it was before the first item movement when the
+   * popover accepts Escape and the cancelable close event isn't prevented.
    * Selection changes made before any item movement become part of the selected
    * value Escape restores.
    *

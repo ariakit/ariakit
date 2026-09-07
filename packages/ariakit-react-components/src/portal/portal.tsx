@@ -28,9 +28,9 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-// Returns the best root element for appending portal nodes. When an element
-// is in fullscreen mode, portals must be appended inside the fullscreen
-// element instead of document.body so they remain visible.
+// Returns the best root element for appending portal nodes. When an element is
+// in fullscreen mode, portals must be appended inside the fullscreen element
+// instead of document.body so they remain visible.
 function getRootElement(element?: Element | null) {
   const doc = getDocument(element);
   const { fullscreenElement } = doc;
@@ -80,8 +80,8 @@ function attachPortalRef(
 }
 
 function detachPortalRef(attached: AttachedPortalRef) {
-  // Preserve React 19 callback ref cleanup semantics. Otherwise, detach the
-  // ref with null like any other React ref.
+  // Preserve React 19 callback ref cleanup semantics. Otherwise, detach the ref
+  // with null like any other React ref.
   if (typeof attached.cleanup === "function") {
     attached.cleanup();
   } else {
@@ -120,8 +120,8 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
   const outerAfterRef = useRef<HTMLSpanElement>(null);
 
   const portalRefProp = useLiveRef(portalRef);
-  // Tracks the currently attached portalRef so the two effects below can
-  // detach and re-attach it without sharing dependencies.
+  // Tracks the currently attached portalRef so the two effects below can detach
+  // and re-attach it without sharing dependencies.
   const attachedPortalRefRef = useRef<AttachedPortalRef | null>(null);
 
   // Create the portal node and attach it to the DOM.
@@ -144,14 +144,14 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
     }
     // If the portal element doesn't have an id already, set one.
     if (!portalEl.id) {
-      // Use the element's id so rendering <Portal id="some-id" /> will
-      // produce predictable results.
+      // Use the element's id so rendering <Portal id="some-id" /> will produce
+      // predictable results.
       portalEl.id = element.id ? `portal/${element.id}` : getRandomId();
     }
-    // Set the internal portal node state and attach the portalRef prop. The
-    // ref is read through a live ref so its identity is not a dependency of
-    // this effect: a portalRef identity change must not recreate the portal
-    // node. The effect below re-fires the ref in that case.
+    // Set the internal portal node state and attach the portalRef prop. The ref
+    // is read through a live ref so its identity is not a dependency of this
+    // effect: a portalRef identity change must not recreate the portal node.
+    // The effect below re-fires the ref in that case.
     setPortalNode(portalEl);
     attachedPortalRefRef.current = attachPortalRef(
       portalRefProp.current,
@@ -195,11 +195,10 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
         rootElement.appendChild(portalNode);
       }
     };
-    // Sync immediately in case fullscreen was entered before this effect
-    // ran, which can happen if the portal mounts while already in
-    // fullscreen mode. Skip when the captured node is already disconnected,
-    // which happens for a StrictMode cleanup node whose layout cleanup
-    // already removed it.
+    // Sync immediately in case fullscreen was entered before this effect ran,
+    // which can happen if the portal mounts while already in fullscreen mode.
+    // Skip when the captured node is already disconnected, which happens for a
+    // StrictMode cleanup node whose layout cleanup already removed it.
     if (portalNode.isConnected) {
       onFullscreenChange();
     }
@@ -225,9 +224,9 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
     };
   }, [portal, preserveTabOrder, preserveTabOrderAnchor]);
 
-  // When preserveTabOrder is true, make sure elements inside the portal
-  // element are tabbable only when the portal has already been focused,
-  // either by tabbing into a focus trap element outside or using the mouse.
+  // When preserveTabOrder is true, make sure elements inside the portal element
+  // are tabbable only when the portal has already been focused, either by
+  // tabbing into a focus trap element outside or using the mouse.
   useEffect(() => {
     if (!portalNode) return;
     if (!preserveTabOrder) return;
@@ -332,9 +331,9 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
               className="__focus-trap-outer-before"
               onFocus={(event) => {
                 // If the event is coming from the outer after focus trap, it
-                // means there's no tabbable element inside the portal. In
-                // this case, we don't focus the inner before focus trap, but
-                // the previous tabbable element outside the portal.
+                // means there's no tabbable element inside the portal. In this
+                // case, we don't focus the inner before focus trap, but the
+                // previous tabbable element outside the portal.
                 const fromOuter = event.relatedTarget === outerAfterRef.current;
                 if (!fromOuter && isFocusEventOutside(event, portalNode)) {
                   queueFocus(innerBeforeRef.current);

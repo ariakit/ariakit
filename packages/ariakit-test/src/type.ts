@@ -33,13 +33,13 @@ function workAroundEmailInput(element: Element) {
 /**
  * Types text into an element, simulating a real user pressing each key. Focuses
  * the element, then for each character fires `keydown`, updates the value and
- * caret position of text fields through an `input` event (preceded by `keypress`
- * when inserting a printable character), and fires `keyup`.
+ * caret position of text fields through an `input` event (preceded by
+ * `keypress` when inserting a printable character), and fires `keyup`.
  *
- * Special characters map to their keys: `"\b"` is Backspace, `"\x7f"` is Delete,
- * `"\n"` is Enter, and `"\t"` is Tab. When no element is passed, the currently
- * focused element is used. Pass `options` to set event properties such as modifier
- * keys or composition state.
+ * Special characters map to their keys: `"\b"` is Backspace, `"\x7f"` is
+ * Delete, `"\n"` is Enter, and `"\t"` is Tab. When no element is passed, the
+ * currently focused element is used. Pass `options` to set event properties
+ * such as modifier keys or composition state.
  * @example
  * ```ts
  * await type("Hello", q.textbox());
@@ -144,8 +144,8 @@ export function type(
       }
 
       // Between keystrokes the component only needs its microtask/rAF-scheduled
-      // work to flush (e.g. a controlled input re-render, combobox re-target), so
-      // a cheap settle keeps typing fast without a per-character wall delay.
+      // work to flush (e.g. a controlled input re-render, combobox re-target),
+      // so a cheap settle keeps typing fast without a per-character wall delay.
       await settle();
 
       await dispatch.keyUp(element, { key, ...options });

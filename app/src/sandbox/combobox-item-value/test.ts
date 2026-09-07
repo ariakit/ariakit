@@ -59,8 +59,8 @@ test("keeps combining marks attached in decomposed item values", async () => {
 });
 
 test("renders a single autocomplete span for normalized-empty input", async () => {
-  // A lone combining mark normalizes to an empty string, which must not
-  // produce highlights but must keep the autocomplete span structure.
+  // A lone combining mark normalizes to an empty string, which must not produce
+  // highlights but must keep the autocomplete span structure.
   await type("\u0301", q.combobox("Search files"));
 
   const option = q.option("notes.txt");

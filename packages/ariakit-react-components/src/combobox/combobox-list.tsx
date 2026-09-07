@@ -139,7 +139,8 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     // Heading hooks publish their id through DialogHeadingContext. Redirecting
     // that setter here makes the heading label this list, whose props take
     // precedence when it shares an element with ComboboxPopover.
-    // ComboboxHeadingContext also exposes the id so nested lists can inherit it.
+    // ComboboxHeadingContext also exposes the id so nested lists can inherit
+    // it.
     props = useWrapElement(
       props,
       (element) => (

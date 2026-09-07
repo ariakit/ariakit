@@ -20,10 +20,9 @@ export interface PerfHelpers {
 }
 
 /**
- * Callback invoked with the iteration's page and a query bound to it. Each
- * perf iteration runs in a fresh browser context, so callbacks must use the
- * helpers they receive instead of closing over the test's fixture `page` or
- * `q`.
+ * Callback invoked with the iteration's page and a query bound to it. Each perf
+ * iteration runs in a fresh browser context, so callbacks must use the helpers
+ * they receive instead of closing over the test's fixture `page` or `q`.
  */
 export type PerfCallback = (helpers: PerfHelpers) => Promise<void> | void;
 
@@ -93,10 +92,10 @@ export const test = base.extend<{
           toPerfMeasureOptions(options),
         ),
     });
-    // Only record results for passing attempts. A failed attempt is retried
-    // in a fresh worker, so appending its partial results (measures that
-    // succeeded before the failure in a multi-measure test) would count them
-    // again when the retry passes and records the full set.
+    // Only record results for passing attempts. A failed attempt is retried in
+    // a fresh worker, so appending its partial results (measures that succeeded
+    // before the failure in a multi-measure test) would count them again when
+    // the retry passes and records the full set.
     const passed = testInfo.status === testInfo.expectedStatus;
     if (passed && results.length > 0) {
       appendResults(results, testInfo);

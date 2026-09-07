@@ -7,9 +7,8 @@ import { expect, test } from "vitest";
 // and a `flushSync` unmount before it, while the simulated events here commit
 // both before that microtask, so those two dismissals are not split the same
 // way. A dismissal in a later task behaves alike in both. The outcome asserted
-// in both files is the same either way: nothing may move focus on its own
-// after the panel is dismissed.
-// https://github.com/ariakit/ariakit/issues/7024
+// in both files is the same either way: nothing may move focus on its own after
+// the panel is dismissed. https://github.com/ariakit/ariakit/issues/7024
 
 /**
  * Reopens the panel, puts DOM focus on a plain button inside it, then loads the
@@ -60,8 +59,8 @@ test("keeps focus after tabbing into a panel that hides itself", async () => {
 // Refusing to present after the panel goes away must not outlive the panel
 // itself. The scroll that discriminates in the browser is invisible here, so
 // the move is driven from outside the panel instead, and the handoff it
-// triggers is what proves the presentation ran: the entry takes focus and
-// hands it back to the panel.
+// triggers is what proves the presentation ran: the entry takes focus and hands
+// it back to the panel.
 test("presents the active item when a move targets the reopened panel", async () => {
   await click(q.button("Focus and hide shortcuts synchronously"));
   await click(q.button("Show shortcuts"));

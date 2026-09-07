@@ -120,13 +120,13 @@ test("detects navigation timeouts by class and message", () => {
   );
   expect(isNavigationTimeoutError(navigationTimeout)).toBe(true);
 
-  // Same message on a plain Error must not match: only Playwright timeouts
-  // are transient navigation stalls.
+  // Same message on a plain Error must not match: only Playwright timeouts are
+  // transient navigation stalls.
   const plainError = new Error("page.goto: Timeout 30000ms exceeded.");
   expect(isNavigationTimeoutError(plainError)).toBe(false);
 
-  // Non-navigation Playwright timeouts (interactions, verify steps) must not
-  // be retried; they can reflect real behavior of the measured code.
+  // Non-navigation Playwright timeouts (interactions, verify steps) must not be
+  // retried; they can reflect real behavior of the measured code.
   const clickTimeout = new errors.TimeoutError(
     'locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for locator("#nope")',
   );

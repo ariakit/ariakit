@@ -106,9 +106,8 @@ function getSameInitialItems({
   if (!activeItem) return items;
   if (!itemTextStartsWith(activeItem, char)) return items;
   const { chars } = typeaheadState;
-  // Keep a matching multi-character query; otherwise repeated initials cycle
-  // by collapsing "oo" to "o" and rotating earlier matches after the active
-  // item.
+  // Keep a matching multi-character query; otherwise repeated initials cycle by
+  // collapsing "oo" to "o" and rotating earlier matches after the active item.
   if (chars !== char && itemTextStartsWith(activeItem, chars)) return items;
   typeaheadState.chars = char;
   return flipItems(
@@ -145,10 +144,10 @@ export const useCompositeTypeahead = createHook<
 
   const onKeyDownCaptureProp = props.onKeyDownCapture;
 
-  // We have to listen to the event in the capture phase because the event
-  // might be handled by a child component. For example, the space key may
-  // trigger a click event on a child component. We need to prevent this
-  // behavior if the character is a valid typeahead key.
+  // We have to listen to the event in the capture phase because the event might
+  // be handled by a child component. For example, the space key may trigger a
+  // click event on a child component. We need to prevent this behavior if the
+  // character is a valid typeahead key.
   const onKeyDownCapture = useEvent((event: KeyboardEvent<HTMLType>) => {
     onKeyDownCaptureProp?.(event);
     if (event.defaultPrevented) return;

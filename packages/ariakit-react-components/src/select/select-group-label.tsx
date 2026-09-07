@@ -33,8 +33,8 @@ export const useSelectGroupLabel = createHook<TagName, SelectGroupLabelOptions>(
  * [`SelectGroup`](https://ariakit.com/reference/select-group) so the
  * `aria-labelledby` prop is properly set on the select group element.
  * @deprecated Use
- * [`ComboboxGroupLabel`](https://ariakit.com/reference/combobox-group-label)
- * instead.
+ *   [`ComboboxGroupLabel`](https://ariakit.com/reference/combobox-group-label)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5,10}

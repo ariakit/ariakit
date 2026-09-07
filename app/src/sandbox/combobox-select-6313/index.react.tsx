@@ -4,8 +4,9 @@ import { useLayoutEffect, useMemo, useState } from "react";
 
 const list = ["Apple", "Banana", "Cherry", "Grape", "Lemon", "Orange"];
 
-// The descendant layout effect runs before ComboboxProvider initializes, so this
-// store-level listener exposes reentrant writes during the initial parent push.
+// The descendant layout effect runs before ComboboxProvider initializes, so
+// this store-level listener exposes reentrant writes during the initial parent
+// push.
 function ValueFollowsHighlight() {
   const combobox = Ariakit.useComboboxContext();
 

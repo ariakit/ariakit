@@ -47,9 +47,9 @@ export const MenuScopedContextProvider = menu.ScopedContextProvider;
 
 /**
  * Returns the menuBar store from the nearest menuBar container.
- * @deprecated
- * Use [`useMenubarContext`](https://ariakit.com/reference/use-menubar-context)
- * instead.
+ * @deprecated Use
+ *   [`useMenubarContext`](https://ariakit.com/reference/use-menubar-context)
+ *   instead.
  * @example
  * function MenuBar() {
  *   const store = useMenuBarContext();

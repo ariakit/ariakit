@@ -36,8 +36,8 @@ function parseCSSTime(time: string | undefined) {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
-// CSS cycles shorter delay/duration lists to match the property/name list.
-// Pair each item's delay and duration; independent maxima can overestimate.
+// CSS cycles shorter delay/duration lists to match the property/name list. Pair
+// each item's delay and duration; independent maxima can overestimate.
 function getEndTime(names: string, delays: string, durations: string) {
   const nameList = names.split(",");
   const delayList = delays.split(",");
@@ -148,9 +148,9 @@ export const useDisclosureContent = createHook<
   useSafeLayoutEffect(() => {
     if (!animated) {
       // When animation detection has disabled animations (e.g., no CSS
-      // transition was detected on the content element), manage data-enter
-      // so wrapper elements using :has([data-enter]) work correctly even
-      // when the content element itself has no transitions.
+      // transition was detected on the content element), manage data-enter so
+      // wrapper elements using :has([data-enter]) work correctly even when the
+      // content element itself has no transitions.
       if (!open) {
         hasClosedRef.current = true;
         setTransition(null);
@@ -163,15 +163,15 @@ export const useDisclosureContent = createHook<
       return;
     }
     // When the disclosure content element is rendered in a portal, we need to
-    // wait for the portal to be mounted and connected to the DOM before we
-    // can start the animation.
+    // wait for the portal to be mounted and connected to the DOM before we can
+    // start the animation.
     if (!contentElement?.isConnected) {
       setTransition(null);
       return;
     }
     // Double requestAnimationFrame is necessary here to avoid potential bugs
-    // when the data attribute is added before the element is fully rendered
-    // in the DOM, which wouldn't trigger the animation.
+    // when the data attribute is added before the element is fully rendered in
+    // the DOM, which wouldn't trigger the animation.
     return afterPaint(() => {
       setTransition(open ? "enter" : mounted ? "leave" : null);
     });
@@ -207,8 +207,8 @@ export const useDisclosureContent = createHook<
       elements.push(otherElement);
     }
     // Conversely, if we're rendering a dialog, its backdrop may be animated
-    // while the dialog itself is not. The backdrop element isn't tracked in
-    // the store, so the dialog passes it in through otherElementRef.
+    // while the dialog itself is not. The backdrop element isn't tracked in the
+    // store, so the dialog passes it in through otherElementRef.
     const relatedElement = otherElementRef?.current;
     if (relatedElement) {
       elements.push(relatedElement);
@@ -219,10 +219,9 @@ export const useDisclosureContent = createHook<
     const timeout = Math.max(...elements.map(getElementEndTime));
     // If the timeout is zero, there's no animation or transition, either
     // because they weren't defined in the CSS or the duration was explicitly
-    // set to zero. In this scenario, we can halt the animation right away
-    // and, if we're entering, we can set the animated state to false so
-    // the element unmounts immediately on close without waiting for a
-    // leave animation.
+    // set to zero. In this scenario, we can halt the animation right away and,
+    // if we're entering, we can set the animated state to false so the element
+    // unmounts immediately on close without waiting for a leave animation.
     if (!timeout) {
       if (transition === "enter") {
         store.setState("animated", false);
@@ -329,8 +328,8 @@ export interface DisclosureContentOptions<
   /**
    * A ref to another element whose CSS transitions and animations should be
    * taken into account when computing the animation timeout, such as the
-   * dialog's backdrop element, which may be animated while the dialog itself
-   * is not.
+   * dialog's backdrop element, which may be animated while the dialog itself is
+   * not.
    * @deprecated
    * @private
    */
@@ -342,8 +341,8 @@ export interface DisclosureContentOptions<
    * none` style will not be applied, unless explicitly set otherwise.
    *
    * This prop is particularly useful when using third-party animation libraries
-   * such as Motion or React Spring, where the element needs to be
-   * visible for exit animations to work.
+   * such as Motion or React Spring, where the element needs to be visible for
+   * exit animations to work.
    *
    * Live examples:
    * - [Dialog with

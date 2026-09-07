@@ -14,8 +14,8 @@ import { ComboboxInputValue } from "./combobox-input-value.tsx";
  * that gets called with the current value as an argument. This can be used as
  * an uncontrolled API to render the combobox value in a custom way.
  * @deprecated Use
- * [`ComboboxInputValue`](https://ariakit.com/reference/combobox-input-value)
- * instead.
+ *   [`ComboboxInputValue`](https://ariakit.com/reference/combobox-input-value)
+ *   instead.
  * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {3-5}
@@ -33,7 +33,7 @@ export function ComboboxValue(props: ComboboxValueProps = {}) {
 
 /**
  * @deprecated Use
- * [`ComboboxInputValueProps`](https://ariakit.com/reference/combobox-input-value)
- * instead.
+ *   [`ComboboxInputValueProps`](https://ariakit.com/reference/combobox-input-value)
+ *   instead.
  */
 export interface ComboboxValueProps extends ComboboxInputValueProps {}

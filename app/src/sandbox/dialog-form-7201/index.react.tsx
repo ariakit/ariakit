@@ -8,8 +8,7 @@ interface CoverageDialogProps {
 
 // A benefits form names its controls after what they collect, and both `self`
 // and `document` below collide with a member the realm helpers read from the
-// form itself.
-// https://github.com/ariakit/ariakit/issues/7201
+// form itself. https://github.com/ariakit/ariakit/issues/7201
 function CoverageDialog({ label, withDocumentField }: CoverageDialogProps) {
   const [open, setOpen] = useState(false);
   return (

@@ -17,6 +17,9 @@ allowBuilds:
   sharp: true
   workerd: true
 
+minimumReleaseAgeExclude:
+  - oxlint-plugin-comment-reflow@0.1.0
+
 overrides:
   "@ariakit/components": "workspace:*"
   "@ariakit/react": "workspace:*"

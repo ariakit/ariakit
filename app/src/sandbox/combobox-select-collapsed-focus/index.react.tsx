@@ -146,9 +146,9 @@ interface HoverSelectProps {
   focusOnHover: Ariakit.ComboboxItemProps["focusOnHover"];
 }
 
-// The pointer side of the same contract. An explicit boolean and a callback
-// are authored here so the collapsed gate is exercised on the authored path,
-// which the default predicate alone never reaches.
+// The pointer side of the same contract. An explicit boolean and a callback are
+// authored here so the collapsed gate is exercised on the authored path, which
+// the default predicate alone never reaches.
 // https://github.com/ariakit/ariakit/issues/7118
 function HoverSelect({ label, focusOnHover }: HoverSelectProps) {
   return (
@@ -177,10 +177,9 @@ function HoverSelect({ label, focusOnHover }: HoverSelectProps) {
 }
 
 // An authored callback with a side effect: the consumer moves the composite
-// from inside the predicate, like the select-grid example does. The closed
-// gate must keep the callback from running at all, or the move would still
-// activate the item and steal focus.
-// https://github.com/ariakit/ariakit/issues/7118
+// from inside the predicate, like the select-grid example does. The closed gate
+// must keep the callback from running at all, or the move would still activate
+// the item and steal focus. https://github.com/ariakit/ariakit/issues/7118
 function MoveHoverSelect() {
   const combobox = Ariakit.useComboboxStore({
     defaultSelectedValue: "Apple",
@@ -216,11 +215,10 @@ function MoveHoverSelect() {
   );
 }
 
-// An authored callback that closes the list from inside the predicate and
-// still returns true. The gate must re-read the live open state after the
-// callback, or the stale pre-check result would activate the item and steal
-// focus right as the list collapses.
-// https://github.com/ariakit/ariakit/issues/7118
+// An authored callback that closes the list from inside the predicate and still
+// returns true. The gate must re-read the live open state after the callback,
+// or the stale pre-check result would activate the item and steal focus right
+// as the list collapses. https://github.com/ariakit/ariakit/issues/7118
 function HideHoverSelect() {
   const combobox = Ariakit.useComboboxStore({
     defaultSelectedValue: "Apple",

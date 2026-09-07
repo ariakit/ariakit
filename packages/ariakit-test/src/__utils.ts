@@ -8,9 +8,9 @@ const preventMouseEvents = new WeakMap<Document, boolean>();
 
 /**
  * The happy-dom marker is per-window. A same-origin iframe window created in
- * happy-dom does not expose it, so this returns `false` for that window. Callers
- * that must cover iframe realms must resolve the environment another way.
- * https://github.com/ariakit/ariakit/issues/7283
+ * happy-dom does not expose it, so this returns `false` for that window.
+ * Callers that must cover iframe realms must resolve the environment another
+ * way. https://github.com/ariakit/ariakit/issues/7283
  */
 export function isHappyDOM(
   win: Window | null | undefined = typeof window !== "undefined"
@@ -130,8 +130,8 @@ export async function flushScheduler(maxTurns = 10) {
       await flushMicrotasks();
       // A mutation may be observed a microtask after it lands, so require two
       // consecutive quiet turns before treating the tree as settled. This keeps
-      // a render slice that hasn't committed its DOM changes yet from ending the
-      // drain early.
+      // a render slice that hasn't committed its DOM changes yet from ending
+      // the drain early.
       stableTurns = mutated ? 0 : stableTurns + 1;
       if (stableTurns >= 2) break;
     }

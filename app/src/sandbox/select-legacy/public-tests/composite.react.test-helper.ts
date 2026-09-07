@@ -31,8 +31,7 @@ describe.each([
     await click(q.button(`Show ${caseName}`));
   });
 
-  // examples/select-grid/test.ts
-  // examples/select-grid-store/test.ts
+  // examples/select-grid/test.ts examples/select-grid-store/test.ts
   test("moves through the two-dimensional Select composite", async () => {
     const select = q.combobox(label);
     expect(select).toHaveTextContent("Center");
@@ -85,11 +84,11 @@ describe("public-select-collapsed-hover", () => {
     await click(q.button("Show public-select-collapsed-hover"));
   });
 
-  // https://github.com/ariakit/ariakit/issues/7120
-  // The authored focusOnHover callback moves the composite from inside the
-  // predicate. While the select is collapsed, the callback must not run at
-  // all, or the move would still activate the item, commit its value, and
-  // steal focus from the unrelated control.
+  // https://github.com/ariakit/ariakit/issues/7120 The authored focusOnHover
+  // callback moves the composite from inside the predicate. While the select is
+  // collapsed, the callback must not run at all, or the move would still
+  // activate the item, commit its value, and steal focus from the unrelated
+  // control.
   test("a side-effectful focusOnHover callback does nothing on a collapsed list", async () => {
     const select = q.combobox("Collapsed hover fruit");
     const grape = q.option("Grape");
@@ -108,9 +107,8 @@ describe("public-select-collapsed-hover", () => {
     expect(other).toHaveFocus();
   });
 
-  // https://github.com/ariakit/ariakit/issues/7120
-  // The gate is about the closed list: the same side-effectful callback
-  // keeps working once the select opens.
+  // https://github.com/ariakit/ariakit/issues/7120 The gate is about the closed
+  // list: the same side-effectful callback keeps working once the select opens.
   test("the same callback activates the option once the select opens", async () => {
     const select = q.combobox("Collapsed hover fruit");
     const grape = q.option("Grape");
@@ -129,10 +127,10 @@ describe("public-select-hide-on-hover", () => {
     await click(q.button("Show public-select-hide-on-hover"));
   });
 
-  // https://github.com/ariakit/ariakit/pull/7121#discussion_r3780074062
-  // The authored callback closes the select and returns true. Built-in
-  // activation must still stop, or the hovered item would become active in
-  // the just-collapsed list.
+  // https://github.com/ariakit/ariakit/pull/7121#discussion_r3780074062 The
+  // authored callback closes the select and returns true. Built-in activation
+  // must still stop, or the hovered item would become active in the
+  // just-collapsed list.
   test("built-in activation stops when the callback closes the select", async () => {
     const select = q.combobox("Hide-on-hover fruit");
     const grape = q.option("Grape");

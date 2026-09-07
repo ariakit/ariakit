@@ -48,11 +48,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(grape).toHaveAttribute("data-focus-visible", "true");
   });
 
-  // https://github.com/ariakit/ariakit/issues/7099
-  // Orange is the last item of the non-looping composite, so the key moves
-  // nothing and no focus event fires. Only the item's own keydown handling can
-  // apply the attribute here. The test above moves focus instead, which
-  // discards that handling when the item blurs before its callback runs.
+  // https://github.com/ariakit/ariakit/issues/7099 Orange is the last item of
+  // the non-looping composite, so the key moves nothing and no focus event
+  // fires. Only the item's own keydown handling can apply the attribute here.
+  // The test above moves focus instead, which discards that handling when the
+  // item blurs before its callback runs.
   test("shows focus-visible on the item when an Alt-modified navigation key doesn't move focus", async ({
     page,
     q,
@@ -90,9 +90,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(firstCell).toHaveAttribute("data-focus-visible", "true");
   });
 
-  // https://github.com/ariakit/ariakit/issues/7099
-  // The counterpart of the tests above. A modified key that Ariakit doesn't use
-  // to move focus is typing or a shortcut, so it must keep pointer modality.
+  // https://github.com/ariakit/ariakit/issues/7099 The counterpart of the tests
+  // above. A modified key that Ariakit doesn't use to move focus is typing or a
+  // shortcut, so it must keep pointer modality.
   test("keeps pointer modality on a modified non-navigation key", async ({
     page,
     q,

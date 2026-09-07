@@ -40,8 +40,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   // Keeps the backdrop truthy, so this passes before the fix too: it's the
   // control that separates the falsy/truthy boundary from an ordinary
-  // re-render.
-  // https://github.com/ariakit/ariakit/issues/7335
+  // re-render. https://github.com/ariakit/ariakit/issues/7335
   test("changing the backdrop's appearance keeps the contents", async ({
     q,
   }) => {

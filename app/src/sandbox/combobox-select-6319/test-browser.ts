@@ -49,8 +49,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.option("Triangle")).toBeHidden();
     await test.expect(combobox).toBeFocused();
     await test.expect(combobox).toContainText("Triangle");
-    // The item after Triangle has no value, so the wrap should skip it and
-    // land on the first valued item
+    // The item after Triangle has no value, so the wrap should skip it and land
+    // on the first valued item
     await page.keyboard.press("ArrowDown");
     await test.expect(combobox).toContainText("Square");
   });

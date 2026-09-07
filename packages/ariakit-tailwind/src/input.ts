@@ -80,9 +80,9 @@ const TEXT_CONTRAST_CYAN_LIGHTNESS_START = 0.45;
 const CONTRAST_SCALE = 0.3334;
 const DISABLED_CONTRAST_SCALE = 0.25;
 const DISABLED_TEXT_CONTRAST_SCALE = 0.8;
-// Text gets a doubled contrast lift because the ancestor layer also shifts
-// with `--contrast`; the extra push compensates for the parent's movement so
-// the text actually changes lightness/alpha visibly rather than tracking the
+// Text gets a doubled contrast lift because the ancestor layer also shifts with
+// `--contrast`; the extra push compensates for the parent's movement so the
+// text actually changes lightness/alpha visibly rather than tracking the
 // background.
 const TEXT_CONTRAST_SCALE = CONTRAST_SCALE * 2;
 const TEXT_CONTRAST_L = fn.inflate(fn.sub(DARK_THRESHOLD_L, l));
@@ -142,9 +142,9 @@ const utilities = new Set<ReturnType<typeof ak.utility>>();
 // `layer-`/`state-` names that must not set the layer-modified flag.
 // `layer-transparent` reads the flag instead of setting it, so stamping it
 // would make it paint unconditionally. The longhands below are inert until a
-// second utility on the same element reads what they write: the mix values
-// only reach the `layer-mix` and `layer-mix-*` bodies, and the contrast amount
-// is multiplied out unless `layer-contrast` sets a direction.
+// second utility on the same element reads what they write: the mix values only
+// reach the `layer-mix` and `layer-mix-*` bodies, and the contrast amount is
+// multiplied out unless `layer-contrast` sets a direction.
 // https://github.com/ariakit/ariakit/issues/7392
 const UNMODIFIED_LAYER_UTILITIES = new Set([
   "layer-transparent",
@@ -362,8 +362,8 @@ function getSafeLightness(
 
 /**
  * Computes a lightness offset that avoids forbidden lightness. If the next
- * lightness enters the forbidden interval, we either flip direction or clamp
- * to the entry boundary, whichever yields more lightness distance from the
+ * lightness enters the forbidden interval, we either flip direction or clamp to
+ * the entry boundary, whichever yields more lightness distance from the
  * original layer color.
  */
 function getResolvedLightnessOffset(
@@ -382,22 +382,22 @@ function getResolvedLightnessOffset(
   // Clamp the flipped candidate before comparing its distance from the source.
   const flippedDelta = fn.neg(normalDelta);
   const flippedL = fn.clamp01(fn.add(l, flippedDelta));
-  // Directional distance: sign is only meaningful when inForbidden=1
-  // where travel direction is well-defined, so we can avoid abs() which
-  // would duplicate the sub-expression in max(x, -x).
+  // Directional distance: sign is only meaningful when inForbidden=1 where
+  // travel direction is well-defined, so we can avoid abs() which would
+  // duplicate the sub-expression in max(x, -x).
   const flippedDist = fn.mul(fn.sub(l, flippedL), direction);
   const boundaryDelta = fn.sub(entryBoundary, l);
   const boundaryDist = fn.mul(boundaryDelta, direction);
   // Only flip if it produces more distance from the original lightness.
   const shouldFlip = fn.binary(fn.sub(flippedDist, boundaryDist));
-  // When forbidden: blend between boundary and flipped deltas.
-  // Using a + x*(b-a) instead of a*(1-x) + b*x so shouldFlip appears once.
+  // When forbidden: blend between boundary and flipped deltas. Using a +
+  // x*(b-a) instead of a*(1-x) + b*x so shouldFlip appears once.
   const forbiddenDelta = fn.add(
     boundaryDelta,
     fn.mul(shouldFlip, fn.sub(flippedDelta, boundaryDelta)),
   );
-  // Blend between normal and forbidden deltas.
-  // Same rearrangement so inForbidden appears once instead of three times.
+  // Blend between normal and forbidden deltas. Same rearrangement so
+  // inForbidden appears once instead of three times.
   return fn.add(
     normalDelta,
     fn.mul(inForbidden, fn.sub(forbiddenDelta, normalDelta)),
@@ -879,7 +879,8 @@ function getPushValue(value: Value) {
  */
 function withUtilityTokenGate(value: Value, tokenValue: Value) {
   // Use raw calc here because fn.mul(0, ...) simplifies to 0, dropping the
-  // --value() dependency that gates this declaration to matching utility tokens.
+  // --value() dependency that gates this declaration to matching utility
+  // tokens.
   return fn.add(value, fn.calc`0 * ${tokenValue}`);
 }
 
@@ -1051,9 +1052,9 @@ interface TextLightnessStep {
 }
 
 /**
- * Precomputed text values per quantized parent lightness. Both ak-text
- * delivery paths (the if() chains and the container query fallback) read this
- * table, so they always produce identical values.
+ * Precomputed text values per quantized parent lightness. Both ak-text delivery
+ * paths (the if() chains and the container query fallback) read this table, so
+ * they always produce identical values.
  */
 function getTextLightnessSteps(): TextLightnessStep[] {
   return getQuantizedLchLightnessSteps().map((parentLightness) => {
@@ -1168,8 +1169,8 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
     fn.add(vars.layerContrastParentL, parentShift),
   );
   const parentDirectedL = getDirectionalLightness(l, parentTargetL, direction);
-  // When ak-layer-contrast is active, direction is ±1 so |direction|=1.
-  // When inactive, direction=0. Use this as a blend mask.
+  // When ak-layer-contrast is active, direction is ±1 so |direction|=1. When
+  // inactive, direction=0. Use this as a blend mask.
   const isActive = fn.mul(direction, direction);
   return fn.add(
     fn.mul(parentDirectedL, isActive),
@@ -1383,13 +1384,12 @@ utility(
   ]),
 );
 
-// Paints the layer color only while the modified flag is set, so a control
-// that opens a layer just to give its children a color context stays
-// see-through at rest. Nearly every other `layer-*` and `state-*` utility sets
-// that flag; UNMODIFIED_LAYER_UTILITIES lists the ones that must not, this
-// utility included.
-// Scaling the source alpha rather than replacing it keeps a translucent layer
-// translucent once it paints.
+// Paints the layer color only while the modified flag is set, so a control that
+// opens a layer just to give its children a color context stays see-through at
+// rest. Nearly every other `layer-*` and `state-*` utility sets that flag;
+// UNMODIFIED_LAYER_UTILITIES lists the ones that must not, this utility
+// included. Scaling the source alpha rather than replacing it keeps a
+// translucent layer translucent once it paints.
 utility(
   "layer-transparent",
   set.backgroundColor(
@@ -1865,9 +1865,9 @@ function getTextDirectional() {
 const textLightnessSteps = getTextLightnessSteps();
 
 /**
- * Resolves a per-step text value as a single if() chain over the parent
- * layer's quantized text lightness. The else value must match the variable's
- * registered initial so unmatched contexts keep today's behavior.
+ * Resolves a per-step text value as a single if() chain over the parent layer's
+ * quantized text lightness. The else value must match the variable's registered
+ * initial so unmatched contexts keep today's behavior.
  */
 function getTextStepIf(
   parentTextL: VarProperty,
@@ -2197,8 +2197,8 @@ function getLayerEdgeContextDeclarations() {
 const LAST_VISIBLE_SELECTOR = "&:not(:has(~ *:not([hidden],template)))";
 
 /**
- * Returns cover/overflow declarations that use calc-based conditionals for
- * axis and edge handling, avoiding container style queries on self properties.
+ * Returns cover/overflow declarations that use calc-based conditionals for axis
+ * and edge handling, avoiding container style queries on self properties.
  */
 function getFrameStretchDeclarations({
   stretchInset,
@@ -2220,12 +2220,12 @@ function getFrameStretchDeclarations({
   const isCol = fn.sub(1, parentRow);
   const isRow = parentRow;
   const negStretchInset = fn.neg(stretchInset);
-  // Incorporate user-specified margin (from ak-frame-m-*) additively so
-  // both stretch and manual margin adjustments are applied together.
+  // Incorporate user-specified margin (from ak-frame-m-*) additively so both
+  // stretch and manual margin adjustments are applied together.
   const totalNegMargin = fn.add(negStretchInset, inputs.frameMargin);
-  // Concentric border radius: reduce parent radius by the total visual
-  // distance from parent border-box edge to child border-box edge.
-  // frameMargin moves the child further inward, so it reduces the radius.
+  // Concentric border radius: reduce parent radius by the total visual distance
+  // from parent border-box edge to child border-box edge. frameMargin moves the
+  // child further inward, so it reduces the radius.
   const childRadius = fn.max(
     fn.sub(parentRadius, fn.add(radiusInset, inputs.frameMargin)),
     "0px",
@@ -2355,13 +2355,13 @@ utility(
     );
     const minimumRadius = fn.min("0.125rem", inputs.frameRadius);
     const autoRadius = fn.max(minimumRadius, fn.max(nestedRadius, "0px"));
-    // When parent padding + margin >= 1rem, the child is far enough from
-    // the parent edge that concentric radius is not meaningful — use the
-    // child's own declared radius instead.
+    // When parent padding + margin >= 1rem, the child is far enough from the
+    // parent edge that concentric radius is not meaningful — use the child's
+    // own declared radius instead.
     //
     // Formula: max(auto - inflated, min(declared, auto + inflated))
-    //   No cap  (excess=0): max(auto, min(declared, auto)) = auto
-    //   Cap     (excess>0): max(auto - huge, min(declared, auto + huge))
+    //   No cap (excess=0): max(auto, min(declared, auto)) = auto Cap
+    //   (excess>0): max(auto - huge, min(declared, auto + huge))
     //                      = max(negative, declared) = declared
     //
     // Subtract 0.5px so that exactly 1rem triggers the cap (>= not >).
@@ -2448,9 +2448,9 @@ utility(
     const parentBorder = inherit(vars.frameParentBorderContext, "0px");
     const parentRadius = inherit(vars.frameParentRadiusContext, "0px");
     const parentRow = inherit(vars.frameParentRowContext, "0");
-    // Stretch past parent content box by the child's own border width so
-    // the child's content box aligns with the parent's content box. This
-    // also collapses borders/rings when both parent and child have them.
+    // Stretch past parent content box by the child's own border width so the
+    // child's content box aligns with the parent's content box. This also
+    // collapses borders/rings when both parent and child have them.
     const stretchInset = fn.add(parentPadding, inputs.frameBorder);
     const radiusInset = fn.sub(parentBorder, inputs.frameBorder);
     return getFrameStretchDeclarations({

@@ -213,7 +213,7 @@ export interface DisclosureStoreOptions extends StoreOptions<
 > {
   /**
    * @deprecated Manually setting the `animated` prop is no longer necessary.
-   * This will be removed in a future release.
+   *   This will be removed in a future release.
    */
   animated?: DisclosureStoreState["animated"];
   /**

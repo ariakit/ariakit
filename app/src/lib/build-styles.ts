@@ -338,13 +338,13 @@ function splitBody(content: string): SplitBodyResult {
 }
 
 /**
- * Parse a block body into ordered PropertyDecl[] preserving declaration and block order.
+ * Parse a block body into ordered PropertyDecl[] preserving declaration and
+ * block order.
  */
 export function parsePropertyDecls(body: string): PropertyDecl[] {
   const { items } = splitBody(body);
   const decls: PropertyDecl[] = [];
-  // Carry comments forward so they stay beside the next normalized
-  // declaration.
+  // Carry comments forward so they stay beside the next normalized declaration.
   let pendingApplyComments: string[] = [];
 
   const flushPendingComments = () => {
@@ -386,8 +386,7 @@ export function parsePropertyDecls(body: string): PropertyDecl[] {
         continue;
       }
       flushPendingComments();
-      // Preserve unknown valueless declarations instead of dropping DSL
-      // syntax.
+      // Preserve unknown valueless declarations instead of dropping DSL syntax.
       decls.push({ name: s, value: {} });
       continue;
     }
@@ -584,8 +583,8 @@ function extractAkTokensFromApplyLine(line: string) {
   const tokens = line.trim().split(/\s+/);
   const akTokens: string[] = [];
   for (const tok of tokens) {
-    // Resolve last segment after colons as the actual utility,
-    // keep any ak-* segments as potential variants or utilities
+    // Resolve last segment after colons as the actual utility, keep any ak-*
+    // segments as potential variants or utilities
     const segments = splitVariantSegments(tok);
     for (let i = 0; i < segments.length; i++) {
       const seg = segments[i];

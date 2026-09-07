@@ -147,9 +147,9 @@ async function getMarkdownRenderer() {
 }
 
 // Rendering markdown is a pure text transform, and reference descriptions
-// repeat heavily (inherited props share docs across components and
-// frameworks), so memoizing by source string collapses thousands of renders
-// into a few hundred unique ones.
+// repeat heavily (inherited props share docs across components and frameworks),
+// so memoizing by source string collapses thousands of renders into a few
+// hundred unique ones.
 const markdownHtmlCache = new Map<string, Promise<string>>();
 
 export function markdownToHtml(markdownString: string) {

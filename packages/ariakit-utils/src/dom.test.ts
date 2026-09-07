@@ -268,8 +268,8 @@ test("getWindow falls back when a document answers its default view with another
 
 // When that frame is cross-origin, its window still answers `window` with
 // itself and throws a `SecurityError` for `document`, so refusing to answer has
-// to count as owning another document.
-// The environment has no cross-origin frames, so the refusal is emulated.
+// to count as owning another document. The environment has no cross-origin
+// frames, so the refusal is emulated.
 test("getWindow falls back when the view it resolves refuses to report its document", () => {
   const refusingView = {
     window: null as unknown,

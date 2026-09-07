@@ -81,8 +81,7 @@ export default defineConfig({
     ],
     // TODO: Remove this workaround once withastro/astro#17166 is fixed.
     // Pre-optimize bare SSR imports so the Cloudflare adapter cannot reload
-    // React mid-request.
-    // https://github.com/withastro/astro/issues/17166
+    // React mid-request. https://github.com/withastro/astro/issues/17166
     optimizeDeps: {
       include: [
         "astro/virtual-modules/transitions.js",

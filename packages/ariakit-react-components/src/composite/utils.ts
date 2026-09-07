@@ -75,8 +75,8 @@ export function ownsFocus(store: CompositeStore) {
   if (compositeElement?.contains(activeElement)) return true;
   if (isItem(store, activeElement)) return true;
   // Items are only recognizable once they register, which is a commit after
-  // they mount, and the composite element can sit outside the popup, so
-  // neither check above covers an option that has just focused itself.
+  // they mount, and the composite element can sit outside the popup, so neither
+  // check above covers an option that has just focused itself.
   return !!getPopupElement(store)?.contains(activeElement);
 }
 
@@ -114,8 +114,8 @@ export interface PresentItemParams {
 
 /**
  * Focuses a composite item without scrolling, then brings it into view after
- * any containing popup has been positioned.
- * Returns a function that cancels a pending presentation.
+ * any containing popup has been positioned. Returns a function that cancels a
+ * pending presentation.
  */
 function presentItem({
   store,
@@ -305,8 +305,8 @@ function presentItem({
     // Focus may move immediately, but scrolling is reserved for an explicit
     // presentation target; hover and stale active ids must not move the page.
     if (markedOnly && !element.hasAttribute("data-autofocus")) {
-      // A withheld request still owes focus, so keep it pending. Only a
-      // request with nothing left to give is finished here.
+      // A withheld request still owes focus, so keep it pending. Only a request
+      // with nothing left to give is finished here.
       if (focusWithheld) return;
       return settle();
     }

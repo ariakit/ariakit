@@ -19,9 +19,9 @@ type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
- * Returns props to create a `FormInput` component. Unlike `useFormControl`, this
- * hook returns the `value` and `onChange` props that can be passed to a native
- * input, select or textarea elements.
+ * Returns props to create a `FormInput` component. Unlike `useFormControl`,
+ * this hook returns the `value` and `onChange` props that can be passed to a
+ * native input, select or textarea elements.
  * @see https://ariakit.com/components/form
  * @example
  * ```jsx

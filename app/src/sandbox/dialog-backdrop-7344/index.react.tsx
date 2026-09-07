@@ -1,9 +1,9 @@
 import * as Ariakit from "@ariakit/react";
 
 // Regression fixture for https://github.com/ariakit/ariakit/issues/7344. The
-// backdrop is fixed and covers the viewport, so the dialog has to be
-// positioned as well. Otherwise it stays in flow behind the backdrop and the
-// browser test cannot click the dismiss button.
+// backdrop is fixed and covers the viewport, so the dialog has to be positioned
+// as well. Otherwise it stays in flow behind the backdrop and the browser test
+// cannot click the dismiss button.
 const css = `
   .backdrop {
     background: rgb(0 0 0 / 0.4);

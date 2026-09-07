@@ -59,11 +59,11 @@ function nextWithValue(store: SelectStore, next: SelectStore["next"]) {
       if (nextItem.value != null) {
         return nextItem.id;
       }
-      // Walking from the last returned id, as if the key was pressed again
-      // from there, skips items without value even across focusLoop
-      // boundaries. A repeated id means the walk cycled through every
-      // reachable item without finding one with value, so we return undefined
-      // to keep move() from changing the active item.
+      // Walking from the last returned id, as if the key was pressed again from
+      // there, skips items without value even across focusLoop boundaries. A
+      // repeated id means the walk cycled through every reachable item without
+      // finding one with value, so we return undefined to keep move() from
+      // changing the active item.
       if (visitedIds.has(nextId)) return;
       visitedIds.add(nextId);
       nextId = next({ activeId: nextId });
@@ -168,8 +168,8 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   const [autofill, setAutofill] = useState(false);
   const nativeSelectChangedRef = useRef(false);
 
-  // Resets the autofilled state when the select value changes, but only if
-  // the change wasn't triggered by the native select element (which is an
+  // Resets the autofilled state when the select value changes, but only if the
+  // change wasn't triggered by the native select element (which is an
   // autofill).
   useEffect(() => {
     const nativeSelectChanged = nativeSelectChangedRef.current;
@@ -305,7 +305,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
  * [`SelectArrow`](https://ariakit.com/reference/select-arrow) component. This
  * can be customized by passing different children to the component.
  * @deprecated Use
- * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) instead.
+ *   [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {2}
@@ -341,11 +341,10 @@ export interface SelectOptions<T extends ElementType = TagName>
    */
   store?: SelectStore;
   /**
-   * Determines if the
-   * [`SelectList`](https://ariakit.com/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.com/reference/select-popover) components
-   * will appear when the user uses arrow keys while the select element is
-   * in focus.
+   * Determines if the [`SelectList`](https://ariakit.com/reference/select-list)
+   * or [`SelectPopover`](https://ariakit.com/reference/select-popover)
+   * components will appear when the user uses arrow keys while the select
+   * element is in focus.
    * @default true
    */
   showOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
@@ -364,8 +363,8 @@ export interface SelectOptions<T extends ElementType = TagName>
    * [`SelectPopover`](https://ariakit.com/reference/select-popover) components.
    * @default true
    * @deprecated Use
-   * [`toggleOnClick`](https://ariakit.com/reference/select#toggleonclick)
-   * instead.
+   *   [`toggleOnClick`](https://ariakit.com/reference/select#toggleonclick)
+   *   instead.
    */
   toggleOnPress?: BooleanOrCallback<
     MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>

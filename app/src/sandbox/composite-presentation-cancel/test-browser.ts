@@ -7,9 +7,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // presented into. The store notifies its listeners synchronously, so the
   // parked request is woken while the item is still rendered and still visible:
   // nothing else stops it from scrolling the page to a popup that never got
-  // placed.
-  // Browser-only: the symptom is the document scroll offset, which happy-dom
-  // cannot model because it stubs `scrollIntoView`.
+  // placed. Browser-only: the symptom is the document scroll offset, which
+  // happy-dom cannot model because it stubs `scrollIntoView`.
   // https://github.com/ariakit/ariakit/issues/6986
   test("abandons a parked presentation when the popup closes", async ({
     page,
@@ -80,8 +79,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // replaced, so an item that leaves for good has to end the request instead of
   // sending it back to waiting. Otherwise the same item returning later, long
   // after the move that asked for it, would revive the request and scroll the
-  // page to it.
-  // https://github.com/ariakit/ariakit/issues/7021
+  // page to it. https://github.com/ariakit/ariakit/issues/7021
   test("abandons a parked presentation when its item leaves for good", async ({
     page,
     q,

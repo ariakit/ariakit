@@ -25,9 +25,10 @@ function createIframeButton() {
 }
 
 // `createEvent` resolves the constructor from the target's own window, so an
-// event dispatched at a node inside an iframe is built in that realm and matches
-// none of the ambient `instanceof` tests `initEvent` picked its initializers
-// with. Every member only an initializer assigns was left undefined.
+// event dispatched at a node inside an iframe is built in that realm and
+// matches none of the ambient `instanceof` tests `initEvent` picked its
+// initializers with. Every member only an initializer assigns was left
+// undefined.
 //
 // These two types prove it because neither is reached by a name. The type
 // fallbacks cover the drag events and `wheel` (`mouseDerivedEventTypes`), the

@@ -42,15 +42,15 @@ test("reference hovercard shows partial content on hover", async ({
   const anchor = q.link("DisclosureContent").first();
   // Hovercard anchors hydrate lazily (client:idle), and a pointer that is
   // already resting on the anchor when hydration completes never produces a
-  // pointerenter event. Move the pointer away and re-hover until the
-  // hovercard opens.
+  // pointerenter event. Move the pointer away and re-hover until the hovercard
+  // opens.
   await expect(async () => {
     await page.mouse.move(0, 0);
     await anchor.hover();
     await expect(q.dialog()).toBeVisible({ timeout: 2000 });
   }).toPass({ timeout: 20_000 });
-  // The hovercard fetches the DisclosureContent reference partial on demand
-  // and renders its content.
+  // The hovercard fetches the DisclosureContent reference partial on demand and
+  // renders its content.
   await expect(q.dialog()).toContainText("Optional Props", {
     timeout: 10_000,
   });

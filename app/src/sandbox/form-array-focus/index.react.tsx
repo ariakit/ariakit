@@ -3,9 +3,9 @@ import { useState } from "react";
 
 // Array-field names are user-controlled (they come from `defaultValues` /
 // `names`), so they can be prefixes of sibling arrays (`tags` vs `tags2`) or
-// contain regex metacharacters (`c++`). FormPush/FormRemove must still match the
-// exact array and focus the right field.
-// See https://github.com/ariakit/ariakit/issues/6219
+// contain regex metacharacters (`c++`). FormPush/FormRemove must still match
+// the exact array and focus the right field. See
+// https://github.com/ariakit/ariakit/issues/6219
 export default function Example() {
   const form = ak.useFormStore({
     defaultValues: {

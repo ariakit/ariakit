@@ -153,8 +153,8 @@ interface CompositeFocusOnMoveProps {
  * item. This lives in a separate memoized component so moving through items
  * doesn't re-render the whole composite component, and composite re-renders
  * don't re-render this component. It's only rendered when the `composite` prop
- * is enabled, so this render-driving subscription doesn't run for
- * non-composite widgets. The store hook tracks move requests separately.
+ * is enabled, so this render-driving subscription doesn't run for non-composite
+ * widgets. The store hook tracks move requests separately.
  */
 const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   store,
@@ -164,14 +164,14 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   scrollIntoView,
 }: CompositeFocusOnMoveProps) {
   const moves = useStoreState(store, "moves");
-  // The composite element is also tracked so the move-to-container effect
-  // below can run once it becomes available. It's published to the store
-  // through a ref callback and a transaction effect on the parent composite
-  // component, which run after this child component's effects. Without this
-  // dependency, the effect could read a not-yet-published composite element
-  // and never retry, for example when the `composite` prop switches from
-  // `false` to `true` after a `move(null)` call. The composite element rarely
-  // changes, so this doesn't add renders while navigating.
+  // The composite element is also tracked so the move-to-container effect below
+  // can run once it becomes available. It's published to the store through a
+  // ref callback and a transaction effect on the parent composite component,
+  // which run after this child component's effects. Without this dependency,
+  // the effect could read a not-yet-published composite element and never
+  // retry, for example when the `composite` prop switches from `false` to
+  // `true` after a `move(null)` call. The composite element rarely changes, so
+  // this doesn't add renders while navigating.
   const compositeElement = useStoreState(store, "compositeElement");
   // Identifies this instance to the store's move request. A ref survives the
   // effect re-runs of the same instance, including StrictMode's double
@@ -214,26 +214,26 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
     const isSelfActive = activeId === null;
     if (!isSelfActive) return;
     if (activeId !== moveRequest.targetId) return;
-    // This branch has nothing left to wait for, so it consumes the request
-    // here rather than reporting back the way a presentation does.
+    // This branch has nothing left to wait for, so it consumes the request here
+    // rather than reporting back the way a presentation does.
     consumeMove(store, instance, moves);
     const previousElement = previousElementRef.current;
-    // We have to clean up the previous element ref so an additional blur
-    // event is not fired on it, for example, when looping through items while
+    // We have to clean up the previous element ref so an additional blur event
+    // is not fired on it, for example, when looping through items while
     // compositeElementInFocusOrder is true.
     previousElementRef.current = null;
     if (previousElement) {
-      // We fire a blur event on the previous active item before moving focus
-      // to the composite element so the events are dispatched in the right
-      // order (blur, then focus).
+      // We fire a blur event on the previous active item before moving focus to
+      // the composite element so the events are dispatched in the right order
+      // (blur, then focus).
       fireBlurEvent(previousElement, { relatedTarget: compositeElement });
     }
     if (!hasFocus(compositeElement)) {
-      // Scroll before focusing, so a focus handler that presents something
-      // else scrolls last and wins. Only for a target that can actually take
-      // focus: the focus call below is a no-op for an unfocusable composite,
-      // and moving the page to an element that never receives focus is the
-      // movement this is meant to replace, not emulate.
+      // Scroll before focusing, so a focus handler that presents something else
+      // scrolls last and wins. Only for a target that can actually take focus:
+      // the focus call below is a no-op for an unfocusable composite, and
+      // moving the page to an element that never receives focus is the movement
+      // this is meant to replace, not emulate.
       if (isFocusable(compositeElement)) {
         compositeElement.scrollIntoView({
           block: "nearest",
@@ -386,8 +386,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
           // A real-focus composite may initially focus the composite element
           // while the item marked as its presentation target is outside the
           // viewport. Bring that item into view without moving DOM focus away
-          // from the composite element.
-          // The id is pinned because the active item is cleared right below.
+          // from the composite element. The id is pinned because the active
+          // item is cleared right below.
           const { activeId } = store.getState();
           if (activeId != null) {
             present({
@@ -429,8 +429,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       const nextActiveElementIsItem = isItem(store, nextActiveElement);
       const previousElement = previousElementRef.current;
       previousElementRef.current = null;
-      // This is an intermediate blur event: blurring the composite container
-      // to focus on an item (nextActiveElement).
+      // This is an intermediate blur event: blurring the composite container to
+      // focus on an item (nextActiveElement).
       if (isSelfTarget(event) && nextActiveElementIsItem) {
         // The next active element will be the same as the active item in the
         // store in these two scenarios:
@@ -658,8 +658,8 @@ export interface CompositeOptions<
    * behavior and stops applying composite ARIA attributes. Another composite
    * component should take over these responsibilities.
    *
-   * Keyboard navigation on items remains active and can still change the
-   * active item. To disable arrow-key navigation, set
+   * Keyboard navigation on items remains active and can still change the active
+   * item. To disable arrow-key navigation, set
    * [`moveOnKeyPress`](https://ariakit.com/reference/composite#moveonkeypress)
    * to `false` on this component and its items.
    *
@@ -684,8 +684,8 @@ export interface CompositeOptions<
    * arrow keys are pressed, given that the composite element is focused and
    * there's no active item.
    *
-   * **Note**: To control automatic focus movement when navigating through items,
-   * use the
+   * **Note**: To control automatic focus movement when navigating through
+   * items, use the
    * [`focusOnMove`](https://ariakit.com/reference/composite#focusonmove) prop
    * instead. If you want to control the behavior _only when arrow keys are
    * pressed_, where

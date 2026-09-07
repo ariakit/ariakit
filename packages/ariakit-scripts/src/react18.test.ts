@@ -44,12 +44,12 @@ async function writeJsonFile(path: string, value: unknown) {
 }
 
 /**
- * Copies the environment without the variables that redirect where git
- * resolves a repository.
+ * Copies the environment without the variables that redirect where git resolves
+ * a repository.
  *
- * Both the fixture and the react18 command locate their repository through
- * git. Left in place, these variables would point them at the caller's own
- * checkout, and at the persistent workspace that `removeFixture` deletes.
+ * Both the fixture and the react18 command locate their repository through git.
+ * Left in place, these variables would point them at the caller's own checkout,
+ * and at the persistent workspace that `removeFixture` deletes.
  */
 function getGitSafeEnv() {
   const env = { ...process.env };

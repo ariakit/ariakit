@@ -14,9 +14,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await page.keyboard.press("PageDown");
 
-    // With a 220px iframe viewport and 50px items, one page down lands on
-    // Item 7. Before the fix, paging used the outer page's much taller viewport
-    // and jumped far past it.
+    // With a 220px iframe viewport and 50px items, one page down lands on Item 7.
+    // Before the fix, paging used the outer page's much taller viewport and
+    // jumped far past it.
     await test.expect(frame.button("Item 7")).toBeFocused();
   });
 });

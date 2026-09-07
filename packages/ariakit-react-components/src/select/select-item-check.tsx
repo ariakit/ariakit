@@ -41,8 +41,8 @@ export const useSelectItemCheck = createHook<TagName, SelectItemCheckOptions>(
  * [`checked`](https://ariakit.com/reference/select-item-check#checked) prop is
  * automatically derived from the context.
  * @deprecated Use
- * [`ComboboxItemCheck`](https://ariakit.com/reference/combobox-item-check)
- * instead.
+ *   [`ComboboxItemCheck`](https://ariakit.com/reference/combobox-item-check)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5,9}

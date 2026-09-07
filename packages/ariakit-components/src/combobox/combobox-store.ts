@@ -203,8 +203,8 @@ export function createComboboxStore({
       : null;
 
   // Use the select as the composite element until an input or explicit
-  // composite element takes ownership. The input may mount after the select,
-  // so this must stay in sync rather than being decided by the select ref alone.
+  // composite element takes ownership. The input may mount after the select, so
+  // this must stay in sync rather than being decided by the select ref alone.
   setup(combobox, () =>
     sync(combobox, ["compositeElement", "selectElement"], (state) => {
       if (!state.selectElement && !syncedSelectElement) return;
@@ -280,8 +280,8 @@ export function createComboboxStore({
   );
 
   // Prefer the select as the popover anchor, then the composite element, then
-  // the disclosure. Track only the fallback assigned here so an explicit
-  // anchor keeps ownership.
+  // the disclosure. Track only the fallback assigned here so an explicit anchor
+  // keeps ownership.
   setup(combobox, () =>
     sync(
       combobox,
@@ -389,8 +389,8 @@ export function createComboboxStore({
   );
 
   // When the activeId changes, but the moves count doesn't, we reset the
-  // activeValue state. This is useful when the activeId changes because of
-  // a mouse move interaction. Both changes also transfer active item ownership
+  // activeValue state. This is useful when the activeId changes because of a
+  // mouse move interaction. Both changes also transfer active item ownership
   // away from the selected-item resolver.
   setup(combobox, () =>
     sync(combobox, ["moves", "activeId"], (state, prevState) => {
@@ -513,8 +513,8 @@ export interface ComboboxStoreState<
   compositeElementInFocusOrder: CompositeStoreState<ComboboxStoreItem>["compositeElementInFocusOrder"];
   /**
    * @deprecated Use
-   * [`compositeElementInFocusOrder`](https://ariakit.com/reference/combobox-provider#compositeelementinfocusorder)
-   * instead.
+   *   [`compositeElementInFocusOrder`](https://ariakit.com/reference/combobox-provider#compositeelementinfocusorder)
+   *   instead.
    */
   includesBaseElement: CompositeStoreState<ComboboxStoreItem>["includesBaseElement"];
   /**
@@ -552,8 +552,8 @@ export interface ComboboxStoreState<
   /**
    * The combobox input value.
    * @deprecated Use
-   * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
-   * instead.
+   *   [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
+   *   instead.
    */
   value: string;
   /**
@@ -629,9 +629,9 @@ export interface ComboboxStoreState<
    * [`defaultSelectedValue`](https://ariakit.com/reference/combobox-provider#defaultselectedvalue)
    * props are arrays.
    * @deprecated Use the
-   * [`resetValueOnSelect`](https://ariakit.com/reference/combobox-item#resetvalueonselect)
-   * prop on [`ComboboxItem`](https://ariakit.com/reference/combobox-item)
-   * instead.
+   *   [`resetValueOnSelect`](https://ariakit.com/reference/combobox-item#resetvalueonselect)
+   *   prop on [`ComboboxItem`](https://ariakit.com/reference/combobox-item)
+   *   instead.
    */
   resetValueOnSelect: boolean;
   /**
@@ -685,8 +685,9 @@ export interface ComboboxStoreFunctions<
    * Sets the
    * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
    * state.
-   * @deprecated Use [`setInputValue`](https://ariakit.com/reference/combobox-provider#setinputvalue)
-   * instead.
+   * @deprecated Use
+   *   [`setInputValue`](https://ariakit.com/reference/combobox-provider#setinputvalue)
+   *   instead.
    */
   setValue: SetState<ComboboxStoreState<T>["value"]>;
   /**
@@ -694,8 +695,8 @@ export interface ComboboxStoreFunctions<
    * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
    * state to its initial value.
    * @deprecated Use
-   * [`resetInputValue`](https://ariakit.com/reference/use-combobox-store#resetinputvalue)
-   * instead.
+   *   [`resetInputValue`](https://ariakit.com/reference/use-combobox-store#resetinputvalue)
+   *   instead.
    */
   resetValue: () => void;
   /**
@@ -752,8 +753,8 @@ export interface ComboboxStoreOptions<
   /**
    * The initial value of the combobox input.
    * @deprecated Use
-   * [`defaultInputValue`](https://ariakit.com/reference/combobox-provider#defaultinputvalue)
-   * instead.
+   *   [`defaultInputValue`](https://ariakit.com/reference/combobox-provider#defaultinputvalue)
+   *   instead.
    * @default ""
    */
   defaultValue?: ComboboxStoreState<T>["value"];

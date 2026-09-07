@@ -132,7 +132,8 @@ export interface TagStoreFunctions extends CompositeStoreFunctions<TagStoreItem>
    */
   resetValue: () => void;
   /**
-   * Sets the [`values`](https://ariakit.com/reference/tag-provider#values) state.
+   * Sets the [`values`](https://ariakit.com/reference/tag-provider#values)
+   * state.
    */
   setValues: SetState<TagStoreState["values"]>;
   /**

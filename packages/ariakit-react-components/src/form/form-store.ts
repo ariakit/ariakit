@@ -202,7 +202,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    * // Can also use store.names for type safety.
    * const emailValue = useFormValue(store, store.names.email);
    * @deprecated Use
-   * [`useFormValue`](https://ariakit.com/reference/use-form-value) instead.
+   *   [`useFormValue`](https://ariakit.com/reference/use-form-value) instead.
    */
   // oxlint-disable-next-line no-unnecessary-type-parameters
   useValue: <T = any>(name: StringLike) => T;
@@ -222,8 +222,8 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    *   }
    * });
    * @deprecated Use
-   * [`useFormValidate`](https://ariakit.com/reference/use-form-validate)
-   * instead.
+   *   [`useFormValidate`](https://ariakit.com/reference/use-form-validate)
+   *   instead.
    */
   useValidate: (callback: Core.FormStoreCallback<FormStoreState<T>>) => void;
   /**
@@ -243,7 +243,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    *   }
    * });
    * @deprecated Use
-   * [`useFormSubmit`](https://ariakit.com/reference/use-form-submit) instead.
+   *   [`useFormSubmit`](https://ariakit.com/reference/use-form-submit) instead.
    */
   useSubmit: (callback: Core.FormStoreCallback<FormStoreState<T>>) => void;
 }

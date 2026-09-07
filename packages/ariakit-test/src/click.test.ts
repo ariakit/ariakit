@@ -198,9 +198,9 @@ test("click with the secondary button matches rightClick", async () => {
   ]);
 });
 
-// Unlike `click`, browsers keep firing `auxclick` on a disabled control. Chromium
-// and WebKit fire it; Firefox is the exception and fires neither `auxclick` nor
-// the compatibility mouse events.
+// Unlike `click`, browsers keep firing `auxclick` on a disabled control.
+// Chromium and WebKit fire it; Firefox is the exception and fires neither
+// `auxclick` nor the compatibility mouse events.
 test("click with the auxiliary button dispatches auxclick on disabled controls", async () => {
   document.body.innerHTML = `<button type="button" disabled>Paste</button>`;
 
@@ -286,8 +286,7 @@ function recordPointerMembers(element: Element, types: string[]) {
 
 // Pointer Events carries only the causal pointer's ID and type onto the event
 // that ends the gesture. Chromium resets `isPrimary` as required; Firefox and
-// WebKit carry it over instead.
-// https://github.com/ariakit/ariakit/issues/7204
+// WebKit carry it over instead. https://github.com/ariakit/ariakit/issues/7204
 test("click carries only the pointer identity to the click event", async () => {
   document.body.innerHTML = `<button type="button">Submit</button>`;
 

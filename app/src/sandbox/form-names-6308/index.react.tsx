@@ -2,9 +2,9 @@ import * as ak from "@ariakit/react";
 import { Component, useState } from "react";
 import type { ReactNode } from "react";
 
-// Regression fixture for https://github.com/ariakit/ariakit/issues/6308.
-// React and Object.prototype.toString probe absent symbol keys; the names
-// proxy must return undefined instead of coercing a Symbol to a string.
+// Regression fixture for https://github.com/ariakit/ariakit/issues/6308. React
+// and Object.prototype.toString probe absent symbol keys; the names proxy must
+// return undefined instead of coercing a Symbol to a string.
 class NameBoundary extends Component<
   { children: ReactNode },
   { error: Error | null }

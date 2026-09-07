@@ -8,9 +8,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // emulation forces hidden tabs to stay visible, which masks the bug — so
     // recreate the browser's own behavior: install (before the app loads, so
     // userland code and the form store see it) a `requestAnimationFrame` that
-    // stops firing while `document.hidden` is true. The store's `submit()` awaits
-    // a frame internally, so it must still complete through a timeout fallback
-    // instead of stalling on "Saving" forever.
+    // stops firing while `document.hidden` is true. The store's `submit()`
+    // awaits a frame internally, so it must still complete through a timeout
+    // fallback instead of stalling on "Saving" forever.
     await page.addInitScript(() => {
       const native = window.requestAnimationFrame.bind(window);
       window.requestAnimationFrame = (callback) =>

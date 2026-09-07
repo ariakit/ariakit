@@ -10,10 +10,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   // modal context. The fallback dismiss button renders next to the menu, where
   // the ARIA menu pattern doesn't forbid it, so the menu still owns only its
   // own items. Safari reaches the capture through a different branch, since it
-  // leaves `BODY` as the active element for a native button without an
-  // explicit tab index, and giving the button one here would move this test
-  // off the branch it covers.
-  // https://github.com/ariakit/ariakit/issues/4270
+  // leaves `BODY` as the active element for a native button without an explicit
+  // tab index, and giving the button one here would move this test off the
+  // branch it covers. https://github.com/ariakit/ariakit/issues/4270
   // https://github.com/ariakit/ariakit/issues/7310
   test("context menu keeps a dismiss button outside the menu", async ({
     page,

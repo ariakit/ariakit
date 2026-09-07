@@ -50,8 +50,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog()).not.toBeVisible();
 
     // Focus returns to the original disclosure (openButton) from the first
-    // open. The non-interactive click did not hijack the disclosure because
-    // the isFocusable() guard filtered out the non-focusable mousedown target.
+    // open. The non-interactive click did not hijack the disclosure because the
+    // isFocusable() guard filtered out the non-focusable mousedown target.
     await test.expect(openButton).toBeFocused();
   });
 });

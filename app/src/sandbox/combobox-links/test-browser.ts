@@ -59,8 +59,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     context,
     browserName,
   }) => {
-    // Chrome and Firefox can take a while to materialize the modifier+Enter
-    // tab under CI load.
+    // Chrome and Firefox can take a while to materialize the modifier+Enter tab
+    // under CI load.
     test.slow();
     const combobox = q.combobox("Links");
     await combobox.click();
@@ -78,8 +78,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await expect(page).toHaveURL(/https:\/\/ariakit\.com/);
       }).toPass();
     } else {
-      // Keep the page-event deadline inside the 90-second slow-test budget so
-      // a missing tab names the event instead of timing out the whole test.
+      // Keep the page-event deadline inside the 90-second slow-test budget so a
+      // missing tab names the event instead of timing out the whole test.
       const newPagePromise = context.waitForEvent("page", {
         timeout: 60_000,
       });

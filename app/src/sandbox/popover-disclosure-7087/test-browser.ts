@@ -84,8 +84,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // apart from the application assigning the same button. So a show() that
   // names nothing keeps the button rather than the element that happened to be
   // focused, which also anchors the popup to that button and returns focus
-  // there on close.
-  // https://github.com/ariakit/ariakit/issues/7087
+  // there on close. https://github.com/ariakit/ariakit/issues/7087
   test("keeps a mounted button as the opener when the open names none", async ({
     q,
   }) => {

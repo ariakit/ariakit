@@ -5,8 +5,8 @@ import { useRef } from "react";
 const items = Array.from({ length: 30 }, (_, index) => `Item ${index + 1}`);
 const formName = "preferences";
 
-// React 19 reads the same named property during commits. Scope the collision
-// to native browser work so its failure does not hide Ariakit's behavior.
+// React 19 reads the same named property during commits. Scope the collision to
+// native browser work so its failure does not hide Ariakit's behavior.
 function setFormName(formRef: RefObject<HTMLFormElement | null>, name: string) {
   const form = formRef.current;
   if (!form) return;

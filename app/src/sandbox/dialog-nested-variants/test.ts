@@ -13,8 +13,8 @@ function expectModalStyle(toHaveStyle: boolean) {
   expect(documentElement)[prop].toHaveStyle("scrollbar-gutter: stable");
   expect(documentElement)[prop].toHaveStyle("overflow-x: hidden");
   expect(documentElement)[prop].toHaveStyle("overflow-y: hidden");
-  // The scrollbar-gutter lock neither defines --scrollbar-width nor touches
-  // the body styles.
+  // The scrollbar-gutter lock neither defines --scrollbar-width nor touches the
+  // body styles.
   expect(
     getComputedStyle(documentElement).getPropertyValue("--scrollbar-width"),
   ).toBe("");

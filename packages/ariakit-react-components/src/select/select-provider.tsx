@@ -10,8 +10,8 @@ type Value = SelectStoreValue;
  * Provides a select store to [Select](https://ariakit.com/components/select)
  * components.
  * @deprecated Use
- * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
- * instead.
+ *   [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx

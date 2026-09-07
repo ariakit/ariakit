@@ -41,8 +41,8 @@ export const useSelectArrow = createHook<TagName, SelectArrowOptions>(
  * rendered inside the [`Select`](https://ariakit.com/reference/select)
  * component.
  * @deprecated Use
- * [`ComboboxSelectArrow`](https://ariakit.com/reference/combobox-select-arrow)
- * instead.
+ *   [`ComboboxSelectArrow`](https://ariakit.com/reference/combobox-select-arrow)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4}

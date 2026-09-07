@@ -3,8 +3,10 @@ import * as Ariakit from "@ariakit/react";
 export default function Example() {
   const form = Ariakit.useFormStore({
     defaultValues: {
-      "123": true, // integer-like property name
-      safe: true, // non integer-like property name
+      // integer-like property name
+      "123": true,
+      // non integer-like property name
+      safe: true,
     },
   });
 
