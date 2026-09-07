@@ -185,8 +185,8 @@ const tabFolder = cx(
   // width and gets a border inside it, and the curves widen their band by the
   // same amount through the folder, which grows them toward the box.
   "ui-selected:ui-focus-visible:[--tab-focus-extra:min(max(1px,calc(2px-var(--ak-frame-border)-var(--ak-frame-ring)),round(up,calc((var(--ak-frame-border)+var(--ak-frame-ring))/2),1px)),var(--py,0px),var(--px,0px))]",
-  "ui-selected:ui-focus-visible:border-t-[length:calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
-  "ui-selected:ui-focus-visible:border-x-[length:calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
+  "ui-selected:ui-focus-visible:border-t-[calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
+  "ui-selected:ui-focus-visible:border-x-[calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
   "ui-selected:ui-focus-visible:pt-[calc(var(--py,0px)-var(--tab-focus-extra))]",
   "ui-selected:ui-focus-visible:px-[calc(var(--px,0px)-var(--tab-focus-extra))]",
   "ui-selected:ui-focus-visible:border-(--ak-outline)",
@@ -319,8 +319,8 @@ export const tabGlider = cv({
         // is the one the tab's focus reads, from the same utilities.
         "ak-outline ak-outline-brand",
         "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:[--tab-focus-extra:max(1px,calc(2px-var(--ak-frame-border)-var(--ak-frame-ring)),round(up,calc((var(--ak-frame-border)+var(--ak-frame-ring))/2),1px))]",
-        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:border-t-[length:calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
-        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:border-x-[length:calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
+        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:border-t-[calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
+        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:border-x-[calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
         "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:border-(--ak-outline)",
         "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:ring-(--ak-outline)",
         "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:[--folder-edge:var(--ak-outline)]",
