@@ -145,8 +145,8 @@ export interface ComboboxStoreOptions<
    * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
    * state changes.
    * @deprecated Use
-   * [`setInputValue`](https://ariakit.com/reference/combobox-provider#setinputvalue)
-   * instead.
+   *   [`setInputValue`](https://ariakit.com/reference/combobox-provider#setinputvalue)
+   *   instead.
    */
   setValue?: (value: ComboboxStoreState<T>["value"]) => void;
   /**

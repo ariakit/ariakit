@@ -135,10 +135,10 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 
-    // Re-check tabbable children each time the panel becomes visible so
-    // content rendered conditionally on tab selection is accounted for. The
-    // tabId dependency covers the single-panel pattern, where the panel stays
-    // mounted and only its tabId and children change on tab selection.
+    // Re-check tabbable children each time the panel becomes visible so content
+    // rendered conditionally on tab selection is accounted for. The tabId
+    // dependency covers the single-panel pattern, where the panel stays mounted
+    // and only its tabId and children change on tab selection.
     useSafeLayoutEffect(() => {
       if (!mounted) return;
       const element = ref.current;

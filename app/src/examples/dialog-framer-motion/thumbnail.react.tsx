@@ -17,9 +17,9 @@ export default function Thumbnail() {
     <div
       data-open
       {...dialog.jsx({
-        // Static preview: data-open renders it open and transition-none
-        // keeps it from fading in on load. The plain static class wins over
-        // the cv's fixed positioning by stylesheet order.
+        // Static preview: data-open renders it open and transition-none keeps
+        // it from fading in on load. The plain static class wins over the cv's
+        // fixed positioning by stylesheet order.
         className: "static flex flex-col gap-4 items-start transition-none",
       })}
     >

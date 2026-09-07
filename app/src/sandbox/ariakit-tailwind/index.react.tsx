@@ -569,6 +569,11 @@ export default function Example() {
             label="raw mix"
             className="ak-layer-mix ak-layer-mix-color-[oklch(0.6_0.15_30)] ak-layer-mix-amount-[35%] *:ak-text"
           />
+          <Cell
+            label="raw mix inputs"
+            className="ak-layer-mix-color-[oklch(0.6_0.15_30)] ak-layer-mix-amount-[35%] ak-layer-mix-method-[lab] *:ak-text"
+          />
+          <Cell label="raw contrast amount" className="ak-layer-contrast-50" />
           <Layer
             label="explicit longhands"
             className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"

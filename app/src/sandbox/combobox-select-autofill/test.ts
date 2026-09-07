@@ -12,5 +12,5 @@ test("select has data-autofill attribute", async () => {
 test("focusing on native select moves focus to custom select", async () => {
   expect(q.combobox()).not.toHaveFocus();
   await focus(getNativeSelect());
-  await expect.poll(q.combobox).toHaveFocus();
+  await expect.poll(q.combobox.lazy()).toHaveFocus();
 });

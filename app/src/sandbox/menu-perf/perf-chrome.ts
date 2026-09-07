@@ -66,8 +66,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
   });
 
-  // Same interaction as "open menu", but with the script profiler enabled
-  // so the PR comment shows where the scripting time goes. Profiling adds
+  // Same interaction as "open menu", but with the script profiler enabled so
+  // the PR comment shows where the scripting time goes. Profiling adds
   // overhead, so the unprofiled test above is the one to read for timings.
   test("open menu (script profile)", async ({ perf }) => {
     await perf.measure(({ q }) => openMenu(q), {

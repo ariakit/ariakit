@@ -14,7 +14,7 @@ test("shows on hover, hides outside, and immediately reopens", async () => {
   await hover(anchor);
   expect(await q.tooltip.wait("Tooltip content")).toBeVisible();
   await hoverOutside();
-  await expect.poll(q.tooltip.maybe).not.toBeInTheDocument();
+  await expect.poll(q.tooltip.maybe.lazy()).not.toBeInTheDocument();
 
   await hover(anchor);
   expect(q.tooltip("Tooltip content")).toBeVisible();
@@ -60,8 +60,8 @@ test("waits again after keyboard focus is lost", async () => {
   expect(q.tooltip.maybe("Tooltip content")).not.toBeInTheDocument();
 
   await hoverOutside();
-  // Dispatch directly so the assertion runs before the timeout can expire
-  // when the full suite delays the interaction helper.
+  // Dispatch directly so the assertion runs before the timeout can expire when
+  // the full suite delays the interaction helper.
   await dispatch.mouseOver(anchor);
   await dispatch.mouseEnter(anchor);
   await dispatch.mouseMove(anchor);

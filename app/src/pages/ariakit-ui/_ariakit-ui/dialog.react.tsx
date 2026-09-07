@@ -44,9 +44,9 @@ interface OpenDialogProps extends DialogProps {
 
 /**
  * A dialog held open inside its card. The stage is a size container, which
- * makes it the containing block of the fixed dialog and its backdrop, so
- * both lay out in the card instead of over the page. Focus stays where it
- * was so the page does not jump on load.
+ * makes it the containing block of the fixed dialog and its backdrop, so both
+ * lay out in the card instead of over the page. Focus stays where it was so the
+ * page does not jump on load.
  */
 function OpenDialog({
   stageClassName,

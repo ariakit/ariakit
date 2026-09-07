@@ -27,8 +27,8 @@ export function getFrameChain(element: Element) {
 
 /**
  * Returns the full composed path and readable iframe host chain for positive
- * dialog membership, plus a target projected into the reference element's
- * root for outside-tree marks.
+ * dialog membership, plus a target projected into the reference element's root
+ * for outside-tree marks.
  */
 export function getEventTargets(
   event: Event,

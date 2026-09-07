@@ -14,8 +14,8 @@ import {
 } from "solid-js";
 
 /**
- * Creates a stable accessor. Useful when creating derived accessors that
- * depend on a mutable variable that may change later.
+ * Creates a stable accessor. Useful when creating derived accessors that depend
+ * on a mutable variable that may change later.
  * @example
  * let value = 0;
  * const accessor = stableAccessor(value, (v) => v + 1);
@@ -89,8 +89,8 @@ export function extractPropsWithDefaults<
  */
 export type RefStore<T> = {
   /**
-   * The current value of the ref. It is a non-reactive getter, wrapped with
-   * the `untrack` function.
+   * The current value of the ref. It is a non-reactive getter, wrapped with the
+   * `untrack` function.
    *
    * **Important note**: since this is a getter, TypeScript might reflect the
    * wrong type in some cases. For example:
@@ -126,10 +126,10 @@ export type RefStore<T> = {
 
 /**
  * Creates a ref object that contains the value getter (`value`) and setter
- * (`set`) as properties for convenience. It also has a `reset` method that
- * can be used to set the value to the initial value that was passed,
- * which is `undefined` by default. The `current` getter can be used to obtain
- * the value without tracking it reactively.
+ * (`set`) as properties for convenience. It also has a `reset` method that can
+ * be used to set the value to the initial value that was passed, which is
+ * `undefined` by default. The `current` getter can be used to obtain the value
+ * without tracking it reactively.
  * @example
  * ```jsx
  * const ref = createRef();

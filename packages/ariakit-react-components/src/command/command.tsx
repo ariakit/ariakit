@@ -218,8 +218,8 @@ export const useCommand = createHook<TagName, CommandOptions>(
  * extra attributes and event handlers to ensure accessibility. It can be
  * activated with the keyboard using the
  * [`clickOnEnter`](https://ariakit.com/reference/command#clickonenter) and
- * [`clickOnSpace`](https://ariakit.com/reference/command#clickonspace)
- * props. Both are set to `true` by default.
+ * [`clickOnSpace`](https://ariakit.com/reference/command#clickonspace) props.
+ * Both are set to `true` by default.
  * @see https://ariakit.com/components/command
  * @example
  * ```jsx

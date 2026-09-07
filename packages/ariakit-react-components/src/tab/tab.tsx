@@ -51,8 +51,8 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
       "Tab must be wrapped in a TabList component.",
   );
 
-  // Keep a reference to the default id so we can wait before all tabs have
-  // been assigned an id before registering them in the store. See
+  // Keep a reference to the default id so we can wait before all tabs have been
+  // assigned an id before registering them in the store. See
   // https://github.com/ariakit/ariakit/issues/1721
   const defaultId = useId();
   const id = props.id || defaultId;

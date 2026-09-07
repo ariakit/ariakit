@@ -97,9 +97,9 @@ export interface NavIconProps
   extends ak.RoleProps<"span">, VariantProps<typeof navIcon> {}
 
 /**
- * Renders the icon slot of a nav row, sized by the Nav icon-size variable.
- * It keeps the line height while the sidebar is expanded so the label
- * aligns, and squares to the icon size when the sidebar collapses.
+ * Renders the icon slot of a nav row, sized by the Nav icon-size variable. It
+ * keeps the line height while the sidebar is expanded so the label aligns, and
+ * squares to the icon size when the sidebar collapses.
  */
 export function NavIcon(props: NavIconProps) {
   const [variantProps, rest] = splitProps(props, navIcon);
@@ -137,8 +137,8 @@ export interface NavButtonProps
   extends ButtonProps, VariantProps<typeof navButton> {}
 
 /**
- * Renders a nav row that is not a disclosure, such as a sidebar brand row or
- * a single link that collapses with the sidebar. Wrap the label in
+ * Renders a nav row that is not a disclosure, such as a sidebar brand row or a
+ * single link that collapses with the sidebar. Wrap the label in
  * `NavButtonContent` so it fades on collapse the way a disclosure row's does,
  * and use the `render` prop for a row that should be an anchor.
  */

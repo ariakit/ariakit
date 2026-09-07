@@ -8,9 +8,9 @@ import type {
  * Besides the standard Changesets `getReleaseLine` and
  * `getDependencyReleaseLine` functions, this module exports a non-standard
  * `getChangelogEntry` hook. It only works because
- * patches/@changesets__apply-release-plan@8.0.0.patch makes upstream's
- * getChangelogEntry delegate to it instead of rendering the default
- * "### Major/Minor/Patch Changes" sections.
+ * patches/@changesets__apply-release-plan@8.1.0.patch makes upstream's
+ * getChangelogEntry delegate to it instead of rendering the default "###
+ * Major/Minor/Patch Changes" sections.
  *
  * When bumping `@changesets/apply-release-plan`, regenerate the patch with
  * `pnpm patch @changesets/apply-release-plan`, re-insert the hook before the
@@ -80,9 +80,7 @@ export async function getChangelogEntry(
   changelogLines: ChangelogLines,
 ) {
   // const date = new Date().toLocaleDateString("en-US", {
-  //   month: "long",
-  //   day: "numeric",
-  //   year: "numeric",
+  //   month: "long", day: "numeric", year: "numeric",
   // });
   const text = await getChangelogText(Object.values(changelogLines).flat());
   return `## ${release.newVersion}\n\n${text}`;

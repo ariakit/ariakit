@@ -117,7 +117,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await q.button("Actions").click();
     await test.expect(menu).toBeVisible();
     // The default pass has written a transform by now, which is what brings the
-    // menu under its button, so the callback is the only thing left to wait for.
+    // menu under its button, so the callback is the only thing left to wait
+    // for.
     await test.expect(firstItem).toBeInViewport();
     // A popup that isn't placed doesn't take its initial focus, so focus
     // staying on the button is the user-facing half of the state the attribute

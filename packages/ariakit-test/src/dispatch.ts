@@ -15,8 +15,9 @@ type Target = Document | Window | Node | Element | null;
 type EventFunction = (element: Target, options?: object) => Promise<boolean>;
 
 // `@testing-library/dom` has no `auxclick` in its event map, so `dispatch` adds
-// it to the events it can build by name. Its `doubleClick` alias has no matching
-// `createEvent` method, so only the buildable `dblClick` name is exposed.
+// it to the events it can build by name. Its `doubleClick` alias has no
+// matching `createEvent` method, so only the buildable `dblClick` name is
+// exposed.
 type DispatchEventType = Exclude<EventType, "doubleClick"> | "auxClick";
 
 type EventsObject = {
@@ -129,8 +130,8 @@ function dispatchDisabledControlClick(
 
   // Real browsers fire `input`/`change` only when the value changed: a checkbox
   // always toggles; a radio only when it wasn't already selected. Dispatch each
-  // through `withWindowEvent` so happy-dom's missing `window.event` reflects the
-  // event being dispatched (as in jsdom/browsers), not the outer click.
+  // through `withWindowEvent` so happy-dom's missing `window.event` reflects
+  // the event being dispatched (as in jsdom/browsers), not the outer click.
   if (input.isConnected && (isCheckbox || !wasChecked)) {
     const fireActivationEvent = (type: "input" | "change") => {
       const activationEvent = createEvent[type](input);
@@ -168,11 +169,11 @@ function baseDispatch(element: Target, event: Event): Promise<boolean> {
 }
 
 // The `@testing-library/dom` event map builds `click` and `contextmenu` from
-// `MouseEvent` and has no `auxclick` entry, but Pointer Events defines all three
-// as `PointerEvent`, which is what Chromium, Firefox, and WebKit dispatch. Only
-// the interface and the pointer members change; `button` and `buttons` keep
-// their mouse-event semantics. Replacing the map's `click` entry also drops its
-// `button: 0`, which `initMouseEvent` assigns anyway.
+// `MouseEvent` and has no `auxclick` entry, but Pointer Events defines all
+// three as `PointerEvent`, which is what Chromium, Firefox, and WebKit
+// dispatch. Only the interface and the pointer members change; `button` and
+// `buttons` keep their mouse-event semantics. Replacing the map's `click` entry
+// also drops its `button: 0`, which `initMouseEvent` assigns anyway.
 // https://www.w3.org/TR/pointerevents/#the-click-auxclick-and-contextmenu-events
 const clickFamilyInit = { bubbles: true, cancelable: true, composed: true };
 
@@ -217,35 +218,36 @@ const events = eventNames.reduce((events, eventName) => {
 
 /**
  * Creates and fires a DOM event on an element, then waits for the resulting
- * microtasks to flush. Call `dispatch.<eventName>(element, options)` to build and
- * fire a specific event (e.g. `dispatch.keyDown`, `dispatch.click`,
- * `dispatch.input`), or call `dispatch(element, event)` directly with an `Event`
- * instance.
+ * microtasks to flush. Call `dispatch.<eventName>(element, options)` to build
+ * and fire a specific event (e.g. `dispatch.keyDown`, `dispatch.click`,
+ * `dispatch.input`), or call `dispatch(element, event)` directly with an
+ * `Event` instance.
  *
  * Unlike higher-level helpers such as `click` and `type`, this fires a single
  * event without simulating the surrounding interaction sequence. Pointer and
- * mouse events fired on an element with `pointer-events: none` are re-dispatched
- * on the nearest ancestor that has pointer events enabled, matching how browsers
- * route those events.
+ * mouse events fired on an element with `pointer-events: none` are
+ * re-dispatched on the nearest ancestor that has pointer events enabled,
+ * matching how browsers route those events.
  *
  * A pointer event built by name reports the contact size and transducer angle
- * browsers report for a device with neither, so `width` and `height` are `1` and
- * `altitudeAngle` is a right angle. Supplying only the tilt or spherical angle
- * pair derives the other pair. The members describing a gesture, such as
- * `pressure` and `isPrimary`, keep their defaults here; the higher-level helpers
- * fill those in. An event you construct yourself keeps whatever its constructor
- * gave it.
+ * browsers report for a device with neither, so `width` and `height` are `1`
+ * and `altitudeAngle` is a right angle. Supplying only the tilt or spherical
+ * angle pair derives the other pair. The members describing a gesture, such as
+ * `pressure` and `isPrimary`, keep their defaults here; the higher-level
+ * helpers fill those in. An event you construct yourself keeps whatever its
+ * constructor gave it.
  *
  * Mouse and pointer events built by name derive `pageX` and `pageY` from the
- * client coordinates and target window scroll, and derive `which` from `button`.
- * The layout-dependent `offsetX` and `offsetY` keep the environment's values.
+ * client coordinates and target window scroll, and derive `which` from
+ * `button`. The layout-dependent `offsetX` and `offsetY` keep the environment's
+ * values.
  *
  * `click`, `auxclick`, and `contextmenu` are built as `PointerEvent`, the way
  * browsers dispatch them, so they accept and report pointer properties such as
  * `pointerType`. An environment with no `PointerEvent` builds them as
  * `MouseEvent` instead, and they report the same properties there.
- * @returns A promise that resolves to `false` when the event's default action was
- * prevented with `event.preventDefault()`, and `true` otherwise.
+ * @returns A promise that resolves to `false` when the event's default action
+ *   was prevented with `event.preventDefault()`, and `true` otherwise.
  * @example
  * ```ts
  * await dispatch.keyDown(q.textbox(), { key: "Enter" });

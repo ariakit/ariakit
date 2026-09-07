@@ -23,8 +23,8 @@ import { clsx } from "clsx";
 import type * as React from "react";
 import { containerSizeContent } from "#app/lib/container-size.ts";
 
-// The docs content column plus the disclosure frame padding on both sides,
-// so the button text aligns with the surrounding prose.
+// The docs content column plus the disclosure frame padding on both sides, so
+// the button text aligns with the surrounding prose.
 const containerProps = container.jsx({
   $size: `calc(min(${containerSizeContent}, 100%) + var(--ak-frame-padding) * 2)`,
   $p: "none",
@@ -98,8 +98,8 @@ export function ContentDisclosureContent({
   ...props
 }: ContentDisclosureContentProps) {
   if (prose) {
-    // The body is the rhythm column alone. It sits inside a page-level
-    // prose, so it must keep inheriting that font size rather than set one.
+    // The body is the rhythm column alone. It sits inside a page-level prose,
+    // so it must keep inheriting that font size rather than set one.
     return (
       <DisclosureContent body={{ className: proseColumn().class }} {...props} />
     );

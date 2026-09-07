@@ -31,8 +31,8 @@ async function loadSourceFile(file: string) {
   const context = {
     addWatchFile() {},
     // Stands in for Vite's resolver: the plugin treats a #app/* import as a
-    // local file and asks the context for its path. Anything else is a
-    // fixture the stand-in was not written for, so it fails loudly.
+    // local file and asks the context for its path. Anything else is a fixture
+    // the stand-in was not written for, so it fails loudly.
     resolve(id: string) {
       if (!id.startsWith("#app/")) {
         throw new Error(`Unexpected import in the fixture: ${id}`);
@@ -108,9 +108,9 @@ test("disclosure source names", () => {
   `);
 });
 
-// An entry outside the examples tree that imports shared _lib data. It has
-// no framework suffix on purpose: framework dependencies resolve from the
-// entry's own directory, and a temporary directory has no node_modules.
+// An entry outside the examples tree that imports shared _lib data. It has no
+// framework suffix on purpose: framework dependencies resolve from the entry's
+// own directory, and a temporary directory has no node_modules.
 async function withLibImportFixture(run: (source: Source) => void) {
   const root = await mkdtemp(join(tmpdir(), "ariakit-source-plugin-"));
   try {

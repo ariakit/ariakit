@@ -16,8 +16,8 @@ test("stays open when interacting with a persistent element before the dialog is
   await click(q.button("Open dialog"));
   expect(q.dialog("Dialog")).toBeVisible();
 
-  // The dialog hasn't been focused yet (autoFocusOnShow={false}). Clicking
-  // the persistent field must not close it.
+  // The dialog hasn't been focused yet (autoFocusOnShow={false}). Clicking the
+  // persistent field must not close it.
   await click(q.textbox("Notification field"));
   expect(q.textbox("Notification field")).toHaveFocus();
   expect(q.dialog("Dialog")).toBeVisible();
@@ -60,7 +60,8 @@ test("keeps the documented behavior after the dialog has been focused", async ()
   expect(q.dialog("Dialog")).toBeVisible();
 });
 
-// Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635586651
+// Regression for
+// https://github.com/ariakit/ariakit/pull/6810#discussion_r3635586651
 test("keeps persistent elements after replacing an open dialog node", async () => {
   await click(q.button("Open dialog"));
   await click(q.button("Replace dialog element"));
@@ -147,7 +148,8 @@ test("closes when interacting inside an unrelated shadow root", async () => {
   await expect.poll(q.dialog.maybe.hidden.lazy("Dialog")).not.toBeVisible();
 });
 
-// Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635034591
+// Regression for
+// https://github.com/ariakit/ariakit/pull/6810#discussion_r3635034591
 test("closes when interacting with a same-id dialog in another root", async () => {
   await click(q.button("Show shadow dialog"));
   await click(q.button("Open dialog"));
@@ -162,7 +164,8 @@ test("closes when interacting with a same-id dialog in another root", async () =
   await expect.poll(q.dialog.maybe.hidden.lazy("Dialog")).not.toBeVisible();
 });
 
-// Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
+// Regression for
+// https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
 test("closes on a no-focus outside shadow click", async () => {
   await click(q.button("Open dialog"));
   expect(q.dialog("Dialog")).toBeVisible();
@@ -176,7 +179,8 @@ test("closes on a no-focus outside shadow click", async () => {
   await expect.poll(q.dialog.maybe.hidden.lazy("Dialog")).not.toBeVisible();
 });
 
-// Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
+// Regression for
+// https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
 test("stays open when dragging from persistent shadow content", async () => {
   await click(q.button("Open dialog"));
   expect(q.dialog("Dialog")).toBeVisible();

@@ -22,8 +22,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeVisible();
 
     await q.button("Disable inline portal").click();
-    // The content is rendered in place once the portal is disabled, and the
-    // new inline portalRef must not have fired against the removed node.
+    // The content is rendered in place once the portal is disabled, and the new
+    // inline portalRef must not have fired against the removed node.
     await test.expect(q.text("Inline portal content")).toBeVisible();
     await test
       .expect(q.text("Inline portal attach connected: yes"))

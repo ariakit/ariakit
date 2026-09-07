@@ -48,17 +48,17 @@
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
     "@ariakit/test": "workspace:*",
-    "@changesets/apply-release-plan": "8.0.0",
-    "@changesets/cli": "3.0.1",
+    "@changesets/apply-release-plan": "8.1.0",
+    "@changesets/cli": "3.0.2",
     "@changesets/types": "7.0.0",
     "@testing-library/jest-dom": "7.0.1",
     "@types/cross-spawn": "6.0.6",
     "@types/fs-extra": "11.0.4",
     "@types/node": "24.13.3",
     "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.5",
+    "@types/react-dom": "19.2.7",
     "@vitejs/plugin-react": "6.1.1",
-    "@vitest/coverage-v8": "4.1.11",
+    "@vitest/coverage-v8": "5.0.0",
     "chalk": "6.0.0",
     "chokidar": "5.0.0",
     "concurrently": "10.0.5",
@@ -66,12 +66,13 @@
     "cross-spawn": "7.0.6",
     "fs-extra": "11.4.0",
     "glob": "13.0.6",
-    "happy-dom": "20.11.15",
+    "happy-dom": "20.14.0",
     "jsdom": "30.0.1",
     "lefthook": "2.1.12",
     "open-cli": "9.0.0",
-    "oxfmt": "0.65.0",
-    "oxlint": "1.80.0",
+    "oxfmt": "0.66.0",
+    "oxlint": "1.81.0",
+    "oxlint-plugin-comment-reflow": "0.1.2",
     "oxlint-tsgolint": "7.0.2001",
     "pkg-pr-new": "0.0.88",
     "react": "19.2.8",
@@ -85,7 +86,7 @@
     "typescript-7": "npm:typescript@7.0.2",
     "vite": "8.2.2",
     "vite-plugin-solid": "2.11.14",
-    "vitest": "4.1.11",
+    "vitest": "5.0.0",
     "vitest-fail-on-console": "0.10.1"
   },
   "devEngines": {
@@ -95,5 +96,5 @@
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@11.25.0"
+  "packageManager": "pnpm@12.3.4"
 }

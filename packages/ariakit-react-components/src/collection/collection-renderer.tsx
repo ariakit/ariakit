@@ -218,7 +218,8 @@ function getItemSize(
   // When the nested items run along the axis being measured, the item's size is
   // the sum of its children's sizes. When they run along the cross axis (e.g. a
   // horizontal group inside a vertical list), summing would measure the wrong
-  // axis, so we fall through to the element/max-child measurement below instead.
+  // axis, so we fall through to the element/max-child measurement below
+  // instead.
   if (items?.length && hasSameOrientation) {
     const paddingStart = itemObject.paddingStart ?? itemObject.padding ?? 0;
     const paddingEnd = itemObject.paddingEnd ?? itemObject.padding ?? 0;
@@ -723,8 +724,8 @@ export function useCollectionRenderer<T extends Item = any>({
   const processVisibleIndices = useCallback(() => {
     const offsets = offsetsRef.current;
 
-    // Ref and resolver targets can change during commit. Skip passive work
-    // from the previous scroller until the resolved value reaches context.
+    // Ref and resolver targets can change during commit. Skip passive work from
+    // the previous scroller until the resolved value reaches context.
     scrollerController?.revalidate();
     if (scrollerRef.current !== scroller) return;
     if (!scroller) return;
@@ -913,9 +914,9 @@ export function useCollectionRenderer<T extends Item = any>({
 
   // Disconnect the observer when the renderer unmounts so it doesn't retain the
   // measured item nodes or keep firing resize callbacks. Re-observe the tracked
-  // elements on setup so observation survives a simulated unmount/remount (e.g.,
-  // React StrictMode), which runs this cleanup but doesn't necessarily re-run
-  // the item ref callbacks.
+  // elements on setup so observation survives a simulated unmount/remount
+  // (e.g., React StrictMode), which runs this cleanup but doesn't necessarily
+  // re-run the item ref callbacks.
   useEffect(() => {
     for (const element of elements.values()) {
       elementObserver?.observe(element);
@@ -993,7 +994,8 @@ export function useCollectionRenderer<T extends Item = any>({
     // When `itemSize` is set the renderer doesn't measure items, so nothing
     // should stay observed; otherwise keep the items that are still rendered.
     // The empty set also cleans up if `itemSize` switches from unset to a fixed
-    // size at runtime, which would otherwise leave already-measured nodes behind.
+    // size at runtime, which would otherwise leave already-measured nodes
+    // behind.
     const renderedIds = itemSize
       ? new Set<string>()
       : new Set(itemsProps.map((itemProps) => itemProps.id));
@@ -1094,8 +1096,8 @@ export interface CollectionRendererOptions<
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.com/reference/use-collection-store)
    * hook. If not provided, the closest
-   * [Collection](https://ariakit.com/components/collection) component's
-   * context will be used.
+   * [Collection](https://ariakit.com/components/collection) component's context
+   * will be used.
    *
    * The store
    * [`items`](https://ariakit.com/reference/use-collection-store#items) state
@@ -1137,8 +1139,8 @@ export interface CollectionRendererOptions<
    */
   items?: Items<T>;
   /**
-   * The element whose viewport determines which items are rendered. By
-   * default, the closest scrolling ancestor is used.
+   * The element whose viewport determines which items are rendered. By default,
+   * the closest scrolling ancestor is used.
    *
    * The element must be a scrolling ancestor in the same document. If a
    * function is provided, it will be called with the renderer element as an

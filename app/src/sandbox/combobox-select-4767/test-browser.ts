@@ -107,8 +107,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const banana = q.option("Banana");
     await test.expect(banana).toBeFocused();
 
-    // Backspace would navigate the page back in WebKit, so the editing-key
-    // half of this behavior is only exercised in the happy-dom duplicate.
+    // Backspace would navigate the page back in WebKit, so the editing-key half
+    // of this behavior is only exercised in the happy-dom duplicate.
     await page.keyboard.press("o");
     await test.expect(q.option("Orange")).toBeFocused();
     await test.expect(select).not.toBeFocused();

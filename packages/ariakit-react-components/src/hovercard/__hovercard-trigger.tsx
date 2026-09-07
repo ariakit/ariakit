@@ -39,14 +39,14 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
     const triggerRef = useRef<HTMLElement | null>(null);
     const showTimeoutRef = useRef(0);
 
-    // A truly disabled trigger must not reveal its content on hover, since
-    // that content would be reachable by pointer users alone. Read it from the
+    // A truly disabled trigger must not reveal its content on hover, since that
+    // content would be reachable by pointer users alone. Read it from the
     // element, because `render` composition can resolve the disabled state
     // below this hook. `focusable={false}` on this trigger's own props also
     // counts: it makes `accessibleWhenDisabled` inoperative and stops focus
-    // from revealing anything, and an inactive Focusable below never stamps,
-    // so only these props can say so. As an event function, this reads the
-    // latest render's values even from a pending show timeout.
+    // from revealing anything, and an inactive Focusable below never stamps, so
+    // only these props can say so. As an event function, this reads the latest
+    // render's values even from a pending show timeout.
     // https://github.com/ariakit/ariakit/issues/7115
     // https://github.com/ariakit/ariakit/issues/7116
     const isTrulyDisabled = useEvent((element: Element) => {
@@ -193,8 +193,8 @@ export interface HovercardTriggerOptions<
    * activating the trigger rather than explaining it. An element that declares
    * `aria-disabled` or `disabled` on its own, outside Ariakit props, counts as
    * disabled here too. A disabled trigger that isn't `accessibleWhenDisabled`
-   * never shows the content on hover, since the content would then be
-   * reachable by pointer users alone; this prop can't turn that back on.
+   * never shows the content on hover, since the content would then be reachable
+   * by pointer users alone; this prop can't turn that back on.
    * @default true
    * @deprecated
    * @private

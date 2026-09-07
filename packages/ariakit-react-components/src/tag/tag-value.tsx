@@ -6,16 +6,15 @@ import type { TagStore, TagStoreState } from "./tag-store.ts";
 
 /**
  * Renders the current
- * [`value`](https://ariakit.com/reference/use-tag-store#value) state in
- * the [tag store](https://ariakit.com/reference/use-tag-store).
+ * [`value`](https://ariakit.com/reference/use-tag-store#value) state in the
+ * [tag store](https://ariakit.com/reference/use-tag-store).
  *
  * As a value component, it doesn't render any DOM elements and therefore
  * doesn't accept HTML props.
  *
- * It takes a
- * [`children`](https://ariakit.com/reference/tag-value#children) function
- * that gets called with the current value as an argument. This can be used as
- * an uncontrolled API to render the tag value in a custom way.
+ * It takes a [`children`](https://ariakit.com/reference/tag-value#children)
+ * function that gets called with the current value as an argument. This can be
+ * used as an uncontrolled API to render the tag value in a custom way.
  * @see https://ariakit.com/components/tag
  * @example
  * ```jsx {3-5}
@@ -49,10 +48,10 @@ export function TagValue({ store, children }: TagValueProps = {}) {
 export interface TagValueProps {
   /**
    * Object returned by the
-   * [`useTagStore`](https://ariakit.com/reference/use-tag-store)
-   * hook. If not provided, the closest
-   * [`TagProvider`](https://ariakit.com/reference/tag-provider)
-   * component's context will be used.
+   * [`useTagStore`](https://ariakit.com/reference/use-tag-store) hook. If not
+   * provided, the closest
+   * [`TagProvider`](https://ariakit.com/reference/tag-provider) component's
+   * context will be used.
    */
   store?: TagStore;
   /**

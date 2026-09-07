@@ -55,8 +55,8 @@ export const list = cv({
       false: "[--list-ol:0] [--list-ul:1]",
     },
     /**
-     * Sets the base gap between items before the mode formulas apply. A
-     * nested list halves it. Numbers scale the spacing token.
+     * Sets the base gap between items before the mode formulas apply. A nested
+     * list halves it. Numbers scale the spacing token.
      */
     $gap(value?: string | number) {
       if (value == null) return;
@@ -152,8 +152,8 @@ export const listItemMarker = cv({
   variants: {
     /**
      * The marker's check state. `"none"` is a plain bullet or number with no
-     * check at all, `false` an empty slot, `true` a completed one. Defaults
-     * to `"none"`, or to a value derived from `$progress` when that is set.
+     * check at all, `false` an empty slot, `true` a completed one. Defaults to
+     * `"none"`, or to a value derived from `$progress` when that is set.
      */
     $checked: {
       none: [
@@ -168,8 +168,7 @@ export const listItemMarker = cv({
       false: "ui-list-ul:ring ui-list-ul:ring-inset",
     },
     /**
-     * Sets the progress between `0` and `1` shown by the circular fill
-     * child.
+     * Sets the progress between `0` and `1` shown by the circular fill child.
      */
     $progress(value?: number | string) {
       if (value == null) return;
@@ -179,8 +178,8 @@ export const listItemMarker = cv({
     },
   },
   defaultVariants: {
-    // $progress alone puts the marker in a check slot, and a full arc
-    // completes it.
+    // $progress alone puts the marker in a check slot, and a full arc completes
+    // it.
     $checked(_defaultValue, variants) {
       if (variants.$progress == null) return "none";
       return Number(variants.$progress) === 1;
@@ -197,8 +196,8 @@ export const listItemMarker = cv({
       return defaultValue ?? 50;
     },
     $lightnessOffset(defaultValue, variants) {
-      // A completed marker paints the brand color straight, without the
-      // neutral surface underneath it.
+      // A completed marker paints the brand color straight, without the neutral
+      // surface underneath it.
       if (variants.$checked === true) return defaultValue;
       // --list-ol and --list-ul are 1/0 flags on the list root. No variant can
       // gate this value, because $lightnessOffset writes to the style

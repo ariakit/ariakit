@@ -26,17 +26,17 @@ export const badge = cv({
     },
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
-      // A transparent badge has nothing to lift off, and a colored badge
-      // paints its own color, so it must not shift off it. A plain badge has
-      // no color of its own and lifts off the surface it sits on instead.
+      // A transparent badge has nothing to lift off, and a colored badge paints
+      // its own color, so it must not shift off it. A plain badge has no color
+      // of its own and lifts off the surface it sits on instead.
       if (variants.$layer === "transparent") return false;
       if (isLayerColor(variants.$layer)) return false;
       return true;
     },
     $mix(defaultValue, variants) {
       if (!isLayerColor(variants.$layer)) return defaultValue;
-      // Blend the color back toward the surface behind it, so a colored
-      // badge reads as a tint rather than a solid fill.
+      // Blend the color back toward the surface behind it, so a colored badge
+      // reads as a tint rather than a solid fill.
       return defaultValue ?? 15;
     },
     $text: true,
@@ -52,11 +52,11 @@ export const badge = cv({
     if (variants.$edgeRaw) return;
     if (variants.$edgeLightnessMin != null) return;
     if (variants.$edgeLightnessMax != null) return;
-    // The tinted edge keeps the color's own lightness, at a fifth of its
-    // alpha over a pale tint of the same hue. A light hue such as yellow all
-    // but vanishes there, so the edge stays at least 40% of the lightness
-    // scale away from the surface, on whichever side the surface is. One
-    // rule for every hue, and no hue is a special case.
+    // The tinted edge keeps the color's own lightness, at a fifth of its alpha
+    // over a pale tint of the same hue. A light hue such as yellow all but
+    // vanishes there, so the edge stays at least 40% of the lightness scale
+    // away from the surface, on whichever side the surface is. One rule for
+    // every hue, and no hue is a special case.
     addClass("ak-light:ak-edge-max-l-60 ak-dark:ak-edge-min-l-60");
   },
 });

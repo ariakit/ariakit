@@ -136,10 +136,10 @@ export const controlSlot = cv({
      * slot size. The larger the slot, the larger the margin. Set to `closeGap`
      * to move the slot closer to the control's text.
      *
-     * The margin goes on the sibling element beside the slot, so the text
-     * must be wrapped in a label element such as `ControlLabel`. A sibling
-     * selector cannot see a bare text node, and the margin would land on the
-     * next element instead, which may be another slot.
+     * The margin goes on the sibling element beside the slot, so the text must
+     * be wrapped in a label element such as `ControlLabel`. A sibling selector
+     * cannot see a bare text node, and the margin would land on the next
+     * element instead, which may be another slot.
      */
     $mx: {
       unset: "",
@@ -225,8 +225,8 @@ export const controlSlot = cv({
       // A badge, an avatar and a floating slot are surfaces of their own and
       // paint the layer they open. Any other slot opens one only to give its
       // icon a color context, and paints it when a layer variant moves the
-      // color. Otherwise the control's own surface shows through: a
-      // see-through control, or one standing aside for a glider.
+      // color. Otherwise the control's own surface shows through: a see-through
+      // control, or one standing aside for a glider.
       if (variants.$kind === "avatar") return true;
       if (variants.$floating) return true;
       return "transparent";
@@ -242,8 +242,8 @@ export const controlSlot = cv({
       return "auto";
     },
     $p(defaultValue, variants) {
-      // Only badges get the default horizontal padding: the $p values pad the
-      // x axis for text content, while avatar children (images) must fill the
+      // Only badges get the default horizontal padding: the $p values pad the x
+      // axis for text content, while avatar children (images) must fill the
       // whole slot, or the round clip turns them into straight-sided slabs.
       if (variants.$kind === "badge") return defaultValue ?? variants.$size;
       return defaultValue ?? "unset";
@@ -324,9 +324,9 @@ export const controlDescription = cv({
 });
 
 // A thicker rule reads as a heavier divider, so its alpha falls as --width
-// grows. A chevron is two strokes meeting at a corner, which reads lighter,
-// so it starts higher and falls faster. Both stay positive only across the
-// widths $width offers.
+// grows. A chevron is two strokes meeting at a corner, which reads lighter, so
+// it starts higher and falls faster. Both stay positive only across the widths
+// $width offers.
 const separatorEdge = cx(
   "ak-edge-alpha-[calc((24-var(--width)*6)/100)]",
   "[.chevron]:ak-edge-alpha-[calc((64-var(--width)*12)/100)]",
@@ -356,8 +356,8 @@ export const controlSeparator = cv({
       xs: ["[--size:1cap] self-center", separatorEdge],
       sm: ["[--size:1em] self-center", separatorEdge],
       md: ["[--size:1lh] self-center", separatorEdge],
-      // A stretched rule runs the whole row, where the plain edge alpha
-      // already reads clearly enough.
+      // A stretched rule runs the whole row, where the plain edge alpha already
+      // reads clearly enough.
       lg: "self-stretch",
       full: "self-stretch -my-(--ak-frame-padding,0px) mx-0",
     },
@@ -374,8 +374,8 @@ export const controlSeparator = cv({
     },
   },
   defaultVariants: {
-    // Pin the layer to the surface around it rather than leaving it unset:
-    // the edge color reads the same surface the separator sits on.
+    // Pin the layer to the surface around it rather than leaving it unset: the
+    // edge color reads the same surface the separator sits on.
     $lightnessOffset: 0,
     $size: "md",
     $width: 1,
@@ -425,8 +425,8 @@ export const controlGroup = cv({
   },
   refine({ variants, addClass }) {
     if (variants.$gap === "none" && variants.$layout === "horizontal") {
-      // Bordered controls share an edge only when nothing separates them,
-      // so each pulls half its edge into its neighbour in a gapless row.
+      // Bordered controls share an edge only when nothing separates them, so
+      // each pulls half its edge into its neighbour in a gapless row.
       addClass([
         "[&>.control:not(:nth-child(1_of_.control))]:-ms-[calc(var(--ak-frame-border)/2)]",
         "[&>.control:not(:nth-last-child(1_of_.control))]:-me-[calc(var(--ak-frame-border)/2)]",

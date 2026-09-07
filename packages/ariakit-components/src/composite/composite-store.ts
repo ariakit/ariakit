@@ -251,11 +251,11 @@ function verticalizeItems(items: CompositeStoreItem[]) {
       if (item) {
         verticalized.push({
           ...item,
-          // If there's no rowId, it means that it's not a grid composite, but
-          // a single row instead. So, instead of verticalizing it, that is,
+          // If there's no rowId, it means that it's not a grid composite, but a
+          // single row instead. So, instead of verticalizing it, that is,
           // assigning a different rowId based on the column index, we keep it
-          // undefined so they will be part of the same row. This is useful
-          // when using up/down on one-dimensional composites.
+          // undefined so they will be part of the same row. This is useful when
+          // using up/down on one-dimensional composites.
           rowId: item.rowId ? `${i}` : undefined,
         });
       }
@@ -435,8 +435,8 @@ export function createCompositeStore<
               : focusLoop !== "vertical");
           if (!canLoop) return undefined;
           // Wrap around to the beginning (or end, when scanning backward) of
-          // the same row, matching the flipItems behavior in the generic
-          // logic below.
+          // the same row, matching the flipItems behavior in the generic logic
+          // below.
           return findEnabledItemId({
             items: renderedItems,
             fromIndex: step === 1 ? 0 : renderedItems.length - 1,
@@ -769,8 +769,8 @@ export interface CompositeStoreState<
    * Whether the composite element is in the arrow-key focus order.
    *
    * @deprecated Use
-   * [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder)
-   * instead.
+   *   [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder)
+   *   instead.
    */
   includesBaseElement: boolean;
   /**
@@ -804,8 +804,8 @@ export interface CompositeStoreFunctions<
    * Sets the composite element state.
    *
    * @deprecated Use
-   * [`setCompositeElement`](https://ariakit.com/reference/use-composite-store#setcompositeelement)
-   * instead.
+   *   [`setCompositeElement`](https://ariakit.com/reference/use-composite-store#setcompositeelement)
+   *   instead.
    */
   setBaseElement: SetState<CompositeStoreState<T>["baseElement"]>;
   /**

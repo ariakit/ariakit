@@ -37,8 +37,8 @@ interface DemoGroupProps extends GliderGroupProps {
 }
 
 /**
- * A group whose selection moves on click, so the glider's travel can be
- * watched rather than inferred from a frozen state.
+ * A group whose selection moves on click, so the glider's travel can be watched
+ * rather than inferred from a frozen state.
  */
 function DemoGroup({
   gliders = [{ $kind: "flat", $state: "selected" }],

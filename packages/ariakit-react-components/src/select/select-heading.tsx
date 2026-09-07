@@ -58,7 +58,8 @@ export const useSelectHeading = createHook<TagName, SelectHeadingOptions>(
  * rendered within a [`SelectList`](https://ariakit.com/reference/select-list)
  * instead of directly within the popover.
  * @deprecated Use
- * [`ComboboxHeading`](https://ariakit.com/reference/combobox-heading) instead.
+ *   [`ComboboxHeading`](https://ariakit.com/reference/combobox-heading)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4}
@@ -90,10 +91,10 @@ export interface SelectHeadingOptions<
    * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook.
    *
    * **Note**: This prop has no effect on this component. The heading is linked
-   * to the closest [`SelectList`](https://ariakit.com/reference/select-list)
-   * or [`SelectPopover`](https://ariakit.com/reference/select-popover)
-   * component through React context, so it must be rendered inside the list or
-   * popover for the `aria-labelledby` prop to be set on that element.
+   * to the closest [`SelectList`](https://ariakit.com/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.com/reference/select-popover) component
+   * through React context, so it must be rendered inside the list or popover
+   * for the `aria-labelledby` prop to be set on that element.
    */
   store?: SelectStore;
 }

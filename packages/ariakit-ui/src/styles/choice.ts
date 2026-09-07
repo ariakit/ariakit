@@ -18,15 +18,15 @@ import { focus, focusWithin } from "./focus.ts";
 import { hover } from "./hover.ts";
 
 /**
- * The box every choice control draws: a native checkbox or radio input with
- * its own look removed, and the check inside a choice card. One class list
- * serves both, because the ui-choice-* variants read the checked, mixed and
- * disabled state from the element itself or from the label or aria-checked
- * host around it. It extends the control slot rather than frame, so the box
- * takes the slot's font-relative sizes, its first-line alignment inside a
- * control row and its floating placement. The surface defaults are the ones
- * input.ts uses, so a box reads as the same sunken material as a text
- * field; keep the two sets in step.
+ * The box every choice control draws: a native checkbox or radio input with its
+ * own look removed, and the check inside a choice card. One class list serves
+ * both, because the ui-choice-* variants read the checked, mixed and disabled
+ * state from the element itself or from the label or aria-checked host around
+ * it. It extends the control slot rather than frame, so the box takes the
+ * slot's font-relative sizes, its first-line alignment inside a control row and
+ * its floating placement. The surface defaults are the ones input.ts uses, so a
+ * box reads as the same sunken material as a text field; keep the two sets in
+ * step.
  */
 export const choice = cv({
   extend: [controlSlot, hover],
@@ -85,18 +85,18 @@ export const choice = cv({
     $rounded: "sm",
     // The box is its own shape, not a corner of the card or row around it.
     $forceRounded: true,
-    // The field geometry of input.ts: always a border, so the box is one
-    // size on light and dark layers, at the input's edge weight, sunk one
-    // step into the surface.
+    // The field geometry of input.ts: always a border, so the box is one size
+    // on light and dark layers, at the input's edge weight, sunk one step into
+    // the surface.
     $border: true,
     $borderType: "border",
     $edgeWeight: 30,
     $lightnessOffset: -1,
     $hoverOffset: true,
     $layer(defaultValue) {
-      // The slot opens a see-through layer for an icon. The box is a
-      // surface. Only the slot's own default is replaced: a color asked for
-      // by an extender or a caller stays.
+      // The slot opens a see-through layer for an icon. The box is a surface.
+      // Only the slot's own default is replaced: a color asked for by an
+      // extender or a caller stays.
       if (defaultValue === "transparent") return true;
       return defaultValue;
     },
@@ -104,10 +104,10 @@ export const choice = cv({
 });
 
 /**
- * The box on a native input. Adds what only an input needs: hovering the
- * field row around it lights it the way hovering the box does, the keyboard
- * focus ring, and the system's own drawing in forced-colors mode, where the
- * checked and mixed states come in the user's palette.
+ * The box on a native input. Adds what only an input needs: hovering the field
+ * row around it lights it the way hovering the box does, the keyboard focus
+ * ring, and the system's own drawing in forced-colors mode, where the checked
+ * and mixed states come in the user's palette.
  */
 export const choiceInput = cv({
   extend: [choice, focus],
@@ -122,9 +122,8 @@ export const choiceInput = cv({
 
 /**
  * A label row around a native choice input: the box, then a label and an
- * optional description. It is a control row, not a button: it paints no
- * surface and draws no ring of its own, because the input inside it does
- * both.
+ * optional description. It is a control row, not a button: it paints no surface
+ * and draws no ring of its own, because the input inside it does both.
  */
 export const choiceField = cv({
   extend: [control],
@@ -140,9 +139,9 @@ export const choiceField = cv({
     "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
   ],
   defaultVariants: {
-    // The row is structure on the surface around it, not a material of its
-    // own. With no layer, the box inside resolves against that surface and
-    // the row costs no color work.
+    // The row is structure on the surface around it, not a material of its own.
+    // With no layer, the box inside resolves against that surface and the row
+    // costs no color work.
     $layer: false,
   },
 });
@@ -154,9 +153,9 @@ export const choiceFieldLabel = controlLabel;
 export const choiceFieldDescription = controlDescription;
 
 /**
- * A card-shaped label around a choice input that stays out of sight. The
- * card tints toward brand while the input is checked or mixed, and the parts
- * inside it read the input's state through the ui-choice-* variants.
+ * A card-shaped label around a choice input that stays out of sight. The card
+ * tints toward brand while the input is checked or mixed, and the parts inside
+ * it read the input's state through the ui-choice-* variants.
  */
 export const choiceCard = cv({
   // Focus lands on the input inside the label, so the ring comes from the
@@ -194,8 +193,8 @@ export const choiceCard = cv({
      */
     $gapY: {
       // Wrapped rows sit closer together than siblings on one line. Defining
-      // --gap-y here also reaches the content wrapper, whose gap-y-(--gap-y)
-      // is inert without it.
+      // --gap-y here also reaches the content wrapper, whose gap-y-(--gap-y) is
+      // inert without it.
       card: "[--gap-y:calc(var(--py)/2)] gap-y-(--gap-y)",
     },
     /**
@@ -214,33 +213,33 @@ export const choiceCard = cv({
     $gapY: "card",
     $border: true,
     $focusOffset: 2,
-    // Cards are content surfaces: they lift unconditionally instead of
-    // taking the adaptive offset, which darkens a card on a light layer.
+    // Cards are content surfaces: they lift unconditionally instead of taking
+    // the adaptive offset, which darkens a card on a light layer.
     $lightnessOffset: false,
     $lighten: true,
   },
 });
 
 /**
- * The box drawn inside a card, at slot scale. It is the same box as the
- * native input, read through the card: the span is never checked or
- * disabled itself, so every state comes from the input in the label around
- * it. A child replaces the drawn mark.
+ * The box drawn inside a card, at slot scale. It is the same box as the native
+ * input, read through the card: the span is never checked or disabled itself,
+ * so every state comes from the input in the label around it. A child replaces
+ * the drawn mark.
  */
 export const choiceCardCheck = cv({
   extend: [choice],
   variants: {
     /**
      * Renders the check as a stamp in the card's top-end corner. Adds to the
-     * slot's own floating rules: the stamp shows only while the choice is
-     * on, so an empty corner never reads as a missing part.
+     * slot's own floating rules: the stamp shows only while the choice is on,
+     * so an empty corner never reads as a missing part.
      */
     $floating: "not-ui-choice-on:invisible",
   },
   defaultVariants: {
     $size: "lg",
-    // The card answers hover itself; a second shift on the check would read
-    // as a nested control.
+    // The card answers hover itself; a second shift on the check would read as
+    // a nested control.
     $hoverOffset: false,
     // A stamp is a disc whichever box the card draws in its row.
     $rounded(defaultValue, variants) {
@@ -272,8 +271,8 @@ export const choiceCardGrid = cv({
   ],
   variants: {
     /**
-     * Sets the narrowest a card may get before the grid drops a column.
-     * Numbers scale the spacing token.
+     * Sets the narrowest a card may get before the grid drops a column. Numbers
+     * scale the spacing token.
      * @default "10rem"
      */
     $minItemSize(value?: string | number) {

@@ -4,8 +4,8 @@ import { splitProps } from "clava";
 import type { FC } from "react";
 import { kbd } from "../styles/kbd.ts";
 
-// Role has no kbd shorthand, so the element comes from the render prop and
-// this alias retypes the props for the kbd element (the runtime component is
+// Role has no kbd shorthand, so the element comes from the render prop and this
+// alias retypes the props for the kbd element (the runtime component is
 // element-agnostic).
 const RoleKbd = ak.Role as FC<ak.RoleProps<"kbd">>;
 

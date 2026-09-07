@@ -8,8 +8,8 @@ export interface InputProps
 
 export function Input(props: InputProps) {
   const [variantProps, rest] = splitProps(props, input);
-  // Focusable adds data-focus-visible and disabled handling; the element
-  // comes from the render prop, which a user-provided render still wins.
+  // Focusable adds data-focus-visible and disabled handling; the element comes
+  // from the render prop, which a user-provided render still wins.
   return (
     <ak.Focusable render={<input />} {...input.jsx(variantProps)} {...rest} />
   );

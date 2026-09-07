@@ -47,8 +47,8 @@ export const useGroup = createHook<TagName, GroupOptions>(
 
 /**
  * Renders a group element. Optionally, a
- * [`GroupLabel`](https://solid.ariakit.com/reference/group-label) can be rendered as
- * a child to provide a label for the group.
+ * [`GroupLabel`](https://solid.ariakit.com/reference/group-label) can be
+ * rendered as a child to provide a label for the group.
  * @see https://solid.ariakit.com/components/group
  * @example
  * ```jsx

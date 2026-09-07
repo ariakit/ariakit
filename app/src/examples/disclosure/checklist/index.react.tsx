@@ -11,8 +11,8 @@ import { useState } from "react";
 
 // Legacy composed ak-list-item with ak-button: the button cv is layered onto
 // the item through its class/style props. The geometry variants restate the
-// item's own frame values so the two systems agree, and plain ak-button
-// paints no idle layer offset.
+// item's own frame values so the two systems agree, and plain ak-button paints
+// no idle layer offset.
 const itemButton = button.jsx({
   $p: "var(--list-item-padding)",
   $rounded: "xl",

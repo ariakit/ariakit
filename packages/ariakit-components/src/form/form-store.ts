@@ -45,10 +45,10 @@ function isPrototypePathSegment(key: PathSegment) {
 function nextFrame() {
   return new Promise<void>((resolve) => {
     // Browsers pause `requestAnimationFrame` in hidden documents, which would
-    // stall `validate()`/`submit()` until the tab becomes visible again. Race it
-    // against a timeout so a hidden document still makes progress; in a visible
-    // document the frame wins first, preserving the "after the next render"
-    // timing.
+    // stall `validate()`/`submit()` until the tab becomes visible again. Race
+    // it against a timeout so a hidden document still makes progress; in a
+    // visible document the frame wins first, preserving the "after the next
+    // render" timing.
     const timeoutId = setTimeout(resolve, 100);
     requestAnimationFrame(() => {
       clearTimeout(timeoutId);
@@ -566,8 +566,8 @@ export interface FormStoreFunctions<
   /**
    * Removes a value from an array field.
    *
-   * The array length is preserved: the removed index is replaced with `null`
-   * so indices stay stable for field keys, touched state, errors, and
+   * The array length is preserved: the removed index is replaced with `null` so
+   * indices stay stable for field keys, touched state, errors, and
    * [`FormRemove`](https://ariakit.com/reference/form-remove) focus handling.
    * Filter out `null` values before submitting if your payload should omit
    * removed items.

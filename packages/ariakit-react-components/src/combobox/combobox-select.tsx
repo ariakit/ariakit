@@ -66,11 +66,11 @@ function nextWithValue(store: ComboboxStore, next: ComboboxStore["next"]) {
       if (nextItem.value != null) {
         return nextItem.id;
       }
-      // Walking from the last returned id, as if the key was pressed again
-      // from there, skips items without value even across focusLoop
-      // boundaries. A repeated id means the walk cycled through every
-      // reachable item without finding one with value, so we return undefined
-      // to keep move() from changing the active item.
+      // Walking from the last returned id, as if the key was pressed again from
+      // there, skips items without value even across focusLoop boundaries. A
+      // repeated id means the walk cycled through every reachable item without
+      // finding one with value, so we return undefined to keep move() from
+      // changing the active item.
       if (visitedIds.has(nextId)) return;
       visitedIds.add(nextId);
       nextId = next({ activeId: nextId });
@@ -328,8 +328,8 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     props = {
       ...props,
       // The store points the active item at the current selection while the
-      // popup is closed, but a collapsed select must not reference an item
-      // that may not even be rendered.
+      // popup is closed, but a collapsed select must not reference an item that
+      // may not even be rendered.
       "aria-activedescendant": mounted
         ? props["aria-activedescendant"]
         : undefined,

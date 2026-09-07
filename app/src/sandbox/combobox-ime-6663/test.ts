@@ -9,9 +9,9 @@ test("keeps focus in the combobox between IME composition sessions", async () =>
   await type("사", combobox, { isComposing: true });
   expect(combobox).toHaveFocus();
 
-  // A Korean IME commits the previous syllable and immediately starts
-  // composing the next one within a single keystroke, so no animation frames
-  // pass between compositionend and the next compositionstart.
+  // A Korean IME commits the previous syllable and immediately starts composing
+  // the next one within a single keystroke, so no animation frames pass between
+  // compositionend and the next compositionstart.
   await dispatch.compositionEnd(combobox);
   await dispatch.compositionStart(combobox);
   await sleep();

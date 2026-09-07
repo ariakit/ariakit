@@ -2,8 +2,8 @@ import { beforeEach } from "vitest";
 
 type Framework = "react" | "solid";
 
-// Keep the path opaque so Vite's dynamic import vars transform does not
-// rewrite nested example paths into an unsupported one-level glob.
+// Keep the path opaque so Vite's dynamic import vars transform does not rewrite
+// nested example paths into an unsupported one-level glob.
 async function importDefault(path: string) {
   const { default: component } = await import(path);
   return component;

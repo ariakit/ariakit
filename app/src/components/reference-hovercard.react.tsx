@@ -88,9 +88,9 @@ export function ReferenceHovercardAnchor({
       <ak.HovercardAnchor
         {...props}
         {...link.jsx({
-          // Kind-colored and code-block anchors bring their own text color,
-          // and the link cv's brand text classes would win the cascade over
-          // those plain utilities, so the text system is disabled for them.
+          // Kind-colored and code-block anchors bring their own text color, and
+          // the link cv's brand text classes would win the cascade over those
+          // plain utilities, so the text system is disabled for them.
           $text: labelColors || inCodeBlock ? false : undefined,
           style: labelColors?.style,
           className: clsx(

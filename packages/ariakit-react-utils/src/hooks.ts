@@ -162,9 +162,9 @@ export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
           if (cleanup) {
             cleanup();
           } else {
-            // React only sees the merged ref, so its cleanup replaces the
-            // usual null call for all refs. Child refs that didn't return a
-            // cleanup still need the null detach they would receive alone.
+            // React only sees the merged ref, so its cleanup replaces the usual
+            // null call for all refs. Child refs that didn't return a cleanup
+            // still need the null detach they would receive alone.
             setRef(ref, null);
           }
         }
@@ -431,8 +431,8 @@ export function useIsMouseMoving() {
   useEffect(() => {
     if (hasInstalledGlobalEventListeners) return;
     // We're not returning the event listener cleanup function here because we
-    // may lose some events if this component is unmounted, but others are
-    // still mounted.
+    // may lose some events if this component is unmounted, but others are still
+    // mounted.
     addGlobalEventListener("mousemove", setMouseMoving, true);
     // See https://github.com/ariakit/ariakit/issues/1137
     addGlobalEventListener("mousedown", resetMouseMoving, true);

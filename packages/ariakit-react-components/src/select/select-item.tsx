@@ -185,10 +185,10 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
       store,
       ...props,
       // Withhold focusOnHover while the popup is closed, even for authored
-      // values, so hover can't activate an item or move focus while the
-      // select is collapsed. Check open before the authored callback so its
-      // side effects never run while closed, and again after so built-in
-      // activation stops when the callback itself closes the select.
+      // values, so hover can't activate an item or move focus while the select
+      // is collapsed. Check open before the authored callback so its side
+      // effects never run while closed, and again after so built-in activation
+      // stops when the callback itself closes the select.
       // https://github.com/ariakit/ariakit/issues/7120
       focusOnHover(event) {
         if (!store.getState().open) return false;
@@ -215,8 +215,8 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
  * By default, the [`value`](https://ariakit.com/reference/select-item#value)
  * prop will be rendered as the children, but this can be overriden if a custom
  * children is provided.
- * @deprecated Use
- * [`ComboboxItem`](https://ariakit.com/reference/combobox-item) instead.
+ * @deprecated Use [`ComboboxItem`](https://ariakit.com/reference/combobox-item)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4-5}

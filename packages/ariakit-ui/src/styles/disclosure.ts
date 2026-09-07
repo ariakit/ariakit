@@ -11,8 +11,8 @@ export const disclosureGroup = cv({
   class: ["[--disclosure-group:1]", "border-y divide-y divide-(--ak-edge)"],
   defaultVariants: {
     // The group runs edge to edge, so it takes no corners of its own. Its
-    // padding is the one every member spends, because each of them covers
-    // this frame.
+    // padding is the one every member spends, because each of them covers this
+    // frame.
     $rounded: "none",
     $p: 4,
   },
@@ -82,28 +82,28 @@ export const disclosure = cv({
     /**
      * Applies a split layout that visually separates the button and content
      * areas: the content gets its own top border and padding. The explicit
-     * false value keeps nested disclosures from inheriting an ancestor's
-     * split flag.
+     * false value keeps nested disclosures from inheriting an ancestor's split
+     * flag.
      */
     $split: {
       true: "[--disclosure-split:1]",
       false: "[--disclosure-split:0]",
     },
     /**
-     * Keeps the content's own top padding, which is what holds it away from
-     * the button. A split layout implies it. Set it on any other layout that
-     * spaces the content itself: the button then stops painting a hover ramp
-     * across its bottom padding, because there is nothing left to soften.
+     * Keeps the content's own top padding, which is what holds it away from the
+     * button. A split layout implies it. Set it on any other layout that spaces
+     * the content itself: the button then stops painting a hover ramp across
+     * its bottom padding, because there is nothing left to soften.
      */
     $contentPadding: {
       true: "[--disclosure-content-padding:1]",
       false: "[--disclosure-content-padding:0]",
     },
     /**
-     * Sets the size of the button's icon slot, which otherwise takes the
-     * text size. It must live on the root: the slot and the content read it
-     * as an inherited property, and the content's indent is computed here.
-     * Numbers scale the spacing token.
+     * Sets the size of the button's icon slot, which otherwise takes the text
+     * size. It must live on the root: the slot and the content read it as an
+     * inherited property, and the content's indent is computed here. Numbers
+     * scale the spacing token.
      */
     $iconSize(value?: string | number) {
       if (value == null) return;
@@ -153,10 +153,9 @@ export const disclosureButton = cv({
       "ui-disclosure-open:delay-0",
     ],
     /**
-     * Sets the button's border radius. Takes a named step from `none` to
-     * `4xl`, `full`, any length or expression such as `var(--my-radius)`, or
-     * `auto`, which stays concentric with the disclosure frame minus its
-     * border.
+     * Sets the button's border radius. Takes a named step from `none` to `4xl`,
+     * `full`, any length or expression such as `var(--my-radius)`, or `auto`,
+     * which stays concentric with the disclosure frame minus its border.
      */
     $rounded(value?: FrameRoundedValue | "auto" | (string & {})) {
       if (value !== "auto") return getFrameRoundedClass(value);
@@ -167,21 +166,20 @@ export const disclosureButton = cv({
     },
     /**
      * Extends the control's gap values with `auto`, which follows the
-     * disclosure frame: half the padding, never tighter than the base
-     * spacing step, measured from the slot's icon. The content body indents
-     * by the same gap, so keep `auto` where a body has to line up with the
-     * label.
+     * disclosure frame: half the padding, never tighter than the base spacing
+     * step, measured from the slot's icon. The content body indents by the same
+     * gap, so keep `auto` where a body has to line up with the label.
      */
     $gap: {
-      // A slot pulls its box in by the control's extra side padding (its
-      // margin is py - px plus its own centring), so the gap adds that extra
-      // back: the label then sits one line plus the root's gap past the
-      // padding, where the body expects it, whatever the padding scale.
+      // A slot pulls its box in by the control's extra side padding (its margin
+      // is py - px plus its own centring), so the gap adds that extra back: the
+      // label then sits one line plus the root's gap past the padding, where
+      // the body expects it, whatever the padding scale.
       auto: "[--gap:calc(var(--disclosure-gap)+var(--px)-var(--py))] gap-(--gap)",
     },
     /**
-     * Extends the focus ring offsets with `inset`, which draws the ring
-     * inside the button rather than over the disclosure edge it covers.
+     * Extends the focus ring offsets with `inset`, which draws the ring inside
+     * the button rather than over the disclosure edge it covers.
      */
     $focusOffset: {
       inset: "-outline-offset-2",
@@ -224,11 +222,11 @@ export const disclosureButton = cv({
   },
 });
 
-// The icon is a control slot, so it takes the size and the first-line
-// alignment every other control icon gets. A slot starts one padding in,
-// and its margins take the control's extra side padding off its box, which
-// the button's gap adds back (see $gap there): the label after it lands
-// where --disclosure-lead says, whatever the icon size is.
+// The icon is a control slot, so it takes the size and the first-line alignment
+// every other control icon gets. A slot starts one padding in, and its margins
+// take the control's extra side padding off its box, which the button's gap
+// adds back (see $gap there): the label after it lands where --disclosure-lead
+// says, whatever the icon size is.
 export const disclosureIcon = cv({
   extend: [buttonSlot],
   class: [
@@ -256,8 +254,8 @@ export const disclosureChevron = cv({
   ],
   variants: {
     /**
-     * Selects the closed-state direction the chevron points to. Both rotate
-     * to point down when open.
+     * Selects the closed-state direction the chevron points to. Both rotate to
+     * point down when open.
      */
     $direction: {
       right: ["-rotate-90", "ui-disclosure-open:rotate-0"],
@@ -286,13 +284,13 @@ export const disclosurePlus = cv({
     "ui-disclosure-open:bg-size-[var(--plus-line-thickness)_60%]",
   ],
   defaultVariants: {
-    // A full line box, so the cross drawn across it keeps its size beside
-    // the text.
+    // A full line box, so the cross drawn across it keeps its size beside the
+    // text.
     $size: "xl",
     $rounded: "full",
     // A line-sized slot normally spaces its label out by a side bearing. The
-    // cross fills only part of the box, so the box's own margin is enough,
-    // and the label stays where --disclosure-lead puts it.
+    // cross fills only part of the box, so the box's own margin is enough, and
+    // the label stays where --disclosure-lead puts it.
     $mx: "unset",
   },
 });
@@ -321,9 +319,9 @@ export const disclosureContent = cv({
   ],
   variants: {
     /**
-     * Draws a vertical guide line under the indicator and indents the
-     * content to align with the label. It counts on a slot leading the
-     * label: a start indicator or an icon.
+     * Draws a vertical guide line under the indicator and indents the content
+     * to align with the label. It counts on a slot leading the label: a start
+     * indicator or an icon.
      */
     $guide: [
       "[--disclosure-ps:var(--disclosure-lead)]",
@@ -368,8 +366,7 @@ export const disclosureContentBody = cv({
   ],
   variants: {
     /**
-     * Applies prose typography and spacing with the frame-capped rhythm
-     * gap.
+     * Applies prose typography and spacing with the frame-capped rhythm gap.
      */
     $prose(value?: boolean) {
       if (!value) return;

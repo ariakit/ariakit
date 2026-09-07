@@ -15,8 +15,8 @@ import { encodeBase64 } from "./base64.ts";
 /**
  * Renames inline code to its own tag so a component can be mapped to it. A
  * fenced block is a `code` inside a `pre`, and the code block component
- * reconstructs it by parsing its own rendered slot, so that one has to stay
- * the native element.
+ * reconstructs it by parsing its own rendered slot, so that one has to stay the
+ * native element.
  */
 export function rehypeInlineCode() {
   return (tree: Root) => {

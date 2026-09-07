@@ -21,10 +21,10 @@ const items = [
   { id: "row-3" },
 ] satisfies readonly CompositeRendererItem[];
 
-// A horizontal group nested one level deeper, inside a same-orientation wrapper.
-// The wrapper measures the group through metadata alone, so the group's height
-// comes from the largest column extent (max of 28 and 36) rather than the sum
-// of the columns' widths.
+// A horizontal group nested one level deeper, inside a same-orientation
+// wrapper. The wrapper measures the group through metadata alone, so the
+// group's height comes from the largest column extent (max of 28 and 36) rather
+// than the sum of the columns' widths.
 const nestedColumns = [
   { id: "nested-column-0", style: { width: COLUMN_WIDTH, height: 28 } },
   { id: "nested-column-1", style: { width: COLUMN_WIDTH, height: 36 } },

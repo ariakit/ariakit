@@ -130,9 +130,8 @@ function getOffsetMiddleware(
       typeof props.gutter === "number"
         ? props.gutter + arrowOffset
         : (props.gutter ?? arrowOffset);
-    // If there's no placement alignment (*-start or *-end),
-    // we'll fallback to the crossAxis offset as it also works
-    // for center-aligned placements.
+    // If there's no placement alignment (*-start or *-end), we'll fallback to
+    // the crossAxis offset as it also works for center-aligned placements.
     const hasAlignment = !!placement.split("-")[1];
     return {
       crossAxis: !hasAlignment ? props.shift : undefined,
@@ -276,10 +275,9 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
     const arrowElement = useStoreState(store, "arrowElement");
     const anchorElement = useStoreState(store, "anchorElement");
-    // The disclosure element is only used as the preserveTabOrder anchor,
-    // which takes effect only on portals and is disabled by the dialog for
-    // modal dialogs, so don't subscribe to it unless the feature can take
-    // effect.
+    // The disclosure element is only used as the preserveTabOrder anchor, which
+    // takes effect only on portals and is disabled by the dialog for modal
+    // dialogs, so don't subscribe to it unless the feature can take effect.
     const shouldPreserveTabOrder = preserveTabOrder && portal && !modal;
     const disclosureElement = useStoreState(
       store,
@@ -324,9 +322,9 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         : (overflowPadding.left ?? 0);
 
     // Whether the popover is unmounted (closed and not animating) while its
-    // element stays both connected to the DOM and hidden. The alwaysVisible
-    // and hidden props can keep the element visible while closed, in which
-    // case the positioning effect below must keep running.
+    // element stays both connected to the DOM and hidden. The alwaysVisible and
+    // hidden props can keep the element visible while closed, in which case the
+    // positioning effect below must keep running.
     const hiddenWhileUnmounted =
       !mounted && isHidden(mounted, props.hidden, props.alwaysVisible);
 
@@ -357,13 +355,13 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         `${getOverflowPaddingValue(positioningPadding)}px`,
       );
 
-      // The popover element stays connected to the DOM when it's closed but
-      // not unmounted. The default updatePosition function bails out while
+      // The popover element stays connected to the DOM when it's closed but not
+      // unmounted. The default updatePosition function bails out while
       // unmounted, so autoUpdate would only keep ancestor scroll/resize
       // listeners and observers running for a hidden element. Skip all of it
       // and set everything up again once the popover is shown. Custom
-      // updatePosition callbacks still run while hidden since they may
-      // position the popover in ways that don't depend on the open state.
+      // updatePosition callbacks still run while hidden since they may position
+      // the popover in ways that don't depend on the open state.
       if (hiddenWhileUnmounted && !hasCustomUpdatePosition) return;
 
       const anchor = getAnchorElement(anchorElement, getAnchorRectProp);
@@ -560,10 +558,10 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     // Subscribe to `mounted` so the show transition publishes `placing` before
     // descendant layout effects observe it; the positioning effect is too late
     // because layout effects run child-first. Only a mounted Popover asserts
-    // this, so popups with nothing to position never wait.
-    // Count writers per store and defer the final reset by a microtask so
-    // StrictMode replay, keyed replacement, and store swaps cannot briefly
-    // clear or strand ancestor-owned state.
+    // this, so popups with nothing to position never wait. Count writers per
+    // store and defer the final reset by a microtask so StrictMode replay,
+    // keyed replacement, and store swaps cannot briefly clear or strand
+    // ancestor-owned state.
     // https://github.com/ariakit/ariakit/pull/7009#discussion_r3699800772
     useSafeLayoutEffect(() => {
       if (!store) return;
@@ -590,9 +588,9 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
     const position = fixed ? "fixed" : "absolute";
 
-    // Wrap our element in a div that will be used to position the popover.
-    // This way the user doesn't need to override the popper's position to
-    // create animations.
+    // Wrap our element in a div that will be used to position the popover. This
+    // way the user doesn't need to override the popper's position to create
+    // animations.
     props = useWrapElement(
       props,
       (element) => (

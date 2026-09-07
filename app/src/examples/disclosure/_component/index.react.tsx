@@ -19,9 +19,9 @@ export default function Example() {
             $p: 4,
             $lighten: true,
             $border: true,
-            // The plain wrapper reads the open state from the Ariakit
-            // content's data-open attribute and forwards it to the open
-            // channel the disclosure styles publish for descendants.
+            // The plain wrapper reads the open state from the Ariakit content's
+            // data-open attribute and forwards it to the open channel the
+            // disclosure styles publish for descendants.
             className: "has-data-open:[--disclosure-open:1]",
           })}
         >

@@ -38,8 +38,8 @@ export const selectPopover = cv({
     "[position-try-fallbacks:flip-block,flip-inline]",
   ],
   defaultVariants: {
-    // A compact list on the canvas layer, rather than the dialog-scale
-    // popover surface.
+    // A compact list on the canvas layer, rather than the dialog-scale popover
+    // surface.
     $rounded: "xl",
     $p: 1,
     $layer: "canvas",

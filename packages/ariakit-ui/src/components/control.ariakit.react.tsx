@@ -39,9 +39,9 @@ export interface ControlSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof controlSlot> {}
 
 /**
- * Fixed-size slot for icons, avatars, badges, and shortcuts. Expects a
- * Control ancestor: it sizes itself from the control's font and reads the
- * control channel for the disabled visuals.
+ * Fixed-size slot for icons, avatars, badges, and shortcuts. Expects a Control
+ * ancestor: it sizes itself from the control's font and reads the control
+ * channel for the disabled visuals.
  */
 export function ControlSlot(props: ControlSlotProps) {
   const [variantProps, rest] = splitProps(props, controlSlot);
@@ -61,8 +61,8 @@ export interface ControlContentProps
   extends ak.RoleProps<"span">, VariantProps<typeof controlContent> {}
 
 /**
- * Flexible content area that hosts the control's label and description.
- * Expects a Control ancestor: it inherits the control's gap variables.
+ * Flexible content area that hosts the control's label and description. Expects
+ * a Control ancestor: it inherits the control's gap variables.
  */
 export function ControlContent(props: ControlContentProps) {
   const [variantProps, rest] = splitProps(props, controlContent);
@@ -85,9 +85,9 @@ export interface ControlDescriptionProps
   extends ak.RoleProps<"span">, VariantProps<typeof controlDescription> {}
 
 /**
- * Secondary text below the control's label. Expects a Control ancestor
- * (usually inside ControlContent): it reads the control channel for the
- * disabled visuals.
+ * Secondary text below the control's label. Expects a Control ancestor (usually
+ * inside ControlContent): it reads the control channel for the disabled
+ * visuals.
  */
 export function ControlDescription(props: ControlDescriptionProps) {
   const [variantProps, rest] = splitProps(props, controlDescription);
@@ -98,9 +98,9 @@ export interface ControlSeparatorProps
   extends ak.RoleProps<"div">, VariantProps<typeof controlSeparator> {}
 
 /**
- * Separator drawn between sibling controls. Expects the control group
- * channels: it hides in vertical groups and, when shy, fades next to
- * hovered, selected, or focused controls.
+ * Separator drawn between sibling controls. Expects the control group channels:
+ * it hides in vertical groups and, when shy, fades next to hovered, selected,
+ * or focused controls.
  */
 export function ControlSeparator(props: ControlSeparatorProps) {
   const [variantProps, rest] = splitProps(props, controlSeparator);

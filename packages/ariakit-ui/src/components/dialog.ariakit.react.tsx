@@ -83,8 +83,8 @@ export interface DialogScrollProps
   extends ComponentProps<"div">, VariantProps<typeof dialogScroll> {}
 
 /**
- * Scrollable viewport that covers the dialog’s content box, for dialogs
- * whose content can outgrow the available height.
+ * Scrollable viewport that covers the dialog’s content box, for dialogs whose
+ * content can outgrow the available height.
  */
 export function DialogScroll(props: DialogScrollProps) {
   const [variantProps, rest] = splitProps(props, dialogScroll);

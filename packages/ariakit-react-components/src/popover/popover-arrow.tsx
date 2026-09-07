@@ -90,10 +90,10 @@ function getRingFromSegment(segment: string, maskedSegment: string) {
   if (!width) return;
   const lengthsStart = match.index ?? 0;
   const lengthsEnd = lengthsStart + match[0].length;
-  // Whatever remains of the segment once the length run and the optional
-  // inset keyword are removed is the ring color. This works regardless of the
-  // color syntax and of whether the browser serializes the color before or
-  // after the lengths.
+  // Whatever remains of the segment once the length run and the optional inset
+  // keyword are removed is the ring color. This works regardless of the color
+  // syntax and of whether the browser serializes the color before or after the
+  // lengths.
   const rest = `${segment.slice(0, lengthsStart)} ${segment.slice(lengthsEnd)}`;
   const color = rest.replace(/\binset\b/g, " ").trim();
   const ring: RingStyle = { width, color: color || undefined };
@@ -184,12 +184,11 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
 
     // When the popover is outlined by a ring, the arrow stroke must match the
     // ring color so the arrow blends into the outline. A ring segment with an
-    // omitted color defaults to currentColor per CSS, so use the computed
-    // text color then. Computed styles always serialize a concrete shadow
-    // color, but declared values returned by some test environments may omit
-    // it. Without a ring, fall back to the border color, which always
-    // resolves to a concrete value on connected elements (currentColor at the
-    // very least).
+    // omitted color defaults to currentColor per CSS, so use the computed text
+    // color then. Computed styles always serialize a concrete shadow color, but
+    // declared values returned by some test environments may omit it. Without a
+    // ring, fall back to the border color, which always resolves to a concrete
+    // value on connected elements (currentColor at the very least).
     const fallbackColor = isRing
       ? style?.getPropertyValue("color")
       : style?.getPropertyValue(`border-${dir}-color`);

@@ -75,14 +75,14 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     (state) => checked ?? getIsChecked(value, state?.value),
   );
 
-  // Use the store's id as the default name to ensure radios in different
-  // groups have unique names. This prevents the browser from treating all
-  // radios as a single group. See https://github.com/ariakit/ariakit/issues/3833
+  // Use the store's id as the default name to ensure radios in different groups
+  // have unique names. This prevents the browser from treating all radios as a
+  // single group. See https://github.com/ariakit/ariakit/issues/3833
   const storeId = useStoreState(store, "id");
   const name = nameProp ?? storeId;
 
-  // TODO: Consider moving this synchronization into the radio store.
-  // Keep the checked radio active; otherwise the first item becomes active.
+  // TODO: Consider moving this synchronization into the radio store. Keep the
+  // checked radio active; otherwise the first item becomes active.
   useEffect(() => {
     if (!id) return;
     if (!isChecked) return;
@@ -96,8 +96,8 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   const nativeRadio = isNativeRadio(tagName, props.type);
   const disabled = groupDisabled || disabledFromProps(props);
   // When the checked property is programmatically set on the change event, we
-  // need to schedule the element's property update, so the controlled
-  // isChecked state can be taken into account.
+  // need to schedule the element's property update, so the controlled isChecked
+  // state can be taken into account.
   const [propertyUpdated, schedulePropertyUpdate] = useForceUpdate();
 
   useEffect(() => {
@@ -155,13 +155,13 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     const { moves, activeId } = store.getState();
     if (!moves) return;
     if (id && activeId !== id) return;
-    // The composite keydown handler calls preventDefault() before moving
-    // focus, which suppresses the browser's native check-on-arrow-key
-    // behavior. Replay that activation with a real click so React delivers an
-    // actual change event with checked already set, going through its
-    // controlled input state restoration. The checked guard keeps no-op focus
-    // events, such as tabbing back to the checked radio, from dispatching
-    // spurious clicks. See https://github.com/ariakit/ariakit/issues/6345
+    // The composite keydown handler calls preventDefault() before moving focus,
+    // which suppresses the browser's native check-on-arrow-key behavior. Replay
+    // that activation with a real click so React delivers an actual change
+    // event with checked already set, going through its controlled input state
+    // restoration. The checked guard keeps no-op focus events, such as tabbing
+    // back to the checked radio, from dispatching spurious clicks. See
+    // https://github.com/ariakit/ariakit/issues/6345
     if (event.currentTarget.checked) return;
     event.currentTarget.click();
   });

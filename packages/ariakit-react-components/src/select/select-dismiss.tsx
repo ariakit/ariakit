@@ -40,7 +40,8 @@ export const useSelectDismiss = createHook<TagName, SelectDismissOptions>(
  * rendered within a [`SelectList`](https://ariakit.com/reference/select-list)
  * instead of directly within the popover.
  * @deprecated Use
- * [`ComboboxDismiss`](https://ariakit.com/reference/combobox-dismiss) instead.
+ *   [`ComboboxDismiss`](https://ariakit.com/reference/combobox-dismiss)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4}
@@ -69,10 +70,9 @@ export interface SelectDismissOptions<
 > extends PopoverDismissOptions<T> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook.
-   * If not provided, the closest
-   * [`Select`](https://ariakit.com/reference/select) or
-   * [`SelectProvider`](https://ariakit.com/reference/select-provider)
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook. If
+   * not provided, the closest [`Select`](https://ariakit.com/reference/select)
+   * or [`SelectProvider`](https://ariakit.com/reference/select-provider)
    * components' context will be used.
    */
   store?: SelectStore;

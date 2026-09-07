@@ -111,10 +111,10 @@ const tabStartCurve = cx(
 // bevel tab paints it back on its own box. The extra variant sorts this after
 // the rule at rest. Keyboard focus paints the box in the brand layer, selected
 // or not, the way a composite row marks its focused item, and the brand layer
-// gives the label its colour. An unselected tab reads the strip's colour with
-// a variant of its own, so the brand carries that variant too to outrank it.
-// The selected tab's lift comes off while the box is brand, so the brand
-// reads the same on every tab.
+// gives the label its colour. An unselected tab reads the strip's colour with a
+// variant of its own, so the brand carries that variant too to outrank it. The
+// selected tab's lift comes off while the box is brand, so the brand reads the
+// same on every tab.
 const tabBox = cx(
   "not-ui-selected:ui-hover:bg-(--ak-layer)",
   "ui-focus-visible:ak-layer-brand ui-focus-visible:ak-layer-contrast",
@@ -244,11 +244,11 @@ export const tab = cv({
     // selected fill matches the panel, which lifts the same way off the same
     // surface.
     $layer: "var(--tabs-layer)",
-    // The lift the selected tab takes; the classes above keep it off the
-    // other tabs. A folder lightens one step, as the panel it merges into
-    // does. A flat or bevel pill takes an offset of one and a half instead,
-    // the separation a raised pill gets on either theme, and stays ahead of
-    // a hovered neighbour's one step.
+    // The lift the selected tab takes; the classes above keep it off the other
+    // tabs. A folder lightens one step, as the panel it merges into does. A
+    // flat or bevel pill takes an offset of one and a half instead, the
+    // separation a raised pill gets on either theme, and stays ahead of a
+    // hovered neighbour's one step.
     $lightnessOffset(_defaultValue, variants) {
       if (variants.$kind === "folder") return false;
       return 1.5;
@@ -259,8 +259,8 @@ export const tab = cv({
     },
     // The radius comes from the frame nesting, concentric with the strip.
     $rounded: "unset",
-    // The kinds mark keyboard focus themselves, so the button's ring stays
-    // off. Its colour stays on: the selected folder's edge takes it.
+    // The kinds mark keyboard focus themselves, so the button's ring stays off.
+    // Its colour stays on: the selected folder's edge takes it.
     $focus: false,
     $focusColor: "brand",
     // A folder tab takes the root's edge, so the selected one merges with the
@@ -392,10 +392,9 @@ export const tabGlider = cv({
     // The glider's own lifts arrive as the default value, and the tab scheme
     // replaces them for the painted covers: a selected cover lifts as the tab
     // it stands in for does, a folder with the lighten below and a flat or
-    // bevel pill with an offset of one and a half, a hovered tab lifts one
-    // step off the strip, and a focused tab paints the brand layer with no
-    // lift. A bar carries its colour another way, so it keeps the glider's
-    // values.
+    // bevel pill with an offset of one and a half, a hovered tab lifts one step
+    // off the strip, and a focused tab paints the brand layer with no lift. A
+    // bar carries its colour another way, so it keeps the glider's values.
     $lightnessOffset(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
       if (variants.$state === "hover") return true;
@@ -403,8 +402,8 @@ export const tabGlider = cv({
       if (variants.$kind === "folder") return false;
       return 1.5;
     },
-    // The focused tab's pill keeps its contrast with a brand surface behind
-    // the strip, and so does the cover that stands in for it.
+    // The focused tab's pill keeps its contrast with a brand surface behind the
+    // strip, and so does the cover that stands in for it.
     $contrast(defaultValue, variants) {
       if (variants.$state !== "focus") return defaultValue;
       return defaultValue ?? true;
@@ -511,9 +510,9 @@ export const tabList = cv({
     $cover: true,
     $p: "unset",
     $rounded: "unset",
-    // The cover adds this margin to its stretch and takes it off the radius,
-    // so the radius nested in the strip stays concentric with the root's where
-    // the row lands. The classes above move the box itself further.
+    // The cover adds this margin to its stretch and takes it off the radius, so
+    // the radius nested in the strip stays concentric with the root's where the
+    // row lands. The classes above move the box itself further.
     $m: "calc(-1 * var(--tabs-pull))",
   },
 });

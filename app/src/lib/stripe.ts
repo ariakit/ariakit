@@ -429,8 +429,8 @@ export async function processCheckout({
     return session;
   }
   if (type === "team") {
-    // Create or reuse the team before removing personal Plus credit so a
-    // failed upgrade retry doesn't take away the user's existing access.
+    // Create or reuse the team before removing personal Plus credit so a failed
+    // upgrade retry doesn't take away the user's existing access.
     await createTeam({ context, user: clerkId, checkoutSession: session.id });
     if (Number(creditUsed)) {
       await removePlusFromUser({ context, user: clerkId });

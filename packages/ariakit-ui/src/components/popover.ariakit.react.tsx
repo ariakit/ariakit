@@ -92,8 +92,8 @@ export interface PopoverScrollProps
   extends ComponentProps<"div">, VariantProps<typeof popoverScroll> {}
 
 /**
- * Scrollable viewport that covers the popover’s content box, for popovers
- * whose content can outgrow the available height.
+ * Scrollable viewport that covers the popover’s content box, for popovers whose
+ * content can outgrow the available height.
  */
 export function PopoverScroll(props: PopoverScrollProps) {
   const [variantProps, rest] = splitProps(props, popoverScroll);

@@ -20,15 +20,15 @@ export const link = cv({
     $text: "brand",
     $textPush(defaultValue, variants) {
       if (!variants.$text) return defaultValue;
-      // Dark layers push the lightness past the readability floor so the
-      // link reads as a tint, not a slab of saturated brand color. Through
-      // the variant rather than a dark-gated utility, which would sort last
-      // and quietly beat a caller's own $textPush.
+      // Dark layers push the lightness past the readability floor so the link
+      // reads as a tint, not a slab of saturated brand color. Through the
+      // variant rather than a dark-gated utility, which would sort last and
+      // quietly beat a caller's own $textPush.
       return defaultValue ?? "calc(var(--link-dark, 0) * 20)";
     },
     $focus: true,
-    // The padding above already holds the focus indicator off the text, and
-    // an offset would push it into the lines above and below.
+    // The padding above already holds the focus indicator off the text, and an
+    // offset would push it into the lines above and below.
     $focusOffset: "none",
   },
 });

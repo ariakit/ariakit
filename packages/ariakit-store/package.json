@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
-    "vitest": "4.1.11"
+    "vitest": "5.0.0"
   },
   "exports": {
     ".": "./src/index.ts",

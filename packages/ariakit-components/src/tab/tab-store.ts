@@ -231,12 +231,12 @@ export function createTabStore({
       selectedIdFromSelectedValue = tab.getState().selectedId;
     };
     const restoreSelectedId = () => {
-      // We suppress the activeId sync to prevent the activeId state from
-      // being set to the selectedId state since this is just a restoration of
-      // the selectedId state from a select or combobox selected value.
-      // setState early-returns on unchanged values and emits no batch event
-      // to consume the suppression, so only arm it when the restore will
-      // actually change the state.
+      // We suppress the activeId sync to prevent the activeId state from being
+      // set to the selectedId state since this is just a restoration of the
+      // selectedId state from a select or combobox selected value. setState
+      // early-returns on unchanged values and emits no batch event to consume
+      // the suppression, so only arm it when the restore will actually change
+      // the state.
       const { selectedId } = tab.getState();
       if (selectedId === selectedIdFromSelectedValue) return;
       pendingRestore = true;
@@ -326,9 +326,9 @@ export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
 export interface TabStoreFunctions extends CompositeStoreFunctions<TabStoreItem> {
   /**
    * Sets the
-   * [`selectedId`](https://ariakit.com/reference/tab-provider#selectedid) state.
-   * If another tab has DOM focus and the selected tab is enabled, focus will
-   * move to the selected tab. If you want to always move focus, use the
+   * [`selectedId`](https://ariakit.com/reference/tab-provider#selectedid)
+   * state. If another tab has DOM focus and the selected tab is enabled, focus
+   * will move to the selected tab. If you want to always move focus, use the
    * [`select`](https://ariakit.com/reference/use-tab-store#select) function
    * instead.
    * @example

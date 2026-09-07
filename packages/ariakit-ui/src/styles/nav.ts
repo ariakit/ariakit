@@ -22,11 +22,10 @@ export const nav = cv({
       };
     },
     /**
-     * Sets the icon slot size for nav icons and nav disclosures. It must
-     * live on the root (or an ancestor such as the sidebar): the consumers
-     * read it as an inherited property or through container style queries,
-     * which read the nearest ancestor container. Numbers scale the spacing
-     * token.
+     * Sets the icon slot size for nav icons and nav disclosures. It must live
+     * on the root (or an ancestor such as the sidebar): the consumers read it
+     * as an inherited property or through container style queries, which read
+     * the nearest ancestor container. Numbers scale the spacing token.
      */
     $iconSize(value?: string | number) {
       if (value == null) return;
@@ -88,9 +87,9 @@ export const navLink = cv({
   },
 });
 
-// The additions layered onto a disclosure button, or onto a plain link such
-// as a sidebar brand row, to make it a nav row that collapses with the
-// sidebar. Not disclosure-specific, which is why it is not named for one.
+// The additions layered onto a disclosure button, or onto a plain link such as
+// a sidebar brand row, to make it a nav row that collapses with the sidebar.
+// Not disclosure-specific, which is why it is not named for one.
 export const navButton = cv({
   class: [
     "justify-start overflow-clip whitespace-normal text-start",
@@ -121,8 +120,8 @@ export const navButton = cv({
   ],
 });
 
-// The label collapses along with the sidebar, staging its height and opacity
-// so the text fades before the width animates. It pairs with navButton, on a
+// The label collapses along with the sidebar, staging its height and opacity so
+// the text fades before the width animates. It pairs with navButton, on a
 // disclosure row or a plain link alike.
 export const navButtonContent = cv({
   class: [

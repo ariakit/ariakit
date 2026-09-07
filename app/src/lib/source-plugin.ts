@@ -113,7 +113,8 @@ function isLibPath(path: string) {
 }
 
 /**
- * Normalize a filename to a basename without framework suffix and relative path.
+ * Normalize a filename to a basename without framework suffix and relative
+ * path.
  */
 function normalizeFilename(filename: string, baseDir: string) {
   const noFrameworkSuffix = removeFrameworkSuffix(filename);
@@ -351,8 +352,8 @@ function computeTopLevelDependencies(files: Record<string, SourceFile>) {
 }
 
 /**
- * Generate a flattened file (final files record entry) from a source file.
- * Uses a cache keyed by absolute id.
+ * Generate a flattened file (final files record entry) from a source file. Uses
+ * a cache keyed by absolute id.
  */
 async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
   const cacheKey = cacheKeyForFile(file.id, file.content);

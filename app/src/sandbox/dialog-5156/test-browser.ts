@@ -19,8 +19,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // EventTarget (such as window or an XMLHttpRequest). Those listeners used
     // to call `contains()` on the target, throwing a TypeError (in Chromium,
     // "Failed to execute 'contains' on 'Node': parameter 1 is not of type
-    // 'Node'"; the wording varies by engine).
-    // See https://github.com/ariakit/ariakit/issues/5156
+    // 'Node'"; the wording varies by engine). See
+    // https://github.com/ariakit/ariakit/issues/5156
     await page.evaluate(() => {
       // `event.target` is read-only and set during dispatch, so shadow it with
       // a bare EventTarget to stand in for the non-Node target.
@@ -37,8 +37,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
       // Escape would close the dialog; its listener handles the target too.
       dispatch(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     });
-    // A foreign mousedown target can remain recorded until a standalone
-    // outside click occurs without replacing it.
+    // A foreign mousedown target can remain recorded until a standalone outside
+    // click occurs without replacing it.
     await page.evaluate(() => {
       const event = new MouseEvent("mousedown", { bubbles: true });
       Object.defineProperty(event, "target", {

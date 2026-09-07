@@ -131,8 +131,8 @@ export function SelectLabel(props: SelectLabelProps) {
 export interface SelectButtonProps
   extends ak.ComboboxSelectProps, VariantProps<typeof select> {
   /**
-   * Custom icon element that will be rendered before or after the display
-   * value depending on the `chevron` position.
+   * Custom icon element that will be rendered before or after the display value
+   * depending on the `chevron` position.
    */
   icon?: React.ReactNode;
   /** Selects chevron/icon placement (before, after). Set `false` to hide. */
@@ -140,9 +140,8 @@ export interface SelectButtonProps
   /** Custom display value element. */
   displayValue?: React.ReactNode;
   /**
-   * Styles the button as a colored status badge, like the legacy
-   * `ak-badge-*` classes on a select button. Pass a colored `$layer` to
-   * tint it.
+   * Styles the button as a colored status badge, like the legacy `ak-badge-*`
+   * classes on a select button. Pass a colored `$layer` to tint it.
    */
   badge?: boolean;
 }
@@ -175,8 +174,8 @@ export function SelectButton({
         ...badgeVariants,
         ...variantProps,
         $disabled: variantProps.$disabled ?? rest.disabled,
-        // The badge cv's own class; restated because the badge look is
-        // composed from resolved variants, which carry no classes.
+        // The badge cv's own class; restated because the badge look is composed
+        // from resolved variants, which carry no classes.
         className: clsx(badge && "font-medium", variantProps.className),
       })}
       {...rest}
@@ -213,8 +212,8 @@ export function SelectPopover(props: SelectPopoverProps) {
 export interface SelectItemProps
   extends ak.ComboboxItemProps, VariantProps<typeof selectItem> {
   /**
-   * Custom icon element that will be rendered before or after the display
-   * value depending on the `checkmark` position.
+   * Custom icon element that will be rendered before or after the display value
+   * depending on the `checkmark` position.
    */
   icon?: React.ReactNode;
   /** Selects checkmark/icon placement (before, after). Set `false` to hide. */

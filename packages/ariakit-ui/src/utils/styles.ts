@@ -64,7 +64,9 @@ interface GetScaledStyleClassParams {
   defaultValue?: StyleValue;
   /** Scale factor for non-percent values before writing the CSS property. */
   multiplier?: StyleValue;
-  /** Output unit mode; use `%` when the value should map directly to percent. */
+  /**
+   * Output unit mode; use `%` when the value should map directly to percent.
+   */
   unit?: "%";
   /** Allows zero values to generate a style class instead of being ignored. */
   allowZero?: boolean;

@@ -20,9 +20,9 @@ export interface CheckboxProps
   extends ak.CheckboxProps, VariantProps<typeof checkbox> {}
 
 /**
- * Native checkbox drawn by CSS. The checked, mixed and disabled looks come
- * from the input's own state, so it works on its own, inside a
- * `CheckboxField` or in a table cell. `checked="mixed"` draws a dash.
+ * Native checkbox drawn by CSS. The checked, mixed and disabled looks come from
+ * the input's own state, so it works on its own, inside a `CheckboxField` or in
+ * a table cell. `checked="mixed"` draws a dash.
  * @see https://ariakit.com/reference/checkbox
  */
 export function Checkbox(props: CheckboxProps) {
@@ -40,8 +40,8 @@ export interface CheckboxFieldProps
  */
 export function CheckboxField({ children, ...props }: CheckboxFieldProps) {
   const [variantProps, rest] = splitProps(props, checkboxField);
-  // The label is never :disabled itself, so mirror the input's disabled prop
-  // as the $disabled variant for the row's own disabled visuals.
+  // The label is never :disabled itself, so mirror the input's disabled prop as
+  // the $disabled variant for the row's own disabled visuals.
   return (
     <label
       {...checkboxField.jsx({
@@ -82,13 +82,13 @@ export interface CheckboxCardProps
   extends ak.CheckboxProps, VariantProps<typeof checkboxCard> {}
 
 /**
- * Card-like label wrapping an Ariakit Checkbox kept out of sight, styled
- * from the input's checked, mixed and disabled state.
+ * Card-like label wrapping an Ariakit Checkbox kept out of sight, styled from
+ * the input's checked, mixed and disabled state.
  */
 export function CheckboxCard({ children, ...props }: CheckboxCardProps) {
   const [variantProps, rest] = splitProps(props, checkboxCard);
-  // The label is never :disabled itself, so mirror the input's disabled prop
-  // as the $disabled variant for the card's own disabled visuals.
+  // The label is never :disabled itself, so mirror the input's disabled prop as
+  // the $disabled variant for the card's own disabled visuals.
   return (
     <label
       {...checkboxCard.jsx({
@@ -136,8 +136,8 @@ export interface CheckboxCardContentProps
   extends ak.RoleProps<"span">, VariantProps<typeof checkboxCardContent> {}
 
 /**
- * Wrapper that stacks the card's label and description. Must be nested
- * inside a `CheckboxCard`.
+ * Wrapper that stacks the card's label and description. Must be nested inside a
+ * `CheckboxCard`.
  */
 export function CheckboxCardContent(props: CheckboxCardContentProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardContent);

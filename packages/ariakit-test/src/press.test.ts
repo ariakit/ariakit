@@ -13,11 +13,12 @@ function getTextInput() {
   return input;
 }
 
-// A scripted click dispatched on a disabled control fires its listeners in jsdom
-// and real browsers; happy-dom drops it, but `dispatch` normalizes that (see
-// dispatch.ts), so these run in the default happy-dom. They guard the disabled
-// gate on the synthetic Space/Enter activation: without the gate, the activation
-// dispatches a click that — once normalized — would reach the listener here.
+// A scripted click dispatched on a disabled control fires its listeners in
+// jsdom and real browsers; happy-dom drops it, but `dispatch` normalizes that
+// (see dispatch.ts), so these run in the default happy-dom. They guard the
+// disabled gate on the synthetic Space/Enter activation: without the gate, the
+// activation dispatches a click that — once normalized — would reach the
+// listener here.
 test("press.up does not activate a disabled control on Space release", async () => {
   const button = document.createElement("button");
   button.disabled = true;

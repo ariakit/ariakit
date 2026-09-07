@@ -33,7 +33,8 @@ const entry = getPublicFiles(sourcePath);
 const esmDir = getESMDir();
 const cjsDir = getCJSDir();
 
-// Get the tsconfig path for the current package. If tsconfig.build.json exists, use it, otherwise use tsconfig.json.
+// Get the tsconfig path for the current package. If tsconfig.build.json exists,
+// use it, otherwise use tsconfig.json.
 const tsconfigPath = existsSync(join(cwd, "tsconfig.build.json"))
   ? "tsconfig.build.json"
   : "tsconfig.json";

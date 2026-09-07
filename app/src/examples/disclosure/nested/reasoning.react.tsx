@@ -62,8 +62,8 @@ export interface ReasoningContentProps extends DisclosureContentProps {}
 export function ReasoningContent(props: ReasoningContentProps) {
   const nested = useContext(NestedReasoningContext);
   const body = createRender(DisclosureContentBody, props.body, {
-    // The /relaxed modifier keeps the prose line-height ratio at the
-    // smaller font size.
+    // The /relaxed modifier keeps the prose line-height ratio at the smaller
+    // font size.
     $prose: true,
     className: "text-sm/relaxed",
   });

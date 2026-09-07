@@ -516,8 +516,8 @@ test("re-registers a listener without dragging a stale cleanup forward", () => {
   sync(store, null, listener);
   store.setState("count", 2);
 
-  // "cleanup 2" must fire before "run 3" so the previous registration
-  // doesn't leak its pending cleanup.
+  // "cleanup 2" must fire before "run 3" so the previous registration doesn't
+  // leak its pending cleanup.
   expect(events).toEqual([
     "run 1",
     "cleanup 1",
@@ -1740,9 +1740,9 @@ test("keeps the batch baseline current across idle setStates between subscriptio
   store.setState("count", 2);
   store.setState("count", 3);
 
-  // Register a new batch listener mid-dispatch. The listener registered
-  // here must see (4, 3) — not (4, 1) — as its initial diff, even though
-  // the idle setStates produced no batch microtask.
+  // Register a new batch listener mid-dispatch. The listener registered here
+  // must see (4, 3) — not (4, 1) — as its initial diff, even though the idle
+  // setStates produced no batch microtask.
   const laterCalls: Array<[number, number]> = [];
   let registered = false;
   sync(store, ["count"], (state) => {
@@ -1788,8 +1788,8 @@ test("keeps the batch baseline current when a batch listener unsubscribes itself
 
   store.setState("count", 3);
 
-  // The new batch listener registered mid-dispatch must see [3, 2] — the
-  // diff from the post-flush state, not the pre-flush snapshot ([3, 1]).
+  // The new batch listener registered mid-dispatch must see [3, 2] — the diff
+  // from the post-flush state, not the pre-flush snapshot ([3, 1]).
   expect(laterCalls).toEqual([[3, 2]]);
 });
 
@@ -1817,8 +1817,8 @@ test("keeps the batch baseline current when the only batch listener unsubscribes
 
   store.setState("count", 2);
 
-  // The new batch listener registered mid-dispatch must see [2, 1] — the
-  // diff from the post-flush state, not the pre-flush snapshot ([2, 0]).
+  // The new batch listener registered mid-dispatch must see [2, 1] — the diff
+  // from the post-flush state, not the pre-flush snapshot ([2, 0]).
   expect(laterCalls).toEqual([[2, 1]]);
 });
 
@@ -1842,9 +1842,9 @@ test("keeps the batch baseline current when a batch listener registers a success
   store.setState("count", 3);
   await flushBatch();
 
-  // The successor batch listener was registered when state was {count: 2},
-  // so the next flush must diff against that baseline, not the pre-flush
-  // snapshot from the original listener's flush ({count: 1}).
+  // The successor batch listener was registered when state was {count: 2}, so
+  // the next flush must diff against that baseline, not the pre-flush snapshot
+  // from the original listener's flush ({count: 1}).
   const lastCall = laterCalls.at(-1);
   expect(lastCall).toEqual([3, 2]);
 });

@@ -72,6 +72,42 @@ export default function Example() {
         </button>
         <button
           type="button"
+          className="ak-layer ak-layer-transparent ak-layer-mix-color-red-500 rounded-md p-2"
+        >
+          Mix input ghost
+        </button>
+        <button
+          type="button"
+          className="ak-layer ak-layer-transparent ak-layer-mix ak-layer-mix-color-red-500 rounded-md p-2"
+        >
+          Mix ghost
+        </button>
+        <button
+          type="button"
+          className="ak-layer ak-layer-mix ak-layer-mix-color-red-500 rounded-md p-2"
+        >
+          Mix control
+        </button>
+        <button
+          type="button"
+          className="ak-layer ak-layer-transparent ak-layer-contrast-50 rounded-md p-2"
+        >
+          Contrast input ghost
+        </button>
+        <button
+          type="button"
+          className="ak-layer ak-layer-transparent ak-layer-contrast ak-layer-contrast-50 rounded-md p-2"
+        >
+          Contrast ghost
+        </button>
+        <button
+          type="button"
+          className="ak-layer ak-layer-contrast ak-layer-contrast-50 rounded-md p-2"
+        >
+          Contrast control
+        </button>
+        <button
+          type="button"
           className="ak-layer ak-layer-transparent ak-layer-[oklch(0.5_0.1_200_/_0.6)] rounded-md p-2"
         >
           Translucent ghost

@@ -19,8 +19,8 @@ const ctx = createStoreContext<SelectStore>(
 /**
  * Returns the select store from the nearest select container.
  * @deprecated Use
- * [`useComboboxContext`](https://ariakit.com/reference/use-combobox-context)
- * instead.
+ *   [`useComboboxContext`](https://ariakit.com/reference/use-combobox-context)
+ *   instead.
  * @example
  * function Select() {
  *   const store = useSelectContext();

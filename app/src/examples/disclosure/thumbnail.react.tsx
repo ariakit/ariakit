@@ -24,8 +24,8 @@ export default function Thumbnail() {
       >
         <div
           {...disclosureButton.jsx({
-            // Decorative preview: the interactive state variants are
-            // disabled so the fake button stays inert.
+            // Decorative preview: the interactive state variants are disabled
+            // so the fake button stays inert.
             $focus: false,
             $active: false,
           })}

@@ -55,8 +55,8 @@ import {
 
 // The settings live as data attributes on <html>, where the page CSS reads
 // them, and are persisted under this prefix. The inline script in
-// [...section].astro restores them before the first paint, so keep the
-// prefix and the attribute names in step with it.
+// [...section].astro restores them before the first paint, so keep the prefix
+// and the attribute names in step with it.
 const STORAGE_PREFIX = "ariakit-ui-gallery:";
 
 type GallerySetting = "theme" | "surface" | "font-size" | "sidebar";
@@ -87,8 +87,8 @@ function writeSetting(name: GallerySetting, value: string | null) {
       localStorage.setItem(`${STORAGE_PREFIX}${name}`, value);
     }
   } catch {
-    // Storage can be unavailable; the attribute alone still applies the
-    // setting for this page view.
+    // Storage can be unavailable; the attribute alone still applies the setting
+    // for this page view.
   }
   for (const listener of listeners) {
     listener();
@@ -229,9 +229,8 @@ export interface GallerySidebarProps {
 
 /**
  * The page sidebar: the brand row, one collapsible group of page links per
- * gallery group, and a footer button that collapses the panel to its icon
- * rail. Under the mobile breakpoint it becomes a drawer opened by a floating
- * toggle.
+ * gallery group, and a footer button that collapses the panel to its icon rail.
+ * Under the mobile breakpoint it becomes a drawer opened by a floating toggle.
  */
 export function GallerySidebar({ currentUrl }: GallerySidebarProps) {
   const isMobile = useIsMobile();

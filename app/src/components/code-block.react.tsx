@@ -196,8 +196,8 @@ export function CodeBlock({
       <div
         {...tabsStyle.jsx({
           // The legacy root drew a plain border rather than the adaptive
-          // border/ring the tabs style defaults to, and kept square top
-          // corners under the opaque tab strip.
+          // border/ring the tabs style defaults to, and kept square top corners
+          // under the opaque tab strip.
           $borderType: "border",
           $panelRoundedTop: false,
           class: clsx(
@@ -216,8 +216,8 @@ export function CodeBlock({
               <div
                 {...tabListStyle.jsx({
                   // The strip sinks further into the root than the tabs style
-                  // does. --tab-bg captures the root color (the parent layer
-                  // at this point) so the selected tab can match the panel.
+                  // does. --tab-bg captures the root color (the parent layer at
+                  // this point) so the selected tab can match the panel.
                   class:
                     "ak-dark:ak-layer-darken-4 ak-light:ak-layer-darken-3 [--tab-bg:var(--ak-layer-parent)]",
                 })}
@@ -225,8 +225,8 @@ export function CodeBlock({
                 <div
                   {...tabStyle.jsx({
                     $size: "sm",
-                    // Match the panel color exactly (see --tab-bg above);
-                    // the automatic lift would shift it away from it.
+                    // Match the panel color exactly (see --tab-bg above); the
+                    // automatic lift would shift it away from it.
                     $layer: "var(--tab-bg)",
                     $lighten: false,
                     // The strip is a static stand-in, not a control: keep the
@@ -234,8 +234,8 @@ export function CodeBlock({
                     $active: false,
                     $focus: false,
                     $hoverOffset: false,
-                    // The selected class forces the ui-selected styles on
-                    // this static, non-interactive stand-in tab.
+                    // The selected class forces the ui-selected styles on this
+                    // static, non-interactive stand-in tab.
                     class: "selected items-center select-auto cursor-auto",
                   })}
                 >
@@ -739,13 +739,13 @@ export function CodeBlockTabs({
   // each responsive half is spelled out with plugin utilities over a
   // see-through button base.
   const viewTabProps = buttonStyle.jsx({
-    // The explicit hover class below replaces the offset so the two don't
-    // fight over the same state utility.
+    // The explicit hover class below replaces the offset so the two don't fight
+    // over the same state utility.
     $hoverOffset: false,
-    // Reduced padding like the legacy segmented button, which multiplied
-    // the button block padding by 0.75. Both axes derive from this token,
-    // so the inline padding trims by the same 0.125em, landing nearer the
-    // legacy inline value than the button default did.
+    // Reduced padding like the legacy segmented button, which multiplied the
+    // button block padding by 0.75. Both axes derive from this token, so the
+    // inline padding trims by the same 0.125em, landing nearer the legacy
+    // inline value than the button default did.
     $p: "0.375em",
     class: clsx(
       "items-center",

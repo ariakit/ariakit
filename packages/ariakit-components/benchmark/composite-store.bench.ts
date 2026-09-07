@@ -2,7 +2,7 @@ import {
   createCompositeStore,
   groupItemsByRows,
 } from "@ariakit/components/composite/composite-store";
-import { bench } from "vitest";
+import { test } from "vitest";
 
 // CI compares these benchmarks across paired baseline/current rounds with a
 // ±10% significance gate (see `ariakit perf-compare --node`). This 1500/400ms
@@ -30,35 +30,32 @@ clonedStore.setState(
 
 let sink: unknown;
 
-bench(
-  "move through composite items",
-  () => {
+test("move through composite items", async ({ bench, task }) => {
+  await bench(task.name, () => {
     for (const activeId of activeIds) {
       sink = store.next({ activeId });
     }
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "move through cloned composite items",
-  () => {
+test("move through cloned composite items", async ({ bench, task }) => {
+  await bench(task.name, () => {
     for (const activeId of activeIds) {
       sink = clonedStore.next({ activeId });
     }
-  },
-  options,
-);
+  }).run(options);
+});
 
-bench(
-  "repeatedly find the last enabled composite item",
-  () => {
+test("repeatedly find the last enabled composite item", async ({
+  bench,
+  task,
+}) => {
+  await bench(task.name, () => {
     for (let i = 0; i < itemCount; i += 1) {
       sink = store.last();
     }
-  },
-  options,
-);
+  }).run(options);
+});
 
 for (const rowCount of [1, 4, 10, 200]) {
   const gridItems = Array.from({ length: itemCount }, (_, index) => ({
@@ -69,15 +66,16 @@ for (const rowCount of [1, 4, 10, 200]) {
         : `row-${Math.floor((index * rowCount) / itemCount) + 1}`,
   }));
   const rowLabel = rowCount === 1 ? "row" : "rows";
-  bench(
-    `group 200 composite items into ${rowCount} ${rowLabel}`,
-    () => {
+  test(`group 200 composite items into ${rowCount} ${rowLabel}`, async ({
+    bench,
+    task,
+  }) => {
+    await bench(task.name, () => {
       for (let i = 0; i < 50; i += 1) {
         sink = groupItemsByRows(gridItems);
       }
-    },
-    options,
-  );
+    }).run(options);
+  });
 }
 
 const smallGridItems = Array.from({ length: 8 }, (_, index) => ({
@@ -85,29 +83,28 @@ const smallGridItems = Array.from({ length: 8 }, (_, index) => ({
   rowId: `row-${Math.floor(index / 2) + 1}`,
 }));
 // Guard the small-item linear path against regressions.
-bench(
-  "group 8 composite items into 4 rows",
-  () => {
+test("group 8 composite items into 4 rows", async ({ bench, task }) => {
+  await bench(task.name, () => {
     for (let i = 0; i < 50; i += 1) {
       sink = groupItemsByRows(smallGridItems);
     }
-  },
-  options,
-);
+  }).run(options);
+});
 
 const thresholdGridItems = Array.from({ length: 48 }, (_, index) => ({
   id: `threshold-grid-item-${index + 1}`,
   rowId: `row-${(index % 2) + 1}`,
 }));
 // Guard the threshold large-path, few-row case against regressions.
-bench(
-  "group 48 interleaved composite items into 2 rows",
-  () => {
+test("group 48 interleaved composite items into 2 rows", async ({
+  bench,
+  task,
+}) => {
+  await bench(task.name, () => {
     for (let i = 0; i < 50; i += 1) {
       sink = groupItemsByRows(thresholdGridItems);
     }
-  },
-  options,
-);
+  }).run(options);
+});
 
 export { sink };

@@ -10,10 +10,10 @@
 import { button } from "@ariakit/ui/styles/button.ts";
 
 /**
- * Tag chip attributes shared by the component and example page intros.
- * Legacy composed ak-badge with ak-button: the badge geometry moves to the
- * button style through the control variants that @ariakit/ui/styles/badge.ts
- * sets as defaults.
+ * Tag chip attributes shared by the component and example page intros. Legacy
+ * composed ak-badge with ak-button: the badge geometry moves to the button
+ * style through the control variants that @ariakit/ui/styles/badge.ts sets as
+ * defaults.
  */
 export const tagChip = button.html({
   $rounded: "full",

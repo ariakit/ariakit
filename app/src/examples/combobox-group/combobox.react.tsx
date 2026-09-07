@@ -93,11 +93,10 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
         blurOnHoverEnd={false}
         {...props}
         {...option.jsx({
-          // The active item keeps its highlight after hover-out
-          // (blurOnHoverEnd above), so the hover offset is restated under
-          // data-active-item and the cv's own hover variant is disabled so
-          // the two never combine. ak-state-6 matches the cv's default
-          // offset step.
+          // The active item keeps its highlight after hover-out (blurOnHoverEnd
+          // above), so the hover offset is restated under data-active-item and
+          // the cv's own hover variant is disabled so the two never combine.
+          // ak-state-6 matches the cv's default offset step.
           $hoverOffset: false,
           className: clsx("data-active-item:ak-state-6", props.className),
           style: props.style,

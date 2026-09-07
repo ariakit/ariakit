@@ -62,8 +62,8 @@ export function getFrameRoundedClass(
 /**
  * The frame geometry on its own: radius, padding, margin, borders and the
  * concentric-radius layout, with no colour behind it. Extend this when an
- * element takes frame geometry but paints nothing, so it does not open a
- * layer it has no use for. Most components want `frame`.
+ * element takes frame geometry but paints nothing, so it does not open a layer
+ * it has no use for. Most components want `frame`.
  */
 export const frameBase = cv({
   variants: {
@@ -204,17 +204,16 @@ export const frameBase = cv({
 });
 
 /**
- * The frame geometry plus the edge colours it paints with, and the layer
- * those colours resolve against. This is the frame primitive components
- * normally extend.
+ * The frame geometry plus the edge colours it paints with, and the layer those
+ * colours resolve against. This is the frame primitive components normally
+ * extend.
  */
 export const frame = cv({
   extend: [edge, frameBase],
   defaultVariants: {
-    // These two clear variants declared by `edge`. They belong here rather
-    // than in `edge` because a computed default only sees the variants its
-    // own component declares or extends, so in `edge` they could not read
-    // $border.
+    // These two clear variants declared by `edge`. They belong here rather than
+    // in `edge` because a computed default only sees the variants its own
+    // component declares or extends, so in `edge` they could not read $border.
     $edge(defaultValue, variants) {
       if (variants.$border === "inherit") {
         return "unset";

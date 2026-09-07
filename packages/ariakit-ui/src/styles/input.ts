@@ -33,17 +33,17 @@ export const input = cv({
      */
     $focus(value?: 1 | 2 | 3 | boolean) {
       if (!value) return;
-      // A function replaces the inherited scale instead of emitting beside
-      // it. focus-within, because the class often sits on a wrapper around
-      // the real input, and plain focus rather than focus-visible, so a
-      // field built from a button or a wrapper rings on a pointer too.
+      // A function replaces the inherited scale instead of emitting beside it.
+      // focus-within, because the class often sits on a wrapper around the real
+      // input, and plain focus rather than focus-visible, so a field built from
+      // a button or a wrapper rings on a pointer too.
       if (value === 1) return "focus-within:outline";
       if (value === 3) return "focus-within:outline-3";
       return "focus-within:outline-2";
     },
     /**
-     * Extends the focus ring offsets with `inset`, which tucks the ring
-     * inside the border so the two read as a single edge.
+     * Extends the focus ring offsets with `inset`, which tucks the ring inside
+     * the border so the two read as a single edge.
      */
     $focusOffset: {
       inset: "-outline-offset-1",
@@ -53,17 +53,17 @@ export const input = cv({
     $rounded: "lg",
     $p: 3,
     $border: true,
-    // Always a real border rather than a ring, so the field geometry stays
-    // the same on light and dark layers.
+    // Always a real border rather than a ring, so the field geometry stays the
+    // same on light and dark layers.
     $borderType: "border",
     // Inputs want a stronger edge than the named border weights provide
     // (between medium and bold). A variant default, not a base class, so
     // instance weights replace it instead of losing by stylesheet order.
     $edgeWeight: 30,
-    // A field sinks into the surrounding surface where a button rises off
-    // it, so the offset runs the other way: lighter on light layers, darker
-    // on dark ones. Hover then spends ak-state in the button direction,
-    // which pulls the field back toward the layer around it.
+    // A field sinks into the surrounding surface where a button rises off it,
+    // so the offset runs the other way: lighter on light layers, darker on dark
+    // ones. Hover then spends ak-state in the button direction, which pulls the
+    // field back toward the layer around it.
     $lightnessOffset: -1,
     $focus: true,
     $focusOffset: "inset",

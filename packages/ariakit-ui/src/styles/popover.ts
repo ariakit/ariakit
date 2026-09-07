@@ -33,10 +33,9 @@ export const popover = cv({
   ],
   variants: {
     /**
-     * Sets the popover shadow. A variant rather than a base class so
-     * extending styles like the tooltip can lighten it — clava concatenates
-     * classes, and a competing shadow class would lose to the base one by
-     * stylesheet order.
+     * Sets the popover shadow. A variant rather than a base class so extending
+     * styles like the tooltip can lighten it — clava concatenates classes, and
+     * a competing shadow class would lose to the base one by stylesheet order.
      */
     $shadow: {
       none: "",
@@ -62,8 +61,8 @@ export const popoverDisclosure = cv({
   extend: [button],
 });
 
-// A viewport into the popover surface rather than a surface of its own, so
-// it takes the frame geometry without the layer and edge that come with it.
+// A viewport into the popover surface rather than a surface of its own, so it
+// takes the frame geometry without the layer and edge that come with it.
 export const popoverScroll = cv({
   extend: [frameBase],
   class: "overflow-auto overscroll-contain",

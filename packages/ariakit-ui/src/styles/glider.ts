@@ -2,12 +2,12 @@ import { cv, cx } from "clava";
 import { controlGroup, controlSeparator } from "./control.ts";
 import { frame } from "./frame.ts";
 
-// A flat, bevel or folder glider takes the box of the control it follows,
-// so the glider and everything the control paints for itself land on the
-// same rectangle. A cover may reach past the control's bottom edge by
-// --glider-reach; the selected folder glider uses it to meet the panel. A
-// frame margin insets the cover on every side, and the frame already takes
-// that margin off the nested radius, so an inset cover stays concentric.
+// A flat, bevel or folder glider takes the box of the control it follows, so
+// the glider and everything the control paints for itself land on the same
+// rectangle. A cover may reach past the control's bottom edge by
+// --glider-reach; the selected folder glider uses it to meet the panel. A frame
+// margin insets the cover on every side, and the frame already takes that
+// margin off the nested radius, so an inset cover stays concentric.
 export const gliderCover = cx(
   "inset-s-[anchor(start)]",
   "bottom-[calc(anchor(bottom)-var(--glider-reach,0px))]",
@@ -49,8 +49,8 @@ export const glider = cv({
     },
     /**
      * Sets which control state the glider follows. A control publishes the
-     * matching anchor name only while it is in that state, so the glider
-     * lands on whichever control is hovered, focused, or selected right now.
+     * matching anchor name only while it is in that state, so the glider lands
+     * on whichever control is hovered, focused, or selected right now.
      */
     $state: {
       none: "",
@@ -111,8 +111,8 @@ export const glider = cv({
     $state: "selected",
     $animated: true,
     $p: "none",
-    // A bar is a rule a couple of pixels thick. It has no room for a radius
-    // or a border, so these two ignore what an extender asked for.
+    // A bar is a rule a couple of pixels thick. It has no room for a radius or
+    // a border, so these two ignore what an extender asked for.
     $rounded(defaultValue, variants) {
       if (variants.$kind === "bar") return "none";
       return defaultValue ?? "full";
@@ -131,17 +131,17 @@ export const glider = cv({
       if (defaultValue !== true) return defaultValue;
       return "transparent";
     },
-    // A glider's lift counts from the group's surface, which is where a
-    // control in a glider group rests. A hover glider takes the one step a
-    // hovered control takes, and a selected glider one more. Controls that
-    // lift at rest pass that lift on to their gliders, or the hover glider
-    // paints the colour they already have.
+    // A glider's lift counts from the group's surface, which is where a control
+    // in a glider group rests. A hover glider takes the one step a hovered
+    // control takes, and a selected glider one more. Controls that lift at rest
+    // pass that lift on to their gliders, or the hover glider paints the colour
+    // they already have.
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
       if (variants.$state === "hover") return true;
       if (variants.$state !== "selected") return defaultValue;
-      // A selected bar carries its color through $invert and $contrast
-      // instead, so it must not also lift off the surface.
+      // A selected bar carries its color through $invert and $contrast instead,
+      // so it must not also lift off the surface.
       if (variants.$kind === "bar") return defaultValue;
       return 2;
     },
@@ -158,8 +158,8 @@ export const glider = cv({
       // Hover and focus feedback have no edge. The ring-* class must not be
       // emitted for them, or it picks up a bordered group's inherited
       // --border-width and draws a hairline beside the focus indicator. A
-      // selected glider keeps the ring-* so the adaptive high-contrast edge
-      // can use the group's width.
+      // selected glider keeps the ring-* so the adaptive high-contrast edge can
+      // use the group's width.
       if (variants.$state === "selected") return defaultValue ?? "ring";
       return defaultValue ?? "unset";
     },
@@ -173,9 +173,9 @@ export const glider = cv({
 export const gliderAnchor = cv({
   class: "peer",
   style: {
-    // Every control carries all three names, but each one stays the dummy
-    // --x until the control enters that state and the glider's own rules
-    // swap the real name in. Only then can a glider anchor to it.
+    // Every control carries all three names, but each one stays the dummy --x
+    // until the control enters that state and the glider's own rules swap the
+    // real name in. Only then can a glider anchor to it.
     anchorName:
       "var(--glider-hover,--x), var(--glider-focus,--x), var(--glider-selected,--x)",
   },

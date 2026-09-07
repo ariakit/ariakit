@@ -30,15 +30,15 @@ const THRESHOLD_PERCENT = 10;
 const MIN_SIGNIFICANT_DELTA_MS = 5;
 // Require at least 75% of each required round's pairwise raw-sample deltas to
 // support the paired median direction before a browser comparison becomes
-// significant. Threshold-sized changes whose rounds agree on direction but
-// fail this gate are reported as unconfirmed candidates instead.
+// significant. Threshold-sized changes whose rounds agree on direction but fail
+// this gate are reported as unconfirmed candidates instead.
 const RAW_SAMPLE_SUPPORT_QUANTILE = 0.25;
 // Cap the unconfirmed candidate table so a noisy run cannot flood the PR
 // comment; the detailed breakdown still lists every metric.
 const MAX_VISIBLE_CANDIDATE_ROWS = 10;
 // Pooled pairwise raw-sample agreement at or above this percent grades an
-// unconfirmed candidate as medium confidence: close to the 75% per-round
-// raw support gate without meeting it in every round.
+// unconfirmed candidate as medium confidence: close to the 75% per-round raw
+// support gate without meeting it in every round.
 const MEDIUM_CONFIDENCE_PAIRWISE_PERCENT = 70;
 
 type MetricKey = keyof PerfMetrics;
@@ -138,23 +138,24 @@ interface DiscoveredRoundFile {
 }
 
 interface BenchmarkReport {
-  files?: BenchmarkReportFile[];
+  testResults?: BenchmarkReportFile[];
 }
 
 interface BenchmarkReportFile {
-  filepath?: string;
-  groups?: BenchmarkReportGroup[];
+  name: string;
+  assertionResults: BenchmarkReportTest[];
 }
 
-interface BenchmarkReportGroup {
-  fullName?: string;
-  benchmarks?: BenchmarkReportEntry[];
+interface BenchmarkReportTest {
+  ancestorTitles: string[];
+  title: string;
+  benchmarks?: { tasks: BenchmarkReportEntry[] }[];
 }
 
 interface BenchmarkReportEntry {
-  name?: string;
-  hz?: number;
-  mean?: number;
+  name: string;
+  throughput?: { mean?: number };
+  latency?: { mean?: number };
 }
 
 export interface PerfCompareOptions {
@@ -177,8 +178,8 @@ export interface PerfCompareRunResult {
   markdown: string;
 }
 
-// Metrics shown in the summary table and detailed breakdown. All of them can
-// be flagged as significant or reported as unconfirmed candidates.
+// Metrics shown in the summary table and detailed breakdown. All of them can be
+// flagged as significant or reported as unconfirmed candidates.
 const PRIMARY_METRICS: MetricKey[] = ["scripting", "rendering", "inp", "total"];
 
 const METRIC_LABELS: Record<MetricKey, string> = {
@@ -249,53 +250,6 @@ function normalizeBenchmarkName(name: string) {
   return name.replace(/@\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/, "");
 }
 
-function normalizeBenchmarkGroupName(name: string, filePath: string) {
-  const fileName = path.basename(filePath);
-  return name
-    .split(" > ")
-    .map((part) => part.trim())
-    .filter((part) => {
-      if (!part) return false;
-      if (part === fileName) return false;
-      return normalizeBenchmarkFilePath(part) !== filePath;
-    });
-}
-
-function formatBenchmarkLabel({
-  file,
-  groupName,
-  name,
-}: {
-  file: string;
-  groupName: string;
-  name: string;
-}) {
-  const parts = [...normalizeBenchmarkGroupName(groupName, file), name].filter(
-    Boolean,
-  );
-  return parts.join(" > ");
-}
-
-/**
- * Returns an escaped task pattern matched by Vitest's `--testNamePattern`.
- * Vitest's report uses ` > ` between suites, but its task matcher uses spaces.
- * Accept both because a suite name may itself contain the report separator.
- */
-function formatBenchmarkPattern({
-  file,
-  groupName,
-  name,
-}: {
-  file: string;
-  groupName: string;
-  name: string;
-}) {
-  const parts = [...normalizeBenchmarkGroupName(groupName, file), name].filter(
-    Boolean,
-  );
-  return parts.map(escapeRegExp).join("(?: > | )");
-}
-
 function createNodeMetrics({ hz, mean }: { hz: number; mean: number }) {
   const total = hz > 0 ? hz : mean > 0 ? 1000 / mean : 0;
   return {
@@ -308,33 +262,30 @@ function createNodeMetrics({ hz, mean }: { hz: number; mean: number }) {
 
 function resultsFromBenchmarkReport(report: BenchmarkReport): PerfResult[] {
   const results: PerfResult[] = [];
-  for (const file of report.files ?? []) {
-    const filePath = normalizeBenchmarkFilePath(file.filepath ?? "");
-    for (const group of file.groups ?? []) {
-      const groupName = group.fullName ?? "";
-      for (const benchmark of group.benchmarks ?? []) {
-        const name = benchmark.name ?? "";
-        const normalizedName = normalizeBenchmarkName(name);
+  for (const file of report.testResults ?? []) {
+    const filePath = normalizeBenchmarkFilePath(file.name);
+    for (const test of file.assertionResults) {
+      // Vitest filters use " > ", but JSON fullName joins titles with spaces.
+      const benchmarkPattern = escapeRegExp(
+        [...test.ancestorTitles, test.title].join(" > "),
+      );
+      for (const benchmark of test.benchmarks?.flatMap(({ tasks }) => tasks) ??
+        []) {
+        const name = benchmark.name;
+        const label = [
+          ...test.ancestorTitles,
+          ...(test.title === name ? [] : [test.title]),
+          normalizeBenchmarkName(name),
+        ].join(" > ");
         const metrics = createNodeMetrics({
-          hz: getNumber(benchmark.hz),
-          mean: getNumber(benchmark.mean),
-        });
-        const label = formatBenchmarkLabel({
-          file: filePath,
-          groupName,
-          name: normalizedName,
+          hz: getNumber(benchmark.throughput?.mean),
+          mean: getNumber(benchmark.latency?.mean),
         });
         results.push({
           testFile: filePath,
-          testTitle: groupName
-            ? `${groupName} > ${normalizedName}`
-            : normalizedName,
+          testTitle: label,
           label,
-          benchmarkPattern: formatBenchmarkPattern({
-            file: filePath,
-            groupName,
-            name,
-          }),
+          benchmarkPattern,
           metrics,
           raw: [metrics],
         });
@@ -354,9 +305,11 @@ export function checkNodeBenchmarkResults(
   }
   const report = readJsonFile(filePath) as BenchmarkReport;
   let actualCount = 0;
-  for (const file of report.files ?? []) {
-    for (const group of file.groups ?? []) {
-      actualCount += group.benchmarks?.length ?? 0;
+  for (const file of report.testResults ?? []) {
+    for (const test of file.assertionResults) {
+      for (const benchmark of test.benchmarks ?? []) {
+        actualCount += benchmark.tasks.length;
+      }
     }
   }
   if (actualCount !== expectedCount) {
@@ -367,8 +320,8 @@ export function checkNodeBenchmarkResults(
 }
 
 // Discover round files like `baseline-1-worker0.json` and
-// `current-1-worker0.json`. If no numbered rounds are present, fall back to
-// the previous single-run files such as `baseline-worker0.json`.
+// `current-1-worker0.json`. If no numbered rounds are present, fall back to the
+// previous single-run files such as `baseline-worker0.json`.
 function discoverRoundFiles(
   prefix: string,
   options: PerfCompareOptions,
@@ -685,8 +638,8 @@ function computeSignificance({
   }
 
   // Share of all raw sample pairs (baseline x current, pooled across rounds)
-  // that move in the median's direction. 50% means the raw distributions
-  // fully overlap; the per-round raw support gate needs 75%.
+  // that move in the median's direction. 50% means the raw distributions fully
+  // overlap; the per-round raw support gate needs 75%.
   const pairwiseSupportPercent =
     pairwiseCount > 0 ? (pairwiseSupportCount / pairwiseCount) * 100 : 0;
 
@@ -901,8 +854,8 @@ function getSignificanceIcon(row: ComparisonRow, options: PerfCompareOptions) {
 }
 
 // Test files whose rows warrant extra confirmation rounds. Candidates are
-// included so a change that only fails raw sample support gets more data
-// before the final comparison is published.
+// included so a change that only fails raw sample support gets more data before
+// the final comparison is published.
 function getConfirmationFiles(rows: ComparisonRow[]): string[] {
   const files = new Set<string>();
   for (const row of rows) {
@@ -1237,10 +1190,10 @@ function formatSupport(row: ComparisonRow, options: PerfCompareOptions) {
   return `${rounds}, ${raw}, ${pairs}`;
 }
 
-// Candidate confidence comes from the pooled pairwise raw-sample agreement:
-// how many baseline x current sample pairs move in the median's direction.
-// Grade on the rounded value shown in the support diagnostics so a row can
-// never display a percent at the grade boundary with the lower grade.
+// Candidate confidence comes from the pooled pairwise raw-sample agreement: how
+// many baseline x current sample pairs move in the median's direction. Grade on
+// the rounded value shown in the support diagnostics so a row can never display
+// a percent at the grade boundary with the lower grade.
 function getCandidateConfidence(row: ComparisonRow) {
   const percent = Math.round(row.pairwiseSupportPercent);
   if (percent >= MEDIUM_CONFIDENCE_PAIRWISE_PERCENT) {

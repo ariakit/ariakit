@@ -95,9 +95,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // https://github.com/ariakit/ariakit/issues/7120
   // The authored focusOnHover callback moves the composite from inside the
-  // predicate. While the select is collapsed, the callback must not run at
-  // all, or the move would still activate the item, commit its value, and
-  // steal focus from the unrelated control.
+  // predicate. While the select is collapsed, the callback must not run at all,
+  // or the move would still activate the item, commit its value, and steal
+  // focus from the unrelated control.
   test("a side-effectful focusOnHover callback does nothing on a collapsed list", async ({
     page,
     q,
@@ -113,9 +113,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await grape.hover();
 
     await test.expect(select).toHaveAttribute("aria-expanded", "false");
-    // Hover activation is committed inside the mousemove handler, so there
-    // is no positive state to wait for. Cross the frames a presentation
-    // would use to reach the item before asserting that none did.
+    // Hover activation is committed inside the mousemove handler, so there is
+    // no positive state to wait for. Cross the frames a presentation would use
+    // to reach the item before asserting that none did.
     await flushFrames(page);
     await test.expect(grape).not.toHaveAttribute("data-active-item");
     await test.expect(select).toContainText("Apple");
@@ -123,8 +123,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7120
-  // The gate is about the closed list: the same side-effectful callback
-  // keeps working once the select opens.
+  // The gate is about the closed list: the same side-effectful callback keeps
+  // working once the select opens.
   test("the same callback activates the option once the select opens", async ({
     q,
   }) => {
@@ -142,8 +142,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // https://github.com/ariakit/ariakit/pull/7121#discussion_r3780074062
   // The authored callback closes the select and returns true. Built-in
-  // activation must still stop, or the hovered item would become active in
-  // the just-collapsed list.
+  // activation must still stop, or the hovered item would become active in the
+  // just-collapsed list.
   test("built-in activation stops when the callback closes the select", async ({
     q,
   }) => {

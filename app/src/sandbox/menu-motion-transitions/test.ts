@@ -1,3 +1,8 @@
+// @vitest-environment jsdom
+// TODO: Remove this jsdom override once happy-dom fixes Animation.cancel()
+// rejections and this file passes without unhandled errors. Until then,
+// jsdom keeps Motion on its JavaScript animation path.
+// https://github.com/capricorn86/happy-dom/issues/2339
 import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
@@ -9,7 +14,7 @@ test("show/hide on click", async () => {
   await click(q.button("Options"));
   expect(q.button("Options")).toHaveFocus();
   expect(q.menu.hidden()).toBeVisible();
-  await expect.poll(q.menu.maybe).not.toBeInTheDocument();
+  await expect.poll(q.menu.maybe.lazy()).not.toBeInTheDocument();
 });
 
 test("show/hide on enter", async () => {
@@ -22,7 +27,7 @@ test("show/hide on enter", async () => {
   await press.Enter();
   expect(q.button("Options")).toHaveFocus();
   expect(q.menu()).toBeVisible();
-  await expect.poll(q.menu.maybe).not.toBeInTheDocument();
+  await expect.poll(q.menu.maybe.lazy()).not.toBeInTheDocument();
 });
 
 test("show/hide on space", { retry: 2 }, async () => {
@@ -35,7 +40,7 @@ test("show/hide on space", { retry: 2 }, async () => {
   await press.Space();
   expect(q.button("Options")).toHaveFocus();
   expect(q.menu.hidden()).toBeVisible();
-  await expect.poll(q.menu.maybe).not.toBeInTheDocument();
+  await expect.poll(q.menu.maybe.lazy()).not.toBeInTheDocument();
 });
 
 test("hide on esc", async () => {
@@ -44,7 +49,7 @@ test("hide on esc", async () => {
   await press.Escape();
   expect(q.button("Options")).toHaveFocus();
   expect(q.menu()).toBeVisible();
-  await expect.poll(q.menu.maybe).not.toBeInTheDocument();
+  await expect.poll(q.menu.maybe.lazy()).not.toBeInTheDocument();
 });
 
 test("hide on click outside", async () => {
@@ -53,5 +58,5 @@ test("hide on click outside", async () => {
   await click(document.body);
   expect(q.button("Options")).not.toHaveFocus();
   expect(q.menu.hidden()).toBeVisible();
-  await expect.poll(q.menu.maybe).not.toBeInTheDocument();
+  await expect.poll(q.menu.maybe.lazy()).not.toBeInTheDocument();
 });

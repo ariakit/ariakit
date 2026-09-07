@@ -1,8 +1,8 @@
 import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// The page-freeze variant (two trailing items without value) is covered only
-// by the browser test: on the buggy code, the keydown handler loops forever
+// The page-freeze variant (two trailing items without value) is covered only by
+// the browser test: on the buggy code, the keydown handler loops forever
 // synchronously, which would hang the happy-dom worker instead of failing.
 // https://github.com/ariakit/ariakit/issues/6319
 test("arrow keys on the closed select skip the trailing item without value", async () => {
@@ -29,8 +29,8 @@ test("arrow keys on the closed select with focusLoop wrap past the item without 
   await press.Escape();
   expect(combobox).toHaveFocus();
   expect(combobox).toHaveTextContent("Triangle");
-  // The item after Triangle has no value, so the wrap should skip it and
-  // land on the first valued item
+  // The item after Triangle has no value, so the wrap should skip it and land
+  // on the first valued item
   await press.ArrowDown();
   expect(combobox).toHaveTextContent("Square");
 });

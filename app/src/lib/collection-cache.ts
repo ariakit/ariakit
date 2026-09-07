@@ -34,7 +34,7 @@ export function getCachedCollection<C extends CollectionKey>(
     promise = getCollection(collection);
     collectionCache.set(collection, promise);
   }
-  // The cache maps each collection name to entries of that same collection;
-  // the assertion only restores the per-key type the Map cannot express.
+  // The cache maps each collection name to entries of that same collection; the
+  // assertion only restores the per-key type the Map cannot express.
   return promise as Promise<CollectionEntry<C>[]>;
 }

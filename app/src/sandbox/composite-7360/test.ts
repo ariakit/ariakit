@@ -116,8 +116,7 @@ test("keeps focus when composite behavior comes back", async () => {
 // handed off has nothing to carry it out, so it stays pending and its item
 // takes focus once the toolbar is a composite again. The move comes from the
 // arrow key, which still moves the active item meanwhile; only focus stops
-// following it.
-// Related: https://github.com/ariakit/ariakit/issues/7363
+// following it. Related: https://github.com/ariakit/ariakit/issues/7363
 test("focuses a newly moved item when composite behavior comes back", async () => {
   await moveToSecondItem();
   await handOff();

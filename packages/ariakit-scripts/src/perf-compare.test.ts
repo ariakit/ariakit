@@ -208,14 +208,7 @@ function createBenchmarkReport(
     "packages/ariakit-store/benchmark/store.bench.ts",
   ),
 ) {
-  return {
-    files: [
-      {
-        filepath,
-        groups,
-      },
-    ],
-  };
+  return createBenchmarkReportFromFiles([{ filepath, groups }]);
 }
 
 function createBenchmarkReportFromFiles(
@@ -227,7 +220,25 @@ function createBenchmarkReportFromFiles(
     }>;
   }>,
 ) {
-  return { files };
+  return {
+    testResults: files.map(({ filepath, groups }) => ({
+      name: filepath,
+      assertionResults: groups.flatMap(({ fullName, benchmarks }) => {
+        const ancestorTitles = fullName.split(" > ").slice(1);
+        return benchmarks.map(({ name, hz, mean }) => ({
+          ancestorTitles,
+          title: name,
+          fullName: [...ancestorTitles, name].join(" "),
+          benchmarks: [
+            {
+              name,
+              tasks: [{ name, throughput: { mean: hz }, latency: { mean } }],
+            },
+          ],
+        }));
+      }),
+    })),
+  };
 }
 
 function createStoreBenchmarkReport(hz?: number, mean?: number) {
@@ -386,8 +397,8 @@ test("reads and writes an absolute results directory outside the current directo
   const workingDir = createTempDir();
   const outputDir = path.join(createTempDir(), "chrome-rounds");
   // Numbered, job-indexed names are what the perf workflow stages into the
-  // directory it passes, so this covers the round-file branch the relative
-  // test above does not reach.
+  // directory it passes, so this covers the round-file branch the relative test
+  // above does not reach.
   writeJsonInto(outputDir, "baseline-1-j1-worker0.json", [createResult(100)]);
   writeJsonInto(outputDir, "current-1-j1-worker0.json", [createResult(120)]);
 
@@ -395,8 +406,8 @@ test("reads and writes an absolute results directory outside the current directo
 
   const markdown = readFileSync(path.join(outputDir, "comparison.md"), "utf-8");
   expect(markdown).toContain("100ms → 120ms (+20%) :warning:");
-  // The workflow reads every generated file from the directory it passed in,
-  // so the whole output set must follow the rounds instead of the cwd.
+  // The workflow reads every generated file from the directory it passed in, so
+  // the whole output set must follow the rounds instead of the cwd.
   expect(existsSync(path.join(outputDir, "comparison.json"))).toBe(true);
   expect(existsSync(path.join(outputDir, "confirmation-files.txt"))).toBe(true);
   expect(existsSync(path.join(outputDir, "confirmation-targets.json"))).toBe(
@@ -465,6 +476,61 @@ test("keeps Vitest benchmark groups distinct in node mode", () => {
     "| store > set state | 1,000 ops/sec | 500 ops/sec | -500 ops/sec (-50%) :warning: |",
   );
   expect(markdown).toContain("| collection > set state |");
+});
+
+test("reads Vitest 5 benchmark tasks and filters their containing test", () => {
+  const dir = createTempDir();
+  const file = "packages/ariakit-store/benchmark/store.bench.ts";
+  const report = {
+    testResults: [
+      {
+        name: `/repo/${file}`,
+        assertionResults: [
+          {
+            ancestorTitles: ["store"],
+            title: "compare implementations",
+            fullName: "store compare implementations",
+            benchmarks: [
+              {
+                name: "comparison",
+                tasks: [
+                  {
+                    name: "cached",
+                    throughput: { mean: 1000 },
+                    latency: { mean: 2 },
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ancestorTitles: [],
+            title: "skipped benchmark",
+            fullName: "skipped benchmark",
+            benchmarks: [],
+          },
+        ],
+      },
+    ],
+  };
+  writeJson(dir, "baseline-1.json", report);
+  writeJson(dir, "current-1.json", report);
+  const reportPath = path.join(dir, resultsDir, "current-1.json");
+  expect(() => checkNodeBenchmarkResults(reportPath, 1)).not.toThrow();
+  expect(() => checkNodeBenchmarkResults(reportPath, 2)).toThrow(/found 1/);
+
+  const markdown = runCompare(dir, { node: true });
+  expect(markdown).toContain(
+    "| store > compare implementations > cached | 1,000 ops/sec |",
+  );
+  expect(readComparisonSummary(dir).rows).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        label: "store > compare implementations > cached",
+        currentBenchmarkPattern: "store > compare implementations",
+      }),
+    ]),
+  );
 });
 
 test("groups Vitest benchmark tables by file in node mode", () => {
@@ -619,9 +685,9 @@ test("writes focused Node confirmation targets with raw benchmark names", () => 
 
   expect(summary.confirmationTargets).toEqual([
     {
-      baselineTestNamePattern: String.raw`^(?:store(?: > | )special(?: > | )other \(fast\)@1\.0\.0|store(?: > | )special(?: > | )set \[state\]@1\.2\.3)$`,
+      baselineTestNamePattern: String.raw`^(?:store > special > other \(fast\)@1\.0\.0|store > special > set \[state\]@1\.2\.3)$`,
       benchmarkCount: 2,
-      currentTestNamePattern: String.raw`^(?:store(?: > | )special(?: > | )other \(fast\)@2\.0\.0|store(?: > | )special(?: > | )set \[state\]@2\.0\.0)$`,
+      currentTestNamePattern: String.raw`^(?:store > special > other \(fast\)@2\.0\.0|store > special > set \[state\]@2\.0\.0)$`,
       file: benchmarkFile,
     },
   ]);
@@ -629,18 +695,24 @@ test("writes focused Node confirmation targets with raw benchmark names", () => 
   if (!target) throw new Error("Missing confirmation target");
   const baselinePattern = new RegExp(target.baselineTestNamePattern);
   const currentPattern = new RegExp(target.currentTestNamePattern);
-  expect(baselinePattern.test("store special set [state]@1.2.3")).toBe(true);
-  expect(baselinePattern.test("store > special set [state]@1.2.3")).toBe(true);
-  expect(baselinePattern.test("store special other (fast)@1.0.0")).toBe(true);
-  expect(baselinePattern.test("collection set [state]@1.2.3")).toBe(false);
-  expect(currentPattern.test("store special set [state]@2.0.0")).toBe(true);
-  expect(currentPattern.test("store special set [state]@1.2.3")).toBe(false);
+  expect(baselinePattern.test("store > special > set [state]@1.2.3")).toBe(
+    true,
+  );
+  expect(baselinePattern.test("store special set [state]@1.2.3")).toBe(false);
+  expect(baselinePattern.test("store > special > other (fast)@1.0.0")).toBe(
+    true,
+  );
+  expect(baselinePattern.test("collection > set [state]@1.2.3")).toBe(false);
+  expect(currentPattern.test("store > special > set [state]@2.0.0")).toBe(true);
+  expect(currentPattern.test("store > special > set [state]@1.2.3")).toBe(
+    false,
+  );
   expect(summary.rows).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
         label: "store > special > set [state]",
-        baselineBenchmarkPattern: String.raw`store(?: > | )special(?: > | )set \[state\]@1\.2\.3`,
-        currentBenchmarkPattern: String.raw`store(?: > | )special(?: > | )set \[state\]@2\.0\.0`,
+        baselineBenchmarkPattern: String.raw`store > special > set \[state\]@1\.2\.3`,
+        currentBenchmarkPattern: String.raw`store > special > set \[state\]@2\.0\.0`,
         significant: true,
       }),
       expect.objectContaining({
@@ -786,8 +858,8 @@ test("does not flag noisy rounds that disagree on direction", () => {
   expect(markdown).not.toContain("Unconfirmed changes");
   expect(markdown).not.toMatch(/% :warning:/);
   expect(markdown).toContain("Aggregated across 5 interleaved rounds");
-  // Clean comparisons still write the workflow list so shell consumers can
-  // read it unconditionally.
+  // Clean comparisons still write the workflow list so shell consumers can read
+  // it unconditionally.
   expect(readConfirmationFilesList(dir)).toBe("");
 });
 
@@ -823,8 +895,8 @@ test("reports overlapping same-direction rounds as unconfirmed candidates", () =
   );
   expect(markdown).not.toContain("| open with mouse | Scripting |");
   expect(markdown).toContain("120ms | 140ms | +20ms (+17%)");
-  // Candidates are reported in the unconfirmed changes section, not repeated
-  // in the detailed breakdown diagnostics.
+  // Candidates are reported in the unconfirmed changes section, not repeated in
+  // the detailed breakdown diagnostics.
   expect(markdown).not.toContain("Unflagged threshold-sized changes");
   expect(markdown).not.toMatch(/% :warning:/);
   expect(markdown).not.toMatch(/% :rocket:/);
@@ -834,8 +906,8 @@ test("grades candidates by their displayed pairs percent", () => {
   const dir = createTempDir();
   const baseline = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
   // 70 of 100 pairwise deltas support round 1 and 69 of 100 support round 2,
-  // pooling to 139/200 = 69.5%, which displays as "pairs 70%". The medium
-  // grade must match the displayed percent, not the raw 69.5 value.
+  // pooling to 139/200 = 69.5%, which displays as "pairs 70%". The medium grade
+  // must match the displayed percent, not the raw 69.5 value.
   writeRawRound(dir, "baseline", 1, baseline);
   writeRawRound(dir, "current", 1, [35, 45, 75, 85, 85, 85, 85, 85, 85, 85]);
   writeRawRound(dir, "baseline", 2, baseline);
@@ -1021,8 +1093,8 @@ test("lists confirmation files for significant and candidate changes", () => {
     "sandbox/a/perf-chrome.ts",
     "sandbox/b/perf-chrome.ts",
   ]);
-  // The perf workflow consumes the flagged files as a plain-text list, one
-  // per line.
+  // The perf workflow consumes the flagged files as a plain-text list, one per
+  // line.
   expect(readConfirmationFilesList(dir)).toBe(
     "sandbox/a/perf-chrome.ts\nsandbox/b/perf-chrome.ts\n",
   );

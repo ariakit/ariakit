@@ -80,8 +80,8 @@ export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
  * label element. This component will move focus to the
  * [`Select`](https://ariakit.com/reference/select) component when clicked.
  * @deprecated Use
- * [`ComboboxSelectLabel`](https://ariakit.com/reference/combobox-select-label)
- * instead.
+ *   [`ComboboxSelectLabel`](https://ariakit.com/reference/combobox-select-label)
+ *   instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {2}

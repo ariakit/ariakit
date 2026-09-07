@@ -37,8 +37,8 @@ export interface SamplesProps extends React.ComponentProps<"div"> {
 }
 
 /**
- * The card grid of a gallery section. The section heading is the page's `h1`
- * in the Astro page, so the cards inside take the next level.
+ * The card grid of a gallery section. The section heading is the page's `h1` in
+ * the Astro page, so the cards inside take the next level.
  */
 export function Samples({
   columns = "auto",
@@ -118,8 +118,8 @@ export interface StageProps extends React.ComponentProps<"div"> {
 }
 
 /**
- * The area of a card that holds the rendered components, as wrapping rows
- * of centered items or a stretched column.
+ * The area of a card that holds the rendered components, as wrapping rows of
+ * centered items or a stretched column.
  */
 export function Stage({ direction = "row", className, ...props }: StageProps) {
   return (
@@ -155,8 +155,8 @@ export interface LabeledProps extends React.ComponentProps<"div"> {
 }
 
 /**
- * Stacks a small caption over one item, for matrices where each cell needs
- * a name.
+ * Stacks a small caption over one item, for matrices where each cell needs a
+ * name.
  */
 export function Labeled({
   label,
@@ -204,8 +204,8 @@ export interface SwatchProps extends LayerProps {
 }
 
 /**
- * A layer painted large enough to read its color, with its name and the
- * props that produced it.
+ * A layer painted large enough to read its color, with its name and the props
+ * that produced it.
  */
 export function Swatch({ label, code, className, ...props }: SwatchProps) {
   return (
@@ -229,8 +229,8 @@ export function Swatch({ label, code, className, ...props }: SwatchProps) {
 export interface PlaceholderProps extends LayerProps {}
 
 /**
- * A block of filler surface for compositions that only need something to
- * lay out.
+ * A block of filler surface for compositions that only need something to lay
+ * out.
  */
 export function Placeholder(props: PlaceholderProps) {
   return (

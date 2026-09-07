@@ -83,12 +83,12 @@ export function TabList({ tabs, children, ...props }: TabListProps) {
       {Array.isArray(tabs)
         ? tabs.map((tab, index) => {
             const element = createRender(Tab, tab);
-            // A keyed element entry keeps its own key so reordering
-            // reconciles by identity; unkeyed entries fall back to their
-            // position. The prefixes keep the two key sources from
-            // colliding (an explicit key "0" vs index 0). Children.toArray
-            // would provide the same semantics, but react-dom 19 still
-            // emits a missing-key warning for its cloned entries.
+            // A keyed element entry keeps its own key so reordering reconciles
+            // by identity; unkeyed entries fall back to their position. The
+            // prefixes keep the two key sources from colliding (an explicit key
+            // "0" vs index 0). Children.toArray would provide the same
+            // semantics, but react-dom 19 still emits a missing-key warning for
+            // its cloned entries.
             const key =
               element.key == null ? `index:${index}` : `key:${element.key}`;
             return <Fragment key={key}>{element}</Fragment>;

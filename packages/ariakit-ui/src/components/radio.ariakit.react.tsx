@@ -54,14 +54,14 @@ export interface RadioFieldProps
 
 /**
  * Label row holding a `Radio` before its children, which it stacks so a
- * `RadioDescription` lands under the `RadioLabel`. Variant props style the
- * row; every other prop reaches the input.
+ * `RadioDescription` lands under the `RadioLabel`. Variant props style the row;
+ * every other prop reaches the input.
  */
 export function RadioField({ children, ...props }: RadioFieldProps) {
   const [variantProps, rest] = splitProps(props, radioField);
-  // The label is never :disabled itself, so mirror the input's disabled prop
-  // as the $disabled variant for the row's own disabled visuals. A radio
-  // disabled through its group reaches the row through CSS instead.
+  // The label is never :disabled itself, so mirror the input's disabled prop as
+  // the $disabled variant for the row's own disabled visuals. A radio disabled
+  // through its group reaches the row through CSS instead.
   return (
     <label
       {...radioField.jsx({
@@ -102,14 +102,14 @@ export interface RadioCardProps
   extends ak.RadioProps, VariantProps<typeof radioCard> {}
 
 /**
- * Card-like label wrapping an Ariakit Radio kept out of sight, styled from
- * the input's checked and disabled state. Requires a `RadioProvider`
- * ancestor and a `RadioGroup` (or `RadioCardGrid`) around it.
+ * Card-like label wrapping an Ariakit Radio kept out of sight, styled from the
+ * input's checked and disabled state. Requires a `RadioProvider` ancestor and a
+ * `RadioGroup` (or `RadioCardGrid`) around it.
  */
 export function RadioCard({ children, ...props }: RadioCardProps) {
   const [variantProps, rest] = splitProps(props, radioCard);
-  // The label is never :disabled itself, so mirror the input's disabled prop
-  // as the $disabled variant for the card's own disabled visuals.
+  // The label is never :disabled itself, so mirror the input's disabled prop as
+  // the $disabled variant for the card's own disabled visuals.
   return (
     <label
       {...radioCard.jsx({
@@ -153,8 +153,8 @@ export interface RadioCardContentProps
   extends ak.RoleProps<"span">, VariantProps<typeof radioCardContent> {}
 
 /**
- * Wrapper that stacks the card's label and description. Must be nested
- * inside a `RadioCard`.
+ * Wrapper that stacks the card's label and description. Must be nested inside a
+ * `RadioCard`.
  */
 export function RadioCardContent(props: RadioCardContentProps) {
   const [variantProps, rest] = splitProps(props, radioCardContent);
@@ -187,8 +187,8 @@ export interface RadioCardGridProps
   extends ak.RadioGroupProps, VariantProps<typeof radioCardGrid> {}
 
 /**
- * The radio group of a set of `RadioCard`s, laid out as a grid of equal
- * rows. Requires a `RadioProvider` ancestor.
+ * The radio group of a set of `RadioCard`s, laid out as a grid of equal rows.
+ * Requires a `RadioProvider` ancestor.
  */
 export function RadioCardGrid(props: RadioCardGridProps) {
   const [variantProps, rest] = splitProps(props, radioCardGrid);

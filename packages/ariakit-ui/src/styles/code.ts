@@ -16,8 +16,8 @@ export const code = cv({
     "text-inherit",
   ],
   defaultVariants: {
-    // The chip lifts off the surface around it. A transparent chip keeps
-    // its ring only.
+    // The chip lifts off the surface around it. A transparent chip keeps its
+    // ring only.
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
       return variants.$layer !== "transparent";

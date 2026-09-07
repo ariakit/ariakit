@@ -19,9 +19,9 @@ import type { OGImageItem } from "./api.ts";
 const BASE_URL = process.env.OG_IMAGE_BASE_URL ?? "http://localhost:4321";
 const PUBLIC_DIR = path.resolve(process.cwd(), "public");
 
-// Maximum fraction of pixels allowed to differ before the image is
-// considered changed. This avoids committing images that only differ
-// due to sub-pixel rendering or anti-aliasing across runs.
+// Maximum fraction of pixels allowed to differ before the image is considered
+// changed. This avoids committing images that only differ due to sub-pixel
+// rendering or anti-aliasing across runs.
 const MAX_DIFF_PIXEL_RATIO = 0.001;
 const MAX_BLANK_PIXEL_RATIO = 0.995;
 const MAX_SCREENSHOT_ATTEMPTS = 3;
@@ -253,8 +253,8 @@ function removeStaleImages(items: OGImageItem[]) {
 
 async function main() {
   console.log("🔥 Generating OG images");
-  // Use the full Chromium channel because headless-shell produces incorrect
-  // OG image captures for the repeated thumbnail strip on newer Playwright.
+  // Use the full Chromium channel because headless-shell produces incorrect OG
+  // image captures for the repeated thumbnail strip on newer Playwright.
   const browser = await chromium.launch({ channel: "chromium" });
   const context = await browser.newContext({
     viewport: { width: 600, height: 315 },

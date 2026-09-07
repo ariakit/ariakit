@@ -9,8 +9,8 @@ const sections = [
 
 // A saved-views form on the page carries a name that collides with the member
 // the tab store reads to learn whether a tab holds focus, so the document
-// answers `activeElement` with the form. Selecting a section through the
-// number shortcut then leaves keyboard focus behind on the previous tab.
+// answers `activeElement` with the form. Selecting a section through the number
+// shortcut then leaves keyboard focus behind on the previous tab.
 export default function Example() {
   const tab = Ariakit.useTabStore({ defaultSelectedId: "overview" });
   const [focusHistory, setFocusHistory] = useState<string[]>([]);

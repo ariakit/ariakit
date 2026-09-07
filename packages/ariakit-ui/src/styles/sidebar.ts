@@ -21,9 +21,9 @@ export const sidebar = cv({
   ],
   variants: {
     /**
-     * Whether the sidebar is collapsed to its minimum width. Descendants
-     * read the flag through container style queries. The width lives in the
-     * same variant so only one width rule is ever emitted.
+     * Whether the sidebar is collapsed to its minimum width. Descendants read
+     * the flag through container style queries. The width lives in the same
+     * variant so only one width rule is ever emitted.
      */
     $collapsed: {
       true: "[--sidebar-collapsed:1] w-(--sidebar-min-width)",
@@ -31,8 +31,8 @@ export const sidebar = cv({
     },
     /**
      * Sizes the sidebar against its positioning context instead of the app
-     * container, for modal sidebars portalled away from it. Both heights
-     * live in the same variant so only one height rule is ever emitted.
+     * container, for modal sidebars portalled away from it. Both heights live
+     * in the same variant so only one height rule is ever emitted.
      */
     $fullHeight: {
       true: "h-full",
@@ -48,8 +48,8 @@ export const sidebar = cv({
       };
     },
     /**
-     * Sets the collapsed width. Numbers scale the spacing token. Nav rows
-     * size their icon buttons against it.
+     * Sets the collapsed width. Numbers scale the spacing token. Nav rows size
+     * their icon buttons against it.
      */
     $minWidth(value?: string | number) {
       if (value == null) return;

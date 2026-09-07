@@ -198,9 +198,9 @@ test("click with the secondary button matches rightClick", async () => {
   ]);
 });
 
-// Unlike `click`, browsers keep firing `auxclick` on a disabled control. Chromium
-// and WebKit fire it; Firefox is the exception and fires neither `auxclick` nor
-// the compatibility mouse events.
+// Unlike `click`, browsers keep firing `auxclick` on a disabled control.
+// Chromium and WebKit fire it; Firefox is the exception and fires neither
+// `auxclick` nor the compatibility mouse events.
 test("click with the auxiliary button dispatches auxclick on disabled controls", async () => {
   document.body.innerHTML = `<button type="button" disabled>Paste</button>`;
 

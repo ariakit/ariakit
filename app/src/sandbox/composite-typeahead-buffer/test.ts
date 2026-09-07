@@ -16,8 +16,8 @@ function typeahead(key: string) {
 test("keeps typeahead characters scoped to each composite instance", async () => {
   await press.Tab();
 
-  // Keep the first composite's "ap" buffer alive so the old global buffer
-  // would leak into the second composite during the "b" keydown below.
+  // Keep the first composite's "ap" buffer alive so the old global buffer would
+  // leak into the second composite during the "b" keydown below.
   vi.useFakeTimers();
 
   try {

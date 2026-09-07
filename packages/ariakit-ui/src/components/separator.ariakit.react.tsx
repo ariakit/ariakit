@@ -4,8 +4,8 @@ import { splitProps } from "clava";
 import type { FC } from "react";
 import { separator } from "../styles/separator.ts";
 
-// Role has no hr shorthand, so the element comes from the render prop and
-// this alias retypes the props for the hr element (the runtime component is
+// Role has no hr shorthand, so the element comes from the render prop and this
+// alias retypes the props for the hr element (the runtime component is
 // element-agnostic).
 const RoleHr = ak.Role as FC<ak.RoleProps<"hr">>;
 

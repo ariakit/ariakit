@@ -91,8 +91,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     await page.keyboard.press("F2");
     await test.expect(q.combobox("Vegetable")).toBeFocused();
-    // The presentation is still waiting for its target, which is what makes
-    // the focus move below an abandonment rather than a no-op.
+    // The presentation is still waiting for its target, which is what makes the
+    // focus move below an abandonment rather than a no-op.
     await test.expect(q.option("Onion")).toHaveCount(0);
 
     await q.textbox("Note").click();

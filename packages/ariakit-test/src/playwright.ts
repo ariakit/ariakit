@@ -17,13 +17,13 @@ type RoleQueries = Record<AriaRole, RoleQuery>;
 type Queries = RoleQueries & { text: TextQuery };
 
 /**
- * Creates role- and text-based query helpers for a Playwright `Page`, `Locator`,
- * or `FrameLocator`. Call a role method such as `query(page).button(name)` to get
- * a `Locator` from `getByRole`, or `query(page).text(name)` to match by text
- * content.
+ * Creates role- and text-based query helpers for a Playwright `Page`,
+ * `Locator`, or `FrameLocator`. Call a role method such as
+ * `query(page).button(name)` to get a `Locator` from `getByRole`, or
+ * `query(page).text(name)` to match by text content.
  *
- * Names are matched exactly by default. This mirrors the role-based `query` from
- * the package root for end-to-end Playwright tests.
+ * Names are matched exactly by default. This mirrors the role-based `query`
+ * from the package root for end-to-end Playwright tests.
  * @example
  * ```ts
  * const { button, dialog } = query(page);

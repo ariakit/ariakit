@@ -5,9 +5,9 @@ const fruits = ["Apple", "Banana", "Cherry", "Grape"];
 
 // A saved-searches form on the page carries a name that collides with the
 // member `ComboboxList` reads to confirm the list still holds focus, so the
-// document answers `activeElement` with the form. The redirect that hands
-// focus back to the combobox never runs, and the list keeps DOM focus that
-// belongs on the input.
+// document answers `activeElement` with the form. The redirect that hands focus
+// back to the combobox never runs, and the list keeps DOM focus that belongs on
+// the input.
 export default function Example() {
   const [focusHistory, setFocusHistory] = useState<string[]>([]);
   const recordFocus = (name: string) => {

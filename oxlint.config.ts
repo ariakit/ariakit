@@ -26,10 +26,16 @@ const disabledReactRules = {
 } as const;
 
 export default defineConfig({
-  // Declaring `react` only in an override would enable just the rules that
-  // the override names, silently disabling every other React rule, including
+  // Declaring `react` only in an override would enable just the rules that the
+  // override names, silently disabling every other React rule, including
   // `react/jsx-key` and `react/no-children-prop`.
   plugins: ["typescript", "react", "import"],
+  jsPlugins: [
+    {
+      name: "comment-reflow",
+      specifier: "oxlint-plugin-comment-reflow",
+    },
+  ],
   options: {
     // Type-aware rules resolve `astro:content` through the gitignored
     // `app/.astro`, so the `lint` and `lint-fix` scripts and the pre-commit
@@ -51,6 +57,10 @@ export default defineConfig({
     pedantic: "off",
   },
   rules: {
+    "comment-reflow/reflow": [
+      "error",
+      { printWidth: 80, trailingComments: "always" },
+    ],
     // Type-only exports are incorrectly reported as missing.
     // https://github.com/oxc-project/oxc/issues/13258
     "import/namespace": "off",

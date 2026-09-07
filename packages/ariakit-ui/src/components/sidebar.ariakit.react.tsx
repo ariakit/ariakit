@@ -17,8 +17,8 @@ const SidebarContext = React.createContext<SidebarContextType>(
   defaultSidebarContext,
 );
 
-// Collapsible detection must key off SidebarProvider specifically. Reading
-// the generic dialog context would flag a sidebar inside any unrelated
+// Collapsible detection must key off SidebarProvider specifically. Reading the
+// generic dialog context would flag a sidebar inside any unrelated
 // DialogProvider and hijack that dialog's store.
 const SidebarProviderContext = React.createContext(false);
 
@@ -58,8 +58,8 @@ export function Sidebar({
     ...sidebar.jsx({
       ...variantProps,
       $collapsed: variantProps.$collapsed ?? !!collapsed,
-      // Modal sidebars live in a portal where container units can't reach
-      // the app container.
+      // Modal sidebars live in a portal where container units can't reach the
+      // app container.
       $fullHeight: variantProps.$fullHeight ?? (isDialog && isMobile),
     }),
     ...rest,

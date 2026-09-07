@@ -135,9 +135,9 @@ function SearchIssues() {
   );
 }
 
-// A list for the same store can be rendered outside the popup, for example
-// into a side panel. It is not inside the popup, so it does not take the popup
-// role and the popover keeps owning its own items.
+// A list for the same store can be rendered outside the popup, for example into
+// a side panel. It is not inside the popup, so it does not take the popup role
+// and the popover keeps owning its own items.
 function SearchDocs() {
   const [panel, setPanel] = useState<HTMLElement | null>(null);
 

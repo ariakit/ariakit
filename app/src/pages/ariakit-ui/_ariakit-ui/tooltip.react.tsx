@@ -36,8 +36,8 @@ interface OpenTooltipProps extends TooltipProps {
 }
 
 /**
- * A tooltip held open inside its card. The provider owns the open state and
- * the tooltip lays out inside the stage instead of a portal.
+ * A tooltip held open inside its card. The provider owns the open state and the
+ * tooltip lays out inside the stage instead of a portal.
  */
 function OpenTooltip({
   label = "Anchor",
@@ -46,8 +46,8 @@ function OpenTooltip({
   children,
   ...props
 }: OpenTooltipProps) {
-  // The anchor sits at the edge the tooltip points away from, so the label
-  // has the rest of the stage to itself.
+  // The anchor sits at the edge the tooltip points away from, so the label has
+  // the rest of the stage to itself.
   const below = placement.startsWith("bottom");
   return (
     <div

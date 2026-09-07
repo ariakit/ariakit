@@ -15,9 +15,9 @@ const DEFAULT_MIX_AMOUNT = 50;
 const DEFAULT_CONTRAST_AMOUNT = 25;
 
 /**
- * Checks whether a `$layer` value colors the layer. `"transparent"` is the
- * one string the layer accepts that is not a color: it keeps the layer
- * without coloring it.
+ * Checks whether a `$layer` value colors the layer. `"transparent"` is the one
+ * string the layer accepts that is not a color: it keeps the layer without
+ * coloring it.
  */
 export function isLayerColor(
   value: VariantProps<typeof layer>["$layer"],
@@ -38,8 +38,8 @@ export const layer = cv({
      *   background color.
      * - If set to `"transparent"`, the element keeps the layer as the color
      *   context for its text, its edges and its descendants, but paints no
-     *   background until another layer variant, or a state such as hover,
-     *   moves the color.
+     *   background until another layer variant, or a state such as hover, moves
+     *   the color.
      *
      * Set to `false` to disable the layer system.
      */
@@ -87,8 +87,8 @@ export const layer = cv({
     $lightnessOffset(value?: string | number | boolean) {
       return getLightnessStyleClass({
         value,
-        // 0 is a real offset here, not an absent one: it is the only way to
-        // ask for the parent's lightness explicitly.
+        // 0 is a real offset here, not an absent one: it is the only way to ask
+        // for the parent's lightness explicitly.
         allowZero: true,
         property: "--layer-lightness-offset",
         class: "ak-layer-offset-(--layer-lightness-offset)",

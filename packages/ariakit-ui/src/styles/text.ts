@@ -90,8 +90,8 @@ export const text = cv({
       });
     },
     /**
-     * Sets the minimum lightness (0-100) of the text color after all other
-     * text variants have been applied.
+     * Sets the minimum lightness (0-100) of the text color after all other text
+     * variants have been applied.
      *
      * **Important**: When used on a `$layer` element, this applies to `$text`
      * or SVG elements inside it, not to text direclty inside the layer element.
@@ -104,8 +104,8 @@ export const text = cv({
       });
     },
     /**
-     * Sets the maximum lightness (0-100) of the text color after all other
-     * text variants have been applied.
+     * Sets the maximum lightness (0-100) of the text color after all other text
+     * variants have been applied.
      *
      * **Important**: When used on a `$layer` element, this applies to `$text`
      * or SVG elements inside it, not to text direclty inside the layer element.
@@ -243,9 +243,9 @@ export const text = cv({
       });
     },
     /**
-     * Sets the exact hue of the text color. Accepts a named hue like
-     * `"red"` or `"blue"`, a color harmony like `"complementary"`, or a degree
-     * value like `240`.
+     * Sets the exact hue of the text color. Accepts a named hue like `"red"` or
+     * `"blue"`, a color harmony like `"complementary"`, or a degree value like
+     * `240`.
      *
      * **Important**: When used on a `$layer` element, this applies to `$text`
      * or SVG elements inside it, not to text direclty inside the layer element.

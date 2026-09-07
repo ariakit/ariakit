@@ -4,9 +4,9 @@ import { frame } from "./frame.ts";
 import { hover } from "./hover.ts";
 import { layer } from "./layer.ts";
 
-// Widths the cell pseudos and the container borders read. The custom
-// properties inherit, so setting them on either element reaches the cells. The
-// channel suffixes match the Tailwind border utilities that spend them, so
+// Widths the cell pseudos and the container borders read. The custom properties
+// inherit, so setting them on either element reaches the cells. The channel
+// suffixes match the Tailwind border utilities that spend them, so
 // --table-border-bs pairs with border-bs-*.
 type TableBorderValue = boolean | string | number;
 
@@ -45,8 +45,8 @@ const tableBorderVariants = {
     return getBorderStyle(["s", "e", "bs", "be"], value);
   },
   /**
-   * Overrides `$border` on the inline-start and inline-end sides, the
-   * borders between columns.
+   * Overrides `$border` on the inline-start and inline-end sides, the borders
+   * between columns.
    */
   $borderInline(value?: TableBorderValue) {
     return getBorderStyle(["s", "e"], value);

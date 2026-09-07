@@ -17,8 +17,8 @@ interface RulerProps extends ContainerProps {
 }
 
 /**
- * A container drawn as a measured band inside a dashed track, so its width
- * and gutter can be read against the card.
+ * A container drawn as a measured band inside a dashed track, so its width and
+ * gutter can be read against the card.
  */
 function Ruler({ label, ...props }: RulerProps) {
   return (

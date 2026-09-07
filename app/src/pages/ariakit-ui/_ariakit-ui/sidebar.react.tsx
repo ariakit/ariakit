@@ -55,8 +55,8 @@ const sections = [
 ];
 
 /**
- * A sized box that becomes the containing block of the fixed sidebar inside
- * it, so the panel lays out in the card instead of over the page.
+ * A sized box that becomes the containing block of the fixed sidebar inside it,
+ * so the panel lays out in the card instead of over the page.
  */
 function SidebarStage({ className, ...props }: React.ComponentProps<"div">) {
   return (

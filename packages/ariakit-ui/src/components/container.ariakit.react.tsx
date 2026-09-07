@@ -7,8 +7,8 @@ export interface ContainerProps
   extends ak.RoleProps<"div">, VariantProps<typeof container> {}
 
 /**
- * Renders a horizontally centered div whose width is capped by `$size` with
- * a `$p` gutter. Both props inherit, so an ancestor can provide them to size
+ * Renders a horizontally centered div whose width is capped by `$size` with a
+ * `$p` gutter. Both props inherit, so an ancestor can provide them to size
  * several nested containers at once.
  */
 export function Container(props: ContainerProps) {

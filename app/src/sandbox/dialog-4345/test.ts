@@ -34,7 +34,9 @@ test("fallback scroll lock also hides the html overflow", async () => {
   expect(q.dialog("Dialog")).toBeVisible();
   // The page scrolls through the html element (overflow-y: scroll), so the
   // padding fallback must also hide the html overflow to lock the scroll.
-  expect(documentElement).toHaveStyle("--scrollbar-width: 1024px");
+  expect(
+    getComputedStyle(documentElement).getPropertyValue("--scrollbar-width"),
+  ).toBe("1024px");
   expect(documentElement).toHaveStyle("overflow-y: hidden");
   expect(documentElement).not.toHaveStyle("scrollbar-gutter: stable");
   expect(body).toHaveStyle("overflow: hidden");
@@ -42,7 +44,9 @@ test("fallback scroll lock also hides the html overflow", async () => {
   await press.Escape();
   expect(q.dialog.maybe("Dialog")).not.toBeInTheDocument();
   expect(documentElement).toHaveStyle("overflow-y: scroll");
-  expect(documentElement).not.toHaveStyle("--scrollbar-width: 1024px");
+  expect(
+    getComputedStyle(documentElement).getPropertyValue("--scrollbar-width"),
+  ).toBe("");
   expect(body).not.toHaveStyle("overflow: hidden");
   expect(body).not.toHaveStyle("padding-right: 1024px");
 });

@@ -25,15 +25,15 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "1.20.4",
+    "@opennextjs/cloudflare": "1.20.6",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "24.13.3",
     "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.5",
+    "@types/react-dom": "19.2.7",
     "babel-plugin-react-compiler": "1.0.0",
     "tailwindcss": "4.3.3",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
-    "wrangler": "4.127.1"
+    "wrangler": "4.129.0"
   }
 }

@@ -55,8 +55,8 @@ interface OpenPopoverProps extends PopoverProps {
 
 /**
  * A popover held open inside its card. The provider owns the open state, the
- * popover lays out inside the stage instead of a portal, and focus stays
- * where it was so the page does not jump on load.
+ * popover lays out inside the stage instead of a portal, and focus stays where
+ * it was so the page does not jump on load.
  */
 function OpenPopover({
   label = "Anchor",

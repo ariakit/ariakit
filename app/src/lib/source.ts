@@ -72,8 +72,8 @@ export interface SourceFile {
    */
   dependencies?: Record<string, string>;
   /**
-   * External dev-only dependencies (currently only @types/*) referenced by
-   * this file, keyed by package name with the resolved version as value.
+   * External dev-only dependencies (currently only @types/*) referenced by this
+   * file, keyed by package name with the resolved version as value.
    */
   devDependencies?: Record<string, string>;
 }
@@ -124,7 +124,9 @@ const PATTERNS: Array<[RegExp, ImportPathType]> = [
 // Module Path Extraction Helpers
 // ============================================================================
 
-/** Extracts the module path from regex match groups (single/double/template). */
+/**
+ * Extracts the module path from regex match groups (single/double/template).
+ */
 function getPathFromGroups(
   groups: RegExpExecArray["groups"],
 ): string | undefined {
@@ -132,8 +134,8 @@ function getPathFromGroups(
 }
 
 /**
- * Determines the quote character used in regex match groups.
- * Defaults to double quote if no match found.
+ * Determines the quote character used in regex match groups. Defaults to double
+ * quote if no match found.
  */
 function getQuoteFromGroups(groups: RegExpExecArray["groups"]): string {
   if (groups?.single != null) return "'";
@@ -142,15 +144,15 @@ function getQuoteFromGroups(groups: RegExpExecArray["groups"]): string {
 }
 
 /**
- * Extracts the comma-separated specifier text inside braces from an
- * import-like declaration string.
+ * Extracts the comma-separated specifier text inside braces from an import-like
+ * declaration string.
  * @example
  * extractSpecifiersInsideBraces('import { A, type B } from "mod";')
  * // Returns "A, type B"
  */
 function extractSpecifiersInsideBraces(matchText: string): string | null {
-  // Match ` from ` followed by a quote to avoid matching "from" inside identifiers
-  // (e.g., `transformFrom`)
+  // Match ` from ` followed by a quote to avoid matching "from" inside
+  // identifiers (e.g., `transformFrom`)
   const fromIndex = matchText.search(/\sfrom\s+['"`]/);
   if (fromIndex < 0) return null;
   const beforeFrom = matchText.slice(0, fromIndex);

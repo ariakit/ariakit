@@ -137,9 +137,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   test("keeps truly disabled anchors out of pointer reach", async ({ q }) => {
-    // Focusable applies `pointer-events: none` to truly disabled elements, so no
-    // mouse move can reach these anchors and the shield is the behavior here.
-    // The hover decision is covered by the two tests below, where it's lifted.
+    // Focusable applies `pointer-events: none` to truly disabled elements, so
+    // no mouse move can reach these anchors and the shield is the behavior
+    // here. The hover decision is covered by the two tests below, where it's
+    // lifted.
     await test
       .expect(q.button("Rename file"))
       .toHaveCSS("pointer-events", "none");
@@ -214,9 +215,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("shows the tooltip on hover when the rendered button is disabled with focusable false", async ({
     q,
   }) => {
-    // `focusable={false}` makes the button's disabled props inoperative, so
-    // the anchor keeps the element keyboard reachable and reveals on focus.
-    // Hover has to agree, or the tooltip becomes keyboard-only.
+    // `focusable={false}` makes the button's disabled props inoperative, so the
+    // anchor keeps the element keyboard reachable and reveals on focus. Hover
+    // has to agree, or the tooltip becomes keyboard-only.
     await q.button("Compress file").hover();
     await test
       .expect(q.tooltip("Compression runs in the background"))

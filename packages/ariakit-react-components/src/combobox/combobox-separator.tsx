@@ -47,8 +47,8 @@ export const useComboboxSeparator = createHook<
  * Renders a divider between
  * [`ComboboxItem`](https://ariakit.com/reference/combobox-item) elements.
  * @deprecated Use
- * [`ComboboxGroup`](https://ariakit.com/reference/combobox-group) with CSS
- * borders instead.
+ *   [`ComboboxGroup`](https://ariakit.com/reference/combobox-group) with CSS
+ *   borders instead.
  * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {5}

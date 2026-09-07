@@ -14,8 +14,8 @@ const cache = new Map<string, Component<any>>();
 
 /**
  * Allows a component to be rendered as a different HTML element or Solid
- * component. Must be passed to the `render` prop of a component that
- * supports it.
+ * component. Must be passed to the `render` prop of a component that supports
+ * it.
  *
  * To render as an HTML element, use `<As.element />` (e.g. `<As.button />`).
  *

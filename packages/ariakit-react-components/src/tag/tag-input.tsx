@@ -130,10 +130,10 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
         const eventWithValues = Object.assign(event, { values });
         if (values.length && addValueOnChangeProp(eventWithValues)) {
           // We need to prevent the default behavior here in case the tag input
-          // component is combined with another component that also listens to the
-          // change event and updates the store value, such as Combobox. In this
-          // case, the tag input logic should take precedence even if this event
-          // handler is called first.
+          // component is combined with another component that also listens to
+          // the change event and updates the store value, such as Combobox. In
+          // this case, the tag input logic should take precedence even if this
+          // event handler is called first.
           event.preventDefault();
           for (const tagValue of values) {
             store.addValue(tagValue);
@@ -270,10 +270,9 @@ export interface TagInputOptions<
     EventWithValues<ChangeEvent<HTMLElement>>
   >;
   /**
-   * Whether the tag
-   * [`value`](https://ariakit.com/reference/tag-provider#value) state
-   * should be updated when the input value changes. This is useful if you want
-   * to customize how the store
+   * Whether the tag [`value`](https://ariakit.com/reference/tag-provider#value)
+   * state should be updated when the input value changes. This is useful if you
+   * want to customize how the store
    * [`value`](https://ariakit.com/reference/tag-provider#value) is updated
    * based on the input element's value.
    * @default true

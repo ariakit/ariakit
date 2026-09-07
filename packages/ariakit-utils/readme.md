@@ -768,7 +768,7 @@ function fireClickEvent(
 
 Creates and dispatches a click event.
 
-The event is a `PointerEvent` built by the window that owns the element, the way browsers dispatch it, falling back to a `MouseEvent` where that window has no `PointerEvent`. Its `view` is that window and it is composed. It reports no pointer behind the click unless the caller passes one, and reports every other pointer attribute at its default value, the way a click always does.
+The event is a `PointerEvent` built by the window that owns the element, the way browsers dispatch it, falling back to a `MouseEvent` where that window has no `PointerEvent`. Its `view` is that window when it is a genuine `Window`, or `null` otherwise, and it is composed. It reports no pointer behind the click unless the caller passes one, and reports every other pointer attribute at its default value, the way a click always does.
 
 Example:
 

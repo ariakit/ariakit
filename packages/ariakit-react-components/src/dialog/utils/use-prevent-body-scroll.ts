@@ -1,4 +1,5 @@
-// Based on https://github.com/floating-ui/floating-ui/blob/1201e72e67a80e479122293d46d96c9bbc8f156d/packages/react-dom-interactions/src/FloatingOverlay.tsx
+// Based on
+// https://github.com/floating-ui/floating-ui/blob/1201e72e67a80e479122293d46d96c9bbc8f156d/packages/react-dom-interactions/src/FloatingOverlay.tsx
 import { useSafeLayoutEffect } from "@ariakit/react-utils";
 import { getDocument, getWindow, chain, isApple, isMac } from "@ariakit/utils";
 import { useEffect } from "react";
@@ -8,14 +9,14 @@ import { useRootDialog } from "./use-root-dialog.ts";
 // Only iOS doesn't respect `overflow: hidden` on document.body.
 const isIOS = isApple() && !isMac();
 
-// Use layout timing to measure and lock before paint. Keep iOS passive
-// because its scroll capture/restore depends on dialog focus timing. isIOS
-// is session-stable, so the hook choice cannot change between renders.
+// Use layout timing to measure and lock before paint. Keep iOS passive because
+// its scroll capture/restore depends on dialog focus timing. isIOS is
+// session-stable, so the hook choice cannot change between renders.
 // https://github.com/ariakit/ariakit/pull/6288
 const useLockEffect = isIOS ? useEffect : useSafeLayoutEffect;
 
-// The CSS global isn't part of the Window type, even though browsers expose
-// it on every window object.
+// The CSS global isn't part of the Window type, even though browsers expose it
+// on every window object.
 interface WindowWithCSS extends Window {
   CSS?: Pick<typeof CSS, "supports">;
 }
@@ -69,10 +70,10 @@ export function usePreventBodyScroll(
       const scrollbarGutter =
         computedStyle.getPropertyValue("scrollbar-gutter");
       const hasGutter = scrollbarGutter.includes("stable");
-      // When the html overflow isn't visible, the page scrolls through the
-      // html element itself and the body overflow doesn't propagate to the
-      // viewport, so hiding the body overflow alone wouldn't lock the page
-      // scroll. See https://github.com/ariakit/ariakit/issues/4345
+      // When the html overflow isn't visible, the page scrolls through the html
+      // element itself and the body overflow doesn't propagate to the viewport,
+      // so hiding the body overflow alone wouldn't lock the page scroll. See
+      // https://github.com/ariakit/ariakit/issues/4345
       const isOverflowVisible = (value: string) =>
         // happy-dom and jsdom return an empty string for unset computed
         // values, whereas browsers return the visible keyword.
@@ -112,8 +113,8 @@ export function usePreventBodyScroll(
           hideHtmlOverflow(),
         );
       }
-      // Fallback for browsers without scrollbar-gutter support (Safari <
-      // 18.2): compensate the removed scrollbar with body padding and expose
+      // Fallback for browsers without scrollbar-gutter support (Safari < 18.2):
+      // compensate the removed scrollbar with body padding and expose
       // --scrollbar-width so userland position: fixed elements can compensate
       // too.
       return withHiddenHtmlOverflow(
@@ -162,11 +163,11 @@ export function usePreventBodyScroll(
     const restore = setStyle();
 
     return () => {
-      // Defer the restore to a microtask so it runs after this commit's
-      // layout effects, such as the dialog's focus-on-hide. This preserves
-      // the close ordering the passive phase provided before: focus first
-      // (while the scroll is still locked), then unlock. The orchestrate
-      // stacks keep this safe if the scroll gets locked again in between.
+      // Defer the restore to a microtask so it runs after this commit's layout
+      // effects, such as the dialog's focus-on-hide. This preserves the close
+      // ordering the passive phase provided before: focus first (while the
+      // scroll is still locked), then unlock. The orchestrate stacks keep this
+      // safe if the scroll gets locked again in between.
       queueMicrotask(restore);
     };
   }, [isRootDialog, contentElement]);

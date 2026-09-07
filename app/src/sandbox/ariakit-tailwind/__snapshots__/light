@@ -130,6 +130,8 @@
         }
       },
       "raw mix": "bg-[oklch(0.7377_0.0971_30.0506)] text-[oklch(0_0_0)] *:text-[lch(18.2327_35.22_34.184)] rounded-[15px] border-[1px] border-[oklch(0_0.0971_30.0506_/_0.1)] p-[4px] shadow-[oklch(0_0.0971_30.0506_/_0.1)_0px_0px_0px_0px]",
+      "raw mix inputs": "bg-[oklch(0.9933_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(43.4424_0.38_0)] rounded-[15px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.1)_0px_0px_0px_0px]",
+      "raw contrast amount": "bg-[oklch(0.9933_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.1)_0px_0px_0px_0px]",
       "explicit longhands": {
         "class": "bg-[oklch(0.9933_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.1)_0px_0px_0px_0px]",
         "children": {

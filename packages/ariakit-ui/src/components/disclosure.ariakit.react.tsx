@@ -24,12 +24,12 @@ export interface DisclosureProps
   /** Custom content element or props to render a `DisclosureContent`. */
   content?: React.ReactElement | DisclosureContentProps;
   /**
-   * Element rendered as the root's last child, after the content. Reserved
-   * for absolutely positioned decorations that have to span the whole
-   * disclosure, including its open content. It follows the content, so a
-   * custom content element that stretches to the frame edges no longer counts
-   * as the root's last child. `ListDisclosure` fills this slot on every
-   * instance, so that applies there whether or not the caller passes one.
+   * Element rendered as the root's last child, after the content. Reserved for
+   * absolutely positioned decorations that have to span the whole disclosure,
+   * including its open content. It follows the content, so a custom content
+   * element that stretches to the frame edges no longer counts as the root's
+   * last child. `ListDisclosure` fills this slot on every instance, so that
+   * applies there whether or not the caller passes one.
    */
   decoration?: React.ReactNode;
   /**
@@ -122,9 +122,8 @@ export function DisclosureButton({
   const labelId = `${baseId}-label`;
   const descriptionId = `${baseId}-description`;
   const [variantProps, rest] = splitProps(props, disclosureButton);
-  // A nullish check, not truthiness: falsy labels like {0} must still
-  // render, since aria-labelledby references the span when a description
-  // exists.
+  // A nullish check, not truthiness: falsy labels like {0} must still render,
+  // since aria-labelledby references the span when a description exists.
   const labelElement =
     rest.children != null ? (
       <span id={labelId} className="min-w-0">

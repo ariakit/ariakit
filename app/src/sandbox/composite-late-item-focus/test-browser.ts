@@ -112,8 +112,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Target bold action").click();
     await q.button("Show pending toolbar").click();
 
-    // The item registers in a passive effect, and no state exposes when a
-    // stale pending presentation would move focus afterward.
+    // The item registers in a passive effect, and no state exposes when a stale
+    // pending presentation would move focus afterward.
     await flushFrames(page);
     await test.expect(q.button("Hide pending toolbar")).toBeFocused();
     await test.expect(q.button("Bold action")).not.toBeFocused();
@@ -144,8 +144,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Target bold action").click();
     await q.button("Show pending toolbar").click();
 
-    // The item registers in a passive effect, and no state exposes when a
-    // stale pending presentation would move focus afterward.
+    // The item registers in a passive effect, and no state exposes when a stale
+    // pending presentation would move focus afterward.
     await flushFrames(page);
     await test.expect(q.button("Hide pending toolbar")).toBeFocused();
     await test.expect(q.button("Bold action")).not.toBeFocused();
@@ -170,8 +170,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Queue initial toolbar").click();
     await q.button("Show initially hidden toolbar").click();
 
-    // The item registers in a passive effect, and no state exposes when a
-    // stale pending presentation would move focus afterward.
+    // The item registers in a passive effect, and no state exposes when a stale
+    // pending presentation would move focus afterward.
     await flushFrames(page);
     await test.expect(q.button("Show initially hidden toolbar")).toBeFocused();
     await test.expect(q.button("Initial bold action")).not.toBeFocused();

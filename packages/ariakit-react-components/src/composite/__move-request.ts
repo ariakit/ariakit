@@ -13,9 +13,9 @@ interface MoveRequest {
 }
 
 /**
- * Tracks the current move per store. This has to outlive the component:
- * `moves` only counts requests, so a fresh instance can't tell whether a move
- * was consumed or what target a pending move asked for.
+ * Tracks the current move per store. This has to outlive the component: `moves`
+ * only counts requests, so a fresh instance can't tell whether a move was
+ * consumed or what target a pending move asked for.
  */
 const moveRequests = new WeakMap<Core.CompositeStore["item"], MoveRequest>();
 

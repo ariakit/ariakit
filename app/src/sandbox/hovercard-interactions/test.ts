@@ -13,8 +13,8 @@ const hoverOutside = async () => {
 test("shows after hovering and hides after hovering outside", async () => {
   expect(maybeHovercard()).not.toBeInTheDocument();
 
-  // Dispatch directly so the assertions run before the timeout can expire
-  // when the full suite delays the interaction helper.
+  // Dispatch directly so the assertions run before the timeout can expire when
+  // the full suite delays the interaction helper.
   await dispatch.mouseMove(q.link("@ariakit.com"));
   expect(maybeHovercard()).not.toBeInTheDocument();
   await expect.poll(hovercard).toBeVisible();

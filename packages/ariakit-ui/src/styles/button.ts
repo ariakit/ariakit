@@ -39,9 +39,9 @@ export const button = cv({
   ],
   variants: {
     /**
-     * Sets the button's surface. `bevel` raises it with the gradient and
-     * inner shadow of a classic push button, while `flat` paints the layer on
-     * its own.
+     * Sets the button's surface. `bevel` raises it with the gradient and inner
+     * shadow of a classic push button, while `flat` paints the layer on its
+     * own.
      */
     $kind: {
       flat: "",
@@ -61,25 +61,25 @@ export const button = cv({
     $active: true,
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
-      // A see-through button has nothing to lift off, and a bevel replaces
-      // the flat lift with its own gradient plus the explicit lighten below.
-      // A button with a layer of its own lifts off the surface around it.
+      // A see-through button has nothing to lift off, and a bevel replaces the
+      // flat lift with its own gradient plus the explicit lighten below. A
+      // button with a layer of its own lifts off the surface around it.
       if (variants.$layer === "transparent") return false;
       if (variants.$kind === "bevel") return false;
       return true;
     },
     $lighten(defaultValue, variants) {
       if (variants.$kind !== "bevel") return defaultValue;
-      // The gradient alone is subtle on dark surfaces, so the base layer
-      // lifts to keep the button distinct from the surface behind it.
+      // The gradient alone is subtle on dark surfaces, so the base layer lifts
+      // to keep the button distinct from the surface behind it.
       return defaultValue ?? true;
     },
   },
   refine({ variants, setVariants }) {
     if (!variants.$disabled) return;
     // Native buttons suppress these through the :disabled-aware ui-hover and
-    // ui-active variants, but label-based controls such as the choice card
-    // are never :disabled themselves, so drop the state variants here.
+    // ui-active variants, but label-based controls such as the choice card are
+    // never :disabled themselves, so drop the state variants here.
     setVariants({
       $hoverOffset: false,
       $hoverPush: false,

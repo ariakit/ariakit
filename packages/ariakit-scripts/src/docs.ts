@@ -199,8 +199,8 @@ function getExcludeSourceFile(
   exclude: string,
   rootPath: string,
 ) {
-  // Prefer the module the entry re-exports under this specifier so excluding
-  // an external package like `@playwright/test` resolves to its declarations.
+  // Prefer the module the entry re-exports under this specifier so excluding an
+  // external package like `@playwright/test` resolves to its declarations.
   for (const declaration of entrySourceFile.getExportDeclarations()) {
     if (declaration.getModuleSpecifierValue() !== exclude) continue;
     const sourceFile = declaration.getModuleSpecifierSourceFile();
@@ -590,8 +590,8 @@ function hasFencedCodeBlock(code: string) {
 function renderExample(example: string) {
   const trimmed = example.trim();
   // Examples that already contain a fenced code block (optionally with
-  // surrounding prose) are treated as Markdown and emitted as-is. Wrapping
-  // them in another code fence would nest fences and break rendering.
+  // surrounding prose) are treated as Markdown and emitted as-is. Wrapping them
+  // in another code fence would nest fences and break rendering.
   if (hasFencedCodeBlock(trimmed)) return trimmed;
   return renderCodeBlock(trimmed);
 }

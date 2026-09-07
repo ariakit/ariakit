@@ -40,9 +40,9 @@ export const heading = cv({
   variants: {
     /**
      * Sets the heading’s visual size independently of the rendered element.
-     * Left unset, the heading sizes itself from its own element, `h1` to
-     * `h5`, so a value is only needed when the semantic level and the design
-     * size disagree.
+     * Left unset, the heading sizes itself from its own element, `h1` to `h5`,
+     * so a value is only needed when the semantic level and the design size
+     * disagree.
      */
     $level(value?: "auto" | 1 | 2 | 3 | 4 | 5) {
       if (!value) return;

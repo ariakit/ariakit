@@ -25,9 +25,9 @@ export default function Thumbnail() {
       <div
         data-open
         {...popover.jsx({
-          // Static preview: data-open renders it open and transition-none
-          // keeps it from fading in on load. The frame matches the migrated
-          // combobox popover (legacy ak-frame-container/container).
+          // Static preview: data-open renders it open and transition-none keeps
+          // it from fading in on load. The frame matches the migrated combobox
+          // popover (legacy ak-frame-container/container).
           $rounded: "xl",
           $p: 1,
           className: "w-66 max-w-full transition-none",

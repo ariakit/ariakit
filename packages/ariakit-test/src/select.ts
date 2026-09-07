@@ -10,11 +10,12 @@ import { sleep } from "./sleep.ts";
 /**
  * Selects a range of text within an element, simulating a real user dragging
  * across it. Hovers and presses on the element, finds the given `text` in its
- * descendant text nodes, sets the document selection to cover it, then releases.
+ * descendant text nodes, sets the document selection to cover it, then
+ * releases.
  *
- * When no element is passed, `document.body` is used. Pass `options` to set event
- * properties such as modifier keys. Each step derives `buttons` from the button
- * it presses, so an explicit `buttons` is ignored.
+ * When no element is passed, `document.body` is used. Pass `options` to set
+ * event properties such as modifier keys. Each step derives `buttons` from the
+ * button it presses, so an explicit `buttons` is ignored.
  * @example
  * ```ts
  * await select("hello world");

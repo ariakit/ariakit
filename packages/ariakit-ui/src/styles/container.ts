@@ -2,31 +2,31 @@ import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 
 // The underscore prefix keeps these inherited state properties out of the
-// --container-* namespace that $size reads theme tokens from, so a token
-// named "max-width" or "padding" can't create a self-reference cycle.
+// --container-* namespace that $size reads theme tokens from, so a token named
+// "max-width" or "padding" can't create a self-reference cycle.
 export const containerSize = cv({
   variants: {
     /**
-     * Sets the container’s maximum width. Accepts a `--container-*` theme
-     * token name like `"default"` or `"7xl"`, or a raw length or expression
-     * like `"64rem"` or `"calc(100% - 2rem)"`. Token names resolve at
-     * runtime, so the token has to reach the page as a real CSS variable.
-     * Tokens the build substitutes, and Tailwind functions like `--spacing()`,
-     * are not available here — pass the equivalent raw expression instead.
-     * The value is written to an inherited custom property, so it can be set
-     * on an ancestor to size several nested containers at once. Use `"none"`
-     * to reset an inherited size.
+     * Sets the container’s maximum width. Accepts a `--container-*` theme token
+     * name like `"default"` or `"7xl"`, or a raw length or expression like
+     * `"64rem"` or `"calc(100% - 2rem)"`. Token names resolve at runtime, so
+     * the token has to reach the page as a real CSS variable. Tokens the build
+     * substitutes, and Tailwind functions like `--spacing()`, are not available
+     * here — pass the equivalent raw expression instead. The value is written
+     * to an inherited custom property, so it can be set on an ancestor to size
+     * several nested containers at once. Use `"none"` to reset an inherited
+     * size.
      */
     $size(value?: "none" | (string & {})) {
       if (!value) return;
       if (value === "none") {
-        // auto is invalid inside the base class min(), which disables
-        // max-width — the same state as never providing a $size.
+        // auto is invalid inside the base class min(), which disables max-width
+        // — the same state as never providing a $size.
         return { style: { "--_container-max-width": "auto" } };
       }
-      // Values with non-ident characters (parens, dots, percent, spaces)
-      // are raw lengths or expressions. Idents try the --container-* theme
-      // token first and fall back to the literal value, which covers both
+      // Values with non-ident characters (parens, dots, percent, spaces) are
+      // raw lengths or expressions. Idents try the --container-* theme token
+      // first and fall back to the literal value, which covers both
       // digit-leading token names like 7xl and bare lengths like 64rem.
       if (/[^\w-]/.test(value)) {
         return { style: { "--_container-max-width": value } };
@@ -38,10 +38,10 @@ export const containerSize = cv({
       };
     },
     /**
-     * Sets the container’s gutter: the minimum space between the container
-     * and the viewport edges when there’s no room for the maximum width.
-     * Like `$size`, it inherits, so it can be provided by an ancestor. Use
-     * `"none"` to remove an inherited gutter.
+     * Sets the container’s gutter: the minimum space between the container and
+     * the viewport edges when there’s no room for the maximum width. Like
+     * `$size`, it inherits, so it can be provided by an ancestor. Use `"none"`
+     * to remove an inherited gutter.
      */
     $p(value?: "unset" | "none" | (string & {}) | number) {
       if (value == null) return;

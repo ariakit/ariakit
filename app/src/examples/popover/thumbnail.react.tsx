@@ -23,8 +23,8 @@ export default function Thumbnail() {
       <div
         data-open
         {...popover.jsx({
-          // Static preview: data-open renders it open and transition-none
-          // keeps it from fading in on load.
+          // Static preview: data-open renders it open and transition-none keeps
+          // it from fading in on load.
           className: "relative max-w-80 flex flex-col gap-2 transition-none",
         })}
       >

@@ -6,9 +6,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     // The menu button in the first row must be reachable with ArrowRight from
-    // its preceding sibling. It's a `CompositeItem` wrapped in a `MenuProvider`,
-    // so before the fix it was registered in the menu's own composite store
-    // instead of the outer composite store, and arrow navigation skipped it.
+    // its preceding sibling. It's a `CompositeItem` wrapped in a
+    // `MenuProvider`, so before the fix it was registered in the menu's own
+    // composite store instead of the outer composite store, and arrow
+    // navigation skipped it.
     await q.button("Button A1").focus();
     await test.expect(q.button("Button A1")).toBeFocused();
     await page.keyboard.press("ArrowRight");

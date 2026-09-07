@@ -57,18 +57,18 @@ export const focus = cv({
   },
   refine({ variants, setVariants }) {
     if (!variants.$focusHighlight) return;
-    // The highlight replaces the ring, so the ring variants have nothing
-    // left to draw. Clearing them here rather than in a computed default
-    // also covers the values the caller passed.
+    // The highlight replaces the ring, so the ring variants have nothing left
+    // to draw. Clearing them here rather than in a computed default also covers
+    // the values the caller passed.
     setVariants({ $focus: false, $focusColor: "unset", $focusOffset: "none" });
   },
 });
 
 /**
  * The ring for a control whose focus lands on an input inside it, such as a
- * choice card around an input kept out of sight. Extend it beside `focus`, or
- * a primitive that reaches `focus`: both `$focus` maps emit, so keep this
- * scale in step with the one above.
+ * choice card around an input kept out of sight. Extend it beside `focus`, or a
+ * primitive that reaches `focus`: both `$focus` maps emit, so keep this scale
+ * in step with the one above.
  */
 export const focusWithin = cv({
   variants: {

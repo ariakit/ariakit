@@ -34,7 +34,7 @@ export const useSelectAnchor = createHook<TagName, SelectAnchorOptions>(
  * Renders an element that acts as the anchor for the
  * [`SelectPopover`](https://ariakit.com/reference/select-popover) component.
  * @deprecated Use
- * [`ComboboxAnchor`](https://ariakit.com/reference/combobox-anchor) instead.
+ *   [`ComboboxAnchor`](https://ariakit.com/reference/combobox-anchor) instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {3}

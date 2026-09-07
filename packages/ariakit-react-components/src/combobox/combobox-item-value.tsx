@@ -126,8 +126,8 @@ function splitValue(itemValue?: string | null, userValue?: string | string[]) {
   // Offsets are computed in normalized space so matching stays
   // diacritic-insensitive, but the parts are sliced from the original string.
   // Translate the offsets to original character boundaries before slicing, as
-  // normalization may change the string length for values such as Hangul,
-  // kana, and decomposed (NFD) strings.
+  // normalization may change the string length for values such as Hangul, kana,
+  // and decomposed (NFD) strings.
   const offsets = toOriginalOffsets(
     itemValue,
     mergeOverlappingOffsets(

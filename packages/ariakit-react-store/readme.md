@@ -44,7 +44,7 @@ interface UseState<S> {
   /**
    * Re-renders the component when state changes and returns the current state.
    * @deprecated Use
-   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
+   *   [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    * @example
    * const state = store.useState();
    */
@@ -285,7 +285,7 @@ type Store<T extends CoreStore = CoreStore> = T & {
    * Re-renders the component when the state changes and returns the current
    * state.
    * @deprecated Use
-   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
+   *   [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    */
   useState: UseState<StoreState<T>>;
 };

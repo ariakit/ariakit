@@ -19,6 +19,7 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - clava@0.6.2
+  - oxlint-plugin-comment-reflow@0.1.2
 
 overrides:
   "@ariakit/components": "workspace:*"
@@ -36,7 +37,7 @@ overrides:
   "@ariakit/utils": "workspace:*"
 
 patchedDependencies:
-  "@changesets/apply-release-plan@8.0.0": "patches/@changesets__apply-release-plan@8.0.0.patch"
+  "@changesets/apply-release-plan@8.1.0": patches/@changesets__apply-release-plan@8.1.0.patch
 
 peerDependencyRules:
   allowedVersions:

@@ -18,12 +18,12 @@ import { dispatch } from "./dispatch.ts";
  * This is the counterpart to `mouseDown` and one step of a full `click`. Pass
  * `options` to set event properties such as modifier keys, or `button` to
  * release another mouse button. The events report no button still held down in
- * `buttons`, like a browser does, unless you pass `buttons` yourself to describe
- * the buttons a chorded gesture keeps held. When that value shows another button
- * stays held down, the release fires `pointermove` instead of `pointerup`, the
- * way Pointer Events routes a chorded release, and the compatibility `mouseup`
- * still fires. The pointer event reports `pressure: 0`, or `0.5` while a chorded
- * gesture keeps a button held.
+ * `buttons`, like a browser does, unless you pass `buttons` yourself to
+ * describe the buttons a chorded gesture keeps held. When that value shows
+ * another button stays held down, the release fires `pointermove` instead of
+ * `pointerup`, the way Pointer Events routes a chorded release, and the
+ * compatibility `mouseup` still fires. The pointer event reports `pressure: 0`,
+ * or `0.5` while a chorded gesture keeps a button held.
  * @example
  * ```ts
  * await mouseDown(q.button("Resize"));

@@ -19,8 +19,8 @@ type TableRowGroupKind = "head" | "body" | "foot";
 
 /**
  * Collects the union of column keys across all rows, preserving the first
- * appearance order (head rows first) so every row renders the same cells in
- * the same positions regardless of its own key order or missing columns.
+ * appearance order (head rows first) so every row renders the same cells in the
+ * same positions regardless of its own key order or missing columns.
  */
 function getColumnKeys<K extends keyof any>(rows?: TableRows<K>) {
   const keys = new Set<string>();
@@ -35,8 +35,8 @@ function getColumnKeys<K extends keyof any>(rows?: TableRows<K>) {
 
 export type TableRow<K extends keyof any> = {
   group?: TableRowGroupKind;
-  // Partial: a row may omit columns (or set them to null) and still render
-  // an empty cell in the right position.
+  // Partial: a row may omit columns (or set them to null) and still render an
+  // empty cell in the right position.
 } & Partial<Record<K, React.ReactNode | TableCellProps>>;
 
 export type TableRows<K extends keyof any> = TableRow<K>[];
@@ -132,9 +132,9 @@ export function Table<K extends keyof any>({
     return rowEl;
   };
 
-  // Rows are caller-controlled records: inherited properties are not part
-  // of the declarative contract, so a sparse row must not render a value
-  // from its prototype chain.
+  // Rows are caller-controlled records: inherited properties are not part of
+  // the declarative contract, so a sparse row must not render a value from its
+  // prototype chain.
   const getCell = (row: TableRow<K>, key: K) => {
     if (!Object.hasOwn(row, key)) return undefined;
     return row[key];

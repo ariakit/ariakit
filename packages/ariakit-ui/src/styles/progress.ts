@@ -8,8 +8,8 @@ const progressBase = cv({
   variants: {
     /**
      * Sets the progress between `0` and `1`. The value goes to
-     * `--progress-value`, which must be registered as an inheriting
-     * `<number>` so the fill can animate it.
+     * `--progress-value`, which must be registered as an inheriting `<number>`
+     * so the fill can animate it.
      */
     $value(value?: number | string) {
       if (value == null) return;

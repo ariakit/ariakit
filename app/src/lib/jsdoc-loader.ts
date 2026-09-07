@@ -165,8 +165,8 @@ function getReExportStatements(
 }
 
 /**
- * Resolves a path without an extension to the first existing `.tsx` or
- * `.ts` variant, returning `undefined` if neither exists.
+ * Resolves a path without an extension to the first existing `.tsx` or `.ts`
+ * variant, returning `undefined` if neither exists.
  */
 function resolveExtension(basePath: string): string | undefined {
   if (existsSync(`${basePath}.tsx`)) return `${basePath}.tsx`;
@@ -175,10 +175,9 @@ function resolveExtension(basePath: string): string | undefined {
 }
 
 /**
- * Parses a source file for relative imports and returns the resolved
- * absolute paths of those that fall within `boundaryDir`. This captures
- * local helper files (e.g., utils, context) that live inside the same
- * component directory.
+ * Parses a source file for relative imports and returns the resolved absolute
+ * paths of those that fall within `boundaryDir`. This captures local helper
+ * files (e.g., utils, context) that live inside the same component directory.
  */
 function getLocalImports(
   sourceFilePath: string,
@@ -206,11 +205,11 @@ function getLocalImports(
 }
 
 /**
- * Gets the full set of source file paths that a component module depends
- * on, without creating a ts-morph project. Starts from the public module
- * re-exports and recursively follows local imports within the component
- * directory so that internal helpers (utils, context files, backdrop
- * components, etc.) are included for mtime tracking.
+ * Gets the full set of source file paths that a component module depends on,
+ * without creating a ts-morph project. Starts from the public module re-exports
+ * and recursively follows local imports within the component directory so that
+ * internal helpers (utils, context files, backdrop components, etc.) are
+ * included for mtime tracking.
  */
 function getComponentSourceFilePaths(
   component: string,
@@ -236,8 +235,8 @@ function getComponentSourceFilePaths(
     }
   }
 
-  // Recursively follow local imports within the component directory so
-  // internal helpers, utils, and context files are included.
+  // Recursively follow local imports within the component directory so internal
+  // helpers, utils, and context files are included.
   while (queue.length > 0) {
     const filePath = queue.shift();
     if (!filePath) break;
@@ -255,9 +254,9 @@ function getComponentSourceFilePaths(
 
 /**
  * Collects all source files under `{corePath}/src/` that live in shared
- * (non-component) directories such as `utils/`. These files are imported
- * by virtually every component, so any change should trigger a full
- * framework rebuild.
+ * (non-component) directories such as `utils/`. These files are imported by
+ * virtually every component, so any change should trigger a full framework
+ * rebuild.
  */
 function getSharedSourceFiles(
   corePath: string,
@@ -306,9 +305,9 @@ function getFileMtimes(files: string[]): Record<string, number> {
 }
 
 /**
- * Safely parses a JSON string into a `FrameworkCache`. Returns `null` if
- * the string is falsy, malformed, or doesn't match the expected shape
- * (e.g., after a format change or interrupted write).
+ * Safely parses a JSON string into a `FrameworkCache`. Returns `null` if the
+ * string is falsy, malformed, or doesn't match the expected shape (e.g., after
+ * a format change or interrupted write).
  */
 function parseFrameworkCache(json: string | undefined): FrameworkCache | null {
   if (!json) return null;
@@ -341,8 +340,8 @@ function mtimesEqual(
 }
 
 /**
- * Stores references for a component in the data store and returns the
- * generated entry IDs.
+ * Stores references for a component in the data store and returns the generated
+ * entry IDs.
  */
 function storeComponentReferences(
   store: LoaderContext["store"],
@@ -359,9 +358,9 @@ function storeComponentReferences(
 }
 
 /**
- * Parses a core source file for relative imports to other component
- * directories (e.g., `from "../composite/composite.tsx"`). Returns the
- * resolved absolute paths of those imports.
+ * Parses a core source file for relative imports to other component directories
+ * (e.g., `from "../composite/composite.tsx"`). Returns the resolved absolute
+ * paths of those imports.
  */
 function getSourceFileImportedPaths(sourceFilePath: string): string[] {
   if (!existsSync(sourceFilePath)) return [];
@@ -400,9 +399,9 @@ function getComponentFromCorePath(
 }
 
 /**
- * Builds a component-level dependency graph by scanning cross-component
- * imports in all core source files. Returns a map from each component to
- * the list of other components it imports from.
+ * Builds a component-level dependency graph by scanning cross-component imports
+ * in all core source files. Returns a map from each component to the list of
+ * other components it imports from.
  */
 function buildComponentDependencyGraph(
   componentModules: string[],
@@ -437,9 +436,9 @@ function buildComponentDependencyGraph(
 }
 
 /**
- * Given a set of directly changed components and a dependency graph,
- * returns all components that need rebuilding — the directly changed ones
- * plus every component that transitively depends on them.
+ * Given a set of directly changed components and a dependency graph, returns
+ * all components that need rebuilding — the directly changed ones plus every
+ * component that transitively depends on them.
  */
 function propagateChanges(
   directlyChanged: Set<string>,
@@ -517,8 +516,8 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
         }
 
         // Track shared (non-component) source files like utils/ that are
-        // imported by virtually every component. A change in any shared
-        // file forces a full framework rebuild.
+        // imported by virtually every component. A change in any shared file
+        // forces a full framework rebuild.
         const sharedFiles = getSharedSourceFiles(corePath, componentModules);
         const sharedMtimes = getFileMtimes(sharedFiles);
 
@@ -547,8 +546,8 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
         }
 
         // When the cache is absent (first run, corrupted, or format change),
-        // clear all existing store entries for this framework so stale
-        // entries from a previous run don't persist.
+        // clear all existing store entries for this framework so stale entries
+        // from a previous run don't persist.
         if (!cachedState) {
           for (const key of context.store.keys()) {
             if (key.startsWith(`${framework}/`)) {
@@ -677,9 +676,9 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
 
       if (!watchedPaths.size) return;
 
-      // In watch mode, reload all references for the affected framework.
-      // This keeps the watcher simple while still updating the cache for
-      // subsequent cold starts.
+      // In watch mode, reload all references for the affected framework. This
+      // keeps the watcher simple while still updating the cache for subsequent
+      // cold starts.
       context.watcher.on("all", (_, path) => {
         const options = frameworkOptions.find(({ corePath, packagePath }) =>
           [corePath, packagePath].some(
@@ -1015,8 +1014,8 @@ function getBaseInterfaces(iface: Node) {
 }
 
 /**
- * Finds property declarations for a given prop name across base interfaces
- * of the provided owner interface, in nearest-first order.
+ * Finds property declarations for a given prop name across base interfaces of
+ * the provided owner interface, in nearest-first order.
  */
 function findPropDeclsInBaseHierarchy(owner: Node, propName: string) {
   const cachedByName = basePropDeclsCache.get(owner);

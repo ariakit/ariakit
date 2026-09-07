@@ -3,7 +3,8 @@ import { withFramework } from "#app/test-utils/preview.ts";
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/3833
   // Without name attributes, the browser treats all radio inputs as one group.
-  // This affects native browser behaviors like Tab navigation and form submission.
+  // This affects native browser behaviors like Tab navigation and form
+  // submission.
   test("radios have unique name attributes per group", async ({ q }) => {
     const fruitsGroup = q.radiogroup("Fruits");
     const vegetablesGroup = q.radiogroup("Vegetables");
@@ -27,8 +28,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   test("Tab moves focus between groups", async ({ page, q }) => {
-    // Check a radio so the group has a selection — Tab behavior differs when
-    // a radio is checked vs. when none is checked.
+    // Check a radio so the group has a selection — Tab behavior differs when a
+    // radio is checked vs. when none is checked.
     await q.radio("Apple").click();
     await test.expect(q.radio("Apple")).toBeChecked();
 

@@ -9,8 +9,8 @@ export interface GliderProps
 /**
  * Renders the div that glides between controls to highlight the hovered,
  * focused, or selected one. It requires a GliderGroup ancestor and preceding
- * sibling controls that compose the glider anchor, and hides itself in
- * browsers without CSS anchor positioning support.
+ * sibling controls that compose the glider anchor, and hides itself in browsers
+ * without CSS anchor positioning support.
  */
 export function Glider(props: GliderProps) {
   const [variantProps, rest] = splitProps(props, glider);
@@ -21,8 +21,8 @@ export interface GliderGroupProps
   extends ak.RoleProps<"div">, VariantProps<typeof gliderGroup> {}
 
 /**
- * Renders the group div that scopes the anchor names shared by a Glider and
- * its sibling controls.
+ * Renders the group div that scopes the anchor names shared by a Glider and its
+ * sibling controls.
  */
 export function GliderGroup(props: GliderGroupProps) {
   const [variantProps, rest] = splitProps(props, gliderGroup);

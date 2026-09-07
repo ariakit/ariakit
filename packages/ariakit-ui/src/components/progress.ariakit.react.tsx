@@ -11,8 +11,8 @@ import {
 export interface ProgressProps
   extends ak.RoleProps<"div">, Omit<VariantProps<typeof progress>, "$value"> {
   /**
-   * Progress between `0` and `1`. Omit it for an indeterminate progress bar
-   * (no aria-valuenow).
+   * Progress between `0` and `1`. Omit it for an indeterminate progress bar (no
+   * aria-valuenow).
    */
   value?: number;
 }
@@ -39,8 +39,8 @@ export interface ProgressCircularProps
     ak.RoleProps<"div">,
     Omit<VariantProps<typeof progressCircular>, "$value"> {
   /**
-   * Progress between `0` and `1`. Omit it for an indeterminate progress bar
-   * (no aria-valuenow).
+   * Progress between `0` and `1`. Omit it for an indeterminate progress bar (no
+   * aria-valuenow).
    */
   value?: number;
 }

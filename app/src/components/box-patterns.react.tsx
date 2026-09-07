@@ -11,9 +11,9 @@ import { button } from "@ariakit/ui/styles/button.ts";
 import { Icon } from "#app/icons/icon.react.tsx";
 
 /**
- * Decorative button lookalikes: they keep the resting button style but
- * disable the interactive state variants so the boxes stay hover-inert like
- * the legacy ak-button_idle utility.
+ * Decorative button lookalikes: they keep the resting button style but disable
+ * the interactive state variants so the boxes stay hover-inert like the legacy
+ * ak-button_idle utility.
  */
 function fakeButton(props?: Parameters<typeof button.jsx>[0]) {
   return button.jsx({

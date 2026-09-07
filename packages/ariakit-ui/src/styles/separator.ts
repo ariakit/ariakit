@@ -28,9 +28,8 @@ export const separator = cv({
       dotted: "border-dotted",
     },
     /**
-     * Sets the space on each side of the rule. Numbers scale the spacing
-     * token. Left unset, the rule takes half the rhythm of the column it
-     * sits in.
+     * Sets the space on each side of the rule. Numbers scale the spacing token.
+     * Left unset, the rule takes half the rhythm of the column it sits in.
      */
     $gap(value?: string | number) {
       if (value == null) return;

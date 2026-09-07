@@ -25,8 +25,8 @@ export const useComboboxDismiss = createHook<TagName, ComboboxDismissOptions>(
 
 /**
  * Renders a button that hides a
- * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
- * component when clicked.
+ * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) component
+ * when clicked.
  * @example
  * ```jsx {4}
  * <ComboboxProvider>

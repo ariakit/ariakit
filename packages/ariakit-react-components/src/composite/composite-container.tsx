@@ -114,9 +114,9 @@ export const useCompositeContainer = createHook<
     const isOpen = isOpenRef.current;
     if (isSelfTarget(event)) {
       // The container element itself has received focus. Here we make an
-      // additional step in case tabbable elements have been added lazily to
-      // the DOM. We get all containers in the current composite element and
-      // disable all tabbable elements inside them.
+      // additional step in case tabbable elements have been added lazily to the
+      // DOM. We get all containers in the current composite element and disable
+      // all tabbable elements inside them.
       isOpenRef.current = false;
       const { compositeElement } = store.getState();
       const selector = "[data-composite-container]";
@@ -128,14 +128,13 @@ export const useCompositeContainer = createHook<
         }
       }
     } else if (!isOpen) {
-      // Otherwise, if any element inside the container has received focus,
-      // for example, by a direct user click, we should act as the container
-      // has been opened.
+      // Otherwise, if any element inside the container has received focus, for
+      // example, by a direct user click, we should act as the container has
+      // been opened.
       isOpenRef.current = true;
       restoreFocusIn(event.currentTarget);
-      // Resets the moves in the store so the composite item will not be
-      // focused right after the focusable element inside the container gets
-      // focus.
+      // Resets the moves in the store so the composite item will not be focused
+      // right after the focusable element inside the container gets focus.
       store?.setState("moves", 0);
     }
   });

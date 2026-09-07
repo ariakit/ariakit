@@ -22,17 +22,17 @@ const EDGE_WEIGHT_VALUES = [
 export type EdgeWeightValues = (typeof EDGE_WEIGHT_VALUES)[number];
 
 /**
- * Checks whether a value is one of the named colors accepted by the
- * `$edge` variant.
+ * Checks whether a value is one of the named colors accepted by the `$edge`
+ * variant.
  */
 export function isEdgeColor(value: unknown): value is EdgeColorValues {
   return includes(COLOR_VALUES, value);
 }
 
-// The hairline color these variants tune is derived by the layer utility on
-// the same element, and none of the channels they write inherit, so an element
-// that carries no layer of its own gets nothing from them. That is why this
-// extends `layer` rather than standing beside it.
+// The hairline color these variants tune is derived by the layer utility on the
+// same element, and none of the channels they write inherit, so an element that
+// carries no layer of its own gets nothing from them. That is why this extends
+// `layer` rather than standing beside it.
 export const edge = cv({
   extend: [layer],
   variants: {
@@ -66,11 +66,10 @@ export const edge = cv({
      */
     $edgeRaw: "ak-edge-raw",
     /**
-     * Sets the edge opacity. Accepts a named weight or a numeric value
-     * (0-100). Setting it to `adaptive` makes the edge appear only in
-     * high-contrast mode. A single overridable channel: instance values
-     * always replace the default instead of fighting it by stylesheet
-     * order.
+     * Sets the edge opacity. Accepts a named weight or a numeric value (0-100).
+     * Setting it to `adaptive` makes the edge appear only in high-contrast
+     * mode. A single overridable channel: instance values always replace the
+     * default instead of fighting it by stylesheet order.
      */
     $edgeWeight(value?: EdgeWeightValues | "unset" | (string & {}) | number) {
       if (value == null) return;
@@ -99,10 +98,10 @@ export const edge = cv({
     $edgeDark:
       "ak-dark-low:ak-edge-push-[-0.28] ak-dark-low:ak-edge-alpha-[calc((1-l)*(1-l))]",
     /**
-     * Pushes the edge lightness away from the current color to create
-     * contrast. By default, it's set to `100` (full contrast). Set it to `0`,
-     * or use `$edgeRaw` (which sets both alpha and lightness), to use the
-     * exact lightness of the base edge color.
+     * Pushes the edge lightness away from the current color to create contrast.
+     * By default, it's set to `100` (full contrast). Set it to `0`, or use
+     * `$edgeRaw` (which sets both alpha and lightness), to use the exact
+     * lightness of the base edge color.
      */
     $edgePush(value?: string | number) {
       return getScaledStyleClass({
@@ -133,8 +132,8 @@ export const edge = cv({
       });
     },
     /**
-     * Sets the minimum lightness (0-100) of the edge color after all other
-     * edge variants have been applied.
+     * Sets the minimum lightness (0-100) of the edge color after all other edge
+     * variants have been applied.
      */
     $edgeLightnessMin(value?: string | number) {
       return getScaledStyleClass({
@@ -144,8 +143,8 @@ export const edge = cv({
       });
     },
     /**
-     * Sets the maximum lightness (0-100) of the edge color after all other
-     * edge variants have been applied.
+     * Sets the maximum lightness (0-100) of the edge color after all other edge
+     * variants have been applied.
      */
     $edgeLightnessMax(value?: string | number) {
       return getScaledStyleClass({
@@ -198,8 +197,8 @@ export const edge = cv({
       });
     },
     /**
-     * Sets the minimum chroma (0-40) of the edge color after all other
-     * edge variants have been applied.
+     * Sets the minimum chroma (0-40) of the edge color after all other edge
+     * variants have been applied.
      */
     $edgeChromaMin(value?: ChromaValues | (string & {}) | number) {
       if (!value) return;
@@ -219,8 +218,8 @@ export const edge = cv({
       });
     },
     /**
-     * Sets the maximum chroma (0-40) of the edge color after all other
-     * edge variants have been applied.
+     * Sets the maximum chroma (0-40) of the edge color after all other edge
+     * variants have been applied.
      */
     $edgeChromaMax(value?: ChromaValues | (string & {}) | number) {
       if (!value) return;
@@ -240,9 +239,9 @@ export const edge = cv({
       });
     },
     /**
-     * Sets the exact hue of the edge color. Accepts a named hue like
-     * `"red"` or `"blue"`, a color harmony like `"complementary"`, or a degree
-     * value like `240`.
+     * Sets the exact hue of the edge color. Accepts a named hue like `"red"` or
+     * `"blue"`, a color harmony like `"complementary"`, or a degree value like
+     * `240`.
      */
     $edgeHue(value?: HueValues | (string & {}) | number) {
       if (!value) return;
