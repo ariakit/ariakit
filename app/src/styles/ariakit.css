@@ -218,6 +218,22 @@
   initial-value: 0px;
 }
 
+/* Table geometry: the table pads its cells like a control, the frame padding
+   above and below and its optical side padding on top, measured in the table's
+   own line box and font and published as lengths, so a head row in smaller
+   text pads like a body row and its text stays on the column below. */
+@property --table-py {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --table-px {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Disclosure state channels: the root publishes open and group flags as
    custom properties, and descendants react through container style
    queries. */

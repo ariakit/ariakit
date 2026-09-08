@@ -4,6 +4,7 @@ import { button, buttonSlot } from "./button.ts";
 import { frame } from "./frame.ts";
 import { hover } from "./hover.ts";
 import { layer } from "./layer.ts";
+import { padding } from "./padding.ts";
 
 // Widths the cells and the container spend, as plain numbers of pixels: the
 // cells cut their lines out of one image (see tableCell), and an image slice
@@ -96,7 +97,7 @@ const tableBorderVariants = {
 };
 
 export const table = cv({
-  extend: [frame],
+  extend: [padding],
   class: [
     "relative w-full border-separate border-spacing-0",
     // The width of a line between rows and of a divider between columns: the
@@ -104,35 +105,17 @@ export const table = cv({
     // container's own border.
     "[--table-row-line:max(var(--table-border-bs,0),var(--table-border-be,0))]",
     "[--table-cell-line:max(var(--table-border-s,0),var(--table-border-e,0))]",
-    // The cells spend --ak-frame-padding as their own padding, so $p sets it
-    // here and the table element itself stays unpadded. Only the ! beats a
-    // padding declared on the same element.
+    // The cells pad like a control, with the frame padding above and below
+    // and the optical side padding on top (see --py and --px in padding.ts).
+    // Both are measured in the table's own line box and font and registered
+    // as lengths (see ariakit.css), so a head row in smaller text pads like a
+    // body row and its text stays on the column below. The table element
+    // itself stays unpadded; only the ! beats the padding declared on it.
+    "[--table-py:var(--py)] [--table-px:var(--px)]",
     "p-0!",
   ],
   variants: {
     ...tableBorderVariants,
-    /**
-     * Overrides the cells' padding-inline. A number scales the spacing token
-     * and resolves in each cell, so a smaller header row takes proportionally
-     * less and its text stops lining up with the column below it. Pass a length
-     * to keep the columns aligned.
-     */
-    $px(value?: string | number) {
-      if (value == null) return;
-      return {
-        style: { "--table-px": getSpacingValue(value) },
-      };
-    },
-    /**
-     * Overrides the cells' block padding. A number scales the spacing token and
-     * resolves in each cell, so a smaller header row takes proportionally less.
-     */
-    $py(value?: string | number) {
-      if (value == null) return;
-      return {
-        style: { "--table-py": getSpacingValue(value) },
-      };
-    },
   },
   defaultVariants: {
     // The cells draw the grid lines from the $border channels, so frame's
@@ -307,12 +290,8 @@ export const tableCell = cv({
     // The header of a sorted column takes the full ink; the sort button in it
     // says which way (see tableSortIndicator).
     "aria-[sort=ascending]:ak-ink-100 aria-[sort=descending]:ak-ink-100",
-    // The cell padding: the table's channels, or else its frame padding,
-    // resolved here so a control in the cell can still read them once its
-    // own frame has moved --ak-frame-padding on (see tableSortButton).
-    "[--table-cell-px:var(--table-px,var(--ak-frame-padding,0px))]",
-    "[--table-cell-py:var(--table-py,var(--ak-frame-padding,0px))]",
-    "px-(--table-cell-px) py-(--table-cell-py)",
+    // The padding the table computed for its cells (see table).
+    "px-(--table-px) py-(--table-py)",
     // A cell draws the lines after it: the line below its row (see tableRow)
     // and the divider after its column, which the last column has none of,
     // and neither has the column before a cell pinned at the end, which holds
@@ -439,14 +418,13 @@ export const tableCell = cv({
 export const tableSortButton = cv({
   extend: [button],
   class: [
-    // The cover reads the padding the cell resolved for itself (see
-    // tableCell): the cell spends the table's channels rather than the
-    // frame's, so a frame cover would miss a table with a $px or $py of its
-    // own, and the button's own frame has moved --ak-frame-padding on. The
-    // negative margins take the cell padding back, and the width is written
-    // out because a block-level button still shrink-wraps.
-    "-my-(--table-cell-py) -mx-(--table-cell-px)",
-    "w-[calc(100%+var(--table-cell-px)*2)]",
+    // The cover reads the table's padding channels, registered lengths the
+    // button's own frame leaves alone, where a frame cover would read the
+    // frame padding the button has moved on. The negative margins take the
+    // cell padding back, and the width is written out because a block-level
+    // button still shrink-wraps.
+    "-my-(--table-py) -mx-(--table-px)",
+    "w-[calc(100%+var(--table-px)*2)]",
     "justify-start text-start",
     // The header's own weight and ink, which the button would otherwise set:
     // a sorted column's header is darker than the others.
@@ -476,8 +454,8 @@ export const tableSortButton = cv({
   defaultVariants: {
     // The plain cell padding on both axes: the control's optical side padding
     // would move the label off the column under it.
-    $p: "var(--table-cell-py)",
-    $px: "var(--table-cell-px)",
+    $p: "var(--table-py)",
+    $px: "var(--table-px)",
     $rounded: "none",
     $focusOffset: "inset",
   },

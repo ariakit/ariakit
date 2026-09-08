@@ -561,8 +561,8 @@ export function TableSection() {
       <Sample
         wide
         title="Density"
-        code="$p={1} · $p={5} · $px={6} $py={1}"
-        description="The cell padding goes through the frame's registered channel, so every cell takes the same length. Per-axis channels resolve in each cell."
+        code='$p={1} · $p={5} · $p={1} $px="xl"'
+        description="The cells pad like a control: the frame padding above and below, and on the sides that padding plus an optical extra, which $px scales. The table measures both in its own font, so the smaller head row pads like a body row and its text stays on the column."
       >
         <div className="grid gap-4 lg:grid-cols-2">
           <DemoTable
@@ -576,8 +576,8 @@ export function TableSection() {
             container={{ $border: true, $layer: true }}
           />
           <DemoTable
-            $px={6}
-            $py={1}
+            $p={1}
+            $px="xl"
             $borderBlock
             container={{ $border: true, $layer: true }}
           />

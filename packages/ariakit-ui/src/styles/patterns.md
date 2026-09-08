@@ -204,14 +204,14 @@ The `(--var)` shorthand takes a fallback, and a leading `-` negates it, so an ar
 ```ts
 // Instead of these
 "[inset-block:var(--table-border-inset,0px)]";
-"[inset-inline-start:calc(var(--table-cell-px)*-1)]";
+"[inset-inline-start:calc(var(--table-px)*-1)]";
 
 // write these
 "inset-y-(--table-border-inset,0px)";
-"-inset-s-(--table-cell-px)";
+"-inset-s-(--table-px)";
 ```
 
-That negating prefix wraps the whole value in another `calc(... * -1)`. Keep it over a scale step or a channel, where there is nothing to put a sign on: `-inset-4`, `-inset-s-(--table-cell-px)`. Once the value is in brackets, put the sign in the value.
+That negating prefix wraps the whole value in another `calc(... * -1)`. Keep it over a scale step or a channel, where there is nothing to put a sign on: `-inset-4`, `-inset-s-(--table-px)`. Once the value is in brackets, put the sign in the value.
 
 ```ts
 // emits margin-top: calc(0.1875rem * -1)
@@ -425,7 +425,7 @@ A unitless `line-height` inherits as a ratio, so a child with a larger font size
 
 `em` and `lh` inside an unregistered custom property resolve where the property is used, not where it is declared. Check the element that finally spends the value when a property crosses component boundaries.
 
-Registration reverses that. A property registered with a `<length>` syntax, such as `--ak-frame-padding`, computes to a fixed length where it is declared, so its `em` stops tracking the font size of whatever finally spends it. That is the difference between the table's `$px`/`$py` and its `$p`: the per-axis channels are unregistered, so a smaller header row takes proportionally smaller padding and stops lining up with the column below it, while `$p` goes through the frame's registered channel and every cell gets the same length. Two properties that look interchangeable are not if only one of them is registered.
+Registration reverses that. A property registered with a `<length>` syntax, such as `--ak-frame-padding`, computes to a fixed length where it is declared, so its `em` stops tracking the font size of whatever finally spends it. The table's cells pad through `--table-px` and `--table-py`, registered lengths the table computes from the padding recipe's `--px` and `--py`: the optical extra is `1lh - 1cap` of the table, not of each cell, so a head row in smaller text pads like a body row and its text stays on the column below. Left unregistered, the same channels gave the head proportionally less and its text drifted off the column. Two properties that look interchangeable are not if only one of them is registered.
 
 ## Lightness values
 
