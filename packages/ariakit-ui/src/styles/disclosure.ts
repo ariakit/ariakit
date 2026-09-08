@@ -330,11 +330,12 @@ export const disclosureChevron = cv({
   variants: {
     ...disclosureIndicatorVariants,
     /**
-     * Selects the closed-state direction the chevron points to. Both rotate to
+     * Selects the closed-state direction the chevron points to: `right` is the
+     * end of the row, so it points left in a right-to-left row. Both rotate to
      * point down when open.
      */
     $direction: {
-      right: ["-rotate-90", "ui-disclosure-open:rotate-0"],
+      right: ["-rotate-90 rtl:rotate-90", "ui-disclosure-open:rotate-0"],
       down: ["rotate-0", "ui-disclosure-open:rotate-180"],
     },
   },
@@ -405,6 +406,10 @@ export const disclosureContent = cv({
      */
     $guide: [
       "[--disclosure-ps:var(--disclosure-lead)]",
+      // The line is an anchor a nav glider bar can centre on, scoped to this
+      // content so a bar outside it, or in a nested content with a guide of
+      // its own, never lands on it (see $side in nav.ts).
+      "[anchor-scope:--disclosure-guide] before:[anchor-name:--disclosure-guide]",
       "before:absolute before:inset-y-0 before:ak-layer",
       // The line is one border, so it takes the layer's edge colour and the
       // pseudo-element's box is as wide as the line.

@@ -16,6 +16,7 @@ import {
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react.tsx";
 import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+import type { NavProps } from "@ariakit/ui/components/nav.ariakit.react.tsx";
 import {
   Nav,
   NavButton,
@@ -29,7 +30,8 @@ import {
   NavList,
 } from "@ariakit/ui/components/nav.ariakit.react.tsx";
 import * as icons from "lucide-react";
-import { Caption, Sample, Samples } from "./gallery.react.tsx";
+import * as React from "react";
+import { Caption, Labeled, Sample, Samples, Stage } from "./gallery.react.tsx";
 
 const guides = [
   { label: "Getting started", icon: icons.Rocket },
@@ -37,6 +39,84 @@ const guides = [
   { label: "Composition", icon: icons.Blocks },
   { label: "Accessibility", icon: icons.Accessibility },
 ];
+
+// The same guides in Arabic, for the right-to-left sample.
+const guidesRtl = [
+  { label: "البدء", icon: icons.Rocket },
+  { label: "التنسيق", icon: icons.Palette },
+  { label: "التركيب", icon: icons.Blocks },
+  { label: "إمكانية الوصول", icon: icons.Accessibility },
+];
+
+const pages = ["Overview", "Installation", "Usage", "Changelog"];
+
+/**
+ * A nav whose current row moves on click, so a glider's travel can be watched
+ * rather than inferred from a frozen state.
+ */
+function DemoNav(props: NavProps) {
+  const [current, setCurrent] = React.useState(1);
+  return (
+    <Nav {...props}>
+      {pages.map((page, index) => (
+        <li key={page}>
+          <NavLink
+            href="#nav"
+            aria-current={current === index ? "page" : undefined}
+            onClick={(event) => {
+              event.preventDefault();
+              setCurrent(index);
+            }}
+          >
+            {page}
+          </NavLink>
+        </li>
+      ))}
+    </Nav>
+  );
+}
+
+/**
+ * Two open disclosures whose current link moves on click, for the bar samples.
+ */
+function DemoDisclosures(props: NavProps) {
+  const [current, setCurrent] = React.useState("Styling/Introduction");
+  return (
+    <Nav $iconSize={5} {...props}>
+      {guides.slice(0, 2).map((guide) => (
+        <NavDisclosure
+          key={guide.label}
+          defaultOpen
+          button={
+            <NavDisclosureButton icon={<guide.icon strokeWidth={1.5} />}>
+              {guide.label}
+            </NavDisclosureButton>
+          }
+        >
+          <NavList>
+            {["Introduction", "Installation", "Quickstart"].map((page) => {
+              const id = `${guide.label}/${page}`;
+              return (
+                <li key={page}>
+                  <NavLink
+                    href="#nav"
+                    aria-current={current === id ? "page" : undefined}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setCurrent(id);
+                    }}
+                  >
+                    {page}
+                  </NavLink>
+                </li>
+              );
+            })}
+          </NavList>
+        </NavDisclosure>
+      ))}
+    </Nav>
+  );
+}
 
 function Rows() {
   return (
@@ -74,14 +154,12 @@ export function NavSection() {
 
       <Sample
         title="Icons and groups"
-        code="Nav $iconSize · NavGroup > NavGroupLabel + NavList > NavLink > NavIcon"
-        description="The icon slot keeps the line height so a wrapping label stays aligned to it. Groups label a run of rows."
+        code="Nav list={false} $iconSize · NavGroup > NavGroupLabel + NavList > NavLink > NavIcon"
+        description="The icon slot keeps the line height so a wrapping label stays aligned to it. Groups label a run of rows: the label pads like a row and its text starts where the rows' content does."
       >
-        <Nav $iconSize={5}>
+        <Nav list={false} $iconSize={5}>
           <NavGroup>
-            <NavGroupLabel className="ak-ink-60 px-2 py-1 text-sm font-medium">
-              Guides
-            </NavGroupLabel>
+            <NavGroupLabel>Guides</NavGroupLabel>
             <NavList>
               {guides.map((guide) => (
                 <li key={guide.label}>
@@ -105,9 +183,7 @@ export function NavSection() {
             </NavList>
           </NavGroup>
           <NavGroup>
-            <NavGroupLabel className="ak-ink-60 px-2 py-1 text-sm font-medium">
-              Reference
-            </NavGroupLabel>
+            <NavGroupLabel>Reference</NavGroupLabel>
             <NavList>
               <li>
                 <NavLink href="#nav">
@@ -203,6 +279,50 @@ export function NavSection() {
       </Sample>
 
       <Sample
+        title="Gliders"
+        code='Nav glider · glider={[{ $state: "hover" }, { $state: "selected" }, { $state: "focus" }]} · glider={{ $kind: "bevel" }}'
+        description="With a glider the current row paints nothing itself and the glider travels to it. Click a row to move it. The second nav adds a hover cover under the current one, which follows the pointer, and a focus ring that follows the keyboard: tab through its rows."
+      >
+        <Stage direction="column">
+          <Labeled label="Selected cover">
+            <DemoNav glider />
+          </Labeled>
+          <Labeled label="Selected, hover and focus">
+            <DemoNav
+              glider={[
+                { $state: "hover" },
+                { $state: "selected" },
+                { $state: "focus" },
+              ]}
+            />
+          </Labeled>
+          <Labeled label="Bevel">
+            <DemoNav glider={{ $kind: "bevel" }} />
+          </Labeled>
+        </Stage>
+      </Sample>
+
+      <Sample
+        title="Active bar"
+        code='Nav glider={{ $kind: "bar" }} · $side="end" · $layer="brand"'
+        description="A bar marks the current row instead of a cover. At the start it lands on the guide line of the disclosure around the list, or on the row's start edge without one. Click a link to move it."
+      >
+        <Stage direction="column">
+          <Labeled label="On the guide line">
+            <DemoDisclosures glider={{ $kind: "bar" }} />
+          </Labeled>
+          <Labeled label="At the end, in the brand color">
+            <DemoDisclosures
+              glider={{ $kind: "bar", $side: "end", $layer: "brand" }}
+            />
+          </Labeled>
+          <Labeled label="Without a guide">
+            <DemoNav glider={{ $kind: "bar" }} />
+          </Labeled>
+        </Stage>
+      </Sample>
+
+      <Sample
         title="Current from a URL"
         code='NavLink currentUrl="/docs/button" href="/docs/button"'
         description="The link compares its href with the page URL, ignoring trailing slashes and matching the hash only when the href declares one."
@@ -251,6 +371,93 @@ export function NavSection() {
             </NavButton>
           </li>
         </Nav>
+      </Sample>
+
+      <Sample
+        title="Right to left"
+        code='<div dir="rtl"> > Nav'
+        description="Under a right-to-left direction the rows, the group labels, the guide lines, the bar and the slots mirror, the closed chevrons point the other way and a shortcut keeps its keys in order."
+      >
+        <div dir="rtl" lang="ar" className="grid gap-4">
+          <Nav list={false} $iconSize={5}>
+            <NavGroup>
+              <NavGroupLabel>الأدلة</NavGroupLabel>
+              <NavList>
+                {guidesRtl.map((guide, index) => (
+                  <li key={guide.label}>
+                    <NavLink
+                      href="#nav"
+                      aria-current={index === 1 ? "page" : undefined}
+                    >
+                      <NavIcon>
+                        <guide.icon strokeWidth={1.5} />
+                      </NavIcon>
+                      {guide.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </NavList>
+            </NavGroup>
+            <NavGroup>
+              <NavGroupLabel>المرجع</NavGroupLabel>
+              <NavList>
+                <li>
+                  <NavLink href="#nav">
+                    <NavIcon>
+                      <icons.FileCode strokeWidth={1.5} />
+                    </NavIcon>
+                    <ButtonLabel>المكونات</ButtonLabel>
+                    <ButtonSlot
+                      $kind="badge"
+                      $layer="brand"
+                      className="ms-auto"
+                    >
+                      12
+                    </ButtonSlot>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavButton>
+                    <NavIcon>
+                      <icons.Search strokeWidth={1.5} />
+                    </NavIcon>
+                    <NavButtonContent>بحث</NavButtonContent>
+                    <ButtonSlot $kind="shortcut" className="ms-auto">
+                      ⌘K
+                    </ButtonSlot>
+                  </NavButton>
+                </li>
+              </NavList>
+            </NavGroup>
+          </Nav>
+          <Nav $iconSize={5} glider={{ $kind: "bar" }}>
+            {guidesRtl.slice(0, 2).map((guide, index) => (
+              <NavDisclosure
+                key={guide.label}
+                defaultOpen={index === 0}
+                button={
+                  <NavDisclosureButton icon={<guide.icon strokeWidth={1.5} />}>
+                    {guide.label}
+                  </NavDisclosureButton>
+                }
+              >
+                <NavList>
+                  <li>
+                    <NavLink href="#nav" aria-current="page">
+                      مقدمة
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink href="#nav">التثبيت</NavLink>
+                  </li>
+                  <li>
+                    <NavLink href="#nav">البدء السريع</NavLink>
+                  </li>
+                </NavList>
+              </NavDisclosure>
+            ))}
+          </Nav>
+        </div>
       </Sample>
 
       <Sample

@@ -100,8 +100,10 @@ export const glider = cv({
     $animated: [
       // display is on the list so a leaving hover glider can wait out its
       // delay first; the discrete behaviour is what lets display take part.
-      "transition-[inset-inline,border-color,height,width,outline,display]",
-      "[.vertical>&]:transition-[inset-block,border-color,height,width,outline,display]",
+      // The insets are the longhands: WebKit passes over the inset-block and
+      // inset-inline shorthands in a transition list.
+      "transition-[inset-inline-start,border-color,height,width,outline,display]",
+      "[.vertical>&]:transition-[bottom,border-color,height,width,outline,display]",
       "duration-100 transition-discrete",
       "[.vertical>&]:duration-50",
     ],

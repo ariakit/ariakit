@@ -190,7 +190,7 @@ export function ButtonSection() {
           </Button>
           <Button>
             <ButtonLabel>Next</ButtonLabel>
-            <ButtonSlot>
+            <ButtonSlot className="rtl:-scale-x-100">
               <icons.ArrowRight />
             </ButtonSlot>
           </Button>

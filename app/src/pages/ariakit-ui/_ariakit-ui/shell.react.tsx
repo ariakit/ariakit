@@ -300,7 +300,9 @@ export function GallerySidebar({ currentUrl }: GallerySidebarProps) {
               writeSetting("sidebar", collapsed ? null : "collapsed");
             }}
           >
-            <NavIcon>
+            {/* The glyph draws the panel on the left, so it turns around
+                with the sidebar in a right-to-left page. */}
+            <NavIcon className="rtl:-scale-x-100">
               <CollapseIcon strokeWidth={1.5} />
             </NavIcon>
             <NavButtonContent>

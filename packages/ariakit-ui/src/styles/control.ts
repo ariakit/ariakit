@@ -185,7 +185,9 @@ export const controlSlot = cv({
      */
     $kind: {
       icon: "",
-      shortcut: "",
+      // A key chord reads the same way in every locale, so the bidi algorithm
+      // must not reorder its keys in a right-to-left row.
+      shortcut: "[direction:ltr]",
       avatar: "overflow-clip",
       badge: "*:text-[0.8125em]",
     },
@@ -194,10 +196,14 @@ export const controlSlot = cv({
      */
     $square: "aspect-square",
     /**
-     * Renders the slot as a floating element in the top-right corner.
+     * Renders the slot as a floating element on the top corner at the end of
+     * the row.
      */
     $floating: [
-      "m-0! absolute top-0 inset-e-0 -translate-y-1/2 translate-x-[calc(var(--size)/2)] border",
+      "m-0! absolute top-0 inset-e-0 -translate-y-1/2 border",
+      // Half of the slot hangs past the corner. A translate is physical, so
+      // it turns around with the corner.
+      "translate-x-[calc(var(--size)/2)] rtl:-translate-x-[calc(var(--size)/2)]",
       "in-[.control]:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
     ],
     /**
@@ -352,7 +358,10 @@ export const controlSeparator = cv({
       slash: "rounded-full -skew-15",
       chevron: [
         "chevron rounded-se-xs [--border-width:calc(var(--width)*2px)]! border-t-(length:--border-width)",
-        "aspect-square scale-50 rotate-45 -translate-x-1/10",
+        // The corner the two borders meet at turns around in a right-to-left
+        // row, so the rotation and the optical nudge turn around with it.
+        "aspect-square scale-50 rotate-45 rtl:-rotate-45",
+        "-translate-x-1/10 rtl:translate-x-1/10",
       ],
     },
     $size: {

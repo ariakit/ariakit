@@ -114,7 +114,7 @@ export function DisclosureSection() {
         wide
         title="Indicators"
         code='DisclosureButton indicator="chevron-right-start" | ... | "plus-end" | false'
-        description="A chevron pointing right or down, or a plus that turns into a minus, at the start, right after the label, or at the end of the row."
+        description="A chevron pointing to the end of the row or down, or a plus that turns into a minus, at the start, right after the label, or at the end of the row."
       >
         <div className="grid gap-2 grid-cols-[repeat(auto-fit,minmax(min(100%,16rem),1fr))]">
           {indicators.map((indicator) => (

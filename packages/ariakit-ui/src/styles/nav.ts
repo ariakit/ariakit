@@ -1,15 +1,32 @@
 import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { button, buttonSlot } from "./button.ts";
-import { frameBase } from "./frame.ts";
+import { frame, frameBase } from "./frame.ts";
+import { glider, gliderCover } from "./glider.ts";
+import { text } from "./text.ts";
 
 export const nav = cv({
   class: [
-    // Gap default the variant overrides through the style attribute.
+    // Groups stack on the root at their own gap. A nav with one list has
+    // nothing to space.
+    "grid gap-(--nav-group-gap)",
+    // Gap defaults the variants override through the style attribute.
     "[--nav-gap:--spacing(1)]",
+    "[--nav-group-gap:--spacing(4)]",
     // The gap between a row's icon slot and its label, on a disclosure row
     // and on a plain row alike.
     "[--nav-row-gap:--spacing(3)]",
+    // A row's padding, and where its content starts past its edge: the
+    // control's default padding and its extra side padding on top (see --py
+    // and --px in control.ts). Both are measured in the nav's own line box
+    // and font and registered as lengths (see ariakit.css), so a group label
+    // in smaller text pads like a row and insets its text to the same pixel.
+    "[--nav-py:--spacing(2)]",
+    "[--nav-px:calc(var(--nav-py)+(1lh-1cap)*0.5)]",
+    // The box a glider in a list outside a disclosure positions against, and
+    // a stacking context that keeps the glider's place in the paint order
+    // inside the nav. Inside a disclosure the content is both of these.
+    "relative isolate",
   ],
   variants: {
     /**
@@ -19,6 +36,15 @@ export const nav = cv({
       if (value == null) return;
       return {
         style: { "--nav-gap": getSpacingValue(value) },
+      };
+    },
+    /**
+     * Sets the space between groups. Numbers scale the spacing token.
+     */
+    $groupGap(value?: string | number) {
+      if (value == null) return;
+      return {
+        style: { "--nav-group-gap": getSpacingValue(value) },
       };
     },
     /**
@@ -37,11 +63,40 @@ export const nav = cv({
 });
 
 export const navList = cv({
-  class: "grid gap-(--nav-gap)",
+  // The marker is what a glider's hover rules read the list through.
+  class: "nav-list grid gap-(--nav-gap)",
+  style: {
+    // A glider in the list follows its rows through these names, and the scope
+    // keeps them to this list, so the glider of a nested list never lands on a
+    // row outside it (see navGlider).
+    anchorScope: "--glider-hover, --glider-focus, --glider-selected",
+  },
 });
 
 export const navGroup = cv({
-  class: "grid",
+  // The label sits one row gap over its list, on the rhythm of the rows.
+  class: "grid gap-(--nav-gap)",
+});
+
+// The label of a group of rows. It takes the row padding above and below and
+// starts its text where a row's content starts. Both lengths come from the nav
+// (see --nav-py and --nav-px there): the label's own text is smaller, and the
+// em-based spacing step would come out smaller in it.
+export const navGroupLabel = cv({
+  extend: [frame, text],
+  class: [
+    "[--py:var(--ak-frame-padding,0px)] [--px:var(--nav-px)] px-(--px) py-(--py)",
+    "ak-ink-60 font-medium text-[0.875em] text-start",
+    // The label folds away with the sidebar, on the sidebar's own clock.
+    "overflow-clip [interpolate-size:allow-keywords]",
+    "transition-[height,padding,opacity] duration-(--sidebar-duration)",
+    "ui-sidebar-collapsed:h-0 ui-sidebar-collapsed:py-0",
+    "ui-sidebar-collapsed:opacity-0",
+  ],
+  defaultVariants: {
+    $p: "var(--nav-py)",
+    $rounded: "md",
+  },
 });
 
 // The icon slot of a nav row, sized by the nav's icon size. It is a control
@@ -137,6 +192,160 @@ export const navButtonContent = cv({
     "ui-sidebar-collapsed:delay-0",
     "ui-sidebar-collapsed:duration-[var(--sidebar-duration),0ms,var(--sidebar-duration)]",
   ],
+});
+
+// A glider that follows the rows of a nav list, as the list's first item, so it
+// leaves with the list when a disclosure closes. The rows sit in list items, so
+// the glider's own rules, which look for the control right beside it, are
+// replaced by ones that look through the items after it. The item is
+// presentational; the list's anchor scope keeps the glider to the list's own
+// rows.
+export const navGlider = cv({
+  extend: [glider],
+  class: [
+    // The glider's box is the disclosure content, and the content body in
+    // between paints a surface that a glider below zero would sit under. At
+    // zero the glider paints over every surface in the content and, coming
+    // first, under the rows, which are positioned too and paint in tree
+    // order. So do two gliders: a later one paints over an earlier one.
+    "z-0",
+  ],
+  variants: {
+    /**
+     * Sets how the glider is drawn. `flat` and `bevel` cover the row they
+     * follow, while `bar` is a thin rule beside it, on the side `$side` picks.
+     */
+    $kind(value?: "flat" | "bevel" | "bar") {
+      if (value === "flat") return gliderCover;
+      if (value === "bevel") return ["ui-bevel", gliderCover];
+      if (value !== "bar") return;
+      return [
+        // The bar reads as an edge on top of the rows, not a surface behind
+        // them, so it reverses the stacking the base class sets.
+        "z-10",
+        // Raw --contrast spans 0-100, so it must be normalized before
+        // scaling the bar thickness, or high-contrast mode inflates the bar
+        // from 2px to 42px.
+        "[--glider-bar:calc(--spacing(0.5)+(--spacing(0.1))*var(--contrast)/100)]",
+        "bottom-[anchor(bottom)] h-[anchor-size()] w-(--glider-bar)",
+      ];
+    },
+    /**
+     * The side a bar sits on. At the `start` it is centred on the guide line of
+     * the disclosure content around the list, when there is one, and otherwise
+     * it sits on the row's start edge. At the `end` it sits on the row's end
+     * edge.
+     */
+    $side: {
+      // The guide is a named anchor the disclosure content scopes to itself
+      // (see $guide in disclosure.ts). Without one in scope the fallback puts
+      // the bar's centre half a bar past the row's start edge.
+      start:
+        "inset-s-[calc(anchor(--disclosure-guide_center,calc(anchor(start)+var(--glider-bar)/2))-var(--glider-bar)/2)]",
+      end: "inset-e-[anchor(end)]",
+    },
+    /**
+     * Sets which row state the glider follows. A row publishes the matching
+     * anchor name only while it is in that state, so the glider lands on
+     * whichever row is hovered, focused, or current right now.
+     */
+    $state(value?: "none" | "hover" | "focus" | "selected") {
+      if (value === "hover") {
+        return [
+          "[position-anchor:--glider-hover] ease-linear",
+          "[&~li>.control]:ui-hover:[--glider-hover:--glider-hover]",
+          // The pointer is crossing the gap between two rows, so the glider
+          // waits on the last one for the next instead of leaving at once.
+          "[.nav-list:hover:not(:has(>li>.control:hover))>&]:delay-250",
+          // With none of the list's own rows under the pointer the anchor is
+          // gone, and a glider that stayed would fall to a point at the
+          // list's start. It leaves instead, after the delay above. Only the
+          // list's own rows count: a nested list's rows anchor its own
+          // glider.
+          "[.nav-list:not(:has(>li>.control:hover))>&]:hidden",
+          // The glider sits behind the row it covers, so the row has to stop
+          // painting its own surface or it hides the glider.
+          "supports-anchor:[&~li>.control]:ui-hover:bg-transparent!",
+          "supports-anchor:[&~li>.control]:ui-hover:border-transparent",
+          "supports-anchor:[&~li>.control]:ui-hover:befter:hidden",
+        ];
+      }
+      if (value === "focus") {
+        return [
+          "[position-anchor:--glider-focus] focus",
+          "[&~li>.control]:ui-focus-visible:[--glider-focus:--glider-focus]",
+          // The ring is drawn only while one of the list's rows has keyboard
+          // focus; the row's own ring goes with it.
+          "[&:has(~li>.control:is(:focus-visible,[data-focus-visible]))]:outline-2",
+          "supports-anchor:[&~li>.control]:ui-focus-visible:outline-none",
+          "ak-outline ak-outline-brand outline-offset-1",
+        ];
+      }
+      if (value === "selected") {
+        return [
+          "[position-anchor:--glider-selected] selected",
+          "[&~li>.control]:ui-nav-current:[--glider-selected:--glider-selected]",
+          // With no current row there is no anchor to land on, and the glider
+          // would stay as a blank square at the list's start.
+          "not-[&:has(~li>.control:where([aria-current='page'],[aria-current='true']))]:hidden",
+          // The current row hands its raised surface and its inset ring over
+          // to the glider, which draws both (see the defaults below).
+          "supports-anchor:[&~li>.control]:ui-nav-current:bg-transparent",
+          "supports-anchor:[&~li>.control]:ui-nav-current:ring-0",
+          "supports-anchor:[&~li>.control]:ui-nav-current:befter:hidden",
+        ];
+      }
+      return;
+    },
+    /**
+     * Animates the glider as it travels between rows.
+     */
+    $animated(value?: boolean) {
+      if (!value) return;
+      return [
+        // display is on the list so a leaving hover glider can wait out its
+        // delay first; the discrete behaviour is what lets display take part.
+        // The insets are the longhands: WebKit passes over the inset-block
+        // and inset-inline shorthands in a transition list.
+        "transition-[bottom,inset-inline-start,inset-inline-end,border-color,height,width,outline,display]",
+        "duration-100 transition-discrete",
+      ];
+    },
+  },
+  defaultVariants: {
+    $side(defaultValue, variants) {
+      if (variants.$kind !== "bar") return;
+      return defaultValue ?? "start";
+    },
+    // A cover takes the row's own radius; a bar has none (see glider.ts), and
+    // keeps none inside a disclosure body, where a nested frame would round its
+    // ends to stay concentric.
+    $rounded(defaultValue, variants) {
+      if (variants.$kind === "bar") return defaultValue;
+      return "md";
+    },
+    $forceRounded(defaultValue, variants) {
+      if (variants.$kind !== "bar") return defaultValue;
+      return defaultValue ?? true;
+    },
+    // A selected cover is the current row's surface: one step off the surface
+    // around it, as the row's own is (see navLink), with the row's inset ring.
+    $lightnessOffset(defaultValue, variants) {
+      if (variants.$state !== "selected") return defaultValue;
+      if (variants.$kind === "bar") return defaultValue;
+      return 1;
+    },
+    $borderType(defaultValue, variants) {
+      if (variants.$state !== "selected") return defaultValue;
+      if (variants.$kind === "bar") return defaultValue;
+      return "inset";
+    },
+    $border(defaultValue, variants) {
+      if (variants.$state !== "selected") return defaultValue;
+      if (variants.$kind === "bar") return defaultValue;
+      return defaultValue ?? true;
+    },
+  },
 });
 
 export const navDisclosure = cv({

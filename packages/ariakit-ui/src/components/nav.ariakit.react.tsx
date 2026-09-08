@@ -1,8 +1,7 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import type * as React from "react";
-import { useEffect } from "react";
+import * as React from "react";
 import { createRender } from "../react-utils/create-render.react.ts";
 import {
   nav,
@@ -11,7 +10,9 @@ import {
   navDisclosure,
   navDisclosureContent,
   navDisclosureContentBody,
+  navGlider,
   navGroup,
+  navGroupLabel,
   navIcon,
   navLink,
   navList,
@@ -32,27 +33,106 @@ import {
   DisclosureContentBody,
 } from "./disclosure.ariakit.react.tsx";
 
+/**
+ * A glider for a list, as `NavGlider` props or an element, or several of them
+ * in an array, such as a hover cover followed by a cover of the current row: a
+ * later glider paints over an earlier one. `true` renders the default glider, a
+ * flat cover of the current row.
+ */
+export type NavGliderValue =
+  | boolean
+  | React.ReactElement
+  | NavGliderProps
+  | (React.ReactElement | NavGliderProps)[];
+
+const NavGliderContext = React.createContext<NavGliderValue | undefined>(
+  undefined,
+);
+
 export interface NavProps
   extends ak.RoleProps<"nav">, VariantProps<typeof nav> {
-  list?: React.ReactElement | NavListProps;
+  /**
+   * The list that holds the rows, as an element or as `NavList` props. Set it
+   * to `false` to render the children as they are, for a nav made of groups
+   * that bring their own lists.
+   */
+  list?: React.ReactElement | NavListProps | false;
+  /**
+   * A glider rendered at the start of every list in the nav, including the
+   * lists inside its disclosures, so the one that holds the current row shows
+   * it. A list's own `glider` prop wins over it.
+   */
+  glider?: NavGliderValue;
 }
 
-export function Nav({ list, children, ...props }: NavProps) {
+export function Nav({ list, glider, children, ...props }: NavProps) {
   const [variantProps, rest] = splitProps(props, nav);
-  const listEl = createRender(NavList, list);
+  const listEl = list === false ? null : createRender(NavList, list);
   return (
     <ak.Role.nav {...nav.jsx(variantProps)} {...rest}>
-      <ak.Role.ul render={listEl}>{children}</ak.Role.ul>
+      <NavGliderContext.Provider value={glider}>
+        {listEl ? (
+          <ak.Role.ul render={listEl}>{children}</ak.Role.ul>
+        ) : (
+          children
+        )}
+      </NavGliderContext.Provider>
     </ak.Role.nav>
   );
 }
 
 export interface NavListProps
-  extends ak.RoleProps<"ul">, VariantProps<typeof navList> {}
+  extends ak.RoleProps<"ul">, VariantProps<typeof navList> {
+  /**
+   * A glider rendered before the rows, as `NavGlider` props or an element.
+   * `true` renders the default glider, and `false` leaves out the one the nav
+   * passes down.
+   */
+  glider?: NavGliderValue;
+}
 
-export function NavList(props: NavListProps) {
+export function NavList({ glider, ...props }: NavListProps) {
+  const inherited = React.useContext(NavGliderContext);
+  const value = glider ?? inherited;
   const [variantProps, rest] = splitProps(props, navList);
-  return <ak.Role.ul {...navList.jsx(variantProps)} {...rest} />;
+  const gliders = !value
+    ? []
+    : value === true
+      ? [createRender(NavGlider)]
+      : Array.isArray(value)
+        ? value.map((item, index) => (
+            <React.Fragment key={index}>
+              {createRender(NavGlider, item)}
+            </React.Fragment>
+          ))
+        : [createRender(NavGlider, value)];
+  return (
+    <ak.Role.ul {...navList.jsx(variantProps)} {...rest}>
+      {gliders}
+      {rest.children}
+    </ak.Role.ul>
+  );
+}
+
+export interface NavGliderProps
+  extends ak.RoleProps<"li">, VariantProps<typeof navGlider> {}
+
+/**
+ * Renders the item that glides between the rows of a `NavList` to mark the
+ * current, hovered or focused one, as a cover of the row or as a bar beside it.
+ * It goes before the rows, so it paints under them, and it hides itself in
+ * browsers without CSS anchor positioning.
+ */
+export function NavGlider(props: NavGliderProps) {
+  const [variantProps, rest] = splitProps(props, navGlider);
+  return (
+    <ak.Role.li
+      role="presentation"
+      aria-hidden
+      {...navGlider.jsx(variantProps)}
+      {...rest}
+    />
+  );
 }
 
 export interface NavLinkProps
@@ -65,7 +145,7 @@ export function NavLink({ currentUrl, ...props }: NavLinkProps) {
   const isCurrent = isCurrentPage(currentUrl, rest.href);
   const disclosure = ak.useDisclosureContext();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!isCurrent) return;
     disclosure?.show();
   }, [isCurrent, disclosure]);
@@ -87,10 +167,16 @@ export function NavGroup(props: NavGroupProps) {
   return <ak.Group {...navGroup.jsx(variantProps)} {...rest} />;
 }
 
-export interface NavGroupLabelProps extends ak.GroupLabelProps {}
+export interface NavGroupLabelProps
+  extends ak.GroupLabelProps, VariantProps<typeof navGroupLabel> {}
 
+/**
+ * Renders the label of a nav group, padded like a row and with its text
+ * starting where the rows' content starts.
+ */
 export function NavGroupLabel(props: NavGroupLabelProps) {
-  return <ak.GroupLabel {...props} />;
+  const [variantProps, rest] = splitProps(props, navGroupLabel);
+  return <ak.GroupLabel {...navGroupLabel.jsx(variantProps)} {...rest} />;
 }
 
 export interface NavIconProps

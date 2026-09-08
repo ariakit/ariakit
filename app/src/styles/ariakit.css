@@ -203,6 +203,21 @@
   initial-value: 0px;
 }
 
+/* Nav geometry: the root measures a row's padding and content inset in its
+   own line box and font, and publishes them as lengths, so a group label in
+   smaller text pads like a row and lands its text on the rows' column. */
+@property --nav-py {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --nav-px {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Disclosure state channels: the root publishes open and group flags as
    custom properties, and descendants react through container style
    queries. */

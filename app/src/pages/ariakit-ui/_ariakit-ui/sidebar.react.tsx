@@ -12,6 +12,7 @@ import {
   ButtonSlot,
   ButtonLabel,
 } from "@ariakit/ui/components/button.ariakit.react.tsx";
+import type { NavProps } from "@ariakit/ui/components/nav.ariakit.react.tsx";
 import {
   Nav,
   NavButton,
@@ -36,23 +37,71 @@ import * as icons from "lucide-react";
 import * as React from "react";
 import { Caption, Sample, Samples, Stage } from "./gallery.react.tsx";
 
-const sections = [
-  {
-    label: "Getting started",
-    icon: icons.Rocket,
-    links: ["Introduction", "Installation", "Quickstart"],
-  },
-  {
-    label: "Guides",
-    icon: icons.BookOpen,
-    links: ["Styling", "Composition"],
-  },
-  {
-    label: "Resources",
-    icon: icons.Layers,
-    links: ["Migration"],
-  },
-];
+interface DemoSection {
+  label: string;
+  icon: icons.LucideIcon;
+  links: string[];
+}
+
+interface DemoContent {
+  sections: DemoSection[];
+  account: string;
+  collapse: string;
+  expand: string;
+}
+
+const english: DemoContent = {
+  sections: [
+    {
+      label: "Getting started",
+      icon: icons.Rocket,
+      links: ["Introduction", "Installation", "Quickstart"],
+    },
+    {
+      label: "Guides",
+      icon: icons.BookOpen,
+      links: ["Styling", "Composition"],
+    },
+    {
+      label: "Resources",
+      icon: icons.Layers,
+      links: ["Migration"],
+    },
+  ],
+  account: "Diego Haz",
+  collapse: "Collapse",
+  expand: "Expand",
+};
+
+// The same content in Arabic, for the right-to-left sample.
+const arabic: DemoContent = {
+  sections: [
+    {
+      label: "البدء",
+      icon: icons.Rocket,
+      links: ["مقدمة", "التثبيت", "البدء السريع"],
+    },
+    {
+      label: "الأدلة",
+      icon: icons.BookOpen,
+      links: ["التنسيق", "التركيب"],
+    },
+    {
+      label: "الموارد",
+      icon: icons.Layers,
+      links: ["الترحيل"],
+    },
+  ],
+  account: "الحساب",
+  collapse: "طيّ",
+  expand: "توسيع",
+};
+
+interface DemoProps {
+  demo?: DemoContent;
+  /** The glider every list of the nav renders, if any. */
+  glider?: NavProps["glider"];
+}
 
 /**
  * A sized box that becomes the containing block of the fixed sidebar inside it,
@@ -73,10 +122,10 @@ function SidebarStage({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function SidebarNav() {
+function SidebarNav({ demo = english, glider }: DemoProps) {
   return (
-    <Nav>
-      {sections.map((section, index) => (
+    <Nav glider={glider}>
+      {demo.sections.map((section, index) => (
         <NavDisclosure
           key={section.label}
           defaultOpen={index === 0}
@@ -117,34 +166,38 @@ function Brand() {
   );
 }
 
-function Account() {
+function Account({ demo = english }: DemoProps) {
   return (
     <NavButton>
       <NavIcon>
         <icons.CircleUserRound strokeWidth={1.5} />
       </NavIcon>
-      <NavButtonContent>Diego Haz</NavButtonContent>
+      <NavButtonContent>{demo.account}</NavButtonContent>
     </NavButton>
   );
 }
 
-function DemoSidebar(props: SidebarProps) {
+function DemoSidebar({ demo, glider, ...props }: SidebarProps & DemoProps) {
   return (
     <Sidebar className="[--nav-icon-size:--spacing(5)]" {...props}>
       <SidebarHeader>
         <Brand />
       </SidebarHeader>
       <SidebarBody>
-        <SidebarNav />
+        <SidebarNav demo={demo} glider={glider} />
       </SidebarBody>
       <SidebarFooter>
-        <Account />
+        <Account demo={demo} />
       </SidebarFooter>
     </Sidebar>
   );
 }
 
-function CollapsingSidebar(props: SidebarProps) {
+function CollapsingSidebar({
+  demo = english,
+  glider,
+  ...props
+}: SidebarProps & DemoProps) {
   const [collapsed, setCollapsed] = React.useState(false);
   return (
     <div className="grid gap-3">
@@ -154,13 +207,20 @@ function CollapsingSidebar(props: SidebarProps) {
         onClick={() => setCollapsed((value) => !value)}
         className="w-max"
       >
-        <ButtonSlot>
+        {/* The glyph draws the panel on the left, so it turns around with
+            the sidebar in a right-to-left page. */}
+        <ButtonSlot className="rtl:-scale-x-100">
           {collapsed ? <icons.PanelLeftOpen /> : <icons.PanelLeftClose />}
         </ButtonSlot>
-        {collapsed ? "Expand" : "Collapse"}
+        {collapsed ? demo.expand : demo.collapse}
       </Button>
       <SidebarStage>
-        <DemoSidebar collapsed={collapsed} {...props} />
+        <DemoSidebar
+          collapsed={collapsed}
+          demo={demo}
+          glider={glider}
+          {...props}
+        />
       </SidebarStage>
     </div>
   );
@@ -211,6 +271,19 @@ export function SidebarSection() {
       </Sample>
 
       <Sample
+        title="Active bar"
+        code='Nav glider={{ $kind: "bar", $layer: "brand" }} · glider'
+        description="A bar on the guide line marks the current page instead of the pill, and a cover glider travels between the rows. Collapse the first one to see the bar leave with the rows."
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
+          <CollapsingSidebar glider={{ $kind: "bar", $layer: "brand" }} />
+          <SidebarStage>
+            <DemoSidebar glider />
+          </SidebarStage>
+        </div>
+      </Sample>
+
+      <Sample
         title="Collapsible with a toggle"
         code="SidebarProvider > SidebarToggle + Sidebar"
         description="With a provider the sidebar is a dialog the toggle opens and closes. Under the mobile breakpoint it opens as a modal drawer over the page."
@@ -252,9 +325,19 @@ export function SidebarSection() {
       </Sample>
 
       <Sample
+        title="Right to left"
+        code='<div dir="rtl"> > Sidebar'
+        description="Under a right-to-left direction the panel sits on the end edge with its border on the other side, the rows and the guide lines mirror, and the toggle icon turns around. Collapse it to check the icon rail."
+      >
+        <div dir="rtl" lang="ar">
+          <CollapsingSidebar demo={arabic} />
+        </div>
+      </Sample>
+
+      <Sample
         title="Live instance"
         code="The page sidebar"
-        description="The sidebar on the left of this page is the same component with page links, a persisted collapse and a mobile drawer."
+        description="The sidebar at the start of this page is the same component with page links, a persisted collapse and a mobile drawer."
       >
         <Stage>
           <Caption>

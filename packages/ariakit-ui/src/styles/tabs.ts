@@ -310,7 +310,7 @@ export const tabGlider = cv({
         // The edge turns to the focus colour at once, as the tab's own does
         // and as the curves do, so the glider's colour transition comes off
         // its list.
-        "ui-selected:transition-[inset-inline,height,width,outline,display]",
+        "ui-selected:transition-[inset-inline-start,height,width,outline,display]",
         // A selected folder glider marks keyboard focus on the tab it covers
         // as the tab marks it on itself: the edge takes the focus colour and
         // grows inward by the same extra width. The glider is sized from the
@@ -361,7 +361,7 @@ export const tabGlider = cv({
         // The glider's travel stays on the list and its leaving comes off it:
         // a hover glider waits to leave so the pointer can cross a gap, but
         // focus leaves the strip in one move, and the pill goes with it.
-        "supports-anchor:transition-[inset-inline,height,width]",
+        "supports-anchor:transition-[inset-inline-start,height,width]",
         "supports-anchor:[.control.ui-folder:has(~&)]:not-ui-selected:ui-focus-visible:after:bg-transparent!",
         "supports-anchor:[.control:not(.ui-folder):has(~&)]:ui-focus-visible:bg-transparent!",
         // The label's colour follows the glider on its way, rather than turn

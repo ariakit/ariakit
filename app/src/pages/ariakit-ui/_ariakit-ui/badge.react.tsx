@@ -187,7 +187,7 @@ export function BadgeSection() {
           </Badge>
           <Badge $layer="brand">
             <BadgeLabel>Updates</BadgeLabel>
-            <BadgeSlot>
+            <BadgeSlot className="rtl:-scale-x-100">
               <icons.ArrowRight />
             </BadgeSlot>
           </Badge>
