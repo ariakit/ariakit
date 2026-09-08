@@ -149,6 +149,8 @@ export function NavButton(props: NavButtonProps) {
       $rounded="lg"
       // The row sits flush with the surface around it, like a nav link.
       $lightnessOffset={false}
+      // The row's own list carries the press (see navButton).
+      $transition={false}
       {...navButton.jsx(variantProps)}
       {...rest}
     />
@@ -174,8 +176,9 @@ export function NavDisclosureButton(props: NavDisclosureButtonProps) {
       indicator="chevron-right-end"
       // The nav row spaces its icon and label through its own gap classes.
       $gap="none"
-      // The row animates its own collapse, so the button's corner and hover
-      // ramp timings would only compete with it.
+      // The row animates its own collapse, so the button's corner, hover ramp
+      // and press timings would only compete with it. The row's own list
+      // carries the press instead (see navButton).
       $transition={false}
       {...navButton.jsx(variantProps)}
       {...rest}

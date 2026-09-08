@@ -93,8 +93,11 @@ export const navLink = cv({
 export const navButton = cv({
   class: [
     "justify-start overflow-clip whitespace-normal text-start",
-    "transition-[gap,width,height,padding] transition-discrete delay-0",
-    "duration-(--sidebar-duration)",
+    // The press rides on this list at its own duration, so the row components
+    // pass $transition off; a second list on the row would only compete with
+    // this one.
+    "transition-[gap,width,height,padding,var(--active-transition)] transition-discrete delay-0",
+    "duration-[var(--sidebar-duration),var(--sidebar-duration),var(--sidebar-duration),var(--sidebar-duration),var(--active-duration)]",
     "[interpolate-size:allow-keywords]",
     // Every row keeps the one gap, plus the control's extra side padding
     // that an icon slot takes off, with the nav's default for a row outside

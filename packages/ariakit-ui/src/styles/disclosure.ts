@@ -139,19 +139,25 @@ export const disclosureButton = cv({
   ],
   variants: {
     /**
-     * Whether the button animates its own corners and hover ramp. Set it to
-     * `false` on a row that runs timings of its own, such as a nav row in a
+     * Whether the button animates its own corners, hover ramp and press. Set it
+     * to `false` on a row that runs timings of its own, such as a nav row in a
      * collapsing sidebar, so the two do not have to fight over the cascade.
      */
-    $transition: [
-      "transition-[border-radius,--tw-gradient-from-position]",
-      // Only a split disclosure moves its corners, but every disclosure moves
-      // the hover ramp below. Both run at half speed and wait for the content
-      // to finish closing before they come back.
-      "duration-[calc(var(--disclosure-duration)*0.5)]",
-      "delay-[calc(var(--disclosure-duration)/1.5)]",
-      "ui-disclosure-open:delay-0",
-    ],
+    $transition(value?: boolean) {
+      // A function variant, so it replaces the press transition that active
+      // brings rather than adding a second list beside it.
+      if (!value) return;
+      return [
+        "transition-[border-radius,--tw-gradient-from-position,var(--active-transition)]",
+        // Only a split disclosure moves its corners, but every disclosure
+        // moves the hover ramp below. Both run at half speed and wait for the
+        // content to finish closing before they come back. The press keeps
+        // its own pace and waits for nothing.
+        "duration-[calc(var(--disclosure-duration)*0.5),calc(var(--disclosure-duration)*0.5),var(--active-duration)]",
+        "delay-[calc(var(--disclosure-duration)/1.5),calc(var(--disclosure-duration)/1.5),0s]",
+        "ui-disclosure-open:delay-0",
+      ];
+    },
     /**
      * Sets the button's border radius. Takes a named step from `none` to `4xl`,
      * `full`, any length or expression such as `var(--my-radius)`, or `auto`,

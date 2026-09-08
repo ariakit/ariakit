@@ -365,9 +365,10 @@ export const tabGlider = cv({
         "supports-anchor:[.control.ui-folder:has(~&)]:not-ui-selected:ui-focus-visible:after:bg-transparent!",
         "supports-anchor:[.control:not(.ui-folder):has(~&)]:ui-focus-visible:bg-transparent!",
         // The label's colour follows the glider on its way, rather than turn
-        // before it arrives.
-        "supports-anchor:[.control:has(~&)]:transition-[color]",
-        "supports-anchor:[.control:has(~&)]:duration-(--duration-tabs)",
+        // before it arrives. This list replaces the tab's own, so the press
+        // rides on it at its own duration (see $transition in active.ts).
+        "supports-anchor:[.control:has(~&)]:transition-[color,var(--active-transition)]",
+        "supports-anchor:[.control:has(~&)]:duration-[var(--duration-tabs),var(--active-duration)]",
         "supports-anchor:[.control:has(~&)]:ease-tabs",
         // A selected folder, or the folder cover standing in for it, sits
         // above the glider, so the pill slides under it and the edge marks
