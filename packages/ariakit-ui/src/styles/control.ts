@@ -3,10 +3,12 @@ import { includes } from "../utils/includes.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
 import { isLayerColor, layer } from "./layer.ts";
+import { padding } from "./padding.ts";
 import { text } from "./text.ts";
 
 // A control and a control group set their font size the same way, and every
-// other measurement in this file derives from it through 1cap, 1em and 1lh.
+// other measurement in this file derives from it through 1cap, 1em and 1lh. The
+// padding itself, --px and --py, comes from the padding recipe.
 const fontSizeVariants = {
   /**
    * Sets the element’s font size. This affects the entire element, including
@@ -25,7 +27,7 @@ const fontSizeVariants = {
 };
 
 export const control = cv({
-  extend: [frame, text],
+  extend: [padding, text],
   class: [
     "control group/control relative flex justify-center",
     // The blank space a font builds into a glyph's advance width. Gaps and slot
@@ -55,16 +57,6 @@ export const control = cv({
       auto: "[--gap-y:calc(var(--gap)/4)] gap-y-(--gap-y)",
     },
     /**
-     * Sets how much horizontal padding the element adds on top of its frame
-     * padding. Rounded elements often look best with more padding.
-     */
-    $px: {
-      sm: "[--px-scale:0]",
-      md: "[--px-scale:0.5]",
-      lg: "[--px-scale:0.75]",
-      xl: "[--px-scale:1.25]",
-    },
-    /**
      * Sets the element’s disabled state.
      */
     $disabled: [
@@ -83,23 +75,10 @@ export const control = cv({
     $gap: "md",
     $gapY: "auto",
     $p: 2,
-    // Without frame padding there is nothing for the scale to add to, and
-    // refine emits no padding formula to spend it on.
-    $px(defaultValue, variants) {
-      if (variants.$p === "none") return;
-      return defaultValue ?? "md";
-    },
   },
-  refine({ variants, setVariants, addClass }) {
-    if (variants.$disabled) {
-      setVariants({ $invert: false });
-    }
-    if (variants.$p === "none") return;
-    addClass([
-      "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
-      "[--py:var(--ak-frame-padding,0px)]",
-      "px-(--px) py-(--py)",
-    ]);
+  refine({ variants, setVariants }) {
+    if (!variants.$disabled) return;
+    setVariants({ $invert: false });
   },
 });
 

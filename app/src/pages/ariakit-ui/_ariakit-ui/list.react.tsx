@@ -45,14 +45,14 @@ export function ListSection() {
           <ListItem>
             The number comes from the list counter, so no row carries an index
           </ListItem>
-          <ListItem>Inline rows draw no connector segments</ListItem>
+          <ListItem>Inline rows draw no guide</ListItem>
         </List>
       </Sample>
 
       <Sample
         title="Blocks mode"
         code="ListItem > p"
-        description="A block child opens the gap and gives every row a roomier frame. Ordered blocks grow a connector between the numbers, and the last segment fades out."
+        description="A block child opens the gap and gives every row a roomier frame. Ordered blocks grow a guide between the numbers, and its last segment fades out."
       >
         <List ordered>
           <ListItem>
@@ -67,7 +67,7 @@ export function ListSection() {
             <p>
               <strong>Configure the styles</strong>
             </p>
-            <p>Ordered blocks also grow a connector between the numbers.</p>
+            <p>Ordered blocks also grow a guide between the numbers.</p>
           </ListItem>
           <ListItem>
             <p>
@@ -81,13 +81,13 @@ export function ListSection() {
             <p>
               <strong>Unordered blocks</strong>
             </p>
-            <p>They share the rhythm, but they connect no rows.</p>
+            <p>They share the rhythm, but they draw no guide on their own.</p>
           </ListItem>
           <ListItem>
             <p>
               <strong>Same channels</strong>
             </p>
-            <p>Only the list kind decides whether a connector paints.</p>
+            <p>The marker kind decides whether a guide draws by itself.</p>
           </ListItem>
         </List>
       </Sample>
@@ -150,12 +150,82 @@ export function ListSection() {
       </Sample>
 
       <Sample
+        title="Marker kinds"
+        code='List $marker="bullet" · $marker="counter" · ordered $marker="dash"'
+        description="The list picks the marker every row draws. An ordered list counts by default and an unordered one dashes, but any list can bullet, count or dash its rows."
+      >
+        <List $marker="bullet">
+          <ListItem>A bulleted row</ListItem>
+          <ListItem>
+            The bullet is a small disc in the dash's colour, centred where the
+            chip centres
+          </ListItem>
+        </List>
+        <List $marker="counter">
+          <ListItem>An unordered list that counts</ListItem>
+          <ListItem>The chip is the same one an ordered list draws</ListItem>
+        </List>
+        <List ordered $marker="dash">
+          <ListItem>An ordered list that dashes</ListItem>
+          <ListItem>
+            The element stays an ordered list for assistive tech
+          </ListItem>
+        </List>
+      </Sample>
+
+      <Sample
+        title="Guides on any rows"
+        code="List $guide · $guide $gap={6} · ordered $guide={false}"
+        description="A guide joins the markers from centre to centre and each marker keeps it a gap away. Asked for on an unordered list it bullets the rows, in blocks mode or as a tight timeline, and an ordered list can turn its own off."
+      >
+        <List $guide>
+          <ListItem>
+            <p>
+              <strong>Bulleted blocks on a guide</strong>
+            </p>
+            <p>The rows read as stops on one track.</p>
+          </ListItem>
+          <ListItem>
+            <p>
+              <strong>The bullet is the default here</strong>
+            </p>
+            <p>A dash would cross the guide, so the list bullets instead.</p>
+          </ListItem>
+          <ListItem checked>
+            <p>
+              <strong>A check slot on the same track</strong>
+            </p>
+            <p>The halo keeps the guide a gap away from the slot too.</p>
+          </ListItem>
+        </List>
+        <List $guide $gap={6}>
+          <ListItem>Inline rows make a timeline</ListItem>
+          <ListItem>The gap sets how long each segment is</ListItem>
+          <ListItem>The last segment fades out</ListItem>
+        </List>
+        <List ordered $guide={false}>
+          <ListItem>
+            <p>
+              <strong>Numbered blocks without a guide</strong>
+            </p>
+            <p>The numbers stand on their own.</p>
+          </ListItem>
+          <ListItem>
+            <p>
+              <strong>The rhythm is the same</strong>
+            </p>
+            <p>Only the guide is gone.</p>
+          </ListItem>
+        </List>
+      </Sample>
+
+      <Sample
         title="Check and progress markers"
         code="ListItem checked · checked={false} · progress={0.65}"
         description="A check slot replaces the bullet or the number. A progress arc rings the slot, and a full arc completes it."
       >
         <List>
-          <ListItem>A plain bullet</ListItem>
+          <ListItem>A plain dash</ListItem>
           <ListItem checked={false}>An empty check slot</ListItem>
           <ListItem progress={0.65}>A progress arc around the slot</ListItem>
           <ListItem progress={1}>A full arc completes the row</ListItem>
@@ -235,7 +305,7 @@ export function ListSection() {
             <p>
               <strong>A lifted, completed row</strong>
             </p>
-            <p>The connector still runs between the markers.</p>
+            <p>The guide still runs between the markers.</p>
           </ListItem>
           <ListItem $layer $border $rounded="xl" $p={3} progress={0.3}>
             <p>
@@ -249,7 +319,7 @@ export function ListSection() {
       <Sample
         title="Interactive rows"
         code="li > ListItem render={<Button render={<a />} />}"
-        description="A row composed with the button recipe keeps its marker and connector while the button adds the hover and press states."
+        description="A row composed with the button recipe keeps its marker and guide while the button adds the hover and press states."
       >
         <List $gap={0} $itemPadding={1}>
           {[
@@ -288,7 +358,7 @@ export function ListSection() {
       <Sample
         title="Disclosure rows"
         code="li > ListDisclosure button={<ListDisclosureButton checked progress />}"
-        description="The connector belongs to the disclosure root, so it runs behind the open content and still reaches the next row."
+        description="The guide belongs to the disclosure root, so it runs behind the open content and still reaches the next row."
       >
         <List ordered>
           <li>
@@ -301,8 +371,8 @@ export function ListSection() {
               }
             >
               <p>
-                The connector belongs to the disclosure root, so it runs behind
-                the open content and still reaches the next row.
+                The guide belongs to the disclosure root, so it runs behind the
+                open content and still reaches the next row.
               </p>
             </ListDisclosure>
           </li>
@@ -350,7 +420,7 @@ export function ListSection() {
       <Sample
         title="On layers"
         code="List inside Layer"
-        description="Markers and connectors read the surface around them."
+        description="Markers and guides read the surface around them."
       >
         <div className="grid gap-3 sm:grid-cols-2">
           <Layer $invert className="grid gap-2 rounded-xl p-4">
@@ -375,6 +445,40 @@ export function ListSection() {
               <ListItem checked={false}>An empty slot</ListItem>
             </List>
           </Layer>
+        </div>
+      </Sample>
+
+      <Sample
+        title="Right to left"
+        code='<div dir="rtl"> > List ordered · List $guide'
+        description="Under a right-to-left direction the marker column, the guide and the text inset all mirror to the end edge."
+      >
+        <div dir="rtl" lang="ar" className="grid gap-4">
+          <List ordered>
+            <ListItem>
+              <p>
+                <strong>تثبيت الحزمة</strong>
+              </p>
+              <p>يبدأ النص بعد عمود العلامة من جهة اليمين.</p>
+            </ListItem>
+            <ListItem>
+              <p>
+                <strong>إعداد الأنماط</strong>
+              </p>
+              <p>يمر الدليل تحت الأرقام في المنتصف.</p>
+            </ListItem>
+            <ListItem checked>
+              <p>
+                <strong>مراجعة المعرض</strong>
+              </p>
+              <p>يتلاشى المقطع الأخير داخل صفه.</p>
+            </ListItem>
+          </List>
+          <List $guide $gap={6}>
+            <ListItem>الخطوة الأولى</ListItem>
+            <ListItem>الخطوة الثانية</ListItem>
+            <ListItem>الخطوة الأخيرة</ListItem>
+          </List>
         </div>
       </Sample>
     </Samples>

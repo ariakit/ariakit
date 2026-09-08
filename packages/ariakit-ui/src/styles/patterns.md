@@ -146,7 +146,7 @@ $lightnessOffset(defaultValue, variants) {
   if (variants.$checked === true) return defaultValue;
   return (
     defaultValue ??
-    `calc(var(--list-ol, 0) * ${ORDERED_MARKER_LIGHTNESS})`
+    `calc(var(--list-counter, 0) * ${COUNTER_LIGHTNESS})`
   );
 },
 ```
@@ -272,9 +272,9 @@ If none apply, and a single component (or a single shared base such as `listRow`
 Derived state with several readers is worth naming once on the root rather than repeating the derivation.
 
 ```ts
-// Connectors join rows only in an ordered list in blocks mode. The
-// connector segment and the disclosure indent both read this flag.
-"[--list-connector:calc(var(--list-ol,0)*var(--list-blocks,0))]",
+// Left to itself, a guide joins the rows only under counters in blocks
+// mode. The guide segments and the disclosure indent both read this flag.
+auto: "[--list-guide:calc(var(--list-counter)*var(--list-blocks))]",
 ```
 
 ## Defaults
@@ -335,7 +335,7 @@ A variant map with a `false` key gets an implicit static default of `false`. Whe
 $checked: {
   none: [ /* plain bullet or number, no check at all */ ],
   true: "before:hidden",
-  false: "ui-list-ul:ring ui-list-ul:ring-inset",
+  false: "ring ring-inset ui-list-counter:ring-0",
 },
 ```
 

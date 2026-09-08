@@ -1,8 +1,9 @@
 import { cv, cx } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { button, buttonSlot } from "./button.ts";
-import { frame, frameBase } from "./frame.ts";
+import { frameBase } from "./frame.ts";
 import { glider } from "./glider.ts";
+import { padding } from "./padding.ts";
 import { text } from "./text.ts";
 
 export const nav = cv({
@@ -18,10 +19,11 @@ export const nav = cv({
     // and on a plain row alike.
     "[--nav-row-gap:--spacing(3)]",
     // A row's padding, and where its content starts past its edge: the
-    // control's default padding and its extra side padding on top (see --py
-    // and --px in control.ts). Both are measured in the nav's own line box
-    // and font and registered as lengths (see ariakit.css), so a group label
-    // in smaller text pads like a row and insets its text to the same pixel.
+    // control's default padding and its optical side padding on top (see
+    // --py and --px in padding.ts). Both are measured in the nav's own line
+    // box and font and registered as lengths (see ariakit.css), so a group
+    // label in smaller text pads like a row and insets its text to the same
+    // pixel.
     "[--nav-py:--spacing(2)]",
     "[--nav-px:calc(var(--nav-py)+(1lh-1cap)*0.5)]",
     // The box a glider positions against, and a stacking context that keeps
@@ -85,9 +87,8 @@ export const navGroup = cv({
 // (see --nav-py and --nav-px there): the label's own text is smaller, and the
 // em-based spacing step would come out smaller in it.
 export const navGroupLabel = cv({
-  extend: [frame, text],
+  extend: [padding, text],
   class: [
-    "[--py:var(--ak-frame-padding,0px)] [--px:var(--nav-px)] px-(--px) py-(--py)",
     "ak-ink-60 font-medium text-[0.875em] text-start",
     // The label folds away with the sidebar, on the sidebar's own clock.
     "overflow-clip [interpolate-size:allow-keywords]",
@@ -96,7 +97,10 @@ export const navGroupLabel = cv({
     "ui-sidebar-collapsed:opacity-0",
   ],
   defaultVariants: {
+    // The label pads like a row, with the lengths the nav measured in its own
+    // font rather than the label's smaller one.
     $p: "var(--nav-py)",
+    $px: "var(--nav-px)",
     $rounded: "md",
   },
 });

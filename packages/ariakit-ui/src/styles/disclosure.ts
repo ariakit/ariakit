@@ -49,8 +49,8 @@ export const disclosure = cv({
     "[--disclosure-radius:var(--ak-frame-radius)]",
     "[--disclosure-border:calc(var(--ak-frame-border)+var(--ak-frame-ring))]",
     // Where the label starts with nothing before it: the button is a
-    // control and spends the frame padding plus the control's extra side
-    // padding (see --px in control.ts, at its default scale). The body
+    // control and spends the frame padding plus the control's optical side
+    // padding (see --px in padding.ts, at its default scale). The body
     // starts here too. A button given a $size or $px of its own moves its
     // label alone.
     "[--disclosure-px:calc(var(--disclosure-padding)+(1lh-1cap)*0.5)]",

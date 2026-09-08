@@ -234,15 +234,23 @@
 }
 
 /* List state channels: the list root publishes its flags as custom
-   properties, and items and markers react through container style queries. */
-@custom-variant ui-list-ol {
-  @container style(--list-ol: 1) {
+   properties, and items and markers react through container style queries.
+   The marker kind is one of them: the root names it, and every marker in the
+   list takes that shape. */
+@custom-variant ui-list-counter {
+  @container style(--list-marker: counter) {
     @slot;
   }
 }
 
-@custom-variant ui-list-ul {
-  @container style(--list-ul: 1) {
+@custom-variant ui-list-bullet {
+  @container style(--list-marker: bullet) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-dash {
+  @container style(--list-marker: dash) {
     @slot;
   }
 }
@@ -271,7 +279,7 @@
 }
 
 /* The row that closes a list, published by the list root on its own last li.
-   Reading it as a channel rather than counting DOM depth keeps the connector
+   Reading it as a channel rather than counting DOM depth keeps the guide
    correct wherever a row puts it, and a nested list resets the flag on itself
    before re-publishing it on its own last row. */
 @custom-variant ui-list-last-row {

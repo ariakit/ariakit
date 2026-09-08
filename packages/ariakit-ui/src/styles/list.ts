@@ -1,13 +1,14 @@
 import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { edge } from "./edge.ts";
-import { frame } from "./frame.ts";
 import { layer } from "./layer.ts";
+import { padding } from "./padding.ts";
 
-// Surface lightness for the marker, on the $lightnessOffset scale. A plain
-// unordered bullet paints no surface, so it gets no offset.
-const ORDERED_MARKER_LIGHTNESS = 2.5;
-const UNORDERED_CHECK_LIGHTNESS = 1;
+// Surface lightness on the $lightnessOffset scale: the counter chip, and the
+// empty check slot beside a bullet or a dash. Those two glyphs paint no
+// surface, so they get no offset.
+const COUNTER_LIGHTNESS = 2.5;
+const SLOT_LIGHTNESS = 1;
 
 export const list = cv({
   class: [
@@ -29,11 +30,11 @@ export const list = cv({
     // queries. Custom properties inherit, so each list declares the off
     // values to clear the flags of the list around it.
     "[--list-blocks:0] [--list-last-row:0]",
-    // Marks the row that closes this list, where the connector fades out.
+    // Marks the row that closes this list, where the guide fades out.
     "[&>li:last-of-type]:[--list-last-row:1]",
-    // Connectors join rows only in an ordered list in blocks mode. The
-    // connector segment and the disclosure indent both read this flag.
-    "[--list-connector:calc(var(--list-ol,0)*var(--list-blocks,0))]",
+    // How far the guide keeps from a marker. The guide runs from marker to
+    // marker under them, and each marker hides it under a halo this wide.
+    "[--list-guide-gap:--spacing(1)]",
     // ui-list-blocks matches a list that contains a block element, or a list
     // inside an ancestor list in blocks mode.
     "ui-list-blocks:[--list-blocks:1]",
@@ -45,14 +46,35 @@ export const list = cv({
   ],
   variants: {
     /**
-     * Whether the list is ordered. Ordered lists number their items and, in
-     * blocks mode, connect them with connector segments.
+     * Whether the list is ordered. The component renders the element; here it
+     * only picks the default marker, so an ordered list counts its rows.
      */
     $ordered: {
-      true: "[--list-ol:1] [--list-ul:0]",
-      // The only reset of --list-ol and --list-ul, so a nested list stops
-      // inheriting the kind of the list around it.
-      false: "[--list-ol:0] [--list-ul:1]",
+      true: "",
+      false: "",
+    },
+    /**
+     * Sets the marker every row draws: a numbered chip (`counter`), a disc
+     * (`bullet`) or a short line (`dash`). Left unset, an ordered list counts
+     * its rows and an unordered one dashes them, or bullets them when it asks
+     * for a guide. The markers read the kind through container style queries,
+     * and the counter flag also decides whether a guide draws on its own.
+     */
+    $marker: {
+      counter: "[--list-marker:counter] [--list-counter:1] [--list-glyph:0]",
+      bullet: "[--list-marker:bullet] [--list-counter:0] [--list-glyph:1]",
+      dash: "[--list-marker:dash] [--list-counter:0] [--list-glyph:1]",
+    },
+    /**
+     * Whether a guide joins the markers, running from each one to the next.
+     * `auto` draws it under counters in blocks mode, where numbered rows read
+     * as steps. The guide segments and the disclosure indent both read this
+     * flag.
+     */
+    $guide: {
+      auto: "[--list-guide:calc(var(--list-counter)*var(--list-blocks))]",
+      true: "[--list-guide:1]",
+      false: "[--list-guide:0]",
     },
     /**
      * Sets the base gap between items before the mode formulas apply. A nested
@@ -76,22 +98,34 @@ export const list = cv({
   },
   defaultVariants: {
     $ordered: false,
+    $guide: "auto",
+    // Always resolved, so a nested list resets the flags of the list around it:
+    // custom properties inherit.
+    $marker(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (variants.$ordered) return "counter";
+      // A guide through dashes crosses them; through bullets it reads as a
+      // track between stops.
+      if (variants.$guide === true) return "bullet";
+      return "dash";
+    },
   },
 });
 
-// The marker and the connector are absolute, so a row must stay their
-// positioning context.
+// The marker and the guide are absolute, so a row must stay their positioning
+// context. A row pads like a control (see padding.ts), so its text sits where a
+// control's would.
 const listRow = cv({
-  extend: [frame],
+  extend: [padding],
   class: [
     "relative",
     // A row freezes the line height it inherits into a length, so every
     // child keeps it. Without this a heading child scales the ratio by its
     // own font size, and its first line stops lining up with the marker.
     "leading-[1lh]",
-    // The marker column is one line wide, plus a gap before the text.
-    "[--list-item-ps:calc(1lh+(--spacing(1.5)))]",
-    "[--list-item-base-ps:calc(var(--ak-frame-padding)+var(--list-item-ps))]",
+    // The row's own border, for the guide to cross. The frame channel does
+    // not inherit, so the row copies it into one that does.
+    "[--list-row-border:var(--ak-frame-border)]",
   ],
   defaultVariants: {
     // Rows are unpainted regions of the surface around them.
@@ -104,9 +138,11 @@ const listRow = cv({
 export const listItem = cv({
   extend: [listRow],
   class: [
-    // Indents the text past the marker column. The longhand wins over the
-    // frame padding shorthand by stylesheet order.
-    "ps-(--list-item-base-ps)",
+    // The marker column is one line box at the frame padding, where a control
+    // puts its icon slot, and the text starts one control inset past it: the
+    // frame padding plus the optical side padding (see --px in padding.ts).
+    // The longhand wins over the padding shorthand by stylesheet order.
+    "ps-[calc(var(--px)+1lh)]",
     // ui-list-item-blocks matches an item that contains a block element.
     "ui-list-item-blocks:grid ui-list-item-blocks:gap-(--list-item-gap)",
   ],
@@ -131,41 +167,59 @@ export const listItemMarker = cv({
   class: [
     // The marker overlays the gutter that the start padding reserves, so the
     // marker stays out of the row's own flow.
-    "absolute pointer-events-none grid place-items-center [&>svg]:size-[60%]",
+    "list-marker absolute pointer-events-none grid place-items-center",
+    "[&>svg]:size-[60%]",
+    // The guide runs under the markers from centre to centre. Each marker
+    // sits over it and wears a halo in the surface colour, so the guide stops
+    // a gap short of any marker shape: chip, disc, dash or check slot.
+    "z-3 outline-(--ak-layer-parent) outline-(length:--list-guide-gap,0px)",
     // A disc inset inside a square the size of one line, which holds the
-    // number, the check icon and the progress arc. The bullet variant below
-    // reshapes the disc through these same longhand properties and wins by
-    // stylesheet order.
+    // number, the check icon and the progress arc. The bullet and dash rules
+    // below reshape the disc through these same longhand properties and win
+    // by stylesheet order.
     "[--list-marker-inset:0.2em]",
     "[--list-marker-size:calc(1lh-var(--list-marker-inset)*2)]",
     "top-(--ak-frame-padding) inset-s-(--ak-frame-padding) m-(--list-marker-inset)",
     "w-(--list-marker-size) h-(--list-marker-size) rounded-full",
-    "ui-list-ol:[counter-increment:list]",
-    "ui-list-ol:before:content-[counter(list)]",
-    "ui-list-ol:before:absolute ui-list-ol:before:inset-0",
-    "ui-list-ol:before:text-center ui-list-ol:before:font-semibold",
-    "ui-list-ol:before:leading-(--list-marker-size)",
-    "ui-list-ol:before:[font-size-adjust:0.45]",
-    "ui-list-ol:[--progress-thickness:0.15em]",
-    "ui-list-ul:[--progress-thickness:calc(30%+0.25%*var(--contrast,0))]",
+    "ui-list-counter:[counter-increment:list]",
+    "ui-list-counter:before:content-[counter(list)]",
+    "ui-list-counter:before:absolute ui-list-counter:before:inset-0",
+    "ui-list-counter:before:text-center ui-list-counter:before:font-semibold",
+    "ui-list-counter:before:leading-(--list-marker-size)",
+    "ui-list-counter:before:[font-size-adjust:0.45]",
+    "ui-list-counter:[--progress-thickness:0.15em]",
+    "ui-list-bullet:[--progress-thickness:calc(30%+0.25%*var(--contrast,0))]",
+    "ui-list-dash:[--progress-thickness:calc(30%+0.25%*var(--contrast,0))]",
   ],
   variants: {
     /**
-     * The marker's check state. `"none"` is a plain bullet or number with no
-     * check at all, `false` an empty slot, `true` a completed one. Defaults to
-     * `"none"`, or to a value derived from `$progress` when that is set.
+     * The marker's check state. `"none"` is a plain bullet, dash or number with
+     * no check at all, `false` an empty slot, `true` a completed one. Defaults
+     * to `"none"`, or to a value derived from `$progress` when that is set.
      */
     $checked: {
       none: [
-        // An unordered bullet is a short line drawn with the marker's bottom
-        // border, so these rules flatten the disc box instead of filling it.
-        "ui-list-ul:top-[calc(0.5lh+var(--ak-frame-padding))]",
-        "ui-list-ul:inset-s-[calc(0.25lh+var(--ak-frame-padding))]",
-        "ui-list-ul:w-[0.5lh] ui-list-ul:h-auto",
-        "ui-list-ul:m-0 ui-list-ul:rounded-none ui-list-ul:border-b",
+        // A dash is a short line drawn with the marker's bottom border, so
+        // these rules flatten the disc box instead of filling it.
+        "ui-list-dash:top-[calc(0.5lh+var(--ak-frame-padding))]",
+        "ui-list-dash:inset-s-[calc(0.25lh+var(--ak-frame-padding))]",
+        "ui-list-dash:w-[0.5lh] ui-list-dash:h-auto",
+        "ui-list-dash:m-0 ui-list-dash:rounded-none ui-list-dash:border-b",
+        // A bullet is a small disc painted in the edge colour the dash draws
+        // with, centred where the chip centres. Painted, not bordered: a
+        // border is rounded to whole pixels, and one half the disc wide
+        // leaves a hole. The size is Tailwind Typography's, and a whole pixel
+        // at 16px.
+        "[--list-bullet-size:0.375em]",
+        "ui-list-bullet:top-[calc(0.5lh-var(--list-bullet-size)/2+var(--ak-frame-padding))]",
+        "ui-list-bullet:inset-s-[calc(0.5lh-var(--list-bullet-size)/2+var(--ak-frame-padding))]",
+        "ui-list-bullet:w-(--list-bullet-size) ui-list-bullet:h-(--list-bullet-size)",
+        "ui-list-bullet:m-0 ui-list-bullet:bg-(--ak-edge)",
       ],
       true: "before:hidden",
-      false: "ui-list-ul:ring ui-list-ul:ring-inset",
+      // An empty slot is a ring, except in a counter list, where the number
+      // fills the chip.
+      false: "ring ring-inset ui-list-counter:ring-0",
     },
     /**
      * Sets the progress between `0` and `1` shown by the circular fill child.
@@ -199,15 +253,16 @@ export const listItemMarker = cv({
       // A completed marker paints the brand color straight, without the neutral
       // surface underneath it.
       if (variants.$checked === true) return defaultValue;
-      // --list-ol and --list-ul are 1/0 flags on the list root. No variant can
-      // gate this value, because $lightnessOffset writes to the style
-      // attribute, so the calc picks the surface per list kind. Both flags fall
-      // back to 0, so a marker outside a list stays on the plain layer.
+      // --list-counter and --list-glyph are 1/0 flags on the list root. No
+      // variant can gate this value, because $lightnessOffset writes to the
+      // style attribute, so the calc picks the surface per marker kind. Both
+      // flags fall back to 0, so a marker outside a list stays on the plain
+      // layer.
       return (
         defaultValue ??
         (variants.$checked === false
-          ? `calc(var(--list-ol, 0) * ${ORDERED_MARKER_LIGHTNESS} + var(--list-ul, 0) * ${UNORDERED_CHECK_LIGHTNESS})`
-          : `calc(var(--list-ol, 0) * ${ORDERED_MARKER_LIGHTNESS})`)
+          ? `calc(var(--list-counter, 0) * ${COUNTER_LIGHTNESS} + var(--list-glyph, 0) * ${SLOT_LIGHTNESS})`
+          : `calc(var(--list-counter, 0) * ${COUNTER_LIGHTNESS})`)
       );
     },
     $edgeWeight(defaultValue, variants) {
@@ -217,34 +272,36 @@ export const listItemMarker = cv({
   },
 });
 
-export const listItemConnector = cv({
+export const listItemGuide = cv({
   extend: [layer],
   class: [
-    // The segment runs from under the marker to the next row's marker, so it
-    // overflows the row into the list gap.
-    "absolute pointer-events-none z-2",
-    "[--list-connector-gap:--spacing(1)]",
-    // Where the marker's disc centers on the line. The segment aligns to it.
-    "[--list-marker-center:0.5lh]",
-    // --list-connector is 1 only in an ordered blocks-mode list, so the
-    // segment collapses to zero width everywhere else.
-    "[--list-connector-width:calc(var(--list-connector,0)*1px)]",
-    "[--list-connector-top:calc(1lh+var(--list-connector-gap)+var(--ak-frame-padding))]",
-    "w-(--list-connector-width)",
-    "top-(--list-connector-top)",
-    "inset-s-[calc(var(--list-marker-center)-var(--list-connector-width)/2+var(--ak-frame-padding))]",
-    "h-[calc(100%+max(0px,var(--list-gap))+max(var(--list-gap),var(--ak-frame-padding))-var(--list-connector-gap)-var(--list-connector-top))]",
+    // Under the markers, over the row's surface and over a disclosure's open
+    // content, which opens a stacking context of its own.
+    "list-guide absolute pointer-events-none z-2",
+    // --list-guide is 1 only where the list draws guides, so the segment has
+    // no width anywhere else.
+    "[--list-guide-width:calc(var(--list-guide,0)*1px)]",
+    "w-(--list-guide-width)",
+    // From the centre of this row's marker to the centre of the next row's:
+    // down the row, across its bottom border, the list gap and the next
+    // row's top border. The next row's frame padding and half line box
+    // cancel this row's, so nothing about the marker's shape enters here;
+    // the markers hide the segment under their halos. A tight list computes
+    // a negative gap, which the grid lays out as none.
+    "top-[calc(var(--ak-frame-padding)+0.5lh)]",
+    "inset-s-[calc(var(--ak-frame-padding)+0.5lh-var(--list-guide-width)/2)]",
+    "h-[calc(100%+max(0px,var(--list-gap))+var(--list-row-border,0px)*2)]",
     // The final segment fades out and stops at its own row's height.
     "ui-list-last-row:bg-transparent ui-list-last-row:bg-linear-to-b",
     "ui-list-last-row:from-(--ak-layer)",
     "ui-list-last-row:from-[calc(100%-1rem)]",
     "ui-list-last-row:to-transparent",
-    "ui-list-last-row:h-[calc(100%-var(--list-connector-top))]",
+    "ui-list-last-row:h-[calc(100%-var(--ak-frame-padding)-0.5lh)]",
   ],
   defaultVariants: {
-    // The segment paints the ordered marker surface, which is the only list
-    // kind where the segment has any width.
-    $lightnessOffset: ORDERED_MARKER_LIGHTNESS,
+    // The segment paints the counter chip's surface, so a step list reads as
+    // chips on one line of the same material.
+    $lightnessOffset: COUNTER_LIGHTNESS,
   },
 });
 
@@ -252,18 +309,21 @@ export const listDisclosure = cv({
   extend: [listRow],
   // The style attribute, so these win over the disclosure root's own resets.
   style: {
-    // The content indents only when connector segments join the rows.
-    // --disclosure-ps replaces the content's padding-inline-start, so the
-    // formula re-adds the frame padding.
+    // The content indents only where a guide joins the rows, and then to the
+    // text of the button: one control inset and one line box in, like a plain
+    // row's. The root pads nothing itself (see disclosure.ts), but it still
+    // publishes the padding channels the formula reads.
     "--disclosure-ps":
-      "calc(var(--ak-frame-padding) + var(--list-item-ps) * var(--list-connector))",
+      "calc(var(--py) + (var(--px) - var(--py) + 1lh) * var(--list-guide))",
     // A row indents by its marker gutter, never by an icon in its button.
     "--disclosure-icon": "0",
   },
 });
 
 export const listDisclosureButton = cv({
-  class: "[--disclosure-ps:var(--list-item-base-ps)]",
+  // The button is a control with its own padding channels, and its label starts
+  // where a plain row's text does.
+  class: "[--disclosure-ps:calc(var(--px)+1lh)]",
 });
 
 export const listDisclosureContentBody = cv({

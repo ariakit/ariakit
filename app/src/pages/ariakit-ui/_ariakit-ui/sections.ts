@@ -185,7 +185,7 @@ export const galleryGroups = [
         id: "list",
         title: "List",
         description:
-          "Bulleted and numbered rows, blocks and sections rhythm, nesting, check and progress markers, connectors and disclosure rows.",
+          "Dashed, bulleted and numbered rows, blocks and sections rhythm, nesting, check and progress markers, guides and disclosure rows.",
       },
       {
         id: "table",
