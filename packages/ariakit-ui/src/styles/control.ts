@@ -304,6 +304,9 @@ export const controlLabel = cv({
 export const controlDescription = cv({
   extend: [text],
   class: [
+    // A marker the control around it can read: a pressed control that holds
+    // one presses less deep (see active.ts).
+    "control-description",
     // A description placed right after a slot picks up the side-bearing
     // margin the slot's $mx puts on its next sibling. On a full-width row of
     // its own that margin reads as a stray indent.

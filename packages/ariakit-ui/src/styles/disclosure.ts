@@ -1,6 +1,12 @@
 import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
-import { button, buttonSlot } from "./button.ts";
+import {
+  button,
+  buttonContent,
+  buttonDescription,
+  buttonLabel,
+  buttonSlot,
+} from "./button.ts";
 import { edge } from "./edge.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
@@ -184,6 +190,18 @@ export const disclosureButton = cv({
       auto: "[--gap:calc(var(--disclosure-gap)+var(--px)-var(--py))] gap-(--gap)",
     },
     /**
+     * Replaces the control's `auto` vertical gap with one that follows the
+     * disclosure frame: half its padding, never looser than the base spacing
+     * step. It holds the description under the label (see
+     * disclosureButtonContent).
+     */
+    $gapY(value?: "none" | "auto") {
+      // A function variant, so it replaces the control's auto rather than
+      // adding a second --gap-y beside it.
+      if (value !== "auto") return;
+      return "[--gap-y:min(var(--py)/2,--spacing(2))] gap-y-(--gap-y)";
+    },
+    /**
      * Extends the focus ring offsets with `inset`, which draws the ring inside
      * the button rather than over the disclosure edge it covers.
      */
@@ -193,6 +211,7 @@ export const disclosureButton = cv({
   },
   defaultVariants: {
     $transition: true,
+    $gapY: "auto",
     // The button padding follows the disclosure frame it covers, plus the
     // control's own extra side padding, which the root publishes as
     // --disclosure-px for the body.
@@ -225,6 +244,34 @@ export const disclosureButton = cv({
       "ui-hover:bg-transparent ui-hover:bg-linear-to-b",
       "ui-hover:from-(--ak-layer) ui-hover:to-transparent",
     ]);
+  },
+});
+
+// The label and the description stacked under it, at the gap the button's $gapY
+// sets. It is the button's own content wrapper, which fills the row and shrinks
+// below its text.
+export const disclosureButtonContent = buttonContent;
+
+export const disclosureButtonLabel = cv({
+  extend: [buttonLabel],
+  // The label is a flex item of the row when nothing sits under it, and a
+  // collapsing row has to make it narrower than its text.
+  class: "min-w-0",
+  defaultVariants: {
+    // A disclosure label wraps; a button's own truncates to hold one line.
+    $truncate: false,
+  },
+});
+
+export const disclosureButtonDescription = cv({
+  extend: [buttonDescription],
+  // A description can hold several lines, such as a date and a badge row. They
+  // stack at the gap the wrapper resolved, inherited as a length: the spacing
+  // step is em-based, so the same formula would come out smaller in the
+  // description's own text size.
+  class: "grid gap-y-[inherit]",
+  defaultVariants: {
+    $truncate: false,
   },
 });
 

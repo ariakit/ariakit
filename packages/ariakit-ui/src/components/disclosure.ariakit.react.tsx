@@ -8,6 +8,9 @@ import { renderIndicator } from "../react-utils/disclosure-indicator.react.tsx";
 import {
   disclosure,
   disclosureButton,
+  disclosureButtonContent,
+  disclosureButtonDescription,
+  disclosureButtonLabel,
   disclosureContent,
   disclosureContentBody,
   disclosureGroup,
@@ -126,7 +129,7 @@ export function DisclosureButton({
   // since aria-labelledby references the span when a description exists.
   const labelElement =
     rest.children != null ? (
-      <span id={labelId} className="min-w-0">
+      <span id={labelId} {...disclosureButtonLabel.jsx({})}>
         {rest.children}
       </span>
     ) : null;
@@ -141,25 +144,15 @@ export function DisclosureButton({
       aria-labelledby={description ? labelId : undefined}
       aria-describedby={description ? descriptionId : undefined}
       data-open={isOpen || undefined}
-      {...disclosureButton.jsx({
-        ...variantProps,
-        // A button with a description is taller, so it presses deeper.
-        $activeDepth:
-          variantProps.$activeDepth ?? (description ? 2 : undefined),
-        $activeDepthX:
-          variantProps.$activeDepthX ?? (description ? 2 : undefined),
-      })}
+      {...disclosureButton.jsx(variantProps)}
       {...rest}
     >
       {atStart && indicatorEl}
       {iconElement}
       {description ? (
-        <span className="grid w-full gap-[min(var(--ak-frame-padding)/2,--spacing(2))]">
+        <span {...disclosureButtonContent.jsx({})}>
           {labelElement}
-          <span
-            id={descriptionId}
-            className="ak-ink-60 grid gap-[inherit] font-normal text-sm"
-          >
+          <span id={descriptionId} {...disclosureButtonDescription.jsx({})}>
             {description}
           </span>
         </span>
