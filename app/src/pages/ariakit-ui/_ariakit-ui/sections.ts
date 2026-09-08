@@ -191,7 +191,7 @@ export const galleryGroups = [
         id: "table",
         title: "Table",
         description:
-          "Declarative and composed tables, cell and container borders, sticky headers, horizontal scroll with a pinned column, numeric columns and hover rows.",
+          "Declarative and composed tables, cell and container borders, sticky headers, horizontal scroll with a pinned column, focused cells and rows, selected rows, sortable headers and hover rows.",
       },
       {
         id: "progress",

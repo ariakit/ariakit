@@ -1,6 +1,7 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import { ArrowUp, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
 import { createRender } from "../react-utils/create-render.react.ts";
 import { isIterable } from "../react-utils/is-iterable.ts";
@@ -13,9 +14,19 @@ import {
   tableRow,
   tableRowGroup,
   tableScroller,
+  tableSortButton,
+  tableSortIndicator,
 } from "../styles/table.ts";
 
 type TableRowGroupKind = "head" | "body" | "foot";
+
+export type TableSortValue = "ascending" | "descending" | "none";
+
+// The cell props a head cell sets for its whole column in declarative rows (see
+// getColumnProps in Table).
+const COLUMN_PROPS = ["numeric", "$sticky", "$fit", "$grow"] as const;
+
+type ColumnProps = Pick<TableCellProps, (typeof COLUMN_PROPS)[number]>;
 
 /**
  * Collects the union of column keys across all rows, preserving the first
@@ -42,6 +53,16 @@ export type TableRow<K extends keyof any> = {
 export type TableRows<K extends keyof any> = TableRow<K>[];
 
 const TableRowGroupContext = React.createContext<TableRowGroupKind>("body");
+
+interface TableCellContextType {
+  numeric: boolean;
+  sort?: TableSortValue;
+}
+
+// What a cell tells the sort button and the indicator inside it.
+const TableCellContext = React.createContext<TableCellContextType>({
+  numeric: false,
+});
 
 export interface TableProps<K extends keyof any>
   extends React.ComponentProps<"table">, VariantProps<typeof table> {
@@ -151,20 +172,18 @@ export function Table<K extends keyof any>({
     return cell as TableCellProps;
   };
 
-  // A column takes its number format and its pin from its head cell, so the
-  // declarative rows set either once instead of on every cell.
-  const getColumnProps = (
-    key: K,
-  ): Pick<TableCellProps, "numeric" | "$sticky"> => {
-    const columnProps: Pick<TableCellProps, "numeric" | "$sticky"> = {};
+  // A column takes its number format, its pin and its width from its head cell,
+  // so the declarative rows set each once instead of on every cell. A sort
+  // stays with the head cell: only a column header takes it.
+  const getColumnProps = (key: K) => {
+    const columnProps: ColumnProps = {};
     for (const row of headRows ?? []) {
       const cellProps = getCellProps(row, key);
       if (!cellProps) continue;
-      if (Object.hasOwn(cellProps, "numeric") && cellProps.numeric) {
-        columnProps.numeric = true;
-      }
-      if (Object.hasOwn(cellProps, "$sticky") && cellProps.$sticky) {
-        columnProps.$sticky = cellProps.$sticky;
+      for (const prop of COLUMN_PROPS) {
+        if (!Object.hasOwn(cellProps, prop)) continue;
+        if (!cellProps[prop]) continue;
+        Object.assign(columnProps, { [prop]: cellProps[prop] });
       }
     }
     return columnProps;
@@ -269,17 +288,27 @@ export interface TableRowProps
   extends React.ComponentProps<"tr">, VariantProps<typeof tableRow> {
   /** The group of rows to render. */
   group?: TableRowGroupKind;
+  /**
+   * Whether the row is selected, which the row says with `aria-selected`. Rows
+   * are selectable in a grid, so a table that selects rows takes `role="grid"`.
+   */
+  selected?: boolean;
 }
 
-export function TableRow({ group, ...props }: TableRowProps) {
+export function TableRow({ group, selected, ...props }: TableRowProps) {
   const contextGroup = React.useContext(TableRowGroupContext);
   group = group ?? contextGroup;
+  const isBody = group === "body";
   const [variantProps, rest] = splitProps(props, tableRow);
   return (
     <tr
+      aria-selected={selected}
       {...tableRow.jsx({
         ...variantProps,
-        $hover: variantProps.$hover ?? group === "body",
+        // The head and foot bands take neither the hover nor the selection
+        // tint.
+        $hover: variantProps.$hover ?? isBody,
+        $selected: variantProps.$selected ?? isBody,
       })}
       {...rest}
     />
@@ -296,9 +325,24 @@ export interface TableCellProps
   numeric?: boolean;
   /** Whether the cell is a header. */
   header?: "column" | "row" | boolean;
+  /**
+   * Makes a column header sortable and says how its column is sorted: the
+   * header takes `aria-sort`, and a `TableSortButton` wraps its content with
+   * the indicator for the state. `"none"` is a sortable column the table is not
+   * sorted by. Only a column header takes it.
+   */
+  sort?: TableSortValue;
+  /** Custom sort button element or props to render a `TableSortButton`. */
+  sortButton?: React.ReactElement | TableSortButtonProps;
 }
 
-export function TableCell({ numeric, header, ...props }: TableCellProps) {
+export function TableCell({
+  numeric,
+  header,
+  sort,
+  sortButton,
+  ...props
+}: TableCellProps) {
   const group = React.useContext(TableRowGroupContext);
   header = header ?? (group === "head" ? "column" : false);
   // Only the bare `true` value derives the header kind from the group, so an
@@ -307,7 +351,13 @@ export function TableCell({ numeric, header, ...props }: TableCellProps) {
     header === "column" || (header === true && group === "head");
   const isRowHeader = header === "row" || (header === true && group !== "head");
   const Component = header ? "th" : "td";
+  const sortable = sort != null && isColumnHeader;
   const [variantProps, rest] = splitProps(props, tableCell);
+  const sortButtonEl = createRender(TableSortButton, sortButton);
+  const contextValue = React.useMemo(
+    () => ({ numeric: !!numeric, sort: sortable ? sort : undefined }),
+    [numeric, sortable, sort],
+  );
 
   const getScope = () => {
     if (!header) return;
@@ -317,14 +367,83 @@ export function TableCell({ numeric, header, ...props }: TableCellProps) {
   };
 
   return (
-    <Component
-      scope={getScope()}
-      {...tableCell.jsx({
-        $header: isColumnHeader ? "column" : isRowHeader ? "row" : false,
-        $numeric: !!numeric,
+    <TableCellContext.Provider value={contextValue}>
+      <Component
+        scope={getScope()}
+        aria-sort={sortable ? sort : undefined}
+        {...tableCell.jsx({
+          $header: isColumnHeader ? "column" : isRowHeader ? "row" : false,
+          $numeric: !!numeric,
+          ...variantProps,
+        })}
+        {...rest}
+      >
+        {sortable ? (
+          <ak.Role render={sortButtonEl}>{rest.children}</ak.Role>
+        ) : (
+          rest.children
+        )}
+      </Component>
+    </TableCellContext.Provider>
+  );
+}
+
+export interface TableSortButtonProps
+  extends ak.ButtonProps, VariantProps<typeof tableSortButton> {
+  /**
+   * The indicator after the label. Defaults to a `TableSortIndicator`; pass
+   * `null` for none.
+   */
+  indicator?: React.ReactNode;
+}
+
+/**
+ * The control of a sortable column header, which `TableCell` renders when it
+ * takes `sort`. It runs edge to edge over the cell, so the whole header is the
+ * target, and keeps the label where a plain header puts it.
+ */
+export function TableSortButton({
+  indicator = <TableSortIndicator />,
+  ...props
+}: TableSortButtonProps) {
+  const cell = React.useContext(TableCellContext);
+  const [variantProps, rest] = splitProps(props, tableSortButton);
+  return (
+    <ak.Button
+      {...tableSortButton.jsx({
         ...variantProps,
+        $numeric: variantProps.$numeric ?? cell.numeric,
       })}
       {...rest}
-    />
+    >
+      {rest.children}
+      {indicator}
+    </ak.Button>
+  );
+}
+
+export interface TableSortIndicatorProps
+  extends
+    React.ComponentProps<"span">,
+    VariantProps<typeof tableSortIndicator> {}
+
+/**
+ * The sort indicator of a `TableSortButton`: chevrons while the column is not
+ * sorted, an arrow once it is, which the header's `aria-sort` turns around for
+ * a descending sort. Children replace the glyph.
+ */
+export function TableSortIndicator(props: TableSortIndicatorProps) {
+  const { sort } = React.useContext(TableCellContext);
+  const [variantProps, rest] = splitProps(props, tableSortIndicator);
+  const sorted = sort === "ascending" || sort === "descending";
+  return (
+    // The header's aria-sort already says the direction.
+    <ak.Role.span
+      aria-hidden
+      {...tableSortIndicator.jsx(variantProps)}
+      {...rest}
+    >
+      {rest.children ?? (sorted ? <ArrowUp /> : <ChevronsUpDown />)}
+    </ak.Role.span>
   );
 }

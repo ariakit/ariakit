@@ -11,6 +11,7 @@ import {
   Badge,
   BadgeLabel,
 } from "@ariakit/ui/components/badge.ariakit.react.tsx";
+import { Checkbox } from "@ariakit/ui/components/checkbox.ariakit.react.tsx";
 import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
 import type {
   TableProps,
@@ -234,6 +235,126 @@ function DemoTable(props: TableProps<ComponentColumn>) {
   return <Table rows={componentRows} {...props} />;
 }
 
+interface ComponentEntry {
+  component: string;
+  status: string;
+  variants: number;
+}
+
+const components: ComponentEntry[] = [
+  { component: "Button", status: "Covered", variants: 12 },
+  { component: "Glider", status: "Expanded", variants: 6 },
+  { component: "Tabs", status: "Expanded", variants: 8 },
+  { component: "Table", status: "Covered", variants: 5 },
+];
+
+const sortedRows: TableRows<ComponentColumn> = [
+  {
+    group: "head",
+    component: { children: "Component", sort: "ascending" },
+    status: { children: "Status", sort: "none" },
+    variants: { children: "Variants", numeric: true, sort: "none" },
+  },
+  ...components,
+];
+
+const sortedByVariantsRows: TableRows<ComponentColumn> = [
+  {
+    group: "head",
+    component: { children: "Component", sort: "none" },
+    status: "Status",
+    variants: { children: "Variants", numeric: true, sort: "descending" },
+  },
+  ...components,
+];
+
+interface StateTableProps extends TableProps<ComponentColumn> {
+  /** Whether a checkbox column leads the rows. */
+  checkboxes?: boolean;
+  /** The indexes of the selected rows. */
+  selected?: number[];
+  /** The index of the row with keyboard focus. */
+  focusedRow?: number;
+  /** The row index and column of the cell with keyboard focus. */
+  focusedCell?: [row: number, column: keyof ComponentEntry];
+}
+
+/**
+ * The component table written out by hand, with its rows and cells in the
+ * states the sample asks for. The focus attribute is the one Ariakit sets on a
+ * focused element, so the static rows paint the real state.
+ */
+function StateTable({
+  checkboxes,
+  selected = [],
+  focusedRow,
+  focusedCell,
+  ...props
+}: StateTableProps) {
+  const selectable = checkboxes || selected.length > 0;
+  const isSelected = (index: number) => selected.includes(index);
+  const isFocused = (index: number, column: keyof ComponentEntry) =>
+    focusedCell?.[0] === index && focusedCell[1] === column;
+  const allSelected = selected.length === components.length;
+  return (
+    <Table container={{ $border: true, $layer: true }} $borderBlock {...props}>
+      <TableRowGroup group="head">
+        <TableRow>
+          {checkboxes && (
+            <TableCell $fit>
+              {/* The head is text-sm, so 1em would draw a smaller box than
+                  the column's; a length keeps the select-all on its axis. */}
+              <Checkbox
+                aria-label="Select all rows"
+                className="[--size:1rem]"
+                checked={allSelected ? true : selected.length ? "mixed" : false}
+              />
+            </TableCell>
+          )}
+          <TableCell $grow={checkboxes}>Component</TableCell>
+          <TableCell>Status</TableCell>
+          <TableCell numeric>Variants</TableCell>
+        </TableRow>
+      </TableRowGroup>
+      <TableRowGroup>
+        {components.map((entry, index) => (
+          <TableRow
+            key={entry.component}
+            selected={selectable ? isSelected(index) : undefined}
+            data-focus-visible={focusedRow === index || undefined}
+          >
+            {checkboxes && (
+              <TableCell $fit>
+                <Checkbox
+                  aria-label={`Select ${entry.component}`}
+                  checked={isSelected(index)}
+                />
+              </TableCell>
+            )}
+            <TableCell
+              header="row"
+              data-focus-visible={isFocused(index, "component") || undefined}
+            >
+              {entry.component}
+            </TableCell>
+            <TableCell
+              data-focus-visible={isFocused(index, "status") || undefined}
+            >
+              {entry.status}
+            </TableCell>
+            <TableCell
+              numeric
+              data-focus-visible={isFocused(index, "variants") || undefined}
+            >
+              {entry.variants}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableRowGroup>
+    </Table>
+  );
+}
+
 export function TableSection() {
   return (
     <Samples columns="wide">
@@ -344,6 +465,68 @@ export function TableSection() {
           foot={{ $sticky: "bottom", $lightnessOffset: 0.5 }}
           $borderBlock
         />
+      </Sample>
+
+      <Sample
+        wide
+        title="Focus"
+        code="TableCell data-focus-visible · TableRow data-focus-visible"
+        description="Keyboard focus draws the brand ring inside a cell, which the arrow keys walk in a grid of cells, or around a row, which they walk in a grid of rows. At a table corner the ring follows the container's rounding. The attribute is the one Ariakit sets on a focused element, so the static samples paint the real state."
+      >
+        <div className="grid items-start gap-4 lg:grid-cols-2">
+          <div className="grid gap-1">
+            <Caption>Focused cell</Caption>
+            <StateTable focusedCell={[1, "status"]} />
+          </div>
+          <div className="grid gap-1">
+            <Caption>Focused row, at the table's corner</Caption>
+            <StateTable focusedRow={3} />
+          </div>
+        </div>
+      </Sample>
+
+      <Sample
+        wide
+        title="Selected rows"
+        code='Table role="grid" > TableRow selected · TableCell $fit > Checkbox · TableCell $grow'
+        description="A selected row mixes the brand colour into its surface, on the layer channel, so the hover still steps on top of it: hover a selected row. With a checkbox column, the head cell fits its select-all and one column takes the surplus width. Rows are selectable in a grid, so both tables take the grid role."
+      >
+        <div className="grid items-start gap-4 lg:grid-cols-2">
+          <div className="grid gap-1">
+            <Caption>With a checkbox column</Caption>
+            <StateTable role="grid" checkboxes selected={[0, 2]} />
+          </div>
+          <div className="grid gap-1">
+            <Caption>Without one, two rows in a run</Caption>
+            <StateTable role="grid" selected={[1, 2]} />
+          </div>
+        </div>
+      </Sample>
+
+      <Sample
+        wide
+        title="Sortable headers"
+        code='TableCell sort="ascending" · sort="none" · numeric sort="descending"'
+        description="A sortable column header holds a button that covers the cell, with the label where a plain header puts it and the indicator after it: faint chevrons while the column is not sorted, an arrow once it is, turned around for a descending sort. In a numeric column the indicator leads, so the label stays on the digits. Hover or tab to a header to see it come up."
+      >
+        <div className="grid items-start gap-4 lg:grid-cols-2">
+          <div className="grid gap-1">
+            <Caption>Sorted by the first column</Caption>
+            <Table
+              rows={sortedRows}
+              $borderBlock
+              container={{ $border: true, $layer: true }}
+            />
+          </div>
+          <div className="grid gap-1">
+            <Caption>Sorted by a numeric column, descending</Caption>
+            <Table
+              rows={sortedByVariantsRows}
+              $borderBlock
+              container={{ $border: true, $layer: true }}
+            />
+          </div>
+        </div>
       </Sample>
 
       <Sample

@@ -394,6 +394,8 @@ The backdrop goes the same way. `ui-backdrop:` reaches the native `::backdrop` a
 "ui-open:starting:ui-backdrop:opacity-0 ui-closed:ui-backdrop:opacity-0",
 ```
 
+A focus ring on a table row cannot be an outline: the cells are positioned, and an outline on the row paints under them in every engine, whatever z-index the row takes. The ring is a pseudo-element of the row instead, over the cells and under a sticky row group, and the row opens a stacking context for it only while focused. A cell's ring is a pseudo-element too, a box inset by the grid lines the cell box holds: the line above a row sits in its cells' first row of pixels, and the divider after a column in the cell's last column of pixels, painted there by the next cell, so an outline on the cell would cover one and be covered by the other, and a hovered neighbour would paint over its edge.
+
 Use a root-relative selector when the target element is markup the component does not own.
 
 ```ts
