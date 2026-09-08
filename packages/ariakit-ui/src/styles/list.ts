@@ -207,16 +207,19 @@ export const listItemMarker = cv({
         "ui-list-dash:inset-s-[calc(0.25lh+var(--ak-frame-padding))]",
         "ui-list-dash:w-[0.5lh] ui-list-dash:h-auto",
         "ui-list-dash:m-0 ui-list-dash:rounded-none ui-list-dash:border-b",
-        // A bullet is a small disc painted in the edge colour the dash draws
-        // with, centred where the chip centres. Painted, not bordered: a
-        // border is rounded to whole pixels, and one half the disc wide
-        // leaves a hole. The size is a whole pixel at 16px, one up from
-        // Tailwind Typography's, so the disc holds its own beside the chip.
+        // A bullet is a small disc in the edge colour the dash draws with,
+        // centred where the chip centres. Painted, not bordered: a border is
+        // rounded to whole pixels, and one half the disc wide leaves a hole.
+        // The size is a whole pixel at 16px, one up from Tailwind
+        // Typography's, so the disc holds its own beside the chip.
         "[--list-bullet-size:0.4375em]",
         "ui-list-bullet:top-[calc(0.5lh-var(--list-bullet-size)/2+var(--ak-frame-padding))]",
         "ui-list-bullet:inset-s-[calc(0.5lh-var(--list-bullet-size)/2+var(--ak-frame-padding))]",
         "ui-list-bullet:w-(--list-bullet-size) ui-list-bullet:h-(--list-bullet-size)",
-        "ui-list-bullet:m-0 ui-list-bullet:bg-(--ak-edge)",
+        // The edge colour is translucent, so it goes on as an image over the
+        // marker's own surface, or the guide under the disc shows through it.
+        "ui-list-bullet:m-0 ui-list-bullet:bg-linear-to-b",
+        "ui-list-bullet:from-(--ak-edge) ui-list-bullet:to-(--ak-edge)",
       ],
       true: "before:hidden",
       // An empty slot is a ring, except in a counter list, where the number
@@ -323,9 +326,16 @@ export const listDisclosure = cv({
 });
 
 export const listDisclosureButton = cv({
-  // The button is a control with its own padding channels, and its label starts
-  // where a plain row's text does.
-  class: "[--disclosure-ps:calc(var(--px)+1lh)]",
+  class: [
+    // The button is a control with its own padding channels, and its label
+    // starts where a plain row's text does.
+    "[--disclosure-ps:calc(var(--px)+1lh)]",
+    // Over the guide, which the root draws beside it: a hovered or pressed
+    // button paints its surface over the segments that cross it, and the
+    // marker inside it keeps its place above them. At rest the button paints
+    // nothing, so the guide shows through.
+    "z-3",
+  ],
 });
 
 export const listDisclosureContentBody = cv({
