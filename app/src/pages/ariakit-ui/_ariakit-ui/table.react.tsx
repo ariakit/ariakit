@@ -65,6 +65,171 @@ const manyRows: TableRows<ComponentColumn> = [
   },
 ];
 
+type WideColumn =
+  | ComponentColumn
+  | "owner"
+  | "package"
+  | "coverage"
+  | "updated"
+  | "size"
+  | "notes";
+
+const wideHead: TableRows<WideColumn>[number] = {
+  group: "head",
+  component: "Component",
+  status: "Status",
+  variants: { children: "Variants", numeric: true },
+  owner: "Owner",
+  package: "Package",
+  coverage: { children: "Coverage", numeric: true },
+  updated: "Updated",
+  size: { children: "Size", numeric: true },
+  notes: "Notes",
+};
+
+const wideBody: TableRows<WideColumn> = [
+  [
+    "Button",
+    "Covered",
+    12,
+    "Diego",
+    "@ariakit/ui",
+    "98%",
+    "2026-08-30",
+    "4.1 kB",
+    "Bevel and flat kinds, all sizes",
+  ],
+  [
+    "Checkbox",
+    "Covered",
+    7,
+    "Diego",
+    "@ariakit/ui",
+    "96%",
+    "2026-08-28",
+    "2.3 kB",
+    "Shares the choice mask with the radio",
+  ],
+  [
+    "Disclosure",
+    "Expanded",
+    9,
+    "Diego",
+    "@ariakit/ui",
+    "91%",
+    "2026-09-02",
+    "5.6 kB",
+    "Guides, split layout, nested groups",
+  ],
+  [
+    "Glider",
+    "Expanded",
+    6,
+    "Diego",
+    "@ariakit/ui",
+    "88%",
+    "2026-09-01",
+    "3.0 kB",
+    "Anchor positioned, hover and focus states",
+  ],
+  [
+    "List",
+    "Covered",
+    11,
+    "Diego",
+    "@ariakit/ui",
+    "97%",
+    "2026-09-05",
+    "6.2 kB",
+    "Markers, guides and disclosure rows",
+  ],
+  [
+    "Nav",
+    "Covered",
+    8,
+    "Diego",
+    "@ariakit/ui",
+    "94%",
+    "2026-09-04",
+    "4.8 kB",
+    "Collapses with the sidebar rail",
+  ],
+  [
+    "Sidebar",
+    "Expanded",
+    5,
+    "Diego",
+    "@ariakit/ui",
+    "90%",
+    "2026-09-08",
+    "3.4 kB",
+    "Panel, disclosure or drawer by breakpoint",
+  ],
+  [
+    "Table",
+    "Covered",
+    6,
+    "Diego",
+    "@ariakit/ui",
+    "95%",
+    "2026-09-08",
+    "5.1 kB",
+    "Border channels, sticky groups and cells",
+  ],
+  [
+    "Tabs",
+    "Expanded",
+    8,
+    "Diego",
+    "@ariakit/ui",
+    "89%",
+    "2026-09-06",
+    "7.7 kB",
+    "Folder tabs with a scroll timeline",
+  ],
+  [
+    "Tooltip",
+    "Covered",
+    4,
+    "Diego",
+    "@ariakit/ui",
+    "99%",
+    "2026-08-25",
+    "1.9 kB",
+    "Popover surface at a lighter shadow",
+  ],
+].map(
+  ([
+    component,
+    status,
+    variants,
+    owner,
+    pkg,
+    coverage,
+    updated,
+    size,
+    notes,
+  ]) => ({
+    component,
+    status,
+    variants,
+    owner,
+    package: pkg,
+    coverage,
+    updated,
+    size,
+    notes,
+  }),
+);
+
+const wideRows: TableRows<WideColumn> = [wideHead, ...wideBody];
+
+// The pin on the head cell reaches the whole column.
+const pinnedRows: TableRows<WideColumn> = [
+  { ...wideHead, component: { children: "Component", $sticky: "start" } },
+  ...wideBody,
+];
+
 function DemoTable(props: TableProps<ComponentColumn>) {
   return <Table rows={componentRows} {...props} />;
 }
@@ -179,6 +344,35 @@ export function TableSection() {
           foot={{ $sticky: "bottom", $lightnessOffset: 0.5 }}
           $borderBlock
         />
+      </Sample>
+
+      <Sample
+        wide
+        title="Horizontal scroll"
+        code='className="whitespace-nowrap" · head cell $sticky="start" · head={{ $sticky: "top" }}'
+        description="Columns wider than the container scroll sideways inside it. The second table pins the column that names the rows: in declarative rows a $sticky on the head cell pins the whole column, and the head sticks to the top as well. Hover a row while it is scrolled."
+      >
+        <div className="grid items-start gap-4 lg:grid-cols-2">
+          <div className="grid gap-1">
+            <Caption>Scrolls sideways</Caption>
+            <Table
+              rows={wideRows}
+              className="whitespace-nowrap"
+              $borderBlock
+              container={{ $border: true, $layer: true }}
+            />
+          </div>
+          <div className="grid gap-1">
+            <Caption>Pinned first column and sticky head</Caption>
+            <Table
+              rows={pinnedRows}
+              className="whitespace-nowrap"
+              $borderBlock
+              head={{ $sticky: "top" }}
+              container={{ $border: true, $layer: true, className: "max-h-64" }}
+            />
+          </div>
+        </div>
       </Sample>
 
       <Sample

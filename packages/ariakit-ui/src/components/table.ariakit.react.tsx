@@ -140,16 +140,34 @@ export function Table<K extends keyof any>({
     return row[key];
   };
 
-  const isNumericColumn = (row: TableRow<K>, key: K) => {
+  // The props of a cell given as an element or as a props object; content given
+  // any other way has none.
+  const getCellProps = (row: TableRow<K>, key: K) => {
     const cell = getCell(row, key);
-    if (!cell) return false;
-    if (typeof cell !== "object") return false;
-    if (React.isValidElement<TableCellProps>(cell)) {
-      return Boolean(cell.props.numeric);
+    if (!cell) return;
+    if (typeof cell !== "object") return;
+    if (React.isValidElement<TableCellProps>(cell)) return cell.props;
+    if (isIterable(cell)) return;
+    return cell as TableCellProps;
+  };
+
+  // A column takes its number format and its pin from its head cell, so the
+  // declarative rows set either once instead of on every cell.
+  const getColumnProps = (
+    key: K,
+  ): Pick<TableCellProps, "numeric" | "$sticky"> => {
+    const columnProps: Pick<TableCellProps, "numeric" | "$sticky"> = {};
+    for (const row of headRows ?? []) {
+      const cellProps = getCellProps(row, key);
+      if (!cellProps) continue;
+      if (Object.hasOwn(cellProps, "numeric") && cellProps.numeric) {
+        columnProps.numeric = true;
+      }
+      if (Object.hasOwn(cellProps, "$sticky") && cellProps.$sticky) {
+        columnProps.$sticky = cellProps.$sticky;
+      }
     }
-    if (isIterable(cell)) return false;
-    if (!Object.hasOwn(cell, "numeric")) return false;
-    return Boolean((cell as TableCellProps).numeric);
+    return columnProps;
   };
 
   const renderRow = (row: TableRow<K>, index: number) => {
@@ -164,9 +182,7 @@ export function Table<K extends keyof any>({
             TableCell,
             value,
             {
-              numeric: !!headRows?.some((row) =>
-                isNumericColumn(row, key as K),
-              ),
+              ...getColumnProps(key as K),
               header: row.group === "head" ? "column" : false,
               children: key,
             },

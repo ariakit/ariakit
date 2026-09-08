@@ -148,6 +148,10 @@ export const tableContainer = cv({
     // What rounds the table: overflow does not apply to a table box, so a
     // radius on the table itself is painted over by the corner cells.
     "overflow-clip",
+    // The container yields to the width its parent gives it, a grid track or
+    // a flex line included, and the scroller takes the overflow. Without this
+    // a parent that sizes to content grows to the table's widest row instead.
+    "min-w-0",
     // The outer borders follow the same channels as the cell borders.
     "border-s-(length:--table-border-s,0px)",
     "border-e-(length:--table-border-e,0px)",
@@ -188,11 +192,13 @@ export const tableRowGroup = cv({
   ],
   variants: {
     /**
-     * Keeps the row group on screen while the scroller scrolls.
+     * Keeps the row group on screen while the scroller scrolls. It sits above a
+     * pinned cell (see $sticky in tableCell), which sits above a hovered row's
+     * cells.
      */
     $sticky: {
-      top: "z-3 sticky top-0",
-      bottom: "z-3 sticky bottom-0",
+      top: "z-4 sticky top-0",
+      bottom: "z-4 sticky bottom-0",
     },
   },
 });
@@ -272,8 +278,24 @@ export const tableCell = cv({
      * Aligns and formats the cell for numbers.
      */
     $numeric: "text-end tabular-nums",
+    /**
+     * Pins the cell to the start or the end edge of the scroller while the
+     * table scrolls sideways, for the column that names the rows. Set it on
+     * every cell of the column, the head's included. The cell paints its row's
+     * surface, so the columns sliding under it stay hidden. The z puts it above
+     * a hovered row's cells, which the row lifts with a rule of higher
+     * specificity (see $hover in tableRow), and below a sticky row group.
+     */
+    $sticky: {
+      start: "z-3! sticky inset-s-0",
+      end: "z-3! sticky inset-e-0",
+    },
   },
   defaultVariants: {
     $header: false,
+    $layer(defaultValue, variants) {
+      if (!variants.$sticky) return defaultValue;
+      return defaultValue ?? true;
+    },
   },
 });
