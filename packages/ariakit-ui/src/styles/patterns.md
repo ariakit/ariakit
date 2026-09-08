@@ -204,14 +204,14 @@ The `(--var)` shorthand takes a fallback, and a leading `-` negates it, so an ar
 ```ts
 // Instead of these
 "[inset-block:var(--table-border-inset,0px)]";
-"[inset-inline-start:calc(var(--table-border-s,0px)*-1)]";
+"[inset-inline-start:calc(var(--table-cell-px)*-1)]";
 
 // write these
 "inset-y-(--table-border-inset,0px)";
-"-inset-s-(--table-border-s,0px)";
+"-inset-s-(--table-cell-px)";
 ```
 
-That negating prefix wraps the whole value in another `calc(... * -1)`. Keep it over a scale step or a channel, where there is nothing to put a sign on: `-inset-4`, `-inset-s-(--table-border-s,0px)`. Once the value is in brackets, put the sign in the value.
+That negating prefix wraps the whole value in another `calc(... * -1)`. Keep it over a scale step or a channel, where there is nothing to put a sign on: `-inset-4`, `-inset-s-(--table-cell-px)`. Once the value is in brackets, put the sign in the value.
 
 ```ts
 // emits margin-top: calc(0.1875rem * -1)
@@ -231,7 +231,7 @@ Over a `calc()` you are already writing, the wrapper just nests.
 "me-[calc(-2*var(--inset-padding))]";
 ```
 
-Add a `length:` hint where the utility also takes a colour, or Tailwind reads the channel as one: `border-s-(length:--table-border-s,0px)`, `ring-(length:--border-width)`.
+Add a `length:` hint where the utility also takes a colour, or Tailwind reads the channel as one: `border-s-(length:--divider-width)`, `ring-(length:--border-width)`.
 
 Logical utilities are not the ones with logical-sounding names. `inset-x` and `inset-y` are `inset-inline` and `inset-block`; `border-s`, `border-e`, `border-bs` and `border-be` are the logical border widths, while `border-t` and `border-b` are physical.
 
@@ -394,7 +394,7 @@ The backdrop goes the same way. `ui-backdrop:` reaches the native `::backdrop` a
 "ui-open:starting:ui-backdrop:opacity-0 ui-closed:ui-backdrop:opacity-0",
 ```
 
-A focus ring on a table row cannot be an outline: the cells are positioned, and an outline on the row paints under them in every engine, whatever z-index the row takes. The ring is a pseudo-element of the row instead, over the cells and under a sticky row group, and the row opens a stacking context for it only while focused. A cell's ring is a pseudo-element too, a box inset by the grid lines the cell box holds: the line above a row sits in its cells' first row of pixels, and the divider after a column in the cell's last column of pixels, painted there by the next cell, so an outline on the cell would cover one and be covered by the other, and a hovered neighbour would paint over its edge.
+A translucent edge takes the colour of whatever it is painted over, so a line between two rows of different colours can only match one of them, and which one depends on paint order. The table's cells lay their lines over a stripe of their row group's own surface, a background layer clipped to the border box under a layer of the row's surface clipped to the padding box, so every line is the edge over the group's surface whatever the rows beside it paint, and no cell has to paint over a neighbour. Each cell draws only the lines after it, the line below its row and the divider after its column, as borders. Real borders make the padding box the box inside the lines, which is what a ring wants: a cell's ring is an inset ring, and it sits one line inside the cell on every side without any geometry of its own. A row's ring cannot be an outline, which paints under a pinned cell in every engine and keeps one offset on every side while the row holds the line below it and not the one above; it is a pseudo-element of the row, over the cells and under a sticky row group, inset by the lines the row's cells hold.
 
 Use a root-relative selector when the target element is markup the component does not own.
 

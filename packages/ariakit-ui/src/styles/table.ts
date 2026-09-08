@@ -5,25 +5,19 @@ import { frame } from "./frame.ts";
 import { hover } from "./hover.ts";
 import { layer } from "./layer.ts";
 
-// Widths the cell pseudos and the container borders read. The custom properties
-// inherit, so setting them on either element reaches the cells. The channel
-// suffixes match the Tailwind border utilities that spend them, so
-// --table-border-bs pairs with border-bs-*.
-type TableBorderValue = boolean | string | number;
+// Widths the cells and the container spend, as plain numbers of pixels: the
+// cells cut their lines out of one image (see tableCell), and an image slice
+// takes a number. The custom properties inherit, so setting them on either
+// element reaches the cells. The channel suffixes match the Tailwind border
+// utilities that spend them, so --table-border-bs pairs with border-bs-*.
+type TableBorderValue = boolean | number;
 
 function getBorderStyle(channels: readonly string[], value?: TableBorderValue) {
   if (value == null) return;
-  const width =
-    value === false
-      ? "0px"
-      : value === true
-        ? "1px"
-        : typeof value === "number"
-          ? `${value}px`
-          : value;
+  const width = value === false ? 0 : value === true ? 1 : value;
   const style: Record<string, string> = {};
   for (const channel of channels) {
-    style[`--table-border-${channel}`] = width;
+    style[`--table-border-${channel}`] = `${width}`;
   }
   return { style };
 }
@@ -37,10 +31,10 @@ function getBorderStyle(channels: readonly string[], value?: TableBorderValue) {
 const tableBorderVariants = {
   /**
    * Draws borders between cells, and around the container when set on it. The
-   * cells draw the grid lines through their own pseudo-elements, so this sets
-   * inherited channels rather than a border on the element it is passed to.
+   * cells draw the grid lines themselves, so this sets inherited channels
+   * rather than a border on the element it is passed to.
    *
-   * Use `true` for 1px, a number for a width in pixels, or any length.
+   * Use `true` for 1px or a number for a width in pixels.
    */
   $border(value?: TableBorderValue) {
     return getBorderStyle(["s", "e", "bs", "be"], value);
@@ -59,25 +53,29 @@ const tableBorderVariants = {
     return getBorderStyle(["bs", "be"], value);
   },
   /**
-   * Overrides the inline-start side only.
+   * Overrides the inline-start side only. Between columns the wider of the two
+   * sides is drawn.
    */
   $borderInlineStart(value?: TableBorderValue) {
     return getBorderStyle(["s"], value);
   },
   /**
-   * Overrides the inline-end side only.
+   * Overrides the inline-end side only. Between columns the wider of the two
+   * sides is drawn.
    */
   $borderInlineEnd(value?: TableBorderValue) {
     return getBorderStyle(["e"], value);
   },
   /**
-   * Overrides the block axis on the leading side only.
+   * Overrides the block axis on the leading side only. Between rows the wider
+   * of the two block sides is drawn.
    */
   $borderBlockStart(value?: TableBorderValue) {
     return getBorderStyle(["bs"], value);
   },
   /**
-   * Overrides the block axis on the trailing side only.
+   * Overrides the block axis on the trailing side only. Between rows the wider
+   * of the two block sides is drawn.
    */
   $borderBlockEnd(value?: TableBorderValue) {
     return getBorderStyle(["be"], value);
@@ -101,10 +99,11 @@ export const table = cv({
   extend: [frame],
   class: [
     "relative w-full border-separate border-spacing-0",
-    // A copy of this element's resolved border color for the cells to paint
-    // with. Each cell pseudo carries ak-layer, which recomputes --ak-edge from
-    // the pseudo's own layer, so the color variants stop here without it.
-    "[--table-edge:var(--ak-edge)]",
+    // The width of a line between rows and of a divider between columns: the
+    // wider of the two sides asked for. The sides only differ for the
+    // container's own border.
+    "[--table-row-line:max(var(--table-border-bs,0),var(--table-border-be,0))]",
+    "[--table-cell-line:max(var(--table-border-s,0),var(--table-border-e,0))]",
     // The cells spend --ak-frame-padding as their own padding, so $p sets it
     // here and the table element itself stays unpadded. Only the ! beats a
     // padding declared on the same element.
@@ -154,10 +153,10 @@ export const tableContainer = cv({
     // a parent that sizes to content grows to the table's widest row instead.
     "min-w-0",
     // The outer borders follow the same channels as the cell borders.
-    "border-s-(length:--table-border-s,0px)",
-    "border-e-(length:--table-border-e,0px)",
-    "border-bs-(length:--table-border-bs,0px)",
-    "border-be-(length:--table-border-be,0px)",
+    "border-s-[calc(var(--table-border-s,0)*1px)]",
+    "border-e-[calc(var(--table-border-e,0)*1px)]",
+    "border-bs-[calc(var(--table-border-bs,0)*1px)]",
+    "border-be-[calc(var(--table-border-be,0)*1px)]",
   ],
   variants: {
     ...tableBorderVariants,
@@ -184,8 +183,15 @@ export const tableRowGroup = cv({
   extend: [layer],
   class: [
     "relative",
-    // Edge flags read by the rows so the cell pseudos skip the block borders at
-    // the very top and bottom of the table.
+    // What the group's cells paint their lines with: the group's edge, laid
+    // over a stripe of the group's own surface (see tableCell). Both are
+    // copied here so the rows' states, which move the layer and the edge
+    // computed from it, never reach a line, and a head band's lines are the
+    // seam of its own material.
+    "[--table-edge:var(--ak-edge)]",
+    "[--table-underlay:linear-gradient(var(--ak-layer),var(--ak-layer))]",
+    // Edge flags read by the rows, for the line the table's last row leaves
+    // out and the corners its first and last rows take.
     "[&:is(thead):first-of-type]:[--table-rowgroup-first:1]",
     "[:not(:has(thead))>&:first-child]:[--table-rowgroup-first:1]",
     "[&:is(tfoot):last-of-type]:[--table-rowgroup-last:1]",
@@ -194,12 +200,19 @@ export const tableRowGroup = cv({
   variants: {
     /**
      * Keeps the row group on screen while the scroller scrolls. It sits above a
-     * pinned cell (see $sticky in tableCell), which sits above a hovered row's
-     * cells.
+     * pinned cell (see $sticky in tableCell) and above a focused row's ring.
      */
     $sticky: {
-      top: "z-4 sticky top-0",
-      bottom: "z-4 sticky bottom-0",
+      top: "z-3 sticky top-0",
+      // The line above a group is drawn by the row before it, which scrolls
+      // away from a group pinned at the bottom: the group's first row draws it
+      // in its own box instead, unless it is the table's first row, and the row
+      // before it gives it up.
+      bottom: [
+        "z-3 sticky bottom-0",
+        "[&>tr:first-child]:[--table-row-line-bs:calc(var(--table-row-line)*(1-var(--table-row-first,0)))]",
+        "[:has(+&)>tr:last-child]:[--table-row-line-be:0]",
+      ],
     },
   },
 });
@@ -223,29 +236,27 @@ export const tableRow = cv({
     // Rows at the group edges forward the flags to their cells.
     "first-of-type:[--table-row-first:var(--table-rowgroup-first,0)]",
     "last-of-type:[--table-row-last:var(--table-rowgroup-last,0)]",
-    // The block lines the row's cells draw: the line above the row, which
-    // sits in their first row of pixels, and the line below it, which they
-    // paint into the next row's first. The table's first and last rows draw
-    // none at its edges.
-    "[--table-row-line-bs:calc(var(--table-border-bs,0px)*(1-var(--table-row-first,0)))]",
-    "[--table-row-line-be:calc(var(--table-border-be,0px)*(1-var(--table-row-last,0)))]",
+    // The line below the row, which its cells draw in their last row of
+    // pixels; the table's last row has none. The line above it belongs to the
+    // row before, except under a group pinned at the bottom (see
+    // tableRowGroup), which sets --table-row-line-bs on its first row.
+    "[--table-row-line-be:calc(var(--table-row-line)*(1-var(--table-row-last,0)))]",
     // The container's corners, for the rows at the very top and bottom of the
     // table, inside the container's own border so the curves stay concentric.
     // A ring at a corner follows the clip instead of being sliced by it. The
     // cells read these for their own corners.
-    "[--table-row-radius-bs:calc((var(--ak-frame-radius,0px)-var(--table-border-bs,0px))*var(--table-row-first,0))]",
-    "[--table-row-radius-be:calc((var(--ak-frame-radius,0px)-var(--table-border-be,0px))*var(--table-row-last,0))]",
+    "[--table-row-radius-bs:calc((var(--ak-frame-radius,0px)-var(--table-border-bs,0)*1px)*var(--table-row-first,0))]",
+    "[--table-row-radius-be:calc((var(--ak-frame-radius,0px)-var(--table-border-be,0)*1px)*var(--table-row-last,0))]",
   ],
   variants: {
     /**
-     * Tints the row on hover, through `$hoverOffset`. The z bumps keep the
-     * hovered row's cell pseudos above the neighbors' borders.
+     * Tints the row on hover, through `$hoverOffset`.
      */
-    $hover: "ui-hover:z-2 ui-hover:*:z-2",
+    $hover: "",
     /**
      * Draws a ring around the row while it has keyboard focus, and how thick. A
-     * ring set on the row itself paints under its positioned cells, so the ring
-     * is a pseudo-element laid over them (see refine).
+     * ring set on the row itself paints under a pinned cell, so the ring is a
+     * pseudo-element laid over the cells (see refine).
      */
     $focus: {
       1: "ui-focus-visible:after:border",
@@ -256,8 +267,7 @@ export const tableRow = cv({
     /**
      * Tints the row while it is selected, which `aria-selected="true"` on the
      * row says: the brand colour mixed into the surface. It goes on the layer
-     * channel, so a hover still steps on top of it, and it reaches a pinned
-     * cell, which paints its own layer from the row's.
+     * channel, so a hover still steps on top of it.
      */
     $selected: "ui-selected:ak-layer-brand ui-selected:ak-layer-mix-15",
   },
@@ -272,19 +282,15 @@ export const tableRow = cv({
     if (!variants.$focus) return;
     addClass([
       "ak-outline ak-outline-brand",
-      // The row opens a stacking context at the hovered level, so the ring
-      // stays under a sticky row group, and the pseudo goes over every cell
-      // of the row, a pinned one included.
-      "ui-focus-visible:relative ui-focus-visible:z-2",
       // The row still takes real DOM focus, so the browser's own ring goes.
-      "ui-focus-visible:outline-none",
-      // The box starts under the line above the row, which the cells hold
-      // in their first row of pixels, so the ring sits inside the lines on
-      // every side.
+      "ui-focus-visible:relative ui-focus-visible:outline-none",
+      // The box sits inside the lines the row's cells hold, the line below
+      // the row and, under a group pinned at the bottom, the one above it.
+      // The z puts it over a pinned cell and under a sticky row group.
       "ui-focus-visible:after:absolute ui-focus-visible:after:inset-x-0",
-      "ui-focus-visible:after:inset-bs-(--table-row-line-bs)",
-      "ui-focus-visible:after:inset-be-0",
-      "ui-focus-visible:after:z-5 ui-focus-visible:after:pointer-events-none",
+      "ui-focus-visible:after:inset-bs-[calc(var(--table-row-line-bs,0)*1px)]",
+      "ui-focus-visible:after:inset-be-[calc(var(--table-row-line-be,0)*1px)]",
+      "ui-focus-visible:after:z-2 ui-focus-visible:after:pointer-events-none",
       "ui-focus-visible:after:border-(--ak-outline)",
       "ui-focus-visible:after:rounded-t-(--table-row-radius-bs)",
       "ui-focus-visible:after:rounded-b-(--table-row-radius-be)",
@@ -295,7 +301,6 @@ export const tableRow = cv({
 export const tableCell = cv({
   extend: [layer],
   class: [
-    "relative z-1",
     // The header of a sorted column takes the full ink; the sort button in it
     // says which way (see tableSortIndicator).
     "aria-[sort=ascending]:ak-ink-100 aria-[sort=descending]:ak-ink-100",
@@ -305,53 +310,39 @@ export const tableCell = cv({
     "[--table-cell-px:var(--table-px,var(--ak-frame-padding,0px))]",
     "[--table-cell-py:var(--table-py,var(--ak-frame-padding,0px))]",
     "px-(--table-cell-px) py-(--table-cell-py)",
-    // The dividers this cell draws: its start line in the last column of
-    // pixels of the cell before, its end line in the first column of the
-    // cell after, so the cells at the table's edges draw none there. Both go
-    // on, because either neighbour can paint over the other, a pinned cell
-    // for one.
-    "[--table-cell-line-s:var(--table-border-s,0px)] first:[--table-cell-line-s:0px]",
-    "[--table-cell-line-e:var(--table-border-e,0px)] last:[--table-cell-line-e:0px]",
-    // The lines the cell box holds, which the ring stays inside of: the line
-    // above the row in its first row of pixels (see tableRow), and the
-    // divider after the column in its last column of pixels, drawn there by
-    // the next cell, which the last cell of a row has no more of.
-    "[--table-cell-next-s:var(--table-border-s,0px)] last:[--table-cell-next-s:0px]",
-    // The ::after pseudo paints the cell's surface and every grid line. It
-    // runs from the line above the row to the line below it, and from the
-    // start divider to the end one, both outside the cell box.
-    "after:absolute after:-z-2 after:pointer-events-none after:ak-layer",
-    "after:inset-bs-0 after:-inset-be-(--table-row-line-be)",
-    "after:-inset-s-(--table-cell-line-s) after:-inset-e-(--table-cell-line-e)",
-    // Every grid line is a stripe of the pseudo's background. The lines
-    // paint with the table's copy of the edge, and fall back to the edge the
-    // ak-layer just computed here, which is what a cell outside a table
-    // draws. Stripes rather than borders: a border and a gradient of the
-    // same translucent colour paint differently in Chromium once the colour
-    // leaves the sRGB gamut, and the four lines have to match.
-    "[--table-cell-line:linear-gradient(var(--table-edge,var(--ak-edge)),var(--table-edge,var(--ak-edge)))]",
-    "after:bg-no-repeat",
-    "after:bg-[image:var(--table-cell-line),var(--table-cell-line),var(--table-cell-line),var(--table-cell-line)]",
-    // The block lines run the pseudo's whole width, at its top and its
-    // bottom edge, which is the line below the row. The dividers start
-    // below the line above, so no crossing paints twice, or lower by
-    // $borderInset, and stop short of the bottom line by the same inset.
-    "[--table-cell-divider-top:max(var(--table-border-inset,0px),var(--table-row-line-bs))]",
-    "[--table-cell-divider-h:calc(100%-var(--table-row-line-be)-var(--table-border-inset,0px)-var(--table-cell-divider-top))]",
-    "after:bg-size-[100%_var(--table-row-line-bs),100%_var(--table-row-line-be),var(--table-cell-line-s)_var(--table-cell-divider-h),var(--table-cell-line-e)_var(--table-cell-divider-h)]",
-    "after:bg-position-[left_top,left_bottom,left_top_var(--table-cell-divider-top),right_top_var(--table-cell-divider-top)]",
-    // The ::before pseudo is the keyboard focus ring: a box inset by the
-    // lines the cell holds, so the ring sits just inside them on every side,
-    // and a hovered neighbour, which paints over those lines, never touches
-    // it. It lies over the surface pseudo and under the content.
-    "before:absolute before:-z-1 before:pointer-events-none",
-    "before:inset-s-0 before:inset-be-0",
-    "before:inset-bs-(--table-row-line-bs) before:inset-e-(--table-cell-next-s)",
-    "before:border-(--ak-outline)",
+    // A cell draws the lines after it: the line below its row (see tableRow)
+    // and the divider after its column, which the last column has none of,
+    // and neither has the column before a cell pinned at the end, which holds
+    // that divider itself (see $sticky). They are borders, so the padding box
+    // is the box inside the lines, which the ring fills (see $focus).
+    "[--table-cell-line-e:var(--table-cell-line)] last:[--table-cell-line-e:0]",
+    "[&:has(+.table-pinned)]:[--table-cell-line-e:0]",
+    "border-bs-[calc(var(--table-row-line-bs,0)*1px)]",
+    "border-be-[calc(var(--table-row-line-be,0)*1px)]",
+    "border-s-[calc(var(--table-cell-line-s,0)*1px)]",
+    "border-e-[calc(var(--table-cell-line-e,0)*1px)]",
+    // One image paints every line: a vertical gradient cut by the same widths
+    // into the four border areas. Its bands, top to bottom, are the line
+    // above the row, a break, the dividers, a break and the line below, so
+    // the dividers stop short of the row lines by $borderInset. The lines
+    // are the table's edge; the breaks are the row's own surface, so they
+    // vanish into it whatever state moved it. The slice takes plain numbers,
+    // which is why the channels are numbers, and it is physical, so it is
+    // restated for right-to-left.
+    "[border-image-source:linear-gradient(var(--table-edge)_calc(var(--table-row-line-bs,0)*1px),var(--ak-layer)_0_calc(var(--table-row-line-bs,0)*1px+var(--table-border-inset,0px)),var(--table-edge)_0_calc(100%-var(--table-row-line-be,0)*1px-var(--table-border-inset,0px)),var(--ak-layer)_0_calc(100%-var(--table-row-line-be,0)*1px),var(--table-edge)_0)]",
+    "[border-image-slice:var(--table-row-line-bs,0)_var(--table-cell-line-e,0)_var(--table-row-line-be,0)_var(--table-cell-line-s,0)]",
+    "rtl:[border-image-slice:var(--table-row-line-bs,0)_var(--table-cell-line-s,0)_var(--table-row-line-be,0)_var(--table-cell-line-e,0)]",
+    // Under the lines lies the row group's own surface, and in the padding
+    // box the row's, whatever state moved it. So every line is the edge over
+    // the group's surface, the same colour beside a hovered or a selected row
+    // as anywhere else, and a pinned cell is opaque without a layer of its
+    // own.
+    "bg-[linear-gradient(var(--ak-layer),var(--ak-layer)),var(--table-underlay)]",
+    "[background-clip:padding-box,border-box]",
     // At the container's corners the ring follows the rounding (see
     // tableRow).
-    "first:before:rounded-ss-(--table-row-radius-bs) first:before:rounded-es-(--table-row-radius-be)",
-    "last:before:rounded-se-(--table-row-radius-bs) last:before:rounded-ee-(--table-row-radius-be)",
+    "first:rounded-ss-(--table-row-radius-bs) first:rounded-es-(--table-row-radius-be)",
+    "last:rounded-se-(--table-row-radius-bs) last:rounded-ee-(--table-row-radius-be)",
     // A focusable cell takes real DOM focus, so the browser's own ring goes.
     "ui-focus-visible:outline-none",
   ],
@@ -371,24 +362,41 @@ export const tableCell = cv({
     /**
      * Pins the cell to the start or the end edge of the scroller while the
      * table scrolls sideways, for the column that names the rows. Set it on
-     * every cell of the column, the head's included. The cell paints its row's
-     * surface, so the columns sliding under it stay hidden. The z puts it above
-     * a hovered row's cells, which the row lifts with a rule of higher
-     * specificity (see $hover in tableRow), and below a sticky row group.
+     * every cell of the column, the head's included. The cell holds the divider
+     * on its scrolling side in its own box, where a neighbour's would slide
+     * under it: after it for a start pin, which every cell draws already, and
+     * before it for an end pin, which the cell before it then leaves out. The z
+     * puts it above the other cells and below a sticky row group. Chromium
+     * paints a cell only up to the whole device pixel its box ends on, so a
+     * column that ends on a fraction would let the content sliding under the
+     * cell show through the remainder: the pseudo-element paints the row's
+     * surface over that hair, one pixel past the scrolling edge, where the
+     * neighbour's surface is the same colour.
      */
     $sticky: {
-      start: "z-3! sticky inset-s-0",
-      end: "z-3! sticky inset-e-0",
+      start: [
+        "z-1 sticky inset-s-0",
+        "after:absolute after:inset-y-0 after:w-px",
+        "after:inset-e-[calc(-1px-var(--table-cell-line-e,0)*1px)]",
+        "after:bg-(--ak-layer) after:pointer-events-none",
+      ],
+      end: [
+        "table-pinned z-1 sticky inset-e-0",
+        "[--table-cell-line-s:var(--table-cell-line)]",
+        "after:absolute after:inset-y-0 after:w-px",
+        "after:inset-s-[calc(-1px-var(--table-cell-line-s,0)*1px)]",
+        "after:bg-(--ak-layer) after:pointer-events-none",
+      ],
     },
     /**
      * Draws a ring inside the cell while it has keyboard focus, and how thick.
-     * The ring is the cell's ::before pseudo-element (see the class list).
+     * The ring fills the padding box, the box inside the lines.
      */
     $focus: {
-      1: "ui-focus-visible:before:border",
-      true: "ui-focus-visible:before:border-2",
-      2: "ui-focus-visible:before:border-2",
-      3: "ui-focus-visible:before:border-3",
+      1: "ui-focus-visible:inset-ring",
+      true: "ui-focus-visible:inset-ring-2",
+      2: "ui-focus-visible:inset-ring-2",
+      3: "ui-focus-visible:inset-ring-3",
     },
     /**
      * Sizes the column to its content, for a checkbox or an icon column. The
@@ -406,14 +414,10 @@ export const tableCell = cv({
   defaultVariants: {
     $header: false,
     $focus: true,
-    $layer(defaultValue, variants) {
-      if (!variants.$sticky) return defaultValue;
-      return defaultValue ?? true;
-    },
   },
   refine({ variants, addClass }) {
     if (!variants.$focus) return;
-    addClass("ak-outline ak-outline-brand");
+    addClass("ak-outline ak-outline-brand inset-ring-(--ak-outline)");
   },
 });
 

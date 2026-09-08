@@ -489,7 +489,7 @@ export function TableSection() {
         wide
         title="Selected rows"
         code='Table role="grid" > TableRow selected · TableCell $fit > Checkbox · TableCell $grow'
-        description="A selected row mixes the brand colour into its surface, on the layer channel, so the hover still steps on top of it: hover a selected row. With a checkbox column, the head cell fits its select-all and one column takes the surplus width. Rows are selectable in a grid, so both tables take the grid role."
+        description="A selected row mixes the brand colour into its surface, on the layer channel, so the hover still steps on top of it: hover a selected row. The lines beside it keep the table's colour, as they do beside a hovered row. With a checkbox column, the head cell fits its select-all and one column takes the surplus width. Rows are selectable in a grid, so both tables take the grid role."
       >
         <div className="grid items-start gap-4 lg:grid-cols-2">
           <div className="grid gap-1">
