@@ -406,10 +406,18 @@ export const disclosureContent = cv({
      */
     $guide: [
       "[--disclosure-ps:var(--disclosure-lead)]",
-      // The line is an anchor a nav glider bar can centre on, scoped to this
-      // content so a bar outside it, or in a nested content with a guide of
-      // its own, never lands on it (see $side in nav.ts).
-      "[anchor-scope:--disclosure-guide] before:[anchor-name:--disclosure-guide]",
+      // The line is an anchor a nav glider bar centres on (see $side in
+      // nav.ts). The content names it for a state only while one of its rows
+      // is in that state, so a glider finds the guide beside the row it
+      // follows; a nested content with a guide of its own comes later in tree
+      // order and wins. The names inherit from a content around this one, so
+      // they are reset first.
+      "[--disclosure-guide-selected:--x] [--disclosure-guide-hover:--x]",
+      "[--disclosure-guide-focus:--x]",
+      "has-[li>.control:where([aria-current='page'],[aria-current='true'])]:[--disclosure-guide-selected:--disclosure-guide-selected]",
+      "has-[li>.control:hover]:[--disclosure-guide-hover:--disclosure-guide-hover]",
+      "has-[li>.control:is(:focus-visible,[data-focus-visible])]:[--disclosure-guide-focus:--disclosure-guide-focus]",
+      "before:[anchor-name:var(--disclosure-guide-selected),var(--disclosure-guide-hover),var(--disclosure-guide-focus)]",
       "before:absolute before:inset-y-0 before:ak-layer",
       // The line is one border, so it takes the layer's edge colour and the
       // pseudo-element's box is as wide as the line.

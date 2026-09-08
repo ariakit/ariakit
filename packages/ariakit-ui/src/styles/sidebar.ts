@@ -10,7 +10,11 @@ export const sidebar = cv({
     // own corners against it, but the panel itself runs to the screen edge.
     // This wins over the frame radius by stylesheet order.
     "rounded-none",
-    "transition-[width,padding,inset] transition-discrete duration-300",
+    "transition-[width,padding,inset,translate] transition-discrete duration-300",
+    // As a dialog the panel slides in from its own edge and back out. A
+    // sidebar that is not a dialog declares data-open to stay in place.
+    "ui-open:starting:-translate-x-full rtl:ui-open:starting:translate-x-full",
+    "ui-closed:-translate-x-full rtl:ui-closed:translate-x-full",
     // Lets the sidebar animate to and from keyword widths such as auto.
     "[interpolate-size:allow-keywords]",
     // Sections apply their own frame, which rewrites --ak-frame-padding, so
@@ -86,5 +90,7 @@ export const sidebarSection = cv({
 
 export const sidebarBody = cv({
   extend: [sidebarSection],
-  class: "flex-1 overflow-y-auto overflow-x-clip",
+  // The body fills the panel, so its content packs at the start rather than
+  // spreading over the height.
+  class: "flex-1 content-start overflow-y-auto overflow-x-clip",
 });

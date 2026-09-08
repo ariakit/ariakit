@@ -86,7 +86,9 @@ export function Sidebar({
       />
     );
   }
-  return <ak.Role {...props} />;
+  // The open marker keeps the panel in place: without it the sidebar styles
+  // read the panel as a closed dialog and slide it out of view.
+  return <ak.Role data-open {...props} />;
 }
 
 export interface SidebarProviderProps

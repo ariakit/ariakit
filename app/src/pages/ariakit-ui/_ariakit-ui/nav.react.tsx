@@ -281,7 +281,7 @@ export function NavSection() {
       <Sample
         title="Gliders"
         code='Nav glider · glider={[{ $state: "hover" }, { $state: "selected" }, { $state: "focus" }]} · glider={{ $kind: "bevel" }}'
-        description="With a glider the current row paints nothing itself and the glider travels to it. Click a row to move it. The second nav adds a hover cover under the current one, which follows the pointer, and a focus ring that follows the keyboard: tab through its rows."
+        description="With a glider the current row paints nothing itself and the glider travels to it. Click a row to move it. The second nav adds a hover cover under the current one, which follows the pointer, and a focus ring that follows the keyboard: tab through its rows. The last one runs the hover cover across disclosure buttons and links alike, and the current cover from one group to the other."
       >
         <Stage direction="column">
           <Labeled label="Selected cover">
@@ -299,17 +299,23 @@ export function NavSection() {
           <Labeled label="Bevel">
             <DemoNav glider={{ $kind: "bevel" }} />
           </Labeled>
+          <Labeled label="Hover and current covers across disclosures">
+            <DemoDisclosures glider={[{ $state: "hover" }, {}]} />
+          </Labeled>
         </Stage>
       </Sample>
 
       <Sample
         title="Active bar"
-        code='Nav glider={{ $kind: "bar" }} · $side="end" · $layer="brand"'
-        description="A bar marks the current row instead of a cover. At the start it lands on the guide line of the disclosure around the list, or on the row's start edge without one. Click a link to move it."
+        code='Nav glider={{ $kind: "bar" }} · $side="end" · $layer="brand" · glider={[{ $kind: "bar" }, {}]}'
+        description="A bar marks the current row beside its own surface. At the start it lands on the guide line of the disclosure around the row, or on the row's start edge without one, and it travels from one group to the other. Click a link to move it. The second nav pairs the bar with a cover, which takes the row's surface over."
       >
         <Stage direction="column">
           <Labeled label="On the guide line">
             <DemoDisclosures glider={{ $kind: "bar" }} />
+          </Labeled>
+          <Labeled label="Bar and cover">
+            <DemoDisclosures glider={[{ $kind: "bar", $layer: "brand" }, {}]} />
           </Labeled>
           <Labeled label="At the end, in the brand color">
             <DemoDisclosures

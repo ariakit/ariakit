@@ -34,8 +34,8 @@ import {
 } from "./disclosure.ariakit.react.tsx";
 
 /**
- * A glider for a list, as `NavGlider` props or an element, or several of them
- * in an array, such as a hover cover followed by a cover of the current row: a
+ * A glider for a nav, as `NavGlider` props or an element, or several of them in
+ * an array, such as a hover cover followed by a cover of the current row: a
  * later glider paints over an earlier one. `true` renders the default glider, a
  * flat cover of the current row.
  */
@@ -45,9 +45,14 @@ export type NavGliderValue =
   | NavGliderProps
   | (React.ReactElement | NavGliderProps)[];
 
-const NavGliderContext = React.createContext<NavGliderValue | undefined>(
-  undefined,
-);
+function renderGliders(value?: NavGliderValue) {
+  if (!value) return null;
+  if (value === true) return createRender(NavGlider);
+  if (!Array.isArray(value)) return createRender(NavGlider, value);
+  return value.map((item, index) => (
+    <React.Fragment key={index}>{createRender(NavGlider, item)}</React.Fragment>
+  ));
+}
 
 export interface NavProps
   extends ak.RoleProps<"nav">, VariantProps<typeof nav> {
@@ -58,81 +63,95 @@ export interface NavProps
    */
   list?: React.ReactElement | NavListProps | false;
   /**
-   * A glider rendered at the start of every list in the nav, including the
-   * lists inside its disclosures, so the one that holds the current row shows
-   * it. A list's own `glider` prop wins over it.
+   * A glider that travels between the rows of the nav, in its own list, in a
+   * group or in a disclosure alike, rendered before them.
    */
   glider?: NavGliderValue;
+}
+
+// The properties whose transitions move the rows of a nav: a disclosure content
+// opening or closing, and a row squaring up as a sidebar collapses.
+const ROW_MOVING_PROPERTIES = new Set(["height", "max-height"]);
+
+/**
+ * Marks the nav with `data-settling` while a transition inside it moves the
+ * rows, so a glider stops easing after its row and follows it at once (see
+ * navGlider). A glider's own transitions do not count. Native listeners: React
+ * dispatches the end of a transition, but not its start.
+ */
+function useSettling(element: HTMLElement | null) {
+  React.useEffect(() => {
+    if (!element) return;
+    let running = 0;
+    const isRowMoving = (event: TransitionEvent) => {
+      if (!ROW_MOVING_PROPERTIES.has(event.propertyName)) return false;
+      // A capability check rather than instanceof: the target may come from
+      // another realm.
+      const target = event.target as Partial<Element> | null;
+      return !target?.classList?.contains("glider");
+    };
+    const start = (event: TransitionEvent) => {
+      if (!isRowMoving(event)) return;
+      running += 1;
+      element.setAttribute("data-settling", "");
+    };
+    const stop = (event: TransitionEvent) => {
+      if (!isRowMoving(event)) return;
+      running = Math.max(0, running - 1);
+      if (running > 0) return;
+      element.removeAttribute("data-settling");
+    };
+    element.addEventListener("transitionstart", start);
+    element.addEventListener("transitionend", stop);
+    element.addEventListener("transitioncancel", stop);
+    return () => {
+      element.removeEventListener("transitionstart", start);
+      element.removeEventListener("transitionend", stop);
+      element.removeEventListener("transitioncancel", stop);
+      element.removeAttribute("data-settling");
+    };
+  }, [element]);
 }
 
 export function Nav({ list, glider, children, ...props }: NavProps) {
   const [variantProps, rest] = splitProps(props, nav);
   const listEl = list === false ? null : createRender(NavList, list);
+  const [element, setElement] = React.useState<HTMLElement | null>(null);
+  useSettling(element);
   return (
-    <ak.Role.nav {...nav.jsx(variantProps)} {...rest}>
-      <NavGliderContext.Provider value={glider}>
-        {listEl ? (
-          <ak.Role.ul render={listEl}>{children}</ak.Role.ul>
-        ) : (
-          children
-        )}
-      </NavGliderContext.Provider>
+    <ak.Role.nav
+      {...nav.jsx(variantProps)}
+      {...rest}
+      // The inner element takes the state setter as its ref, and Ariakit
+      // merges it with the caller's ref and render element.
+      render={<ak.Role.nav ref={setElement} render={rest.render} />}
+    >
+      {renderGliders(glider)}
+      {listEl ? <ak.Role.ul render={listEl}>{children}</ak.Role.ul> : children}
     </ak.Role.nav>
   );
 }
 
 export interface NavListProps
-  extends ak.RoleProps<"ul">, VariantProps<typeof navList> {
-  /**
-   * A glider rendered before the rows, as `NavGlider` props or an element.
-   * `true` renders the default glider, and `false` leaves out the one the nav
-   * passes down.
-   */
-  glider?: NavGliderValue;
-}
+  extends ak.RoleProps<"ul">, VariantProps<typeof navList> {}
 
-export function NavList({ glider, ...props }: NavListProps) {
-  const inherited = React.useContext(NavGliderContext);
-  const value = glider ?? inherited;
+export function NavList(props: NavListProps) {
   const [variantProps, rest] = splitProps(props, navList);
-  const gliders = !value
-    ? []
-    : value === true
-      ? [createRender(NavGlider)]
-      : Array.isArray(value)
-        ? value.map((item, index) => (
-            <React.Fragment key={index}>
-              {createRender(NavGlider, item)}
-            </React.Fragment>
-          ))
-        : [createRender(NavGlider, value)];
-  return (
-    <ak.Role.ul {...navList.jsx(variantProps)} {...rest}>
-      {gliders}
-      {rest.children}
-    </ak.Role.ul>
-  );
+  return <ak.Role.ul {...navList.jsx(variantProps)} {...rest} />;
 }
 
 export interface NavGliderProps
-  extends ak.RoleProps<"li">, VariantProps<typeof navGlider> {}
+  extends ak.RoleProps<"div">, VariantProps<typeof navGlider> {}
 
 /**
- * Renders the item that glides between the rows of a `NavList` to mark the
+ * Renders the element that glides between the rows of a `Nav` to mark the
  * current, hovered or focused one, as a cover of the row or as a bar beside it.
- * It goes before the rows, so it paints under them, and it hides itself in
- * browsers without CSS anchor positioning.
+ * It goes before the rows, as the nav's first child, so it paints under them,
+ * and it hides itself in browsers without CSS anchor positioning.
  */
 export function NavGlider(props: NavGliderProps) {
   const [variantProps, rest] = splitProps(props, navGlider);
-  return (
-    <ak.Role.li
-      role="presentation"
-      aria-hidden
-      {...navGlider.jsx(variantProps)}
-      {...rest}
-    />
-  );
+  return <ak.Role.div aria-hidden {...navGlider.jsx(variantProps)} {...rest} />;
 }
 
 export interface NavLinkProps
@@ -301,6 +320,9 @@ export function NavDisclosureContentBody(props: NavDisclosureContentBodyProps) {
   const [variantProps, rest] = splitProps(props, navDisclosureContentBody);
   return (
     <DisclosureContentBody
+      // The body paints no surface of its own: a nav glider that covers a
+      // row inside it paints under the content, and it has to show through.
+      $layer="transparent"
       {...navDisclosureContentBody.jsx(variantProps)}
       {...rest}
     />
