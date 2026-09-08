@@ -122,8 +122,8 @@ export function CodeSection() {
       >
         <p className="max-w-64 text-sm">
           The import path{" "}
-          <Code>@ariakit/ui/react-utils/disclosure-indicator.react.tsx</Code>{" "}
-          wraps onto the next line.
+          <Code>@ariakit/ui/components/disclosure.ariakit.react.tsx</Code> wraps
+          onto the next line.
         </p>
       </Sample>
     </Samples>

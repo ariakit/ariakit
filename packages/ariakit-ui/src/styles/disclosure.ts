@@ -64,19 +64,22 @@ export const disclosure = cv({
     "[--disclosure-gap:max(--spacing(2),var(--disclosure-padding)/2)]",
     // Where the label starts when a slot leads it. A slot starts one padding
     // in and, with the gap above, ends the label one line plus the gap past
-    // it whatever the icon size (see disclosureIcon); an icon wider than the
-    // line pushes the label over by its far-side overflow. These three are
-    // registered as lengths (see ariakit.css), so they are measured in the
-    // root's own line box and font once, and a body with a line height of
-    // its own, such as prose, still lands on the label. The button is
+    // it whatever the icon size (see disclosureButtonSlot); an icon wider
+    // than the line pushes the label over by its far-side overflow. These
+    // three are registered as lengths (see ariakit.css), so they are measured
+    // in the root's own line box and font once, and a body with a line height
+    // of its own, such as prose, still lands on the label. The button is
     // expected to keep the root's line height.
     "[--disclosure-lead:calc(var(--disclosure-padding)+1lh+var(--disclosure-gap)+max(0px,(var(--disclosure-icon-size,1em)-1lh)/2))]",
-    // Whether an icon leads the label; the content reads it through a style
-    // query to indent past the icon. Custom properties inherit, so a nested
-    // disclosure clears it before it tests its own button. :where() keeps
-    // the rule at utility weight, so it wins by order alone.
+    // Whether a slot leads the label; the content reads it through a style
+    // query to indent past the slot. The leading slot is the button's first
+    // child, or the one right after a start indicator. A slot later in the
+    // row, such as a badge before an end indicator, indents nothing. Custom
+    // properties inherit, so a nested disclosure clears it before it tests
+    // its own button. :where() keeps the rule at utility weight, so it wins
+    // by order alone.
     "[--disclosure-icon:0]",
-    "[&:has(>:where(.disclosure-button)>:where(.disclosure-icon))]:[--disclosure-icon:1]",
+    "[&:has(>:where(.disclosure-button)>:where(.disclosure-button-slot):where(:first-child,[data-disclosure-indicator]:first-child+*))]:[--disclosure-icon:1]",
     // Open is signalled by native details or by the wrapper's data-open.
     "open:[--disclosure-open:1] data-open:[--disclosure-open:1]",
     // Inside a group the disclosure covers the group frame, which is where
@@ -275,27 +278,46 @@ export const disclosureButtonDescription = cv({
   },
 });
 
-// The icon is a control slot, so it takes the size and the first-line alignment
-// every other control icon gets. A slot starts one padding in, and its margins
-// take the control's extra side padding off its box, which the button's gap
-// adds back (see $gap there): the label after it lands where --disclosure-lead
-// says, whatever the icon size is.
-export const disclosureIcon = cv({
+// A slot in the button's row: the icon that leads the label, or a badge, an
+// avatar or a shortcut anywhere in the row. It is a control slot, so it takes
+// the size and the first-line alignment every other control slot gets. A slot
+// starts one padding in, and its margins take the control's extra side padding
+// off its box, which the button's gap adds back (see $gap there): the label
+// after it lands where --disclosure-lead says, whatever the icon size is. That
+// lead is one line box wide, so only a line-sized slot, an icon or a square
+// avatar, can lead the label and keep the body under it.
+export const disclosureButtonSlot = cv({
   extend: [buttonSlot],
   class: [
-    "disclosure-icon",
-    // The root's $iconSize sizes the slot; otherwise the text size does.
-    "[--size:var(--disclosure-icon-size,1em)]",
+    "disclosure-button-slot",
     // An icon wider than the line overflows its box on both sides. The end
     // margin grows by the far-side overflow so the gap to the label holds,
     // and --disclosure-lead adds the same amount for the body.
     "me-[calc(var(--mx)+max(0px,(var(--size)-1lh)/2))]",
   ],
+  variants: {
+    /**
+     * Extends the slot sizes with `auto`, which follows the root's `$iconSize`
+     * and otherwise the text size.
+     */
+    $size: {
+      auto: "[--size:var(--disclosure-icon-size,1em)]",
+    },
+  },
   defaultVariants: {
-    // The size comes from the class above, not from a named step.
-    $size: "unset",
+    $size: "auto",
   },
 });
+
+// Shared by the chevron and the plus. Important, because a slot right before
+// the indicator puts a side-bearing margin on its next sibling through a
+// variant-gated rule, which sorts after a plain utility.
+const disclosureIndicatorVariants = {
+  /**
+   * Pushes the indicator to the end of the row.
+   */
+  $end: "ms-auto!",
+};
 
 export const disclosureChevron = cv({
   extend: [buttonSlot],
@@ -306,6 +328,7 @@ export const disclosureChevron = cv({
     "[--slot-icon-size:1.1em]",
   ],
   variants: {
+    ...disclosureIndicatorVariants,
     /**
      * Selects the closed-state direction the chevron points to. Both rotate to
      * point down when open.
@@ -336,6 +359,9 @@ export const disclosurePlus = cv({
     "ui-disclosure-open:rotate-90",
     "ui-disclosure-open:bg-size-[var(--plus-line-thickness)_60%]",
   ],
+  variants: {
+    ...disclosureIndicatorVariants,
+  },
   defaultVariants: {
     // A full line box, so the cross drawn across it keeps its size beside the
     // text.

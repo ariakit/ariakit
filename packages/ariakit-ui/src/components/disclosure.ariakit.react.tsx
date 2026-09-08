@@ -1,20 +1,21 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import { ChevronDownIcon } from "lucide-react";
 import * as React from "react";
 import { createRender } from "../react-utils/create-render.react.ts";
-import type { DisclosureIndicator } from "../react-utils/disclosure-indicator.react.tsx";
-import { renderIndicator } from "../react-utils/disclosure-indicator.react.tsx";
 import {
   disclosure,
   disclosureButton,
   disclosureButtonContent,
   disclosureButtonDescription,
   disclosureButtonLabel,
+  disclosureButtonSlot,
+  disclosureChevron,
   disclosureContent,
   disclosureContentBody,
   disclosureGroup,
-  disclosureIcon,
+  disclosurePlus,
 } from "../styles/disclosure.ts";
 
 export interface DisclosureProps
@@ -100,6 +101,17 @@ export function DisclosureGroup(props: DisclosureGroupProps) {
   return <ak.Role {...disclosureGroup.jsx(variantProps)} {...rest} />;
 }
 
+export type DisclosureIndicator =
+  | "chevron-down-start"
+  | "chevron-down-next"
+  | "chevron-down-end"
+  | "chevron-right-start"
+  | "chevron-right-next"
+  | "chevron-right-end"
+  | "plus-start"
+  | "plus-next"
+  | "plus-end";
+
 export interface DisclosureButtonProps
   extends ak.DisclosureProps, VariantProps<typeof disclosureButton> {
   /** Secondary text shown below the main label. */
@@ -111,6 +123,22 @@ export interface DisclosureButtonProps
    * `false` to hide.
    */
   indicator?: DisclosureIndicator | false;
+}
+
+function renderIndicator(indicator: DisclosureIndicator) {
+  const $end = indicator.endsWith("-end");
+  if (indicator.startsWith("plus")) {
+    return <span data-disclosure-indicator {...disclosurePlus.jsx({ $end })} />;
+  }
+  const $direction = indicator.startsWith("chevron-down") ? "down" : "right";
+  return (
+    <span
+      data-disclosure-indicator
+      {...disclosureChevron.jsx({ $direction, $end })}
+    >
+      <ChevronDownIcon />
+    </span>
+  );
 }
 
 export function DisclosureButton({
@@ -134,7 +162,7 @@ export function DisclosureButton({
       </span>
     ) : null;
   const iconElement = icon ? (
-    <span {...disclosureIcon.jsx({})}>{icon}</span>
+    <span {...disclosureButtonSlot.jsx({})}>{icon}</span>
   ) : null;
   const indicatorEl = indicator ? renderIndicator(indicator) : null;
   const atStart = indicator ? indicator.endsWith("-start") : false;
