@@ -168,7 +168,9 @@ export const listItemMarker = cv({
     // The marker overlays the gutter that the start padding reserves, so the
     // marker stays out of the row's own flow.
     "list-marker absolute pointer-events-none grid place-items-center",
-    "[&>svg]:size-[60%]",
+    // The check is drawn at the weight the checkbox draws its own mark (see
+    // choice.ts): a lighter stroke reads thin inside the filled disc.
+    "[&>svg]:size-[60%] [&>svg]:stroke-3",
     // The guide runs under the markers from centre to centre. Each marker
     // sits over it and wears a halo in the surface colour, so the guide stops
     // a gap short of any marker shape: chip, disc, dash or check slot.
@@ -208,9 +210,9 @@ export const listItemMarker = cv({
         // A bullet is a small disc painted in the edge colour the dash draws
         // with, centred where the chip centres. Painted, not bordered: a
         // border is rounded to whole pixels, and one half the disc wide
-        // leaves a hole. The size is Tailwind Typography's, and a whole pixel
-        // at 16px.
-        "[--list-bullet-size:0.375em]",
+        // leaves a hole. The size is a whole pixel at 16px, one up from
+        // Tailwind Typography's, so the disc holds its own beside the chip.
+        "[--list-bullet-size:0.4375em]",
         "ui-list-bullet:top-[calc(0.5lh-var(--list-bullet-size)/2+var(--ak-frame-padding))]",
         "ui-list-bullet:inset-s-[calc(0.5lh-var(--list-bullet-size)/2+var(--ak-frame-padding))]",
         "ui-list-bullet:w-(--list-bullet-size) ui-list-bullet:h-(--list-bullet-size)",
