@@ -286,7 +286,7 @@ export function SidebarSection() {
       <Sample
         title="Collapsible with a toggle"
         code="SidebarProvider > SidebarToggle + Sidebar"
-        description="With a provider the sidebar is a dialog the toggle opens and closes. Under the mobile breakpoint it opens as a modal drawer over the page."
+        description="With a provider the toggle slides the sidebar in and out of the page. Under the mobile breakpoint it opens as a modal drawer over the page instead."
       >
         <CollapsibleSidebar />
       </Sample>

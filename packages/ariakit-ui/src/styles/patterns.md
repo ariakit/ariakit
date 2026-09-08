@@ -383,6 +383,8 @@ An attribute selector in a variant position wants a variant, not brackets. Brack
 
 An overlay's open state comes through `ui-open:` and `ui-closed:`, which read the native `open` attribute, the popover pseudo-classes and Ariakit's `data-open` alike, so a style never has to know which kind of element it landed on. The closed variant excludes every one of those, so an element carrying none of them is closed: static markup declares `data-open` to render open. `transition-none` is the switch for the motion, and it only works because the transition is written as a utility, which sorts before it. An arbitrary property would sort after it and win.
 
+`@starting-style` fires on an element's first render, and server markup is first rendered at the page's first paint, so an `ui-open:starting:` slide plays on every load for a panel that is open from the start. The sidebar keeps its motion behind `$animated`, off by default, and the component turns it on once the page has painted: a `duration-0` at first paint leaves nothing to play, for the slide and for a collapsed state the client restores alike. Both durations sit in one variant, as the two widths do, so only one duration rule is ever emitted.
+
 The backdrop goes the same way. `ui-backdrop:` reaches the native `::backdrop` and the element Ariakit renders as the dialog's previous sibling alike, so the dialog styles its own backdrop and no backdrop style exists on its own. Put the open variants before it, as in `ui-open:starting:ui-backdrop:opacity-0`: Tailwind applies variants left to right, and the other order wraps `::backdrop` in `:is()`, which is invalid, so the rule drops without a word.
 
 ```ts

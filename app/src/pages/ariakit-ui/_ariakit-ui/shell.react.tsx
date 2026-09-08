@@ -42,7 +42,6 @@ import {
   TooltipAnchor,
   TooltipProvider,
 } from "@ariakit/ui/components/tooltip.ariakit.react.tsx";
-import { useIsMobile } from "@ariakit/ui/react-hooks/use-is-mobile.react.ts";
 import * as icons from "lucide-react";
 import * as React from "react";
 import { Logo } from "#app/icons/logo.react.tsx";
@@ -233,18 +232,17 @@ export interface GallerySidebarProps {
  * Under the mobile breakpoint it becomes a drawer opened by a floating toggle.
  */
 export function GallerySidebar({ currentUrl }: GallerySidebarProps) {
-  const isMobile = useIsMobile();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const collapsed = useSetting("sidebar") === "collapsed";
   const CollapseIcon = collapsed ? icons.PanelLeftOpen : icons.PanelLeftClose;
   return (
-    <SidebarProvider
-      open={isMobile ? mobileOpen : true}
-      setOpen={setMobileOpen}
-    >
+    // The provider only drives the drawer: on desktop the panel stays in the
+    // page and collapses to its icon rail.
+    <SidebarProvider open={mobileOpen} setOpen={setMobileOpen}>
       <Sidebar
         aria-label="Gallery sections"
-        collapsed={collapsed && !isMobile}
+        collapsible="icon"
+        collapsed={collapsed}
         $maxWidth="var(--gallery-sidebar-max)"
         $minWidth="var(--gallery-sidebar-min)"
         // The icon size lives on the sidebar so the brand and footer rows
@@ -320,8 +318,8 @@ export function GallerySidebar({ currentUrl }: GallerySidebarProps) {
             </ButtonSlot>
           </Button>
         }
-        // The desktop sidebar is always open, so the toggle only exists for
-        // the drawer. The breakpoint matches useIsMobile.
+        // The desktop panel is part of the page, so the toggle only exists
+        // for the drawer. The breakpoint matches useIsMobile.
         className="fixed end-4 bottom-4 z-20 min-[768px]:hidden"
       />
     </SidebarProvider>

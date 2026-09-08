@@ -10,9 +10,10 @@ export const sidebar = cv({
     // own corners against it, but the panel itself runs to the screen edge.
     // This wins over the frame radius by stylesheet order.
     "rounded-none",
-    "transition-[width,padding,inset,translate] transition-discrete duration-300",
-    // As a dialog the panel slides in from its own edge and back out. A
-    // sidebar that is not a dialog declares data-open to stay in place.
+    "transition-[width,padding,inset,translate] transition-discrete",
+    // Opened by its provider, the panel slides in from its own edge, and back
+    // out when closed. A sidebar with no provider declares data-open to stay in
+    // place.
     "ui-open:starting:-translate-x-full rtl:ui-open:starting:translate-x-full",
     "ui-closed:-translate-x-full rtl:ui-closed:translate-x-full",
     // Lets the sidebar animate to and from keyword widths such as auto.
@@ -35,12 +36,23 @@ export const sidebar = cv({
     },
     /**
      * Sizes the sidebar against its positioning context instead of the app
-     * container, for modal sidebars portalled away from it. Both heights live
-     * in the same variant so only one height rule is ever emitted.
+     * container, for the drawer, portalled away from it. Both heights live in
+     * the same variant so only one height rule is ever emitted.
      */
     $fullHeight: {
       true: "h-full",
       false: "h-[100cqb]",
+    },
+    /**
+     * Whether the sidebar moves between its states: the narrowing to the icon
+     * rail, and the slide in and out of the page. Both durations live in the
+     * same variant so only one duration rule is ever emitted. Off by default,
+     * because a panel nothing opens would only ever slide in on load; the
+     * component turns it on once the page has painted.
+     */
+    $animated: {
+      true: "duration-300 motion-reduce:duration-0",
+      false: "duration-0",
     },
     /**
      * Sets the expanded width. Numbers scale the spacing token.
@@ -65,6 +77,7 @@ export const sidebar = cv({
   defaultVariants: {
     $collapsed: false,
     $fullHeight: false,
+    $animated: false,
     $lightnessOffset: 0.5,
     $rounded: "2xl",
     $maxWidth: 60,
