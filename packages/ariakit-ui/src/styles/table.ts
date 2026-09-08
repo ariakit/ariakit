@@ -183,13 +183,6 @@ export const tableRowGroup = cv({
   extend: [layer],
   class: [
     "relative",
-    // What the group's cells paint their lines with: the group's edge, laid
-    // over a stripe of the group's own surface (see tableCell). Both are
-    // copied here so the rows' states, which move the layer and the edge
-    // computed from it, never reach a line, and a head band's lines are the
-    // seam of its own material.
-    "[--table-edge:var(--ak-edge)]",
-    "[--table-underlay:linear-gradient(var(--ak-layer),var(--ak-layer))]",
     // Edge flags read by the rows, for the line the table's last row leaves
     // out and the corners its first and last rows take.
     "[&:is(thead):first-of-type]:[--table-rowgroup-first:1]",
@@ -241,6 +234,11 @@ export const tableRow = cv({
     // row before, except under a group pinned at the bottom (see
     // tableRowGroup), which sets --table-row-line-bs on its first row.
     "[--table-row-line-be:calc(var(--table-row-line)*(1-var(--table-row-last,0)))]",
+    // A row in a state, hovered or selected, takes the line above it as
+    // well: its cells paint it over the row before (see tableCell). The
+    // table's first row has no line above it, and a row that draws its own
+    // needs none.
+    "[--table-row-shadow:calc(var(--table-row-state,0)*(var(--table-row-line)*(1-var(--table-row-first,0))-var(--table-row-line-bs,0)))]",
     // The container's corners, for the rows at the very top and bottom of the
     // table, inside the container's own border so the curves stay concentric.
     // A ring at a corner follows the clip instead of being sliced by it. The
@@ -250,9 +248,10 @@ export const tableRow = cv({
   ],
   variants: {
     /**
-     * Tints the row on hover, through `$hoverOffset`.
+     * Tints the row on hover, through `$hoverOffset`, and gives it the lines
+     * around it while it lasts.
      */
-    $hover: "",
+    $hover: "ui-hover:[--table-row-state:1]",
     /**
      * Draws a ring around the row while it has keyboard focus, and how thick. A
      * ring set on the row itself paints under a pinned cell, so the ring is a
@@ -267,9 +266,13 @@ export const tableRow = cv({
     /**
      * Tints the row while it is selected, which `aria-selected="true"` on the
      * row says: the brand colour mixed into the surface. It goes on the layer
-     * channel, so a hover still steps on top of it.
+     * channel, so a hover still steps on top of it. The row takes the lines
+     * around it with the tint.
      */
-    $selected: "ui-selected:ak-layer-brand ui-selected:ak-layer-mix-15",
+    $selected: [
+      "ui-selected:ak-layer-brand ui-selected:ak-layer-mix-15",
+      "ui-selected:[--table-row-state:1]",
+    ],
   },
   defaultVariants: {
     $focus: true,
@@ -314,7 +317,11 @@ export const tableCell = cv({
     // and the divider after its column, which the last column has none of,
     // and neither has the column before a cell pinned at the end, which holds
     // that divider itself (see $sticky). They are borders, so the padding box
-    // is the box inside the lines, which the ring fills (see $focus).
+    // is the box inside the lines, which the ring fills (see $focus). The
+    // cell paints no surface of its own: the row's shows through, and the
+    // lines, the row's edge, lie over it, so a hovered or selected row keeps
+    // its lines in contrast with its tint. A pinned cell is the exception
+    // (see $sticky).
     "[--table-cell-line-e:var(--table-cell-line)] last:[--table-cell-line-e:0]",
     "[&:has(+.table-pinned)]:[--table-cell-line-e:0]",
     "border-bs-[calc(var(--table-row-line-bs,0)*1px)]",
@@ -324,21 +331,18 @@ export const tableCell = cv({
     // One image paints every line: a vertical gradient cut by the same widths
     // into the four border areas. Its bands, top to bottom, are the line
     // above the row, a break, the dividers, a break and the line below, so
-    // the dividers stop short of the row lines by $borderInset. The lines
-    // are the table's edge; the breaks are the row's own surface, so they
-    // vanish into it whatever state moved it. The slice takes plain numbers,
-    // which is why the channels are numbers, and it is physical, so it is
-    // restated for right-to-left.
-    "[border-image-source:linear-gradient(var(--table-edge)_calc(var(--table-row-line-bs,0)*1px),var(--ak-layer)_0_calc(var(--table-row-line-bs,0)*1px+var(--table-border-inset,0px)),var(--table-edge)_0_calc(100%-var(--table-row-line-be,0)*1px-var(--table-border-inset,0px)),var(--ak-layer)_0_calc(100%-var(--table-row-line-be,0)*1px),var(--table-edge)_0)]",
+    // the dividers stop short of the row lines by $borderInset. The slice
+    // takes plain numbers, which is why the channels are numbers, and it is
+    // physical, so it is restated for right-to-left.
+    "[border-image-source:linear-gradient(var(--ak-edge)_calc(var(--table-row-line-bs,0)*1px),transparent_0_calc(var(--table-row-line-bs,0)*1px+var(--table-border-inset,0px)),var(--ak-edge)_0_calc(100%-var(--table-row-line-be,0)*1px-var(--table-border-inset,0px)),transparent_0_calc(100%-var(--table-row-line-be,0)*1px),var(--ak-edge)_0)]",
     "[border-image-slice:var(--table-row-line-bs,0)_var(--table-cell-line-e,0)_var(--table-row-line-be,0)_var(--table-cell-line-s,0)]",
     "rtl:[border-image-slice:var(--table-row-line-bs,0)_var(--table-cell-line-s,0)_var(--table-row-line-be,0)_var(--table-cell-line-e,0)]",
-    // Under the lines lies the row group's own surface, and in the padding
-    // box the row's, whatever state moved it. So every line is the edge over
-    // the group's surface, the same colour beside a hovered or a selected row
-    // as anywhere else, and a pinned cell is opaque without a layer of its
-    // own.
-    "bg-[linear-gradient(var(--ak-layer),var(--ak-layer)),var(--table-underlay)]",
-    "[background-clip:padding-box,border-box]",
+    // The line above a row in a state, painted over the row before it, whose
+    // border it is: a later cell paints over an earlier one. The first shadow
+    // lies on top, so it is the row's edge over a stripe of the row's own
+    // surface, the same paint as the lines below. For a row in no state the
+    // offset is zero and the shadow stays under the cell.
+    "shadow-[0_calc(var(--table-row-shadow,0)*-1px)_0_var(--ak-edge),0_calc(var(--table-row-shadow,0)*-1px)_0_var(--ak-layer)]",
     // At the container's corners the ring follows the rounding (see
     // tableRow).
     "first:rounded-ss-(--table-row-radius-bs) first:rounded-es-(--table-row-radius-be)",
@@ -365,13 +369,14 @@ export const tableCell = cv({
      * every cell of the column, the head's included. The cell holds the divider
      * on its scrolling side in its own box, where a neighbour's would slide
      * under it: after it for a start pin, which every cell draws already, and
-     * before it for an end pin, which the cell before it then leaves out. The z
-     * puts it above the other cells and below a sticky row group. Chromium
-     * paints a cell only up to the whole device pixel its box ends on, so a
-     * column that ends on a fraction would let the content sliding under the
-     * cell show through the remainder: the pseudo-element paints the row's
-     * surface over that hair, one pixel past the scrolling edge, where the
-     * neighbour's surface is the same colour.
+     * before it for an end pin, which the cell before it then leaves out. The
+     * cell paints its row's surface as a layer of its own, so the columns
+     * sliding under it stay hidden, and the z puts it above the other cells and
+     * below a sticky row group. Chromium paints a cell only up to the whole
+     * device pixel its box ends on, so a column that ends on a fraction would
+     * let the content sliding under the cell show through the remainder: the
+     * pseudo-element paints the row's surface over that hair, one pixel past
+     * the scrolling edge, where the neighbour's surface is the same colour.
      */
     $sticky: {
       start: [
@@ -414,6 +419,10 @@ export const tableCell = cv({
   defaultVariants: {
     $header: false,
     $focus: true,
+    $layer(defaultValue, variants) {
+      if (!variants.$sticky) return defaultValue;
+      return defaultValue ?? true;
+    },
   },
   refine({ variants, addClass }) {
     if (!variants.$focus) return;
