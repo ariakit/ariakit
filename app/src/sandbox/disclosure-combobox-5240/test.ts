@@ -1,6 +1,18 @@
 import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+// https://github.com/ariakit/ariakit/pull/5240#discussion_r3974019389
+test("preserves a zero description and omits a false description", async () => {
+  const button = q.button("Pending requests");
+  expect(button).toHaveAccessibleDescription("0");
+  expect(button).toHaveTextContent("Pending requests0");
+  await click(button);
+  expect(q.text("No requests need review")).toBeVisible();
+  const archived = q.button("Archived requests");
+  expect(archived).not.toHaveAttribute("aria-describedby");
+  expect(archived).not.toHaveAttribute("aria-labelledby");
+});
+
 // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972224162
 test("omits optional headings without hiding the filters", async () => {
   expect(q.combobox("Assignee")).toBeVisible();

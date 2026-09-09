@@ -153,6 +153,7 @@ export function DisclosureButton({
   const labelId = `${baseId}-label`;
   const descriptionId = `${baseId}-description`;
   const [variantProps, rest] = splitProps(props, disclosureButton);
+  const hasDescription = description != null && description !== false;
   // A nullish check, not truthiness: falsy labels like {0} must still render,
   // since aria-labelledby references the span when a description exists.
   const labelElement =
@@ -169,15 +170,15 @@ export function DisclosureButton({
   return (
     <ak.Disclosure
       data-disclosure-button
-      aria-labelledby={description && labelElement ? labelId : undefined}
-      aria-describedby={description ? descriptionId : undefined}
+      aria-labelledby={hasDescription && labelElement ? labelId : undefined}
+      aria-describedby={hasDescription ? descriptionId : undefined}
       data-open={isOpen || undefined}
       {...disclosureButton.jsx(variantProps)}
       {...rest}
     >
       {atStart && indicatorEl}
       {iconElement}
-      {description ? (
+      {hasDescription ? (
         <span {...disclosureButtonContent.jsx({})}>
           {labelElement}
           <span id={descriptionId} {...disclosureButtonDescription.jsx({})}>

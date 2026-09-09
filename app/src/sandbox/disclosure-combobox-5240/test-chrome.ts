@@ -1,6 +1,19 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974019389
+  test("preserves a zero description and omits a false description", async ({
+    q,
+  }) => {
+    const button = q.button("Pending requests");
+    await test.expect(button).toHaveAccessibleDescription("0");
+    await test.expect(button).toHaveText("Pending requests0");
+    await button.click();
+    await test.expect(q.text("No requests need review")).toBeVisible();
+    const archived = q.button("Archived requests");
+    await test.expect(archived).not.toHaveAttribute("aria-describedby");
+    await test.expect(archived).not.toHaveAttribute("aria-labelledby");
+  });
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972224162
   test("omits optional headings without hiding the filters", async ({
     q,

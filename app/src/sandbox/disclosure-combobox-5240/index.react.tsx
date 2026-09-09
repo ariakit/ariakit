@@ -39,6 +39,14 @@ export default function Example() {
       <Disclosure button={{ description: "Advanced options" }}>
         Advanced controls
       </Disclosure>
+      <Disclosure button={{ children: "Pending requests", description: 0 }}>
+        No requests need review
+      </Disclosure>
+      <Disclosure
+        button={{ children: "Archived requests", description: false }}
+      >
+        Archived requests are available
+      </Disclosure>
     </div>
   );
 }
