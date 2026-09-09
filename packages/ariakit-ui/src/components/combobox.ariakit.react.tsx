@@ -103,12 +103,16 @@ export function ComboboxLabel(props: ComboboxLabelProps) {
 export interface ComboboxPopoverProps
   extends ak.ComboboxPopoverProps, VariantProps<typeof comboboxPopover> {}
 
-export function ComboboxPopover(props: ComboboxPopoverProps) {
+export function ComboboxPopover({
+  portal = true,
+  gutter = 8,
+  ...props
+}: ComboboxPopoverProps) {
   const [variantProps, rest] = splitProps(props, comboboxPopover);
   return (
     <ak.ComboboxPopover
-      portal
-      gutter={8}
+      portal={portal}
+      gutter={gutter}
       {...comboboxPopover.jsx(variantProps)}
       {...rest}
     />
@@ -154,12 +158,16 @@ export interface ComboboxItemProps
  * ComboboxItemContent, ComboboxItemLabel, and ComboboxItemDescription to lay
  * out an avatar and secondary text.
  */
-export function ComboboxItem(props: ComboboxItemProps) {
+export function ComboboxItem({
+  focusOnHover = true,
+  blurOnHoverEnd = false,
+  ...props
+}: ComboboxItemProps) {
   const [variantProps, rest] = splitProps(props, comboboxItem);
   return (
     <ak.ComboboxItem
-      focusOnHover
-      blurOnHoverEnd={false}
+      focusOnHover={focusOnHover}
+      blurOnHoverEnd={blurOnHoverEnd}
       {...comboboxItem.jsx({
         ...variantProps,
         $disabled: variantProps.$disabled ?? rest.disabled,
@@ -412,12 +420,16 @@ export interface ComboboxSelectPopoverProps
 /**
  * @see https://ariakit.com/reference/select-popover
  */
-export function ComboboxSelectPopover(props: ComboboxSelectPopoverProps) {
+export function ComboboxSelectPopover({
+  gutter = 8,
+  shift = -3,
+  ...props
+}: ComboboxSelectPopoverProps) {
   const [variantProps, rest] = splitProps(props, comboboxSelectPopover);
   return (
     <ak.ComboboxPopover
-      gutter={8}
-      shift={-3}
+      gutter={gutter}
+      shift={shift}
       {...comboboxSelectPopover.jsx(variantProps)}
       {...rest}
     />
