@@ -154,7 +154,7 @@ export interface TabPanelProps extends ak.TabPanelProps {
  */
 export function TabPanel({ single, ...props }: TabPanelProps) {
   const context = ak.useTabContext();
-  const tabId = ak.useStoreState(context, "selectedId");
+  const tabId = ak.useStoreState(props.store ?? context, "selectedId");
   return <ak.TabPanel tabId={single ? tabId : undefined} {...props} />;
 }
 
