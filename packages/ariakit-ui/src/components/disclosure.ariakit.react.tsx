@@ -147,8 +147,8 @@ export function DisclosureButton({
   indicator = icon ? "chevron-down-end" : "chevron-right-start",
   ...props
 }: DisclosureButtonProps) {
-  const store = ak.useDisclosureContext();
-  const isOpen = ak.useStoreState(store, "open");
+  const context = ak.useDisclosureContext();
+  const isOpen = ak.useStoreState(props.store ?? context, "open");
   const baseId = React.useId();
   const labelId = `${baseId}-label`;
   const descriptionId = `${baseId}-description`;
