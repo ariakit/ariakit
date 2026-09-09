@@ -143,16 +143,17 @@ export interface SidebarToggleProps extends ak.DialogDisclosureProps {}
 export function SidebarToggle(props: SidebarToggleProps) {
   const isMobile = useIsMobile();
   const context = ak.useDialogContext();
-  const isOpen = ak.useStoreState(context, "open");
-  const label = (
+  const store = props.store ?? context;
+  const isOpen = ak.useStoreState(store, "open");
+  const children = props.children ?? (
     <span className="sr-only">
       {isOpen ? "Collapse sidebar" : "Expand sidebar"}
     </span>
   );
   if (isMobile) {
-    return <ak.DialogDisclosure {...props}>{label}</ak.DialogDisclosure>;
+    return <ak.DialogDisclosure {...props}>{children}</ak.DialogDisclosure>;
   }
-  return <ak.Disclosure {...props}>{label}</ak.Disclosure>;
+  return <ak.Disclosure {...props}>{children}</ak.Disclosure>;
 }
 
 export interface SidebarHeaderProps

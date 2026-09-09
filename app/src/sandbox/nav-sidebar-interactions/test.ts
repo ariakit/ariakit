@@ -1,6 +1,46 @@
 import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+for (const [name, label] of [
+  ["Custom", "Menu"],
+  ["Zero", "0"],
+] as const) {
+  // https://github.com/ariakit/ariakit/pull/5240#discussion_r3973781705
+  test(`preserves ${name} sidebar toggle content when opening and closing`, async () => {
+    const toggle = q.within(q.region(`${name} toggle`)).button(label);
+    expect(toggle).toHaveTextContent(label);
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await click(toggle);
+    expect(q.link(`${name} settings`)).toBeVisible();
+    expect(toggle).toHaveTextContent(label);
+    await click(q.button(`Close ${name} menu`));
+    expect(q.link.maybe(`${name} settings`)).not.toBeInTheDocument();
+    expect(toggle).toHaveTextContent(label);
+  });
+}
+
+test("keeps the state label when sidebar toggle children are absent", async () => {
+  const section = q.within(q.region("Fallback toggle"));
+  const toggle = section.button("Expand sidebar");
+  await click(toggle);
+  expect(q.link("Fallback settings")).toBeVisible();
+  expect(toggle).toHaveTextContent("Collapse sidebar");
+  expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await click(q.button("Close Fallback menu"));
+  expect(section.button("Expand sidebar")).toBeVisible();
+});
+
+test("reads the sidebar toggle label from its explicit store", async () => {
+  const section = q.within(q.region("Explicit store toggle"));
+  const toggle = section.button("Expand sidebar");
+  await click(toggle);
+  expect(q.link("Explicit store settings")).toBeVisible();
+  expect(toggle).toHaveTextContent("Collapse sidebar");
+  expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await click(q.button("Close explicit store menu"));
+  expect(section.button("Expand sidebar")).toBeVisible();
+});
+
 // https://github.com/ariakit/ariakit/pull/5240#discussion_r3973584695
 test("uses the explicit navigation button and content without extra controls", async () => {
   const navigation = q.within(q.navigation("Project navigation"));

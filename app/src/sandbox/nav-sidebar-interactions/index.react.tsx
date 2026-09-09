@@ -12,6 +12,7 @@ import {
 } from "@ariakit/ui/components/nav.ariakit.react";
 import { Sidebar } from "@ariakit/ui/components/sidebar.ariakit.react";
 import * as React from "react";
+import { SidebarToggleContent } from "./sidebar-toggle-content.react.tsx";
 
 export default function Example() {
   const [collapsed, setCollapsed] = React.useState(false);
@@ -79,6 +80,7 @@ export default function Example() {
           </NavButton>
         </Sidebar>
       </section>
+      <SidebarToggleContent />
     </div>
   );
 }
