@@ -10,6 +10,7 @@ import {
   optionLabel,
   optionSlot,
 } from "./option.ts";
+import { padding } from "./padding.ts";
 import { popover } from "./popover.ts";
 import { text } from "./text.ts";
 
@@ -39,18 +40,16 @@ export const comboboxGroup = cv({
 });
 
 export const comboboxGroupLabel = cv({
-  extend: [frame, text],
+  extend: [padding, text],
   class: "cursor-default text-sm font-medium ak-ink-50",
   defaultVariants: {
-    $rounded: "xl",
     $p: 2,
-    $layer: "transparent",
   },
 });
 
 export const comboboxItem = cv({
   extend: [option],
-  class: "data-active-item:ak-state-6",
+  class: "data-active-item:ak-state-5",
   defaultVariants: {
     $hoverOffset: false,
   },

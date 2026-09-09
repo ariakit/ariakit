@@ -58,7 +58,7 @@ export default function Example() {
                 <ComboboxItem key={item.name} value={item.name}>
                   <ComboboxItemSlot
                     $kind="avatar"
-                    $size="sm"
+                    $size="md"
                     $rowSpan={2}
                     $layer="brand"
                     $contrast

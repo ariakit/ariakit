@@ -14,6 +14,7 @@ export const option = cv({
   class: "justify-start",
   defaultVariants: {
     $rounded: "lg",
+    $p: 1.5,
     // A row lies flush on the list surface behind it. Hover and focus are the
     // only things that lift it off.
     $lightnessOffset: false,
