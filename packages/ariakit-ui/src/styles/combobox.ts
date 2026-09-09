@@ -1,7 +1,7 @@
 import { cv } from "clava";
 import { button, buttonSlot } from "./button.ts";
 import { control, controlLabel } from "./control.ts";
-import { frame, frameBase } from "./frame.ts";
+import { frameBase } from "./frame.ts";
 import { input } from "./input.ts";
 import {
   option,
