@@ -26,7 +26,7 @@ const SidebarProviderContext = React.createContext(false);
 export interface SidebarProps
   extends
     ak.RoleProps<"div">,
-    VariantProps<typeof sidebar>,
+    Omit<VariantProps<typeof sidebar>, "$side">,
     Partial<SidebarContextType> {
   /**
    * How the sidebar collapses. With `"icon"` the panel stays in the page and
@@ -87,6 +87,7 @@ export function Sidebar({
   props = {
     ...sidebar.jsx({
       ...variantProps,
+      $side: resolvedSide,
       // A drawer has no rail to narrow to.
       $collapsed: isDrawer ? false : (variantProps.$collapsed ?? !!collapsed),
       // The drawer lives in a portal where container units can't reach the app

@@ -12,6 +12,7 @@ import {
 } from "@ariakit/ui/components/nav.ariakit.react";
 import { Sidebar } from "@ariakit/ui/components/sidebar.ariakit.react";
 import * as React from "react";
+import { SidebarPlacement } from "./sidebar-placement.react.tsx";
 import { SidebarToggleContent } from "./sidebar-toggle-content.react.tsx";
 
 export default function Example() {
@@ -80,6 +81,7 @@ export default function Example() {
           </NavButton>
         </Sidebar>
       </section>
+      <SidebarPlacement />
       <SidebarToggleContent />
     </div>
   );

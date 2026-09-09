@@ -5,17 +5,12 @@ import { frame } from "./frame.ts";
 export const sidebar = cv({
   extend: [frame],
   class: [
-    "fixed inset-s-0 top-0 z-10 flex flex-col overflow-clip border-e",
+    "fixed top-0 z-10 flex flex-col overflow-clip",
     // The frame radius stays dialog-sized so covering sections round their
     // own corners against it, but the panel itself runs to the screen edge.
     // This wins over the frame radius by stylesheet order.
     "rounded-none",
     "transition-[width,padding,inset,translate] transition-discrete",
-    // Opened by its provider, the panel slides in from its own edge, and back
-    // out when closed. A sidebar with no provider declares data-open to stay in
-    // place.
-    "ui-open:starting:-translate-x-full rtl:ui-open:starting:translate-x-full",
-    "ui-closed:-translate-x-full rtl:ui-closed:translate-x-full",
     // Lets the sidebar animate to and from keyword widths such as auto.
     "[interpolate-size:allow-keywords]",
     // Sections apply their own frame, which rewrites --ak-frame-padding, so
@@ -25,6 +20,22 @@ export const sidebar = cv({
     "[--sidebar-duration:var(--tw-duration)]",
   ],
   variants: {
+    /**
+     * The logical edge the panel attaches to and slides from. Defaults to
+     * start.
+     */
+    $side: {
+      start: [
+        "inset-s-0 border-e",
+        "ui-open:starting:-translate-x-full rtl:ui-open:starting:translate-x-full",
+        "ui-closed:-translate-x-full rtl:ui-closed:translate-x-full",
+      ],
+      end: [
+        "inset-e-0 border-s",
+        "ui-open:starting:translate-x-full rtl:ui-open:starting:-translate-x-full",
+        "ui-closed:translate-x-full rtl:ui-closed:-translate-x-full",
+      ],
+    },
     /**
      * Whether the sidebar is collapsed to its minimum width. Descendants read
      * the flag through container style queries. The width lives in the same
@@ -75,6 +86,7 @@ export const sidebar = cv({
     },
   },
   defaultVariants: {
+    $side: "start",
     $collapsed: false,
     $fullHeight: false,
     $animated: false,
