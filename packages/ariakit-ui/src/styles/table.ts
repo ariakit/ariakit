@@ -399,7 +399,7 @@ export const tableCell = cv({
     $header: false,
     $focus: true,
     $layer(defaultValue, variants) {
-      if (!variants.$sticky) return defaultValue;
+      if (!variants.$sticky) return false;
       return defaultValue ?? true;
     },
   },
