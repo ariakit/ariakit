@@ -1,7 +1,7 @@
+import type { elements } from "@ariakit/components/role/role";
 import type { Role } from "@ariakit/react";
 import type { ComponentProps, ComponentPropsWithRef } from "react";
 import { expectTypeOf } from "vitest";
-import type { elements } from "./elements.ts";
 
 type Tag = (typeof elements)[number];
 type NativeProps = { [K in Tag]: ComponentPropsWithRef<K> };

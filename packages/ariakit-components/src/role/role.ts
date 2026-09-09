@@ -1,3 +1,7 @@
+/**
+ * Standard, non-obsolete HTML tags supported by React and Solid, plus svg.
+ * Excludes platform-specific intrinsic tags.
+ */
 export const elements = [
   "a",
   "abbr",

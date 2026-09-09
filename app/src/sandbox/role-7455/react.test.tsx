@@ -1,9 +1,9 @@
+import { elements } from "@ariakit/components/role/role";
 import { Role } from "@ariakit/react";
 import { Role as ComponentRole } from "@ariakit/react-components/role/role";
 import { Role as SubpathRole } from "@ariakit/react/role";
-import { expect, test } from "vitest";
 import "./types.react.ts";
-import { elements } from "./elements.ts";
+import { expect, test } from "vitest";
 
 test("exports every helper with native props and refs", () => {
   for (const element of elements) {
