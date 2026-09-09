@@ -415,14 +415,19 @@ export const controlGroup = cv({
     $gap: "auto",
   },
   refine({ variants, addClass }) {
-    if (variants.$gap === "none" && variants.$layout === "horizontal") {
-      // Bordered controls share an edge only when nothing separates them, so
-      // each pulls half its edge into its neighbour in a gapless row.
-      addClass([
-        "[&>.control:not(:nth-child(1_of_.control))]:-ms-[calc(var(--ak-frame-border)/2)]",
-        "[&>.control:not(:nth-last-child(1_of_.control))]:-me-[calc(var(--ak-frame-border)/2)]",
-      ]);
+    if (variants.$layout !== "horizontal" && variants.$layout !== "stretch") {
+      return;
     }
+    const gapless =
+      variants.$gap === "none" ||
+      (variants.$gap === "auto" && variants.$p === "none");
+    if (!gapless) return;
+    // Bordered controls share an edge only when nothing separates them, so each
+    // pulls half its edge into its neighbour in a gapless row.
+    addClass([
+      "[&>.control:not(:nth-child(1_of_.control))]:-ms-[calc(var(--ak-frame-border)/2)]",
+      "[&>.control:not(:nth-last-child(1_of_.control))]:-me-[calc(var(--ak-frame-border)/2)]",
+    ]);
     if (variants.$p !== "none") return;
     addClass([
       "[&>.control:not(:nth-child(1_of_.control))]:rounded-s-none",
