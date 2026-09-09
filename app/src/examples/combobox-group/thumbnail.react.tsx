@@ -1,55 +1,78 @@
 import {
-  Control,
-  ControlContent,
-  ControlDescription,
-  ControlLabel,
-  ControlSlot,
-} from "@ariakit/ui/components/control.ariakit.react.tsx";
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react.tsx";
-import { Input } from "@ariakit/ui/components/input.ariakit.react.tsx";
-import { Text } from "@ariakit/ui/components/text.ariakit.react.tsx";
+  comboboxGroupLabel,
+  comboboxInput,
+  comboboxItem,
+  comboboxItemContent,
+  comboboxItemDescription,
+  comboboxItemLabel,
+  comboboxItemSlot,
+  comboboxPopover,
+} from "@ariakit/ui/styles/combobox";
+import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 
 export default function Thumbnail() {
   return (
-    <div className="flex flex-col gap-2 items-center" aria-hidden>
-      <Input focusable={false} render={<div />} className="w-64 mt-4">
-        e.g., John Doe
-      </Input>
-      <Frame
-        $rounded="xl"
-        $p={1}
-        $lighten
-        $border
-        className="w-66 max-w-full shadow-xl"
+    <div
+      className="flex flex-col gap-2 items-center pointer-events-none"
+      aria-hidden
+    >
+      <div {...comboboxInput.jsx({ className: "w-64 mt-4" })}>
+        <PlaceholderText>e.g., John Doe</PlaceholderText>
+      </div>
+      <div
+        data-open
+        {...comboboxPopover.jsx({
+          className: "w-66 max-w-full transition-none",
+        })}
       >
-        <Text render={<div />} className="p-2 text-sm font-medium ak-ink-60">
-          Members
-        </Text>
-        <Control $layer $lightnessOffset={true} className="justify-start">
-          <ControlSlot $kind="avatar" $layer="brand" $contrast />
-          <ControlContent>
-            <ControlLabel>John Smith</ControlLabel>
-            <ControlDescription>john@example.com</ControlDescription>
-          </ControlContent>
-        </Control>
-        <Control className="justify-start">
-          <ControlSlot $kind="avatar" />
-          <ControlContent>
-            <ControlLabel>Emma Johnson</ControlLabel>
-            <ControlDescription>emma@example.com</ControlDescription>
-          </ControlContent>
-        </Control>
-        <Text render={<div />} className="p-2 text-sm font-medium ak-ink-60">
-          Files
-        </Text>
-        <Control className="justify-start">
-          <ControlSlot $kind="avatar" />
-          <ControlContent>
-            <ControlLabel>annual_report.pdf</ControlLabel>
-            <ControlDescription>Documents</ControlDescription>
-          </ControlContent>
-        </Control>
-      </Frame>
+        <div {...comboboxGroupLabel.jsx()}>Members</div>
+        <div {...comboboxItem.jsx({ className: "ak-state-6" })}>
+          <div
+            {...comboboxItemSlot.jsx({
+              $kind: "avatar",
+              $size: "sm",
+              $rowSpan: 2,
+              $layer: "brand",
+              $contrast: true,
+            })}
+          />
+          <div {...comboboxItemContent.jsx()}>
+            <div {...comboboxItemLabel.jsx()}>John Smith</div>
+            <div {...comboboxItemDescription.jsx()}>john@example.com</div>
+          </div>
+        </div>
+        <div {...comboboxItem.jsx()}>
+          <div
+            {...comboboxItemSlot.jsx({
+              $kind: "avatar",
+              $size: "sm",
+              $rowSpan: 2,
+            })}
+          />
+          <div {...comboboxItemContent.jsx()}>
+            <PlaceholderText>Emma Johnson</PlaceholderText>
+            <PlaceholderText weight="light" size="sm">
+              emma@example.com
+            </PlaceholderText>
+          </div>
+        </div>
+        <div {...comboboxGroupLabel.jsx()}>Files</div>
+        <div {...comboboxItem.jsx()}>
+          <div
+            {...comboboxItemSlot.jsx({
+              $kind: "avatar",
+              $size: "sm",
+              $rowSpan: 2,
+            })}
+          />
+          <div {...comboboxItemContent.jsx()}>
+            <PlaceholderText>annual_report.pdf</PlaceholderText>
+            <PlaceholderText weight="light" size="sm">
+              Documents
+            </PlaceholderText>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
