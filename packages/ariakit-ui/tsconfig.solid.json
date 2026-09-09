@@ -8,5 +8,5 @@
     "emitDeclarationOnly": true
   },
   "include": ["src/**/*.solid.tsx", "src/**/*.ts", "src/**/*.json"],
-  "exclude": []
+  "exclude": ["src/**/*.react.ts"]
 }

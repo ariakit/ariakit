@@ -56,7 +56,6 @@
     "./react-hooks/use-is-mobile.react": "./src/react-hooks/use-is-mobile.react.ts",
     "./react-utils/create-render.react": "./src/react-utils/create-render.react.ts",
     "./react-utils/is-iterable": "./src/react-utils/is-iterable.ts",
-    "./react-utils/merge-props.react": "./src/react-utils/merge-props.react.ts",
     "./styles/active": "./src/styles/active.ts",
     "./styles/badge": "./src/styles/badge.ts",
     "./styles/button": "./src/styles/button.ts",
@@ -100,6 +99,7 @@
   },
   "dependencies": {
     "@ariakit/react": "workspace:*",
+    "@ariakit/react-utils": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
     "clava": "0.6.2",
     "clsx": "2.1.1",

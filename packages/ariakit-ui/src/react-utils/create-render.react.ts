@@ -1,6 +1,6 @@
+import { mergeProps } from "@ariakit/react-utils";
 import * as React from "react";
 import { isIterable } from "./is-iterable.ts";
-import { mergeProps } from "./merge-props.react.ts";
 
 /**
  * Creates a React element from a component and a flexible prop value, merging
