@@ -10,7 +10,7 @@
 
 import { createHash } from "node:crypto";
 import fs from "node:fs";
-import { basename, dirname, join, relative } from "node:path";
+import { basename, dirname, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { resolve as resolveImportMeta } from "import-meta-resolve";
 import * as prettier from "prettier";
@@ -280,9 +280,6 @@ export function replaceImportPaths(
   return result;
 }
 
-const APP_LIB_PATH = join(import.meta.dirname, "../examples/_lib");
-const NEXTJS_LIB_PATH = join(import.meta.dirname, "../../../nextjs/components");
-
 // Cache for package information to avoid repeated lookups
 const packageCache = new Map<
   string,
@@ -355,11 +352,7 @@ function getPackageName(source: string) {
  * Whether a path references a local library file.
  */
 function isLibPath(path: string) {
-  return (
-    path.startsWith("#") ||
-    path.startsWith(APP_LIB_PATH) ||
-    path.startsWith(NEXTJS_LIB_PATH)
-  );
+  return path.startsWith("#");
 }
 
 /**
