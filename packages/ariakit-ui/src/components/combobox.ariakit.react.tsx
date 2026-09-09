@@ -408,7 +408,7 @@ export function ComboboxSelectButton({
       {chevron === "before" && arrow}
       {chevron !== "before" && iconElement}
       <span {...comboboxSelectValueLabel.jsx({})}>
-        {displayValue || rest.children || <ComboboxSelectValue />}
+        {displayValue ?? rest.children ?? <ComboboxSelectValue />}
       </span>
       {chevron === "before" && iconElement}
       {chevron === "after" && arrow}
@@ -471,7 +471,7 @@ export function ComboboxSelectItem({
       {checkmark === "before" && check}
       {checkmark !== "before" && iconElement}
       <span {...comboboxSelectValueLabel.jsx({})}>
-        {rest.children || rest.value}
+        {rest.children ?? rest.value}
       </span>
       {checkmark === "before" && iconElement}
       {checkmark === "after" && check}

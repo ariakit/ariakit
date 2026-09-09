@@ -1,5 +1,12 @@
 import * as ak from "@ariakit/react";
-import { ComboboxSelect } from "@ariakit/ui/components/combobox.ariakit.react";
+import {
+  ComboboxSelect,
+  ComboboxSelectButton,
+  ComboboxSelectItem,
+  ComboboxSelectLabel,
+  ComboboxSelectPopover,
+  ComboboxSelectProvider,
+} from "@ariakit/ui/components/combobox.ariakit.react";
 
 export default function Example() {
   const store = ak.useComboboxStore({ defaultSelectedValue: "Apple" });
@@ -32,6 +39,23 @@ export default function Example() {
           items={[{ value: "Apple" }, { value: "Orange" }]}
         />
         <p>Selected fruit: {selectedValue}</p>
+      </div>
+      <div className="flex gap-4">
+        <div>
+          <ComboboxSelectProvider defaultValue="All">
+            <ComboboxSelectLabel>Unread messages</ComboboxSelectLabel>
+            <ComboboxSelectButton displayValue={0}>All</ComboboxSelectButton>
+          </ComboboxSelectProvider>
+        </div>
+        <div>
+          <ComboboxSelectProvider defaultValue="All">
+            <ComboboxSelectLabel>Open issues</ComboboxSelectLabel>
+            <ComboboxSelectButton>{0}</ComboboxSelectButton>
+            <ComboboxSelectPopover>
+              <ComboboxSelectItem value="no-issues">{0}</ComboboxSelectItem>
+            </ComboboxSelectPopover>
+          </ComboboxSelectProvider>
+        </div>
       </div>
     </div>
   );
