@@ -1,18 +1,5 @@
 @import "@ariakit/tailwind";
 
-html,
-body {
-  @apply font-sans min-h-dvh antialiased;
-}
-
-body {
-  @apply ak-layer ak-layer-canvas;
-}
-
-body > * {
-  @apply ak-dark:scheme-dark;
-}
-
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);
   --color-brand: oklch(56.7% 0.1546 248.5156);
@@ -80,6 +67,19 @@ body > * {
     --color-warning: var(--color-yellow-400);
     --color-danger: var(--color-red-400);
   }
+}
+
+html,
+body {
+  @apply font-sans min-h-dvh antialiased;
+}
+
+body {
+  @apply ak-layer ak-layer-canvas;
+}
+
+body > * {
+  @apply ak-dark:scheme-dark;
 }
 
 /* Registered so the @ariakit/ui progress fills can transition it: the width
