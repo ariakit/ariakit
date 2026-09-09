@@ -267,6 +267,7 @@ export interface ComboboxSelectProps extends Omit<
  * />
  */
 export function ComboboxSelect({
+  store,
   value,
   setValue,
   defaultValue,
@@ -283,6 +284,7 @@ export function ComboboxSelect({
   const popoverEl = createRender(ComboboxSelectPopover, popover);
   return (
     <ComboboxSelectProvider
+      store={store}
       value={value}
       setValue={setValue}
       defaultValue={defaultValue}
