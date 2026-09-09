@@ -49,6 +49,7 @@ test("collects separator source and dependencies", async () => {
     "react",
     "react-dom",
     "@ariakit/react",
+    "@ariakit/ui",
   ]);
   expect(Object.keys(separator.devDependencies)).toEqual([
     "@types/react",

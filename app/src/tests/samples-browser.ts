@@ -20,6 +20,20 @@ test("combobox sample and variant work in their iframes", async ({
     const preview = query(frame);
     await preview.combobox("Find records").fill("annual");
     await expect(preview.option(/annual_report\.pdf/)).toBeVisible();
+    await expect(preview.group("Files")).toBeVisible();
+    if (title === "Custom Items") {
+      await expect(preview.option(/annual_report\.pdf/)).toContainText(
+        "Documents",
+      );
+    }
+    await preview.option(/annual_report\.pdf/).click();
+    await expect(preview.combobox("Find records")).toHaveValue(
+      "annual_report.pdf",
+    );
+    await expect(preview.listbox()).not.toBeVisible();
+    await preview.combobox("Find records").fill("No matching record");
+    await expect(preview.text("No results found")).toBeVisible();
+    await expect(preview.option()).toHaveCount(0);
   }
 
   const source = q.text("index.tsx", { exact: true }).first();

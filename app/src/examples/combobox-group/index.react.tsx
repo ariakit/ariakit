@@ -1,11 +1,11 @@
-import { matchSorter } from "match-sorter";
-import * as React from "react";
 import {
   Combobox,
   ComboboxEmpty,
   ComboboxGroup,
   ComboboxItem,
-} from "./combobox.react.tsx";
+} from "@ariakit/ui/components/combobox.ariakit.react.tsx";
+import { matchSorter } from "match-sorter";
+import * as React from "react";
 import data from "./data.ts";
 
 export default function Example() {
@@ -27,14 +27,15 @@ export default function Example() {
   }, [deferredValue]);
 
   return (
-    <label className="flex flex-col gap-2 indent-2">
-      Find records
+    <div className="flex flex-col gap-2">
       <Combobox
+        label="Find records"
         autoSelect
         autoComplete="both"
         placeholder="e.g., John Doe"
-        value={value}
-        onChange={setValue}
+        inputValue={value}
+        setInputValue={setValue}
+        className="w-64"
       >
         {!matches.length && <ComboboxEmpty />}
         {matches.map(([type, items]) => (
@@ -45,6 +46,6 @@ export default function Example() {
           </ComboboxGroup>
         ))}
       </Combobox>
-    </label>
+    </div>
   );
 }

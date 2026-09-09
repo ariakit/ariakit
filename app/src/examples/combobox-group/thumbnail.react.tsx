@@ -1,69 +1,55 @@
-import { input } from "@ariakit/ui/styles/input.ts";
-import { option } from "@ariakit/ui/styles/option.ts";
-import { popover } from "@ariakit/ui/styles/popover.ts";
-
-// Decorative option lookalikes: keep the resting option look but disable the
-// interactive state variants so the thumbnail stays hover-inert, like the
-// box-patterns fake buttons.
-function fakeOption(props?: Parameters<typeof option.jsx>[0]) {
-  return option.jsx({
-    $hoverOffset: false,
-    $active: false,
-    ...props,
-  });
-}
-
-const optionRowClass = "grid gap-2 grid-cols-[2rem_auto] items-center";
+import {
+  Control,
+  ControlContent,
+  ControlDescription,
+  ControlLabel,
+  ControlSlot,
+} from "@ariakit/ui/components/control.ariakit.react.tsx";
+import { Frame } from "@ariakit/ui/components/frame.ariakit.react.tsx";
+import { Input } from "@ariakit/ui/components/input.ariakit.react.tsx";
+import { Text } from "@ariakit/ui/components/text.ariakit.react.tsx";
 
 export default function Thumbnail() {
   return (
-    <div className="flex flex-col gap-2 items-center">
-      <div {...input.jsx({ className: "w-64 flex mt-4" })}>
-        <span aria-hidden="true">e.g., John Doe</span>
-      </div>
-      <div
-        data-open
-        {...popover.jsx({
-          // Keep the thumbnail open without an enter transition.
-          $rounded: "xl",
-          $p: 1,
-          className: "w-66 max-w-full transition-none",
-        })}
+    <div className="flex flex-col gap-2 items-center" aria-hidden>
+      <Input focusable={false} render={<div />} className="w-64 mt-4">
+        e.g., John Doe
+      </Input>
+      <Frame
+        $rounded="xl"
+        $p={1}
+        $lighten
+        $border
+        className="w-66 max-w-full shadow-xl"
       >
-        <div className="ak-frame ak-frame-xl/2 text-sm ak-ink-60 font-medium">
+        <Text render={<div />} className="p-2 text-sm font-medium ak-ink-60">
           Members
-        </div>
-        <div
-          {...fakeOption({
-            // Restate the legacy forced hover state (ak-option_hover) so this
-            // row previews the active item.
-            className: `ak-state-6 ${optionRowClass}`,
-          })}
-        >
-          <div className="ak-layer ak-layer-brand ak-layer-contrast rounded-full aspect-square" />
-          <div className="grid">
-            <div className="ak-ink-90 text-sm font-medium">John Smith</div>
-            <div className="ak-ink-60 text-xs">john@example.com</div>
-          </div>
-        </div>
-        <div {...fakeOption({ className: optionRowClass })}>
-          <div className="ak-layer ak-layer-6 rounded-full aspect-square" />
-          <div className="grid">
-            <span aria-hidden="true">Emma Johnson</span>
-            <span aria-hidden="true">emma@example.com</span>
-          </div>
-        </div>
-        <div className="ak-frame ak-frame-xl/2 text-sm ak-ink-60 font-medium">
+        </Text>
+        <Control $layer $lightnessOffset={true} className="justify-start">
+          <ControlSlot $kind="avatar" $layer="brand" $contrast />
+          <ControlContent>
+            <ControlLabel>John Smith</ControlLabel>
+            <ControlDescription>john@example.com</ControlDescription>
+          </ControlContent>
+        </Control>
+        <Control className="justify-start">
+          <ControlSlot $kind="avatar" />
+          <ControlContent>
+            <ControlLabel>Emma Johnson</ControlLabel>
+            <ControlDescription>emma@example.com</ControlDescription>
+          </ControlContent>
+        </Control>
+        <Text render={<div />} className="p-2 text-sm font-medium ak-ink-60">
           Files
-        </div>
-        <div {...fakeOption({ className: optionRowClass })}>
-          <div className="ak-layer ak-layer-6 rounded-full aspect-square" />
-          <div className="grid">
-            <span aria-hidden="true">annual_report.pdf</span>
-            <span aria-hidden="true">Documents</span>
-          </div>
-        </div>
-      </div>
+        </Text>
+        <Control className="justify-start">
+          <ControlSlot $kind="avatar" />
+          <ControlContent>
+            <ControlLabel>annual_report.pdf</ControlLabel>
+            <ControlDescription>Documents</ControlDescription>
+          </ControlContent>
+        </Control>
+      </Frame>
     </div>
   );
 }
