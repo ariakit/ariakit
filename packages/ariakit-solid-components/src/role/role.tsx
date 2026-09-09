@@ -1,39 +1,12 @@
+import { elements } from "@ariakit/components/role/role";
 import { createHook, createInstance } from "@ariakit/solid-utils";
 import type { Options, Props } from "@ariakit/solid-utils";
 import type { Component, JSX, ValidComponent } from "solid-js";
 
+export { elements } from "@ariakit/components/role/role";
+
 const TagName = "div" satisfies ValidComponent;
 type TagName = typeof TagName;
-
-export const elements = [
-  "a",
-  "button",
-  "details",
-  "dialog",
-  "div",
-  "form",
-  "h1",
-  "h2",
-  "h3",
-  "h4",
-  "h5",
-  "h6",
-  "header",
-  "img",
-  "input",
-  "label",
-  "li",
-  "nav",
-  "ol",
-  "p",
-  "section",
-  "select",
-  "span",
-  "summary",
-  "textarea",
-  "ul",
-  "svg",
-] as const;
 
 type RoleElements = {
   [K in (typeof elements)[number]]: Component<RoleProps<K>>;
