@@ -79,7 +79,7 @@ export function Disclosure({
         })}
         {...rest}
       >
-        {button != null ? (
+        {button != null && button !== false ? (
           <>
             <ak.Role render={buttonEl} />
             <ak.Role render={contentEl}>{rest.children}</ak.Role>

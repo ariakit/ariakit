@@ -60,7 +60,9 @@ export function Combobox({
   ...props
 }: ComboboxProps) {
   const labelElement =
-    label != null ? createRender(ComboboxLabel, label) : null;
+    label != null && label !== false
+      ? createRender(ComboboxLabel, label)
+      : null;
   const popoverElement = createRender(ComboboxPopover, popover, { children });
   return (
     <ComboboxProvider
@@ -123,7 +125,9 @@ export function ComboboxGroup({ label, ...props }: ComboboxGroupProps) {
   const [variantProps, rest] = splitProps(props, comboboxGroup);
   return (
     <ak.ComboboxGroup {...comboboxGroup.jsx(variantProps)} {...rest}>
-      {label != null && createRender(ComboboxGroupLabel, label)}
+      {label != null &&
+        label !== false &&
+        createRender(ComboboxGroupLabel, label)}
       {rest.children}
     </ak.ComboboxGroup>
   );
@@ -265,7 +269,9 @@ export function ComboboxSelect({
   ...props
 }: ComboboxSelectProps) {
   const labelEl =
-    label != null ? createRender(ComboboxSelectLabel, label) : null;
+    label != null && label !== false
+      ? createRender(ComboboxSelectLabel, label)
+      : null;
   const popoverEl = createRender(ComboboxSelectPopover, popover);
   return (
     <ComboboxSelectProvider
