@@ -380,8 +380,8 @@ export function ComboboxSelectButton({
   return (
     <ak.ComboboxSelect
       {...comboboxSelect.jsx({
-        ...badgeVariants,
         ...variantProps,
+        ...badgeVariants,
         $disabled: variantProps.$disabled ?? rest.disabled,
         // The badge cv's own class; restated because the badge look is composed
         // from resolved variants, which carry no classes.
