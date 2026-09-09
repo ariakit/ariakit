@@ -28,10 +28,11 @@ runs:
       with:
         path: |
           ${{ runner.os == 'macOS' && '~/Library/Caches/ms-playwright' || runner.os == 'Windows' && '~\\AppData\\Local\\ms-playwright' || '~/.cache/ms-playwright' }}
-        key: playwright-${{ runner.os }}-${{ steps.engines.outputs.cache-key }}-${{ hashFiles('pnpm-lock.yaml') }}
+        # Workspaces can require different Playwright browser revisions.
+        key: playwright-${{ runner.os }}-${{ inputs.workspace }}-${{ steps.engines.outputs.cache-key }}-${{ hashFiles('pnpm-lock.yaml') }}
         restore-keys: |
-          playwright-${{ runner.os }}-${{ steps.engines.outputs.cache-key }}-
-          playwright-${{ runner.os }}-
+          playwright-${{ runner.os }}-${{ inputs.workspace }}-${{ steps.engines.outputs.cache-key }}-
+          playwright-${{ runner.os }}-${{ inputs.workspace }}-
 
     - name: Install Playwright
       if: steps.cache-playwright.outputs.cache-hit != 'true'
