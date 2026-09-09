@@ -2,7 +2,7 @@
 
 This section records behavior from the site before its removal. These are candidates for the future site. They do not require the same components, parser, data transport, styles, or third-party libraries.
 
-Source baseline: [`73d5c8645`](https://github.com/ariakit/ariakit/commit/73d5c8645458823366c7163446a9211128cf4cae). Main source files: `app/src/lib/reference-tokenizer.ts`, `app/src/lib/reference-tokenizer.test.ts`, `app/src/lib/reference.ts`, `app/src/components/reference-*.astro`, `app/src/components/reference-*.react.tsx`, `app/src/components/code-block-content.astro`, `app/src/components/code-block-segments.astro`, and `app/src/tests/reference-hovercards-browser.ts`.
+Source baseline: [`73d5c8645`](https://github.com/ariakit/ariakit/commit/73d5c8645458823366c7163446a9211128cf4cae). [Fetch the pull request history](readme.md#read-archived-source) to read it in a fresh clone. Main source files: `app/src/lib/reference-tokenizer.ts`, `app/src/lib/reference-tokenizer.test.ts`, `app/src/lib/reference.ts`, `app/src/components/reference-*.astro`, `app/src/components/reference-*.react.tsx`, `app/src/components/code-block-content.astro`, `app/src/components/code-block-segments.astro`, and `app/src/tests/reference-hovercards-browser.ts`.
 
 ## Purpose
 

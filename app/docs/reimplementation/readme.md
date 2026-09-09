@@ -8,6 +8,17 @@ The app is reduced to a small site scaffold before the `@ariakit/ui` branch merg
 
 The historical source is available at [`73d5c8645`](https://github.com/ariakit/ariakit/commit/73d5c8645458823366c7163446a9211128cf4cae). Each handoff identifies its source files, behavior, acceptance scenarios, and known limits. Use Better Auth for the future account implementation. Do not restore Clerk.
 
+## Read archived source
+
+The snapshot belongs to [PR #5240](https://github.com/ariakit/ariakit/pull/5240). It includes app changes that are absent from the PR's base on `main`. A fresh clone after a squash merge does not include those intermediate commits. Fetch the pull request history before reading the snapshot:
+
+```sh
+git fetch origin pull/5240/head
+git show 73d5c8645458823366c7163446a9211128cf4cae:app/src/lib/auth.ts
+```
+
+These commands assume `origin` points to `https://github.com/ariakit/ariakit.git`. Replace the file path to read another archived source.
+
 ## Retained scaffold
 
 Keep all sandboxes, icons, guides, the Ariakit UI demo, preview generation and hydration, API routes, reference partials, and OG image routes. The remaining app samples are Separator for React and Solid, Combobox Group for React, and its Custom Items variant. The legacy `website`, root `examples`, and `nextjs` fixtures remain separate from this app cleanup.

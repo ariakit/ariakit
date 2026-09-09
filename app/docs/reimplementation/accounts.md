@@ -4,9 +4,10 @@
 
 This document records behavior from the removed application. Use it as input for a later implementation with Better Auth. It does not require the old page layout, Astro Actions interface, Clerk components, or Clerk metadata design.
 
-The source snapshot is [`73d5c8645`](https://github.com/ariakit/ariakit/commit/73d5c8645458823366c7163446a9211128cf4cae). All descriptions of old behavior below refer to that commit. Read an archived file with this command:
+The source snapshot is [`73d5c8645`](https://github.com/ariakit/ariakit/commit/73d5c8645458823366c7163446a9211128cf4cae). All descriptions of old behavior below refer to that commit. [Fetch the pull request history](readme.md#read-archived-source) before reading an archived file in a fresh clone:
 
 ```sh
+git fetch origin pull/5240/head
 git show 73d5c8645458823366c7163446a9211128cf4cae:app/src/lib/auth.ts
 ```
 

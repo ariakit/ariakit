@@ -2,7 +2,7 @@
 
 This document records behavior from the site before its removal. It is a handoff for a future implementation on the Ariakit UI package. It does not require the new site to retain all features, component names, styling, or implementation methods.
 
-Historical source: [`73d5c8645`](https://github.com/ariakit/ariakit/commit/73d5c8645458823366c7163446a9211128cf4cae). Source paths below refer to that commit.
+Historical source: [`73d5c8645`](https://github.com/ariakit/ariakit/commit/73d5c8645458823366c7163446a9211128cf4cae). Source paths below refer to that commit. [Fetch the pull request history](readme.md#read-archived-source) to read it in a fresh clone.
 
 ## Scroll behavior
 
