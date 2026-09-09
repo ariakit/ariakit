@@ -2,7 +2,7 @@ import { relative, resolve } from "node:path";
 import { query } from "@ariakit/test/playwright";
 import { errors } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { isInDirectory, toPosixPath } from "#app/lib/paths.ts";
+import { isInDirectory, toPosixPath } from "#app/lib/path.ts";
 import { previewConfig } from "#app/lib/preview-config.ts";
 import {
   getPreviewFrameworksSync,

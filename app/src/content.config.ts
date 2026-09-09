@@ -16,7 +16,6 @@ import { jsdoc } from "./lib/jsdoc-loader.ts";
 import { componentLoader, exampleLoader } from "./lib/mdx-loader.ts";
 import { PreviewKindSchema, previewConfig } from "./lib/preview-config.ts";
 import { previewLoader } from "./lib/preview-discovery.ts";
-import { TagSchema } from "./lib/schemas.ts";
 
 function generateExampleId(options: { entry: string }) {
   return options.entry
@@ -49,7 +48,6 @@ const components = defineCollection({
   schema: componentLoader.schema(
     z.object({
       title: z.string(),
-      tags: TagSchema.array().default([]),
     }),
   ),
 });
@@ -61,7 +59,6 @@ const examples = defineCollection({
   schema: exampleLoader.schema(
     z.object({
       title: z.string(),
-      tags: TagSchema.array().default([]),
       components: z.array(reference("components")).default([]),
     }),
   ),

@@ -13,25 +13,15 @@ import { rehypeHeadingIds, unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
-import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
 import { previewConfig } from "./src/lib/preview-config.ts";
 import { previewIntegration } from "./src/lib/preview-integration.ts";
-import {
-  rehypeAdmonitions,
-  rehypeAsTagName,
-  rehypeInlineCode,
-  rehypePreviousCode,
-} from "./src/lib/rehype.ts";
-import { sourcePlugin } from "./src/lib/source-plugin.ts";
-import { getPlusAccountPath, getPlusCheckoutPath } from "./src/lib/url.ts";
+import { sourcePlugin } from "./src/lib/source.ts";
 
 const port = Number(process.env.APP_PORT) || 4321;
 const inspectorPort = Number(process.env.APP_INSPECTOR_PORT) || 0;
-const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 const viteCacheDir = process.env.APP_VITE_CACHE_DIR;
 
 // https://astro.build/config
@@ -87,10 +77,8 @@ export default defineConfig({
     optimizeDeps: {
       include: [
         "astro/virtual-modules/transitions.js",
-        "astro/actions/runtime/entrypoints/server.js",
         "astro/app/manifest",
         "astro/zod",
-        "astro-remote",
       ],
     },
   },
@@ -100,14 +88,7 @@ export default defineConfig({
     processor: unified({
       rehypePlugins: [
         rehypeHeadingIds,
-        rehypeInlineCode,
-        rehypePreviousCode,
-        rehypeAdmonitions,
         [rehypeAutolinkHeadings, { behavior: "wrap" }],
-        [
-          rehypeAsTagName,
-          { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
-        ],
       ],
     }),
   },
@@ -117,20 +98,5 @@ export default defineConfig({
     react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
     solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
     mdx({ extendMarkdownConfig: true }),
-    !hasClerk
-      ? dummyClerkIntegration()
-      : clerk({
-          signInUrl: getPlusAccountPath({ path: "login" }),
-          signUpUrl: getPlusCheckoutPath({ step: "login" }),
-          appearance: {
-            variables: {
-              fontSize: "1rem",
-            },
-            options: {
-              logoPlacement: "none",
-              showOptionalFields: false,
-            },
-          },
-        }),
   ],
 });

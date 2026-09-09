@@ -11,7 +11,7 @@ import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { AstroConfig, AstroIntegration } from "astro";
 import type { Plugin } from "vite";
-import { isInDirectory, toPosixPath } from "./paths.ts";
+import { isInDirectory, toPosixPath } from "./path.ts";
 import {
   getPreviewFile,
   setPreviewCodegenDir,

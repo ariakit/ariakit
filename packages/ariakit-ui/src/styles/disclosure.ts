@@ -66,7 +66,7 @@ export const disclosure = cv({
     // in and, with the gap above, ends the label one line plus the gap past
     // it whatever the icon size (see disclosureButtonSlot); an icon wider
     // than the line pushes the label over by its far-side overflow. These
-    // three are registered as lengths (see ariakit.css), so they are measured
+    // three are registered as lengths (see ui.css), so they are measured
     // in the root's own line box and font once, and a body with a line height
     // of its own, such as prose, still lands on the label. The button is
     // expected to keep the root's line height.

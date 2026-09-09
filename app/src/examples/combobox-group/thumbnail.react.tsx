@@ -1,7 +1,6 @@
 import { input } from "@ariakit/ui/styles/input.ts";
 import { option } from "@ariakit/ui/styles/option.ts";
 import { popover } from "@ariakit/ui/styles/popover.ts";
-import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 
 // Decorative option lookalikes: keep the resting option look but disable the
 // interactive state variants so the thumbnail stays hover-inert, like the
@@ -20,20 +19,18 @@ export default function Thumbnail() {
   return (
     <div className="flex flex-col gap-2 items-center">
       <div {...input.jsx({ className: "w-64 flex mt-4" })}>
-        <PlaceholderText>e.g., John Doe</PlaceholderText>
+        <span aria-hidden="true">e.g., John Doe</span>
       </div>
       <div
         data-open
         {...popover.jsx({
-          // Static preview: data-open renders it open and transition-none keeps
-          // it from fading in on load. The frame matches the migrated combobox
-          // popover (legacy ak-frame-container/container).
+          // Keep the thumbnail open without an enter transition.
           $rounded: "xl",
           $p: 1,
           className: "w-66 max-w-full transition-none",
         })}
       >
-        <div className="ak-frame ak-frame-container/2 text-sm ak-ink-60 font-medium">
+        <div className="ak-frame ak-frame-xl/2 text-sm ak-ink-60 font-medium">
           Members
         </div>
         <div
@@ -52,22 +49,18 @@ export default function Thumbnail() {
         <div {...fakeOption({ className: optionRowClass })}>
           <div className="ak-layer ak-layer-6 rounded-full aspect-square" />
           <div className="grid">
-            <PlaceholderText>Emma Johnson</PlaceholderText>
-            <PlaceholderText weight="light" size="sm">
-              emma@example.com
-            </PlaceholderText>
+            <span aria-hidden="true">Emma Johnson</span>
+            <span aria-hidden="true">emma@example.com</span>
           </div>
         </div>
-        <div className="ak-frame ak-frame-container/2 text-sm ak-ink-60 font-medium">
+        <div className="ak-frame ak-frame-xl/2 text-sm ak-ink-60 font-medium">
           Files
         </div>
         <div {...fakeOption({ className: optionRowClass })}>
           <div className="ak-layer ak-layer-6 rounded-full aspect-square" />
           <div className="grid">
-            <PlaceholderText>annual_report.pdf</PlaceholderText>
-            <PlaceholderText weight="light" size="sm">
-              Documents
-            </PlaceholderText>
+            <span aria-hidden="true">annual_report.pdf</span>
+            <span aria-hidden="true">Documents</span>
           </div>
         </div>
       </div>

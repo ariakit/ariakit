@@ -21,7 +21,7 @@ export const nav = cv({
     // A row's padding, and where its content starts past its edge: the
     // control's default padding and its optical side padding on top (see
     // --py and --px in padding.ts). Both are measured in the nav's own line
-    // box and font and registered as lengths (see ariakit.css), so a group
+    // box and font and registered as lengths (see ui.css), so a group
     // label in smaller text pads like a row and insets its text to the same
     // pixel.
     "[--nav-py:--spacing(2)]",

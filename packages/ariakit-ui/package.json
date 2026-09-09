@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@ariakit/react": "workspace:*",
+    "@ariakit/tailwind": "workspace:*",
     "clava": "0.6.2",
     "clsx": "2.1.1",
     "lucide-react": "1.37.0",

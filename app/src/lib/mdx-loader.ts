@@ -12,7 +12,7 @@ import { invariant } from "@ariakit/utils";
 import { glob } from "astro/loaders";
 import type { Loader, LoaderContext } from "astro/loaders";
 import type { z } from "astro/zod";
-import { isInDirectory, toFilePath } from "./paths.ts";
+import { isInDirectory, toFilePath } from "./path.ts";
 import {
   getPreviewFrameworks,
   isPreviewEntryFile,

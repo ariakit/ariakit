@@ -11,8 +11,8 @@ import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { uniq } from "#app/lib/array.ts";
 import { getGuideDetail } from "#app/lib/content.ts";
-import { getOGImageItemKey } from "#app/lib/og-image-key.ts";
-import { getOGImagePath } from "#app/lib/og-image-path.ts";
+import { getOGImageItemKey } from "#app/lib/og-image.ts";
+import { getOGImagePath } from "#app/lib/og-image.ts";
 
 const types = ["pages", "examples", "components", "styles"] as const;
 

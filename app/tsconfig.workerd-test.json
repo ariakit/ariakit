@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.workerd.json",
+  "include": [
+    ".astro/types.d.ts",
+    "env.d.ts",
+    "worker-configuration.d.ts",
+    "src/pages/api/_tests/**/*.test.ts"
+  ],
+  "exclude": ["dist"]
+}

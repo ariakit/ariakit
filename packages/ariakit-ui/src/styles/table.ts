@@ -108,7 +108,7 @@ export const table = cv({
     // The cells pad like a control, with the frame padding above and below
     // and the optical side padding on top (see --py and --px in padding.ts).
     // Both are measured in the table's own line box and font and registered
-    // as lengths (see ariakit.css), so a head row in smaller text pads like a
+    // as lengths (see ui.css), so a head row in smaller text pads like a
     // body row and its text stays on the column below. The table element
     // itself stays unpadded; only the ! beats the padding declared on it.
     "[--table-py:var(--py)] [--table-px:var(--px)]",

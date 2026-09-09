@@ -8,42 +8,11 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import {
-  BoxPatternsLeftOnly,
-  BoxPatternsRightOnly,
-} from "#app/components/box-patterns.react.tsx";
-import ChipLinkList from "#app/components/chip-link-list.astro";
-import ChipLink from "#app/components/chip-link.astro";
-import ContainerLeftMenu from "#app/components/container-left-menu.astro";
-import ContainerRightMenu from "#app/components/container-right-menu.astro";
-import { components } from "#app/components/content-components.astro";
-import ContentHeading from "#app/components/content-heading.astro";
-import ContentLink from "#app/components/content-link.astro";
-import ContentParagraph from "#app/components/content-paragraph.astro";
-import HorizontalScroll from "#app/components/horizontal-scroll.astro";
 import Meta from "#app/components/meta.astro";
-import PageCardExample from "#app/components/page-card-example.astro";
-import ReferenceContent from "#app/components/reference-content.astro";
-import { ReferenceLabel } from "#app/components/reference-label.react.tsx";
-import type { SidebarMenuItem } from "#app/components/sidebar-menu.astro";
-import SidebarMenu from "#app/components/sidebar-menu.astro";
-import TableOfContents from "#app/components/table-of-contents.astro";
-import TimelineAnchor from "#app/components/timeline-anchor.astro";
-import TimelineAnimate from "#app/components/timeline-animate.astro";
-import { Icon } from "#app/icons/icon.react.tsx";
-import { containerSizeContent } from "#app/lib/container-size.ts";
-import { tagChip } from "#app/lib/page-intro.ts";
-import { descriptionToText } from "#app/lib/content.ts";
-import { trimRight } from "#app/lib/string.ts";
-import { mapTags } from "#app/lib/tags.ts";
+import ApiReference from "#app/components/api-reference.astro";
 import { getReferencePath } from "#app/lib/url.ts";
+import { descriptionToText } from "#app/lib/content.ts";
 import Layout from "#app/pages/_layout.astro";
-import { Prose } from "@ariakit/ui/components/prose.ariakit.react.tsx";
-import { button } from "@ariakit/ui/styles/button.ts";
-import { container } from "@ariakit/ui/styles/container.ts";
-import { heading } from "@ariakit/ui/styles/heading.ts";
-import { input, inputPlaceholder } from "@ariakit/ui/styles/input.ts";
-import { kbd } from "@ariakit/ui/styles/kbd.ts";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 
@@ -110,393 +79,66 @@ const {
 const { Content, headings } = await render(entry);
 const { Content: Gallery } = gallery ? await render(gallery) : {};
 const { Content: Description } = description ? await render(description) : {};
-
 Astro.locals.framework = framework;
-
-headings.unshift(
-  { slug: "examples", text: "Examples", depth: 2 },
-  { slug: "api", text: "API Reference", depth: 2 },
-);
-
-const tags = mapTags(entry.data.tags, [framework]);
 const title = entry.data.title;
 const descriptionText = await descriptionToText(description?.body, framework);
-
-// Build href to the full API reference page for the default reference
-const referenceHref = reference && getReferencePath({ reference });
-
-function getFunctions() {
-  return references.filter(
-    (ref) => ref.data.kind === "function" || ref.data.kind === "store",
-  );
-}
-
-function getComponents() {
-  return references.filter((ref) => ref.data.kind === "component");
-}
-
-function getMenu(
-  references:
-    | ReturnType<typeof getFunctions>
-    | ReturnType<typeof getComponents>,
-) {
-  return references.map((reference) => {
-    return {
-      label: reference.data.name,
-      href: getReferencePath({ reference }),
-      kind: reference.data.kind,
-      symbols: true,
-    } satisfies SidebarMenuItem;
-  });
-}
-
-const functionsMenu = getFunctions();
-const componentsMenu = getComponents();
-
-const referenceMenu = [
-  ...(functionsMenu.length ? [{ label: "Functions" }] : []),
-  ...getMenu(functionsMenu),
-  ...(componentsMenu.length ? [{ label: "Components" }] : []),
-  ...getMenu(componentsMenu),
-];
-
-function isLinkItem(
-  item: SidebarMenuItem,
-): item is Extract<SidebarMenuItem, { href: string; label: string }> {
-  return "href" in item;
-}
-
-function getReferenceProps(item: SidebarMenuItem) {
-  if (!("kind" in item) || item.kind === undefined) return;
-  const { href: _href, ...referenceProps } = item;
-  return referenceProps;
-}
-
-const apiLinks = referenceMenu.filter(isLinkItem);
-
-function isCurrentHref(href: string, pathname = Astro.url.pathname) {
-  const url = new URL(href, Astro.url.origin);
-  return trimRight(pathname, "/") === trimRight(url.pathname, "/");
-}
-
-// The new Prose root no longer styles headings, so the API Reference heading
-// carries the heading style itself, plus the content container the legacy
-// markup applied on the same element.
-const containerContent = container.html({
-  $size: containerSizeContent,
-  $p: "none",
-});
-const apiHeading = heading.html({
-  $level: 2,
-  class: [
-    containerContent.class,
-    // Plain mb-[1em] wins the tie against the heading base's mb-[0.5em]
-    // (arbitrary values sort lexically), and staying non-important lets the
-    // scroll-driven keyframe animate the margin to 0 on reference subpages.
-    "mb-[1em] relative scroll-mt-[calc(var(--header-height)+1em)]",
-  ],
-  style: containerContent.style,
-});
 ---
 
-<Layout title={title}>
+<Layout {title}>
   <Meta
     slot="meta"
     id={entry.id}
     type="components"
-    title={title}
-    framework={framework}
+    {title}
+    {framework}
     description={descriptionText}
   />
-
-  <div class="overflow-x-clip">
-    <div {...container.html({ $size: "default", class: "py-24" })}>
-      <h1
-        {...container.html({
-          $size: "default",
-          $p: "none",
-          class: "text-4xl font-semibold mb-5 relative",
-        })}
-      >
-        {entry.data.title}
-        <BoxPatternsLeftOnly />
-      </h1>
-      <div
-        class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] gap-3 items-start"
-      >
-        <div
-          {...container.html({
-            $size: containerSizeContent,
-            $p: "none",
-            class: "text-lg flex flex-col gap-5",
-          })}
-        >
-          {
-            Description && (
-              <Prose
-                className="ak-ink-70 text-lg/[1.8] [&_p]:ak-ink-70 [&_a]:not-hover:ak-ink-70! [&_code]:ring-0 relative"
-              >
-                <Description {framework} {components} />
-                <BoxPatternsRightOnly />
-              </Prose>
-            )
-          }
-          {
-            !!tags.length && (
-              <ul class="flex gap-2">
-                {tags.map((tag) => (
-                  <li>
-                    <a
-                      href={`/${framework}/components/${tag.id}/`}
-                      {...tagChip}
-                    >
-                      {tag.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )
-          }
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    data-gallery="true"
-    {...container.html({
-      $size: "wider",
-      class: "flex flex-col gap-12 mb-24",
-    })}
-  >
-    {Gallery && <Gallery {framework} {components} />}
-  </div>
-  {
-    !!examples.length && (
-      <Prose
-        {...container.jsx({
-          $size: "wider",
-          class: "@5xl:text-lg/loose mb-24",
-        })}
-      >
-        <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
-          <ContentHeading as="h2" id="examples">
-            <ContentLink href="#examples">Examples</ContentLink>
-          </ContentHeading>
-          <div />
-          <ContentParagraph class="ak-ink-0 mb-2">
-            Learn <strong>{entry.data.title}</strong> by exploring these
-            real-world examples.
-          </ContentParagraph>
-        </div>
-        <div
-          {...container.html({
-            $size: "default",
-            $p: "none",
-            class: "grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-4",
-          })}
-        >
-          {examples.map((example) => (
-            <PageCardExample entry={example} />
-          ))}
-        </div>
-      </Prose>
-    )
-  }
-  {
-    reference && (
-      <div class="relative mb-24 [--scroll-mt:calc(var(--header-height)-1px)]">
-        {!main && <TimelineAnchor name="anchor" />}
-        <div
-          class:list={[
-            "border-b ak-layer flex items-center h-14",
-            !main &&
-              "sticky top-(--scroll-mt) z-4 [&~*]:[--header-height:calc(var(--scroll-mt)+--spacing(14))]",
-          ]}
-        >
-          <ContainerRightMenu
-            keepSidebar
-            {...container.html({ $size: "wider", class: "items-center" })}
-          >
-            <Prose className="@5xl:text-lg/loose">
-              <TimelineAnimate
-                as="h2"
-                id={main ? `api` : undefined}
-                enabled={!main}
-                anchor="anchor"
-                rangeStart="exit calc(var(--scroll-mt) * -3)"
-                rangeEnd="exit calc(var(--scroll-mt) * -1)"
-                keyframes={`to { font-size: 1.25rem; margin-bottom: 0; }`}
-                {...apiHeading}
-              >
-                <ContentLink href="#api">API Reference</ContentLink>
-              </TimelineAnimate>
-            </Prose>
-            {!main && (
-              <TimelineAnimate
-                slot="sidebar"
-                as="a"
-                anchor="anchor"
-                rangeStart="exit calc(var(--scroll-mt) * -3)"
-                rangeEnd="exit calc(var(--scroll-mt) * -1)"
-                keyframes={`from { opacity: 0; display: none; margin-bottom: 1.5rem; }`}
-                href={`/${framework}/components/${entry.id}/#api`}
-                {...button.html({
-                  // The legacy state-6 hover in place of the button's offset.
-                  $hoverOffset: false,
-                  class:
-                    "text-sm ak-text ak-text-25 ak-text-primary ms-3 justify-self-start items-center ui-hover:ak-state-6",
-                })}
-              >
-                <span>
-                  Collapse<span class="@max-3xl:sr-only"> API Reference</span>
-                </span>
-                <Icon name="arrowUp" className="ak-ink-0" />
-              </TimelineAnimate>
-            )}
-          </ContainerRightMenu>
-        </div>
-        <div
-          class:list={[
-            "@5xl:hidden ak-layer border-b",
-            "h-12 flex items-center",
-            !main &&
-              "sticky top-(--header-height) z-4 @max-5xl:[&~*]:[--header-height:calc(var(--scroll-mt)+--spacing(14)+--spacing(12))]",
-          ]}
-        >
-          <button
-            aria-label="Search API Reference"
-            {...button.html({
-              $rounded: "none",
-              $p: 1,
-              $lightnessOffset: false,
-              class: "size-12 aspect-square border-e items-center",
-            })}
-          >
-            <Icon name="search" className="text-base" />
-          </button>
-          <HorizontalScroll
-            id="api-reference-menu-mobile"
-            class="h-full grid items-center"
-          >
-            <ChipLinkList>
-              {apiLinks.map((item) => {
-                const referenceProps = getReferenceProps(item);
-                return (
-                  <li>
-                    <ChipLink
-                      href={item.href}
-                      current={isCurrentHref(item.href)}
-                    >
-                      {referenceProps?.kind ? (
-                        <ReferenceLabel
-                          {...referenceProps}
-                          set:text={item.label}
-                        />
-                      ) : (
-                        item.label
-                      )}
-                    </ChipLink>
-                  </li>
-                );
-              })}
-            </ChipLinkList>
-          </HorizontalScroll>
-        </div>
-
-        <div
-          class:list={[
-            "ak-layer border-b",
-            main &&
-              "max-h-[min(28rem,calc(100dvh-var(--scroll-mt)-8rem))] overflow-clip has-[[data-expand]:hover]:ak-layer-3",
-          ]}
-        >
-          <ContainerLeftMenu>
-            <SidebarMenu id="api-reference-menu" items={referenceMenu}>
-              <div slot="before" class="p-2">
-                <button
-                  {...input.html({
-                    $p: 2,
-                    $edgeWeight: 15,
-                    class: "flex h-10 gap-2 items-center text-start w-full text-sm",
-                  })}
-                >
-                  <div class="flex items-center gap-2 grow min-w-0 ak-frame ak-frame-p-1">
-                    <Icon name="search" strokeWidth={2} className="flex-none" />
-                    <div {...inputPlaceholder.html({ class: "truncate" })}>
-                      Search API Reference
-                    </div>
-                  </div>
-                  <kbd
-                    {...kbd.html({
-                      class: "grid place-items-center aspect-square h-full",
-                    })}
-                  >
-                    <Icon name="chevronLeft" aria-label="<" />
-                  </kbd>
-                </button>
-              </div>
-            </SidebarMenu>
-            <div
-              data-content="true"
-              class:list={["ak-layer relative max-h-[inherit]"]}
+  <h1>{title}</h1>
+  {Description && <Description {framework} />}
+  {main && Gallery && <Gallery {framework} />}
+  <nav aria-label="API reference">
+    <ul>
+      {
+        references.map((item) => (
+          <li>
+            <a
+              href={getReferencePath({ reference: item })}
+              aria-current={item.id === reference?.id ? "page" : undefined}
             >
-              <div
-                inert={main ? "" : undefined}
-                class:list={[main && "opacity-70"]}
-              >
-                <ReferenceContent reference={reference} inert={main} />
-              </div>
-              {main && referenceHref && (
-                <a
-                  data-expand="true"
-                  href={referenceHref}
-                  class="absolute group/expand outline-none inset-0 ak-layer bg-transparent bg-linear-to-b from-transparent from-20% to-[calc(100%-2rem)] to-(--ak-layer) z-2"
-                >
-                  <ContainerRightMenu
-                    as="span"
-                    class="absolute inset-0 py-2 grid justify-items-center items-end"
-                  >
-                    {/* Decorative button visuals on a span: the real
-                    interactive element is the expand link (group/expand), so
-                    the focus and active states are forced from the group by
-                    restating the focus width and active scale classes of the
-                    button style under group-* variants. */}
-                    <span
-                      {...button.html({
-                        $lightnessOffset: false,
-                        // The box's own scale is disabled so it never
-                        // combines with the forced group scales below.
-                        $active: false,
-                        class: [
-                          "text-sm items-center",
-                          "group-focus-visible/expand:outline-2",
-                          "group-active/expand:origin-bottom group-active/expand:scale-x-[98%] group-active/expand:scale-y-[96%]",
-                        ],
-                      })}
-                    >
-                      Expand API Reference
-                      <Icon className="text-base" name="chevronDown" />
-                    </span>
-                  </ContainerRightMenu>
-                </a>
-              )}
-            </div>
-          </ContainerLeftMenu>
-        </div>
-      </div>
+              {item.data.name}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  {reference && <ApiReference {reference} />}
+  {
+    main && examples.length > 0 && (
+      <section>
+        <h2 id="examples">Examples</h2>
+        <ul>
+          {examples.map((example) => (
+            <li>
+              <a href={"/" + framework + "/examples/" + example.id + "/"}>
+                {example.data.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
     )
   }
-  <div data-content="true" {...container.html({ $size: "wider" })}>
-    <ContainerRightMenu>
-      <Prose className="@5xl:text-lg/loose">
-        <Content framework={framework} components={components} />
-      </Prose>
-      <TableOfContents
-        slot="sidebar"
-        title={entry.data.title}
-        headings={headings}
-        class="sticky [--top:calc(var(--header-height)+--spacing(8))] top-(--top) max-h-[calc(100dvh-var(--top))] overflow-y-auto"
-      />
-    </ContainerRightMenu>
-  </div>
+  {
+    headings.length > 0 && (
+      <nav aria-label="On this page">
+        <ul>
+          {headings.map((item) => (
+            <li><a href={"#" + item.slug}>{item.text}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+  <Content {framework} />
 </Layout>

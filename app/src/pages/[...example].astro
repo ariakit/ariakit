@@ -8,23 +8,9 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import {
-  BoxPatternsLeftOnly,
-  BoxPatternsRightOnly,
-} from "#app/components/box-patterns.react.tsx";
-import ContainerRightMenu from "#app/components/container-right-menu.astro";
-import { components } from "#app/components/content-components.astro";
 import Meta from "#app/components/meta.astro";
-import TableOfContents from "#app/components/table-of-contents.astro";
-import { Icon } from "#app/icons/icon.react.tsx";
-import { containerSizeContent } from "#app/lib/container-size.ts";
-import { tagChip } from "#app/lib/page-intro.ts";
 import { descriptionToText } from "#app/lib/content.ts";
-import { mapTags } from "#app/lib/tags.ts";
 import Layout from "#app/pages/_layout.astro";
-import { Prose } from "@ariakit/ui/components/prose.ariakit.react.tsx";
-import { button } from "@ariakit/ui/styles/button.ts";
-import { container } from "@ariakit/ui/styles/container.ts";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 
@@ -46,129 +32,33 @@ const { framework, entry, gallery, description } = Astro.props;
 const { Content, headings } = await render(entry);
 const { Content: Gallery } = gallery ? await render(gallery) : {};
 const { Content: Description } = description ? await render(description) : {};
-
 Astro.locals.framework = framework;
-
-const tags = mapTags(entry.data.tags, [framework]);
 const title = entry.data.title;
 const descriptionText = await descriptionToText(description?.body, framework);
-
 ---
 
-<Layout title={title}>
+<Layout {title}>
   <Meta
     slot="meta"
     id={entry.id}
     type="examples"
-    title={title}
-    framework={framework}
+    {title}
+    {framework}
     description={descriptionText}
   />
-  <div class="overflow-x-clip">
-    <div {...container.html({ $size: "default", class: "py-24" })}>
-      <h1
-        {...container.html({
-          $size: "default",
-          $p: "none",
-          class: "text-4xl font-semibold mb-5 relative",
-        })}
-      >
-        {entry.data.title}
-        <BoxPatternsLeftOnly />
-      </h1>
-      <div
-        class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] gap-3 items-start"
-      >
-        <div
-          {...container.html({
-            $size: containerSizeContent,
-            $p: "none",
-            class: "text-lg flex flex-col gap-5",
-          })}
-        >
-          {
-            Description && (
-              <Prose
-                className="ak-ink-70 text-lg/[1.8] [&_p]:ak-ink-70 [&_a]:not-hover:ak-ink-70! [&_code]:ring-0"
-              >
-                <Description {framework} {components} />
-              </Prose>
-            )
-          }
-          {
-            !!tags.length && (
-              <ul class="flex gap-2">
-                {tags.map((tag) => (
-                  <li>
-                    <a href={`/${framework}/examples/${tag.id}/`} {...tagChip}>
-                      {tag.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )
-          }
-        </div>
-        <div class="ms-auto relative @3xl:max-w-70 @max-3xl:w-full">
-          <BoxPatternsRightOnly />
-          <div class="grid gap-2">
-            <button
-              {...button.html({
-                $activeDepthX: 3,
-                $lightnessOffset: false,
-                class:
-                  "ak-frame-border ak-edge-40 border-dashed grid grid-cols-[1fr_auto_1fr] items-center whitespace-nowrap",
-              })}
-            >
-              <Icon name="copyAi" />
-              Copy AI prompt
-              <kbd class="ak-ink-0 justify-self-end">
-                <span class="font-sans">⌘</span>I
-              </kbd>
-            </button>
-            <button
-              {...button.html({
-                $activeDepthX: 3,
-                $lightnessOffset: false,
-                class:
-                  "ak-layer-6 font-mono grid grid-cols-[1fr_auto_1fr] items-center whitespace-nowrap",
-              })}
-            >
-              <Icon name="terminal" />
-              <span class="overflow-hidden text-sm"
-                >npx shadcn@latest add https://ariakit.com/r/disclosure.json</span
-              >
-              <kbd
-                class="ak-layer bg-transparent ak-ink-0 justify-self-end relative after:absolute after:h-full after:end-full after:w-10 after:bg-linear-to-l after:from-(--ak-layer) after:from-20%"
-              >
-                <span class="font-sans">⌘</span>S
-              </kbd>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div
-      data-gallery="true"
-      {...container.html({
-        $size: "wider",
-        class: "flex flex-col gap-12 mb-24",
-      })}
-    >
-      {Gallery && <Gallery {framework} {components} />}
-    </div>
-    <div data-content="true" {...container.html({ $size: "wider" })}>
-      <ContainerRightMenu>
-        <Prose className="@5xl:text-lg/loose">
-          <Content {framework} {components} />
-        </Prose>
-        <TableOfContents
-          slot="sidebar"
-          title={entry.data.title}
-          {headings}
-          class="sticky [--top:calc(var(--header-height)+--spacing(8))] top-(--top) max-h-[calc(100dvh-var(--top))] overflow-y-auto"
-        />
-      </ContainerRightMenu>
-    </div>
-  </div>
+  <h1>{title}</h1>
+  {Description && <Description {framework} />}
+  {Gallery && <Gallery {framework} />}
+  {
+    headings.length > 0 && (
+      <nav aria-label="On this page">
+        <ul>
+          {headings.map((item) => (
+            <li><a href={"#" + item.slug}>{item.text}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+  <Content {framework} />
 </Layout>

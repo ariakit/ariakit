@@ -8,11 +8,9 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import ReferenceContent from "#app/components/reference-content.astro";
-import ReferenceItem from "#app/components/reference-item.astro";
+import ApiReference from "#app/components/api-reference.astro";
 import { getReferenceItems } from "#app/lib/reference.ts";
 import { getReferencePath, referenceURLToPartialPath } from "#app/lib/url.ts";
-import { Prose } from "@ariakit/ui/components/prose.ariakit.react.tsx";
 import { invariant } from "@ariakit/utils";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
@@ -31,7 +29,7 @@ export const getStaticPaths = (async () => {
       const path = getReferencePath({ reference, item });
       invariant(
         path,
-        `Reference path not found for ${item} in ${reference.id}`
+        `Reference path not found for ${item} in ${reference.id}`,
       );
       return referenceURLToPartialPath(path);
     };
@@ -58,14 +56,4 @@ Astro.locals.framework = reference.data.framework;
 Astro.locals.reference = reference.id;
 ---
 
-{
-  item ? (
-    <Prose className="ak-frame ak-frame-p-2">
-      <ReferenceItem reference={reference} {...item} standalone />
-    </Prose>
-  ) : (
-    <div class="ak-frame ak-frame-p-2 p-0">
-      <ReferenceContent reference={reference} compact />
-    </div>
-  )
-}
+<ApiReference {reference} {item} />

@@ -31,8 +31,6 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           gutter={8}
           overflowPadding={16}
           {...popover.jsx({
-            // Container-sized frame, like the legacy
-            // ak-frame-container/container.
             $rounded: "xl",
             $p: 1,
             className:
@@ -71,7 +69,7 @@ export const ComboboxGroup = React.forwardRef<
             "text-sm font-medium ak-ink-50 cursor-default",
             stickyLabel
               ? "sticky top-(--ak-frame-margin) z-10 ak-layer ak-frame ak-frame-cover ak-frame-p-3 pb-[calc(var(--ak-frame-padding)---spacing(1))] border-b mb-1"
-              : "ak-frame ak-frame-container/2 [&+*]:scroll-mt-11",
+              : "ak-frame ak-frame-xl/2 [&+*]:scroll-mt-11",
           )}
         >
           {label}

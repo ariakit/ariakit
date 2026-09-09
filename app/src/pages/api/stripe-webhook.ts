@@ -7,9 +7,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { APIRoute } from "astro";
+import type { APIContext } from "astro";
 import type { Stripe } from "stripe";
-import { getUser } from "#app/lib/auth.ts";
 import {
   deletePrice,
   deletePromo,
@@ -19,20 +18,18 @@ import {
 } from "#app/lib/kv.ts";
 import { createLogger } from "#app/lib/logger.ts";
 import { objectId } from "#app/lib/object.ts";
+import { parsePlusPriceKey } from "#app/lib/price-key.ts";
 import { badRequest, internalServerError, ok } from "#app/lib/response.ts";
 import {
   getPromotionCoupon,
   getStripeClient,
   isSalePromo,
-  parsePlusPriceKey,
-  processCheckout,
 } from "#app/lib/stripe.ts";
 
 export const prerender = false;
 
 const logger = createLogger("stripe-webhook");
 
-// Lists all events in use
 const EVENTS = {
   CheckoutSessionCompleted: "checkout.session.completed",
   CheckoutSessionAsyncPaymentSucceeded:
@@ -44,13 +41,13 @@ const EVENTS = {
   PromotionCodeUpdated: "promotion_code.updated",
 } satisfies Record<string, Stripe.Event.Type>;
 
-export const POST: APIRoute = async (context) => {
+export async function POST({ request }: Pick<APIContext, "request">) {
   const stripe = getStripeClient();
   if (!stripe) {
     logger.error("Stripe not configured");
     return internalServerError();
   }
-  const signature = context.request.headers.get("stripe-signature");
+  const signature = request.headers.get("stripe-signature");
   if (!signature) {
     logger.error("No signature");
     return badRequest();
@@ -61,7 +58,7 @@ export const POST: APIRoute = async (context) => {
     return internalServerError();
   }
 
-  const body = await context.request.text();
+  const body = await request.text();
   let event: Stripe.Event;
 
   try {
@@ -71,38 +68,13 @@ export const POST: APIRoute = async (context) => {
     return badRequest();
   }
 
-  const getUserFromCustomer = async (
-    customerId?: string | Stripe.Customer | Stripe.DeletedCustomer | null,
-  ) => {
-    if (typeof customerId !== "string") {
-      logger.error("Invalid customer ID", customerId);
-      return badRequest();
-    }
-    const customer = await stripe.customers.retrieve(customerId);
-    if (customer.deleted) {
-      logger.error("Customer deleted", customerId);
-      return ok();
-    }
-    const { clerkId } = customer.metadata;
-    if (!clerkId) {
-      logger.error("Customer has no Clerk ID", customerId);
-      return ok();
-    }
-    const user = await getUser({ context, user: clerkId });
-    if (!user) {
-      logger.error("User not found", clerkId);
-      return ok();
-    }
-    return user;
-  };
-
   if (
     event.type === EVENTS.CheckoutSessionCompleted ||
     event.type === EVENTS.CheckoutSessionAsyncPaymentSucceeded
   ) {
-    const session = event.data.object;
-    await processCheckout({ context, session });
-    return ok();
+    // Keep payment events retryable until account fulfillment is restored.
+    logger.error("Account fulfillment unavailable", event.id);
+    return new Response("Account fulfillment unavailable", { status: 503 });
   }
 
   if (
@@ -159,8 +131,12 @@ export const POST: APIRoute = async (context) => {
     event.type === EVENTS.PromotionCodeCreated ||
     event.type === EVENTS.PromotionCodeUpdated
   ) {
-    let userId: string | null = null;
     const promo = event.data.object;
+    if (promo.customer) {
+      // Preserve the cached customer promotion until accounts can be resolved.
+      logger.error("Customer promotions unavailable", event.id);
+      return new Response("Customer promotions unavailable", { status: 503 });
+    }
     let coupon = getPromotionCoupon(promo);
     if (!coupon) {
       const couponId = promo.promotion.coupon;
@@ -172,18 +148,10 @@ export const POST: APIRoute = async (context) => {
       coupon = await stripe.coupons.retrieve(couponId);
     }
     const isSale = isSalePromo(coupon);
-    if (!isSale && !promo.customer) {
+    if (!isSale) {
       await deletePromo(promo.id);
       logger.info("Promotion code not a plus sale", promo.id);
       return ok();
-    }
-    if (promo.customer) {
-      const user = await getUserFromCustomer(promo.customer);
-      if (user instanceof Response) {
-        await deletePromo(promo.id);
-        return user;
-      }
-      userId = objectId(user);
     }
     if (!promo.active || coupon.deleted || !coupon.valid) {
       await deletePromo(promo.id);
@@ -197,8 +165,8 @@ export const POST: APIRoute = async (context) => {
     }
     await putPromo({
       id: promo.id,
-      type: promo.customer ? "customer" : "sale",
-      user: userId,
+      type: "sale",
+      user: null,
       products: coupon.applies_to?.products ?? [],
       expiresAt: promo.expires_at ?? coupon.redeem_by,
       percentOff: coupon.percent_off,
@@ -210,4 +178,4 @@ export const POST: APIRoute = async (context) => {
   }
 
   return ok();
-};
+}
