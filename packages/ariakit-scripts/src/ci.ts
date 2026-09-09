@@ -109,8 +109,6 @@ const rootMainDependencies = new Set([
   "oxfmt",
   "oxlint",
   "oxlint-tsgolint",
-  "stylelint",
-  "stylelint-config-standard",
   "vitest",
   "vitest-fail-on-console",
 ]);

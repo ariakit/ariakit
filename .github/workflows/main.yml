@@ -25,9 +25,6 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
-      - name: Lint CSS
-        run: pnpm run lint-css
-
   typescript:
     name: Type check
     runs-on: ubuntu-latest

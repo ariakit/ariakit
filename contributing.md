@@ -564,14 +564,13 @@ pnpm -F app run test --project=chrome --debug my-component
 
 ## Linting and formatting
 
-GitHub lints every pull request and checks its formatting. To run the same checks locally, use these commands from the project's root directory:
+GitHub lints every pull request and checks its formatting. To run the same checks locally, use this command from the project's root directory:
 
 ```bash
 pnpm run lint
-pnpm run lint-css
 ```
 
-The first command lints the source and checks its formatting. The second one lints the stylesheets. To apply the fixes that the first one can apply automatically, run:
+This command lints the source and checks its formatting. To apply automatic fixes, run:
 
 ```bash
 pnpm run lint-fix
