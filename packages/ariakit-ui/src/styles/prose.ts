@@ -31,9 +31,9 @@ export const prose = cv({
     // reader would have to install.
     "prose",
     // The typographic origin: descendants size themselves in em and lh
-    // against this. Font-size utilities sort alphabetically, so a plain
-    // `text-*` size from a caller loses to the one set here. Override with a
-    // variant-prefixed size instead.
+    // against this. Font-size utilities have equal specificity, so a plain
+    // caller class wins only if it sorts after this size. Use a variant-prefixed
+    // size when the override must apply regardless of the utility order.
     "text-base/relaxed ak-dark:ak-ink-75 ak-light:ak-ink-90",
     // The plain markup an author writes inline, for the elements this folder
     // has no component for. The whole selector sits in `:where()`, so these
