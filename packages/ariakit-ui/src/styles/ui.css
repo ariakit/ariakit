@@ -1,5 +1,18 @@
 @import "@ariakit/tailwind";
 
+html,
+body {
+  @apply font-sans min-h-dvh antialiased;
+}
+
+body {
+  @apply ak-layer ak-layer-canvas;
+}
+
+body > * {
+  @apply ak-dark:scheme-dark;
+}
+
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);
   --color-brand: oklch(56.7% 0.1546 248.5156);
@@ -16,6 +29,8 @@
   --radius: 0.25em;
   --spacing: 0.25em;
   --spacing-px: 1px;
+
+  --container-wider: 92rem;
 
   --duration-tabs: 100ms;
   --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
@@ -43,12 +58,6 @@
     0.99 59.1%,
     1
   );
-}
-
-/* Container size props read these tokens at runtime, so always emit them. */
-@theme static {
-  --container-wider: 92rem;
-  --container-default: 72rem;
 }
 
 @theme inline {

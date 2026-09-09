@@ -11,9 +11,6 @@
 
 @source "../../../packages/ariakit-ui/src/**";
 @source not "../sandbox/ariakit-tailwind*";
-/* patterns.md documents the style folder in class names, so scanning it
-   would turn every example it gives into a real rule. */
-@source not "../../../packages/ariakit-ui/src/**/*.md";
 
 astro-island,
 astro-slot,
@@ -22,17 +19,4 @@ astro-static-slot {
   :is(a, p, li, span, code) & {
     display: inline !important;
   }
-}
-
-html,
-body {
-  @apply font-sans min-h-dvh antialiased;
-}
-
-body {
-  @apply ak-layer ak-layer-canvas;
-}
-
-body > * {
-  @apply ak-dark:scheme-dark;
 }
