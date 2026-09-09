@@ -33,7 +33,7 @@ type ColumnProps = Pick<TableCellProps, (typeof COLUMN_PROPS)[number]>;
  * appearance order (head rows first) so every row renders the same cells in the
  * same positions regardless of its own key order or missing columns.
  */
-function getColumnKeys<K extends keyof any>(rows?: TableRows<K>) {
+function getColumnKeys<K extends string | number>(rows?: TableRows<K>) {
   const keys = new Set<string>();
   for (const row of rows ?? []) {
     for (const key of Object.keys(row)) {
@@ -44,13 +44,13 @@ function getColumnKeys<K extends keyof any>(rows?: TableRows<K>) {
   return [...keys];
 }
 
-export type TableRow<K extends keyof any> = {
+export type TableRow<K extends string | number> = {
   group?: TableRowGroupKind;
   // Partial: a row may omit columns (or set them to null) and still render an
   // empty cell in the right position.
 } & Partial<Record<K, React.ReactNode | TableCellProps>>;
 
-export type TableRows<K extends keyof any> = TableRow<K>[];
+export type TableRows<K extends string | number> = TableRow<K>[];
 
 const TableRowGroupContext = React.createContext<TableRowGroupKind>("body");
 
@@ -64,7 +64,7 @@ const TableCellContext = React.createContext<TableCellContextType>({
   numeric: false,
 });
 
-export interface TableProps<K extends keyof any>
+export interface TableProps<K extends string | number>
   extends React.ComponentProps<"table">, VariantProps<typeof table> {
   /** Custom container element or props to render a `TableContainer`. */
   container?: React.ReactElement | TableContainerProps;
@@ -116,7 +116,7 @@ export interface TableProps<K extends keyof any>
  *   ]}
  * />
  */
-export function Table<K extends keyof any>({
+export function Table<K extends string | number>({
   children,
   container,
   scroller,
