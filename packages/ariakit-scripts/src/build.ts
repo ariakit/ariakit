@@ -362,7 +362,14 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
       entryFileNames: "[name].js",
       chunkFileNames: "__chunks/[hash].js",
       sourcemap: true,
-      ...(isReactPackage && { banner: '"use client";' }),
+      banner(chunk) {
+        if (isReactPackage) return '"use client";';
+        // Mixed packages use the .react suffix for their React entrypoints.
+        if (/\.react\.[jt]sx?$/.test(chunk.facadeModuleId ?? "")) {
+          return '"use client";';
+        }
+        return "";
+      },
     },
     plugins: [
       ...(isSolid ? [solidPlugin({ solid: { generate: "dom" } })] : []),

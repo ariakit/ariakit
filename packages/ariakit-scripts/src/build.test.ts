@@ -407,6 +407,75 @@ test("uses a sourcemap-aware banner for index-only React packages", async () => 
   }
 });
 
+test("marks only React entrypoints in mixed packages as client code", async () => {
+  const rootPath = await createBuildFixture({
+    name: "@ariakit/ui",
+    sources: {
+      "components/button.ariakit.react.tsx": [
+        'import { sharedValue } from "../__shared.ts";',
+        "",
+        "export function buttonValue() {",
+        "  return sharedValue();",
+        "}",
+        "",
+      ].join("\n"),
+      "react-hooks/use-value.react.ts": [
+        'import { sharedValue } from "../__shared.ts";',
+        "export function useValue() { return sharedValue(); }",
+      ].join("\n"),
+      "components/button.solid.ts": [
+        'import { sharedValue } from "../__shared.ts";',
+        "export function buttonValue() { return sharedValue(); }",
+      ].join("\n"),
+      "styles/button.ts": [
+        'import { sharedValue } from "../__shared.ts";',
+        "export function buttonStyles() { return sharedValue(); }",
+      ].join("\n"),
+      "__shared.ts": "export function sharedValue() {\n  return 1;\n}\n",
+    },
+  });
+
+  try {
+    const result = runBuild(rootPath);
+
+    expectNoBrokenSourcemapWarning(result);
+
+    const reactEntries = [
+      "components/button.ariakit.react.js",
+      "react-hooks/use-value.react.js",
+    ];
+    const nonReactEntries = ["components/button.solid.js", "styles/button.js"];
+    const chunkNames = (await readdir(join(rootPath, "dist/__chunks"))).filter(
+      (name) => name.endsWith(".js"),
+    );
+
+    expect(chunkNames).toHaveLength(1);
+
+    for (const name of reactEntries) {
+      const code = await readFile(join(rootPath, "dist", name), "utf-8");
+      expect(code.startsWith('"use client";\n'), name).toBe(true);
+    }
+
+    for (const name of [
+      ...nonReactEntries,
+      ...chunkNames.map((name) => `__chunks/${name}`),
+    ]) {
+      const code = await readFile(join(rootPath, "dist", name), "utf-8");
+      expect(code.startsWith('"use client";\n'), name).toBe(false);
+    }
+
+    await expectGeneratedLineToMapToSource({
+      jsPath: join(rootPath, "dist/components/button.ariakit.react.js"),
+      generatedText: "return sharedValue()",
+      sourceName: "button.ariakit.react.tsx",
+      sourceLine: 4,
+      sourceColumn: 2,
+    });
+  } finally {
+    await rm(rootPath, { recursive: true, force: true });
+  }
+});
+
 test("omits the use client banner for non-React packages", async () => {
   const rootPath = await createBuildFixture({
     sources: {
