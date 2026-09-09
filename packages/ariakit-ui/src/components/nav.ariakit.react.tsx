@@ -33,6 +33,10 @@ import {
   DisclosureContentBody,
 } from "./disclosure.ariakit.react.tsx";
 
+const NavDisclosureContext = React.createContext<
+  ak.DisclosureStore | undefined
+>(undefined);
+
 /**
  * A glider for a nav, as `NavGlider` props or an element, or several of them in
  * an array, such as a hover cover followed by a cover of the current row: a
@@ -162,7 +166,7 @@ export interface NavLinkProps
 export function NavLink({ currentUrl, ...props }: NavLinkProps) {
   const [variantProps, rest] = splitProps(props, navLink);
   const isCurrent = isCurrentPage(currentUrl, rest.href);
-  const disclosure = ak.useDisclosureContext();
+  const disclosure = React.useContext(NavDisclosureContext);
 
   React.useEffect(() => {
     if (!isCurrent) return;
@@ -217,6 +221,17 @@ export interface NavDisclosureProps
   content?: React.ReactElement | NavDisclosureContentProps;
 }
 
+function NavDisclosureRoot(props: ak.RoleProps<"li">) {
+  // Capture this disclosure's store before a nested provider can replace the
+  // generic context, which also carries unrelated dialogs and popovers.
+  const disclosure = ak.useDisclosureContext();
+  return (
+    <NavDisclosureContext.Provider value={disclosure}>
+      <ak.Role.li {...props} />
+    </NavDisclosureContext.Provider>
+  );
+}
+
 export function NavDisclosure(props: NavDisclosureProps) {
   const [variantProps, rest] = splitProps(props, navDisclosure);
   const button = createRender(NavDisclosureButton, rest.button);
@@ -233,7 +248,7 @@ export function NavDisclosure(props: NavDisclosureProps) {
       {...rest}
       button={button}
       content={content}
-      render={<ak.Role.li render={rest.render} />}
+      render={<NavDisclosureRoot render={rest.render} />}
     />
   );
 }
