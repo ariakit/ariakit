@@ -266,6 +266,42 @@ test("exports CSS source unchanged through build and clean", async () => {
   }
 });
 
+test("clean preserves root files and folders that only have CSS entries", async () => {
+  const rootPath = await createBuildFixture({
+    sources: {
+      "index.ts": "export {};\n",
+      "button.ts": "export {};\n",
+      "index.css": ":root { color: black; }\n",
+      "styles/ui.css": ":root { color: white; }\n",
+    },
+  });
+
+  try {
+    const rootStyles = '@import "./src/index.css";\n';
+    const nestedStyles = '@import "../src/styles/ui.css";\n';
+    await writeFile(join(rootPath, "index.css"), rootStyles);
+    await mkdir(join(rootPath, "styles"));
+    await writeFile(join(rootPath, "styles/theme.css"), nestedStyles);
+    await mkdir(join(rootPath, "button"));
+    await writeFile(join(rootPath, "button/index.js"), "export {};\n");
+
+    await cleanPackage(rootPath);
+
+    expect(await readdir(rootPath)).toEqual(
+      expect.arrayContaining(["index.css", "styles"]),
+    );
+    expect(await readFile(join(rootPath, "index.css"), "utf-8")).toBe(
+      rootStyles,
+    );
+    expect(await readFile(join(rootPath, "styles/theme.css"), "utf-8")).toBe(
+      nestedStyles,
+    );
+    await expectPathMissing(join(rootPath, "button"));
+  } finally {
+    await rm(rootPath, { recursive: true, force: true });
+  }
+});
+
 test("uses a sourcemap-aware banner for React packages", async () => {
   const rootPath = await createBuildFixture({
     name: "@ariakit/react-test",

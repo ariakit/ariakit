@@ -400,8 +400,11 @@ export async function cleanPackage(
   const isSolid = isSolidPackage(packageJson);
   const publicFiles = await updateSourcePackageJson(rootPath, options);
   cleanOutput(rootPath, isSolid);
+  // Stylesheets never had legacy proxy folders.
   cleanLegacyBuild(
     rootPath,
-    publicFiles.map((file) => file.name),
+    publicFiles
+      .filter((file) => isTypeScriptSource(file.path))
+      .map((file) => file.name),
   );
 }
