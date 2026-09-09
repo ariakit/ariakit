@@ -255,7 +255,7 @@ export const layer = cv({
      * value like `240`.
      */
     $hue(value?: HueValues | (string & {}) | number) {
-      if (!value) return;
+      if (value == null) return;
       if (includes(HUE_VALUES, value)) {
         const valueMap = {
           red: "ak-layer-red",
