@@ -196,9 +196,11 @@ export function ListDisclosure(props: ListDisclosureProps) {
           <ListItemGuide />
         </>
       }
-      // A nullish check, not truthiness: falsy labels like {0} must still
-      // render through ListDisclosureButton so its indicator defaults apply.
-      button={rest.button != null ? button : undefined}
+      // Falsy labels like {0} must still render through ListDisclosureButton
+      // so its indicator defaults apply.
+      button={
+        rest.button != null && rest.button !== false ? button : rest.button
+      }
       content={content}
     />
   );

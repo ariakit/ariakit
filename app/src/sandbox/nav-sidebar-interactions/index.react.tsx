@@ -5,6 +5,8 @@ import {
   NavButton,
   NavButtonContent,
   NavDisclosure,
+  NavDisclosureButton,
+  NavDisclosureContent,
   NavIcon,
   NavLink,
 } from "@ariakit/ui/components/nav.ariakit.react";
@@ -46,6 +48,16 @@ export default function Example() {
               </Ariakit.DialogDismiss>
             </Ariakit.Dialog>
           </Ariakit.DialogProvider>
+        </NavDisclosure>
+      </Nav>
+      <Nav aria-label="Project navigation">
+        <NavDisclosure>
+          <NavDisclosureButton>Project pages</NavDisclosureButton>
+          <NavDisclosureContent>
+            <NavLink href="/projects" currentUrl="/account">
+              All projects
+            </NavLink>
+          </NavDisclosureContent>
         </NavDisclosure>
       </Nav>
       <section aria-label="Collapsible navigation">

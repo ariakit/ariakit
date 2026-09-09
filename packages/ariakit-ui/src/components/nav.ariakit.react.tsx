@@ -246,7 +246,9 @@ export function NavDisclosure(props: NavDisclosureProps) {
       $p={2}
       {...navDisclosure.jsx(variantProps)}
       {...rest}
-      button={button}
+      button={
+        rest.button != null && rest.button !== false ? button : rest.button
+      }
       content={content}
       render={<NavDisclosureRoot render={rest.render} />}
     />
