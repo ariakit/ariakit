@@ -86,7 +86,6 @@ export const elements = [
   "s",
   "samp",
   "script",
-  "search",
   "section",
   "select",
   "slot",
