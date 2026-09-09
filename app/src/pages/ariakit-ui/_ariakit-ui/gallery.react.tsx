@@ -7,17 +7,17 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Code } from "@ariakit/ui/components/code.ariakit.react.tsx";
-import type { FrameProps } from "@ariakit/ui/components/frame.ariakit.react.tsx";
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react.tsx";
+import { Code } from "@ariakit/ui/components/code.ariakit.react";
+import type { FrameProps } from "@ariakit/ui/components/frame.ariakit.react";
+import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Heading,
   HeadingLevel,
-} from "@ariakit/ui/components/heading.ariakit.react.tsx";
-import type { LayerProps } from "@ariakit/ui/components/layer.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
-import type { TextProps } from "@ariakit/ui/components/text.ariakit.react.tsx";
-import { Text } from "@ariakit/ui/components/text.ariakit.react.tsx";
+} from "@ariakit/ui/components/heading.ariakit.react";
+import type { LayerProps } from "@ariakit/ui/components/layer.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
+import type { TextProps } from "@ariakit/ui/components/text.ariakit.react";
+import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { clsx } from "clsx";
 import type * as React from "react";
 

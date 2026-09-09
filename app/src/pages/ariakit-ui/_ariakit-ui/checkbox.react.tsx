@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { CheckboxCardProps } from "@ariakit/ui/components/checkbox.ariakit.react.tsx";
+import type { CheckboxCardProps } from "@ariakit/ui/components/checkbox.ariakit.react";
 import {
   Checkbox,
   CheckboxCard,
@@ -20,8 +20,8 @@ import {
   CheckboxDescription,
   CheckboxField,
   CheckboxLabel,
-} from "@ariakit/ui/components/checkbox.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+} from "@ariakit/ui/components/checkbox.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import * as icons from "lucide-react";
 import * as React from "react";
 import {

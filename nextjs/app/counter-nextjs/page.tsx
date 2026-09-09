@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { useState } from "react";
 
 export default function CounterPage() {

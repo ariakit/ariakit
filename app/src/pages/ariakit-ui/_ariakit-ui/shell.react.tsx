@@ -14,7 +14,7 @@ import {
   ButtonGlider,
   ButtonGroup,
   ButtonSlot,
-} from "@ariakit/ui/components/button.ariakit.react.tsx";
+} from "@ariakit/ui/components/button.ariakit.react";
 import {
   Nav,
   NavButton,
@@ -24,11 +24,11 @@ import {
   NavIcon,
   NavLink,
   NavList,
-} from "@ariakit/ui/components/nav.ariakit.react.tsx";
+} from "@ariakit/ui/components/nav.ariakit.react";
 import {
   RadioGroup,
   RadioProvider,
-} from "@ariakit/ui/components/radio.ariakit.react.tsx";
+} from "@ariakit/ui/components/radio.ariakit.react";
 import {
   Sidebar,
   SidebarBody,
@@ -36,12 +36,12 @@ import {
   SidebarHeader,
   SidebarProvider,
   SidebarToggle,
-} from "@ariakit/ui/components/sidebar.ariakit.react.tsx";
+} from "@ariakit/ui/components/sidebar.ariakit.react";
 import {
   Tooltip,
   TooltipAnchor,
   TooltipProvider,
-} from "@ariakit/ui/components/tooltip.ariakit.react.tsx";
+} from "@ariakit/ui/components/tooltip.ariakit.react";
 import * as icons from "lucide-react";
 import * as React from "react";
 import { Logo } from "#app/icons/logo.react.tsx";

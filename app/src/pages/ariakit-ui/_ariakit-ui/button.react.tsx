@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { ButtonProps } from "@ariakit/ui/components/button.ariakit.react.tsx";
+import type { ButtonProps } from "@ariakit/ui/components/button.ariakit.react";
 import {
   Button,
   ButtonContent,
@@ -17,9 +17,9 @@ import {
   ButtonLabel,
   ButtonSeparator,
   ButtonSlot,
-} from "@ariakit/ui/components/button.ariakit.react.tsx";
-import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+} from "@ariakit/ui/components/button.ariakit.react";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import * as icons from "lucide-react";
 import * as React from "react";
 import {

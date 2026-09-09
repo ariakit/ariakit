@@ -866,6 +866,10 @@ importers:
       solid-js:
         specifier: 1.9.14
         version: 1.9.14
+    devDependencies:
+      '@ariakit/scripts':
+        specifier: workspace:*
+        version: link:../ariakit-scripts
 
   packages/ariakit-utils:
     devDependencies:

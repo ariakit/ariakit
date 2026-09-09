@@ -226,6 +226,46 @@ test("clean removes current and legacy build output", async () => {
   }
 });
 
+test("exports CSS source unchanged through build and clean", async () => {
+  const styles = "@theme { --color-brand: hotpink; }\n";
+  const rootPath = await createBuildFixture({
+    sources: {
+      "index.ts": "export {};\n",
+      "styles/ui.css": styles,
+    },
+  });
+
+  try {
+    runBuild(rootPath);
+
+    const builtPackageJson = JSON.parse(
+      await readFile(join(rootPath, "package.json"), "utf-8"),
+    );
+    expect(builtPackageJson.exports["./styles/ui.css"]).toBe(
+      "./src/styles/ui.css",
+    );
+    expect(await readFile(join(rootPath, "src/styles/ui.css"), "utf-8")).toBe(
+      styles,
+    );
+
+    await cleanPackage(rootPath);
+
+    const sourcePackageJson = JSON.parse(
+      await readFile(join(rootPath, "package.json"), "utf-8"),
+    );
+    expect(sourcePackageJson.exports).toEqual({
+      ".": "./src/index.ts",
+      "./styles/ui.css": "./src/styles/ui.css",
+      "./package.json": "./package.json",
+    });
+    expect(await readFile(join(rootPath, "src/styles/ui.css"), "utf-8")).toBe(
+      styles,
+    );
+  } finally {
+    await rm(rootPath, { recursive: true, force: true });
+  }
+});
+
 test("uses a sourcemap-aware banner for React packages", async () => {
   const rootPath = await createBuildFixture({
     name: "@ariakit/react-test",

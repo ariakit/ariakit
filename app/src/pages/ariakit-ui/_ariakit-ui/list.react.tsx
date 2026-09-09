@@ -7,21 +7,21 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
-import { Code } from "@ariakit/ui/components/code.ariakit.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react";
+import { Code } from "@ariakit/ui/components/code.ariakit.react";
 import {
   Heading,
   HeadingLevel,
-} from "@ariakit/ui/components/heading.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+} from "@ariakit/ui/components/heading.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import {
   List,
   ListDisclosure,
   ListDisclosureButton,
   ListItem,
   ListItemMarker,
-} from "@ariakit/ui/components/list.ariakit.react.tsx";
-import { Prose } from "@ariakit/ui/components/prose.ariakit.react.tsx";
+} from "@ariakit/ui/components/list.ariakit.react";
+import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import { Caption, Sample, Samples } from "./gallery.react.tsx";
 
 export function ListSection() {

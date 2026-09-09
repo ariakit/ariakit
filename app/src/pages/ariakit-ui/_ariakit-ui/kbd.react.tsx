@@ -7,8 +7,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import {
   Labeled,
   Sample,

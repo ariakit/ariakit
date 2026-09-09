@@ -7,9 +7,9 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
-import { Link } from "@ariakit/ui/components/link.ariakit.react.tsx";
-import { Prose } from "@ariakit/ui/components/prose.ariakit.react.tsx";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
+import { Link } from "@ariakit/ui/components/link.ariakit.react";
+import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import * as icons from "lucide-react";
 import {
   Labeled,

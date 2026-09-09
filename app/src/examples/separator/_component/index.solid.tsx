@@ -1,5 +1,5 @@
 import { Separator } from "@ariakit/solid";
-import { separator } from "@ariakit/ui/styles/separator.ts";
+import { separator } from "@ariakit/ui/styles/separator";
 
 export default function Example() {
   return (

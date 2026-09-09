@@ -10,9 +10,9 @@
 import {
   Heading,
   HeadingLevel,
-} from "@ariakit/ui/components/heading.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
-import { Prose } from "@ariakit/ui/components/prose.ariakit.react.tsx";
+} from "@ariakit/ui/components/heading.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
+import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import { Caption, Sample, Samples } from "./gallery.react.tsx";
 
 const visualLevels = [1, 2, 3, 4, 5] as const;

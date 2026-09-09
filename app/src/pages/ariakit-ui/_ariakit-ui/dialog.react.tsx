@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { DialogProps } from "@ariakit/ui/components/dialog.ariakit.react.tsx";
+import type { DialogProps } from "@ariakit/ui/components/dialog.ariakit.react";
 import {
   Dialog,
   DialogDescription,
@@ -16,9 +16,9 @@ import {
   DialogHeading,
   DialogProvider,
   DialogScroll,
-} from "@ariakit/ui/components/dialog.ariakit.react.tsx";
-import { Input } from "@ariakit/ui/components/input.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+} from "@ariakit/ui/components/dialog.ariakit.react";
+import { Input } from "@ariakit/ui/components/input.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import { clsx } from "clsx";
 import type * as React from "react";
 import { Caption, Sample, Samples, Stage, LOREM } from "./gallery.react.tsx";

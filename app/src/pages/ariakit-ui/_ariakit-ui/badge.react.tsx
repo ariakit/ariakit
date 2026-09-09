@@ -11,14 +11,14 @@ import {
   Badge,
   BadgeLabel,
   BadgeSlot,
-} from "@ariakit/ui/components/badge.ariakit.react.tsx";
+} from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
   ButtonSlot,
   ButtonLabel,
-} from "@ariakit/ui/components/button.ariakit.react.tsx";
-import { Heading } from "@ariakit/ui/components/heading.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+} from "@ariakit/ui/components/button.ariakit.react";
+import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import * as icons from "lucide-react";
 import {
   Caption,

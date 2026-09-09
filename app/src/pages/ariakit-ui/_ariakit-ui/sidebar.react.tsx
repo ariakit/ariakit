@@ -11,8 +11,8 @@ import {
   Button,
   ButtonSlot,
   ButtonLabel,
-} from "@ariakit/ui/components/button.ariakit.react.tsx";
-import type { NavProps } from "@ariakit/ui/components/nav.ariakit.react.tsx";
+} from "@ariakit/ui/components/button.ariakit.react";
+import type { NavProps } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Nav,
   NavButton,
@@ -22,8 +22,8 @@ import {
   NavIcon,
   NavLink,
   NavList,
-} from "@ariakit/ui/components/nav.ariakit.react.tsx";
-import type { SidebarProps } from "@ariakit/ui/components/sidebar.ariakit.react.tsx";
+} from "@ariakit/ui/components/nav.ariakit.react";
+import type { SidebarProps } from "@ariakit/ui/components/sidebar.ariakit.react";
 import {
   Sidebar,
   SidebarBody,
@@ -31,7 +31,7 @@ import {
   SidebarHeader,
   SidebarProvider,
   SidebarToggle,
-} from "@ariakit/ui/components/sidebar.ariakit.react.tsx";
+} from "@ariakit/ui/components/sidebar.ariakit.react";
 import { clsx } from "clsx";
 import * as icons from "lucide-react";
 import * as React from "react";

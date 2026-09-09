@@ -7,15 +7,15 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
-import type { DisclosureIndicator } from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react";
+import type { DisclosureIndicator } from "@ariakit/ui/components/disclosure.ariakit.react";
 import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
   DisclosureGroup,
-} from "@ariakit/ui/components/disclosure.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+} from "@ariakit/ui/components/disclosure.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import * as icons from "lucide-react";
 import * as React from "react";
 import { Caption, Sample, Samples, Stage, LOREM } from "./gallery.react.tsx";

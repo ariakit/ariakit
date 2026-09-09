@@ -7,10 +7,10 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
-import { Prose } from "@ariakit/ui/components/prose.ariakit.react.tsx";
-import type { SeparatorProps } from "@ariakit/ui/components/separator.ariakit.react.tsx";
-import { Separator } from "@ariakit/ui/components/separator.ariakit.react.tsx";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
+import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
+import type { SeparatorProps } from "@ariakit/ui/components/separator.ariakit.react";
+import { Separator } from "@ariakit/ui/components/separator.ariakit.react";
 import { Sample, Samples } from "./gallery.react.tsx";
 
 function Divided(props: SeparatorProps) {

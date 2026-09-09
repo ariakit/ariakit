@@ -7,9 +7,9 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Code } from "@ariakit/ui/components/code.ariakit.react.tsx";
-import { Heading } from "@ariakit/ui/components/heading.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+import { Code } from "@ariakit/ui/components/code.ariakit.react";
+import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import {
   Labeled,
   Sample,
@@ -36,7 +36,7 @@ export function CodeSection() {
       >
         <p>
           Install <Code>@ariakit/ui</Code>, then import <Code>Button</Code> from{" "}
-          <Code>@ariakit/ui/components/button.ariakit.react.tsx</Code> and pass{" "}
+          <Code>@ariakit/ui/components/button.ariakit.react</Code> and pass{" "}
           <Code>$kind="bevel"</Code> to raise it.
         </p>
       </Sample>
@@ -122,7 +122,7 @@ export function CodeSection() {
       >
         <p className="max-w-64 text-sm">
           The import path{" "}
-          <Code>@ariakit/ui/components/disclosure.ariakit.react.tsx</Code> wraps
+          <Code>@ariakit/ui/components/disclosure.ariakit.react</Code> wraps
           onto the next line.
         </p>
       </Sample>

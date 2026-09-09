@@ -7,13 +7,13 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
-import { Input } from "@ariakit/ui/components/input.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react";
+import { Input } from "@ariakit/ui/components/input.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import type {
   PopoverProps,
   PopoverProviderProps,
-} from "@ariakit/ui/components/popover.ariakit.react.tsx";
+} from "@ariakit/ui/components/popover.ariakit.react";
 import {
   Popover,
   PopoverArrow,
@@ -23,8 +23,8 @@ import {
   PopoverHeading,
   PopoverProvider,
   PopoverScroll,
-} from "@ariakit/ui/components/popover.ariakit.react.tsx";
-import { Text } from "@ariakit/ui/components/text.ariakit.react.tsx";
+} from "@ariakit/ui/components/popover.ariakit.react";
+import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { clsx } from "clsx";
 import type * as React from "react";
 import { Caption, Sample, Samples, Stage, LOREM } from "./gallery.react.tsx";

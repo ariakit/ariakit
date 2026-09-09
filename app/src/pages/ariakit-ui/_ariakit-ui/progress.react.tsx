@@ -7,13 +7,13 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import {
   Progress,
   ProgressCircular,
-} from "@ariakit/ui/components/progress.ariakit.react.tsx";
-import { Text } from "@ariakit/ui/components/text.ariakit.react.tsx";
+} from "@ariakit/ui/components/progress.ariakit.react";
+import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import * as React from "react";
 import { Caption, Labeled, Sample, Samples, Stage } from "./gallery.react.tsx";
 

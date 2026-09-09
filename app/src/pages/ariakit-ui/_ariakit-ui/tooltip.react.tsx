@@ -10,18 +10,18 @@
 import {
   Button,
   ButtonSlot,
-} from "@ariakit/ui/components/button.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+} from "@ariakit/ui/components/button.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import type {
   TooltipProps,
   TooltipProviderProps,
-} from "@ariakit/ui/components/tooltip.ariakit.react.tsx";
+} from "@ariakit/ui/components/tooltip.ariakit.react";
 import {
   Tooltip,
   TooltipAnchor,
   TooltipArrow,
   TooltipProvider,
-} from "@ariakit/ui/components/tooltip.ariakit.react.tsx";
+} from "@ariakit/ui/components/tooltip.ariakit.react";
 import { clsx } from "clsx";
 import * as icons from "lucide-react";
 import type * as React from "react";

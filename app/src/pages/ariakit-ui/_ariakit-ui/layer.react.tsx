@@ -7,9 +7,9 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
-import { Text } from "@ariakit/ui/components/text.ariakit.react.tsx";
-import { COLOR_VALUES } from "@ariakit/ui/utils/styles.ts";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
+import { Text } from "@ariakit/ui/components/text.ariakit.react";
+import { COLOR_VALUES } from "@ariakit/ui/utils/styles";
 import {
   Caption,
   Sample,

@@ -7,14 +7,14 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import type {
   TabGliderProps,
   TabListProps,
   TabPanelsProps,
   TabProps,
   TabsProps,
-} from "@ariakit/ui/components/tabs.ariakit.react.tsx";
+} from "@ariakit/ui/components/tabs.ariakit.react";
 import {
   Tab,
   TabGlider,
@@ -25,7 +25,7 @@ import {
   TabSeparator,
   TabSlot,
   Tabs,
-} from "@ariakit/ui/components/tabs.ariakit.react.tsx";
+} from "@ariakit/ui/components/tabs.ariakit.react";
 import * as icons from "lucide-react";
 import * as React from "react";
 import {

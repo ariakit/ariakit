@@ -7,22 +7,19 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import {
-  Badge,
-  BadgeLabel,
-} from "@ariakit/ui/components/badge.ariakit.react.tsx";
-import { Checkbox } from "@ariakit/ui/components/checkbox.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
+import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
+import { Checkbox } from "@ariakit/ui/components/checkbox.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import type {
   TableProps,
   TableRows,
-} from "@ariakit/ui/components/table.ariakit.react.tsx";
+} from "@ariakit/ui/components/table.ariakit.react";
 import {
   Table,
   TableCell,
   TableRow,
   TableRowGroup,
-} from "@ariakit/ui/components/table.ariakit.react.tsx";
+} from "@ariakit/ui/components/table.ariakit.react";
 import { Caption, Sample, Samples } from "./gallery.react.tsx";
 
 type ComponentColumn = "component" | "status" | "variants";

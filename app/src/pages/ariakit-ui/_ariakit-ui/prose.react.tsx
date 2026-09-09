@@ -7,18 +7,18 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Code } from "@ariakit/ui/components/code.ariakit.react.tsx";
+import { Code } from "@ariakit/ui/components/code.ariakit.react";
 import {
   Heading,
   HeadingLevel,
-} from "@ariakit/ui/components/heading.ariakit.react.tsx";
-import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
-import { Link } from "@ariakit/ui/components/link.ariakit.react.tsx";
-import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react.tsx";
-import type { ProseProps } from "@ariakit/ui/components/prose.ariakit.react.tsx";
-import { Prose } from "@ariakit/ui/components/prose.ariakit.react.tsx";
-import { Separator } from "@ariakit/ui/components/separator.ariakit.react.tsx";
+} from "@ariakit/ui/components/heading.ariakit.react";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
+import { Link } from "@ariakit/ui/components/link.ariakit.react";
+import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react";
+import type { ProseProps } from "@ariakit/ui/components/prose.ariakit.react";
+import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
+import { Separator } from "@ariakit/ui/components/separator.ariakit.react";
 import { Sample, Samples } from "./gallery.react.tsx";
 
 function Article(props: ProseProps) {

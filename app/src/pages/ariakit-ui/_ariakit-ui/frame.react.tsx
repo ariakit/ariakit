@@ -7,10 +7,10 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Code } from "@ariakit/ui/components/code.ariakit.react.tsx";
-import type { FrameProps } from "@ariakit/ui/components/frame.ariakit.react.tsx";
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react.tsx";
-import { Text } from "@ariakit/ui/components/text.ariakit.react.tsx";
+import { Code } from "@ariakit/ui/components/code.ariakit.react";
+import type { FrameProps } from "@ariakit/ui/components/frame.ariakit.react";
+import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { clsx } from "clsx";
 import type * as React from "react";
 import { Caption, Sample, Samples, SwatchGrid } from "./gallery.react.tsx";

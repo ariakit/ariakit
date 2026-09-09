@@ -7,16 +7,13 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import {
-  Badge,
-  BadgeLabel,
-} from "@ariakit/ui/components/badge.ariakit.react.tsx";
+import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   ButtonLabel,
   ButtonSlot,
-} from "@ariakit/ui/components/button.ariakit.react.tsx";
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
-import type { NavProps } from "@ariakit/ui/components/nav.ariakit.react.tsx";
+} from "@ariakit/ui/components/button.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
+import type { NavProps } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Nav,
   NavButton,
@@ -28,7 +25,7 @@ import {
   NavIcon,
   NavLink,
   NavList,
-} from "@ariakit/ui/components/nav.ariakit.react.tsx";
+} from "@ariakit/ui/components/nav.ariakit.react";
 import * as icons from "lucide-react";
 import * as React from "react";
 import { Caption, Labeled, Sample, Samples, Stage } from "./gallery.react.tsx";

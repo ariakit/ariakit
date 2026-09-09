@@ -3,7 +3,7 @@ import {
   ComboboxEmpty,
   ComboboxGroup,
   ComboboxItem,
-} from "@ariakit/ui/components/combobox.ariakit.react.tsx";
+} from "@ariakit/ui/components/combobox.ariakit.react";
 import { matchSorter } from "match-sorter";
 import * as React from "react";
 import data from "./data.ts";

@@ -7,8 +7,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
-import type { RadioFieldProps } from "@ariakit/ui/components/radio.ariakit.react.tsx";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
+import type { RadioFieldProps } from "@ariakit/ui/components/radio.ariakit.react";
 import {
   Radio,
   RadioCard,
@@ -22,7 +22,7 @@ import {
   RadioGroup,
   RadioLabel,
   RadioProvider,
-} from "@ariakit/ui/components/radio.ariakit.react.tsx";
+} from "@ariakit/ui/components/radio.ariakit.react";
 import * as React from "react";
 import {
   Caption,
