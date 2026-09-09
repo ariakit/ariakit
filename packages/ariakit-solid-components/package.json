@@ -33,6 +33,7 @@
     "clean": "ariakit clean"
   },
   "dependencies": {
+    "@ariakit/components": "workspace:*",
     "@ariakit/solid-utils": "workspace:*",
     "@ariakit/utils": "workspace:*"
   },

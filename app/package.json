@@ -42,6 +42,7 @@
     "og-image-generate": "node src/pages/og-image/_generate-images.ts"
   },
   "dependencies": {
+    "@ariakit/components": "workspace:*",
     "@ariakit/react": "workspace:*",
     "@ariakit/react-components": "workspace:*",
     "@ariakit/react-store": "workspace:*",

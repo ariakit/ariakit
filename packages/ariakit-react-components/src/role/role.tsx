@@ -1,39 +1,10 @@
+import { elements } from "@ariakit/components/role/role";
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
 import type { ElementType, FC } from "react";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
-
-const elements = [
-  "a",
-  "button",
-  "details",
-  "dialog",
-  "div",
-  "form",
-  "h1",
-  "h2",
-  "h3",
-  "h4",
-  "h5",
-  "h6",
-  "header",
-  "img",
-  "input",
-  "label",
-  "li",
-  "nav",
-  "ol",
-  "p",
-  "section",
-  "select",
-  "span",
-  "summary",
-  "textarea",
-  "ul",
-  "svg",
-] as const;
 
 type RoleElements = {
   [K in (typeof elements)[number]]: FC<RoleProps<K>>;

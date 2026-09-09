@@ -253,6 +253,9 @@ importers:
 
   app:
     dependencies:
+      '@ariakit/components':
+        specifier: workspace:*
+        version: link:../packages/ariakit-components
       '@ariakit/react':
         specifier: workspace:*
         version: link:../packages/ariakit-react
@@ -744,6 +747,9 @@ importers:
 
   packages/ariakit-solid-components:
     dependencies:
+      '@ariakit/components':
+        specifier: workspace:*
+        version: link:../ariakit-components
       '@ariakit/solid-utils':
         specifier: workspace:*
         version: link:../ariakit-solid-utils
