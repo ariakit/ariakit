@@ -123,7 +123,7 @@ export function ListItemMarker({
   ...props
 }: ListItemMarkerProps) {
   const hasCheck = checked != null || progress != null;
-  const completed = progress === 1 || !!checked;
+  const completed = checked ?? progress === 1;
   const [variantProps, rest] = splitProps(props, listItemMarker);
   return (
     <span
