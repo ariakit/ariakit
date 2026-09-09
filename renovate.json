@@ -135,8 +135,7 @@
         "/^oxlint/",
         "/^oxfmt/",
         "/^prettier/",
-        "/^vitest/",
-        "/^stylelint/"
+        "/^vitest/"
       ],
       "automerge": true,
       "automergeType": "pr",
