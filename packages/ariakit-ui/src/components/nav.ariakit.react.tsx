@@ -283,7 +283,8 @@ export interface NavButtonContentProps extends ak.RoleProps<"span"> {}
  * The label of a nav row, which collapses along with the sidebar.
  */
 export function NavButtonContent(props: NavButtonContentProps) {
-  return <ak.Role.span {...navButtonContent.jsx({})} {...props} />;
+  const [variantProps, rest] = splitProps(props, navButtonContent);
+  return <ak.Role.span {...navButtonContent.jsx(variantProps)} {...rest} />;
 }
 
 export interface NavDisclosureButtonProps
