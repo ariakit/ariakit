@@ -26,3 +26,12 @@ test("omits optional headings without hiding the filters", async () => {
   await click(q.button("0"));
   expect(q.text("No pending requests")).toBeVisible();
 });
+
+// https://github.com/ariakit/ariakit/pull/5240#discussion_r3972224487
+test("names a disclosure from its description without a missing label", async () => {
+  const button = q.button("Advanced options");
+  expect(button).not.toHaveAttribute("aria-labelledby");
+  expect(button).toHaveAccessibleDescription("Advanced options");
+  await click(button);
+  expect(q.text("Advanced controls")).toBeVisible();
+});

@@ -36,6 +36,9 @@ export default function Example() {
         </div>
       </Disclosure>
       <Disclosure button={0}>No pending requests</Disclosure>
+      <Disclosure button={{ description: "Advanced options" }}>
+        Advanced controls
+      </Disclosure>
     </div>
   );
 }

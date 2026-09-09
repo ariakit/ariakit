@@ -169,7 +169,7 @@ export function DisclosureButton({
   return (
     <ak.Disclosure
       data-disclosure-button
-      aria-labelledby={description ? labelId : undefined}
+      aria-labelledby={description && labelElement ? labelId : undefined}
       aria-describedby={description ? descriptionId : undefined}
       data-open={isOpen || undefined}
       {...disclosureButton.jsx(variantProps)}
