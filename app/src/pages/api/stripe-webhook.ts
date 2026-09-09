@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { APIContext } from "astro";
+import type { APIRoute } from "astro";
 import type { Stripe } from "stripe";
 import {
   deletePrice,
@@ -41,13 +41,13 @@ const EVENTS = {
   PromotionCodeUpdated: "promotion_code.updated",
 } satisfies Record<string, Stripe.Event.Type>;
 
-export async function POST({ request }: Pick<APIContext, "request">) {
+export const POST: APIRoute = async (context) => {
   const stripe = getStripeClient();
   if (!stripe) {
     logger.error("Stripe not configured");
     return internalServerError();
   }
-  const signature = request.headers.get("stripe-signature");
+  const signature = context.request.headers.get("stripe-signature");
   if (!signature) {
     logger.error("No signature");
     return badRequest();
@@ -58,7 +58,7 @@ export async function POST({ request }: Pick<APIContext, "request">) {
     return internalServerError();
   }
 
-  const body = await request.text();
+  const body = await context.request.text();
   let event: Stripe.Event;
 
   try {
@@ -178,4 +178,4 @@ export async function POST({ request }: Pick<APIContext, "request">) {
   }
 
   return ok();
-}
+};

@@ -6,5 +6,5 @@
     "**/*.test-helper.ts",
     "env.d.ts"
   ],
-  "exclude": ["dist", "src/pages/api/_tests"]
+  "exclude": ["dist"]
 }
