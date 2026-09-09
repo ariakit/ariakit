@@ -82,9 +82,8 @@ export const control = cv({
   },
 });
 
-// Sizes a badge or an avatar is bumped past. Those kinds paint their own
-// surface, which needs room around the content before it reads as a shape
-// rather than a tight box.
+// A single-row badge or avatar needs room around its content. Spanning more
+// rows already provides that room, so those slots keep their requested size.
 const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
 
 export const controlSlot = cv({
@@ -116,7 +115,7 @@ export const controlSlot = cv({
      * to move the slot closer to the control's text.
      *
      * The margin goes on the sibling element beside the slot, so the text must
-     * be wrapped in a label element such as `ControlLabel`. A sibling selector
+     * be wrapped in a label element such as `ButtonLabel`. A sibling selector
      * cannot see a bare text node, and the margin would land on the next
      * element instead, which may be another slot.
      */
@@ -256,6 +255,7 @@ export const controlSlot = cv({
       "group-[.disabled]/control:ak-layer-darken-5",
       "group-[.disabled]/control:ak-ink-0",
     ]);
+    if (variants.$rowSpan !== 1) return;
     if (includes(PADDED_SLOT_SIZES, variants.$size)) {
       setVariants({ $size: "xl" });
     }

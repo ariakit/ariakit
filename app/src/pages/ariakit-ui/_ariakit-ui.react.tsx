@@ -15,7 +15,6 @@ export { GalleryControls, GallerySidebar } from "./_ariakit-ui/shell.react.tsx";
 
 export { LayerSection } from "./_ariakit-ui/layer.react.tsx";
 export { FrameSection } from "./_ariakit-ui/frame.react.tsx";
-export { ContainerSection } from "./_ariakit-ui/container.react.tsx";
 export { TextSection } from "./_ariakit-ui/text.react.tsx";
 export { HeadingSection } from "./_ariakit-ui/heading.react.tsx";
 export { ProseSection } from "./_ariakit-ui/prose.react.tsx";
@@ -25,8 +24,6 @@ export { KbdSection } from "./_ariakit-ui/kbd.react.tsx";
 export { LinkSection } from "./_ariakit-ui/link.react.tsx";
 
 export { ButtonSection } from "./_ariakit-ui/button.react.tsx";
-export { ControlSection } from "./_ariakit-ui/control.react.tsx";
-export { GliderSection } from "./_ariakit-ui/glider.react.tsx";
 export { BadgeSection } from "./_ariakit-ui/badge.react.tsx";
 export { InputSection } from "./_ariakit-ui/input.react.tsx";
 export { CheckboxSection } from "./_ariakit-ui/checkbox.react.tsx";

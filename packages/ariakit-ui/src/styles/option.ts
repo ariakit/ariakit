@@ -1,5 +1,11 @@
 import { cv } from "clava";
-import { button } from "./button.ts";
+import {
+  button,
+  buttonContent,
+  buttonDescription,
+  buttonLabel,
+  buttonSlot,
+} from "./button.ts";
 
 export const option = cv({
   extend: [button],
@@ -14,3 +20,8 @@ export const option = cv({
     $focusHighlight: true,
   },
 });
+
+export const optionContent = buttonContent;
+export const optionDescription = buttonDescription;
+export const optionLabel = buttonLabel;
+export const optionSlot = buttonSlot;

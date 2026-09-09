@@ -44,12 +44,6 @@ export const galleryGroups = [
           "Radius, padding, margin and borders on top of a layer, with nested frames staying concentric with the frame around them.",
       },
       {
-        id: "container",
-        title: "Container",
-        description:
-          "A centered column capped by a theme token, with an inherited gutter that an ancestor can set for every container below it.",
-      },
-      {
         id: "text",
         title: "Text",
         description:
@@ -102,18 +96,6 @@ export const galleryGroups = [
         title: "Button",
         description:
           "Flat and bevel buttons across layers, sizes and radii, with the slot, content, label, description, group, separator and glider parts.",
-      },
-      {
-        id: "control",
-        title: "Control",
-        description:
-          "The row anatomy every control shares: slot kinds and sizes, content orientation, label truncation, description clamping, groups and separators.",
-      },
-      {
-        id: "glider",
-        title: "Glider",
-        description:
-          "The surface that glides between sibling controls to mark the selected, hovered or focused one, as a flat cover, a bevel or a bar.",
       },
       {
         id: "badge",

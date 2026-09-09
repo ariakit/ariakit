@@ -3,34 +3,34 @@ import { TagControl } from "@ariakit/react-components/tag/tag-control";
 import { TagLabel } from "@ariakit/react-components/tag/tag-label";
 import { TagList } from "@ariakit/react-components/tag/tag-list";
 import { TagProvider } from "@ariakit/react-components/tag/tag-provider";
-import { Button } from "@ariakit/ui/components/button.ariakit.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react";
+import {
+  ComboboxSelectButton,
+  ComboboxSelectItem,
+  ComboboxSelectLabel,
+  ComboboxSelectPopover,
+  ComboboxSelectProvider,
+} from "@ariakit/ui/components/combobox.ariakit.react";
 import {
   Dialog,
   DialogDisclosure,
   DialogDismiss,
   DialogHeading,
   DialogProvider,
-} from "@ariakit/ui/components/dialog.ariakit.react.tsx";
-import {
-  SelectButton,
-  SelectItem,
-  SelectLabel,
-  SelectPopover,
-  SelectProvider,
-} from "@ariakit/ui/components/select.ariakit.react.tsx";
+} from "@ariakit/ui/components/dialog.ariakit.react";
+import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import {
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-} from "@ariakit/ui/components/tabs.ariakit.react.tsx";
+} from "@ariakit/ui/components/tabs.ariakit.react";
 import {
   Tooltip,
   TooltipAnchor,
   TooltipProvider,
-} from "@ariakit/ui/components/tooltip.ariakit.react.tsx";
-import { input } from "@ariakit/ui/styles/input.ts";
+} from "@ariakit/ui/components/tooltip.ariakit.react";
 
 export default function Example() {
   return (
@@ -57,29 +57,27 @@ export default function Example() {
         </TabPanels>
       </Tabs>
 
-      <SelectProvider defaultValue="Apple">
-        <SelectLabel>Fruit</SelectLabel>
-        <SelectButton aria-label="Custom select label" />
-        <SelectPopover>
+      <ComboboxSelectProvider defaultValue="Apple">
+        <ComboboxSelectLabel>Fruit</ComboboxSelectLabel>
+        <ComboboxSelectButton aria-label="Custom select label" />
+        <ComboboxSelectPopover>
           {/* The list keeps the raw Ariakit primitive: the explicit
               ComboboxList with its own aria-label is what this sandbox
               exercises, and @ariakit/ui has no wrapper for it. */}
           <ak.ComboboxList aria-label="Custom list label">
-            <SelectItem value="Apple" />
-            <SelectItem value="Banana" />
+            <ComboboxSelectItem value="Apple" />
+            <ComboboxSelectItem value="Banana" />
           </ak.ComboboxList>
-        </SelectPopover>
-      </SelectProvider>
+        </ComboboxSelectPopover>
+      </ComboboxSelectProvider>
 
       <ak.FormProvider>
         <ak.Form>
           <ak.FormLabel name="name">Name</ak.FormLabel>
-          {/* Keeps the FormInput primitive (the @ariakit/ui Input isn't
-              form-aware) and takes the field look from the input cv. */}
           <ak.FormInput
             name="name"
             aria-label="Custom input label"
-            {...input.jsx({})}
+            render={<Input />}
           />
         </ak.Form>
       </ak.FormProvider>

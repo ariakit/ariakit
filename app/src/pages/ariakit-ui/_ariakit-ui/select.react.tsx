@@ -1,3 +1,11 @@
+import type { ComboboxSelectItemProps } from "@ariakit/ui/components/combobox.ariakit.react";
+import {
+  ComboboxSelect,
+  ComboboxSelectButton,
+  ComboboxSelectItem,
+  ComboboxSelectPopover,
+  ComboboxSelectProvider,
+} from "@ariakit/ui/components/combobox.ariakit.react";
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -7,15 +15,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Layer } from "@ariakit/ui/components/layer.ariakit.react.tsx";
-import type { SelectItemProps } from "@ariakit/ui/components/select.ariakit.react.tsx";
-import {
-  Select,
-  SelectButton,
-  SelectItem,
-  SelectPopover,
-  SelectProvider,
-} from "@ariakit/ui/components/select.ariakit.react.tsx";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import * as icons from "lucide-react";
 import * as React from "react";
 import {
@@ -33,14 +33,14 @@ const fruits = [
   { value: "Cherry" },
   { value: "Grape" },
   { value: "Orange" },
-] satisfies SelectItemProps[];
+] satisfies ComboboxSelectItemProps[];
 
 const frameworks = [
   { value: "React", icon: <icons.Atom /> },
   { value: "Solid", icon: <icons.Hexagon /> },
   { value: "Vue", icon: <icons.Triangle /> },
   { value: "Svelte", icon: <icons.Flame />, disabled: true, $disabled: true },
-] satisfies SelectItemProps[];
+] satisfies ComboboxSelectItemProps[];
 
 const statuses = [
   { value: "Draft", layer: "warning" },
@@ -51,13 +51,13 @@ const statuses = [
 
 const many = Array.from({ length: 24 }, (_, index) => ({
   value: `Option ${index + 1}`,
-})) satisfies SelectItemProps[];
+})) satisfies ComboboxSelectItemProps[];
 
 function StatusSelect({ size }: { size?: "sm" }) {
   const [value, setValue] = React.useState("In review");
   const status = statuses.find((status) => status.value === value);
   return (
-    <SelectProvider
+    <ComboboxSelectProvider
       value={value}
       setValue={(next) => {
         // A single select only ever reports one string.
@@ -65,13 +65,13 @@ function StatusSelect({ size }: { size?: "sm" }) {
         setValue(next);
       }}
     >
-      <SelectButton badge $layer={status?.layer} $size={size} />
-      <SelectPopover>
+      <ComboboxSelectButton badge $layer={status?.layer} $size={size} />
+      <ComboboxSelectPopover>
         {statuses.map((status) => (
-          <SelectItem key={status.value} value={status.value} />
+          <ComboboxSelectItem key={status.value} value={status.value} />
         ))}
-      </SelectPopover>
-    </SelectProvider>
+      </ComboboxSelectPopover>
+    </ComboboxSelectProvider>
   );
 }
 
@@ -83,14 +83,14 @@ function StatusSelect({ size }: { size?: "sm" }) {
 function OpenSelect({
   children,
   ...props
-}: React.ComponentProps<typeof SelectPopover> & {
+}: React.ComponentProps<typeof ComboboxSelectPopover> & {
   children?: React.ReactNode;
 }) {
   return (
     <div className="relative min-h-72">
-      <SelectProvider open defaultValue="Banana">
-        <SelectButton />
-        <SelectPopover
+      <ComboboxSelectProvider open defaultValue="Banana">
+        <ComboboxSelectButton />
+        <ComboboxSelectPopover
           portal={false}
           hideOnInteractOutside={false}
           // Focus stays where it was, so the page does not jump to the open
@@ -103,9 +103,11 @@ function OpenSelect({
           {...props}
         >
           {children ??
-            fruits.map((fruit) => <SelectItem key={fruit.value} {...fruit} />)}
-        </SelectPopover>
-      </SelectProvider>
+            fruits.map((fruit) => (
+              <ComboboxSelectItem key={fruit.value} {...fruit} />
+            ))}
+        </ComboboxSelectPopover>
+      </ComboboxSelectProvider>
     </div>
   );
 }
@@ -115,23 +117,23 @@ export function SelectSection() {
     <Samples>
       <Sample
         title="Basic"
-        code="Select label items defaultValue"
+        code="ComboboxSelect label items defaultValue"
         description="The high-level component wires the provider, label, button and popover. Open it to see the checkmark on the selected item."
       >
         <Stage direction="column" className="items-start">
-          <Select
+          <ComboboxSelect
             label="Fruit"
             items={fruits}
             defaultValue="Apple"
             className="min-w-40"
           />
-          <Select
+          <ComboboxSelect
             items={fruits}
             defaultValue="Cherry"
             $kind="bevel"
             className="min-w-40"
           />
-          <Select
+          <ComboboxSelect
             items={fruits}
             defaultValue="Grape"
             displayValue="A custom display value"
@@ -142,37 +144,37 @@ export function SelectSection() {
 
       <Sample
         title="Icons and checkmarks"
-        code='icon · SelectItem icon · checkmark="before" | "after" | false'
+        code='icon · ComboboxSelectItem icon · checkmark="before" | "after" | false'
         description="An icon before the value on the button, icons on the items, and the checkmark on either side or hidden."
       >
         <Stage direction="column" className="items-start">
-          <Select
+          <ComboboxSelect
             defaultValue="React"
             icon={<icons.Atom />}
             className="min-w-44"
           >
             {frameworks.map((framework) => (
-              <SelectItem key={framework.value} {...framework} />
+              <ComboboxSelectItem key={framework.value} {...framework} />
             ))}
-          </Select>
-          <Select defaultValue="React" className="min-w-44">
+          </ComboboxSelect>
+          <ComboboxSelect defaultValue="React" className="min-w-44">
             {frameworks.map((framework) => (
-              <SelectItem
+              <ComboboxSelectItem
                 key={framework.value}
                 {...framework}
                 checkmark="after"
               />
             ))}
-          </Select>
-          <Select defaultValue="React" className="min-w-44">
+          </ComboboxSelect>
+          <ComboboxSelect defaultValue="React" className="min-w-44">
             {frameworks.map((framework) => (
-              <SelectItem
+              <ComboboxSelectItem
                 key={framework.value}
                 {...framework}
                 checkmark={false}
               />
             ))}
-          </Select>
+          </ComboboxSelect>
         </Stage>
       </Sample>
 
@@ -182,10 +184,14 @@ export function SelectSection() {
         description="The chevron ends the row by default. It can lead the row or go away."
       >
         <Stage>
-          <Select items={fruits} defaultValue="Apple" />
-          <Select items={fruits} defaultValue="Apple" chevron="before" />
-          <Select items={fruits} defaultValue="Apple" chevron={false} />
-          <Select
+          <ComboboxSelect items={fruits} defaultValue="Apple" />
+          <ComboboxSelect
+            items={fruits}
+            defaultValue="Apple"
+            chevron="before"
+          />
+          <ComboboxSelect items={fruits} defaultValue="Apple" chevron={false} />
+          <ComboboxSelect
             items={fruits}
             defaultValue="Apple"
             icon={<icons.Apple />}
@@ -196,7 +202,7 @@ export function SelectSection() {
 
       <Sample
         title="Badge mode"
-        code="SelectButton badge $layer"
+        code="ComboboxSelectButton badge $layer"
         description="The button borrows the badge recipe, tinted by the selected status."
       >
         <Stage>
@@ -211,17 +217,21 @@ export function SelectSection() {
         description="The button is a Button, so every button knob applies."
       >
         <Stage>
-          <Select items={fruits} defaultValue="Apple" $size="sm" />
-          <Select items={fruits} defaultValue="Apple" $size="lg" />
-          <Select
+          <ComboboxSelect items={fruits} defaultValue="Apple" $size="sm" />
+          <ComboboxSelect items={fruits} defaultValue="Apple" $size="lg" />
+          <ComboboxSelect
             items={fruits}
             defaultValue="Apple"
             $rounded="full"
             $kind="bevel"
           />
-          <Select items={fruits} defaultValue="Apple" $layer="brand" />
-          <Select items={fruits} defaultValue="Apple" $lightnessOffset />
-          <Select items={fruits} defaultValue="Apple" disabled />
+          <ComboboxSelect items={fruits} defaultValue="Apple" $layer="brand" />
+          <ComboboxSelect
+            items={fruits}
+            defaultValue="Apple"
+            $lightnessOffset
+          />
+          <ComboboxSelect items={fruits} defaultValue="Apple" disabled />
         </Stage>
       </Sample>
 
@@ -231,7 +241,7 @@ export function SelectSection() {
         description="A popover taller than its cap scrolls its items."
       >
         <Stage className="items-start">
-          <Select
+          <ComboboxSelect
             items={many}
             defaultValue="Option 7"
             popover={{ className: "max-h-56 overflow-y-auto" }}
@@ -241,25 +251,25 @@ export function SelectSection() {
 
       <Sample
         title="Open popover"
-        code="SelectProvider open · SelectPopover portal={false}"
+        code="ComboboxSelectProvider open · ComboboxSelectPopover portal={false}"
         description="The popover held open below its button: canvas layer, compact padding, checkmark on the selected item and a disabled item at the end."
       >
         <OpenSelect>
           {fruits.map((fruit) => (
-            <SelectItem key={fruit.value} {...fruit} />
+            <ComboboxSelectItem key={fruit.value} {...fruit} />
           ))}
-          <SelectItem value="Sold out pear" disabled $disabled />
+          <ComboboxSelectItem value="Sold out pear" disabled $disabled />
         </OpenSelect>
       </Sample>
 
       <Sample
         title="Open popover variants"
-        code='SelectPopover $shadow="md" $rounded="lg" $p={2} · icons'
+        code='ComboboxSelectPopover $shadow="md" $rounded="lg" $p={2} · icons'
         description="The popover is a Popover, so the shadow, radius and padding knobs apply. Items can carry icons with the checkmark after them."
       >
         <OpenSelect $shadow="md" $rounded="lg" $p={2}>
           {frameworks.map((framework) => (
-            <SelectItem
+            <ComboboxSelectItem
               key={framework.value}
               {...framework}
               checkmark="after"
@@ -270,20 +280,24 @@ export function SelectSection() {
 
       <Sample
         title="On layers"
-        code="Select inside Layer"
+        code="ComboboxSelect inside Layer"
         description="The button follows the surface. The popover stays on the canvas layer so the list reads the same everywhere."
       >
         <SwatchGrid min="12rem">
           <Layer $lightnessOffset={2} className="grid gap-2 rounded-xl p-4">
             <Caption>Offset</Caption>
             <Labeled label="Flat">
-              <Select items={fruits} defaultValue="Apple" />
+              <ComboboxSelect items={fruits} defaultValue="Apple" />
             </Labeled>
           </Layer>
           <Layer $invert className="grid gap-2 rounded-xl p-4">
             <Caption>Inverted</Caption>
             <Labeled label="Bevel">
-              <Select items={fruits} defaultValue="Apple" $kind="bevel" />
+              <ComboboxSelect
+                items={fruits}
+                defaultValue="Apple"
+                $kind="bevel"
+              />
             </Labeled>
           </Layer>
           <Layer $layer="brand" className="grid gap-2 rounded-xl p-4">

@@ -3,16 +3,14 @@ import {
   ComboboxGroup,
   ComboboxInput,
   ComboboxItem,
+  ComboboxItemContent,
+  ComboboxItemDescription,
+  ComboboxItemLabel,
+  ComboboxItemSlot,
   ComboboxLabel,
   ComboboxPopover,
   ComboboxProvider,
-} from "@ariakit/ui/components/combobox.ariakit.react.tsx";
-import {
-  ControlContent,
-  ControlDescription,
-  ControlLabel,
-  ControlSlot,
-} from "@ariakit/ui/components/control.ariakit.react.tsx";
+} from "@ariakit/ui/components/combobox.ariakit.react";
 import { matchSorter } from "match-sorter";
 import * as React from "react";
 import data from "../data.ts";
@@ -58,20 +56,22 @@ export default function Example() {
             <ComboboxGroup key={type} label={type}>
               {items.map((item) => (
                 <ComboboxItem key={item.name} value={item.name}>
-                  <ControlSlot
+                  <ComboboxItemSlot
                     $kind="avatar"
+                    $size="sm"
+                    $rowSpan={2}
                     $layer="brand"
                     $contrast
                     aria-hidden
                   >
                     {getInitials(item.name)}
-                  </ControlSlot>
-                  <ControlContent>
-                    <ControlLabel>{item.name}</ControlLabel>
-                    <ControlDescription>
+                  </ComboboxItemSlot>
+                  <ComboboxItemContent>
+                    <ComboboxItemLabel>{item.name}</ComboboxItemLabel>
+                    <ComboboxItemDescription>
                       {"email" in item ? item.email : item.folder}
-                    </ControlDescription>
-                  </ControlContent>
+                    </ComboboxItemDescription>
+                  </ComboboxItemContent>
                 </ComboboxItem>
               ))}
             </ComboboxGroup>

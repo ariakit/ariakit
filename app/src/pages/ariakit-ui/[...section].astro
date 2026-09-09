@@ -11,33 +11,29 @@
 import "#app/styles/global.css";
 import "@fontsource-variable/inter";
 import Meta from "#app/components/meta.astro";
-import { badge, badgeLabel } from "@ariakit/ui/styles/badge.ts";
+import { badge, badgeLabel } from "@ariakit/ui/styles/badge";
 import {
   button,
   buttonContent,
   buttonDescription,
   buttonLabel,
-} from "@ariakit/ui/styles/button.ts";
-import { container } from "@ariakit/ui/styles/container.ts";
-import { frame } from "@ariakit/ui/styles/frame.ts";
-import { heading } from "@ariakit/ui/styles/heading.ts";
-import { layer } from "@ariakit/ui/styles/layer.ts";
-import { link } from "@ariakit/ui/styles/link.ts";
-import { text } from "@ariakit/ui/styles/text.ts";
+} from "@ariakit/ui/styles/button";
+import { frame } from "@ariakit/ui/styles/frame";
+import { heading } from "@ariakit/ui/styles/heading";
+import { layer } from "@ariakit/ui/styles/layer";
+import { link } from "@ariakit/ui/styles/link";
+import { text } from "@ariakit/ui/styles/text";
 import type { GetStaticPaths } from "astro";
 import {
   BadgeSection,
   ButtonSection,
   CheckboxSection,
   CodeSection,
-  ContainerSection,
-  ControlSection,
   DialogSection,
   DisclosureSection,
   FrameSection,
   GalleryControls,
   GallerySidebar,
-  GliderSection,
   HeadingSection,
   InputSection,
   KbdSection,
@@ -146,11 +142,7 @@ const surfaceClass = [
         })}
       >
         <div
-          {...container.html({
-            $size: "wider",
-            $p: 6,
-            class: "flex items-center gap-4",
-          })}
+          class="mx-auto w-[calc(100%---spacing(12))] max-w-wider flex items-center gap-4"
         >
           <nav aria-label="Breadcrumb" class="flex min-w-0 items-center gap-2">
             {
@@ -191,18 +183,13 @@ const surfaceClass = [
 
       <main {...layer.html({ class: surfaceClass.join(" ") })}>
         <div
-          {...container.html({
-            $size: "wider",
-            $p: 6,
-            class: "grid gap-12 py-14 max-[767px]:pb-24",
-          })}
+          class="mx-auto w-[calc(100%---spacing(12))] max-w-wider grid gap-12 py-14 max-[767px]:pb-24"
         >
           {
             section ? (
               <Section id={section.id}>
                 {id === "layer" && <LayerSection client:load />}
                 {id === "frame" && <FrameSection client:load />}
-                {id === "container" && <ContainerSection client:load />}
                 {id === "text" && <TextSection client:load />}
                 {id === "heading" && <HeadingSection client:load />}
                 {id === "prose" && <ProseSection client:load />}
@@ -211,8 +198,6 @@ const surfaceClass = [
                 {id === "kbd" && <KbdSection client:load />}
                 {id === "link" && <LinkSection client:load />}
                 {id === "button" && <ButtonSection client:load />}
-                {id === "control" && <ControlSection client:load />}
-                {id === "glider" && <GliderSection client:load />}
                 {id === "badge" && <BadgeSection client:load />}
                 {id === "input" && <InputSection client:load />}
                 {id === "checkbox" && <CheckboxSection client:load />}
@@ -341,11 +326,7 @@ const surfaceClass = [
 
       <footer {...layer.html({ class: "border-t" })}>
         <div
-          {...container.html({
-            $size: "wider",
-            $p: 6,
-            class: "flex flex-wrap items-center gap-x-6 gap-y-2 py-6 text-sm",
-          })}
+          class="mx-auto w-[calc(100%---spacing(12))] max-w-wider flex flex-wrap items-center gap-x-6 gap-y-2 py-6 text-sm"
         >
           <p class="ak-ink-70">
             The components live in{" "}
