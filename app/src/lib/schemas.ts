@@ -8,10 +8,9 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { z } from "zod";
-import { frameworks } from "./frameworks.ts";
+import { frameworks } from "./framework.ts";
 import { keys } from "./object.ts";
 import { parsePlusPriceKey } from "./price-key.ts";
-import { tags } from "./tags.ts";
 
 export const FRAMEWORKS = keys(frameworks);
 export const FrameworkSchema = z.enum(FRAMEWORKS);
@@ -20,18 +19,6 @@ export type Framework = z.infer<typeof FrameworkSchema>;
 export const ADMONITION_TYPES = ["note", "tip", "warning", "caution"] as const;
 export const AdmonitionTypeSchema = z.enum(ADMONITION_TYPES).catch("note");
 export type AdmonitionType = z.infer<typeof AdmonitionTypeSchema>;
-
-export const TAGS = keys(tags);
-export const TagSchema = z.enum(TAGS);
-export type Tag = z.infer<typeof TagSchema>;
-
-export const PLUS_CHECKOUT_STEPS = ["login", "payment", "access"] as const;
-export const PlusCheckoutStepSchema = z.enum(PLUS_CHECKOUT_STEPS);
-export type PlusCheckoutStep = z.infer<typeof PlusCheckoutStepSchema>;
-
-export const PLUS_ACCOUNT_PATHS = ["login", "", "team", "billing"] as const;
-export const PlusAccountPathSchema = z.enum(PLUS_ACCOUNT_PATHS);
-export type PlusAccountPath = z.infer<typeof PlusAccountPathSchema>;
 
 export const PLUS_TYPES = ["personal", "team"] as const;
 export const PlusTypeSchema = z.enum(PLUS_TYPES);
@@ -68,36 +55,6 @@ export const PromoDataSchema = z.object({
   maxRedemptions: z.number().nullable(),
 });
 export type PromoData = z.infer<typeof PromoDataSchema>;
-
-const URL_SCHEMA_BASE = new URL("http://localhost");
-
-export interface NormalizeURLPathOptions {
-  base?: string | URL;
-}
-
-export function normalizeURLPath(
-  value?: string | URL | null,
-  { base = URL_SCHEMA_BASE }: NormalizeURLPathOptions = {},
-) {
-  if (!value) return undefined;
-  try {
-    const url = new URL(value, base);
-    if (url.protocol !== "http:" && url.protocol !== "https:") {
-      return undefined;
-    }
-    const pathname = `/${url.pathname.replace(/^\/+/, "")}`;
-    return pathname + url.search + url.hash;
-  } catch {
-    return undefined;
-  }
-}
-
-export const URLSchema = z
-  .string()
-  .optional()
-  .transform((value) => {
-    return normalizeURLPath(value);
-  });
 
 const ReferenceExampleSchema = z.object({
   description: z.string(),

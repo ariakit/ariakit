@@ -10,8 +10,8 @@
 import fs from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { invariant } from "@ariakit/utils";
-import { isInDirectory, toFilePath, toPosixPath } from "./paths.ts";
-import type { PathInput } from "./paths.ts";
+import { isInDirectory, toFilePath, toPosixPath } from "./path.ts";
+import type { PathInput } from "./path.ts";
 import type { DiscoveredPreview } from "./preview-discovery.ts";
 import type { Framework } from "./schemas.ts";
 

@@ -1,0 +1,382 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import "#app/styles/global.css";
+import "@fontsource-variable/inter";
+import Meta from "#app/components/meta.astro";
+import { badge, badgeLabel } from "@ariakit/ui/styles/badge";
+import {
+  button,
+  buttonContent,
+  buttonDescription,
+  buttonLabel,
+} from "@ariakit/ui/styles/button";
+import { frame } from "@ariakit/ui/styles/frame";
+import { heading } from "@ariakit/ui/styles/heading";
+import { layer } from "@ariakit/ui/styles/layer";
+import { link } from "@ariakit/ui/styles/link";
+import { text } from "@ariakit/ui/styles/text";
+import type { GetStaticPaths } from "astro";
+import {
+  BadgeSection,
+  ButtonSection,
+  CheckboxSection,
+  CodeSection,
+  DialogSection,
+  DisclosureSection,
+  FrameSection,
+  GalleryControls,
+  GallerySidebar,
+  HeadingSection,
+  InputSection,
+  KbdSection,
+  LayerSection,
+  LinkSection,
+  ListSection,
+  NavSection,
+  PopoverSection,
+  ProgressSection,
+  ProseSection,
+  RadioSection,
+  SelectSection,
+  SeparatorSection,
+  SidebarSection,
+  TableSection,
+  TabsSection,
+  TextSection,
+  TooltipSection,
+} from "./_ariakit-ui.react.tsx";
+import Section from "./_ariakit-ui/section.astro";
+import type { GallerySectionEntry } from "./_ariakit-ui/sections.ts";
+import {
+  galleryBasePath,
+  galleryGroups,
+  gallerySections,
+  getGallerySectionHref,
+} from "./_ariakit-ui/sections.ts";
+
+// One page per component keeps each visit down to a single island, and the
+// index is the overview. Every island still has to be written out with its
+// own client directive below: Astro cannot bundle a component it only meets
+// through a dynamic tag.
+export const getStaticPaths = (() => [
+  { params: { section: undefined }, props: { section: undefined } },
+  ...gallerySections.map((section) => ({
+    params: { section: section.id },
+    props: { section },
+  })),
+]) satisfies GetStaticPaths;
+
+interface Props {
+  section?: GallerySectionEntry;
+}
+
+const { section } = Astro.props;
+const id = section?.id;
+const title = section ? `${section.title} - Ariakit UI gallery` : "Ariakit UI gallery";
+const description = section
+  ? section.description
+  : "Every @ariakit/ui React component rendered through its variants, on pages built from the same components.";
+
+// The page column keeps clear of the fixed sidebar. The width follows the
+// collapse flag the sidebar persists on <html>, and drops to nothing under
+// the mobile breakpoint, where the sidebar becomes a drawer. The breakpoint
+// is in pixels to match useIsMobile whatever the root font size is.
+const columnClass = [
+  "flex min-h-dvh flex-col",
+  "[--gallery-sidebar-width:var(--gallery-sidebar-max)]",
+  "[[data-sidebar=collapsed]_&]:[--gallery-sidebar-width:var(--gallery-sidebar-min)]",
+  "max-[767px]:[--gallery-sidebar-width:0px]",
+  "ps-(--gallery-sidebar-width) transition-[padding] duration-300",
+];
+
+// The surface the gallery sits on, switched from the header controls through
+// the data-surface attribute on <html>. Classes rather than layer variants,
+// because a variant writes an inline style that no attribute can gate.
+const surfaceClass = [
+  "flex-1",
+  "[[data-surface=raised]_&]:ak-layer-10",
+  "[[data-surface=inverted]_&]:ak-layer-80",
+  "[[data-surface=tinted]_&]:ak-layer-brand [[data-surface=tinted]_&]:ak-layer-mix-20",
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <Meta {title} {description} />
+    <script is:inline>
+      // Restores the persisted gallery settings before the first paint, so
+      // the theme, surface, text size and sidebar width never flash. The
+      // storage prefix and the attribute names match
+      // _ariakit-ui/shell.react.tsx, which writes them.
+      (() => {
+        try {
+          const root = document.documentElement;
+          for (const name of ["theme", "surface", "font-size", "sidebar"]) {
+            const value = localStorage.getItem("ariakit-ui-gallery:" + name);
+            if (value) root.setAttribute("data-" + name, value);
+          }
+        } catch {}
+      })();
+    </script>
+  </head>
+  <body
+    id="top"
+    class="min-h-dvh overflow-x-clip [--gallery-header-height:--spacing(14)] [--gallery-sidebar-max:--spacing(64)] [--gallery-sidebar-min:--spacing(14)]"
+  >
+    <GallerySidebar client:load currentUrl={Astro.url.pathname} />
+
+    <div class:list={columnClass}>
+      <header
+        {...layer.html({
+          class:
+            "sticky top-0 z-10 flex h-(--gallery-header-height) items-center border-b",
+        })}
+      >
+        <div
+          class="mx-auto w-[calc(100%---spacing(12))] max-w-wider flex items-center gap-4"
+        >
+          <nav aria-label="Breadcrumb" class="flex min-w-0 items-center gap-2">
+            {
+              section ? (
+                <>
+                  <a {...link.html({ class: "font-medium" })} href={galleryBasePath}>
+                    Component gallery
+                  </a>
+                  <span aria-hidden="true" class="ak-ink-40">/</span>
+                  <span class="ak-ink-60 max-[767px]:hidden">{section.group.title}</span>
+                  <span aria-hidden="true" class="ak-ink-40 max-[767px]:hidden">/</span>
+                  <span aria-current="page" class="truncate font-medium">
+                    {section.title}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span aria-current="page" class="truncate font-medium">
+                    Component gallery
+                  </span>
+                  <span
+                    {...badge.html({
+                      $layer: "brand",
+                      class: "max-[767px]:hidden",
+                    })}
+                  >
+                    <span {...badgeLabel.html()}>Manual visual tests</span>
+                  </span>
+                </>
+              )
+            }
+          </nav>
+          <div class="ms-auto flex items-center">
+            <GalleryControls client:load />
+          </div>
+        </div>
+      </header>
+
+      <main {...layer.html({ class: surfaceClass.join(" ") })}>
+        <div
+          class="mx-auto w-[calc(100%---spacing(12))] max-w-wider grid gap-12 py-14 max-[767px]:pb-24"
+        >
+          {
+            section ? (
+              <Section id={section.id}>
+                {id === "layer" && <LayerSection client:load />}
+                {id === "frame" && <FrameSection client:load />}
+                {id === "text" && <TextSection client:load />}
+                {id === "heading" && <HeadingSection client:load />}
+                {id === "prose" && <ProseSection client:load />}
+                {id === "separator" && <SeparatorSection client:load />}
+                {id === "code" && <CodeSection client:load />}
+                {id === "kbd" && <KbdSection client:load />}
+                {id === "link" && <LinkSection client:load />}
+                {id === "button" && <ButtonSection client:load />}
+                {id === "badge" && <BadgeSection client:load />}
+                {id === "input" && <InputSection client:load />}
+                {id === "checkbox" && <CheckboxSection client:load />}
+                {id === "radio" && <RadioSection client:load />}
+                {id === "select" && <SelectSection client:load />}
+                {id === "tabs" && <TabsSection client:load />}
+                {id === "disclosure" && <DisclosureSection client:load />}
+                {id === "nav" && <NavSection client:load />}
+                {id === "sidebar" && <SidebarSection client:load />}
+                {id === "list" && <ListSection client:load />}
+                {id === "table" && <TableSection client:load />}
+                {id === "progress" && <ProgressSection client:load />}
+                {id === "popover" && <PopoverSection client:load />}
+                {id === "dialog" && <DialogSection client:load />}
+                {id === "tooltip" && <TooltipSection client:load />}
+              </Section>
+            ) : (
+              <>
+                <div class="grid gap-4">
+                  <p
+                    {...text.html({
+                      $text: "brand",
+                      class: "text-sm font-medium",
+                    })}
+                  >
+                    Ariakit UI
+                  </p>
+                  <h1 {...heading.html({ class: "mt-0 mb-0 text-balance" })}>
+                    Component gallery
+                  </h1>
+                  <p class="ak-ink-70 max-w-3xl text-lg text-pretty">
+                    Every <code class="font-mono text-[0.9em]">@ariakit/ui</code>{" "}
+                    React component, rendered through as many of its variants as
+                    the recipes expose, one page per component. The shell around
+                    them is built from the same components. Switch the color
+                    scheme, the surface and the text size from the header to
+                    check every sample in each combination.
+                  </p>
+                  <div class="flex flex-wrap gap-2 pt-2">
+                    <span {...badge.html({ $size: "sm" })}>
+                      <span {...badgeLabel.html()}>
+                        {gallerySections.length} components
+                      </span>
+                    </span>
+                    <span {...badge.html({ $size: "sm" })}>
+                      <span {...badgeLabel.html()}>
+                        {galleryGroups.length} groups
+                      </span>
+                    </span>
+                    <span {...badge.html({ $size: "sm" })}>
+                      <span {...badgeLabel.html()}>
+                        One React island per page over an Astro shell
+                      </span>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="grid gap-6">
+                  {
+                    galleryGroups.map((group) => (
+                      <article
+                        {...frame.html({
+                          $rounded: "2xl",
+                          $p: 5,
+                          $border: true,
+                          class: "grid gap-4",
+                        })}
+                      >
+                        <header class="flex flex-wrap items-baseline gap-3">
+                          <h2 {...heading.html({ $level: 3, class: "mt-0 mb-0" })}>
+                            {group.title}
+                          </h2>
+                          <span {...badge.html()}>
+                            <span {...badgeLabel.html()}>
+                              {group.sections.length} components
+                            </span>
+                          </span>
+                        </header>
+                        <ul
+                          class="grid gap-2 grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))]"
+                        >
+                          {group.sections.map((entry) => (
+                            <li class="grid">
+                              <a
+                                href={getGallerySectionHref(entry.id)}
+                                {...button.html({
+                                  $rounded: "xl",
+                                  $p: 3,
+                                  $gap: "none",
+                                  $lightnessOffset: false,
+                                  class:
+                                    "justify-start text-start text-wrap font-normal",
+                                })}
+                              >
+                                <span {...buttonContent.html()}>
+                                  <span
+                                    {...buttonLabel.html({
+                                      $truncate: false,
+                                      class: "font-semibold",
+                                    })}
+                                  >
+                                    {entry.title}
+                                  </span>
+                                  <span
+                                    {...buttonDescription.html({
+                                      $truncate: false,
+                                      $lineClamp: 2,
+                                    })}
+                                  >
+                                    {entry.description}
+                                  </span>
+                                </span>
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </article>
+                    ))
+                  }
+                </div>
+              </>
+            )
+          }
+        </div>
+      </main>
+
+      <footer {...layer.html({ class: "border-t" })}>
+        <div
+          class="mx-auto w-[calc(100%---spacing(12))] max-w-wider flex flex-wrap items-center gap-x-6 gap-y-2 py-6 text-sm"
+        >
+          <p class="ak-ink-70">
+            The components live in{" "}
+            <a
+              {...link.html()}
+              href="https://github.com/ariakit/ariakit/tree/main/packages/ariakit-ui"
+            >
+              packages/ariakit-ui
+            </a>{" "}
+            and the gallery in{" "}
+            <a
+              {...link.html()}
+              href="https://github.com/ariakit/ariakit/tree/main/app/src/pages/ariakit-ui"
+            >
+              app/src/pages/ariakit-ui
+            </a>.
+          </p>
+          <a {...link.html({ class: "ms-auto" })} href="#top">Back to top</a>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  /* A forced scheme restates the tokens that ui.css switches on the
+     system preference, which a page cannot override any other way. The values
+     match ui.css and app/src/test-utils/visual.ts. The canvas system
+     color that seeds the layer system follows color-scheme on its own. */
+  html[data-theme="light"] {
+    color-scheme: light;
+    --color-canvas: oklch(99.33% 0.0011 197.14);
+    --color-warning: var(--color-yellow-500);
+    --color-danger: var(--color-red-600);
+  }
+
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --color-canvas: oklch(16.34% 0.0091 264.28);
+    --color-warning: var(--color-yellow-400);
+    --color-danger: var(--color-red-400);
+  }
+
+  /* The spacing and radius tokens are in em, so the root font size scales
+     every component with the text. */
+  html[data-font-size="sm"] {
+    font-size: 14px;
+  }
+
+  html[data-font-size="lg"] {
+    font-size: 18px;
+  }
+</style>

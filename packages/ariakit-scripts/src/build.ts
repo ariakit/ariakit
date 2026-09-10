@@ -140,10 +140,13 @@ async function getPublicFiles(sourcePath: string, prefix = "") {
       continue;
     }
 
-    if (!isTypeScriptSource(entry)) continue;
+    const isSource = isTypeScriptSource(entry);
+    if (!isSource && !entry.endsWith(".css")) continue;
+
+    const name = normalizePath(prefixedPath);
 
     files.push({
-      name: removeExtension(normalizePath(prefixedPath)),
+      name: isSource ? removeExtension(name) : name,
       path: entryPath,
       source: `./${source}`,
     });
@@ -171,6 +174,9 @@ function getExportName(name: string) {
 
 function getExportValue(file: PublicFile, isSolid: boolean, mode: ExportMode) {
   if (mode === "source") return file.source;
+  if (file.name.endsWith(".css")) {
+    return file.source;
+  }
 
   const name = file.name;
   return {
@@ -273,7 +279,11 @@ function getExternal(packageJson: PackageJson) {
 }
 
 function getInput(publicFiles: PublicFile[]) {
-  return Object.fromEntries(publicFiles.map((file) => [file.name, file.path]));
+  return Object.fromEntries(
+    publicFiles
+      .filter((file) => isTypeScriptSource(file.path))
+      .map((file) => [file.name, file.path]),
+  );
 }
 
 function cleanOutput(rootPath: string, isSolid: boolean) {
@@ -352,7 +362,14 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
       entryFileNames: "[name].js",
       chunkFileNames: "__chunks/[hash].js",
       sourcemap: true,
-      ...(isReactPackage && { banner: '"use client";' }),
+      banner(chunk) {
+        if (isReactPackage) return '"use client";';
+        // Mixed packages use the .react suffix for their React entrypoints.
+        if (/\.react\.[jt]sx?$/.test(chunk.facadeModuleId ?? "")) {
+          return '"use client";';
+        }
+        return "";
+      },
     },
     plugins: [
       ...(isSolid ? [solidPlugin({ solid: { generate: "dom" } })] : []),
@@ -390,8 +407,11 @@ export async function cleanPackage(
   const isSolid = isSolidPackage(packageJson);
   const publicFiles = await updateSourcePackageJson(rootPath, options);
   cleanOutput(rootPath, isSolid);
+  // Stylesheets never had legacy proxy folders.
   cleanLegacyBuild(
     rootPath,
-    publicFiles.map((file) => file.name),
+    publicFiles
+      .filter((file) => isTypeScriptSource(file.path))
+      .map((file) => file.name),
   );
 }

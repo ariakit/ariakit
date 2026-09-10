@@ -226,6 +226,82 @@ test("clean removes current and legacy build output", async () => {
   }
 });
 
+test("exports CSS source unchanged through build and clean", async () => {
+  const styles = "@theme { --color-brand: hotpink; }\n";
+  const rootPath = await createBuildFixture({
+    sources: {
+      "index.ts": "export {};\n",
+      "styles/ui.css": styles,
+    },
+  });
+
+  try {
+    runBuild(rootPath);
+
+    const builtPackageJson = JSON.parse(
+      await readFile(join(rootPath, "package.json"), "utf-8"),
+    );
+    expect(builtPackageJson.exports["./styles/ui.css"]).toBe(
+      "./src/styles/ui.css",
+    );
+    expect(await readFile(join(rootPath, "src/styles/ui.css"), "utf-8")).toBe(
+      styles,
+    );
+
+    await cleanPackage(rootPath);
+
+    const sourcePackageJson = JSON.parse(
+      await readFile(join(rootPath, "package.json"), "utf-8"),
+    );
+    expect(sourcePackageJson.exports).toEqual({
+      ".": "./src/index.ts",
+      "./styles/ui.css": "./src/styles/ui.css",
+      "./package.json": "./package.json",
+    });
+    expect(await readFile(join(rootPath, "src/styles/ui.css"), "utf-8")).toBe(
+      styles,
+    );
+  } finally {
+    await rm(rootPath, { recursive: true, force: true });
+  }
+});
+
+test("clean preserves root files and folders that only have CSS entries", async () => {
+  const rootPath = await createBuildFixture({
+    sources: {
+      "index.ts": "export {};\n",
+      "button.ts": "export {};\n",
+      "index.css": ":root { color: black; }\n",
+      "styles/ui.css": ":root { color: white; }\n",
+    },
+  });
+
+  try {
+    const rootStyles = '@import "./src/index.css";\n';
+    const nestedStyles = '@import "../src/styles/ui.css";\n';
+    await writeFile(join(rootPath, "index.css"), rootStyles);
+    await mkdir(join(rootPath, "styles"));
+    await writeFile(join(rootPath, "styles/theme.css"), nestedStyles);
+    await mkdir(join(rootPath, "button"));
+    await writeFile(join(rootPath, "button/index.js"), "export {};\n");
+
+    await cleanPackage(rootPath);
+
+    expect(await readdir(rootPath)).toEqual(
+      expect.arrayContaining(["index.css", "styles"]),
+    );
+    expect(await readFile(join(rootPath, "index.css"), "utf-8")).toBe(
+      rootStyles,
+    );
+    expect(await readFile(join(rootPath, "styles/theme.css"), "utf-8")).toBe(
+      nestedStyles,
+    );
+    await expectPathMissing(join(rootPath, "button"));
+  } finally {
+    await rm(rootPath, { recursive: true, force: true });
+  }
+});
+
 test("uses a sourcemap-aware banner for React packages", async () => {
   const rootPath = await createBuildFixture({
     name: "@ariakit/react-test",
@@ -324,6 +400,75 @@ test("uses a sourcemap-aware banner for index-only React packages", async () => 
       generatedText: "return 1",
       sourceName: "index.ts",
       sourceLine: 2,
+      sourceColumn: 2,
+    });
+  } finally {
+    await rm(rootPath, { recursive: true, force: true });
+  }
+});
+
+test("marks only React entrypoints in mixed packages as client code", async () => {
+  const rootPath = await createBuildFixture({
+    name: "@ariakit/ui",
+    sources: {
+      "components/button.ariakit.react.tsx": [
+        'import { sharedValue } from "../__shared.ts";',
+        "",
+        "export function buttonValue() {",
+        "  return sharedValue();",
+        "}",
+        "",
+      ].join("\n"),
+      "react-hooks/use-value.react.ts": [
+        'import { sharedValue } from "../__shared.ts";',
+        "export function useValue() { return sharedValue(); }",
+      ].join("\n"),
+      "components/button.solid.ts": [
+        'import { sharedValue } from "../__shared.ts";',
+        "export function buttonValue() { return sharedValue(); }",
+      ].join("\n"),
+      "styles/button.ts": [
+        'import { sharedValue } from "../__shared.ts";',
+        "export function buttonStyles() { return sharedValue(); }",
+      ].join("\n"),
+      "__shared.ts": "export function sharedValue() {\n  return 1;\n}\n",
+    },
+  });
+
+  try {
+    const result = runBuild(rootPath);
+
+    expectNoBrokenSourcemapWarning(result);
+
+    const reactEntries = [
+      "components/button.ariakit.react.js",
+      "react-hooks/use-value.react.js",
+    ];
+    const nonReactEntries = ["components/button.solid.js", "styles/button.js"];
+    const chunkNames = (await readdir(join(rootPath, "dist/__chunks"))).filter(
+      (name) => name.endsWith(".js"),
+    );
+
+    expect(chunkNames).toHaveLength(1);
+
+    for (const name of reactEntries) {
+      const code = await readFile(join(rootPath, "dist", name), "utf-8");
+      expect(code.startsWith('"use client";\n'), name).toBe(true);
+    }
+
+    for (const name of [
+      ...nonReactEntries,
+      ...chunkNames.map((name) => `__chunks/${name}`),
+    ]) {
+      const code = await readFile(join(rootPath, "dist", name), "utf-8");
+      expect(code.startsWith('"use client";\n'), name).toBe(false);
+    }
+
+    await expectGeneratedLineToMapToSource({
+      jsPath: join(rootPath, "dist/components/button.ariakit.react.js"),
+      generatedText: "return sharedValue()",
+      sourceName: "button.ariakit.react.tsx",
+      sourceLine: 4,
       sourceColumn: 2,
     });
   } finally {

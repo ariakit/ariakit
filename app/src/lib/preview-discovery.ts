@@ -16,9 +16,9 @@ import { invariant } from "@ariakit/utils";
 import type { Loader } from "astro/loaders";
 import type { LoaderContext } from "astro/loaders";
 import { z } from "astro/zod";
-import { getFrameworkByFilename, isFramework } from "./frameworks.ts";
-import { isInDirectory, toFilePath, toPosixPath } from "./paths.ts";
-import type { PathInput } from "./paths.ts";
+import { getFrameworkByFilename, isFramework } from "./framework.ts";
+import { isInDirectory, toFilePath, toPosixPath } from "./path.ts";
+import type { PathInput } from "./path.ts";
 import {
   getPreviewCodegenDir,
   getPreviewContentFile,

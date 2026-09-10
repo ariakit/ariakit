@@ -3,7 +3,7 @@ import reactPlugin from "@vitejs/plugin-react";
 import { globSync } from "glob";
 import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
-import { sourcePlugin } from "./app/src/lib/source-plugin.ts";
+import { sourcePlugin } from "./app/src/lib/source.ts";
 
 const rootDir = process.cwd();
 

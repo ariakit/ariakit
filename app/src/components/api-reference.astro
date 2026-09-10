@@ -1,0 +1,103 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { markdownToHtml } from "#app/lib/content.ts";
+import { getReferenceSections } from "#app/lib/reference.ts";
+import type { ReferenceItem } from "#app/lib/reference.ts";
+import { getReferencePath } from "#app/lib/url.ts";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  reference: CollectionEntry<"references">;
+  item?: ReferenceItem;
+}
+
+const { reference, item } = Astro.props;
+const data = reference.data;
+const sections = item
+  ? [
+      {
+        id: item.sectionId,
+        title: undefined,
+        items: [item],
+        type: undefined,
+        description: undefined,
+      },
+    ]
+  : getReferenceSections(data);
+---
+
+<section id={item ? undefined : "api"}>
+  {
+    !item && (
+      <>
+        <h2>{data.name}</h2>
+        {data.deprecated && (
+          <aside>
+            <strong>Deprecated</strong>
+            {typeof data.deprecated === "string" && (
+              <Fragment set:html={await markdownToHtml(data.deprecated)} />
+            )}
+          </aside>
+        )}
+        <Fragment set:html={await markdownToHtml(data.description)} />
+        {data.examples.map(async (example) => (
+          <>
+            <Fragment
+              set:html={await markdownToHtml(example.description ?? "")}
+            />
+            <pre><code>{example.code}</code></pre>
+          </>
+        ))}
+      </>
+    )
+  }
+  {
+    sections.map(async (section) => (
+      <section>
+        {section.title && <h3 id={section.id}>{section.title}</h3>}
+        {section.type && <pre><code>{section.type}</code></pre>}
+        {section.description && (
+          <Fragment set:html={await markdownToHtml(section.description)} />
+        )}
+        {section.items?.map(async (entry) => (
+          <section>
+            <h4 id={entry.id}>
+              <a href={getReferencePath({ reference, item: entry.id })}>
+                {entry.name}
+              </a>
+            </h4>
+            <pre><code>{entry.type}</code></pre>
+            {entry.defaultValue != null && (
+              <p>Default: <code>{entry.defaultValue}</code></p>
+            )}
+            {entry.deprecated && (
+              <aside>
+                <strong>Deprecated</strong>
+                {typeof entry.deprecated === "string" && (
+                  <Fragment set:html={await markdownToHtml(entry.deprecated)} />
+                )}
+              </aside>
+            )}
+            <Fragment set:html={await markdownToHtml(entry.description)} />
+            {entry.examples.map(async (example) => (
+              <>
+                <Fragment
+                  set:html={await markdownToHtml(example.description ?? "")}
+                />
+                <pre><code>{example.code}</code></pre>
+              </>
+            ))}
+          </section>
+        ))}
+      </section>
+    ))
+  }
+</section>

@@ -13,7 +13,7 @@ import pixelmatch from "pixelmatch";
 import type { Page, Response } from "playwright";
 import { chromium } from "playwright";
 import { PNG } from "pngjs";
-import { getFramework } from "#app/lib/frameworks.ts";
+import { getFramework } from "#app/lib/framework.ts";
 import type { OGImageItem } from "./api.ts";
 
 const BASE_URL = process.env.OG_IMAGE_BASE_URL ?? "http://localhost:4321";

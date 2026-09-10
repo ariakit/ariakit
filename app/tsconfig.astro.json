@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.workerd.json",
+  "include": [".astro/types.d.ts", "env.d.ts", "**/*.astro"]
+}

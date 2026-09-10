@@ -1,11 +1,18 @@
-import { matchSorter } from "match-sorter";
-import * as React from "react";
 import {
-  Combobox,
   ComboboxEmpty,
   ComboboxGroup,
+  ComboboxInput,
   ComboboxItem,
-} from "../combobox.react.tsx";
+  ComboboxItemContent,
+  ComboboxItemDescription,
+  ComboboxItemLabel,
+  ComboboxItemSlot,
+  ComboboxLabel,
+  ComboboxPopover,
+  ComboboxProvider,
+} from "@ariakit/ui/components/combobox.ariakit.react";
+import { matchSorter } from "match-sorter";
+import * as React from "react";
 import data from "../data.ts";
 
 function getInitials(name: string) {
@@ -34,38 +41,43 @@ export default function Example() {
   }, [deferredValue]);
 
   return (
-    <label className="flex flex-col gap-2 indent-2">
-      Find records
-      <Combobox
-        autoSelect
-        autoComplete="both"
-        placeholder="e.g., John Doe"
-        value={value}
-        onChange={setValue}
-      >
-        {!matches.length && <ComboboxEmpty />}
-        {matches.map(([type, items]) => (
-          <ComboboxGroup key={type} label={type}>
-            {items.map((item) => (
-              <ComboboxItem key={item.name} value={item.name}>
-                <div className="grid grid-cols-[2rem_auto] items-center gap-2">
-                  <div className="ak-layer ak-layer-primary ak-layer-contrast rounded-full aspect-square flex items-center justify-center text-sm font-medium">
+    <div className="flex flex-col gap-2">
+      <ComboboxProvider inputValue={value} setInputValue={setValue}>
+        <ComboboxLabel>Find records</ComboboxLabel>
+        <ComboboxInput
+          autoSelect
+          autoComplete="both"
+          placeholder="e.g., John Doe"
+          className="w-64"
+        />
+        <ComboboxPopover>
+          {!matches.length && <ComboboxEmpty />}
+          {matches.map(([type, items]) => (
+            <ComboboxGroup key={type} label={type}>
+              {items.map((item) => (
+                <ComboboxItem key={item.name} value={item.name}>
+                  <ComboboxItemSlot
+                    $kind="avatar"
+                    $size="md"
+                    $rowSpan={2}
+                    $layer="brand"
+                    $contrast
+                    aria-hidden
+                  >
                     {getInitials(item.name)}
-                  </div>
-                  <div className="grid">
-                    <div className="ak-ink-90 text-sm font-medium">
-                      {item.name}
-                    </div>
-                    <div className="ak-ink-60 text-xs">
+                  </ComboboxItemSlot>
+                  <ComboboxItemContent>
+                    <ComboboxItemLabel>{item.name}</ComboboxItemLabel>
+                    <ComboboxItemDescription>
                       {"email" in item ? item.email : item.folder}
-                    </div>
-                  </div>
-                </div>
-              </ComboboxItem>
-            ))}
-          </ComboboxGroup>
-        ))}
-      </Combobox>
-    </label>
+                    </ComboboxItemDescription>
+                  </ComboboxItemContent>
+                </ComboboxItem>
+              ))}
+            </ComboboxGroup>
+          ))}
+        </ComboboxPopover>
+      </ComboboxProvider>
+    </div>
   );
 }

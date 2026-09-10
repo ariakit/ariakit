@@ -9,13 +9,12 @@
  */
 import { invariant } from "@ariakit/utils";
 import { unified as createUnifiedProcessor } from "@astrojs/markdown-remark";
-import type { MarkdownRenderer, RehypePlugin } from "@astrojs/markdown-remark";
+import type { MarkdownRenderer } from "@astrojs/markdown-remark";
 import type { CollectionEntry } from "astro:content";
 import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
-import { getFramework, isFramework } from "./frameworks.ts";
-import { rehypeAsTagName } from "./rehype.ts";
+import { getFramework, isFramework } from "./framework.ts";
 import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
@@ -133,14 +132,7 @@ async function getMarkdownRenderer() {
   if (markdownRenderer) {
     return markdownRenderer;
   }
-  markdownRenderer = await createUnifiedProcessor({
-    rehypePlugins: [
-      [
-        rehypeAsTagName as RehypePlugin,
-        { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
-      ],
-    ],
-  }).createRenderer({
+  markdownRenderer = await createUnifiedProcessor({}).createRenderer({
     syntaxHighlight: false,
   });
   return markdownRenderer;

@@ -1,11 +1,16 @@
 import { Separator } from "@ariakit/react";
+import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { separator } from "@ariakit/ui/styles/separator";
 
 export default function Example() {
   return (
-    <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-container/4 grid gap-2 shadow">
+    <Frame $rounded="xl" $p={4} $lighten className="grid gap-2 shadow">
       Item
-      <Separator orientation="horizontal" className="ak-layer" />
+      <Separator
+        orientation="horizontal"
+        {...separator.jsx({ $line: "solid", $gap: 0 })}
+      />
       Item
-    </div>
+    </Frame>
   );
 }

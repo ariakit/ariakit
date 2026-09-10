@@ -1,0 +1,784 @@
+@import "@ariakit/tailwind";
+
+@theme {
+  --color-canvas: oklch(99.33% 0.0011 197.14);
+  --color-brand: oklch(56.7% 0.1546 248.5156);
+  --color-primary: var(--color-brand);
+  --color-secondary: oklch(65.59% 0.2118 354.31);
+  --color-success: var(--color-green-700);
+  --color-warning: var(--color-yellow-500);
+  --color-danger: var(--color-red-600);
+
+  --font-sans:
+    "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --radius: 0.25em;
+  --spacing: 0.25em;
+  --spacing-px: 1px;
+
+  --container-wider: 92rem;
+
+  --duration-tabs: 100ms;
+  --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
+
+  --duration-overshoot: 500ms;
+  /* Curve from easingwizard.com. Popovers, dialogs and tooltips enter on it,
+     so it lives here rather than inline: a Tailwind theme token is the only
+     way to write the value once and still have `ease-overshoot` compile. */
+  --ease-overshoot: linear(
+    0,
+    0.008 1.1%,
+    0.031 2.2%,
+    0.129 4.8%,
+    0.257 7.2%,
+    0.671 14.2%,
+    0.789 16.5%,
+    0.881 18.6%,
+    0.957 20.7%,
+    1.019 22.9%,
+    1.063 25.1%,
+    1.094 27.4%,
+    1.114 30.7%,
+    1.112 34.5%,
+    1.018 49.9%,
+    0.99 59.1%,
+    1
+  );
+}
+
+@theme inline {
+  --radius-none: 0;
+  --radius-xs: calc(var(--radius) * 0.5);
+  --radius-sm: calc(var(--radius) * 1);
+  --radius-md: calc(var(--radius) * 1.5);
+  --radius-lg: calc(var(--radius) * 2);
+  --radius-xl: calc(var(--radius) * 3);
+  --radius-2xl: calc(var(--radius) * 4);
+  --radius-3xl: calc(var(--radius) * 6);
+  --radius-4xl: calc(var(--radius) * 8);
+  --radius-full: calc(var(--radius) * infinity);
+}
+
+:root {
+  @variant dark {
+    --color-canvas: oklch(16.34% 0.0091 264.28);
+    --color-success: var(--color-green-700);
+    --color-warning: var(--color-yellow-400);
+    --color-danger: var(--color-red-400);
+  }
+}
+
+html,
+body {
+  @apply font-sans min-h-dvh antialiased;
+}
+
+body {
+  @apply ak-layer ak-layer-canvas;
+}
+
+body > * {
+  @apply ak-dark:scheme-dark;
+}
+
+/* Registered so the @ariakit/ui progress fills can transition it: the width
+   calc and the conic sweep both read this inherited number. */
+@property --progress-value {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* How round each top corner of a tab panel is, 0 to 1. Registered so the
+   scroll-driven animation below can interpolate them; where it does not run
+   they keep the corner whole. */
+@property --tabs-round-s {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --tabs-round-e {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+/* The radius of a folder's curves, the quarter circles a selected folder
+   paints past its bottom corners. The ui-folder utility sets it from the
+   folder's own frame radius, and the tabs point it at their root's instead.
+   Registered so the glider's start curve can transition it. */
+@property --folder-radius {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@keyframes ui-tabs-round-s {
+  from {
+    --tabs-round-s: 1;
+  }
+  to {
+    --tabs-round-s: 0;
+  }
+}
+
+@keyframes ui-tabs-round-e {
+  from {
+    --tabs-round-e: 0;
+  }
+  to {
+    --tabs-round-e: 1;
+  }
+}
+
+/**
+ * Squares a tab panel's top corner while the strip's content continues past
+ * that side. The panel follows the strip's scroll timeline, which the tabs
+ * root scopes as --tabs-scroll, and each flag changes over one frame radius
+ * of scroll at its own end of the range. A strip that cannot scroll has no
+ * active timeline and leaves both corners whole. So do browsers without
+ * scroll-driven animations: the gate keeps a zero-duration animation from
+ * running the keyframes to their end. The longhands are used because the
+ * shorthand would reset the timeline and the range.
+ */
+@utility ui-tabs-round {
+  @supports (animation-timeline: scroll()) {
+    animation-name: ui-tabs-round-s, ui-tabs-round-e;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --tabs-scroll, --tabs-scroll;
+    animation-range:
+      0 var(--ak-frame-radius),
+      calc(100% - var(--ak-frame-radius)) 100%;
+  }
+}
+
+/* The marks the choice box cuts out of its own text color: lucide's check
+   and minus paths, drawn heavier than the icon stroke because the mask
+   renders at about 11px in a 1em box. Published once here and read through
+   var() by every box, so no element carries the image. Any opaque color
+   works in an alpha mask; the fill you see is the pseudo-element's own
+   background color. */
+:root {
+  --choice-mark-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  --choice-mark-dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+}
+
+/* Disclosure geometry: the root measures its icon column in its own line
+   box and font, and publishes the results as lengths. Registered, they
+   compute on the root, so a button or a body with a line height of its own
+   still spends the same pixels. */
+@property --disclosure-px {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --disclosure-gap {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --disclosure-lead {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Nav geometry: the root measures a row's padding and content inset in its
+   own line box and font, and publishes them as lengths, so a group label in
+   smaller text pads like a row and lands its text on the rows' column. */
+@property --nav-py {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --nav-px {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Table geometry: the table pads its cells like a control, the frame padding
+   above and below and its optical side padding on top, measured in the table's
+   own line box and font and published as lengths, so a head row in smaller
+   text pads like a body row and its text stays on the column below. */
+@property --table-py {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --table-px {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Disclosure state channels: the root publishes open and group flags as
+   custom properties, and descendants react through container style
+   queries. */
+@custom-variant ui-disclosure-open {
+  @container style(--disclosure-open: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disclosure-group {
+  @container style(--disclosure-group: 1) {
+    @slot;
+  }
+}
+
+/* List state channels: the list root publishes its flags as custom
+   properties, and items and markers react through container style queries.
+   The marker kind is one of them: the root names it, and every marker in the
+   list takes that shape. */
+@custom-variant ui-list-counter {
+  @container style(--list-marker: counter) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-bullet {
+  @container style(--list-marker: bullet) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-dash {
+  @container style(--list-marker: dash) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-item-blocks {
+  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-blocks {
+  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+    @slot;
+  }
+  @container style(--list-blocks: 1) {
+    @slot;
+  }
+}
+
+/* Registered after ui-list-blocks so the sections gap wins when a list
+   matches both. */
+@custom-variant ui-list-sections {
+  &:has(:where(h1, h2, h3, h4)) {
+    @slot;
+  }
+}
+
+/* The row that closes a list, published by the list root on its own last li.
+   Reading it as a channel rather than counting DOM depth keeps the guide
+   correct wherever a row puts it, and a nested list resets the flag on itself
+   before re-publishing it on its own last row. */
+@custom-variant ui-list-last-row {
+  @container style(--list-last-row: 1) {
+    @slot;
+  }
+}
+
+/* Sidebar collapse flag published by the sidebar root and read by
+   descendants (such as nav labels) through container style queries. */
+@custom-variant ui-sidebar-collapsed {
+  @container style(--sidebar-collapsed: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-nav-current {
+  &:where([aria-current="true"], [aria-current="page"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disabled {
+  &:is(:disabled, [aria-disabled="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disabled-within {
+  &:is(:disabled, [aria-disabled="true"]),
+  &:has(:is(:disabled, [aria-disabled="true"])) {
+    @slot;
+  }
+}
+
+@custom-variant ui-active {
+  &:is(:active) {
+    @variant not-ui-disabled {
+      @slot;
+    }
+  }
+}
+
+@custom-variant ui-hover {
+  @variant hover {
+    @variant not-ui-disabled {
+      /* Hovering a nested interactive element (a select inside a split
+         disclosure row, for example) must not light up the host, which
+         would falsely signal that a click activates it. Same exclusions as
+         the legacy ak-command-hover. */
+      &:not(:has(button:hover), :has(*:hover > button)) {
+        @slot;
+      }
+    }
+  }
+}
+
+@custom-variant ui-focus {
+  &:focus {
+    @slot;
+  }
+}
+
+@custom-variant ui-focus-visible {
+  &:is(:focus-visible, [data-focus-visible]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-focus-visible-within {
+  &:is(:focus-visible, [data-focus-visible]),
+  &:has(:is(:focus-visible, [data-focus-visible])) {
+    @slot;
+  }
+}
+
+/* Open state, whichever way it arrives: the native open attribute and popover
+   pseudo-classes, or the data-open attribute Ariakit sets. The closed variant
+   excludes all of them, so it never hides an open Ariakit element. Static
+   markup declares data-open to render open. */
+@custom-variant ui-open {
+  &:is([open], :popover-open, :open, [data-open]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-closed {
+  &:not(:is([open], :popover-open, :open, [data-open])) {
+    @slot;
+  }
+}
+
+/* The backdrop, whichever way it is rendered: the native ::backdrop, or the
+   element Ariakit renders as the previous sibling of the dialog, or of a
+   wrapper around it. Put the open variants before this one: the other order
+   wraps ::backdrop in :is(), which is invalid, and the rule drops. */
+@custom-variant ui-backdrop {
+  &::backdrop,
+  :where([data-backdrop]):has(+ &, + * &) {
+    @slot;
+  }
+}
+
+@custom-variant ui-checked {
+  &:is(:checked, [aria-checked="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-checked-within {
+  &:is(:checked, [aria-checked="true"]),
+  &:has(:checked, [aria-checked="true"]) {
+    @slot;
+  }
+}
+
+/* Mixed state, whichever way it arrives: the indeterminate flag Ariakit's
+   Checkbox sets on a native input, or aria-checked="mixed" on a custom one.
+   A radio in a group with no selection is :indeterminate as well and must
+   not count; the :where() keeps that exclusion out of the specificity, so
+   these rules stay level with ui-checked and ui-disabled. */
+@custom-variant ui-mixed {
+  &:is([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))) {
+    @slot;
+  }
+}
+
+@custom-variant ui-mixed-within {
+  &:is([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))),
+  &:has([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))) {
+    @slot;
+  }
+}
+
+/* The state of a choice box, read from the element itself or from the host
+   it belongs to: a native input carries :checked, while the box drawn
+   inside a card label, or inside a custom checkbox with aria-checked, reads
+   the state of that host. The same classes then draw both. ui-choice-on
+   covers checked and mixed, which share the fill; ui-choice-mixed swaps the
+   mark. Register ui-choice-disabled last: its edge and ink have to win over
+   the on state at equal specificity. */
+@custom-variant ui-choice-on {
+  &:is(
+    :checked,
+    [aria-checked="true"],
+    [aria-checked="mixed"],
+    :indeterminate:where(:not([type="radio"]))
+  ),
+  :where(
+      label:has(
+        :checked,
+        [aria-checked="true"],
+        [aria-checked="mixed"],
+        :indeterminate:where(:not([type="radio"]))
+      ),
+      [aria-checked="true"],
+      [aria-checked="mixed"]
+    )
+    & {
+    @slot;
+  }
+}
+
+@custom-variant ui-choice-mixed {
+  &:is([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))),
+  :where(
+      label:has([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))),
+      [aria-checked="mixed"]
+    )
+    & {
+    @slot;
+  }
+}
+
+@custom-variant ui-choice-disabled {
+  &:is(:disabled, [aria-disabled="true"]),
+  :where(label:has(:disabled, [aria-disabled="true"]), [aria-disabled="true"])
+    & {
+    @slot;
+  }
+}
+
+@custom-variant ui-selected {
+  &:is(
+    :checked,
+    .selected,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-selected-within {
+  &:is(
+    :checked,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ),
+  &:has(
+    :checked,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ) {
+    @slot;
+  }
+}
+
+/* A sibling on either side is selected, adjacent or not. A glider reads it
+   to stay out of sight while none of the controls it follows is selected.
+   The selected class is left out: a selected glider carries it itself. */
+@custom-variant ui-sibling-selected {
+  :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+    ~ &,
+  &:has(
+    ~ :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-hover {
+  :hover:not(:disabled, [aria-disabled="true"]) + &,
+  &:has(+ :hover:not(:disabled, [aria-disabled="true"])) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-selected {
+  :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+    + &,
+  &:has(
+    + :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-focus-visible {
+  :focus-visible + &,
+  &:has(+ :focus-visible) {
+    @slot;
+  }
+}
+
+@custom-variant befter {
+  &::before,
+  &::after {
+    @slot;
+  }
+}
+
+@custom-variant supports-anchor {
+  @supports (anchor-name: --a) {
+    @slot;
+  }
+}
+
+@custom-variant supports-corner-shape {
+  @supports (corner-shape: squircle) {
+    @slot;
+  }
+}
+
+@custom-variant ui-text {
+  &.text:not(.ak-layer), & .text:not(.ak-layer), & svg {
+    @slot;
+  }
+}
+
+
+@utility ui-bevel {
+  --min-l: 0.25;
+  --max-l: 1;
+  --bg-dark-l: calc(l - 0.02 - 0.1 * c);
+  --bg-light-l: calc(l + 0.01);
+  --bg-dark: oklch(from var(--ak-layer) clamp(var(--min-l), var(--bg-dark-l), var(--max-l)) c h);
+  --bg-light: oklch(from var(--ak-layer) clamp(var(--min-l), var(--bg-light-l), var(--max-l)) c h);
+  --shadow-color: oklch(from var(--bg-dark) calc(l - 0.15) c h);
+  --shadow: 0 -0.5px 0.5px 1px var(--shadow-color);
+  --highlight: 0 2px 0.5px oklch(from var(--bg-dark) calc(l + 0.2) calc(c / 2) h);
+  --inset-shadow: var(--shadow), inset var(--highlight);
+  @apply inset-shadow-(--inset-shadow) from-(--bg-dark) to-(--bg-light) bg-linear-to-b from-50% bg-clip-padding outline-offset-1;
+  @variant ak-dark {
+    --min-l: 0.15;
+    --max-l: 0.85;
+    --bg-dark-l: l;
+    --shadow: 0 -0.5px 0.5px var(--shadow-color);
+    --highlight: 0 1.5px 0.5px oklch(from var(--bg-dark) calc(l + 0.1) c h);
+  }
+}
+
+@utility ui-bevel-button {
+  @apply ui-bevel;
+  @variant ui-hover {
+    --min-l: 0.35;
+    --max-l: 1;
+    @variant ak-dark {
+      --min-l: 0.25;
+    }
+  }
+  @variant ui-active {
+    --bg-dark-active: oklch(from var(--ak-layer) calc(l - 0.02) c h);
+    --bg-light-active: oklch(from var(--ak-layer) calc(l + 0.02) c h);
+    --shadow: 0 1px 0.5px 1px var(--shadow-color);
+    --highlight: 0 0 transparent;
+    @apply from-(--bg-dark-active) to-(--bg-light-active) from-60%;
+    @variant ak-dark {
+      --bg-dark-active: oklch(from var(--ak-layer) calc(l - 0.02) c h);
+      --bg-light-active: oklch(from var(--ak-layer) calc(l + 0.02) c h);
+      --shadow: 0 0.5px 0.5px var(--shadow-color);
+    }
+  }
+}
+
+/**
+ * Curves the bottom outer corners of a selected element like a folder tab so it
+ * merges into the panel below. Each corner is drawn by a pseudo element that
+ * stacks two radial gradients: the layer with its edge, and the parent backdrop
+ * that fills the notch left beside the curve.
+ *
+ * The curves paint the edge in --folder-edge, the frame's edge colour unless
+ * the consumer points it elsewhere, and as wide as the frame's edge plus
+ * --folder-extra. A consumer that thickens its edge inward for keyboard focus
+ * sets both on the folder element: the extra band grows toward the box, and
+ * the curves grow by the same amount, so their outer arc keeps its place. The
+ * extra band is a layer of its own that ends on the seam, where the curve's
+ * foot meets the panel's edge, so it does not run on below it as the box does.
+ *
+ * Tailwind emits this utility ahead of the frame border widths, so the bottom
+ * border reset has to be important to survive a bordered frame. The ui-selected
+ * declarations need no such help: their `:is()` selector already outranks the
+ * single-class utilities they override.
+ */
+@utility ui-folder {
+  position: relative;
+  border-bottom-width: 0 !important;
+  --folder-radius: var(--ak-frame-radius, 0px);
+
+  &::before,
+  &::after {
+    position: absolute;
+    bottom: 0;
+    border-style: none;
+    background-repeat: no-repeat;
+  }
+
+  @variant ui-selected {
+    /* Only a selected folder paints curves outside its box and covers the
+       seam, so only it clips, and only a ring folder cuts at its bottom: a
+       ring runs on below the box, over the panel, and the cut removes it. A
+       clip path is antialiased where it falls while a background is snapped
+       to the pixel grid, and the blur reaches about a pixel on each side, so
+       the cut must keep a pixel away from the panel's edge, or a hair of that
+       edge shows through, and two pixels away from the ring's own inner edge
+       at the box's bottom, since the ring is also painted under the box's
+       last pixel, or a hair of the ring does: the box and the curves run
+       three pixels past the seam, and the cut lands two pixels inside the
+       box, on the panel's surface, which matches the folder's. A border
+       folder ends on the seam with nothing below its box, so it does not cut
+       there at all. */
+    clip-path: inset(
+      -4rem -4rem
+        calc(-4rem + min(var(--folder-ring) * 1000000, 4rem + 2px)) -4rem
+    );
+    --folder-edge: var(--ak-edge);
+    --folder-ring: var(--ak-frame-ring, 0px);
+    --folder-border: var(--ak-frame-border, 0px);
+    --folder-bordering: calc(var(--ak-frame-border, 0px) + var(--ak-frame-ring, 0px));
+    /* How far the folder's box runs past the seam into the panel: three
+       pixels under a ring, for the cut above, and nothing under a border. The
+       folder reads its own edge here rather than the seam's, because a frame
+       that inherits an edge picks border or ring for itself. */
+    --folder-over: min(var(--folder-ring) * 1000000, 3px);
+    /* How far past the seam the box must reach to cover the panel's edge,
+       which sits inside the panel's box as a border and outside it as a
+       ring. The consumer adds the room between its row and the seam. */
+    --folder-reach: calc(var(--folder-border) + var(--folder-over));
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+
+    &::before,
+    &::after {
+      /* Overlap neighboring color stops by a hair so the bands blend instead
+         of showing an aliased seam. */
+      --folder-smoothness: min(0.2px, var(--folder-bordering));
+      --folder-inner: var(--folder-radius);
+      --folder-inner-border: calc(var(--folder-inner) - var(--folder-smoothness));
+      --folder-inner-bg: calc(var(--folder-inner) + var(--folder-smoothness));
+      --folder-outer: calc(var(--folder-inner) - var(--folder-bordering));
+      --folder-outer-border: calc(var(--folder-outer) + var(--folder-smoothness));
+      --folder-outer-bg: calc(var(--folder-outer) - var(--folder-smoothness));
+      --folder-transparent: transparent var(--folder-outer-bg);
+      --folder-border: var(--folder-edge) var(--folder-outer-border), var(--folder-edge) var(--folder-inner-border);
+      --folder-bg: var(--ak-layer) var(--folder-inner-bg);
+      --folder-gradient: var(--folder-transparent), var(--folder-border), var(--folder-bg);
+      --folder-backdrop-ring: calc(var(--folder-outer-border) + var(--folder-ring));
+      --folder-backdrop: transparent var(--folder-outer-border), var(--ak-layer-parent) var(--folder-outer-border), var(--ak-layer-parent) var(--folder-backdrop-ring), var(--ak-layer) var(--folder-backdrop-ring);
+      /* The extra band runs from the band's inner edge to --folder-extra
+         further in, over the layer below. It starts a hair before the edge
+         ends, so the two blend, and it has its own hair of smoothness, since
+         an edgeless folder has none. */
+      --folder-extra-smoothness: min(0.2px, var(--folder-extra, 0px));
+      --folder-extra-inner: calc(var(--folder-inner) + var(--folder-extra, 0px));
+      --folder-extra-gradient: transparent calc(var(--folder-inner-border) - var(--folder-extra-smoothness)), var(--folder-edge) var(--folder-inner-border), var(--folder-edge) calc(var(--folder-extra-inner) - var(--folder-extra-smoothness)), transparent calc(var(--folder-extra-inner) + var(--folder-extra-smoothness));
+      content: "";
+      pointer-events: none;
+      width: calc(var(--folder-radius) + var(--folder-extra, 0px));
+      height: calc(var(--folder-radius) + var(--folder-over));
+      /* The extra band's layer has no width until the extra is on, and it
+         stops at the seam. */
+      background-size: min(var(--folder-extra, 0px) * 1000000, 100%) var(--folder-radius), auto, auto;
+      transition-property: --folder-radius;
+      transition-duration: var(--duration-tabs);
+      transition-timing-function: var(--ease-tabs);
+    }
+
+    &::before {
+      inset-inline-end: 100%;
+      background-image: radial-gradient(circle at 0 0, var(--folder-extra-gradient)),
+        radial-gradient(circle at 0 0, var(--folder-gradient)),
+        radial-gradient(circle at 0 0, var(--folder-backdrop));
+    }
+
+    &::after {
+      inset-inline-start: 100%;
+      background-image: radial-gradient(circle at 100% 0, var(--folder-extra-gradient)),
+        radial-gradient(circle at 100% 0, var(--folder-gradient)),
+        radial-gradient(circle at 100% 0, var(--folder-backdrop));
+    }
+
+    /* The curves are placed by logical insets while the gradients' centres
+       are physical corners, so a right-to-left folder mirrors each curve in
+       its own box to keep the centre on the corner away from the tab. */
+    &:dir(rtl)::before,
+    &:dir(rtl)::after {
+      transform: scaleX(-1);
+    }
+  }
+}
+
+/**
+ * Paints a tab strip's surface inside the tabs root's edge. The strip's box
+ * reaches over the root's edge so that its scroll clip spares the tab edges
+ * that land there, and the root does not clip at its edge either, so the strip
+ * cannot paint its whole box. It paints a rounded rectangle one edge width
+ * inside its box instead, cornered like the root's padding box: two
+ * rectangles and two quarter circles, one at each top corner. The circles are
+ * feathered by a fraction of a pixel where they meet the root's border, as the
+ * folder curves are. The bottom corners stay square under the panel.
+ */
+@utility ui-tabs-well {
+  --well-inset: var(--tabs-bordering, 0px);
+  --well-radius: max(0px, calc(var(--tabs-radius, 0px) - var(--tabs-border, 0px)));
+  --well-smoothness: 0.5px;
+  --well-color: var(--ak-layer);
+  --well-corner: var(--well-color) calc(var(--well-radius) - var(--well-smoothness)),
+    transparent calc(var(--well-radius) + var(--well-smoothness));
+  --well-fill: linear-gradient(var(--well-color), var(--well-color));
+  /* The layer utility paints the whole box; the images below paint instead. */
+  background-color: transparent !important;
+  background-image:
+    radial-gradient(circle at 100% 100%, var(--well-corner)),
+    radial-gradient(circle at 0 100%, var(--well-corner)),
+    var(--well-fill),
+    var(--well-fill);
+  background-size:
+    var(--well-radius) var(--well-radius),
+    var(--well-radius) var(--well-radius),
+    calc(100% - 2 * var(--well-inset) - 2 * var(--well-radius)) var(--well-radius),
+    calc(100% - 2 * var(--well-inset)) calc(100% - var(--well-inset) - var(--well-radius));
+  background-position:
+    var(--well-inset) var(--well-inset),
+    calc(100% - var(--well-inset)) var(--well-inset),
+    calc(var(--well-inset) + var(--well-radius)) var(--well-inset),
+    var(--well-inset) calc(var(--well-inset) + var(--well-radius));
+  background-repeat: no-repeat;
+}
