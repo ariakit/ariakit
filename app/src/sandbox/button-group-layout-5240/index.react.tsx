@@ -8,6 +8,16 @@ const groups = [
   { title: "Spaced", $layout: "horizontal", $gap: "md", $p: "none" },
   { title: "Vertical", $layout: "vertical", $gap: "auto", $p: "none" },
   { title: "Wrapped", $layout: "wrap", $gap: "auto", $p: "none" },
+  // All of these lengths resolve to the same padding as "none".
+  { title: "Numeric zero", $layout: "horizontal", $gap: "auto", $p: 0 },
+  { title: "Pixel zero", $layout: "horizontal", $gap: "auto", $p: "0px" },
+  { title: "Rem zero", $layout: "horizontal", $gap: "auto", $p: "0rem" },
+  {
+    title: "Calculated zero",
+    $layout: "horizontal",
+    $gap: "auto",
+    $p: "calc(0px)",
+  },
 ] as const;
 
 export default function Example() {

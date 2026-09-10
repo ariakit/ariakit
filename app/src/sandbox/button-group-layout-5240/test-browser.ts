@@ -2,8 +2,17 @@ import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972227948
+  // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550181
   test("joins adjacent horizontal borders", async ({ q }) => {
-    for (const title of ["Horizontal", "Stretched", "Padded"]) {
+    for (const title of [
+      "Horizontal",
+      "Stretched",
+      "Padded",
+      "Numeric zero",
+      "Pixel zero",
+      "Rem zero",
+      "Calculated zero",
+    ]) {
       const group = query(q.group(title));
       const first = group.button("Day");
       const middle = group.button("Week");

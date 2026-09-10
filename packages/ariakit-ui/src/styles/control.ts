@@ -418,20 +418,24 @@ export const controlGroup = cv({
     if (variants.$layout !== "horizontal" && variants.$layout !== "stretch") {
       return;
     }
-    const gapless =
-      variants.$gap === "none" ||
-      (variants.$gap === "auto" && variants.$p === "none");
-    if (!gapless) return;
+    if (variants.$gap !== "none" && variants.$gap !== "auto") return;
     // Bordered controls share an edge only when nothing separates them, so each
-    // pulls half its edge into its neighbour in a gapless row.
+    // pulls half its edge into its neighbour in a gapless row. The auto gap
+    // follows the resolved padding, including CSS lengths and expressions.
+    if (variants.$gap === "none") {
+      addClass([
+        "[&>.control:not(:nth-child(1_of_.control))]:-ms-[calc(var(--ak-frame-border)/2)]",
+        "[&>.control:not(:nth-last-child(1_of_.control))]:-me-[calc(var(--ak-frame-border)/2)]",
+      ]);
+    } else {
+      addClass([
+        "[&>.control:not(:nth-child(1_of_.control))]:[@container_style(--ak-frame-padding:_0px)]:-ms-[calc(var(--ak-frame-border)/2)]",
+        "[&>.control:not(:nth-last-child(1_of_.control))]:[@container_style(--ak-frame-padding:_0px)]:-me-[calc(var(--ak-frame-border)/2)]",
+      ]);
+    }
     addClass([
-      "[&>.control:not(:nth-child(1_of_.control))]:-ms-[calc(var(--ak-frame-border)/2)]",
-      "[&>.control:not(:nth-last-child(1_of_.control))]:-me-[calc(var(--ak-frame-border)/2)]",
-    ]);
-    if (variants.$p !== "none") return;
-    addClass([
-      "[&>.control:not(:nth-child(1_of_.control))]:rounded-s-none",
-      "[&>.control:not(:nth-last-child(1_of_.control))]:rounded-e-none",
+      "[&>.control:not(:nth-child(1_of_.control))]:[@container_style(--ak-frame-padding:_0px)]:rounded-s-none",
+      "[&>.control:not(:nth-last-child(1_of_.control))]:[@container_style(--ak-frame-padding:_0px)]:rounded-e-none",
     ]);
   },
 });
