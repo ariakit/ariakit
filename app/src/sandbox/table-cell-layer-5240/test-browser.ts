@@ -9,11 +9,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const ordinary = q.text("Row surface");
     const pinned = q.text("Pinned name");
     const custom = q.text("Custom surface");
+    const modified = q.text("Modified surface");
+    const disabled = q.text("Disabled surface");
     const selected = q.checkbox("Select row");
+    // Transparent layers retain their color channels and serialize as OKLCH.
+    const transparentColor = /^(?:rgba\(.+, 0\)|oklch\(.+ \/ 0\))$/;
     const expectRowSurface = async () => {
       await test
         .expect(ordinary)
-        .toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+        .toHaveCSS("background-color", transparentColor);
+      await test
+        .expect(disabled)
+        .toHaveCSS("background-color", transparentColor);
       await test.expect
         .poll(async () => {
           const rowBackground = await row.evaluate(
@@ -34,6 +41,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(pinned).toHaveCSS("background-color", restingBackground);
     await test
       .expect(custom)
+      .not.toHaveCSS("background-color", restingBackground);
+    // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974548937
+    await test
+      .expect(modified)
+      .not.toHaveCSS("background-color", transparentColor);
+    await test
+      .expect(modified)
       .not.toHaveCSS("background-color", restingBackground);
 
     await ordinary.hover();

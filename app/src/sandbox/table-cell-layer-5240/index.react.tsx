@@ -29,6 +29,11 @@ export default function Example() {
             <TableCell $sticky="start">Pinned name</TableCell>
             <TableCell>Row surface</TableCell>
             <TableCell $layer="brand">Custom surface</TableCell>
+            {/* A modifier alone must enable the cell's layer. */}
+            <TableCell $lighten>Modified surface</TableCell>
+            <TableCell $lighten $layer={false}>
+              Disabled surface
+            </TableCell>
           </TableRow>
         </TableRowGroup>
       </Table>

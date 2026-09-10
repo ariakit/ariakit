@@ -297,8 +297,8 @@ export const tableCell = cv({
     // and neither has the column before a cell pinned at the end, which holds
     // that divider itself (see $sticky). They are borders, so the padding box
     // is the box inside the lines, which the ring fills (see $focus). The
-    // cell paints no surface of its own: the row's shows through, and the
-    // lines, the row's edge, lie over it, so a hovered or selected row keeps
+    // cell paints no surface of its own by default: the row's shows through.
+    // The lines, the row's edge, lie over it, so a hovered or selected row keeps
     // its lines in contrast with its tint. A pinned cell is the exception
     // (see $sticky).
     "[--table-cell-line-e:var(--table-cell-line)] last:[--table-cell-line-e:0]",
@@ -399,8 +399,13 @@ export const tableCell = cv({
     $header: false,
     $focus: true,
     $layer(defaultValue, variants) {
-      if (!variants.$sticky) return false;
-      return defaultValue ?? true;
+      if (variants.$sticky) {
+        return defaultValue ?? true;
+      }
+      // A transparent layer lets the row show through until a cell modifier
+      // asks it to paint, while retaining the modifier's color context.
+      if (defaultValue === true) return "transparent";
+      return defaultValue;
     },
   },
   refine({ variants, addClass }) {
