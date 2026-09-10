@@ -38,6 +38,7 @@ function getColumnKeys<K extends string | number>(rows?: TableRows<K>) {
   for (const row of rows ?? []) {
     for (const key of Object.keys(row)) {
       if (key === "group") continue;
+      if (key === "key") continue;
       keys.add(key);
     }
   }
@@ -46,6 +47,12 @@ function getColumnKeys<K extends string | number>(rows?: TableRows<K>) {
 
 export type TableRow<K extends string | number> = {
   group?: TableRowGroupKind;
+  /**
+   * Stable identity within the row group, so edits and component state survive
+   * reordering. This reserved field does not render a column. Rows without a
+   * key use their position.
+   */
+  key?: React.Key;
   // Partial: a row may omit columns (or set them to null) and still render an
   // empty cell in the right position.
 } & Partial<Record<K, React.ReactNode | TableCellProps>>;
@@ -83,8 +90,8 @@ export interface TableProps<K extends string | number>
   /** Custom row element or props to render a `TableRow` for foot rows. */
   footRow?: React.ReactElement | TableRowProps;
   /**
-   * Declarative rows data. Keys map to columns; values are cell content or
-   * props.
+   * Declarative rows data. Except for the reserved `group` and `key` fields,
+   * keys map to columns; values are cell content or props.
    */
   rows?: TableRows<K>;
 }
@@ -112,7 +119,7 @@ export interface TableProps<K extends string | number>
  * <Table
  *   rows={[
  *     { group: "head", name: "Name", age: { children: "Age", numeric: true } },
- *     { name: "Ada", age: 37 },
+ *     { key: "ada", name: "Ada", age: 37 },
  *   ]}
  * />
  */
@@ -191,8 +198,10 @@ export function Table<K extends string | number>({
 
   const renderRow = (row: TableRow<K>, index: number) => {
     const rowElement = getRowElement(row);
+    // Keep explicit keys separate from positions in mixed keyed/unkeyed rows.
+    const key = row.key == null ? `index:${index}` : `key:${row.key}`;
     return (
-      <ak.Role key={index} render={rowElement}>
+      <ak.Role key={key} render={rowElement}>
         {columnKeys.map((key) => {
           // Missing and null columns still emit an empty cell so every
           // following cell stays under its header.
