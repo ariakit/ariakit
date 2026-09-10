@@ -2,7 +2,10 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import * as React from "react";
-import { createRender } from "../react-utils/create-render.react.ts";
+import {
+  createOptionalRender,
+  createRender,
+} from "../react-utils/create-render.react.ts";
 import {
   nav,
   navButton,
@@ -234,7 +237,7 @@ function NavDisclosureRoot(props: ak.RoleProps<"li">) {
 
 export function NavDisclosure(props: NavDisclosureProps) {
   const [variantProps, rest] = splitProps(props, navDisclosure);
-  const button = createRender(NavDisclosureButton, rest.button);
+  const button = createOptionalRender(NavDisclosureButton, rest.button);
   const content = createRender(NavDisclosureContent, rest.content);
   return (
     <Disclosure
@@ -246,9 +249,7 @@ export function NavDisclosure(props: NavDisclosureProps) {
       $p={2}
       {...navDisclosure.jsx(variantProps)}
       {...rest}
-      button={
-        rest.button != null && rest.button !== false ? button : rest.button
-      }
+      button={button}
       content={content}
       render={<NavDisclosureRoot render={rest.render} />}
     />

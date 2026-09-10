@@ -7,10 +7,12 @@ import {
   ComboboxSelectPopover,
   ComboboxSelectProvider,
 } from "@ariakit/ui/components/combobox.ariakit.react";
+import ConditionalContent from "./conditional-content.react.tsx";
 
 export default function Example() {
   const store = ak.useComboboxStore({ defaultSelectedValue: "Apple" });
   const selectedValue = ak.useStoreState(store, "selectedValue");
+  // Undefined sizes keep the badge default, and numeric zero remains content.
   return (
     <div className="flex flex-col gap-6">
       <div className="flex gap-4">
@@ -57,6 +59,7 @@ export default function Example() {
           </ComboboxSelectProvider>
         </div>
       </div>
+      <ConditionalContent />
     </div>
   );
 }

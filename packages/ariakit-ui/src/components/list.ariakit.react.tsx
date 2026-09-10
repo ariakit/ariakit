@@ -3,7 +3,10 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { CheckIcon } from "lucide-react";
 import type * as React from "react";
-import { createRender } from "../react-utils/create-render.react.ts";
+import {
+  createOptionalRender,
+  createRender,
+} from "../react-utils/create-render.react.ts";
 import {
   list,
   listDisclosure,
@@ -181,7 +184,7 @@ export interface ListDisclosureProps
  */
 export function ListDisclosure(props: ListDisclosureProps) {
   const [variantProps, rest] = splitProps(props, listDisclosure);
-  const button = createRender(ListDisclosureButton, rest.button);
+  const button = createOptionalRender(ListDisclosureButton, rest.button);
   const content = createRender(ListDisclosureContent, rest.content);
   return (
     <Disclosure
@@ -196,11 +199,7 @@ export function ListDisclosure(props: ListDisclosureProps) {
           <ListItemGuide />
         </>
       }
-      // Falsy labels like {0} must still render through ListDisclosureButton
-      // so its indicator defaults apply.
-      button={
-        rest.button != null && rest.button !== false ? button : rest.button
-      }
+      button={button}
       content={content}
     />
   );

@@ -22,4 +22,39 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.text("Selected fruit: Orange")).toBeVisible();
     await test.expect(q.listbox()).toBeHidden();
   });
+
+  // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974549543
+  test("falls back from false labels and keeps conditional options named", async ({
+    q,
+  }) => {
+    const button = q.combobox("Status filter");
+    await test.expect(button).toHaveText("Open");
+    await test.expect(q.combobox("Status summary")).toHaveText("0Summary");
+    await button.click();
+    await q.option("Closed").click();
+    await test.expect(button).toHaveText("Closed");
+    await q.checkbox("Show status labels").check();
+    await test.expect(button).toContainText("Custom status");
+    await button.click();
+    await test.expect(q.option("Closed status")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974549543
+  test("omits false icon slots and preserves zero icons", async ({ q }) => {
+    const button = q.combobox("Status filter");
+    await test.expect(button.locator(":scope > *")).toHaveCount(1);
+    await button.click();
+    const options = q.option();
+    await test.expect(options.nth(0).locator(":scope > *")).toHaveCount(1);
+    await test.expect(options.nth(1).locator(":scope > *")).toHaveCount(1);
+    await test.expect(q.option(/^0\s*No activity$/)).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974549543
+  test("preserves intentional empty strings", async ({ q }) => {
+    await test.expect(q.combobox("Blank display")).toHaveText("");
+    await test.expect(q.combobox("Blank summary")).toHaveText("");
+    await q.combobox("Status filter").click();
+    await test.expect(q.option("Blank status")).toHaveText("");
+  });
 });

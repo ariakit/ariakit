@@ -3,6 +3,24 @@ import * as React from "react";
 import { isIterable } from "./is-iterable.ts";
 
 /**
+ * Whether an optional render shorthand requests an element. Nullish values and
+ * `false` omit it; `0` and an explicit empty string remain content.
+ */
+export function isRenderable(value: unknown) {
+  return value != null && value !== false;
+}
+
+/** Like `createRender`, but nullish values and `false` omit the element. */
+export function createOptionalRender<P extends object>(
+  Component: React.ElementType<P> | React.ExoticComponent<P>,
+  props?: P | React.ReactNode,
+  defaultProps?: P,
+) {
+  if (!isRenderable(props)) return null;
+  return createRender(Component, props, defaultProps);
+}
+
+/**
  * Creates a React element from a component and a flexible prop value, merging
  * default props and supporting an element, a props object, or plain children.
  * @example

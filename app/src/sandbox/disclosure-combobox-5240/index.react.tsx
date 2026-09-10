@@ -9,6 +9,8 @@ import * as React from "react";
 
 export default function Example() {
   const [headings, setHeadings] = React.useState(false);
+  // False omits optional content; zero still renders as a label, icon, or
+  // description.
   return (
     <div className="grid gap-4">
       <label>
@@ -46,6 +48,12 @@ export default function Example() {
         button={{ children: "Archived requests", description: false }}
       >
         Archived requests are available
+      </Disclosure>
+      <Disclosure button={{ children: false, description: "Optional title" }}>
+        Optional settings
+      </Disclosure>
+      <Disclosure button={{ children: "Unread messages", icon: 0 }}>
+        No unread messages
       </Disclosure>
     </div>
   );

@@ -4,7 +4,11 @@ import { splitProps } from "clava";
 import { clsx } from "clsx";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import type * as React from "react";
-import { createRender } from "../react-utils/create-render.react.ts";
+import {
+  createOptionalRender,
+  createRender,
+  isRenderable,
+} from "../react-utils/create-render.react.ts";
 import { badge as badgeStyle } from "../styles/badge.ts";
 import {
   comboboxEmpty,
@@ -59,10 +63,7 @@ export function Combobox({
   store,
   ...props
 }: ComboboxProps) {
-  const labelElement =
-    label != null && label !== false
-      ? createRender(ComboboxLabel, label)
-      : null;
+  const labelElement = createOptionalRender(ComboboxLabel, label);
   const popoverElement = createRender(ComboboxPopover, popover, { children });
   return (
     <ComboboxProvider
@@ -129,9 +130,7 @@ export function ComboboxGroup({ label, ...props }: ComboboxGroupProps) {
   const [variantProps, rest] = splitProps(props, comboboxGroup);
   return (
     <ak.ComboboxGroup {...comboboxGroup.jsx(variantProps)} {...rest}>
-      {label != null &&
-        label !== false &&
-        createRender(ComboboxGroupLabel, label)}
+      {createOptionalRender(ComboboxGroupLabel, label)}
       {rest.children}
     </ak.ComboboxGroup>
   );
@@ -277,10 +276,7 @@ export function ComboboxSelect({
   popover,
   ...props
 }: ComboboxSelectProps) {
-  const labelEl =
-    label != null && label !== false
-      ? createRender(ComboboxSelectLabel, label)
-      : null;
+  const labelEl = createOptionalRender(ComboboxSelectLabel, label);
   const popoverEl = createRender(ComboboxSelectPopover, popover);
   return (
     <ComboboxSelectProvider
@@ -390,7 +386,7 @@ export function ComboboxSelectButton({
       <ChevronDownIcon />
     </span>
   );
-  const iconElement = icon != null && (
+  const iconElement = isRenderable(icon) && (
     <span {...comboboxSelectIcon.jsx({})}>{icon}</span>
   );
   return (
@@ -408,7 +404,13 @@ export function ComboboxSelectButton({
       {chevron === "before" && arrow}
       {chevron !== "before" && iconElement}
       <span {...comboboxSelectValueLabel.jsx({})}>
-        {displayValue ?? rest.children ?? <ComboboxSelectValue />}
+        {isRenderable(displayValue) ? (
+          displayValue
+        ) : isRenderable(rest.children) ? (
+          rest.children
+        ) : (
+          <ComboboxSelectValue />
+        )}
       </span>
       {chevron === "before" && iconElement}
       {chevron === "after" && arrow}
@@ -463,7 +465,7 @@ export function ComboboxSelectItem({
       <CheckIcon />
     </span>
   );
-  const iconElement = icon != null && (
+  const iconElement = isRenderable(icon) && (
     <span {...comboboxSelectIcon.jsx({})}>{icon}</span>
   );
   return (
@@ -471,7 +473,7 @@ export function ComboboxSelectItem({
       {checkmark === "before" && check}
       {checkmark !== "before" && iconElement}
       <span {...comboboxSelectValueLabel.jsx({})}>
-        {rest.children ?? rest.value}
+        {isRenderable(rest.children) ? rest.children : rest.value}
       </span>
       {checkmark === "before" && iconElement}
       {checkmark === "after" && check}

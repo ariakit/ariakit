@@ -1,6 +1,30 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550076
+  test("omits a false label while keeping the description", async ({ q }) => {
+    const button = q.button("Optional title");
+    await test.expect(button).not.toHaveAttribute("aria-labelledby");
+    await test.expect(button).toHaveAccessibleDescription("Optional title");
+    await test.expect(button.locator("span[id]")).toHaveCount(1);
+    await button.click();
+    await test.expect(q.text("Optional settings")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974549543
+  test("renders a zero icon before the label and the default indicator", async ({
+    q,
+  }) => {
+    const button = q.button(/Unread messages$/);
+    await test.expect(button).toHaveText("0Unread messages");
+    await test.expect(button.locator(":scope > span").first()).toHaveText("0");
+    await test
+      .expect(button.locator(":scope > span").last())
+      .toHaveAttribute("data-disclosure-indicator");
+    await button.click();
+    await test.expect(q.text("No unread messages")).toBeVisible();
+  });
+
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974019389
   test("preserves a zero description and omits a false description", async ({
     q,

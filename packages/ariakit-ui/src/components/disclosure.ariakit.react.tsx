@@ -3,7 +3,11 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { ChevronDownIcon } from "lucide-react";
 import * as React from "react";
-import { createRender } from "../react-utils/create-render.react.ts";
+import {
+  createOptionalRender,
+  createRender,
+  isRenderable,
+} from "../react-utils/create-render.react.ts";
 import {
   disclosure,
   disclosureButton,
@@ -67,7 +71,7 @@ export function Disclosure({
   const store = ak.useDisclosureStore({ open, setOpen, defaultOpen });
   const isOpen = ak.useStoreState(store, "open");
   const [variantProps, rest] = splitProps(props, disclosure);
-  const buttonEl = createRender(DisclosureButton, button);
+  const buttonEl = createOptionalRender(DisclosureButton, button);
   const contentEl = createRender(DisclosureContent, content);
   return (
     <ak.DisclosureProvider store={store}>
@@ -79,7 +83,7 @@ export function Disclosure({
         })}
         {...rest}
       >
-        {button != null && button !== false ? (
+        {buttonEl ? (
           <>
             <ak.Role render={buttonEl} />
             <ak.Role render={contentEl}>{rest.children}</ak.Role>
@@ -144,7 +148,7 @@ function renderIndicator(indicator: DisclosureIndicator) {
 export function DisclosureButton({
   description,
   icon,
-  indicator = icon ? "chevron-down-end" : "chevron-right-start",
+  indicator = isRenderable(icon) ? "chevron-down-end" : "chevron-right-start",
   ...props
 }: DisclosureButtonProps) {
   const context = ak.useDisclosureContext();
@@ -153,16 +157,13 @@ export function DisclosureButton({
   const labelId = `${baseId}-label`;
   const descriptionId = `${baseId}-description`;
   const [variantProps, rest] = splitProps(props, disclosureButton);
-  const hasDescription = description != null && description !== false;
-  // A nullish check, not truthiness: falsy labels like {0} must still render,
-  // since aria-labelledby references the span when a description exists.
-  const labelElement =
-    rest.children != null ? (
-      <span id={labelId} {...disclosureButtonLabel.jsx({})}>
-        {rest.children}
-      </span>
-    ) : null;
-  const iconElement = icon ? (
+  const hasDescription = isRenderable(description);
+  const labelElement = isRenderable(rest.children) ? (
+    <span id={labelId} {...disclosureButtonLabel.jsx({})}>
+      {rest.children}
+    </span>
+  ) : null;
+  const iconElement = isRenderable(icon) ? (
     <span {...disclosureButtonSlot.jsx({})}>{icon}</span>
   ) : null;
   const indicatorEl = indicator ? renderIndicator(indicator) : null;

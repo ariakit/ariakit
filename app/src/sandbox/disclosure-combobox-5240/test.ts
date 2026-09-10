@@ -1,6 +1,26 @@
 import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+// https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550076
+test("omits a false label while keeping the description", async () => {
+  const button = q.button("Optional title");
+  expect(button).not.toHaveAttribute("aria-labelledby");
+  expect(button).toHaveAccessibleDescription("Optional title");
+  expect(button.querySelectorAll("span[id]")).toHaveLength(1);
+  await click(button);
+  expect(q.text("Optional settings")).toBeVisible();
+});
+
+// https://github.com/ariakit/ariakit/pull/5240#discussion_r3974549543
+test("renders a zero icon before the label and the default indicator", async () => {
+  const button = q.button(/Unread messages$/);
+  expect(button).toHaveTextContent("0Unread messages");
+  expect(button.firstElementChild).toHaveTextContent("0");
+  expect(button.lastElementChild).toHaveAttribute("data-disclosure-indicator");
+  await click(button);
+  expect(q.text("No unread messages")).toBeVisible();
+});
+
 // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974019389
 test("preserves a zero description and omits a false description", async () => {
   const button = q.button("Pending requests");
