@@ -36,6 +36,21 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(query(q.row(/^Total /)).cell()).toHaveCount(2);
   });
 
+  // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974552570
+  test("keeps missing hours under their header when adding a contributor", async ({
+    q,
+  }) => {
+    await q.button("Add contributor").click();
+
+    const cells = query(q.row(/^Katherine\b/)).cell();
+    await test.expect(cells).toHaveCount(3);
+    await test.expect(cells.nth(0)).toHaveText("Katherine");
+    await test.expect(cells.nth(1)).toBeEmpty();
+    await test
+      .expect(query(cells.nth(2)).textbox("Katherine notes"))
+      .toHaveValue("");
+  });
+
   // Explicit zero must not share an identity with an unkeyed row at index zero.
   test("keeps keyed row edits when unkeyed rows change position", async ({
     q,

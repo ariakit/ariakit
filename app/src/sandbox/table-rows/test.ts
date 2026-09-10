@@ -43,6 +43,20 @@ test("renders column cells without the reserved row metadata", () => {
   expect(q.within(q.row(/^Total /)).cell.all()).toHaveLength(2);
 });
 
+// https://github.com/ariakit/ariakit/pull/5240#discussion_r3974552570
+test("keeps missing hours under their header when adding a contributor", async () => {
+  await click(q.button("Add contributor"));
+
+  const row = q.row(/^Katherine\b/);
+  expect(Array.from(row.children, (cell) => cell.textContent)).toEqual([
+    "Katherine",
+    "",
+    "",
+  ]);
+  expect(row.lastElementChild).toContainElement(q.textbox("Katherine notes"));
+  expect(q.textbox("Katherine notes")).toHaveValue("");
+});
+
 // Explicit zero must not share an identity with an unkeyed row at index zero.
 test("keeps keyed row edits when unkeyed rows change position", async () => {
   await click(q.textbox("Assigned task notes"));

@@ -196,13 +196,19 @@ export function Table<K extends string | number>({
     return columnProps;
   };
 
+  // Head cells set the same column props for every row in this render.
+  const columns = columnKeys.map((key) => ({
+    key,
+    props: getColumnProps(key as K),
+  }));
+
   const renderRow = (row: TableRow<K>, index: number) => {
     const rowElement = getRowElement(row);
     // Keep explicit keys separate from positions in mixed keyed/unkeyed rows.
     const key = row.key == null ? `index:${index}` : `key:${row.key}`;
     return (
       <ak.Role key={key} render={rowElement}>
-        {columnKeys.map((key) => {
+        {columns.map(({ key, props: columnProps }) => {
           // Missing and null columns still emit an empty cell so every
           // following cell stays under its header.
           const value = getCell(row, key as K) ?? { children: null };
@@ -210,7 +216,7 @@ export function Table<K extends string | number>({
             TableCell,
             value,
             {
-              ...getColumnProps(key as K),
+              ...columnProps,
               header: row.group === "head" ? "column" : false,
               children: key,
             },

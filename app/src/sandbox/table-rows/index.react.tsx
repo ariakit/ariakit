@@ -1,11 +1,12 @@
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import type { TableRows } from "@ariakit/ui/components/table.ariakit.react";
-import { Table } from "@ariakit/ui/components/table.ariakit.react";
+import { Table, TableCell } from "@ariakit/ui/components/table.ariakit.react";
 import { useState } from "react";
 import MixedRowKeys from "./mixed-row-keys.react.tsx";
 
 export default function Example() {
+  const [pinned, setPinned] = useState(true);
   const [added, setAdded] = useState(false);
   const [rows, setRows] = useState<TableRows<0 | "hours" | "notes">>([
     {
@@ -55,6 +56,15 @@ export default function Example() {
           Add contributor
         </Button>
       </div>
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          tabIndex={0}
+          checked={pinned}
+          onChange={(event) => setPinned(event.target.checked)}
+        />
+        Pin contributor names
+      </label>
       <Table
         aria-label="Team hours"
         $border
@@ -62,8 +72,16 @@ export default function Example() {
           {
             key: "head",
             group: "head",
-            0: "Contributor",
-            hours: "Hours",
+            0: {
+              children: "Contributor",
+              $sticky: pinned ? "start" : undefined,
+              $grow: true,
+            },
+            hours: (
+              <TableCell numeric $fit>
+                Hours
+              </TableCell>
+            ),
             notes: "Notes",
           },
           ...rows,
