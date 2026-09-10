@@ -348,7 +348,7 @@ export function NavSection() {
       <Sample
         title="Nav button"
         code="NavButton > NavIcon + NavButtonContent · render={<a />}"
-        description="A row that is not a disclosure, such as a sidebar brand row, sized like the disclosure rows around it."
+        description="A standalone navigation row, sized like the disclosure rows around it."
       >
         <Nav $iconSize={5}>
           <li>

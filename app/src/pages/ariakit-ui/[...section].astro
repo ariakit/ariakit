@@ -33,7 +33,6 @@ import {
   DisclosureSection,
   FrameSection,
   GalleryControls,
-  GallerySidebar,
   HeadingSection,
   InputSection,
   KbdSection,
@@ -47,7 +46,6 @@ import {
   RadioSection,
   SelectSection,
   SeparatorSection,
-  SidebarSection,
   TableSection,
   TabsSection,
   TextSection,
@@ -85,18 +83,6 @@ const description = section
   ? section.description
   : "Every @ariakit/ui React component rendered through its variants, on pages built from the same components.";
 
-// The page column keeps clear of the fixed sidebar. The width follows the
-// collapse flag the sidebar persists on <html>, and drops to nothing under
-// the mobile breakpoint, where the sidebar becomes a drawer. The breakpoint
-// is in pixels to match useIsMobile whatever the root font size is.
-const columnClass = [
-  "flex min-h-dvh flex-col",
-  "[--gallery-sidebar-width:var(--gallery-sidebar-max)]",
-  "[[data-sidebar=collapsed]_&]:[--gallery-sidebar-width:var(--gallery-sidebar-min)]",
-  "max-[767px]:[--gallery-sidebar-width:0px]",
-  "ps-(--gallery-sidebar-width) transition-[padding] duration-300",
-];
-
 // The surface the gallery sits on, switched from the header controls through
 // the data-surface attribute on <html>. Classes rather than layer variants,
 // because a variant writes an inline style that no attribute can gate.
@@ -114,13 +100,13 @@ const surfaceClass = [
     <Meta {title} {description} />
     <script is:inline>
       // Restores the persisted gallery settings before the first paint, so
-      // the theme, surface, text size and sidebar width never flash. The
+      // the theme, surface and text size never flash. The
       // storage prefix and the attribute names match
       // _ariakit-ui/shell.react.tsx, which writes them.
       (() => {
         try {
           const root = document.documentElement;
-          for (const name of ["theme", "surface", "font-size", "sidebar"]) {
+          for (const name of ["theme", "surface", "font-size"]) {
             const value = localStorage.getItem("ariakit-ui-gallery:" + name);
             if (value) root.setAttribute("data-" + name, value);
           }
@@ -130,19 +116,17 @@ const surfaceClass = [
   </head>
   <body
     id="top"
-    class="min-h-dvh overflow-x-clip [--gallery-header-height:--spacing(14)] [--gallery-sidebar-max:--spacing(64)] [--gallery-sidebar-min:--spacing(14)]"
+    class="min-h-dvh overflow-x-clip [--gallery-header-height:--spacing(14)]"
   >
-    <GallerySidebar client:load currentUrl={Astro.url.pathname} />
-
-    <div class:list={columnClass}>
+    <div class="flex min-h-dvh flex-col">
       <header
         {...layer.html({
           class:
-            "sticky top-0 z-10 flex h-(--gallery-header-height) items-center border-b",
+            "sticky top-0 z-10 flex min-h-(--gallery-header-height) items-center border-b",
         })}
       >
         <div
-          class="mx-auto w-[calc(100%---spacing(12))] max-w-wider flex items-center gap-4"
+          class="mx-auto w-[calc(100%---spacing(12))] max-w-wider flex flex-wrap items-center gap-x-4 gap-y-2 py-1"
         >
           <nav aria-label="Breadcrumb" class="flex min-w-0 items-center gap-2">
             {
@@ -183,7 +167,7 @@ const surfaceClass = [
 
       <main {...layer.html({ class: surfaceClass.join(" ") })}>
         <div
-          class="mx-auto w-[calc(100%---spacing(12))] max-w-wider grid gap-12 py-14 max-[767px]:pb-24"
+          class="mx-auto w-[calc(100%---spacing(12))] max-w-wider grid gap-12 py-14"
         >
           {
             section ? (
@@ -206,7 +190,6 @@ const surfaceClass = [
                 {id === "tabs" && <TabsSection client:load />}
                 {id === "disclosure" && <DisclosureSection client:load />}
                 {id === "nav" && <NavSection client:load />}
-                {id === "sidebar" && <SidebarSection client:load />}
                 {id === "list" && <ListSection client:load />}
                 {id === "table" && <TableSection client:load />}
                 {id === "progress" && <ProgressSection client:load />}

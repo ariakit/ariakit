@@ -149,8 +149,7 @@ export const disclosureButton = cv({
   variants: {
     /**
      * Whether the button animates its own corners, hover ramp and press. Set it
-     * to `false` on a row that runs timings of its own, such as a nav row in a
-     * collapsing sidebar, so the two do not have to fight over the cascade.
+     * to `false` on a row that supplies its own transitions.
      */
     $transition(value?: boolean) {
       // A function variant, so it replaces the press transition that active
