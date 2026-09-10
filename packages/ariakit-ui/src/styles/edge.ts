@@ -138,6 +138,7 @@ export const edge = cv({
     $edgeLightnessMin(value?: string | number) {
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--edge-lightness-min",
         class: "ak-edge-min-(--edge-lightness-min)",
       });
@@ -149,6 +150,7 @@ export const edge = cv({
     $edgeLightnessMax(value?: string | number) {
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--edge-lightness-max",
         class: "ak-edge-max-(--edge-lightness-max)",
       });
@@ -160,7 +162,6 @@ export const edge = cv({
      * numeric value like `40`.
      */
     $edgeChroma(value?: ChromaValues | (string & {}) | number) {
-      if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
           muted: "ak-edge-muted",
@@ -172,6 +173,7 @@ export const edge = cv({
       }
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--edge-chroma",
         class: "ak-edge-c-(--edge-chroma)",
       });
@@ -201,7 +203,6 @@ export const edge = cv({
      * variants have been applied.
      */
     $edgeChromaMin(value?: ChromaValues | (string & {}) | number) {
-      if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
           muted: "ak-edge-min-c-muted",
@@ -213,6 +214,7 @@ export const edge = cv({
       }
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--edge-chroma-min",
         class: "ak-edge-min-c-(--edge-chroma-min)",
       });
@@ -222,7 +224,6 @@ export const edge = cv({
      * variants have been applied.
      */
     $edgeChromaMax(value?: ChromaValues | (string & {}) | number) {
-      if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
           muted: "ak-edge-max-c-muted",
@@ -234,6 +235,7 @@ export const edge = cv({
       }
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--edge-chroma-max",
         class: "ak-edge-max-c-(--edge-chroma-max)",
       });
@@ -244,7 +246,8 @@ export const edge = cv({
      * `240`.
      */
     $edgeHue(value?: HueValues | (string & {}) | number) {
-      if (!value) return;
+      if (value == null) return;
+      if (value === "") return;
       if (includes(HUE_VALUES, value)) {
         const valueMap = {
           red: "ak-edge-red",

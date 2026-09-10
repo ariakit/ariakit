@@ -140,6 +140,7 @@ export const layer = cv({
     $lightnessMin(value?: string | number | null) {
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--layer-lightness-min",
         class: "ak-layer-min-(--layer-lightness-min)",
       });
@@ -151,6 +152,7 @@ export const layer = cv({
     $lightnessMax(value?: string | number | null) {
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--layer-lightness-max",
         class: "ak-layer-max-(--layer-lightness-max)",
       });
@@ -162,7 +164,6 @@ export const layer = cv({
      * numeric value like `40`.
      */
     $chroma(value?: ChromaValues | (string & {}) | number) {
-      if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
           muted: "ak-layer-muted",
@@ -174,6 +175,7 @@ export const layer = cv({
       }
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--layer-chroma",
         class: `ak-layer-c-(--layer-chroma)`,
       });
@@ -183,7 +185,6 @@ export const layer = cv({
      * layer variants have been applied.
      */
     $chromaMin(value?: ChromaValues | (string & {}) | number) {
-      if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
           muted: "ak-layer-min-c-muted",
@@ -195,6 +196,7 @@ export const layer = cv({
       }
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--layer-chroma-min",
         class: `ak-layer-min-c-(--layer-chroma-min)`,
       });
@@ -207,7 +209,6 @@ export const layer = cv({
      * saturated color.
      */
     $chromaMax(value?: ChromaValues | "auto" | (string & {}) | number) {
-      if (!value) return;
       const mapValues = [...CHROMA_VALUES, "auto"] as const;
       if (includes(mapValues, value)) {
         const valueMap = {
@@ -221,6 +222,7 @@ export const layer = cv({
       }
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--layer-chroma-max",
         class: `ak-layer-max-c-(--layer-chroma-max)`,
       });
@@ -256,6 +258,7 @@ export const layer = cv({
      */
     $hue(value?: HueValues | (string & {}) | number) {
       if (value == null) return;
+      if (value === "") return;
       if (includes(HUE_VALUES, value)) {
         const valueMap = {
           red: "ak-layer-red",

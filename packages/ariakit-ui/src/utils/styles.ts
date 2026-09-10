@@ -102,6 +102,7 @@ export function getScaledStyleClass({
 }: GetScaledStyleClassParams): StyleClassValue | undefined {
   if (value == null) return;
   if (value === false) return;
+  if (value === "") return;
   if (!allowZero && !value) return;
   const styleValue = value === true ? defaultValue : value;
   if (styleValue == null) return;

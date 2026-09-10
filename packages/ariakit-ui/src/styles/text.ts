@@ -99,6 +99,7 @@ export const text = cv({
     $textLightnessMin(value?: string | number) {
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--text-lightness-min",
         class: "ui-text:ak-text-min-(--text-lightness-min)",
       });
@@ -113,6 +114,7 @@ export const text = cv({
     $textLightnessMax(value?: string | number) {
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--text-lightness-max",
         class: "ui-text:ak-text-max-(--text-lightness-max)",
       });
@@ -126,7 +128,6 @@ export const text = cv({
      * or SVG elements inside it, not to text direclty inside the layer element.
      */
     $textChroma(value?: ChromaValues | (string & {}) | number) {
-      if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
           muted: "ui-text:ak-text-muted",
@@ -138,6 +139,7 @@ export const text = cv({
       }
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--text-chroma",
         class: "ui-text:ak-text-c-(--text-chroma)",
       });
@@ -202,7 +204,6 @@ export const text = cv({
      * or SVG elements inside it, not to text direclty inside the layer element.
      */
     $textChromaMin(value?: ChromaValues | (string & {}) | number) {
-      if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
           muted: "ui-text:ak-text-min-c-muted",
@@ -214,6 +215,7 @@ export const text = cv({
       }
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--text-chroma-min",
         class: "ui-text:ak-text-min-c-(--text-chroma-min)",
       });
@@ -226,7 +228,6 @@ export const text = cv({
      * or SVG elements inside it, not to text direclty inside the layer element.
      */
     $textChromaMax(value?: ChromaValues | (string & {}) | number) {
-      if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
           muted: "ui-text:ak-text-max-c-muted",
@@ -238,6 +239,7 @@ export const text = cv({
       }
       return getScaledStyleClass({
         value,
+        allowZero: true,
         property: "--text-chroma-max",
         class: "ui-text:ak-text-max-c-(--text-chroma-max)",
       });
@@ -251,7 +253,8 @@ export const text = cv({
      * or SVG elements inside it, not to text direclty inside the layer element.
      */
     $textHue(value?: HueValues | (string & {}) | number) {
-      if (!value) return;
+      if (value == null) return;
+      if (value === "") return;
       if (includes(HUE_VALUES, value)) {
         const valueMap = {
           red: "ui-text:ak-text-red",
