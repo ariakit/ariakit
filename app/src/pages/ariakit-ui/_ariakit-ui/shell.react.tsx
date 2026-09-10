@@ -15,6 +15,17 @@ import {
   ButtonGroup,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
+import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import {
+  Nav,
+  NavButton,
+  NavButtonContent,
+  NavDisclosure,
+  NavDisclosureButton,
+  NavIcon,
+  NavLink,
+  NavList,
+} from "@ariakit/ui/components/nav.ariakit.react";
 import {
   RadioGroup,
   RadioProvider,
@@ -26,6 +37,13 @@ import {
 } from "@ariakit/ui/components/tooltip.ariakit.react";
 import * as icons from "lucide-react";
 import * as React from "react";
+import { Logo } from "#app/icons/logo.react.tsx";
+import type { GalleryGroupId } from "./sections.ts";
+import {
+  galleryBasePath,
+  galleryGroups,
+  getGallerySectionHref,
+} from "./sections.ts";
 
 // The settings live as data attributes on <html>, where the page CSS reads
 // them, and are persisted under this prefix. The inline script in
@@ -185,5 +203,136 @@ export function GalleryControls() {
         options={fontSizeOptions}
       />
     </div>
+  );
+}
+
+const groupIcons = {
+  foundations: icons.Shapes,
+  controls: icons.ToggleLeft,
+  navigation: icons.Compass,
+  data: icons.Table,
+  overlays: icons.SquareStack,
+} satisfies Record<GalleryGroupId, icons.LucideIcon>;
+
+export interface GallerySidebarProps {
+  /** The current page URL, which marks the matching link as current. */
+  currentUrl?: string;
+}
+
+interface GalleryNavigationProps extends GallerySidebarProps {
+  children?: React.ReactNode;
+}
+
+function GalleryNavigation({ currentUrl, children }: GalleryNavigationProps) {
+  return (
+    <>
+      <div className="flex shrink-0 items-center justify-between">
+        <NavButton render={<a href={galleryBasePath} />}>
+          <NavIcon>
+            <Logo iconOnly />
+          </NavIcon>
+          <NavButtonContent>Ariakit UI</NavButtonContent>
+        </NavButton>
+        {children}
+      </div>
+      <Nav className="min-h-0 flex-1 overflow-x-clip overflow-y-auto">
+        {galleryGroups.map((group) => {
+          const Icon = groupIcons[group.id];
+          return (
+            <NavDisclosure
+              key={group.id}
+              defaultOpen
+              button={
+                <NavDisclosureButton icon={<Icon strokeWidth={1.5} />}>
+                  {group.title}
+                </NavDisclosureButton>
+              }
+            >
+              <NavList>
+                {group.sections.map((section) => (
+                  <li key={section.id}>
+                    <NavLink
+                      href={getGallerySectionHref(section.id)}
+                      currentUrl={currentUrl}
+                    >
+                      {section.title}
+                    </NavLink>
+                  </li>
+                ))}
+              </NavList>
+            </NavDisclosure>
+          );
+        })}
+      </Nav>
+    </>
+  );
+}
+
+/**
+ * Keeps the gallery navigation beside the page on desktop and opens it in a
+ * modal dialog on mobile.
+ */
+export function GallerySidebar(props: GallerySidebarProps) {
+  const store = ak.useDialogStore();
+
+  React.useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 768px)");
+    // Release the dialog's focus trap and scroll lock when the desktop panel
+    // takes over. Keep this breakpoint in step with the layout classes.
+    const onChange = () => {
+      if (desktop.matches) {
+        store.hide();
+      }
+    };
+    onChange();
+    desktop.addEventListener("change", onChange);
+    return () => desktop.removeEventListener("change", onChange);
+  }, [store]);
+
+  // Keep nested rows rounded while the panel itself meets the viewport edge.
+  const panelClass =
+    "fixed inset-s-0 top-0 flex h-dvh w-(--gallery-sidebar-width) max-w-full flex-col gap-2 overflow-clip rounded-none border-e [--nav-icon-size:--spacing(5)]";
+
+  return (
+    <>
+      <Frame
+        render={<aside aria-label="Gallery sections" />}
+        $p={2}
+        $rounded="2xl"
+        $lightnessOffset={0.5}
+        className={`${panelClass} z-20 max-[768px]:hidden`}
+      >
+        <GalleryNavigation {...props} />
+      </Frame>
+      <ak.Dialog
+        store={store}
+        aria-label="Gallery sections"
+        unmountOnHide
+        render={<Frame $p={2} $rounded="2xl" $lightnessOffset={0.5} />}
+        backdrop={<div className="bg-black/30 backdrop-blur-xs" />}
+        className={`${panelClass} z-30`}
+      >
+        <GalleryNavigation {...props}>
+          <ak.DialogDismiss
+            render={<Button $p={2} />}
+            aria-label="Close gallery sections"
+          >
+            <ButtonSlot>
+              <icons.X />
+            </ButtonSlot>
+          </ak.DialogDismiss>
+        </GalleryNavigation>
+      </ak.Dialog>
+      <ak.DialogDisclosure
+        store={store}
+        aria-label="Open gallery sections"
+        render={<Button $kind="bevel" $rounded="full" $p={3} />}
+        className="fixed! end-4 bottom-4 z-20 min-[768px]:hidden"
+      >
+        <ButtonSlot $size="lg">
+          <icons.Menu />
+        </ButtonSlot>
+      </ak.DialogDisclosure>
+    </>
   );
 }

@@ -11,7 +11,7 @@
 // The hydrated blocks of the Ariakit UI gallery page. The Astro page owns the
 // shell and mounts each of these as an island; the sections live in one file
 // per component under _ariakit-ui/.
-export { GalleryControls } from "./_ariakit-ui/shell.react.tsx";
+export { GalleryControls, GallerySidebar } from "./_ariakit-ui/shell.react.tsx";
 
 export { LayerSection } from "./_ariakit-ui/layer.react.tsx";
 export { FrameSection } from "./_ariakit-ui/frame.react.tsx";

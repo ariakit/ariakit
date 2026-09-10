@@ -33,6 +33,7 @@ import {
   DisclosureSection,
   FrameSection,
   GalleryControls,
+  GallerySidebar,
   HeadingSection,
   InputSection,
   KbdSection,
@@ -116,9 +117,10 @@ const surfaceClass = [
   </head>
   <body
     id="top"
-    class="min-h-dvh overflow-x-clip [--gallery-header-height:--spacing(14)]"
+    class="min-h-dvh overflow-x-clip [--gallery-header-height:--spacing(14)] [--gallery-sidebar-width:--spacing(64)]"
   >
-    <div class="flex min-h-dvh flex-col">
+    <GallerySidebar client:load currentUrl={Astro.url.pathname} />
+    <div class="flex min-h-dvh flex-col min-[768px]:ps-(--gallery-sidebar-width)">
       <header
         {...layer.html({
           class:
@@ -136,8 +138,8 @@ const surfaceClass = [
                     Component gallery
                   </a>
                   <span aria-hidden="true" class="ak-ink-40">/</span>
-                  <span class="ak-ink-60 max-[767px]:hidden">{section.group.title}</span>
-                  <span aria-hidden="true" class="ak-ink-40 max-[767px]:hidden">/</span>
+                  <span class="ak-ink-60 max-[768px]:hidden">{section.group.title}</span>
+                  <span aria-hidden="true" class="ak-ink-40 max-[768px]:hidden">/</span>
                   <span aria-current="page" class="truncate font-medium">
                     {section.title}
                   </span>
@@ -150,7 +152,7 @@ const surfaceClass = [
                   <span
                     {...badge.html({
                       $layer: "brand",
-                      class: "max-[767px]:hidden",
+                      class: "max-[768px]:hidden",
                     })}
                   >
                     <span {...badgeLabel.html()}>Manual visual tests</span>
@@ -167,7 +169,7 @@ const surfaceClass = [
 
       <main {...layer.html({ class: surfaceClass.join(" ") })}>
         <div
-          class="mx-auto w-[calc(100%---spacing(12))] max-w-wider grid gap-12 py-14"
+          class="mx-auto w-[calc(100%---spacing(12))] max-w-wider grid gap-12 py-14 max-[768px]:pb-24"
         >
           {
             section ? (
