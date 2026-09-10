@@ -33,7 +33,6 @@ export { SelectSection } from "./_ariakit-ui/select.react.tsx";
 export { TabsSection } from "./_ariakit-ui/tabs.react.tsx";
 export { DisclosureSection } from "./_ariakit-ui/disclosure.react.tsx";
 export { NavSection } from "./_ariakit-ui/nav.react.tsx";
-export { SidebarSection } from "./_ariakit-ui/sidebar.react.tsx";
 
 export { ListSection } from "./_ariakit-ui/list.react.tsx";
 export { TableSection } from "./_ariakit-ui/table.react.tsx";

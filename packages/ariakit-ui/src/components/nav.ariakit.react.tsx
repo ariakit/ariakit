@@ -11,7 +11,6 @@ import {
   navButton,
   navButtonContent,
   navDisclosure,
-  navDisclosureContent,
   navDisclosureContentBody,
   navGlider,
   navGroup,
@@ -76,8 +75,8 @@ export interface NavProps
   glider?: NavGliderValue;
 }
 
-// The properties whose transitions move the rows of a nav: a disclosure content
-// opening or closing, and a row squaring up as a sidebar collapses.
+// The properties whose transitions move the rows of a nav when disclosure
+// content opens or closes.
 const ROW_MOVING_PROPERTIES = new Set(["height", "max-height"]);
 
 /**
@@ -210,8 +209,7 @@ export interface NavIconProps
 
 /**
  * Renders the icon slot of a nav row, sized by the Nav icon-size variable. It
- * keeps the line height while the sidebar is expanded so the label aligns, and
- * squares to the icon size when the sidebar collapses.
+ * keeps the line height so the label aligns with the icon.
  */
 export function NavIcon(props: NavIconProps) {
   const [variantProps, rest] = splitProps(props, navIcon);
@@ -260,10 +258,8 @@ export interface NavButtonProps
   extends ButtonProps, VariantProps<typeof navButton> {}
 
 /**
- * Renders a nav row that is not a disclosure, such as a sidebar brand row or a
- * single link that collapses with the sidebar. Wrap the label in
- * `NavButtonContent` so it fades on collapse the way a disclosure row's does,
- * and use the `render` prop for a row that should be an anchor.
+ * Renders a standalone nav row. Use `NavButtonContent` for its label and the
+ * `render` prop for a row that should be an anchor.
  */
 export function NavButton(props: NavButtonProps) {
   const [variantProps, rest] = splitProps(props, navButton);
@@ -272,8 +268,6 @@ export function NavButton(props: NavButtonProps) {
       $rounded="lg"
       // The row sits flush with the surface around it, like a nav link.
       $lightnessOffset={false}
-      // The row's own list carries the press (see navButton).
-      $transition={false}
       {...navButton.jsx(variantProps)}
       {...rest}
     />
@@ -283,7 +277,7 @@ export function NavButton(props: NavButtonProps) {
 export interface NavButtonContentProps extends ak.RoleProps<"span"> {}
 
 /**
- * The label of a nav row, which collapses along with the sidebar.
+ * The label of a nav row.
  */
 export function NavButtonContent(props: NavButtonContentProps) {
   const [variantProps, rest] = splitProps(props, navButtonContent);
@@ -300,10 +294,6 @@ export function NavDisclosureButton(props: NavDisclosureButtonProps) {
       indicator="chevron-right-end"
       // The nav row spaces its icon and label through its own gap classes.
       $gap="none"
-      // The row animates its own collapse, so the button's corner, hover ramp
-      // and press timings would only compete with it. The row's own list
-      // carries the press instead (see navButton).
-      $transition={false}
       {...navButton.jsx(variantProps)}
       {...rest}
     >
@@ -312,22 +302,13 @@ export function NavDisclosureButton(props: NavDisclosureButtonProps) {
   );
 }
 
-export interface NavDisclosureContentProps
-  extends DisclosureContentProps, VariantProps<typeof navDisclosureContent> {
+export interface NavDisclosureContentProps extends DisclosureContentProps {
   body?: React.ReactElement | NavDisclosureContentBodyProps;
 }
 
 export function NavDisclosureContent(props: NavDisclosureContentProps) {
-  const [variantProps, rest] = splitProps(props, navDisclosureContent);
-  const body = createRender(NavDisclosureContentBody, rest.body);
-  return (
-    <DisclosureContent
-      guide
-      {...navDisclosureContent.jsx(variantProps)}
-      {...rest}
-      body={body}
-    />
-  );
+  const body = createRender(NavDisclosureContentBody, props.body);
+  return <DisclosureContent guide {...props} body={body} />;
 }
 
 export interface NavDisclosureContentBodyProps

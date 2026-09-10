@@ -8,8 +8,8 @@ import { text } from "./text.ts";
 
 export const nav = cv({
   class: [
-    // Groups stack on the root at their own gap, packed at the start: a nav
-    // stretched by a sidebar must not spread them. A nav with one list has
+    // Groups stack on the root at their own gap, packed at the start: a
+    // stretched nav must not spread them. A nav with one list has
     // nothing to space. The marker is what a glider reads the nav through.
     "nav grid content-start gap-(--nav-group-gap)",
     // Gap defaults the variants override through the style attribute.
@@ -58,9 +58,9 @@ export const nav = cv({
     },
     /**
      * Sets the icon slot size for nav icons and nav disclosures. It must live
-     * on the root (or an ancestor such as the sidebar): the consumers read it
-     * as an inherited property or through container style queries, which read
-     * the nearest ancestor container. Numbers scale the spacing token.
+     * on the root or an ancestor: the consumers read it as an inherited
+     * property or through container style queries, which read the nearest
+     * ancestor container. Numbers scale the spacing token.
      */
     $iconSize(value?: string | number) {
       if (value == null) return;
@@ -72,8 +72,8 @@ export const nav = cv({
 });
 
 export const navList = cv({
-  // Packed at the start: a list stretched by a sidebar keeps its rows together
-  // rather than spreading them over the height.
+  // Packed at the start: a stretched list keeps its rows together rather than
+  // spreading them over the height.
   class: "grid content-start gap-(--nav-gap)",
 });
 
@@ -88,14 +88,7 @@ export const navGroup = cv({
 // em-based spacing step would come out smaller in it.
 export const navGroupLabel = cv({
   extend: [padding, text],
-  class: [
-    "ak-ink-60 font-medium text-[0.875em] text-start",
-    // The label folds away with the sidebar, on the sidebar's own clock.
-    "overflow-clip [interpolate-size:allow-keywords]",
-    "transition-[height,padding,opacity] duration-(--sidebar-duration)",
-    "ui-sidebar-collapsed:h-0 ui-sidebar-collapsed:py-0",
-    "ui-sidebar-collapsed:opacity-0",
-  ],
+  class: ["ak-ink-60 font-medium text-[0.875em] text-start"],
   defaultVariants: {
     // The label pads like a row, with the lengths the nav measured in its own
     // font rather than the label's smaller one.
@@ -107,9 +100,8 @@ export const navGroupLabel = cv({
 
 // The icon slot of a nav row, sized by the nav's icon size. It is a control
 // slot, so its outer box is one line square whatever the icon size: that is
-// what keeps a wrapping label aligned to it, and what lets a collapsed row
-// centre it with one padding. A standalone nav row, such as a sidebar brand
-// link, can use it on its own.
+// what keeps a wrapping label aligned to it. A standalone nav row, such as a
+// brand link, can use it on its own.
 export const navIcon = cv({
   extend: [buttonSlot],
   class: "[--size:var(--nav-icon-size,1em)]",
@@ -148,56 +140,20 @@ export const navLink = cv({
   },
 });
 
-// The additions layered onto a disclosure button, or onto a plain link such as
-// a sidebar brand row, to make it a nav row that collapses with the sidebar.
-// Not disclosure-specific, which is why it is not named for one.
+// Shared row alignment for disclosure buttons and standalone navigation links.
 export const navButton = cv({
   class: [
     "justify-start overflow-clip whitespace-normal text-start",
-    // The press rides on this list at its own duration, so the row components
-    // pass $transition off; a second list on the row would only compete with
-    // this one.
-    "transition-[gap,width,height,padding,var(--active-transition)] transition-discrete delay-0",
-    "duration-[var(--sidebar-duration),var(--sidebar-duration),var(--sidebar-duration),var(--sidebar-duration),var(--active-duration)]",
-    "[interpolate-size:allow-keywords]",
     // Every row keeps the one gap, plus the control's extra side padding
     // that an icon slot takes off, with the nav's default for a row outside
-    // a nav, such as a sidebar brand row. Important, because a disclosure
+    // a nav, such as a brand row. Important, because a disclosure
     // button spends its own gap channel on the same property.
     "gap-[calc(var(--nav-row-gap,--spacing(3))+var(--px)-var(--py))]!",
-    // Collapsing squares the button around the icon and hides the rest.
-    "[--nav-button-size:calc(var(--sidebar-min-width)-(--spacing(2)))]",
-    "ui-sidebar-collapsed:size-(--nav-button-size)",
-    "ui-sidebar-collapsed:gap-0!",
-    // The icon slot's outer box is one line tall and, across, one line less
-    // the control's extra side padding twice, which its margins take off.
-    // So the square centres it with the block padding below, plus that
-    // extra on each side. Padding is in the transition above, and nothing
-    // about the icon itself changes, so both directions stay smooth.
-    // Important, so the icon keeps equal padding on both sides: a disclosure
-    // button spends its start padding on a ps-* longhand, and a longhand
-    // sorts after the shorthand.
-    "[--nav-button-p:calc((var(--nav-button-size)-1lh)*0.5)]",
-    "ui-sidebar-collapsed:py-(--nav-button-p)!",
-    "ui-sidebar-collapsed:px-[calc(var(--nav-button-p)+var(--px)-var(--py))]!",
-    "ui-sidebar-collapsed:**:data-disclosure-indicator:opacity-0",
   ],
 });
 
-// The label collapses along with the sidebar, staging its height and opacity so
-// the text fades before the width animates. It pairs with navButton, on a
-// disclosure row or a plain link alike.
 export const navButtonContent = cv({
-  class: [
-    "block overflow-hidden transition-[translate,height,opacity]",
-    "transition-discrete",
-    "[interpolate-size:allow-keywords]",
-    "duration-(--sidebar-duration)",
-    "delay-[0ms,var(--sidebar-duration),0ms]",
-    "ui-sidebar-collapsed:h-lh ui-sidebar-collapsed:opacity-0",
-    "ui-sidebar-collapsed:delay-0",
-    "ui-sidebar-collapsed:duration-[var(--sidebar-duration),0ms,var(--sidebar-duration)]",
-  ],
+  class: "block overflow-hidden",
 });
 
 // A cover takes the box of the row it follows. It is placed from the top: a
@@ -222,11 +178,11 @@ export const navGlider = cv({
     // NavDisclosureContentBody), so a cover shows through it. Two gliders
     // paint in tree order: a later one over an earlier one.
     "z-0",
-    // A row in a collapsed sidebar, or one a disclosure is still revealing,
-    // is clipped by the content around it. The glider goes with the row while
+    // A row a disclosure is still revealing is clipped by the content around
+    // it. The glider goes with the row while
     // none of it shows.
     "[position-visibility:anchors-visible]",
-    // While a disclosure or a collapsing sidebar moves the rows, the nav says
+    // While a disclosure moves the rows, the nav says
     // so (see Nav), and the glider follows its row at once rather than easing
     // after it.
     "[.nav[data-settling]>&]:transition-none",
@@ -405,10 +361,6 @@ export const navDisclosure = cv({
     // style attribute is what beats the disclosure root's own gap.
     "--disclosure-gap": "var(--nav-row-gap, calc(var(--spacing) * 3))",
   },
-});
-
-export const navDisclosureContent = cv({
-  class: ["ui-sidebar-collapsed:h-0 ui-sidebar-collapsed:w-0"],
 });
 
 export const navDisclosureContentBody = cv({

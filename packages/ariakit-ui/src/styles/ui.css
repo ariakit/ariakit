@@ -289,14 +289,6 @@ body > * {
   }
 }
 
-/* Sidebar collapse flag published by the sidebar root and read by
-   descendants (such as nav labels) through container style queries. */
-@custom-variant ui-sidebar-collapsed {
-  @container style(--sidebar-collapsed: 1) {
-    @slot;
-  }
-}
-
 @custom-variant ui-nav-current {
   &:where([aria-current="true"], [aria-current="page"]) {
     @slot;

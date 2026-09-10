@@ -23,8 +23,8 @@ export interface GalleryGroup {
 
 /**
  * The gallery's table of contents. The Astro page renders one `Section` per
- * entry and the sidebar builds its anchors from the same list, so a section
- * cannot exist in one place without the other.
+ * entry and the index builds its links from the same list, so a section cannot
+ * exist in one place without the other.
  */
 export const galleryGroups = [
   {
@@ -150,12 +150,6 @@ export const galleryGroups = [
         title: "Nav",
         description:
           "Navigation rows with current, hover and disabled states, groups with labels, icons and collapsible sections.",
-      },
-      {
-        id: "sidebar",
-        title: "Sidebar",
-        description:
-          "A fixed side panel with header, body and footer sections that collapses to an icon rail. The page's own sidebar is the live instance.",
       },
     ],
   },

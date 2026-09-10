@@ -15,6 +15,7 @@ import {
   ButtonGroup,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
+import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Nav,
   NavButton,
@@ -29,14 +30,6 @@ import {
   RadioGroup,
   RadioProvider,
 } from "@ariakit/ui/components/radio.ariakit.react";
-import {
-  Sidebar,
-  SidebarBody,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarProvider,
-  SidebarToggle,
-} from "@ariakit/ui/components/sidebar.ariakit.react";
 import {
   Tooltip,
   TooltipAnchor,
@@ -58,7 +51,7 @@ import {
 // and the attribute names in step with it.
 const STORAGE_PREFIX = "ariakit-ui-gallery:";
 
-type GallerySetting = "theme" | "surface" | "font-size" | "sidebar";
+type GallerySetting = "theme" | "surface" | "font-size";
 
 const listeners = new Set<() => void>();
 
@@ -226,102 +219,120 @@ export interface GallerySidebarProps {
   currentUrl?: string;
 }
 
-/**
- * The page sidebar: the brand row, one collapsible group of page links per
- * gallery group, and a footer button that collapses the panel to its icon rail.
- * Under the mobile breakpoint it becomes a drawer opened by a floating toggle.
- */
-export function GallerySidebar({ currentUrl }: GallerySidebarProps) {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const collapsed = useSetting("sidebar") === "collapsed";
-  const CollapseIcon = collapsed ? icons.PanelLeftOpen : icons.PanelLeftClose;
+interface GalleryNavigationProps extends GallerySidebarProps {
+  children?: React.ReactNode;
+}
+
+function GalleryNavigation({ currentUrl, children }: GalleryNavigationProps) {
   return (
-    // The provider only drives the drawer: on desktop the panel stays in the
-    // page and collapses to its icon rail.
-    <SidebarProvider open={mobileOpen} setOpen={setMobileOpen}>
-      <Sidebar
-        aria-label="Gallery sections"
-        collapsible="icon"
-        collapsed={collapsed}
-        $maxWidth="var(--gallery-sidebar-max)"
-        $minWidth="var(--gallery-sidebar-min)"
-        // The icon size lives on the sidebar so the brand and footer rows
-        // outside the Nav read it too.
-        className="z-20 [--nav-icon-size:--spacing(5)] ui-backdrop:bg-(--ak-layer)/30 ui-backdrop:backdrop-blur-xs"
+    <>
+      <div className="flex shrink-0 items-center justify-between">
+        <NavButton render={<a href={galleryBasePath} />}>
+          <NavIcon>
+            <Logo iconOnly />
+          </NavIcon>
+          <NavButtonContent>Ariakit UI</NavButtonContent>
+        </NavButton>
+        {children}
+      </div>
+      <Nav className="min-h-0 flex-1 overflow-x-clip overflow-y-auto">
+        {galleryGroups.map((group) => {
+          const Icon = groupIcons[group.id];
+          return (
+            <NavDisclosure
+              key={group.id}
+              defaultOpen
+              button={
+                <NavDisclosureButton icon={<Icon strokeWidth={1.5} />}>
+                  {group.title}
+                </NavDisclosureButton>
+              }
+            >
+              <NavList>
+                {group.sections.map((section) => (
+                  <li key={section.id}>
+                    <NavLink
+                      href={getGallerySectionHref(section.id)}
+                      currentUrl={currentUrl}
+                    >
+                      {section.title}
+                    </NavLink>
+                  </li>
+                ))}
+              </NavList>
+            </NavDisclosure>
+          );
+        })}
+      </Nav>
+    </>
+  );
+}
+
+/**
+ * Keeps the gallery navigation beside the page on desktop and opens it in a
+ * modal dialog on mobile.
+ */
+export function GallerySidebar(props: GallerySidebarProps) {
+  const store = ak.useDialogStore();
+
+  React.useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 768px)");
+    // Release the dialog's focus trap and scroll lock when the desktop panel
+    // takes over. Keep this breakpoint in step with the layout classes.
+    const onChange = () => {
+      if (desktop.matches) {
+        store.hide();
+      }
+    };
+    onChange();
+    desktop.addEventListener("change", onChange);
+    return () => desktop.removeEventListener("change", onChange);
+  }, [store]);
+
+  // Keep nested rows rounded while the panel itself meets the viewport edge.
+  const panelClass =
+    "fixed inset-s-0 top-0 flex h-dvh w-(--gallery-sidebar-width) max-w-full flex-col gap-2 overflow-clip rounded-none border-e [--nav-icon-size:--spacing(5)]";
+
+  return (
+    <>
+      <Frame
+        render={<aside aria-label="Gallery sections" />}
+        $p={2}
+        $rounded="2xl"
+        $lightnessOffset={0.5}
+        className={`${panelClass} z-20 max-[768px]:hidden`}
       >
-        <SidebarHeader>
-          <NavButton render={<a href={galleryBasePath} />}>
-            <NavIcon>
-              <Logo iconOnly />
-            </NavIcon>
-            <NavButtonContent>Ariakit UI</NavButtonContent>
-          </NavButton>
-        </SidebarHeader>
-        <SidebarBody>
-          <Nav>
-            {galleryGroups.map((group) => {
-              const Icon = groupIcons[group.id];
-              return (
-                <NavDisclosure
-                  key={group.id}
-                  defaultOpen
-                  button={
-                    <NavDisclosureButton icon={<Icon strokeWidth={1.5} />}>
-                      {group.title}
-                    </NavDisclosureButton>
-                  }
-                >
-                  <NavList>
-                    {group.sections.map((section) => (
-                      <li key={section.id}>
-                        <NavLink
-                          href={getGallerySectionHref(section.id)}
-                          currentUrl={currentUrl}
-                        >
-                          {section.title}
-                        </NavLink>
-                      </li>
-                    ))}
-                  </NavList>
-                </NavDisclosure>
-              );
-            })}
-          </Nav>
-        </SidebarBody>
-        <SidebarFooter>
-          <NavButton
-            aria-expanded={!collapsed}
-            // The drawer has nothing to collapse to. The breakpoint matches
-            // useIsMobile.
-            className="max-[767px]:hidden"
-            onClick={() => {
-              writeSetting("sidebar", collapsed ? null : "collapsed");
-            }}
-          >
-            {/* The glyph draws the panel on the left, so it turns around
-                with the sidebar in a right-to-left page. */}
-            <NavIcon className="rtl:-scale-x-100">
-              <CollapseIcon strokeWidth={1.5} />
-            </NavIcon>
-            <NavButtonContent>
-              {collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            </NavButtonContent>
-          </NavButton>
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarToggle
+        <GalleryNavigation {...props} />
+      </Frame>
+      <ak.Dialog
+        store={store}
         aria-label="Gallery sections"
-        render={
-          <Button $kind="bevel" $rounded="full" $p={3}>
-            <ButtonSlot $size="lg">
-              <icons.Menu />
+        unmountOnHide
+        render={<Frame $p={2} $rounded="2xl" $lightnessOffset={0.5} />}
+        backdrop={<div className="bg-black/30 backdrop-blur-xs" />}
+        className={`${panelClass} z-30`}
+      >
+        <GalleryNavigation {...props}>
+          <ak.DialogDismiss
+            render={<Button $p={2} />}
+            aria-label="Close gallery sections"
+          >
+            <ButtonSlot>
+              <icons.X />
             </ButtonSlot>
-          </Button>
-        }
-        // The desktop panel is part of the page, so the toggle only exists
-        // for the drawer. The breakpoint matches useIsMobile.
-        className="fixed end-4 bottom-4 z-20 min-[768px]:hidden"
-      />
-    </SidebarProvider>
+          </ak.DialogDismiss>
+        </GalleryNavigation>
+      </ak.Dialog>
+      <ak.DialogDisclosure
+        store={store}
+        aria-label="Open gallery sections"
+        render={<Button $kind="bevel" $rounded="full" $p={3} />}
+        className="fixed! end-4 bottom-4 z-20 min-[768px]:hidden"
+      >
+        <ButtonSlot $size="lg">
+          <icons.Menu />
+        </ButtonSlot>
+      </ak.DialogDisclosure>
+    </>
   );
 }
