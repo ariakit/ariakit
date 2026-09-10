@@ -1,6 +1,7 @@
 import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react";
 
 export default function Example() {
+  // Explicit checked values must override the conflicting progress values.
   return (
     <div className="grid gap-4">
       <List aria-label="Completed progress">

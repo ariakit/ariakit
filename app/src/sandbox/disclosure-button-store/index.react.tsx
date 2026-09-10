@@ -29,6 +29,7 @@ function Details({ name }: DetailsProps) {
 }
 
 export default function Example() {
+  // The surrounding open provider must not replace Details' explicit store.
   return (
     <div className="grid gap-6">
       <Details name="Project" />

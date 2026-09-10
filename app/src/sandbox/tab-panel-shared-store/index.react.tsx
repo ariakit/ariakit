@@ -16,6 +16,7 @@ function ActivityTabs({ name, pinned }: ActivityTabsProps) {
   const reviewsId = `${name.toLowerCase()}-reviews`;
   const store = ak.useTabStore({ defaultSelectedId: activityId });
   const selectedId = ak.useStoreState(store, "selectedId");
+  // Pinned panels keep their tabId when another tab becomes selected.
   return (
     <section className="grid gap-2">
       <h2>{name} updates</h2>
@@ -33,6 +34,7 @@ function ActivityTabs({ name, pinned }: ActivityTabsProps) {
 }
 
 export default function Example() {
+  // Team's explicit store must take precedence over the surrounding provider.
   return (
     <div className="grid gap-6">
       <ActivityTabs name="Project" />

@@ -8,6 +8,7 @@ import { useState } from "react";
 
 export default function Example() {
   const [selected, setSelected] = useState(false);
+  // The narrow container makes the pinned cell overlap the scrolling cells.
   return (
     <div className="grid gap-4">
       <label>
@@ -29,7 +30,7 @@ export default function Example() {
             <TableCell $sticky="start">Pinned name</TableCell>
             <TableCell>Row surface</TableCell>
             <TableCell $layer="brand">Custom surface</TableCell>
-            {/* A modifier alone must enable the cell's layer. */}
+            {/* A modifier enables the layer unless it is explicitly false. */}
             <TableCell $lighten>Modified surface</TableCell>
             <TableCell $lighten $layer={false}>
               Disabled surface

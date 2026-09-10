@@ -6,6 +6,7 @@ import * as React from "react";
 
 export default function Example() {
   const [headings, setHeadings] = React.useState(false);
+  // A hidden heading supplies false; zero must still render a button label.
   return (
     <div className="grid gap-4">
       <label>

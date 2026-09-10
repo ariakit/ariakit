@@ -3,6 +3,7 @@ import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 
 export default function Example() {
+  // Numeric zero must match its string form; empty strings keep the defaults.
   return (
     <div className="grid gap-4">
       <Layer $layer="brand" $hue={0} className="rounded-lg p-6">

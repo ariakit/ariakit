@@ -8,6 +8,7 @@ import * as React from "react";
 
 export default function Example() {
   const [name, setName] = React.useState("");
+  // Explicit undefined models unset optional props forwarded by a wrapper.
   return (
     <section aria-label="Project editor" className="grid gap-8">
       <label>
