@@ -100,7 +100,7 @@
     "@ariakit/react": "workspace:*",
     "@ariakit/react-utils": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
-    "clava": "0.6.2",
+    "clava": "0.6.3",
     "clsx": "2.1.1",
     "lucide-react": "1.41.0",
     "react": "19.2.8",

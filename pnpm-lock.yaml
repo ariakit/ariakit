@@ -858,8 +858,8 @@ importers:
         specifier: workspace:*
         version: link:../ariakit-tailwind
       clava:
-        specifier: 0.6.2
-        version: 0.6.2
+        specifier: 0.6.3
+        version: 0.6.3
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -6464,8 +6464,8 @@ packages:
     resolution: {integrity: sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==}
     engines: {node: '>=8'}
 
-  clava@0.6.2:
-    resolution: {integrity: sha512-ixiEmNLVX/xBwRE1AxffB32UWH2HehpUl5DIILvpuE6axLZfMo7Yuf+SUqaJl68kwRq3Pro8/PFwHo4CsoLMtw==}
+  clava@0.6.3:
+    resolution: {integrity: sha512-+laIWj6kY/TzWPwU2y6sa9YsN46/qZhQjde98bDe4GVM512zbzqX05CfmXdZSWOr8VwPZL2U0Gil/lEal4KcTQ==}
 
   client-only@0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
@@ -16076,7 +16076,7 @@ snapshots:
 
   ci-info@4.4.0: {}
 
-  clava@0.6.2:
+  clava@0.6.3:
     dependencies:
       clsx: 2.1.1
       csstype: 3.2.3
