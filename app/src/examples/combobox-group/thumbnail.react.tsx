@@ -26,7 +26,7 @@ export default function Thumbnail() {
         })}
       >
         <div {...comboboxGroupLabel.jsx()}>Members</div>
-        <div data-active-item {...comboboxItem.jsx()}>
+        <div {...comboboxItem.jsx({ $highlighted: true })}>
           <div
             {...comboboxItemSlot.jsx({
               $kind: "avatar",

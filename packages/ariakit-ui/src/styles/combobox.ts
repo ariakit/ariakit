@@ -50,6 +50,10 @@ export const comboboxGroupLabel = cv({
 export const comboboxItem = cv({
   extend: [option],
   class: "data-active-item:ak-state-5",
+  variants: {
+    /** Paints the highlighted appearance for static content. */
+    $highlighted: "ak-state-5",
+  },
   defaultVariants: {
     $hoverOffset: false,
   },
