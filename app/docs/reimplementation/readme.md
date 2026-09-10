@@ -13,11 +13,11 @@ The historical source is available at [`73d5c8645`](https://github.com/ariakit/a
 The snapshot belongs to [PR #5240](https://github.com/ariakit/ariakit/pull/5240). It includes app changes that are absent from the PR's base on `main`. A fresh clone after a squash merge does not include those intermediate commits. Fetch the pull request history before reading the snapshot:
 
 ```sh
-git fetch origin pull/5240/head
+git fetch origin pull/5240/head:refs/archive/pr-5240
 git show 73d5c8645458823366c7163446a9211128cf4cae:app/src/lib/auth.ts
 ```
 
-These commands assume `origin` points to `https://github.com/ariakit/ariakit.git`. Replace the file path to read another archived source.
+The local archive reference keeps the fetched history available after Git garbage collection. These commands assume `origin` points to `https://github.com/ariakit/ariakit.git`. Replace the file path to read another archived source.
 
 ## Retained scaffold
 
