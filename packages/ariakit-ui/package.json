@@ -102,7 +102,7 @@
     "@ariakit/tailwind": "workspace:*",
     "clava": "0.6.2",
     "clsx": "2.1.1",
-    "lucide-react": "1.41.0",
+    "lucide-react": "1.42.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "solid-js": "1.9.15"
