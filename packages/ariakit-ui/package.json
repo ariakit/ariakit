@@ -25,7 +25,6 @@
     "clean": "ariakit clean"
   },
   "exports": {
-    ".": "./src/index.ts",
     "./components/badge.ariakit.react": "./src/components/badge.ariakit.react.tsx",
     "./components/button.ariakit.react": "./src/components/button.ariakit.react.tsx",
     "./components/checkbox.ariakit.react": "./src/components/checkbox.ariakit.react.tsx",
