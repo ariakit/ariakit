@@ -399,8 +399,8 @@ export function ComboboxSelectButton({
         ...variantProps,
         ...badgeVariants,
         $disabled: variantProps.$disabled ?? rest.disabled,
-        // The badge cv's own class; restated because the badge look is composed
-        // from resolved variants, which carry no classes.
+        // Resolved variants omit the badge's base and refine classes. Restore
+        // its font weight here; the colored-edge clamp is not included.
         className: clsx(badge && "font-medium", variantProps.className),
       })}
       {...rest}
