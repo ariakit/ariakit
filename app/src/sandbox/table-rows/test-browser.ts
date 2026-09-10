@@ -11,7 +11,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
       q.cell("Grace"),
       q.rowheader("Total"),
     ];
-    const hours = [q.cell("12"), q.cell("7"), q.cell("19")];
+    const hours = [
+      q.columnheader("Hours"),
+      q.cell("12"),
+      q.cell("7"),
+      q.cell("19"),
+    ];
 
     for (const cell of names) {
       await test.expect(cell).toHaveCSS("position", "sticky");
@@ -21,6 +26,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await test.expect(cell).toHaveCSS("text-align", "end");
       await test.expect(cell).toHaveCSS("white-space", "nowrap");
     }
+    await test.expect(q.rowheader("Total")).toHaveCSS("text-align", "end");
+    await test
+      .expect(q.columnheader("Contributor"))
+      .toHaveCSS("text-align", "start");
 
     await q.checkbox("Pin contributor names").uncheck();
 

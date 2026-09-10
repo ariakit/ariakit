@@ -88,7 +88,8 @@ export default function Example() {
           {
             key: "total",
             group: "foot",
-            0: { children: "Total", header: "row" },
+            // Align the total label toward the value beside it.
+            0: { children: "Total", header: "row", numeric: true },
             hours: 19,
             notes: null,
           },

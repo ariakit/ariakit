@@ -335,8 +335,8 @@ export const tableCell = cv({
      */
     $header: {
       false: "",
-      column: "ak-ink-70 text-start font-semibold",
-      row: "text-start font-semibold",
+      column: "ak-ink-70 font-semibold",
+      row: "font-semibold",
     },
     /**
      * Aligns and formats the cell for numbers.
@@ -409,6 +409,9 @@ export const tableCell = cv({
     },
   },
   refine({ variants, addClass }) {
+    if (variants.$header && !variants.$numeric) {
+      addClass("text-start");
+    }
     if (!variants.$focus) return;
     addClass("ak-outline ak-outline-brand inset-ring-(--ak-outline)");
   },
