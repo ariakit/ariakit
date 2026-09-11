@@ -270,9 +270,11 @@ for (const { route, title } of screenshotRoutes) {
 // style checks asserted, so one capture of each keeps them under visual
 // regression. The review threads below document those checks.
 //
-// Button fixtures, joined borders and kept corners of button groups:
+// Button fixtures, joined borders, kept corners and the selected glider of
+// button groups:
 // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972227948
 // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550181
+// https://github.com/ariakit/ariakit/issues/7466
 // Combobox fixtures, badge size and static thumbnail highlight:
 // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972223972
 // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550839
@@ -879,6 +881,22 @@ withCapturePage("tooltip", async ({ test }) => {
       });
       await expectCapturableHeight(q.main());
       await visual(getContentCapture(q.main(), "light-canvas"));
+    });
+  }
+});
+
+withCapturePage("button-fixtures", async ({ query, test }) => {
+  // A hovered control owns both of its shared edges, so each one takes the
+  // hovered surface instead of darkening where two borders overlap.
+  // https://github.com/ariakit/ariakit/issues/7466
+  for (const title of ["Horizontal", "Joined vertical"]) {
+    test(`tints both shared edges of the hovered middle control in ${title} @visual`, async ({
+      q,
+      visual,
+    }) => {
+      const group = q.group(title);
+      await hoverOver(query(group).button("Week"));
+      await visual(getCapture(group));
     });
   }
 });

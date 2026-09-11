@@ -12,10 +12,25 @@ import {
   Button,
   ButtonGroup,
 } from "@ariakit/ui/components/button.ariakit.react";
-import { button, buttonGroup } from "@ariakit/ui/styles/button";
+import { button, buttonGlider, buttonGroup } from "@ariakit/ui/styles/button";
 import { Example, ExampleGrid } from "../example.react.tsx";
 
 const groups = [
+  { title: "Glider", $layout: "horizontal", $gap: "none", $p: "none" },
+  {
+    title: "Independent",
+    $layout: "horizontal",
+    $gap: "none",
+    $p: "none",
+    $joined: false,
+  },
+  {
+    title: "Joined vertical",
+    $layout: "vertical",
+    $gap: "auto",
+    $p: "none",
+    $joined: true,
+  },
   { title: "Horizontal", $layout: "horizontal", $gap: "auto", $p: "none" },
   { title: "Stretched", $layout: "stretch", $gap: "none", $p: "none" },
   { title: "Padded", $layout: "horizontal", $gap: "none", $p: 2 },
@@ -34,10 +49,11 @@ const groups = [
   },
 ] as const;
 
-// Migrated from the button-group-layout sandbox without changes: raw
-// @ariakit/react buttons styled through the recipes, in groups that set every
-// zero-length padding form. The box around it is a frame with enough padding
-// that the groups keep the radius they have at the top level.
+// Migrated from the button-group-layout sandbox without changes, including the
+// glider, independent and joined vertical groups of #7471: raw @ariakit/react
+// buttons styled through the recipes, in groups that set every zero-length
+// padding form. The box around it is a frame with enough padding that the
+// groups keep the radius they have at the top level.
 function ButtonGroupLayout() {
   return (
     <div className="grid w-80 max-w-full gap-4">
@@ -56,11 +72,19 @@ function ButtonGroupLayout() {
             {["Day", "Week", "Month"].map((label) => (
               <ak.Button
                 key={label}
+                aria-current={
+                  title === "Glider" && label === "Week" ? "true" : undefined
+                }
                 {...button.jsx({ $border: 2, $borderType: "border" })}
               >
                 {label}
               </ak.Button>
             ))}
+            {title === "Glider" && (
+              <div
+                {...buttonGlider.jsx({ $state: "selected", $layer: "blue" })}
+              />
+            )}
           </div>
         </section>
       ))}
@@ -73,7 +97,7 @@ export function ButtonFixturesExamples() {
     <ExampleGrid>
       <Example
         title="Button group layout"
-        description="Ten groups of bordered buttons: gapless rows that join, a padded row, and spaced, vertical and wrapping rows that keep their corners."
+        description="Thirteen groups of bordered buttons: gapless rows that join, one with a selected glider, a row and a column that set $joined, a padded row, and spaced, vertical and wrapping rows that keep their corners."
         code={
           <ButtonGroup $border={2} $layout="horizontal" $gap="auto" $p="none">
             <Button $border={2} $borderType="border">

@@ -666,6 +666,7 @@ const frameVars = {
   frameMargin: ak.prop.len("frame-margin", { initial: "0px" }),
   frameBorder: ak.prop.len("frame-border", { initial: "0px" }),
   frameRing: ak.prop.len("frame-ring", { initial: "0px" }),
+  frameJoinRingShadow: _ak.prop("frame-join-ring-shadow"),
   frameParentRadiusContext: _ak.var("fprc"),
   frameParentPaddingContext: _ak.var("fppc"),
   frameParentBorderContext: _ak.var("fpbc"),
@@ -770,6 +771,10 @@ const inputs = {
   frameStart: _ak.prop.zero("frame-start"),
   frameEnd: _ak.prop.zero("frame-end"),
   frameForce: _ak.prop.zero("frame-force"),
+  frameJoinActive: _ak.prop.zero("frame-join-active"),
+  frameJoinFill: _ak.prop.zero("frame-join-fill"),
+  // Keep joining scoped to the immediate parent.
+  frameJoin: _ak.prop("frame-join", { initial: 0 }),
 };
 
 const theme = at.theme(
@@ -1389,11 +1394,14 @@ utility(
 // rest. Nearly every other `layer-*` and `state-*` utility sets that flag;
 // UNMODIFIED_LAYER_UTILITIES lists the ones that must not, this utility
 // included. Scaling the source alpha rather than replacing it keeps a
-// translucent layer translucent once it paints.
+// translucent layer translucent once it paints. A joined frame with an edge
+// also needs this surface paint beneath its border or ring.
 utility(
   "layer-transparent",
   set.backgroundColor(
-    fn.oklch(vars.layer, { a: fn.mul(alpha, vars.layerModified) }),
+    fn.oklch(vars.layer, {
+      a: fn.mul(alpha, fn.max(vars.layerModified, inputs.frameJoinFill)),
+    }),
   ),
 );
 
@@ -2183,6 +2191,12 @@ function getFrameBorderWidthDeclarations(target: VarProperty) {
 
 const frameContext = createContext();
 
+const FRAME_JOIN_CONDITION = `(${fn.style(inputs.frameJoin, 1)}) or ((${fn.style(inputs.frameJoin, "auto")}) and (${fn.style(vars.framePadding, "0px")}))`;
+const frameRingColor = fn.var(
+  "--tw-ring-color",
+  "--theme(--default-ring-color, currentColor)",
+);
+
 function getFrameBorderingContextDeclarations() {
   return set(inputs.frameBorderingContext, 1);
 }
@@ -2194,20 +2208,22 @@ function getFrameBorderingContextDeclarations() {
  * `ak-frame`, so the rule order between the two utilities does not matter.
  */
 function getFrameRingDeclarations(transparentWhenZero = false) {
-  const declarations = [at.apply`ring-[length:${vars.frameRing}]`];
-  if (!transparentWhenZero) return declarations;
   // Firefox can paint a colored zero-width shadow at rounded corners. Gate only
   // its alpha so nonzero rings retain their color and other shadows.
-  const color = fn.oklch(
-    "var(--tw-ring-color, --theme(--default-ring-color, currentColor))",
-    { a: fn.mul(alpha, fn.exp`sign(${vars.frameRing})`) },
-  );
+  const color = transparentWhenZero
+    ? fn.oklch(frameRingColor, {
+        a: fn.mul(alpha, fn.exp`sign(${vars.frameRing})`),
+      })
+    : frameRingColor;
   const spread = fn.add(vars.frameRing, "var(--tw-ring-offset-width)");
   return [
-    ...declarations,
+    at.apply`ring-[length:${vars.frameRing}]`,
     set(
       "--tw-ring-shadow",
-      fn.exp`var(--tw-ring-inset,) 0 0 0 ${spread} ${color}`,
+      fn.var(
+        vars.frameJoinRingShadow,
+        fn.exp`var(--tw-ring-inset,) 0 0 0 ${spread} ${color}`,
+      ),
     ),
   ];
 }
@@ -2494,6 +2510,103 @@ utility("frame-col", set(inputs.frameRow, 0));
 
 utility("frame-start", set(inputs.frameStart, 1));
 utility("frame-end", set(inputs.frameEnd, 1));
+
+utility("frame-join", set.isolation("isolate"), set(inputs.frameJoin, 1));
+
+// Compute joined ring paint in the static item utility. Dynamic ring utilities
+// only read it, and zero-width colors stay transparent to avoid Firefox arcs.
+const frameJoinRingAlpha = fn.mul(alpha, fn.exp`sign(${vars.frameRing})`);
+const frameJoinRingColor = fn.oklch(frameRingColor, {
+  a: frameJoinRingAlpha,
+});
+const frameJoinRingSurface = fn.oklch(vars.layer, { a: frameJoinRingAlpha });
+
+utility(
+  "frame-join-item",
+  at.container(
+    FRAME_JOIN_CONDITION,
+    set.zIndex(inputs.frameJoinActive),
+    rule(
+      "&:not([hidden])",
+      set.position("relative"),
+      rule(
+        "&:nth-child(1 of :not([hidden],template))",
+        set(inputs.frameStart, 1),
+      ),
+      rule(LAST_VISIBLE_SELECTOR, set(inputs.frameEnd, 1)),
+      // The owner's surface covers the old edge before its translucent edge
+      // paints. The flag also works when layer-transparent comes from @apply.
+      set(
+        inputs.frameJoinFill,
+        fn.exp`sign(${fn.add(vars.frameBorder, vars.frameRing)})`,
+      ),
+      set.backgroundClip("border-box"),
+      set(
+        vars.frameJoinRingShadow,
+        `var(--tw-ring-inset,) 0 0 0 calc(${fn.var(vars.frameRing)} + var(--tw-ring-offset-width, 0px)) ${frameJoinRingColor}, 0 0 0 ${fn.var(vars.frameRing)} ${frameJoinRingSurface}`,
+      ),
+      ...frameContext(({ inherit, provide }) => {
+        const row = inherit(vars.frameParentRowContext, 0);
+        const col = fn.invert(row);
+        // Preserve cover's outside stretch; only internal edges get the join.
+        const margin = fn.add(
+          inputs.frameMargin,
+          fn.div(fn.sub(vars.frameRing, vars.frameBorder), 2),
+        );
+        const startMargin = fn.add(
+          fn.mul(inputs.frameStart, vars.frameMargin),
+          fn.mul(fn.invert(inputs.frameStart), margin),
+        );
+        const endMargin = fn.add(
+          fn.mul(inputs.frameEnd, vars.frameMargin),
+          fn.mul(fn.invert(inputs.frameEnd), margin),
+        );
+        const startStart = fn.mul(
+          inputs.frameStart,
+          inherit(vars.frameParentCornerStartStartContext, 1),
+        );
+        const startEnd = fn.mul(
+          fn.max(fn.mul(col, inputs.frameStart), fn.mul(row, inputs.frameEnd)),
+          inherit(vars.frameParentCornerStartEndContext, 1),
+        );
+        const endStart = fn.mul(
+          fn.max(fn.mul(col, inputs.frameEnd), fn.mul(row, inputs.frameStart)),
+          inherit(vars.frameParentCornerEndStartContext, 1),
+        );
+        const endEnd = fn.mul(
+          inputs.frameEnd,
+          inherit(vars.frameParentCornerEndEndContext, 1),
+        );
+        return [
+          at.container(
+            fn.style(inputs.frameRow, 1),
+            set.marginInlineStart(startMargin),
+            set.marginInlineEnd(endMargin),
+          ),
+          at.container(
+            fn.style(inputs.frameRow, 0),
+            set.marginBlockStart(startMargin),
+            set.marginBlockEnd(endMargin),
+          ),
+          at.container(
+            fn.style(vars.framePadding, "0px"),
+            set.borderStartStartRadius(fn.mul(startStart, vars.frameRadius)),
+            set.borderStartEndRadius(fn.mul(startEnd, vars.frameRadius)),
+            set.borderEndStartRadius(fn.mul(endStart, vars.frameRadius)),
+            set.borderEndEndRadius(fn.mul(endEnd, vars.frameRadius)),
+            set(provide(vars.frameParentCornerStartStartContext), startStart),
+            set(provide(vars.frameParentCornerStartEndContext), startEnd),
+            set(provide(vars.frameParentCornerEndStartContext), endStart),
+            set(provide(vars.frameParentCornerEndEndContext), endEnd),
+          ),
+        ];
+      }),
+    ),
+  ),
+);
+
+utility("frame-join-auto", set(inputs.frameJoin, "auto"));
+utility("frame-join-active", set(inputs.frameJoinActive, 1));
 
 utility(
   "frame-border",

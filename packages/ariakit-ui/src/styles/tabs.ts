@@ -527,6 +527,7 @@ export const tabList = cv({
     },
   },
   defaultVariants: {
+    $joined: false,
     // The strip paints the root's surface half a step darker, a well the tabs
     // sit in. The selected tab and the panel lift off the root itself, so the
     // two stand out of the well together.

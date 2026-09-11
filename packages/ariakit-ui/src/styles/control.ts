@@ -29,7 +29,8 @@ const fontSizeVariants = {
 export const control = cv({
   extend: [padding, text],
   class: [
-    "control group/control relative flex justify-center",
+    "control ak-frame-join-item group/control relative flex justify-center",
+    "ui-hover:ak-frame-join-active ui-selected:ak-frame-join-active ui-focus-visible:ak-frame-join-active",
     // The blank space a font builds into a glyph's advance width. Gaps and slot
     // margins subtract it so a slot sits optically, not geometrically, beside
     // the text.
@@ -438,6 +439,12 @@ export const controlGroup = cv({
   class: ["control-group"],
   variants: {
     ...fontSizeVariants,
+    /**
+     * Joins adjacent control edges in a single row or column with no gap.
+     * Active controls own their shared edges; later active controls win ties.
+     * Inner corners are square only when the group padding resolves to zero.
+     */
+    $joined: "",
     $layout: {
       none: "",
       wrap: "flex flex-wrap",
@@ -462,29 +469,36 @@ export const controlGroup = cv({
     $layout: "horizontal",
     $p: 1,
     $gap: "auto",
+    $joined(defaultValue, variants) {
+      return (
+        defaultValue ??
+        (variants.$layout === "horizontal" || variants.$layout === "stretch")
+      );
+    },
   },
   refine({ variants, addClass }) {
-    if (variants.$layout !== "horizontal" && variants.$layout !== "stretch") {
+    if (!variants.$joined) return;
+    if (
+      variants.$layout !== "horizontal" &&
+      variants.$layout !== "stretch" &&
+      variants.$layout !== "vertical"
+    ) {
       return;
     }
     if (variants.$gap !== "none" && variants.$gap !== "auto") return;
-    // Bordered controls share an edge only when nothing separates them, so each
-    // pulls half its edge into its neighbour in a gapless row. The auto gap
-    // follows the resolved padding, including CSS lengths and expressions.
+    // Auto gaps follow resolved padding, so all equivalent CSS zero lengths
+    // activate the same geometry. Wrapped rows have no DOM adjacency contract.
     if (variants.$gap === "none") {
-      addClass([
-        "[&>.control:not(:nth-child(1_of_.control))]:-ms-[calc(var(--ak-frame-border)/2)]",
-        "[&>.control:not(:nth-last-child(1_of_.control))]:-me-[calc(var(--ak-frame-border)/2)]",
-      ]);
+      addClass("ak-frame-join");
     } else {
-      addClass([
-        "[&>.control:not(:nth-child(1_of_.control))]:[@container_style(--ak-frame-padding:_0px)]:-ms-[calc(var(--ak-frame-border)/2)]",
-        "[&>.control:not(:nth-last-child(1_of_.control))]:[@container_style(--ak-frame-padding:_0px)]:-me-[calc(var(--ak-frame-border)/2)]",
-      ]);
+      addClass("ak-frame-join ak-frame-join-auto");
     }
+    addClass(variants.$layout === "vertical" ? "ak-frame-col" : "ak-frame-row");
+    // The recipe knows which siblings are controls, so decorations such as a
+    // glider do not decide the generic frame utility's boundary positions.
     addClass([
-      "[&>.control:not(:nth-child(1_of_.control))]:[@container_style(--ak-frame-padding:_0px)]:rounded-s-none",
-      "[&>.control:not(:nth-last-child(1_of_.control))]:[@container_style(--ak-frame-padding:_0px)]:rounded-e-none",
+      "[&>.control:nth-child(1_of_.control:not([hidden]))]:ak-frame-start",
+      "[&>.control:nth-last-child(1_of_.control:not([hidden]))]:ak-frame-end",
     ]);
   },
 });
