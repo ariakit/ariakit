@@ -61,6 +61,12 @@ export interface ScreenshotOptions {
    * @default false
    */
   fullPage?: boolean;
+  /**
+   * How long each screenshot assertion may take, in milliseconds, including the
+   * two identical captures that a new baseline needs. Without it, the
+   * configured expect timeout applies.
+   */
+  timeout?: number;
 }
 
 export const viewports = {
@@ -379,6 +385,7 @@ export async function visual(
     element,
     clipMargin = DEFAULT_CLIP_MARGIN,
     fullPage = false,
+    timeout,
   } = options;
 
   const viewportEntries = Object.entries(viewports);
@@ -418,6 +425,7 @@ export async function visual(
           });
           await expect(page).toHaveScreenshot(fileSnapshotName, {
             ...screenshotOptions,
+            timeout,
           });
           // Touch the screenshot file so the CI stale-detection step (which
           // deletes files older than a pre-run marker) knows this screenshot is

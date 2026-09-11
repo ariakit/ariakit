@@ -58,6 +58,11 @@ const MAX_SCREENSHOT_HEIGHT = 16_383;
 // anchor beside it: the 8px gutter and a field or a button up to 48px tall.
 const OVERLAY_CLIP_MARGIN = 64;
 
+// Safari on the macOS runners can take several seconds for one capture of a
+// tall gallery page, and a new baseline needs two identical captures in a row,
+// which the default five seconds do not cover.
+const SCREENSHOT_TIMEOUT = 30_000;
+
 /**
  * Moves real keyboard focus to the page's focus target. A `Tab` press, not
  * `element.focus()`, is what puts the engine in keyboard modality, which is
@@ -119,6 +124,7 @@ function getContentCapture(content: Locator, setting: string) {
     clipMargin: 0,
     viewports: { desktop: viewports.desktop },
     styles: { [setting]: {} },
+    timeout: SCREENSHOT_TIMEOUT,
   } satisfies ScreenshotOptions;
 }
 
@@ -135,6 +141,7 @@ function getCapture(
     element,
     viewports: { desktop: viewports.desktop },
     styles: { [setting]: {} },
+    timeout: SCREENSHOT_TIMEOUT,
     ...options,
   } satisfies ScreenshotOptions;
 }
@@ -152,7 +159,26 @@ function getViewportCapture(
     clipMargin: 0,
     viewports: { [viewport]: viewports[viewport] },
     styles: { "light-canvas": {} },
+    timeout: SCREENSHOT_TIMEOUT,
   } satisfies ScreenshotOptions;
+}
+
+type Visual = (options: ScreenshotOptions) => Promise<void>;
+
+/**
+ * Captures a box that no interaction has scrolled to. A capture that is not
+ * full-page clips to the viewport, so the box is centered in it first, where
+ * the sticky header cannot cover it either.
+ */
+async function captureInView(
+  visual: Visual,
+  box: Locator,
+  options?: ScreenshotOptions,
+) {
+  await box.evaluate((node) => {
+    node.scrollIntoView({ block: "center" });
+  });
+  await visual(getCapture(box, options));
 }
 
 /**
@@ -198,6 +224,8 @@ function withCapturePage(
 ) {
   withGalleryPage(pageId, async (params) => {
     params.test.use({ viewport: viewports.desktop });
+    // A test can take up to three captures, each within the screenshot budget.
+    params.test.describe.configure({ timeout: 120_000 });
     params.test.beforeEach(async ({ page }) => {
       await loadWithSettings(page, pageId, lightCanvas);
     });
@@ -721,8 +749,8 @@ withCapturePage("progress", async ({ test }) => {
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await expectMedia(page, "(forced-colors: active)");
-    await visual(getCapture(q.article("Default"), { id: "bar" }));
-    await visual(getCapture(q.article("Ring with label"), { id: "ring" }));
+    await captureInView(visual, q.article("Default"), { id: "bar" });
+    await captureInView(visual, q.article("Ring with label"), { id: "ring" });
   });
 
   // The track's inset ring used to read the border width of the bordered
@@ -735,10 +763,10 @@ withCapturePage("progress", async ({ test }) => {
   }) => {
     await page.emulateMedia({ contrast: "more" });
     await expectMedia(page, "(prefers-contrast: more)");
-    await visual(getCapture(q.article("Default"), { id: "bordered" }));
-    await visual(
-      getCapture(q.article("Borderless track"), { id: "borderless" }),
-    );
+    await captureInView(visual, q.article("Default"), { id: "bordered" });
+    await captureInView(visual, q.article("Borderless track"), {
+      id: "borderless",
+    });
   });
 });
 
@@ -973,7 +1001,7 @@ withCapturePage("table-fixtures", async ({ query, test }) => {
   }) => {
     const box = q.article("Table rows");
     await scrollCellsUnderPinnedCell(query(box).table("Team hours"));
-    await visual(getCapture(box));
+    await captureInView(visual, box);
   });
 
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974552570
@@ -986,7 +1014,7 @@ withCapturePage("table-fixtures", async ({ query, test }) => {
     await pin.uncheck();
     await test.expect(pin).not.toBeChecked();
     await scrollCellsUnderPinnedCell(query(box).table("Team hours"));
-    await visual(getCapture(box));
+    await captureInView(visual, box);
   });
 
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974552570
@@ -997,7 +1025,7 @@ withCapturePage("table-fixtures", async ({ query, test }) => {
     const box = q.article("Table rows");
     await query(box).button("Add contributor").click();
     await test.expect(query(box).row(/^Katherine\b/)).toBeVisible();
-    await visual(getCapture(box));
+    await captureInView(visual, box);
   });
 });
 
