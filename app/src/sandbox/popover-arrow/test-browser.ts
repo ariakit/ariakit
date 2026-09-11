@@ -99,6 +99,31 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeLessThanOrEqual(anchorBox.x + anchorBox.width);
   });
 
+  test("arrow takes the new theme colors when the popover opens after a theme switch", async ({
+    page,
+    q,
+  }) => {
+    const disclosure = q.button("Themed popover");
+    await disclosure.click();
+    const dialog = q.dialog("Themed popover");
+    const arrow = dialog.locator(".arrow");
+    await test.expect(arrow).toHaveCSS("fill", "rgb(255, 255, 255)");
+    await test.expect(arrow).toHaveCSS("stroke", ringColor);
+    await test.expect(arrow).toHaveCSS("stroke-width", "2px");
+
+    await page.keyboard.press("Escape");
+    await test.expect(dialog).toBeHidden();
+    await q.checkbox("Dark theme").check();
+
+    // The switch happened while the popover was closed and re-rendered nothing
+    // inside it, so only a fresh read on open can pick up the dark colors.
+    await disclosure.click();
+    await test.expect(dialog).toBeVisible();
+    await test.expect(arrow).toHaveCSS("fill", "rgb(15, 23, 42)");
+    await test.expect(arrow).toHaveCSS("stroke", "rgb(250, 204, 21)");
+    await test.expect(arrow).toHaveCSS("stroke-width", "4px");
+  });
+
   const cases = [
     // A 1px ring is detected by the current width regex, but the arrow stroke
     // must also match the ring color instead of the inherited text color.
