@@ -30,17 +30,7 @@ const rotateMap = {
   left: `rotate(90 ${halfDefaultSize} ${halfDefaultSize})`,
 };
 
-function useComputedStyle(store: PopoverStore) {
-  const [style, setStyle] = useState<CSSStyleDeclaration>();
-  const contentElement = useStoreState(store, "contentElement");
-  useSafeLayoutEffect(() => {
-    if (!contentElement) return;
-    const win = getWindow(contentElement);
-    const computedStyle = win.getComputedStyle(contentElement);
-    setStyle(computedStyle);
-  }, [contentElement]);
-  return style;
-}
+type BasePlacement = ReturnType<typeof getBasePlacement>;
 
 interface RingStyle {
   width: number;
@@ -105,8 +95,7 @@ function getRingFromSegment(segment: string, maskedSegment: string) {
  * with a positive spread, as produced by Tailwind ring utilities) and returns
  * its width and color.
  */
-function getRing(style?: CSSStyleDeclaration) {
-  if (!style) return;
+function getRing(style: CSSStyleDeclaration) {
   const boxShadow = style.getPropertyValue("box-shadow");
   if (!boxShadow) return;
   if (boxShadow === "none") return;
@@ -124,6 +113,81 @@ function getRing(style?: CSSStyleDeclaration) {
     segmentStart = index + 1;
   }
   return;
+}
+
+interface ArrowStyle {
+  fill: string;
+  stroke: string;
+  borderWidth: number;
+  isRing: boolean;
+}
+
+interface GetArrowStyleParams {
+  style: CSSStyleDeclaration;
+  dir: BasePlacement;
+  borderWidthProp?: number;
+}
+
+/**
+ * Derives the arrow's fill, stroke and stroke mode from the popover's computed
+ * style.
+ */
+function getArrowStyle({
+  style,
+  dir,
+  borderWidthProp,
+}: GetArrowStyleParams): ArrowStyle {
+  const fill = style.getPropertyValue("background-color") || "none";
+  // Without a ring, the stroke takes the border color, which always resolves to
+  // a concrete value on connected elements (currentColor at the very least).
+  const borderColor = style.getPropertyValue(`border-${dir}-color`) || "none";
+  if (borderWidthProp != null) {
+    return {
+      fill,
+      stroke: borderColor,
+      borderWidth: borderWidthProp,
+      isRing: false,
+    };
+  }
+  const ring = getRing(style);
+  if (ring) {
+    // When the popover is outlined by a ring, the arrow stroke must match the
+    // ring color so the arrow blends into the outline. A ring segment with an
+    // omitted color defaults to currentColor per CSS, so use the computed text
+    // color then. Computed styles always serialize a concrete shadow color, but
+    // declared values returned by some test environments may omit it.
+    const stroke = ring.color || style.getPropertyValue("color") || "none";
+    // Math.ceil matches the border width fallback below so fractional ring
+    // widths still render a visible stroke on high-DPI screens.
+    return { fill, stroke, borderWidth: Math.ceil(ring.width), isRing: true };
+  }
+  const parsed = Number.parseFloat(
+    style.getPropertyValue(`border-${dir}-width`),
+  );
+  const borderWidth = Number.isNaN(parsed) ? 0 : Math.ceil(parsed);
+  return { fill, stroke: borderColor, borderWidth, isRing: false };
+}
+
+interface UseArrowStyleParams {
+  store: PopoverStore;
+  dir: BasePlacement;
+  borderWidthProp?: number;
+}
+
+function useArrowStyle({ store, dir, borderWidthProp }: UseArrowStyleParams) {
+  const [arrowStyle, setArrowStyle] = useState<ArrowStyle>();
+  const contentElement = useStoreState(store, "contentElement");
+  const open = useStoreState(store, "open");
+  // The popover colors can change while it's closed, for example after a theme
+  // switch, without re-rendering the arrow. The open state is a dependency so
+  // the computed style is read again every time the popover opens.
+  useSafeLayoutEffect(() => {
+    if (!contentElement) return;
+    const win = getWindow(contentElement);
+    const style = win.getComputedStyle(contentElement);
+    setArrowStyle(getArrowStyle({ style, dir, borderWidthProp }));
+  }, [contentElement, open, dir, borderWidthProp]);
+  return arrowStyle;
 }
 
 /**
@@ -160,39 +224,11 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
     );
 
     const maskId = useId();
-    const style = useComputedStyle(store);
-    const fill = style?.getPropertyValue("background-color") || "none";
-
-    const [borderWidth, isRing, ringColor] = useMemo(() => {
-      if (borderWidthProp != null) {
-        return [borderWidthProp, false, undefined] as const;
-      }
-      if (!style) return [0, false, undefined] as const;
-      const ring = getRing(style);
-      // Math.ceil matches the border width fallback below so fractional ring
-      // widths still render a visible stroke on high-DPI screens.
-      if (ring) return [Math.ceil(ring.width), true, ring.color] as const;
-      const borderWidth = style.getPropertyValue(`border-${dir}-width`);
-      if (borderWidth) {
-        const parsed = Number.parseFloat(borderWidth);
-        if (!Number.isNaN(parsed)) {
-          return [Math.ceil(parsed), false, undefined] as const;
-        }
-      }
-      return [0, false, undefined] as const;
-    }, [borderWidthProp, style, dir]);
-
-    // When the popover is outlined by a ring, the arrow stroke must match the
-    // ring color so the arrow blends into the outline. A ring segment with an
-    // omitted color defaults to currentColor per CSS, so use the computed text
-    // color then. Computed styles always serialize a concrete shadow color, but
-    // declared values returned by some test environments may omit it. Without a
-    // ring, fall back to the border color, which always resolves to a concrete
-    // value on connected elements (currentColor at the very least).
-    const fallbackColor = isRing
-      ? style?.getPropertyValue("color")
-      : style?.getPropertyValue(`border-${dir}-color`);
-    const stroke = ringColor || fallbackColor || "none";
+    const arrowStyle = useArrowStyle({ store, dir, borderWidthProp });
+    const fill = arrowStyle?.fill ?? "none";
+    const stroke = arrowStyle?.stroke ?? "none";
+    const isRing = arrowStyle?.isRing ?? false;
+    const borderWidth = arrowStyle?.borderWidth ?? borderWidthProp ?? 0;
 
     const strokeWidth = borderWidth * 2 * (defaultSize / size);
     const transform = rotateMap[dir];
