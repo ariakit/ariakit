@@ -2193,8 +2193,23 @@ function getFrameBorderingContextDeclarations() {
  * shadow on a rounded box as faint arcs at its corners. The width comes from
  * `ak-frame`, so the rule order between the two utilities does not matter.
  */
-function getFrameRingDeclarations() {
-  return at.apply`ring-[length:${vars.frameRing}]`;
+function getFrameRingDeclarations(transparentWhenZero = false) {
+  const declarations = [at.apply`ring-[length:${vars.frameRing}]`];
+  if (!transparentWhenZero) return declarations;
+  // Firefox can paint a colored zero-width shadow at rounded corners. Gate only
+  // its alpha so nonzero rings retain their color and other shadows.
+  const color = fn.oklch(
+    "var(--tw-ring-color, --theme(--default-ring-color, currentColor))",
+    { a: fn.mul(alpha, fn.exp`sign(${vars.frameRing})`) },
+  );
+  const spread = fn.add(vars.frameRing, "var(--tw-ring-offset-width)");
+  return [
+    ...declarations,
+    set(
+      "--tw-ring-shadow",
+      fn.exp`var(--tw-ring-inset,) 0 0 0 ${spread} ${color}`,
+    ),
+  ];
 }
 
 function getLayerEdgeContextDeclarations() {
@@ -2542,14 +2557,14 @@ utility(
   "frame-bordering",
   set(inputs.frameBordering, "1px"),
   getFrameBorderingDarkLight(),
-  getFrameRingDeclarations(),
+  getFrameRingDeclarations(true),
   getFrameBorderingContextDeclarations(),
   getLayerEdgeContextDeclarations(),
 );
 
 utility(
   "frame-bordering-inherit",
-  getFrameRingDeclarations(),
+  getFrameRingDeclarations(true),
   frameContext.read(({ inherit }) => [
     set(
       inputs.frameBordering,
@@ -2566,7 +2581,7 @@ utility(
   "frame-bordering-*",
   getFrameBorderWidthDeclarations(inputs.frameBordering),
   getFrameBorderingDarkLight(),
-  getFrameRingDeclarations(),
+  getFrameRingDeclarations(true),
   getFrameBorderingContextDeclarations(),
   getLayerEdgeContextDeclarations(),
 );

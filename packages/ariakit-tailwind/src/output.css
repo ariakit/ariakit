@@ -1268,6 +1268,7 @@
     --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
   }
   @apply ring-[length:var(--ak-frame-ring)];
+  --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(var(--ak-frame-ring) + var(--tw-ring-offset-width)) oklch(from var(--tw-ring-color, --theme(--default-ring-color, currentColor)) l c h / calc(alpha * sign(var(--ak-frame-ring))));
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
@@ -1283,6 +1284,7 @@
 
 @utility ak-frame-bordering-inherit {
   @apply ring-[length:var(--ak-frame-ring)];
+  --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(var(--ak-frame-ring) + var(--tw-ring-offset-width)) oklch(from var(--tw-ring-color, --theme(--default-ring-color, currentColor)) l c h / calc(alpha * sign(var(--ak-frame-ring))));
   @container (style(--_context-2: even)) or (not style(--_context-2)) {
     --_ak-frame-bordering: max(var(--_ak-fpbbc-even, 0px), var(--_ak-fpbgc-even, 0px));
     --_ak-fbd: clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1);
@@ -1328,6 +1330,7 @@
     --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
   }
   @apply ring-[length:var(--ak-frame-ring)];
+  --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(var(--ak-frame-ring) + var(--tw-ring-offset-width)) oklch(from var(--tw-ring-color, --theme(--default-ring-color, currentColor)) l c h / calc(alpha * sign(var(--ak-frame-ring))));
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
