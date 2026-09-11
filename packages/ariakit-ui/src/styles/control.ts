@@ -445,5 +445,11 @@ export const controlGroup = cv({
       addClass("ak-frame-join ak-frame-join-auto");
     }
     addClass(variants.$layout === "vertical" ? "ak-frame-col" : "ak-frame-row");
+    // The recipe knows which siblings are controls, so decorations such as a
+    // glider do not decide the generic frame utility's boundary positions.
+    addClass([
+      "[&>.control:nth-child(1_of_.control:not([hidden]))]:ak-frame-start",
+      "[&>.control:nth-last-child(1_of_.control:not([hidden]))]:ak-frame-end",
+    ]);
   },
 });

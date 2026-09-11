@@ -4,6 +4,7 @@
 @source "./index.react.tsx";
 
 @theme {
+  --default-ring-color: blue;
   --spacing: 0.25rem;
   --spacing-px: 1px;
   --radius: 0.25rem;

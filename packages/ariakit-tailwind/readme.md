@@ -861,7 +861,9 @@ All three utilities accept no argument (defaults to `1px`), named widths (`0`, `
 
 ### Joined surfaces
 
-Use `ak-frame-join` on a frame and the `ak-frame-join-item` marker on each participating child. The group must be a single row or column with no gap, in DOM order. Set `ak-frame-row` or `ak-frame-col` to match its layout. Each item needs `ak-frame` and `ak-layer` and the same declared edge width. Borders, outside rings, and adaptive bordering can participate.
+Use `ak-frame-join` on a frame and `ak-frame-join-item` on each participating child. The group must be a single row or column with no gap, in DOM order. Set `ak-frame-row` or `ak-frame-col` to match its layout. Each item needs `ak-frame` and `ak-layer` and the same declared edge width. Borders, outside rings, and adaptive bordering can participate.
+
+Joining uses declared edge widths for overlap. Native border joins require the browser's rendered border width to match the declared width. Pixel rounding can break that alignment for fractional widths and at some zoom levels; those combinations are not supported. Use outside frame rings for fractional edges, such as `ak-frame-ring-[0.5px]`. Their shadow spread uses the declared length.
 
 ```html
 <div class="ak-frame ak-frame-row ak-frame-xl/0 ak-frame-join flex">
@@ -889,9 +891,25 @@ The group overlaps each edge once and paints the owner's surface beneath it. Thi
 
 Joining keeps the child padding and frame radius. Inner corners become square only when the group padding resolves to zero. A padded group with a zero gap therefore keeps its inner corner radii. Add `ak-frame-join-auto` beside `ak-frame-join` when the group gap follows `--ak-frame-padding`; it disables joining when that padding is nonzero. Equivalent zero lengths and expressions have the same result.
 
-Joining also composes with `ak-frame-cover`. Cover stretches the outer and cross-axis edges toward the parent, while joining overlaps only the internal edges. Squared corners propagate to nested covers. The first and last participating items set the cover's start and end flags.
+Joining also composes with `ak-frame-cover`. Cover stretches the outer and cross-axis edges toward the parent, while joining overlaps only the internal edges. Squared corners propagate to nested covers. The start and end flags also define the outside edges for cover.
 
-Items with `[hidden]` do not participate. Siblings without the item marker are ignored, so an absolutely positioned decoration does not change the outer corners. Keep those siblings out of the layout flow. For CSS-hidden items, also remove the marker or use `[hidden]`. Do not apply joining to wrapped or reordered layouts, unequal edge widths, or items separated by in-flow content. Omit the group utility for independent surfaces or nonzero gaps that do not follow frame padding.
+The item utility carries its own declarations, so both group and item utilities work through `@apply` in custom CSS classes:
+
+```css
+.segmented-control {
+  @apply ak-frame ak-frame-row ak-frame-join flex;
+}
+
+.segment {
+  @apply ak-layer ak-frame ak-frame-lg/2 ak-frame-border-2 ak-frame-join-item;
+}
+
+.segment:hover {
+  @apply ak-layer-5 ak-frame-join-active;
+}
+```
+
+Items with `[hidden]` do not participate. The first and last visible DOM children get the start and end flags automatically; `[hidden]` siblings and `template` elements are skipped. If the group has decoration siblings or other nonparticipating children, apply `ak-frame-start` and `ak-frame-end` to the first and last joined items. Keep nonparticipating children out of layout flow. The control-group recipe sets these flags for its controls, so a glider does not change the outer corners. For CSS-hidden items, use `[hidden]` or set the boundary flags explicitly. Do not apply joining to wrapped or reordered layouts, unequal edge widths, or items separated by in-flow content. Omit the group utility for independent surfaces or nonzero gaps that do not follow frame padding.
 
 ## Variants
 

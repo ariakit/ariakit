@@ -1,4 +1,3 @@
-import { edgePixels, expectSameColor } from "#app/test-utils/frame-pixels.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
@@ -57,9 +56,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7466
-  test("tints both shared edges with the hovered control's surface", async ({
-    page,
+  test("tints both shared edges with the hovered control's surface @visual", async ({
     q,
+    visual,
   }) => {
     for (const title of ["Horizontal", "Joined vertical"]) {
       const group = query(q.group(title));
@@ -68,20 +67,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await item.scrollIntoViewIfNeeded();
         await item.hover();
         await test.expect(item).toHaveCSS("z-index", "1");
-        // The control's hover colors transition after the state selects it.
-        await test.expect
-          .poll(async () => {
-            const pixels = await edgePixels(page, item);
-            return Math.max(
-              ...pixels.left.map((channel, index) =>
-                Math.abs(channel - (pixels.right[index] ?? 0)),
-              ),
-            );
-          })
-          .toBeLessThanOrEqual(2);
-        const pixels = await edgePixels(page, item);
-        expectSameColor(pixels.left, pixels.right);
-        expectSameColor(pixels.top, pixels.bottom);
+        await visual({
+          element: q.group(title),
+          id: `${title}-${label}`,
+          styles: {},
+        });
       }
     }
   });

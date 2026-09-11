@@ -1,57 +1,123 @@
 import { expect } from "@playwright/test";
-import { edgePixels, expectSameColor } from "#app/test-utils/frame-pixels.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
   for (const colorScheme of ["light", "dark"] as const) {
     for (const contrast of ["no-preference", "more"] as const) {
-      // https://github.com/ariakit/ariakit/issues/7466
-      test(`paints one edge per hovered boundary (${colorScheme}, ${contrast})`, async ({
-        page,
-        q,
-      }) => {
-        await page.emulateMedia({ colorScheme, contrast });
-        for (const title of [
-          "Border 1",
-          "Border 2",
-          "Border 4",
-          "Border 8",
-          "Border 3",
-          "Ring 2",
-          "Adaptive 2",
-          "RTL",
-          "Vertical",
-          "Vertical ring",
-        ]) {
+      for (const title of [
+        "Applied",
+        "Border 1",
+        "Border 2",
+        "Border 4",
+        "Border 8",
+        "Border 3",
+        "Ring 2",
+        "Fractional ring",
+        "Adaptive 2",
+        "RTL",
+        "Vertical",
+        "Vertical ring",
+        "No edge",
+        "Shadow without edge",
+      ]) {
+        // https://github.com/ariakit/ariakit/issues/7466
+        test(`${title} joins edges through hover (${colorScheme}, ${contrast}) @visual`, async ({
+          page,
+          q,
+          visual,
+        }) => {
+          await page.emulateMedia({ colorScheme, contrast });
           const group = query(q.group(title));
           await page.mouse.move(0, 0);
           const idleItem = group.button("Week");
           await idleItem.scrollIntoViewIfNeeded();
-          const idlePixels = await edgePixels(page, idleItem);
-          expectSameColor(idlePixels.left, idlePixels.top);
-          expectSameColor(idlePixels.right, idlePixels.top);
-          expectSameColor(idlePixels.bottom, idlePixels.top);
+          await visual({
+            element: q.group(title),
+            id: `${title}-idle`,
+            styles: {},
+          });
           for (const label of ["Day", "Week", "Month"]) {
             const item = group.button(label);
             await item.scrollIntoViewIfNeeded();
-            const before = await item.boundingBox();
+            const geometry = () =>
+              item.evaluate((element) => {
+                const box = element.getBoundingClientRect();
+                return {
+                  x: box.x + window.scrollX,
+                  y: box.y + window.scrollY,
+                  width: box.width,
+                  height: box.height,
+                };
+              });
+            const before = await geometry();
             await item.hover();
             await expect(item).toHaveCSS("z-index", "1");
-            const pixels = await edgePixels(page, item);
-            expectSameColor(pixels.left, pixels.top);
-            expectSameColor(pixels.right, pixels.top);
-            expectSameColor(pixels.bottom, pixels.top);
-            expect(await item.boundingBox()).toEqual(before);
+            expect(await geometry()).toEqual(before);
+            await visual({
+              element: q.group(title),
+              id: `${title}-${label}`,
+              styles: {},
+            });
           }
-        }
-      });
+        });
+      }
     }
   }
 
   // https://github.com/ariakit/ariakit/issues/7466
-  test("later active items own boundaries shared by two active items", async ({
-    page,
+  test("joins fractional outside rings", async ({ q }) => {
+    const group = query(q.group("Fractional ring"));
+    const day = group.button("Day");
+    const week = group.button("Week");
+    await expect(day).toBeVisible();
+    const end = await day.evaluate(
+      (element) => element.getBoundingClientRect().right,
+    );
+    const start = await week.evaluate(
+      (element) => element.getBoundingClientRect().left,
+    );
+    expect(start - end).toBe(0.5);
+    await expect(week).toHaveCSS("box-shadow", /0px 0px 0px 0\.5px/);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7466
+  test("preserves the theme's default frame ring color", async ({ q }) => {
+    await expect(q.button("Theme ring")).toHaveCSS("color", "rgb(255, 0, 0)");
+    await expect(q.button("Theme ring")).toHaveCSS(
+      "box-shadow",
+      /rgb\(0, 0, 255\) 0px 0px 0px 2px/,
+    );
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7466
+  test("keeps a nested independent group separate", async ({ q }) => {
+    const week = query(q.group("Nested independent")).button("Week");
+    await expect(week).toHaveCSS("margin-inline-start", "0px");
+    await expect(week).toHaveCSS("margin-inline-end", "0px");
+    await expect(week).not.toHaveCSS("border-radius", "0px");
+    await expect(week).toHaveCSS("box-shadow", /0px 0px 0px 2px/);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7466
+  test("joins items through @apply in separate custom classes", async ({
     q,
+  }) => {
+    const group = query(q.group("Applied"));
+    const day = group.button("Day");
+    const week = group.button("Week");
+    await expect(q.group("Applied")).toHaveClass("applied-group");
+    await expect(day).toHaveClass("applied-item");
+    await expect(week).toHaveCSS("margin-inline-start", "-1px");
+    await expect(week).toHaveCSS("margin-inline-end", "-1px");
+    await expect(week).toHaveCSS("border-radius", "0px");
+    await week.hover();
+    await expect(week).toHaveCSS("z-index", "1");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7466
+  test("later active items own boundaries shared by two active items @visual", async ({
+    q,
+    visual,
   }) => {
     const group = query(q.group("Border 2"));
     const day = group.button("Day");
@@ -61,13 +127,27 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await expect(day).toHaveAttribute("aria-pressed", "true");
     await expect(week).toHaveAttribute("aria-pressed", "true");
     await day.hover();
-    const pixels = await edgePixels(page, week);
-    expectSameColor(pixels.left, pixels.top);
-    expectSameColor(pixels.right, pixels.top);
+    await expect(day).toHaveCSS("z-index", "1");
+    await expect(week).toHaveCSS("z-index", "1");
+    await visual({
+      element: q.group("Border 2"),
+      id: "selected-selected",
+      styles: {},
+    });
+    await week.hover();
+    await visual({
+      element: q.group("Border 2"),
+      id: "hover-selected",
+      styles: {},
+    });
     await week.click();
     await day.hover();
-    const activePixels = await edgePixels(page, day);
-    expectSameColor(activePixels.right, activePixels.top);
+    await expect(week).toHaveCSS("z-index", "0");
+    await visual({
+      element: q.group("Border 2"),
+      id: "selected-idle",
+      styles: {},
+    });
   });
 
   // https://github.com/ariakit/ariakit/issues/7466
@@ -111,6 +191,37 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7466
+  test("allows explicit focus stacking above an active neighbor @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    const group = query(q.group("Focus priority"));
+    const week = group.button("Week");
+    const month = group.button("Month");
+    await page.keyboard.press("Tab");
+    await week.focus();
+    await expect(week).toBeFocused();
+    await expect(week).toHaveCSS("z-index", "10");
+    await expect(month).toHaveCSS("z-index", "1");
+    await visual({ element: q.group("Focus priority"), styles: {} });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7466
+  test("preserves native Tailwind rings with programmatic focus", async ({
+    page,
+    q,
+  }) => {
+    const group = query(q.group("Focus priority"));
+    await page.keyboard.press("Tab");
+    await group.button("Week").focus();
+    await expect(group.button("Week")).toHaveCSS(
+      "box-shadow",
+      /rgb\(255, 0, 0\) 0px 0px 0px 2px/,
+    );
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7466
   test("preserves shadows, keyboard focus, and unbordered transparent layers", async ({
     page,
     q,
@@ -130,5 +241,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     );
     const unbordered = query(q.group("No edge")).button("Week");
     await expect(unbordered).toHaveCSS("background-color", /\/ 0\)$/);
+    await expect(unbordered).toHaveCSS("box-shadow", "none");
   });
 });
