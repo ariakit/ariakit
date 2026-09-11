@@ -97,9 +97,9 @@ export function CountryComboboxExample() {
         autoComplete="both"
         inputValue={value}
         setInputValue={setValue}
-        // The page holds other lists open, and a list that already exists
-        // when they open is marked as outside them and ignores Escape. A
-        // portaled list that mounts on open is not.
+        // The page holds other lists open, and a list that already exists when
+        // they open is marked as outside them and ignores Escape. A portaled
+        // list that mounts on open is not.
         // https://github.com/ariakit/ariakit/issues/7463
         popover={{ unmountOnHide: true }}
       >
@@ -129,10 +129,10 @@ export function BadgeSelectExample() {
         <ComboboxSelectLabel>Review status</ComboboxSelectLabel>
         <ComboboxSelectButton badge $layer={status?.layer} />
         {/*
-          Mounted on open, so the lists held open on the page do not mark it
-          as outside them, which would make it ignore Escape.
+          Mounted on open, so the lists held open on the page do not mark it as
+          outside them, which would make it ignore Escape.
           https://github.com/ariakit/ariakit/issues/7463
-        */}
+         */}
         <ComboboxSelectPopover unmountOnHide>
           {reviewStatuses.map((entry) => (
             <ComboboxSelectItem key={entry.value} value={entry.value} />

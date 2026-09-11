@@ -71,7 +71,10 @@ export function ListFixturesExamples() {
         title="list-item-marker-checked"
         description="A progress of 1 completes the marker by default, and an explicit checked value overrides a conflicting progress in both directions."
       >
-        {/* Explicit checked values must override the conflicting progress values. */}
+        {/*
+         * Explicit checked values must override the conflicting progress
+         * values.
+         */}
         <div className="grid gap-4">
           <List aria-label="Completed progress">
             <ListItem progress={1}>Ready for review</ListItem>

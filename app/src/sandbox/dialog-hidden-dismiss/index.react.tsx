@@ -56,10 +56,10 @@ export default function Example() {
       {/*
         A nested popover is non-modal, and `portal` defaults to `modal`, so it
         renders inline inside the dialog. It also stays rendered while closed,
-        so its dismiss button sits in the dialog's subtree before the user
-        opens it. That button closes the popover, not the dialog.
+        so its dismiss button sits in the dialog's subtree before the user opens
+        it. That button closes the popover, not the dialog.
         https://github.com/ariakit/ariakit/issues/7321
-      */}
+       */}
       <Ariakit.DialogProvider>
         <Ariakit.DialogDisclosure>Compose</Ariakit.DialogDisclosure>
         <Ariakit.Dialog>
@@ -117,11 +117,11 @@ export default function Example() {
         </Ariakit.Menu>
       </Ariakit.MenuProvider>
       {/*
-        Whether the dialog needs the fallback can change while it stays open,
-        in both directions: a dialog that loads its content gains a dismiss
-        control, and one that starts a task it can't cancel loses the control
-        it had. https://github.com/ariakit/ariakit/issues/7321
-      */}
+        Whether the dialog needs the fallback can change while it stays open, in
+        both directions: a dialog that loads its content gains a dismiss
+        control, and one that starts a task it can't cancel loses the control it
+        had. https://github.com/ariakit/ariakit/issues/7321
+       */}
       <Ariakit.DialogProvider>
         <Ariakit.DialogDisclosure>Activity</Ariakit.DialogDisclosure>
         <Ariakit.Dialog>

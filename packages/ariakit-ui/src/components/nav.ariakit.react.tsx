@@ -130,8 +130,8 @@ export function Nav({ list, glider, children, ...props }: NavProps) {
     <ak.Role.nav
       {...nav.jsx(variantProps)}
       {...rest}
-      // The inner element takes the state setter as its ref, and Ariakit
-      // merges it with the caller's ref and render element.
+      // The inner element takes the state setter as its ref, and Ariakit merges
+      // it with the caller's ref and render element.
       render={<ak.Role.nav ref={setElement} render={rest.render} />}
     >
       {renderGliders(glider)}
@@ -333,8 +333,8 @@ export function NavDisclosureContentBody(props: NavDisclosureContentBodyProps) {
   const [variantProps, rest] = splitProps(props, navDisclosureContentBody);
   return (
     <DisclosureContentBody
-      // The body paints no surface of its own: a nav glider that covers a
-      // row inside it paints under the content, and it has to show through.
+      // The body paints no surface of its own: a nav glider that covers a row
+      // inside it paints under the content, and it has to show through.
       $layer="transparent"
       {...navDisclosureContentBody.jsx(variantProps)}
       {...rest}

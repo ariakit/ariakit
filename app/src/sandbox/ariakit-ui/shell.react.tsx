@@ -345,7 +345,9 @@ export function GallerySidebar(props: GallerySidebarProps) {
         backdrop={<div className="bg-black/30 backdrop-blur-xs" />}
         className={`${panelClass} z-30`}
       >
-        {/* A link only changes the hash, so no new document closes the dialog. */}
+        {/*
+         * A link only changes the hash, so no new document closes the dialog.
+         */}
         <GalleryNavigation {...props} onNavigate={store.hide}>
           <ak.DialogDismiss
             render={<Button $p={2} />}

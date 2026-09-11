@@ -202,10 +202,10 @@ export function TooltipExamples() {
           </TooltipAnchor>
           {/*
             Unmounted on hide: this route holds other tooltips open, and a live
-            tooltip that already exists when they open is marked as outside
-            them and ignores Escape.
+            tooltip that already exists when they open is marked as outside them
+            and ignores Escape.
             https://github.com/ariakit/ariakit/issues/7463
-          */}
+           */}
           <Tooltip unmountOnHide>Publish to the public site</Tooltip>
         </TooltipProvider>
       </Example>

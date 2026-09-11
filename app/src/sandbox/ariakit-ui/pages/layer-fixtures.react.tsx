@@ -17,7 +17,10 @@ export function LayerFixturesExamples() {
     <ExampleGrid>
       {/* Migrated from the layer-color-values sandbox with the same markup. */}
       <Example title="Layer color values" wide stretch>
-        {/* Numeric zero must match its string form; empty strings keep the defaults. */}
+        {/*
+         * Numeric zero must match its string form; empty strings keep the
+         * defaults.
+         */}
         <div className="grid gap-4">
           <Layer $layer="brand" $hue={0} className="rounded-lg p-6">
             Numeric zero
@@ -56,7 +59,9 @@ export function LayerFixturesExamples() {
             <Text $text="brand" $textHue={120}>
               Other text hue
             </Text>
-            {/* Raw edges keep their hue visible without the contrast adjustment. */}
+            {/*
+             * Raw edges keep their hue visible without the contrast adjustment.
+             */}
             <Frame
               $edge="brand"
               $edgeRaw
