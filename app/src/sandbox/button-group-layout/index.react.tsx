@@ -1,7 +1,22 @@
 import { Button } from "@ariakit/react";
-import { button, buttonGroup } from "@ariakit/ui/styles/button";
+import { button, buttonGlider, buttonGroup } from "@ariakit/ui/styles/button";
 
 const groups = [
+  { title: "Glider", $layout: "horizontal", $gap: "none", $p: "none" },
+  {
+    title: "Independent",
+    $layout: "horizontal",
+    $gap: "none",
+    $p: "none",
+    $joined: false,
+  },
+  {
+    title: "Joined vertical",
+    $layout: "vertical",
+    $gap: "auto",
+    $p: "none",
+    $joined: true,
+  },
   { title: "Horizontal", $layout: "horizontal", $gap: "auto", $p: "none" },
   { title: "Stretched", $layout: "stretch", $gap: "none", $p: "none" },
   { title: "Padded", $layout: "horizontal", $gap: "none", $p: 2 },
@@ -38,11 +53,19 @@ export default function Example() {
             {["Day", "Week", "Month"].map((label) => (
               <Button
                 key={label}
+                aria-current={
+                  title === "Glider" && label === "Week" ? "true" : undefined
+                }
                 {...button.jsx({ $border: 2, $borderType: "border" })}
               >
                 {label}
               </Button>
             ))}
+            {title === "Glider" && (
+              <div
+                {...buttonGlider.jsx({ $state: "selected", $layer: "blue" })}
+              />
+            )}
           </div>
         </section>
       ))}

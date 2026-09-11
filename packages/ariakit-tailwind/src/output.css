@@ -1188,6 +1188,130 @@
   --_ak-frame-end: 1;
 }
 
+@utility ak-frame-join {
+  isolation: isolate;
+  --_ak-frame-join: 1;
+  & > .ak-frame-join-item:where(:not([hidden])) {
+    @container (style(--_ak-frame-join: 1)) or ((style(--_ak-frame-join: auto)) and (style(--ak-frame-padding: 0px))) {
+      position: relative;
+      z-index: var(--_ak-frame-join-active);
+      &:nth-child(1 of .ak-frame-join-item:where(:not([hidden]))) {
+        --_ak-frame-start: 1;
+      }
+      &:nth-last-child(1 of .ak-frame-join-item:where(:not([hidden]))) {
+        --_ak-frame-end: 1;
+      }
+      &:where(.ak-layer-transparent) {
+        background-color: oklch(from var(--ak-layer) l c h / calc(alpha * max(var(--_ak-lm), sign((var(--ak-frame-border) + var(--ak-frame-ring))))));
+      }
+      background-clip: border-box;
+      --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(var(--ak-frame-ring) + var(--tw-ring-offset-width, 0px)) var(--tw-ring-color, currentcolor), 0 0 0 var(--ak-frame-ring) var(--ak-layer);
+      @container (style(--_context-2: even)) or (not style(--_context-2)) {
+        --_context-2: odd;
+        @container style(--_ak-frame-row: 1) {
+          &:not(:nth-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+            margin-inline-start: calc(var(--_ak-frame-margin) + ((var(--ak-frame-ring) - var(--ak-frame-border)) / 2));
+          }
+          &:not(:nth-last-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+            margin-inline-end: calc(var(--_ak-frame-margin) + ((var(--ak-frame-ring) - var(--ak-frame-border)) / 2));
+          }
+          @container style(--ak-frame-padding: 0px) {
+            &:not(:nth-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+              border-start-start-radius: 0px;
+              border-end-start-radius: 0px;
+              --_ak-fpcss-odd: 0;
+              --_ak-fpces-odd: 0;
+            }
+            &:not(:nth-last-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+              border-start-end-radius: 0px;
+              border-end-end-radius: 0px;
+              --_ak-fpcse-odd: 0;
+              --_ak-fpcee-odd: 0;
+            }
+          }
+        }
+        @container style(--_ak-frame-row: 0) {
+          &:not(:nth-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+            margin-block-start: calc(var(--_ak-frame-margin) + ((var(--ak-frame-ring) - var(--ak-frame-border)) / 2));
+          }
+          &:not(:nth-last-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+            margin-block-end: calc(var(--_ak-frame-margin) + ((var(--ak-frame-ring) - var(--ak-frame-border)) / 2));
+          }
+          @container style(--ak-frame-padding: 0px) {
+            &:not(:nth-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+              border-start-start-radius: 0px;
+              border-start-end-radius: 0px;
+              --_ak-fpcss-odd: 0;
+              --_ak-fpcse-odd: 0;
+            }
+            &:not(:nth-last-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+              border-end-start-radius: 0px;
+              border-end-end-radius: 0px;
+              --_ak-fpces-odd: 0;
+              --_ak-fpcee-odd: 0;
+            }
+          }
+        }
+      }
+      @container style(--_context-2: odd) {
+        --_context-2: even;
+        @container style(--_ak-frame-row: 1) {
+          &:not(:nth-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+            margin-inline-start: calc(var(--_ak-frame-margin) + ((var(--ak-frame-ring) - var(--ak-frame-border)) / 2));
+          }
+          &:not(:nth-last-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+            margin-inline-end: calc(var(--_ak-frame-margin) + ((var(--ak-frame-ring) - var(--ak-frame-border)) / 2));
+          }
+          @container style(--ak-frame-padding: 0px) {
+            &:not(:nth-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+              border-start-start-radius: 0px;
+              border-end-start-radius: 0px;
+              --_ak-fpcss-even: 0;
+              --_ak-fpces-even: 0;
+            }
+            &:not(:nth-last-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+              border-start-end-radius: 0px;
+              border-end-end-radius: 0px;
+              --_ak-fpcse-even: 0;
+              --_ak-fpcee-even: 0;
+            }
+          }
+        }
+        @container style(--_ak-frame-row: 0) {
+          &:not(:nth-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+            margin-block-start: calc(var(--_ak-frame-margin) + ((var(--ak-frame-ring) - var(--ak-frame-border)) / 2));
+          }
+          &:not(:nth-last-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+            margin-block-end: calc(var(--_ak-frame-margin) + ((var(--ak-frame-ring) - var(--ak-frame-border)) / 2));
+          }
+          @container style(--ak-frame-padding: 0px) {
+            &:not(:nth-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+              border-start-start-radius: 0px;
+              border-start-end-radius: 0px;
+              --_ak-fpcss-even: 0;
+              --_ak-fpcse-even: 0;
+            }
+            &:not(:nth-last-child(1 of .ak-frame-join-item:where(:not([hidden])))) {
+              border-end-start-radius: 0px;
+              border-end-end-radius: 0px;
+              --_ak-fpces-even: 0;
+              --_ak-fpcee-even: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@utility ak-frame-join-auto {
+  --_ak-frame-join: auto;
+}
+
+@utility ak-frame-join-active {
+  --_ak-frame-join-active: 1;
+}
+
 @utility ak-frame-border {
   --_ak-frame-border: 1px;
   border-width: var(--_ak-frame-border);
@@ -2122,6 +2246,12 @@
 }
 
 @property --_ak-frame-force {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --_ak-frame-join-active {
   syntax: "<number>";
   inherits: false;
   initial-value: 0;

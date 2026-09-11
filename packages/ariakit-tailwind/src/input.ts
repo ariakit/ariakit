@@ -770,6 +770,8 @@ const inputs = {
   frameStart: _ak.prop.zero("frame-start"),
   frameEnd: _ak.prop.zero("frame-end"),
   frameForce: _ak.prop.zero("frame-force"),
+  frameJoinActive: _ak.prop.zero("frame-join-active"),
+  frameJoin: _ak.var("frame-join"),
 };
 
 const theme = at.theme(
@@ -2494,6 +2496,107 @@ utility("frame-col", set(inputs.frameRow, 0));
 
 utility("frame-start", set(inputs.frameStart, 1));
 utility("frame-end", set(inputs.frameEnd, 1));
+
+const FRAME_JOIN_ITEM = ".ak-frame-join-item:where(:not([hidden]))";
+
+utility(
+  "frame-join",
+  set.isolation("isolate"),
+  set(inputs.frameJoin, 1),
+  rule(
+    `& > ${FRAME_JOIN_ITEM}`,
+    at.container(
+      `(${fn.style(inputs.frameJoin, 1)}) or ((${fn.style(inputs.frameJoin, "auto")}) and (${fn.style(vars.framePadding, "0px")}))`,
+      set.position("relative"),
+      set.zIndex(inputs.frameJoinActive),
+      rule(`&:nth-child(1 of ${FRAME_JOIN_ITEM})`, set(inputs.frameStart, 1)),
+      rule(
+        `&:nth-last-child(1 of ${FRAME_JOIN_ITEM})`,
+        set(inputs.frameEnd, 1),
+      ),
+      // The owner's surface must cover the old edge before its translucent edge
+      // paints. Keep the ring in Tailwind's slot so caller shadows still compose.
+      rule(
+        "&:where(.ak-layer-transparent)",
+        set.backgroundColor(
+          fn.oklch(vars.layer, {
+            a: fn.mul(
+              alpha,
+              fn.max(
+                vars.layerModified,
+                fn.exp`sign(${fn.add(vars.frameBorder, vars.frameRing)})`,
+              ),
+            ),
+          }),
+        ),
+      ),
+      set.backgroundClip("border-box"),
+      set(
+        "--tw-ring-shadow",
+        `var(--tw-ring-inset,) 0 0 0 calc(${fn.var(vars.frameRing)} + var(--tw-ring-offset-width, 0px)) var(--tw-ring-color, currentcolor), 0 0 0 ${fn.var(vars.frameRing)} ${fn.var(vars.layer)}`,
+      ),
+      ...frameContext(({ provide }) => {
+        // Internal cover margins are zero; only its outside edges stretch. Add
+        // the join to the declared margin without repeating that outer stretch.
+        const margin = fn.add(
+          inputs.frameMargin,
+          fn.div(fn.sub(vars.frameRing, vars.frameBorder), 2),
+        );
+        const before = `&:not(:nth-child(1 of ${FRAME_JOIN_ITEM}))`;
+        const after = `&:not(:nth-last-child(1 of ${FRAME_JOIN_ITEM}))`;
+        return [
+          at.container(
+            fn.style(inputs.frameRow, 1),
+            rule(before, set.marginInlineStart(margin)),
+            rule(after, set.marginInlineEnd(margin)),
+            at.container(
+              fn.style(vars.framePadding, "0px"),
+              rule(
+                before,
+                set.borderStartStartRadius("0px"),
+                set.borderEndStartRadius("0px"),
+                set(provide(vars.frameParentCornerStartStartContext), 0),
+                set(provide(vars.frameParentCornerEndStartContext), 0),
+              ),
+              rule(
+                after,
+                set.borderStartEndRadius("0px"),
+                set.borderEndEndRadius("0px"),
+                set(provide(vars.frameParentCornerStartEndContext), 0),
+                set(provide(vars.frameParentCornerEndEndContext), 0),
+              ),
+            ),
+          ),
+          at.container(
+            fn.style(inputs.frameRow, 0),
+            rule(before, set.marginBlockStart(margin)),
+            rule(after, set.marginBlockEnd(margin)),
+            at.container(
+              fn.style(vars.framePadding, "0px"),
+              rule(
+                before,
+                set.borderStartStartRadius("0px"),
+                set.borderStartEndRadius("0px"),
+                set(provide(vars.frameParentCornerStartStartContext), 0),
+                set(provide(vars.frameParentCornerStartEndContext), 0),
+              ),
+              rule(
+                after,
+                set.borderEndStartRadius("0px"),
+                set.borderEndEndRadius("0px"),
+                set(provide(vars.frameParentCornerEndStartContext), 0),
+                set(provide(vars.frameParentCornerEndEndContext), 0),
+              ),
+            ),
+          ),
+        ];
+      }),
+    ),
+  ),
+);
+
+utility("frame-join-auto", set(inputs.frameJoin, "auto"));
+utility("frame-join-active", set(inputs.frameJoinActive, 1));
 
 utility(
   "frame-border",

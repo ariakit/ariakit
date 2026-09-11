@@ -859,6 +859,40 @@ All three utilities accept no argument (defaults to `1px`), named widths (`0`, `
 
 `ak-frame-cover` uses logical margin and radius properties so row covers follow the frame direction. When overriding its stretch margin on the same element, prefer axis or side utilities such as `mx-*`, `my-*`, `ms-*`, `me-*`, `mt-*`, `mr-*`, `mb-*`, or `ml-*`; Tailwind sorts the bare `m-*` shorthand before the cover declarations, so it will not reset the logical stretch. Covers should also share the frame's `dir` and `writing-mode`; apply direction changes inside the cover when the content needs a different flow.
 
+### Joined surfaces
+
+Use `ak-frame-join` on a frame and the `ak-frame-join-item` marker on each participating child. The group must be a single row or column with no gap, in DOM order. Set `ak-frame-row` or `ak-frame-col` to match its layout. Each item needs `ak-frame` and `ak-layer` and the same declared edge width. Borders, outside rings, and adaptive bordering can participate.
+
+```html
+<div class="ak-frame ak-frame-row ak-frame-xl/0 ak-frame-join flex">
+  <button
+    class="ak-layer ak-frame ak-frame-lg/2 ak-frame-border-2 ak-frame-join-item hover:ak-layer-5 hover:ak-frame-join-active"
+  >
+    Day
+  </button>
+  <button
+    class="ak-layer ak-frame ak-frame-lg/2 ak-frame-border-2 ak-frame-join-item hover:ak-layer-5 hover:ak-frame-join-active"
+  >
+    Week
+  </button>
+  <button
+    class="ak-layer ak-frame ak-frame-lg/2 ak-frame-border-2 ak-frame-join-item hover:ak-layer-5 hover:ak-frame-join-active"
+  >
+    Month
+  </button>
+</div>
+```
+
+The group overlaps each edge once and paints the owner's surface beneath it. This prevents translucent borders from darkening at shared boundaries. Use opaque layer colors for joined surfaces. A bordered `ak-layer-transparent` item paints its resolved layer while joined; an item with no edge keeps its normal transparency. Background images extend beneath the border. Tailwind shadows, inset shadows, and outlines remain in place.
+
+`ak-frame-join-active` gives an item ownership of both neighboring edges without changing layout. Apply it through hover, selection, or other variants. Active items paint above inactive items. When two neighbors have the same state, the later item in DOM order owns their boundary, including in RTL. Keep edge widths stable across states. A focus outline remains separate from the edge; use an explicit higher `z-index` when focus must take precedence over another active item.
+
+Joining keeps the child padding and frame radius. Inner corners become square only when the group padding resolves to zero. A padded group with a zero gap therefore keeps its inner corner radii. Add `ak-frame-join-auto` beside `ak-frame-join` when the group gap follows `--ak-frame-padding`; it disables joining when that padding is nonzero. Equivalent zero lengths and expressions have the same result.
+
+Joining also composes with `ak-frame-cover`. Cover stretches the outer and cross-axis edges toward the parent, while joining overlaps only the internal edges. Squared corners propagate to nested covers. The first and last participating items set the cover's start and end flags.
+
+Items with `[hidden]` do not participate. Siblings without the item marker are ignored, so an absolutely positioned decoration does not change the outer corners. Keep those siblings out of the layout flow. For CSS-hidden items, also remove the marker or use `[hidden]`. Do not apply joining to wrapped or reordered layouts, unequal edge widths, or items separated by in-flow content. Omit the group utility for independent surfaces or nonzero gaps that do not follow frame padding.
+
 ## Variants
 
 Variants apply utilities conditionally based on the parent layer or user preference. Use them like any Tailwind variant: `ak-dark:ak-ink-80`.
