@@ -256,6 +256,14 @@ export const choiceCard = cv({
     // the adaptive offset, which darkens a card on a light layer.
     $lightnessOffset: false,
     $lighten: true,
+    // The optical extra on the sides insets a line of text from a rounded edge.
+    // A tile's edges hold a slot and a check instead, so it keeps the frame
+    // padding on every side.
+    $px(defaultValue, variants) {
+      if (defaultValue == null) return;
+      if (variants.$orientation === "vertical") return "sm";
+      return defaultValue;
+    },
   },
 });
 

@@ -14,22 +14,20 @@ export const input = cv({
     // nested-interactive exclusion would suppress feedback on a wrapper
     // whose form holds the input next to a submit button. The disabled
     // exclusion it builds in has to be spelled out in exchange, with the
-    // same two conditions as the disabled look below.
-    "not-ui-disabled:not-has-[input:disabled]:hover:ak-state-2.5",
-    // A script can flip :disabled after render, and a wrapper takes the state
-    // from the input inside it, so the disabled look is a CSS rule rather than
-    // a variant. Only the field or its own input counts: a disabled button in
-    // a wrapper, such as a send button that waits for text, leaves the field
-    // enabled. The field lies flat on the surface with a faint edge and the
-    // dimmed ink of every other disabled control. $lightnessOffset lands in
-    // the style attribute, which no class can gate, so the plugin's own zero
-    // offset cancels the sink.
-    "ui-disabled:cursor-not-allowed has-[input:disabled]:cursor-not-allowed",
-    "[&_input:disabled]:cursor-not-allowed",
-    "ui-disabled:ak-ink-0 has-[input:disabled]:ak-ink-0",
-    "ui-disabled:**:ak-ink-0 has-[input:disabled]:**:ak-ink-0",
-    "ui-disabled:ak-edge-10 has-[input:disabled]:ak-edge-10",
-    "ui-disabled:ak-layer-offset-0 has-[input:disabled]:ak-layer-offset-0",
+    // same condition as the disabled look below.
+    "not-ui-field-disabled:hover:ak-state-2.5",
+    // A script can flip the disabled state after render, and a wrapper takes
+    // the state from the entry controls inside it, so the disabled look is a
+    // CSS rule rather than a variant. ui-field-disabled leaves a wrapper enabled
+    // while any control in it still takes entry, and when only a button in it
+    // is disabled, such as a send button that waits for text. The field lies
+    // flat on the surface with a faint edge and the dimmed ink of every other
+    // disabled control. $lightnessOffset lands in the style attribute, which
+    // no class can gate, so the plugin's own zero offset cancels the sink.
+    "ui-field-disabled:cursor-not-allowed **:ui-disabled:cursor-not-allowed",
+    "ui-field-disabled:ak-ink-0 ui-field-disabled:**:ak-ink-0",
+    "ui-field-disabled:ak-edge-10",
+    "ui-field-disabled:ak-layer-offset-0",
     // The row is one tight line plus the frame padding, whether the class
     // sits on the input itself or on a wrapper around it. Six steps of box
     // minus two one-step margins lands the nested input on the same 4-step

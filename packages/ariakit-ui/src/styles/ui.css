@@ -310,6 +310,50 @@ body > * {
   }
 }
 
+/* A field that is disabled itself, or a wrapper whose entry controls are all
+   disabled. Entry controls are the inputs that take entry, textareas and
+   selects. Unlike ui-disabled-within, a disabled button in the wrapper, such as
+   a send button that waits for text, leaves the field enabled, and so does a
+   disabled control beside one that still takes entry, such as a locked
+   currency select beside an amount. The entry list appears twice: keep both
+   copies the same. */
+@custom-variant ui-field-disabled {
+  &:is(:disabled, [aria-disabled="true"]),
+  &:has(
+      :is(
+          input:not(
+              [type="hidden"],
+              [type="button"],
+              [type="submit"],
+              [type="reset"],
+              [type="image"],
+              [type="checkbox"],
+              [type="radio"]
+            ),
+          textarea,
+          select
+        )
+    ):not(
+      :has(
+        :is(
+            input:not(
+                [type="hidden"],
+                [type="button"],
+                [type="submit"],
+                [type="reset"],
+                [type="image"],
+                [type="checkbox"],
+                [type="radio"]
+              ),
+            textarea,
+            select
+          ):not(:disabled, [aria-disabled="true"])
+      )
+    ) {
+    @slot;
+  }
+}
+
 @custom-variant ui-active {
   &:is(:active) {
     @variant not-ui-disabled {
