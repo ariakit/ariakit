@@ -173,9 +173,16 @@ export interface CheckboxCardGridProps
 
 /**
  * Packs `CheckboxCard`s into equal rows, as many columns as `$minItemSize`
- * allows.
+ * allows. It renders a group, like the radio group of `RadioCardGrid`, so name
+ * it with `aria-label` or `aria-labelledby`.
  */
 export function CheckboxCardGrid(props: CheckboxCardGridProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardGrid);
-  return <ak.Role.div {...checkboxCardGrid.jsx(variantProps)} {...rest} />;
+  return (
+    <ak.Role.div
+      role="group"
+      {...checkboxCardGrid.jsx(variantProps)}
+      {...rest}
+    />
+  );
 }

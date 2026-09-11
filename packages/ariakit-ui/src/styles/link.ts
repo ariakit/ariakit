@@ -3,6 +3,9 @@ import { focus } from "./focus.ts";
 import { text } from "./text.ts";
 
 export const link = cv({
+  // The plain ring, not focusHighlight: the highlight paints the element's own
+  // layer, and a text link keeps its background transparent, so it would show
+  // no focus indicator at all.
   extend: [text, focus],
   class: [
     // The padding grows the hit target and the focus indicator past the text

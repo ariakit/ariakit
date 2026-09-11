@@ -26,6 +26,12 @@ export const popover = cv({
     // over the page after Ariakit hides it.
     "ui-backdrop:transition-opacity ui-backdrop:duration-250 ui-backdrop:ease-[ease]",
     "ui-open:starting:ui-backdrop:opacity-0 ui-closed:ui-backdrop:opacity-0",
+    // Reduced motion drops the scale and the fade, which carry nothing the
+    // end state does not. It removes the transitioned properties rather than
+    // zeroing the durations, because the open and closed durations above
+    // outrank a plain duration, and because Ariakit then hides a closing
+    // popover at once instead of waiting for a transition end.
+    "motion-reduce:transition-none motion-reduce:ui-backdrop:transition-none",
     // Scale from the anchor side when Ariakit provides the
     // `transform-origin`; the invalid var() fallback leaves the default
     // center origin for native popovers.
@@ -58,6 +64,10 @@ export const popover = cv({
 });
 
 export const popoverDisclosure = cv({
+  extend: [button],
+});
+
+export const popoverDismiss = cv({
   extend: [button],
 });
 

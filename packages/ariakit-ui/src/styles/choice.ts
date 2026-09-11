@@ -14,7 +14,7 @@ import {
   controlLabel,
   controlSlot,
 } from "./control.ts";
-import { focus, focusWithin } from "./focus.ts";
+import { focusHighlight, focusWithin } from "./focus.ts";
 import { hover } from "./hover.ts";
 
 /**
@@ -62,7 +62,7 @@ export const choice = cv({
     // when on, and keeps a readable edge, or a small empty box vanishes on
     // a light layer.
     "ui-choice-disabled:ui-choice-on:ak-layer-15",
-    "ui-choice-disabled:ak-ink-0 ui-choice-disabled:ak-edge-10",
+    "ui-choice-disabled:ak-ink-0 ui-choice-disabled:ak-edge-20",
     "ui-choice-disabled:cursor-not-allowed",
   ],
   variants: {
@@ -87,10 +87,11 @@ export const choice = cv({
     $forceRounded: true,
     // The field geometry of input.ts: always a border, so the box is one size
     // on light and dark layers, at the input's edge weight, sunk one step into
-    // the surface.
+    // the surface. An empty box has no other boundary, so the weight is the
+    // lightest that keeps its edge at 3:1 against a light or a dark canvas.
     $border: true,
     $borderType: "border",
-    $edgeWeight: 30,
+    $edgeWeight: 45,
     $lightnessOffset: -1,
     $hoverOffset: true,
     $layer(defaultValue) {
@@ -110,7 +111,7 @@ export const choice = cv({
  * and mixed states come in the user's palette.
  */
 export const choiceInput = cv({
-  extend: [choice, focus],
+  extend: [choice, focusHighlight],
   class: [
     "not-ui-choice-disabled:group-hover/choice-field:ak-state-(--hover-offset,0)",
     "forced-colors:appearance-auto forced-colors:after:hidden",
@@ -185,8 +186,46 @@ export const choiceCard = cv({
     // class.
     "not-ui-disabled-within:ui-checked-within:ak-layer-lighten-0",
     "not-ui-disabled-within:ui-mixed-within:ak-layer-lighten-0",
+    // On a surface of the brand's own pigment, the tint matches the surface.
+    // A one-step push barely moves the tint elsewhere, but on a mid-lightness
+    // pigment it lands in the ambiguous midrange, which the push skips, so
+    // the card still separates from the surface.
+    "not-ui-disabled-within:ui-checked-within:ak-layer-push-1",
+    "not-ui-disabled-within:ui-mixed-within:ak-layer-push-1",
+    // A card disabled through its group never receives the $disabled prop, so
+    // it reads the state from its input and draws what $disabled below draws.
+    // The label itself is never disabled, so its hover and press, which only
+    // skip a disabled element, are turned off here too.
+    "ui-disabled-within:cursor-not-allowed",
+    "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
+    "ui-disabled-within:ak-edge-5 ui-disabled-within:ak-layer-mix-20",
+    "ui-disabled-within:ui-hover:ak-state-0",
+    "ui-disabled-within:ui-active:scale-x-100",
+    "ui-disabled-within:ui-active:scale-y-100",
   ],
   variants: {
+    /**
+     * Sets the card's flow. `vertical` makes the card a tile: the slot and the
+     * check share the top row, one at each end, and the content fills the row
+     * below, whatever its source order. The slot drops the margins that seat it
+     * on a line of text, so it lines up with the label under it. The flag is
+     * set on the card's parts, so a slot inside the content drops them too,
+     * while a control inside the tile, such as a badge, resets it for its own
+     * slots and keeps their margins. As on any frame, `vertical` also rounds
+     * nested `$cover` frames for a column.
+     */
+    $orientation: {
+      vertical: [
+        // The card is itself a control, and every control resets the flag on
+        // its own parts, so the tile's value must be important to reach them.
+        "[&>*]:[--control-inline:0]!",
+        // The card's justify-start and the control's justify-center are plain
+        // utilities that sort after justify-between, so only the important
+        // flag puts the check at the end of the row.
+        "justify-between!",
+        "[&>.control-content]:basis-full [&>.control-content]:order-1",
+      ],
+    },
     /**
      * Sets the vertical gap between the element's label and description.
      * @default "card"

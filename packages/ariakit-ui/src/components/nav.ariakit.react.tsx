@@ -35,9 +35,11 @@ import {
   DisclosureContentBody,
 } from "./disclosure.ariakit.react.tsx";
 
-const NavDisclosureContext = React.createContext<
-  ak.DisclosureStore | undefined
->(undefined);
+// The stores of every NavDisclosure around a row, outermost first, so a current
+// link can open all of them and not only the nearest one.
+const NavDisclosureContext = React.createContext<readonly ak.DisclosureStore[]>(
+  [],
+);
 
 /**
  * A glider for a nav, as `NavGlider` props or an element, or several of them in
@@ -168,12 +170,14 @@ export interface NavLinkProps
 export function NavLink({ currentUrl, ...props }: NavLinkProps) {
   const [variantProps, rest] = splitProps(props, navLink);
   const isCurrent = isCurrentPage(currentUrl, rest.href);
-  const disclosure = React.useContext(NavDisclosureContext);
+  const disclosures = React.useContext(NavDisclosureContext);
 
   React.useEffect(() => {
     if (!isCurrent) return;
-    disclosure?.show();
-  }, [isCurrent, disclosure]);
+    for (const disclosure of disclosures) {
+      disclosure.show();
+    }
+  }, [isCurrent, disclosures]);
 
   return (
     <ak.Role.a
@@ -226,8 +230,13 @@ function NavDisclosureRoot(props: ak.RoleProps<"li">) {
   // Capture this disclosure's store before a nested provider can replace the
   // generic context, which also carries unrelated dialogs and popovers.
   const disclosure = ak.useDisclosureContext();
+  const ancestors = React.useContext(NavDisclosureContext);
+  const disclosures = React.useMemo(() => {
+    if (!disclosure) return ancestors;
+    return [...ancestors, disclosure];
+  }, [ancestors, disclosure]);
   return (
-    <NavDisclosureContext.Provider value={disclosure}>
+    <NavDisclosureContext.Provider value={disclosures}>
       <ak.Role.li {...props} />
     </NavDisclosureContext.Provider>
   );
@@ -245,6 +254,10 @@ export function NavDisclosure(props: NavDisclosureProps) {
       // A nav row is a field-sized frame with control-sized padding.
       $rounded="lg"
       $p={2}
+      // The root paints no surface of its own. A nested section sits in a
+      // content that stacks over the nav's gliders, so an opaque root would
+      // hide the covers of its rows.
+      $layer="transparent"
       {...navDisclosure.jsx(variantProps)}
       {...rest}
       button={button}

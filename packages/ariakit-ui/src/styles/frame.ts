@@ -170,11 +170,17 @@ export const frameBase = cv({
     /**
      * Sets the border width. When set to `inherit`, the border uses the parent
      * frame's border or ring width and color. When set to `true`, it defaults
-     * to `1px`.
+     * to `1px`. When set to `false`, the element draws no border, even when its
+     * component sets a `$borderType` or it sits inside a bordered frame.
      */
     $border(value?: "inherit" | boolean | number) {
       if (value == null) return;
-      if (value === false) return;
+      // --border-width inherits. Left unset, a $borderType passed along with
+      // false, or one on a descendant, would draw at the width of a bordered
+      // ancestor.
+      if (value === false) {
+        return { style: { "--border-width": "0px" } };
+      }
       if (value === "inherit") {
         return "ak-frame-bordering-inherit ak-edge-inherit";
       }
@@ -188,6 +194,12 @@ export const frameBase = cv({
     $frame: true,
     $borderType(defaultValue, variants) {
       if (variants.$border === "inherit") {
+        return "unset";
+      }
+      // No border also drops the type a component keeps. At a zero width, its
+      // ring would still paint a shadow, which Firefox draws as faint arcs at
+      // rounded corners.
+      if (variants.$border === false) {
         return "unset";
       }
       // An explicit or component-level $borderType wins; $border alone only

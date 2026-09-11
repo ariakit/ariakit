@@ -143,7 +143,9 @@ export const navLink = cv({
 // Shared row alignment for disclosure buttons and standalone navigation links.
 export const navButton = cv({
   class: [
-    "justify-start overflow-clip whitespace-normal text-start",
+    // A row fills its list item. A button element would otherwise shrink to
+    // its content, and a trailing slot would stop short of the row's end.
+    "w-full justify-start overflow-clip whitespace-normal text-start",
     // Every row keeps the one gap, plus the control's extra side padding
     // that an icon slot takes off, with the nav's default for a row outside
     // a nav, such as a brand row. Important, because a disclosure
@@ -370,9 +372,11 @@ export const navDisclosureContentBody = cv({
   class: [
     "[--nav-body-padding:calc(var(--nav-gap)*0.5)]",
     "[--nav-body-radius:calc(var(--disclosure-radius)+var(--nav-body-padding))]",
-    // The body starts on the row's label. A row's text sits its own control
-    // inset past its pill, so each row pulls its pill back by that inset and
-    // its text lands on the label, however the lists and groups nest.
+    // The body starts where the content's guide puts it, which is on the
+    // label when an icon leads the disclosure row. A row's text sits its own
+    // control inset past its pill, so each row pulls its pill back by that
+    // inset and its text lands on the body's start, however the lists and
+    // groups nest.
     "[&_li>.control]:-ms-(--px)",
   ],
   defaultVariants: {

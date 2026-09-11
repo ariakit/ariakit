@@ -1,6 +1,7 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import { XIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 import {
   dialog,
@@ -10,6 +11,7 @@ import {
   dialogHeading,
   dialogScroll,
 } from "../styles/dialog.ts";
+import { ButtonSlot } from "./button.ariakit.react.tsx";
 
 export interface DialogProviderProps extends ak.DialogProviderProps {}
 
@@ -72,11 +74,30 @@ export interface DialogDismissProps
   extends ak.DialogDismissProps, VariantProps<typeof dialogDismiss> {}
 
 /**
+ * Without children, renders a square icon button named "Dismiss popup".
  * @see https://ariakit.com/reference/dialog-dismiss
  */
-export function DialogDismiss(props: DialogDismissProps) {
+export function DialogDismiss({ children, ...props }: DialogDismissProps) {
   const [variantProps, rest] = splitProps(props, dialogDismiss);
-  return <ak.DialogDismiss {...dialogDismiss.jsx(variantProps)} {...rest} />;
+  // Ariakit's default children is a bare 1em icon, which the button recipe pads
+  // like a line of text. A slot makes the icon-only button square, and the name
+  // moves to the button because the slot icon is hidden.
+  const iconOnly = children === undefined;
+  return (
+    <ak.DialogDismiss
+      aria-label={iconOnly ? "Dismiss popup" : undefined}
+      {...dialogDismiss.jsx(variantProps)}
+      {...rest}
+    >
+      {iconOnly ? (
+        <ButtonSlot>
+          <XIcon />
+        </ButtonSlot>
+      ) : (
+        children
+      )}
+    </ak.DialogDismiss>
+  );
 }
 
 export interface DialogScrollProps
@@ -84,7 +105,9 @@ export interface DialogScrollProps
 
 /**
  * Scrollable viewport that covers the dialog’s content box, for dialogs whose
- * content can outgrow the available height.
+ * content can outgrow the available height. Give the dialog a flex column
+ * layout so the viewport can shrink below the dialog's height cap, for example
+ * `className="flex flex-col"`.
  */
 export function DialogScroll(props: DialogScrollProps) {
   const [variantProps, rest] = splitProps(props, dialogScroll);

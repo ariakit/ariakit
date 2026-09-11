@@ -14,13 +14,21 @@ import { prose } from "./prose.ts";
 
 export const disclosureGroup = cv({
   extend: [frame],
-  class: ["[--disclosure-group:1]", "border-y divide-y divide-(--ak-edge)"],
+  class: ["[--disclosure-group:1]", "divide-y divide-(--ak-edge)"],
   defaultVariants: {
     // The group runs edge to edge, so it takes no corners of its own. Its
     // padding is the one every member spends, because each of them covers this
     // frame.
     $rounded: "none",
     $p: 4,
+  },
+  refine({ variants, addClass }) {
+    // A group with a frame edge is already lined on every side. A border the
+    // frame does not know about would sit inside that edge and double it, and
+    // the members, which cover only the frame padding, would round one line
+    // short of it.
+    if (variants.$border) return;
+    addClass("border-y");
   },
 });
 
@@ -83,8 +91,9 @@ export const disclosure = cv({
     // Open is signalled by native details or by the wrapper's data-open.
     "open:[--disclosure-open:1] data-open:[--disclosure-open:1]",
     // Inside a group the disclosure covers the group frame, which is where
-    // its radius and padding then come from. Leave $rounded and $p unset on
-    // a group member: both sort after this line and would win over it.
+    // its radius and padding then come from. The cover sorts after a
+    // member's own $rounded and $p, so it wins over them and every member
+    // keeps the group's shape.
     "ui-disclosure-group:ak-frame-cover",
   ],
   variants: {

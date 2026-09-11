@@ -62,7 +62,9 @@ export const edge = cv({
     },
     /**
      * Applies the edge color exactly as specified, without the default alpha
-     * and lightness adjustments.
+     * and lightness adjustments. It clears the `$edgeWeight`, `$edgePush`,
+     * `$edgeLighten`, and `$edgeDarken` defaults that a component sets, while
+     * values passed along with it still apply.
      */
     $edgeRaw: "ak-edge-raw",
     /**
@@ -99,9 +101,10 @@ export const edge = cv({
       "ak-dark-low:ak-edge-push-[-0.28] ak-dark-low:ak-edge-alpha-[calc((1-l)*(1-l))]",
     /**
      * Pushes the edge lightness away from the current color to create contrast.
-     * By default, it's set to `100` (full contrast). Set it to `0`, or use
-     * `$edgeRaw` (which sets both alpha and lightness), to use the exact
-     * lightness of the base edge color.
+     * By default, it's `100` (full contrast) for the edge derived from the
+     * layer, and `0` for a named or custom `$edge` color, which keeps its own
+     * lightness and hue. Set it to change either, or use `$edgeRaw` (which sets
+     * both alpha and lightness) to use the exact base edge color.
      */
     $edgePush(value?: string | number) {
       return getScaledStyleClass({
@@ -277,6 +280,33 @@ export const edge = cv({
         class: "ak-edge-h-(--edge-hue)",
         style: { "--edge-hue": `${value}` },
       };
+    },
+  },
+  defaultVariants: {
+    // The raw utility sets the alpha and the lightness, but a component's
+    // default for either sorts after it in the stylesheet and wins. Clearing
+    // those defaults lets the raw color through. Values passed with it stay.
+    $edgeWeight(defaultValue, variants) {
+      if (variants.$edgeRaw) return undefined;
+      return defaultValue;
+    },
+    $edgeLighten(defaultValue, variants) {
+      if (variants.$edgeRaw) return undefined;
+      return defaultValue;
+    },
+    $edgeDarken(defaultValue, variants) {
+      if (variants.$edgeRaw) return undefined;
+      return defaultValue;
+    },
+    $edgePush(defaultValue, variants) {
+      if (variants.$edgeRaw) return undefined;
+      if (defaultValue != null) return defaultValue;
+      if (variants.$edge == null) return defaultValue;
+      if (variants.$edge === "unset") return defaultValue;
+      // The full push turns the layer's own color into a black or white
+      // hairline. On a color asked for by name, it would clamp the lightness to
+      // either end and take the hue with it.
+      return 0;
     },
   },
 });

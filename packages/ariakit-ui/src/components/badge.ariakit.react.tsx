@@ -4,14 +4,15 @@ import { splitProps } from "clava";
 import { badge, badgeLabel, badgeSlot } from "../styles/badge.ts";
 
 export interface BadgeProps
-  extends ak.RoleProps<"div">, VariantProps<typeof badge> {}
+  extends ak.RoleProps<"span">, VariantProps<typeof badge> {}
 
 /**
+ * A span, so it can sit in running text such as a paragraph or a heading.
  * @see https://ariakit.com/react/examples/badge
  */
 export function Badge(props: BadgeProps) {
   const [variantProps, rest] = splitProps(props, badge);
-  return <ak.Role.div {...badge.jsx(variantProps)} {...rest} />;
+  return <ak.Role.span {...badge.jsx(variantProps)} {...rest} />;
 }
 
 export interface BadgeLabelProps
@@ -33,5 +34,16 @@ export interface BadgeSlotProps
  */
 export function BadgeSlot(props: BadgeSlotProps) {
   const [variantProps, rest] = splitProps(props, badgeSlot);
-  return <ak.Role.span {...badgeSlot.jsx(variantProps)} {...rest} />;
+  const variants = badgeSlot.getVariants(variantProps);
+  // The badge kind sizes the count through a child element, which a bare text
+  // node is not.
+  return (
+    <ak.Role.span {...badgeSlot.jsx(variantProps)} {...rest}>
+      {variants.$kind === "badge" ? (
+        <span>{rest.children}</span>
+      ) : (
+        rest.children
+      )}
+    </ak.Role.span>
+  );
 }

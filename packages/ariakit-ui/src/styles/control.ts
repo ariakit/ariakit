@@ -34,6 +34,12 @@ export const control = cv({
     // margins subtract it so a slot sits optically, not geometrically, beside
     // the text.
     "[--sidebearing:0.15em]",
+    // A stacked card sets --control-inline on its parts, and custom properties
+    // inherit. Every control resets it on its own parts, so the slots of a badge
+    // or button inside a tile keep the in-row margins that
+    // var(--control-inline,1) falls back to. The control itself keeps the value
+    // it inherits, so a tile spaces it like any other part.
+    "[&>*]:[--control-inline:initial]",
   ],
   variants: {
     ...fontSizeVariants,
@@ -90,10 +96,17 @@ export const controlSlot = cv({
   extend: [frame],
   class: [
     "flex flex-none items-center justify-center",
-    "[--my:calc((1lh-var(--size,1lh))/2*var(--row-span))]",
-    "[--mx:calc((var(--py)-var(--px))+var(--my))]",
+    // The margins seat the slot on the first line of text and pull it toward
+    // the edge. A stacked card sets --control-inline to 0, which drops both,
+    // so a slot on a row of its own lines up with the label under it.
+    "[--my:calc((1lh-var(--size,1lh))/2*var(--row-span)*var(--control-inline,1))]",
+    "[--mx:calc(((var(--py)-var(--px))+var(--my))*var(--control-inline,1))]",
     "min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
-    "[&>svg]:block [&>svg]:size-(--slot-icon-size,var(--size)) mx-(--mx) my-(--my)",
+    // An extender that draws its own mark sets --slot-icon-size. Otherwise,
+    // the icon fills the slot, scaled down by --slot-icon-scale when the slot
+    // paints a surface of its own (see refine).
+    "[&>svg]:block [&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
+    "mx-(--mx) my-(--my)",
   ],
   variants: {
     /**
@@ -118,17 +131,22 @@ export const controlSlot = cv({
      * be wrapped in a label element such as `ButtonLabel`. A sibling selector
      * cannot see a bare text node, and the margin would land on the next
      * element instead, which may be another slot.
+     *
+     * A stacked card sets `--control-inline` to 0, which drops these margins
+     * along with the slot's own.
      */
     $mx: {
       unset: "",
-      closeGap: "[&+*]:-ms-1 [*:has(+&)]:-me-1",
-      xs: "[&+*]:-ms-(--sidebearing) [*:has(+&)]:-me-(--sidebearing)",
-      sm: "[&+*]:-ms-(--sidebearing) [*:has(+&)]:-me-(--sidebearing)",
+      closeGap:
+        "[&+*]:ms-[calc(var(--spacing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--spacing)*-1*var(--control-inline,1))]",
+      xs: "[&+*]:ms-[calc(var(--sidebearing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--sidebearing)*-1*var(--control-inline,1))]",
+      sm: "[&+*]:ms-[calc(var(--sidebearing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--sidebearing)*-1*var(--control-inline,1))]",
       md: "",
       lg: "",
-      xl: "[&+*]:ms-(--sidebearing) [*:has(+&)]:me-(--sidebearing)",
-      "2xl": "[&+*]:ms-(--py) [*:has(+&)]:me-(--py)",
-      full: "[&+*]:ms-[1cap] [*:has(+&)]:me-[1cap]",
+      xl: "[&+*]:ms-[calc(var(--sidebearing)*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--sidebearing)*var(--control-inline,1))]",
+      "2xl":
+        "[&+*]:ms-[calc(var(--py)*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--py)*var(--control-inline,1))]",
+      full: "[&+*]:ms-[calc(1cap*var(--control-inline,1))] [*:has(+&)]:me-[calc(1cap*var(--control-inline,1))]",
     },
     /**
      * Sets the slot padding.
@@ -223,6 +241,9 @@ export const controlSlot = cv({
       if (defaultValue != null) return defaultValue;
       if (variants.$floating) return "full";
       if (variants.$kind === "avatar") return "full";
+      // A badge is a pill, as the standalone badge is. A radius concentric with
+      // the control's corner collapses to zero at the default padding.
+      if (variants.$kind === "badge") return "full";
       return "auto";
     },
     $p(defaultValue, variants) {
@@ -246,8 +267,28 @@ export const controlSlot = cv({
       if (!isLayerColor(variants.$layer)) return defaultValue;
       return defaultValue ?? variants.$layer;
     },
+    $edgeHue(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (variants.$kind !== "badge") return defaultValue;
+      if (!isLayerColor(variants.$layer)) return defaultValue;
+      // The edge copies the layer color, not the layer, so a hue set on the
+      // layer has to reach the edge on its own. An edge color passed by the
+      // caller keeps its own hue. The computed $edge above may still be unset
+      // here, so only a present, different value counts as the caller's.
+      if (variants.$edge != null && variants.$edge !== variants.$layer) {
+        return defaultValue;
+      }
+      return variants.$hue;
+    },
   },
   refine({ variants, setVariants, addClass }) {
+    const paintsIcon =
+      variants.$kind === "icon" && isLayerColor(variants.$layer);
+    if (paintsIcon && variants.$rowSpan === 1) {
+      // A painted icon slot is a tile, so its icon sits inside it instead of
+      // filling it. A slot that spans rows is already taller than its icon.
+      addClass("[--slot-icon-scale:0.6]");
+    }
     const paintsSurface =
       variants.$kind === "badge" || variants.$kind === "avatar";
     if (!paintsSurface) return;
@@ -263,8 +304,12 @@ export const controlSlot = cv({
 });
 
 export const controlContent = cv({
-  class:
-    "group/control-content flex-1 min-w-0 content-start text-start gap-x-(--gap) gap-y-(--gap-y)",
+  class: [
+    // A marker the control around it can read: a stacked choice card lays
+    // the content out on a row of its own (see choice.ts).
+    "control-content group/control-content",
+    "flex-1 min-w-0 content-start text-start gap-x-(--gap) gap-y-(--gap-y)",
+  ],
   variants: {
     $orientation: {
       unset: "",
@@ -296,7 +341,11 @@ export const controlDescription = cv({
     // margin the slot's $mx puts on its next sibling. On a full-width row of
     // its own that margin reads as a stray indent.
     "ms-0!",
-    "ak-ink-70 basis-full font-normal text-[0.875em]",
+    // A description on a wrapping row of its own, such as in a choice card,
+    // takes the whole row. Inside horizontal content, it sits beside the label
+    // and wraps to the next line only when the row runs out of room.
+    "ak-ink-70 basis-full group-[.flex-wrap]/control-content:basis-auto",
+    "font-normal text-[0.875em]",
     "group-[.disabled]/control:ak-ink-0",
   ],
   variants: {

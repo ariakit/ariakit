@@ -1,7 +1,7 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import { Fragment } from "react";
+import { Fragment, isValidElement } from "react";
 import type { ComponentProps } from "react";
 import { createRender } from "../react-utils/create-render.react.ts";
 import {
@@ -73,6 +73,37 @@ export interface TabListProps
     | Record<string, React.ReactNode | TabProps>;
 }
 
+interface TextTabProps extends TabProps {
+  children: string | number;
+}
+
+function isText(value: unknown): value is string | number {
+  return typeof value === "string" || typeof value === "number";
+}
+
+function hasTextChildren(tab: React.ReactNode | TabProps): tab is TextTabProps {
+  if (!tab || typeof tab !== "object") return false;
+  if (isValidElement(tab)) return false;
+  if (!("children" in tab)) return false;
+  return isText(tab.children);
+}
+
+/**
+ * Renders one entry of the `tabs` prop. Text, alone or as the `children` of a
+ * props object, is a label, so it goes in a `TabLabel` and holds one line like
+ * the label of a tab written as JSX.
+ */
+function renderTab(tab: React.ReactNode | TabProps, props?: TabProps) {
+  if (isText(tab)) {
+    return createRender(Tab, { children: <TabLabel>{tab}</TabLabel> }, props);
+  }
+  if (hasTextChildren(tab)) {
+    const children = <TabLabel>{tab.children}</TabLabel>;
+    return createRender(Tab, { ...tab, children }, props);
+  }
+  return createRender(Tab, tab, props);
+}
+
 /**
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
  */
@@ -82,7 +113,7 @@ export function TabList({ tabs, children, ...props }: TabListProps) {
     <ak.TabList {...tabList.jsx(variantProps)} {...rest}>
       {Array.isArray(tabs)
         ? tabs.map((tab, index) => {
-            const element = createRender(Tab, tab);
+            const element = renderTab(tab);
             // A keyed element entry keeps its own key so reordering reconciles
             // by identity; unkeyed entries fall back to their position. The
             // prefixes keep the two key sources from colliding (an explicit key
@@ -94,7 +125,7 @@ export function TabList({ tabs, children, ...props }: TabListProps) {
             return <Fragment key={key}>{element}</Fragment>;
           })
         : Object.entries(tabs ?? {}).map(([id, tab]) => (
-            <Fragment key={id}>{createRender(Tab, tab, { id })}</Fragment>
+            <Fragment key={id}>{renderTab(tab, { id })}</Fragment>
           ))}
       {children}
     </ak.TabList>
@@ -131,7 +162,16 @@ export interface TabSlotProps
  */
 export function TabSlot(props: TabSlotProps) {
   const [variantProps, rest] = splitProps(props, tabSlot);
-  return <span {...tabSlot.jsx(variantProps)} {...rest} />;
+  const variants = tabSlot.getVariants(variantProps);
+  return (
+    <span {...tabSlot.jsx(variantProps)} {...rest}>
+      {variants.$kind === "badge" ? (
+        <span>{rest.children}</span>
+      ) : (
+        rest.children
+      )}
+    </span>
+  );
 }
 
 export interface TabPanelsProps

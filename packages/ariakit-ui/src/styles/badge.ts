@@ -4,7 +4,13 @@ import { isLayerColor } from "./layer.ts";
 
 export const badge = cv({
   extend: [control],
-  class: "font-medium",
+  class: [
+    "font-medium",
+    // A badge sits in a line of text as often as in a row of items, so it keeps
+    // its content width and the baseline of the text around it. A flex or grid
+    // parent lays it out as any other item.
+    "inline-flex",
+  ],
   defaultVariants: {
     $rounded: "full",
     $size: "xs",
@@ -12,17 +18,34 @@ export const badge = cv({
     $px: "lg",
     $border: true,
     $borderType: "inset",
-    $edgePush: 0,
     $edgeWeight(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
+      // $edgeRaw asks for the edge color exactly as given.
+      if (variants.$edgeRaw) return defaultValue;
       // A colored badge carries a tinted ring that always shows. A plain one
       // keeps the adaptive hairline, which shows up only in high-contrast mode.
       if (isLayerColor(variants.$layer)) return "medium";
       return "adaptive";
     },
+    // A colored badge rings itself in its own color, and the edge push default
+    // for a named color keeps that color's lightness. A plain badge has no
+    // color of its own, so its ring takes the full push away from the surface,
+    // where any weight shows.
     $edge(defaultValue, variants) {
       if (!isLayerColor(variants.$layer)) return defaultValue;
       return defaultValue ?? variants.$layer;
+    },
+    $edgeHue(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (!isLayerColor(variants.$layer)) return defaultValue;
+      // The ring copies the layer color, not the layer, so a hue set on the
+      // layer has to reach the ring on its own. An edge color passed by the
+      // caller keeps its own hue. The computed $edge above may still be unset
+      // here, so only a present, different value counts as the caller's.
+      if (variants.$edge != null && variants.$edge !== variants.$layer) {
+        return defaultValue;
+      }
+      return variants.$hue;
     },
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;

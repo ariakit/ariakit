@@ -256,14 +256,16 @@ body > * {
   }
 }
 
+/* Every heading level counts. The level comes from where the list sits in the
+   document outline, and a heading of any level is the same structure. */
 @custom-variant ui-list-item-blocks {
-  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+  &:has(:where(p, div, details, h1, h2, h3, h4, h5, h6)) {
     @slot;
   }
 }
 
 @custom-variant ui-list-blocks {
-  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+  &:has(:where(p, div, details, h1, h2, h3, h4, h5, h6)) {
     @slot;
   }
   @container style(--list-blocks: 1) {
@@ -274,7 +276,7 @@ body > * {
 /* Registered after ui-list-blocks so the sections gap wins when a list
    matches both. */
 @custom-variant ui-list-sections {
-  &:has(:where(h1, h2, h3, h4)) {
+  &:has(:where(h1, h2, h3, h4, h5, h6)) {
     @slot;
   }
 }
