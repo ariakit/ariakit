@@ -51,7 +51,8 @@ export default function Example() {
       <ak.TabPanel tabId="dairy">Milk, cheese, and yogurt</ak.TabPanel>
       <button
         type="button"
-        // WebKit keeps focus on the clicked button only when explicitly tabbable.
+        // WebKit keeps focus on the clicked button only when explicitly
+        // tabbable.
         tabIndex={0}
         onClick={() => setSelectedTab("vegetables")}
       >

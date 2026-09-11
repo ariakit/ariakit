@@ -71,7 +71,7 @@
     "open-cli": "9.0.0",
     "oxfmt": "0.67.0",
     "oxlint": "1.82.0",
-    "oxlint-plugin-comment-reflow": "0.1.2",
+    "oxlint-plugin-comment-reflow": "0.2.0",
     "oxlint-tsgolint": "7.0.2001",
     "pkg-pr-new": "0.0.88",
     "react": "19.2.8",

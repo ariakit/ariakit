@@ -92,8 +92,8 @@ export default function Example() {
             {(item) => (
               <button
                 // Bumping the key remounts the item to a new node while keeping
-                // the same id, mirroring a data refresh that recreates rows. The
-                // previous node must stop being observed.
+                // the same id, mirroring a data refresh that recreates rows.
+                // The previous node must stop being observed.
                 key={`${item.id}-${nonce}`}
                 id={item.id}
                 className="item"

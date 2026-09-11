@@ -20,7 +20,8 @@ export default function Example() {
           aria-hidden
           data-glider
           className="ak-layer ak-layer-15 absolute inset-y-1 -z-1 w-32 rounded-md transition-[left]"
-          // One control (w-32) plus one gap (gap-1) per step, from the p-1 inset.
+          // One control (w-32) plus one gap (gap-1) per step, from the p-1
+          // inset.
           style={{ left: `${selectedIndex * 8.25 + 0.25}rem` }}
         />
         {VIEWS.map((view, index) => (

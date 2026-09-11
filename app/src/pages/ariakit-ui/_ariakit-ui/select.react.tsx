@@ -96,8 +96,8 @@ function OpenSelect({
           // Focus stays where it was, so the page does not jump to the open
           // popover on load.
           autoFocusOnShow={false}
-          // Pinned to its placement for the same reason as the popover
-          // samples: the position is computed against the viewport.
+          // Pinned to its placement for the same reason as the popover samples:
+          // the position is computed against the viewport.
           flip={false}
           slide={false}
           {...props}
