@@ -74,7 +74,7 @@
     "import-meta-resolve": "4.2.0",
     "kleur": "4.1.5",
     "lodash-es": "4.18.1",
-    "lucide-react": "1.42.0",
+    "lucide-react": "1.43.0",
     "match-sorter": "8.3.0",
     "motion": "13.2.0",
     "playwright": "1.63.0",
