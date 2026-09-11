@@ -509,6 +509,8 @@ export const tabList = cv({
     $layer: true,
     $darken: 0.5,
     $cover: true,
+    // Each tab keeps its own shape, including when the strip has no padding.
+    $joined: false,
     $p: "unset",
     $rounded: "unset",
     // The cover adds this margin to its stretch and takes it off the radius, so

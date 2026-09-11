@@ -384,8 +384,8 @@ export function ButtonSection() {
 
       <Sample
         title="Groups"
-        code='ButtonGroup $layout="horizontal" | "stretch" | "vertical" | "wrap" · $gap · $p="none"'
-        description="A group sizes its buttons together. Without padding the inner corners square off so the buttons join."
+        code='ButtonGroup $layout="horizontal" | "stretch" | "vertical" | "wrap" · $gap · $p="none" · $joined={false}'
+        description="A group sizes its buttons together. Adjacent buttons in a horizontal row join their borders and, without padding, their inner corners. Set $joined={false} to keep their borders and corners independent."
       >
         <Stage direction="column">
           <ButtonGroup $border $layer className="w-max max-w-full">
@@ -395,6 +395,17 @@ export function ButtonSection() {
           </ButtonGroup>
           <ButtonGroup $border $layer $p="none" className="w-max max-w-full">
             <Button>Joined</Button>
+            <Button>Buttons</Button>
+            <Button>No padding</Button>
+          </ButtonGroup>
+          <ButtonGroup
+            $border
+            $layer
+            $p="none"
+            $joined={false}
+            className="w-max max-w-full"
+          >
+            <Button>Independent</Button>
             <Button>Buttons</Button>
             <Button>No padding</Button>
           </ButtonGroup>

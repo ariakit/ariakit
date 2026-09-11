@@ -406,6 +406,13 @@ export const controlGroup = cv({
       lg: "[--group-gap:--spacing(3)] gap-(--group-gap)",
       xl: "[--group-gap:--spacing(4)] gap-(--group-gap)",
     },
+    /**
+     * Joins adjacent controls in horizontal and stretched layouts by
+     * overlapping their borders when the gap is zero and squaring their inner
+     * corners when the padding is also zero. Set to `false` to keep each
+     * control's borders and corners independent.
+     */
+    $joined: "",
   },
   defaultVariants: {
     $size: "auto",
@@ -413,8 +420,10 @@ export const controlGroup = cv({
     $layout: "horizontal",
     $p: 1,
     $gap: "auto",
+    $joined: true,
   },
   refine({ variants, addClass }) {
+    if (!variants.$joined) return;
     if (variants.$layout !== "horizontal" && variants.$layout !== "stretch") {
       return;
     }
