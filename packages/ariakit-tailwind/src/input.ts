@@ -2187,6 +2187,16 @@ function getFrameBorderingContextDeclarations() {
   return set(inputs.frameBorderingContext, 1);
 }
 
+/**
+ * Draws the frame ring. Only the utilities that can set a ring width apply it,
+ * so a frame without one has no box shadow at all: Firefox paints a zero-width
+ * shadow on a rounded box as faint arcs at its corners. The width comes from
+ * `ak-frame`, so the rule order between the two utilities does not matter.
+ */
+function getFrameRingDeclarations() {
+  return at.apply`ring-[length:${vars.frameRing}]`;
+}
+
 function getLayerEdgeContextDeclarations() {
   return edgeContext(({ provide }) => [
     set(provide(vars.layerEdgeContext), vars.edge),
@@ -2332,7 +2342,6 @@ utility(
   set.scrollPadding(vars.framePadding),
   set.borderRadius(vars.frameRadius),
   set.margin(vars.frameMargin),
-  at.apply`ring-[length:${vars.frameRing}]`,
   frameContext(({ provide, inherit }) => {
     const parentRadius = inherit(
       vars.frameParentRadiusContext,
@@ -2489,12 +2498,14 @@ utility(
 utility(
   "frame-ring",
   set(inputs.frameRing, "1px"),
+  getFrameRingDeclarations(),
   getFrameBorderingContextDeclarations(),
   getLayerEdgeContextDeclarations(),
 );
 utility(
   "frame-ring-*",
   getFrameBorderWidthDeclarations(inputs.frameRing),
+  getFrameRingDeclarations(),
   getFrameBorderingContextDeclarations(),
   getLayerEdgeContextDeclarations(),
 );
@@ -2531,12 +2542,14 @@ utility(
   "frame-bordering",
   set(inputs.frameBordering, "1px"),
   getFrameBorderingDarkLight(),
+  getFrameRingDeclarations(),
   getFrameBorderingContextDeclarations(),
   getLayerEdgeContextDeclarations(),
 );
 
 utility(
   "frame-bordering-inherit",
+  getFrameRingDeclarations(),
   frameContext.read(({ inherit }) => [
     set(
       inputs.frameBordering,
@@ -2553,6 +2566,7 @@ utility(
   "frame-bordering-*",
   getFrameBorderWidthDeclarations(inputs.frameBordering),
   getFrameBorderingDarkLight(),
+  getFrameRingDeclarations(),
   getFrameBorderingContextDeclarations(),
   getLayerEdgeContextDeclarations(),
 );
