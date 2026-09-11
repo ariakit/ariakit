@@ -190,8 +190,8 @@ export function ListDisclosure(props: ListDisclosureProps) {
     <Disclosure
       {...listDisclosure.jsx(variantProps)}
       {...rest}
-      // The guide has to span the whole row, open content included, so it
-      // goes on the disclosure root instead of on the button. A caller's own
+      // The guide has to span the whole row, open content included, so it goes
+      // on the disclosure root instead of on the button. A caller's own
       // decoration keeps its place alongside it.
       decoration={
         <>

@@ -58,9 +58,9 @@ function OpenDialog({
   return (
     <Layer
       $lightnessOffset
-      // Layout containment is what makes the stage the containing block of
-      // the fixed dialog and backdrop; container-type alone stopped implying
-      // it, and only sizes the dialog's viewport units.
+      // Layout containment is what makes the stage the containing block of the
+      // fixed dialog and backdrop; container-type alone stopped implying it,
+      // and only sizes the dialog's viewport units.
       className={clsx(
         "relative h-72 overflow-clip rounded-xl p-4 contain-layout [container-type:size]",
         stageClassName,

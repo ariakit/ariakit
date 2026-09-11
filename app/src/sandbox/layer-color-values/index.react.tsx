@@ -43,7 +43,9 @@ export default function Example() {
         <Text $text="brand" $textHue={120}>
           Other text hue
         </Text>
-        {/* Raw edges keep their hue visible without the contrast adjustment. */}
+        {/*
+         * Raw edges keep their hue visible without the contrast adjustment.
+         */}
         <Frame
           $edge="brand"
           $edgeRaw

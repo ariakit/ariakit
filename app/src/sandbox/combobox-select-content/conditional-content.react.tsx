@@ -45,7 +45,10 @@ export default function ConditionalContent() {
             {""}
           </ComboboxSelectItem>
         </ComboboxSelectPopover>
-        {/* A false display value falls through to children, and an icon of 0 stays. */}
+        {/*
+         * A false display value falls through to children, and an icon of 0
+         * stays.
+         */}
         <ComboboxSelectButton
           aria-label="Status summary"
           displayValue={false}
@@ -54,7 +57,10 @@ export default function ConditionalContent() {
         >
           Summary
         </ComboboxSelectButton>
-        {/* An explicit empty string requests blank content instead of a fallback. */}
+        {/*
+         * An explicit empty string requests blank content instead of a
+         * fallback.
+         */}
         <ComboboxSelectButton
           aria-label="Blank display"
           displayValue=""
