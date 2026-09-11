@@ -94,10 +94,56 @@ function RtlPlacementPopover() {
   );
 }
 
+// A theme switch changes the popover colors through a stylesheet, like a dark
+// mode class on an ancestor, without re-rendering the popover. The light theme
+// outlines the popover with a ring and the dark theme with a border, so the
+// arrow must also switch between its ring and border strokes. PopoverArrow used
+// to keep the colors it read when the popover mounted, so an arrow opened after
+// the switch still showed the light theme.
+const themeStyles = `
+  .theme-switch .themed-popover {
+    background-color: rgb(255, 255, 255);
+    color: rgb(15, 23, 42);
+    box-shadow: 0 0 0 1px rgb(59, 130, 246);
+  }
+  .theme-switch[data-theme="dark"] .themed-popover {
+    background-color: rgb(15, 23, 42);
+    color: rgb(248, 250, 252);
+    border: 2px solid rgb(250, 204, 21);
+    box-shadow: none;
+  }
+`;
+
+function ThemeSwitchPopover() {
+  const [dark, setDark] = useState(false);
+  return (
+    <div className="theme-switch" data-theme={dark ? "dark" : "light"}>
+      <style>{themeStyles}</style>
+      <label>
+        <input
+          type="checkbox"
+          checked={dark}
+          onChange={(event) => setDark(event.target.checked)}
+        />
+        Dark theme
+      </label>
+      <Ariakit.PopoverProvider>
+        <Ariakit.PopoverDisclosure>Themed popover</Ariakit.PopoverDisclosure>
+        <Ariakit.Popover className="themed-popover" style={{ padding: 16 }}>
+          <Ariakit.PopoverArrow className="arrow" />
+          <Ariakit.PopoverHeading>Themed popover</Ariakit.PopoverHeading>
+          <p>The arrow follows the theme.</p>
+        </Ariakit.Popover>
+      </Ariakit.PopoverProvider>
+    </div>
+  );
+}
+
 export default function Example() {
   return (
     <>
       <RtlPlacementPopover />
+      <ThemeSwitchPopover />
       <div style={{ display: "flex", gap: 16, padding: 64 }}>
         <RingPopover label="Thin ring" boxShadow={`0 0 0 1px ${ringColor}`} />
         <RingPopover label="Thick ring" boxShadow={`0 0 0 10px ${ringColor}`} />

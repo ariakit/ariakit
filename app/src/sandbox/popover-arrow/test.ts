@@ -1,4 +1,4 @@
-import { click, q } from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 const ringColor = "rgb(59, 130, 246)";
@@ -55,6 +55,30 @@ test("clears the arrow's stale static-side inset after a placement change", asyn
   // clearing that happens right after the reposition, such as the userland
   // workaround for this bug, without racing it.
   await expect.poll(() => arrow.style.right).toBe("");
+});
+
+test("arrow takes the new theme colors when the popover opens after a theme switch", async () => {
+  await click(q.button("Themed popover"));
+  const arrow = q.dialog("Themed popover").querySelector(".arrow");
+  expect(arrow).toBeInTheDocument();
+  expect(arrow).toHaveStyle({
+    fill: "rgb(255, 255, 255)",
+    stroke: ringColor,
+    strokeWidth: "2",
+  });
+
+  await press.Escape();
+  expect(q.dialog.maybe("Themed popover")).not.toBeInTheDocument();
+  await click(q.checkbox("Dark theme"));
+
+  // The switch happened while the popover was closed and re-rendered nothing
+  // inside it, so only a fresh read on open can pick up the dark colors.
+  await click(q.button("Themed popover"));
+  expect(arrow).toHaveStyle({
+    fill: "rgb(15, 23, 42)",
+    stroke: "rgb(250, 204, 21)",
+    strokeWidth: "4",
+  });
 });
 
 // See https://github.com/ariakit/ariakit/issues/6321
