@@ -1054,7 +1054,6 @@
   scroll-padding: var(--ak-frame-padding);
   border-radius: var(--ak-frame-radius);
   margin: var(--ak-frame-margin);
-  @apply ring-[length:var(--ak-frame-ring)];
   @container (style(--_context-2: even)) or (not style(--_context-2)) {
     --_context-2: odd;
     --_ak-far: max(min(0.125rem, var(--_ak-frame-radius)), max((var(--_ak-fprc-even, var(--_ak-frame-radius)) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), 0px));
@@ -1224,6 +1223,7 @@
 
 @utility ak-frame-ring {
   --_ak-frame-ring: 1px;
+  @apply ring-[length:var(--ak-frame-ring)];
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
@@ -1240,6 +1240,7 @@
 @utility ak-frame-ring-* {
   --_ak-frame-ring: --value([*]);
   --_ak-frame-ring: calc(--value(number, [number], "0", "1", "2", "4", "8") * 1px);
+  @apply ring-[length:var(--ak-frame-ring)];
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
@@ -1266,6 +1267,7 @@
     border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
     --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
   }
+  @apply ring-[length:var(--ak-frame-ring)];
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
@@ -1280,6 +1282,7 @@
 }
 
 @utility ak-frame-bordering-inherit {
+  @apply ring-[length:var(--ak-frame-ring)];
   @container (style(--_context-2: even)) or (not style(--_context-2)) {
     --_ak-frame-bordering: max(var(--_ak-fpbbc-even, 0px), var(--_ak-fpbgc-even, 0px));
     --_ak-fbd: clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1);
@@ -1324,6 +1327,7 @@
     border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
     --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
   }
+  @apply ring-[length:var(--ak-frame-ring)];
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
