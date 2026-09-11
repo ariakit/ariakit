@@ -21,6 +21,8 @@ type Framework = import("./src/lib/schemas.ts").Framework;
 declare namespace App {
   interface Locals {
     framework?: Framework;
+    /** The `preview.json` route that `[...preview].astro` is rendering. */
+    previewRoute?: string;
     reference?: string;
   }
 }

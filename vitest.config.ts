@@ -27,6 +27,15 @@ function getFrameworkTestIncludes(framework: Framework) {
     const dir = dirname(file);
     return [`${dir}/test.{ts,tsx}`, `${dir}/${framework}.test.{ts,tsx}`];
   });
+  // Astro entries render islands from several modules and cannot render in
+  // happy-dom, so their directories claim only `*.<framework>.test.{ts,tsx}`
+  // files, which mount their own component.
+  const astroEntryTests = globSync(
+    "app/src/{examples,sandbox}/**/index.astro",
+    {
+      cwd: rootDir,
+    },
+  ).map((file) => `${dirname(file)}/*.${framework}.test.{ts,tsx}`);
   // The first glob covers framework packages except explicit DOM overrides. The
   // second picks up framework-marked test files in any other package, like
   // ariakit-test.
@@ -34,6 +43,7 @@ function getFrameworkTestIncludes(framework: Framework) {
     `packages/ariakit-${framework}*/src/**/{test,!(*.dom).test}.{ts,tsx}`,
     `packages/*/src/**/*${framework}.test.{ts,tsx}`,
     ...exampleTests,
+    ...astroEntryTests,
   ];
 }
 

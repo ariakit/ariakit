@@ -1,14 +1,17 @@
 import { relative, resolve } from "node:path";
 import { query } from "@ariakit/test/playwright";
+import { invariant } from "@ariakit/utils";
 import { errors } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { isInDirectory, toPosixPath } from "#app/lib/path.ts";
 import { previewConfig } from "#app/lib/preview-config.ts";
 import {
   getPreviewFrameworksSync,
+  getPreviewRoutesSync,
   resolvePreviewRoots,
 } from "#app/lib/preview-discovery.ts";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
+import { getPreviewPath } from "#app/lib/preview-routes.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import { test } from "./fixtures.ts";
 
@@ -78,27 +81,71 @@ interface WithFrameworkCallbackParams {
   query: typeof query;
 }
 
+interface WithFrameworkOptions {
+  /** A route declared in the preview's `preview.json` `routes` list. */
+  route?: string;
+}
+
+type WithFrameworkCallback = (
+  params: WithFrameworkCallbackParams,
+) => Promise<void>;
+
+/**
+ * Waits until the preview island has committed. Call it after a navigation that
+ * `withFramework` did not perform, such as a link click.
+ */
+export async function waitForPreviewHydration(page: Page) {
+  await page.waitForFunction(isPreviewHydrated);
+}
+
 export function withFramework(
   dirname: string,
-  callback: (params: WithFrameworkCallbackParams) => Promise<void>,
+  callback: WithFrameworkCallback,
+): void;
+export function withFramework(
+  dirname: string,
+  options: WithFrameworkOptions,
+  callback: WithFrameworkCallback,
+): void;
+export function withFramework(
+  dirname: string,
+  ...args:
+    | [WithFrameworkCallback]
+    | [WithFrameworkOptions, WithFrameworkCallback]
 ) {
+  const [options, callback] = args.length === 1 ? [{}, args[0]] : args;
+  const { route } = options;
   const id = getPreviewId(dirname);
   if (!id) {
     throw new Error(`Cannot parse preview id from ${dirname}`);
+  }
+  // A mistyped route loads the 404 page, which has no islands. The hydration
+  // wait would pass at once and the test would fail for a confusing reason.
+  if (route) {
+    invariant(
+      getPreviewRoutesSync(dirname).includes(route),
+      `Unknown route "${route}" for preview ${id}`,
+    );
   }
   const frameworkNames: readonly Framework[] = id.includes("nextjs")
     ? ["react"]
     : getPreviewFrameworksSync(dirname);
   for (const framework of frameworkNames) {
-    test.describe(framework, { tag: `@${framework}` }, () => {
+    // The route in the title keeps several route blocks in one file distinct,
+    // which also keeps their screenshot names distinct.
+    const title = route ? `${framework} ${route}` : framework;
+    test.describe(title, { tag: `@${framework}` }, () => {
       test.beforeEach(async ({ page, javaScriptEnabled }) => {
-        await gotoAndSettle(page, `/${framework}/previews/${id}/`);
+        await gotoAndSettle(
+          page,
+          `/${getPreviewPath({ framework, id, route })}/`,
+        );
         // Generated Astro previews contain one eager client:load island. Its
         // wrapper marks the document from a mount effect after the example
         // commits. JavaScript-disabled previews skip the check, while Next.js
         // previews contain no Astro island and pass through it immediately.
         if (javaScriptEnabled) {
-          await page.waitForFunction(isPreviewHydrated);
+          await waitForPreviewHydration(page);
         }
       });
       return callback({ id, framework, query, test });

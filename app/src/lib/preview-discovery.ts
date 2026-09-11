@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import type { Dirent } from "node:fs";
 import fs from "node:fs/promises";
 import { basename, join, relative } from "node:path";
@@ -50,9 +50,15 @@ interface PreviewMetadata {
   title?: string;
   fullscreen?: boolean;
   frameworks?: Framework[];
+  routes?: string[];
 }
 
-const PREVIEW_METADATA_KEYS = ["title", "fullscreen", "frameworks"] as const;
+const PREVIEW_METADATA_KEYS = [
+  "title",
+  "fullscreen",
+  "frameworks",
+  "routes",
+] as const;
 
 function isPreviewMetadataKey(key: string) {
   return PREVIEW_METADATA_KEYS.some((item) => item === key);
@@ -71,6 +77,7 @@ export const PreviewDataSchema = z.object({
   title: z.string(),
   fullscreen: z.boolean().optional(),
   frameworks: FrameworkSchema.array(),
+  routes: z.string().array().optional(),
   source: z.string(),
 });
 
@@ -120,6 +127,28 @@ function parseFrameworks(value: unknown, id: string) {
   return frameworks;
 }
 
+// One lowercase kebab-case URL segment. A route can then never leave the
+// preview path or look like a nested preview directory such as `_component`.
+const PREVIEW_ROUTE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function parseRoutes(value: unknown, id: string) {
+  if (value === undefined) return undefined;
+  invariant(
+    Array.isArray(value) && value.length > 0,
+    `Invalid routes metadata for ${id}`,
+  );
+  const routes: string[] = [];
+  for (const route of value) {
+    invariant(
+      typeof route === "string" && PREVIEW_ROUTE_PATTERN.test(route),
+      `Invalid route "${String(route)}" for ${id}`,
+    );
+    invariant(!routes.includes(route), `Duplicate route "${route}" for ${id}`);
+    routes.push(route);
+  }
+  return routes;
+}
+
 function parsePreviewMetadata(value: unknown, id: string) {
   invariant(isRecord(value), `Invalid preview metadata for ${id}`);
   for (const key of Object.keys(value)) {
@@ -145,7 +174,31 @@ function parsePreviewMetadata(value: unknown, id: string) {
   if (frameworks) {
     metadata.frameworks = frameworks;
   }
+  const routes = parseRoutes(value.routes, id);
+  if (routes) {
+    metadata.routes = routes;
+  }
   return metadata;
+}
+
+/**
+ * Reads the `routes` metadata of a preview directory without loading the Astro
+ * content layer. Returns an empty list when the directory has no metadata file.
+ */
+export function getPreviewRoutesSync(
+  dir: string,
+  metadataFileName = "preview.json",
+) {
+  let json: string;
+  try {
+    json = readFileSync(join(dir, metadataFileName), "utf8");
+  } catch (error) {
+    const code = error instanceof Error && "code" in error && error.code;
+    if (code === "ENOENT") return [];
+    throw error;
+  }
+  const parsed: unknown = JSON.parse(json);
+  return parsePreviewMetadata(parsed, basename(dir)).routes ?? [];
 }
 
 async function readPreviewMetadata(file: string, id: string) {
@@ -253,6 +306,11 @@ function addPreview({
       `Preview "${id}" declares "${framework}" without an index.${framework} entry file`,
     );
   }
+  // Only a server-rendered Astro entry can read the route and pick its island.
+  invariant(
+    !metadata.routes || (frameworks.length === 1 && !!entryFiles.astro),
+    `Preview "${id}" declares routes without index.astro as its only entry file`,
+  );
   const existing = context.previews.get(id);
   invariant(!existing, `Duplicate preview id: ${id}`);
   context.previews.set(id, {
@@ -307,6 +365,21 @@ async function discoverRoot(
   }
 }
 
+// A routed preview owns its whole URL space, so nothing may nest under it.
+function assertRoutedPreviewsHaveNoNestedPreviews(
+  previews: Map<string, DiscoveredPreview>,
+) {
+  for (const preview of previews.values()) {
+    if (!preview.metadata.routes) continue;
+    for (const id of previews.keys()) {
+      invariant(
+        !id.startsWith(`${preview.id}/`),
+        `Preview "${id}" is nested in routed preview "${preview.id}"`,
+      );
+    }
+  }
+}
+
 export async function discoverPreviews(options: PreviewDiscoveryOptions) {
   const roots = resolvePreviewRoots(options);
   const previews = new Map<string, DiscoveredPreview>();
@@ -314,6 +387,7 @@ export async function discoverPreviews(options: PreviewDiscoveryOptions) {
   for (const root of roots) {
     await discoverRoot({ root, previews }, root.dir, metadataFileName);
   }
+  assertRoutedPreviewsHaveNoNestedPreviews(previews);
   return [...previews.values()].sort((a, b) => a.id.localeCompare(b.id));
 }
 
@@ -343,6 +417,7 @@ async function updatePreviewStore(
       title: preview.title,
       fullscreen: preview.metadata.fullscreen,
       frameworks: preview.frameworks,
+      routes: preview.metadata.routes,
       source: preview.source,
     };
     const data = await context.parseData({ id: preview.id, data: rawData });

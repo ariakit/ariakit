@@ -153,12 +153,20 @@ function generatePreviewWrapper(preview: DiscoveredPreview, file: string) {
     componentImports.push(
       `import ${variable}Example from ${JSON.stringify(importPath)};`,
     );
-    sourceImports.push(
-      `import source${variable} from ${JSON.stringify(`${sourceImportPath}?source`)};`,
-    );
-    sourceEntries.push(`  ${JSON.stringify(framework)}: source${variable},`);
+    // Astro entries render on the server and own their islands, so they get no
+    // client directive. They also get no `?source` import: Astro's Vite plugin
+    // compiles every `.astro?query` id except url/raw/direct, so the source
+    // plugin's output would be parsed as an Astro template.
+    const serverRendered = framework === "astro";
+    if (!serverRendered) {
+      sourceImports.push(
+        `import source${variable} from ${JSON.stringify(`${sourceImportPath}?source`)};`,
+      );
+      sourceEntries.push(`  ${JSON.stringify(framework)}: source${variable},`);
+    }
+    const directive = serverRendered ? "" : " client:load";
     componentEntries.push(
-      `  <${variable}Example client:load slot=${JSON.stringify(framework)} />`,
+      `  <${variable}Example${directive} slot=${JSON.stringify(framework)} />`,
     );
   }
   return `---\nimport PreviewFramework from "#app/components/preview-framework.astro";\n${componentImports.join("\n")}\n\n${sourceImports.join("\n")}\n\nexport const source = {\n${sourceEntries.join("\n")}\n};\n---\n\n<PreviewFramework>\n${componentEntries.join("\n")}\n</PreviewFramework>\n`;

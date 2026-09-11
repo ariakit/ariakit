@@ -9,12 +9,14 @@
  */
 import type { PreviewKind } from "./preview-config.ts";
 import { SANDBOX_PREVIEW_KIND } from "./preview-config.ts";
+import { getPreviewPaths } from "./preview-routes.ts";
 import type { Framework } from "./schemas.ts";
 
 interface PreviewIndexEntry {
   id: string;
   data: {
     frameworks: Framework[];
+    routes?: string[];
     source: PreviewKind;
   };
 }
@@ -22,9 +24,5 @@ interface PreviewIndexEntry {
 export function getPreviewIndexPaths(entries: PreviewIndexEntry[]) {
   return entries
     .filter((entry) => entry.data.source !== SANDBOX_PREVIEW_KIND)
-    .flatMap((entry) =>
-      entry.data.frameworks.map(
-        (framework) => `/${framework}/previews/${entry.id}`,
-      ),
-    );
+    .flatMap((entry) => getPreviewPaths(entry).map(({ path }) => `/${path}`));
 }

@@ -143,6 +143,64 @@ test("wraps preview entries with framework hydration markers", async () => {
   `);
 });
 
+test("renders Astro entries on the server", async () => {
+  const dir = await createDir();
+  const codegenDir = join(dir, "codegen");
+  const preview: DiscoveredPreview = {
+    id: "gallery",
+    title: "Gallery",
+    source: "sandbox",
+    frameworks: ["astro"],
+    entryFiles: { astro: join(dir, "sandbox/gallery/index.astro") },
+    metadata: { routes: ["button"] },
+  };
+
+  await writePreviewCodegen({ codegenDir, previews: [preview] });
+
+  const previewDir = join(codegenDir, "previews/gallery");
+  const astro = await fs.readFile(join(previewDir, "preview.astro"), "utf8");
+
+  // No client directive, because the entry owns its own islands, and no
+  // `?source` import, because Astro's Vite plugin compiles every `.astro?query`
+  // id except url/raw/direct.
+  expect(astro).toMatchInlineSnapshot(`
+    "---
+    import PreviewFramework from "#app/components/preview-framework.astro";
+    import AstroExample from "../../../sandbox/gallery/index.astro";
+
+
+
+    export const source = {
+
+    };
+    ---
+
+    <PreviewFramework>
+      <AstroExample slot="astro" />
+    </PreviewFramework>
+    "
+  `);
+  await expect(
+    fs.access(join(previewDir, "preview.client.astro.tsx")),
+  ).rejects.toThrow();
+});
+
+test("regenerates previews for Astro entry files", async () => {
+  const dir = await createDir();
+  const srcDir = join(dir, "src");
+  const roots = resolvePreviewRoots({ ...previewConfig, srcDir });
+
+  expect(
+    shouldRegeneratePreview(join(srcDir, "examples/menu/index.astro"), roots),
+  ).toBe(true);
+  expect(
+    shouldRegeneratePreview(
+      join(srcDir, "examples/menu/page-header.astro"),
+      roots,
+    ),
+  ).toBe(false);
+});
+
 test("generates deferred preview content modules", async () => {
   const dir = await createDir();
   const codegenDir = join(dir, "codegen");
