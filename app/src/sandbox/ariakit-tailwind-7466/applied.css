@@ -1,0 +1,22 @@
+@reference "./style.css";
+
+.applied-group {
+  @apply ak-frame ak-frame-row ak-frame-xl/0 ak-frame-join flex w-fit;
+}
+
+.applied-item {
+  @apply ak-layer ak-layer-transparent ak-frame ak-frame-lg/2 ak-frame-border-2 ak-frame-join-item w-24 h-12;
+  @apply ak-outline outline-offset-2 focus-visible:outline-2;
+}
+
+.applied-item:hover {
+  @apply ak-layer-10 ak-frame-join-active;
+}
+
+.applied-item[aria-pressed="true"] {
+  @apply ak-layer-amber-200 ak-frame-join-active;
+}
+
+.applied-item:last-of-type {
+  @apply ak-frame-end;
+}
