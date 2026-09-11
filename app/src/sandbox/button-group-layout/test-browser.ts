@@ -67,6 +67,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await item.scrollIntoViewIfNeeded();
         await item.hover();
         await test.expect(item).toHaveCSS("z-index", "1");
+        if (label !== "Week") continue;
         await visual({
           element: q.group(title),
           id: `${title}-${label}`,

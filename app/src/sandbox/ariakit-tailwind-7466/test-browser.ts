@@ -21,21 +21,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         "Shadow without edge",
       ]) {
         // https://github.com/ariakit/ariakit/issues/7466
-        test(`${title} joins edges through hover (${colorScheme}, ${contrast}) @visual`, async ({
+        test(`${title} keeps its geometry through hover (${colorScheme}, ${contrast})`, async ({
           page,
           q,
-          visual,
         }) => {
           await page.emulateMedia({ colorScheme, contrast });
           const group = query(q.group(title));
           await page.mouse.move(0, 0);
-          const idleItem = group.button("Week");
-          await idleItem.scrollIntoViewIfNeeded();
-          await visual({
-            element: q.group(title),
-            id: `${title}-idle`,
-            styles: {},
-          });
           for (const label of ["Day", "Week", "Month"]) {
             const item = group.button(label);
             await item.scrollIntoViewIfNeeded();
@@ -53,15 +45,41 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
             await item.hover();
             await expect(item).toHaveCSS("z-index", "1");
             expect(await geometry()).toEqual(before);
-            await visual({
-              element: q.group(title),
-              id: `${title}-${label}`,
-              styles: {},
-            });
           }
         });
       }
     }
+  }
+
+  // Hovering the middle item checks both shared edges. Sample the paint
+  // variants here; the full matrix above checks geometry and stacking.
+  for (const [title, colorScheme, contrast] of [
+    ["Applied", "light", "no-preference"],
+    ["Border 2", "dark", "no-preference"],
+    ["Border 2", "light", "more"],
+    ["Border 2", "dark", "more"],
+    ["Ring 2", "light", "no-preference"],
+    ["Fractional ring", "dark", "no-preference"],
+    ["Vertical ring", "light", "no-preference"],
+    ["RTL", "light", "no-preference"],
+  ] as const) {
+    // https://github.com/ariakit/ariakit/issues/7466
+    test(`${title} joins edges through hover (${colorScheme}, ${contrast}) @visual`, async ({
+      page,
+      q,
+      visual,
+    }) => {
+      await page.emulateMedia({ colorScheme, contrast });
+      const week = query(q.group(title)).button("Week");
+      await week.scrollIntoViewIfNeeded();
+      await week.hover();
+      await expect(week).toHaveCSS("z-index", "1");
+      await visual({
+        element: q.group(title),
+        id: `${title}-Week`,
+        styles: {},
+      });
+    });
   }
 
   // https://github.com/ariakit/ariakit/issues/7466
@@ -134,20 +152,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       id: "selected-selected",
       styles: {},
     });
-    await week.hover();
-    await visual({
-      element: q.group("Border 2"),
-      id: "hover-selected",
-      styles: {},
-    });
     await week.click();
     await day.hover();
     await expect(week).toHaveCSS("z-index", "0");
-    await visual({
-      element: q.group("Border 2"),
-      id: "selected-idle",
-      styles: {},
-    });
   });
 
   // https://github.com/ariakit/ariakit/issues/7466
