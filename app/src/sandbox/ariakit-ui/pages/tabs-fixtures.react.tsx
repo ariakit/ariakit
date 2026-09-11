@@ -17,7 +17,6 @@ import {
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 interface ActivityTabsProps {
   name: string;
@@ -113,4 +112,4 @@ export function TabsFixturesExamples() {
   );
 }
 
-export default createGalleryPage("tabs-fixtures", TabsFixturesExamples);
+export default TabsFixturesExamples;

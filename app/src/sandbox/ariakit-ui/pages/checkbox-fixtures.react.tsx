@@ -23,7 +23,6 @@ import {
 } from "@ariakit/ui/components/checkbox.ariakit.react";
 import { ChartBar, Sparkles } from "lucide-react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 export function CheckboxFixturesExamples() {
   return (
@@ -116,4 +115,4 @@ export function CheckboxFixturesExamples() {
   );
 }
 
-export default createGalleryPage("checkbox-fixtures", CheckboxFixturesExamples);
+export default CheckboxFixturesExamples;

@@ -18,7 +18,6 @@ import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { CreditCard, Folder, Settings, Users } from "lucide-react";
 import { useId, useState } from "react";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 /**
  * A disclosure whose open state the page owns, toggled from a separate button
@@ -427,4 +426,4 @@ export function DisclosureExamples() {
   );
 }
 
-export default createGalleryPage("disclosure", DisclosureExamples);
+export default DisclosureExamples;

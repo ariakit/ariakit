@@ -32,7 +32,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 // A local image, so the screenshots never wait on the network.
 const avatarImage =
@@ -374,7 +373,7 @@ export function ButtonExamples() {
 
       <Example
         title="Disabled"
-        description="The text and the icon fade, the badge darkens, and the button stops responding to the pointer."
+        description="The text, the icon and the badge count fade, and the button stops responding to the pointer. The badge keeps its fill."
       >
         <Button disabled>
           <ButtonSlot>
@@ -690,4 +689,4 @@ export function ButtonExamples() {
   );
 }
 
-export default createGalleryPage("button", ButtonExamples);
+export default ButtonExamples;

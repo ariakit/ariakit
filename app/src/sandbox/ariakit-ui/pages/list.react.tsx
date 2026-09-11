@@ -22,7 +22,6 @@ import {
 } from "@ariakit/ui/components/list.ariakit.react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 // Every link row composes the same button. The class keeps the row's own
 // layout: full width, text from the start, wrapping, and the list's font.
@@ -533,4 +532,4 @@ export function ListExamples() {
   );
 }
 
-export default createGalleryPage("list", ListExamples);
+export default ListExamples;

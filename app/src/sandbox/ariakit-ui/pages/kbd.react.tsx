@@ -10,7 +10,6 @@
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 export function KbdExamples() {
   return (
@@ -146,4 +145,4 @@ export function KbdExamples() {
   );
 }
 
-export default createGalleryPage("kbd", KbdExamples);
+export default KbdExamples;

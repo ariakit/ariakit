@@ -16,7 +16,6 @@ import {
   discoverPreviews,
   getPreviewFrameworks,
   getPreviewFrameworksSync,
-  getPreviewRoutesSync,
   PreviewDataSchema,
   previewLoader,
 } from "./preview-discovery.ts";
@@ -311,127 +310,6 @@ test("supports metadata-only sandbox previews", async () => {
       title: "counter-nextjs",
     },
   ]);
-});
-
-test("accepts routes on an index.astro preview", async () => {
-  const dir = await createDir();
-  await writeFile(join(dir, "sandbox/gallery/index.astro"));
-  await writeFile(
-    join(dir, "sandbox/gallery/preview.json"),
-    JSON.stringify({ routes: ["button", "nav-fixtures"] }),
-  );
-
-  const previews = await discoverPreviews({
-    roots: [getSandboxRoot(dir)],
-  });
-
-  expect(previews).toMatchObject([
-    {
-      frameworks: ["astro"],
-      id: "gallery",
-      metadata: { routes: ["button", "nav-fixtures"] },
-    },
-  ]);
-});
-
-test("rejects routes without index.astro as the only entry file", async () => {
-  const dir = await createDir();
-  await writeFile(join(dir, "sandbox/gallery/index.react.tsx"));
-  await writeFile(
-    join(dir, "sandbox/gallery/preview.json"),
-    JSON.stringify({ routes: ["button"] }),
-  );
-
-  await expect(
-    discoverPreviews({ roots: [getSandboxRoot(dir)] }),
-  ).rejects.toThrow(
-    'Preview "gallery" declares routes without index.astro as its only entry file',
-  );
-
-  await writeFile(join(dir, "sandbox/gallery/index.astro"));
-
-  await expect(
-    discoverPreviews({ roots: [getSandboxRoot(dir)] }),
-  ).rejects.toThrow(
-    'Preview "gallery" declares routes without index.astro as its only entry file',
-  );
-});
-
-const invalidRoutes: { routes: unknown; message: string }[] = [
-  { routes: [], message: "Invalid routes metadata for gallery" },
-  { routes: "button", message: "Invalid routes metadata for gallery" },
-  { routes: ["Button"], message: 'Invalid route "Button" for gallery' },
-  { routes: ["a/b"], message: 'Invalid route "a/b" for gallery' },
-  { routes: [".."], message: 'Invalid route ".." for gallery' },
-  { routes: [""], message: 'Invalid route "" for gallery' },
-  { routes: [1], message: 'Invalid route "1" for gallery' },
-  { routes: ["a", "a"], message: 'Duplicate route "a" for gallery' },
-];
-
-for (const { routes, message } of invalidRoutes) {
-  test(`rejects routes metadata ${JSON.stringify(routes)}`, async () => {
-    const dir = await createDir();
-    await writeFile(join(dir, "sandbox/gallery/index.astro"));
-    await writeFile(
-      join(dir, "sandbox/gallery/preview.json"),
-      JSON.stringify({ routes }),
-    );
-
-    await expect(
-      discoverPreviews({ roots: [getSandboxRoot(dir)] }),
-    ).rejects.toThrow(message);
-  });
-}
-
-test("rejects a preview nested in a routed preview", async () => {
-  const dir = await createDir();
-  await writeFile(join(dir, "sandbox/gallery/index.astro"));
-  await writeFile(
-    join(dir, "sandbox/gallery/preview.json"),
-    JSON.stringify({ routes: ["button"] }),
-  );
-  await writeFile(join(dir, "sandbox/gallery/pages/index.react.tsx"));
-
-  await expect(
-    discoverPreviews({ roots: [getSandboxRoot(dir)] }),
-  ).rejects.toThrow(
-    'Preview "gallery/pages" is nested in routed preview "gallery"',
-  );
-});
-
-test("reads preview routes without the content layer", async () => {
-  const dir = await createDir();
-  const previewDir = join(dir, "sandbox/gallery");
-  await writeFile(join(previewDir, "index.astro"));
-
-  expect(getPreviewRoutesSync(previewDir)).toEqual([]);
-
-  await writeFile(
-    join(previewDir, "preview.json"),
-    JSON.stringify({ routes: ["button", "nav"] }),
-  );
-
-  expect(getPreviewRoutesSync(previewDir)).toEqual(["button", "nav"]);
-  expect(getPreviewRoutesSync(join(dir, "sandbox/menu"))).toEqual([]);
-});
-
-test("preview loader stores and reloads routes metadata", async () => {
-  const dir = await createDir();
-  const loader = previewLoader({
-    roots: [getSandboxRoot(dir)],
-  });
-  const { context, entries, watcher } = getPreviewStoreContext(dir);
-  const metadataFile = join(dir, "sandbox/gallery/preview.json");
-  await writeFile(join(dir, "sandbox/gallery/index.astro"));
-  await writeFile(metadataFile, JSON.stringify({ routes: ["button"] }));
-
-  await loader.load(context);
-
-  expect(entries.get("gallery")?.data.routes).toEqual(["button"]);
-  await writeFile(metadataFile, JSON.stringify({ routes: ["button", "nav"] }));
-  await watcher.emit("change", metadataFile);
-
-  expect(entries.get("gallery")?.data.routes).toEqual(["button", "nav"]);
 });
 
 test("preview loader defines generated data schema", () => {

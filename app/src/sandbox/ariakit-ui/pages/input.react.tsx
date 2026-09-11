@@ -15,7 +15,6 @@ import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { inputPlaceholder } from "@ariakit/ui/styles/input";
 import { ListFilter, Search } from "lucide-react";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 export function InputExamples() {
   return (
@@ -241,4 +240,4 @@ export function InputExamples() {
   );
 }
 
-export default createGalleryPage("input", InputExamples);
+export default InputExamples;

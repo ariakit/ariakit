@@ -38,7 +38,6 @@ import {
   ExampleStage,
   screenshotFocus,
 } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 import {
   BadgeSelectExample,
   CountryComboboxExample,
@@ -56,7 +55,7 @@ const startTimes = Array.from(
 
 function selectedCountLabel(value: string | readonly string[]) {
   if (typeof value === "string") return value;
-  return `${value.length} labels`;
+  return `${value.length} ${value.length === 1 ? "label" : "labels"}`;
 }
 
 export function ComboboxExamples() {
@@ -583,4 +582,4 @@ export function ComboboxExamples() {
   );
 }
 
-export default createGalleryPage("combobox", ComboboxExamples);
+export default ComboboxExamples;

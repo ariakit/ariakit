@@ -21,11 +21,10 @@ import {
 } from "@ariakit/ui/components/tabs.ariakit.react";
 import { BookOpenIcon, BracesIcon, EyeIcon } from "lucide-react";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 // Every box passes an explicit defaultSelectedId with page-unique ids, so the
-// server markup already marks the selected tab and no glider travels while the
-// page hydrates.
+// first render already marks the selected tab and no glider travels while the
+// tabs register.
 
 export function TabsExamples() {
   return (
@@ -697,4 +696,4 @@ export function TabsExamples() {
   );
 }
 
-export default createGalleryPage("tabs", TabsExamples);
+export default TabsExamples;

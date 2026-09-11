@@ -14,7 +14,6 @@ import {
 } from "@ariakit/ui/components/progress.ariakit.react";
 import { useState } from "react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 // The old gallery's Live sample: both kinds follow one value, and the button
 // wraps back to 0 after 1.
@@ -61,4 +60,4 @@ export function ProgressFixturesExamples() {
   );
 }
 
-export default createGalleryPage("progress-fixtures", ProgressFixturesExamples);
+export default ProgressFixturesExamples;

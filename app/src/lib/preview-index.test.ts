@@ -34,30 +34,3 @@ test("excludes sandbox previews from the preview index", () => {
 
   expect(paths).toEqual(["/react/previews/menu", "/solid/previews/menu"]);
 });
-
-test("lists the index and every route of a routed preview", () => {
-  const paths = getPreviewIndexPaths([
-    {
-      id: "gallery",
-      data: {
-        frameworks: ["astro"],
-        routes: ["button", "nav"],
-        source: EXAMPLES_PREVIEW_KIND,
-      },
-    },
-    {
-      id: "ariakit-ui",
-      data: {
-        frameworks: ["astro"],
-        routes: ["button"],
-        source: SANDBOX_PREVIEW_KIND,
-      },
-    },
-  ]);
-
-  expect(paths).toEqual([
-    "/astro/previews/gallery",
-    "/astro/previews/gallery/button",
-    "/astro/previews/gallery/nav",
-  ]);
-});

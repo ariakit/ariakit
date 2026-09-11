@@ -20,7 +20,6 @@ import {
 } from "@ariakit/ui/components/combobox.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 import {
   ConditionalContent,
   ItemHighlight,
@@ -117,4 +116,4 @@ export function ComboboxFixturesExamples() {
   );
 }
 
-export default createGalleryPage("combobox-fixtures", ComboboxFixturesExamples);
+export default ComboboxFixturesExamples;

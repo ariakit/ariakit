@@ -12,7 +12,6 @@ import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 export function CodeExamples() {
   return (
@@ -139,4 +138,4 @@ export function CodeExamples() {
   );
 }
 
-export default createGalleryPage("code", CodeExamples);
+export default CodeExamples;

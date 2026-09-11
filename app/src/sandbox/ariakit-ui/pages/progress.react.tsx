@@ -15,7 +15,6 @@ import {
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { useId } from "react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 export function ProgressExamples() {
   const uploadLabelId = useId();
@@ -189,4 +188,4 @@ export function ProgressExamples() {
   );
 }
 
-export default createGalleryPage("progress", ProgressExamples);
+export default ProgressExamples;

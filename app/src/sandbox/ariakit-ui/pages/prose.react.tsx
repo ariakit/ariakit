@@ -19,7 +19,6 @@ import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import { Separator } from "@ariakit/ui/components/separator.ariakit.react";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 // The short column each box that changes one Prose setting reuses, so the
 // setting is the only difference between those boxes. It is an element tree
@@ -138,4 +137,4 @@ export function ProseExamples() {
   );
 }
 
-export default createGalleryPage("prose", ProseExamples);
+export default ProseExamples;

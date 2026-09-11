@@ -8,21 +8,25 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { invariant } from "@ariakit/utils";
-import { getPreviewPath } from "#app/lib/preview-routes.ts";
 
-// Pure data shared by index.astro, the React shell and the Playwright tests.
-// Keep this module free of React, CSS and Node imports.
+// Pure data shared by the React app and the Playwright tests. Keep this module
+// free of React, CSS and Node imports.
 
 /**
  * The settings live as data attributes on `<html>`, where `style.css` and the
  * surface classes read them, and are persisted under this prefix. The inline
- * script in `index.astro` restores them before the first paint, and
- * `shell.react.tsx` writes them, so keep all three in step.
+ * script that `shell.react.tsx` renders restores them before the first paint,
+ * and the header controls in the same file write them, so keep them in step.
  */
 export const GALLERY_STORAGE_PREFIX = "ariakit-ui-gallery:";
 
 /** The settings the header controls switch, in their `data-` attribute form. */
-export const GALLERY_SETTINGS = ["theme", "surface", "font-size"] as const;
+export const GALLERY_SETTINGS = [
+  "theme",
+  "surface",
+  "font-size",
+  "code",
+] as const;
 
 export type GallerySetting = (typeof GALLERY_SETTINGS)[number];
 
@@ -54,14 +58,15 @@ export const galleryGroups = [
 export type GalleryGroupId = (typeof galleryGroups)[number]["id"];
 
 export interface GalleryPage {
-  /** The route segment, which is also the page module's file name. */
+  /** The hash route segment, which is also the page module's file name. */
   id: string;
   title: string;
   description: string;
   group: GalleryGroupId;
   /**
-   * `showcase` pages are captured by the screenshot suite. `fixture` pages hold
-   * regression-only scenarios and are skipped by it.
+   * `showcase` pages are captured in every setting by the screenshot suite.
+   * `fixture` pages hold regression-only scenarios and are captured once, in
+   * the light canvas setting.
    */
   kind: "showcase" | "fixture";
 }
@@ -249,7 +254,7 @@ const pages = [
     group: "fixtures",
     kind: "fixture",
     description:
-      "Regression-only Checkbox scenarios: a right-to-left tile card whose mirrored geometry a test asserts, and a badge inside a tile that keeps its own slot spacing.",
+      "Regression-only Checkbox scenarios: a right-to-left tile card with mirrored geometry, and a badge inside a tile that keeps its own slot spacing.",
   },
   {
     id: "combobox-fixtures",
@@ -297,7 +302,7 @@ const pages = [
     group: "fixtures",
     kind: "fixture",
     description:
-      "Regression-only Progress scenarios: a bar and a ring whose value changes on demand, which a test asserts.",
+      "Regression-only Progress scenarios: a bar and a ring whose value changes on demand.",
   },
   {
     id: "table-fixtures",
@@ -334,23 +339,31 @@ export const fixturePages = galleryPages.filter(
 );
 
 /**
- * The index page of the gallery. It has no route of its own: it is what the
- * preview renders when `Astro.locals.previewRoute` is undefined.
+ * The index page of the gallery. It renders at `#/`, and when the URL has no
+ * route hash.
  */
 export const overviewPage = {
   title: "Component gallery",
   description:
-    "Every @ariakit/ui React component, rendered through as many of its variants as the recipes expose, one route per component. The shell around them is built from the same components. Switch the color scheme, the surface and the text size from the header to check every example in each combination.",
+    "Every @ariakit/ui React component, rendered through as many of its variants as the recipes expose, one page per component. The shell around them is built from the same components. Switch the color scheme, the surface and the text size from the header to check every example in each combination.",
 };
 
-export const galleryBasePath = `/${getPreviewPath({
-  framework: "astro",
-  id: "ariakit-ui",
-})}/`;
+// Only hashes with this prefix are routes. Any other hash is an in-page anchor,
+// such as the placeholder links in the examples, and keeps the current page.
+const ROUTE_HASH_PREFIX = "#/";
 
 export function getGalleryHref(id?: GalleryPageId) {
-  if (!id) return galleryBasePath;
-  return `${galleryBasePath}${id}/`;
+  return `${ROUTE_HASH_PREFIX}${id ?? ""}`;
+}
+
+/**
+ * Reads the page from a location hash: a page id, `undefined` for the overview
+ * (including an unknown id), or `null` for a hash that is not a route.
+ */
+export function parseGalleryHash(hash: string) {
+  if (!hash.startsWith(ROUTE_HASH_PREFIX)) return null;
+  const id = hash.slice(ROUTE_HASH_PREFIX.length);
+  return isGalleryPageId(id) ? id : undefined;
 }
 
 export function isGalleryPageId(value: unknown): value is GalleryPageId {
@@ -365,25 +378,4 @@ export function getGalleryPage(id: GalleryPageId) {
 
 export function getGalleryGroupPages(group: GalleryGroupId) {
   return galleryPages.filter((page) => page.group === group);
-}
-
-/**
- * Fails the prerender when `preview.json` and this file list different pages.
- * Adding a page touches four places (`preview.json`, this list, the page module
- * and the `index.astro` branch), so both directions are checked here and the
- * missing island is caught by `test-routes-chrome.ts`.
- */
-export function assertGalleryRoutes(routes: readonly string[]) {
-  for (const route of routes) {
-    invariant(
-      isGalleryPageId(route),
-      `preview.json declares route "${route}", which pages.ts does not list`,
-    );
-  }
-  for (const page of galleryPages) {
-    invariant(
-      routes.includes(page.id),
-      `pages.ts lists page "${page.id}", which preview.json does not declare`,
-    );
-  }
 }

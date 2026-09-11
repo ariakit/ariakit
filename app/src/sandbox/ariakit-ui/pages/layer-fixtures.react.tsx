@@ -11,7 +11,6 @@ import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 export function LayerFixturesExamples() {
   return (
@@ -95,4 +94,4 @@ export function LayerFixturesExamples() {
   );
 }
 
-export default createGalleryPage("layer-fixtures", LayerFixturesExamples);
+export default LayerFixturesExamples;

@@ -19,7 +19,6 @@ import {
 } from "@ariakit/ui/components/table.ariakit.react";
 import { useState } from "react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 // Migrated from the table-cell-layer sandbox with the same markup and state.
 function TableCellLayer() {
@@ -59,7 +58,9 @@ function TableCellLayer() {
 }
 
 // Migrated from the table-rows sandbox with the same markup and state. The
-// mixed-keys table that rendered below it is its own fixture now.
+// mixed-keys table that rendered below it is its own fixture now. The narrow
+// container is new: the columns scroll under the pinned names, so the captures
+// show whether the names stay pinned in the head, the body and the foot.
 function TableRowsFixture() {
   const [pinned, setPinned] = useState(true);
   const [added, setAdded] = useState(false);
@@ -123,6 +124,8 @@ function TableRowsFixture() {
       <Table
         aria-label="Team hours"
         $border
+        className="min-w-[32rem]"
+        container={{ $border: true, className: "max-w-80" }}
         rows={[
           {
             key: "head",
@@ -271,4 +274,4 @@ export function TableFixturesExamples() {
   );
 }
 
-export default createGalleryPage("table-fixtures", TableFixturesExamples);
+export default TableFixturesExamples;

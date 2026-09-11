@@ -133,8 +133,9 @@ export function Example({
           {children}
         </div>
       </HeadingLevel>
+      {/* The header's code setting hides every snippet through this marker. */}
       <Frame
-        render={<pre />}
+        render={<pre data-example-code />}
         $rounded="xl"
         $p={3}
         $border

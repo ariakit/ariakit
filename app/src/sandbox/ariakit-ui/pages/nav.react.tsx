@@ -40,7 +40,6 @@ import {
 import type { MouseEvent } from "react";
 import { useState } from "react";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 // The rows link to documentation paths that do not exist in the sandbox, so a
 // click must not leave the page.
@@ -812,4 +811,4 @@ export function NavExamples() {
   );
 }
 
-export default createGalleryPage("nav", NavExamples);
+export default NavExamples;

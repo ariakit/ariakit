@@ -25,7 +25,6 @@ import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import * as icons from "lucide-react";
 import { useId, useState } from "react";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 interface Feature {
   value: string;
@@ -481,4 +480,4 @@ export function CheckboxExamples() {
   );
 }
 
-export default createGalleryPage("checkbox", CheckboxExamples);
+export default CheckboxExamples;

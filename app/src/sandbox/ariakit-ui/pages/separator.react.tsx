@@ -15,7 +15,6 @@ import {
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import { Separator } from "@ariakit/ui/components/separator.ariakit.react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 export function SeparatorExamples() {
   return (
@@ -184,4 +183,4 @@ export function SeparatorExamples() {
   );
 }
 
-export default createGalleryPage("separator", SeparatorExamples);
+export default SeparatorExamples;

@@ -26,7 +26,6 @@ import {
   openTooltipProps,
   screenshotFocus,
 } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 // Held tooltips use the controlled open prop rather than defaultOpen: every
 // TooltipAnchor that mounts hides the tooltip that is currently shown, and only
@@ -214,4 +213,4 @@ export function TooltipExamples() {
   );
 }
 
-export default createGalleryPage("tooltip", TooltipExamples);
+export default TooltipExamples;

@@ -25,7 +25,6 @@ import {
 } from "@ariakit/ui/components/radio.ariakit.react";
 import { CreditCard, Landmark, Wallet } from "lucide-react";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 const plans = [
   {
@@ -343,4 +342,4 @@ export function RadioExamples() {
   );
 }
 
-export default createGalleryPage("radio", RadioExamples);
+export default RadioExamples;

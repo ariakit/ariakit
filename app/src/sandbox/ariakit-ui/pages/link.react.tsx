@@ -12,7 +12,6 @@ import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import { ArrowUpRight } from "lucide-react";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 export function LinkExamples() {
   return (
@@ -147,4 +146,4 @@ export function LinkExamples() {
   );
 }
 
-export default createGalleryPage("link", LinkExamples);
+export default LinkExamples;

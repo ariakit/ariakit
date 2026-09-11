@@ -25,7 +25,6 @@ import {
   getGalleryHref,
   showcasePages,
 } from "../pages.ts";
-import { createGalleryPage } from "../shell.react.tsx";
 
 interface GroupCardProps {
   group: GalleryGroup;
@@ -97,9 +96,7 @@ export function OverviewExamples() {
           <BadgeLabel>{groups.length} groups</BadgeLabel>
         </Badge>
         <Badge $size="sm">
-          <BadgeLabel>
-            One React island per route over an Astro shell
-          </BadgeLabel>
+          <BadgeLabel>One React app with hash routes</BadgeLabel>
         </Badge>
       </div>
       {groups.map((group, index) => (
@@ -114,4 +111,4 @@ export function OverviewExamples() {
   );
 }
 
-export default createGalleryPage(undefined, OverviewExamples);
+export default OverviewExamples;

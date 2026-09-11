@@ -21,7 +21,6 @@ import {
 } from "@ariakit/ui/components/disclosure.ariakit.react";
 import { useState } from "react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 interface DetailsProps {
   name: string;
@@ -164,11 +163,22 @@ export function DisclosureFixturesExamples() {
       >
         <DisclosureOptionalContent />
       </Example>
+
+      <Example
+        title="Named description-only button"
+        description="An aria-label names a button that shows only a description, so the description describes the button instead of naming it."
+      >
+        <Disclosure
+          button={{
+            "aria-label": "Advanced filters",
+            description: "Tune the results",
+          }}
+        >
+          Filter controls
+        </Disclosure>
+      </Example>
     </ExampleGrid>
   );
 }
 
-export default createGalleryPage(
-  "disclosure-fixtures",
-  DisclosureFixturesExamples,
-);
+export default DisclosureFixturesExamples;

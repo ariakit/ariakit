@@ -41,12 +41,11 @@ import {
 } from "@ariakit/ui/components/tooltip.ariakit.react";
 import * as icons from "lucide-react";
 import * as React from "react";
-import { withPreviewHydration } from "#app/components/preview-hydration.react.tsx";
 import { Logo } from "#app/icons/logo.react.tsx";
 import type { GalleryGroupId, GalleryPageId, GallerySetting } from "./pages.ts";
 import {
+  GALLERY_SETTINGS,
   GALLERY_STORAGE_PREFIX,
-  galleryBasePath,
   galleryGroups,
   getGalleryGroupPages,
   getGalleryHref,
@@ -175,6 +174,11 @@ const surfaceOptions = [
   { value: "tinted", label: "Brand-tinted surface", icon: <icons.Palette /> },
 ] satisfies readonly SettingOption[];
 
+const codeOptions = [
+  { value: "shown", label: "Show code snippets", icon: <icons.Code /> },
+  { value: "hidden", label: "Hide code snippets", icon: <icons.EyeOff /> },
+] satisfies readonly SettingOption[];
+
 const fontSizeOptions = [
   { value: "sm", label: "Small text", icon: <icons.AArrowDown /> },
   { value: "md", label: "Default text", icon: <icons.ALargeSmall /> },
@@ -207,6 +211,12 @@ export function GalleryControls() {
         fallback="md"
         options={fontSizeOptions}
       />
+      <SettingGroup
+        name="code"
+        label="Code snippets"
+        fallback="shown"
+        options={codeOptions}
+      />
     </div>
   );
 }
@@ -223,14 +233,20 @@ const groupIcons = {
 interface GalleryNavigationProps {
   /** The current page URL, which marks the matching link as current. */
   currentUrl?: string;
+  /** Called when a link changes the page. */
+  onNavigate?: () => void;
   children?: React.ReactNode;
 }
 
-function GalleryNavigation({ currentUrl, children }: GalleryNavigationProps) {
+function GalleryNavigation({
+  currentUrl,
+  onNavigate,
+  children,
+}: GalleryNavigationProps) {
   return (
     <>
       <div className="flex shrink-0 items-center justify-between">
-        <NavButton render={<a href={galleryBasePath} />}>
+        <NavButton render={<a href={getGalleryHref()} onClick={onNavigate} />}>
           <NavIcon>
             <Logo iconOnly />
           </NavIcon>
@@ -260,6 +276,7 @@ function GalleryNavigation({ currentUrl, children }: GalleryNavigationProps) {
                     <NavLink
                       href={getGalleryHref(page.id)}
                       currentUrl={currentUrl}
+                      onClick={onNavigate}
                     >
                       {page.title}
                     </NavLink>
@@ -274,7 +291,10 @@ function GalleryNavigation({ currentUrl, children }: GalleryNavigationProps) {
   );
 }
 
-export interface GallerySidebarProps extends GalleryNavigationProps {}
+export interface GallerySidebarProps extends Omit<
+  GalleryNavigationProps,
+  "onNavigate"
+> {}
 
 /**
  * Keeps the gallery navigation beside the page on desktop and opens it in a
@@ -325,7 +345,8 @@ export function GallerySidebar(props: GallerySidebarProps) {
         backdrop={<div className="bg-black/30 backdrop-blur-xs" />}
         className={`${panelClass} z-30`}
       >
-        <GalleryNavigation {...props}>
+        {/* A link only changes the hash, so no new document closes the dialog. */}
+        <GalleryNavigation {...props} onNavigate={store.hide}>
           <ak.DialogDismiss
             render={<Button $p={2} />}
             aria-label="Close gallery sections"
@@ -362,13 +383,27 @@ const surfaceClass = [
 
 const columnClass = "mx-auto w-[calc(100%---spacing(12))] max-w-wider";
 
+// Restores the persisted settings while the server markup is still parsing, so
+// the theme, the surface and the text size never flash before hydration. The
+// render-blocking stylesheet holds the first paint, and the island markup that
+// follows this script paints with the restored attributes.
+const restoreSettingsScript = `(() => {
+  try {
+    const root = document.documentElement;
+    for (const name of ${JSON.stringify(GALLERY_SETTINGS)}) {
+      const value = localStorage.getItem(${JSON.stringify(GALLERY_STORAGE_PREFIX)} + name);
+      if (value) root.setAttribute("data-" + name, value);
+    }
+  } catch {}
+})();`;
+
 interface GalleryShellProps {
   /** The current page, or undefined on the overview. */
   pageId?: GalleryPageId;
   children?: React.ReactNode;
 }
 
-function GalleryShell({ pageId, children }: GalleryShellProps) {
+export function GalleryShell({ pageId, children }: GalleryShellProps) {
   const page = pageId ? getGalleryPage(pageId) : undefined;
   const group = galleryGroups.find((entry) => entry.id === page?.group);
   const title = page?.title ?? overviewPage.title;
@@ -383,6 +418,11 @@ function GalleryShell({ pageId, children }: GalleryShellProps) {
       id="top"
       className="min-h-dvh overflow-x-clip [--gallery-header-height:--spacing(14)] [--gallery-sidebar-width:--spacing(64)]"
     >
+      {/*
+        The browser runs this script while it parses the server markup.
+        Hydration keeps the element and does not run it again.
+      */}
+      <script dangerouslySetInnerHTML={{ __html: restoreSettingsScript }} />
       <GallerySidebar currentUrl={getGalleryHref(pageId)} />
       <div className="flex min-h-dvh flex-col min-[768px]:ps-(--gallery-sidebar-width)">
         <Layer
@@ -398,7 +438,7 @@ function GalleryShell({ pageId, children }: GalleryShellProps) {
             >
               {page && group ? (
                 <>
-                  <Link href={galleryBasePath} className="font-medium">
+                  <Link href={getGalleryHref()} className="font-medium">
                     {overviewPage.title}
                   </Link>
                   <span aria-hidden="true" className="ak-ink-40">
@@ -488,26 +528,4 @@ function GalleryShell({ pageId, children }: GalleryShellProps) {
       </div>
     </div>
   );
-}
-
-/**
- * Builds the island of one gallery route. Exactly one of these is hydrated per
- * page: the shell, the header, the page header, the examples and the footer all
- * render inside this single React tree, so the preview hydration marker means
- * the whole page committed.
- */
-export function createGalleryPage(
-  pageId: GalleryPageId | undefined,
-  Examples: React.ComponentType,
-) {
-  function GalleryPage() {
-    return (
-      <GalleryShell pageId={pageId}>
-        <Examples />
-      </GalleryShell>
-    );
-  }
-  // The wrapper is the island root. Its mount effect runs after every child
-  // effect in the first commit, so the marker means the whole page committed.
-  return withPreviewHydration(GalleryPage);
 }

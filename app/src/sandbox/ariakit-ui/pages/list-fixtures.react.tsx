@@ -15,7 +15,6 @@ import {
 } from "@ariakit/ui/components/list.ariakit.react";
 import { useState } from "react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 // Migrated from the list-disclosure-optional-button sandbox with the same
 // props, markup and initial state.
@@ -55,10 +54,12 @@ export function ListFixturesExamples() {
         code={
           <List ordered>
             <li>
-              <ListDisclosure>Review assigned issues</ListDisclosure>
+              <ListDisclosure button={false}>
+                Review assigned issues
+              </ListDisclosure>
             </li>
             <li>
-              <ListDisclosure>No pending tasks</ListDisclosure>
+              <ListDisclosure button={0}>No pending tasks</ListDisclosure>
             </li>
           </List>
         }
@@ -103,4 +104,4 @@ export function ListFixturesExamples() {
   );
 }
 
-export default createGalleryPage("list-fixtures", ListFixturesExamples);
+export default ListFixturesExamples;

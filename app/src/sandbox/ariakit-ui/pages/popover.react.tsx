@@ -27,7 +27,6 @@ import {
   openPopoverProps,
   screenshotFocus,
 } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 const releaseNotes = [
   "Popovers now lift off the surface behind them and take an adaptive edge, so they read as raised material on light and dark pages alike.",
@@ -286,4 +285,4 @@ export function PopoverExamples() {
   );
 }
 
-export default createGalleryPage("popover", PopoverExamples);
+export default PopoverExamples;

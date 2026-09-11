@@ -28,7 +28,6 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { markExampleCodeTransparent } from "../example-code.react.ts";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 type ComponentColumn = "component" | "status" | "variants";
 
@@ -1047,4 +1046,4 @@ export function TableExamples() {
   );
 }
 
-export default createGalleryPage("table", TableExamples);
+export default TableExamples;

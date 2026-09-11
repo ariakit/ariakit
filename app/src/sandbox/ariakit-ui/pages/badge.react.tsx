@@ -17,7 +17,6 @@ import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { ArrowRight, Check } from "lucide-react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 export function BadgeExamples() {
   return (
@@ -243,4 +242,4 @@ export function BadgeExamples() {
   );
 }
 
-export default createGalleryPage("badge", BadgeExamples);
+export default BadgeExamples;

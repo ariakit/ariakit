@@ -89,6 +89,7 @@ const STATE_PROPS = [
 const SEMANTIC_PROPS = [
   "accessibleWhenDisabled",
   "badge",
+  "button",
   "checkmark",
   "chevron",
   "description",

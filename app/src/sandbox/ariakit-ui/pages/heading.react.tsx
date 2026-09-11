@@ -15,7 +15,6 @@ import {
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import { Example, ExampleGrid, screenshotFocus } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 // Every box title is an h2 and its example sits one HeadingLevel below it, so a
 // bare Heading in a box is an h3. The page title is the only h1: the h1 size
@@ -130,4 +129,4 @@ export function HeadingExamples() {
   );
 }
 
-export default createGalleryPage("heading", HeadingExamples);
+export default HeadingExamples;

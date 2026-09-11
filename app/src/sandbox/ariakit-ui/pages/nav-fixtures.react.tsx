@@ -20,7 +20,6 @@ import {
 } from "@ariakit/ui/components/nav.ariakit.react";
 import { useState } from "react";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 // Migrated from nav-optional-headings.react.tsx in the nav-interactions
 // sandbox, with the same markup.
@@ -145,13 +144,13 @@ export function NavFixturesExamples() {
         code={
           <>
             <Nav>
-              <NavDisclosure>
+              <NavDisclosure button={false}>
                 <NavLink>Workspace members</NavLink>
                 <NavLink>Workspace settings</NavLink>
               </NavDisclosure>
             </Nav>
             <Nav>
-              <NavDisclosure>
+              <NavDisclosure button={0}>
                 <NavLink>Invitation settings</NavLink>
               </NavDisclosure>
             </Nav>
@@ -164,4 +163,4 @@ export function NavFixturesExamples() {
   );
 }
 
-export default createGalleryPage("nav-fixtures", NavFixturesExamples);
+export default NavFixturesExamples;

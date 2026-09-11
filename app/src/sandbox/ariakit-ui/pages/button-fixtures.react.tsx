@@ -14,7 +14,6 @@ import {
 } from "@ariakit/ui/components/button.ariakit.react";
 import { button, buttonGroup } from "@ariakit/ui/styles/button";
 import { Example, ExampleGrid } from "../example.react.tsx";
-import { createGalleryPage } from "../shell.react.tsx";
 
 const groups = [
   { title: "Horizontal", $layout: "horizontal", $gap: "auto", $p: "none" },
@@ -95,4 +94,4 @@ export function ButtonFixturesExamples() {
   );
 }
 
-export default createGalleryPage("button-fixtures", ButtonFixturesExamples);
+export default ButtonFixturesExamples;

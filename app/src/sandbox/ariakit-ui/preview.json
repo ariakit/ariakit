@@ -1,37 +1,4 @@
 {
   "title": "Ariakit UI",
-  "fullscreen": true,
-  "routes": [
-    "heading",
-    "prose",
-    "separator",
-    "code",
-    "kbd",
-    "link",
-    "button",
-    "badge",
-    "input",
-    "checkbox",
-    "radio",
-    "combobox",
-    "tabs",
-    "disclosure",
-    "nav",
-    "list",
-    "table",
-    "progress",
-    "popover",
-    "dialog",
-    "tooltip",
-    "button-fixtures",
-    "checkbox-fixtures",
-    "combobox-fixtures",
-    "disclosure-fixtures",
-    "layer-fixtures",
-    "list-fixtures",
-    "nav-fixtures",
-    "progress-fixtures",
-    "table-fixtures",
-    "tabs-fixtures"
-  ]
+  "fullscreen": true
 }

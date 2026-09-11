@@ -35,3 +35,9 @@ html[data-font-size="sm"] {
 html[data-font-size="lg"] {
   font-size: 18px;
 }
+
+/* Hides the snippet under every example, so a page shows only the rendered
+   examples, as in the page screenshots. */
+html[data-code="hidden"] [data-example-code] {
+  display: none;
+}
