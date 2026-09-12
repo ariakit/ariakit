@@ -22,6 +22,18 @@
   --duration-tabs: 100ms;
   --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
 
+  --animate-ui-progress: ui-progress 1.5s ease-in-out infinite;
+
+  @keyframes ui-progress {
+    from {
+      translate: -100%;
+    }
+    to {
+      /* A third-width segment leaves the track after three of its widths. */
+      translate: 300%;
+    }
+  }
+
   --duration-overshoot: 500ms;
   /* Curve from easingwizard.com. Popovers, dialogs and tooltips enter on it,
      so it lives here rather than inline: a Tailwind theme token is the only
