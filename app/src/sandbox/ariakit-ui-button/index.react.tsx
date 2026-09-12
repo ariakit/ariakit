@@ -132,6 +132,20 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Layer disabled"
+        description="Disable the layer system while keeping the button's spacing. A bevel still paints its own surface."
+        code={`
+          <Button $layer={false}>Cancel action</Button>
+          <Button $layer={false} $kind="bevel">Apply action</Button>
+        `}
+      >
+        <Button $layer={false}>Cancel action</Button>
+        <Button $layer={false} $kind="bevel">
+          Apply action
+        </Button>
+      </Example>
+
+      <Example
         title="Lifted"
         description="A neutral surface that stays visible at rest, for a button that stands alone."
         code={`

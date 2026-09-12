@@ -112,19 +112,22 @@ export const button = cv({
     if (variants.$border == null) {
       const hasSurface =
         variants.$kind === "bevel" ||
-        layer.variantKeys.some((key) => {
-          const value = variants[key];
-          if (value == null) return false;
-          if (value === false) return false;
-          if (value === "") return false;
-          if (key === "$layer" && value === "transparent") return false;
-          // Zero pins or clamps some color channels but disables shifts. Ask
-          // the layer resolver whether this zero emits a modifier of its own.
-          if (value === 0) {
-            return !!layer.class({ $layer: false, [key]: value });
-          }
-          return true;
-        });
+        // Layer modifiers cannot paint without an enabled layer. The bevel
+        // above paints independently and still needs its own fallback.
+        (!!variants.$layer &&
+          layer.variantKeys.some((key) => {
+            const value = variants[key];
+            if (value == null) return false;
+            if (value === false) return false;
+            if (value === "") return false;
+            if (key === "$layer" && value === "transparent") return false;
+            // Zero pins or clamps some color channels but disables shifts. Ask
+            // the layer resolver whether this zero emits a modifier of its own.
+            if (value === 0) {
+              return !!layer.class({ $layer: false, [key]: value });
+            }
+            return true;
+          }));
       if (hasSurface) {
         addClass("forced-colors:ak-frame-border");
       }
