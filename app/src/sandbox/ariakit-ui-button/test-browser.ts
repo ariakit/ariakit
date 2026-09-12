@@ -102,6 +102,60 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   }
 
+  for (const attribute of ["disabled", "aria-disabled"]) {
+    // https://github.com/ariakit/ariakit/issues/7474
+    // https://github.com/ariakit/ariakit/pull/7490#discussion_r3997179911
+    test(`dims nested slot ink when a script changes ${attribute}`, async ({
+      page,
+      q,
+    }) => {
+      for (const contrast of ["no-preference", "more"] as const) {
+        await page.emulateMedia({ contrast });
+        await forEachColorScheme(page, async () => {
+          const box = query(q.article("Nested badge and avatar"));
+          const button = box.button("J Jane Doe 3");
+          const slots = [
+            [
+              box.text("3").locator(".."),
+              query(q.article("Disabled")).text("3").locator(".."),
+            ],
+            [box.text("J"), query(q.article("Disabled avatars")).text("J")],
+          ] as const;
+          const enabledColors = await Promise.all(
+            slots.map(([slot]) =>
+              slot.evaluate((element) => getComputedStyle(element).color),
+            ),
+          );
+          await button.evaluate(
+            (element, name) => element.setAttribute(name, "true"),
+            attribute,
+          );
+          await test.expect(button).toBeDisabled();
+          for (const [slot, disabled] of slots) {
+            for (const property of ["background-color", "color"]) {
+              const expected = await disabled.evaluate(
+                (element, property) =>
+                  getComputedStyle(element).getPropertyValue(property),
+                property,
+              );
+              await test.expect(slot).toHaveCSS(property, expected);
+            }
+          }
+          await button.evaluate(
+            (element, name) => element.removeAttribute(name),
+            attribute,
+          );
+          await test.expect(button).toBeEnabled();
+          for (const [index, [slot]] of slots.entries()) {
+            const color = enabledColors[index];
+            if (color == null) continue;
+            await test.expect(slot).toHaveCSS("color", color);
+          }
+        });
+      }
+    });
+  }
+
   // https://github.com/ariakit/ariakit/issues/7474
   test("dims slots in a disabled fieldset except its first legend", async ({
     page,

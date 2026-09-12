@@ -726,6 +726,30 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Nested badge and avatar"
+        description="Badge and avatar slots can sit inside the button content."
+        code={`
+          <Button>
+            <ButtonContent $orientation="horizontal">
+              <ButtonSlot $kind="avatar" $layer="brand">J</ButtonSlot>
+              <ButtonLabel>Jane Doe</ButtonLabel>
+              <ButtonSlot $kind="badge">3</ButtonSlot>
+            </ButtonContent>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonContent $orientation="horizontal">
+            <ButtonSlot $kind="avatar" $layer="brand">
+              J
+            </ButtonSlot>
+            <ButtonLabel>Jane Doe</ButtonLabel>
+            <ButtonSlot $kind="badge">3</ButtonSlot>
+          </ButtonContent>
+        </Button>
+      </Example>
+
+      <Example
         title="Disabled bevel"
         description="The gradient goes away, and a faint surface keeps the shape of the button in both themes."
         code={`
