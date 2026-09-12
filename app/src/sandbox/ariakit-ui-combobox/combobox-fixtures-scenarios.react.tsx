@@ -70,7 +70,7 @@ export function SelectContent() {
   // Undefined sizes keep the default, and numeric zero remains content.
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
         <ComboboxProvider>
           <ComboboxSelect aria-label="Default status" displayValue="Pending" />
         </ComboboxProvider>
