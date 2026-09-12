@@ -288,19 +288,19 @@ export default function BadgeExamples() {
 
       <Example
         title="Avatar"
-        description="A round avatar slot that paints its own surface behind an initial."
+        description="A round avatar slot that paints its own surface behind two initials."
         code={`
           <Badge>
-            <BadgeSlot $kind="avatar" $layer="brand">D</BadgeSlot>
-            <BadgeLabel>Diego</BadgeLabel>
+            <BadgeSlot $kind="avatar" $layer="brand">WW</BadgeSlot>
+            <BadgeLabel>Will</BadgeLabel>
           </Badge>
         `}
       >
         <Badge>
           <BadgeSlot $kind="avatar" $layer="brand">
-            D
+            WW
           </BadgeSlot>
-          <BadgeLabel>Diego</BadgeLabel>
+          <BadgeLabel>Will</BadgeLabel>
         </Badge>
       </Example>
 
