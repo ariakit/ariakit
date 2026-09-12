@@ -20,11 +20,14 @@ import {
   comboboxItemDescription,
   comboboxItemLabel,
   comboboxItemSlot,
+  comboboxList,
   comboboxSelect,
   comboboxSelectArrow,
   comboboxSelectIcon,
   comboboxSelectItem,
   comboboxSelectItemCheck,
+  comboboxSelectLabel,
+  comboboxSelectPlaceholder,
   comboboxSelectPopover,
   comboboxSelectValueLabel,
   comboboxLabel,
@@ -120,6 +123,18 @@ export function ComboboxPopover({
   );
 }
 
+export interface ComboboxListProps
+  extends ak.ComboboxListProps, VariantProps<typeof comboboxList> {}
+
+/**
+ * Groups options inside a popover that also contains a search field or other
+ * content. The list owns the listbox role and the popover becomes a dialog.
+ */
+export function ComboboxList(props: ComboboxListProps) {
+  const [variantProps, rest] = splitProps(props, comboboxList);
+  return <ak.ComboboxList {...comboboxList.jsx(variantProps)} {...rest} />;
+}
+
 export interface ComboboxGroupProps
   extends ak.ComboboxGroupProps, VariantProps<typeof comboboxGroup> {
   /** Custom label element or props to render a `ComboboxGroupLabel`. */
@@ -181,7 +196,25 @@ export function ComboboxItem({
 export interface ComboboxEmptyProps
   extends ak.RoleProps<"div">, VariantProps<typeof comboboxEmpty> {}
 
-/** Render when filtering leaves no suggestions. */
+/**
+ * Displays a message when filtering leaves no suggestions. Put it beside
+ * `ComboboxList` so the message is outside the options.
+ *
+ * For announcements, keep a separate status region mounted outside the popover
+ * and update its text when the matches change. A status mounted only with the
+ * empty state can be silent. Hide the visual message from screen readers when
+ * the separate region supplies its text.
+ * @example
+ * <>
+ *   <Combobox label="Fruit">
+ *     <ComboboxList>{options}</ComboboxList>
+ *     {empty && <ComboboxEmpty aria-hidden />}
+ *   </Combobox>
+ *   <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+ *     {empty ? "No results found" : ""}
+ *   </div>
+ * </>
+ */
 export function ComboboxEmpty(props: ComboboxEmptyProps) {
   const [variantProps, rest] = splitProps(props, comboboxEmpty);
   return (
@@ -354,13 +387,22 @@ export function ComboboxSelectValue({
   );
 }
 
-export interface ComboboxSelectLabelProps extends ak.ComboboxSelectLabelProps {}
+export interface ComboboxSelectLabelProps
+  extends
+    ak.ComboboxSelectLabelProps,
+    VariantProps<typeof comboboxSelectLabel> {}
 
 /**
  * @see https://ariakit.com/reference/select-label
  */
 export function ComboboxSelectLabel(props: ComboboxSelectLabelProps) {
-  return <ak.ComboboxSelectLabel {...props} />;
+  const [variantProps, rest] = splitProps(props, comboboxSelectLabel);
+  return (
+    <ak.ComboboxSelectLabel
+      {...comboboxSelectLabel.jsx(variantProps)}
+      {...rest}
+    />
+  );
 }
 
 export interface ComboboxSelectButtonProps
@@ -375,6 +417,13 @@ export interface ComboboxSelectButtonProps
   /** Custom display value element. */
   displayValue?: React.ReactNode;
   /**
+   * Prompt to show with placeholder ink when the selection is empty. Set
+   * `defaultValue=""` or control the provider's `value` to start empty;
+   * otherwise, the store selects the first item. Custom `displayValue` or
+   * `children` take precedence.
+   */
+  placeholder?: React.ReactNode;
+  /**
    * Styles the button as a colored status badge, like the legacy `ak-badge-*`
    * classes on a select button. Pass a colored `$layer` to tint it.
    */
@@ -388,6 +437,7 @@ export function ComboboxSelectButton({
   icon,
   chevron = "after",
   displayValue,
+  placeholder,
   badge,
   ...props
 }: ComboboxSelectButtonProps) {
@@ -423,7 +473,17 @@ export function ComboboxSelectButton({
         ) : isRenderable(rest.children) ? (
           rest.children
         ) : (
-          <ComboboxSelectValue />
+          <ComboboxSelectValue>
+            {(value) =>
+              value.length || !isRenderable(placeholder) ? (
+                joinSelectedValue(value)
+              ) : (
+                <span {...comboboxSelectPlaceholder.jsx({})}>
+                  {placeholder}
+                </span>
+              )
+            }
+          </ComboboxSelectValue>
         )}
       </span>
       {chevron === "before" && iconElement}
