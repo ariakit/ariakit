@@ -164,5 +164,5 @@ export const comboboxSelectArrow = cv({
 // The mark keeps its space when unselected so item labels stay aligned.
 export const comboboxItemCheck = cv({
   extend: [optionSlot],
-  class: "[&:empty]:invisible",
+  class: "pointer-events-none [&:empty]:invisible",
 });

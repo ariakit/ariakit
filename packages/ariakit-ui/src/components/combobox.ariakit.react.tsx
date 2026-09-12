@@ -206,18 +206,25 @@ export interface ComboboxItemCheckProps
   extends ak.ComboboxItemCheckProps, VariantProps<typeof comboboxItemCheck> {}
 
 /** Keeps its space when unselected so the item labels stay aligned. */
-export function ComboboxItemCheck(props: ComboboxItemCheckProps) {
+export function ComboboxItemCheck({
+  checked,
+  store: _store,
+  "aria-hidden": ariaHidden = true,
+  ...props
+}: ComboboxItemCheckProps) {
   const [variantProps, rest] = splitProps(props, comboboxItemCheck);
-  const styleProps = comboboxItemCheck.jsx(variantProps);
   return (
-    <ak.ComboboxItemCheck
-      {...styleProps}
-      {...rest}
-      // The slot classes size the check, replacing Ariakit's inline defaults.
-      style={{ width: undefined, height: undefined, ...styleProps.style }}
-    >
-      {rest.children ?? <CheckIcon />}
-    </ak.ComboboxItemCheck>
+    <ak.ComboboxItemSelected>
+      {(selected) => (
+        <ak.Role.span
+          aria-hidden={ariaHidden}
+          {...comboboxItemCheck.jsx(variantProps)}
+          {...rest}
+        >
+          {(checked ?? selected) ? rest.children || <CheckIcon /> : null}
+        </ak.Role.span>
+      )}
+    </ak.ComboboxItemSelected>
   );
 }
 
