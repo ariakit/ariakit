@@ -21,15 +21,15 @@
     "@ariakit/react": "workspace:*",
     "@ariakit/ui": "workspace:*",
     "next": "16.2.12",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "1.20.6",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "24.13.4",
-    "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.7",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "babel-plugin-react-compiler": "1.0.0",
     "tailwindcss": "4.3.3",
     "typescript": "npm:@typescript/typescript6@6.0.2",
