@@ -17,6 +17,7 @@ import {
   ComboboxItemLabel,
   ComboboxItemSlot,
   ComboboxLabel,
+  ComboboxList,
   ComboboxPopover,
   ComboboxProvider,
   ComboboxSelect,
@@ -38,7 +39,9 @@ import {
 import {
   BadgeSelectExample,
   CountryComboboxExample,
+  FieldBoundariesExample,
   SearchableSelectExample,
+  SelectPlaceholdersExample,
   openListProps,
 } from "./combobox-examples.react.tsx";
 import {
@@ -65,11 +68,13 @@ export default function ComboboxExamples() {
         title="Default"
         description="Type to filter the countries. The first match completes inline, and a message shows when nothing matches."
         code={`
-          <Combobox>
-            <ComboboxItem value="Argentina" />
-            <ComboboxItem value="Australia" />
-            <ComboboxEmpty />
+          <Combobox label="Destination">
+            <ComboboxList>{options}</ComboboxList>
+            {empty && <ComboboxEmpty aria-hidden />}
           </Combobox>
+          <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+            {empty ? "No results found" : ""}
+          </div>
         `}
       >
         <CountryComboboxExample />
@@ -281,12 +286,13 @@ export default function ComboboxExamples() {
 
       <Example
         title="Empty state"
-        description="The message in the list when the typed text matches no item."
+        description="The message sits outside the option list. The Default example announces filtering changes through a status region that stays mounted outside the popup."
         code={`
           <ComboboxProvider open>
             <ComboboxLabel>Ingredient</ComboboxLabel>
             <ComboboxInput />
             <ComboboxPopover>
+              <ComboboxList />
               <ComboboxEmpty />
             </ComboboxPopover>
           </ComboboxProvider>
@@ -299,6 +305,7 @@ export default function ComboboxExamples() {
               <ComboboxInput />
             </div>
             <ComboboxPopover {...openListProps}>
+              <ComboboxList />
               <ComboboxEmpty />
             </ComboboxPopover>
           </ComboboxProvider>
@@ -603,9 +610,9 @@ export default function ComboboxExamples() {
 
       <Example
         title="Placeholder"
-        description="An empty value shows a prompt until the user picks an item. The prompt has the ink of a value, not of a placeholder."
+        description="An empty value shows a prompt with placeholder ink until the user picks an item. Set defaultValue to an empty string to prevent the first item from being selected automatically."
         code={`
-          <ComboboxSelect items={[…]} displayValue={<ComboboxSelectValue fallback="Choose a region" />} />
+          <ComboboxSelect items={[…]} defaultValue="" placeholder="Choose a region" />
         `}
       >
         <div className="flex flex-col items-start gap-2">
@@ -617,8 +624,10 @@ export default function ComboboxExamples() {
               { value: "North America" },
               { value: "Asia" },
             ]}
-            displayValue={<ComboboxSelectValue fallback="Choose a region" />}
+            placeholder="Choose a region"
+            popover={{ unmountOnHide: true }}
           />
+          <SelectPlaceholdersExample />
         </div>
       </Example>
 
@@ -731,10 +740,10 @@ export default function ComboboxExamples() {
             <ComboboxSelectButton />
             <ComboboxSelectPopover>
               <ComboboxInput />
-              <ak.ComboboxList>
+              <ComboboxList>
                 <ComboboxSelectItem value="UTC" />
                 <ComboboxSelectItem value="Europe/London" />
-              </ak.ComboboxList>
+              </ComboboxList>
             </ComboboxSelectPopover>
           </ComboboxSelectProvider>
         `}
@@ -770,6 +779,19 @@ export default function ComboboxExamples() {
             </ComboboxSelectPopover>
           </ComboboxSelectProvider>
         </ExampleStage>
+      </Example>
+
+      <Example
+        title="Field boundaries"
+        description="Labels inherit the layer's text color. Long options stay inside the available viewport width."
+        code={`
+          <Layer $layer="brand" render={<Text $text="danger" />}>
+            <Combobox label="Long suggestion">…</Combobox>
+            <ComboboxSelect label="Long selection" items={[…]} />
+          </Layer>
+        `}
+      >
+        <FieldBoundariesExample />
       </Example>
 
       {/*
