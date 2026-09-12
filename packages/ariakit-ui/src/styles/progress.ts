@@ -97,7 +97,13 @@ export const progressFill = cv({
     "block h-full w-[calc(var(--progress-value)*100%)]",
     // Animate from empty on first paint; the registered property makes the
     // width calc interpolate smoothly.
-    "starting:w-0! transition-[width]",
+    "not-data-indeterminate:starting:w-0! transition-[width]",
+    // The resting segment stays centered when motion is reduced.
+    "data-indeterminate:w-1/3 data-indeterminate:translate-x-full",
+    // Keep the same origin in RTL; reversing the animation changes its travel.
+    "data-indeterminate:absolute data-indeterminate:left-0",
+    "motion-safe:data-indeterminate:animate-ui-progress",
+    "rtl:data-indeterminate:[animation-direction:reverse]",
   ],
 });
 
@@ -109,7 +115,9 @@ export const progressCircularFill = cv({
     // pointer goes through it to the children in the middle.
     "pointer-events-none",
     // Transitioning the registered value property animates the conic sweep.
-    "transition-[--progress-value] starting:[--progress-value:0]!",
+    "transition-[--progress-value] not-data-indeterminate:starting:[--progress-value:0]!",
+    "data-indeterminate:[--progress-value:0.25]",
+    "motion-safe:data-indeterminate:animate-spin",
     // The feather offsets soften the conic edge and the mask edge by a
     // fraction so the arc doesn't alias. The angular feather shrinks to
     // nothing at either end of the sweep: a full degree would fade the arc in
