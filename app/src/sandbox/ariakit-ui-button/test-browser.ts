@@ -33,6 +33,28 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await test.expect.poll(() => initials.evaluate(initialsFit)).toBe(true);
   });
 
+  // https://github.com/ariakit/ariakit/issues/7475
+  test("keeps avatar dimensions with normal line height", async ({ q }) => {
+    const example = query(q.article("Avatar with normal line height"));
+    const initials = example.text("WW");
+    const label = example.text("Will Williams");
+    await test.expect(initials).toBeVisible();
+    await test.expect(label).toBeVisible();
+    await test.expect
+      .poll(async () => {
+        const avatarHeight = await initials.evaluate((element) => {
+          const slot = element.closest(".overflow-clip");
+          if (!slot) throw new Error("Avatar slot not found");
+          return slot.getBoundingClientRect().height;
+        });
+        const labelHeight = await label.evaluate(
+          (element) => element.getBoundingClientRect().height,
+        );
+        return Math.abs(avatarHeight - labelHeight);
+      })
+      .toBeLessThan(1);
+  });
+
   // https://github.com/ariakit/ariakit/pull/7489#discussion_r3995106162
   test("fits initials from adjacent expressions inside an avatar slot", async ({
     q,

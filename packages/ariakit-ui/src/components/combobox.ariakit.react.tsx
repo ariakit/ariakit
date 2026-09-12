@@ -4,7 +4,6 @@ import { splitProps } from "clava";
 import { clsx } from "clsx";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import type * as React from "react";
-import { wrapTextChildren } from "../react-utils/__wrap-text-children.react.tsx";
 import {
   createOptionalRender,
   createRender,
@@ -228,8 +227,6 @@ export function ComboboxItemSlot(props: ComboboxItemSlotProps) {
     <ak.Role.span {...comboboxItemSlot.jsx(variantProps)} {...rest}>
       {variants.$kind === "badge" ? (
         <span>{rest.children}</span>
-      ) : variants.$kind === "avatar" ? (
-        wrapTextChildren(rest.children)
       ) : (
         rest.children
       )}

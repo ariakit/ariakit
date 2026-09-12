@@ -445,6 +445,24 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Avatar with normal line height"
+        description="An avatar follows the font's normal line height in a small button."
+        code={`
+          <Button $size="xs" style={{ lineHeight: "normal" }}>
+            <ButtonSlot $kind="avatar" $layer="brand">WW</ButtonSlot>
+            <ButtonLabel>Will Williams</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button $size="xs" style={{ lineHeight: "normal" }}>
+          <ButtonSlot $kind="avatar" $layer="brand">
+            WW
+          </ButtonSlot>
+          <ButtonLabel>Will Williams</ButtonLabel>
+        </Button>
+      </Example>
+
+      <Example
         title="Composed avatar initials"
         description="Initials from separate first and last name values fit in one avatar."
         code={`

@@ -1,7 +1,6 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import { wrapTextChildren } from "../react-utils/__wrap-text-children.react.tsx";
 import {
   button,
   buttonContent,
@@ -115,8 +114,6 @@ export function ButtonSlot(props: ButtonSlotProps) {
     <ak.Role.span {...buttonSlot.jsx(variantProps)} {...rest}>
       {variants.$kind === "badge" ? (
         <span>{rest.children}</span>
-      ) : variants.$kind === "avatar" ? (
-        wrapTextChildren(rest.children)
       ) : (
         rest.children
       )}

@@ -1,7 +1,6 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import { wrapTextChildren } from "../react-utils/__wrap-text-children.react.tsx";
 import {
   radio,
   radioCard,
@@ -147,14 +146,7 @@ export interface RadioCardSlotProps
  */
 export function RadioCardSlot(props: RadioCardSlotProps) {
   const [variantProps, rest] = splitProps(props, radioCardSlot);
-  const variants = radioCardSlot.getVariants(variantProps);
-  return (
-    <ak.Role.span {...radioCardSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "avatar"
-        ? wrapTextChildren(rest.children)
-        : rest.children}
-    </ak.Role.span>
-  );
+  return <ak.Role.span {...radioCardSlot.jsx(variantProps)} {...rest} />;
 }
 
 export interface RadioCardContentProps
