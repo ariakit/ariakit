@@ -180,9 +180,11 @@ export function CheckboxCardGrid(props: CheckboxCardGridProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardGrid);
   return (
     <ak.Role.div
-      role="group"
       {...checkboxCardGrid.jsx(variantProps)}
       {...rest}
+      // Set after the spread, so a role prop that is present but undefined, as
+      // a wrapper with an optional role passes it, keeps the group role.
+      role={rest.role ?? "group"}
     />
   );
 }

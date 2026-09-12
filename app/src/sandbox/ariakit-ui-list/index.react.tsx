@@ -60,6 +60,32 @@ function ListDisclosureOptionalButton() {
 // layout: full width, text from the start, wrapping, and the list's font.
 const linkRowClassName = "w-full justify-start font-normal text-wrap";
 
+interface StatusMarkerProps {
+  label?: string;
+  description?: string;
+}
+
+// Passes its optional label and description on as is, so each marker gets an
+// ARIA prop that is present but undefined.
+function StatusMarker({ label, description }: StatusMarkerProps) {
+  return (
+    <span className="grid gap-2">
+      <span className="flex items-center gap-2">
+        <span className="relative inline-block size-[1lh]">
+          <ListItemMarker checked aria-label={label} />
+        </span>
+        Approved
+      </span>
+      <span className="flex items-center gap-2">
+        <span className="relative inline-block size-[1lh]">
+          <ListItemMarker progress={0.5} aria-description={description} />
+        </span>
+        In review
+      </span>
+    </span>
+  );
+}
+
 export default function ListExamples() {
   return (
     <ExampleGrid>
@@ -887,6 +913,17 @@ export default function ListExamples() {
           </span>
           Review pending
         </span>
+      </Example>
+
+      <Example
+        title="Markers with optional props"
+        description="A wrapper passes its optional label and description on to the markers. Without them, each marker keeps its own name and description."
+        code={`
+          <ListItemMarker checked aria-label={label} />
+          <ListItemMarker progress={0.5} aria-description={description} />
+        `}
+      >
+        <StatusMarker />
       </Example>
     </ExampleGrid>
   );

@@ -29,6 +29,7 @@ import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import * as icons from "lucide-react";
 import { ChartBar, Sparkles } from "lucide-react";
+import type { AriaRole } from "react";
 import { useId, useState } from "react";
 import {
   Example,
@@ -159,6 +160,25 @@ function CountedCardGrid() {
         {selected.length} of {features.length} selected
       </Text>
     </div>
+  );
+}
+
+interface FeatureGridProps {
+  role?: AriaRole;
+}
+
+// Passes its optional role on as is, so the grid gets a role prop that is
+// present but undefined.
+function FeatureGrid({ role }: FeatureGridProps) {
+  return (
+    <CheckboxCardGrid aria-label="Optional role" role={role} className="w-full">
+      {features.slice(0, 2).map((feature) => (
+        <CheckboxCard key={feature.value} value={feature.value}>
+          <CheckboxCardLabel>{feature.label}</CheckboxCardLabel>
+          <CheckboxCardCheck />
+        </CheckboxCard>
+      ))}
+    </CheckboxCardGrid>
   );
 }
 
@@ -827,6 +847,20 @@ export default function CheckboxExamples() {
             <BadgeLabel>Recommended</BadgeLabel>
           </Badge>
         </div>
+      </Example>
+      <Example
+        title="Card grid with an optional role"
+        description="A wrapper passes its optional role on to the grid. Without a role, the grid keeps its group role."
+        code={`
+          <CheckboxCardGrid aria-label="Optional role" role={role}>
+            <CheckboxCard value="analytics">
+              <CheckboxCardLabel>Analytics</CheckboxCardLabel>
+              <CheckboxCardCheck />
+            </CheckboxCard>
+          </CheckboxCardGrid>
+        `}
+      >
+        <FeatureGrid />
       </Example>
     </ExampleGrid>
   );

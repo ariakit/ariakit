@@ -44,4 +44,11 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(grid.checkbox("Alerts")).toBeChecked();
     await test.expect(box.text("2 of 4 selected")).toBeVisible();
   });
+  // A role prop that is present but undefined, as a wrapper with an optional
+  // role passes it, must keep the grid's own group role.
+  test("keeps the group role of a card grid whose role prop is undefined", async ({
+    q,
+  }) => {
+    await test.expect(q.group("Optional role")).toBeVisible();
+  });
 });

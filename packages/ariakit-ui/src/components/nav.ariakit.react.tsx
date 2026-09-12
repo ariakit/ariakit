@@ -242,22 +242,34 @@ function NavDisclosureRoot(props: ak.RoleProps<"li">) {
   );
 }
 
-export function NavDisclosure(props: NavDisclosureProps) {
+/**
+ * A row of a `Nav` that discloses rows of its own. Its root paints no surface
+ * by default: a nested section sits in a content that stacks over the nav's
+ * gliders, so an opaque root would hide the covers of its rows.
+ */
+export function NavDisclosure({
+  // Parameter defaults rather than props on the element below, so a value that
+  // a caller forwards unset, as a wrapper with an optional prop does, still
+  // lands on the row instead of reaching it as undefined.
+  //
+  // The row and its content are already spaced apart, so the button needs no
+  // hover ramp between them.
+  $contentPadding = true,
+  // A nav row is a field-sized frame with control-sized padding.
+  $rounded = "lg",
+  $p = 2,
+  $layer = "transparent",
+  ...props
+}: NavDisclosureProps) {
   const [variantProps, rest] = splitProps(props, navDisclosure);
   const button = createOptionalRender(NavDisclosureButton, rest.button);
   const content = createRender(NavDisclosureContent, rest.content);
   return (
     <Disclosure
-      // The row and its content are already spaced apart, so the button needs
-      // no hover ramp between them.
-      $contentPadding
-      // A nav row is a field-sized frame with control-sized padding.
-      $rounded="lg"
-      $p={2}
-      // The root paints no surface of its own. A nested section sits in a
-      // content that stacks over the nav's gliders, so an opaque root would
-      // hide the covers of its rows.
-      $layer="transparent"
+      $contentPadding={$contentPadding}
+      $rounded={$rounded}
+      $p={$p}
+      $layer={$layer}
       {...navDisclosure.jsx(variantProps)}
       {...rest}
       button={button}

@@ -84,4 +84,14 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(unchecked.img("Unchecked")).toBeVisible();
     await test.expect(checked.img("Checked")).toBeVisible();
   });
+
+  test("keeps the name and the description of markers whose props are undefined", async ({
+    q,
+  }) => {
+    const box = query(q.article("Markers with optional props"));
+    await test.expect(box.img("Checked")).toBeVisible();
+    await test
+      .expect(box.img("Unchecked"))
+      .toHaveAccessibleDescription("50% complete");
+  });
 });
