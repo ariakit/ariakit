@@ -187,7 +187,7 @@ In ordinary lighting, an exposed surface catches more light while a cutout or we
 
 Numeric `ak-layer-<number>` modifiers are not elevation values. They request appearance-aware separation from the selected source, which defaults to the parent layer. They normally move light sources darker and dark sources lighter, but the contrast-safe lightness pipeline may clamp the target or move it past an ambiguous midrange. Use them to separate a surface without declaring that it is above or below, and use `ak-layer-lighten-*` or `ak-layer-darken-*` when spatial direction matters.
 
-Ariakit UI fields use appearance-aware separation in the opposite direction. `Input` and the checkbox and radio boxes use `$lightnessOffset: -1` to keep a light writing surface on light layers and a dark one on dark layers. These fields are not darkened wells. Their edges mark the field boundary, and hover moves their fill toward the surrounding surface.
+Form fields can use appearance-aware separation in the opposite direction. For example, `ak-layer ak-layer-offset-[-0.01]` keeps a light writing surface on light layers and a dark one on dark layers. Pair the fill with an edge to mark the field boundary, and use a hover state to move the fill toward the surrounding surface.
 
 A neutral standalone button can use this material when its affordance should remain visible at rest. Use it selectively: buttons inside a toolbar or another shared surface can stay on that plane and rely on state or ink changes for interaction.
 
