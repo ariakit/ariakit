@@ -1,4 +1,5 @@
-import { expect, test } from "vitest";
+import type { VariantProps } from "clava";
+import { expect, expectTypeOf, test } from "vitest";
 import { focus, focusHighlight } from "./focus.ts";
 import { input } from "./input.ts";
 import { link } from "./link.ts";
@@ -9,10 +10,13 @@ function getOffsetClasses(className: string) {
     .filter((name) => name.includes("outline-offset-"));
 }
 
-// https://github.com/ariakit/ariakit/pull/7495#discussion_r3996994127
-test("leaves the focus offset unset for none", () => {
+// https://github.com/ariakit/ariakit/pull/7495#discussion_r3997158431
+test("leaves the focus offset unset", () => {
+  expectTypeOf<VariantProps<typeof focus>["$focusOffset"]>().toEqualTypeOf<
+    "unset" | 0 | 1 | 2 | undefined
+  >();
   for (const recipe of [focus, input, link]) {
-    const result = recipe({ $focus: true, $focusOffset: "none" });
+    const result = recipe({ $focus: true, $focusOffset: "unset" });
     expect(getOffsetClasses(result.class)).toEqual([]);
   }
 });
