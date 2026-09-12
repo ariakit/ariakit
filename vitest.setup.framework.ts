@@ -52,6 +52,8 @@ const LOADERS = {
  * Fixture grammar:
  * - `test.ts` runs for every matching `index.<framework>.tsx`.
  * - `<framework>.test.ts` runs only for that framework.
+ * - `<name>.<framework>.test.ts` next to `index.astro` is not auto-mounted; it
+ *   mounts its own component.
  * Playwright uses `test-<target>.ts`; targets are defined in
  * `app/playwright.config.ts`.
  */

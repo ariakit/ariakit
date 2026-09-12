@@ -256,14 +256,16 @@ body > * {
   }
 }
 
+/* Every heading level counts. The level comes from where the list sits in the
+   document outline, and a heading of any level is the same structure. */
 @custom-variant ui-list-item-blocks {
-  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+  &:has(:where(p, div, details, h1, h2, h3, h4, h5, h6)) {
     @slot;
   }
 }
 
 @custom-variant ui-list-blocks {
-  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+  &:has(:where(p, div, details, h1, h2, h3, h4, h5, h6)) {
     @slot;
   }
   @container style(--list-blocks: 1) {
@@ -274,7 +276,7 @@ body > * {
 /* Registered after ui-list-blocks so the sections gap wins when a list
    matches both. */
 @custom-variant ui-list-sections {
-  &:has(:where(h1, h2, h3, h4)) {
+  &:has(:where(h1, h2, h3, h4, h5, h6)) {
     @slot;
   }
 }
@@ -304,6 +306,50 @@ body > * {
 @custom-variant ui-disabled-within {
   &:is(:disabled, [aria-disabled="true"]),
   &:has(:is(:disabled, [aria-disabled="true"])) {
+    @slot;
+  }
+}
+
+/* A field that is disabled itself, or a wrapper whose entry controls are all
+   disabled. Entry controls are the inputs that take entry, textareas and
+   selects. Unlike ui-disabled-within, a disabled button in the wrapper, such as
+   a send button that waits for text, leaves the field enabled, and so does a
+   disabled control beside one that still takes entry, such as a locked
+   currency select beside an amount. The entry list appears twice: keep both
+   copies the same. */
+@custom-variant ui-field-disabled {
+  &:is(:disabled, [aria-disabled="true"]),
+  &:has(
+      :is(
+          input:not(
+              [type="hidden"],
+              [type="button"],
+              [type="submit"],
+              [type="reset"],
+              [type="image"],
+              [type="checkbox"],
+              [type="radio"]
+            ),
+          textarea,
+          select
+        )
+    ):not(
+      :has(
+        :is(
+            input:not(
+                [type="hidden"],
+                [type="button"],
+                [type="submit"],
+                [type="reset"],
+                [type="image"],
+                [type="checkbox"],
+                [type="radio"]
+              ),
+            textarea,
+            select
+          ):not(:disabled, [aria-disabled="true"])
+      )
+    ) {
     @slot;
   }
 }

@@ -45,6 +45,15 @@ function getColumnKeys<K extends string | number>(rows?: TableRows<K>) {
   return [...keys];
 }
 
+// A TableCell element given as a row value is the cell itself. Any other
+// element is the cell's content: cloned with the cell props, it would land in
+// the row beside the cells and receive props it does not know.
+function isTableCellElement(
+  value: unknown,
+): value is React.ReactElement<TableCellProps> {
+  return React.isValidElement(value) && value.type === TableCell;
+}
+
 export type TableRow<K extends string | number> = {
   group?: TableRowGroupKind;
   /**
@@ -91,7 +100,9 @@ export interface TableProps<K extends string | number>
   footRow?: React.ReactElement | TableRowProps;
   /**
    * Declarative rows data. Except for the reserved `group` and `key` fields,
-   * keys map to columns; values are cell content or props.
+   * keys map to columns. A value is the cell's content, a `TableCell` props
+   * object, or a `TableCell` element that replaces the cell. Any other element,
+   * a component that renders a `TableCell` included, is content.
    */
   rows?: TableRows<K>;
 }
@@ -168,15 +179,27 @@ export function Table<K extends string | number>({
     return row[key];
   };
 
-  // The props of a cell given as an element or as a props object; content given
-  // any other way has none.
+  // The props of a cell given as a TableCell element or as a props object;
+  // content given any other way has none.
   const getCellProps = (row: TableRow<K>, key: K) => {
     const cell = getCell(row, key);
     if (!cell) return;
     if (typeof cell !== "object") return;
-    if (React.isValidElement<TableCellProps>(cell)) return cell.props;
+    if (isTableCellElement(cell)) return cell.props;
+    if (React.isValidElement(cell)) return;
     if (isIterable(cell)) return;
     return cell as TableCellProps;
+  };
+
+  // What createRender takes for a cell. Missing and null columns still emit an
+  // empty cell so every following cell stays under its header, and an element
+  // other than a TableCell is wrapped as the cell's content.
+  const getCellValue = (row: TableRow<K>, key: K) => {
+    const value = getCell(row, key);
+    if (value == null) return { children: null };
+    if (isTableCellElement(value)) return value;
+    if (React.isValidElement(value)) return { children: value };
+    return value;
   };
 
   // A column takes its number format, its pin and its width from its head cell,
@@ -209,9 +232,7 @@ export function Table<K extends string | number>({
     return (
       <ak.Role key={key} render={rowElement}>
         {columns.map(({ key, props: columnProps }) => {
-          // Missing and null columns still emit an empty cell so every
-          // following cell stays under its header.
-          const value = getCell(row, key as K) ?? { children: null };
+          const value = getCellValue(row, key as K);
           const tableCellElement = createRender<TableCellProps>(
             TableCell,
             value,

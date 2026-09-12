@@ -31,16 +31,18 @@ export const prose = cv({
     // reader would have to install.
     "prose",
     // The typographic origin: descendants size themselves in em and lh
-    // against this. Font-size utilities have equal specificity, so a plain
-    // caller class wins only if it sorts after this size. Use a variant-prefixed
-    // size when the override must apply regardless of the utility order.
-    "text-base/relaxed ak-dark:ak-ink-75 ak-light:ak-ink-90",
+    // against this. The size sits in `:where()`, so it has no specificity and
+    // any text-* or leading-* class on the element wins, whatever order
+    // Tailwind gives the two.
+    "[:where(&)]:text-base/relaxed ak-dark:ak-ink-75 ak-light:ak-ink-90",
     // The plain markup an author writes inline, for the elements this folder
     // has no component for. The whole selector sits in `:where()`, so these
     // rules carry no specificity and a class on the element always wins.
-    // Paragraphs re-derive the ink so they stay readable inside a child that
-    // paints its own surface.
-    "[:where(&_p)]:ak-dark:ak-ink-75 [:where(&_p)]:ak-light:ak-ink-90",
+    // Paragraphs and list items re-derive the ink inside a child that paints
+    // its own surface, so body copy keeps the muted tone of the column rather
+    // than taking that layer's full ink.
+    "[:where(&_:is(p,li))]:ak-dark:ak-ink-75",
+    "[:where(&_:is(p,li))]:ak-light:ak-ink-90",
     "[:where(&_strong)]:ak-ink-100 [:where(&_strong)]:font-medium",
   ],
 });

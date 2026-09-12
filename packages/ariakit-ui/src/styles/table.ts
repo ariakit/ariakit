@@ -443,6 +443,12 @@ export const tableSortButton = cv({
     "[--table-sort-ink:0.4]",
     "ui-hover:ak-ink-100 ui-hover:[--table-sort-ink:1]",
     "ui-focus-visible:ak-ink-100 ui-focus-visible:[--table-sort-ink:1]",
+    // A header cell at a corner of the table takes the container's rounding
+    // (see tableCell). The button covers the cell to its edges, so its ring
+    // takes the same corners instead of being cut by the container's clip.
+    // The frame's radius is one value for all four corners, so the corners
+    // are inherited instead, by a utility that sorts after the frame's own.
+    "rounded-[inherit]",
   ],
   variants: {
     /**

@@ -21,6 +21,9 @@ export const comboboxLabel = controlLabel;
 export const comboboxPopover = cv({
   extend: [popover],
   class: [
+    // Focus can land here for a tick before Ariakit hands it back to the
+    // combobox control, so the browser's ring stays off. The active item
+    // carries the highlight.
     "outline-none overflow-auto overscroll-contain",
     "max-h-[min(var(--popover-available-height),20rem)]",
     "min-w-(--popover-anchor-width)",
@@ -69,8 +72,70 @@ export const comboboxItemDescription = optionDescription;
 export const comboboxItemLabel = optionLabel;
 export const comboboxItemSlot = optionSlot;
 
+// A flat select with a layer of its own is a form field, so it takes the finish
+// of the input beside it: sunk into the surface, with a real border.
+// `$layer="transparent"` keeps the see-through button for a toolbar that owns
+// the surface, and the bevel and a colored layer keep their button look.
+function isSelectField(variants: { $kind?: unknown; $layer?: unknown }) {
+  if (variants.$kind === "bevel") return false;
+  return variants.$layer === true;
+}
+
 export const comboboxSelect = cv({
   extend: [button],
+  // The primitives resolve their computed defaults first, so the field values
+  // below replace only the specific defaults they would otherwise produce.
+  defaultVariants: {
+    $layer(defaultValue, variants) {
+      // The bevel paints its own gradient over the see-through button layer.
+      if (variants.$kind === "bevel") return defaultValue;
+      if (defaultValue !== "transparent") return defaultValue;
+      return true;
+    },
+    $lightnessOffset(defaultValue, variants) {
+      if (!isSelectField(variants)) return defaultValue;
+      if (defaultValue !== true) return defaultValue;
+      // The button lifts a layer of its own. A field sinks instead, like the
+      // input: lighter on light layers and darker on dark ones. A disabled
+      // field lies flat on the surface around it.
+      if (variants.$disabled) return 0;
+      return -1;
+    },
+    $border(defaultValue, variants) {
+      if (!isSelectField(variants)) return defaultValue;
+      return defaultValue ?? true;
+    },
+    $borderType(defaultValue, variants) {
+      if (!isSelectField(variants)) return defaultValue;
+      if (!variants.$border) return defaultValue;
+      // A real border rather than the adaptive ring, like the input, so the
+      // field keeps the same size on light and dark layers.
+      if (defaultValue != null && defaultValue !== "auto") return defaultValue;
+      return "border";
+    },
+    $edgeWeight(defaultValue, variants) {
+      if (!isSelectField(variants)) return defaultValue;
+      if (!variants.$border) return defaultValue;
+      if (defaultValue != null) return defaultValue;
+      // The input's weight, which keeps the field boundary at 3:1 against the
+      // surface. A disabled field keeps only a faint edge.
+      return variants.$disabled ? 10 : 45;
+    },
+    $rounded(defaultValue, variants) {
+      if (!isSelectField(variants)) return defaultValue;
+      if (defaultValue !== "md") return defaultValue;
+      return "lg";
+    },
+  },
+  refine({ variants, addClass }) {
+    if (!isSelectField(variants)) return;
+    if (!variants.$border) return;
+    if (variants.$borderType !== "border") return;
+    // The disabled rules wipe a button's border, and a bordered field with no
+    // border at all reads as a rendering glitch on light layers. This channel
+    // keeps its edge color instead.
+    addClass("[--disabled-border:var(--ak-edge)]");
+  },
 });
 
 // A slot, so the chevron takes the size and the row alignment every other
@@ -90,25 +155,17 @@ export const comboboxSelectValueLabel = cv({
   class: "flex-1 text-start",
 });
 
+// The same list surface as the combobox popover, so a long select scrolls and a
+// wide button opens a list at least as wide as itself.
 export const comboboxSelectPopover = cv({
-  extend: [popover],
+  extend: [comboboxPopover],
   class: [
-    // Focus lands here for a tick before Ariakit hands it back to the button,
-    // so the browser's ring stays off. The active item carries the highlight.
-    "outline-none",
     // Anchor positioning for a native [popover] opened by its invoker.
     // Ariakit positions through the style attribute, which wins over these.
     "top-[calc(anchor(bottom)+--spacing(1))]",
     "inset-s-[calc(anchor(start)---spacing(1))]",
     "[position-try-fallbacks:flip-block,flip-inline]",
   ],
-  defaultVariants: {
-    // A compact list on the canvas layer, rather than the dialog-scale popover
-    // surface.
-    $rounded: "xl",
-    $p: 1,
-    $layer: "canvas",
-  },
 });
 
 export const comboboxSelectItem = cv({

@@ -7,7 +7,7 @@ import {
   controlLabel,
   controlSlot,
 } from "./control.ts";
-import { focus } from "./focus.ts";
+import { focusHighlight } from "./focus.ts";
 import {
   glider,
   gliderAnchor,
@@ -15,9 +15,32 @@ import {
   gliderSeparator,
 } from "./glider.ts";
 import { hover } from "./hover.ts";
+import { isLayerColor } from "./layer.ts";
+
+interface BevelLightenVariants {
+  $kind?: string;
+  $layer?: Parameters<typeof isLayerColor>[0];
+  $disabled?: boolean;
+}
+
+/**
+ * Whether a bevel lifts its base layer through the explicit lighten instead of
+ * the flat lift. Only a bevel in the surface's own color does.
+ */
+function hasBevelLighten(variants: BevelLightenVariants) {
+  if (variants.$kind !== "bevel") return false;
+  // A color of its own already separates the bevel from the surface. A fixed
+  // lighten on a mid-lightness color can land in the contrast pipeline's
+  // ambiguous midrange, which moves it far past the step and flips the ink.
+  if (isLayerColor(variants.$layer)) return false;
+  // The disabled look wipes the gradient, and on a light surface the lighten
+  // alone lands on white, where the box disappears.
+  if (variants.$disabled) return false;
+  return true;
+}
 
 export const button = cv({
-  extend: [control, gliderAnchor, hover, focus, active],
+  extend: [control, gliderAnchor, hover, focusHighlight, active],
   class: [
     "not-[a]:cursor-default not-[button]:select-none",
     // A pointer cursor promises navigation or submission, so only a submit
@@ -61,15 +84,23 @@ export const button = cv({
     $active: true,
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
-      // A see-through button has nothing to lift off, and a bevel replaces the
-      // flat lift with its own gradient plus the explicit lighten below. A
-      // button with a layer of its own lifts off the surface around it.
+      // A bevel paints a surface even on the see-through layer. In the
+      // surface's own color, it lifts through its gradient plus the explicit
+      // lighten below. With a color of its own, it takes the flat lift, so both
+      // kinds paint the same color. Disabled, it loses the gradient and takes
+      // the flat lift too, which stays visible in both color schemes. A lighten
+      // passed along with either replaces the flat lift.
+      if (variants.$kind === "bevel") {
+        if (hasBevelLighten(variants)) return false;
+        return variants.$lighten == null;
+      }
+      // A see-through button has nothing to lift off. A button with a layer of
+      // its own lifts off the surface around it.
       if (variants.$layer === "transparent") return false;
-      if (variants.$kind === "bevel") return false;
       return true;
     },
     $lighten(defaultValue, variants) {
-      if (variants.$kind !== "bevel") return defaultValue;
+      if (!hasBevelLighten(variants)) return defaultValue;
       // The gradient alone is subtle on dark surfaces, so the base layer lifts
       // to keep the button distinct from the surface behind it.
       return defaultValue ?? true;

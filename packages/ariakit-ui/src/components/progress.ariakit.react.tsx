@@ -11,8 +11,10 @@ import {
 export interface ProgressProps
   extends ak.RoleProps<"div">, Omit<VariantProps<typeof progress>, "$value"> {
   /**
-   * Progress between `0` and `1`. Omit it for an indeterminate progress bar (no
-   * aria-valuenow).
+   * Progress between `0` and `1`. Omit it when the progress is unknown: the bar
+   * then has no `aria-valuenow`, which assistive technology reads as
+   * indeterminate. There is no indeterminate style, so the track paints empty,
+   * the same as at `0`.
    */
   value?: number;
 }
@@ -39,8 +41,10 @@ export interface ProgressCircularProps
     ak.RoleProps<"div">,
     Omit<VariantProps<typeof progressCircular>, "$value"> {
   /**
-   * Progress between `0` and `1`. Omit it for an indeterminate progress bar (no
-   * aria-valuenow).
+   * Progress between `0` and `1`. Omit it when the progress is unknown: the
+   * ring then has no `aria-valuenow`, which assistive technology reads as
+   * indeterminate. There is no indeterminate style, so the track paints empty,
+   * the same as at `0`.
    */
   value?: number;
 }

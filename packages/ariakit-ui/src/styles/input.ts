@@ -1,10 +1,10 @@
 import { cv } from "clava";
-import { focus } from "./focus.ts";
+import { focusHighlight } from "./focus.ts";
 import { frame } from "./frame.ts";
 import { text } from "./text.ts";
 
 export const input = cv({
-  extend: [frame, text, focus],
+  extend: [frame, text, focusHighlight],
   class: [
     "max-w-full cursor-text",
     // Only animate into the hover state; snapping back on hover-out keeps
@@ -13,9 +13,21 @@ export const input = cv({
     // Plain hover, not ui-hover: fields are not command-like, and ui-hover's
     // nested-interactive exclusion would suppress feedback on a wrapper
     // whose form holds the input next to a submit button. The disabled
-    // exclusion it builds in has to be spelled out in exchange, which works
-    // here only because ui-disabled-within is a single selector list.
-    "not-ui-disabled-within:hover:ak-state-2.5",
+    // exclusion it builds in has to be spelled out in exchange, with the
+    // same condition as the disabled look below.
+    "not-ui-field-disabled:hover:ak-state-2.5",
+    // A script can flip the disabled state after render, and a wrapper takes
+    // the state from the entry controls inside it, so the disabled look is a
+    // CSS rule rather than a variant. ui-field-disabled leaves a wrapper enabled
+    // while any control in it still takes entry, and when only a button in it
+    // is disabled, such as a send button that waits for text. The field lies
+    // flat on the surface with a faint edge and the dimmed ink of every other
+    // disabled control. $lightnessOffset lands in the style attribute, which
+    // no class can gate, so the plugin's own zero offset cancels the sink.
+    "ui-field-disabled:cursor-not-allowed **:ui-disabled:cursor-not-allowed",
+    "ui-field-disabled:ak-ink-0 ui-field-disabled:**:ak-ink-0",
+    "ui-field-disabled:ak-edge-10",
+    "ui-field-disabled:ak-layer-offset-0",
     // The row is one tight line plus the frame padding, whether the class
     // sits on the input itself or on a wrapper around it. Six steps of box
     // minus two one-step margins lands the nested input on the same 4-step
@@ -24,6 +36,9 @@ export const input = cv({
     "[input]:box-content [input]:h-4",
     "[&_input]:-my-1 [&_input]:box-content [&_input]:h-6",
     "[&_input]:outline-none",
+    // A textarea stacks rows, so it keeps the ordinary line height instead of
+    // the tight one-line row above.
+    "[textarea]:leading-normal",
     "placeholder:ak-ink-0 [&_input]:placeholder:ak-ink-0",
   ],
   variants: {
@@ -56,10 +71,12 @@ export const input = cv({
     // Always a real border rather than a ring, so the field geometry stays the
     // same on light and dark layers.
     $borderType: "border",
-    // Inputs want a stronger edge than the named border weights provide
-    // (between medium and bold). A variant default, not a base class, so
-    // instance weights replace it instead of losing by stylesheet order.
-    $edgeWeight: 30,
+    // A field's edge is its only boundary on the surface around it, so it is
+    // stronger than the named border weights provide: the lightest that keeps
+    // it at 3:1 against a light or a dark canvas. choice.ts draws its box at
+    // the same weight. A variant default, not a base class, so instance weights
+    // replace it instead of losing by stylesheet order.
+    $edgeWeight: 45,
     // A field sinks into the surrounding surface where a button rises off it,
     // so the offset runs the other way: lighter on light layers, darker on dark
     // ones. Hover then spends ak-state in the button direction, which pulls the

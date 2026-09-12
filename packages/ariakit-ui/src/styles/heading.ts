@@ -11,20 +11,27 @@ export const heading = cv({
     "[--heading-size-3:1.4em] [--heading-size-4:1.2em] [--heading-size-5:1em]",
     // Each heading element takes its own step. An element with no step of
     // its own, an h6 or a div given the heading look, declares no size at
-    // all and so keeps whatever the caller or the surrounding text sets.
-    "[&:where(h1)]:text-(length:--heading-size-1)",
-    "[&:where(h2)]:text-(length:--heading-size-2)",
-    "[&:where(h3)]:text-(length:--heading-size-3)",
-    "[&:where(h4)]:text-(length:--heading-size-4)",
-    "[&:where(h5)]:text-(length:--heading-size-5)",
+    // all and so keeps whatever the caller or the surrounding text sets. The
+    // whole selector sits in `:where()`, so the rule has no specificity and a
+    // caller's text-* class wins whatever order Tailwind gives the two.
+    "[:where(&:is(h1))]:text-(length:--heading-size-1)",
+    "[:where(&:is(h2))]:text-(length:--heading-size-2)",
+    "[:where(&:is(h3))]:text-(length:--heading-size-3)",
+    "[:where(&:is(h4))]:text-(length:--heading-size-4)",
+    "[:where(&:is(h5))]:text-(length:--heading-size-5)",
     // The flow margins are spent from channels rather than written into the
     // utilities directly. A channel utility sorts before every literal one,
     // so a caller's own mt-* or mb-* wins without an important flag.
     "mt-(--heading-mt) mb-(--heading-mb)",
     "[--heading-mt:--spacing(4)] [--heading-mb:--spacing(2)]",
-    // A heading with nothing before it has nothing to sit away from.
-    "first:[--heading-mt:0px]",
+    // A heading with nothing before it has nothing to sit away from, and one
+    // with nothing after it has nothing to push away.
+    "first:[--heading-mt:0px] last:[--heading-mb:0px]",
     // A heading directly under another sits closer to it than to body text.
+    // The upper heading gives up its closing margin and the lower one keeps a
+    // short opening margin, so the distance is that one value in block flow
+    // and in a flex or grid column alike, where margins do not collapse.
+    "[&:has(+:is(h1,h2,h3,h4,h5,h6))]:[--heading-mb:0px]",
     "[:is(h1,h2,h3,h4,h5,h6)+&]:[--heading-mt:0.35em]",
     // Inside a list item the heading shares the item's own flow, so its
     // closing margin must not push the rest of the item down.
@@ -42,7 +49,8 @@ export const heading = cv({
      * Sets the heading’s visual size independently of the rendered element.
      * Left unset, the heading sizes itself from its own element, `h1` to `h5`,
      * so a value is only needed when the semantic level and the design size
-     * disagree.
+     * disagree. For a size outside these steps, leave this unset and pass a
+     * `text-*` class, which replaces the element's step.
      */
     $level(value?: "auto" | 1 | 2 | 3 | 4 | 5) {
       if (!value) return;

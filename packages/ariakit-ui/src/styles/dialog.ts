@@ -1,6 +1,11 @@
 import { cv } from "clava";
 import { button } from "./button.ts";
-import { popover, popoverDescription, popoverScroll } from "./popover.ts";
+import {
+  popover,
+  popoverDescription,
+  popoverDismiss,
+  popoverScroll,
+} from "./popover.ts";
 
 export const dialog = cv({
   extend: [popover],
@@ -16,8 +21,10 @@ export const dialog = cv({
     "w-auto max-w-(--dialog-max-width)",
     // Ariakit measures the visual viewport into this property, so a virtual
     // keyboard shrinks the dialog instead of covering it. A native dialog has
-    // no such measurement and takes the dynamic viewport.
-    "max-h-[calc(var(--dialog-viewport-height,100dvh)-var(--dialog-inset)*2)]",
+    // no such measurement and takes the dynamic viewport. A channel like the
+    // width, so a caller's max-h-* also sorts after it and wins.
+    "[--dialog-max-height:calc(var(--dialog-viewport-height,100dvh)-var(--dialog-inset)*2)]",
+    "max-h-(--dialog-max-height)",
     // A translucent wash of the surface behind the dialog, through the same
     // channel as the fade: the native ::backdrop and Ariakit's element alike.
     "ui-backdrop:bg-(--ak-layer)/10 ak-dark:ui-backdrop:bg-(--ak-layer)/30",
@@ -29,9 +36,7 @@ export const dialogDisclosure = cv({
   extend: [button],
 });
 
-export const dialogDismiss = cv({
-  extend: [button],
-});
+export const dialogDismiss = popoverDismiss;
 
 export const dialogScroll = popoverScroll;
 

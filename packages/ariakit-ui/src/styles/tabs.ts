@@ -21,6 +21,11 @@ export const tabs = cv({
     // third, the focus glider fourth, a folder selected glider fifth, the
     // tabs sixth, and a bar keeps the glider's own place above them all.
     "isolate",
+    // The root yields to the width its parent gives it, a grid track or a flex
+    // line included, and the strip scrolls the tabs that do not fit. Without
+    // this, the tabs, which never wrap, set the root's minimum width, and the
+    // root grows past its parent to show all of them.
+    "min-w-0",
     // The tabs, the glider and the panel all read the root's geometry. The
     // padding and the radius inherit, but every frame on the way down rewrites
     // them, and the edge widths never inherit at all.
@@ -84,6 +89,10 @@ export const tabs = cv({
     ],
   },
   defaultVariants: {
+    // The root owns the folder's shape, as a control group does: the strip and
+    // the panel take their radius and padding from it.
+    $rounded: "xl",
+    $p: 1,
     $border: true,
     $panelRoundedTop: true,
   },
@@ -442,6 +451,7 @@ export const tabGlider = cv({
 export const tabList = cv({
   extend: [buttonGroup],
   class: [
+    "flex",
     // The strip ends flat where the panel begins.
     "rounded-b-none!",
     // The panel's edge tucks into the strip by its width, border or ring, so
@@ -502,6 +512,20 @@ export const tabList = cv({
     // cut at; the root scopes the name for it.
     "[scroll-timeline:--tabs-scroll_inline]",
   ],
+  variants: {
+    /**
+     * Lays the tabs out along the strip. `horizontal` sizes each tab to its
+     * content, and `stretch` shares the strip's width between the tabs. The
+     * strip is horizontal only: its folder curves, its well and its scroll clip
+     * have no vertical form.
+     */
+    $layout(value?: "horizontal" | "stretch") {
+      if (value !== "stretch") return;
+      // Not the group's full width: the strip reaches over the root's edge
+      // through negative margins, which widen only a box of auto width.
+      return "[&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow";
+    },
+  },
   defaultVariants: {
     $joined: false,
     // The strip paints the root's surface half a step darker, a well the tabs

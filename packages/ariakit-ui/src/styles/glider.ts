@@ -167,6 +167,8 @@ export const glider = cv({
     },
     $edgeWeight(defaultValue, variants) {
       if (variants.$state !== "selected") return defaultValue;
+      // $edgeRaw asks for the edge color exactly as given.
+      if (variants.$edgeRaw) return defaultValue;
       return defaultValue ?? "adaptive";
     },
   },

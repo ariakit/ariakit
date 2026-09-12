@@ -119,6 +119,13 @@ export interface ListItemMarkerProps
  * Marker rendered in a list item's gutter: a dash or a bullet in unordered
  * lists, a numbered chip in ordered ones, and a check slot when `checked` or
  * `progress` is set. The list's `$marker` picks the shape.
+ *
+ * The marker is absolutely positioned. Outside a list, for example as a status
+ * icon, it fills the positioned box one line tall that holds it.
+ * @example
+ * <span className="relative inline-block size-[1lh]">
+ *   <ListItemMarker progress={0.5} />
+ * </span>
  */
 export function ListItemMarker({
   progress,
@@ -128,19 +135,31 @@ export function ListItemMarker({
   const hasCheck = checked != null || progress != null;
   const completed = checked ?? progress === 1;
   const [variantProps, rest] = splitProps(props, listItemMarker);
+  // The arc shows how far along an unfinished row is. The name keeps the check
+  // state, and the description says the value the arc draws.
+  const description =
+    !completed && progress != null
+      ? `${Math.round(progress * 100)}% complete`
+      : undefined;
   return (
     <span
-      // Bullets and numbers repeat what the list element already conveys, so
-      // only the check slot exposes a state.
-      aria-hidden={hasCheck ? undefined : true}
-      role={hasCheck ? "img" : undefined}
-      aria-label={hasCheck ? (completed ? "Checked" : "Unchecked") : undefined}
       {...listItemMarker.jsx({
         $checked: hasCheck ? completed : undefined,
         $progress: completed ? undefined : progress,
         ...variantProps,
       })}
       {...rest}
+      // Set after the spread, so a prop that is present but undefined, as a
+      // wrapper with an optional label passes it, keeps the fallback. Bullets
+      // and numbers repeat what the list element already conveys, so only the
+      // check slot exposes a state.
+      aria-hidden={rest["aria-hidden"] ?? (hasCheck ? undefined : true)}
+      role={rest.role ?? (hasCheck ? "img" : undefined)}
+      aria-label={
+        rest["aria-label"] ??
+        (hasCheck ? (completed ? "Checked" : "Unchecked") : undefined)
+      }
+      aria-description={rest["aria-description"] ?? description}
     >
       {completed ? (
         <CheckIcon />

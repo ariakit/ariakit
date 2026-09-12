@@ -168,11 +168,19 @@ export function DisclosureButton({
   ) : null;
   const indicatorEl = indicator ? renderIndicator(indicator) : null;
   const atStart = indicator ? indicator.endsWith("-start") : false;
+  // Without any label, the description is the only content and already names
+  // the button. Describing the button with the same text would announce it
+  // twice. An aria-label or aria-labelledby names it instead, so the
+  // description still describes it.
+  const hasLabel =
+    !!labelElement ||
+    rest["aria-label"] != null ||
+    rest["aria-labelledby"] != null;
   return (
     <ak.Disclosure
       data-disclosure-button
       aria-labelledby={hasDescription && labelElement ? labelId : undefined}
-      aria-describedby={hasDescription ? descriptionId : undefined}
+      aria-describedby={hasDescription && hasLabel ? descriptionId : undefined}
       data-open={isOpen || undefined}
       {...disclosureButton.jsx(variantProps)}
       {...rest}

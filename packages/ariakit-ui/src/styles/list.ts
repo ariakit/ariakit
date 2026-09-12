@@ -156,9 +156,9 @@ export const listItemContent = cv({
   // contents generates no box, so the children lay out as they would in the row
   // itself.
   //
-  // Keep this a span. The block-mode variants match :has(:where(p, div,
-  // details, h1, h2, h3, h4)), so a div would put every list and every item
-  // into blocks mode.
+  // Keep this a span. The block-mode variants match a p, div, details or
+  // heading child, so a div would put every list and every item into blocks
+  // mode.
   class: "contents",
 });
 
@@ -182,6 +182,10 @@ export const listItemMarker = cv({
     "[--list-marker-inset:0.2em]",
     "[--list-marker-size:calc(1lh-var(--list-marker-inset)*2)]",
     "top-(--ak-frame-padding) inset-s-(--ak-frame-padding) m-(--list-marker-inset)",
+    // Outside a list there is no row padding to keep to, and the frame
+    // padding inherits from any frame around, so the marker fills the
+    // positioned box one line tall that holds it.
+    "not-in-[.list]:top-0 not-in-[.list]:inset-s-0",
     "w-(--list-marker-size) h-(--list-marker-size) rounded-full",
     "ui-list-counter:[counter-increment:list]",
     "ui-list-counter:before:content-[counter(list)]",
@@ -189,9 +193,12 @@ export const listItemMarker = cv({
     "ui-list-counter:before:text-center ui-list-counter:before:font-semibold",
     "ui-list-counter:before:leading-(--list-marker-size)",
     "ui-list-counter:before:[font-size-adjust:0.45]",
+    // The arc's thickness, which the circular fill's mask reads. The slot of
+    // a bullet or a dash, and a marker outside any list, take a thick arc;
+    // the counter rule sorts after this one and keeps a thin ring around the
+    // number.
+    "[--progress-thickness:calc(30%+0.25%*var(--contrast,0))]",
     "ui-list-counter:[--progress-thickness:0.15em]",
-    "ui-list-bullet:[--progress-thickness:calc(30%+0.25%*var(--contrast,0))]",
-    "ui-list-dash:[--progress-thickness:calc(30%+0.25%*var(--contrast,0))]",
   ],
   variants: {
     /**
@@ -272,6 +279,8 @@ export const listItemMarker = cv({
     },
     $edgeWeight(defaultValue, variants) {
       if (variants.$checked === true) return defaultValue;
+      // A raw edge paints the exact edge color, so it skips the weight below.
+      if (variants.$edgeRaw) return defaultValue;
       return defaultValue ?? (variants.$checked === false ? 25 : "bold");
     },
   },

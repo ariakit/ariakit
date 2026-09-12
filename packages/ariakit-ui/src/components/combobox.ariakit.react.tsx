@@ -252,7 +252,7 @@ export interface ComboboxSelectProps extends Omit<
 /**
  * High-level select that wires provider, button, label and popover.
  * @example
- * <ComboboxSelect popover={{ portal: true }}>
+ * <ComboboxSelect label="Fruit">
  *   <ComboboxSelectItem value="apple" />
  *   <ComboboxSelectItem value="orange" />
  * </ComboboxSelect>
@@ -333,11 +333,25 @@ export function ComboboxSelectProvider({
 export interface ComboboxSelectValueProps
   extends ak.ComboboxSelectedValueProps {}
 
+// A multiple select stores an array. Ariakit returns it as is, and React would
+// run the strings together, so the default display joins them.
+function joinSelectedValue(value: string | readonly string[]) {
+  if (typeof value === "string") return value;
+  return value.join(", ");
+}
+
 /**
+ * Renders the selected value. When several items are selected, it joins their
+ * values with a comma. Pass a function as children to render them differently.
  * @see https://ariakit.com/reference/select-value
  */
-export function ComboboxSelectValue(props: ComboboxSelectValueProps) {
-  return <ak.ComboboxSelectedValue {...props} />;
+export function ComboboxSelectValue({
+  children = joinSelectedValue,
+  ...props
+}: ComboboxSelectValueProps) {
+  return (
+    <ak.ComboboxSelectedValue {...props}>{children}</ak.ComboboxSelectedValue>
+  );
 }
 
 export interface ComboboxSelectLabelProps extends ak.ComboboxSelectLabelProps {}
@@ -422,9 +436,12 @@ export interface ComboboxSelectPopoverProps
   extends ak.ComboboxPopoverProps, VariantProps<typeof comboboxSelectPopover> {}
 
 /**
+ * Renders in a portal by default, like `ComboboxPopover`, so a card or scroll
+ * area that clips its content cannot cut the list.
  * @see https://ariakit.com/reference/select-popover
  */
 export function ComboboxSelectPopover({
+  portal = true,
   gutter = 8,
   shift = -3,
   ...props
@@ -432,6 +449,7 @@ export function ComboboxSelectPopover({
   const [variantProps, rest] = splitProps(props, comboboxSelectPopover);
   return (
     <ak.ComboboxPopover
+      portal={portal}
       gutter={gutter}
       shift={shift}
       {...comboboxSelectPopover.jsx(variantProps)}
@@ -447,7 +465,11 @@ export interface ComboboxSelectItemProps
    * depending on the `checkmark` position.
    */
   icon?: React.ReactNode;
-  /** Selects checkmark/icon placement (before, after). Set `false` to hide. */
+  /**
+   * Selects checkmark/icon placement (before, after). Set `false` to hide. The
+   * checkmark is the only default sign of the selected item, so a list without
+   * it needs another indicator.
+   */
   checkmark?: "before" | "after" | false;
 }
 
@@ -469,7 +491,13 @@ export function ComboboxSelectItem({
     <span {...comboboxSelectIcon.jsx({})}>{icon}</span>
   );
   return (
-    <ak.ComboboxItem {...comboboxSelectItem.jsx(variantProps)} {...rest}>
+    <ak.ComboboxItem
+      {...comboboxSelectItem.jsx({
+        ...variantProps,
+        $disabled: variantProps.$disabled ?? rest.disabled,
+      })}
+      {...rest}
+    >
       {checkmark === "before" && check}
       {checkmark !== "before" && iconElement}
       <span {...comboboxSelectValueLabel.jsx({})}>

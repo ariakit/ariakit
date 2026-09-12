@@ -38,7 +38,8 @@ export interface ScreenshotOptions {
   styles?: Styles;
   /**
    * Element or selector to capture. If not provided, all the children of the
-   * body element will be captured.
+   * body element will be captured. Combine it with `fullPage` to capture an
+   * element that is taller than the viewport.
    */
   element?: Locator | string;
   /**
@@ -55,10 +56,17 @@ export interface ScreenshotOptions {
    */
   clipMargin?: number;
   /**
-   * Whether to capture the full page.
+   * Whether to capture the full page. With `element`, captures the element's
+   * whole box, including the parts below the viewport.
    * @default false
    */
   fullPage?: boolean;
+  /**
+   * How long each screenshot assertion may take, in milliseconds, including the
+   * two identical captures that a new baseline needs. Without it, the
+   * configured expect timeout applies.
+   */
+  timeout?: number;
 }
 
 export const viewports = {
@@ -231,23 +239,32 @@ async function getScreenshotClip(
   options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
 ) {
   const { element, clipMargin, fullPage } = options;
-  if (fullPage) {
-    return null;
-  }
   if (!element) {
+    if (fullPage) return null;
     return getBodyClip(page, clipMargin);
   }
   const locator = typeof element === "string" ? page.locator(element) : element;
   const rect = await locator.boundingBox();
   invariant(rect, "Element not visible");
-  return applyClipMargin(rect, clipMargin);
+  if (!fullPage) {
+    return applyClipMargin(rect, clipMargin);
+  }
+  // boundingBox is viewport-relative. Playwright trims a full-page clip to the
+  // document rather than the viewport, and reads it in document coordinates.
+  const scroll = await page.evaluate(() => ({ x: scrollX, y: scrollY }));
+  return applyClipMargin(
+    { ...rect, x: rect.x + scroll.x, y: rect.y + scroll.y },
+    clipMargin,
+  );
 }
 
 async function waitForStableScreenshotClip(
   page: Page,
   options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
 ) {
-  if (options.fullPage) {
+  // A whole-page capture has no clip to stabilize. An element capture still
+  // does, even in full-page mode.
+  if (options.fullPage && !options.element) {
     return;
   }
   // Some previews update their layout a few frames after they become visible.
@@ -286,7 +303,11 @@ async function getPlaywrightScreenshotOptions(
   if (!clip) {
     return { animations: "disabled" as const, fullPage: true };
   }
-  return { animations: "disabled" as const, clip, fullPage: false };
+  return {
+    animations: "disabled" as const,
+    clip,
+    fullPage: !!options.fullPage,
+  };
 }
 
 async function withStyles(
@@ -364,6 +385,7 @@ export async function visual(
     element,
     clipMargin = DEFAULT_CLIP_MARGIN,
     fullPage = false,
+    timeout,
   } = options;
 
   const viewportEntries = Object.entries(viewports);
@@ -385,6 +407,12 @@ export async function visual(
           });
           await page.waitForLoadState("domcontentloaded");
           await page.evaluate(() => document.fonts?.ready?.catch(() => {}));
+          if (fullPage && element) {
+            // Sticky and fixed parts paint at the current scroll position, so a
+            // document capture taken while scrolled would draw them over the
+            // element.
+            await page.evaluate(() => window.scrollTo(0, 0));
+          }
           await waitForStableScreenshotClip(page, {
             element,
             clipMargin,
@@ -397,6 +425,7 @@ export async function visual(
           });
           await expect(page).toHaveScreenshot(fileSnapshotName, {
             ...screenshotOptions,
+            timeout,
           });
           // Touch the screenshot file so the CI stale-detection step (which
           // deletes files older than a pre-run marker) knows this screenshot is
