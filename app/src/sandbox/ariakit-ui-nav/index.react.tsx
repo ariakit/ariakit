@@ -601,6 +601,59 @@ export default function NavExamples() {
         </Nav>
       </Example>
 
+      {(["ltr", "rtl"] as const).map((dir) => (
+        <Example
+          key={dir}
+          title={`Disclosures without icons (${dir})`}
+          description="A start indicator gives the guide its own column. Labels and child links align in each nested section."
+          code={`
+            <Nav dir="${dir}">
+              <NavDisclosure button="Documentation" defaultOpen>
+                <NavList>
+                  <li><NavLink href="#overview">Overview</NavLink></li>
+                  <NavDisclosure button="Components" defaultOpen>
+                    <NavList>
+                      <li><NavLink href="#buttons">Buttons</NavLink></li>
+                      <li><NavLink href="#dialogs">Dialogs</NavLink></li>
+                    </NavList>
+                  </NavDisclosure>
+                </NavList>
+              </NavDisclosure>
+            </Nav>
+          `}
+        >
+          <Nav
+            dir={dir}
+            aria-label={`Disclosures without icons (${dir})`}
+            className="w-full"
+          >
+            <NavDisclosure button="Documentation" defaultOpen>
+              <NavList>
+                <li>
+                  <NavLink href="#overview" onClick={preventNavigation}>
+                    Overview
+                  </NavLink>
+                </li>
+                <NavDisclosure button="Components" defaultOpen>
+                  <NavList>
+                    <li>
+                      <NavLink href="#buttons" onClick={preventNavigation}>
+                        Buttons
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink href="#dialogs" onClick={preventNavigation}>
+                        Dialogs
+                      </NavLink>
+                    </li>
+                  </NavList>
+                </NavDisclosure>
+              </NavList>
+            </NavDisclosure>
+          </Nav>
+        </Example>
+      ))}
+
       <Example
         title="Nested disclosures"
         description="A section inside a section, both closed at first. The current link deep inside opens every section around it, and its cover shows there."

@@ -207,6 +207,9 @@ export function ListDisclosure(props: ListDisclosureProps) {
   const content = createRender(ListDisclosureContent, rest.content);
   return (
     <Disclosure
+      // The list row supplies its own frame geometry.
+      $rounded="unset"
+      $p="unset"
       {...listDisclosure.jsx(variantProps)}
       {...rest}
       // The guide has to span the whole row, open content included, so it goes

@@ -18,6 +18,8 @@ import {
 import {
   Disclosure,
   DisclosureButton,
+  DisclosureButtonLabel,
+  DisclosureButtonSlot,
   DisclosureContent,
   DisclosureGroup,
 } from "@ariakit/ui/components/disclosure.ariakit.react";
@@ -157,7 +159,7 @@ export default function DisclosureExamples() {
     <ExampleGrid>
       <Example
         title="Default"
-        description="A disclosure with no frame. The row has no padding and square corners, and the open content starts under the chevron."
+        description="A disclosure with rounded corners and padding. The open content starts under the chevron."
         stretch
         code={`
           <Disclosure button="What is Ariakit?" defaultOpen>
@@ -167,6 +169,86 @@ export default function DisclosureExamples() {
       >
         <Disclosure button="What is Ariakit?" defaultOpen>
           <p>A toolkit for building accessible web apps with React.</p>
+        </Disclosure>
+      </Example>
+
+      <Example
+        title="No shape"
+        description="Explicit props remove the default padding and corner radius."
+        stretch
+        code={`
+          <Disclosure $rounded="none" $p={0} button="Compact details" defaultOpen>
+            No extra space around this content.
+          </Disclosure>
+        `}
+      >
+        <Disclosure $rounded="none" $p={0} button="Compact details" defaultOpen>
+          <p>No extra space around this content.</p>
+        </Disclosure>
+      </Example>
+
+      <Example
+        title="Trailing badge"
+        description="A badge sits beside the label and before the end indicator. The open content starts under the label, with no leading icon."
+        stretch
+        code={`
+          <Disclosure defaultOpen button={
+            <DisclosureButton indicator="chevron-down-end">
+              <DisclosureButtonLabel>Notifications</DisclosureButtonLabel>
+              <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+            </DisclosureButton>
+          }>
+            Three messages need your attention.
+          </Disclosure>
+        `}
+      >
+        <Disclosure
+          defaultOpen
+          button={
+            <DisclosureButton indicator="chevron-down-end">
+              <DisclosureButtonLabel>Notifications</DisclosureButtonLabel>
+              <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+            </DisclosureButton>
+          }
+        >
+          <p>Three messages need your attention.</p>
+        </Disclosure>
+      </Example>
+
+      <Example
+        title="Slots with description"
+        description="The label and description share a column between a leading icon and a trailing badge. A fragment groups the label and badge without adding a box."
+        stretch
+        code={`
+          <Disclosure defaultOpen button={
+            <DisclosureButton icon={<Users />} description="People with access to this workspace">
+              <>
+                <DisclosureButtonLabel id="workspace-members-label">Workspace members</DisclosureButtonLabel>
+                <DisclosureButtonSlot $kind="badge">4</DisclosureButtonSlot>
+              </>
+            </DisclosureButton>
+          }>
+            Invite a teammate or change a role.
+          </Disclosure>
+        `}
+      >
+        <Disclosure
+          defaultOpen
+          button={
+            <DisclosureButton
+              icon={<Users />}
+              description="People with access to this workspace"
+            >
+              <>
+                <DisclosureButtonLabel id="workspace-members-label">
+                  Workspace members
+                </DisclosureButtonLabel>
+                <DisclosureButtonSlot $kind="badge">4</DisclosureButtonSlot>
+              </>
+            </DisclosureButton>
+          }
+        >
+          <p>Invite a teammate or change a role.</p>
         </Disclosure>
       </Example>
 

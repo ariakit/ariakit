@@ -5,6 +5,7 @@ import * as React from "react";
 import {
   createOptionalRender,
   createRender,
+  isRenderable,
 } from "../react-utils/create-render.react.ts";
 import {
   nav,
@@ -312,11 +313,16 @@ export function NavButtonContent(props: NavButtonContentProps) {
 export interface NavDisclosureButtonProps
   extends DisclosureButtonProps, VariantProps<typeof navButton> {}
 
-export function NavDisclosureButton(props: NavDisclosureButtonProps) {
+export function NavDisclosureButton({
+  icon,
+  indicator = isRenderable(icon) ? "chevron-right-end" : "chevron-right-start",
+  ...props
+}: NavDisclosureButtonProps) {
   const [variantProps, rest] = splitProps(props, navButton);
   return (
     <DisclosureButton
-      indicator="chevron-right-end"
+      icon={icon}
+      indicator={indicator}
       // The nav row spaces its icon and label through its own gap classes.
       $gap="none"
       {...navButton.jsx(variantProps)}

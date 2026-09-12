@@ -1,6 +1,40 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/issues/7478
+  test("keeps a trailing badge beside the label", async ({ q }) => {
+    const example = query(q.article("Trailing badge"));
+    const button = example.button("Notifications 3");
+    await test.expect(button.locator(":scope > span").nth(1)).toHaveText("3");
+    await button.click();
+    await test
+      .expect(example.text("Three messages need your attention."))
+      .toBeHidden();
+    await button.press("Enter");
+    await test
+      .expect(example.text("Three messages need your attention."))
+      .toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7478
+  test("keeps a custom label and description separate from the slots", async ({
+    q,
+  }) => {
+    const example = query(q.article("Slots with description"));
+    const button = example.button("Workspace members");
+    await test
+      .expect(button)
+      .toHaveAttribute("aria-labelledby", "workspace-members-label");
+    await test
+      .expect(button)
+      .toHaveAccessibleDescription("People with access to this workspace");
+    await test.expect(button.locator(":scope > span").nth(2)).toHaveText("4");
+    await button.click();
+    await test
+      .expect(example.text("Invite a teammate or change a role."))
+      .toBeHidden();
+  });
+
   test("shares the open state of a controlled disclosure with an outside button", async ({
     page,
     q,
