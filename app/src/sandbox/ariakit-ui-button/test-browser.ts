@@ -25,12 +25,40 @@ function initialsFit(element: Element) {
   );
 }
 
+function textHeight(element: Element) {
+  const range = element.ownerDocument.createRange();
+  range.selectNodeContents(element);
+  return range.getBoundingClientRect().height;
+}
+
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/issues/7475
   test("fits two wide initials inside an avatar slot", async ({ q }) => {
     const initials = query(q.article("Initial avatar")).text("WW");
     await test.expect(initials).toBeVisible();
     await test.expect.poll(() => initials.evaluate(initialsFit)).toBe(true);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7489#discussion_r3997142100
+  test("keeps large avatar initials at the label text size", async ({ q }) => {
+    const example = query(q.article("Large avatar initials"));
+    for (const [initials, name] of [
+      ["AT", "Ava Thompson"],
+      ["NP", "Noah Patel"],
+    ] as const) {
+      const avatar = example.text(initials);
+      const label = example.text(name);
+      await test.expect(avatar).toBeVisible();
+      await test.expect(label).toBeVisible();
+      await test.expect.poll(() => avatar.evaluate(initialsFit)).toBe(true);
+      await test.expect
+        .poll(async () => {
+          const avatarHeight = await avatar.evaluate(textHeight);
+          const labelHeight = await label.evaluate(textHeight);
+          return Math.abs(avatarHeight - labelHeight);
+        })
+        .toBeLessThan(1);
+    }
   });
 
   // https://github.com/ariakit/ariakit/issues/7475

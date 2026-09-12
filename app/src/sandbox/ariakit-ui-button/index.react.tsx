@@ -445,6 +445,34 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Large avatar initials"
+        description="Avatars that extend into the button padding use the label text size."
+        code={`
+          <Button>
+            <ButtonSlot $kind="avatar" $size="2xl">AT</ButtonSlot>
+            <ButtonLabel>Ava Thompson</ButtonLabel>
+          </Button>
+          <Button>
+            <ButtonSlot $kind="avatar" $size="full">NP</ButtonSlot>
+            <ButtonLabel>Noah Patel</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonSlot $kind="avatar" $size="2xl">
+            AT
+          </ButtonSlot>
+          <ButtonLabel>Ava Thompson</ButtonLabel>
+        </Button>
+        <Button>
+          <ButtonSlot $kind="avatar" $size="full">
+            NP
+          </ButtonSlot>
+          <ButtonLabel>Noah Patel</ButtonLabel>
+        </Button>
+      </Example>
+
+      <Example
         title="Avatar with normal line height"
         description="An avatar follows the font's normal line height in a small button."
         code={`
