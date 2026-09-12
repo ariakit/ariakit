@@ -32,6 +32,7 @@ import {
   Share2,
   Trash2,
 } from "lucide-react";
+import { useState } from "react";
 import {
   Example,
   ExampleGrid,
@@ -118,7 +119,40 @@ function ButtonGroupLayout() {
 const avatarImage =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23f59e0b'/%3E%3Ccircle cx='20' cy='16' r='7' fill='%23fff7ed'/%3E%3Cpath d='M6 40c2-9 7-13 14-13s12 4 14 13z' fill='%23fff7ed'/%3E%3C/svg%3E";
 
+function AvatarPicture() {
+  const [purple, setPurple] = useState(false);
+  return (
+    <ak.Button
+      aria-label="Change avatar color"
+      className="size-full"
+      onClick={() => setPurple(!purple)}
+    >
+      <img
+        alt=""
+        src={purple ? avatarImage.replace("f59e0b", "6366f1") : avatarImage}
+        className="size-full"
+      />
+    </ak.Button>
+  );
+}
+
+function AvatarShape() {
+  const [round, setRound] = useState(true);
+  return (
+    <div className="flex items-center gap-3">
+      <ButtonSlot $kind={round ? "avatar" : "icon"} $size="xl">
+        <AvatarPicture />
+      </ButtonSlot>
+      <Button aria-pressed={round} onClick={() => setRound(!round)}>
+        Round avatar
+      </Button>
+    </div>
+  );
+}
+
 export default function ButtonExamples() {
+  const firstInitial = "W";
+  const lastInitial = "W";
   return (
     <ExampleGrid>
       <Example
@@ -394,20 +428,122 @@ export default function ButtonExamples() {
 
       <Example
         title="Initial avatar"
-        description="A round avatar slot that paints its own surface behind an initial."
+        description="A round avatar slot that paints its own surface behind two initials."
         code={`
           <Button>
-            <ButtonSlot $kind="avatar" $layer="brand">J</ButtonSlot>
-            <ButtonLabel>Jane Doe</ButtonLabel>
+            <ButtonSlot $kind="avatar" $layer="brand">WW</ButtonSlot>
+            <ButtonLabel>Will Williams</ButtonLabel>
           </Button>
         `}
       >
         <Button>
           <ButtonSlot $kind="avatar" $layer="brand">
-            J
+            WW
           </ButtonSlot>
-          <ButtonLabel>Jane Doe</ButtonLabel>
+          <ButtonLabel>Will Williams</ButtonLabel>
         </Button>
+      </Example>
+
+      <Example
+        title="Large avatar initials"
+        description="Avatars that extend into the button padding use the label text size."
+        code={`
+          <Button>
+            <ButtonSlot $kind="avatar" $size="2xl">AT</ButtonSlot>
+            <ButtonLabel>Ava Thompson</ButtonLabel>
+          </Button>
+          <Button>
+            <ButtonSlot $kind="avatar" $size="full">NP</ButtonSlot>
+            <ButtonLabel>Noah Patel</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonSlot $kind="avatar" $size="2xl">
+            AT
+          </ButtonSlot>
+          <ButtonLabel>Ava Thompson</ButtonLabel>
+        </Button>
+        <Button>
+          <ButtonSlot $kind="avatar" $size="full">
+            NP
+          </ButtonSlot>
+          <ButtonLabel>Noah Patel</ButtonLabel>
+        </Button>
+      </Example>
+
+      <Example
+        title="Avatar with normal line height"
+        description="An avatar follows the font's normal line height in a small button."
+        code={`
+          <Button $size="xs" style={{ lineHeight: "normal" }}>
+            <ButtonSlot $kind="avatar" $layer="brand">WW</ButtonSlot>
+            <ButtonLabel>Will Williams</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button $size="xs" style={{ lineHeight: "normal" }}>
+          <ButtonSlot $kind="avatar" $layer="brand">
+            WW
+          </ButtonSlot>
+          <ButtonLabel>Will Williams</ButtonLabel>
+        </Button>
+      </Example>
+
+      <Example
+        title="Composed avatar initials"
+        description="Initials from separate first and last name values fit in one avatar."
+        code={`
+          <Button>
+            <ButtonSlot $kind="avatar" $layer="brand">
+              {firstInitial}{lastInitial}
+            </ButtonSlot>
+            <ButtonLabel>Will Williams</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonSlot $kind="avatar" $layer="brand">
+            {firstInitial}
+            {lastInitial}
+          </ButtonSlot>
+          <ButtonLabel>Will Williams</ButtonLabel>
+        </Button>
+      </Example>
+
+      <Example
+        title="Fragment avatar initials"
+        description="A fragment can group initials without changing their size."
+        code={`
+          <Button>
+            <ButtonSlot $kind="avatar" $layer="brand">
+              <>{firstInitial}<>{lastInitial}</></>
+            </ButtonSlot>
+            <ButtonLabel>Will Williams</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonSlot $kind="avatar" $layer="brand">
+            <>
+              {firstInitial}
+              <>{lastInitial}</>
+            </>
+          </ButtonSlot>
+          <ButtonLabel>Will Williams</ButtonLabel>
+        </Button>
+      </Example>
+
+      <Example
+        title="Avatar shape"
+        description="Change the image color, then switch between a round avatar and a square icon. The selected color stays the same."
+        code={`
+          <ButtonSlot $kind={round ? "avatar" : "icon"} $size="xl">
+            <AvatarPicture />
+          </ButtonSlot>
+        `}
+      >
+        <AvatarShape />
       </Example>
 
       <Example

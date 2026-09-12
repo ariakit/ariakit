@@ -721,7 +721,7 @@ importers:
         version: link:../ariakit-utils
       use-sync-external-store:
         specifier: ^1.6.0
-        version: 1.6.0(react@19.2.8)
+        version: 1.7.0(react@19.2.8)
     devDependencies:
       '@ariakit/scripts':
         specifier: workspace:*
@@ -10258,8 +10258,8 @@ packages:
       '@types/react':
         optional: true
 
-  use-sync-external-store@1.6.0:
-    resolution: {integrity: sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==}
+  use-sync-external-store@1.7.0:
+    resolution: {integrity: sha512-6L+EeigHMQhdaIPNIFUKwfWJSwWFQ8gJbJ2DLOs5sDIegTwR9fRxvnM3uciHKjIZhFz+KAv2emhWMRvDmMcY8A==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -12411,7 +12411,7 @@ snapshots:
       '@floating-ui/utils': 0.2.12
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
-      use-sync-external-store: 1.6.0(react@19.2.8)
+      use-sync-external-store: 1.7.0(react@19.2.8)
     optionalDependencies:
       '@date-fns/tz': 1.5.0
       '@types/react': 19.2.18
@@ -12424,7 +12424,7 @@ snapshots:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       reselect: 5.3.0
-      use-sync-external-store: 1.6.0(react@19.2.8)
+      use-sync-external-store: 1.7.0(react@19.2.8)
     optionalDependencies:
       '@types/react': 19.2.18
 
@@ -20065,7 +20065,7 @@ snapshots:
   swr@2.2.0(react@18.3.1):
     dependencies:
       react: 18.3.1
-      use-sync-external-store: 1.6.0(react@18.3.1)
+      use-sync-external-store: 1.7.0(react@18.3.1)
 
   symbol-tree@3.2.4: {}
 
@@ -20523,11 +20523,11 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.18
 
-  use-sync-external-store@1.6.0(react@18.3.1):
+  use-sync-external-store@1.7.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 
-  use-sync-external-store@1.6.0(react@19.2.8):
+  use-sync-external-store@1.7.0(react@19.2.8):
     dependencies:
       react: 19.2.8
 

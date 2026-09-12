@@ -177,8 +177,8 @@ export const controlSlot = cv({
       return getFrameRoundedClass(value);
     },
     /**
-     * Sets the element’s kind. When you use the `badge` kind, wrap the text in
-     * a `<span>` element so it’s styled correctly.
+     * Sets the element’s kind. When you use the `badge` kind, wrap text in a
+     * `<span>` element so it’s styled correctly.
      */
     $kind: {
       icon: "",
@@ -313,6 +313,14 @@ export const controlSlot = cv({
       "group-ui-disabled-within/choice:[&_img]:opacity-50",
     ]);
     if (variants.$rowSpan !== 1) return;
+    if (variants.$kind === "avatar") {
+      // Larger slots have room for the label's text size.
+      if (variants.$size === "2xl") return;
+      if (variants.$size === "full") return;
+      // Keep the parent's line height before adjusting font metrics, which also
+      // affect normal line height. A 0.45em cap height gives initials room.
+      addClass("leading-[1lh] [font-size-adjust:cap-height_0.45]");
+    }
     if (includes(PADDED_SLOT_SIZES, variants.$size)) {
       setVariants({ $size: "xl" });
     }
