@@ -696,9 +696,13 @@ export default function ComboboxExamples() {
         title="Selection count"
         description="A render function in ComboboxSelectedValue changes the text on the button, here to the number of selected items."
         code={`
-          <ComboboxProvider>
+          <ComboboxProvider defaultSelectedValue={["Bug", "Docs"]}>
             <ComboboxSelectLabel>Issue labels</ComboboxSelectLabel>
-            <ComboboxSelect displayValue={<ComboboxSelectedValue />} />
+            <ComboboxSelect
+              displayValue={
+                <ComboboxSelectedValue>{selectedCountLabel}</ComboboxSelectedValue>
+              }
+            />
             <ComboboxPopover>
               <ComboboxItem checkmark="before" value="Bug" />
               <ComboboxItem checkmark="before" value="Docs" />
