@@ -18,7 +18,7 @@ allowBuilds:
   workerd: true
 
 minimumReleaseAgeExclude:
-  - rolldown-plugin-react-forward-ref@0.1.0
+  - rolldown-plugin-react-forward-ref@0.2.0
 
 overrides:
   "@ariakit/components": "workspace:*"
@@ -37,7 +37,6 @@ overrides:
 
 patchedDependencies:
   "@changesets/apply-release-plan@8.1.0": patches/@changesets__apply-release-plan@8.1.0.patch
-  rolldown-plugin-react-forward-ref@0.1.0: patches/rolldown-plugin-react-forward-ref@0.1.0.patch
 
 peerDependencyRules:
   allowedVersions:

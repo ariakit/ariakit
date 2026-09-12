@@ -114,10 +114,16 @@ export default defineConfig({
           reactVersion.startsWith("18.") &&
             reactForwardRef({
               include: "packages/ariakit-ui/src/components/**/*.react.tsx",
-              // The pnpm patch opts these element factories into ref
-              // adaptation.
-              // https://github.com/diegohaz/rolldown-plugin-react-forward-ref/issues/9
-              elementFactories: ["createRender", "createOptionalRender"],
+              elementFactories: [
+                {
+                  source: "../react-utils/create-render.react.ts",
+                  imported: "createRender",
+                },
+                {
+                  source: "../react-utils/create-render.react.ts",
+                  imported: "createOptionalRender",
+                },
+              ],
             }),
           reactPlugin(),
         ],
