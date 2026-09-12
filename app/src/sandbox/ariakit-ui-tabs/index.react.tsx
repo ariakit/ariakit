@@ -1320,6 +1320,49 @@ export default function TabsExamples() {
           </TabPanels>
         </Tabs>
       </Example>
+      {(["folder", "flat", "bevel"] as const).map((kind) => (
+        <Example
+          key={kind}
+          title={`${kind} tab with a long label`}
+          description="The label stays on one line and shows an ellipsis when the tab reaches its maximum width."
+          stretch
+          code={`
+            <Tabs>
+              <TabList>
+                <Tab $kind="${kind}" className="max-w-40">
+                  <TabLabel>Project settings and permissions</TabLabel>
+                </Tab>
+                <Tab $kind="${kind}">
+                  <TabLabel>Activity</TabLabel>
+                </Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel single>…</TabPanel>
+              </TabPanels>
+            </Tabs>
+          `}
+        >
+          <Tabs defaultSelectedId={`long-${kind}-settings`}>
+            <TabList aria-label={`${kind} tab with a long label`}>
+              <Tab
+                id={`long-${kind}-settings`}
+                $kind={kind}
+                className="max-w-40"
+              >
+                <TabLabel>Project settings and permissions</TabLabel>
+              </Tab>
+              <Tab id={`long-${kind}-activity`} $kind={kind}>
+                <TabLabel>Activity</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                <p className="text-sm">Manage project access.</p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </Example>
+      ))}
     </ExampleGrid>
   );
 }
