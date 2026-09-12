@@ -32,3 +32,23 @@ export function generateId(prefix = "ak-") {
 export function slugify(str: string) {
   return kebabCase(str);
 }
+
+/**
+ * Removes the blank lines at the start and the end of a string and the
+ * indentation that all its other non-blank lines share, so an indented template
+ * literal reads as if it were written at the first column.
+ */
+export function dedent(str: string) {
+  const lines = str
+    .replace(/^\s*\n/, "")
+    .trimEnd()
+    .split("\n");
+  let indent = Number.POSITIVE_INFINITY;
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const lineIndent = line.length - line.trimStart().length;
+    indent = Math.min(indent, lineIndent);
+  }
+  if (indent === Number.POSITIVE_INFINITY) return "";
+  return lines.map((line) => line.slice(indent)).join("\n");
+}
