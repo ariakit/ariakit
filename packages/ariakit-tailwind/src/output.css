@@ -1342,6 +1342,11 @@
     border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
     --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
   }
+  @variant forced-colors {
+    --_ak-frame-border: var(--_ak-frame-bordering);
+    border-width: var(--_ak-frame-bordering);
+    --_ak-frame-ring: 0px;
+  }
   @apply ring-[length:var(--ak-frame-ring)];
   --tw-ring-shadow: var(--_ak-frame-join-ring-shadow, var(--tw-ring-inset,) 0 0 0 calc(var(--ak-frame-ring) + var(--tw-ring-offset-width)) oklch(from var(--tw-ring-color, --theme(--default-ring-color, currentColor)) l c h / calc(alpha * sign(var(--ak-frame-ring)))));
   --_ak-frame-bordering-context: 1;
@@ -1373,6 +1378,11 @@
       border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
       --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
     }
+    @variant forced-colors {
+      --_ak-frame-border: var(--_ak-frame-bordering);
+      border-width: var(--_ak-frame-bordering);
+      --_ak-frame-ring: 0px;
+    }
   }
   @container style(--_context-2: odd) {
     --_ak-frame-bordering: max(var(--_ak-fpbbc-odd, 0px), var(--_ak-fpbgc-odd, 0px));
@@ -1386,6 +1396,11 @@
       --_ak-frame-border: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
       border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
       --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
+    }
+    @variant forced-colors {
+      --_ak-frame-border: var(--_ak-frame-bordering);
+      border-width: var(--_ak-frame-bordering);
+      --_ak-frame-ring: 0px;
     }
   }
 }
@@ -1403,6 +1418,11 @@
     --_ak-frame-border: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
     border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
     --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
+  }
+  @variant forced-colors {
+    --_ak-frame-border: var(--_ak-frame-bordering);
+    border-width: var(--_ak-frame-bordering);
+    --_ak-frame-ring: 0px;
   }
   @apply ring-[length:var(--ak-frame-ring)];
   --tw-ring-shadow: var(--_ak-frame-join-ring-shadow, var(--tw-ring-inset,) 0 0 0 calc(var(--ak-frame-ring) + var(--tw-ring-offset-width)) oklch(from var(--tw-ring-color, --theme(--default-ring-color, currentColor)) l c h / calc(alpha * sign(var(--ak-frame-ring)))));

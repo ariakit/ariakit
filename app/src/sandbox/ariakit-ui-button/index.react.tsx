@@ -132,6 +132,20 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Layer disabled"
+        description="Disable the layer system while keeping the button's spacing. A bevel still paints its own surface."
+        code={`
+          <Button $layer={false}>Cancel action</Button>
+          <Button $layer={false} $kind="bevel">Apply action</Button>
+        `}
+      >
+        <Button $layer={false}>Cancel action</Button>
+        <Button $layer={false} $kind="bevel">
+          Apply action
+        </Button>
+      </Example>
+
+      <Example
         title="Lifted"
         description="A neutral surface that stays visible at rest, for a button that stands alone."
         code={`
@@ -139,6 +153,42 @@ export default function ButtonExamples() {
         `}
       >
         <Button $lightnessOffset>Edit</Button>
+      </Example>
+
+      <Example
+        title="Pushed"
+        description="A neutral surface with a minimum lightness shift, which grows when the user asks for more contrast."
+        code={`
+          <Button $lightnessPush={2}>Publish changes</Button>
+          <Button $lightnessPush={0}>Cancel changes</Button>
+        `}
+      >
+        <Button $lightnessPush={2}>Publish changes</Button>
+        <Button $lightnessPush={0}>Cancel changes</Button>
+      </Example>
+
+      <Example
+        title="Contrast"
+        description="A surface with increased contrast against the surface around it."
+        code={`
+          <Button $contrast>Review changes</Button>
+        `}
+      >
+        <Button $contrast>Review changes</Button>
+      </Example>
+
+      <Example
+        title="Desaturated"
+        description="Remove color from a button on a colored surface. Zero chroma keeps a neutral fill."
+        code={`
+          <Frame $layer="brand" $p={3}>
+            <Button $chroma={0}>Preview changes</Button>
+          </Frame>
+        `}
+      >
+        <Frame $layer="brand" $p={3}>
+          <Button $chroma={0}>Preview changes</Button>
+        </Frame>
       </Example>
 
       <Example

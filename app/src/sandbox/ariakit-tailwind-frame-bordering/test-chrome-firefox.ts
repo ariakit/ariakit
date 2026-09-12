@@ -14,6 +14,28 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.describe(colorScheme, () => {
       test.use({ colorScheme });
 
+      // https://github.com/ariakit/ariakit/issues/7476
+      test("keeps adaptive boundaries in forced colors", async ({
+        page,
+        q,
+      }) => {
+        await page.emulateMedia({ forcedColors: "active" });
+        for (const direction of ["Darkening", "Lightening"]) {
+          for (const [variant, width] of [
+            ["Default", 1],
+            ["Explicit", 4],
+            ["Inherited", 4],
+            ["Fractional", 1],
+            ["Zero", 0],
+            ["Inset", 4],
+          ] as const) {
+            const button = q.button(`${direction} ${variant}`);
+            await expect(button).toHaveCSS("border-top-width", `${width}px`);
+            await expect(button).toHaveCSS("box-shadow", "none");
+          }
+        }
+      });
+
       // https://github.com/ariakit/ariakit/issues/7470
       test("suppresses zero-width ring paint and preserves frame geometry", async ({
         q,

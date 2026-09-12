@@ -2,6 +2,7 @@ import {
   captureInView,
   capturePage,
   expectFocusVisible,
+  expectMedia,
   forEachColorScheme,
   getCapture,
   hoverOver,
@@ -20,6 +21,68 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),
     );
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7476
+  // https://github.com/ariakit/ariakit/pull/7500#discussion_r3995296714
+  test("keeps disabled layers borderless and preserves bevels in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      await expectMedia(page, "(forced-colors: active)");
+      const box = q.article("Layer disabled");
+      await test
+        .expect(query(box).button("Cancel action"))
+        .toHaveCSS("border-top-width", "0px");
+      await test
+        .expect(query(box).button("Apply action"))
+        .toHaveCSS("border-top-width", "1px");
+      await captureInView(visual, box, colorScheme);
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7476
+  test("keeps filled and bevel button boundaries in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      await expectMedia(page, "(forced-colors: active)");
+      for (const [title, name] of [
+        ["Default", "Cancel"],
+        ["Lifted", "Edit"],
+        ["Pushed", "Publish changes"],
+        ["Contrast", "Review changes"],
+        ["Desaturated", "Preview changes"],
+        ["Brand", "Save changes"],
+        ["Bevel", "Duplicate"],
+        ["Inverted", "Continue"],
+      ] as const) {
+        const box = q.article(title);
+        const button = query(box).button(name);
+        await test
+          .expect(button)
+          .toHaveCSS("border-top-width", title === "Default" ? "0px" : "1px");
+        if (title === "Pushed") {
+          await test
+            .expect(query(box).button("Cancel changes"))
+            .toHaveCSS("border-top-width", "0px");
+        }
+        await captureInView(visual, box, colorScheme, {
+          id: title,
+        });
+      }
+      const box = q.article("Thick focus ring");
+      const button = query(box).button("Move");
+      await tabTo(page, button);
+      await expectFocusVisible(button);
+      await captureInView(visual, box, colorScheme, { id: "focus" });
+    });
   });
 
   test("shows the thick focus ring on keyboard focus @visual", async ({
