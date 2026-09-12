@@ -9,28 +9,28 @@ import {
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
+function initialsFit(element: Element) {
+  const slot = element.closest(".overflow-clip");
+  if (!slot) {
+    throw new Error("Avatar slot not found");
+  }
+  const range = element.ownerDocument.createRange();
+  range.selectNodeContents(element);
+  const text = range.getBoundingClientRect();
+  const bounds = slot.getBoundingClientRect();
+  return (
+    Math.abs(bounds.width - bounds.height) < 1 &&
+    text.left >= bounds.left &&
+    text.right <= bounds.right
+  );
+}
+
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/issues/7475
   test("fits two wide initials inside an avatar slot", async ({ q }) => {
     const initials = query(q.article("Initial avatar")).text("WW");
     await test.expect(initials).toBeVisible();
-    await test.expect
-      .poll(() =>
-        initials.evaluate((element) => {
-          const slot = element.closest(".overflow-clip");
-          if (!slot) throw new Error("Avatar slot not found");
-          const range = document.createRange();
-          range.selectNodeContents(element);
-          const text = range.getBoundingClientRect();
-          const bounds = slot.getBoundingClientRect();
-          return (
-            Math.abs(bounds.width - bounds.height) < 1 &&
-            text.left >= bounds.left &&
-            text.right <= bounds.right
-          );
-        }),
-      )
-      .toBe(true);
+    await test.expect.poll(() => initials.evaluate(initialsFit)).toBe(true);
   });
 
   // https://github.com/ariakit/ariakit/pull/7489#discussion_r3995106162
@@ -39,23 +39,16 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   }) => {
     const initials = query(q.article("Composed avatar initials")).text("WW");
     await test.expect(initials).toBeVisible();
-    await test.expect
-      .poll(() =>
-        initials.evaluate((element) => {
-          const slot = element.closest(".overflow-clip");
-          if (!slot) throw new Error("Avatar slot not found");
-          const range = document.createRange();
-          range.selectNodeContents(element);
-          const text = range.getBoundingClientRect();
-          const bounds = slot.getBoundingClientRect();
-          return (
-            Math.abs(bounds.width - bounds.height) < 1 &&
-            text.left >= bounds.left &&
-            text.right <= bounds.right
-          );
-        }),
-      )
-      .toBe(true);
+    await test.expect.poll(() => initials.evaluate(initialsFit)).toBe(true);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7489#discussion_r3995226168
+  test("fits initials inside nested fragments in an avatar slot", async ({
+    q,
+  }) => {
+    const initials = query(q.article("Fragment avatar initials")).text("WW");
+    await test.expect(initials).toBeVisible();
+    await test.expect.poll(() => initials.evaluate(initialsFit)).toBe(true);
   });
 
   test("keeps an image avatar at the full slot size", async ({ q }) => {
