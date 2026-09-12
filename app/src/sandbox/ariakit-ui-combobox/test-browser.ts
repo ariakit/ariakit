@@ -30,32 +30,46 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
       .toHaveCSS("color", color);
   });
 
-  // https://github.com/ariakit/ariakit/issues/7473
-  test("keeps long suggestions and select options inside the viewport", async ({
-    page,
-    q,
-  }) => {
-    await page.setViewportSize({ width: 400, height: 800 });
-    for (const name of ["Long suggestion", "Long selection"]) {
-      await q.combobox(name).click();
-      const list = q.listbox(name);
-      await test
-        .expect(
-          query(list).option(
-            "international-shipping-region-with-an-unbreakable-identifier",
-          ),
-        )
-        .toBeVisible();
-      await test.expect
-        .poll(() => list.evaluate((node) => node.getBoundingClientRect().right))
-        .toBeLessThanOrEqual(400);
-      await test.expect
-        .poll(() => list.evaluate((node) => node.getBoundingClientRect().left))
-        .toBeGreaterThanOrEqual(0);
-      await page.keyboard.press("Escape");
-      await test.expect(list).toBeHidden();
-    }
-  });
+  for (const width of [400, 180]) {
+    // https://github.com/ariakit/ariakit/issues/7473
+    test(`keeps long suggestions and select options inside a ${width}px viewport`, async ({
+      page,
+      q,
+    }) => {
+      await page.setViewportSize({ width, height: 800 });
+      for (const name of ["Long suggestion", "Long selection"]) {
+        const anchor = q.combobox(name);
+        if (width === 180) {
+          await test.expect
+            .poll(() =>
+              anchor.evaluate((node) => node.getBoundingClientRect().width),
+            )
+            .toBeGreaterThan(width);
+        }
+        await anchor.click();
+        const list = q.listbox(name);
+        await test
+          .expect(
+            query(list).option(
+              "international-shipping-region-with-an-unbreakable-identifier",
+            ),
+          )
+          .toBeVisible();
+        await test.expect
+          .poll(() =>
+            list.evaluate((node) => node.getBoundingClientRect().right),
+          )
+          .toBeLessThanOrEqual(width);
+        await test.expect
+          .poll(() =>
+            list.evaluate((node) => node.getBoundingClientRect().left),
+          )
+          .toBeGreaterThanOrEqual(0);
+        await page.keyboard.press("Escape");
+        await test.expect(list).toBeHidden();
+      }
+    });
+  }
   // The fixture section sits at the end of the sandbox, so it is scrolled to
   // the top of the viewport first: the lists then have room to open below their
   // anchors instead of flipping above them.

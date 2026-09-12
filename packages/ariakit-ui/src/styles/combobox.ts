@@ -33,7 +33,7 @@ export const comboboxPopover = cv({
     "outline-none overflow-auto overscroll-contain",
     "max-h-[min(var(--popover-available-height),20rem)]",
     "max-w-(--popover-available-width)",
-    "min-w-(--popover-anchor-width)",
+    "min-w-[min(var(--popover-anchor-width),var(--popover-available-width))]",
   ],
   defaultVariants: {
     $rounded: "xl",
