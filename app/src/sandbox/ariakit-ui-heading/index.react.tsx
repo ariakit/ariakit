@@ -85,7 +85,7 @@ export default function HeadingExamples() {
 
       <Example
         title="Wrapped title"
-        description="A long title at the h1 size wraps onto more than one line. The heading keeps the line height of the text around it."
+        description="A long title at the h1 size wraps onto more than one line. The heading uses a tighter line height of 1.25."
         code={`
           <Heading $level={1}>…</Heading>
         `}

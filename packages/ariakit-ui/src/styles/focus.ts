@@ -23,7 +23,7 @@ export const focus = cv({
      * The offset of the focus ring.
      */
     $focusOffset: {
-      none: "",
+      none: "outline-offset-0",
       1: "outline-offset-1",
       2: "outline-offset-2",
     },

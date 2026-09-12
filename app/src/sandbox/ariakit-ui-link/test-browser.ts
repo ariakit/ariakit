@@ -14,6 +14,21 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     );
   });
 
+  // https://github.com/ariakit/ariakit/issues/7483
+  test("keeps the focus ring against an inline link @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorScheme(page, async (colorScheme) => {
+      const box = q.article("Default");
+      const link = query(box).link("styling guide");
+      await tabTo(page, link);
+      await expectFocusVisible(link);
+      await captureInView(visual, box, colorScheme);
+    });
+  });
+
   test("offsets the focus ring of a standalone link @visual", async ({
     page,
     q,
