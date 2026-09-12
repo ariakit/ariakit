@@ -7,18 +7,21 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import * as ak from "@ariakit/react";
 import {
   Combobox,
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
+  ComboboxList,
+  ComboboxSelect,
   ComboboxSelectButton,
   ComboboxSelectItem,
   ComboboxSelectLabel,
   ComboboxSelectPopover,
   ComboboxSelectProvider,
 } from "@ariakit/ui/components/combobox.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
+import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import {
@@ -105,11 +108,22 @@ export function CountryComboboxExample() {
         // https://github.com/ariakit/ariakit/issues/7463
         popover={{ unmountOnHide: true }}
       >
-        {matches.map((country) => (
-          <ComboboxItem key={country} value={country} />
-        ))}
-        {!matches.length && <ComboboxEmpty />}
+        <ComboboxList>
+          {matches.map((country) => (
+            <ComboboxItem key={country} value={country} />
+          ))}
+        </ComboboxList>
+        {!matches.length && <ComboboxEmpty aria-hidden />}
       </Combobox>
+      {/* The region stays mounted when the popup is closed or has matches. */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {matches.length ? "" : "No results found"}
+      </div>
     </div>
   );
 }
@@ -171,13 +185,72 @@ export function SearchableSelectExample() {
             placeholder="Search timezones"
             aria-label="Search timezones"
           />
-          <ak.ComboboxList>
+          <ComboboxList>
             {matches.map((zone) => (
               <ComboboxSelectItem key={zone} value={zone} />
             ))}
-          </ak.ComboboxList>
+          </ComboboxList>
         </ComboboxSelectPopover>
       </ComboboxSelectProvider>
     </ExampleStage>
+  );
+}
+
+export function FieldBoundariesExample() {
+  const longValue =
+    "international-shipping-region-with-an-unbreakable-identifier";
+  return (
+    <Layer
+      $layer="brand"
+      render={<Text $text="danger" />}
+      className="grid gap-4 p-4"
+    >
+      <Combobox
+        label="Long suggestion"
+        className="w-48"
+        popover={{ unmountOnHide: true }}
+      >
+        <ComboboxItem value="Europe" />
+        <ComboboxItem value={longValue} />
+      </Combobox>
+      <ComboboxSelect
+        label="Long selection"
+        className="w-48"
+        defaultValue="Europe"
+        items={[{ value: "Europe" }, { value: longValue }]}
+        popover={{ unmountOnHide: true }}
+      />
+    </Layer>
+  );
+}
+
+export function SelectPlaceholdersExample() {
+  const items = [{ value: "Europe" }, { value: "Asia" }];
+  return (
+    <div className="grid gap-4">
+      <ComboboxSelect
+        label="Extra regions"
+        defaultValue={[]}
+        placeholder={<em>No regions selected</em>}
+        items={items}
+        popover={{ unmountOnHide: true }}
+      />
+      <ComboboxSelect
+        label="Automatic region"
+        placeholder="Choose automatically"
+        items={items}
+      />
+      <ComboboxSelectProvider defaultValue="">
+        <ComboboxSelectLabel>Custom prompt</ComboboxSelectLabel>
+        <ComboboxSelectButton displayValue={0} placeholder="Unspecified" />
+        <ComboboxSelectButton
+          aria-label="Blank prompt"
+          placeholder="Unspecified"
+        >
+          {""}
+        </ComboboxSelectButton>
+        <ComboboxSelectButton aria-label="Zero prompt" placeholder={0} />
+      </ComboboxSelectProvider>
+    </div>
   );
 }

@@ -1,6 +1,44 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/issues/7482
+  test("moves and selects tabs in right-to-left order", async ({ page, q }) => {
+    const box = query(q.article("Right to left"));
+    const drafts = box.tab("المسودات");
+    const review = box.tab("قيد المراجعة");
+    const published = box.tab("المنشورة");
+
+    await drafts.click();
+    await page.keyboard.press("ArrowLeft");
+    await test.expect(review).toBeFocused();
+    await test.expect(review).toHaveAttribute("aria-selected", "true");
+    await page.keyboard.press("ArrowRight");
+    await test.expect(drafts).toBeFocused();
+    await test.expect(drafts).toHaveAttribute("aria-selected", "true");
+    await page.keyboard.press("ArrowRight");
+    await test.expect(published).toBeFocused();
+    await test.expect(published).toHaveAttribute("aria-selected", "true");
+    await page.keyboard.press("ArrowLeft");
+    await test.expect(drafts).toBeFocused();
+    await test.expect(drafts).toHaveAttribute("aria-selected", "true");
+  });
+
+  for (const [name, label] of [
+    ["Default", "Preview"],
+    ["Overflowing strip", "Overview"],
+    ["Tabs record", "Usage"],
+    ["Tabs record", "Code"],
+  ] as const) {
+    // https://github.com/ariakit/ariakit/issues/7482
+    test(`renders a phrasing label in ${name}: ${label}`, async ({ q }) => {
+      const tab = query(q.article(name)).tab(label);
+      await test.expect(tab).toHaveJSProperty("tagName", "BUTTON");
+      await test
+        .expect(query(tab).text(label, { exact: true }))
+        .toHaveJSProperty("tagName", "SPAN");
+    });
+  }
+
   test("moves keyboard focus between tabs without selecting", async ({
     page,
     q,

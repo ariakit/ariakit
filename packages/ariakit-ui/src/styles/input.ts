@@ -8,8 +8,8 @@ export const input = cv({
     "max-w-full cursor-text items-center justify-start",
     // Keep the danger color's lightness and set its weight after the ordinary
     // edge utilities, which otherwise push it to black or white.
-    "not-ui-field-disabled:aria-invalid:ak-edge-danger not-ui-field-disabled:aria-invalid:ak-edge-45",
-    "not-ui-field-disabled:aria-invalid:ak-edge-push-0",
+    "not-ui-field-disabled:ui-field-invalid:ak-edge-danger not-ui-field-disabled:ui-field-invalid:ak-edge-45",
+    "not-ui-field-disabled:ui-field-invalid:ak-edge-push-0",
     // Only animate into the hover state; snapping back on hover-out keeps
     // the field from feeling laggy.
     "hover:transition-[background-color]",

@@ -302,7 +302,7 @@ export default function InputExamples() {
                 $size={size}
                 aria-label={`${size} field`}
                 placeholder={`${size} field`}
-                className="min-w-0 flex-1"
+                className="w-0 min-w-0 flex-1"
               />
               <Button $size={size} $kind="bevel" aria-label={`Save ${size}`}>
                 Save

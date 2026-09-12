@@ -42,6 +42,50 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     }
   });
 
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r3995200392
+  test("keeps the size controls inside their card on a narrow screen", async ({
+    page,
+    q,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const card = q.article("Control sizes");
+    const box = query(card);
+    const cardBox = await card.boundingBox();
+    test.expect(cardBox).not.toBeNull();
+    if (!cardBox) return;
+    for (const size of ["xs", "sm", "md", "lg", "xl"]) {
+      const button = box.button(`Save ${size}`);
+      await test.expect
+        .poll(async () => {
+          const rect = await button.boundingBox();
+          return rect && rect.x + rect.width;
+        })
+        .toBeLessThan(cardBox.x + cardBox.width);
+    }
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r3995154902
+  test("reads invalid state from a wrapped input", async ({ page, q }) => {
+    const field = q.textbox("Filter components");
+    const wrapper = field.locator("xpath=..");
+    await forEachColorScheme(page, async () => {
+      const ordinaryEdge = await wrapper.evaluate((node) =>
+        getComputedStyle(node).getPropertyValue("--ak-edge"),
+      );
+      const dangerEdge = await query(q.article("Invalid"))
+        .textbox("Email")
+        .evaluate((node) =>
+          getComputedStyle(node).getPropertyValue("--ak-edge"),
+        );
+      await field.evaluate((node) => node.setAttribute("aria-invalid", "true"));
+      await test.expect(wrapper).toHaveCSS("--ak-edge", dangerEdge);
+      await field.evaluate((node) =>
+        node.setAttribute("aria-invalid", "false"),
+      );
+      await test.expect(wrapper).toHaveCSS("--ak-edge", ordinaryEdge);
+    });
+  });
+
   // https://github.com/ariakit/ariakit/issues/7477
   test("keeps fields with slots at the plain field height", async ({ q }) => {
     const inputBox = await q.textbox("Full name").boundingBox();
