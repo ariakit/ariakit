@@ -31,7 +31,6 @@ export const comboboxPopover = cv({
   defaultVariants: {
     $rounded: "xl",
     $p: 1,
-    $layer: "canvas",
   },
 });
 

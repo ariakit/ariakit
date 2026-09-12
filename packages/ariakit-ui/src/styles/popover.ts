@@ -50,6 +50,7 @@ export const popover = cv({
     },
   },
   defaultVariants: {
+    $layer: "canvas",
     $shadow: "xl",
     $rounded: "2xl",
     $forceRounded: true,

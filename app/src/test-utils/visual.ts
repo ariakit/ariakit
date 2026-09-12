@@ -425,6 +425,8 @@ export async function visual(
           });
           await expect(page).toHaveScreenshot(fileSnapshotName, {
             ...screenshotOptions,
+            // A page-sized pixel allowance can hide changes to small controls.
+            ...(fullPage && { maxDiffPixelRatio: 0 }),
             timeout,
           });
           // Touch the screenshot file so the CI stale-detection step (which

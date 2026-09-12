@@ -12,6 +12,8 @@ import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Progress,
   ProgressCircular,
+  ProgressCircularFill,
+  ProgressFill,
 } from "@ariakit/ui/components/progress.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { useId, useState } from "react";
@@ -19,6 +21,23 @@ import {
   Example,
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
+
+function ProgressLoading() {
+  const [value, setValue] = useState<number>();
+  return (
+    <div className="grid gap-3">
+      <Progress value={value} aria-label="Loading results" />
+      <div className="flex items-center gap-3">
+        <div className="size-12">
+          <ProgressCircular value={value} aria-label="Loading preview" />
+        </div>
+        <Button onClick={() => setValue(value == null ? 0.6 : undefined)}>
+          {value == null ? "Set progress" : "Restart"}
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 // Both kinds follow one value, and the button wraps back to 0 after 1.
 function ProgressValueChange() {
@@ -70,13 +89,67 @@ export default function ProgressExamples() {
 
       <Example
         title="No value"
-        description="Without a value, the bar has no aria-valuenow and reads as indeterminate. It has no indeterminate style, so the track stays empty."
+        description="Without a value, a moving segment and a spinning arc show that work is in progress. With reduced motion, both stay in a fixed position. Set a value to show known progress."
         stretch
         code={`
           <Progress />
+          <ProgressCircular />
         `}
       >
-        <Progress aria-label="Loading results" />
+        <ProgressLoading />
+      </Example>
+
+      <Example
+        title="Fill colors"
+        description="The fill accepts layer props for success, warning, and danger colors. The track keeps its own color."
+        stretch
+        code={`
+          <Progress value={1} fill={{ $layer: "success" }} />
+          <ProgressCircular value={0.7} fill={{ $layer: "warning" }} />
+        `}
+      >
+        <div className="grid gap-3">
+          {(["success", "warning", "danger"] as const).map((color) => (
+            <div key={color} className="flex items-center gap-3">
+              <Progress
+                value={1}
+                fill={{ $layer: color }}
+                aria-label={`${color} bar`}
+              />
+              <div className="size-10 shrink-0">
+                <ProgressCircular
+                  value={0.7}
+                  fill={{ $layer: color }}
+                  aria-label={`${color} ring`}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Example>
+
+      <Example
+        title="Custom fill"
+        description="A fill element can set its layer and render a different tag. This bar runs from right to left and still shows unknown progress when no value is set."
+        stretch
+        code={`
+          <Progress dir="rtl" fill={<ProgressFill $layer="success" render={<span />} />} />
+          <ProgressCircular fill={<ProgressCircularFill $layer="success" render={<span />} />} />
+        `}
+      >
+        <div className="grid gap-3">
+          <Progress
+            dir="rtl"
+            fill={<ProgressFill $layer="success" render={<span />} />}
+            aria-label="Custom bar"
+          />
+          <div className="size-12">
+            <ProgressCircular
+              fill={<ProgressCircularFill $layer="success" render={<span />} />}
+              aria-label="Custom ring"
+            />
+          </div>
+        </div>
       </Example>
 
       <Example
