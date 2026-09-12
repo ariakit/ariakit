@@ -9,6 +9,10 @@ import {
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
+function getEdgePattern(value: string) {
+  return new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+}
+
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/issues/7481
   test("colors grid lines through custom and disabled cell layers", async ({
@@ -21,9 +25,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const edge = await grid
         .locator("xpath=../..")
         .evaluate((node) => getComputedStyle(node).borderTopColor);
-      const edgePattern = new RegExp(
-        edge.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-      );
+      const edgePattern = getEdgePattern(edge);
       for (const selected of [false, true]) {
         await fixture.checkbox("Select row").setChecked(selected);
         await hoverOver(query(grid).text("Disabled surface"));
@@ -49,19 +51,13 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         for (const cell of await table.locator("th, td").all()) {
           await test
             .expect(cell)
-            .toHaveCSS(
-              "border-image-source",
-              new RegExp(edge.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
-            );
+            .toHaveCSS("border-image-source", getEdgePattern(edge));
         }
         const row = query(table).row(/^Button /);
         await hoverOver(row);
         await test
           .expect(query(row).cell().first())
-          .toHaveCSS(
-            "border-image-source",
-            new RegExp(edge.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
-          );
+          .toHaveCSS("border-image-source", getEdgePattern(edge));
       }
     });
   });
@@ -80,10 +76,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
           .evaluate((node) => getComputedStyle(node).color);
         await test
           .expect(cell)
-          .toHaveCSS(
-            "border-image-source",
-            new RegExp(color.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
-          );
+          .toHaveCSS("border-image-source", getEdgePattern(color));
       }
     });
   });
