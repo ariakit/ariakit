@@ -165,7 +165,7 @@ export function ListItemMarker({
       {completed ? (
         <CheckIcon />
       ) : progress != null ? (
-        <span {...progressCircularFill.jsx({})} />
+        <span {...progressCircularFill.jsx()} />
       ) : null}
       {rest.children}
     </span>

@@ -446,12 +446,12 @@ export function ComboboxSelectButton({
   // defaults when they are tuned; explicit variant props still win.
   const badgeVariants = badge ? badgeStyle.getVariants(variantProps) : null;
   const arrow = chevron !== false && (
-    <span {...comboboxSelectArrow.jsx({})}>
+    <span {...comboboxSelectArrow.jsx()}>
       <ChevronDownIcon />
     </span>
   );
   const iconElement = isRenderable(icon) && (
-    <span {...comboboxSelectIcon.jsx({})}>{icon}</span>
+    <span {...comboboxSelectIcon.jsx()}>{icon}</span>
   );
   return (
     <ak.ComboboxSelect
@@ -467,7 +467,7 @@ export function ComboboxSelectButton({
     >
       {chevron === "before" && arrow}
       {chevron !== "before" && iconElement}
-      <span {...comboboxSelectValueLabel.jsx({})}>
+      <span {...comboboxSelectValueLabel.jsx()}>
         {isRenderable(displayValue) ? (
           displayValue
         ) : isRenderable(rest.children) ? (
@@ -478,9 +478,7 @@ export function ComboboxSelectButton({
               value.length || !isRenderable(placeholder) ? (
                 joinSelectedValue(value)
               ) : (
-                <span {...comboboxSelectPlaceholder.jsx({})}>
-                  {placeholder}
-                </span>
+                <span {...comboboxSelectPlaceholder.jsx()}>{placeholder}</span>
               )
             }
           </ComboboxSelectValue>
@@ -543,12 +541,12 @@ export function ComboboxSelectItem({
 }: ComboboxSelectItemProps) {
   const [variantProps, rest] = splitProps(props, comboboxSelectItem);
   const check = checkmark !== false && (
-    <span {...comboboxSelectItemCheck.jsx({})}>
+    <span {...comboboxSelectItemCheck.jsx()}>
       <CheckIcon />
     </span>
   );
   const iconElement = isRenderable(icon) && (
-    <span {...comboboxSelectIcon.jsx({})}>{icon}</span>
+    <span {...comboboxSelectIcon.jsx()}>{icon}</span>
   );
   return (
     <ak.ComboboxItem
@@ -560,7 +558,7 @@ export function ComboboxSelectItem({
     >
       {checkmark === "before" && check}
       {checkmark !== "before" && iconElement}
-      <span {...comboboxSelectValueLabel.jsx({})}>
+      <span {...comboboxSelectValueLabel.jsx()}>
         {isRenderable(rest.children) ? rest.children : rest.value}
       </span>
       {checkmark === "before" && iconElement}

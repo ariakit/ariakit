@@ -206,9 +206,9 @@ export function DisclosureButton({
       return label;
     }
     return (
-      <span {...disclosureButtonContent.jsx({})}>
+      <span {...disclosureButtonContent.jsx()}>
         {label}
-        <span id={descriptionId} {...disclosureButtonDescription.jsx({})}>
+        <span id={descriptionId} {...disclosureButtonDescription.jsx()}>
           {description}
         </span>
       </span>

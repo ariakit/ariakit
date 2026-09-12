@@ -70,7 +70,7 @@ export function RadioField({ children, ...props }: RadioFieldProps) {
       })}
     >
       <Radio {...rest} />
-      <span {...radioContent.jsx({})}>{children}</span>
+      <span {...radioContent.jsx()}>{children}</span>
     </label>
   );
 }
