@@ -119,6 +119,8 @@ const avatarImage =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23f59e0b'/%3E%3Ccircle cx='20' cy='16' r='7' fill='%23fff7ed'/%3E%3Cpath d='M6 40c2-9 7-13 14-13s12 4 14 13z' fill='%23fff7ed'/%3E%3C/svg%3E";
 
 export default function ButtonExamples() {
+  const firstInitial = "W";
+  const lastInitial = "W";
   return (
     <ExampleGrid>
       <Example
@@ -405,6 +407,27 @@ export default function ButtonExamples() {
         <Button>
           <ButtonSlot $kind="avatar" $layer="brand">
             WW
+          </ButtonSlot>
+          <ButtonLabel>Will Williams</ButtonLabel>
+        </Button>
+      </Example>
+
+      <Example
+        title="Composed avatar initials"
+        description="Initials from separate first and last name values fit in one avatar."
+        code={`
+          <Button>
+            <ButtonSlot $kind="avatar" $layer="brand">
+              {firstInitial}{lastInitial}
+            </ButtonSlot>
+            <ButtonLabel>Will Williams</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonSlot $kind="avatar" $layer="brand">
+            {firstInitial}
+            {lastInitial}
           </ButtonSlot>
           <ButtonLabel>Will Williams</ButtonLabel>
         </Button>

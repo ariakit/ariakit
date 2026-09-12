@@ -1,6 +1,7 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import { wrapTextChildren } from "../react-utils/__wrap-text-children.react.tsx";
 import { optionLabel, optionSlot } from "../styles/option.ts";
 
 export interface OptionLabelProps
@@ -19,9 +20,10 @@ export function OptionSlot(props: OptionSlotProps) {
   const variants = optionSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...optionSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ||
-      (variants.$kind === "avatar" && typeof rest.children === "string") ? (
+      {variants.$kind === "badge" ? (
         <span>{rest.children}</span>
+      ) : variants.$kind === "avatar" ? (
+        wrapTextChildren(rest.children)
       ) : (
         rest.children
       )}

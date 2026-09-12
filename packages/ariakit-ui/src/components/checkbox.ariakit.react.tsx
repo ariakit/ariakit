@@ -1,6 +1,7 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import { wrapTextChildren } from "../react-utils/__wrap-text-children.react.tsx";
 import {
   checkbox,
   checkboxCard,
@@ -132,11 +133,9 @@ export function CheckboxCardSlot(props: CheckboxCardSlotProps) {
   const variants = checkboxCardSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...checkboxCardSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "avatar" && typeof rest.children === "string" ? (
-        <span>{rest.children}</span>
-      ) : (
-        rest.children
-      )}
+      {variants.$kind === "avatar"
+        ? wrapTextChildren(rest.children)
+        : rest.children}
     </ak.Role.span>
   );
 }

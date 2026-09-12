@@ -3,6 +3,7 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { Fragment, isValidElement } from "react";
 import type { ComponentProps } from "react";
+import { wrapTextChildren } from "../react-utils/__wrap-text-children.react.tsx";
 import { createRender } from "../react-utils/create-render.react.ts";
 import {
   tab,
@@ -165,9 +166,10 @@ export function TabSlot(props: TabSlotProps) {
   const variants = tabSlot.getVariants(variantProps);
   return (
     <span {...tabSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ||
-      (variants.$kind === "avatar" && typeof rest.children === "string") ? (
+      {variants.$kind === "badge" ? (
         <span>{rest.children}</span>
+      ) : variants.$kind === "avatar" ? (
+        wrapTextChildren(rest.children)
       ) : (
         rest.children
       )}
