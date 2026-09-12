@@ -12,11 +12,9 @@ import {
   Combobox,
   ComboboxItem,
   ComboboxSelect,
-  ComboboxSelectButton,
-  ComboboxSelectItem,
   ComboboxSelectLabel,
-  ComboboxSelectPopover,
-  ComboboxSelectProvider,
+  ComboboxPopover,
+  ComboboxProvider,
 } from "@ariakit/ui/components/combobox.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import { comboboxItem } from "@ariakit/ui/styles/combobox";
@@ -24,9 +22,8 @@ import { layer } from "@ariakit/ui/styles/layer";
 import * as React from "react";
 import Thumbnail from "#app/examples/combobox-group/thumbnail.react.tsx";
 
-// The scenarios of the old combobox-item-highlight, combobox-select-content and
-// input-combobox-optional-props sandboxes, with their props, markup and initial
-// state unchanged. Their regression tests depend on every detail here.
+// These scenarios keep the state and content cases from the former standalone
+// fixtures while using the shared combobox parts.
 
 /**
  * The combobox-select-content sandbox's index, without the conditional content
@@ -35,51 +32,56 @@ import Thumbnail from "#app/examples/combobox-group/thumbnail.react.tsx";
 export function SelectContent() {
   const store = Ariakit.useComboboxStore({ defaultSelectedValue: "Apple" });
   const selectedValue = Ariakit.useStoreState(store, "selectedValue");
-  // Undefined sizes keep the badge default, and numeric zero remains content.
+  // Undefined sizes keep the default, and numeric zero remains content.
   return (
     <div className="flex flex-col gap-6">
       <div className="flex gap-4">
-        <ComboboxSelect
-          badge
-          aria-label="Default status"
-          displayValue="Pending"
-        />
-        <ComboboxSelect
-          badge
-          $size={undefined}
-          aria-label="Optional status"
-          displayValue="Active"
-        />
-        <ComboboxSelect
-          badge
-          $size="lg"
-          aria-label="Large status"
-          displayValue="Complete"
-        />
+        <ComboboxProvider>
+          <ComboboxSelect aria-label="Default status" displayValue="Pending" />
+        </ComboboxProvider>
+        <ComboboxProvider>
+          <ComboboxSelect
+            $size={undefined}
+            aria-label="Optional status"
+            displayValue="Active"
+          />
+        </ComboboxProvider>
+        <ComboboxProvider>
+          <ComboboxSelect
+            $size="lg"
+            aria-label="Large status"
+            displayValue="Complete"
+          />
+        </ComboboxProvider>
       </div>
       <div>
-        <ComboboxSelect
-          store={store}
-          label="Fruit"
-          items={[{ value: "Apple" }, { value: "Orange" }]}
-        />
+        <ComboboxProvider store={store}>
+          <ComboboxSelectLabel>Fruit</ComboboxSelectLabel>
+          <ComboboxSelect />
+          <ComboboxPopover>
+            <ComboboxItem value="Apple" checkmark="before" />
+            <ComboboxItem value="Orange" checkmark="before" />
+          </ComboboxPopover>
+        </ComboboxProvider>
         <p>Selected fruit: {selectedValue}</p>
       </div>
       <div className="flex gap-4">
         <div>
-          <ComboboxSelectProvider defaultValue="All">
+          <ComboboxProvider defaultSelectedValue="All">
             <ComboboxSelectLabel>Unread messages</ComboboxSelectLabel>
-            <ComboboxSelectButton displayValue={0}>All</ComboboxSelectButton>
-          </ComboboxSelectProvider>
+            <ComboboxSelect displayValue={0}>All</ComboboxSelect>
+          </ComboboxProvider>
         </div>
         <div>
-          <ComboboxSelectProvider defaultValue="All">
+          <ComboboxProvider defaultSelectedValue="All">
             <ComboboxSelectLabel>Open issues</ComboboxSelectLabel>
-            <ComboboxSelectButton>{0}</ComboboxSelectButton>
-            <ComboboxSelectPopover>
-              <ComboboxSelectItem value="no-issues">{0}</ComboboxSelectItem>
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            <ComboboxSelect>{0}</ComboboxSelect>
+            <ComboboxPopover>
+              <ComboboxItem checkmark="before" value="no-issues">
+                {0}
+              </ComboboxItem>
+            </ComboboxPopover>
+          </ComboboxProvider>
         </div>
       </div>
     </div>
@@ -100,58 +102,58 @@ export function ConditionalContent() {
         />
         Show status labels
       </label>
-      <ComboboxSelectProvider defaultValue="Open">
+      <ComboboxProvider defaultSelectedValue="Open">
         <ComboboxSelectLabel>Status filter</ComboboxSelectLabel>
-        <ComboboxSelectButton
+        <ComboboxSelect
           chevron={false}
           icon={icon}
           displayValue={labels && "Custom status"}
         >
           {labels && "Status summary"}
-        </ComboboxSelectButton>
-        <ComboboxSelectPopover>
-          <ComboboxSelectItem value="Open" checkmark={false} icon={icon}>
+        </ComboboxSelect>
+        <ComboboxPopover>
+          <ComboboxItem value="Open" checkmark={false} icon={icon}>
             {labels && "Open status"}
-          </ComboboxSelectItem>
-          <ComboboxSelectItem value="Closed" checkmark={false} icon={icon}>
+          </ComboboxItem>
+          <ComboboxItem value="Closed" checkmark={false} icon={icon}>
             {labels && "Closed status"}
-          </ComboboxSelectItem>
-          <ComboboxSelectItem value="No activity" checkmark={false} icon={0} />
-          <ComboboxSelectItem
+          </ComboboxItem>
+          <ComboboxItem value="No activity" checkmark={false} icon={0} />
+          <ComboboxItem
             value="Blank"
             aria-label="Blank status"
             checkmark={false}
           >
             {""}
-          </ComboboxSelectItem>
-        </ComboboxSelectPopover>
+          </ComboboxItem>
+        </ComboboxPopover>
         {/*
          * A false display value falls through to children, and an icon of 0
          * stays.
          */}
-        <ComboboxSelectButton
+        <ComboboxSelect
           aria-label="Status summary"
           displayValue={false}
           chevron={false}
           icon={0}
         >
           Summary
-        </ComboboxSelectButton>
+        </ComboboxSelect>
         {/*
          * An explicit empty string requests blank content instead of a
          * fallback.
          */}
-        <ComboboxSelectButton
+        <ComboboxSelect
           aria-label="Blank display"
           displayValue=""
           chevron={false}
         >
           Fallback
-        </ComboboxSelectButton>
-        <ComboboxSelectButton aria-label="Blank summary" chevron={false}>
+        </ComboboxSelect>
+        <ComboboxSelect aria-label="Blank summary" chevron={false}>
           {""}
-        </ComboboxSelectButton>
-      </ComboboxSelectProvider>
+        </ComboboxSelect>
+      </ComboboxProvider>
     </section>
   );
 }
@@ -190,12 +192,14 @@ export function OptionalProps() {
           blurOnHoverEnd={undefined}
         />
       </Combobox>
-      <ComboboxSelect
-        label="Status"
-        defaultValue="Active"
-        popover={{ gutter: undefined, shift: undefined }}
-        items={[{ value: "Active" }, { value: "Complete" }]}
-      />
+      <ComboboxProvider defaultSelectedValue="Active">
+        <ComboboxSelectLabel>Status</ComboboxSelectLabel>
+        <ComboboxSelect />
+        <ComboboxPopover gutter={undefined} shift={undefined}>
+          <ComboboxItem value="Active" checkmark="before" />
+          <ComboboxItem value="Complete" checkmark="before" />
+        </ComboboxPopover>
+      </ComboboxProvider>
     </section>
   );
 }

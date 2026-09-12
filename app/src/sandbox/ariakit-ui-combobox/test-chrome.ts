@@ -100,7 +100,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toHaveAttribute("aria-selected", "true");
   });
 
-  test("shows the chosen status on the badge select", async ({ q }) => {
+  test("shows the chosen status on the status select", async ({ q }) => {
     const select = q.combobox("Review status");
     await test.expect(select).toHaveText("In review");
     await select.click();

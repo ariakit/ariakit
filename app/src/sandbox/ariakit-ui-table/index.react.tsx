@@ -206,14 +206,14 @@ const elementValueRows: TableRows<"name" | "status" | "action"> = [
   {
     group: "head",
     name: "Name",
-    status: "Status",
+    status: { children: "Status", $fit: true },
     action: { children: "Action", $fit: true },
   },
   {
     key: "ada",
     name: <TableCell header="row">Ada</TableCell>,
     status: (
-      <Badge $layer="success">
+      <Badge $forceRounded $layer="success">
         <BadgeLabel>Active</BadgeLabel>
       </Badge>
     ),
@@ -537,12 +537,16 @@ const reviewRows: TableRows<ReviewColumn> = [
 
 // An element other than a TableCell is the content of its column's cell.
 const statusRows: TableRows<"component" | "status"> = [
-  { group: "head", component: "Component", status: "Status" },
+  {
+    group: "head",
+    component: "Component",
+    status: { children: "Status", $fit: true },
+  },
   {
     key: "button",
     component: "Button",
     status: (
-      <Badge $layer="success">
+      <Badge $forceRounded $layer="success">
         <BadgeLabel>Covered</BadgeLabel>
       </Badge>
     ),
@@ -551,7 +555,7 @@ const statusRows: TableRows<"component" | "status"> = [
     key: "tabs",
     component: "Tabs",
     status: (
-      <Badge $layer="warning">
+      <Badge $forceRounded $layer="warning">
         <BadgeLabel>Partial</BadgeLabel>
       </Badge>
     ),
@@ -717,8 +721,8 @@ export default function TableExamples() {
             <TableRowGroup>
               <TableRow>
                 <TableCell header="row">Button</TableCell>
-                <TableCell>
-                  <Badge $layer="success">
+                <TableCell $fit>
+                  <Badge $forceRounded $layer="success">
                     <BadgeLabel>Covered</BadgeLabel>
                   </Badge>
                 </TableCell>
@@ -726,8 +730,8 @@ export default function TableExamples() {
               </TableRow>
               <TableRow>
                 <TableCell header="row">Glider</TableCell>
-                <TableCell>
-                  <Badge $layer="warning">
+                <TableCell $fit>
+                  <Badge $forceRounded $layer="warning">
                     <BadgeLabel>Expanded</BadgeLabel>
                   </Badge>
                 </TableCell>
@@ -735,8 +739,8 @@ export default function TableExamples() {
               </TableRow>
               <TableRow>
                 <TableCell header="row">Tabs</TableCell>
-                <TableCell>
-                  <Badge $layer="brand">
+                <TableCell $fit>
+                  <Badge $forceRounded $layer="brand">
                     <BadgeLabel>In review</BadgeLabel>
                   </Badge>
                 </TableCell>
@@ -763,8 +767,8 @@ export default function TableExamples() {
           <TableRowGroup>
             <TableRow>
               <TableCell header="row">Button</TableCell>
-              <TableCell>
-                <Badge $layer="success">
+              <TableCell $fit>
+                <Badge $forceRounded $layer="success">
                   <BadgeLabel>Covered</BadgeLabel>
                 </Badge>
               </TableCell>
@@ -772,8 +776,8 @@ export default function TableExamples() {
             </TableRow>
             <TableRow>
               <TableCell header="row">Glider</TableCell>
-              <TableCell>
-                <Badge $layer="warning">
+              <TableCell $fit>
+                <Badge $forceRounded $layer="warning">
                   <BadgeLabel>Expanded</BadgeLabel>
                 </Badge>
               </TableCell>
@@ -781,8 +785,8 @@ export default function TableExamples() {
             </TableRow>
             <TableRow>
               <TableCell header="row">Tabs</TableCell>
-              <TableCell>
-                <Badge $layer="brand">
+              <TableCell $fit>
+                <Badge $forceRounded $layer="brand">
                   <BadgeLabel>In review</BadgeLabel>
                 </Badge>
               </TableCell>
@@ -816,8 +820,8 @@ export default function TableExamples() {
             <TableRowGroup>
               <TableRow>
                 <TableCell>Button</TableCell>
-                <TableCell>
-                  <Badge $layer="success">
+                <TableCell $fit>
+                  <Badge $forceRounded $layer="success">
                     <BadgeLabel>Covered</BadgeLabel>
                   </Badge>
                 </TableCell>

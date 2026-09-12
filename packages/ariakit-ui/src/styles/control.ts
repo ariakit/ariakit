@@ -154,6 +154,10 @@ export const controlSlot = cv({
      */
     $p: {
       unset: "",
+      // Match a badge's optical side padding at the slot's fixed height. The
+      // text is scaled to 0.8125em, and the standalone badge uses a 0.75 share
+      // of the space around its capitals for its optical padding.
+      auto: "px-[max(0px,calc((var(--size)-1lh*0.8125)/2+(1lh-1cap)*0.8125*0.75))]",
       xs: "px-[calc(var(--size)*0.05)]",
       sm: "px-[calc(var(--size)*0.1)]",
       md: "px-[calc(var(--size)*0.15)]",
@@ -184,7 +188,7 @@ export const controlSlot = cv({
       icon: "",
       // A key chord reads the same way in every locale, so the bidi algorithm
       // must not reorder its keys in a right-to-left row.
-      shortcut: "[direction:ltr]",
+      shortcut: "[direction:ltr] ak-ink-60",
       avatar: "overflow-clip",
       badge: "*:text-[0.8125em]",
     },
@@ -251,7 +255,9 @@ export const controlSlot = cv({
       // Only badges get the default horizontal padding: the $p values pad the x
       // axis for text content, while avatar children (images) must fill the
       // whole slot, or the round clip turns them into straight-sided slabs.
-      if (variants.$kind === "badge") return defaultValue ?? variants.$size;
+      if (variants.$kind === "badge") {
+        return defaultValue ?? "auto";
+      }
       return defaultValue ?? "unset";
     },
     $rowSpan: 1,
@@ -314,7 +320,7 @@ export const controlContent = cv({
   variants: {
     $orientation: {
       unset: "",
-      horizontal: "flex flex-wrap",
+      horizontal: "flex flex-wrap items-baseline",
       vertical: "flex flex-col",
     },
   },

@@ -20,15 +20,10 @@ import {
   ComboboxPopover,
   ComboboxProvider,
   ComboboxSelect,
-  ComboboxSelectButton,
-  ComboboxSelectItem,
   ComboboxSelectLabel,
-  ComboboxSelectPopover,
-  ComboboxSelectProvider,
-  ComboboxSelectValue,
+  ComboboxSelectedValue,
 } from "@ariakit/ui/components/combobox.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
-import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import * as icons from "lucide-react";
 import {
   Example,
@@ -36,9 +31,10 @@ import {
   ExampleStage,
 } from "#app/components/ariakit-ui-example.react.tsx";
 import {
-  BadgeSelectExample,
+  StatusSelectExample,
   CountryComboboxExample,
   SearchableSelectExample,
+  ScrollableSearchExample,
   openListProps,
 } from "./combobox-examples.react.tsx";
 import {
@@ -229,8 +225,8 @@ export default function ComboboxExamples() {
                   <ComboboxItemLabel>New file</ComboboxItemLabel>
                 </ComboboxItemContent>
                 <ComboboxItemSlot $kind="shortcut">
-                  <Kbd>⌘</Kbd>
-                  <Kbd>N</Kbd>
+                  <kbd>⌘</kbd>
+                  <kbd>N</kbd>
                 </ComboboxItemSlot>
               </ComboboxItem>
               <ComboboxItem value="Share">
@@ -261,8 +257,8 @@ export default function ComboboxExamples() {
                   <ComboboxItemLabel>New file</ComboboxItemLabel>
                 </ComboboxItemContent>
                 <ComboboxItemSlot $kind="shortcut" aria-hidden>
-                  <Kbd>⌘</Kbd>
-                  <Kbd>N</Kbd>
+                  <kbd>⌘</kbd>
+                  <kbd>N</kbd>
                 </ComboboxItemSlot>
               </ComboboxItem>
               <ComboboxItem value="Share">
@@ -309,24 +305,27 @@ export default function ComboboxExamples() {
         title="Default select"
         description="A select that shows the chosen value. At rest it looks like a text field: sunk into the surface, with a border."
         code={`
-          <ComboboxSelect items={[…]} />
+          <ComboboxProvider defaultSelectedValue="Apple">
+            <ComboboxSelectLabel>Favorite fruit</ComboboxSelectLabel>
+            <ComboboxSelect />
+            <ComboboxPopover>
+              <ComboboxItem value="Apple" checkmark="before" />
+              <ComboboxItem value="Banana" checkmark="before" />
+              <ComboboxItem value="Cherry" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         `}
       >
         <div className="flex flex-col items-start gap-2">
-          <ComboboxSelect
-            label="Favorite fruit"
-            items={[
-              { value: "Apple" },
-              { value: "Banana" },
-              { value: "Cherry" },
-            ]}
-            defaultValue="Apple"
-            // The page holds other lists open, and a list that already exists
-            // when they open is marked as outside them and ignores Escape. A
-            // portaled list that mounts on open is not.
-            // https://github.com/ariakit/ariakit/issues/7463
-            popover={{ unmountOnHide: true }}
-          />
+          <ComboboxProvider defaultSelectedValue="Apple">
+            <ComboboxSelectLabel>Favorite fruit</ComboboxSelectLabel>
+            <ComboboxSelect />
+            <ComboboxPopover unmountOnHide>
+              <ComboboxItem value="Apple" checkmark="before" />
+              <ComboboxItem value="Banana" checkmark="before" />
+              <ComboboxItem value="Cherry" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         </div>
       </Example>
 
@@ -334,31 +333,35 @@ export default function ComboboxExamples() {
         title="Open select"
         description="The list below its button. A check marks the selected item, and a disabled item is dimmed."
         code={`
-          <ComboboxSelectProvider open>
+          <ComboboxProvider open>
             <ComboboxSelectLabel>Dessert</ComboboxSelectLabel>
-            <ComboboxSelectButton />
-            <ComboboxSelectPopover>
-              <ComboboxSelectItem value="Brownie" />
-              <ComboboxSelectItem value="Cheesecake" />
-              <ComboboxSelectItem value="Tiramisu" />
-              <ComboboxSelectItem value="Sold-out macaron" disabled />
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            <ComboboxSelect />
+            <ComboboxPopover>
+              <ComboboxItem checkmark="before" value="Brownie" />
+              <ComboboxItem checkmark="before" value="Cheesecake" />
+              <ComboboxItem checkmark="before" value="Tiramisu" />
+              <ComboboxItem checkmark="before" value="Sold-out macaron" disabled />
+            </ComboboxPopover>
+          </ComboboxProvider>
         `}
       >
         <ExampleStage anchor="start" height={62}>
-          <ComboboxSelectProvider open defaultValue="Cheesecake">
+          <ComboboxProvider open defaultSelectedValue="Cheesecake">
             <div className="flex w-full flex-col items-start gap-2">
               <ComboboxSelectLabel>Dessert</ComboboxSelectLabel>
-              <ComboboxSelectButton />
+              <ComboboxSelect />
             </div>
-            <ComboboxSelectPopover {...openListProps}>
-              <ComboboxSelectItem value="Brownie" />
-              <ComboboxSelectItem value="Cheesecake" />
-              <ComboboxSelectItem value="Tiramisu" />
-              <ComboboxSelectItem value="Sold-out macaron" disabled />
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            <ComboboxPopover {...openListProps}>
+              <ComboboxItem checkmark="before" value="Brownie" />
+              <ComboboxItem checkmark="before" value="Cheesecake" />
+              <ComboboxItem checkmark="before" value="Tiramisu" />
+              <ComboboxItem
+                checkmark="before"
+                value="Sold-out macaron"
+                disabled
+              />
+            </ComboboxPopover>
+          </ComboboxProvider>
         </ExampleStage>
       </Example>
 
@@ -368,15 +371,15 @@ export default function ComboboxExamples() {
         code={`
           Full name
           <Input />
-          <ComboboxSelectProvider open>
+          <ComboboxProvider open>
             <ComboboxSelectLabel>Country</ComboboxSelectLabel>
-            <ComboboxSelectButton />
-            <ComboboxSelectPopover>
-              <ComboboxSelectItem value="Ireland" />
-              <ComboboxSelectItem value="Portugal" />
-              <ComboboxSelectItem value="United Kingdom" />
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            <ComboboxSelect />
+            <ComboboxPopover>
+              <ComboboxItem checkmark="before" value="Ireland" />
+              <ComboboxItem checkmark="before" value="Portugal" />
+              <ComboboxItem checkmark="before" value="United Kingdom" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         `}
       >
         <ExampleStage anchor="start" height={76}>
@@ -385,17 +388,17 @@ export default function ComboboxExamples() {
               Full name
               <Input defaultValue="Ada Lovelace" />
             </label>
-            <ComboboxSelectProvider open defaultValue="United Kingdom">
+            <ComboboxProvider open defaultSelectedValue="United Kingdom">
               <div className="grid gap-2">
                 <ComboboxSelectLabel>Country</ComboboxSelectLabel>
-                <ComboboxSelectButton className="w-full" />
+                <ComboboxSelect className="w-full" />
               </div>
-              <ComboboxSelectPopover {...openListProps}>
-                <ComboboxSelectItem value="Ireland" />
-                <ComboboxSelectItem value="Portugal" />
-                <ComboboxSelectItem value="United Kingdom" />
-              </ComboboxSelectPopover>
-            </ComboboxSelectProvider>
+              <ComboboxPopover {...openListProps}>
+                <ComboboxItem checkmark="before" value="Ireland" />
+                <ComboboxItem checkmark="before" value="Portugal" />
+                <ComboboxItem checkmark="before" value="United Kingdom" />
+              </ComboboxPopover>
+            </ComboboxProvider>
           </div>
         </ExampleStage>
       </Example>
@@ -404,65 +407,65 @@ export default function ComboboxExamples() {
         title="Rich items"
         description="Items with a label and a description. In the disabled item, the description dims with the label."
         code={`
-          <ComboboxSelectProvider open>
+          <ComboboxProvider open>
             <ComboboxSelectLabel>Plan</ComboboxSelectLabel>
-            <ComboboxSelectButton />
-            <ComboboxSelectPopover>
-              <ComboboxSelectItem value="Starter">
+            <ComboboxSelect />
+            <ComboboxPopover>
+              <ComboboxItem checkmark="before" value="Starter">
                 <ComboboxItemContent>
                   <ComboboxItemLabel>Starter</ComboboxItemLabel>
                   <ComboboxItemDescription>…</ComboboxItemDescription>
                 </ComboboxItemContent>
-              </ComboboxSelectItem>
-              <ComboboxSelectItem value="Team">
+              </ComboboxItem>
+              <ComboboxItem checkmark="before" value="Team">
                 <ComboboxItemContent>
                   <ComboboxItemLabel>Team</ComboboxItemLabel>
                   <ComboboxItemDescription>…</ComboboxItemDescription>
                 </ComboboxItemContent>
-              </ComboboxSelectItem>
-              <ComboboxSelectItem value="Enterprise" disabled>
+              </ComboboxItem>
+              <ComboboxItem checkmark="before" value="Enterprise" disabled>
                 <ComboboxItemContent>
                   <ComboboxItemLabel>Enterprise</ComboboxItemLabel>
                   <ComboboxItemDescription>…</ComboboxItemDescription>
                 </ComboboxItemContent>
-              </ComboboxSelectItem>
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+              </ComboboxItem>
+            </ComboboxPopover>
+          </ComboboxProvider>
         `}
       >
         <ExampleStage anchor="start" height={70}>
-          <ComboboxSelectProvider open defaultValue="Team">
+          <ComboboxProvider open defaultSelectedValue="Team">
             <div className="flex w-full flex-col items-start gap-2">
               <ComboboxSelectLabel>Plan</ComboboxSelectLabel>
-              <ComboboxSelectButton />
+              <ComboboxSelect />
             </div>
-            <ComboboxSelectPopover {...openListProps}>
-              <ComboboxSelectItem value="Starter">
+            <ComboboxPopover {...openListProps}>
+              <ComboboxItem checkmark="before" value="Starter">
                 <ComboboxItemContent>
                   <ComboboxItemLabel>Starter</ComboboxItemLabel>
                   <ComboboxItemDescription>
                     One project and community support
                   </ComboboxItemDescription>
                 </ComboboxItemContent>
-              </ComboboxSelectItem>
-              <ComboboxSelectItem value="Team">
+              </ComboboxItem>
+              <ComboboxItem checkmark="before" value="Team">
                 <ComboboxItemContent>
                   <ComboboxItemLabel>Team</ComboboxItemLabel>
                   <ComboboxItemDescription>
                     Unlimited projects and email support
                   </ComboboxItemDescription>
                 </ComboboxItemContent>
-              </ComboboxSelectItem>
-              <ComboboxSelectItem value="Enterprise" disabled>
+              </ComboboxItem>
+              <ComboboxItem checkmark="before" value="Enterprise" disabled>
                 <ComboboxItemContent>
                   <ComboboxItemLabel>Enterprise</ComboboxItemLabel>
                   <ComboboxItemDescription>
                     Contact sales to turn it on
                   </ComboboxItemDescription>
                 </ComboboxItemContent>
-              </ComboboxSelectItem>
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+              </ComboboxItem>
+            </ComboboxPopover>
+          </ComboboxProvider>
         </ExampleStage>
       </Example>
 
@@ -470,48 +473,48 @@ export default function ComboboxExamples() {
         title="Icons"
         description="An icon on the button and on each item, with the check after the label."
         code={`
-          <ComboboxSelectProvider open>
+          <ComboboxProvider open>
             <ComboboxSelectLabel>Framework</ComboboxSelectLabel>
-            <ComboboxSelectButton icon={<Atom />} />
-            <ComboboxSelectPopover>
-              <ComboboxSelectItem value="React" icon={<Atom />} checkmark="after" />
-              <ComboboxSelectItem value="Solid" icon={<Hexagon />} checkmark="after" />
-              <ComboboxSelectItem value="Vue" icon={<Triangle />} checkmark="after" />
-              <ComboboxSelectItem value="Svelte" icon={<Flame />} checkmark="after" disabled />
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            <ComboboxSelect icon={<Atom />} />
+            <ComboboxPopover>
+              <ComboboxItem value="React" icon={<Atom />} checkmark="after" />
+              <ComboboxItem value="Solid" icon={<Hexagon />} checkmark="after" />
+              <ComboboxItem value="Vue" icon={<Triangle />} checkmark="after" />
+              <ComboboxItem value="Svelte" icon={<Flame />} checkmark="after" disabled />
+            </ComboboxPopover>
+          </ComboboxProvider>
         `}
       >
         <ExampleStage anchor="start" height={62}>
-          <ComboboxSelectProvider open defaultValue="React">
+          <ComboboxProvider open defaultSelectedValue="React">
             <div className="flex w-full flex-col items-start gap-2">
               <ComboboxSelectLabel>Framework</ComboboxSelectLabel>
-              <ComboboxSelectButton icon={<icons.Atom />} />
+              <ComboboxSelect icon={<icons.Atom />} />
             </div>
-            <ComboboxSelectPopover {...openListProps}>
-              <ComboboxSelectItem
+            <ComboboxPopover {...openListProps}>
+              <ComboboxItem
                 value="React"
                 icon={<icons.Atom />}
                 checkmark="after"
               />
-              <ComboboxSelectItem
+              <ComboboxItem
                 value="Solid"
                 icon={<icons.Hexagon />}
                 checkmark="after"
               />
-              <ComboboxSelectItem
+              <ComboboxItem
                 value="Vue"
                 icon={<icons.Triangle />}
                 checkmark="after"
               />
-              <ComboboxSelectItem
+              <ComboboxItem
                 value="Svelte"
                 icon={<icons.Flame />}
                 checkmark="after"
                 disabled
               />
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            </ComboboxPopover>
+          </ComboboxProvider>
         </ExampleStage>
       </Example>
 
@@ -519,20 +522,19 @@ export default function ComboboxExamples() {
         title="Bevel select"
         description="A raised select that looks like a push button."
         code={`
-          <ComboboxSelect $kind="bevel" items={[…]} />
+          <ComboboxSelect $kind="bevel" />
         `}
       >
         <div className="flex flex-col items-start gap-2">
-          <ComboboxSelect
-            $kind="bevel"
-            label="Size"
-            items={[
-              { value: "Small" },
-              { value: "Medium" },
-              { value: "Large" },
-            ]}
-            defaultValue="Medium"
-          />
+          <ComboboxProvider defaultSelectedValue="Medium">
+            <ComboboxSelectLabel>Size</ComboboxSelectLabel>
+            <ComboboxSelect $kind="bevel" />
+            <ComboboxPopover>
+              <ComboboxItem value="Small" checkmark="before" />
+              <ComboboxItem value="Medium" checkmark="before" />
+              <ComboboxItem value="Large" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         </div>
       </Example>
 
@@ -540,20 +542,19 @@ export default function ComboboxExamples() {
         title="Flat select"
         description="A see-through select for a toolbar that already owns the surface. It paints a background only on hover."
         code={`
-          <ComboboxSelect $layer="transparent" items={[…]} />
+          <ComboboxSelect $layer="transparent" />
         `}
       >
         <div className="flex flex-col items-start gap-2">
-          <ComboboxSelect
-            $layer="transparent"
-            label="View"
-            items={[
-              { value: "Board" },
-              { value: "List" },
-              { value: "Timeline" },
-            ]}
-            defaultValue="Board"
-          />
+          <ComboboxProvider defaultSelectedValue="Board">
+            <ComboboxSelectLabel>View</ComboboxSelectLabel>
+            <ComboboxSelect $layer="transparent" />
+            <ComboboxPopover>
+              <ComboboxItem value="Board" checkmark="before" />
+              <ComboboxItem value="List" checkmark="before" />
+              <ComboboxItem value="Timeline" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         </div>
       </Example>
 
@@ -561,21 +562,19 @@ export default function ComboboxExamples() {
         title="Chevron first"
         description="The chevron starts the row, and the icon moves after the value."
         code={`
-          <ComboboxSelect chevron="before" icon={<Layers />} items={[…]} />
+          <ComboboxSelect chevron="before" icon={<Layers />} />
         `}
       >
         <div className="flex flex-col items-start gap-2">
-          <ComboboxSelect
-            label="Group by"
-            chevron="before"
-            icon={<icons.Layers />}
-            items={[
-              { value: "Status" },
-              { value: "Owner" },
-              { value: "Priority" },
-            ]}
-            defaultValue="Status"
-          />
+          <ComboboxProvider defaultSelectedValue="Status">
+            <ComboboxSelectLabel>Group by</ComboboxSelectLabel>
+            <ComboboxSelect chevron="before" icon={<icons.Layers />} />
+            <ComboboxPopover>
+              <ComboboxItem value="Status" checkmark="before" />
+              <ComboboxItem value="Owner" checkmark="before" />
+              <ComboboxItem value="Priority" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         </div>
       </Example>
 
@@ -583,21 +582,19 @@ export default function ComboboxExamples() {
         title="Without chevron"
         description="A select with no chevron. A leading icon still shows that the control opens a list."
         code={`
-          <ComboboxSelect chevron={false} icon={<ArrowUpDown />} items={[…]} />
+          <ComboboxSelect chevron={false} icon={<ArrowUpDown />} />
         `}
       >
         <div className="flex flex-col items-start gap-2">
-          <ComboboxSelect
-            label="Sort by"
-            chevron={false}
-            icon={<icons.ArrowUpDown />}
-            items={[
-              { value: "Newest" },
-              { value: "Oldest" },
-              { value: "Name" },
-            ]}
-            defaultValue="Newest"
-          />
+          <ComboboxProvider defaultSelectedValue="Newest">
+            <ComboboxSelectLabel>Sort by</ComboboxSelectLabel>
+            <ComboboxSelect chevron={false} icon={<icons.ArrowUpDown />} />
+            <ComboboxPopover>
+              <ComboboxItem value="Newest" checkmark="before" />
+              <ComboboxItem value="Oldest" checkmark="before" />
+              <ComboboxItem value="Name" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         </div>
       </Example>
 
@@ -605,56 +602,61 @@ export default function ComboboxExamples() {
         title="Placeholder"
         description="An empty value shows a prompt until the user picks an item. The prompt has the ink of a value, not of a placeholder."
         code={`
-          <ComboboxSelect items={[…]} displayValue={<ComboboxSelectValue fallback="Choose a region" />} />
+          <ComboboxSelect displayValue={<ComboboxSelectedValue fallback="Choose a region" />} />
         `}
       >
         <div className="flex flex-col items-start gap-2">
-          <ComboboxSelect
-            label="Shipping region"
-            defaultValue=""
-            items={[
-              { value: "Europe" },
-              { value: "North America" },
-              { value: "Asia" },
-            ]}
-            displayValue={<ComboboxSelectValue fallback="Choose a region" />}
-          />
+          <ComboboxProvider>
+            <ComboboxSelectLabel>Shipping region</ComboboxSelectLabel>
+            <ComboboxSelect
+              displayValue={
+                <ComboboxSelectedValue fallback="Choose a region" />
+              }
+            />
+            <ComboboxPopover>
+              <ComboboxItem value="Europe" checkmark="before" />
+              <ComboboxItem value="North America" checkmark="before" />
+              <ComboboxItem value="Asia" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         </div>
       </Example>
 
       <Example
-        title="Badge select"
-        description="A select that looks like a status badge. Its color follows the selected status."
+        title="Status select"
+        description="The color of the select follows the selected status."
         code={`
-          <ComboboxSelectProvider>
+          <ComboboxProvider>
             <ComboboxSelectLabel>Review status</ComboboxSelectLabel>
-            <ComboboxSelectButton badge $layer="brand" />
-            <ComboboxSelectPopover>
-              <ComboboxSelectItem value="Draft" />
-              <ComboboxSelectItem value="In review" />
-              <ComboboxSelectItem value="Published" />
-              <ComboboxSelectItem value="Archived" />
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            <ComboboxSelect $layer="brand" />
+            <ComboboxPopover>
+              <ComboboxItem checkmark="before" value="Draft" />
+              <ComboboxItem checkmark="before" value="In review" />
+              <ComboboxItem checkmark="before" value="Published" />
+              <ComboboxItem checkmark="before" value="Archived" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         `}
       >
-        <BadgeSelectExample />
+        <StatusSelectExample />
       </Example>
 
       <Example
         title="Disabled select"
         description="The value and the chevron are dimmed, the border is faint, and hover and press do nothing."
         code={`
-          <ComboboxSelect items={[…]} disabled />
+          <ComboboxSelect disabled />
         `}
       >
         <div className="flex flex-col items-start gap-2">
-          <ComboboxSelect
-            label="Billing cycle"
-            items={[{ value: "Monthly" }, { value: "Yearly" }]}
-            defaultValue="Yearly"
-            disabled
-          />
+          <ComboboxProvider defaultSelectedValue="Yearly">
+            <ComboboxSelectLabel>Billing cycle</ComboboxSelectLabel>
+            <ComboboxSelect disabled />
+            <ComboboxPopover>
+              <ComboboxItem value="Monthly" checkmark="before" />
+              <ComboboxItem value="Yearly" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         </div>
       </Example>
 
@@ -662,63 +664,65 @@ export default function ComboboxExamples() {
         title="Multiple selection"
         description="An array value keeps more than one item. Each selected item has a check, and the button lists the selected values."
         code={`
-          <ComboboxSelectProvider open>
+          <ComboboxProvider open>
             <ComboboxSelectLabel>Toppings</ComboboxSelectLabel>
-            <ComboboxSelectButton />
-            <ComboboxSelectPopover>
-              <ComboboxSelectItem value="Cheese" />
-              <ComboboxSelectItem value="Olives" />
-              <ComboboxSelectItem value="Mushrooms" />
-              <ComboboxSelectItem value="Peppers" />
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            <ComboboxSelect />
+            <ComboboxPopover>
+              <ComboboxItem checkmark="before" value="Cheese" />
+              <ComboboxItem checkmark="before" value="Olives" />
+              <ComboboxItem checkmark="before" value="Mushrooms" />
+              <ComboboxItem checkmark="before" value="Peppers" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         `}
       >
         <ExampleStage anchor="start" height={62}>
-          <ComboboxSelectProvider open defaultValue={["Cheese", "Olives"]}>
+          <ComboboxProvider open defaultSelectedValue={["Cheese", "Olives"]}>
             <div className="flex w-full flex-col items-start gap-2">
               <ComboboxSelectLabel>Toppings</ComboboxSelectLabel>
-              <ComboboxSelectButton />
+              <ComboboxSelect />
             </div>
-            <ComboboxSelectPopover {...openListProps}>
-              <ComboboxSelectItem value="Cheese" />
-              <ComboboxSelectItem value="Olives" />
-              <ComboboxSelectItem value="Mushrooms" />
-              <ComboboxSelectItem value="Peppers" />
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            <ComboboxPopover {...openListProps}>
+              <ComboboxItem checkmark="before" value="Cheese" />
+              <ComboboxItem checkmark="before" value="Olives" />
+              <ComboboxItem checkmark="before" value="Mushrooms" />
+              <ComboboxItem checkmark="before" value="Peppers" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         </ExampleStage>
       </Example>
 
       <Example
         title="Selection count"
-        description="A render function in ComboboxSelectValue changes the text on the button, here to the number of selected items."
+        description="A render function in ComboboxSelectedValue changes the text on the button, here to the number of selected items."
         code={`
-          <ComboboxSelectProvider>
+          <ComboboxProvider>
             <ComboboxSelectLabel>Issue labels</ComboboxSelectLabel>
-            <ComboboxSelectButton displayValue={<ComboboxSelectValue />} />
-            <ComboboxSelectPopover>
-              <ComboboxSelectItem value="Bug" />
-              <ComboboxSelectItem value="Docs" />
-              <ComboboxSelectItem value="Feature" />
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            <ComboboxSelect displayValue={<ComboboxSelectedValue />} />
+            <ComboboxPopover>
+              <ComboboxItem checkmark="before" value="Bug" />
+              <ComboboxItem checkmark="before" value="Docs" />
+              <ComboboxItem checkmark="before" value="Feature" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         `}
       >
         <div className="flex flex-col items-start gap-2">
-          <ComboboxSelectProvider defaultValue={["Bug", "Docs"]}>
+          <ComboboxProvider defaultSelectedValue={["Bug", "Docs"]}>
             <ComboboxSelectLabel>Issue labels</ComboboxSelectLabel>
-            <ComboboxSelectButton
+            <ComboboxSelect
               displayValue={
-                <ComboboxSelectValue>{selectedCountLabel}</ComboboxSelectValue>
+                <ComboboxSelectedValue>
+                  {selectedCountLabel}
+                </ComboboxSelectedValue>
               }
             />
-            <ComboboxSelectPopover>
-              <ComboboxSelectItem value="Bug" />
-              <ComboboxSelectItem value="Docs" />
-              <ComboboxSelectItem value="Feature" />
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            <ComboboxPopover>
+              <ComboboxItem checkmark="before" value="Bug" />
+              <ComboboxItem checkmark="before" value="Docs" />
+              <ComboboxItem checkmark="before" value="Feature" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         </div>
       </Example>
 
@@ -726,49 +730,69 @@ export default function ComboboxExamples() {
         title="Searchable select"
         description="A search field above the items filters the list. A ComboboxList keeps the items in a listbox of their own, apart from the field."
         code={`
-          <ComboboxSelectProvider open>
+          <ComboboxProvider open>
             <ComboboxSelectLabel>Timezone</ComboboxSelectLabel>
-            <ComboboxSelectButton />
-            <ComboboxSelectPopover>
+            <ComboboxSelect />
+            <ComboboxPopover>
               <ComboboxInput />
-              <ak.ComboboxList>
-                <ComboboxSelectItem value="UTC" />
-                <ComboboxSelectItem value="Europe/London" />
-              </ak.ComboboxList>
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+              <ComboboxList>
+                <ComboboxItem checkmark="before" value="UTC" />
+                <ComboboxItem checkmark="before" value="Europe/London" />
+              </ComboboxList>
+            </ComboboxPopover>
+          </ComboboxProvider>
         `}
       >
         <SearchableSelectExample />
       </Example>
 
       <Example
+        title="Scrollable search"
+        description="The list scrolls below the search field. The field stays visible while you move through the countries."
+        code={`
+          <ComboboxProvider open>
+            <ComboboxSelectLabel>Shipping country</ComboboxSelectLabel>
+            <ComboboxSelect />
+            <ComboboxPopover>
+              <ComboboxInput />
+              <ComboboxList>
+                <ComboboxItem value="Argentina" checkmark="before" />
+                <ComboboxItem value="Australia" checkmark="before" />
+              </ComboboxList>
+            </ComboboxPopover>
+          </ComboboxProvider>
+        `}
+      >
+        <ScrollableSearchExample />
+      </Example>
+
+      <Example
         title="Long list"
         description="A list taller than the height limit of the popover scrolls inside it. It has an item for every hour."
         code={`
-          <ComboboxSelectProvider open>
+          <ComboboxProvider open>
             <ComboboxSelectLabel>Start time</ComboboxSelectLabel>
-            <ComboboxSelectButton />
-            <ComboboxSelectPopover>
-              <ComboboxSelectItem value="00:00" />
-              <ComboboxSelectItem value="01:00" />
-              <ComboboxSelectItem value="02:00" />
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            <ComboboxSelect />
+            <ComboboxPopover>
+              <ComboboxItem checkmark="before" value="00:00" />
+              <ComboboxItem checkmark="before" value="01:00" />
+              <ComboboxItem checkmark="before" value="02:00" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         `}
       >
         <ExampleStage anchor="start" height={104}>
-          <ComboboxSelectProvider open defaultValue="02:00">
+          <ComboboxProvider open defaultSelectedValue="02:00">
             <div className="flex w-full flex-col items-start gap-2">
               <ComboboxSelectLabel>Start time</ComboboxSelectLabel>
-              <ComboboxSelectButton />
+              <ComboboxSelect />
             </div>
-            <ComboboxSelectPopover {...openListProps}>
+            <ComboboxPopover {...openListProps}>
               {startTimes.map((time) => (
-                <ComboboxSelectItem key={time} value={time} />
+                <ComboboxItem checkmark="before" key={time} value={time} />
               ))}
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            </ComboboxPopover>
+          </ComboboxProvider>
         </ExampleStage>
       </Example>
 
@@ -789,7 +813,7 @@ export default function ComboboxExamples() {
             <ComboboxItem value="Alice" />
             <ComboboxItem value="Bob" />
           </Combobox>
-          <ComboboxSelect items={[…]} />
+          <ComboboxSelect />
         `}
       >
         <OptionalProps />
@@ -797,23 +821,23 @@ export default function ComboboxExamples() {
 
       <Example
         title="combobox-select-content"
-        description="An undefined size keeps the badge size, a supplied store drives the select, and a numeric zero stays content in the button and in an item."
+        description="An undefined size keeps the default size, a supplied store drives the select, and a numeric zero stays content in the button and in an item."
         code={`
-          <ComboboxSelect badge />
-          <ComboboxSelect badge />
-          <ComboboxSelect badge $size="lg" />
-          <ComboboxSelect items={[…]} />
-          <ComboboxSelectProvider>
+          <ComboboxSelect />
+          <ComboboxSelect />
+          <ComboboxSelect $size="lg" />
+          <ComboboxSelect />
+          <ComboboxProvider>
             <ComboboxSelectLabel>Unread messages</ComboboxSelectLabel>
-            <ComboboxSelectButton>All</ComboboxSelectButton>
-          </ComboboxSelectProvider>
-          <ComboboxSelectProvider>
+            <ComboboxSelect>All</ComboboxSelect>
+          </ComboboxProvider>
+          <ComboboxProvider>
             <ComboboxSelectLabel>Open issues</ComboboxSelectLabel>
-            <ComboboxSelectButton>0</ComboboxSelectButton>
-            <ComboboxSelectPopover>
-              <ComboboxSelectItem value="no-issues">0</ComboboxSelectItem>
-            </ComboboxSelectPopover>
-          </ComboboxSelectProvider>
+            <ComboboxSelect>0</ComboboxSelect>
+            <ComboboxPopover>
+              <ComboboxItem checkmark="before" value="no-issues">0</ComboboxItem>
+            </ComboboxPopover>
+          </ComboboxProvider>
         `}
       >
         <SelectContent />
@@ -823,19 +847,19 @@ export default function ComboboxExamples() {
         title="combobox-select-content conditional content"
         description="False labels, icons and display values fall back or leave nothing behind, a zero icon stays, and explicit empty strings stay blank."
         code={`
-          <ComboboxSelectProvider>
+          <ComboboxProvider>
             <ComboboxSelectLabel>Status filter</ComboboxSelectLabel>
-            <ComboboxSelectButton chevron={false} />
-            <ComboboxSelectPopover>
-              <ComboboxSelectItem value="Open" checkmark={false} />
-              <ComboboxSelectItem value="Closed" checkmark={false} />
-              <ComboboxSelectItem value="No activity" checkmark={false} />
-              <ComboboxSelectItem value="Blank" checkmark={false} />
-            </ComboboxSelectPopover>
-            <ComboboxSelectButton chevron={false} />
-            <ComboboxSelectButton chevron={false} />
-            <ComboboxSelectButton chevron={false} />
-          </ComboboxSelectProvider>
+            <ComboboxSelect chevron={false} />
+            <ComboboxPopover>
+              <ComboboxItem value="Open" checkmark={false} />
+              <ComboboxItem value="Closed" checkmark={false} />
+              <ComboboxItem value="No activity" checkmark={false} />
+              <ComboboxItem value="Blank" checkmark={false} />
+            </ComboboxPopover>
+            <ComboboxSelect chevron={false} />
+            <ComboboxSelect chevron={false} />
+            <ComboboxSelect chevron={false} />
+          </ComboboxProvider>
         `}
       >
         <ConditionalContent />

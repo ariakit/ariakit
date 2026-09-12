@@ -1,15 +1,13 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import { clsx } from "clsx";
-import { CheckIcon, ChevronDownIcon } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 import type * as React from "react";
 import {
   createOptionalRender,
   createRender,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
-import { badge as badgeStyle } from "../styles/badge.ts";
 import {
   comboboxEmpty,
   comboboxGroup,
@@ -22,11 +20,8 @@ import {
   comboboxItemSlot,
   comboboxSelect,
   comboboxSelectArrow,
-  comboboxSelectIcon,
-  comboboxSelectItem,
-  comboboxSelectItemCheck,
-  comboboxSelectPopover,
-  comboboxSelectValueLabel,
+  comboboxItemCheck,
+  comboboxList,
   comboboxLabel,
   comboboxPopover,
 } from "../styles/combobox.ts";
@@ -120,6 +115,15 @@ export function ComboboxPopover({
   );
 }
 
+export interface ComboboxListProps
+  extends ak.ComboboxListProps, VariantProps<typeof comboboxList> {}
+
+/** A list that scrolls separately from an input in the popover. */
+export function ComboboxList(props: ComboboxListProps) {
+  const [variantProps, rest] = splitProps(props, comboboxList);
+  return <ak.ComboboxList {...comboboxList.jsx(variantProps)} {...rest} />;
+}
+
 export interface ComboboxGroupProps
   extends ak.ComboboxGroupProps, VariantProps<typeof comboboxGroup> {
   /** Custom label element or props to render a `ComboboxGroupLabel`. */
@@ -150,7 +154,12 @@ export function ComboboxGroupLabel(props: ComboboxGroupLabelProps) {
 }
 
 export interface ComboboxItemProps
-  extends ak.ComboboxItemProps, VariantProps<typeof comboboxItem> {}
+  extends ak.ComboboxItemProps, VariantProps<typeof comboboxItem> {
+  /** Icon beside the label, opposite the checkmark when one is shown. */
+  icon?: React.ReactNode;
+  /** Shows a selection checkmark before or after the label. */
+  checkmark?: "before" | "after" | false;
+}
 
 /**
  * Suggestion row. Custom children can use ComboboxItemSlot,
@@ -158,11 +167,18 @@ export interface ComboboxItemProps
  * out an avatar and secondary text.
  */
 export function ComboboxItem({
+  icon,
+  checkmark = false,
   focusOnHover = true,
   blurOnHoverEnd = false,
   ...props
 }: ComboboxItemProps) {
   const [variantProps, rest] = splitProps(props, comboboxItem);
+  const check = checkmark !== false && <ComboboxItemCheck />;
+  const iconElement = isRenderable(icon) && (
+    <ComboboxItemSlot>{icon}</ComboboxItemSlot>
+  );
+  const content = isRenderable(rest.children) ? rest.children : rest.value;
   return (
     <ak.ComboboxItem
       focusOnHover={focusOnHover}
@@ -173,8 +189,35 @@ export function ComboboxItem({
       })}
       {...rest}
     >
-      {rest.children ?? <ComboboxItemLabel>{rest.value}</ComboboxItemLabel>}
+      {checkmark === "before" && check}
+      {checkmark !== "before" && iconElement}
+      {typeof content === "string" || typeof content === "number" ? (
+        <ComboboxItemLabel className="flex-1">{content}</ComboboxItemLabel>
+      ) : (
+        content
+      )}
+      {checkmark === "before" && iconElement}
+      {checkmark === "after" && check}
     </ak.ComboboxItem>
+  );
+}
+
+export interface ComboboxItemCheckProps
+  extends ak.ComboboxItemCheckProps, VariantProps<typeof comboboxItemCheck> {}
+
+/** Keeps its space when unselected so the item labels stay aligned. */
+export function ComboboxItemCheck(props: ComboboxItemCheckProps) {
+  const [variantProps, rest] = splitProps(props, comboboxItemCheck);
+  const styleProps = comboboxItemCheck.jsx(variantProps);
+  return (
+    <ak.ComboboxItemCheck
+      {...styleProps}
+      {...rest}
+      // The slot classes size the check, replacing Ariakit's inline defaults.
+      style={{ width: undefined, height: undefined, ...styleProps.style }}
+    >
+      {rest.children ?? <CheckIcon />}
+    </ak.ComboboxItemCheck>
   );
 }
 
@@ -234,121 +277,27 @@ export function ComboboxItemSlot(props: ComboboxItemSlotProps) {
   );
 }
 
-export interface ComboboxSelectProps extends Omit<
-  ComboboxSelectButtonProps,
-  "value" | "defaultValue" | "popover"
-> {
-  value?: ComboboxSelectProviderProps["value"];
-  setValue?: ComboboxSelectProviderProps["setValue"];
-  defaultValue?: ComboboxSelectProviderProps["defaultValue"];
-  /** Items to render in the popover when not provided as children. */
-  items?: ComboboxSelectItemProps[];
-  /** Custom label element or props to render a `ComboboxSelectLabel`. */
-  label?: React.ReactNode | ComboboxSelectLabelProps;
-  /** Custom popover element or props to render a `ComboboxSelectPopover`. */
-  popover?: React.ReactElement | ComboboxSelectPopoverProps;
-}
-
-/**
- * High-level select that wires provider, button, label and popover.
- * @example
- * <ComboboxSelect label="Fruit">
- *   <ComboboxSelectItem value="apple" />
- *   <ComboboxSelectItem value="orange" />
- * </ComboboxSelect>
- * @example
- * <ComboboxSelect
- *   label="Fruit"
- *   items={[
- *     { value: "apple" },
- *     { value: "orange" },
- *   ]}
- * />
- */
-export function ComboboxSelect({
-  store,
-  value,
-  setValue,
-  defaultValue,
-  items,
-  label,
-  children,
-  popover,
-  ...props
-}: ComboboxSelectProps) {
-  const labelEl = createOptionalRender(ComboboxSelectLabel, label);
-  const popoverEl = createRender(ComboboxSelectPopover, popover);
-  return (
-    <ComboboxSelectProvider
-      store={store}
-      value={value}
-      setValue={setValue}
-      defaultValue={defaultValue}
-    >
-      {labelEl}
-      <ComboboxSelectButton {...props} />
-      <ak.Role render={popoverEl}>
-        {items?.map((item) => (
-          <ComboboxSelectItem key={item.value} {...item} />
-        ))}
-        {children}
-      </ak.Role>
-    </ComboboxSelectProvider>
-  );
-}
-
-export interface ComboboxSelectProviderProps extends Omit<
-  ak.ComboboxProviderProps,
-  | "value"
-  | "setValue"
-  | "defaultValue"
-  | "selectedValue"
-  | "setSelectedValue"
-  | "defaultSelectedValue"
-> {
-  value?: ak.ComboboxProviderProps["selectedValue"];
-  setValue?: ak.ComboboxProviderProps["setSelectedValue"];
-  defaultValue?: ak.ComboboxProviderProps["defaultSelectedValue"];
-}
-
-/**
- * @see https://ariakit.com/reference/select-provider
- */
-export function ComboboxSelectProvider({
-  value,
-  setValue,
-  defaultValue,
-  ...props
-}: ComboboxSelectProviderProps) {
-  return (
-    <ak.ComboboxProvider
-      selectedValue={value}
-      setSelectedValue={setValue}
-      defaultSelectedValue={defaultValue}
-      {...props}
-    />
-  );
-}
-
-export interface ComboboxSelectValueProps
+export interface ComboboxSelectedValueProps
   extends ak.ComboboxSelectedValueProps {}
 
 // A multiple select stores an array. Ariakit returns it as is, and React would
 // run the strings together, so the default display joins them.
 function joinSelectedValue(value: string | readonly string[]) {
-  if (typeof value === "string") return value;
+  if (typeof value === "string") {
+    return value;
+  }
   return value.join(", ");
 }
 
 /**
  * Renders the selected value. When several items are selected, it joins their
  * values with a comma. Pass a function as children to render them differently.
- * @see https://ariakit.com/reference/select-value
+ * @see https://ariakit.com/reference/combobox-selected-value
  */
-export function ComboboxSelectValue({
+export function ComboboxSelectedValue({
   children = joinSelectedValue,
   ...props
-}: ComboboxSelectValueProps) {
+}: ComboboxSelectedValueProps) {
   return (
     <ak.ComboboxSelectedValue {...props}>{children}</ak.ComboboxSelectedValue>
   );
@@ -357,13 +306,13 @@ export function ComboboxSelectValue({
 export interface ComboboxSelectLabelProps extends ak.ComboboxSelectLabelProps {}
 
 /**
- * @see https://ariakit.com/reference/select-label
+ * @see https://ariakit.com/reference/combobox-select-label
  */
 export function ComboboxSelectLabel(props: ComboboxSelectLabelProps) {
   return <ak.ComboboxSelectLabel {...props} />;
 }
 
-export interface ComboboxSelectButtonProps
+export interface ComboboxSelectProps
   extends ak.ComboboxSelectProps, VariantProps<typeof comboboxSelect> {
   /**
    * Custom icon element that will be rendered before or after the display value
@@ -374,137 +323,60 @@ export interface ComboboxSelectButtonProps
   chevron?: "before" | "after" | false;
   /** Custom display value element. */
   displayValue?: React.ReactNode;
-  /**
-   * Styles the button as a colored status badge, like the legacy `ak-badge-*`
-   * classes on a select button. Pass a colored `$layer` to tint it.
-   */
-  badge?: boolean;
 }
 
 /**
- * @see https://ariakit.com/reference/select
+ * @see https://ariakit.com/reference/combobox-select
  */
-export function ComboboxSelectButton({
+export function ComboboxSelect({
   icon,
   chevron = "after",
   displayValue,
-  badge,
   ...props
-}: ComboboxSelectButtonProps) {
+}: ComboboxSelectProps) {
   const [variantProps, rest] = splitProps(props, comboboxSelect);
-  // The badge look resolves through the badge cv so the button tracks its
-  // defaults when they are tuned; explicit variant props still win.
-  const badgeVariants = badge ? badgeStyle.getVariants(variantProps) : null;
-  const arrow = chevron !== false && (
-    <span {...comboboxSelectArrow.jsx({})}>
-      <ChevronDownIcon />
-    </span>
-  );
+  const arrow = chevron !== false && <ComboboxSelectArrow />;
   const iconElement = isRenderable(icon) && (
-    <span {...comboboxSelectIcon.jsx({})}>{icon}</span>
+    <ComboboxItemSlot>{icon}</ComboboxItemSlot>
   );
   return (
     <ak.ComboboxSelect
       {...comboboxSelect.jsx({
         ...variantProps,
-        ...badgeVariants,
         $disabled: variantProps.$disabled ?? rest.disabled,
-        // Resolved variants omit the badge's base and refine classes. Restore
-        // its font weight here; the colored-edge clamp is not included.
-        className: clsx(badge && "font-medium", variantProps.className),
       })}
       {...rest}
     >
       {chevron === "before" && arrow}
       {chevron !== "before" && iconElement}
-      <span {...comboboxSelectValueLabel.jsx({})}>
+      <ComboboxItemLabel className="flex-1 text-start">
         {isRenderable(displayValue) ? (
           displayValue
         ) : isRenderable(rest.children) ? (
           rest.children
         ) : (
-          <ComboboxSelectValue />
+          <ComboboxSelectedValue />
         )}
-      </span>
+      </ComboboxItemLabel>
       {chevron === "before" && iconElement}
       {chevron === "after" && arrow}
     </ak.ComboboxSelect>
   );
 }
 
-export interface ComboboxSelectPopoverProps
-  extends ak.ComboboxPopoverProps, VariantProps<typeof comboboxSelectPopover> {}
+export interface ComboboxSelectArrowProps
+  extends
+    ak.ComboboxSelectArrowProps,
+    VariantProps<typeof comboboxSelectArrow> {}
 
-/**
- * Renders in a portal by default, like `ComboboxPopover`, so a card or scroll
- * area that clips its content cannot cut the list.
- * @see https://ariakit.com/reference/select-popover
- */
-export function ComboboxSelectPopover({
-  portal = true,
-  gutter = 8,
-  shift = -3,
-  ...props
-}: ComboboxSelectPopoverProps) {
-  const [variantProps, rest] = splitProps(props, comboboxSelectPopover);
+export function ComboboxSelectArrow(props: ComboboxSelectArrowProps) {
+  const [variantProps, rest] = splitProps(props, comboboxSelectArrow);
+  const styleProps = comboboxSelectArrow.jsx(variantProps);
   return (
-    <ak.ComboboxPopover
-      portal={portal}
-      gutter={gutter}
-      shift={shift}
-      {...comboboxSelectPopover.jsx(variantProps)}
+    <ak.ComboboxSelectArrow
+      {...styleProps}
       {...rest}
+      style={{ width: undefined, height: undefined, ...styleProps.style }}
     />
-  );
-}
-
-export interface ComboboxSelectItemProps
-  extends ak.ComboboxItemProps, VariantProps<typeof comboboxSelectItem> {
-  /**
-   * Custom icon element that will be rendered before or after the display value
-   * depending on the `checkmark` position.
-   */
-  icon?: React.ReactNode;
-  /**
-   * Selects checkmark/icon placement (before, after). Set `false` to hide. The
-   * checkmark is the only default sign of the selected item, so a list without
-   * it needs another indicator.
-   */
-  checkmark?: "before" | "after" | false;
-}
-
-/**
- * @see https://ariakit.com/reference/select-item
- */
-export function ComboboxSelectItem({
-  icon,
-  checkmark = "before",
-  ...props
-}: ComboboxSelectItemProps) {
-  const [variantProps, rest] = splitProps(props, comboboxSelectItem);
-  const check = checkmark !== false && (
-    <span {...comboboxSelectItemCheck.jsx({})}>
-      <CheckIcon />
-    </span>
-  );
-  const iconElement = isRenderable(icon) && (
-    <span {...comboboxSelectIcon.jsx({})}>{icon}</span>
-  );
-  return (
-    <ak.ComboboxItem
-      {...comboboxSelectItem.jsx({
-        ...variantProps,
-        $disabled: variantProps.$disabled ?? rest.disabled,
-      })}
-      {...rest}
-    >
-      {checkmark === "before" && check}
-      {checkmark !== "before" && iconElement}
-      <span {...comboboxSelectValueLabel.jsx({})}>
-        {isRenderable(rest.children) ? rest.children : rest.value}
-      </span>
-      {checkmark === "before" && iconElement}
-      {checkmark === "after" && check}
-    </ak.ComboboxItem>
   );
 }

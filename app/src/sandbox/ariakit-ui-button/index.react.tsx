@@ -19,7 +19,6 @@ import {
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { button, buttonGlider, buttonGroup } from "@ariakit/ui/styles/button";
 import {
@@ -469,8 +468,7 @@ export default function ButtonExamples() {
           <Button>
             <ButtonLabel>Save</ButtonLabel>
             <ButtonSlot $kind="shortcut">
-              <Kbd>⌘</Kbd>
-              <Kbd>S</Kbd>
+              <kbd>⌘S</kbd>
             </ButtonSlot>
           </Button>
         `}
@@ -478,8 +476,7 @@ export default function ButtonExamples() {
         <Button>
           <ButtonLabel>Save</ButtonLabel>
           <ButtonSlot $kind="shortcut">
-            <Kbd>⌘</Kbd>
-            <Kbd>S</Kbd>
+            <kbd>⌘S</kbd>
           </ButtonSlot>
         </Button>
       </Example>
