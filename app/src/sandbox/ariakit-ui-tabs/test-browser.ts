@@ -10,6 +10,32 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  for (const kind of ["folder", "flat", "bevel"]) {
+    // https://github.com/ariakit/ariakit/issues/7482
+    test(`keeps a phrasing label truncated in a ${kind} tab`, async ({ q }) => {
+      const box = query(q.article(`${kind} tab with a long label`));
+      const tab = box.tab("Project settings and permissions");
+      const label = query(tab).text("Project settings and permissions");
+      await test.expect(label).toHaveJSProperty("tagName", "SPAN");
+      await test.expect(label).toHaveCSS("text-overflow", "ellipsis");
+      await test.expect(label).toHaveCSS("white-space", "nowrap");
+      await test.expect(label).toHaveCSS("overflow", "hidden");
+      await test.expect
+        .poll(() =>
+          label.evaluate((node) => node.scrollWidth > node.clientWidth),
+        )
+        .toBe(true);
+      await test.expect(tab).toHaveAttribute("aria-selected", "true");
+      await box.tab("Activity").click();
+      await test.expect(tab).toHaveAttribute("aria-selected", "false");
+      await test.expect
+        .poll(() =>
+          label.evaluate((node) => node.scrollWidth > node.clientWidth),
+        )
+        .toBe(true);
+    });
+  }
+
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),
