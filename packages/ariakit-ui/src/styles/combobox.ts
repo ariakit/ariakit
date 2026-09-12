@@ -79,7 +79,7 @@ export const comboboxItemLabel = optionLabel;
 export const comboboxItemSlot = optionSlot;
 
 // A flat select with a layer of its own is a form field, so it takes the finish
-// of the input beside it: sunk into the surface, with a real border.
+// of the input beside it: a writing surface with an inset edge.
 // `$layer="transparent"` keeps the see-through button for a toolbar that owns
 // the surface, and the bevel and a colored layer keep their button look.
 function isSelectField(variants: { $kind?: unknown; $layer?: unknown }) {
@@ -101,9 +101,9 @@ export const comboboxSelect = cv({
     $lightnessOffset(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
       if (defaultValue !== true) return defaultValue;
-      // The button lifts a layer of its own. A field sinks instead, like the
-      // input: lighter on light layers and darker on dark ones. A disabled
-      // field lies flat on the surface around it.
+      // Like the input, a field keeps a light writing surface on light layers
+      // and a dark one on dark layers. A disabled field uses the surrounding
+      // surface.
       if (variants.$disabled) return 0;
       return -1;
     },
@@ -114,10 +114,10 @@ export const comboboxSelect = cv({
     $borderType(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
       if (!variants.$border) return defaultValue;
-      // A real border rather than the adaptive ring, like the input, so the
-      // field keeps the same size on light and dark layers.
+      // Like the input, an inset edge keeps the control's intrinsic height on
+      // light and dark layers.
       if (defaultValue != null && defaultValue !== "auto") return defaultValue;
-      return "border";
+      return "inset";
     },
     $edgeWeight(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
@@ -136,11 +136,18 @@ export const comboboxSelect = cv({
   refine({ variants, addClass }) {
     if (!isSelectField(variants)) return;
     if (!variants.$border) return;
-    if (variants.$borderType !== "border") return;
+    if (variants.$borderType !== "border" && variants.$borderType !== "inset") {
+      return;
+    }
     // The disabled rules wipe a button's border, and a bordered field with no
     // border at all reads as a rendering glitch on light layers. This channel
     // keeps its edge color instead.
     addClass("[--disabled-border:var(--ak-edge)]");
+    if (variants.$borderType !== "inset") return;
+    // Forced colors remove the shadow that paints the inset edge.
+    addClass(
+      "forced-colors:outline-(length:--border-width) forced-colors:-outline-offset-1",
+    );
   },
 });
 

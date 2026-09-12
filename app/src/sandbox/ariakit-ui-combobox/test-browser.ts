@@ -15,6 +15,35 @@ function textHeight(element: Element) {
 }
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r3997524409
+  test("keeps select fields at the text field height with a visible edge", async ({
+    page,
+    q,
+  }) => {
+    await forEachColorScheme(page, async () => {
+      const form = query(q.article("In a form"));
+      const inputBox = await form.textbox("Full name").boundingBox();
+      test.expect(inputBox).not.toBeNull();
+      if (!inputBox) return;
+      for (const select of [
+        form.combobox("Country"),
+        q.combobox("Billing cycle"),
+      ]) {
+        await test.expect
+          .poll(async () => (await select.boundingBox())?.height)
+          .toBe(inputBox.height);
+        const edge = await select.evaluate((node) =>
+          getComputedStyle(node).getPropertyValue("--ak-edge"),
+        );
+        await test.expect
+          .poll(() =>
+            select.evaluate((node) => getComputedStyle(node).boxShadow),
+          )
+          .toContain(edge);
+      }
+    });
+  });
+
   // https://github.com/ariakit/ariakit/pull/7489#discussion_r3996544068
   test("keeps initials at the label text size in two-row avatars", async ({
     q,

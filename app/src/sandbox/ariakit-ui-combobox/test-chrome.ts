@@ -1,6 +1,22 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r3997524409
+  test("keeps select field boundaries in forced colors", async ({
+    page,
+    q,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    for (const select of [
+      query(q.article("In a form")).combobox("Country"),
+      q.combobox("Billing cycle"),
+    ]) {
+      await test.expect(select).toHaveCSS("outline-width", "1px");
+      await test.expect(select).toHaveCSS("outline-style", "solid");
+      await test.expect(select).toHaveCSS("outline-offset", "-1px");
+    }
+  });
+
   // https://github.com/ariakit/ariakit/issues/7473
   test("replaces the select placeholder when a region is selected", async ({
     q,
