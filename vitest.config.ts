@@ -2,6 +2,7 @@ import { dirname, join } from "node:path";
 import reactPlugin from "@vitejs/plugin-react";
 import { globSync } from "glob";
 import { version as reactVersion } from "react";
+import reactForwardRef from "rolldown-plugin-react-forward-ref";
 import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./app/src/lib/source.ts";
@@ -58,10 +59,6 @@ function getProjectTestExcludes(project: TestProject) {
   if (project === "dom") {
     return frameworks.flatMap((framework) => projectTestClaims[framework]);
   }
-  // The Ariakit UI table fixture uses React 19 ref props.
-  if (project === "react" && reactVersion.startsWith("18.")) {
-    return [...domTestOverrides, "app/src/sandbox/ariakit-ui-table/**"];
-  }
   return domTestOverrides;
 }
 
@@ -113,7 +110,17 @@ export default defineConfig({
       },
       {
         extends: true,
-        plugins: [reactPlugin()],
+        plugins: [
+          reactVersion.startsWith("18.") &&
+            reactForwardRef({
+              include: "packages/ariakit-ui/src/components/**/*.react.tsx",
+              // The pnpm patch opts these element factories into ref
+              // adaptation.
+              // https://github.com/diegohaz/rolldown-plugin-react-forward-ref/issues/9
+              elementFactories: ["createRender", "createOptionalRender"],
+            }),
+          reactPlugin(),
+        ],
         test: {
           name: "react",
           environment: "happy-dom",

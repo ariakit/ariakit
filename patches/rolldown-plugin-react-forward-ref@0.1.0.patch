@@ -1,0 +1,45 @@
+diff --git a/dist/index.d.ts b/dist/index.d.ts
+index 604a07325987ed588d110261cd184812f37b758e..47990a6eb30e6825f68252fe6df9232a83e2262d 100644
+--- a/dist/index.d.ts
++++ b/dist/index.d.ts
+@@ -6,6 +6,8 @@ export interface Options {
+   include: FilterPattern$1;
+   /** Additional files to leave unchanged. Exclusion takes priority. */
+   exclude?: FilterPattern$1;
++  /** Local names of trusted element factories whose first argument is a component. */
++  elementFactories?: string[];
+ }
+ /** A structural plugin type shared by Rolldown and Vite (including Vitest). */
+ export interface ReactForwardRefPlugin {
+diff --git a/dist/index.js b/dist/index.js
+index 5dedd6ef55dca2ee7da33bdb6c91dda3b8425a91..f4d1087145130ae19bb3a4f2e68dd007044e4d9a 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -95,7 +95,7 @@ function reactCalls(program) {
+ 	}
+ 	return matches;
+ }
+-function transform(code, id) {
++function transform(code, id, elementFactories = []) {
+ 	const typescript = /\.[cm]?tsx?$/.test(id);
+ 	const parsed = parseSync(id, code, {
+ 		sourceType: "module",
+@@ -127,7 +127,8 @@ function transform(code, id) {
+ 			"bind"
+ 		].includes(callee.property.name)) renderFunctions.add(callee.object.name);
+ 		if (isReactCall(callee, "memo") || isReactCall(callee, "createElement")) return;
+-		for (const argument of node.arguments) {
++		for (const [index, argument] of node.arguments.entries()) {
++			if (index === 0 && callee.type === "Identifier" && elementFactories.includes(callee.name)) continue;
+ 			if (argument.type === "SpreadElement") continue;
+ 			const render = unwrap(argument);
+ 			if (render.type === "Identifier") renderFunctions.add(render.name);
+@@ -223,7 +224,7 @@ function reactForwardRef(options) {
+ 				if (query && /(?:^|&)(?:raw|url)(?:[=&]|$)/.test(query)) return null;
+ 				if (!/\.(?:[cm]?[jt]s|[jt]sx)$/.test(path) || /\.d\.[cm]?ts$/.test(path)) return null;
+ 				if (path.split("/").includes("node_modules") || !filter(path)) return null;
+-				return transform(code, path);
++				return transform(code, path, options.elementFactories);
+ 			}
+ 		}
+ 	};
