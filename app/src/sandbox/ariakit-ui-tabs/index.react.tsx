@@ -8,11 +8,13 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as ak from "@ariakit/react";
+// TODO: Use TabLabel after its element is fixed.
+// https://github.com/ariakit/ariakit/issues/7482
+import { ButtonLabel as TabLabel } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Tab,
   TabGlider,
-  TabLabel,
   TabList,
   TabPanel,
   TabPanels,
@@ -1127,49 +1129,53 @@ export default function TabsExamples() {
         code={`
           <div dir="rtl">
             <Tabs>
-              <TabList>
-                <Tab>
-                  <TabLabel>المسودات</TabLabel>
-                </Tab>
-                <TabSeparator $kind="chevron" />
-                <Tab>
-                  <TabLabel>قيد المراجعة</TabLabel>
-                </Tab>
-                <TabSeparator $kind="chevron" />
-                <Tab>
-                  <TabLabel>المنشورة</TabLabel>
-                </Tab>
-              </TabList>
-              <TabPanels>
-                <TabPanel single>
-                  …
-                </TabPanel>
-              </TabPanels>
+              <TabProvider rtl>
+                <TabList>
+                  <Tab>
+                    <TabLabel>المسودات</TabLabel>
+                  </Tab>
+                  <TabSeparator $kind="chevron" />
+                  <Tab>
+                    <TabLabel>قيد المراجعة</TabLabel>
+                  </Tab>
+                  <TabSeparator $kind="chevron" />
+                  <Tab>
+                    <TabLabel>المنشورة</TabLabel>
+                  </Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel single>
+                    …
+                  </TabPanel>
+                </TabPanels>
+              </TabProvider>
             </Tabs>
           </div>
         `}
       >
         {/* Drafts, In review and Published, with an Arabic panel line. */}
         <div dir="rtl" lang="ar">
-          <Tabs defaultSelectedId="rtl-drafts">
-            <TabList aria-label="مراحل النشر">
-              <Tab id="rtl-drafts">
-                <TabLabel>المسودات</TabLabel>
-              </Tab>
-              <TabSeparator $kind="chevron" />
-              <Tab id="rtl-review">
-                <TabLabel>قيد المراجعة</TabLabel>
-              </Tab>
-              <TabSeparator $kind="chevron" />
-              <Tab id="rtl-published">
-                <TabLabel>المنشورة</TabLabel>
-              </Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel single>
-                <p className="text-sm">ثلاث مسودات قيد التحرير الآن.</p>
-              </TabPanel>
-            </TabPanels>
+          <Tabs>
+            <TabProvider rtl defaultSelectedId="rtl-drafts">
+              <TabList aria-label="مراحل النشر">
+                <Tab id="rtl-drafts">
+                  <TabLabel>المسودات</TabLabel>
+                </Tab>
+                <TabSeparator $kind="chevron" />
+                <Tab id="rtl-review">
+                  <TabLabel>قيد المراجعة</TabLabel>
+                </Tab>
+                <TabSeparator $kind="chevron" />
+                <Tab id="rtl-published">
+                  <TabLabel>المنشورة</TabLabel>
+                </Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel single>
+                  <p className="text-sm">ثلاث مسودات قيد التحرير الآن.</p>
+                </TabPanel>
+              </TabPanels>
+            </TabProvider>
           </Tabs>
         </div>
       </Example>
@@ -1204,7 +1210,7 @@ export default function TabsExamples() {
               "Accessibility",
               "Examples",
               "Changelog",
-            ]}
+            ].map((label) => ({ children: <TabLabel>{label}</TabLabel> }))}
           />
           <TabPanels>
             <TabPanel single>
@@ -1308,9 +1314,12 @@ export default function TabsExamples() {
           <TabList
             aria-label="Tabs record"
             tabs={{
-              "record-preview": "Preview",
-              "record-code": { children: "Code", disabled: true },
-              "record-usage": "Usage",
+              "record-preview": { children: <TabLabel>Preview</TabLabel> },
+              "record-code": {
+                children: <TabLabel>Code</TabLabel>,
+                disabled: true,
+              },
+              "record-usage": { children: <TabLabel>Usage</TabLabel> },
             }}
           />
           <TabPanels>
