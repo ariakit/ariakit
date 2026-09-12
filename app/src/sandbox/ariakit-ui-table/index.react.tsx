@@ -684,6 +684,66 @@ function SelectedRowsGrid() {
   );
 }
 
+function CellEdgeOverride() {
+  const [border, setBorder] = useState(true);
+  return (
+    <div className="grid gap-3">
+      <label className="flex items-center gap-2">
+        <Checkbox
+          checked={border}
+          onChange={(event) => setBorder(event.currentTarget.checked)}
+        />
+        Show all borders on Failed cells
+      </label>
+      {[false, true].map((colored) => (
+        <Table
+          key={`${colored}`}
+          aria-label={colored ? "Colored cell edges" : "Plain cell edges"}
+          container={{
+            $border: true,
+            $edge: colored ? "brand" : undefined,
+            $edgeWeight: colored ? "bold" : undefined,
+          }}
+          rows={[
+            { group: "head", status: "Status", note: "Note" },
+            {
+              status: (
+                <TableCell
+                  $edge="danger"
+                  $edgeRaw
+                  $border={border ? undefined : false}
+                  tabIndex={0}
+                >
+                  <span className="text-danger">Failed</span>
+                </TableCell>
+              ),
+              note: <TableCell $border>Needs review</TableCell>,
+            },
+            {
+              status: (
+                <TableCell
+                  $edge="warning"
+                  $edgeRaw
+                  $border={2}
+                  $focus={false}
+                  tabIndex={0}
+                >
+                  Warning
+                </TableCell>
+              ),
+              note: "Check details",
+            },
+            {
+              status: "Pending",
+              note: <TableCell $edgeWeight="bold">Ready to test</TableCell>,
+            },
+          ]}
+        />
+      ))}
+    </div>
+  );
+}
+
 function CaptionOptions() {
   const [format, setFormat] = useState("Props");
   const captions = [
@@ -977,35 +1037,14 @@ export default function TableExamples() {
 
       <Example
         title="Cell edge override"
-        description="An explicit cell edge replaces the grid defaults in both a plain table and a colored table."
+        description="Cell edge variants show all four borders automatically. Set $border to false for grid lines only, true for a full border, or a number for its width."
         stretch
         code={`
-          <TableCell className="ak-edge-danger ak-edge-raw">Failed</TableCell>
+          <TableCell $edge="danger" $edgeRaw>Failed</TableCell>
+          <TableCell $edge="danger" $edgeRaw $border={false}>Grid lines only</TableCell>
         `}
       >
-        {[false, true].map((colored) => (
-          <Table
-            key={`${colored}`}
-            aria-label={colored ? "Colored cell edges" : "Plain cell edges"}
-            container={{
-              $border: true,
-              $edge: colored ? "brand" : undefined,
-              $edgeWeight: colored ? "bold" : undefined,
-            }}
-            rows={[
-              { group: "head", status: "Status", note: "Note" },
-              {
-                status: (
-                  <TableCell className="ak-edge-danger ak-edge-raw">
-                    <span className="text-danger">Failed</span>
-                  </TableCell>
-                ),
-                note: "Needs review",
-              },
-              { status: "Pending", note: "Ready to test" },
-            ]}
-          />
-        ))}
+        <CellEdgeOverride />
       </Example>
 
       <Example

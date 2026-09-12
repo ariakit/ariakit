@@ -88,6 +88,91 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
+  test("shows full cell borders for edge variants without moving content @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorScheme(page, async (colorScheme) => {
+      const box = q.article("Cell edge override");
+      const fixture = query(box);
+      const checkbox = fixture.checkbox("Show all borders on Failed cells");
+      const getContentBounds = (cell: Locator) =>
+        cell.locator("span").evaluate((node) => {
+          const bounds = node.getBoundingClientRect();
+          return {
+            x: bounds.x + window.scrollX,
+            y: bounds.y + window.scrollY,
+            width: bounds.width,
+            height: bounds.height,
+          };
+        });
+      await checkbox.check();
+      for (const name of ["Plain cell edges", "Colored cell edges"]) {
+        const table = query(fixture.table(name));
+        const cell = table.cell("Failed");
+        const color = await cell
+          .locator("span")
+          .evaluate((node) => getComputedStyle(node).color);
+        await test.expect(cell).toHaveCSS("outline-style", "solid");
+        await test.expect(cell).toHaveCSS("outline-width", "1px");
+        await test.expect(cell).toHaveCSS("outline-offset", "-1px");
+        await test.expect(cell).toHaveCSS("outline-color", color);
+        await test
+          .expect(table.cell("Pending"))
+          .toHaveCSS("outline-style", "none");
+        await test
+          .expect(table.cell("Needs review"))
+          .toHaveCSS("outline-width", "1px");
+        // A translucent border must replace the grid paint on owned sides, or
+        // those sides become darker than the rest of the full border.
+        await test
+          .expect(table.cell("Needs review"))
+          .toHaveCSS("border-image-width", "0");
+        await test
+          .expect(table.cell("Ready to test"))
+          .toHaveCSS("outline-width", "1px");
+        await test
+          .expect(table.cell("Warning"))
+          .toHaveCSS("outline-width", "2px");
+
+        const bounds = await getContentBounds(cell);
+        await checkbox.uncheck();
+        await test.expect(cell).toHaveCSS("outline-style", "none");
+        await test.expect(cell).toHaveCSS("border-image-width", "1");
+        test.expect(await getContentBounds(cell)).toEqual(bounds);
+        await checkbox.check();
+        await test.expect(cell).toHaveCSS("outline-style", "solid");
+        await hoverOver(cell);
+        await test.expect(cell).toHaveCSS("outline-color", color);
+      }
+      await visual(getCapture(box, colorScheme, { id: "hover" }));
+
+      await checkbox.focus();
+      await page.keyboard.press("Tab");
+      const table = query(fixture.table("Plain cell edges"));
+      await expectFocusVisible(table.cell("Failed"));
+      await test
+        .expect(table.cell("Failed"))
+        .toHaveCSS("outline-style", "none");
+      await test.expect(table.cell("Failed")).toHaveCSS("box-shadow", /inset/);
+      await test
+        .expect(table.cell("Failed"))
+        .toHaveCSS("border-image-width", "1");
+      await visual(getCapture(box, colorScheme, { id: "focus" }));
+
+      await page.keyboard.press("Tab");
+      await expectFocusVisible(table.cell("Warning"));
+      await test
+        .expect(table.cell("Warning"))
+        .toHaveCSS("outline-style", "solid");
+      await test
+        .expect(table.cell("Warning"))
+        .toHaveCSS("outline-width", "2px");
+      await checkbox.focus();
+    });
+  });
+
   // https://github.com/ariakit/ariakit/issues/7481
   test("keeps a nested table's grid independent of its outer table", async ({
     q,

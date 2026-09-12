@@ -1,9 +1,9 @@
 import { cv, cx } from "clava";
 import type { VariantProps } from "clava";
+import { keys } from "../utils/keys.ts";
 import { getScaledStyleValue, getSpacingValue } from "../utils/styles.ts";
 import { button, buttonSlot } from "./button.ts";
-import type { edge } from "./edge.ts";
-import { getEdgeColorValue, getEdgeWeightValue } from "./edge.ts";
+import { edge, getEdgeColorValue, getEdgeWeightValue } from "./edge.ts";
 import { frame } from "./frame.ts";
 import { hover } from "./hover.ts";
 import { layer } from "./layer.ts";
@@ -337,7 +337,7 @@ export const tableRow = cv({
 });
 
 export const tableCell = cv({
-  extend: [layer],
+  extend: [edge],
   class: [
     tableEdgeInputs,
     // The header of a sorted column takes the full ink; the sort button in it
@@ -379,10 +379,26 @@ export const tableCell = cv({
     // tableRow).
     "first:rounded-ss-(--table-row-radius-bs) first:rounded-es-(--table-row-radius-be)",
     "last:rounded-se-(--table-row-radius-bs) last:rounded-ee-(--table-row-radius-be)",
-    // A focusable cell takes real DOM focus, so the browser's own ring goes.
-    "ui-focus-visible:outline-none",
   ],
   variants: {
+    /**
+     * Draws all four cell borders without changing the grid or cell size.
+     * Defaults to `true` when the cell has an edge modifier. Set to `false` for
+     * grid lines only, `true` for 1px, or a number for a width in pixels.
+     */
+    $border(value?: TableBorderValue) {
+      if (!value) return;
+      return {
+        // Replace the grid's paint inside the border box, keeping its layout
+        // widths. Overlapping translucent edges would darken the owned sides.
+        class: [
+          "[border-image-width:0]",
+          "outline-(length:--table-cell-border) outline-(--ak-edge)",
+          "-outline-offset-(--table-cell-border)",
+        ],
+        style: { "--table-cell-border": `${value === true ? 1 : value}px` },
+      };
+    },
     /**
      * Whether the cell is a header, and which kind.
      */
@@ -456,6 +472,20 @@ export const tableCell = cv({
   defaultVariants: {
     $header: false,
     $focus: true,
+    $border(defaultValue, variants) {
+      if (defaultValue != null) {
+        return defaultValue;
+      }
+      return keys(variants).some((key) => {
+        if (!key.startsWith("$edge")) return false;
+        const value = variants[key];
+        if (value == null) return false;
+        if (value === false) return false;
+        if (value === "") return false;
+        if (value === "unset") return false;
+        return true;
+      });
+    },
     $layer(defaultValue, variants) {
       if (variants.$sticky) {
         return defaultValue ?? true;
@@ -470,7 +500,15 @@ export const tableCell = cv({
     if (variants.$header && !variants.$numeric) {
       addClass("text-start");
     }
+    // The focus ring replaces the full border. With focus styling disabled,
+    // keep an explicit border, but suppress the browser's default ring.
+    if (variants.$focus || !variants.$border) {
+      addClass("ui-focus-visible:outline-none");
+    }
     if (!variants.$focus) return;
+    if (variants.$border) {
+      addClass("ui-focus-visible:[border-image-width:1]");
+    }
     addClass("ak-outline ak-outline-brand inset-ring-(--ak-outline)");
   },
 });
