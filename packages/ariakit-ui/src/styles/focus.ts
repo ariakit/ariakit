@@ -20,10 +20,11 @@ export const focus = cv({
       brand: "ak-outline ak-outline-brand",
     },
     /**
-     * The offset of the focus ring.
+     * The offset of the focus ring. Use `none` to leave the offset unset.
      */
     $focusOffset: {
-      none: "outline-offset-0",
+      none: "",
+      0: "outline-offset-0",
       1: "outline-offset-1",
       2: "outline-offset-2",
     },
