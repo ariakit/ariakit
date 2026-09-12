@@ -862,6 +862,23 @@ export default function CheckboxExamples() {
       >
         <FeatureGrid />
       </Example>
+      <Example
+        title="Card badge"
+        description="A badge slot shows a count beside the card label."
+        code={`
+          <CheckboxCard value="messages">
+            <CheckboxCardCheck />
+            <CheckboxCardLabel>Messages</CheckboxCardLabel>
+            <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+          </CheckboxCard>
+        `}
+      >
+        <CheckboxCard value="messages">
+          <CheckboxCardCheck />
+          <CheckboxCardLabel>Messages</CheckboxCardLabel>
+          <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+        </CheckboxCard>
+      </Example>
     </ExampleGrid>
   );
 }

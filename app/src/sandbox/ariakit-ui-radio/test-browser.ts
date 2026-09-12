@@ -8,6 +8,13 @@ import {
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/issues/7474
+  // https://github.com/ariakit/ariakit/pull/7490#discussion_r3997181250
+  test("uses compact text for a card badge", async ({ q }) => {
+    const badge = query(q.article("Disabled card slots")).text("3");
+    await test.expect(badge).toHaveCSS("font-size", "13px");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7474
   test("dims badge and avatar slots when the card grid is disabled", async ({
     page,
     q,
@@ -19,7 +26,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         const radio = box.radio("J Jane Doe 3");
         await test.expect(radio).toBeDisabled();
         const slots = [];
-        for (const slot of [box.text("J"), box.text("3")]) {
+        for (const slot of [box.text("J"), box.text("3").locator("..")]) {
           await test.expect(slot).toHaveCSS("opacity", "1");
           const background = await slot.evaluate(
             (element) => getComputedStyle(element).backgroundColor,
