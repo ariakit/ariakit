@@ -1,6 +1,58 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/issues/7473
+  test("replaces the select placeholder when a region is selected", async ({
+    q,
+  }) => {
+    const select = q.combobox("Shipping region");
+    await test.expect(select).toHaveText("Choose a region");
+    await select.click();
+    await query(q.listbox("Shipping region")).option("Europe").click();
+    await test.expect(select).toHaveText("Europe");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7473
+  test("restores a rich placeholder after clearing a multiple selection", async ({
+    q,
+  }) => {
+    const select = q.combobox("Extra regions");
+    await test.expect(select).toHaveText("No regions selected");
+    await test.expect(select.locator("em")).toBeVisible();
+    await select.click();
+    const list = query(q.listbox("Extra regions"));
+    await list.option("Europe").click();
+    await list.option("Asia").click();
+    await test.expect(select).toHaveText("Europe, Asia");
+    await list.option("Europe").click();
+    await list.option("Asia").click();
+    await test.expect(select).toHaveText("No regions selected");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7473
+  test("preserves default selection and explicit display content with a placeholder", async ({
+    q,
+  }) => {
+    await test.expect(q.combobox("Automatic region")).toHaveText("Europe");
+    await test.expect(q.combobox("Custom prompt")).toHaveText("0");
+    await test.expect(q.combobox("Blank prompt")).toHaveText("");
+    await test.expect(q.combobox("Zero prompt")).toHaveText("0");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7473
+  test("keeps searchable select roles and keyboard selection with the UI list", async ({
+    q,
+  }) => {
+    const dialog = query(q.dialog("Timezone"));
+    const input = dialog.combobox("Search timezones");
+    const list = dialog.listbox("Timezone");
+    await input.fill("Tokyo");
+    await test.expect(query(list).option()).toHaveCount(1);
+    await input.press("ArrowDown");
+    await input.press("Enter");
+    await test.expect(q.combobox("Timezone")).toHaveText("Asia/Tokyo");
+  });
+
   // The lists held open in this sandbox mark every list that already exists
   // when they open as outside them, and Ariakit then ignores Escape on it. The
   // lists that tests open render in a portal and mount on open to avoid the
@@ -46,13 +98,30 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(input).toHaveValue("Denmark");
   });
 
-  test("shows the empty state when nothing matches", async ({ q }) => {
+  // https://github.com/ariakit/ariakit/issues/7473
+  test("updates a persistent empty-result status outside the options", async ({
+    q,
+  }) => {
     const input = q.combobox("Destination");
+    const status = q.status();
+    await test.expect(status).toHaveText("");
     await input.click();
     await input.pressSequentially("xyz");
     const list = q.listbox("Destination");
     await test.expect(query(list).option()).toHaveCount(0);
-    await test.expect(query(list).text("No results found")).toBeVisible();
+    await test
+      .expect(query(q.dialog("Destination")).text("No results found"))
+      .toBeVisible();
+    await test.expect(list).not.toContainText("No results found");
+    await test.expect(status).toHaveText("No results found");
+    await test.expect(status).toHaveAttribute("aria-live", "polite");
+    await test.expect(status).toHaveAttribute("aria-atomic", "true");
+    await test.expect(query(q.dialog("Destination")).status()).toHaveCount(0);
+    await input.fill("");
+    await test.expect(query(list).option("Argentina")).toBeVisible();
+    await test.expect(status).toHaveText("");
+    await input.press("Escape");
+    await test.expect(status).toHaveCount(1);
   });
 
   test("renders the select list in a portal", async ({ q }) => {
