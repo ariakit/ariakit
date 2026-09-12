@@ -18,6 +18,8 @@ import {
   ComboboxPopover,
   ComboboxProvider,
 } from "@ariakit/ui/components/combobox.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
+import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import {
@@ -104,11 +106,22 @@ export function CountryComboboxExample() {
         // https://github.com/ariakit/ariakit/issues/7463
         popover={{ unmountOnHide: true }}
       >
-        {matches.map((country) => (
-          <ComboboxItem key={country} value={country} />
-        ))}
-        {!matches.length && <ComboboxEmpty />}
+        <ComboboxList>
+          {matches.map((country) => (
+            <ComboboxItem key={country} value={country} />
+          ))}
+        </ComboboxList>
+        {!matches.length && <ComboboxEmpty aria-hidden />}
       </Combobox>
+      {/* The region stays mounted when the popup is closed or has matches. */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {matches.length ? "" : "No results found"}
+      </div>
     </div>
   );
 }
@@ -211,10 +224,73 @@ export function ScrollableSearchExample() {
             {matches.map((country) => (
               <ComboboxItem key={country} value={country} checkmark="before" />
             ))}
-            {!matches.length && <ComboboxEmpty />}
           </ComboboxList>
+          {!matches.length && <ComboboxEmpty />}
         </ComboboxPopover>
       </ComboboxProvider>
     </ExampleStage>
+  );
+}
+
+export function FieldBoundariesExample() {
+  const longValue =
+    "international-shipping-region-with-an-unbreakable-identifier";
+  return (
+    <Layer
+      $layer="brand"
+      render={<Text $text="danger" />}
+      className="grid gap-4 p-4"
+    >
+      <Combobox
+        label="Long suggestion"
+        className="w-48"
+        popover={{ unmountOnHide: true }}
+      >
+        <ComboboxItem value="Europe" />
+        <ComboboxItem value={longValue} />
+      </Combobox>
+      <ComboboxProvider defaultSelectedValue="Europe">
+        <ComboboxSelectLabel>Long selection</ComboboxSelectLabel>
+        <ComboboxSelect className="w-48" />
+        <ComboboxPopover unmountOnHide>
+          <ComboboxItem value="Europe" checkmark="before" />
+          <ComboboxItem value={longValue} checkmark="before" />
+        </ComboboxPopover>
+      </ComboboxProvider>
+    </Layer>
+  );
+}
+
+export function SelectPlaceholdersExample() {
+  const items = [{ value: "Europe" }, { value: "Asia" }];
+  return (
+    <div className="grid gap-4">
+      <ComboboxProvider defaultSelectedValue={[]}>
+        <ComboboxSelectLabel>Extra regions</ComboboxSelectLabel>
+        <ComboboxSelect placeholder={<em>No regions selected</em>} />
+        <ComboboxPopover unmountOnHide>
+          {items.map((item) => (
+            <ComboboxItem key={item.value} {...item} checkmark="before" />
+          ))}
+        </ComboboxPopover>
+      </ComboboxProvider>
+      <ComboboxProvider>
+        <ComboboxSelectLabel>Automatic region</ComboboxSelectLabel>
+        <ComboboxSelect placeholder="Choose automatically" />
+        <ComboboxPopover>
+          {items.map((item) => (
+            <ComboboxItem key={item.value} {...item} checkmark="before" />
+          ))}
+        </ComboboxPopover>
+      </ComboboxProvider>
+      <ComboboxProvider defaultSelectedValue="">
+        <ComboboxSelectLabel>Custom prompt</ComboboxSelectLabel>
+        <ComboboxSelect displayValue={0} placeholder="Unspecified" />
+        <ComboboxSelect aria-label="Blank prompt" placeholder="Unspecified">
+          {""}
+        </ComboboxSelect>
+        <ComboboxSelect aria-label="Zero prompt" placeholder={0} />
+      </ComboboxProvider>
+    </div>
   );
 }

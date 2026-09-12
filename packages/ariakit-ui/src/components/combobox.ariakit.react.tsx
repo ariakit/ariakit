@@ -18,10 +18,12 @@ import {
   comboboxItemDescription,
   comboboxItemLabel,
   comboboxItemSlot,
+  comboboxList,
   comboboxSelect,
   comboboxSelectArrow,
   comboboxItemCheck,
-  comboboxList,
+  comboboxSelectLabel,
+  comboboxSelectPlaceholder,
   comboboxLabel,
   comboboxPopover,
 } from "../styles/combobox.ts";
@@ -118,7 +120,10 @@ export function ComboboxPopover({
 export interface ComboboxListProps
   extends ak.ComboboxListProps, VariantProps<typeof comboboxList> {}
 
-/** A list that scrolls separately from an input in the popover. */
+/**
+ * Groups options inside a popover that also contains a search field or other
+ * content. The list owns the listbox role and the popover becomes a dialog.
+ */
 export function ComboboxList(props: ComboboxListProps) {
   const [variantProps, rest] = splitProps(props, comboboxList);
   return <ak.ComboboxList {...comboboxList.jsx(variantProps)} {...rest} />;
@@ -231,7 +236,25 @@ export function ComboboxItemCheck({
 export interface ComboboxEmptyProps
   extends ak.RoleProps<"div">, VariantProps<typeof comboboxEmpty> {}
 
-/** Render when filtering leaves no suggestions. */
+/**
+ * Displays a message when filtering leaves no suggestions. Put it beside
+ * `ComboboxList` so the message is outside the options.
+ *
+ * For announcements, keep a separate status region mounted outside the popover
+ * and update its text when the matches change. A status mounted only with the
+ * empty state can be silent. Hide the visual message from screen readers when
+ * the separate region supplies its text.
+ * @example
+ * <>
+ *   <Combobox label="Fruit">
+ *     <ComboboxList>{options}</ComboboxList>
+ *     {empty && <ComboboxEmpty aria-hidden />}
+ *   </Combobox>
+ *   <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+ *     {empty ? "No results found" : ""}
+ *   </div>
+ * </>
+ */
 export function ComboboxEmpty(props: ComboboxEmptyProps) {
   const [variantProps, rest] = splitProps(props, comboboxEmpty);
   return (
@@ -310,13 +333,22 @@ export function ComboboxSelectedValue({
   );
 }
 
-export interface ComboboxSelectLabelProps extends ak.ComboboxSelectLabelProps {}
+export interface ComboboxSelectLabelProps
+  extends
+    ak.ComboboxSelectLabelProps,
+    VariantProps<typeof comboboxSelectLabel> {}
 
 /**
  * @see https://ariakit.com/reference/combobox-select-label
  */
 export function ComboboxSelectLabel(props: ComboboxSelectLabelProps) {
-  return <ak.ComboboxSelectLabel {...props} />;
+  const [variantProps, rest] = splitProps(props, comboboxSelectLabel);
+  return (
+    <ak.ComboboxSelectLabel
+      {...comboboxSelectLabel.jsx(variantProps)}
+      {...rest}
+    />
+  );
 }
 
 export interface ComboboxSelectProps
@@ -330,6 +362,13 @@ export interface ComboboxSelectProps
   chevron?: "before" | "after" | false;
   /** Custom display value element. */
   displayValue?: React.ReactNode;
+  /**
+   * Prompt to show with placeholder ink when the selection is empty. Set the
+   * provider's `defaultSelectedValue=""` or control its `selectedValue` to
+   * start empty; otherwise, the store selects the first item. Custom
+   * `displayValue` or `children` take precedence.
+   */
+  placeholder?: React.ReactNode;
 }
 
 /**
@@ -339,6 +378,7 @@ export function ComboboxSelect({
   icon,
   chevron = "after",
   displayValue,
+  placeholder,
   ...props
 }: ComboboxSelectProps) {
   const [variantProps, rest] = splitProps(props, comboboxSelect);
@@ -362,7 +402,17 @@ export function ComboboxSelect({
         ) : isRenderable(rest.children) ? (
           rest.children
         ) : (
-          <ComboboxSelectedValue />
+          <ComboboxSelectedValue>
+            {(value) =>
+              value.length || !isRenderable(placeholder) ? (
+                joinSelectedValue(value)
+              ) : (
+                <span {...comboboxSelectPlaceholder.jsx({})}>
+                  {placeholder}
+                </span>
+              )
+            }
+          </ComboboxSelectedValue>
         )}
       </ComboboxItemLabel>
       {chevron === "before" && iconElement}

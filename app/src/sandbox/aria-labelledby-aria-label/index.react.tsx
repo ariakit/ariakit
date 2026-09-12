@@ -7,6 +7,7 @@ import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import {
   ComboboxSelect,
   ComboboxItem,
+  ComboboxList,
   ComboboxSelectLabel,
   ComboboxPopover,
   ComboboxProvider,
@@ -61,13 +62,10 @@ export default function Example() {
         <ComboboxSelectLabel>Fruit</ComboboxSelectLabel>
         <ComboboxSelect aria-label="Custom select label" />
         <ComboboxPopover>
-          {/* The list keeps the raw Ariakit primitive: the explicit
-              ComboboxList with its own aria-label is what this sandbox
-              exercises. */}
-          <ak.ComboboxList aria-label="Custom list label">
+          <ComboboxList aria-label="Custom list label">
             <ComboboxItem value="Apple" checkmark="before" />
             <ComboboxItem value="Banana" checkmark="before" />
-          </ak.ComboboxList>
+          </ComboboxList>
         </ComboboxPopover>
       </ComboboxProvider>
 
