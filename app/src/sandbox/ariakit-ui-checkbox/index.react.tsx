@@ -879,6 +879,29 @@ export default function CheckboxExamples() {
           <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
         </CheckboxCard>
       </Example>
+      <Example
+        title="Disabled card badges"
+        description="Native and ARIA disabled cards use the same badge and text contrast."
+        code={`
+          <CheckboxCard value="email" disabled>
+            <CheckboxCardLabel>Email</CheckboxCardLabel>
+            <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+          </CheckboxCard>
+          <CheckboxCard value="messages" aria-disabled>
+            <CheckboxCardLabel>Messages</CheckboxCardLabel>
+            <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+          </CheckboxCard>
+        `}
+      >
+        <CheckboxCard value="email" disabled>
+          <CheckboxCardLabel>Email</CheckboxCardLabel>
+          <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+        </CheckboxCard>
+        <CheckboxCard value="messages" aria-disabled>
+          <CheckboxCardLabel>Messages</CheckboxCardLabel>
+          <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+        </CheckboxCard>
+      </Example>
     </ExampleGrid>
   );
 }

@@ -196,6 +196,7 @@ export const choiceCard = cv({
     // it reads the state from its input and draws what $disabled below draws.
     // The label itself is never disabled, so its hover and press, which only
     // skip a disabled element, are turned off here too.
+    "ui-disabled-within:ak-disabled",
     "ui-disabled-within:cursor-not-allowed",
     "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
     "ui-disabled-within:ak-edge-5 ui-disabled-within:ak-layer-mix-20",

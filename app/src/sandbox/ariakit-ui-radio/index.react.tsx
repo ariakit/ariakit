@@ -626,6 +626,37 @@ export default function RadioExamples() {
           </RadioCardGrid>
         </RadioProvider>
       </Example>
+      <Example
+        title="Disabled card badges"
+        description="Native and ARIA disabled cards use the same badge and text contrast."
+        code={`
+          <RadioProvider>
+            <RadioCardGrid aria-label="Unavailable channels">
+              <RadioCard value="email" disabled>
+                <RadioCardLabel>Email</RadioCardLabel>
+                <RadioCardSlot $kind="badge">3</RadioCardSlot>
+              </RadioCard>
+              <RadioCard value="messages" aria-disabled>
+                <RadioCardLabel>Messages</RadioCardLabel>
+                <RadioCardSlot $kind="badge">3</RadioCardSlot>
+              </RadioCard>
+            </RadioCardGrid>
+          </RadioProvider>
+        `}
+      >
+        <RadioProvider>
+          <RadioCardGrid aria-label="Unavailable channels">
+            <RadioCard value="email" disabled>
+              <RadioCardLabel>Email</RadioCardLabel>
+              <RadioCardSlot $kind="badge">3</RadioCardSlot>
+            </RadioCard>
+            <RadioCard value="messages" aria-disabled>
+              <RadioCardLabel>Messages</RadioCardLabel>
+              <RadioCardSlot $kind="badge">3</RadioCardSlot>
+            </RadioCard>
+          </RadioCardGrid>
+        </RadioProvider>
+      </Example>
     </ExampleGrid>
   );
 }
