@@ -595,6 +595,8 @@ The static `ak-layer` class must be applied to the same element as `ak-state-*`.
 
 Applies the same reduced contrast as `:disabled`, `[disabled]`, and `[aria-disabled="true"]`. Use it on a custom control surface, such as a label whose input is disabled. Descendant layers and text inherit the contrast settings.
 
+Enabled descendants also inherit these settings. For example, a control in the first legend of a disabled fieldset remains operable, but inherits reduced contrast, including under `prefers-contrast: more`. There is no public utility to reset that inherited contrast.
+
 ```html
 <label class="ak-layer ak-disabled ak-ink-0">
   <input type="file" disabled class="sr-only" />
