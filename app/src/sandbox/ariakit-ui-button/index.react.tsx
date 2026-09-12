@@ -623,7 +623,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Disabled"
-        description="The text, the icon and the whole badge fade, and the button stops responding to the pointer."
+        description="The badge fill mixes into the button's surface while its text keeps adaptive contrast. The button stops responding to the pointer."
         code={`
           <Button disabled>
             <ButtonSlot>
@@ -687,6 +687,42 @@ export default function ButtonExamples() {
           </ButtonSlot>
           <ButtonLabel>Ariakit</ButtonLabel>
         </Button>
+      </Example>
+
+      <Example
+        title="Disabled fieldset"
+        description="The fieldset disables the button and its slots. The button in the first legend stays enabled."
+        code={`
+          <fieldset disabled>
+            <legend>
+              <Button>
+                Actions
+                <ButtonSlot $kind="badge">1</ButtonSlot>
+              </Button>
+            </legend>
+            <Button>
+              <ButtonSlot $kind="avatar" $layer="brand">J</ButtonSlot>
+              <ButtonLabel>Jane Doe</ButtonLabel>
+              <ButtonSlot $kind="badge">3</ButtonSlot>
+            </Button>
+          </fieldset>
+        `}
+      >
+        <fieldset disabled>
+          <legend>
+            <Button>
+              Actions
+              <ButtonSlot $kind="badge">1</ButtonSlot>
+            </Button>
+          </legend>
+          <Button>
+            <ButtonSlot $kind="avatar" $layer="brand">
+              J
+            </ButtonSlot>
+            <ButtonLabel>Jane Doe</ButtonLabel>
+            <ButtonSlot $kind="badge">3</ButtonSlot>
+          </Button>
+        </fieldset>
       </Example>
 
       <Example

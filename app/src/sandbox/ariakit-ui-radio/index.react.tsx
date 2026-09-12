@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Radio,
@@ -24,6 +25,7 @@ import {
   RadioProvider,
 } from "@ariakit/ui/components/radio.ariakit.react";
 import { CreditCard, Landmark, Wallet } from "lucide-react";
+import { useState } from "react";
 import {
   Example,
   ExampleGrid,
@@ -69,6 +71,7 @@ const paymentMethods = [
 ];
 
 export default function RadioExamples() {
+  const [disabled, setDisabled] = useState(true);
   return (
     <ExampleGrid>
       <Example
@@ -585,6 +588,41 @@ export default function RadioExamples() {
                 </RadioCardContent>
               </RadioCard>
             ))}
+          </RadioCardGrid>
+        </RadioProvider>
+      </Example>
+      <Example
+        title="Disabled card slots"
+        description="The disabled grid fades the card's badge and avatar without a disabled prop on the card."
+        code={`
+          const [disabled, setDisabled] = useState(true);
+
+          <Button onClick={() => setDisabled(!disabled)}>
+            {disabled ? "Enable card grid" : "Disable card grid"}
+          </Button>
+          <RadioProvider defaultValue="jane">
+            <RadioCardGrid aria-label="Assignee" disabled={disabled}>
+              <RadioCard value="jane">
+                <RadioCardSlot $kind="avatar" $layer="brand">J</RadioCardSlot>
+                <RadioCardLabel>Jane Doe</RadioCardLabel>
+                <RadioCardSlot $kind="badge">3</RadioCardSlot>
+              </RadioCard>
+            </RadioCardGrid>
+          </RadioProvider>
+        `}
+      >
+        <Button onClick={() => setDisabled(!disabled)}>
+          {disabled ? "Enable card grid" : "Disable card grid"}
+        </Button>
+        <RadioProvider defaultValue="jane">
+          <RadioCardGrid aria-label="Assignee" disabled={disabled}>
+            <RadioCard value="jane">
+              <RadioCardSlot $kind="avatar" $layer="brand">
+                J
+              </RadioCardSlot>
+              <RadioCardLabel>Jane Doe</RadioCardLabel>
+              <RadioCardSlot $kind="badge">3</RadioCardSlot>
+            </RadioCard>
           </RadioCardGrid>
         </RadioProvider>
       </Example>

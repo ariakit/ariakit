@@ -163,8 +163,8 @@ export const choiceCard = cv({
   // -within trigger.
   extend: [button, focusWithin],
   class: [
-    // A named group for compositions that lay the card's parts out from the
-    // card's own classes; the package itself reads no state from it.
+    // Slots read the input's disabled state through this group. Compositions
+    // can also use it to lay the parts out from the card's own classes.
     "group/choice",
     // A wrapping row, so a description placed directly inside the card falls
     // to its own line instead of sitting beside the label.
