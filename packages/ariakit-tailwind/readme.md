@@ -178,7 +178,7 @@ In ordinary lighting, an exposed surface catches more light while a cutout or we
 | --------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | Same plane                  | Content or layout that belongs to the current material                                                        | No new `ak-layer`                                                                         |
 | Raised or exposed           | Card, popover, floating toolbar, or control above its support                                                 | `ak-layer ak-layer-lighten-*`                                                             |
-| Recessed                    | Well, track, code area, media bed, input bed, or pressed region                                               | `ak-layer ak-layer-darken-*`                                                              |
+| Recessed                    | Well, track, code area, media bed, or pressed region                                                          | `ak-layer ak-layer-darken-*`                                                              |
 | Appearance-aware separation | Selected row, adjacent pane, or neutral standalone button that should remain visibly separate in either theme | `ak-layer ak-layer-*`                                                                     |
 | New material or pigment     | Canvas, primary action, warning, brand region, or another intentional color boundary                          | `ak-layer ak-layer-<color>`, optionally with `ak-layer-mix-*`                             |
 | Interactive response        | The same material responding to hover, press, focus, selection, or disabled state                             | Variant-prefixed `ak-state-*`, `ak-ink-*`, `ak-outline-*`, and other contextual modifiers |
@@ -186,6 +186,8 @@ In ordinary lighting, an exposed surface catches more light while a cutout or we
 | Self-relative tonal push    | A surface that needs a minimum tonal move and must skip the ambiguous midrange                                | `ak-layer-push-*`                                                                         |
 
 Numeric `ak-layer-<number>` modifiers are not elevation values. They request appearance-aware separation from the selected source, which defaults to the parent layer. They normally move light sources darker and dark sources lighter, but the contrast-safe lightness pipeline may clamp the target or move it past an ambiguous midrange. Use them to separate a surface without declaring that it is above or below, and use `ak-layer-lighten-*` or `ak-layer-darken-*` when spatial direction matters.
+
+Ariakit UI fields use appearance-aware separation in the opposite direction. `Input` and the checkbox and radio boxes use `$lightnessOffset: -1` to keep a light writing surface on light layers and a dark one on dark layers. These fields are not darkened wells. Their edges mark the field boundary, and hover moves their fill toward the surrounding surface.
 
 A neutral standalone button can use this material when its affordance should remain visible at rest. Use it selectively: buttons inside a toolbar or another shared surface can stay on that plane and rely on state or ink changes for interaction.
 

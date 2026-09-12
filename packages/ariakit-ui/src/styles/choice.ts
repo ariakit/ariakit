@@ -85,10 +85,9 @@ export const choice = cv({
     $rounded: "sm",
     // The box is its own shape, not a corner of the card or row around it.
     $forceRounded: true,
-    // The field geometry of input.ts: always a border, so the box is one size
-    // on light and dark layers, at the input's edge weight, sunk one step into
-    // the surface. An empty box has no other boundary, so the weight is the
-    // lightest that keeps its edge at 3:1 against a light or a dark canvas.
+    // The slot fixes the box's dimensions, so its border takes no extra space.
+    // Keep the same edge weight and writing surface as text fields. An empty
+    // box has no other boundary against a light or a dark canvas.
     $border: true,
     $borderType: "border",
     $edgeWeight: 45,

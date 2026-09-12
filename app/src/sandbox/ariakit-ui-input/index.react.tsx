@@ -9,7 +9,7 @@
  */
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import { Input } from "@ariakit/ui/components/input.ariakit.react";
+import { Input, InputSlot } from "@ariakit/ui/components/input.ariakit.react";
 import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { inputPlaceholder } from "@ariakit/ui/styles/input";
@@ -64,7 +64,7 @@ export default function InputExamples() {
         description="A field marked invalid, with a danger edge and an error message that the field references."
         code={`
           <Text render={<label />}>Email</Text>
-          <Input $edge="danger" />
+          <Input aria-invalid />
           <Text $text="danger">…</Text>
         `}
       >
@@ -80,7 +80,6 @@ export default function InputExamples() {
             defaultValue="not an email"
             aria-invalid
             aria-describedby="input-email-error"
-            $edge="danger"
           />
           <Text id="input-email-error" $text="danger" className="text-sm">
             Enter a valid email address.
@@ -130,25 +129,25 @@ export default function InputExamples() {
         title="Compact"
         description="Less padding around the text, at the same font size."
         code={`
-          <Input $p={2} />
+          <Input $p={1} />
         `}
       >
-        <Input aria-label="City" placeholder="London" $p={2} />
+        <Input aria-label="City" placeholder="London" $p={1} />
       </Example>
 
       <Example
         title="Small"
-        description="A text-sm class on the label around the field. The field takes that font size, and its padding and radius scale with it."
+        description="The small control size. The field sets its own font size, and its padding and radius scale with it."
         code={`
           <Text render={<label />}>
             Postal code
-            <Input />
+            <Input $size="sm" />
           </Text>
         `}
       >
-        <Text render={<label />} className="grid w-full gap-1.5 text-sm">
+        <Text render={<label />} className="grid w-full gap-1.5">
           <span className="font-medium">Postal code</span>
-          <Input placeholder="SW1A 1AA" />
+          <Input placeholder="SW1A 1AA" $size="sm" />
         </Text>
       </Example>
 
@@ -192,16 +191,15 @@ export default function InputExamples() {
         description="The field style on a label around a plain input, so an icon shares the box. The ring shows when the input inside takes focus."
         code={`
           <Input render={<label />}>
-            <ListFilter />
+            <InputSlot><ListFilter /></InputSlot>
+            <input aria-label="Filter components" />
           </Input>
         `}
       >
-        <Input
-          render={<label />}
-          focusable={false}
-          className="flex items-center gap-2"
-        >
-          <ListFilter className="ak-ink-60 size-[1em] flex-none" />
+        <Input render={<label />} focusable={false}>
+          <InputSlot className="ak-ink-60">
+            <ListFilter />
+          </InputSlot>
           <input
             aria-label="Filter components"
             placeholder="Filter components"
@@ -214,19 +212,19 @@ export default function InputExamples() {
         title="Share link with copy button"
         description="A read-only link with a prefix and an action button in one field. A label inside the field keeps the button out of it."
         code={`
-          <Input render={<div />} $p={1}>
-            <Text>https://</Text>
-            <Button $size="sm">Copy</Button>
+          <Input render={<div />}>
+            <label>
+              <Text>https://</Text>
+              <input aria-label="Share link" readOnly />
+            </label>
+            <InputSlot $size="2xl" $square={false}>
+              <Button $size="sm">Copy</Button>
+            </InputSlot>
           </Input>
         `}
       >
-        <Input
-          render={<div />}
-          focusable={false}
-          $p={1}
-          className="flex items-center gap-2"
-        >
-          <label className="flex min-w-0 flex-1 items-center gap-2 self-stretch ps-2">
+        <Input render={<div />} focusable={false}>
+          <label className="flex min-w-0 flex-1 items-center gap-2">
             <Text className="ak-ink-60">https://</Text>
             <input
               aria-label="Share link"
@@ -235,7 +233,9 @@ export default function InputExamples() {
               className="min-w-0 flex-1"
             />
           </label>
-          <Button $size="sm">Copy</Button>
+          <InputSlot $size="2xl" $square={false}>
+            <Button $size="sm">Copy</Button>
+          </InputSlot>
         </Input>
       </Example>
 
@@ -244,40 +244,35 @@ export default function InputExamples() {
         description="A button that looks like an empty field, to open a search dialog. The label uses the inputPlaceholder recipe."
         code={`
           <Input render={<button type="button" />}>
-            <Search />
+            <InputSlot><Search /></InputSlot>
             <Text>Search docs</Text>
-            <Kbd>⌘K</Kbd>
+            <InputSlot $kind="shortcut" $size="xl"><Kbd aria-hidden>⌘K</Kbd></InputSlot>
           </Input>
         `}
       >
-        <Input
-          render={<button type="button" />}
-          className="flex items-center gap-2 text-start"
-        >
-          <Search className="ak-ink-60 size-[1em] flex-none" />
+        <Input render={<button type="button" />} className="text-start">
+          <InputSlot className="ak-ink-60">
+            <Search />
+          </InputSlot>
           <Text {...inputPlaceholder.jsx({ className: "flex-1 truncate" })}>
             Search docs
           </Text>
-          {/*
-            The key cap is taller than the one-line row of the field, so the
-            negative margin keeps the trigger at the height of a text field.
-          */}
-          <Kbd aria-hidden className="-my-1">
-            ⌘K
-          </Kbd>
+          <InputSlot $kind="shortcut" $size="xl">
+            <Kbd aria-hidden>⌘K</Kbd>
+          </InputSlot>
         </Input>
       </Example>
 
       <Example
         title="Inline form with submit button"
-        description="A field beside a submit button. The row stretches both to one height."
+        description="A field beside a submit button, with both centered to show their intrinsic heights."
         code={`
           <Input type="email" />
           <Button type="submit" $layer="brand" $kind="bevel">Subscribe</Button>
         `}
       >
         <form
-          className="flex w-full gap-2"
+          className="flex w-full items-center gap-2"
           onSubmit={(event) => event.preventDefault()}
         >
           <Input
@@ -293,8 +288,33 @@ export default function InputExamples() {
       </Example>
 
       <Example
+        title="Control sizes"
+        description="Each field shares its size with the button beside it. The row centers the controls without stretching them."
+        code={`
+          <Input $size="sm" />
+          <Button $size="sm" $kind="bevel">Save</Button>
+        `}
+      >
+        <div className="grid w-full gap-3">
+          {(["xs", "sm", "md", "lg", "xl"] as const).map((size) => (
+            <div key={size} className="flex items-center gap-2">
+              <Input
+                $size={size}
+                aria-label={`${size} field`}
+                placeholder={`${size} field`}
+                className="min-w-0 flex-1"
+              />
+              <Button $size={size} $kind="bevel" aria-label={`Save ${size}`}>
+                Save
+              </Button>
+            </div>
+          ))}
+        </div>
+      </Example>
+
+      <Example
         title="On a brand layer"
-        description="The field sinks into a saturated brand surface, and its edge and placeholder adapt to it."
+        description="The field separates from a saturated brand surface, and its edge and placeholder adapt to it."
         code={`
           <Frame $layer="brand" $rounded="xl" $p={4}>
             <Input />

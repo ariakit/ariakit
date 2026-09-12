@@ -9,6 +9,107 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/issues/7477
+  test("matches the field and button heights without stretching", async ({
+    q,
+  }) => {
+    const box = query(q.article("Inline form with submit button"));
+    const input = box.textbox("Newsletter email");
+    const button = box.button("Subscribe");
+    await test.expect(input).toBeVisible();
+    const buttonBox = await button.boundingBox();
+    await test.expect
+      .poll(async () => (await input.boundingBox())?.height)
+      .toBe(buttonBox?.height);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7477
+  test("shares every named control size with buttons", async ({ q }) => {
+    const box = query(q.article("Control sizes"));
+    for (const size of ["xs", "sm", "md", "lg", "xl"]) {
+      const input = box.textbox(`${size} field`);
+      const button = box.button(`Save ${size}`);
+      const buttonBox = await button.boundingBox();
+      await test.expect
+        .poll(async () => (await input.boundingBox())?.height)
+        .toBe(buttonBox?.height);
+      await test
+        .expect(input)
+        .toHaveCSS(
+          "font-size",
+          await button.evaluate((node) => getComputedStyle(node).fontSize),
+        );
+    }
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7477
+  test("keeps fields with slots at the plain field height", async ({ q }) => {
+    const inputBox = await q.textbox("Full name").boundingBox();
+    const fields = [
+      q.textbox("Filter components").locator("xpath=.."),
+      q.textbox("Share link").locator("xpath=../.."),
+      q.button("Search docs"),
+    ];
+    for (const field of fields) {
+      await test.expect
+        .poll(async () => (await field.boundingBox())?.height)
+        .toBe(inputBox?.height);
+    }
+    const copy = q.button("Copy");
+    const wrapper = copy.locator("xpath=../..");
+    const buttonBox = await copy.boundingBox();
+    const wrapperBox = await wrapper.boundingBox();
+    test.expect(buttonBox).not.toBeNull();
+    test.expect(wrapperBox).not.toBeNull();
+    if (!buttonBox) return;
+    if (!wrapperBox) return;
+    test.expect(buttonBox.x).toBeGreaterThan(wrapperBox.x);
+    test
+      .expect(buttonBox.x + buttonBox.width)
+      .toBeLessThan(wrapperBox.x + wrapperBox.width);
+    test.expect(buttonBox.y).toBeGreaterThan(wrapperBox.y);
+    test
+      .expect(buttonBox.y + buttonBox.height)
+      .toBeLessThan(wrapperBox.y + wrapperBox.height);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7477
+  test("updates the field edge when aria-invalid changes", async ({
+    page,
+    q,
+  }) => {
+    await forEachColorScheme(page, async () => {
+      const input = query(q.article("Invalid")).textbox("Email");
+      const invalidEdge = await input.evaluate((node) =>
+        getComputedStyle(node).getPropertyValue("--ak-edge"),
+      );
+      // The danger hue must keep its own lightness instead of being pushed to
+      // black or white by the ordinary field edge.
+      await test.expect(input).toHaveCSS(
+        "--ak-edge",
+        await input.evaluate((node) => {
+          const color = node.ownerDocument.createElement("span");
+          color.style.color = "oklch(from var(--color-danger) l c h / 0.45)";
+          node.after(color);
+          const expected = getComputedStyle(color).color;
+          color.remove();
+          return expected;
+        }),
+      );
+      await input.evaluate((node) =>
+        node.setAttribute("aria-invalid", "false"),
+      );
+      await test.expect(input).toHaveAttribute("aria-invalid", "false");
+      await test.expect
+        .poll(() =>
+          input.evaluate((node) =>
+            getComputedStyle(node).getPropertyValue("--ak-edge"),
+          ),
+        )
+        .not.toBe(invalidEdge);
+    });
+  });
+
   // Flips the disabled state the way application code does after render, which
   // is why the recipe draws the disabled look from CSS state instead of a prop.
   const setDisabled = (element: Locator, attribute = "disabled") =>

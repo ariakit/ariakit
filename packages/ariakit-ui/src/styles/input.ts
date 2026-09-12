@@ -1,12 +1,15 @@
 import { cv } from "clava";
+import { control, controlSlot } from "./control.ts";
 import { focusHighlight } from "./focus.ts";
-import { frame } from "./frame.ts";
-import { text } from "./text.ts";
 
 export const input = cv({
-  extend: [frame, text, focusHighlight],
+  extend: [control, focusHighlight],
   class: [
-    "max-w-full cursor-text",
+    "max-w-full cursor-text items-center justify-start",
+    // Keep the danger color's lightness and set its weight after the ordinary
+    // edge utilities, which otherwise push it to black or white.
+    "not-ui-field-disabled:aria-invalid:ak-edge-danger not-ui-field-disabled:aria-invalid:ak-edge-45",
+    "not-ui-field-disabled:aria-invalid:ak-edge-push-0",
     // Only animate into the hover state; snapping back on hover-out keeps
     // the field from feeling laggy.
     "hover:transition-[background-color]",
@@ -28,17 +31,13 @@ export const input = cv({
     "ui-field-disabled:ak-ink-0 ui-field-disabled:**:ak-ink-0",
     "ui-field-disabled:ak-edge-10",
     "ui-field-disabled:ak-layer-offset-0",
-    // The row is one tight line plus the frame padding, whether the class
-    // sits on the input itself or on a wrapper around it. Six steps of box
-    // minus two one-step margins lands the nested input on the same 4-step
-    // row as the self case, so a change to one number needs the others.
-    "leading-4",
-    "[input]:box-content [input]:h-4",
-    "[&_input]:-my-1 [&_input]:box-content [&_input]:h-6",
+    // Native inputs and wrappers use the same line box as other controls.
+    // A textarea keeps its row-based height.
+    "[input]:box-content [input]:h-lh",
+    "[&_input]:box-content [&_input]:h-lh",
     "[&_input]:outline-none",
-    // A textarea stacks rows, so it keeps the ordinary line height instead of
-    // the tight one-line row above.
-    "[textarea]:leading-normal",
+    // Forced colors remove shadows, including the inset edge.
+    "forced-colors:outline-(length:--border-width) forced-colors:-outline-offset-1",
     "placeholder:ak-ink-0 [&_input]:placeholder:ak-ink-0",
   ],
   variants: {
@@ -66,26 +65,24 @@ export const input = cv({
   },
   defaultVariants: {
     $rounded: "lg",
-    $p: 3,
     $border: true,
-    // Always a real border rather than a ring, so the field geometry stays the
-    // same on light and dark layers.
-    $borderType: "border",
+    // An inset edge preserves the control's intrinsic height in both themes.
+    $borderType: "inset",
     // A field's edge is its only boundary on the surface around it, so it is
     // stronger than the named border weights provide: the lightest that keeps
     // it at 3:1 against a light or a dark canvas. choice.ts draws its box at
     // the same weight. A variant default, not a base class, so instance weights
     // replace it instead of losing by stylesheet order.
     $edgeWeight: 45,
-    // A field sinks into the surrounding surface where a button rises off it,
-    // so the offset runs the other way: lighter on light layers, darker on dark
-    // ones. Hover then spends ak-state in the button direction, which pulls the
-    // field back toward the layer around it.
+    // Fields keep a light writing surface on light layers and a dark one on
+    // dark layers. Hover pulls the field toward the surrounding surface.
     $lightnessOffset: -1,
     $focus: true,
     $focusOffset: "inset",
   },
 });
+
+export const inputSlot = controlSlot;
 
 /**
  * Placeholder-colored text for fake input fields, like a button styled as an
