@@ -1122,7 +1122,14 @@ export default function TableExamples() {
               components: (
                 <Table
                   aria-label="Nested component coverage"
-                  rows={statusRows}
+                  rows={[
+                    ...statusRows,
+                    {
+                      group: "foot",
+                      component: "Total",
+                      status: "2 components",
+                    },
+                  ]}
                   container={{ $border: true }}
                 />
               ),

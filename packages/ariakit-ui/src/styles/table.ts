@@ -218,11 +218,13 @@ export const tableRowGroup = cv({
     tableEdgeInputs,
     "relative",
     // Edge flags read by the rows, for the line the table's last row leaves
-    // out and the corners its first and last rows take.
+    // out and the corners its first and last rows take. Reset them here so a
+    // nested group cannot inherit its outer group's position.
+    "[--table-rowgroup-first:0] [--table-rowgroup-last:0]",
     "[&:is(thead):first-of-type]:[--table-rowgroup-first:1]",
     "[:not(:has(>thead))>&:nth-child(1_of_tbody,tfoot)]:[--table-rowgroup-first:1]",
     "[&:is(tfoot):last-of-type]:[--table-rowgroup-last:1]",
-    "[:not(:has(tfoot))>&:last-child]:[--table-rowgroup-last:1]",
+    "[:not(:has(>tfoot))>&:last-child]:[--table-rowgroup-last:1]",
   ],
   variants: {
     /**
@@ -261,7 +263,9 @@ export const tableRow = cv({
   extend: [layer, hover],
   class: [
     tableEdgeInputs,
-    // Rows at the group edges forward the flags to their cells.
+    // Rows at the group edges forward the flags to their cells. Other rows
+    // must not inherit the position of a row that contains a nested table.
+    "[--table-row-first:0] [--table-row-last:0]",
     "first-of-type:[--table-row-first:var(--table-rowgroup-first,0)]",
     "last-of-type:[--table-row-last:var(--table-rowgroup-last,0)]",
     // The line below the row, which its cells draw in their last row of

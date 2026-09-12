@@ -190,6 +190,30 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     test.expect(innerEdge).toContain("/ 0.1)");
   });
 
+  test("keeps outer table corners when a nested table has a footer", async ({
+    q,
+  }) => {
+    const fixture = query(q.article("Nested table edges"));
+    const outer = fixture.table("Project groups");
+    const inner = fixture.table("Nested component coverage");
+    await test.expect(query(inner).cell("Total")).toBeVisible();
+    const firstCell = query(outer).cell("Website", { exact: true });
+    const lastCell = firstCell.locator("xpath=following-sibling::td");
+    for (const cell of [firstCell, lastCell]) {
+      await test.expect(cell).toHaveCSS("border-bottom-width", "0px");
+    }
+    await test.expect(firstCell).toHaveCSS("border-bottom-left-radius", "11px");
+    await test.expect(lastCell).toHaveCSS("border-bottom-right-radius", "11px");
+    for (const name of ["Button", "Tabs"]) {
+      await test
+        .expect(query(inner).cell(name))
+        .toHaveCSS("border-bottom-width", "1px");
+    }
+    await test
+      .expect(query(inner).cell("Total"))
+      .toHaveCSS("border-bottom-width", "0px");
+  });
+
   // https://github.com/ariakit/ariakit/issues/7481
   test("keeps header choices at body size and preserves explicit control sizes", async ({
     q,
