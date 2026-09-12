@@ -1169,11 +1169,11 @@ export default function TabsExamples() {
 
       <Example
         title="Right to left"
-        description="The curves and the chevrons mirror. The selected first tab meets the panel's start corner on the right."
+        description="The curves and the chevrons mirror. The selected first tab meets the panel's start corner on the right. The rtl prop makes the arrow keys follow the same direction."
         stretch
         code={`
           <div dir="rtl">
-            <Tabs>
+            <Tabs rtl>
               <TabList>
                 <Tab>
                   <TabLabel>المسودات</TabLabel>
@@ -1198,7 +1198,7 @@ export default function TabsExamples() {
       >
         {/* Drafts, In review and Published, with an Arabic panel line. */}
         <div dir="rtl" lang="ar">
-          <Tabs defaultSelectedId="rtl-drafts">
+          <Tabs rtl defaultSelectedId="rtl-drafts">
             <TabList aria-label="مراحل النشر">
               <Tab id="rtl-drafts">
                 <TabLabel>المسودات</TabLabel>
@@ -1367,6 +1367,49 @@ export default function TabsExamples() {
           </TabPanels>
         </Tabs>
       </Example>
+      {(["folder", "flat", "bevel"] as const).map((kind) => (
+        <Example
+          key={kind}
+          title={`${kind} tab with a long label`}
+          description="The label stays on one line and shows an ellipsis when the tab reaches its maximum width."
+          stretch
+          code={`
+            <Tabs>
+              <TabList>
+                <Tab $kind="${kind}" className="max-w-40">
+                  <TabLabel>Project settings and permissions</TabLabel>
+                </Tab>
+                <Tab $kind="${kind}">
+                  <TabLabel>Activity</TabLabel>
+                </Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel single>…</TabPanel>
+              </TabPanels>
+            </Tabs>
+          `}
+        >
+          <Tabs defaultSelectedId={`long-${kind}-settings`}>
+            <TabList aria-label={`${kind} tab with a long label`}>
+              <Tab
+                id={`long-${kind}-settings`}
+                $kind={kind}
+                className="max-w-40"
+              >
+                <TabLabel>Project settings and permissions</TabLabel>
+              </Tab>
+              <Tab id={`long-${kind}-activity`} $kind={kind}>
+                <TabLabel>Activity</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                <p className="text-sm">Manage project access.</p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </Example>
+      ))}
     </ExampleGrid>
   );
 }

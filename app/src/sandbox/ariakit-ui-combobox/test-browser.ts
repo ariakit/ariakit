@@ -104,7 +104,8 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await test.expect(emailCheck.locator("svg")).toBeVisible();
     await expectIconCentered(email);
     await test.expect(smsCheck).toBeHidden();
-    // Read both labels in one frame while the popover can still be animating.
+    // Wait for the scale transition to end before comparing subpixel positions.
+    await test.expect(q.listbox("Notifications")).toHaveCSS("scale", "none");
     const labelPositions = await q
       .listbox("Notifications")
       .locator("[role=option] > :last-child")
