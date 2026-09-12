@@ -168,6 +168,26 @@ function mapButtonLabels(
   });
 }
 
+/**
+ * Keeps a derived button's content wrapper inside its label, so sibling slots
+ * stay in the button row. Plain children still receive the default label.
+ * @private
+ */
+export function wrapDisclosureButtonLabel(
+  children: React.ReactNode,
+  wrap: (children: React.ReactNode) => React.ReactNode,
+) {
+  let hasLabel = false;
+  const result = mapButtonLabels(children, (label) => {
+    hasLabel = true;
+    return React.cloneElement(label, { children: wrap(label.props.children) });
+  });
+  if (hasLabel) {
+    return result;
+  }
+  return <DisclosureButtonLabel>{wrap(children)}</DisclosureButtonLabel>;
+}
+
 export function DisclosureButton({
   description,
   icon,

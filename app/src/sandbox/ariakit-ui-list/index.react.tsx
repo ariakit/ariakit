@@ -8,6 +8,10 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
+import {
+  DisclosureButtonLabel,
+  DisclosureButtonSlot,
+} from "@ariakit/ui/components/disclosure.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Heading,
@@ -17,6 +21,7 @@ import {
   List,
   ListDisclosure,
   ListDisclosureButton,
+  ListDisclosureContent,
   ListItem,
   ListItemMarker,
 } from "@ariakit/ui/components/list.ariakit.react";
@@ -641,6 +646,48 @@ export default function ListExamples() {
           <ListItem>
             <p>Go live.</p>
           </ListItem>
+        </List>
+      </Example>
+
+      <Example
+        title="Disclosure badges"
+        description="An explicit label keeps its badge beside the text, with or without a description."
+        code={`
+          <ListDisclosureButton description="All tasks in this workspace">
+            <DisclosureButtonLabel>Team tasks</DisclosureButtonLabel>
+            <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+          </ListDisclosureButton>
+        `}
+      >
+        <List ordered>
+          <li>
+            <ListDisclosure defaultOpen>
+              <ListDisclosureButton>
+                <DisclosureButtonLabel id="list-project-label">
+                  Project tasks
+                </DisclosureButtonLabel>
+                <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+              </ListDisclosureButton>
+              <ListDisclosureContent>
+                <p>Manage project tasks</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
+          <li>
+            <ListDisclosure defaultOpen>
+              <ListDisclosureButton description="All tasks in this workspace">
+                <>
+                  <DisclosureButtonLabel id="list-tasks-label">
+                    Team tasks
+                  </DisclosureButtonLabel>
+                  <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+                </>
+              </ListDisclosureButton>
+              <ListDisclosureContent>
+                <p>Manage team tasks</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
         </List>
       </Example>
 

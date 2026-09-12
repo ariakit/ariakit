@@ -12,6 +12,10 @@ import {
   ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
+import {
+  DisclosureButtonLabel,
+  DisclosureButtonSlot,
+} from "@ariakit/ui/components/disclosure.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import type { NavProps } from "@ariakit/ui/components/nav.ariakit.react";
 import {
@@ -1162,6 +1166,48 @@ export default function NavExamples() {
             <NavDisclosureContent>
               <NavLink href="/projects" currentUrl="/account">
                 All projects
+              </NavLink>
+            </NavDisclosureContent>
+          </NavDisclosure>
+        </Nav>
+      </Example>
+
+      <Example
+        title="Disclosure badges"
+        description="An explicit label keeps its badge beside the text, with or without a description."
+        code={`
+          <NavDisclosureButton description="All pages in this workspace">
+            <DisclosureButtonLabel>Team pages</DisclosureButtonLabel>
+            <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+          </NavDisclosureButton>
+        `}
+      >
+        <Nav>
+          <NavDisclosure defaultOpen>
+            <NavDisclosureButton>
+              <DisclosureButtonLabel id="nav-project-label">
+                Project pages
+              </DisclosureButtonLabel>
+              <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+            </NavDisclosureButton>
+            <NavDisclosureContent>
+              <NavLink href="/pages/settings" currentUrl="/account">
+                Manage project pages
+              </NavLink>
+            </NavDisclosureContent>
+          </NavDisclosure>
+          <NavDisclosure defaultOpen>
+            <NavDisclosureButton description="All pages in this workspace">
+              <>
+                <DisclosureButtonLabel id="nav-pages-label">
+                  Team pages
+                </DisclosureButtonLabel>
+                <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+              </>
+            </NavDisclosureButton>
+            <NavDisclosureContent>
+              <NavLink href="/pages/settings" currentUrl="/account">
+                Manage team pages
               </NavLink>
             </NavDisclosureContent>
           </NavDisclosure>

@@ -1,6 +1,38 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3995263562
+  test("keeps a disclosure badge beside the label without a description", async ({
+    q,
+  }) => {
+    const example = query(q.article("Disclosure badges"));
+    const button = example.button("Project pages 3");
+    await test
+      .expect(button.locator(":scope > span").filter({ hasText: /^3$/ }))
+      .toHaveCount(1);
+    await button.click();
+    await test.expect(example.link("Manage project pages")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3995263562
+  test("keeps a disclosure badge beside the label with a description", async ({
+    q,
+  }) => {
+    const example = query(q.article("Disclosure badges"));
+    const button = example.button("Team pages");
+    await test
+      .expect(button)
+      .toHaveAttribute("aria-labelledby", "nav-pages-label");
+    await test
+      .expect(button)
+      .toHaveAccessibleDescription("All pages in this workspace");
+    await test
+      .expect(button.locator(":scope > span").filter({ hasText: /^3$/ }))
+      .toHaveCount(1);
+    await button.click();
+    await test.expect(example.link("Manage team pages")).toBeHidden();
+  });
+
   test("marks only the link that matches the current URL", async ({ q }) => {
     const rows = query(q.navigation("Rows"));
     await test

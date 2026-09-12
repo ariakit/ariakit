@@ -1,6 +1,45 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  test("keeps a disclosure step's checked state in its name", async ({ q }) => {
+    const button = query(q.article("Disclosure steps")).button(
+      "Checked Connect the repository",
+    );
+    await test.expect(button).toHaveAccessibleDescription("Done on Monday");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3995263562
+  test("keeps a disclosure badge beside the label without a description", async ({
+    q,
+  }) => {
+    const example = query(q.article("Disclosure badges"));
+    const button = example.button("Project tasks 3");
+    await test
+      .expect(button.locator(":scope > span").filter({ hasText: /^3$/ }))
+      .toHaveCount(1);
+    await button.click();
+    await test.expect(example.text("Manage project tasks")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3995263562
+  test("keeps a disclosure badge beside the label with a description", async ({
+    q,
+  }) => {
+    const example = query(q.article("Disclosure badges"));
+    const button = example.button("Team tasks");
+    await test
+      .expect(button)
+      .toHaveAttribute("aria-labelledby", "list-tasks-label");
+    await test
+      .expect(button)
+      .toHaveAccessibleDescription("All tasks in this workspace");
+    await test
+      .expect(button.locator(":scope > span").filter({ hasText: /^3$/ }))
+      .toHaveCount(1);
+    await button.click();
+    await test.expect(example.text("Manage team tasks")).toBeHidden();
+  });
+
   test("describes the value of a progress marker", async ({ q }) => {
     const row = query(q.article("Checklist"))
       .listitem()

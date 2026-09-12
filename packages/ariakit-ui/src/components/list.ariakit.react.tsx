@@ -28,6 +28,7 @@ import {
   DisclosureButton,
   DisclosureContent,
   DisclosureContentBody,
+  wrapDisclosureButtonLabel,
 } from "./disclosure.ariakit.react.tsx";
 
 export interface ListProps
@@ -246,8 +247,12 @@ export function ListDisclosureButton({
       {...listDisclosureButton.jsx(variantProps)}
       {...rest}
     >
-      <ListItemMarker checked={checked} progress={progress} />
-      <ListItemContent>{rest.children}</ListItemContent>
+      {wrapDisclosureButtonLabel(rest.children, (children) => (
+        <>
+          <ListItemMarker checked={checked} progress={progress} />
+          <ListItemContent>{children}</ListItemContent>
+        </>
+      ))}
     </DisclosureButton>
   );
 }

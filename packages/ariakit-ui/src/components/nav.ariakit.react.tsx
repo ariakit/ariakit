@@ -34,6 +34,7 @@ import {
   DisclosureButton,
   DisclosureContent,
   DisclosureContentBody,
+  wrapDisclosureButtonLabel,
 } from "./disclosure.ariakit.react.tsx";
 
 // The stores of every NavDisclosure around a row, outermost first, so a current
@@ -328,7 +329,9 @@ export function NavDisclosureButton({
       {...navButton.jsx(variantProps)}
       {...rest}
     >
-      <NavButtonContent>{rest.children}</NavButtonContent>
+      {wrapDisclosureButtonLabel(rest.children, (children) => (
+        <NavButtonContent>{children}</NavButtonContent>
+      ))}
     </DisclosureButton>
   );
 }
