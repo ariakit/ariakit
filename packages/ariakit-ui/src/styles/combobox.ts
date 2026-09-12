@@ -2,7 +2,7 @@ import { cv } from "clava";
 import { button, buttonSlot } from "./button.ts";
 import { control, controlLabel } from "./control.ts";
 import { frameBase } from "./frame.ts";
-import { input } from "./input.ts";
+import { input, inputPlaceholder } from "./input.ts";
 import {
   option,
   optionContent,
@@ -18,6 +18,12 @@ export const comboboxInput = input;
 
 export const comboboxLabel = controlLabel;
 
+export const comboboxList = cv({
+  // The list can receive focus before it returns to the input. The active
+  // option provides the highlight during this transfer.
+  class: "outline-none",
+});
+
 export const comboboxPopover = cv({
   extend: [popover],
   class: [
@@ -26,12 +32,12 @@ export const comboboxPopover = cv({
     // carries the highlight.
     "outline-none overflow-auto overscroll-contain",
     "max-h-[min(var(--popover-available-height),20rem)]",
-    "min-w-(--popover-anchor-width)",
+    "max-w-(--popover-available-width)",
+    "min-w-[min(var(--popover-anchor-width),var(--popover-available-width))]",
   ],
   defaultVariants: {
     $rounded: "xl",
     $p: 1,
-    $layer: "canvas",
   },
 });
 
@@ -146,6 +152,10 @@ export const comboboxSelectArrow = cv({
 });
 
 export const comboboxSelectIcon = buttonSlot;
+
+export const comboboxSelectLabel = controlLabel;
+
+export const comboboxSelectPlaceholder = inputPlaceholder;
 
 // The display value takes the label cv so the button's $text* variants reach
 // it: they only match .text and svg descendants. It fills the row and reads
