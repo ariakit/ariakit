@@ -10,6 +10,158 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/issues/7481
+  test("colors grid lines through custom and disabled cell layers", async ({
+    page,
+    q,
+  }) => {
+    await forEachColorScheme(page, async () => {
+      const fixture = query(q.article("Colored cell layers"));
+      const grid = fixture.grid();
+      const edge = await grid
+        .locator("xpath=../..")
+        .evaluate((node) => getComputedStyle(node).borderTopColor);
+      const edgePattern = new RegExp(
+        edge.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+      );
+      for (const selected of [false, true]) {
+        await fixture.checkbox("Select row").setChecked(selected);
+        await hoverOver(query(grid).text("Disabled surface"));
+        for (const cell of await query(grid).row().locator("td").all()) {
+          await test.expect(cell).toHaveCSS("border-image-source", edgePattern);
+        }
+      }
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7481
+  test("uses container edge colors for grid lines and table overrides", async ({
+    page,
+    q,
+  }) => {
+    await forEachColorScheme(page, async () => {
+      for (const title of ["Brand grid lines", "Grid edge override"]) {
+        const table = query(q.article(title)).table();
+        const container = table.locator("xpath=../..");
+        const edge = await (
+          title === "Brand grid lines" ? container : table
+        ).evaluate((node) => getComputedStyle(node).borderTopColor);
+        for (const cell of await table.locator("th, td").all()) {
+          await test
+            .expect(cell)
+            .toHaveCSS(
+              "border-image-source",
+              new RegExp(edge.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+            );
+        }
+        const row = query(table).row(/^Button /);
+        await hoverOver(row);
+        await test
+          .expect(query(row).cell().first())
+          .toHaveCSS(
+            "border-image-source",
+            new RegExp(edge.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+          );
+      }
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7481
+  test("preserves explicit raw cell edges over table defaults", async ({
+    page,
+    q,
+  }) => {
+    await forEachColorScheme(page, async () => {
+      const fixture = query(q.article("Cell edge override"));
+      for (const name of ["Plain cell edges", "Colored cell edges"]) {
+        const cell = query(fixture.table(name)).cell("Failed");
+        const color = await cell
+          .locator("span")
+          .evaluate((node) => getComputedStyle(node).color);
+        await test
+          .expect(cell)
+          .toHaveCSS(
+            "border-image-source",
+            new RegExp(color.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+          );
+      }
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7481
+  test("keeps a nested table's grid independent of its outer table", async ({
+    q,
+  }) => {
+    const fixture = query(q.article("Nested table edges"));
+    const outer = fixture.table("Project groups");
+    const inner = fixture.table("Nested component coverage");
+    const outerEdge = await query(outer)
+      .columnheader("Project")
+      .evaluate((node) => getComputedStyle(node).borderImageSource);
+    const innerEdge = await query(inner)
+      .columnheader("Component")
+      .evaluate((node) => getComputedStyle(node).borderImageSource);
+    test.expect(innerEdge).not.toBe(outerEdge);
+    test.expect(innerEdge).toContain("/ 0.1)");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7481
+  test("keeps header choices at body size and preserves explicit control sizes", async ({
+    q,
+  }) => {
+    const selected = query(q.article("Selected rows"));
+    const size = (element: Locator) =>
+      element.evaluate((node) => node.getBoundingClientRect().width);
+    test
+      .expect(await size(selected.checkbox("Select all rows")))
+      .toBe(await size(selected.checkbox("Select Button")));
+    const large = query(q.article("Header control sizes"));
+    test.expect(await size(large.checkbox("Header choice"))).toBe(20);
+    test
+      .expect(await size(large.checkbox("Header choice")))
+      .toBe(await size(large.checkbox("Body choice")));
+    test
+      .expect(await size(large.checkbox("Small header choice")))
+      .toBe(await size(large.checkbox("Small body choice")));
+    test
+      .expect(await size(large.checkbox("Small header choice")))
+      .toBeLessThan(await size(large.checkbox("Header choice")));
+    await test
+      .expect(large.button("Edit header"))
+      .toHaveCSS("font-size", "12px");
+    await test.expect(large.button("Edit row")).toHaveCSS("font-size", "12px");
+    test
+      .expect(await size(large.button("Edit header").locator("svg")))
+      .toBe(await size(large.button("Edit row").locator("svg")));
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7481
+  test("aligns caption padding with the cells", async ({ q }) => {
+    const table = query(q.article("Caption options")).table();
+    const caption = query(table).caption();
+    await test.expect(caption).toBeVisible();
+    const cell = query(table).cell("Button");
+    for (const property of [
+      "paddingInlineStart",
+      "paddingInlineEnd",
+      "paddingTop",
+      "paddingBottom",
+    ] as const) {
+      const padding = await cell.evaluate(
+        (node, property) => getComputedStyle(node)[property],
+        property,
+      );
+      test
+        .expect(
+          await caption.evaluate(
+            (node, property) => getComputedStyle(node)[property],
+            property,
+          ),
+        )
+        .toBe(padding);
+    }
+  });
+
   // The narrow containers of the fixture tables let the cells scroll under the
   // pinned ones. A pinned cell must paint the row's surface, which the row
   // shows through the ordinary cells, at rest and in every row state.

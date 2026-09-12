@@ -1,10 +1,44 @@
-import { cv } from "clava";
-import { getSpacingValue } from "../utils/styles.ts";
+import { cv, cx } from "clava";
+import type { VariantProps } from "clava";
+import { getScaledStyleValue, getSpacingValue } from "../utils/styles.ts";
 import { button, buttonSlot } from "./button.ts";
+import type { edge } from "./edge.ts";
+import { getEdgeColorValue, getEdgeWeightValue } from "./edge.ts";
 import { frame } from "./frame.ts";
 import { hover } from "./hover.ts";
 import { layer } from "./layer.ts";
 import { padding } from "./padding.ts";
+import { text } from "./text.ts";
+
+const tableEdgeInputs = cx(
+  // Inherited inputs are defaults; explicit edge utilities on a part win.
+  "[:where(&)]:ak-edge-color-(--table-edge-color)",
+  "[:where(&)]:ak-edge-alpha-(--table-edge-alpha,0.1)",
+  "[:where(&)]:ak-edge-push-(--table-edge-push,1)",
+);
+
+// Cells resolve these inputs against their own layer, so a row's hover and
+// selection tint still determine the surface behind each translucent line.
+function getTableEdgeStyle(variants: VariantProps<typeof edge>) {
+  const color = getEdgeColorValue(variants.$edge);
+  const weight = getEdgeWeightValue(variants.$edgeWeight);
+  const push = variants.$edgePush;
+  const style: Record<string, string> = {};
+  if (color != null) {
+    style["--table-edge-color"] = color;
+  }
+  if (weight != null) {
+    style["--table-edge-alpha"] = getScaledStyleValue(weight);
+  } else if (variants.$edgeRaw) {
+    style["--table-edge-alpha"] = "1";
+  }
+  if (push != null && push !== "") {
+    style["--table-edge-push"] = getScaledStyleValue(push);
+  } else if (variants.$edgeRaw) {
+    style["--table-edge-push"] = "0";
+  }
+  return style;
+}
 
 // Widths the cells and the container spend, as plain numbers of pixels: the
 // cells cut their lines out of one image (see tableCell), and an image slice
@@ -99,6 +133,7 @@ const tableBorderVariants = {
 export const table = cv({
   extend: [padding],
   class: [
+    tableEdgeInputs,
     "relative w-full border-separate border-spacing-0",
     // The width of a line between rows and of a divider between columns: the
     // wider of the two sides asked for. The sides only differ for the
@@ -112,6 +147,7 @@ export const table = cv({
     // body row and its text stays on the column below. The table element
     // itself stays unpadded; only the ! beats the padding declared on it.
     "[--table-py:var(--py)] [--table-px:var(--px)]",
+    "[--table-size:1em]",
     "p-0!",
   ],
   variants: {
@@ -122,6 +158,9 @@ export const table = cv({
     // computed border type must not react to the truthy $border.
     $borderType: "unset",
     $p: 3,
+  },
+  refine({ variants }) {
+    return { style: getTableEdgeStyle(variants) };
   },
 });
 
@@ -135,6 +174,9 @@ export const tableContainer = cv({
     // a flex line included, and the scroller takes the overflow. Without this
     // a parent that sizes to content grows to the table's widest row instead.
     "min-w-0",
+    // A nested table starts its own edge context. Its table element can still
+    // replace individual inputs that this container supplies.
+    "[--table-edge-color:initial] [--table-edge-alpha:initial] [--table-edge-push:initial]",
     // The outer borders follow the same channels as the cell borders.
     "border-s-[calc(var(--table-border-s,0)*1px)]",
     "border-e-[calc(var(--table-border-e,0)*1px)]",
@@ -151,6 +193,14 @@ export const tableContainer = cv({
     $rounded: "xl",
     $p: "none",
   },
+  refine({ variants }) {
+    return { style: getTableEdgeStyle(variants) };
+  },
+});
+
+export const tableCaption = cv({
+  extend: [text],
+  class: "px-(--table-px) py-(--table-py) text-start",
 });
 
 export const tableScroller = cv({
@@ -165,11 +215,12 @@ export const tableScroller = cv({
 export const tableRowGroup = cv({
   extend: [layer],
   class: [
+    tableEdgeInputs,
     "relative",
     // Edge flags read by the rows, for the line the table's last row leaves
     // out and the corners its first and last rows take.
     "[&:is(thead):first-of-type]:[--table-rowgroup-first:1]",
-    "[:not(:has(thead))>&:first-child]:[--table-rowgroup-first:1]",
+    "[:not(:has(>thead))>&:nth-child(1_of_tbody,tfoot)]:[--table-rowgroup-first:1]",
     "[&:is(tfoot):last-of-type]:[--table-rowgroup-last:1]",
     "[:not(:has(tfoot))>&:last-child]:[--table-rowgroup-last:1]",
   ],
@@ -209,6 +260,7 @@ export const tableFoot = cv({
 export const tableRow = cv({
   extend: [layer, hover],
   class: [
+    tableEdgeInputs,
     // Rows at the group edges forward the flags to their cells.
     "first-of-type:[--table-row-first:var(--table-rowgroup-first,0)]",
     "last-of-type:[--table-row-last:var(--table-rowgroup-last,0)]",
@@ -287,6 +339,7 @@ export const tableRow = cv({
 export const tableCell = cv({
   extend: [layer],
   class: [
+    tableEdgeInputs,
     // The header of a sorted column takes the full ink; the sort button in it
     // says which way (see tableSortIndicator).
     "aria-[sort=ascending]:ak-ink-100 aria-[sort=descending]:ak-ink-100",
@@ -335,7 +388,12 @@ export const tableCell = cv({
      */
     $header: {
       false: "",
-      column: "ak-ink-70 font-semibold",
+      column: [
+        "ak-ink-70 font-semibold",
+        // A bare choice or icon keeps the body size beside the smaller label.
+        // Slots inside a control keep that control's own explicit size.
+        "[&>.control-slot]:text-(length:--table-size)",
+      ],
       row: "font-semibold",
     },
     /**

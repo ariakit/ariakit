@@ -219,6 +219,13 @@ body > * {
   initial-value: 0px;
 }
 
+/* A header slot uses the table's font size even when its label is smaller. */
+@property --table-size {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 16px;
+}
+
 /* Disclosure state channels: the root publishes open and group flags as
    custom properties, and descendants react through container style
    queries. */

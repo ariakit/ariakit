@@ -19,6 +19,7 @@ import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import type { TableRows } from "@ariakit/ui/components/table.ariakit.react";
 import {
   Table,
+  TableCaption,
   TableCell,
   TableRow,
   TableRowGroup,
@@ -32,7 +33,7 @@ import {
 } from "#app/components/ariakit-ui-example.react.tsx";
 
 // Migrated from the table-cell-layer sandbox with the same markup and state.
-function TableCellLayer() {
+function TableCellLayer({ colored = false }: { colored?: boolean }) {
   const [selected, setSelected] = useState(false);
   // The narrow container makes the pinned cell overlap the scrolling cells.
   return (
@@ -49,7 +50,12 @@ function TableCellLayer() {
         role="grid"
         $border
         className="min-w-[40rem]"
-        container={{ $border: true, className: "max-w-80" }}
+        container={{
+          $border: true,
+          $edge: colored ? "brand" : undefined,
+          $edgeWeight: colored ? "bold" : undefined,
+          className: "max-w-80",
+        }}
       >
         <TableRowGroup>
           <TableRow selected={selected}>
@@ -611,15 +617,10 @@ function SelectedRowsGrid() {
         <TableRowGroup group="head">
           <ak.CompositeRow render={<TableRow />}>
             <TableCell $fit>
-              {/*
-                The head is text-sm and the box is sized in em, so a length
-                keeps the select-all the same size as the boxes below it.
-              */}
               <ak.CompositeItem
                 render={
                   <Checkbox
                     aria-label="Select all rows"
-                    className="[--size:1rem]"
                     checked={
                       allSelected ? true : selected.length ? "mixed" : false
                     }
@@ -683,6 +684,59 @@ function SelectedRowsGrid() {
   );
 }
 
+function CaptionOptions() {
+  const [format, setFormat] = useState("Props");
+  const captions = [
+    { name: "Text", caption: "Component inventory" },
+    {
+      name: "Props",
+      caption: {
+        children: <strong>Component inventory</strong>,
+        $text: "brand",
+      },
+    },
+    {
+      name: "Element",
+      caption: <TableCaption>Component inventory</TableCaption>,
+    },
+    { name: "Zero", caption: 0 },
+    { name: "Hidden", caption: false },
+  ];
+  const caption = captions.find(({ name }) => name === format)?.caption;
+  return (
+    <div className="grid gap-3">
+      <div
+        className="flex flex-wrap gap-2"
+        role="group"
+        aria-label="Caption format"
+      >
+        {captions.map(({ name }) => (
+          <Button
+            key={name}
+            $size="sm"
+            $p={1}
+            aria-pressed={format === name}
+            onClick={() => setFormat(name)}
+          >
+            {name}
+          </Button>
+        ))}
+      </div>
+      <Table
+        caption={caption}
+        container={{ $border: true }}
+        $p={2}
+        rows={[{ component: "Button", status: "Covered" }]}
+      >
+        <TableRow>
+          <TableCell>Tabs</TableCell>
+          <TableCell>Expanded</TableCell>
+        </TableRow>
+      </Table>
+    </div>
+  );
+}
+
 export default function TableExamples() {
   return (
     <ExampleGrid>
@@ -691,11 +745,11 @@ export default function TableExamples() {
         description="Head, body and foot rows come from one array. A head cell sets the format of its whole column."
         stretch
         code={`
-          <Table rows={[…]} container={{ $border: true }} />
+          <Table caption="Component coverage" rows={[…]} container={{ $border: true }} />
         `}
       >
         <Table
-          aria-label="Component coverage"
+          caption="Component coverage"
           rows={componentRows}
           container={{ $border: true }}
         />
@@ -706,7 +760,7 @@ export default function TableExamples() {
         description="A table written out by hand, with row headers, badges in cells and a foot cell that spans two columns."
         stretch
         code={`
-          <Table container={{ $border: true }}>
+          <Table caption="Component review" container={{ $border: true }}>
             <TableRowGroup group="head">
               <TableRow>
                 <TableCell>Component</TableCell>
@@ -752,7 +806,7 @@ export default function TableExamples() {
           </Table>
         `}
       >
-        <Table aria-label="Component review" container={{ $border: true }}>
+        <Table caption="Component review" container={{ $border: true }}>
           <TableRowGroup group="head">
             <TableRow>
               <TableCell>Component</TableCell>
@@ -887,6 +941,168 @@ export default function TableExamples() {
           container={{ $border: true }}
           $borderInline={false}
         />
+      </Example>
+
+      <Example
+        title="Brand grid lines"
+        description="The container's edge color and weight reach the lines between cells. Hover a row to see its tint behind the lines."
+        stretch
+        code={`
+          <Table rows={[…]} container={{ $border: true, $edge: "brand", $edgeWeight: "bold" }} />
+        `}
+      >
+        <Table
+          aria-label="Brand component coverage"
+          rows={componentRows}
+          container={{ $border: true, $edge: "brand", $edgeWeight: "bold" }}
+        />
+      </Example>
+
+      <Example
+        title="Grid edge override"
+        description="The table sets the grid color and opacity while the container keeps its brand border."
+        stretch
+        code={`
+          <Table rows={[…]} $edge="danger" $edgeWeight={25} container={{ $border: true, $edge: "brand", $edgeWeight: "bold" }} />
+        `}
+      >
+        <Table
+          aria-label="Review grid edges"
+          rows={componentRows}
+          $edge="danger"
+          $edgeWeight={25}
+          container={{ $border: true, $edge: "brand", $edgeWeight: "bold" }}
+        />
+      </Example>
+
+      <Example
+        title="Cell edge override"
+        description="An explicit cell edge replaces the grid defaults in both a plain table and a colored table."
+        stretch
+        code={`
+          <TableCell className="ak-edge-danger ak-edge-raw">Failed</TableCell>
+        `}
+      >
+        {[false, true].map((colored) => (
+          <Table
+            key={`${colored}`}
+            aria-label={colored ? "Colored cell edges" : "Plain cell edges"}
+            container={{
+              $border: true,
+              $edge: colored ? "brand" : undefined,
+              $edgeWeight: colored ? "bold" : undefined,
+            }}
+            rows={[
+              { group: "head", status: "Status", note: "Note" },
+              {
+                status: (
+                  <TableCell className="ak-edge-danger ak-edge-raw">
+                    <span className="text-danger">Failed</span>
+                  </TableCell>
+                ),
+                note: "Needs review",
+              },
+              { status: "Pending", note: "Ready to test" },
+            ]}
+          />
+        ))}
+      </Example>
+
+      <Example
+        title="Caption options"
+        description="A caption gives the table a visible native name. Pass text, props for rich content, or a TableCaption element."
+        stretch
+        code={`
+          <Table caption={{ children: <strong>Component inventory</strong>, $text: "brand" }} rows={[…]} />
+        `}
+      >
+        <CaptionOptions />
+      </Example>
+
+      <Example
+        title="Header control sizes"
+        description="Choices in a smaller head label keep the table's size. An explicit slot size or button size still applies."
+        stretch
+        code={`
+          <Table className="text-xl" rows={[…]} />
+        `}
+      >
+        <Table
+          aria-label="Large table controls"
+          className="text-xl"
+          container={{ $border: true }}
+          rows={[
+            {
+              group: "head",
+              choice: <Checkbox aria-label="Header choice" />,
+              small: <Checkbox $size="sm" aria-label="Small header choice" />,
+              action: (
+                <Button $size="xs">
+                  <ButtonSlot>
+                    <Pencil />
+                  </ButtonSlot>
+                  Edit header
+                </Button>
+              ),
+            },
+            {
+              choice: <Checkbox aria-label="Body choice" />,
+              small: <Checkbox $size="sm" aria-label="Small body choice" />,
+              action: (
+                <Button $size="xs">
+                  <ButtonSlot>
+                    <Pencil />
+                  </ButtonSlot>
+                  Edit row
+                </Button>
+              ),
+            },
+          ]}
+        />
+      </Example>
+
+      <Example
+        title="Nested table edges"
+        description="A table inside a colored grid starts with its own edge color and weight."
+        stretch
+        code={`
+          <Table container={{ $border: true, $edge: "brand", $edgeWeight: "bold" }}>
+            <TableRowGroup><TableRow><TableCell>
+              <Table rows={[…]} container={{ $border: true }} />
+            </TableCell></TableRow></TableRowGroup>
+          </Table>
+        `}
+      >
+        <Table
+          aria-label="Project groups"
+          container={{ $border: true, $edge: "brand", $edgeWeight: "bold" }}
+          rows={[
+            { group: "head", project: "Project", components: "Components" },
+            {
+              project: "Website",
+              components: (
+                <Table
+                  aria-label="Nested component coverage"
+                  rows={statusRows}
+                  container={{ $border: true }}
+                />
+              ),
+            },
+          ]}
+        />
+      </Example>
+
+      <Example
+        title="Colored cell layers"
+        description="Grid lines keep the requested edge through cells with a custom or disabled layer, including selected and hovered rows."
+        stretch
+        code={`
+          <Table container={{ $border: true, $edge: "brand", $edgeWeight: "bold" }}>
+            <TableRowGroup><TableRow><TableCell $layer={false}>Row surface</TableCell></TableRow></TableRowGroup>
+          </Table>
+        `}
+      >
+        <TableCellLayer colored />
       </Example>
 
       <Example
