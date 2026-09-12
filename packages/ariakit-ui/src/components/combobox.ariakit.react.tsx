@@ -225,7 +225,8 @@ export function ComboboxItemSlot(props: ComboboxItemSlotProps) {
   const variants = comboboxItemSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...comboboxItemSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {variants.$kind === "badge" ||
+      (variants.$kind === "avatar" && typeof rest.children === "string") ? (
         <span>{rest.children}</span>
       ) : (
         rest.children

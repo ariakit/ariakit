@@ -35,11 +35,10 @@ export interface BadgeSlotProps
 export function BadgeSlot(props: BadgeSlotProps) {
   const [variantProps, rest] = splitProps(props, badgeSlot);
   const variants = badgeSlot.getVariants(variantProps);
-  // The badge kind sizes the count through a child element, which a bare text
-  // node is not.
   return (
     <ak.Role.span {...badgeSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {variants.$kind === "badge" ||
+      (variants.$kind === "avatar" && typeof rest.children === "string") ? (
         <span>{rest.children}</span>
       ) : (
         rest.children

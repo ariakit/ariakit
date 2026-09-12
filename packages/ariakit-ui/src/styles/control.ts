@@ -177,15 +177,16 @@ export const controlSlot = cv({
       return getFrameRoundedClass(value);
     },
     /**
-     * Sets the element’s kind. When you use the `badge` kind, wrap the text in
-     * a `<span>` element so it’s styled correctly.
+     * Sets the element’s kind. When you use the `badge` or `avatar` kind, wrap
+     * text in a `<span>` element so it’s styled correctly.
      */
     $kind: {
       icon: "",
       // A key chord reads the same way in every locale, so the bidi algorithm
       // must not reorder its keys in a right-to-left row.
       shortcut: "[direction:ltr]",
-      avatar: "overflow-clip",
+      // Size initials on a child so font-relative slot dimensions stay intact.
+      avatar: "overflow-clip [&>span]:text-[0.625em]",
       badge: "*:text-[0.8125em]",
     },
     /**

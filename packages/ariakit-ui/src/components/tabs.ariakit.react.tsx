@@ -165,7 +165,8 @@ export function TabSlot(props: TabSlotProps) {
   const variants = tabSlot.getVariants(variantProps);
   return (
     <span {...tabSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {variants.$kind === "badge" ||
+      (variants.$kind === "avatar" && typeof rest.children === "string") ? (
         <span>{rest.children}</span>
       ) : (
         rest.children

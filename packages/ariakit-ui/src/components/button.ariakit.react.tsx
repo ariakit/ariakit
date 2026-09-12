@@ -112,7 +112,8 @@ export function ButtonSlot(props: ButtonSlotProps) {
   const variants = buttonSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...buttonSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {variants.$kind === "badge" ||
+      (variants.$kind === "avatar" && typeof rest.children === "string") ? (
         <span>{rest.children}</span>
       ) : (
         rest.children

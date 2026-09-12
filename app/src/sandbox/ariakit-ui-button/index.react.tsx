@@ -394,19 +394,19 @@ export default function ButtonExamples() {
 
       <Example
         title="Initial avatar"
-        description="A round avatar slot that paints its own surface behind an initial."
+        description="A round avatar slot that paints its own surface behind two initials."
         code={`
           <Button>
-            <ButtonSlot $kind="avatar" $layer="brand">J</ButtonSlot>
-            <ButtonLabel>Jane Doe</ButtonLabel>
+            <ButtonSlot $kind="avatar" $layer="brand">WW</ButtonSlot>
+            <ButtonLabel>Will Williams</ButtonLabel>
           </Button>
         `}
       >
         <Button>
           <ButtonSlot $kind="avatar" $layer="brand">
-            J
+            WW
           </ButtonSlot>
-          <ButtonLabel>Jane Doe</ButtonLabel>
+          <ButtonLabel>Will Williams</ButtonLabel>
         </Button>
       </Example>
 

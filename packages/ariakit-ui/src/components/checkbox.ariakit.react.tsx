@@ -129,7 +129,16 @@ export interface CheckboxCardSlotProps
  */
 export function CheckboxCardSlot(props: CheckboxCardSlotProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardSlot);
-  return <ak.Role.span {...checkboxCardSlot.jsx(variantProps)} {...rest} />;
+  const variants = checkboxCardSlot.getVariants(variantProps);
+  return (
+    <ak.Role.span {...checkboxCardSlot.jsx(variantProps)} {...rest}>
+      {variants.$kind === "avatar" && typeof rest.children === "string" ? (
+        <span>{rest.children}</span>
+      ) : (
+        rest.children
+      )}
+    </ak.Role.span>
+  );
 }
 
 export interface CheckboxCardContentProps
