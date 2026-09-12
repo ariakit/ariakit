@@ -1,6 +1,7 @@
 import { dirname, join } from "node:path";
 import reactPlugin from "@vitejs/plugin-react";
 import { globSync } from "glob";
+import { version as reactVersion } from "react";
 import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./app/src/lib/source.ts";
@@ -56,6 +57,10 @@ function getProjectTestExcludes(project: TestProject) {
   }
   if (project === "dom") {
     return frameworks.flatMap((framework) => projectTestClaims[framework]);
+  }
+  // The Ariakit UI table fixture uses React 19 ref props.
+  if (project === "react" && reactVersion.startsWith("18.")) {
+    return [...domTestOverrides, "app/src/sandbox/ariakit-ui-table/**"];
   }
   return domTestOverrides;
 }
