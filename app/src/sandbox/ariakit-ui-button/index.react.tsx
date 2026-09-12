@@ -623,7 +623,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Disabled"
-        description="The text, the icon and the badge count fade, and the button stops responding to the pointer. The badge keeps its fill."
+        description="The text, the icon and the whole badge fade, and the button stops responding to the pointer."
         code={`
           <Button disabled>
             <ButtonSlot>
@@ -640,6 +640,52 @@ export default function ButtonExamples() {
           </ButtonSlot>
           <ButtonLabel>Delete</ButtonLabel>
           <ButtonSlot $kind="badge">3</ButtonSlot>
+        </Button>
+      </Example>
+
+      <Example
+        title="Disabled upload label"
+        description="A file input's label takes the disabled look through the style recipe, while the input carries the disabled attribute."
+        code={`
+          <label {...button.jsx({ $disabled: true })}>
+            <input type="file" disabled className="sr-only" />
+            Upload attachment
+          </label>
+        `}
+      >
+        <label {...button.jsx({ $disabled: true })}>
+          <input type="file" disabled className="sr-only" />
+          Upload attachment
+        </label>
+      </Example>
+
+      <Example
+        title="Disabled avatars"
+        description="Disabled controls with an initial avatar and an image avatar."
+        code={`
+          <Button disabled>
+            <ButtonSlot $kind="avatar" $layer="brand">J</ButtonSlot>
+            <ButtonLabel>Jane Doe</ButtonLabel>
+          </Button>
+          <Button disabled>
+            <ButtonSlot $kind="avatar">
+              <img alt="" src={avatarImage} className="size-full" />
+            </ButtonSlot>
+            <ButtonLabel>Ariakit</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button disabled>
+          <ButtonSlot $kind="avatar" $layer="brand">
+            J
+          </ButtonSlot>
+          <ButtonLabel>Jane Doe</ButtonLabel>
+        </Button>
+        <Button disabled>
+          <ButtonSlot $kind="avatar">
+            <img alt="" src={avatarImage} className="size-full" />
+          </ButtonSlot>
+          <ButtonLabel>Ariakit</ButtonLabel>
         </Button>
       </Example>
 

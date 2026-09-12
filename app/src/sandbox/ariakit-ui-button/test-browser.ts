@@ -10,6 +10,51 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/issues/7474
+  test("dims badge and avatar surfaces in disabled controls", async ({
+    page,
+    q,
+  }) => {
+    await forEachColorScheme(page, async () => {
+      const badge = query(q.article("Disabled")).text("3").locator("..");
+      const avatars = query(q.article("Disabled avatars"));
+      const initial = avatars.text("J");
+      const image = avatars.button("Ariakit").locator("img").locator("..");
+      for (const slot of [badge, initial, image]) {
+        await test.expect(slot).toBeVisible();
+        const opacity = await slot.evaluate(
+          (element) => getComputedStyle(element).opacity,
+        );
+        test.expect(Number(opacity)).toBeGreaterThan(0);
+        test.expect(Number(opacity)).toBeLessThan(1);
+      }
+      const enabled = query(q.article("Count badge")).text("12").locator("..");
+      await test.expect(enabled).toHaveCSS("opacity", "1");
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7474
+  test("gives the disabled style prop the native disabled contrast", async ({
+    page,
+    q,
+  }) => {
+    for (const contrast of ["no-preference", "more"] as const) {
+      await page.emulateMedia({ contrast });
+      await forEachColorScheme(page, async () => {
+        const native = query(q.article("Disabled")).button("Delete 3");
+        const label = query(q.article("Disabled upload label")).text(
+          "Upload attachment",
+        );
+        await test.expect(label).not.toHaveAttribute("disabled");
+        await test.expect(label).not.toHaveAttribute("aria-disabled");
+        const color = await native.evaluate(
+          (element) => getComputedStyle(element).color,
+        );
+        await test.expect(label).toHaveCSS("color", color);
+      });
+    }
+  });
+
   // The page capture also keeps the static states of the button group fixture
   // under visual regression: joined borders, kept corners and the selected
   // glider.

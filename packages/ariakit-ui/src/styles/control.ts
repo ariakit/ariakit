@@ -67,7 +67,7 @@ export const control = cv({
      * Sets the element’s disabled state.
      */
     $disabled: [
-      "disabled cursor-not-allowed!",
+      "disabled ak-disabled cursor-not-allowed!",
       // The border wipe reads an overridable channel: card-like extenders set
       // --disabled-border to keep a faint edge, while buttons fall back to
       // transparent.
@@ -294,7 +294,8 @@ export const controlSlot = cv({
       variants.$kind === "badge" || variants.$kind === "avatar";
     if (!paintsSurface) return;
     addClass([
-      "group-[.disabled]/control:ak-layer-darken-5",
+      // Fade the whole slot so colored fills and avatar images dim together.
+      "group-[.disabled]/control:opacity-50",
       "group-[.disabled]/control:ak-ink-0",
     ]);
     if (variants.$rowSpan !== 1) return;
