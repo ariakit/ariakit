@@ -39,6 +39,7 @@ import {
 } from "./combobox-examples.react.tsx";
 import {
   ConditionalContent,
+  CustomSelectionIcons,
   ItemHighlight,
   OptionalProps,
   SelectContent,
@@ -867,6 +868,21 @@ export default function ComboboxExamples() {
         `}
       >
         <ConditionalContent />
+      </Example>
+
+      <Example
+        title="Custom selection icons"
+        description="Custom icons and sizes on the trigger and selected items. Empty check slots keep the labels aligned."
+        code={`
+          <ComboboxSelectArrow $size="xl" style={{ width: 32, height: 24 }}>
+            <ChevronsUpDownIcon />
+          </ComboboxSelectArrow>
+          <ComboboxItemCheck $size="xl" style={{ width: 32, height: 24 }}>
+            <CircleCheckIcon />
+          </ComboboxItemCheck>
+        `}
+      >
+        <CustomSelectionIcons />
       </Example>
 
       <Example

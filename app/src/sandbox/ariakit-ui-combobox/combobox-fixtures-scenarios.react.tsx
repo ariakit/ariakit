@@ -11,19 +11,54 @@ import * as Ariakit from "@ariakit/react";
 import {
   Combobox,
   ComboboxItem,
+  ComboboxItemCheck,
+  ComboboxItemLabel,
   ComboboxSelect,
+  ComboboxSelectArrow,
+  ComboboxSelectedValue,
   ComboboxSelectLabel,
   ComboboxPopover,
   ComboboxProvider,
 } from "@ariakit/ui/components/combobox.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
-import { comboboxItem } from "@ariakit/ui/styles/combobox";
+import { comboboxItem, comboboxSelect } from "@ariakit/ui/styles/combobox";
 import { layer } from "@ariakit/ui/styles/layer";
+import { ChevronsUpDownIcon, CircleCheckIcon } from "lucide-react";
 import * as React from "react";
 import Thumbnail from "#app/examples/combobox-group/thumbnail.react.tsx";
 
 // These scenarios keep the state and content cases from the former standalone
 // fixtures while using the shared combobox parts.
+
+export function CustomSelectionIcons() {
+  return (
+    <ComboboxProvider defaultSelectedValue={["Email"]}>
+      <div className="flex flex-col items-start gap-2">
+        <ComboboxSelectLabel>Notifications</ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect {...comboboxSelect.jsx()}>
+          <ComboboxSelectedValue />
+          <ComboboxSelectArrow $size="xl" style={{ width: 32, height: 24 }}>
+            <ChevronsUpDownIcon />
+          </ComboboxSelectArrow>
+        </Ariakit.ComboboxSelect>
+      </div>
+      <ComboboxPopover>
+        {["Email", "SMS"].map((value) => (
+          <ComboboxItem key={value} value={value}>
+            <ComboboxItemCheck
+              $size="xl"
+              aria-hidden={undefined}
+              style={{ width: 32, height: 24 }}
+            >
+              {value === "Email" && <CircleCheckIcon />}
+            </ComboboxItemCheck>
+            <ComboboxItemLabel>{value}</ComboboxItemLabel>
+          </ComboboxItem>
+        ))}
+      </ComboboxPopover>
+    </ComboboxProvider>
+  );
+}
 
 /**
  * The combobox-select-content sandbox's index, without the conditional content

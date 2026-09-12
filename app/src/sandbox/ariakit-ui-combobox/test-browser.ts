@@ -60,6 +60,69 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     }
   });
 
+  // https://github.com/ariakit/ariakit/pull/7492#discussion_r3995158957
+  // https://github.com/ariakit/ariakit/pull/7492#discussion_r3995167094
+  test("keeps custom icon sizes and aligns selected and unselected items", async ({
+    q,
+  }) => {
+    const expectIconCentered = async (row: Locator) => {
+      const offset = await row.evaluate((element) => {
+        const svg = element.querySelector("svg");
+        const textNode =
+          element.getAttribute("role") === "combobox"
+            ? element.firstChild
+            : element.lastElementChild;
+        if (!svg || !textNode) {
+          throw new Error("The row has no icon or label");
+        }
+        const range = element.ownerDocument.createRange();
+        range.selectNodeContents(textNode);
+        const text = range.getBoundingClientRect();
+        const icon = svg.getBoundingClientRect();
+        return Math.abs(icon.y + icon.height / 2 - text.y - text.height / 2);
+      });
+      test.expect(offset).toBeLessThan(1);
+    };
+    const select = q.combobox("Notifications");
+    const arrow = select.locator(":scope > [aria-hidden]");
+    await test.expect(arrow).toHaveCSS("width", "32px");
+    await test.expect(arrow).toHaveCSS("height", "24px");
+    await test.expect(arrow.locator("svg")).toBeVisible();
+    await expectIconCentered(select);
+    await select.click();
+    const list = query(q.listbox("Notifications"));
+    const email = list.option("Email");
+    const sms = list.option("SMS");
+    const emailCheck = email.locator(":scope > :first-child");
+    const smsCheck = sms.locator(":scope > :first-child");
+    for (const check of [emailCheck, smsCheck]) {
+      await test.expect(check).toHaveAttribute("aria-hidden", "true");
+      await test.expect(check).toHaveCSS("width", "32px");
+      await test.expect(check).toHaveCSS("height", "24px");
+      await test.expect(check).toHaveCSS("pointer-events", "none");
+    }
+    await test.expect(emailCheck.locator("svg")).toBeVisible();
+    await expectIconCentered(email);
+    await test.expect(smsCheck).toBeHidden();
+    // Read both labels in one frame while the popover can still be animating.
+    const labelPositions = await q
+      .listbox("Notifications")
+      .locator("[role=option] > :last-child")
+      .evaluateAll((labels) =>
+        labels.map((label) => label.getBoundingClientRect().x),
+      );
+    test.expect(labelPositions).toHaveLength(2);
+    test.expect(labelPositions[0]).toBe(labelPositions[1]);
+    await sms.click();
+    await test.expect(sms).toHaveAttribute("aria-selected", "true");
+    await test.expect(smsCheck.locator("svg")).toBeVisible();
+    await expectIconCentered(sms);
+    await email.click();
+    await test.expect(email).toHaveAttribute("aria-selected", "false");
+    await test.expect(emailCheck).toBeHidden();
+    await test.expect(select).toHaveText("SMS");
+  });
+
   test("scrolls the search results while the field stays in place", async ({
     page,
     q,
