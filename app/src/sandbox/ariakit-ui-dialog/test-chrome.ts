@@ -105,4 +105,15 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(dialog).toBeVisible();
     test.expect(await countAnimations(dialog, true)).toBe(0);
   });
+
+  // https://github.com/ariakit/ariakit/pull/7465#discussion_r3992662589
+  test("names an icon-only dismiss whose label prop is undefined", async ({
+    q,
+  }) => {
+    await q.button("View messages").click();
+    const dialog = q.dialog("Messages");
+    await test.expect(dialog).toBeVisible();
+    await query(dialog).button("Dismiss popup").click();
+    await test.expect(dialog).toBeHidden();
+  });
 });

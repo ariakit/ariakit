@@ -83,11 +83,14 @@ export function DialogDismiss({ children, ...props }: DialogDismissProps) {
   // like a line of text. A slot makes the icon-only button square, and the name
   // moves to the button because the slot icon is hidden.
   const iconOnly = children === undefined;
+  const fallbackLabel = iconOnly ? "Dismiss popup" : undefined;
   return (
     <ak.DialogDismiss
-      aria-label={iconOnly ? "Dismiss popup" : undefined}
       {...dialogDismiss.jsx(variantProps)}
       {...rest}
+      // Set after the spread, so a label prop that is present but undefined, as
+      // a wrapper with an optional label passes it, keeps the fallback.
+      aria-label={rest["aria-label"] ?? fallbackLabel}
     >
       {iconOnly ? (
         <ButtonSlot>

@@ -98,4 +98,14 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(popover).toBeHidden();
     await test.expect(moreInfo).toBeFocused();
   });
+
+  // https://github.com/ariakit/ariakit/pull/7465#discussion_r3992662589
+  test("names an icon-only dismiss whose label prop is undefined", async ({
+    q,
+  }) => {
+    const popover = query(q.article("Dismiss with an optional label")).dialog(
+      "Messages",
+    );
+    await test.expect(query(popover).button("Dismiss popup")).toBeVisible();
+  });
 });

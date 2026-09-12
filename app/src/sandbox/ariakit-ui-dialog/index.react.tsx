@@ -83,6 +83,17 @@ function RenameProjectExample() {
   );
 }
 
+interface DialogCloseButtonProps {
+  label?: string;
+}
+
+// Passes its optional label on as is, so the dismiss gets an aria-label prop
+// that is present but undefined.
+// https://github.com/ariakit/ariakit/pull/7465#discussion_r3992662589
+function DialogCloseButton({ label }: DialogCloseButtonProps) {
+  return <DialogDismiss aria-label={label} />;
+}
+
 export default function DialogExamples() {
   return (
     <ExampleGrid>
@@ -352,6 +363,24 @@ export default function DialogExamples() {
         Regression fixtures: an icon-only dismiss whose label prop is present
         but undefined.
       */}
+      <Example
+        title="Dismiss with an optional label"
+        description="A wrapper passes its optional label on to the dismiss. Without a label, the dismiss keeps its default name."
+        code={`
+          <DialogDismiss aria-label={label} />
+        `}
+      >
+        <DialogProvider>
+          <DialogDisclosure $kind="bevel">View messages</DialogDisclosure>
+          <Dialog className="flex flex-col gap-4">
+            <div className="flex items-center justify-between gap-2">
+              <DialogHeading>Messages</DialogHeading>
+              <DialogCloseButton />
+            </div>
+            <DialogDescription>No new messages.</DialogDescription>
+          </Dialog>
+        </DialogProvider>
+      </Example>
     </ExampleGrid>
   );
 }

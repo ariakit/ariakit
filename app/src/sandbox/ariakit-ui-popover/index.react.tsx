@@ -33,6 +33,17 @@ const releaseNotes = [
   "Tooltips wrap long labels instead of running across the page, and keep their padding on every line.",
 ];
 
+interface PopoverCloseButtonProps {
+  label?: string;
+}
+
+// Passes its optional label on as is, so the dismiss gets an aria-label prop
+// that is present but undefined.
+// https://github.com/ariakit/ariakit/pull/7465#discussion_r3992662589
+function PopoverCloseButton({ label }: PopoverCloseButtonProps) {
+  return <PopoverDismiss aria-label={label} />;
+}
+
 export default function PopoverExamples() {
   return (
     <ExampleGrid>
@@ -396,6 +407,29 @@ export default function PopoverExamples() {
         Regression fixtures: an icon-only dismiss whose label prop is present
         but undefined.
       */}
+      <Example
+        title="Dismiss with an optional label"
+        description="A wrapper passes its optional label on to the dismiss. Without a label, the dismiss keeps its default name."
+        code={`
+          <PopoverDismiss aria-label={label} />
+        `}
+      >
+        <ExampleStage anchor="start" height={42}>
+          <PopoverProvider defaultOpen>
+            <PopoverDisclosure $kind="bevel">Messages</PopoverDisclosure>
+            <Popover
+              {...openPopoverProps}
+              className="flex w-72 max-w-full flex-col gap-2"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <PopoverHeading>Messages</PopoverHeading>
+                <PopoverCloseButton />
+              </div>
+              <PopoverDescription>No new messages.</PopoverDescription>
+            </Popover>
+          </PopoverProvider>
+        </ExampleStage>
+      </Example>
     </ExampleGrid>
   );
 }
