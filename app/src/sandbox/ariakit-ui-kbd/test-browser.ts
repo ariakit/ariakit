@@ -33,7 +33,10 @@ withCaptures(import.meta.dirname, async ({ test }) => {
         const below = bounds.bottom - baseline - descent;
         return Math.abs(above - below);
       });
-      // Allow subpixel differences in text ink across platform rasterizers.
+      // In this 14px fixture, aligned caps measured 0.77–0.78px on Linux;
+      // removing the lift measured 1.33–1.36px on macOS. Recheck both cases if
+      // the font changes: this limit leaves only 0.22px on the pass side.
+      // https://github.com/ariakit/ariakit/pull/7495#discussion_r4000630660
       test.expect(imbalance).toBeLessThan(1);
     });
   });
