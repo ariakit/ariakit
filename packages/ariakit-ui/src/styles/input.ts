@@ -35,7 +35,7 @@ export const input = cv({
     // A native input uses the control line box; a textarea keeps its rows.
     "[input]:box-content [input]:h-lh",
     "[&_input]:box-content [&_input]:h-lh",
-    "[&_input]:outline-none",
+    "[&_:is(input,textarea,select)]:outline-none",
     "placeholder:ak-ink-0 [&_input]:placeholder:ak-ink-0",
     // A field inside another input surface uses the outer padding and edge.
     // The focus override also wins against its own focus-state variant.

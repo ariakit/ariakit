@@ -9,6 +9,24 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  for (const tag of ["textarea", "select"]) {
+    // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001152364
+    test(`uses one focus outline for a grouped ${tag}`, async ({ page, q }) => {
+      const field =
+        tag === "textarea"
+          ? q.textbox("Delivery notes")
+          : q.combobox("Delivery speed");
+      await forEachColorScheme(page, async () => {
+        await field.focus();
+        await test.expect(field).toBeFocused();
+        await test.expect(field).toHaveCSS("outline-style", "none");
+        await test
+          .expect(field.locator(".."))
+          .toHaveCSS("outline-width", "2px");
+      });
+    });
+  }
+
   test("uses one border, padding and focus ring for a grouped Input", async ({
     page,
     q,

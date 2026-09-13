@@ -393,6 +393,43 @@ export default function InputExamples() {
           </InputGroup>
         </PopoverProvider>
       </Example>
+
+      <Example
+        title="Grouped native fields"
+        description="A textarea and a select each share one focus ring with their group."
+        code={`
+          <InputGroup>
+            <Text>Note</Text>
+            <textarea aria-label="Delivery notes" rows={2} />
+          </InputGroup>
+          <InputGroup>
+            <Text>Ship</Text>
+            <select aria-label="Delivery speed">
+              <option>Standard</option>
+              <option>Express</option>
+            </select>
+          </InputGroup>
+        `}
+      >
+        <div className="grid w-full gap-3">
+          <InputGroup>
+            <Text>Note</Text>
+            <textarea
+              aria-label="Delivery notes"
+              rows={2}
+              placeholder="Leave the package at the front desk."
+              className="min-w-0 flex-1 resize-y"
+            />
+          </InputGroup>
+          <InputGroup>
+            <Text>Ship</Text>
+            <select aria-label="Delivery speed" className="min-w-0 flex-1">
+              <option>Standard</option>
+              <option>Express</option>
+            </select>
+          </InputGroup>
+        </div>
+      </Example>
     </ExampleGrid>
   );
 }
