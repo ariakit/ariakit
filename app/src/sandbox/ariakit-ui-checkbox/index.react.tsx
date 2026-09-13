@@ -862,6 +862,69 @@ export default function CheckboxExamples() {
       >
         <FeatureGrid />
       </Example>
+      <Example
+        title="Card badge"
+        description="A badge slot shows a count beside the card label."
+        code={`
+          <CheckboxCard value="messages">
+            <CheckboxCardCheck />
+            <CheckboxCardLabel>Messages</CheckboxCardLabel>
+            <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+          </CheckboxCard>
+        `}
+      >
+        <CheckboxCard value="messages">
+          <CheckboxCardCheck />
+          <CheckboxCardLabel>Messages</CheckboxCardLabel>
+          <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+        </CheckboxCard>
+      </Example>
+      <Example
+        title="Disabled card badges"
+        description="Native and ARIA disabled cards use the same badge and text contrast."
+        code={`
+          <CheckboxCard value="email" disabled>
+            <CheckboxCardLabel>Email</CheckboxCardLabel>
+            <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+          </CheckboxCard>
+          <CheckboxCard value="messages" aria-disabled>
+            <CheckboxCardLabel>Messages</CheckboxCardLabel>
+            <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+          </CheckboxCard>
+        `}
+      >
+        <CheckboxCard value="email" disabled>
+          <CheckboxCardLabel>Email</CheckboxCardLabel>
+          <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+        </CheckboxCard>
+        <CheckboxCard value="messages" aria-disabled>
+          <CheckboxCardLabel>Messages</CheckboxCardLabel>
+          <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+        </CheckboxCard>
+      </Example>
+      <Example
+        title="Disabled field labels"
+        description="Native and ARIA disabled fields use the same label and description contrast."
+        code={`
+          <CheckboxField value="email" disabled>
+            <CheckboxLabel>Email</CheckboxLabel>
+            <CheckboxDescription>Receive email updates.</CheckboxDescription>
+          </CheckboxField>
+          <CheckboxField value="messages" aria-disabled>
+            <CheckboxLabel>Messages</CheckboxLabel>
+            <CheckboxDescription>Receive message updates.</CheckboxDescription>
+          </CheckboxField>
+        `}
+      >
+        <CheckboxField value="email" disabled>
+          <CheckboxLabel>Email</CheckboxLabel>
+          <CheckboxDescription>Receive email updates.</CheckboxDescription>
+        </CheckboxField>
+        <CheckboxField value="messages" aria-disabled>
+          <CheckboxLabel>Messages</CheckboxLabel>
+          <CheckboxDescription>Receive message updates.</CheckboxDescription>
+        </CheckboxField>
+      </Example>
     </ExampleGrid>
   );
 }

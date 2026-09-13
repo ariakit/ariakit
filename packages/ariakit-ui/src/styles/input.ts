@@ -24,6 +24,7 @@ export const input = cv({
     // flat on the surface with a faint edge and the dimmed ink of every other
     // disabled control. $lightnessOffset lands in the style attribute, which
     // no class can gate, so the plugin's own zero offset cancels the sink.
+    "ui-field-disabled:ak-disabled",
     "ui-field-disabled:cursor-not-allowed **:ui-disabled:cursor-not-allowed",
     "ui-field-disabled:ak-ink-0 ui-field-disabled:**:ak-ink-0",
     "ui-field-disabled:ak-edge-10",

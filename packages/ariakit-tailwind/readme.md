@@ -13,6 +13,7 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
 - [Mental model](#mental-model)
 - [`ak-layer`](#ak-layer): background, text, and border colors for a surface
 - [`ak-state-*`](#ak-state): interactive state adjustments
+- [`ak-disabled`](#ak-disabled): disabled contrast for custom control surfaces
 - [`ak-ink`](#ak-ink): text opacity inside a layer
 - [`ak-text`](#ak-text): colored text with automatic contrast
 - [`ak-edge`](#ak-edge): border and ring colors
@@ -589,6 +590,21 @@ The static `ak-layer` class must be applied to the same element as `ak-state-*`.
 | `ak-state-desaturate-<number>` | Decreases chroma in state context.                                                                                                                                                                |
 | `ak-state-push-<number>`       | Minimum lightness shift in state context.                                                                                                                                                         |
 | `ak-state-h-rotate-<number>`   | Rotates hue in state context.                                                                                                                                                                     |
+
+## `ak-disabled`
+
+Applies the same reduced contrast as `:disabled`, `[disabled]`, and `[aria-disabled="true"]`. Use it on a custom control surface, such as a label whose input is disabled. Descendant layers and text inherit the contrast settings.
+
+Enabled descendants also inherit these settings. For example, a control in the first legend of a disabled fieldset remains operable, but inherits reduced contrast, including under `prefers-contrast: more`. There is no public utility to reset that inherited contrast.
+
+```html
+<label class="ak-layer ak-disabled ak-ink-0">
+  <input type="file" disabled class="sr-only" />
+  Upload attachment
+</label>
+```
+
+The utility changes contrast settings only. Use `ak-ink-0` to dim text to the disabled contrast floor. Keep the disabled attribute on the input to prevent interaction.
 
 ## `ak-ink`
 

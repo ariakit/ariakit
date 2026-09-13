@@ -136,6 +136,7 @@ export const choiceField = cv({
     // its state from it as well as from the $disabled prop, which a radio
     // disabled through its group never receives. The description paints its
     // own ink, so the dimming has to reach every descendant.
+    "ui-disabled-within:ak-disabled",
     "ui-disabled-within:cursor-not-allowed",
     "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
   ],
@@ -163,8 +164,8 @@ export const choiceCard = cv({
   // -within trigger.
   extend: [button, focusWithin],
   class: [
-    // A named group for compositions that lay the card's parts out from the
-    // card's own classes; the package itself reads no state from it.
+    // Slots read the input's disabled state through this group. Compositions
+    // can also use it to lay the parts out from the card's own classes.
     "group/choice",
     // A wrapping row, so a description placed directly inside the card falls
     // to its own line instead of sitting beside the label.
@@ -196,6 +197,7 @@ export const choiceCard = cv({
     // it reads the state from its input and draws what $disabled below draws.
     // The label itself is never disabled, so its hover and press, which only
     // skip a disabled element, are turned off here too.
+    "ui-disabled-within:ak-disabled",
     "ui-disabled-within:cursor-not-allowed",
     "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
     "ui-disabled-within:ak-edge-5 ui-disabled-within:ak-layer-mix-20",

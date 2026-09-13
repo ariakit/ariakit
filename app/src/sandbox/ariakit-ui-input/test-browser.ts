@@ -16,6 +16,43 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       node.setAttribute(name, name === "disabled" ? "" : "true");
     }, attribute);
 
+  // https://github.com/ariakit/ariakit/pull/7490#discussion_r3997782168
+  test("matches native disabled contrast on an input wrapper", async ({
+    page,
+    q,
+  }) => {
+    for (const contrast of ["no-preference", "more"] as const) {
+      await page.emulateMedia({ contrast });
+      await forEachColorScheme(page, async () => {
+        const native = query(q.article("Disabled")).textbox("Username");
+        const input = query(q.article("Field with leading icon")).textbox(
+          "Filter components",
+        );
+        const wrapper = input.locator("..");
+        const enabledColor = await wrapper.evaluate(
+          (element) => getComputedStyle(element).color,
+        );
+        for (const attribute of ["disabled", "aria-disabled"]) {
+          await setDisabled(input, attribute);
+          await test.expect(input).toBeDisabled();
+          const expected = await native.evaluate(
+            (element) => getComputedStyle(element).color,
+          );
+          await test.expect(wrapper).toHaveCSS("color", expected);
+          await test
+            .expect(wrapper.locator("svg"))
+            .toHaveCSS("color", expected);
+          await input.evaluate(
+            (element, name) => element.removeAttribute(name),
+            attribute,
+          );
+          await test.expect(input).toBeEnabled();
+          await test.expect(wrapper).toHaveCSS("color", enabledColor);
+        }
+      });
+    }
+  });
+
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),

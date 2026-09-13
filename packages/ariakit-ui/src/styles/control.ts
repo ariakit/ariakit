@@ -67,7 +67,7 @@ export const control = cv({
      * Sets the element’s disabled state.
      */
     $disabled: [
-      "disabled cursor-not-allowed!",
+      "disabled ak-disabled cursor-not-allowed!",
       // The border wipe reads an overridable channel: card-like extenders set
       // --disabled-border to keep a faint edge, while buttons fall back to
       // transparent.
@@ -294,8 +294,23 @@ export const controlSlot = cv({
       variants.$kind === "badge" || variants.$kind === "avatar";
     if (!paintsSurface) return;
     addClass([
-      "group-[.disabled]/control:ak-layer-darken-5",
+      // Mix the fill into its parent before ink is calculated, so disabled
+      // text keeps the contrast chosen for the resulting surface.
+      "group-[.disabled]/control:ak-layer-mix-20",
+      // Native and ARIA states can change without rerendering the recipe.
+      "group-ui-disabled/control:ak-layer-mix-20",
+      // A choice card reads disabled state from the input inside its label.
+      "group-ui-disabled-within/choice:ak-layer-mix-20",
+      // Slots can sit below a content wrapper, beyond the control's direct
+      // child ink rules.
       "group-[.disabled]/control:ak-ink-0",
+      "group-ui-disabled/control:ak-ink-0",
+      "group-ui-disabled-within/choice:ak-ink-0",
+      // Images cover the layer. Fade only their pixels into it; fading the
+      // whole slot would also reduce its text's adaptive contrast.
+      "group-[.disabled]/control:[&_img]:opacity-50",
+      "group-ui-disabled/control:[&_img]:opacity-50",
+      "group-ui-disabled-within/choice:[&_img]:opacity-50",
     ]);
     if (variants.$rowSpan !== 1) return;
     if (variants.$kind === "avatar") {
