@@ -295,18 +295,45 @@ async function waitForStableScreenshotClip(
   });
 }
 
-async function getPlaywrightScreenshotOptions(
+export async function getPlaywrightScreenshotOptions(
   page: Page,
   options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
 ) {
   const clip = await getScreenshotClip(page, options);
-  if (!clip) {
-    return { animations: "disabled" as const, fullPage: true };
-  }
+  const viewport = page.viewportSize();
+  invariant(viewport, "Missing viewport");
+  const size = options.fullPage
+    ? await page.evaluate(() => ({
+        width: Math.max(
+          document.body.scrollWidth,
+          document.documentElement.scrollWidth,
+          document.body.offsetWidth,
+          document.documentElement.offsetWidth,
+          document.body.clientWidth,
+          document.documentElement.clientWidth,
+        ),
+        height: Math.max(
+          document.body.scrollHeight,
+          document.documentElement.scrollHeight,
+          document.body.offsetHeight,
+          document.documentElement.offsetHeight,
+          document.body.clientHeight,
+          document.documentElement.clientHeight,
+        ),
+      }))
+    : viewport;
+  // Playwright trims clips to the document or viewport before capture.
+  const width = clip ? Math.min(clip.width, size.width - clip.x) : size.width;
+  const height = clip
+    ? Math.min(clip.height, size.height - clip.y)
+    : size.height;
+  const exceedsViewport = width > viewport.width || height > viewport.height;
   return {
     animations: "disabled" as const,
-    clip,
+    ...(clip && { clip }),
     fullPage: !!options.fullPage,
+    // Large images can hide changes to small controls within a ratio allowance.
+    ...(exceedsViewport && { maxDiffPixelRatio: 0 }),
   };
 }
 
@@ -425,8 +452,6 @@ export async function visual(
           });
           await expect(page).toHaveScreenshot(fileSnapshotName, {
             ...screenshotOptions,
-            // A page-sized pixel allowance can hide changes to small controls.
-            ...(fullPage && { maxDiffPixelRatio: 0 }),
             timeout,
           });
           // Touch the screenshot file so the CI stale-detection step (which
