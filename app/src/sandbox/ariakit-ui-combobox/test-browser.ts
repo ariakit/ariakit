@@ -1,7 +1,7 @@
 import type { Locator } from "@playwright/test";
 import {
   captureInView,
-  capturePage,
+  captureSections,
   forEachColorScheme,
   getCapture,
   OVERLAY_CLIP_MARGIN,
@@ -107,13 +107,13 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       node.scrollIntoView({ block: "start" });
     });
 
-  // The page capture also keeps the static states of the combobox fixtures
+  // The section captures also keep the static states of the combobox fixtures
   // under visual regression: the badge size and the static thumbnail highlight.
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972223972
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550839
-  test("page @visual", async ({ page, visual }) => {
+  test("sections @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      captureSections(page, visual, colorScheme),
     );
   });
 

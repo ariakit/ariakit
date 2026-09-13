@@ -1,6 +1,6 @@
 import { query } from "@ariakit/test/playwright";
 import type { Locator, Page } from "@playwright/test";
-import { expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { gotoAndSettle, withFramework } from "./preview.ts";
 import type { ScreenshotOptions } from "./visual.ts";
@@ -19,7 +19,7 @@ const colorSchemes = ["light", "dark"] as const;
 export type ColorScheme = (typeof colorSchemes)[number];
 
 // Safari on the macOS runners can take several seconds for one capture of a
-// tall sandbox, and a new baseline needs two identical captures in a row, which
+// tall example, and a new baseline needs two identical captures in a row, which
 // the default five seconds do not cover.
 const SCREENSHOT_TIMEOUT = 30_000;
 
@@ -41,7 +41,7 @@ export function withCaptures(dirname: string, callback: WithFrameworkCallback) {
   withFramework(dirname, async (params) => {
     params.test.use({ viewport: viewports.desktop });
     // A test loads the sandbox once per color scheme and takes up to two
-    // captures in each, every one within the screenshot budget.
+    // captures in each. Section tests add a budget for every example box.
     params.test.describe.configure({ timeout: 120_000 });
     return callback(params);
   });
@@ -97,21 +97,31 @@ export function getViewportCapture(page: Page, colorScheme: ColorScheme) {
   return getCapture(page.locator("html"), colorScheme, { clipMargin: 0 });
 }
 
-/** Captures the whole grid of a sandbox, including the part below the fold. */
-export async function capturePage(
+/** Captures each example box, including any content below the fold. */
+export async function captureSections(
   page: Page,
   visual: Visual,
   colorScheme: ColorScheme,
 ) {
-  const main = page.getByRole("main");
-  const { height } = await main.evaluate((node) =>
-    node.getBoundingClientRect(),
-  );
-  expect(height).toBeLessThanOrEqual(MAX_SCREENSHOT_HEIGHT);
-  // The grid pads itself, so a margin would only add canvas.
-  await visual(
-    getCapture(main, colorScheme, { fullPage: true, clipMargin: 0 }),
-  );
+  const sections = query(page).main().locator(":scope > article");
+  await expect(sections.first()).toBeVisible();
+  const count = await sections.count();
+  // Each section needs its own screenshot budget in addition to navigation.
+  test.setTimeout(test.info().timeout + count * SCREENSHOT_TIMEOUT);
+  for (const section of await sections.all()) {
+    const title = await query(section.locator(":scope > header"))
+      .heading()
+      .textContent();
+    const id = title?.trim();
+    expect(id).toBeTruthy();
+    const { height } = await section.evaluate((node) =>
+      node.getBoundingClientRect(),
+    );
+    expect(height).toBeLessThanOrEqual(MAX_SCREENSHOT_HEIGHT);
+    await visual(
+      getCapture(section, colorScheme, { id, fullPage: true, clipMargin: 0 }),
+    );
+  }
 }
 
 /**

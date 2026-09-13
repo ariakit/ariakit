@@ -1,5 +1,5 @@
 import {
-  capturePage,
+  captureSections,
   forEachColorScheme,
   getViewportCapture,
   withCaptures,
@@ -16,9 +16,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     { box: "Brand surface", disclosure: "Upgrade", name: "Upgrade to Pro" },
   ];
 
-  test("page @visual", async ({ page, visual }) => {
+  test("sections @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      captureSections(page, visual, colorScheme),
     );
   });
 

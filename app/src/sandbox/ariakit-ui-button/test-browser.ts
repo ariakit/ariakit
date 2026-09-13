@@ -1,6 +1,6 @@
 import {
   captureInView,
-  capturePage,
+  captureSections,
   expectFocusVisible,
   forEachColorScheme,
   getCapture,
@@ -121,15 +121,15 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       .toBe(true);
   });
 
-  // The page capture also keeps the static states of the button group fixture
-  // under visual regression: joined borders, kept corners and the selected
-  // glider.
+  // The section captures also keep the static states of the button group
+  // fixture under visual regression: joined borders, kept corners and the
+  // selected glider.
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972227948
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550181
   // https://github.com/ariakit/ariakit/issues/7466
-  test("page @visual", async ({ page, visual }) => {
+  test("sections @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      captureSections(page, visual, colorScheme),
     );
   });
 

@@ -1,7 +1,7 @@
 import type { Locator } from "@playwright/test";
 import {
   captureInView,
-  capturePage,
+  captureSections,
   forEachColorScheme,
   getCapture,
   hoverOver,
@@ -16,9 +16,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       node.setAttribute(name, name === "disabled" ? "" : "true");
     }, attribute);
 
-  test("page @visual", async ({ page, visual }) => {
+  test("sections @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      captureSections(page, visual, colorScheme),
     );
   });
 

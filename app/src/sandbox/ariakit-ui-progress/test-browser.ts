@@ -1,6 +1,6 @@
 import {
   captureInView,
-  capturePage,
+  captureSections,
   expectMedia,
   forEachColorScheme,
   withCaptures,
@@ -129,9 +129,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await test.expect(ringFill).toHaveCSS("animation-name", "none");
   });
 
-  test("page @visual", async ({ page, visual }) => {
+  test("sections @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      captureSections(page, visual, colorScheme),
     );
   });
 

@@ -1,6 +1,6 @@
 import {
   captureInView,
-  capturePage,
+  captureSections,
   expectFocusVisible,
   forEachColorScheme,
   tabTo,
@@ -8,9 +8,9 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
-  test("page @visual", async ({ page, visual }) => {
+  test("sections @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      captureSections(page, visual, colorScheme),
     );
   });
 

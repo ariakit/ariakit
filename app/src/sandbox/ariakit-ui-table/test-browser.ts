@@ -1,7 +1,7 @@
 import type { Locator } from "@playwright/test";
 import {
   captureInView,
-  capturePage,
+  captureSections,
   expectFocusVisible,
   forEachColorScheme,
   getCapture,
@@ -22,14 +22,14 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     test.expect(scrollLeft).toBeGreaterThan(0);
   };
 
-  // The page capture also keeps the cell layers and the inherited column styles
-  // of the table fixtures under visual regression.
+  // The section captures also keep the cell layers and the inherited column
+  // styles of the table fixtures under visual regression.
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972228648
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974548937
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974552570
-  test("page @visual", async ({ page, visual }) => {
+  test("sections @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      captureSections(page, visual, colorScheme),
     );
   });
 

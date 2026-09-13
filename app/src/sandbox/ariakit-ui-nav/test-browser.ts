@@ -1,6 +1,6 @@
 import {
   captureInView,
-  capturePage,
+  captureSections,
   expectFocusVisible,
   forEachColorScheme,
   getCapture,
@@ -10,12 +10,12 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
-  // The page capture also keeps the custom navigation label styles of the nav
-  // fixtures under visual regression.
+  // The section captures also keep the custom navigation label styles of the
+  // nav fixtures under visual regression.
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972223730
-  test("page @visual", async ({ page, visual }) => {
+  test("sections @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      captureSections(page, visual, colorScheme),
     );
   });
 
