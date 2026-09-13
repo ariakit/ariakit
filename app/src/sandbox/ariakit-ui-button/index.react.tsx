@@ -37,83 +37,6 @@ import {
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
 
-const groups = [
-  { title: "Glider", $layout: "horizontal", $gap: "none", $p: "none" },
-  {
-    title: "Independent",
-    $layout: "horizontal",
-    $gap: "none",
-    $p: "none",
-    $joined: false,
-  },
-  {
-    title: "Joined vertical",
-    $layout: "vertical",
-    $gap: "auto",
-    $p: "none",
-    $joined: true,
-  },
-  { title: "Horizontal", $layout: "horizontal", $gap: "auto", $p: "none" },
-  { title: "Stretched", $layout: "stretch", $gap: "none", $p: "none" },
-  { title: "Padded", $layout: "horizontal", $gap: "none", $p: 2 },
-  { title: "Spaced", $layout: "horizontal", $gap: "md", $p: "none" },
-  { title: "Vertical", $layout: "vertical", $gap: "auto", $p: "none" },
-  { title: "Wrapped", $layout: "wrap", $gap: "auto", $p: "none" },
-  // All of these lengths resolve to the same padding as "none".
-  { title: "Numeric zero", $layout: "horizontal", $gap: "auto", $p: 0 },
-  { title: "Pixel zero", $layout: "horizontal", $gap: "auto", $p: "0px" },
-  { title: "Rem zero", $layout: "horizontal", $gap: "auto", $p: "0rem" },
-  {
-    title: "Calculated zero",
-    $layout: "horizontal",
-    $gap: "auto",
-    $p: "calc(0px)",
-  },
-] as const;
-
-// Migrated from the button-group-layout sandbox without changes, including the
-// glider, independent and joined vertical groups of #7471: raw @ariakit/react
-// buttons styled through the recipes, in groups that set every zero-length
-// padding form. The box around it is a frame with enough padding that the
-// groups keep the radius they have at the top level.
-function ButtonGroupLayout() {
-  return (
-    <div className="grid w-80 max-w-full gap-4">
-      {groups.map(({ title, ...variants }) => (
-        <section key={title}>
-          <h2>{title}</h2>
-          <div
-            role="group"
-            aria-label={title}
-            {...buttonGroup.jsx({
-              $border: 2,
-              className: title === "Wrapped" ? "w-32" : undefined,
-              ...variants,
-            })}
-          >
-            {["Day", "Week", "Month"].map((label) => (
-              <ak.Button
-                key={label}
-                aria-current={
-                  title === "Glider" && label === "Week" ? "true" : undefined
-                }
-                {...button.jsx({ $border: 2, $borderType: "border" })}
-              >
-                {label}
-              </ak.Button>
-            ))}
-            {title === "Glider" && (
-              <div
-                {...buttonGlider.jsx({ $state: "selected", $layer: "blue" })}
-              />
-            )}
-          </div>
-        </section>
-      ))}
-    </div>
-  );
-}
-
 // A local image, so the screenshots never wait on the network.
 const avatarImage =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23f59e0b'/%3E%3Ccircle cx='20' cy='16' r='7' fill='%23fff7ed'/%3E%3Cpath d='M6 40c2-9 7-13 14-13s12 4 14 13z' fill='%23fff7ed'/%3E%3C/svg%3E";
@@ -1239,22 +1162,667 @@ export default function ButtonExamples() {
         </Frame>
       </Example>
 
-      {/*
-        Regression fixtures: Button and ButtonGroup scenarios migrated from the
-        button-group-layout sandbox.
-      */}
       <Example
-        title="Button group layout"
-        description="Thirteen groups of bordered buttons: gapless rows that join, one with a selected glider, a row and a column that set $joined, a padded row, and spaced, vertical and wrapping rows that keep their corners."
+        title="Glider"
+        description="A selected glider sits under Week in a row of joined buttons."
         code={`
-          <ButtonGroup $border={2} $layout="horizontal" $gap="auto" $p="none">
-            <Button $border={2} $borderType="border">Day</Button>
-            <Button $border={2} $borderType="border">Week</Button>
-            <Button $border={2} $borderType="border">Month</Button>
-          </ButtonGroup>
+          <div
+            role="group"
+            aria-label="Glider"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "none",
+              $p: "none",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button aria-current="true" {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+            <div {...buttonGlider.jsx({ $state: "selected", $layer: "blue" })} />
+          </div>
         `}
       >
-        <ButtonGroupLayout />
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Glider"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "none",
+              $p: "none",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button
+              aria-current="true"
+              {...button.jsx({ $border: 2, $borderType: "border" })}
+            >
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+            <div
+              {...buttonGlider.jsx({ $state: "selected", $layer: "blue" })}
+            />
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Independent"
+        description="Buttons keep separate corners when joining is disabled, even with no gap."
+        code={`
+          <div
+            role="group"
+            aria-label="Independent"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "none",
+              $p: "none",
+              $joined: false,
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        `}
+      >
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Independent"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "none",
+              $p: "none",
+              $joined: false,
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Joined vertical"
+        description="A vertical group joins the borders and corners of adjacent buttons."
+        code={`
+          <div
+            role="group"
+            aria-label="Joined vertical"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "vertical",
+              $gap: "auto",
+              $p: "none",
+              $joined: true,
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        `}
+      >
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Joined vertical"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "vertical",
+              $gap: "auto",
+              $p: "none",
+              $joined: true,
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Horizontal"
+        description="A horizontal group joins adjacent buttons when the gap and padding resolve to zero."
+        code={`
+          <div
+            role="group"
+            aria-label="Horizontal"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "auto",
+              $p: "none",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        `}
+      >
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Horizontal"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "auto",
+              $p: "none",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Stretched"
+        description="The buttons stretch to fill the width of the group."
+        code={`
+          <div
+            role="group"
+            aria-label="Stretched"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "stretch",
+              $gap: "none",
+              $p: "none",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        `}
+      >
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Stretched"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "stretch",
+              $gap: "none",
+              $p: "none",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Padded"
+        description="Padding around the buttons keeps their corners separate."
+        code={`
+          <div
+            role="group"
+            aria-label="Padded"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "none",
+              $p: 2,
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        `}
+      >
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Padded"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "none",
+              $p: 2,
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Spaced"
+        description="A medium gap separates the buttons and keeps their corners."
+        code={`
+          <div
+            role="group"
+            aria-label="Spaced"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "md",
+              $p: "none",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        `}
+      >
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Spaced"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "md",
+              $p: "none",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Vertical"
+        description="A vertical group keeps separate button corners by default."
+        code={`
+          <div
+            role="group"
+            aria-label="Vertical"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "vertical",
+              $gap: "auto",
+              $p: "none",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        `}
+      >
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Vertical"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "vertical",
+              $gap: "auto",
+              $p: "none",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Wrapped"
+        description="Buttons wrap onto more rows when the group is narrow."
+        code={`
+          <div
+            role="group"
+            aria-label="Wrapped"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "wrap",
+              $gap: "auto",
+              $p: "none",
+              className: "w-32",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        `}
+      >
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Wrapped"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "wrap",
+              $gap: "auto",
+              $p: "none",
+              className: "w-32",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Numeric zero"
+        description="Numeric zero padding joins the buttons, like the none padding value."
+        code={`
+          <div
+            role="group"
+            aria-label="Numeric zero"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "auto",
+              $p: 0,
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        `}
+      >
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Numeric zero"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "auto",
+              $p: 0,
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Pixel zero"
+        description="Zero pixel padding joins the buttons, like the none padding value."
+        code={`
+          <div
+            role="group"
+            aria-label="Pixel zero"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "auto",
+              $p: "0px",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        `}
+      >
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Pixel zero"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "auto",
+              $p: "0px",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Rem zero"
+        description="Zero rem padding joins the buttons, like the none padding value."
+        code={`
+          <div
+            role="group"
+            aria-label="Rem zero"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "auto",
+              $p: "0rem",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        `}
+      >
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Rem zero"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "auto",
+              $p: "0rem",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Calculated zero"
+        description="Calculated zero padding joins the buttons, like the none padding value."
+        code={`
+          <div
+            role="group"
+            aria-label="Calculated zero"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "auto",
+              $p: "calc(0px)",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        `}
+      >
+        <div className="w-80 max-w-full">
+          <div
+            role="group"
+            aria-label="Calculated zero"
+            {...buttonGroup.jsx({
+              $border: 2,
+              $layout: "horizontal",
+              $gap: "auto",
+              $p: "calc(0px)",
+            })}
+          >
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Day
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Week
+            </ak.Button>
+            <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
+              Month
+            </ak.Button>
+          </div>
+        </div>
       </Example>
     </ExampleGrid>
   );
