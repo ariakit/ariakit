@@ -31,10 +31,10 @@ withCaptures(import.meta.dirname, async ({ test }) => {
         marker.remove();
         const above = baseline - ascent - bounds.top;
         const below = bounds.bottom - baseline - descent;
-        return Math.abs(above - below) / parseFloat(font.fontSize);
+        return Math.abs(above - below);
       });
-      // Allow font-metric rounding while keeping the cap centered on text ink.
-      test.expect(imbalance).toBeLessThan(0.05);
+      // Allow subpixel differences in text ink across platform rasterizers.
+      test.expect(imbalance).toBeLessThan(1);
     });
   });
 
