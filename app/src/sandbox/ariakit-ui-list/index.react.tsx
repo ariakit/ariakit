@@ -711,6 +711,63 @@ export default function ListExamples() {
       </Example>
 
       <Example
+        title="Disclosure status"
+        description="Checked and progress markers remain visible when a disclosure has no label."
+        code={`
+          <ListDisclosureButton checked aria-label="Repository connection" />
+          <ListDisclosureButton progress={0.5} description="Half done" />
+        `}
+      >
+        <List ordered>
+          <li>
+            <ListDisclosure>
+              <ListDisclosureButton
+                checked
+                aria-label="Repository connection"
+              />
+              <ListDisclosureContent>
+                <p>Repository connection details</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
+          <li>
+            <ListDisclosure>
+              <ListDisclosureButton progress={0.5} description="Half done" />
+              <ListDisclosureContent>
+                <p>Remaining setup tasks</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
+          <li>
+            <ListDisclosure>
+              <ListDisclosureButton
+                checked
+                label={false}
+                aria-label="Workspace access"
+                description="Access granted"
+              />
+              <ListDisclosureContent>
+                <p>Workspace access details</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
+          <li>
+            <ListDisclosure>
+              <ListDisclosureButton
+                progress={0.25}
+                label={null}
+                aria-label="Account sync"
+                description="Sync started"
+              />
+              <ListDisclosureContent>
+                <p>Account sync details</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
+        </List>
+      </Example>
+
+      <Example
         title="Release notes"
         description="Disclosure rows in an unordered list draw no guide, so the open content starts under the dash, not at the label."
         stretch

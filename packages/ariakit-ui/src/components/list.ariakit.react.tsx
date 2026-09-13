@@ -248,6 +248,7 @@ export function ListDisclosureButton({
       ? { children: rest.children }
       : label;
   const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
+  const marker = <ListItemMarker checked={checked} progress={progress} />;
   return (
     <DisclosureButton
       indicator={indicator}
@@ -258,7 +259,7 @@ export function ListDisclosureButton({
           ? React.cloneElement(labelEl, {
               children: (
                 <>
-                  <ListItemMarker checked={checked} progress={progress} />
+                  {marker}
                   <ListItemContent>{labelEl.props.children}</ListItemContent>
                 </>
               ),
@@ -266,6 +267,7 @@ export function ListDisclosureButton({
           : null
       }
     >
+      {!labelEl && marker}
       {label !== undefined && rest.children}
     </DisclosureButton>
   );

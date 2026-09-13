@@ -39,3 +39,18 @@ test("keeps a bare fragment label separate from its description and badge", asyn
   await click(button);
   expect(q.text("Update account tasks")).toBeVisible();
 });
+
+for (const [name, state, description] of [
+  ["Repository connection", "Checked", ""],
+  [/Half done/, "Unchecked", "50% complete"],
+  ["Workspace access", "Checked", ""],
+  ["Account sync", "Unchecked", "25% complete"],
+] as const) {
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998773052
+  test(`keeps the status marker without a label: ${name}`, () => {
+    const button = q.within(q.article("Disclosure status")).button(name);
+    const marker = q.within(button).img(state);
+    expect(marker).toBeVisible();
+    expect(marker).toHaveAccessibleDescription(description);
+  });
+}
