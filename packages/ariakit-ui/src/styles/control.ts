@@ -96,7 +96,7 @@ const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
 export const controlSlot = cv({
   extend: [frame],
   class: [
-    "flex flex-none items-center justify-center",
+    "control-slot flex flex-none items-center justify-center",
     // The margins seat the slot on the first line of text and pull it toward
     // the edge. A stacked card sets --control-inline to 0, which drops both,
     // so a slot on a row of its own lines up with the label under it.
