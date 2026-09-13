@@ -96,7 +96,7 @@ const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
 export const controlSlot = cv({
   extend: [frame],
   class: [
-    "flex flex-none items-center justify-center",
+    "control-slot flex flex-none items-center justify-center",
     // The margins seat the slot on the first line of text and pull it toward
     // the edge. A stacked card sets --control-inline to 0, which drops both,
     // so a slot on a row of its own lines up with the label under it.
@@ -177,8 +177,8 @@ export const controlSlot = cv({
       return getFrameRoundedClass(value);
     },
     /**
-     * Sets the element’s kind. When you use the `badge` kind, wrap the text in
-     * a `<span>` element so it’s styled correctly.
+     * Sets the element’s kind. When you use the `badge` kind, wrap text in a
+     * `<span>` element so it’s styled correctly.
      */
     $kind: {
       icon: "",
@@ -298,6 +298,14 @@ export const controlSlot = cv({
       "group-[.disabled]/control:ak-ink-0",
     ]);
     if (variants.$rowSpan !== 1) return;
+    if (variants.$kind === "avatar") {
+      // Larger slots have room for the label's text size.
+      if (variants.$size === "2xl") return;
+      if (variants.$size === "full") return;
+      // Keep the parent's line height before adjusting font metrics, which also
+      // affect normal line height. A 0.45em cap height gives initials room.
+      addClass("leading-[1lh] [font-size-adjust:cap-height_0.45]");
+    }
     if (includes(PADDED_SLOT_SIZES, variants.$size)) {
       setVariants({ $size: "xl" });
     }
