@@ -25,6 +25,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const link = query(box).link("styling guide");
       await tabTo(page, link);
       await expectFocusVisible(link);
+      await test.expect(link).toHaveCSS("outline-offset", "0px");
       await captureInView(visual, box, colorScheme);
     });
   });
@@ -39,6 +40,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const link = query(box).link("View all");
       await tabTo(page, link);
       await expectFocusVisible(link);
+      await test.expect(link).toHaveCSS("outline-offset", "2px");
       await captureInView(visual, box, colorScheme);
     });
   });
