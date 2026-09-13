@@ -7,6 +7,7 @@ import {
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r3997273277
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000461790
+  // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000913151
   test("keeps unselected tabs borderless in forced colors @visual", async ({
     page,
     q,
@@ -19,6 +20,8 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         "Bevel tabs",
         "Flat glider",
         "Bevel glider",
+        "Borderless flat glider",
+        "Borderless bevel glider",
       ]) {
         const box = q.article(title);
         const tabs = query(box).tab();

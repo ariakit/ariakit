@@ -178,7 +178,11 @@ export const glider = cv({
       variants.$border == null &&
       (variants.$kind === "bevel" || hasLayerBackground(variants))
     ) {
-      addClass("forced-colors:ak-frame-border-(--border-width,1px)");
+      // A borderless ancestor must not erase the glider's own painted edge.
+      // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000913151
+      addClass(
+        "forced-colors:ak-frame-border-[length:max(1px,var(--border-width,1px))]",
+      );
     }
     if (variants.$kind === "bar") return;
     // Forced colors repaint transparent borders. A cover owns the edge, so
