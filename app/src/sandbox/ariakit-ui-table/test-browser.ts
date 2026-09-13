@@ -471,6 +471,42 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
+  // https://github.com/ariakit/ariakit/pull/7498#discussion_r3998333523
+  test("creates a focus-only row border only while focused", async ({
+    page,
+    q,
+  }) => {
+    const fixture = query(q.article("Focusable rows"));
+    const row = fixture.row(/^Button /);
+    const next = fixture.row(/^Glider /);
+    const getBox = () =>
+      row.evaluate((node) => ({
+        position: getComputedStyle(node).position,
+        content: getComputedStyle(node, "::after").content,
+        width: getComputedStyle(node, "::after").borderTopWidth,
+      }));
+    await test.expect.poll(getBox).toMatchObject({
+      position: "static",
+      content: "none",
+    });
+    await row.scrollIntoViewIfNeeded();
+    const bounds = await getDocumentBounds(row);
+    await row.focus();
+    await expectFocusVisible(row);
+    await test.expect.poll(getBox).toMatchObject({
+      position: "relative",
+      content: '""',
+      width: "2px",
+    });
+    test.expect(await getDocumentBounds(row)).toEqual(bounds);
+    await page.keyboard.press("ArrowDown");
+    await expectFocusVisible(next);
+    await test.expect.poll(getBox).toMatchObject({
+      position: "static",
+      content: "none",
+    });
+  });
+
   // The last row draws no line below it, and its ring follows the container's
   // rounded bottom corners inside its 1px border.
   test("rounds the ring of the focused last row @visual", async ({

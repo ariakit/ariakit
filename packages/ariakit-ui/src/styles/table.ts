@@ -370,7 +370,7 @@ export const tableRow = cv({
     }
     addClass([
       // The row still takes real DOM focus, so the browser's own ring goes.
-      "relative ui-focus-visible:outline-none",
+      "ui-focus-visible:outline-none",
       // The box sits inside the lines the row's cells hold, the line below
       // the row and, under a group pinned at the bottom, the one above it.
       // The z puts it over a pinned cell and under a sticky row group.
@@ -383,7 +383,12 @@ export const tableRow = cv({
     ]);
     if (variants.$border) {
       addClass(
-        "after:border-(length:--table-item-border) after:border-(--ak-edge)",
+        "relative after:border-(length:--table-item-border) after:border-(--ak-edge)",
+      );
+    } else {
+      // A focus-only row creates its border box only while focused.
+      addClass(
+        "ui-focus-visible:relative after:content-none ui-focus-visible:after:content-['']",
       );
     }
     if (variants.$focus) {
