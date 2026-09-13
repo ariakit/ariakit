@@ -1,6 +1,7 @@
 import {
   captureInView,
   capturePage,
+  expectDisabledContrastFollowsInput,
   expectFocusVisible,
   forEachColorScheme,
   tabTo,
@@ -30,32 +31,15 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
           ],
         ] as const;
         await test.expect(input).toBeDisabled();
-        for (const attribute of ["aria-disabled", "disabled"]) {
-          await input.evaluate((element, name) => {
-            element.removeAttribute("disabled");
-            element.removeAttribute("aria-disabled");
-            element.setAttribute(name, "true");
-          }, attribute);
-          await test.expect(input).toBeDisabled();
-          for (const [actual, expected] of pairs) {
-            const color = await expected.evaluate(
-              (element) => getComputedStyle(element).color,
-            );
-            await test.expect(actual).toHaveCSS("color", color);
-          }
-          const disabledColor = await card.evaluate(
-            (element) => getComputedStyle(element).color,
-          );
-          await input.evaluate((element) => {
-            element.removeAttribute("disabled");
-            element.removeAttribute("aria-disabled");
-          });
-          await test.expect(input).toBeEnabled();
-          await test.expect(card).not.toHaveCSS("color", disabledColor);
-        }
-        await input.evaluate((element) =>
-          element.setAttribute("aria-disabled", "true"),
+        const disabledColor = await card.evaluate(
+          (element) => getComputedStyle(element).color,
         );
+        await input.evaluate((element) => {
+          element.removeAttribute("disabled");
+          element.removeAttribute("aria-disabled");
+        });
+        await test.expect(card).not.toHaveCSS("color", disabledColor);
+        await expectDisabledContrastFollowsInput(input, pairs);
       });
     }
   });
@@ -82,42 +66,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
           ],
         ] as const;
         await test.expect(input).toBeDisabled();
-        await input.evaluate((element) => {
-          element.removeAttribute("disabled");
-          element.removeAttribute("aria-disabled");
-        });
-        const enabledColors = await Promise.all(
-          pairs.map(([element]) =>
-            element.evaluate((node) => getComputedStyle(node).color),
-          ),
-        );
-        for (const attribute of ["aria-disabled", "disabled"]) {
-          await input.evaluate((element, name) => {
-            element.removeAttribute("disabled");
-            element.removeAttribute("aria-disabled");
-            element.setAttribute(name, "true");
-          }, attribute);
-          await test.expect(input).toBeDisabled();
-          for (const [actual, expected] of pairs) {
-            const color = await expected.evaluate(
-              (element) => getComputedStyle(element).color,
-            );
-            await test.expect(actual).toHaveCSS("color", color);
-          }
-          await input.evaluate((element) => {
-            element.removeAttribute("disabled");
-            element.removeAttribute("aria-disabled");
-          });
-          await test.expect(input).toBeEnabled();
-          for (const [index, [element]] of pairs.entries()) {
-            const color = enabledColors[index];
-            if (color == null) continue;
-            await test.expect(element).toHaveCSS("color", color);
-          }
-        }
-        await input.evaluate((element) =>
-          element.setAttribute("aria-disabled", "true"),
-        );
+        await expectDisabledContrastFollowsInput(input, pairs);
       });
     }
   });
