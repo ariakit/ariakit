@@ -146,7 +146,16 @@ export interface RadioCardSlotProps
  */
 export function RadioCardSlot(props: RadioCardSlotProps) {
   const [variantProps, rest] = splitProps(props, radioCardSlot);
-  return <ak.Role.span {...radioCardSlot.jsx(variantProps)} {...rest} />;
+  const variants = radioCardSlot.getVariants(variantProps);
+  return (
+    <ak.Role.span {...radioCardSlot.jsx(variantProps)} {...rest}>
+      {variants.$kind === "badge" ? (
+        <span>{rest.children}</span>
+      ) : (
+        rest.children
+      )}
+    </ak.Role.span>
+  );
 }
 
 export interface RadioCardContentProps

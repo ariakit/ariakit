@@ -198,6 +198,50 @@ export async function hoverOver(
     .toBe(true);
 }
 
+/**
+ * Compares colors with native-disabled references for both input attributes.
+ * Restores the fixture's ARIA-disabled state after checking enabled colors.
+ * https://github.com/ariakit/ariakit/pull/7490#discussion_r4000754343
+ */
+export async function expectDisabledContrastFollowsInput(
+  input: Locator,
+  pairs: readonly (readonly [Locator, Locator])[],
+) {
+  const setDisabled = async (attribute?: "aria-disabled" | "disabled") => {
+    await input.evaluate((element, name) => {
+      element.removeAttribute("disabled");
+      element.removeAttribute("aria-disabled");
+      if (name) {
+        element.setAttribute(name, "true");
+      }
+    }, attribute);
+  };
+  await setDisabled();
+  await expect(input).toBeEnabled();
+  const enabledColors = await Promise.all(
+    pairs.map(async ([element]) => ({
+      element,
+      color: await element.evaluate((node) => getComputedStyle(node).color),
+    })),
+  );
+  for (const attribute of ["aria-disabled", "disabled"] as const) {
+    await setDisabled(attribute);
+    await expect(input).toBeDisabled();
+    for (const [actual, expected] of pairs) {
+      const color = await expected.evaluate(
+        (element) => getComputedStyle(element).color,
+      );
+      await expect(actual).toHaveCSS("color", color);
+    }
+    await setDisabled();
+    await expect(input).toBeEnabled();
+    for (const { element, color } of enabledColors) {
+      await expect(element).toHaveCSS("color", color);
+    }
+  }
+  await setDisabled("aria-disabled");
+}
+
 /** Waits until an element has focus that the engine shows as keyboard focus. */
 export async function expectFocusVisible(element: Locator) {
   await expect(element).toBeFocused();
