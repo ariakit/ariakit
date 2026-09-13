@@ -1,5 +1,58 @@
 # @ariakit/tailwind
 
+## 0.2.8
+
+### Added `ak-layer-transparent`
+
+The `ak-layer` utility always paints its resolved color. Against the parent layer that paint is invisible, but it is still opaque, so a control that opens a layer only to give its descendants a color context covers whatever is drawn behind it, such as a moving highlight at a negative z-index.
+
+The new `ak-layer-transparent` utility makes that paint conditional. The element paints nothing at rest, and paints the layer color as soon as a modifier applies one, including under a variant such as `hover:` or `aria-selected:`.
+
+```tsx
+<button className="ak-layer ak-layer-transparent hover:ak-state-10">
+  Transparent at rest, painted on hover
+</button>
+```
+
+### Shared borders for adjacent frames
+
+Use `ak-frame-join` with `ak-frame-join-item` children to draw one edge between adjacent surfaces. It supports rows, columns, RTL, frame borders, and outside rings. Apply `ak-frame-join-active` through hover or selection variants to give an item ownership of its neighboring edges. These utilities also work through `@apply` in custom CSS classes.
+
+Native border joins require the browser's rendered width to match the declared width. Pixel rounding can break that alignment for fractional widths and at some zoom levels. Use frame rings for fractional edges.
+
+```tsx
+<div className="ak-frame ak-frame-row ak-frame-join flex">
+  <button className="ak-layer ak-frame ak-frame-lg/2 ak-frame-border ak-frame-join-item hover:ak-frame-join-active">
+    Day
+  </button>
+  <button className="ak-layer ak-frame ak-frame-lg/2 ak-frame-border ak-frame-join-item hover:ak-frame-join-active">
+    Week
+  </button>
+</div>
+```
+
+### Inert layer longhands no longer mark a color change
+
+`ak-layer-mix-color-*`, `ak-layer-mix-amount-*`, and `ak-layer-mix-method-*` only fill in values that the mixing utilities read, and `ak-layer-contrast-*` only fills in the amount that `ak-layer-contrast` reads. Without that partner on the same element, the resolved layer color never moves.
+
+They were still marked as color changes, and that mark is also what makes `ak-layer-transparent` paint. So a nested layer carrying only these longhands reapplied the global contrast bias instead of inheriting its parent color whenever `--contrast` was above `0`, and, with `ak-layer-transparent`, it would have painted a background instead of staying see-through.
+
+```tsx
+<div className="ak-layer">
+  {/* Inherits the parent color, like a bare ak-layer */}
+  <div className="ak-layer ak-layer-mix-color-red-500" />
+  <div className="ak-layer ak-layer-contrast-50" />
+  {/* Still moves the color, and still counts as a color change */}
+  <div className="ak-layer ak-layer-mix ak-layer-mix-color-red-500" />
+  <div className="ak-layer ak-layer-contrast ak-layer-contrast-50" />
+</div>
+```
+
+### Other updates
+
+- Fixed `ak-frame` adding a zero-width ring shadow to frames without a ring, which Firefox painted as faint arcs at rounded corners. Only the utilities that set a ring width, such as `ak-frame-ring` and `ak-frame-bordering`, now add the ring shadow.
+- Fixed faint rounded-corner shadows in Firefox when adaptive frame bordering selects a border.
+
 ## 0.2.7
 
 - Fixed bare `ak-layer` elements to preserve inherited background colors when the global contrast setting increases.
