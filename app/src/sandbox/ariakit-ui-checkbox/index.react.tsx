@@ -902,6 +902,29 @@ export default function CheckboxExamples() {
           <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
         </CheckboxCard>
       </Example>
+      <Example
+        title="Disabled field labels"
+        description="Native and ARIA disabled fields use the same label and description contrast."
+        code={`
+          <CheckboxField value="email" disabled>
+            <CheckboxLabel>Email</CheckboxLabel>
+            <CheckboxDescription>Receive email updates.</CheckboxDescription>
+          </CheckboxField>
+          <CheckboxField value="messages" aria-disabled>
+            <CheckboxLabel>Messages</CheckboxLabel>
+            <CheckboxDescription>Receive message updates.</CheckboxDescription>
+          </CheckboxField>
+        `}
+      >
+        <CheckboxField value="email" disabled>
+          <CheckboxLabel>Email</CheckboxLabel>
+          <CheckboxDescription>Receive email updates.</CheckboxDescription>
+        </CheckboxField>
+        <CheckboxField value="messages" aria-disabled>
+          <CheckboxLabel>Messages</CheckboxLabel>
+          <CheckboxDescription>Receive message updates.</CheckboxDescription>
+        </CheckboxField>
+      </Example>
     </ExampleGrid>
   );
 }

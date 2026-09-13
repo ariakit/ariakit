@@ -657,6 +657,37 @@ export default function RadioExamples() {
           </RadioCardGrid>
         </RadioProvider>
       </Example>
+      <Example
+        title="Disabled field labels"
+        description="Native and ARIA disabled fields use the same label and description contrast."
+        code={`
+          <RadioProvider>
+            <RadioGroup aria-label="Unavailable notifications">
+              <RadioField value="email" disabled>
+                <RadioLabel>Email</RadioLabel>
+                <RadioDescription>Receive email updates.</RadioDescription>
+              </RadioField>
+              <RadioField value="messages" aria-disabled>
+                <RadioLabel>Messages</RadioLabel>
+                <RadioDescription>Receive message updates.</RadioDescription>
+              </RadioField>
+            </RadioGroup>
+          </RadioProvider>
+        `}
+      >
+        <RadioProvider>
+          <RadioGroup aria-label="Unavailable notifications">
+            <RadioField value="email" disabled>
+              <RadioLabel>Email</RadioLabel>
+              <RadioDescription>Receive email updates.</RadioDescription>
+            </RadioField>
+            <RadioField value="messages" aria-disabled>
+              <RadioLabel>Messages</RadioLabel>
+              <RadioDescription>Receive message updates.</RadioDescription>
+            </RadioField>
+          </RadioGroup>
+        </RadioProvider>
+      </Example>
     </ExampleGrid>
   );
 }

@@ -136,6 +136,7 @@ export const choiceField = cv({
     // its state from it as well as from the $disabled prop, which a radio
     // disabled through its group never receives. The description paints its
     // own ink, so the dimming has to reach every descendant.
+    "ui-disabled-within:ak-disabled",
     "ui-disabled-within:cursor-not-allowed",
     "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
   ],
