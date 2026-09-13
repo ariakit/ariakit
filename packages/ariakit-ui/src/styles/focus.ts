@@ -20,10 +20,11 @@ export const focus = cv({
       brand: "ak-outline ak-outline-brand",
     },
     /**
-     * The offset of the focus ring.
+     * The offset of the focus ring. Use `unset` to omit offset styling.
      */
     $focusOffset: {
-      none: "",
+      unset: "",
+      0: "outline-offset-0",
       1: "outline-offset-1",
       2: "outline-offset-2",
     },
@@ -72,7 +73,7 @@ export const focusHighlight = cv({
     // The highlight replaces the ring, so the ring variants have nothing left
     // to draw. Clearing them here rather than in a computed default also covers
     // the values the caller passed.
-    setVariants({ $focus: false, $focusColor: "unset", $focusOffset: "none" });
+    setVariants({ $focus: false, $focusColor: "unset", $focusOffset: "unset" });
   },
 });
 
