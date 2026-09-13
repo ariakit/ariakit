@@ -373,6 +373,14 @@ body > * {
   }
 }
 
+/* Native fields carry their invalid state inside a styled wrapper. */
+@custom-variant ui-field-invalid {
+  &[aria-invalid="true"],
+  &:has(:is(input, textarea, select)[aria-invalid="true"]) {
+    @slot;
+  }
+}
+
 @custom-variant ui-active {
   &:is(:active) {
     @variant not-ui-disabled {
