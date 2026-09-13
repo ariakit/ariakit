@@ -10,7 +10,6 @@
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
-import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { inputPlaceholder } from "@ariakit/ui/styles/input";
 import { ListFilter, Search } from "lucide-react";
@@ -246,7 +245,7 @@ export default function InputExamples() {
           <Input render={<button type="button" />}>
             <Search />
             <Text>Search docs</Text>
-            <Kbd>⌘K</Kbd>
+            <kbd className="ak-ink-60">⌘K</kbd>
           </Input>
         `}
       >
@@ -258,13 +257,9 @@ export default function InputExamples() {
           <Text {...inputPlaceholder.jsx({ className: "flex-1 truncate" })}>
             Search docs
           </Text>
-          {/*
-            The key cap is taller than the one-line row of the field, so the
-            negative margin keeps the trigger at the height of a text field.
-          */}
-          <Kbd aria-hidden className="-my-1">
+          <kbd aria-hidden className="ak-ink-60">
             ⌘K
-          </Kbd>
+          </kbd>
         </Input>
       </Example>
 
