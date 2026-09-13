@@ -823,6 +823,103 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Borderless flat glider"
+        description="A pill marks the selected tab while the tab panels have no border."
+        stretch
+        code={`
+          <Tabs $border={false}>
+            <TabList>
+              <Tab $kind="flat">
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab $kind="flat">
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab $kind="flat">
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+              <TabGlider $kind="flat" $state="selected" />
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs
+          $border={false}
+          defaultSelectedId="borderless-flat-glider-preview"
+        >
+          <TabList aria-label="Borderless flat glider">
+            <Tab $kind="flat" id="borderless-flat-glider-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab $kind="flat" id="borderless-flat-glider-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab $kind="flat" id="borderless-flat-glider-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+            <TabGlider $kind="flat" $state="selected" />
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The pill travels between tabs.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Borderless bevel glider"
+        description="A bevel pill marks the selected tab while the tab panels have no border."
+        stretch
+        code={`
+          <Tabs $border={false}>
+            <TabList>
+              <Tab $kind="flat">
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab $kind="flat">
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab $kind="flat">
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+              <TabGlider $kind="bevel" />
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs $border={false} defaultSelectedId="borderless-bevel-glider-usage">
+          <TabList aria-label="Borderless bevel glider">
+            <Tab $kind="flat" id="borderless-bevel-glider-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab $kind="flat" id="borderless-bevel-glider-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab $kind="flat" id="borderless-bevel-glider-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+            <TabGlider $kind="bevel" />
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The pill looks pressable.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Bar glider"
         description="A bar underlines the selected tab, and the tab keeps its own fill."
         stretch

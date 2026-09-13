@@ -13,6 +13,11 @@ const progressBase = cv({
     "forced-colors:outline",
   ],
   variants: {
+    $borderType: {
+      // The shared inset fallback would shrink the fill inside this fixed-size
+      // track. Its outer outline already supplies the boundary.
+      inset: "forced-colors:ak-frame-border-0!",
+    },
     /**
      * Sets the progress between `0` and `1`. The value goes to
      * `--progress-value`, which must be registered as an inheriting `<number>`

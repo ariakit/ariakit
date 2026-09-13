@@ -15,7 +15,7 @@ import {
   gliderSeparator,
 } from "./glider.ts";
 import { hover } from "./hover.ts";
-import { isLayerColor } from "./layer.ts";
+import { hasLayerBackground, isLayerColor } from "./layer.ts";
 
 interface BevelLightenVariants {
   $kind?: string;
@@ -106,7 +106,16 @@ export const button = cv({
       return defaultValue ?? true;
     },
   },
-  refine({ variants, setVariants }) {
+  refine({ variants, setVariants, addClass }) {
+    // A bevel paints even without a layer background, so it still needs an edge
+    // when the control's shared fill fallback does not apply.
+    if (
+      variants.$kind === "bevel" &&
+      variants.$border == null &&
+      !hasLayerBackground(variants)
+    ) {
+      addClass("forced-colors:ak-frame-border");
+    }
     if (!variants.$disabled) return;
     // Native buttons suppress these through the :disabled-aware ui-hover and
     // ui-active variants, but label-based controls such as the choice card are

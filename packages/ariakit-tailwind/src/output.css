@@ -1302,6 +1302,11 @@
   --_ak-frame-ring: 1px;
   @apply ring-[length:var(--ak-frame-ring)];
   --tw-ring-shadow: var(--_ak-frame-join-ring-shadow, var(--tw-ring-inset,) 0 0 0 calc(var(--ak-frame-ring) + var(--tw-ring-offset-width)) var(--tw-ring-color, --theme(--default-ring-color, currentColor)));
+  @variant forced-colors {
+    --_ak-frame-border: 1px;
+    border-width: var(--_ak-frame-border);
+    --_ak-frame-ring: 0px;
+  }
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
@@ -1320,6 +1325,12 @@
   --_ak-frame-ring: calc(--value(number, [number], "0", "1", "2", "4", "8") * 1px);
   @apply ring-[length:var(--ak-frame-ring)];
   --tw-ring-shadow: var(--_ak-frame-join-ring-shadow, var(--tw-ring-inset,) 0 0 0 calc(var(--ak-frame-ring) + var(--tw-ring-offset-width)) var(--tw-ring-color, --theme(--default-ring-color, currentColor)));
+  @variant forced-colors {
+    --_ak-frame-border: --value([*]);
+    --_ak-frame-border: calc(--value(number, [number], "0", "1", "2", "4", "8") * 1px);
+    border-width: var(--_ak-frame-border);
+    --_ak-frame-ring: 0px;
+  }
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
@@ -1345,6 +1356,11 @@
     --_ak-frame-border: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
     border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
     --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
+  }
+  @variant forced-colors {
+    --_ak-frame-border: var(--_ak-frame-bordering);
+    border-width: var(--_ak-frame-bordering);
+    --_ak-frame-ring: 0px;
   }
   @apply ring-[length:var(--ak-frame-ring)];
   --tw-ring-shadow: var(--_ak-frame-join-ring-shadow, var(--tw-ring-inset,) 0 0 0 calc(var(--ak-frame-ring) + var(--tw-ring-offset-width)) oklch(from var(--tw-ring-color, --theme(--default-ring-color, currentColor)) l c h / calc(alpha * sign(var(--ak-frame-ring)))));
@@ -1377,6 +1393,11 @@
       border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
       --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
     }
+    @variant forced-colors {
+      --_ak-frame-border: var(--_ak-frame-bordering);
+      border-width: var(--_ak-frame-bordering);
+      --_ak-frame-ring: 0px;
+    }
   }
   @container style(--_context-2: odd) {
     --_ak-frame-bordering: max(var(--_ak-fpbbc-odd, 0px), var(--_ak-fpbgc-odd, 0px));
@@ -1390,6 +1411,11 @@
       --_ak-frame-border: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
       border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
       --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
+    }
+    @variant forced-colors {
+      --_ak-frame-border: var(--_ak-frame-bordering);
+      border-width: var(--_ak-frame-bordering);
+      --_ak-frame-ring: 0px;
     }
   }
 }
@@ -1407,6 +1433,11 @@
     --_ak-frame-border: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
     border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
     --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
+  }
+  @variant forced-colors {
+    --_ak-frame-border: var(--_ak-frame-bordering);
+    border-width: var(--_ak-frame-bordering);
+    --_ak-frame-ring: 0px;
   }
   @apply ring-[length:var(--ak-frame-ring)];
   --tw-ring-shadow: var(--_ak-frame-join-ring-shadow, var(--tw-ring-inset,) 0 0 0 calc(var(--ak-frame-ring) + var(--tw-ring-offset-width)) oklch(from var(--tw-ring-color, --theme(--default-ring-color, currentColor)) l c h / calc(alpha * sign(var(--ak-frame-ring)))));

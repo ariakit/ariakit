@@ -81,6 +81,10 @@ export const comboboxItem = cv({
 export const comboboxEmpty = cv({
   extend: [control],
   class: "justify-start",
+  defaultVariants: {
+    // The message is part of the popup's surface, not a separate control.
+    $layer: "transparent",
+  },
 });
 
 export const comboboxItemContent = optionContent;

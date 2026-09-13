@@ -21,6 +21,7 @@ import {
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { button, buttonGlider, buttonGroup } from "@ariakit/ui/styles/button";
+import { control } from "@ariakit/ui/styles/control";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -88,6 +89,20 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Layer disabled"
+        description="Disable the layer system while keeping the button's spacing. A bevel still paints its own surface."
+        code={`
+          <Button $layer={false}>Cancel action</Button>
+          <Button $layer={false} $kind="bevel">Apply action</Button>
+        `}
+      >
+        <Button $layer={false}>Cancel action</Button>
+        <Button $layer={false} $kind="bevel">
+          Apply action
+        </Button>
+      </Example>
+
+      <Example
         title="Lifted"
         description="A neutral surface that stays visible at rest, for a button that stands alone."
         code={`
@@ -95,6 +110,42 @@ export default function ButtonExamples() {
         `}
       >
         <Button $lightnessOffset>Edit</Button>
+      </Example>
+
+      <Example
+        title="Pushed"
+        description="A neutral surface with a minimum lightness shift, which grows when the user asks for more contrast."
+        code={`
+          <Button $lightnessPush={2}>Publish changes</Button>
+          <Button $lightnessPush={0}>Cancel changes</Button>
+        `}
+      >
+        <Button $lightnessPush={2}>Publish changes</Button>
+        <Button $lightnessPush={0}>Cancel changes</Button>
+      </Example>
+
+      <Example
+        title="Contrast"
+        description="A surface with increased contrast against the surface around it."
+        code={`
+          <Button $contrast>Review changes</Button>
+        `}
+      >
+        <Button $contrast>Review changes</Button>
+      </Example>
+
+      <Example
+        title="Desaturated"
+        description="Remove color from a button on a colored surface. Zero chroma keeps a neutral fill."
+        code={`
+          <Frame $layer="brand" $p={3}>
+            <Button $chroma={0}>Preview changes</Button>
+          </Frame>
+        `}
+      >
+        <Frame $layer="brand" $p={3}>
+          <Button $chroma={0}>Preview changes</Button>
+        </Frame>
       </Example>
 
       <Example
@@ -145,6 +196,30 @@ export default function ButtonExamples() {
         `}
       >
         <Button $kind="bevel">Duplicate</Button>
+      </Example>
+
+      <Example
+        title="Ring borders"
+        description="Ring and inset edges keep the requested width when the button has a flat or bevel surface."
+        code={`
+          <Button $layer="brand" $border $borderType="ring">Export report</Button>
+          <Button $kind="bevel" $border={2} $borderType="ring">Download report</Button>
+          <Button $layer="brand" $border $borderType="inset">Save report</Button>
+          <Button $kind="bevel" $border={2} $borderType="inset">Print report</Button>
+        `}
+      >
+        <Button $layer="brand" $border $borderType="ring">
+          Export report
+        </Button>
+        <Button $kind="bevel" $border={2} $borderType="ring">
+          Download report
+        </Button>
+        <Button $layer="brand" $border $borderType="inset">
+          Save report
+        </Button>
+        <Button $kind="bevel" $border={2} $borderType="inset">
+          Print report
+        </Button>
       </Example>
 
       <Example
@@ -1929,6 +2004,25 @@ export default function ButtonExamples() {
             </ak.Button>
           </div>
         </div>
+      </Example>
+      <Example
+        title="Control surfaces"
+        description="The shared control recipe supplies the surface and spacing for a custom button. Transparent controls and explicit border choices keep their own appearance."
+        code={`
+          <ak.Button {...control.jsx({ $layer: "brand" })}>Sync now</ak.Button>
+          <ak.Button {...control.jsx({ $layer: "transparent" })}>Skip sync</ak.Button>
+          <ak.Button {...control.jsx({ $layer: false })}>Cancel sync</ak.Button>
+          <ak.Button {...control.jsx({ $layer: "brand", $border: false })}>Sync without border</ak.Button>
+        `}
+      >
+        <ak.Button {...control.jsx({ $layer: "brand" })}>Sync now</ak.Button>
+        <ak.Button {...control.jsx({ $layer: "transparent" })}>
+          Skip sync
+        </ak.Button>
+        <ak.Button {...control.jsx({ $layer: false })}>Cancel sync</ak.Button>
+        <ak.Button {...control.jsx({ $layer: "brand", $border: false })}>
+          Sync without border
+        </ak.Button>
       </Example>
     </ExampleGrid>
   );
