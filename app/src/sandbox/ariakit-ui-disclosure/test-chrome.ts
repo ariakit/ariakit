@@ -1,6 +1,91 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998773048
+  test("keeps a bare fragment label separate from its description and badge", async ({
+    q,
+  }) => {
+    const button = q.button("Account settings");
+    await test
+      .expect(button)
+      .toHaveAccessibleDescription("Manage your profile");
+    await test
+      .expect(button.locator(":scope > .disclosure-button-slot"))
+      .toHaveText("3");
+    await button.click();
+    await test.expect(q.text("Update account settings")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7478
+  test("keeps a trailing badge beside the label", async ({ q }) => {
+    const example = query(q.article("Trailing badge"));
+    const button = example.button("Notifications 3");
+    await test.expect(button.locator(":scope > span").nth(1)).toHaveText("3");
+    await button.click();
+    await test
+      .expect(example.text("Three messages need your attention."))
+      .toBeHidden();
+    await button.press("Enter");
+    await test
+      .expect(example.text("Three messages need your attention."))
+      .toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998666934
+  test("keeps a consumer label component and description separate from the slots", async ({
+    q,
+  }) => {
+    const example = query(q.article("Slots with description"));
+    const button = example.button("Workspace members");
+    await test
+      .expect(button)
+      .toHaveAttribute("aria-labelledby", "workspace-members-label");
+    await test
+      .expect(button)
+      .toHaveAccessibleDescription("People with access to this workspace");
+    await test.expect(button.locator(":scope > span").nth(2)).toHaveText("4");
+    await button.click();
+    await test
+      .expect(example.text("Invite a teammate or change a role."))
+      .toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998666934
+  test("accepts label props with fragment content and adjacent slots", async ({
+    q,
+  }) => {
+    const button = q.button("Invitation details");
+    await test
+      .expect(button)
+      .toHaveAttribute("aria-labelledby", "invitation-label");
+    await test
+      .expect(button)
+      .toHaveAccessibleDescription("Review workspace invitations");
+    await test.expect(button.locator(":scope > span").nth(2)).toHaveText("2");
+    await button.click();
+    await test.expect(q.text("Two invitations need review")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998666934
+  test("renders a zero label and omits a false label without wrapping row children", async ({
+    q,
+  }) => {
+    const button = q.button("0").filter({ hasText: "Pending invitations" });
+    await test
+      .expect(button)
+      .toHaveAccessibleDescription("Pending invitations");
+    await button.click();
+    await test.expect(q.text("No invitations need review")).toBeVisible();
+    const members = q.button("Show invited members");
+    await test.expect(members).not.toHaveAttribute("aria-labelledby");
+    await test
+      .expect(members)
+      .toHaveAccessibleDescription("Members waiting for access");
+    await test
+      .expect(members.locator(":scope > .disclosure-button-slot"))
+      .toHaveCount(1);
+  });
+
   test("shares the open state of a controlled disclosure with an outside button", async ({
     page,
     q,
