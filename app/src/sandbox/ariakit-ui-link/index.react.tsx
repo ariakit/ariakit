@@ -36,10 +36,13 @@ export default function LinkExamples() {
       >
         <Prose>
           <p>
-            Read the <Link href="#styling-guide">styling guide</Link> first,
-            then the <Link href="#composition">composition patterns</Link>.
-            Every example links back to its{" "}
-            <Link href="#source">source on GitHub</Link>.
+            Read the{" "}
+            <Link href="#styling-guide" tabIndex={0}>
+              styling guide
+            </Link>{" "}
+            first, then the{" "}
+            <Link href="#composition">composition patterns</Link>. Every example
+            links back to its <Link href="#source">source on GitHub</Link>.
           </p>
         </Prose>
       </Example>

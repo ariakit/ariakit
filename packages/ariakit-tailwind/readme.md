@@ -951,6 +951,8 @@ Each layer appearance variant also has a `not-*` counterpart, such as
 
 > `ak-dark` / `ak-light` and their band variants require a parent `ak-layer`. They're implemented as `@container` style queries, so they silently fail to match outside a layer rather than falling back to a default. Negated variants match whenever the queried layer value is absent or different, so wrap them in an `ak-layer` when relying on layer appearance.
 
+For `::before` and `::after`, the originating element can be the query container. For example, `ak-light:before:border-t` on an `ak-layer` element draws a top border on its pseudo-element when that element's own layer is light. This also works when its layer is inverted relative to the parent.
+
 ### Accessibility
 
 | Variant         | Matches when…                                                                                                                                                                                           |
