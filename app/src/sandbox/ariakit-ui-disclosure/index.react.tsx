@@ -13,7 +13,10 @@ import {
   Combobox,
   ComboboxGroup,
   ComboboxItem,
+  ComboboxPopover,
+  ComboboxProvider,
   ComboboxSelect,
+  ComboboxSelectLabel,
 } from "@ariakit/ui/components/combobox.ariakit.react";
 import {
   Disclosure,
@@ -31,42 +34,34 @@ import {
 
 interface DetailsProps {
   name: string;
+  providerOpen?: boolean;
 }
 
-// Migrated from the disclosure-button-store sandbox with the same markup.
-function Details({ name }: DetailsProps) {
+function Details({ name, providerOpen = false }: DetailsProps) {
   const store = ak.useDisclosureStore();
+  const open = ak.useStoreState(store, "open");
+  // The inner provider must not replace the parts' explicit store.
   return (
-    <section className="grid gap-2">
-      <DisclosureButton
-        store={store}
-        indicator={false}
-        $p={3}
-        $rounded="md"
-        className="border data-open:border-green-700 data-open:bg-green-100 data-open:text-green-950"
-      >
-        {name} details
-      </DisclosureButton>
-      <DisclosureContent store={store}>
-        {name} details are available.
-      </DisclosureContent>
-    </section>
+    <Disclosure open={open} $border $p={3} $rounded="md">
+      <ak.DisclosureProvider defaultOpen={providerOpen}>
+        <DisclosureButton store={store}>{name} details</DisclosureButton>
+        <DisclosureContent store={store}>
+          {name} details are available.
+        </DisclosureContent>
+      </ak.DisclosureProvider>
+    </Disclosure>
   );
 }
 
 function DisclosureButtonStore() {
-  // The surrounding open provider must not replace Details' explicit store.
   return (
     <div className="grid gap-6">
       <Details name="Project" />
-      <ak.DisclosureProvider defaultOpen>
-        <Details name="Team" />
-      </ak.DisclosureProvider>
+      <Details name="Team" providerOpen />
     </div>
   );
 }
 
-// Migrated from the disclosure-optional-content sandbox with the same markup.
 function DisclosureOptionalContent() {
   const [headings, setHeadings] = useState(false);
   // False omits optional content; zero still renders as a label, icon, or
@@ -89,12 +84,14 @@ function DisclosureOptionalContent() {
               <ComboboxItem value="Bob" />
             </ComboboxGroup>
           </Combobox>
-          <ComboboxSelect
-            label={headings && "Status"}
-            aria-label="Status"
-            defaultValue="Active"
-            items={[{ value: "Active" }, { value: "Complete" }]}
-          />
+          <ComboboxProvider defaultSelectedValue="Active">
+            {headings && <ComboboxSelectLabel>Status</ComboboxSelectLabel>}
+            <ComboboxSelect aria-label="Status" />
+            <ComboboxPopover>
+              <ComboboxItem value="Active" checkmark="before" />
+              <ComboboxItem value="Complete" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         </div>
       </Disclosure>
       <Disclosure button={0}>No pending requests</Disclosure>
@@ -648,12 +645,14 @@ export default function DisclosureExamples() {
         description="A DisclosureButton and a DisclosureContent that share an explicit store follow it, even inside an open DisclosureProvider."
         stretch
         code={`
-          <DisclosureButton $p={3} $rounded="md">Project details</DisclosureButton>
-          <DisclosureContent />
-          <ak.DisclosureProvider>
-            <DisclosureButton $p={3} $rounded="md">Team details</DisclosureButton>
-            <DisclosureContent />
-          </ak.DisclosureProvider>
+          <Disclosure open={open} $border $p={3} $rounded="md">
+            <ak.DisclosureProvider defaultOpen>
+              <DisclosureButton store={store}>Team details</DisclosureButton>
+              <DisclosureContent store={store}>
+                Team details are available.
+              </DisclosureContent>
+            </ak.DisclosureProvider>
+          </Disclosure>
         `}
       >
         <DisclosureButtonStore />
@@ -671,7 +670,13 @@ export default function DisclosureExamples() {
                 <ComboboxItem />
               </ComboboxGroup>
             </Combobox>
-            <ComboboxSelect />
+            <ComboboxProvider defaultSelectedValue="Active">
+              <ComboboxSelect aria-label="Status" />
+              <ComboboxPopover>
+                <ComboboxItem value="Active" checkmark="before" />
+                <ComboboxItem value="Complete" checkmark="before" />
+              </ComboboxPopover>
+            </ComboboxProvider>
           </Disclosure>
           <Disclosure>No pending requests</Disclosure>
           <Disclosure>Advanced controls</Disclosure>
