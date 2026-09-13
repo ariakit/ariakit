@@ -865,10 +865,15 @@ const root = rule(
   at.variant("contrast-more", set(vars.contrast, CONTRAST_HIGH)),
 );
 
-const disabled = rule(
-  ':where(:disabled, [disabled], [aria-disabled="true"])',
+utility(
+  "disabled",
   set(vars.contrastScale, vars.disabledContrastScale),
   set(vars.textContrastScale, vars.disabledTextContrastScale),
+);
+
+const disabled = rule(
+  ':where(:disabled, [disabled], [aria-disabled="true"])',
+  at.apply`ak-disabled`,
 );
 
 /**
