@@ -29,6 +29,27 @@ export function isEdgeColor(value: unknown): value is EdgeColorValues {
   return includes(COLOR_VALUES, value);
 }
 
+/** Resolves an edge color for an inherited CSS channel. */
+export function getEdgeColorValue(
+  value?: EdgeColorValues | "unset" | (string & {}),
+) {
+  if (value == null) return;
+  if (value === "unset") return;
+  return isEdgeColor(value) ? `var(--color-${value})` : value;
+}
+
+/** Resolves named edge weights to their opacity on the 0–100 scale. */
+export function getEdgeWeightValue(
+  value?: EdgeWeightValues | "unset" | (string & {}) | number,
+) {
+  if (value == null) return;
+  if (value === "unset") return;
+  if (value === "") return;
+  if (!includes(EDGE_WEIGHT_VALUES, value)) return value;
+  const weights = { adaptive: 0, light: 5, normal: 10, medium: 20, bold: 40 };
+  return weights[value];
+}
+
 // The hairline color these variants tune is derived by the layer utility on the
 // same element, and none of the channels they write inherit, so an element that
 // carries no layer of its own gets nothing from them. That is why this extends
