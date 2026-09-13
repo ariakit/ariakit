@@ -1,10 +1,56 @@
-import { cv } from "clava";
-import { getSpacingValue } from "../utils/styles.ts";
+import { cv, cx } from "clava";
+import type { VariantProps } from "clava";
+import { keys } from "../utils/keys.ts";
+import { getScaledStyleValue, getSpacingValue } from "../utils/styles.ts";
 import { button, buttonSlot } from "./button.ts";
+import { edge, getEdgeColorValue, getEdgeWeightValue } from "./edge.ts";
 import { frame } from "./frame.ts";
 import { hover } from "./hover.ts";
 import { layer } from "./layer.ts";
 import { padding } from "./padding.ts";
+import { text } from "./text.ts";
+
+const tableEdgeInputs = cx(
+  // Inherited inputs are defaults; explicit edge utilities on a part win.
+  "[:where(&)]:ak-edge-color-(--table-edge-color)",
+  "[:where(&)]:ak-edge-alpha-(--table-edge-alpha,0.1)",
+  "[:where(&)]:ak-edge-push-(--table-edge-push,1)",
+);
+
+// Cells resolve these inputs against their own layer, so a row's hover and
+// selection tint still determine the surface behind each translucent line.
+function getTableEdgeStyle(variants: VariantProps<typeof edge>) {
+  const color = getEdgeColorValue(variants.$edge);
+  const weight = getEdgeWeightValue(variants.$edgeWeight);
+  const push = variants.$edgePush;
+  const style: Record<string, string> = {};
+  if (color != null) {
+    style["--table-edge-color"] = color;
+  }
+  if (weight != null) {
+    style["--table-edge-alpha"] = getScaledStyleValue(weight);
+  } else if (variants.$edgeRaw) {
+    style["--table-edge-alpha"] = "1";
+  }
+  if (push != null && push !== "") {
+    style["--table-edge-push"] = getScaledStyleValue(push);
+  } else if (variants.$edgeRaw) {
+    style["--table-edge-push"] = "0";
+  }
+  return style;
+}
+
+function hasEdgeModifier(variants: VariantProps<typeof edge>) {
+  return keys(variants).some((key) => {
+    if (!key.startsWith("$edge")) return false;
+    const value = variants[key];
+    if (value == null) return false;
+    if (value === false) return false;
+    if (value === "") return false;
+    if (value === "unset") return false;
+    return true;
+  });
+}
 
 // Widths the cells and the container spend, as plain numbers of pixels: the
 // cells cut their lines out of one image (see tableCell), and an image slice
@@ -99,6 +145,7 @@ const tableBorderVariants = {
 export const table = cv({
   extend: [padding],
   class: [
+    tableEdgeInputs,
     "relative w-full border-separate border-spacing-0",
     // The width of a line between rows and of a divider between columns: the
     // wider of the two sides asked for. The sides only differ for the
@@ -112,6 +159,7 @@ export const table = cv({
     // body row and its text stays on the column below. The table element
     // itself stays unpadded; only the ! beats the padding declared on it.
     "[--table-py:var(--py)] [--table-px:var(--px)]",
+    "[--table-size:1em]",
     "p-0!",
   ],
   variants: {
@@ -122,6 +170,9 @@ export const table = cv({
     // computed border type must not react to the truthy $border.
     $borderType: "unset",
     $p: 3,
+  },
+  refine({ variants }) {
+    return { style: getTableEdgeStyle(variants) };
   },
 });
 
@@ -135,6 +186,9 @@ export const tableContainer = cv({
     // a flex line included, and the scroller takes the overflow. Without this
     // a parent that sizes to content grows to the table's widest row instead.
     "min-w-0",
+    // A nested table starts its own edge context. Its table element can still
+    // replace individual inputs that this container supplies.
+    "[--table-edge-color:initial] [--table-edge-alpha:initial] [--table-edge-push:initial]",
     // The outer borders follow the same channels as the cell borders.
     "border-s-[calc(var(--table-border-s,0)*1px)]",
     "border-e-[calc(var(--table-border-e,0)*1px)]",
@@ -151,6 +205,14 @@ export const tableContainer = cv({
     $rounded: "xl",
     $p: "none",
   },
+  refine({ variants }) {
+    return { style: getTableEdgeStyle(variants) };
+  },
+});
+
+export const tableCaption = cv({
+  extend: [text],
+  class: "px-(--table-px) py-(--table-py) text-start",
 });
 
 export const tableScroller = cv({
@@ -165,13 +227,17 @@ export const tableScroller = cv({
 export const tableRowGroup = cv({
   extend: [layer],
   class: [
+    tableEdgeInputs,
+    "[--table-grid-edge:var(--ak-edge)]",
     "relative",
     // Edge flags read by the rows, for the line the table's last row leaves
-    // out and the corners its first and last rows take.
+    // out and the corners its first and last rows take. Reset them here so a
+    // nested group cannot inherit its outer group's position.
+    "[--table-rowgroup-first:0] [--table-rowgroup-last:0]",
     "[&:is(thead):first-of-type]:[--table-rowgroup-first:1]",
-    "[:not(:has(thead))>&:first-child]:[--table-rowgroup-first:1]",
+    "[:not(:has(>thead))>&:nth-child(1_of_tbody,tfoot)]:[--table-rowgroup-first:1]",
     "[&:is(tfoot):last-of-type]:[--table-rowgroup-last:1]",
-    "[:not(:has(tfoot))>&:last-child]:[--table-rowgroup-last:1]",
+    "[:not(:has(>tfoot))>&:last-child]:[--table-rowgroup-last:1]",
   ],
   variants: {
     /**
@@ -206,10 +272,38 @@ export const tableFoot = cv({
   extend: [tableRowGroup],
 });
 
+const tableItem = cv({
+  extend: [edge],
+  variants: {
+    /**
+     * Draws a border inside the grid lines without changing the layout. Edge
+     * modifiers enable it automatically. Set to `false` to turn it off, `true`
+     * for 1px, or a number for a width in pixels. Keyboard focus replaces it.
+     */
+    $border(value?: TableBorderValue) {
+      if (!value) return;
+      return {
+        style: { "--table-item-border": `${value === true ? 1 : value}px` },
+      };
+    },
+  },
+  defaultVariants: {
+    $border(defaultValue, variants) {
+      if (defaultValue != null) {
+        return defaultValue;
+      }
+      return hasEdgeModifier(variants);
+    },
+  },
+});
+
 export const tableRow = cv({
-  extend: [layer, hover],
+  extend: [tableItem, hover],
   class: [
-    // Rows at the group edges forward the flags to their cells.
+    tableEdgeInputs,
+    // Rows at the group edges forward the flags to their cells. Other rows
+    // must not inherit the position of a row that contains a nested table.
+    "[--table-row-first:0] [--table-row-last:0]",
     "first-of-type:[--table-row-first:var(--table-rowgroup-first,0)]",
     "last-of-type:[--table-row-last:var(--table-rowgroup-last,0)]",
     // The line below the row, which its cells draw in their last row of
@@ -265,28 +359,51 @@ export const tableRow = cv({
     },
   },
   refine({ variants, addClass }) {
-    if (!variants.$focus) return;
+    const style = variants.$border ? undefined : getTableEdgeStyle(variants);
+    // A static border has its own color. Keep that color out of the grid and
+    // the hover shadow, which otherwise adds another colored line above it.
+    if (!variants.$border) {
+      addClass("[--table-grid-edge:var(--ak-edge)]");
+    }
+    if (!variants.$focus && !variants.$border) {
+      return { style };
+    }
     addClass([
-      "ak-outline ak-outline-brand",
       // The row still takes real DOM focus, so the browser's own ring goes.
-      "ui-focus-visible:relative ui-focus-visible:outline-none",
+      "ui-focus-visible:outline-none",
       // The box sits inside the lines the row's cells hold, the line below
       // the row and, under a group pinned at the bottom, the one above it.
       // The z puts it over a pinned cell and under a sticky row group.
-      "ui-focus-visible:after:absolute ui-focus-visible:after:inset-x-0",
-      "ui-focus-visible:after:inset-bs-[calc(var(--table-row-line-bs,0)*1px)]",
-      "ui-focus-visible:after:inset-be-[calc(var(--table-row-line-be,0)*1px)]",
-      "ui-focus-visible:after:z-2 ui-focus-visible:after:pointer-events-none",
-      "ui-focus-visible:after:border-(--ak-outline)",
-      "ui-focus-visible:after:rounded-t-(--table-row-radius-bs)",
-      "ui-focus-visible:after:rounded-b-(--table-row-radius-be)",
+      "after:absolute after:inset-x-0",
+      "after:inset-bs-[calc(var(--table-row-line-bs,0)*1px)]",
+      "after:inset-be-[calc(var(--table-row-line-be,0)*1px)]",
+      "after:z-2 after:pointer-events-none",
+      "after:rounded-t-(--table-row-radius-bs)",
+      "after:rounded-b-(--table-row-radius-be)",
     ]);
+    if (variants.$border) {
+      addClass(
+        "relative after:border-(length:--table-item-border) after:border-(--ak-edge)",
+      );
+    } else {
+      // A focus-only row creates its border box only while focused.
+      addClass(
+        "ui-focus-visible:relative after:content-none ui-focus-visible:after:content-['']",
+      );
+    }
+    if (variants.$focus) {
+      addClass(
+        "ak-outline ak-outline-brand ui-focus-visible:after:border-(--ak-outline)",
+      );
+    }
+    return { style };
   },
 });
 
 export const tableCell = cv({
-  extend: [layer],
+  extend: [tableItem],
   class: [
+    tableEdgeInputs,
     // The header of a sorted column takes the full ink; the sort button in it
     // says which way (see tableSortIndicator).
     "aria-[sort=ascending]:ak-ink-100 aria-[sort=descending]:ak-ink-100",
@@ -313,7 +430,7 @@ export const tableCell = cv({
     // the dividers stop short of the row lines by $borderInset. The slice
     // takes plain numbers, which is why the channels are numbers, and it is
     // physical, so it is restated for right-to-left.
-    "[border-image-source:linear-gradient(var(--ak-edge)_calc(var(--table-row-line-bs,0)*1px),transparent_0_calc(var(--table-row-line-bs,0)*1px+var(--table-border-inset,0px)),var(--ak-edge)_0_calc(100%-var(--table-row-line-be,0)*1px-var(--table-border-inset,0px)),transparent_0_calc(100%-var(--table-row-line-be,0)*1px),var(--ak-edge)_0)]",
+    "[border-image-source:linear-gradient(var(--table-cell-edge)_calc(var(--table-row-line-bs,0)*1px),transparent_0_calc(var(--table-row-line-bs,0)*1px+var(--table-border-inset,0px)),var(--table-cell-edge)_0_calc(100%-var(--table-row-line-be,0)*1px-var(--table-border-inset,0px)),transparent_0_calc(100%-var(--table-row-line-be,0)*1px),var(--table-cell-edge)_0)]",
     "[border-image-slice:var(--table-row-line-bs,0)_var(--table-cell-line-e,0)_var(--table-row-line-be,0)_var(--table-cell-line-s,0)]",
     "rtl:[border-image-slice:var(--table-row-line-bs,0)_var(--table-cell-line-s,0)_var(--table-row-line-be,0)_var(--table-cell-line-e,0)]",
     // The line above a row in a state, painted over the row before it, whose
@@ -321,13 +438,11 @@ export const tableCell = cv({
     // lies on top, so it is the row's edge over a stripe of the row's own
     // surface, the same paint as the lines below. For a row in no state the
     // offset is zero and the shadow stays under the cell.
-    "shadow-[0_calc(var(--table-row-shadow,0)*-1px)_0_var(--ak-edge),0_calc(var(--table-row-shadow,0)*-1px)_0_var(--ak-layer)]",
+    "shadow-[0_calc(var(--table-row-shadow,0)*-1px)_0_var(--table-cell-edge),0_calc(var(--table-row-shadow,0)*-1px)_0_var(--ak-layer)]",
     // At the container's corners the ring follows the rounding (see
     // tableRow).
     "first:rounded-ss-(--table-row-radius-bs) first:rounded-es-(--table-row-radius-be)",
     "last:rounded-se-(--table-row-radius-bs) last:rounded-ee-(--table-row-radius-be)",
-    // A focusable cell takes real DOM focus, so the browser's own ring goes.
-    "ui-focus-visible:outline-none",
   ],
   variants: {
     /**
@@ -335,7 +450,12 @@ export const tableCell = cv({
      */
     $header: {
       false: "",
-      column: "ak-ink-70 font-semibold",
+      column: [
+        "ak-ink-70 font-semibold",
+        // A bare choice or icon keeps the body size beside the smaller label.
+        // Slots inside a control keep that control's own explicit size.
+        "[&>.control-slot]:text-(length:--table-size)",
+      ],
       row: "font-semibold",
     },
     /**
@@ -412,8 +532,22 @@ export const tableCell = cv({
     if (variants.$header && !variants.$numeric) {
       addClass("text-start");
     }
-    if (!variants.$focus) return;
-    addClass("ak-outline ak-outline-brand inset-ring-(--ak-outline)");
+    addClass("ui-focus-visible:outline-none");
+    if (variants.$border || variants.$layer === false) {
+      addClass("[--table-cell-edge:var(--table-grid-edge,var(--ak-edge))]");
+    } else {
+      addClass("[--table-cell-edge:var(--ak-edge)]");
+    }
+    if (variants.$border) {
+      addClass(
+        "inset-ring-(length:--table-item-border) inset-ring-(--ak-edge)",
+      );
+    }
+    if (variants.$focus) {
+      addClass(
+        "ak-outline ak-outline-brand ui-focus-visible:inset-ring-(--ak-outline)",
+      );
+    }
   },
 });
 

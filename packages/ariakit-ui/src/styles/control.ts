@@ -96,7 +96,7 @@ const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
 export const controlSlot = cv({
   extend: [frame],
   class: [
-    "flex flex-none items-center justify-center",
+    "control-slot flex flex-none items-center justify-center",
     // The margins seat the slot on the first line of text and pull it toward
     // the edge. A stacked card sets --control-inline to 0, which drops both,
     // so a slot on a row of its own lines up with the label under it.
@@ -154,6 +154,10 @@ export const controlSlot = cv({
      */
     $p: {
       unset: "",
+      // Match a badge's optical side padding at the slot's fixed height. The
+      // text is scaled to 0.8125em, and the standalone badge uses a 0.75 share
+      // of the space around its capitals for its optical padding.
+      auto: "px-[max(0px,calc((var(--size)-1lh*0.8125)/2+(1lh-1cap)*0.8125*0.75))]",
       xs: "px-[calc(var(--size)*0.05)]",
       sm: "px-[calc(var(--size)*0.1)]",
       md: "px-[calc(var(--size)*0.15)]",
@@ -177,14 +181,14 @@ export const controlSlot = cv({
       return getFrameRoundedClass(value);
     },
     /**
-     * Sets the element’s kind. When you use the `badge` kind, wrap the text in
-     * a `<span>` element so it’s styled correctly.
+     * Sets the element’s kind. When you use the `badge` kind, wrap text in a
+     * `<span>` element so it’s styled correctly.
      */
     $kind: {
       icon: "",
       // A key chord reads the same way in every locale, so the bidi algorithm
       // must not reorder its keys in a right-to-left row.
-      shortcut: "[direction:ltr]",
+      shortcut: "[direction:ltr] ak-ink-60",
       avatar: "overflow-clip",
       badge: "*:text-[0.8125em]",
     },
@@ -251,7 +255,9 @@ export const controlSlot = cv({
       // Only badges get the default horizontal padding: the $p values pad the x
       // axis for text content, while avatar children (images) must fill the
       // whole slot, or the round clip turns them into straight-sided slabs.
-      if (variants.$kind === "badge") return defaultValue ?? variants.$size;
+      if (variants.$kind === "badge") {
+        return defaultValue ?? "auto";
+      }
       return defaultValue ?? "unset";
     },
     $rowSpan: 1,
@@ -298,6 +304,14 @@ export const controlSlot = cv({
       "group-[.disabled]/control:ak-ink-0",
     ]);
     if (variants.$rowSpan !== 1) return;
+    if (variants.$kind === "avatar") {
+      // Larger slots have room for the label's text size.
+      if (variants.$size === "2xl") return;
+      if (variants.$size === "full") return;
+      // Keep the parent's line height before adjusting font metrics, which also
+      // affect normal line height. A 0.45em cap height gives initials room.
+      addClass("leading-[1lh] [font-size-adjust:cap-height_0.45]");
+    }
     if (includes(PADDED_SLOT_SIZES, variants.$size)) {
       setVariants({ $size: "xl" });
     }
@@ -314,7 +328,7 @@ export const controlContent = cv({
   variants: {
     $orientation: {
       unset: "",
-      horizontal: "flex flex-wrap",
+      horizontal: "flex flex-wrap items-baseline",
       vertical: "flex flex-col",
     },
   },

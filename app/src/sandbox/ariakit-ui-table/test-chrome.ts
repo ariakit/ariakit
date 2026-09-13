@@ -2,6 +2,51 @@ import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/issues/7481
+  test("names declarative and composed tables with native captions", async ({
+    q,
+  }) => {
+    for (const title of ["Declarative rows", "Composed parts"]) {
+      const table = query(q.article(title)).table();
+      const caption = query(table).caption();
+      await test.expect(caption).toBeVisible();
+      await test.expect(table).toHaveAccessibleName(await caption.innerText());
+      test
+        .expect(await table.evaluate((node) => node.firstElementChild?.tagName))
+        .toBe("CAPTION");
+    }
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7481
+  test("supports optional caption parts before declarative and appended rows", async ({
+    q,
+  }) => {
+    const fixture = query(q.article("Caption options"));
+    const table = fixture.table();
+    for (const format of ["Text", "Props", "Element", "Zero", "Hidden"]) {
+      await fixture.button(format).click();
+      if (format === "Hidden") {
+        await test.expect(query(table).caption()).toHaveCount(0);
+      } else {
+        await test.expect(query(table).caption()).toHaveCount(1);
+        await test
+          .expect(table)
+          .toHaveAccessibleName(
+            format === "Zero" ? "0" : "Component inventory",
+          );
+        test
+          .expect(
+            await table.evaluate((node) => node.firstElementChild?.tagName),
+          )
+          .toBe("CAPTION");
+      }
+      await test.expect(query(table).row()).toHaveCount(2);
+      await test
+        .expect(query(table).cell())
+        .toHaveText(["Button", "Covered", "Tabs", "Expanded"]);
+    }
+  });
+
   test("selects rows with their checkboxes and the select-all", async ({
     q,
   }) => {

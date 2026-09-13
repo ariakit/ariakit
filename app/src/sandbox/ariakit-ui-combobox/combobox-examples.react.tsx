@@ -7,18 +7,19 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import * as ak from "@ariakit/react";
 import {
   Combobox,
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
-  ComboboxSelectButton,
-  ComboboxSelectItem,
+  ComboboxList,
+  ComboboxSelect,
   ComboboxSelectLabel,
-  ComboboxSelectPopover,
-  ComboboxSelectProvider,
+  ComboboxPopover,
+  ComboboxProvider,
 } from "@ariakit/ui/components/combobox.ariakit.react";
+import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
+import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import {
@@ -105,42 +106,57 @@ export function CountryComboboxExample() {
         // https://github.com/ariakit/ariakit/issues/7463
         popover={{ unmountOnHide: true }}
       >
-        {matches.map((country) => (
-          <ComboboxItem key={country} value={country} />
-        ))}
-        {!matches.length && <ComboboxEmpty />}
+        <ComboboxList>
+          {matches.map((country) => (
+            <ComboboxItem key={country} value={country} />
+          ))}
+        </ComboboxList>
+        {!matches.length && <ComboboxEmpty aria-hidden />}
       </Combobox>
+      {/* The region stays mounted when the popup is closed or has matches. */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {matches.length ? "" : "No results found"}
+      </div>
     </div>
   );
 }
 
-/** A status badge that takes the color of the selected status. */
-export function BadgeSelectExample() {
+/** A select that takes the color of the selected status. */
+export function StatusSelectExample() {
   const [value, setValue] = useState("In review");
   const status = reviewStatuses.find((entry) => entry.value === value);
   return (
     <div className="flex flex-col items-start gap-2">
-      <ComboboxSelectProvider
-        value={value}
-        setValue={(next) => {
+      <ComboboxProvider
+        selectedValue={value}
+        setSelectedValue={(next) => {
           // A single select only ever reports one string.
           if (typeof next !== "string") return;
           setValue(next);
         }}
       >
         <ComboboxSelectLabel>Review status</ComboboxSelectLabel>
-        <ComboboxSelectButton badge $layer={status?.layer} />
+        <ComboboxSelect $layer={status?.layer} />
         {/*
           Mounted on open, so the lists held open on the page do not mark it as
           outside them, which would make it ignore Escape.
           https://github.com/ariakit/ariakit/issues/7463
         */}
-        <ComboboxSelectPopover unmountOnHide>
+        <ComboboxPopover unmountOnHide>
           {reviewStatuses.map((entry) => (
-            <ComboboxSelectItem key={entry.value} value={entry.value} />
+            <ComboboxItem
+              checkmark="before"
+              key={entry.value}
+              value={entry.value}
+            />
           ))}
-        </ComboboxSelectPopover>
-      </ComboboxSelectProvider>
+        </ComboboxPopover>
+      </ComboboxProvider>
     </div>
   );
 }
@@ -154,30 +170,127 @@ export function SearchableSelectExample() {
   const matches = filterByText(timezones, search);
   return (
     <ExampleStage anchor="start" height={100}>
-      <ComboboxSelectProvider
+      <ComboboxProvider
         open
-        defaultValue="UTC"
+        defaultSelectedValue="UTC"
         inputValue={search}
         setInputValue={setSearch}
         resetValueOnHide
       >
         <div className="flex w-full flex-col items-start gap-2">
           <ComboboxSelectLabel>Timezone</ComboboxSelectLabel>
-          <ComboboxSelectButton />
+          <ComboboxSelect />
         </div>
-        <ComboboxSelectPopover {...openListProps}>
+        <ComboboxPopover {...openListProps}>
           <ComboboxInput
             autoSelect
             placeholder="Search timezones"
             aria-label="Search timezones"
           />
-          <ak.ComboboxList>
+          <ComboboxList>
             {matches.map((zone) => (
-              <ComboboxSelectItem key={zone} value={zone} />
+              <ComboboxItem checkmark="before" key={zone} value={zone} />
             ))}
-          </ak.ComboboxList>
-        </ComboboxSelectPopover>
-      </ComboboxSelectProvider>
+          </ComboboxList>
+        </ComboboxPopover>
+      </ComboboxProvider>
     </ExampleStage>
+  );
+}
+
+/** The search field stays in place while a long list scrolls below it. */
+export function ScrollableSearchExample() {
+  const [search, setSearch] = useState("");
+  const matches = filterByText(countries, search);
+  return (
+    <ExampleStage anchor="start" height={100}>
+      <ComboboxProvider
+        open
+        defaultSelectedValue="Argentina"
+        inputValue={search}
+        setInputValue={setSearch}
+      >
+        <div className="flex w-full flex-col items-start gap-2">
+          <ComboboxSelectLabel>Shipping country</ComboboxSelectLabel>
+          <ComboboxSelect />
+        </div>
+        <ComboboxPopover {...openListProps}>
+          <ComboboxInput
+            autoSelect
+            placeholder="Search shipping countries"
+            aria-label="Search shipping countries"
+          />
+          <ComboboxList>
+            {matches.map((country) => (
+              <ComboboxItem key={country} value={country} checkmark="before" />
+            ))}
+          </ComboboxList>
+          {!matches.length && <ComboboxEmpty />}
+        </ComboboxPopover>
+      </ComboboxProvider>
+    </ExampleStage>
+  );
+}
+
+export function FieldBoundariesExample() {
+  const longValue =
+    "international-shipping-region-with-an-unbreakable-identifier";
+  return (
+    <Layer
+      $layer="brand"
+      render={<Text $text="danger" />}
+      className="grid gap-4 p-4"
+    >
+      <Combobox
+        label="Long suggestion"
+        className="w-48"
+        popover={{ unmountOnHide: true }}
+      >
+        <ComboboxItem value="Europe" />
+        <ComboboxItem value={longValue} />
+      </Combobox>
+      <ComboboxProvider defaultSelectedValue="Europe">
+        <ComboboxSelectLabel>Long selection</ComboboxSelectLabel>
+        <ComboboxSelect className="w-48" />
+        <ComboboxPopover unmountOnHide>
+          <ComboboxItem value="Europe" checkmark="before" />
+          <ComboboxItem value={longValue} checkmark="before" />
+        </ComboboxPopover>
+      </ComboboxProvider>
+    </Layer>
+  );
+}
+
+export function SelectPlaceholdersExample() {
+  const items = [{ value: "Europe" }, { value: "Asia" }];
+  return (
+    <div className="grid gap-4">
+      <ComboboxProvider defaultSelectedValue={[]}>
+        <ComboboxSelectLabel>Extra regions</ComboboxSelectLabel>
+        <ComboboxSelect placeholder={<em>No regions selected</em>} />
+        <ComboboxPopover unmountOnHide>
+          {items.map((item) => (
+            <ComboboxItem key={item.value} {...item} checkmark="before" />
+          ))}
+        </ComboboxPopover>
+      </ComboboxProvider>
+      <ComboboxProvider>
+        <ComboboxSelectLabel>Automatic region</ComboboxSelectLabel>
+        <ComboboxSelect placeholder="Choose automatically" />
+        <ComboboxPopover>
+          {items.map((item) => (
+            <ComboboxItem key={item.value} {...item} checkmark="before" />
+          ))}
+        </ComboboxPopover>
+      </ComboboxProvider>
+      <ComboboxProvider defaultSelectedValue="">
+        <ComboboxSelectLabel>Custom prompt</ComboboxSelectLabel>
+        <ComboboxSelect displayValue={0} placeholder="Unspecified" />
+        <ComboboxSelect aria-label="Blank prompt" placeholder="Unspecified">
+          {""}
+        </ComboboxSelect>
+        <ComboboxSelect aria-label="Zero prompt" placeholder={0} />
+      </ComboboxProvider>
+    </div>
   );
 }

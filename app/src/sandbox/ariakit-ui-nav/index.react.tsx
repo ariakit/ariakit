@@ -1097,7 +1097,11 @@ export default function NavExamples() {
             <NavDisclosure>
               <NavDisclosureButton>Project pages</NavDisclosureButton>
               <NavDisclosureContent>
-                <NavLink>All projects</NavLink>
+                <NavList>
+                  <li>
+                    <NavLink>All projects</NavLink>
+                  </li>
+                </NavList>
               </NavDisclosureContent>
             </NavDisclosure>
           </Nav>
@@ -1107,9 +1111,13 @@ export default function NavExamples() {
           <NavDisclosure>
             <NavDisclosureButton>Project pages</NavDisclosureButton>
             <NavDisclosureContent>
-              <NavLink href="/projects" currentUrl="/account">
-                All projects
-              </NavLink>
+              <NavList>
+                <li>
+                  <NavLink href="/projects" currentUrl="/account">
+                    All projects
+                  </NavLink>
+                </li>
+              </NavList>
             </NavDisclosureContent>
           </NavDisclosure>
         </Nav>

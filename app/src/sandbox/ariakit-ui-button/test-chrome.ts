@@ -2,6 +2,25 @@ import { tabInto } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7489#discussion_r3995226174
+  test("preserves the selected avatar color when its kind changes", async ({
+    q,
+  }) => {
+    const box = query(q.article("Avatar shape"));
+    const picture = box.button("Change avatar color");
+    const image = picture.locator("img");
+    await test.expect(image).toHaveAttribute("src", /f59e0b/);
+    await picture.click();
+    await test.expect(image).toHaveAttribute("src", /6366f1/);
+    const round = box.button("Round avatar");
+    await round.click();
+    await test.expect(round).toHaveAttribute("aria-pressed", "false");
+    await test.expect(image).toHaveAttribute("src", /6366f1/);
+    await round.click();
+    await test.expect(round).toHaveAttribute("aria-pressed", "true");
+    await test.expect(image).toHaveAttribute("src", /6366f1/);
+  });
+
   test("keeps a focusable disabled button in the tab order", async ({
     page,
     q,

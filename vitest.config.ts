@@ -1,6 +1,8 @@
 import { dirname, join } from "node:path";
 import reactPlugin from "@vitejs/plugin-react";
 import { globSync } from "glob";
+import { version as reactVersion } from "react";
+import reactForwardRef from "rolldown-plugin-react-forward-ref";
 import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./app/src/lib/source.ts";
@@ -108,7 +110,23 @@ export default defineConfig({
       },
       {
         extends: true,
-        plugins: [reactPlugin()],
+        plugins: [
+          reactVersion.startsWith("18.") &&
+            reactForwardRef({
+              include: "packages/ariakit-ui/src/components/**/*.react.tsx",
+              elementFactories: [
+                {
+                  source: "../react-utils/create-render.react.ts",
+                  imported: "createRender",
+                },
+                {
+                  source: "../react-utils/create-render.react.ts",
+                  imported: "createOptionalRender",
+                },
+              ],
+            }),
+          reactPlugin(),
+        ],
         test: {
           name: "react",
           environment: "happy-dom",

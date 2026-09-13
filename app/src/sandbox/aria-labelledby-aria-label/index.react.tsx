@@ -5,11 +5,12 @@ import { TagList } from "@ariakit/react-components/tag/tag-list";
 import { TagProvider } from "@ariakit/react-components/tag/tag-provider";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import {
-  ComboboxSelectButton,
-  ComboboxSelectItem,
+  ComboboxSelect,
+  ComboboxItem,
+  ComboboxList,
   ComboboxSelectLabel,
-  ComboboxSelectPopover,
-  ComboboxSelectProvider,
+  ComboboxPopover,
+  ComboboxProvider,
 } from "@ariakit/ui/components/combobox.ariakit.react";
 import {
   Dialog,
@@ -57,19 +58,16 @@ export default function Example() {
         </TabPanels>
       </Tabs>
 
-      <ComboboxSelectProvider defaultValue="Apple">
+      <ComboboxProvider defaultSelectedValue="Apple">
         <ComboboxSelectLabel>Fruit</ComboboxSelectLabel>
-        <ComboboxSelectButton aria-label="Custom select label" />
-        <ComboboxSelectPopover>
-          {/* The list keeps the raw Ariakit primitive: the explicit
-              ComboboxList with its own aria-label is what this sandbox
-              exercises, and @ariakit/ui has no wrapper for it. */}
-          <ak.ComboboxList aria-label="Custom list label">
-            <ComboboxSelectItem value="Apple" />
-            <ComboboxSelectItem value="Banana" />
-          </ak.ComboboxList>
-        </ComboboxSelectPopover>
-      </ComboboxSelectProvider>
+        <ComboboxSelect aria-label="Custom select label" />
+        <ComboboxPopover>
+          <ComboboxList aria-label="Custom list label">
+            <ComboboxItem value="Apple" checkmark="before" />
+            <ComboboxItem value="Banana" checkmark="before" />
+          </ComboboxList>
+        </ComboboxPopover>
+      </ComboboxProvider>
 
       <ak.FormProvider>
         <ak.Form>

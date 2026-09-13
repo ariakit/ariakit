@@ -20,7 +20,11 @@ export interface TabsProps
     ak.RoleProps,
     Pick<
       TabProviderProps,
-      "selectedId" | "setSelectedId" | "defaultSelectedId" | "selectOnMove"
+      | "rtl"
+      | "selectedId"
+      | "setSelectedId"
+      | "defaultSelectedId"
+      | "selectOnMove"
     >,
     VariantProps<typeof tabs> {}
 
@@ -28,6 +32,7 @@ export interface TabsProps
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
  */
 export function Tabs({
+  rtl,
   selectedId,
   setSelectedId,
   defaultSelectedId,
@@ -37,6 +42,7 @@ export function Tabs({
   const [variantProps, rest] = splitProps(props, tabs);
   return (
     <TabProvider
+      rtl={rtl}
       selectedId={selectedId}
       setSelectedId={setSelectedId}
       defaultSelectedId={defaultSelectedId}
@@ -144,14 +150,14 @@ export function TabSeparator(props: TabSeparatorProps) {
 }
 
 export interface TabLabelProps
-  extends ComponentProps<"div">, VariantProps<typeof tabLabel> {}
+  extends ComponentProps<"span">, VariantProps<typeof tabLabel> {}
 
 /**
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
  */
 export function TabLabel(props: TabLabelProps) {
   const [variantProps, rest] = splitProps(props, tabLabel);
-  return <div {...tabLabel.jsx(variantProps)} {...rest} />;
+  return <span {...tabLabel.jsx(variantProps)} {...rest} />;
 }
 
 export interface TabSlotProps
