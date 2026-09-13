@@ -272,10 +272,13 @@ export const tab = cv({
     // Its colour stays on: the selected folder's edge takes it.
     $focus: false,
     $focusColor: "brand",
-    // A folder tab takes the root's edge, so the selected one merges with the
-    // panel. The other kinds have none, like the button they are.
+    // A folder inherits the root's edge to merge with the panel. Other kinds
+    // cancel their unselected fill in CSS, so also opt out of the button's
+    // forced-colors edge for that fill.
     $border(defaultValue, variants) {
-      if (variants.$kind !== "folder") return defaultValue;
+      if (variants.$kind !== "folder") {
+        return defaultValue ?? false;
+      }
       return defaultValue ?? "inherit";
     },
   },
