@@ -5,12 +5,12 @@ import { TagList } from "@ariakit/react-components/tag/tag-list";
 import { TagProvider } from "@ariakit/react-components/tag/tag-provider";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import {
+  ComboboxSelect,
+  ComboboxItem,
   ComboboxList,
-  ComboboxSelectButton,
-  ComboboxSelectItem,
   ComboboxSelectLabel,
-  ComboboxSelectPopover,
-  ComboboxSelectProvider,
+  ComboboxPopover,
+  ComboboxProvider,
 } from "@ariakit/ui/components/combobox.ariakit.react";
 import {
   Dialog,
@@ -58,16 +58,16 @@ export default function Example() {
         </TabPanels>
       </Tabs>
 
-      <ComboboxSelectProvider defaultValue="Apple">
+      <ComboboxProvider defaultSelectedValue="Apple">
         <ComboboxSelectLabel>Fruit</ComboboxSelectLabel>
-        <ComboboxSelectButton aria-label="Custom select label" />
-        <ComboboxSelectPopover>
+        <ComboboxSelect aria-label="Custom select label" />
+        <ComboboxPopover>
           <ComboboxList aria-label="Custom list label">
-            <ComboboxSelectItem value="Apple" />
-            <ComboboxSelectItem value="Banana" />
+            <ComboboxItem value="Apple" checkmark="before" />
+            <ComboboxItem value="Banana" checkmark="before" />
           </ComboboxList>
-        </ComboboxSelectPopover>
-      </ComboboxSelectProvider>
+        </ComboboxPopover>
+      </ComboboxProvider>
 
       <ak.FormProvider>
         <ak.Form>

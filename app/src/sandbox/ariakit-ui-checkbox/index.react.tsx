@@ -594,19 +594,19 @@ export default function CheckboxExamples() {
         description="Small pill cards in a wrapping row, used as a set of filters. Each chip keeps its check, so its state does not rest on color alone."
         code={`
           <CheckboxCard value="design" defaultChecked $rounded="full" $size="sm">
-            <CheckboxCardCheck />
+            <CheckboxCardCheck $forceRounded={false} />
             <CheckboxCardLabel>Design</CheckboxCardLabel>
           </CheckboxCard>
           <CheckboxCard value="docs" $rounded="full" $size="sm">
-            <CheckboxCardCheck />
+            <CheckboxCardCheck $forceRounded={false} />
             <CheckboxCardLabel>Docs</CheckboxCardLabel>
           </CheckboxCard>
           <CheckboxCard value="engineering" defaultChecked $rounded="full" $size="sm">
-            <CheckboxCardCheck />
+            <CheckboxCardCheck $forceRounded={false} />
             <CheckboxCardLabel>Engineering</CheckboxCardLabel>
           </CheckboxCard>
           <CheckboxCard value="marketing" $rounded="full" $size="sm">
-            <CheckboxCardCheck />
+            <CheckboxCardCheck $forceRounded={false} />
             <CheckboxCardLabel>Marketing</CheckboxCardLabel>
           </CheckboxCard>
         `}
@@ -620,7 +620,7 @@ export default function CheckboxExamples() {
               $rounded="full"
               $size="sm"
             >
-              <CheckboxCardCheck />
+              <CheckboxCardCheck $forceRounded={false} />
               <CheckboxCardLabel>{tag}</CheckboxCardLabel>
             </CheckboxCard>
           ))}

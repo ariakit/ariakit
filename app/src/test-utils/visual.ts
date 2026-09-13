@@ -37,9 +37,9 @@ export interface ScreenshotOptions {
    */
   styles?: Styles;
   /**
-   * Element or selector to capture. If not provided, all the children of the
-   * body element will be captured. Combine it with `fullPage` to capture an
-   * element that is taller than the viewport.
+   * Elements or selector to capture as one bounding box. If not provided, all
+   * the children of the body element will be captured. Combine it with
+   * `fullPage` to capture an element that is taller than the viewport.
    */
   element?: Locator | string;
   /**
@@ -244,7 +244,12 @@ async function getScreenshotClip(
     return getBodyClip(page, clipMargin);
   }
   const locator = typeof element === "string" ? page.locator(element) : element;
-  const rect = await locator.boundingBox();
+  let rect: Rect | null = null;
+  for (const element of await locator.all()) {
+    const bounds = await element.boundingBox();
+    invariant(bounds, "Element not visible");
+    rect = rect ? getCombinedClip(rect, bounds) : bounds;
+  }
   invariant(rect, "Element not visible");
   if (!fullPage) {
     return applyClipMargin(rect, clipMargin);
