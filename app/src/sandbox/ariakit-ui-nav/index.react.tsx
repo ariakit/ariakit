@@ -12,6 +12,11 @@ import {
   ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
+import {
+  DisclosureButtonLabel,
+  DisclosureButtonSlot,
+} from "@ariakit/ui/components/disclosure.ariakit.react";
+import type { DisclosureButtonLabelProps } from "@ariakit/ui/components/disclosure.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import type { NavProps } from "@ariakit/ui/components/nav.ariakit.react";
 import {
@@ -45,6 +50,10 @@ import {
   Example,
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
+
+function CustomLabel(props: DisclosureButtonLabelProps) {
+  return <DisclosureButtonLabel {...props} />;
+}
 
 // Migrated from nav-optional-headings.react.tsx in the nav-interactions
 // sandbox, with the same markup.
@@ -395,7 +404,7 @@ export default function NavExamples() {
               <NavList>
                 <NavLink>
                   <ButtonLabel>Components</ButtonLabel>
-                  <ButtonSlot $kind="badge">
+                  <ButtonSlot $kind="badge" $p="md">
                     12
                   </ButtonSlot>
                 </NavLink>
@@ -425,7 +434,7 @@ export default function NavExamples() {
               <li>
                 <NavLink href="#components">
                   <ButtonLabel>Components</ButtonLabel>
-                  <ButtonSlot $kind="badge" className="ms-auto">
+                  <ButtonSlot $kind="badge" $p="md" className="ms-auto">
                     <span>12</span>
                   </ButtonSlot>
                 </NavLink>
@@ -600,6 +609,59 @@ export default function NavExamples() {
           </NavDisclosure>
         </Nav>
       </Example>
+
+      {(["ltr", "rtl"] as const).map((dir) => (
+        <Example
+          key={dir}
+          title={`Disclosures without icons (${dir})`}
+          description="A start indicator gives the guide its own column. Labels and child links align in each nested section."
+          code={`
+            <Nav dir="${dir}">
+              <NavDisclosure button="Documentation" defaultOpen>
+                <NavList>
+                  <li><NavLink href="#overview">Overview</NavLink></li>
+                  <NavDisclosure button="Components" defaultOpen>
+                    <NavList>
+                      <li><NavLink href="#buttons">Buttons</NavLink></li>
+                      <li><NavLink href="#dialogs">Dialogs</NavLink></li>
+                    </NavList>
+                  </NavDisclosure>
+                </NavList>
+              </NavDisclosure>
+            </Nav>
+          `}
+        >
+          <Nav
+            dir={dir}
+            aria-label={`Disclosures without icons (${dir})`}
+            className="w-full"
+          >
+            <NavDisclosure button="Documentation" defaultOpen>
+              <NavList>
+                <li>
+                  <NavLink href="#overview" onClick={preventNavigation}>
+                    Overview
+                  </NavLink>
+                </li>
+                <NavDisclosure button="Components" defaultOpen>
+                  <NavList>
+                    <li>
+                      <NavLink href="#buttons" onClick={preventNavigation}>
+                        Buttons
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink href="#dialogs" onClick={preventNavigation}>
+                        Dialogs
+                      </NavLink>
+                    </li>
+                  </NavList>
+                </NavDisclosure>
+              </NavList>
+            </NavDisclosure>
+          </Nav>
+        </Example>
+      ))}
 
       <Example
         title="Nested disclosures"
@@ -843,7 +905,7 @@ export default function NavExamples() {
                       <FileCode />
                     </NavIcon>
                     <ButtonLabel>المكونات</ButtonLabel>
-                    <ButtonSlot $kind="badge">
+                    <ButtonSlot $kind="badge" $p="md">
                       12
                     </ButtonSlot>
                   </NavLink>
@@ -892,7 +954,7 @@ export default function NavExamples() {
                       <FileCode strokeWidth={1.5} />
                     </NavIcon>
                     <ButtonLabel>المكونات</ButtonLabel>
-                    <ButtonSlot $kind="badge" className="ms-auto">
+                    <ButtonSlot $kind="badge" $p="md" className="ms-auto">
                       <span>12</span>
                     </ButtonSlot>
                   </NavLink>
@@ -1118,6 +1180,64 @@ export default function NavExamples() {
                   </NavLink>
                 </li>
               </NavList>
+            </NavDisclosureContent>
+          </NavDisclosure>
+        </Nav>
+      </Example>
+
+      <Example
+        title="Disclosure badges"
+        description="An explicit label keeps its badge beside the text, with or without a description."
+        code={`
+          <NavDisclosureButton label="Team pages" description="All pages in this workspace">
+            <DisclosureButtonSlot $kind="badge" $p="md">3</DisclosureButtonSlot>
+          </NavDisclosureButton>
+        `}
+      >
+        <Nav>
+          <NavDisclosure defaultOpen>
+            <NavDisclosureButton label="Project pages">
+              <DisclosureButtonSlot $kind="badge" $p="md">
+                3
+              </DisclosureButtonSlot>
+            </NavDisclosureButton>
+            <NavDisclosureContent>
+              <NavLink href="/pages/settings" currentUrl="/account">
+                Manage project pages
+              </NavLink>
+            </NavDisclosureContent>
+          </NavDisclosure>
+          <NavDisclosure defaultOpen>
+            <NavDisclosureButton
+              label={<CustomLabel id="nav-pages-label">Team pages</CustomLabel>}
+              description="All pages in this workspace"
+            >
+              <DisclosureButtonSlot $kind="badge" $p="md">
+                3
+              </DisclosureButtonSlot>
+            </NavDisclosureButton>
+            <NavDisclosureContent>
+              <NavLink href="/pages/settings" currentUrl="/account">
+                Manage team pages
+              </NavLink>
+            </NavDisclosureContent>
+          </NavDisclosure>
+
+          <NavDisclosure>
+            <NavDisclosureButton
+              label={
+                <>
+                  Account <strong>pages</strong>
+                </>
+              }
+              description="Manage account pages"
+            >
+              <DisclosureButtonSlot $kind="badge" $p="md">
+                3
+              </DisclosureButtonSlot>
+            </NavDisclosureButton>
+            <NavDisclosureContent>
+              <p>Update account pages</p>
             </NavDisclosureContent>
           </NavDisclosure>
         </Nav>
