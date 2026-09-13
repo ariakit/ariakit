@@ -295,7 +295,7 @@ async function waitForStableScreenshotClip(
   });
 }
 
-export async function getPlaywrightScreenshotOptions(
+async function getPlaywrightScreenshotOptions(
   page: Page,
   options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
 ) {
