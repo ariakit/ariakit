@@ -1,4 +1,5 @@
 import type { Locator } from "@playwright/test";
+import { PNG } from "pngjs";
 import {
   captureInView,
   capturePage,
@@ -11,6 +12,18 @@ import {
 
 function getEdgePattern(value: string) {
   return new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+}
+
+function getDocumentBounds(element: Locator) {
+  return element.evaluate((node) => {
+    const bounds = node.getBoundingClientRect();
+    return {
+      x: bounds.x + window.scrollX,
+      y: bounds.y + window.scrollY,
+      width: bounds.width,
+      height: bounds.height,
+    };
+  });
 }
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
@@ -69,6 +82,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   }) => {
     await forEachColorScheme(page, async () => {
       const fixture = query(q.article("Cell edge override"));
+      await fixture.checkbox("Show all borders on Failed cells").uncheck();
       for (const name of ["Plain cell edges", "Colored cell edges"]) {
         const cell = query(fixture.table(name)).cell("Failed");
         const color = await cell
@@ -81,7 +95,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
-  test("shows full cell borders for edge variants without moving content @visual", async ({
+  test("shares cell border geometry with focus without adding hover edges @visual", async ({
     page,
     q,
     visual,
@@ -90,16 +104,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const box = q.article("Cell edge override");
       const fixture = query(box);
       const checkbox = fixture.checkbox("Show all borders on Failed cells");
-      const getContentBounds = (cell: Locator) =>
-        cell.locator("span").evaluate((node) => {
-          const bounds = node.getBoundingClientRect();
-          return {
-            x: bounds.x + window.scrollX,
-            y: bounds.y + window.scrollY,
-            width: bounds.width,
-            height: bounds.height,
-          };
-        });
       await checkbox.check();
       for (const name of ["Plain cell edges", "Colored cell edges"]) {
         const table = query(fixture.table(name));
@@ -107,37 +111,50 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         const color = await cell
           .locator("span")
           .evaluate((node) => getComputedStyle(node).color);
-        await test.expect(cell).toHaveCSS("outline-style", "solid");
-        await test.expect(cell).toHaveCSS("outline-width", "1px");
-        await test.expect(cell).toHaveCSS("outline-offset", "-1px");
-        await test.expect(cell).toHaveCSS("outline-color", color);
+        await test.expect(cell).toHaveCSS("outline-style", "none");
+        await test
+          .expect(cell)
+          .toHaveCSS("box-shadow", /0px 0px 0px 1px inset/);
+        await test.expect(cell).toHaveCSS("box-shadow", getEdgePattern(color));
         await test
           .expect(table.cell("Pending"))
-          .toHaveCSS("outline-style", "none");
+          .not.toHaveCSS("box-shadow", /0px 0px 0px [1-9]\d*px inset/);
         await test
           .expect(table.cell("Needs review"))
-          .toHaveCSS("outline-width", "1px");
-        // A translucent border must replace the grid paint on owned sides, or
-        // those sides become darker than the rest of the full border.
-        await test
-          .expect(table.cell("Needs review"))
-          .toHaveCSS("border-image-width", "0");
+          .toHaveCSS("box-shadow", /0px 0px 0px 1px inset/);
         await test
           .expect(table.cell("Ready to test"))
-          .toHaveCSS("outline-width", "1px");
+          .toHaveCSS("box-shadow", /0px 0px 0px 1px inset/);
         await test
           .expect(table.cell("Warning"))
-          .toHaveCSS("outline-width", "2px");
+          .toHaveCSS("box-shadow", /0px 0px 0px 2px inset/);
 
-        const bounds = await getContentBounds(cell);
+        const bounds = await getDocumentBounds(cell.locator("span"));
         await checkbox.uncheck();
-        await test.expect(cell).toHaveCSS("outline-style", "none");
-        await test.expect(cell).toHaveCSS("border-image-width", "1");
-        test.expect(await getContentBounds(cell)).toEqual(bounds);
+        await test.expect(cell).not.toHaveCSS("box-shadow", /inset/);
+        await test
+          .expect(cell)
+          .toHaveCSS("border-image-source", getEdgePattern(color));
+        test
+          .expect(await getDocumentBounds(cell.locator("span")))
+          .toEqual(bounds);
         await checkbox.check();
-        await test.expect(cell).toHaveCSS("outline-style", "solid");
+        await test
+          .expect(cell)
+          .toHaveCSS("box-shadow", /0px 0px 0px 1px inset/);
         await hoverOver(cell);
-        await test.expect(cell).toHaveCSS("outline-color", color);
+        // Only the inset border uses the cell color. The grid and the shadow
+        // above a hovered row retain the same paint as the neighboring cell.
+        const grid = await table
+          .cell("Needs review")
+          .evaluate((node) => getComputedStyle(node).borderImageSource);
+        await test.expect(cell).toHaveCSS("border-image-source", grid);
+        const shadow = await cell.evaluate(
+          (node) => getComputedStyle(node).boxShadow,
+        );
+        test
+          .expect(shadow.match(new RegExp(getEdgePattern(color), "g")))
+          .toHaveLength(1);
       }
       await visual(getCapture(box, colorScheme, { id: "hover" }));
 
@@ -149,19 +166,169 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         .expect(table.cell("Failed"))
         .toHaveCSS("outline-style", "none");
       await test.expect(table.cell("Failed")).toHaveCSS("box-shadow", /inset/);
+      const color = await table
+        .cell("Failed")
+        .locator("span")
+        .evaluate((node) => getComputedStyle(node).color);
       await test
         .expect(table.cell("Failed"))
-        .toHaveCSS("border-image-width", "1");
+        .not.toHaveCSS("box-shadow", getEdgePattern(color));
+      await test
+        .expect(table.cell("Failed"))
+        .toHaveCSS("box-shadow", /0px 0px 0px 2px inset/);
       await visual(getCapture(box, colorScheme, { id: "focus" }));
 
       await page.keyboard.press("Tab");
       await expectFocusVisible(table.cell("Warning"));
       await test
         .expect(table.cell("Warning"))
-        .toHaveCSS("outline-style", "solid");
+        .toHaveCSS("outline-style", "none");
       await test
         .expect(table.cell("Warning"))
-        .toHaveCSS("outline-width", "2px");
+        .toHaveCSS("box-shadow", /0px 0px 0px 2px inset/);
+      await checkbox.focus();
+    });
+  });
+
+  test("keeps the grid visible beside colored cell borders", async ({
+    page,
+    q,
+  }) => {
+    await forEachColorScheme(page, async () => {
+      const box = q.article("Cell edge override");
+      const fixture = query(box);
+      for (const name of ["Plain cell edges", "Colored cell edges"]) {
+        const table = query(fixture.table(name));
+        const cell = table.cell("Failed");
+        const neighbor = table.cell("Needs review");
+        for (const hovered of [false, true]) {
+          await hoverOver(hovered ? cell : table.columnheader("Status"));
+          const screenshot = PNG.sync.read(
+            await box.screenshot({ scale: "css" }),
+          );
+          const bounds = await getDocumentBounds(box);
+          const cellBounds = await getDocumentBounds(cell);
+          const neighborBounds = await getDocumentBounds(neighbor);
+          const left = Math.round(cellBounds.x - bounds.x);
+          const top = Math.round(cellBounds.y - bounds.y);
+          const right = Math.round(left + cellBounds.width);
+          const bottom = Math.round(top + cellBounds.height);
+          const pixel = (x: number, y: number) => {
+            const offset = (y * screenshot.width + x) * 4;
+            return screenshot.data.subarray(offset, offset + 4);
+          };
+          const grid = pixel(
+            Math.round(neighborBounds.x - bounds.x) + 10,
+            bottom - 1,
+          );
+          const surface = pixel(left + 10, top + 10);
+          const expectGrid = (x: number, y: number) => {
+            // Compositing the translucent image and shadow can round an 8-bit
+            // color channel one step apart across browser engines.
+            for (const [index, value] of pixel(x, y).entries()) {
+              test
+                .expect(Math.abs(value - grid.readUInt8(index)))
+                .toBeLessThanOrEqual(1);
+            }
+          };
+          // The normal grid remains outside the colored inset ring. A hover
+          // keeps the same grid color above the cell instead of adding red.
+          test.expect(grid).not.toEqual(surface);
+          expectGrid(left + 10, bottom - 1);
+          expectGrid(right - 1, top + 10);
+          test.expect(pixel(left + 10, top)).not.toEqual(grid);
+          test.expect(pixel(left + 10, top)).not.toEqual(surface);
+          if (hovered) {
+            expectGrid(left + 10, top - 1);
+          }
+        }
+      }
+    });
+  });
+
+  test("shares row borders with focus across hover, selection, and pinned cells @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorScheme(page, async (colorScheme) => {
+      const box = q.article("Row edge override");
+      const fixture = query(box);
+      const checkbox = fixture.checkbox("Show all borders on Failed row");
+      const row = fixture.row("Failed Needs review");
+      const warning = fixture.row("Warning Check details");
+      const pending = fixture.row("Pending Ready to test");
+      const getBorder = (row: Locator) =>
+        row.evaluate((node) => {
+          const style = getComputedStyle(node, "::after");
+          return {
+            color: style.borderTopColor,
+            width: style.borderTopWidth,
+            top: style.top,
+            bottom: style.bottom,
+            zIndex: style.zIndex,
+          };
+        });
+      await checkbox.check();
+      const color = await query(row)
+        .gridcell("Failed")
+        .locator("span")
+        .evaluate((node) => getComputedStyle(node).color);
+      await test.expect
+        .poll(() => getBorder(row))
+        .toMatchObject({ color, width: "1px", zIndex: "2" });
+      const border = await getBorder(row);
+      const bounds = await getDocumentBounds(row);
+      await hoverOver(row);
+      await fixture.checkbox("Select Failed row").check();
+      await test.expect(row).toHaveAttribute("aria-selected", "true");
+      test.expect(await getBorder(row)).toEqual(border);
+      for (const cell of await query(row).gridcell().all()) {
+        await test
+          .expect(cell)
+          .not.toHaveCSS("box-shadow", getEdgePattern(color));
+        await test
+          .expect(cell)
+          .not.toHaveCSS("border-image-source", getEdgePattern(color));
+      }
+      await visual(getCapture(box, colorScheme, { id: "selected" }));
+      await checkbox.uncheck();
+      await test.expect
+        .poll(() => getBorder(row))
+        .toMatchObject({ width: "0px" });
+      test.expect(await getDocumentBounds(row)).toEqual(bounds);
+      await test
+        .expect(query(row).gridcell("Failed"))
+        .toHaveCSS("border-image-source", getEdgePattern(color));
+      await checkbox.check();
+      await checkbox.focus();
+      await page.keyboard.press("Tab");
+      await expectFocusVisible(row);
+      await test.expect
+        .poll(() => getBorder(row))
+        .toMatchObject({
+          width: "2px",
+          top: border.top,
+          bottom: border.bottom,
+        });
+      test.expect((await getBorder(row)).color).not.toBe(color);
+      await visual(getCapture(box, colorScheme, { id: "focus" }));
+      const warningBorder = await getBorder(warning);
+      test.expect(warningBorder.width).toBe("3px");
+      await page.keyboard.press("Tab");
+      await expectFocusVisible(warning);
+      await test.expect
+        .poll(() => getBorder(warning))
+        .toMatchObject({ width: "1px" });
+      test
+        .expect((await getBorder(warning)).color)
+        .not.toBe(warningBorder.color);
+      await page.keyboard.press("Tab");
+      await expectFocusVisible(pending);
+      await test.expect
+        .poll(() => getBorder(pending))
+        .toMatchObject({ width: "1px" });
+      test.expect(await getBorder(warning)).toEqual(warningBorder);
       await checkbox.focus();
     });
   });

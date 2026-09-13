@@ -744,6 +744,71 @@ function CellEdgeOverride() {
   );
 }
 
+function RowEdgeOverride() {
+  const [border, setBorder] = useState(true);
+  const [selected, setSelected] = useState(false);
+  return (
+    <div className="grid gap-3">
+      <label className="flex items-center gap-2">
+        <Checkbox
+          checked={selected}
+          onChange={(event) => setSelected(event.currentTarget.checked)}
+        />
+        Select Failed row
+      </label>
+      <label className="flex items-center gap-2">
+        <Checkbox
+          checked={border}
+          onChange={(event) => setBorder(event.currentTarget.checked)}
+        />
+        Show all borders on Failed row
+      </label>
+      <Table
+        role="grid"
+        aria-label="Review row edges"
+        container={{ $border: true }}
+      >
+        <TableRowGroup group="head">
+          <TableRow>
+            <TableCell>Status</TableCell>
+            <TableCell>Note</TableCell>
+          </TableRow>
+        </TableRowGroup>
+        <TableRowGroup>
+          <TableRow
+            $edge="danger"
+            $edgeRaw
+            $border={border ? undefined : false}
+            selected={selected}
+            tabIndex={0}
+          >
+            <TableCell $sticky="start">
+              <span className="text-danger">Failed</span>
+            </TableCell>
+            <TableCell $layer={false}>Needs review</TableCell>
+          </TableRow>
+          <TableRow
+            $edge="warning"
+            $edgeRaw
+            $border={3}
+            $focus={1}
+            tabIndex={0}
+          >
+            <TableCell>Warning</TableCell>
+            <TableCell $edge="danger" $edgeRaw>
+              Check details
+            </TableCell>
+          </TableRow>
+          <TableRow $border $focus={false} tabIndex={0}>
+            <TableCell>Pending</TableCell>
+            <TableCell $sticky="end">Ready to test</TableCell>
+          </TableRow>
+        </TableRowGroup>
+      </Table>
+    </div>
+  );
+}
+
 function CaptionOptions() {
   const [format, setFormat] = useState("Props");
   const captions = [
@@ -1037,7 +1102,7 @@ export default function TableExamples() {
 
       <Example
         title="Cell edge override"
-        description="Cell edge variants show all four borders automatically. Set $border to false for grid lines only, true for a full border, or a number for its width."
+        description="Cell edge variants draw a border in the same space as the focus ring. Keyboard focus replaces its color and width. Set $border to false for grid lines only, true for a full border, or a number for its width."
         stretch
         code={`
           <TableCell $edge="danger" $edgeRaw>Failed</TableCell>
@@ -1045,6 +1110,18 @@ export default function TableExamples() {
         `}
       >
         <CellEdgeOverride />
+      </Example>
+
+      <Example
+        title="Row edge override"
+        description="Row edge variants draw a border over the cells, including pinned cells. Keyboard focus replaces the border. Set $border to false to color only the grid lines."
+        stretch
+        code={`
+          <TableRow $edge="danger" $edgeRaw tabIndex={0}>…</TableRow>
+          <TableRow $edge="warning" $edgeRaw $border={3} $focus={1} tabIndex={0}>…</TableRow>
+        `}
+      >
+        <RowEdgeOverride />
       </Example>
 
       <Example
