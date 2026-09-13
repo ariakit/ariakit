@@ -71,8 +71,7 @@
 }
 
 :where(:disabled, [disabled], [aria-disabled="true"]) {
-  --_ak-contrast-scale: var(--ak-disabled-contrast-scale);
-  --_ak-text-contrast-scale: var(--ak-disabled-text-contrast-scale);
+  @apply ak-disabled;
 }
 
 @custom-variant ak-dark {
@@ -109,6 +108,11 @@
   @container style(--_ak-lbd: oklch(1 0 0)) {
     @slot;
   }
+}
+
+@utility ak-disabled {
+  --_ak-contrast-scale: var(--ak-disabled-contrast-scale);
+  --_ak-text-contrast-scale: var(--ak-disabled-text-contrast-scale);
 }
 
 @utility ak-layer {
