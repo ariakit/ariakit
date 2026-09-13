@@ -42,7 +42,7 @@ export function InputGroup(props: InputGroupProps) {
     }
     const field = Array.from(
       event.currentTarget.querySelectorAll<HTMLElement>(
-        "input, textarea, select",
+        'input:not([type="hidden"], [type="button"], [type="submit"], [type="reset"], [type="image"], [type="checkbox"], [type="radio"]), textarea, select',
       ),
     ).find(isFocusable);
     field?.focus();

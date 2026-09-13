@@ -9,6 +9,18 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001176828
+  test("skips a leading action when focusing the field from group padding", async ({
+    q,
+  }) => {
+    const field = q.textbox("Draft message");
+    await field.locator("xpath=..").click({ position: { x: 4, y: 4 } });
+    await test.expect(field).toBeFocused();
+    await q.button("Clear").click();
+    await test.expect(q.button("Clear")).toBeFocused();
+    await test.expect(field).not.toBeFocused();
+  });
+
   for (const tag of ["textarea", "select"]) {
     // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001152364
     test(`uses one focus outline for a grouped ${tag}`, async ({ page, q }) => {

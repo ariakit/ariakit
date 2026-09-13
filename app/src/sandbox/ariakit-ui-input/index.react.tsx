@@ -430,6 +430,34 @@ export default function InputExamples() {
           </InputGroup>
         </div>
       </Example>
+      <Example
+        title="Field with leading reset button"
+        description="A native reset button keeps its own focus. Clicking the group padding focuses the text field."
+        code={`
+          <form>
+            <InputGroup>
+              <input type="reset" value="Clear" tabIndex={0} />
+              <Input aria-label="Draft message" />
+            </InputGroup>
+          </form>
+        `}
+      >
+        <form className="w-full">
+          <InputGroup>
+            <input
+              type="reset"
+              value="Clear"
+              tabIndex={0}
+              className="cursor-pointer"
+            />
+            <Input
+              aria-label="Draft message"
+              placeholder="Write a message"
+              className="min-w-0 flex-1"
+            />
+          </InputGroup>
+        </form>
+      </Example>
     </ExampleGrid>
   );
 }

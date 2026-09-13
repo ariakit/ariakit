@@ -1,6 +1,16 @@
 import { click, focus, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+// https://github.com/ariakit/ariakit/pull/7491#discussion_r4001176828
+test("skips a leading action when focusing the field from group padding", async () => {
+  const field = q.textbox("Draft message");
+  await click(field.parentElement);
+  expect(field).toHaveFocus();
+  await click(q.button("Clear"));
+  expect(q.button("Clear")).toHaveFocus();
+  expect(field).not.toHaveFocus();
+});
+
 // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001106872
 test("does not focus the field when its help popup is clicked", async () => {
   const field = q.textbox("Contact email");
