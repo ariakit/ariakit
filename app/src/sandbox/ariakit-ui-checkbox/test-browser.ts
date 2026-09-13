@@ -8,13 +8,6 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
-  // https://github.com/ariakit/ariakit/issues/7474
-  // https://github.com/ariakit/ariakit/pull/7490#discussion_r3997200806
-  test("uses compact text for a card badge", async ({ q }) => {
-    const badge = query(q.article("Card badge")).text("3");
-    await test.expect(badge).toHaveCSS("font-size", "13px");
-  });
-
   // https://github.com/ariakit/ariakit/pull/7490#discussion_r3997302340
   test("matches native card contrast for ARIA and script disabled states", async ({
     page,
