@@ -9,6 +9,31 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r3997757472
+  test("focuses the share link from the padded field surface", async ({
+    q,
+  }) => {
+    const input = q.textbox("Share link");
+    const field = input.locator("xpath=../..");
+    const copy = q.button("Copy");
+    const box = await field.boundingBox();
+    test.expect(box).not.toBeNull();
+    if (!box) return;
+    for (const position of [
+      { x: box.width / 2, y: 2 },
+      { x: box.width / 2, y: box.height - 2 },
+      { x: 2, y: box.height / 2 },
+    ]) {
+      await copy.click();
+      await test.expect(copy).toBeFocused();
+      await field.click({ position });
+      await test.expect(input).toBeFocused();
+    }
+    await copy.click();
+    await test.expect(copy).toBeFocused();
+    await test.expect(input).not.toBeFocused();
+  });
+
   // https://github.com/ariakit/ariakit/issues/7477
   test("matches the field and button heights without stretching", async ({
     q,

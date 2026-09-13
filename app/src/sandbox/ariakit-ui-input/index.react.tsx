@@ -213,7 +213,7 @@ export default function InputExamples() {
         description="A read-only link with a prefix and an action button in one field. A label inside the field keeps the button out of it."
         code={`
           <Input render={<div />}>
-            <label>
+            <label className="-ms-(--px) -my-(--py) flex min-w-0 flex-1 items-center gap-2 ps-(--px) py-(--py)">
               <Text>https://</Text>
               <input aria-label="Share link" readOnly />
             </label>
@@ -224,7 +224,8 @@ export default function InputExamples() {
         `}
       >
         <Input render={<div />} focusable={false}>
-          <label className="flex min-w-0 flex-1 items-center gap-2">
+          {/* Extend native label activation over the field padding. */}
+          <label className="-ms-(--px) -my-(--py) flex min-w-0 flex-1 items-center gap-2 ps-(--px) py-(--py)">
             <Text className="ak-ink-60">https://</Text>
             <input
               aria-label="Share link"
