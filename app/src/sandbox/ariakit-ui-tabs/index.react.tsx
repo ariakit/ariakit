@@ -989,7 +989,7 @@ export default function TabsExamples() {
               </Tab>
               <Tab>
                 <TabLabel>Code</TabLabel>
-                <TabSlot $kind="badge">3</TabSlot>
+                <TabSlot $kind="badge" $p="md">3</TabSlot>
               </Tab>
               <Tab>
                 <TabLabel>Usage</TabLabel>
@@ -1010,7 +1010,9 @@ export default function TabsExamples() {
             </Tab>
             <Tab id="badge-code">
               <TabLabel>Code</TabLabel>
-              <TabSlot $kind="badge">3</TabSlot>
+              <TabSlot $kind="badge" $p="md">
+                3
+              </TabSlot>
             </Tab>
             <Tab id="badge-usage">
               <TabLabel>Usage</TabLabel>

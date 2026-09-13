@@ -372,12 +372,11 @@ export const navDisclosureContentBody = cv({
   class: [
     "[--nav-body-padding:calc(var(--nav-gap)*0.5)]",
     "[--nav-body-radius:calc(var(--disclosure-radius)+var(--nav-body-padding))]",
-    // The body starts where the content's guide puts it, which is on the
-    // label when an icon leads the disclosure row. A row's text sits its own
-    // control inset past its pill, so each row pulls its pill back by that
-    // inset and its text lands on the body's start, however the lists and
-    // groups nest.
-    "[&_li>.control]:-ms-(--px)",
+    // Pull a row back by its control inset so its text starts on the body. A
+    // nested disclosure moves as a whole, so its guide stays under its leading
+    // icon or indicator.
+    "[&_li>.control:not(.disclosure-button)]:-ms-(--px)",
+    "[&_li:has(>.disclosure-button)]:-ms-(--disclosure-px)",
   ],
   defaultVariants: {
     $forceRounded: true,

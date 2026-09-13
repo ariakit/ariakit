@@ -10,12 +10,19 @@ export const badge = cv({
     // its content width and the baseline of the text around it. A flex or grid
     // parent lays it out as any other item.
     "inline-flex",
+    // A one-line count stays at least square, including its padding and border.
+    "min-w-[calc(1lh+(var(--ak-frame-padding,0px)+var(--ak-frame-border,0px))*2)]",
   ],
   defaultVariants: {
     $rounded: "full",
     $size: "xs",
     $p: 1,
-    $px: "lg",
+    $px(defaultValue, variants) {
+      // Replace padding's fallback for pills; explicit padding still wins.
+      if (defaultValue !== "md") return defaultValue;
+      if (variants.$rounded === "full") return "lg";
+      return defaultValue;
+    },
     $border: true,
     $borderType: "inset",
     $edgeWeight(defaultValue, variants) {

@@ -2,10 +2,11 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { CheckIcon } from "lucide-react";
-import type * as React from "react";
+import * as React from "react";
 import {
   createOptionalRender,
   createRender,
+  isRenderable,
 } from "../react-utils/create-render.react.ts";
 import {
   list,
@@ -26,6 +27,7 @@ import type {
 import {
   Disclosure,
   DisclosureButton,
+  DisclosureButtonLabel,
   DisclosureContent,
   DisclosureContentBody,
 } from "./disclosure.ariakit.react.tsx";
@@ -164,7 +166,7 @@ export function ListItemMarker({
       {completed ? (
         <CheckIcon />
       ) : progress != null ? (
-        <span {...progressCircularFill.jsx({})} />
+        <span {...progressCircularFill.jsx()} />
       ) : null}
       {rest.children}
     </span>
@@ -207,6 +209,9 @@ export function ListDisclosure(props: ListDisclosureProps) {
   const content = createRender(ListDisclosureContent, rest.content);
   return (
     <Disclosure
+      // The list row supplies its own frame geometry.
+      $rounded="unset"
+      $p="unset"
       {...listDisclosure.jsx(variantProps)}
       {...rest}
       // The guide has to span the whole row, open content included, so it goes
@@ -231,20 +236,39 @@ export interface ListDisclosureButtonProps
     Pick<ListItemMarkerProps, "checked" | "progress"> {}
 
 export function ListDisclosureButton({
+  label,
   checked,
   progress,
   indicator = "chevron-down-next",
   ...props
 }: ListDisclosureButtonProps) {
   const [variantProps, rest] = splitProps(props, listDisclosureButton);
+  const labelProps =
+    label === undefined && isRenderable(rest.children)
+      ? { children: rest.children }
+      : label;
+  const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
+  const marker = <ListItemMarker checked={checked} progress={progress} />;
   return (
     <DisclosureButton
       indicator={indicator}
       {...listDisclosureButton.jsx(variantProps)}
       {...rest}
+      label={
+        labelEl
+          ? React.cloneElement(labelEl, {
+              children: (
+                <>
+                  {marker}
+                  <ListItemContent>{labelEl.props.children}</ListItemContent>
+                </>
+              ),
+            })
+          : null
+      }
     >
-      <ListItemMarker checked={checked} progress={progress} />
-      <ListItemContent>{rest.children}</ListItemContent>
+      {!labelEl && marker}
+      {label !== undefined && rest.children}
     </DisclosureButton>
   );
 }
