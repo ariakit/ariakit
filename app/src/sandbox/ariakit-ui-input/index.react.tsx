@@ -187,15 +187,15 @@ export default function InputExamples() {
 
       <Example
         title="Field with leading icon"
-        description="The field style on a label around a plain input, so an icon shares the box. The ring shows when the input inside takes focus."
+        description="An icon shares the field with a plain input. Clicking the field surface focuses the input."
         code={`
-          <Input render={<label />}>
+          <Input>
             <InputSlot><ListFilter /></InputSlot>
             <input aria-label="Filter components" />
           </Input>
         `}
       >
-        <Input render={<label />} focusable={false}>
+        <Input>
           <InputSlot className="ak-ink-60">
             <ListFilter />
           </InputSlot>
@@ -209,22 +209,21 @@ export default function InputExamples() {
 
       <Example
         title="Share link with copy button"
-        description="A read-only link with a prefix and an action button in one field. A label inside the field keeps the button out of it."
+        description="A read-only link with a prefix and an action button in one field. Clicking the field surface focuses the input; Copy keeps its own focus."
         code={`
-          <Input render={<div />}>
-            <label className="-ms-(--px) -my-(--py) flex min-w-0 flex-1 items-center gap-2 ps-(--px) py-(--py)">
+          <Input>
+            <span className="flex min-w-0 flex-1 items-center gap-2">
               <Text>https://</Text>
               <input aria-label="Share link" readOnly />
-            </label>
+            </span>
             <InputSlot $size="2xl" $square={false}>
               <Button $size="sm">Copy</Button>
             </InputSlot>
           </Input>
         `}
       >
-        <Input render={<div />} focusable={false}>
-          {/* Extend native label activation over the field padding. */}
-          <label className="-ms-(--px) -my-(--py) flex min-w-0 flex-1 items-center gap-2 ps-(--px) py-(--py)">
+        <Input>
+          <span className="flex min-w-0 flex-1 items-center gap-2">
             <Text className="ak-ink-60">https://</Text>
             <input
               aria-label="Share link"
@@ -232,7 +231,7 @@ export default function InputExamples() {
               readOnly
               className="min-w-0 flex-1"
             />
-          </label>
+          </span>
           <InputSlot $size="2xl" $square={false}>
             <Button $size="sm">Copy</Button>
           </InputSlot>
@@ -243,14 +242,18 @@ export default function InputExamples() {
         title="Search trigger"
         description="A button that looks like an empty field, to open a search dialog. The label uses the inputPlaceholder recipe."
         code={`
-          <Input render={<button type="button" />}>
+          <Input focusable render={<button type="button" />}>
             <InputSlot><Search /></InputSlot>
             <Text>Search docs</Text>
             <InputSlot $kind="shortcut" $size="xl"><kbd aria-hidden>⌘K</kbd></InputSlot>
           </Input>
         `}
       >
-        <Input render={<button type="button" />} className="text-start">
+        <Input
+          focusable
+          render={<button type="button" />}
+          className="text-start"
+        >
           <InputSlot className="ak-ink-60">
             <Search />
           </InputSlot>
