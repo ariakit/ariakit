@@ -175,6 +175,11 @@ export const listItemMarker = cv({
     // sits over it and wears a halo in the surface colour, so the guide stops
     // a gap short of any marker shape: chip, disc, dash or check slot.
     "z-3 outline-(--ak-layer-parent) outline-(length:--list-guide-gap,0px)",
+    // Keep the halo in the canvas color and the glyphs in system colors.
+    // Automatic adjustment would repaint the halo as a thick foreground edge
+    // and remove the bullet's fill and the empty slot's ring.
+    "forced-colors:forced-color-adjust-none forced-colors:outline-[Canvas]",
+    "forced-colors:[--ak-edge:CanvasText]",
     // A disc inset inside a square the size of one line, which holds the
     // number, the check icon and the progress arc. The bullet and dash rules
     // below reshape the disc through these same longhand properties and win
@@ -208,6 +213,8 @@ export const listItemMarker = cv({
      */
     $checked: {
       none: [
+        "forced-colors:bg-[Canvas] forced-colors:text-[CanvasText]",
+        "forced-colors:ui-list-counter:ring forced-colors:ui-list-counter:ring-inset",
         // A dash is a short line drawn with the marker's bottom border, so
         // these rules flatten the disc box instead of filling it.
         "ui-list-dash:top-[calc(0.5lh+var(--ak-frame-padding))]",
@@ -228,10 +235,17 @@ export const listItemMarker = cv({
         "ui-list-bullet:m-0 ui-list-bullet:bg-linear-to-b",
         "ui-list-bullet:from-(--ak-edge) ui-list-bullet:to-(--ak-edge)",
       ],
-      true: "before:hidden",
+      true: [
+        "before:hidden",
+        "forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+      ],
       // An empty slot is a ring, except in a counter list, where the number
       // fills the chip.
-      false: "ring ring-inset ui-list-counter:ring-0",
+      false: [
+        "ring ring-inset ui-list-counter:ring-0",
+        "forced-colors:bg-[Canvas] forced-colors:text-[CanvasText]",
+        "forced-colors:ui-list-counter:ring",
+      ],
     },
     /**
      * Sets the progress between `0` and `1` shown by the circular fill child.
@@ -292,6 +306,8 @@ export const listItemGuide = cv({
     // Under the markers, over the row's surface and over a disclosure's open
     // content, which opens a stacking context of its own.
     "list-guide absolute pointer-events-none z-2",
+    // Preserve both the line and its fading end in the system text color.
+    "forced-colors:forced-color-adjust-none forced-colors:[--ak-layer:CanvasText]",
     // --list-guide is 1 only where the list draws guides, so the segment has
     // no width anywhere else.
     "[--list-guide-width:calc(var(--list-guide,0)*1px)]",

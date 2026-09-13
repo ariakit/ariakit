@@ -1,6 +1,7 @@
 import { cv, cx } from "clava";
 import { controlGroup, controlSeparator } from "./control.ts";
 import { frame } from "./frame.ts";
+import { hasLayerBackground } from "./layer.ts";
 
 // A flat, bevel or folder glider takes the box of the control it follows, so
 // the glider and everything the control paints for itself land on the same
@@ -171,6 +172,31 @@ export const glider = cv({
       if (variants.$edgeRaw) return defaultValue;
       return defaultValue ?? "adaptive";
     },
+  },
+  refine({ variants, addClass }) {
+    if (
+      variants.$border == null &&
+      (variants.$kind === "bevel" || hasLayerBackground(variants))
+    ) {
+      // A borderless ancestor must not erase the glider's own painted edge.
+      // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000913151
+      addClass(
+        "forced-colors:ak-frame-border-[length:max(1px,var(--border-width,1px))]",
+      );
+    }
+    if (variants.$kind === "bar") return;
+    // Forced colors repaint transparent borders. A cover owns the edge, so
+    // remove the covered control's width as well as its border color.
+    if (variants.$state === "selected") {
+      addClass(
+        "supports-anchor:[.control:has(~&)]:ui-selected:forced-colors:ak-frame-border-0",
+      );
+    }
+    if (variants.$state === "hover") {
+      addClass(
+        "supports-anchor:[.control:has(~&)]:ui-hover:forced-colors:ak-frame-border-0",
+      );
+    }
   },
 });
 

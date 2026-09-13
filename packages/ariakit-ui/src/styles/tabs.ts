@@ -272,12 +272,18 @@ export const tab = cv({
     // Its colour stays on: the selected folder's edge takes it.
     $focus: false,
     $focusColor: "brand",
-    // A folder tab takes the root's edge, so the selected one merges with the
-    // panel. The other kinds have none, like the button they are.
+    // A folder inherits the root's edge to merge with the panel.
     $border(defaultValue, variants) {
       if (variants.$kind !== "folder") return defaultValue;
       return defaultValue ?? "inherit";
     },
+  },
+  refine({ variants, addClass }) {
+    if (variants.$kind === "folder") return;
+    if (variants.$border != null) return;
+    // Only the selected tab paints at rest. Keep its fallback edge while
+    // removing it from the transparent tabs beside it.
+    addClass("not-ui-selected:forced-colors:ak-frame-border-0");
   },
 });
 
