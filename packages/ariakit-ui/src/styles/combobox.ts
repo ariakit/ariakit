@@ -14,15 +14,12 @@ import { padding } from "./padding.ts";
 import { popover } from "./popover.ts";
 import { text } from "./text.ts";
 
-export const comboboxInput = input;
+export const comboboxInput = cv({
+  extend: [input],
+  class: "combobox-input shrink-0",
+});
 
 export const comboboxLabel = controlLabel;
-
-export const comboboxList = cv({
-  // The list can receive focus before it returns to the input. The active
-  // option provides the highlight during this transfer.
-  class: "outline-none",
-});
 
 export const comboboxPopover = cv({
   extend: [popover],
@@ -31,14 +28,27 @@ export const comboboxPopover = cv({
     // combobox control, so the browser's ring stays off. The active item
     // carries the highlight.
     "outline-none overflow-auto overscroll-contain",
+    "has-[>.combobox-list]:flex has-[>.combobox-list]:flex-col",
     "max-h-[min(var(--popover-available-height),20rem)]",
     "max-w-(--popover-available-width)",
     "min-w-[min(var(--popover-anchor-width),var(--popover-available-width))]",
+    // Native popovers use their invoker as an anchor. Ariakit's positioning
+    // uses the style attribute, which takes precedence over these classes.
+    "top-[calc(anchor(bottom)+--spacing(1))]",
+    "inset-s-[calc(anchor(start)---spacing(1))]",
+    "[position-try-fallbacks:flip-block,flip-inline]",
   ],
   defaultVariants: {
     $rounded: "xl",
     $p: 1,
   },
+});
+
+export const comboboxList = cv({
+  class: [
+    "combobox-list min-h-0 overflow-auto overscroll-contain outline-none",
+    "[.combobox-input+&]:mt-1",
+  ],
 });
 
 export const comboboxGroup = cv({
@@ -151,44 +161,12 @@ export const comboboxSelectArrow = cv({
   class: "ms-auto",
 });
 
-export const comboboxSelectIcon = buttonSlot;
-
 export const comboboxSelectLabel = controlLabel;
 
 export const comboboxSelectPlaceholder = inputPlaceholder;
 
-// The display value takes the label cv so the button's $text* variants reach
-// it: they only match .text and svg descendants. It fills the row and reads
-// from the start, where the button would center it.
-export const comboboxSelectValueLabel = cv({
-  extend: [controlLabel],
-  class: "flex-1 text-start",
-});
-
-// The same list surface as the combobox popover, so a long select scrolls and a
-// wide button opens a list at least as wide as itself.
-export const comboboxSelectPopover = cv({
-  extend: [comboboxPopover],
-  class: [
-    // Anchor positioning for a native [popover] opened by its invoker.
-    // Ariakit positions through the style attribute, which wins over these.
-    "top-[calc(anchor(bottom)+--spacing(1))]",
-    "inset-s-[calc(anchor(start)---spacing(1))]",
-    "[position-try-fallbacks:flip-block,flip-inline]",
-  ],
-});
-
-export const comboboxSelectItem = cv({
-  extend: [option],
-  class: "group/select-item",
-  defaultVariants: {
-    // The check sits closer to its label than a button's slot does.
-    $gap: "sm",
-  },
-});
-
-// The check keeps its space while unselected, so the labels line up.
-export const comboboxSelectItemCheck = cv({
-  extend: [buttonSlot],
-  class: "invisible group-ui-selected/select-item:visible",
+// The mark keeps its space when unselected so item labels stay aligned.
+export const comboboxItemCheck = cv({
+  extend: [optionSlot],
+  class: "pointer-events-none [&:empty]:invisible",
 });
