@@ -10,7 +10,6 @@
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Input, InputSlot } from "@ariakit/ui/components/input.ariakit.react";
-import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { inputPlaceholder } from "@ariakit/ui/styles/input";
 import { ListFilter, Search } from "lucide-react";
@@ -247,7 +246,7 @@ export default function InputExamples() {
           <Input render={<button type="button" />}>
             <InputSlot><Search /></InputSlot>
             <Text>Search docs</Text>
-            <InputSlot $kind="shortcut" $size="xl"><Kbd aria-hidden>⌘K</Kbd></InputSlot>
+            <InputSlot $kind="shortcut" $size="xl"><kbd aria-hidden>⌘K</kbd></InputSlot>
           </Input>
         `}
       >
@@ -259,7 +258,7 @@ export default function InputExamples() {
             Search docs
           </Text>
           <InputSlot $kind="shortcut" $size="xl">
-            <Kbd aria-hidden>⌘K</Kbd>
+            <kbd aria-hidden>⌘K</kbd>
           </InputSlot>
         </Input>
       </Example>

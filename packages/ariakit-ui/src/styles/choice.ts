@@ -117,6 +117,7 @@ export const choiceInput = cv({
   ],
   defaultVariants: {
     $focus: true,
+    $hoverOffset: 3,
   },
 });
 
