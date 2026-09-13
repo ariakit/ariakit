@@ -40,11 +40,8 @@ export const input = cv({
     "placeholder:ak-ink-0 [&_input]:placeholder:ak-ink-0",
   ],
   variants: {
-    /** Applies the field’s disabled appearance without removing its edge. */
-    $disabled(value?: boolean) {
-      if (!value) return;
-      return "disabled";
-    },
+    // Disabled appearance follows the field's DOM state.
+    $disabled: null,
     /**
      * Whether to show a focus ring when the field, or the input inside it,
      * takes focus, and how thick the ring should be.

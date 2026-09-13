@@ -7,7 +7,9 @@ import type { MouseEvent } from "react";
 import { input, inputSlot } from "../styles/input.ts";
 
 export interface InputProps
-  extends ak.FocusableProps<"input">, VariantProps<typeof input> {}
+  extends
+    ak.FocusableProps<"input">,
+    Omit<VariantProps<typeof input>, "$disabled"> {}
 
 export function Input({ children, focusable, render, ...props }: InputProps) {
   const [variantProps, rest] = splitProps(props, input);

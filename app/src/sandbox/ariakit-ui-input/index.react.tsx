@@ -328,20 +328,6 @@ export default function InputExamples() {
           <Input aria-label="Invite email" placeholder="teammate@example.com" />
         </Frame>
       </Example>
-      <Example
-        title="Disabled style"
-        description="The disabled appearance keeps a faint field edge. Native disabled behavior is set separately."
-        code={`
-          <Input $disabled />
-        `}
-      >
-        <Input
-          $disabled
-          aria-invalid
-          aria-label="Preview username"
-          defaultValue="ada"
-        />
-      </Example>
     </ExampleGrid>
   );
 }

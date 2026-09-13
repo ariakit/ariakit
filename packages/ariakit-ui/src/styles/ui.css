@@ -337,7 +337,7 @@ body > * {
    currency select beside an amount. The entry list appears twice: keep both
    copies the same. */
 @custom-variant ui-field-disabled {
-  &:is(:disabled, [aria-disabled="true"], .disabled),
+  &:is(:disabled, [aria-disabled="true"]),
   &:has(
       :is(
           input:not(

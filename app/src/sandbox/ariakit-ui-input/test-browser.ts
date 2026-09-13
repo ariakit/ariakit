@@ -9,36 +9,6 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
-  // https://github.com/ariakit/ariakit/pull/7491#discussion_r4000613089
-  test("keeps the disabled field boundary and surface", async ({ page, q }) => {
-    const field = q.textbox("Preview username");
-    const native = q.textbox("Username");
-    await forEachColorScheme(page, async () => {
-      for (const property of ["border-color", "background-color"]) {
-        await test
-          .expect(field)
-          .toHaveCSS(
-            property,
-            await native.evaluate(
-              (node, property) =>
-                getComputedStyle(node).getPropertyValue(property),
-              property,
-            ),
-          );
-      }
-      await test.expect(field).toHaveCSS("border-width", "1px");
-      await field.hover();
-      await test
-        .expect(field)
-        .toHaveCSS(
-          "background-color",
-          await native.evaluate(
-            (node) => getComputedStyle(node).backgroundColor,
-          ),
-        );
-    });
-  });
-
   // https://github.com/ariakit/ariakit/pull/7491#discussion_r3997757472
   test("focuses the share link from the padded field surface", async ({
     q,
