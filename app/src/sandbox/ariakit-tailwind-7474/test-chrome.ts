@@ -37,12 +37,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
             }
           }
           for (const name of ["badge", "colored text"]) {
-            const color = await q
-              .text(`Native ${name}`)
-              .evaluate((element) => getComputedStyle(element).color);
-            await test
-              .expect(q.text(`Upload ${name}`))
-              .toHaveCSS("color", color);
+            const properties =
+              name === "badge" ? ["color", "background-color"] : ["color"];
+            for (const property of properties) {
+              const expected = await q
+                .text(`Native ${name}`)
+                .evaluate(
+                  (element, property) =>
+                    getComputedStyle(element).getPropertyValue(property),
+                  property,
+                );
+              await test
+                .expect(q.text(`Upload ${name}`))
+                .toHaveCSS(property, expected);
+            }
           }
           const enabledColor = await q
             .button("Enabled")
