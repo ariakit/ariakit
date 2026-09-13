@@ -50,7 +50,7 @@ export function CheckboxField({ children, ...props }: CheckboxFieldProps) {
       })}
     >
       <Checkbox {...rest} />
-      <span {...checkboxContent.jsx({})}>{children}</span>
+      <span {...checkboxContent.jsx()}>{children}</span>
     </label>
   );
 }

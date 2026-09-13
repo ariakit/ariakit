@@ -118,6 +118,13 @@ export type DisclosureIndicator =
 
 export interface DisclosureButtonProps
   extends ak.DisclosureProps, VariantProps<typeof disclosureButton> {
+  /**
+   * Label content, a custom label element, or `DisclosureButtonLabel` props.
+   * When omitted, children form the label. When set, children render beside the
+   * label and description. Set `null` or `false` to omit the label. Custom
+   * label elements must forward their props to the label element.
+   */
+  label?: React.ReactNode | DisclosureButtonLabelProps;
   /** Secondary text shown below the main label. */
   description?: React.ReactNode;
   /** Custom icon. */
@@ -146,6 +153,7 @@ function renderIndicator(indicator: DisclosureIndicator) {
 }
 
 export function DisclosureButton({
+  label,
   description,
   icon,
   indicator = isRenderable(icon) ? "chevron-down-end" : "chevron-right-start",
@@ -154,32 +162,47 @@ export function DisclosureButton({
   const context = ak.useDisclosureContext();
   const isOpen = ak.useStoreState(props.store ?? context, "open");
   const baseId = React.useId();
-  const labelId = `${baseId}-label`;
   const descriptionId = `${baseId}-description`;
   const [variantProps, rest] = splitProps(props, disclosureButton);
+  // Fragments need an element to carry the label's ID and styles.
+  const isFragment =
+    React.isValidElement(label) && label.type === React.Fragment;
+  const labelProps =
+    label === undefined && isRenderable(rest.children)
+      ? { children: rest.children }
+      : isFragment
+        ? { children: label }
+        : label;
+  const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps, {
+    id: `${baseId}-label`,
+  });
+  const hasLabelContent = !!labelEl;
   const hasDescription = isRenderable(description);
-  const labelElement = isRenderable(rest.children) ? (
-    <span id={labelId} {...disclosureButtonLabel.jsx({})}>
-      {rest.children}
+  const labelElement = hasDescription ? (
+    <span {...disclosureButtonContent.jsx()}>
+      {labelEl}
+      <span id={descriptionId} {...disclosureButtonDescription.jsx()}>
+        {description}
+      </span>
     </span>
-  ) : null;
+  ) : (
+    labelEl
+  );
   const iconElement = isRenderable(icon) ? (
-    <span {...disclosureButtonSlot.jsx({})}>{icon}</span>
+    <DisclosureButtonSlot>{icon}</DisclosureButtonSlot>
   ) : null;
   const indicatorEl = indicator ? renderIndicator(indicator) : null;
   const atStart = indicator ? indicator.endsWith("-start") : false;
-  // Without any label, the description is the only content and already names
-  // the button. Describing the button with the same text would announce it
-  // twice. An aria-label or aria-labelledby names it instead, so the
-  // description still describes it.
+  // Without a label, the description contributes to the button's name. An
+  // explicit accessible name makes it a separate description instead.
   const hasLabel =
-    !!labelElement ||
+    hasLabelContent ||
     rest["aria-label"] != null ||
     rest["aria-labelledby"] != null;
   return (
     <ak.Disclosure
       data-disclosure-button
-      aria-labelledby={hasDescription && labelElement ? labelId : undefined}
+      aria-labelledby={hasDescription ? labelEl?.props.id : undefined}
       aria-describedby={hasDescription && hasLabel ? descriptionId : undefined}
       data-open={isOpen || undefined}
       {...disclosureButton.jsx(variantProps)}
@@ -187,18 +210,41 @@ export function DisclosureButton({
     >
       {atStart && indicatorEl}
       {iconElement}
-      {hasDescription ? (
-        <span {...disclosureButtonContent.jsx({})}>
-          {labelElement}
-          <span id={descriptionId} {...disclosureButtonDescription.jsx({})}>
-            {description}
-          </span>
-        </span>
-      ) : (
-        labelElement
-      )}
+      {labelElement}
+      {label !== undefined && rest.children}
       {!atStart && indicatorEl}
     </ak.Disclosure>
+  );
+}
+
+export interface DisclosureButtonLabelProps
+  extends ak.RoleProps<"span">, VariantProps<typeof disclosureButtonLabel> {}
+
+/**
+ * A custom label for the disclosure button's `label` prop.
+ */
+export function DisclosureButtonLabel(props: DisclosureButtonLabelProps) {
+  const [variantProps, rest] = splitProps(props, disclosureButtonLabel);
+  return (
+    <ak.Role.span {...disclosureButtonLabel.jsx(variantProps)} {...rest} />
+  );
+}
+
+export interface DisclosureButtonSlotProps
+  extends ak.RoleProps<"span">, VariantProps<typeof disclosureButtonSlot> {}
+
+/** An icon, badge, or shortcut beside the button's `label`. */
+export function DisclosureButtonSlot(props: DisclosureButtonSlotProps) {
+  const [variantProps, rest] = splitProps(props, disclosureButtonSlot);
+  const variants = disclosureButtonSlot.getVariants(variantProps);
+  return (
+    <ak.Role.span {...disclosureButtonSlot.jsx(variantProps)} {...rest}>
+      {variants.$kind === "badge" ? (
+        <span>{rest.children}</span>
+      ) : (
+        rest.children
+      )}
+    </ak.Role.span>
   );
 }
 

@@ -131,6 +131,8 @@ export const disclosure = cv({
     },
   },
   defaultVariants: {
+    $rounded: "lg",
+    $p: 2,
     // The map's false key gives this an implicit constant default, so `??`
     // never fires and the value has to be tested instead.
     $contentPadding(defaultValue, variants) {

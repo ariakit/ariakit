@@ -5,6 +5,7 @@ import * as React from "react";
 import {
   createOptionalRender,
   createRender,
+  isRenderable,
 } from "../react-utils/create-render.react.ts";
 import {
   nav,
@@ -31,6 +32,7 @@ import type {
 import {
   Disclosure,
   DisclosureButton,
+  DisclosureButtonLabel,
   DisclosureContent,
   DisclosureContentBody,
 } from "./disclosure.ariakit.react.tsx";
@@ -312,17 +314,37 @@ export function NavButtonContent(props: NavButtonContentProps) {
 export interface NavDisclosureButtonProps
   extends DisclosureButtonProps, VariantProps<typeof navButton> {}
 
-export function NavDisclosureButton(props: NavDisclosureButtonProps) {
+export function NavDisclosureButton({
+  label,
+  icon,
+  indicator = isRenderable(icon) ? "chevron-right-end" : "chevron-right-start",
+  ...props
+}: NavDisclosureButtonProps) {
   const [variantProps, rest] = splitProps(props, navButton);
+  const labelProps =
+    label === undefined && isRenderable(rest.children)
+      ? { children: rest.children }
+      : label;
+  const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
   return (
     <DisclosureButton
-      indicator="chevron-right-end"
+      icon={icon}
+      indicator={indicator}
       // The nav row spaces its icon and label through its own gap classes.
       $gap="none"
       {...navButton.jsx(variantProps)}
       {...rest}
+      label={
+        labelEl
+          ? React.cloneElement(labelEl, {
+              children: (
+                <NavButtonContent>{labelEl.props.children}</NavButtonContent>
+              ),
+            })
+          : null
+      }
     >
-      <NavButtonContent>{rest.children}</NavButtonContent>
+      {label !== undefined && rest.children}
     </DisclosureButton>
   );
 }

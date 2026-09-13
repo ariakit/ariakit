@@ -407,9 +407,7 @@ export function ComboboxSelect({
               value.length || !isRenderable(placeholder) ? (
                 joinSelectedValue(value)
               ) : (
-                <span {...comboboxSelectPlaceholder.jsx({})}>
-                  {placeholder}
-                </span>
+                <span {...comboboxSelectPlaceholder.jsx()}>{placeholder}</span>
               )
             }
           </ComboboxSelectedValue>

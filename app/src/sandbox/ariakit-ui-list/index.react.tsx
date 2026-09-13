@@ -8,6 +8,11 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
+import {
+  DisclosureButtonLabel,
+  DisclosureButtonSlot,
+} from "@ariakit/ui/components/disclosure.ariakit.react";
+import type { DisclosureButtonLabelProps } from "@ariakit/ui/components/disclosure.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Heading,
@@ -17,6 +22,7 @@ import {
   List,
   ListDisclosure,
   ListDisclosureButton,
+  ListDisclosureContent,
   ListItem,
   ListItemMarker,
 } from "@ariakit/ui/components/list.ariakit.react";
@@ -26,6 +32,10 @@ import {
   Example,
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
+
+function CustomLabel(props: DisclosureButtonLabelProps) {
+  return <DisclosureButtonLabel {...props} />;
+}
 
 // Migrated from the list-disclosure-optional-button sandbox with the same
 // props, markup and initial state.
@@ -641,6 +651,119 @@ export default function ListExamples() {
           <ListItem>
             <p>Go live.</p>
           </ListItem>
+        </List>
+      </Example>
+
+      <Example
+        title="Disclosure badges"
+        description="An explicit label keeps its badge beside the text, with or without a description."
+        code={`
+          <ListDisclosureButton label="Team tasks" description="All tasks in this workspace">
+            <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+          </ListDisclosureButton>
+        `}
+      >
+        <List ordered>
+          <li>
+            <ListDisclosure defaultOpen>
+              <ListDisclosureButton label="Project tasks">
+                <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+              </ListDisclosureButton>
+              <ListDisclosureContent>
+                <p>Manage project tasks</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
+          <li>
+            <ListDisclosure defaultOpen>
+              <ListDisclosureButton
+                label={
+                  <CustomLabel id="list-tasks-label">Team tasks</CustomLabel>
+                }
+                description="All tasks in this workspace"
+              >
+                <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+              </ListDisclosureButton>
+              <ListDisclosureContent>
+                <p>Manage team tasks</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
+          <li>
+            <ListDisclosure>
+              <ListDisclosureButton
+                checked
+                label={
+                  <>
+                    Account <strong>tasks</strong>
+                  </>
+                }
+                description="Manage account tasks"
+              >
+                <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+              </ListDisclosureButton>
+              <ListDisclosureContent>
+                <p>Update account tasks</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
+        </List>
+      </Example>
+
+      <Example
+        title="Disclosure status"
+        description="Checked and progress markers remain visible when a disclosure has no label."
+        code={`
+          <ListDisclosureButton checked aria-label="Repository connection" />
+          <ListDisclosureButton progress={0.5} description="Half done" />
+        `}
+      >
+        <List ordered>
+          <li>
+            <ListDisclosure>
+              <ListDisclosureButton
+                checked
+                aria-label="Repository connection"
+              />
+              <ListDisclosureContent>
+                <p>Repository connection details</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
+          <li>
+            <ListDisclosure>
+              <ListDisclosureButton progress={0.5} description="Half done" />
+              <ListDisclosureContent>
+                <p>Remaining setup tasks</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
+          <li>
+            <ListDisclosure>
+              <ListDisclosureButton
+                checked
+                label={false}
+                aria-label="Workspace access"
+                description="Access granted"
+              />
+              <ListDisclosureContent>
+                <p>Workspace access details</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
+          <li>
+            <ListDisclosure>
+              <ListDisclosureButton
+                progress={0.25}
+                label={null}
+                aria-label="Account sync"
+                description="Sync started"
+              />
+              <ListDisclosureContent>
+                <p>Account sync details</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
         </List>
       </Example>
 
