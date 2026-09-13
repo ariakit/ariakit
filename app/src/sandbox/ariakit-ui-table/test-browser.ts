@@ -404,13 +404,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         test
           .expect((await getDocumentBounds(pinned)).x)
           .toBeCloseTo(pinnedBounds.x, 2);
-        const after = await getPixels();
-        // Fractional grid widths can round a color channel differently when
-        // Chrome composites the pinned cell after scrolling.
-        for (const [index, channel] of before.border.entries()) {
-          test.expect(after.border[index]).toBeGreaterThanOrEqual(channel - 1);
-          test.expect(after.border[index]).toBeLessThanOrEqual(channel + 1);
-        }
+        test.expect((await getPixels()).border).toEqual(before.border);
         await visual(
           getCapture(box, colorScheme, {
             id: `${cell}-${focus ? "focus" : "static"}`,

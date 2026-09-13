@@ -4,6 +4,7 @@ import { expect, test } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { gotoAndSettle, withFramework } from "./preview.ts";
 import type { ScreenshotOptions } from "./visual.ts";
+import { viewports } from "./visual.ts";
 
 // Helpers for the tests of the ariakit-ui-* sandboxes, which render the
 // examples of one Ariakit UI component in a grid of boxes built with
@@ -22,9 +23,8 @@ export type ColorScheme = (typeof colorSchemes)[number];
 // the default five seconds do not cover.
 const SCREENSHOT_TIMEOUT = 30_000;
 
-const CAPTURE_VIEWPORT = { width: 1920, height: 800 };
 // Keep compact grids in one image and split taller grids at row boundaries.
-const SINGLE_CAPTURE_HEIGHT = 1600;
+const SINGLE_CAPTURE_HEIGHT = 1280;
 const ROWS_PER_CAPTURE = 3;
 
 // WebP stores each side in 14 bits and every engine fails to encode a taller
@@ -43,7 +43,7 @@ export const OVERLAY_CLIP_MARGIN = 64;
  */
 export function withCaptures(dirname: string, callback: WithFrameworkCallback) {
   withFramework(dirname, async (params) => {
-    params.test.use({ viewport: CAPTURE_VIEWPORT });
+    params.test.use({ viewport: viewports.desktop });
     // A test loads the sandbox once per color scheme and takes up to two
     // captures in each, every one within the screenshot budget.
     params.test.describe.configure({ timeout: 120_000 });
@@ -85,7 +85,7 @@ export function getCapture(
 ) {
   return {
     element,
-    viewports: { desktop: CAPTURE_VIEWPORT },
+    viewports: { desktop: viewports.desktop },
     styles: { [colorScheme]: {} },
     timeout: SCREENSHOT_TIMEOUT,
     ...options,
