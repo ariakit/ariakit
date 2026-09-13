@@ -1,6 +1,6 @@
 import * as ak from "@ariakit/react";
 import { mergeProps } from "@ariakit/react-utils";
-import { isElement, isFocusable } from "@ariakit/utils";
+import { isElement, isFocusable, isPortalEvent } from "@ariakit/utils";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import type { MouseEvent } from "react";
@@ -33,6 +33,7 @@ export function InputGroup(props: InputGroupProps) {
   const [variantProps, rest] = splitProps(props, input);
   const onClick = (event: MouseEvent<HTMLDivElement>) => {
     if (event.defaultPrevented) return;
+    if (isPortalEvent(event)) return;
     // Keep clicks on the field or a nested action at their own target.
     let target = isElement(event.target) ? event.target : null;
     while (target && target !== event.currentTarget) {

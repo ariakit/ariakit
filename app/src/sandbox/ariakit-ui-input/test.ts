@@ -1,6 +1,19 @@
 import { click, focus, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+// https://github.com/ariakit/ariakit/pull/7491#discussion_r4001106872
+test("does not focus the field when its help popup is clicked", async () => {
+  const field = q.textbox("Contact email");
+  await click(q.button("Email help"));
+  const help = q.text(
+    "Use the email address where you want to receive updates.",
+  );
+  expect(help).toBeVisible();
+  await click(help);
+  expect(field).not.toHaveFocus();
+  expect(help).toBeVisible();
+});
+
 // https://github.com/ariakit/ariakit/pull/7491#discussion_r4000613090
 test("tabs through composed fields without stopping on their wrappers", async () => {
   for (const [title, name] of [

@@ -14,6 +14,11 @@ import {
   InputGroup,
   InputSlot,
 } from "@ariakit/ui/components/input.ariakit.react";
+import {
+  Popover,
+  PopoverDisclosure,
+  PopoverProvider,
+} from "@ariakit/ui/components/popover.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { inputPlaceholder } from "@ariakit/ui/styles/input";
 import { ListFilter, Search } from "lucide-react";
@@ -347,6 +352,46 @@ export default function InputExamples() {
         <Frame $layer="brand" $rounded="xl" $p={4} className="grid w-full">
           <Input aria-label="Invite email" placeholder="teammate@example.com" />
         </Frame>
+      </Example>
+
+      <Example
+        title="Field with help popup"
+        description="A help button opens a note beside the field. Clicking the note keeps focus out of the input."
+        code={`
+          <PopoverProvider>
+            <InputGroup>
+              <Input aria-label="Contact email" />
+              <InputSlot $size="2xl" $square={false}>
+                <PopoverDisclosure $size="sm">Email help</PopoverDisclosure>
+              </InputSlot>
+              <Popover portal role="note" focusable={false} autoFocusOnShow={false}>
+                Use the email address where you want to receive updates.
+              </Popover>
+            </InputGroup>
+          </PopoverProvider>
+        `}
+      >
+        <PopoverProvider>
+          <InputGroup>
+            <Input
+              aria-label="Contact email"
+              placeholder="you@example.com"
+              className="min-w-0 flex-1"
+            />
+            <InputSlot $size="2xl" $square={false}>
+              <PopoverDisclosure $size="sm">Email help</PopoverDisclosure>
+            </InputSlot>
+            <Popover
+              portal
+              role="note"
+              focusable={false}
+              autoFocusOnShow={false}
+              className="max-w-64"
+            >
+              Use the email address where you want to receive updates.
+            </Popover>
+          </InputGroup>
+        </PopoverProvider>
       </Example>
     </ExampleGrid>
   );

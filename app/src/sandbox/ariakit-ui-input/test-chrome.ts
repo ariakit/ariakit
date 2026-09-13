@@ -1,6 +1,21 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001106872
+  test("does not focus the field when its help popup is clicked", async ({
+    q,
+  }) => {
+    const field = q.textbox("Contact email");
+    const help = q.text(
+      "Use the email address where you want to receive updates.",
+    );
+    await q.button("Email help").click();
+    await test.expect(help).toBeVisible();
+    await help.click();
+    await test.expect(field).not.toBeFocused();
+    await test.expect(help).toBeVisible();
+  });
+
   // https://github.com/ariakit/ariakit/pull/7491#discussion_r4000613090
   test("tabs through composed fields without stopping on their wrappers", async ({
     page,
