@@ -224,6 +224,53 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Without padding or root edge"
+        description="The selected tab and panel keep their borders. The root has no padding or visible border, and the strip keeps the root's background color."
+        stretch
+        code={`
+          <Tabs $p="none" $edgeHidden>
+            <TabList $darken={false}>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs $p="none" $edgeHidden defaultSelectedId="flush-hidden-preview">
+          <TabList $darken={false} aria-label="Without padding or root edge">
+            <Tab id="flush-hidden-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="flush-hidden-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="flush-hidden-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">
+                Only the selected tab and panel have borders.
+              </p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Full-width strip"
         description="The tabs share the strip's width, and the strip still reaches both ends of the root."
         stretch
