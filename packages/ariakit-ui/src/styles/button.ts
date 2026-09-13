@@ -119,14 +119,10 @@ export const button = cv({
             const value = variants[key];
             if (value == null) return false;
             if (value === false) return false;
-            if (value === "") return false;
-            if (key === "$layer" && value === "transparent") return false;
-            // Zero pins or clamps some color channels but disables shifts. Ask
-            // the layer resolver whether this zero emits a modifier of its own.
-            if (value === 0) {
-              return !!layer.class({ $layer: false, [key]: value });
+            if (key === "$layer") {
+              return value !== "transparent";
             }
-            return true;
+            return !!layer.class({ $layer: false, [key]: value });
           }));
       if (hasSurface) {
         addClass("forced-colors:ak-frame-border");
