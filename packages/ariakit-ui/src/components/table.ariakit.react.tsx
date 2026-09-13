@@ -3,10 +3,14 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { ArrowUp, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
-import { createRender } from "../react-utils/create-render.react.ts";
+import {
+  createOptionalRender,
+  createRender,
+} from "../react-utils/create-render.react.ts";
 import { isIterable } from "../react-utils/is-iterable.ts";
 import {
   table,
+  tableCaption,
   tableCell,
   tableContainer,
   tableFoot,
@@ -82,6 +86,12 @@ const TableCellContext = React.createContext<TableCellContextType>({
 
 export interface TableProps<K extends string | number>
   extends React.ComponentProps<"table">, VariantProps<typeof table> {
+  /**
+   * Visible native table name, or an element or props for `TableCaption`. An
+   * element replaces the part; use a props object with `children` for rich
+   * text.
+   */
+  caption?: React.ReactNode | TableCaptionProps;
   /** Custom container element or props to render a `TableContainer`. */
   container?: React.ReactElement | TableContainerProps;
   /** Custom scroller element or props to render a `TableScroller`. */
@@ -136,6 +146,7 @@ export interface TableProps<K extends string | number>
  */
 export function Table<K extends string | number>({
   children,
+  caption,
   container,
   scroller,
   head,
@@ -148,6 +159,7 @@ export function Table<K extends string | number>({
   ...props
 }: TableProps<K>) {
   const [variantProps, rest] = splitProps(props, table);
+  const captionEl = createOptionalRender(TableCaption, caption);
   const containerEl = createRender(TableContainer, container);
   const scrollerEl = createRender(TableScroller, scroller);
   const headEl = createRender(TableRowGroup, head, { group: "head" });
@@ -252,6 +264,7 @@ export function Table<K extends string | number>({
     <ak.Role render={containerEl}>
       <ak.Role render={scrollerEl}>
         <table {...table.jsx(variantProps)} {...rest}>
+          {captionEl}
           {rows?.length ? (
             <>
               {!!headRows?.length && (
@@ -278,6 +291,14 @@ export function Table<K extends string | number>({
       </ak.Role>
     </ak.Role>
   );
+}
+
+export interface TableCaptionProps
+  extends React.ComponentProps<"caption">, VariantProps<typeof tableCaption> {}
+
+export function TableCaption(props: TableCaptionProps) {
+  const [variantProps, rest] = splitProps(props, tableCaption);
+  return <caption {...tableCaption.jsx(variantProps)} {...rest} />;
 }
 
 export interface TableContainerProps
