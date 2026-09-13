@@ -2,4 +2,4 @@
 "@ariakit/tailwind": patch
 ---
 
-Fixed adaptive frame boundaries disappearing in forced colors.
+Fixed adaptive and ring frame boundaries disappearing in forced colors.

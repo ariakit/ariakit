@@ -69,4 +69,34 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await captureInView(visual, box, colorScheme, { id: "focus" });
     });
   });
+
+  // https://github.com/ariakit/ariakit/issues/7476
+  // https://github.com/ariakit/ariakit/pull/7500#discussion_r3996535606
+  test("preserves explicit ring and inset button edges in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      const box = q.article("Ring borders");
+      for (const [label, width] of [
+        ["Export report", 1],
+        ["Download report", 2],
+        ["Save report", 1],
+        ["Print report", 2],
+      ] as const) {
+        const button = query(box).button(label);
+        await test.expect(button).toHaveCSS("border-top-width", `${width}px`);
+        await test.expect(button).toHaveCSS("box-shadow", "none");
+      }
+      await captureInView(visual, box, colorScheme);
+      const insetButton = query(box).button("Print report");
+      await test.expect(insetButton).toHaveCSS("outline-style", "none");
+      await tabTo(page, insetButton);
+      await expectFocusVisible(insetButton);
+      await test.expect(insetButton).toHaveCSS("outline-width", "2px");
+      await test.expect(insetButton).toHaveCSS("border-top-width", "2px");
+    });
+  });
 });

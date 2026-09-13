@@ -2627,6 +2627,14 @@ utility(
   "frame-ring",
   set(inputs.frameRing, "1px"),
   getFrameRingDeclarations(),
+  // Forced colors suppress ring shadows; the real edge also supplies the
+  // border width used by nested, covered, and joined frames.
+  at.variant(
+    "forced-colors",
+    set(inputs.frameBorder, "1px"),
+    set.borderWidth(inputs.frameBorder),
+    set(inputs.frameRing, "0px"),
+  ),
   getFrameBorderingContextDeclarations(),
   getLayerEdgeContextDeclarations(),
 );
@@ -2634,6 +2642,12 @@ utility(
   "frame-ring-*",
   getFrameBorderWidthDeclarations(inputs.frameRing),
   getFrameRingDeclarations(),
+  at.variant(
+    "forced-colors",
+    ...getFrameBorderWidthDeclarations(inputs.frameBorder),
+    set.borderWidth(inputs.frameBorder),
+    set(inputs.frameRing, "0px"),
+  ),
   getFrameBorderingContextDeclarations(),
   getLayerEdgeContextDeclarations(),
 );

@@ -15,6 +15,34 @@ withFramework(import.meta.dirname, async ({ test }) => {
       test.use({ colorScheme });
 
       // https://github.com/ariakit/ariakit/issues/7476
+      // https://github.com/ariakit/ariakit/pull/7500#discussion_r3997271869
+      test("keeps explicit ring boundaries in forced colors", async ({
+        page,
+        q,
+      }) => {
+        await page.emulateMedia({ forcedColors: "active" });
+        for (const [label, width] of [
+          ["Default ring", 1],
+          ["Wide ring", 4],
+          ["Fractional ring", 1],
+          ["Variable ring", 2],
+          ["Inset ring", 4],
+          ["Zero ring", 0],
+          ["Inherited ring", 4],
+          ["Covered ring", 2],
+        ] as const) {
+          const button = q.button(label);
+          await expect(button).toHaveCSS("border-top-width", `${width}px`);
+          await expect(button).toHaveCSS("box-shadow", "none");
+          await expect(button).toHaveCSS("--ak-frame-ring", "0px");
+        }
+        const button = q.button("Wide ring");
+        await button.focus();
+        await expect(button).toHaveCSS("outline-width", "2px");
+        await expect(button).toHaveCSS("border-top-width", "4px");
+      });
+
+      // https://github.com/ariakit/ariakit/issues/7476
       test("keeps adaptive boundaries in forced colors", async ({
         page,
         q,

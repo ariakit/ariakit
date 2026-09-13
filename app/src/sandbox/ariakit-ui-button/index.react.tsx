@@ -275,6 +275,30 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Ring borders"
+        description="Ring and inset edges keep the requested width when the button has a flat or bevel surface."
+        code={`
+          <Button $layer="brand" $border $borderType="ring">Export report</Button>
+          <Button $kind="bevel" $border={2} $borderType="ring">Download report</Button>
+          <Button $layer="brand" $border $borderType="inset">Save report</Button>
+          <Button $kind="bevel" $border={2} $borderType="inset">Print report</Button>
+        `}
+      >
+        <Button $layer="brand" $border $borderType="ring">
+          Export report
+        </Button>
+        <Button $kind="bevel" $border={2} $borderType="ring">
+          Download report
+        </Button>
+        <Button $layer="brand" $border $borderType="inset">
+          Save report
+        </Button>
+        <Button $kind="bevel" $border={2} $borderType="inset">
+          Print report
+        </Button>
+      </Example>
+
+      <Example
         title="Danger bevel"
         description="A bevel on a color of its own paints the same color and text as the flat button, with the gradient on top."
         code={`

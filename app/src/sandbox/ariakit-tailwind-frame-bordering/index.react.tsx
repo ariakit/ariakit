@@ -12,6 +12,41 @@ const edges = [
 export default function Example() {
   return (
     <div className="ak-layer ak-layer-white dark:ak-layer-gray-950 grid gap-4 p-8">
+      <section aria-label="Ring boundaries" className="flex flex-wrap gap-6">
+        {[
+          ["Default ring", "ak-frame-ring"],
+          ["Wide ring", "ak-frame-ring-4"],
+          ["Fractional ring", "ak-frame-ring-[0.5px]"],
+          ["Variable ring", "ak-frame-ring-(--ring-width)"],
+          ["Inset ring", "ak-frame-ring-4 ring-inset"],
+          ["Zero ring", "ak-frame-ring-0"],
+        ].map(([label, edge]) => (
+          <button
+            key={label}
+            type="button"
+            className={`ak-layer ak-layer-cyan-500 ak-frame ak-frame-xl/2 [--ring-width:2px] focus-visible:outline-2 focus-visible:outline-offset-2 ${edge}`}
+          >
+            {label}
+          </button>
+        ))}
+      </section>
+      <section
+        aria-label="Nested rings"
+        className="ak-layer ak-frame ak-frame-2xl/4 ak-frame-ring-4 grid gap-4"
+      >
+        <button
+          type="button"
+          className="ak-layer ak-frame ak-frame-xl/2 ak-frame-bordering-inherit"
+        >
+          Inherited ring
+        </button>
+        <button
+          type="button"
+          className="ak-layer ak-frame ak-frame-xl/2 ak-frame-ring-2 ak-frame-cover"
+        >
+          Covered ring
+        </button>
+      </section>
       {[
         ["Darkening", "ak-layer-darken-30"],
         ["Lightening", "ak-layer-lighten-30"],

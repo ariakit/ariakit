@@ -163,7 +163,10 @@ export const frameBase = cv({
       auto: "ak-frame-bordering-(--border-width)",
       border: "ak-frame-border-(--border-width)",
       ring: "ak-frame-ring-(--border-width)",
-      inset: "ring-(length:--border-width) ring-inset",
+      // Tailwind's inset ring uses a shadow, so share the frame's real border
+      // fallback in forced colors, including its geometry and requested width.
+      inset:
+        "ring-(length:--border-width) ring-inset forced-colors:ak-frame-border-(--border-width)",
       dashed: "ak-frame-border-(--border-width) border-dashed",
       dotted: "ak-frame-border-(--border-width) border-dotted",
     },
