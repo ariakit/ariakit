@@ -5,6 +5,10 @@ export const heading = cv({
   extend: [text],
   class: [
     "ak-ink-100 font-medium",
+    // List rows keep the line height that aligns text with their markers.
+    // Zero specificity lets caller classes win. Set line-height directly so
+    // text-* utilities keep their own leading fallback instead of --tw-leading.
+    "[:where(&:not(li_*))]:[line-height:1.25]",
     // The one place the size scale is written down, so the element rules
     // below and the $level variant cannot drift apart.
     "[--heading-size-1:2.25em] [--heading-size-2:1.75em]",
