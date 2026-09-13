@@ -9,6 +9,52 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  test("uses one border, padding and focus ring for a grouped Input", async ({
+    page,
+    q,
+  }) => {
+    const field = q.textbox("Handle");
+    const group = field.locator("..");
+    const standalone = q.textbox("Postal code");
+    await forEachColorScheme(page, async () => {
+      await test.expect(field).toHaveCSS("border-width", "0px");
+      await test.expect(field).toHaveCSS("padding", "0px");
+      await test
+        .expect(field)
+        .toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+      await test.expect(group).toHaveCSS("border-width", "1px");
+      await test.expect
+        .poll(async () => (await group.boundingBox())?.height)
+        .toBe((await standalone.boundingBox())?.height);
+      await test
+        .expect(field)
+        .toHaveCSS(
+          "font-size",
+          await standalone.evaluate(
+            (element) => getComputedStyle(element).fontSize,
+          ),
+        );
+      await field.click();
+      await test.expect(field).toBeFocused();
+      await test.expect(field).toHaveCSS("outline-style", "none");
+      await test.expect(group).toHaveCSS("outline-width", "2px");
+      await test
+        .expect(field)
+        .toHaveCSS(
+          "color",
+          await group.evaluate((element) => getComputedStyle(element).color),
+        );
+      await field.evaluate((element) => element.setAttribute("disabled", ""));
+      await test.expect(field).toBeDisabled();
+      const disabledColor = await q
+        .textbox("Username")
+        .evaluate((element) => getComputedStyle(element).color);
+      await test.expect(group).toHaveCSS("color", disabledColor);
+      await test.expect(field).toHaveCSS("color", disabledColor);
+      await field.evaluate((element) => element.removeAttribute("disabled"));
+    });
+  });
+
   // https://github.com/ariakit/ariakit/pull/7491#discussion_r3997757472
   test("focuses the share link from the padded field surface", async ({
     q,

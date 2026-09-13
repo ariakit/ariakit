@@ -5,6 +5,7 @@ import { expect, test } from "vitest";
 test("tabs through composed fields without stopping on their wrappers", async () => {
   for (const [title, name] of [
     ["Field with leading icon", "Filter components"],
+    ["Grouped Input", "Handle"],
     ["Share link with copy button", "Share link"],
   ]) {
     const box = q.within(q.article(title));

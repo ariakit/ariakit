@@ -8,6 +8,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   }) => {
     for (const [title, name] of [
       ["Field with leading icon", "Filter components"],
+      ["Grouped Input", "Handle"],
       ["Share link with copy button", "Share link"],
     ]) {
       const box = query(q.article(title));

@@ -9,7 +9,11 @@
  */
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import { Input, InputSlot } from "@ariakit/ui/components/input.ariakit.react";
+import {
+  Input,
+  InputGroup,
+  InputSlot,
+} from "@ariakit/ui/components/input.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { inputPlaceholder } from "@ariakit/ui/styles/input";
 import { ListFilter, Search } from "lucide-react";
@@ -189,13 +193,13 @@ export default function InputExamples() {
         title="Field with leading icon"
         description="An icon shares the field with a plain input. Clicking the field surface focuses the input."
         code={`
-          <Input>
+          <InputGroup>
             <InputSlot><ListFilter /></InputSlot>
             <input aria-label="Filter components" />
-          </Input>
+          </InputGroup>
         `}
       >
-        <Input>
+        <InputGroup>
           <InputSlot className="ak-ink-60">
             <ListFilter />
           </InputSlot>
@@ -204,14 +208,34 @@ export default function InputExamples() {
             placeholder="Filter components"
             className="min-w-0 flex-1"
           />
-        </Input>
+        </InputGroup>
+      </Example>
+
+      <Example
+        title="Grouped Input"
+        description="Input uses the group's border, padding and size when placed inside InputGroup."
+        code={`
+          <InputGroup $size="sm">
+            <InputSlot>@</InputSlot>
+            <Input aria-label="Handle" />
+          </InputGroup>
+        `}
+      >
+        <InputGroup $size="sm">
+          <InputSlot className="ak-ink-60">@</InputSlot>
+          <Input
+            aria-label="Handle"
+            placeholder="ada"
+            className="min-w-0 flex-1"
+          />
+        </InputGroup>
       </Example>
 
       <Example
         title="Share link with copy button"
         description="A read-only link with a prefix and an action button in one field. Clicking the field surface focuses the input; Copy keeps its own focus."
         code={`
-          <Input>
+          <InputGroup>
             <span className="flex min-w-0 flex-1 items-center gap-2">
               <Text>https://</Text>
               <input aria-label="Share link" readOnly />
@@ -219,10 +243,10 @@ export default function InputExamples() {
             <InputSlot $size="2xl" $square={false}>
               <Button $size="sm">Copy</Button>
             </InputSlot>
-          </Input>
+          </InputGroup>
         `}
       >
-        <Input>
+        <InputGroup>
           <span className="flex min-w-0 flex-1 items-center gap-2">
             <Text className="ak-ink-60">https://</Text>
             <input
@@ -235,25 +259,21 @@ export default function InputExamples() {
           <InputSlot $size="2xl" $square={false}>
             <Button $size="sm">Copy</Button>
           </InputSlot>
-        </Input>
+        </InputGroup>
       </Example>
 
       <Example
         title="Search trigger"
         description="A button that looks like an empty field, to open a search dialog. The label uses the inputPlaceholder recipe."
         code={`
-          <Input focusable render={<button type="button" />}>
+          <Input render={<button type="button" />}>
             <InputSlot><Search /></InputSlot>
             <Text>Search docs</Text>
             <InputSlot $kind="shortcut" $size="xl"><kbd aria-hidden>⌘K</kbd></InputSlot>
           </Input>
         `}
       >
-        <Input
-          focusable
-          render={<button type="button" />}
-          className="text-start"
-        >
+        <Input render={<button type="button" />} className="text-start">
           <InputSlot className="ak-ink-60">
             <Search />
           </InputSlot>

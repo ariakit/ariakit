@@ -11,44 +11,46 @@ export interface InputProps
     ak.FocusableProps<"input">,
     Omit<VariantProps<typeof input>, "$disabled"> {}
 
-export function Input({ children, focusable, render, ...props }: InputProps) {
+export function Input({ render, ...props }: InputProps) {
   const [variantProps, rest] = splitProps(props, input);
-  const hasChildren = children != null && children !== false;
-  if (hasChildren && !focusable) {
-    const onClick = (event: MouseEvent<HTMLElement>) => {
-      if (event.defaultPrevented) return;
-      // Keep clicks on the field or a nested action at their own target.
-      let target = isElement(event.target) ? event.target : null;
-      while (target && target !== event.currentTarget) {
-        if (isFocusable(target)) return;
-        target = target.parentElement;
-      }
-      const field = Array.from(
-        event.currentTarget.querySelectorAll<HTMLElement>(
-          "input, textarea, select",
-        ),
-      ).find(isFocusable);
-      field?.focus();
-    };
-    return (
-      <ak.Role
-        render={render ?? <div />}
-        {...input.jsx(variantProps)}
-        {...mergeProps({ onClick }, rest)}
-      >
-        {children}
-      </ak.Role>
-    );
-  }
   return (
     <ak.Focusable
       render={render ?? <input />}
-      focusable={focusable}
       {...input.jsx(variantProps)}
       {...rest}
-    >
-      {children}
-    </ak.Focusable>
+    />
+  );
+}
+
+export interface InputGroupProps
+  extends ak.RoleProps<"div">, Omit<VariantProps<typeof input>, "$disabled"> {}
+
+/**
+ * Groups a field and its slots in one surface. Surface clicks focus the field;
+ * nested controls keep their own focus.
+ */
+export function InputGroup(props: InputGroupProps) {
+  const [variantProps, rest] = splitProps(props, input);
+  const onClick = (event: MouseEvent<HTMLDivElement>) => {
+    if (event.defaultPrevented) return;
+    // Keep clicks on the field or a nested action at their own target.
+    let target = isElement(event.target) ? event.target : null;
+    while (target && target !== event.currentTarget) {
+      if (isFocusable(target)) return;
+      target = target.parentElement;
+    }
+    const field = Array.from(
+      event.currentTarget.querySelectorAll<HTMLElement>(
+        "input, textarea, select",
+      ),
+    ).find(isFocusable);
+    field?.focus();
+  };
+  return (
+    <ak.Role.div
+      {...input.jsx(variantProps)}
+      {...mergeProps({ onClick }, rest)}
+    />
   );
 }
 

@@ -32,12 +32,16 @@ export const input = cv({
     "ui-field-disabled:ak-ink-0 ui-field-disabled:**:ak-ink-0",
     "ui-field-disabled:ak-edge-10",
     "ui-field-disabled:ak-layer-offset-0",
-    // Native inputs and wrappers use the same line box as other controls.
-    // A textarea keeps its row-based height.
+    // A native input uses the control line box; a textarea keeps its rows.
     "[input]:box-content [input]:h-lh",
     "[&_input]:box-content [&_input]:h-lh",
     "[&_input]:outline-none",
     "placeholder:ak-ink-0 [&_input]:placeholder:ak-ink-0",
+    // A field inside another input surface uses the outer padding and edge.
+    // The focus override also wins against its own focus-state variant.
+    "[:is(&_&)]:p-0 [:is(&_&)]:border-0 [:is(&_&)]:ring-0",
+    "[:is(&_&)]:shadow-none [:is(&_&)]:outline-none!",
+    "[:is(&_&)]:bg-transparent [:is(&_&)]:ak-layer-offset-0 [:is(&_&)]:ak-state-0",
   ],
   variants: {
     // Disabled appearance follows the field's DOM state.
