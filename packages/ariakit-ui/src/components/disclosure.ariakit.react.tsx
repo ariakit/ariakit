@@ -233,7 +233,7 @@ export function DisclosureButtonLabel(props: DisclosureButtonLabelProps) {
 export interface DisclosureButtonSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof disclosureButtonSlot> {}
 
-/** An icon, badge, or shortcut beside a `DisclosureButtonLabel`. */
+/** An icon, badge, or shortcut beside the button's `label`. */
 export function DisclosureButtonSlot(props: DisclosureButtonSlotProps) {
   const [variantProps, rest] = splitProps(props, disclosureButtonSlot);
   const variants = disclosureButtonSlot.getVariants(variantProps);
