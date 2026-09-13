@@ -2,7 +2,7 @@ import { cv, cx } from "clava";
 import { includes } from "../utils/includes.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
-import { isLayerColor, layer } from "./layer.ts";
+import { hasLayerBackground, isLayerColor, layer } from "./layer.ts";
 import { padding } from "./padding.ts";
 import { text } from "./text.ts";
 
@@ -83,7 +83,11 @@ export const control = cv({
     $gapY: "auto",
     $p: 2,
   },
-  refine({ variants, setVariants }) {
+  refine({ variants, setVariants, addClass }) {
+    // Forced colors remove a control's fill, which may be its only boundary.
+    if (variants.$border == null && hasLayerBackground(variants)) {
+      addClass("forced-colors:ak-frame-border");
+    }
     if (!variants.$disabled) return;
     setVariants({ $invert: false });
   },

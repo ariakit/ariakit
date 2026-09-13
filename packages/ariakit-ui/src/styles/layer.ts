@@ -26,6 +26,23 @@ export function isLayerColor(
   return value !== "transparent";
 }
 
+/**
+ * Checks whether resolved layer variants paint a background before CSS state
+ * overrides. A modifier can paint a transparent layer, but not a disabled one.
+ */
+export function hasLayerBackground(variants: VariantProps<typeof layer>) {
+  if (!variants.$layer) return false;
+  return layer.variantKeys.some((key) => {
+    const value = variants[key];
+    if (value == null) return false;
+    if (value === false) return false;
+    if (key === "$layer") {
+      return value !== "transparent";
+    }
+    return !!layer.class({ $layer: false, [key]: value });
+  });
+}
+
 export const layer = cv({
   variants: {
     /**

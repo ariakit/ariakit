@@ -1,3 +1,8 @@
+import {
+  captureInView,
+  forEachColorScheme,
+  withCaptures,
+} from "#app/test-utils/ariakit-ui.ts";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -39,5 +44,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // The combobox-item-highlight list stays open in this sandbox, so the query
     // names the list that closes.
     await test.expect(q.listbox("Assignee")).not.toBeVisible();
+  });
+});
+
+withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000661269
+  test("keeps the empty message borderless in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      const box = q.article("Empty state");
+      await test
+        .expect(query(box).text("No results found"))
+        .toHaveCSS("border-top-width", "0px");
+      await captureInView(visual, box, colorScheme);
+    });
   });
 });

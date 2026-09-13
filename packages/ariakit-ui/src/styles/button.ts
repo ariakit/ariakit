@@ -15,7 +15,7 @@ import {
   gliderSeparator,
 } from "./glider.ts";
 import { hover } from "./hover.ts";
-import { isLayerColor, layer } from "./layer.ts";
+import { hasLayerBackground, isLayerColor } from "./layer.ts";
 
 interface BevelLightenVariants {
   $kind?: string;
@@ -107,26 +107,14 @@ export const button = cv({
     },
   },
   refine({ variants, setVariants, addClass }) {
-    // The fill or bevel can be the button's only boundary. Forced colors remove
-    // that paint, so supply an edge unless a border was specified.
-    if (variants.$border == null) {
-      const hasSurface =
-        variants.$kind === "bevel" ||
-        // Layer modifiers cannot paint without an enabled layer. The bevel
-        // above paints independently and still needs its own fallback.
-        (!!variants.$layer &&
-          layer.variantKeys.some((key) => {
-            const value = variants[key];
-            if (value == null) return false;
-            if (value === false) return false;
-            if (key === "$layer") {
-              return value !== "transparent";
-            }
-            return !!layer.class({ $layer: false, [key]: value });
-          }));
-      if (hasSurface) {
-        addClass("forced-colors:ak-frame-border");
-      }
+    // A bevel paints even without a layer background, so it still needs an edge
+    // when the control's shared fill fallback does not apply.
+    if (
+      variants.$kind === "bevel" &&
+      variants.$border == null &&
+      !hasLayerBackground(variants)
+    ) {
+      addClass("forced-colors:ak-frame-border");
     }
     if (!variants.$disabled) return;
     // Native buttons suppress these through the :disabled-aware ui-hover and

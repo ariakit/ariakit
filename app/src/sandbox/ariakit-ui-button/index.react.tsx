@@ -21,6 +21,7 @@ import {
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { button, buttonGlider, buttonGroup } from "@ariakit/ui/styles/button";
+import { control } from "@ariakit/ui/styles/control";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -1897,6 +1898,25 @@ export default function ButtonExamples() {
             </ak.Button>
           </div>
         </div>
+      </Example>
+      <Example
+        title="Control surfaces"
+        description="The shared control recipe supplies the surface and spacing for a custom button. Transparent controls and explicit border choices keep their own appearance."
+        code={`
+          <ak.Button {...control.jsx({ $layer: "brand" })}>Sync now</ak.Button>
+          <ak.Button {...control.jsx({ $layer: "transparent" })}>Skip sync</ak.Button>
+          <ak.Button {...control.jsx({ $layer: false })}>Cancel sync</ak.Button>
+          <ak.Button {...control.jsx({ $layer: "brand", $border: false })}>Sync without border</ak.Button>
+        `}
+      >
+        <ak.Button {...control.jsx({ $layer: "brand" })}>Sync now</ak.Button>
+        <ak.Button {...control.jsx({ $layer: "transparent" })}>
+          Skip sync
+        </ak.Button>
+        <ak.Button {...control.jsx({ $layer: false })}>Cancel sync</ak.Button>
+        <ak.Button {...control.jsx({ $layer: "brand", $border: false })}>
+          Sync without border
+        </ak.Button>
       </Example>
     </ExampleGrid>
   );

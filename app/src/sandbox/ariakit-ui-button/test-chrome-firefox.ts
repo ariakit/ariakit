@@ -3,11 +3,58 @@ import {
   expectFocusVisible,
   expectMedia,
   forEachColorScheme,
+  hoverOver,
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000661269
+  test("keeps a filled control boundary in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      const box = q.article("Control surfaces");
+      for (const name of [
+        "Sync now",
+        "Skip sync",
+        "Cancel sync",
+        "Sync without border",
+      ]) {
+        await test
+          .expect(query(box).button(name))
+          .toHaveCSS("border-top-width", name === "Sync now" ? "1px" : "0px");
+      }
+      await captureInView(visual, box, colorScheme);
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000661269
+  test("keeps glider boundaries and inherited widths in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      const joined = q.article("Glider");
+      await test
+        .expect(joined.locator(".glider.selected"))
+        .toHaveCSS("border-top-width", "2px");
+      await captureInView(visual, joined, colorScheme, { id: "joined" });
+
+      const links = q.article("Current link gliders");
+      await hoverOver(query(links).link("Activity"));
+      const hoverGlider = links.locator(".glider:not(.selected):not(.focus)");
+      await test.expect(hoverGlider).toBeVisible();
+      await test.expect(hoverGlider).toHaveCSS("border-top-width", "1px");
+      await captureInView(visual, links, colorScheme, { id: "hover" });
+    });
+  });
+
   // https://github.com/ariakit/ariakit/issues/7476
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r3995296714
   test("keeps disabled layers borderless and preserves bevels in forced colors @visual", async ({
