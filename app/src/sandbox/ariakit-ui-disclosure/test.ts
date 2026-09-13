@@ -46,3 +46,14 @@ test("renders a zero label and omits a false label without wrapping row children
     members.querySelectorAll(":scope > .disclosure-button-slot"),
   ).toHaveLength(1);
 });
+
+// https://github.com/ariakit/ariakit/pull/7494#discussion_r3998773048
+test("keeps a bare fragment label separate from its description and badge", async () => {
+  const button = q.button("Account settings");
+  expect(button).toHaveAccessibleDescription("Manage your profile");
+  expect(
+    button.querySelector(":scope > .disclosure-button-slot"),
+  ).toHaveTextContent("3");
+  await click(button);
+  expect(q.text("Update account settings")).toBeVisible();
+});

@@ -1,6 +1,21 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998773048
+  test("keeps a bare fragment label separate from its description and badge", async ({
+    q,
+  }) => {
+    const button = q.button("Checked Account tasks");
+    await test
+      .expect(button)
+      .toHaveAccessibleDescription("Manage account tasks");
+    await test
+      .expect(button.locator(":scope > .disclosure-button-slot"))
+      .toHaveText("3");
+    await button.click();
+    await test.expect(q.text("Update account tasks")).toBeVisible();
+  });
+
   test("keeps a disclosure step's checked state in its name", async ({ q }) => {
     const button = query(q.article("Disclosure steps")).button(
       "Checked Connect the repository",

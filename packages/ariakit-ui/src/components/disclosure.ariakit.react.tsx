@@ -164,10 +164,15 @@ export function DisclosureButton({
   const baseId = React.useId();
   const descriptionId = `${baseId}-description`;
   const [variantProps, rest] = splitProps(props, disclosureButton);
+  // Fragments need an element to carry the label's ID and styles.
+  const isFragment =
+    React.isValidElement(label) && label.type === React.Fragment;
   const labelProps =
     label === undefined && isRenderable(rest.children)
       ? { children: rest.children }
-      : label;
+      : isFragment
+        ? { children: label }
+        : label;
   const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps, {
     id: `${baseId}-label`,
   });

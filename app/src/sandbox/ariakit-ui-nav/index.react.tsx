@@ -1218,6 +1218,22 @@ export default function NavExamples() {
               </NavLink>
             </NavDisclosureContent>
           </NavDisclosure>
+
+          <NavDisclosure>
+            <NavDisclosureButton
+              label={
+                <>
+                  Account <strong>pages</strong>
+                </>
+              }
+              description="Manage account pages"
+            >
+              <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+            </NavDisclosureButton>
+            <NavDisclosureContent>
+              <p>Update account pages</p>
+            </NavDisclosureContent>
+          </NavDisclosure>
         </Nav>
       </Example>
 

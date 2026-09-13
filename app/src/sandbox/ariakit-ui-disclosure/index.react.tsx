@@ -159,6 +159,21 @@ function ControlledDisclosure() {
 function DisclosureExplicitLabels() {
   return (
     <div className="grid gap-4">
+      <Disclosure
+        button={{
+          label: (
+            <>
+              Account <strong>settings</strong>
+            </>
+          ),
+          description: "Manage your profile",
+          children: (
+            <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+          ),
+        }}
+      >
+        Update account settings
+      </Disclosure>
       <Disclosure button={{ label: 0, description: "Pending invitations" }}>
         No invitations need review
       </Disclosure>

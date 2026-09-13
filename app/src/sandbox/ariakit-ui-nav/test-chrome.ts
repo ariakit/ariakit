@@ -1,6 +1,23 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998773048
+  test("keeps a bare fragment label separate from its description and badge", async ({
+    q,
+  }) => {
+    const button = query(q.article("Disclosure badges")).button(
+      "Account pages",
+    );
+    await test
+      .expect(button)
+      .toHaveAccessibleDescription("Manage account pages");
+    await test
+      .expect(button.locator(":scope > .disclosure-button-slot"))
+      .toHaveText("3");
+    await button.click();
+    await test.expect(q.text("Update account pages")).toBeVisible();
+  });
+
   // https://github.com/ariakit/ariakit/pull/7494#discussion_r3995263562
   test("keeps a disclosure badge beside the label without a description", async ({
     q,

@@ -1,6 +1,21 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998773048
+  test("keeps a bare fragment label separate from its description and badge", async ({
+    q,
+  }) => {
+    const button = q.button("Account settings");
+    await test
+      .expect(button)
+      .toHaveAccessibleDescription("Manage your profile");
+    await test
+      .expect(button.locator(":scope > .disclosure-button-slot"))
+      .toHaveText("3");
+    await button.click();
+    await test.expect(q.text("Update account settings")).toBeVisible();
+  });
+
   // https://github.com/ariakit/ariakit/issues/7478
   test("keeps a trailing badge beside the label", async ({ q }) => {
     const example = query(q.article("Trailing badge"));

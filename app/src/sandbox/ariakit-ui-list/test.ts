@@ -28,3 +28,14 @@ test("keeps a disclosure step's checked state in its name", () => {
   const button = q.button("Checked Connect the repository");
   expect(button).toHaveAccessibleDescription("Done on Monday");
 });
+
+// https://github.com/ariakit/ariakit/pull/7494#discussion_r3998773048
+test("keeps a bare fragment label separate from its description and badge", async () => {
+  const button = q.button("Checked Account tasks");
+  expect(button).toHaveAccessibleDescription("Manage account tasks");
+  expect(
+    button.querySelector(":scope > .disclosure-button-slot"),
+  ).toHaveTextContent("3");
+  await click(button);
+  expect(q.text("Update account tasks")).toBeVisible();
+});

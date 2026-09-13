@@ -689,6 +689,24 @@ export default function ListExamples() {
               </ListDisclosureContent>
             </ListDisclosure>
           </li>
+          <li>
+            <ListDisclosure>
+              <ListDisclosureButton
+                checked
+                label={
+                  <>
+                    Account <strong>tasks</strong>
+                  </>
+                }
+                description="Manage account tasks"
+              >
+                <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+              </ListDisclosureButton>
+              <ListDisclosureContent>
+                <p>Update account tasks</p>
+              </ListDisclosureContent>
+            </ListDisclosure>
+          </li>
         </List>
       </Example>
 

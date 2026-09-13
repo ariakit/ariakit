@@ -24,3 +24,16 @@ test("keeps a disclosure badge beside a consumer label component with a descript
   await click(button);
   expect(link).not.toBeVisible();
 });
+
+// https://github.com/ariakit/ariakit/pull/7494#discussion_r3998773048
+test("keeps a bare fragment label separate from its description and badge", async () => {
+  const button = q
+    .within(q.article("Disclosure badges"))
+    .button("Account pages");
+  expect(button).toHaveAccessibleDescription("Manage account pages");
+  expect(
+    button.querySelector(":scope > .disclosure-button-slot"),
+  ).toHaveTextContent("3");
+  await click(button);
+  expect(q.text("Update account pages")).toBeVisible();
+});
