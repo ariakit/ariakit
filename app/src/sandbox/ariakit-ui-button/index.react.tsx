@@ -569,13 +569,15 @@ export default function ButtonExamples() {
         code={`
           <Button>
             <ButtonLabel>Inbox</ButtonLabel>
-            <ButtonSlot $kind="badge">12</ButtonSlot>
+            <ButtonSlot $kind="badge" $p="md">12</ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Inbox</ButtonLabel>
-          <ButtonSlot $kind="badge">12</ButtonSlot>
+          <ButtonSlot $kind="badge" $p="md">
+            12
+          </ButtonSlot>
         </Button>
       </Example>
 
@@ -585,13 +587,13 @@ export default function ButtonExamples() {
         code={`
           <Button>
             <ButtonLabel>Reviews</ButtonLabel>
-            <ButtonSlot $kind="badge" $layer="brand" $hue="green" $border>3</ButtonSlot>
+            <ButtonSlot $kind="badge" $p="md" $layer="brand" $hue="green" $border>3</ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Reviews</ButtonLabel>
-          <ButtonSlot $kind="badge" $layer="brand" $hue="green" $border>
+          <ButtonSlot $kind="badge" $p="md" $layer="brand" $hue="green" $border>
             3
           </ButtonSlot>
         </Button>
@@ -763,7 +765,7 @@ export default function ButtonExamples() {
               <Trash />
             </ButtonSlot>
             <ButtonLabel>Delete</ButtonLabel>
-            <ButtonSlot $kind="badge">3</ButtonSlot>
+            <ButtonSlot $kind="badge" $p="md">3</ButtonSlot>
           </Button>
         `}
       >
@@ -772,7 +774,9 @@ export default function ButtonExamples() {
             <Trash2 />
           </ButtonSlot>
           <ButtonLabel>Delete</ButtonLabel>
-          <ButtonSlot $kind="badge">3</ButtonSlot>
+          <ButtonSlot $kind="badge" $p="md">
+            3
+          </ButtonSlot>
         </Button>
       </Example>
 

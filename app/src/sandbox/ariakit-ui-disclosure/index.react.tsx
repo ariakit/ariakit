@@ -168,7 +168,9 @@ function DisclosureExplicitLabels() {
           ),
           description: "Manage your profile",
           children: (
-            <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+            <DisclosureButtonSlot $kind="badge" $p="md">
+              3
+            </DisclosureButtonSlot>
           ),
         }}
       >
@@ -182,7 +184,9 @@ function DisclosureExplicitLabels() {
           label: { id: "invitation-label", children: <>Invitation details</> },
           description: "Review workspace invitations",
           children: (
-            <DisclosureButtonSlot $kind="badge">2</DisclosureButtonSlot>
+            <DisclosureButtonSlot $kind="badge" $p="md">
+              2
+            </DisclosureButtonSlot>
           ),
         }}
       >
@@ -246,7 +250,7 @@ export default function DisclosureExamples() {
         code={`
           <Disclosure defaultOpen button={
             <DisclosureButton label="Notifications" indicator="chevron-down-end">
-              <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+              <DisclosureButtonSlot $kind="badge" $p="md">3</DisclosureButtonSlot>
             </DisclosureButton>
           }>
             Three messages need your attention.
@@ -260,7 +264,9 @@ export default function DisclosureExamples() {
               label="Notifications"
               indicator="chevron-down-end"
             >
-              <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+              <DisclosureButtonSlot $kind="badge" $p="md">
+                3
+              </DisclosureButtonSlot>
             </DisclosureButton>
           }
         >
@@ -283,7 +289,7 @@ export default function DisclosureExamples() {
               label={<CustomLabel id="workspace-members-label">Workspace members</CustomLabel>}
               description="People with access to this workspace"
             >
-              <DisclosureButtonSlot $kind="badge">4</DisclosureButtonSlot>
+              <DisclosureButtonSlot $kind="badge" $p="md">4</DisclosureButtonSlot>
             </DisclosureButton>
           }>
             Invite a teammate or change a role.
@@ -302,7 +308,9 @@ export default function DisclosureExamples() {
               }
               description="People with access to this workspace"
             >
-              <DisclosureButtonSlot $kind="badge">4</DisclosureButtonSlot>
+              <DisclosureButtonSlot $kind="badge" $p="md">
+                4
+              </DisclosureButtonSlot>
             </DisclosureButton>
           }
         >
@@ -807,7 +815,7 @@ export default function DisclosureExamples() {
         code={`
           <DisclosureButton label={0} description="Pending invitations" />
           <DisclosureButton label={{ children: <>Invitation details</> }}>
-            <DisclosureButtonSlot $kind="badge">2</DisclosureButtonSlot>
+            <DisclosureButtonSlot $kind="badge" $p="md">2</DisclosureButtonSlot>
           </DisclosureButton>
         `}
       >

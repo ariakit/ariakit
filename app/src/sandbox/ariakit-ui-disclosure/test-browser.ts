@@ -7,6 +7,24 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  test("keeps a single-digit trailing badge square", async ({ page, q }) => {
+    const label = query(q.article("Trailing badge")).text("3");
+    await test.expect(label).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
+    await test.expect
+      .poll(() =>
+        label.evaluate((element) => {
+          const slot = element.parentElement;
+          if (!slot) {
+            throw new Error("Badge slot not found");
+          }
+          const { width, height } = slot.getBoundingClientRect();
+          return Math.abs(width - height);
+        }),
+      )
+      .toBeLessThan(1);
+  });
+
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),

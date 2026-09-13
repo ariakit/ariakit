@@ -404,7 +404,7 @@ export default function NavExamples() {
               <NavList>
                 <NavLink>
                   <ButtonLabel>Components</ButtonLabel>
-                  <ButtonSlot $kind="badge">
+                  <ButtonSlot $kind="badge" $p="md">
                     12
                   </ButtonSlot>
                 </NavLink>
@@ -434,7 +434,7 @@ export default function NavExamples() {
               <li>
                 <NavLink href="#components">
                   <ButtonLabel>Components</ButtonLabel>
-                  <ButtonSlot $kind="badge" className="ms-auto">
+                  <ButtonSlot $kind="badge" $p="md" className="ms-auto">
                     <span>12</span>
                   </ButtonSlot>
                 </NavLink>
@@ -905,7 +905,7 @@ export default function NavExamples() {
                       <FileCode />
                     </NavIcon>
                     <ButtonLabel>المكونات</ButtonLabel>
-                    <ButtonSlot $kind="badge">
+                    <ButtonSlot $kind="badge" $p="md">
                       12
                     </ButtonSlot>
                   </NavLink>
@@ -954,7 +954,7 @@ export default function NavExamples() {
                       <FileCode strokeWidth={1.5} />
                     </NavIcon>
                     <ButtonLabel>المكونات</ButtonLabel>
-                    <ButtonSlot $kind="badge" className="ms-auto">
+                    <ButtonSlot $kind="badge" $p="md" className="ms-auto">
                       <span>12</span>
                     </ButtonSlot>
                   </NavLink>
@@ -1190,14 +1190,16 @@ export default function NavExamples() {
         description="An explicit label keeps its badge beside the text, with or without a description."
         code={`
           <NavDisclosureButton label="Team pages" description="All pages in this workspace">
-            <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+            <DisclosureButtonSlot $kind="badge" $p="md">3</DisclosureButtonSlot>
           </NavDisclosureButton>
         `}
       >
         <Nav>
           <NavDisclosure defaultOpen>
             <NavDisclosureButton label="Project pages">
-              <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+              <DisclosureButtonSlot $kind="badge" $p="md">
+                3
+              </DisclosureButtonSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
               <NavLink href="/pages/settings" currentUrl="/account">
@@ -1210,7 +1212,9 @@ export default function NavExamples() {
               label={<CustomLabel id="nav-pages-label">Team pages</CustomLabel>}
               description="All pages in this workspace"
             >
-              <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+              <DisclosureButtonSlot $kind="badge" $p="md">
+                3
+              </DisclosureButtonSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
               <NavLink href="/pages/settings" currentUrl="/account">
@@ -1228,7 +1232,9 @@ export default function NavExamples() {
               }
               description="Manage account pages"
             >
-              <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+              <DisclosureButtonSlot $kind="badge" $p="md">
+                3
+              </DisclosureButtonSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
               <p>Update account pages</p>

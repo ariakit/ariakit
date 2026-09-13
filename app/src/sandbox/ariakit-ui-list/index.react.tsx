@@ -659,7 +659,7 @@ export default function ListExamples() {
         description="An explicit label keeps its badge beside the text, with or without a description."
         code={`
           <ListDisclosureButton label="Team tasks" description="All tasks in this workspace">
-            <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+            <DisclosureButtonSlot $kind="badge" $p="md">3</DisclosureButtonSlot>
           </ListDisclosureButton>
         `}
       >
@@ -667,7 +667,9 @@ export default function ListExamples() {
           <li>
             <ListDisclosure defaultOpen>
               <ListDisclosureButton label="Project tasks">
-                <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+                <DisclosureButtonSlot $kind="badge" $p="md">
+                  3
+                </DisclosureButtonSlot>
               </ListDisclosureButton>
               <ListDisclosureContent>
                 <p>Manage project tasks</p>
@@ -682,7 +684,9 @@ export default function ListExamples() {
                 }
                 description="All tasks in this workspace"
               >
-                <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+                <DisclosureButtonSlot $kind="badge" $p="md">
+                  3
+                </DisclosureButtonSlot>
               </ListDisclosureButton>
               <ListDisclosureContent>
                 <p>Manage team tasks</p>
@@ -700,7 +704,9 @@ export default function ListExamples() {
                 }
                 description="Manage account tasks"
               >
-                <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+                <DisclosureButtonSlot $kind="badge" $p="md">
+                  3
+                </DisclosureButtonSlot>
               </ListDisclosureButton>
               <ListDisclosureContent>
                 <p>Update account tasks</p>
