@@ -16,6 +16,9 @@ export const kbd = cv({
     // In a flex or grid row, the cap takes its height from the line box.
     // Pin the leading so these caps stay compact too.
     "leading-none whitespace-nowrap",
+    // Lift the cap to balance its bottom lip around the surrounding text.
+    // https://github.com/ariakit/ariakit/pull/7495#discussion_r3998720431
+    "align-[0.05em]",
     "px-1 py-0",
     // Light falls from above: a hairline across the top, a thick lip along
     // the bottom, nothing on the sides. Each max() keeps its side from
