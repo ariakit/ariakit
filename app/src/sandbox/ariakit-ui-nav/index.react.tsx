@@ -16,6 +16,7 @@ import {
   DisclosureButtonLabel,
   DisclosureButtonSlot,
 } from "@ariakit/ui/components/disclosure.ariakit.react";
+import type { DisclosureButtonLabelProps } from "@ariakit/ui/components/disclosure.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import type { NavProps } from "@ariakit/ui/components/nav.ariakit.react";
 import {
@@ -49,6 +50,10 @@ import {
   Example,
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
+
+function CustomLabel(props: DisclosureButtonLabelProps) {
+  return <DisclosureButtonLabel {...props} />;
+}
 
 // Migrated from nav-optional-headings.react.tsx in the nav-interactions
 // sandbox, with the same markup.
@@ -1176,18 +1181,14 @@ export default function NavExamples() {
         title="Disclosure badges"
         description="An explicit label keeps its badge beside the text, with or without a description."
         code={`
-          <NavDisclosureButton description="All pages in this workspace">
-            <DisclosureButtonLabel>Team pages</DisclosureButtonLabel>
+          <NavDisclosureButton label="Team pages" description="All pages in this workspace">
             <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
           </NavDisclosureButton>
         `}
       >
         <Nav>
           <NavDisclosure defaultOpen>
-            <NavDisclosureButton>
-              <DisclosureButtonLabel id="nav-project-label">
-                Project pages
-              </DisclosureButtonLabel>
+            <NavDisclosureButton label="Project pages">
               <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
@@ -1197,13 +1198,11 @@ export default function NavExamples() {
             </NavDisclosureContent>
           </NavDisclosure>
           <NavDisclosure defaultOpen>
-            <NavDisclosureButton description="All pages in this workspace">
-              <>
-                <DisclosureButtonLabel id="nav-pages-label">
-                  Team pages
-                </DisclosureButtonLabel>
-                <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
-              </>
+            <NavDisclosureButton
+              label={<CustomLabel id="nav-pages-label">Team pages</CustomLabel>}
+              description="All pages in this workspace"
+            >
+              <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
               <NavLink href="/pages/settings" currentUrl="/account">

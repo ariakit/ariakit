@@ -23,6 +23,7 @@ import {
   DisclosureContent,
   DisclosureGroup,
 } from "@ariakit/ui/components/disclosure.ariakit.react";
+import type { DisclosureButtonLabelProps } from "@ariakit/ui/components/disclosure.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { CreditCard, Folder, Settings, Users } from "lucide-react";
 import { useId, useState } from "react";
@@ -30,6 +31,10 @@ import {
   Example,
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
+
+function CustomLabel(props: DisclosureButtonLabelProps) {
+  return <DisclosureButtonLabel {...props} />;
+}
 
 interface DetailsProps {
   name: string;
@@ -154,6 +159,41 @@ function ControlledDisclosure() {
   );
 }
 
+function DisclosureExplicitLabels() {
+  return (
+    <div className="grid gap-4">
+      <Disclosure button={{ label: 0, description: "Pending invitations" }}>
+        No invitations need review
+      </Disclosure>
+      <Disclosure
+        button={{
+          label: { id: "invitation-label", children: <>Invitation details</> },
+          description: "Review workspace invitations",
+          children: (
+            <DisclosureButtonSlot $kind="badge">2</DisclosureButtonSlot>
+          ),
+        }}
+      >
+        Two invitations need review
+      </Disclosure>
+      <Disclosure
+        button={{
+          label: false,
+          "aria-label": "Show invited members",
+          description: "Members waiting for access",
+          children: (
+            <DisclosureButtonSlot>
+              <Users />
+            </DisclosureButtonSlot>
+          ),
+        }}
+      >
+        Invited members are available
+      </Disclosure>
+    </div>
+  );
+}
+
 export default function DisclosureExamples() {
   return (
     <ExampleGrid>
@@ -193,8 +233,7 @@ export default function DisclosureExamples() {
         stretch
         code={`
           <Disclosure defaultOpen button={
-            <DisclosureButton indicator="chevron-down-end">
-              <DisclosureButtonLabel>Notifications</DisclosureButtonLabel>
+            <DisclosureButton label="Notifications" indicator="chevron-down-end">
               <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
             </DisclosureButton>
           }>
@@ -205,8 +244,10 @@ export default function DisclosureExamples() {
         <Disclosure
           defaultOpen
           button={
-            <DisclosureButton indicator="chevron-down-end">
-              <DisclosureButtonLabel>Notifications</DisclosureButtonLabel>
+            <DisclosureButton
+              label="Notifications"
+              indicator="chevron-down-end"
+            >
               <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
             </DisclosureButton>
           }
@@ -217,15 +258,20 @@ export default function DisclosureExamples() {
 
       <Example
         title="Slots with description"
-        description="The label and description share a column between a leading icon and a trailing badge. A fragment groups the label and badge without adding a box."
+        description="The label and description share a column between a leading icon and a trailing badge. A custom label component receives the label props."
         stretch
         code={`
+          function CustomLabel(props: DisclosureButtonLabelProps) {
+            return <DisclosureButtonLabel {...props} />;
+          }
+
           <Disclosure defaultOpen button={
-            <DisclosureButton icon={<Users />} description="People with access to this workspace">
-              <>
-                <DisclosureButtonLabel id="workspace-members-label">Workspace members</DisclosureButtonLabel>
-                <DisclosureButtonSlot $kind="badge">4</DisclosureButtonSlot>
-              </>
+            <DisclosureButton
+              icon={<Users />}
+              label={<CustomLabel id="workspace-members-label">Workspace members</CustomLabel>}
+              description="People with access to this workspace"
+            >
+              <DisclosureButtonSlot $kind="badge">4</DisclosureButtonSlot>
             </DisclosureButton>
           }>
             Invite a teammate or change a role.
@@ -237,14 +283,14 @@ export default function DisclosureExamples() {
           button={
             <DisclosureButton
               icon={<Users />}
+              label={
+                <CustomLabel id="workspace-members-label">
+                  Workspace members
+                </CustomLabel>
+              }
               description="People with access to this workspace"
             >
-              <>
-                <DisclosureButtonLabel id="workspace-members-label">
-                  Workspace members
-                </DisclosureButtonLabel>
-                <DisclosureButtonSlot $kind="badge">4</DisclosureButtonSlot>
-              </>
+              <DisclosureButtonSlot $kind="badge">4</DisclosureButtonSlot>
             </DisclosureButton>
           }
         >
@@ -739,6 +785,19 @@ export default function DisclosureExamples() {
         `}
       >
         <DisclosureButtonStore />
+      </Example>
+
+      <Example
+        title="Explicit labels"
+        description="Labels accept text, props, or a custom element. A false label leaves room for an icon beside the description."
+        code={`
+          <DisclosureButton label={0} description="Pending invitations" />
+          <DisclosureButton label={{ children: <>Invitation details</> }}>
+            <DisclosureButtonSlot $kind="badge">2</DisclosureButtonSlot>
+          </DisclosureButton>
+        `}
+      >
+        <DisclosureExplicitLabels />
       </Example>
 
       <Example

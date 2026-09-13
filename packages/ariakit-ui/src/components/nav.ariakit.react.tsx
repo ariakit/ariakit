@@ -32,9 +32,9 @@ import type {
 import {
   Disclosure,
   DisclosureButton,
+  DisclosureButtonLabel,
   DisclosureContent,
   DisclosureContentBody,
-  wrapDisclosureButtonLabel,
 } from "./disclosure.ariakit.react.tsx";
 
 // The stores of every NavDisclosure around a row, outermost first, so a current
@@ -315,11 +315,17 @@ export interface NavDisclosureButtonProps
   extends DisclosureButtonProps, VariantProps<typeof navButton> {}
 
 export function NavDisclosureButton({
+  label,
   icon,
   indicator = isRenderable(icon) ? "chevron-right-end" : "chevron-right-start",
   ...props
 }: NavDisclosureButtonProps) {
   const [variantProps, rest] = splitProps(props, navButton);
+  const labelProps =
+    label === undefined && isRenderable(rest.children)
+      ? { children: rest.children }
+      : label;
+  const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
   return (
     <DisclosureButton
       icon={icon}
@@ -328,10 +334,17 @@ export function NavDisclosureButton({
       $gap="none"
       {...navButton.jsx(variantProps)}
       {...rest}
+      label={
+        labelEl
+          ? React.cloneElement(labelEl, {
+              children: (
+                <NavButtonContent>{labelEl.props.children}</NavButtonContent>
+              ),
+            })
+          : null
+      }
     >
-      {wrapDisclosureButtonLabel(rest.children, (children) => (
-        <NavButtonContent>{children}</NavButtonContent>
-      ))}
+      {label !== undefined && rest.children}
     </DisclosureButton>
   );
 }

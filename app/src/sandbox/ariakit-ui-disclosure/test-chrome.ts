@@ -16,8 +16,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toBeVisible();
   });
 
-  // https://github.com/ariakit/ariakit/issues/7478
-  test("keeps a custom label and description separate from the slots", async ({
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998666934
+  test("keeps a consumer label component and description separate from the slots", async ({
     q,
   }) => {
     const example = query(q.article("Slots with description"));
@@ -33,6 +33,42 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test
       .expect(example.text("Invite a teammate or change a role."))
       .toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998666934
+  test("accepts label props with fragment content and adjacent slots", async ({
+    q,
+  }) => {
+    const button = q.button("Invitation details");
+    await test
+      .expect(button)
+      .toHaveAttribute("aria-labelledby", "invitation-label");
+    await test
+      .expect(button)
+      .toHaveAccessibleDescription("Review workspace invitations");
+    await test.expect(button.locator(":scope > span").nth(2)).toHaveText("2");
+    await button.click();
+    await test.expect(q.text("Two invitations need review")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998666934
+  test("renders a zero label and omits a false label without wrapping row children", async ({
+    q,
+  }) => {
+    const button = q.button("0").filter({ hasText: "Pending invitations" });
+    await test
+      .expect(button)
+      .toHaveAccessibleDescription("Pending invitations");
+    await button.click();
+    await test.expect(q.text("No invitations need review")).toBeVisible();
+    const members = q.button("Show invited members");
+    await test.expect(members).not.toHaveAttribute("aria-labelledby");
+    await test
+      .expect(members)
+      .toHaveAccessibleDescription("Members waiting for access");
+    await test
+      .expect(members.locator(":scope > .disclosure-button-slot"))
+      .toHaveCount(1);
   });
 
   test("shares the open state of a controlled disclosure with an outside button", async ({

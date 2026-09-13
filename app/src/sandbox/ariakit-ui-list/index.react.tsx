@@ -12,6 +12,7 @@ import {
   DisclosureButtonLabel,
   DisclosureButtonSlot,
 } from "@ariakit/ui/components/disclosure.ariakit.react";
+import type { DisclosureButtonLabelProps } from "@ariakit/ui/components/disclosure.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Heading,
@@ -31,6 +32,10 @@ import {
   Example,
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
+
+function CustomLabel(props: DisclosureButtonLabelProps) {
+  return <DisclosureButtonLabel {...props} />;
+}
 
 // Migrated from the list-disclosure-optional-button sandbox with the same
 // props, markup and initial state.
@@ -653,8 +658,7 @@ export default function ListExamples() {
         title="Disclosure badges"
         description="An explicit label keeps its badge beside the text, with or without a description."
         code={`
-          <ListDisclosureButton description="All tasks in this workspace">
-            <DisclosureButtonLabel>Team tasks</DisclosureButtonLabel>
+          <ListDisclosureButton label="Team tasks" description="All tasks in this workspace">
             <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
           </ListDisclosureButton>
         `}
@@ -662,10 +666,7 @@ export default function ListExamples() {
         <List ordered>
           <li>
             <ListDisclosure defaultOpen>
-              <ListDisclosureButton>
-                <DisclosureButtonLabel id="list-project-label">
-                  Project tasks
-                </DisclosureButtonLabel>
+              <ListDisclosureButton label="Project tasks">
                 <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
               </ListDisclosureButton>
               <ListDisclosureContent>
@@ -675,13 +676,13 @@ export default function ListExamples() {
           </li>
           <li>
             <ListDisclosure defaultOpen>
-              <ListDisclosureButton description="All tasks in this workspace">
-                <>
-                  <DisclosureButtonLabel id="list-tasks-label">
-                    Team tasks
-                  </DisclosureButtonLabel>
-                  <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
-                </>
+              <ListDisclosureButton
+                label={
+                  <CustomLabel id="list-tasks-label">Team tasks</CustomLabel>
+                }
+                description="All tasks in this workspace"
+              >
+                <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
               </ListDisclosureButton>
               <ListDisclosureContent>
                 <p>Manage team tasks</p>

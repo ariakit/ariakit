@@ -21,8 +21,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(example.text("Manage project tasks")).toBeHidden();
   });
 
-  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3995263562
-  test("keeps a disclosure badge beside the label with a description", async ({
+  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998666934
+  test("keeps a disclosure badge beside a consumer label component with a description", async ({
     q,
   }) => {
     const example = query(q.article("Disclosure badges"));

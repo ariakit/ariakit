@@ -2,10 +2,11 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { CheckIcon } from "lucide-react";
-import type * as React from "react";
+import * as React from "react";
 import {
   createOptionalRender,
   createRender,
+  isRenderable,
 } from "../react-utils/create-render.react.ts";
 import {
   list,
@@ -26,9 +27,9 @@ import type {
 import {
   Disclosure,
   DisclosureButton,
+  DisclosureButtonLabel,
   DisclosureContent,
   DisclosureContentBody,
-  wrapDisclosureButtonLabel,
 } from "./disclosure.ariakit.react.tsx";
 
 export interface ListProps
@@ -235,24 +236,37 @@ export interface ListDisclosureButtonProps
     Pick<ListItemMarkerProps, "checked" | "progress"> {}
 
 export function ListDisclosureButton({
+  label,
   checked,
   progress,
   indicator = "chevron-down-next",
   ...props
 }: ListDisclosureButtonProps) {
   const [variantProps, rest] = splitProps(props, listDisclosureButton);
+  const labelProps =
+    label === undefined && isRenderable(rest.children)
+      ? { children: rest.children }
+      : label;
+  const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
   return (
     <DisclosureButton
       indicator={indicator}
       {...listDisclosureButton.jsx(variantProps)}
       {...rest}
+      label={
+        labelEl
+          ? React.cloneElement(labelEl, {
+              children: (
+                <>
+                  <ListItemMarker checked={checked} progress={progress} />
+                  <ListItemContent>{labelEl.props.children}</ListItemContent>
+                </>
+              ),
+            })
+          : null
+      }
     >
-      {wrapDisclosureButtonLabel(rest.children, (children) => (
-        <>
-          <ListItemMarker checked={checked} progress={progress} />
-          <ListItemContent>{children}</ListItemContent>
-        </>
-      ))}
+      {label !== undefined && rest.children}
     </DisclosureButton>
   );
 }
