@@ -745,10 +745,18 @@ function CellEdgeOverride() {
 }
 
 function RowEdgeOverride() {
+  const [scroll, setScroll] = useState(false);
   const [border, setBorder] = useState(true);
   const [selected, setSelected] = useState(false);
   return (
     <div className="grid gap-3">
+      <label className="flex items-center gap-2">
+        <Checkbox
+          checked={scroll}
+          onChange={(event) => setScroll(event.currentTarget.checked)}
+        />
+        Scroll row borders
+      </label>
       <label className="flex items-center gap-2">
         <Checkbox
           checked={selected}
@@ -766,7 +774,11 @@ function RowEdgeOverride() {
       <Table
         role="grid"
         aria-label="Review row edges"
-        container={{ $border: true }}
+        className={scroll ? "min-w-128" : undefined}
+        container={{
+          $border: true,
+          className: scroll ? "max-w-80" : undefined,
+        }}
       >
         <TableRowGroup group="head">
           <TableRow>

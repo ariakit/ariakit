@@ -333,6 +333,87 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
+  // https://github.com/ariakit/ariakit/pull/7498#discussion_r3998333745
+  test("paints row borders above pinned cells while scrolling @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorScheme(page, async (colorScheme) => {
+      const box = q.article("Row edge override");
+      const fixture = query(box);
+      await fixture.checkbox("Scroll row borders").check();
+      const scroller = fixture.grid().locator("xpath=..");
+      await test.expect
+        .poll(() =>
+          scroller.evaluate((node) => node.scrollWidth - node.clientWidth),
+        )
+        .toBeGreaterThan(0);
+      const cases = [
+        { name: "Failed Needs review", cell: "Failed", focus: false },
+        { name: "Failed Needs review", cell: "Failed", focus: true },
+        { name: "Pending Ready to test", cell: "Ready to test", focus: false },
+      ];
+      for (const { name, cell, focus } of cases) {
+        const row = fixture.row(name);
+        const pinned = query(row).gridcell(cell);
+        await scroller.evaluate((node) => {
+          node.scrollLeft = 0;
+        });
+        await fixture.checkbox("Show all borders on Failed row").focus();
+        if (focus) {
+          await page.keyboard.press("Tab");
+          await row.focus();
+          await expectFocusVisible(row);
+        }
+        await hoverOver(fixture.checkbox("Scroll row borders"));
+        const getPixels = async () => {
+          const screenshot = PNG.sync.read(
+            await box.screenshot({ scale: "css" }),
+          );
+          const boxBounds = await getDocumentBounds(box);
+          const rowBounds = await getDocumentBounds(row);
+          const pinnedBounds = await getDocumentBounds(pinned);
+          const viewport = await getDocumentBounds(scroller);
+          const left = Math.max(pinnedBounds.x, viewport.x);
+          const right = Math.min(
+            pinnedBounds.x + pinnedBounds.width,
+            viewport.x + viewport.width,
+          );
+          test.expect(right - left).toBeGreaterThan(20);
+          const x = Math.round((left + right) / 2 - boxBounds.x);
+          const y = Math.round(rowBounds.y - boxBounds.y);
+          const pixel = (y: number) => {
+            const offset = (y * screenshot.width + x) * 4;
+            return [...screenshot.data.subarray(offset, offset + 4)];
+          };
+          return { border: pixel(y), surface: pixel(y + 5) };
+        };
+        const before = await getPixels();
+        test.expect(before.border).not.toEqual(before.surface);
+        const rowBounds = await getDocumentBounds(row);
+        const pinnedBounds = await getDocumentBounds(pinned);
+        const scroll = await scroller.evaluate((node) => {
+          node.scrollLeft = (node.scrollWidth - node.clientWidth) / 2;
+          return node.scrollLeft;
+        });
+        test.expect(scroll).toBeGreaterThan(0);
+        await test.expect
+          .poll(async () => (await getDocumentBounds(row)).x)
+          .toBeLessThan(rowBounds.x);
+        test
+          .expect((await getDocumentBounds(pinned)).x)
+          .toBeCloseTo(pinnedBounds.x, 2);
+        test.expect((await getPixels()).border).toEqual(before.border);
+        await visual(
+          getCapture(box, colorScheme, {
+            id: `${cell}-${focus ? "focus" : "static"}`,
+          }),
+        );
+      }
+    });
+  });
+
   // https://github.com/ariakit/ariakit/issues/7481
   test("keeps a nested table's grid independent of its outer table", async ({
     q,
