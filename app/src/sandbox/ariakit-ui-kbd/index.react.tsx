@@ -78,15 +78,18 @@ export default function KbdExamples() {
 
       <Example
         title="Small text"
-        description="In text-xs, the hairline, the lip and the ring keep a visible minimum width, and the lip stays thicker than the hairline."
+        description="Small labels keep a visible hairline, lip and ring. Use a line height of at least 1.5 for text-xs so the caps have room between wrapped lines."
         code={`
-          Press
-          <Kbd>Esc</Kbd>
-          to close
+          <p className="max-w-40 text-xs leading-normal">
+            Press <Kbd>Esc</Kbd> to close,
+            <Kbd>Enter</Kbd> to confirm, or
+            <Kbd>Page Down</Kbd> to continue.
+          </p>
         `}
       >
-        <p className="text-xs">
-          Press <Kbd>Esc</Kbd> to close
+        <p className="max-w-40 text-xs leading-normal">
+          Press <Kbd>Esc</Kbd> to close, <Kbd>Enter</Kbd> to confirm, or{" "}
+          <Kbd>Page Down</Kbd> to continue.
         </p>
       </Example>
 

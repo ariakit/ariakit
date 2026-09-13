@@ -32,6 +32,6 @@ export const link = cv({
     $focus: true,
     // The padding above already holds the focus indicator off the text, and an
     // offset would push it into the lines above and below.
-    $focusOffset: "none",
+    $focusOffset: 0,
   },
 });
