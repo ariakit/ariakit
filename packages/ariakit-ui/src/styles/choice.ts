@@ -24,9 +24,8 @@ import { hover } from "./hover.ts";
  * state from the element itself or from the label or aria-checked host around
  * it. It extends the control slot rather than frame, so the box takes the
  * slot's font-relative sizes, its first-line alignment inside a control row and
- * its floating placement. It shares the input's edge weight and writing
- * surface. The slot fixes the box's dimensions, so it keeps a real border where
- * the input uses an inset edge.
+ * its floating placement. It shares the input's border, edge weight and writing
+ * surface. The slot fixes the box's outer dimensions.
  */
 export const choice = cv({
   extend: [controlSlot, hover],

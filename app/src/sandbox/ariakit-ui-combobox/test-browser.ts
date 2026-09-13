@@ -37,9 +37,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         );
         await test.expect
           .poll(() =>
-            select.evaluate((node) => getComputedStyle(node).boxShadow),
+            select.evaluate((node) => getComputedStyle(node).borderColor),
           )
-          .toContain(edge);
+          .toBe(edge);
       }
     });
   });

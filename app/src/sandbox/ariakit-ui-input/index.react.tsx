@@ -292,7 +292,7 @@ export default function InputExamples() {
 
       <Example
         title="Control sizes"
-        description="Each field shares its size with the button beside it. The row centers the controls without stretching them."
+        description="Each field shares its font size and padding with the button beside it. The real border adds to the field height."
         code={`
           <Input $size="sm" />
           <Button $size="sm" $kind="bevel">Save</Button>
@@ -327,6 +327,20 @@ export default function InputExamples() {
         <Frame $layer="brand" $rounded="xl" $p={4} className="grid w-full">
           <Input aria-label="Invite email" placeholder="teammate@example.com" />
         </Frame>
+      </Example>
+      <Example
+        title="Disabled style"
+        description="The disabled appearance keeps a faint field edge. Native disabled behavior is set separately."
+        code={`
+          <Input $disabled />
+        `}
+      >
+        <Input
+          $disabled
+          aria-invalid
+          aria-label="Preview username"
+          defaultValue="ada"
+        />
       </Example>
     </ExampleGrid>
   );

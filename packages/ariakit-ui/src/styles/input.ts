@@ -36,11 +36,14 @@ export const input = cv({
     "[input]:box-content [input]:h-lh",
     "[&_input]:box-content [&_input]:h-lh",
     "[&_input]:outline-none",
-    // Forced colors remove shadows, including the inset edge.
-    "forced-colors:outline-(length:--border-width) forced-colors:-outline-offset-1",
     "placeholder:ak-ink-0 [&_input]:placeholder:ak-ink-0",
   ],
   variants: {
+    /** Applies the field’s disabled appearance without removing its edge. */
+    $disabled(value?: boolean) {
+      if (!value) return;
+      return "disabled";
+    },
     /**
      * Whether to show a focus ring when the field, or the input inside it,
      * takes focus, and how thick the ring should be.
@@ -66,8 +69,7 @@ export const input = cv({
   defaultVariants: {
     $rounded: "lg",
     $border: true,
-    // An inset edge preserves the control's intrinsic height in both themes.
-    $borderType: "inset",
+    $borderType: "border",
     // A field's edge is its only boundary on the surface around it, so it is
     // stronger than the named border weights provide: the lightest that keeps
     // it at 3:1 against a light or a dark canvas. choice.ts draws its box at

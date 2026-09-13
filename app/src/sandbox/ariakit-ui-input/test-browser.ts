@@ -9,6 +9,36 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r4000613089
+  test("keeps the disabled field boundary and surface", async ({ page, q }) => {
+    const field = q.textbox("Preview username");
+    const native = q.textbox("Username");
+    await forEachColorScheme(page, async () => {
+      for (const property of ["border-color", "background-color"]) {
+        await test
+          .expect(field)
+          .toHaveCSS(
+            property,
+            await native.evaluate(
+              (node, property) =>
+                getComputedStyle(node).getPropertyValue(property),
+              property,
+            ),
+          );
+      }
+      await test.expect(field).toHaveCSS("border-width", "1px");
+      await field.hover();
+      await test
+        .expect(field)
+        .toHaveCSS(
+          "background-color",
+          await native.evaluate(
+            (node) => getComputedStyle(node).backgroundColor,
+          ),
+        );
+    });
+  });
+
   // https://github.com/ariakit/ariakit/pull/7491#discussion_r3997757472
   test("focuses the share link from the padded field surface", async ({
     q,
@@ -35,7 +65,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7477
-  test("matches the field and button heights without stretching", async ({
+  test("keeps the shared control height plus the field border", async ({
     q,
   }) => {
     const box = query(q.article("Inline form with submit button"));
@@ -45,7 +75,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     const buttonBox = await button.boundingBox();
     await test.expect
       .poll(async () => (await input.boundingBox())?.height)
-      .toBe(buttonBox?.height);
+      .toBe((buttonBox?.height ?? 0) + 2);
   });
 
   // https://github.com/ariakit/ariakit/issues/7477
@@ -57,7 +87,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const buttonBox = await button.boundingBox();
       await test.expect
         .poll(async () => (await input.boundingBox())?.height)
-        .toBe(buttonBox?.height);
+        .toBe((buttonBox?.height ?? 0) + 2);
       await test
         .expect(input)
         .toHaveCSS(

@@ -89,7 +89,7 @@ export const comboboxItemLabel = optionLabel;
 export const comboboxItemSlot = optionSlot;
 
 // A flat select with a layer of its own is a form field, so it takes the finish
-// of the input beside it: a writing surface with an inset edge.
+// of the input beside it: a writing surface with a real border.
 // `$layer="transparent"` keeps the see-through button for a toolbar that owns
 // the surface, and the bevel and a colored layer keep their button look.
 function isSelectField(variants: { $kind?: unknown; $layer?: unknown }) {
@@ -124,10 +124,10 @@ export const comboboxSelect = cv({
     $borderType(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
       if (!variants.$border) return defaultValue;
-      // Like the input, an inset edge keeps the control's intrinsic height on
-      // light and dark layers.
+      // A real border keeps the field geometry the same on light and dark
+      // layers, like the input.
       if (defaultValue != null && defaultValue !== "auto") return defaultValue;
-      return "inset";
+      return "border";
     },
     $edgeWeight(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
@@ -146,18 +146,11 @@ export const comboboxSelect = cv({
   refine({ variants, addClass }) {
     if (!isSelectField(variants)) return;
     if (!variants.$border) return;
-    if (variants.$borderType !== "border" && variants.$borderType !== "inset") {
-      return;
-    }
+    if (variants.$borderType !== "border") return;
     // The disabled rules wipe a button's border, and a bordered field with no
     // border at all reads as a rendering glitch on light layers. This channel
     // keeps its edge color instead.
     addClass("[--disabled-border:var(--ak-edge)]");
-    if (variants.$borderType !== "inset") return;
-    // Forced colors remove the shadow that paints the inset edge.
-    addClass(
-      "forced-colors:outline-(length:--border-width) forced-colors:-outline-offset-1",
-    );
   },
 });
 
