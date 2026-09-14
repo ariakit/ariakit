@@ -101,6 +101,27 @@ test("removes stale generated preview files", async () => {
   expect(removalResult.changed).toBe(true);
 });
 
+test("renders an Astro entry as static markup without a source import", async () => {
+  const dir = await createDir();
+  const codegenDir = join(dir, "codegen");
+  const preview = getPreview(dir);
+  preview.frameworks = ["astro"];
+  preview.entryFiles = { astro: join(dir, "sandbox/menu/index.astro") };
+
+  await writePreviewCodegen({ codegenDir, previews: [preview] });
+
+  const astro = await fs.readFile(
+    join(codegenDir, "previews/menu/preview.astro"),
+    "utf8",
+  );
+  expect(astro).toContain(
+    'import AstroExample from "../../../sandbox/menu/index.astro";',
+  );
+  expect(astro).toContain('<AstroExample slot="astro" />');
+  expect(astro).not.toContain("client:load");
+  expect(astro).not.toContain("?source");
+});
+
 test("wraps preview entries with framework hydration markers", async () => {
   const dir = await createDir();
   const codegenDir = join(dir, "codegen");
