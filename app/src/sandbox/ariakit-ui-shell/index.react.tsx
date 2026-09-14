@@ -70,7 +70,6 @@ const scenarios = {
   marketing: "Marketing page",
   bar: "Bar parts",
   static: "Static panel",
-  warnings: "Warnings",
 } as const;
 
 type ScenarioId = keyof typeof scenarios;
@@ -882,44 +881,6 @@ function StaticScenario() {
   );
 }
 
-/**
- * The mistakes the shell warns about in development: a percentage width, a
- * wrapper around a part, a sidebar wider than its slot, and a sticky footer.
- * Open the console to see them.
- */
-function WarningsScenario() {
-  // Spread, because the footer's props reject $sticky at the type level.
-  const stickyFooterProps = { $sticky: true };
-  return (
-    <Shell $sidebarWidth="50%">
-      <ShellHeader start={<Brand />} end={<ScenarioControls />} />
-      <div>
-        <ShellSidebar aria-label="Wrapped" render={<aside />}>
-          <p>This sidebar sits in a wrapper, so it has no slot.</p>
-        </ShellSidebar>
-      </div>
-      <ShellSidebar
-        $side="end"
-        aria-label="Wide"
-        render={<aside />}
-        className="w-80"
-      >
-        <p>This sidebar is wider than its slot.</p>
-      </ShellSidebar>
-      <ShellMain $centered>
-        <Prose>
-          <HeadingLevel>
-            <Heading>Warnings</Heading>
-          </HeadingLevel>
-          <p>Open the console to see what the shell warns about.</p>
-        </Prose>
-      </ShellMain>
-      {/* @ts-expect-error The footer rejects $sticky and warns about it. */}
-      <ShellFooter {...stickyFooterProps} start={<p>A footer</p>} />
-    </Shell>
-  );
-}
-
 const scenarioComponents = {
   docs: DocsScenario,
   dashboard: DashboardScenario,
@@ -928,7 +889,6 @@ const scenarioComponents = {
   marketing: MarketingScenario,
   bar: BarScenario,
   static: StaticScenario,
-  warnings: WarningsScenario,
 } satisfies Record<ScenarioId, () => ReactNode>;
 
 export default function ShellExamples() {

@@ -1,5 +1,5 @@
 import { click, dispatch, q } from "@ariakit/test";
-import { afterEach, expect, test, vi } from "vitest";
+import { expect, test } from "vitest";
 
 async function selectScenario(value: string) {
   await dispatch.change(q.combobox("Scenario"), { target: { value } });
@@ -11,10 +11,6 @@ function getColumn(label: string) {
   expect(column).not.toBeNull();
   return column as HTMLElement;
 }
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
 
 test("renders the docs page as one banner, one main, one contentinfo and labelled navigations", () => {
   expect(q.banner()).toBeInTheDocument();
@@ -87,19 +83,4 @@ test("keeps a panel without a store open, with no toggle", async () => {
   expect(q.complementary("Sections")).toBeInTheDocument();
   expect(getColumn("Sections")).toHaveAttribute("data-open", "true");
   expect(q.button.maybe("Toggle sidebar")).not.toBeInTheDocument();
-});
-
-// The warning about a sidebar wider than its slot needs layout, so it lives in
-// the browser test only.
-test("warns in development about a percentage width, a wrapped part and a sticky footer", async () => {
-  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-  await selectScenario("warnings");
-  const messages = warn.mock.calls.map(([message]) => String(message));
-  expect(messages).toEqual(
-    expect.arrayContaining([
-      expect.stringContaining("a sidebar width cannot be a percentage"),
-      expect.stringContaining("not a shell part"),
-      expect.stringContaining("$sticky has no effect"),
-    ]),
-  );
 });

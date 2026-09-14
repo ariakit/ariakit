@@ -29,27 +29,6 @@ import {
 } from "../styles/shell.ts";
 import { ButtonSlot } from "./button.ariakit.react.tsx";
 
-const isDevelopment = process.env.NODE_ENV !== "production";
-
-// The class each shell part carries. A direct child of the shell without one of
-// them is a wrapper, which becomes the grid item and hides a sidebar from its
-// slot.
-const SHELL_PART_CLASSES = [
-  "shell",
-  "shell-header",
-  "shell-sidebar",
-  "shell-main",
-  "shell-footer",
-];
-
-function isShellPart(element: Element) {
-  return SHELL_PART_CLASSES.some((name) => element.classList.contains(name));
-}
-
-function isPercentage(value: unknown) {
-  return typeof value === "string" && value.trim().endsWith("%");
-}
-
 export interface ShellProps
   extends ak.RoleProps<"div">, VariantProps<typeof shell> {}
 
@@ -78,45 +57,7 @@ export interface ShellProps
  */
 export function Shell(props: ShellProps) {
   const [variantProps, rest] = splitProps(props, shell);
-  const ref = React.useRef<HTMLDivElement>(null);
-  const { $sidebarWidth, $startWidth, $endWidth } = variantProps;
-  // A boolean rather than the values: a width pair is a new tuple on every
-  // render.
-  const hasPercentage = [$sidebarWidth, $startWidth, $endWidth]
-    .flat()
-    .some(isPercentage);
-
-  React.useEffect(() => {
-    if (!isDevelopment) return;
-    if (!hasPercentage) return;
-    console.warn(
-      "Shell: a sidebar width cannot be a percentage. The width tokens are registered lengths, so a percentage is invalid and the slot silently falls back to the default width. Pass a length, an expression or a spacing number instead.",
-    );
-  }, [hasPercentage]);
-
-  // No dependency list: the children can change without a new element, and
-  // walking a handful of direct children after a render costs nothing in
-  // development, which is the only time it runs.
-  React.useEffect(() => {
-    if (!isDevelopment) return;
-    const element = ref.current;
-    if (!element) return;
-    for (const child of element.children) {
-      if (isShellPart(child)) continue;
-      console.warn(
-        `Shell: <${child.tagName.toLowerCase()}> is a direct child of the shell but not a shell part. A wrapper becomes the grid item and hides a sidebar from its slot. Render shell parts as direct children.`,
-        child,
-      );
-    }
-  });
-
-  return (
-    <ak.Role.div
-      {...shell.jsx(variantProps)}
-      {...rest}
-      ref={useMergeRefs(ref, rest.ref)}
-    />
-  );
+  return <ak.Role.div {...shell.jsx(variantProps)} {...rest} />;
 }
 
 export interface ShellHeaderPartProps
@@ -258,40 +199,22 @@ export interface ShellFooterProps
   extends
     ak.RoleProps<"footer">,
     VariantProps<typeof shellFooter>,
-    ShellBarPartsProps {
-  /**
-   * Not supported: footers are always static and scroll with the page. Passing
-   * it warns in development.
-   */
-  $sticky?: never;
-}
+    ShellBarPartsProps {}
 
 /**
  * The bottom bar of a shell. It is always static and as tall as its content,
- * and a sticky sidebar body ends above it at the end of the page.
+ * and a sticky sidebar body ends above it at the end of the page. It has no
+ * `$sticky` variant.
  */
 export function ShellFooter({
   start,
   center,
   end,
   children,
-  // Taken off the props so an untyped caller's value never reaches the
-  // element.
-  $sticky,
   ...props
 }: ShellFooterProps) {
   const [variantProps, rest] = splitProps(props, shellFooter);
   const variants = shellFooter.getVariants(variantProps);
-  const hasSticky = $sticky !== undefined;
-
-  React.useEffect(() => {
-    if (!isDevelopment) return;
-    if (!hasSticky) return;
-    console.warn(
-      "ShellFooter: $sticky has no effect. Footers are always static and scroll with the page.",
-    );
-  }, [hasSticky]);
-
   return (
     <ak.Role.footer
       data-blur={getShellBlurStep(variants.$blur)}
@@ -447,39 +370,6 @@ function useOverlayFlag(column: HTMLElement | null) {
   return overlay;
 }
 
-/**
- * Warns in development when the column renders wider than its slot token, which
- * breaks the centering by the difference. Checked once the column mounts and
- * whenever it resizes without a running transition.
- */
-function useSlotWidthWarning(column: HTMLElement | null, enabled: boolean) {
-  useSafeLayoutEffect(() => {
-    if (!isDevelopment) return;
-    if (!column) return;
-    if (!enabled) return;
-    const win = getWindow(column);
-    const check = () => {
-      if (column.getAnimations().length) return;
-      const style = win.getComputedStyle(column);
-      if (style.getPropertyValue("--shell-overlay").trim() === "1") return;
-      const slotWidth = Number.parseFloat(
-        style.getPropertyValue("--shell-slot-width"),
-      );
-      const width = column.getBoundingClientRect().width;
-      if (!width || !slotWidth) return;
-      if (Math.abs(width - slotWidth) < 1) return;
-      console.warn(
-        `ShellSidebar: the sidebar renders ${width}px wide but its slot is ${slotWidth}px. A sidebar wider or narrower than its declared slot breaks the centering of main by the difference. Set the width on the shell with $sidebarWidth, $startWidth or $endWidth instead of on the sidebar.`,
-        column,
-      );
-    };
-    check();
-    const observer = new win.ResizeObserver(check);
-    observer.observe(column);
-    return () => observer.disconnect();
-  }, [column, enabled]);
-}
-
 export interface ShellSidebarProps
   extends
     ak.RoleProps<"div">,
@@ -568,7 +458,6 @@ export function ShellSidebar({
   const [column, setColumn] = React.useState<HTMLDivElement | null>(null);
   const overlay = useOverlayFlag(column);
   const isDialog = overlay && modal;
-  useSlotWidthWarning(column, isOpen);
 
   const [variantProps, rest] = splitProps(props, shellSidebar);
   const variants = shellSidebar.getVariants(variantProps);

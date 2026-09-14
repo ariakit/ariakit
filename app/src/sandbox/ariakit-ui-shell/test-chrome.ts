@@ -139,28 +139,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       );
       await expect(q.button("Toggle sidebar")).toHaveCount(0);
     });
-
-    test("warns in development about the mistakes the layout cannot absorb", async ({
-      page,
-      q,
-    }) => {
-      const warnings: string[] = [];
-      page.on("console", (message) => {
-        if (message.type() === "warning") {
-          warnings.push(message.text());
-        }
-      });
-      await selectScenario(q, "warnings");
-      await expect.poll(() => warnings.length).toBeGreaterThanOrEqual(4);
-      expect(warnings).toEqual(
-        expect.arrayContaining([
-          expect.stringContaining("a sidebar width cannot be a percentage"),
-          expect.stringContaining("not a shell part"),
-          expect.stringContaining("wide but its slot is"),
-          expect.stringContaining("$sticky has no effect"),
-        ]),
-      );
-    });
   });
 
   test.describe("phone", () => {
