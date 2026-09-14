@@ -211,7 +211,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7477
-  test("shares every named control size with buttons", async ({ q }) => {
+  test("shares every named control size with buttons plus the field border", async ({
+    q,
+  }) => {
     const box = query(q.article("Control sizes"));
     for (const size of ["xs", "sm", "md", "lg", "xl"]) {
       const input = box.textbox(`${size} field`);
