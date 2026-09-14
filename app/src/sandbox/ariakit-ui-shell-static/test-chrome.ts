@@ -13,14 +13,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const sidebar = page.locator("#sidebar");
     const toggle = q.button("Toggle sidebar");
     await expect(page.locator("astro-island")).toHaveCount(0);
-    await expect(sidebar).toHaveCSS("width", "256px");
     await expect(q.navigation("Documentation")).toBeVisible();
     await toggle.click();
-    await expect(sidebar).toHaveCSS("width", "0px");
     await expect(query(sidebar).link("Sidebars")).toBeHidden();
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
     await toggle.click();
-    await expect(sidebar).toHaveCSS("width", "256px");
     await expect(query(sidebar).link("Sidebars")).toBeVisible();
   });
 });

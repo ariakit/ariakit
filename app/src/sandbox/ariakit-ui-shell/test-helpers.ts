@@ -22,11 +22,6 @@ export function getSidebar(q: Query, name: string) {
     .or(q.complementary(name, { includeHidden: true }));
 }
 
-/** The body inside a sidebar column, the element that scrolls and sticks. */
-export function getSidebarBody(sidebar: Locator) {
-  return sidebar.locator(":scope > .shell-sidebar-body");
-}
-
 /** The first rendered child of main, which sits in the content column. */
 export function getContent(q: Query) {
   return q.main().locator(":scope > :not(style)").first();

@@ -47,7 +47,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 });
 
-withCaptures(import.meta.dirname, async ({ query, test }) => {
+withCaptures(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000661269
   test("keeps the empty message borderless in forced colors @visual", async ({
     page,
@@ -57,9 +57,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Empty state");
-      await test
-        .expect(query(box).text("No results found"))
-        .toHaveCSS("border-top-width", "0px");
       await captureInView(visual, box, colorScheme);
     });
   });

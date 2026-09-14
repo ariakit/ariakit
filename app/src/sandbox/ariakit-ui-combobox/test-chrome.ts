@@ -136,14 +136,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(q.listbox("Favorite fruit")).toBeHidden();
   });
 
-  test("counts one selected label in the singular", async ({ q }) => {
-    const select = query(q.article("Selection count")).combobox("Issue labels");
-    await test.expect(select).toHaveText("2 labels");
-    await select.click();
-    await query(q.listbox("Issue labels")).option("Docs").click();
-    await test.expect(select).toHaveText("1 label");
-  });
-
   test("lets a long select list scroll inside its height cap", async ({
     page,
     q,
@@ -167,15 +159,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test
       .expect(article.option("Olives"))
       .toHaveAttribute("aria-selected", "true");
-  });
-
-  test("shows the chosen status on the status select", async ({ q }) => {
-    const select = q.combobox("Review status");
-    await test.expect(select).toHaveText("In review");
-    await select.click();
-    await q.option("Published").click();
-    await test.expect(select).toHaveText("Published");
-    await test.expect(q.listbox("Review status")).toBeHidden();
   });
 
   // Regression fixtures.

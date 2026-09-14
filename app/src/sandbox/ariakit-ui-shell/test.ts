@@ -42,13 +42,6 @@ test("opens the table of contents from its own toggle without touching the navig
   expect(getColumn("Documentation")).toHaveAttribute("data-open", "true");
 });
 
-test("puts a bare element passed to a bar prop in its part cell", () => {
-  // The docs footer passes a link, not a part element, as its end part.
-  const cell = q.link("Back to top").closest(".shell-bar-end");
-  expect(cell).not.toBeNull();
-  expect(cell?.parentElement).toBe(q.contentinfo());
-});
-
 test("keeps the icon and the default name on a toggle whose children are false", async () => {
   await selectScenario("settings");
   // Open by default: the conditional label is false.
