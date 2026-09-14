@@ -1,0 +1,138 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+// The shell from its recipes alone, as an Astro page renders it: static HTML
+// and CSS with a persisted open state and no component JavaScript. The one
+// script on the page is the plain toggle, which flips the sidebar's open
+// attribute the way a cookie-backed inline script would.
+import {
+  shell,
+  shellHeader,
+  shellHeaderCenter,
+  shellHeaderEnd,
+  shellHeaderStart,
+  shellMain,
+  shellSidebar,
+  shellSidebarBackdrop,
+  shellSidebarBody,
+  shellSidebarToggle,
+} from "@ariakit/ui/styles/shell";
+import { prose } from "@ariakit/ui/styles/prose";
+
+const root = shell.html({ $startWidth: 64 });
+const header = shellHeader.html({ $blur: true });
+const start = shellHeaderStart.html();
+const center = shellHeaderCenter.html();
+const end = shellHeaderEnd.html({ $shrink: true });
+const toggle = shellSidebarToggle.html();
+const sidebar = shellSidebar.html({ $overlayBelow: "md" });
+const backdrop = shellSidebarBackdrop.html();
+const body = shellSidebarBody.html();
+const main = shellMain.html({ $centered: true });
+const article = prose.html();
+
+const sections = ["Introduction", "Installation", "Sidebars", "Centering"];
+---
+
+<div class={root.class} style={root.style}>
+  <header
+    class={header.class}
+    style={header.style}
+    data-sticky="true"
+    data-blur="md"
+  >
+    <div class={start.class} style={start.style}>
+      <button
+        type="button"
+        id="toggle"
+        class={toggle.class}
+        style={toggle.style}
+        aria-expanded="true"
+        aria-controls="sidebar-body"
+      >
+        Toggle sidebar
+      </button>
+      <strong>Static shell</strong>
+    </div>
+    <div class={center.class} style={center.style}>Documentation</div>
+    <div class={end.class} style={end.style}>No component JavaScript</div>
+  </header>
+  <div
+    id="sidebar"
+    class={sidebar.class}
+    style={sidebar.style}
+    data-side="start"
+    data-open="true"
+    data-sticky="true"
+    data-overlay-below="md"
+  >
+    <div class={backdrop.class} style={backdrop.style} id="backdrop"></div>
+    <div id="sidebar-body" class={body.class} style={body.style}>
+      <nav aria-label="Documentation">
+        <ul class="grid gap-1">
+          {
+            sections.map((section) => (
+              <li>
+                <a href={`#${section.toLowerCase()}`} class="block px-3 py-2">
+                  {section}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+  </div>
+  <main class={main.class} style={main.style} data-centered="true">
+    <div class={article.class} style={article.style}>
+      <h1>Static shell</h1>
+      {
+        sections.map((section) => (
+          <section>
+            <h2 id={section.toLowerCase()}>{section}</h2>
+            <p>
+              The shell renders from its recipes as static HTML and CSS. The
+              header sticks, the sidebar folds and the main area stays centered
+              without any component JavaScript.
+            </p>
+            <p>
+              Below 48rem of shell width the sidebar is an overlay drawer with a
+              backdrop, from the same markup and the same open attribute.
+            </p>
+          </section>
+        ))
+      }
+    </div>
+  </main>
+</div>
+
+<script is:inline>
+  // The plain toggle: the open state is one attribute on the column, so a
+  // click flips it and the drawer slides. A click on the backdrop closes it.
+  // Inline, so it ships as written: no TypeScript syntax here.
+  const column = document.getElementById("sidebar");
+  const toggle = document.getElementById("toggle");
+  const backdrop = document.getElementById("backdrop");
+  if (column && toggle && backdrop) {
+    /** @param {boolean} open */
+    const setOpen = (open) => {
+      if (open) {
+        column.setAttribute("data-open", "true");
+      } else {
+        column.removeAttribute("data-open");
+      }
+      toggle.setAttribute("aria-expanded", String(open));
+    };
+    toggle.addEventListener("click", () => {
+      setOpen(!column.hasAttribute("data-open"));
+    });
+    backdrop.addEventListener("click", () => setOpen(false));
+  }
+</script>
