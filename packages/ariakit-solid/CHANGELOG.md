@@ -1,5 +1,21 @@
 # @ariakit/solid
 
+## 0.2.8
+
+### More HTML helpers for `Role`
+
+[`Role`](https://ariakit.com/reference/role) now includes helpers for standard HTML elements such as `kbd`, `hr`, `code`, `main`, `fieldset`, and `table` in React and Solid. Each helper renders its named element and accepts its native props and ref, with the same composition options as existing helpers.
+
+```tsx
+<Role.kbd>⌘K</Role.kbd>
+<Role.hr />
+<Role.time dateTime="2026-09-09">September 9</Role.time>
+```
+
+### Other updates
+
+- Updated dependencies: `@ariakit/solid-components@0.1.8`
+
 ## 0.2.7
 
 - Updated dependencies: `@ariakit/solid-components@0.1.7`

@@ -1,5 +1,9 @@
 # @ariakit/solid-store
 
+## 0.1.10
+
+- Updated dependencies: `@ariakit/store@0.1.10`
+
 ## 0.1.9
 
 - Updated dependencies: `@ariakit/store@0.1.9`
