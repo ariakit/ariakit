@@ -5,10 +5,30 @@ import {
   forEachColorScheme,
   getCapture,
   hoverOver,
+  tabInto,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001360186
+  test("keeps a distinct keyboard focus outline on a grouped action input", async ({
+    page,
+    q,
+  }) => {
+    const action = q.button("Clear");
+    const field = q.textbox("Draft message");
+    await forEachColorScheme(page, async () => {
+      await tabInto(page, q.article("Field with leading reset button"));
+      await test.expect(action).toBeFocused();
+      await test.expect(action).not.toHaveCSS("outline-style", "none");
+      await test.expect(action).not.toHaveCSS("outline-width", "0px");
+      await page.keyboard.press("Tab");
+      await test.expect(field).toBeFocused();
+      await test.expect(field).toHaveCSS("outline-style", "none");
+      await test.expect(field.locator("..")).toHaveCSS("outline-width", "2px");
+    });
+  });
+
   // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001360182
   test("uses adaptive placeholder ink for a grouped textarea", async ({
     page,

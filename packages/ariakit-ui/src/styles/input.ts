@@ -35,7 +35,9 @@ export const input = cv({
     // A native input uses the control line box; a textarea keeps its rows.
     "[input]:box-content [input]:h-lh",
     "[&_input]:box-content [&_input]:h-lh",
-    "[&_:is(input,textarea,select)]:outline-none",
+    // Entry fields share the group outline; actions keep their own focus cue.
+    // :where keeps the type exclusions from raising specificity.
+    "[&_:is(input:not(:where([type=hidden],[type=button],[type=submit],[type=reset],[type=image],[type=checkbox],[type=radio])),textarea,select)]:outline-none",
     "placeholder:ak-ink-0 [&_:is(input,textarea)]:placeholder:ak-ink-0",
     // A field inside another input surface uses the outer padding and edge.
     // The focus override also wins against its own focus-state variant.
