@@ -7,7 +7,7 @@ import {
   getShell,
   getSidebar,
   getSidebarBody,
-} from "./helpers.ts";
+} from "./test-helpers.ts";
 
 // The server-rendered page with no JavaScript: the persisted open state, the
 // sticky header and the centered main all come from the markup and the

@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
-import { getSidebar, selectScenario } from "./helpers.ts";
+import { getSidebar, selectScenario } from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
   test.describe("wide", () => {

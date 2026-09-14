@@ -14,7 +14,7 @@ import {
   getSidebarBody,
   sampleCenterOffset,
   selectScenario,
-} from "./helpers.ts";
+} from "./test-helpers.ts";
 
 // The header height token, 3.25rem at the 16px root font size.
 const HEADER_HEIGHT = 52;
