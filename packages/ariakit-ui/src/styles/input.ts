@@ -36,7 +36,7 @@ export const input = cv({
     "[input]:box-content [input]:h-lh",
     "[&_input]:box-content [&_input]:h-lh",
     "[&_:is(input,textarea,select)]:outline-none",
-    "placeholder:ak-ink-0 [&_input]:placeholder:ak-ink-0",
+    "placeholder:ak-ink-0 [&_:is(input,textarea)]:placeholder:ak-ink-0",
     // A field inside another input surface uses the outer padding and edge.
     // The focus override also wins against its own focus-state variant.
     "[:is(&_&)]:p-0 [:is(&_&)]:border-0 [:is(&_&)]:ring-0",

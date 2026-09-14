@@ -9,6 +9,25 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001360182
+  test("uses adaptive placeholder ink for a grouped textarea", async ({
+    page,
+    q,
+  }) => {
+    await forEachColorScheme(page, async () => {
+      const placeholderColor = await q
+        .textbox("Draft message")
+        .evaluate((node) => getComputedStyle(node, "::placeholder").color);
+      await test.expect
+        .poll(() =>
+          q
+            .textbox("Delivery notes")
+            .evaluate((node) => getComputedStyle(node, "::placeholder").color),
+        )
+        .toBe(placeholderColor);
+    });
+  });
+
   // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001176828
   test("skips a leading action when focusing the field from group padding", async ({
     q,
