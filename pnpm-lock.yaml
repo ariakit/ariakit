@@ -266,8 +266,8 @@ importers:
         specifier: 1.82.0
         version: 1.82.0(oxlint-tsgolint@7.0.2001)
       oxlint-plugin-comment-reflow:
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.2.1
+        version: 0.2.1
       oxlint-tsgolint:
         specifier: 7.0.2001
         version: 7.0.2001
@@ -8897,8 +8897,8 @@ packages:
       vite-plus:
         optional: true
 
-  oxlint-plugin-comment-reflow@0.2.0:
-    resolution: {integrity: sha512-WAtekr/oIMaaUS5peTNcK6QP1bMmzvMfdICioRXD/lbWtCzRjMaVyKHe6UhgjYVNsX/sRZQfppZswoMFqzCzdg==}
+  oxlint-plugin-comment-reflow@0.2.1:
+    resolution: {integrity: sha512-1bqJ1v5bf9pk+4LD8SMmoHNQXobC904FI3PqEIOORttuzHRZ+5LcucynH0yhPsnT5L1SgBP3LsyWy9F74zm2gA==}
     engines: {node: ^24.18.0 || >=26.0.0}
 
   oxlint-tsgolint@7.0.2001:
@@ -19065,7 +19065,7 @@ snapshots:
       '@oxfmt/binding-win32-ia32-msvc': 0.67.0
       '@oxfmt/binding-win32-x64-msvc': 0.67.0
 
-  oxlint-plugin-comment-reflow@0.2.0:
+  oxlint-plugin-comment-reflow@0.2.1:
     dependencies:
       '@oxlint/plugins': 1.82.0
 
