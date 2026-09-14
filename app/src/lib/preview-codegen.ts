@@ -153,12 +153,19 @@ function generatePreviewWrapper(preview: DiscoveredPreview, file: string) {
     componentImports.push(
       `import ${variable}Example from ${JSON.stringify(importPath)};`,
     );
-    sourceImports.push(
-      `import source${variable} from ${JSON.stringify(`${sourceImportPath}?source`)};`,
-    );
-    sourceEntries.push(`  ${JSON.stringify(framework)}: source${variable},`);
+    // Only a framework with a hydration adapter is an island whose entry is a
+    // TypeScript module. An Astro or HTML entry renders as static markup: a
+    // client directive on it is an error, and the source plugin cannot parse
+    // it.
+    if (adapter) {
+      sourceImports.push(
+        `import source${variable} from ${JSON.stringify(`${sourceImportPath}?source`)};`,
+      );
+      sourceEntries.push(`  ${JSON.stringify(framework)}: source${variable},`);
+    }
+    const directive = adapter ? " client:load" : "";
     componentEntries.push(
-      `  <${variable}Example client:load slot=${JSON.stringify(framework)} />`,
+      `  <${variable}Example${directive} slot=${JSON.stringify(framework)} />`,
     );
   }
   return `---\nimport PreviewFramework from "#app/components/preview-framework.astro";\n${componentImports.join("\n")}\n\n${sourceImports.join("\n")}\n\nexport const source = {\n${sourceEntries.join("\n")}\n};\n---\n\n<PreviewFramework>\n${componentEntries.join("\n")}\n</PreviewFramework>\n`;
