@@ -40,12 +40,7 @@ const sections = ["Introduction", "Installation", "Sidebars", "Centering"];
 ---
 
 <div class={root.class} style={root.style}>
-  <header
-    class={header.class}
-    style={header.style}
-    data-sticky="true"
-    data-blur="md"
-  >
+  <header class={header.class} style={header.style}>
     <div class={start.class} style={start.style}>
       <button
         type="button"
@@ -66,9 +61,7 @@ const sections = ["Introduction", "Installation", "Sidebars", "Centering"];
     id="sidebar"
     class={sidebar.class}
     style={sidebar.style}
-    data-side="start"
     data-open="true"
-    data-sticky="true"
   >
     <div id="sidebar-body" class={body.class} style={body.style}>
       <nav aria-label="Documentation">
@@ -86,7 +79,7 @@ const sections = ["Introduction", "Installation", "Sidebars", "Centering"];
       </nav>
     </div>
   </div>
-  <main class={main.class} style={main.style} data-centered="true">
+  <main class={main.class} style={main.style}>
     <div class={article.class} style={article.style}>
       <h1>Static shell</h1>
       {

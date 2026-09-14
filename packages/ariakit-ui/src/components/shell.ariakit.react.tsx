@@ -8,7 +8,6 @@ import {
   createRender,
 } from "../react-utils/create-render.react.ts";
 import {
-  getShellBlurStep,
   shell,
   shellBleed,
   shellFooter,
@@ -70,15 +69,7 @@ type BarPartRecipe = typeof shellHeaderStart;
  */
 function renderPartCell(recipe: BarPartRecipe, props: ShellHeaderPartProps) {
   const [variantProps, rest] = splitProps(props, recipe);
-  const variants = recipe.getVariants(variantProps);
-  return (
-    <ak.Role.div
-      data-shrink={variants.$shrink || undefined}
-      data-grow={variants.$grow || undefined}
-      {...recipe.jsx(variantProps)}
-      {...rest}
-    />
-  );
+  return <ak.Role.div {...recipe.jsx(variantProps)} {...rest} />;
 }
 
 /**
@@ -175,15 +166,8 @@ export function ShellHeader({
   ...props
 }: ShellHeaderProps) {
   const [variantProps, rest] = splitProps(props, shellHeader);
-  const variants = shellHeader.getVariants(variantProps);
   return (
-    <ak.Role.header
-      data-sticky={variants.$sticky || undefined}
-      data-blur={getShellBlurStep(variants.$blur)}
-      data-stack-center={variants.$stackCenter || undefined}
-      {...shellHeader.jsx(variantProps)}
-      {...rest}
-    >
+    <ak.Role.header {...shellHeader.jsx(variantProps)} {...rest}>
       {renderBarPart(ShellHeaderStart, start)}
       {renderBarPart(ShellHeaderCenter, center)}
       {renderBarPart(ShellHeaderEnd, end)}
@@ -211,13 +195,8 @@ export function ShellFooter({
   ...props
 }: ShellFooterProps) {
   const [variantProps, rest] = splitProps(props, shellFooter);
-  const variants = shellFooter.getVariants(variantProps);
   return (
-    <ak.Role.footer
-      data-blur={getShellBlurStep(variants.$blur)}
-      {...shellFooter.jsx(variantProps)}
-      {...rest}
-    >
+    <ak.Role.footer {...shellFooter.jsx(variantProps)} {...rest}>
       {renderBarPart(ShellFooterStart, start)}
       {renderBarPart(ShellFooterCenter, center)}
       {renderBarPart(ShellFooterEnd, end)}
@@ -277,14 +256,7 @@ export interface ShellMainProps
  */
 export function ShellMain(props: ShellMainProps) {
   const [variantProps, rest] = splitProps(props, shellMain);
-  const variants = shellMain.getVariants(variantProps);
-  return (
-    <ak.Role.main
-      data-centered={variants.$centered || undefined}
-      {...shellMain.jsx(variantProps)}
-      {...rest}
-    />
-  );
+  return <ak.Role.main {...shellMain.jsx(variantProps)} {...rest} />;
 }
 
 export interface ShellBleedProps
@@ -383,7 +355,6 @@ export function ShellSidebar({
     defaultOpen: defaultOpen ?? (providedStore ? undefined : true),
   });
   const [variantProps, rest] = splitProps(props, shellSidebar);
-  const variants = shellSidebar.getVariants(variantProps);
   const bodyElement = createRender(ShellSidebarBody, body);
   return (
     <ak.DisclosureContent
@@ -392,8 +363,6 @@ export function ShellSidebar({
       // content through visibility once the motion ends, so the content stays
       // in the DOM in both states.
       hidden={false}
-      data-side={variants.$side}
-      data-sticky={variants.$sticky || undefined}
       {...shellSidebar.jsx(variantProps)}
       {...rest}
     >

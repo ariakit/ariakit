@@ -20,17 +20,6 @@ test("renders the docs page as one banner, one main, one contentinfo and labelle
   expect(q.navigation("On this page")).toBeInTheDocument();
 });
 
-test("mirrors the variants on data attributes that the recipes select on", () => {
-  expect(q.banner()).toHaveAttribute("data-sticky", "true");
-  expect(q.banner()).toHaveAttribute("data-blur", "md");
-  expect(q.main()).toHaveAttribute("data-centered", "true");
-  const column = getColumn("Documentation");
-  expect(column).toHaveAttribute("data-side", "start");
-  expect(column).toHaveAttribute("data-sticky", "true");
-  expect(getColumn("On this page")).toHaveAttribute("data-side", "end");
-  expect(q.contentinfo()).not.toHaveAttribute("data-sticky");
-});
-
 test("toggles the navigation sidebar from a disclosure linked to its column", async () => {
   const toggle = q.button("Toggle sidebar");
   const column = getColumn("Documentation");

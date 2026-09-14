@@ -88,7 +88,7 @@ export const shell = cv({
     // sticky sidebar bodies and anchors in main read. Zero unless the header
     // says it is sticky.
     "[--shell-header-offset:0px]",
-    "[&:has(>.shell-header[data-sticky])]:[--shell-header-offset:var(--shell-header-height)]",
+    "[&:has(>.shell-header-sticky)]:[--shell-header-offset:var(--shell-header-height)]",
     // A nested shell takes the main cell of the shell around it. The shared
     // tokens are inherited explicitly, because the defaults above are
     // re-declared on every shell; the four slot widths are not, so an outer
@@ -172,8 +172,8 @@ const bar = cx(
   "pr-[max(var(--shell-gutter),env(safe-area-inset-right))]",
   // A growing center part takes a double share of the leftover, so it grows
   // while staying centered as long as both sides fit in a quarter of the bar.
-  // The part announces it with data-grow, which the React component sets.
-  "[&:has(>.shell-bar-center[data-grow])]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
+  // The part announces it with the class its $grow variant emits.
+  "[&:has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
 );
 
 /**
@@ -231,9 +231,11 @@ export const shellHeader = cv({
   variants: {
     /**
      * Keeps the header in view while its row is in view. It keeps its space, so
-     * nothing flows under it. Defaults to `true`.
+     * nothing flows under it. The shell reads the class this emits to publish
+     * the header's height as the offset sticky sidebar bodies and anchors keep.
+     * Defaults to `true`.
      */
-    $sticky: "sticky inset-bs-0",
+    $sticky: "shell-header-sticky sticky inset-bs-0",
     /**
      * Blurs the page behind the bar: `"sm"`, `"md"` or `"lg"`, with `true`
      * meaning `"md"`. Each step bundles the blur radius with a translucent
@@ -295,7 +297,10 @@ export const shellHeaderStart = cv({
     /**
      * Fills the part's track instead of sitting at its edge.
      */
-    $grow: { true: "justify-self-stretch", false: "justify-self-start" },
+    $grow: {
+      true: "justify-self-stretch",
+      false: "justify-self-start",
+    },
   },
 });
 
@@ -312,9 +317,12 @@ export const shellHeaderCenter = cv({
      * Takes a double share of the bar's leftover width, growing while staying
      * centered as long as both sides fit in a quarter of the bar. Beside a very
      * wide side part it sits further off center than a plain part; `$shrink` on
-     * both sides keeps it exactly centered.
+     * both sides keeps it exactly centered. The bar reads the class this emits.
      */
-    $grow: { true: "justify-self-stretch", false: "justify-self-center" },
+    $grow: {
+      true: "shell-bar-grow justify-self-stretch",
+      false: "justify-self-center",
+    },
   },
 });
 
@@ -329,7 +337,10 @@ export const shellHeaderEnd = cv({
     /**
      * Fills the part's track instead of sitting at its edge.
      */
-    $grow: { true: "justify-self-stretch", false: "justify-self-end" },
+    $grow: {
+      true: "justify-self-stretch",
+      false: "justify-self-end",
+    },
   },
 });
 
@@ -377,9 +388,9 @@ export const shellFooterEnd = shellHeaderEnd;
  * first render does not. It clips rather than hides its overflow: hidden would
  * make it a scroll container and kill the sticky body.
  *
- * The React component sets `data-side`, `data-open` and `data-sticky` on the
- * column; static markup declares them itself. The selectors here and in the
- * main recipe read them.
+ * The React component sets `data-open` on the column from its store; static
+ * markup declares it itself. The selectors here and in the main recipe read it,
+ * together with the side class the `$side` variant emits.
  */
 export const shellSidebar = cv({
   extend: [frame],
@@ -403,20 +414,20 @@ export const shellSidebar = cv({
      * The side of the shell the sidebar sits on. Among sidebars on the same
      * side, DOM order is the visual order from the shell's edge: the first
      * start sidebar sits at the edge, the first end sidebar sits next to main.
-     * A sibling's `data-side` says which slot this one takes.
+     * A sibling's side class says which slot this one takes.
      */
     $side: {
       start: [
-        "col-1 border-e",
+        "shell-sidebar-start col-1 border-e",
         "[--shell-slot-width:var(--shell-start-1-width)]",
-        "[.shell-sidebar[data-side=start]~&]:col-2",
-        "[.shell-sidebar[data-side=start]~&]:[--shell-slot-width:var(--shell-start-2-width)]",
+        "[.shell-sidebar-start~&]:col-2",
+        "[.shell-sidebar-start~&]:[--shell-slot-width:var(--shell-start-2-width)]",
       ],
       end: [
-        "col-4 border-s",
+        "shell-sidebar-end col-4 border-s",
         "[--shell-slot-width:var(--shell-end-1-width)]",
-        "[.shell-sidebar[data-side=end]~&]:col-5",
-        "[.shell-sidebar[data-side=end]~&]:[--shell-slot-width:var(--shell-end-2-width)]",
+        "[.shell-sidebar-end~&]:col-5",
+        "[.shell-sidebar-end~&]:[--shell-slot-width:var(--shell-end-2-width)]",
       ],
     },
     /**
@@ -449,8 +460,8 @@ export const shellSidebarBody = cv({
   class: [
     "shell-sidebar-body box-border w-(--shell-slot-width) min-h-0 flex-auto",
     "overflow-y-auto overscroll-contain",
-    "[.shell-sidebar[data-side=start]>&]:ms-auto",
-    "[.shell-sidebar[data-side=end]>&]:me-auto",
+    "[.shell-sidebar-start>&]:ms-auto",
+    "[.shell-sidebar-end>&]:me-auto",
   ],
   defaultVariants: {
     $p: 4,
@@ -473,13 +484,13 @@ export const shellSidebarToggle = cv({
  */
 const slotFlags = cx(
   // The first start sidebar: not preceded by another start sidebar.
-  "[.shell:has(>.shell-sidebar[data-side=start][data-open]:not(.shell-sidebar[data-side=start]~*))>&]:[--shell-start-1-open:1]",
+  "[.shell:has(>.shell-sidebar-start[data-open]:not(.shell-sidebar-start~*))>&]:[--shell-start-1-open:1]",
   // The second start sidebar: preceded by another start sidebar.
-  "[.shell:has(>.shell-sidebar[data-side=start]~.shell-sidebar[data-side=start][data-open])>&]:[--shell-start-2-open:1]",
+  "[.shell:has(>.shell-sidebar-start~.shell-sidebar-start[data-open])>&]:[--shell-start-2-open:1]",
   // The first end sidebar, next to main.
-  "[.shell:has(>.shell-sidebar[data-side=end][data-open]:not(.shell-sidebar[data-side=end]~*))>&]:[--shell-end-1-open:1]",
+  "[.shell:has(>.shell-sidebar-end[data-open]:not(.shell-sidebar-end~*))>&]:[--shell-end-1-open:1]",
   // The second end sidebar, at the shell's end edge.
-  "[.shell:has(>.shell-sidebar[data-side=end]~.shell-sidebar[data-side=end][data-open])>&]:[--shell-end-2-open:1]",
+  "[.shell:has(>.shell-sidebar-end~.shell-sidebar-end[data-open])>&]:[--shell-end-2-open:1]",
 );
 
 /**

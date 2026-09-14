@@ -25,7 +25,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(sidebar).toHaveCSS("width", "256px");
     await expect(q.navigation("Documentation")).toBeVisible();
     await expect(q.navigation("On this page")).toBeHidden();
-    await expect(q.banner()).toHaveAttribute("data-sticky");
     await expectCentered(getContent(q), getShell(page));
     await page.evaluate(() => window.scrollTo(0, 600));
     expect((await getBox(q.banner())).y).toBe(0);
