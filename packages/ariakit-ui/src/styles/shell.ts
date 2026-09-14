@@ -177,44 +177,19 @@ const bar = cx(
 );
 
 /**
- * The translucent surface behind a blur step, chosen so that bar text stays
- * above a 7:1 contrast over any backdrop in either theme. Where backdrop
- * filters are unsupported or reduced transparency is requested, the opaque
- * layer color returns. The layer utility paints the opaque color first, and
- * these sort after it.
+ * Blurs the page behind a bar: a medium backdrop blur with a translucent
+ * surface, chosen so that bar text stays above a 7:1 contrast over any backdrop
+ * in either theme. Where backdrop filters are unsupported or reduced
+ * transparency is requested, the opaque layer color returns; the layer utility
+ * paints the opaque color first, and the fallbacks sort after it. A backdrop
+ * filter creates a stacking context and a containing block for fixed
+ * descendants, and nested backdrop filters do not compose.
  */
-const blurFallback = cx(
+const blur = cx(
+  "backdrop-blur-md bg-[color-mix(in_oklab,var(--ak-layer)_80%,transparent)]",
   "supports-[not(backdrop-filter:blur(1px))]:bg-(--ak-layer)",
   "[@media(prefers-reduced-transparency:reduce)]:bg-(--ak-layer)",
 );
-
-const blurSteps = {
-  sm: "backdrop-blur-sm bg-[color-mix(in_oklab,var(--ak-layer)_85%,transparent)]",
-  md: "backdrop-blur-md bg-[color-mix(in_oklab,var(--ak-layer)_80%,transparent)]",
-  lg: "backdrop-blur-lg bg-[color-mix(in_oklab,var(--ak-layer)_75%,transparent)]",
-};
-
-export type ShellBlurValue = keyof typeof blurSteps;
-
-/** Resolves a `$blur` value to its step, with `true` meaning the middle one. */
-export function getShellBlurStep(value?: boolean | ShellBlurValue) {
-  if (!value) return;
-  if (value === true) return "md";
-  return value;
-}
-
-/**
- * Blurs the page behind the bar. Each step bundles Tailwind's backdrop blur of
- * that size with a translucent surface, and restores the opaque surface where
- * backdrop filters are unsupported or reduced transparency is requested. A
- * backdrop filter creates a stacking context and a containing block for fixed
- * descendants, and nested backdrop filters do not compose.
- */
-function getBlurClass(value?: boolean | ShellBlurValue) {
-  const step = getShellBlurStep(value);
-  if (!step) return;
-  return [blurSteps[step], blurFallback];
-}
 
 export const shellHeader = cv({
   extend: [frame],
@@ -237,14 +212,11 @@ export const shellHeader = cv({
      */
     $sticky: "shell-header-sticky sticky inset-bs-0",
     /**
-     * Blurs the page behind the bar: `"sm"`, `"md"` or `"lg"`, with `true`
-     * meaning `"md"`. Each step bundles the blur radius with a translucent
-     * surface, and falls back to the opaque surface where backdrop filters are
-     * unsupported or reduced transparency is requested.
+     * Blurs the page behind the bar through a translucent surface, which falls
+     * back to the opaque one where backdrop filters are unsupported or reduced
+     * transparency is requested.
      */
-    $blur(value?: boolean | ShellBlurValue) {
-      return getBlurClass(value);
-    },
+    $blur: blur,
     /**
      * Moves the center part to a second row spanning the bar when the bar's
      * content is narrower than 40rem. A stacked bar is taller than its height
@@ -351,14 +323,11 @@ export const shellFooter = cv({
   ],
   variants: {
     /**
-     * Blurs the page behind the bar: `"sm"`, `"md"` or `"lg"`, with `true`
-     * meaning `"md"`. Each step bundles the blur radius with a translucent
-     * surface, and falls back to the opaque surface where backdrop filters are
-     * unsupported or reduced transparency is requested.
+     * Blurs the page behind the bar through a translucent surface, which falls
+     * back to the opaque one where backdrop filters are unsupported or reduced
+     * transparency is requested.
      */
-    $blur(value?: boolean | ShellBlurValue) {
-      return getBlurClass(value);
-    },
+    $blur: blur,
   },
   defaultVariants: {
     $p: "none",
