@@ -264,8 +264,7 @@ export interface ShellBleedProps
 
 /**
  * A direct child of main that spans its gutters, for a full-width band inside a
- * centered main. Anywhere else it keeps its content size. `Frame` does the same
- * with `$bleed`.
+ * centered main. Anywhere else it keeps its content size.
  */
 export function ShellBleed(props: ShellBleedProps) {
   const [variantProps, rest] = splitProps(props, shellBleed);

@@ -1,4 +1,4 @@
-import { cv, cx } from "clava";
+import { cv } from "clava";
 import { includes } from "../utils/includes.ts";
 import { getSpacingValue } from "../utils/styles.ts";
 import { edge } from "./edge.ts";
@@ -219,33 +219,12 @@ export const frameBase = cv({
 });
 
 /**
- * The classes that put a child of the shell main area on its `full` grid lines,
- * shared by `$bleed` here and by the `shellBleed` recipe. Both rules apply only
- * there: an unscoped containment would size the element as empty in a flex row
- * or an auto track anywhere else. The selector outranks main's own placement of
- * its children.
- */
-export const frameBleed = cx(
-  "[.shell-main>&]:col-[full] [.shell-main>&]:contain-inline-size",
-);
-
-/**
  * The frame geometry plus the edge colours it paints with, and the layer those
  * colours resolve against. This is the frame primitive components normally
  * extend.
  */
 export const frame = cv({
   extend: [edge, frameBase],
-  variants: {
-    /**
-     * Spans the gutters of the shell main area around the frame, from its
-     * `full-start` line to its `full-end` line, with inline-size containment so
-     * a wide child does not stretch the gutter tracks. Both apply only to a
-     * direct child of `ShellMain`, the one element that has those lines;
-     * anywhere else the frame keeps its content size.
-     */
-    $bleed: frameBleed,
-  },
   defaultVariants: {
     // These two clear variants declared by `edge`. They belong here rather than
     // in `edge` because a computed default only sees the variants its own

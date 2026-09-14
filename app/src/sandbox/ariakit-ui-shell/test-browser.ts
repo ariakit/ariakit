@@ -246,29 +246,15 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       expect(offset).toBeCloseTo(112, 0);
     });
 
-    test("spans the gutters of main from a bleed wrapper or a bleed frame, only as a direct child of main", async ({
-      q,
-    }) => {
+    test("spans the gutters of main from a bleed wrapper", async ({ q }) => {
       const main = await getBox(q.main());
       const content = await getBox(getContent(q));
       const band = await getBox(
         q.text("A full-bleed band inside the centered main"),
       );
-      const frame = await getBox(
-        q.text("A full-bleed frame inside the centered main").locator(".."),
-      );
-      const badge = await getBox(q.text("Badge"));
       expect(content.width).toBeLessThan(main.width);
       expect(band.x).toBe(main.x);
       expect(band.width).toBe(main.width);
-      expect(frame.x).toBe(main.x);
-      expect(frame.width).toBe(main.width);
-      // The badge is a bleed inside a flex row: it keeps its content size. With
-      // the containment it would be as wide as its padding alone, under 16px,
-      // with its text overflowing.
-      expect(badge.width).toBeGreaterThan(32);
-      expect(badge.width).toBeLessThan(content.width);
-      expect(badge.x).toBeGreaterThan(main.x);
     });
 
     test("reflows main's content with the width main has", async ({ q }) => {

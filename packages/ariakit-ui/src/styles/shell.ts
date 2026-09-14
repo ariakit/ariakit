@@ -1,7 +1,7 @@
 import { cv, cx } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { button } from "./button.ts";
-import { frame, frameBase, frameBleed } from "./frame.ts";
+import { frame, frameBase } from "./frame.ts";
 import { layer } from "./layer.ts";
 
 export type ShellWidth = string | number;
@@ -550,11 +550,13 @@ export const shellMain = cv({
 });
 
 /**
- * A direct child of main that spans the gutters. Inline-size containment keeps
- * a wide table or an embedded shell from stretching the gutter tracks. Both
- * rules apply only there; anywhere else the element keeps its content size. The
- * `$bleed` variant on `Frame` does the same.
+ * A direct child of main that spans the gutters, from its `full-start` line to
+ * its `full-end` line. Inline-size containment keeps a wide table or an
+ * embedded shell from stretching the gutter tracks. Both rules apply only
+ * there: the selector outranks main's own placement of its children, and an
+ * unscoped containment would size the element as empty in a flex row or an auto
+ * track anywhere else.
  */
 export const shellBleed = cv({
-  class: frameBleed,
+  class: "[.shell-main>&]:col-[full] [.shell-main>&]:contain-inline-size",
 });

@@ -314,31 +314,6 @@ function DocsScenario() {
             content column.
           </p>
         </Prose>
-        <Frame
-          $bleed
-          $layer="secondary"
-          $p={6}
-          $rounded="none"
-          className="flex flex-wrap items-center justify-center gap-3"
-        >
-          <span className="font-medium">
-            A full-bleed frame inside the centered main
-          </span>
-          {/*
-            A bleed inside a flex row, not a direct child of main: neither the
-            placement nor the containment reaches it, so the badge keeps its
-            content size.
-           */}
-          <Frame
-            $bleed
-            $layer="brand"
-            $p={2}
-            $rounded="full"
-            className="text-sm"
-          >
-            Badge
-          </Frame>
-        </Frame>
       </ShellMain>
       <ShellSidebar
         store={contents}
