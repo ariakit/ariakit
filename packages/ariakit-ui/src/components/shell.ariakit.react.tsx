@@ -289,7 +289,10 @@ export interface ShellSidebarProps
    * The store that owns the open state: a disclosure store, or a dialog store,
    * which is one. It defaults to the store of the nearest `DialogProvider` or
    * `DisclosureProvider`. Without a store, the sidebar backs its own with the
-   * `open`, `defaultOpen` and `onOpenChange` props, open by default.
+   * `open`, `defaultOpen` and `onOpenChange` props, open by default. Inside a
+   * dialog, a popover or another component that gives its content a disclosure
+   * store, that store is the nearest one: pass a `store` there, or wrap the
+   * shell in a provider of its own.
    */
   store?: ak.DisclosureStore;
   /**
