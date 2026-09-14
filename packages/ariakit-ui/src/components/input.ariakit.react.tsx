@@ -1,9 +1,15 @@
 import * as ak from "@ariakit/react";
 import { mergeProps } from "@ariakit/react-utils";
-import { isElement, isFocusable, isPortalEvent } from "@ariakit/utils";
+import {
+  getWindow,
+  isElement,
+  isFocusable,
+  isPortalEvent,
+} from "@ariakit/utils";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import type { MouseEvent } from "react";
+import { useRef } from "react";
 import { input, inputSlot } from "../styles/input.ts";
 
 export interface InputProps
@@ -31,9 +37,27 @@ export interface InputGroupProps
  */
 export function InputGroup(props: InputGroupProps) {
   const [variantProps, rest] = splitProps(props, input);
+  const mouseDownRef = useRef<[number, number] | null>(null);
+  const onMouseDown = (event: MouseEvent<HTMLDivElement>) => {
+    if (isPortalEvent(event)) return;
+    mouseDownRef.current = [event.clientX, event.clientY];
+  };
   const onClick = (event: MouseEvent<HTMLDivElement>) => {
+    const mouseDown = mouseDownRef.current;
+    mouseDownRef.current = null;
     if (event.defaultPrevented) return;
     if (isPortalEvent(event)) return;
+    // Preserve drag selection. A stationary click can still hold the previous
+    // selection until its default action runs, so selection alone is not
+    // enough.
+    const selection = getWindow(event.currentTarget).getSelection();
+    if (selection && !selection.isCollapsed) {
+      // Repeated clicks select words or lines without pointer movement.
+      if (event.detail > 1) return;
+      if (!mouseDown) return;
+      if (event.clientX !== mouseDown[0]) return;
+      if (event.clientY !== mouseDown[1]) return;
+    }
     // Keep clicks on the field or a nested action at their own target.
     let target = isElement(event.target) ? event.target : null;
     while (target && target !== event.currentTarget) {
@@ -47,12 +71,9 @@ export function InputGroup(props: InputGroupProps) {
     ).find(isFocusable);
     field?.focus();
   };
-  return (
-    <ak.Role.div
-      {...input.jsx(variantProps)}
-      {...mergeProps({ onClick }, rest)}
-    />
-  );
+  // oxlint-disable-next-line react/refs -- mergeProps wraps handlers without calling them.
+  const mergedProps = mergeProps({ onMouseDown, onClick }, rest);
+  return <ak.Role.div {...input.jsx(variantProps)} {...mergedProps} />;
 }
 
 export interface InputSlotProps

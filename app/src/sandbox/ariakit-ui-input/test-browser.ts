@@ -10,6 +10,53 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  for (const clickCount of [2, 3]) {
+    // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001553443
+    test(`preserves group prefix selection from ${clickCount} clicks`, async ({
+      page,
+      q,
+    }) => {
+      const prefix = q.text("https://", { exact: true });
+      const field = q.textbox("Share link");
+      await prefix.click({ clickCount, position: { x: 10, y: 10 } });
+      await test.expect
+        .poll(() => page.evaluate(() => getSelection()?.toString().trim()))
+        .toBe(clickCount === 2 ? "https" : "https://");
+      await test.expect(field).not.toBeFocused();
+      await prefix.click();
+      await test.expect(field).toBeFocused();
+    });
+  }
+
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001553443
+  test("preserves text selected by dragging across a group prefix", async ({
+    page,
+    q,
+  }) => {
+    const prefix = q.text("https://", { exact: true });
+    const field = q.textbox("Share link");
+    // Keep the drag away from viewport edges that trigger selection scrolling.
+    await prefix.evaluate((node) => node.scrollIntoView({ block: "center" }));
+    const box = await prefix.boundingBox();
+    test.expect(box).not.toBeNull();
+    if (!box) return;
+    await page.mouse.move(box.x + 1, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width - 1, box.y + box.height / 2, {
+      steps: 12,
+    });
+    await test.expect
+      .poll(() => page.evaluate(() => getSelection()?.toString()))
+      .toBe("https://");
+    await page.mouse.up();
+    await test.expect
+      .poll(() => page.evaluate(() => getSelection()?.toString()))
+      .toBe("https://");
+    await test.expect(field).not.toBeFocused();
+    await prefix.click();
+    await test.expect(field).toBeFocused();
+  });
+
   // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001360186
   test("keeps a distinct keyboard focus outline on a grouped action input", async ({
     page,
