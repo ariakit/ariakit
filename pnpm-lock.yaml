@@ -917,6 +917,9 @@ importers:
       '@ariakit/tailwind':
         specifier: workspace:*
         version: link:../ariakit-tailwind
+      '@ariakit/utils':
+        specifier: workspace:*
+        version: link:../ariakit-utils
       clava:
         specifier: 0.6.3
         version: 0.6.3

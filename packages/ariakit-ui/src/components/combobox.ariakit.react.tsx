@@ -83,7 +83,9 @@ export function ComboboxProvider(props: ComboboxProviderProps) {
 }
 
 export interface ComboboxInputProps
-  extends ak.ComboboxProps, VariantProps<typeof comboboxInput> {}
+  extends
+    ak.ComboboxProps,
+    Omit<VariantProps<typeof comboboxInput>, "$disabled"> {}
 
 export function ComboboxInput(props: ComboboxInputProps) {
   const [variantProps, rest] = splitProps(props, comboboxInput);

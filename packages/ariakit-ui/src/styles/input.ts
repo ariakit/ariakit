@@ -1,12 +1,15 @@
 import { cv } from "clava";
+import { control, controlSlot } from "./control.ts";
 import { focusHighlight } from "./focus.ts";
-import { frame } from "./frame.ts";
-import { text } from "./text.ts";
 
 export const input = cv({
-  extend: [frame, text, focusHighlight],
+  extend: [control, focusHighlight],
   class: [
-    "max-w-full cursor-text",
+    "max-w-full cursor-text items-center justify-start",
+    // Keep the danger color's lightness and set its weight after the ordinary
+    // edge utilities, which otherwise push it to black or white.
+    "not-ui-field-disabled:ui-field-invalid:ak-edge-danger not-ui-field-disabled:ui-field-invalid:ak-edge-45",
+    "not-ui-field-disabled:ui-field-invalid:ak-edge-push-0",
     // Only animate into the hover state; snapping back on hover-out keeps
     // the field from feeling laggy.
     "hover:transition-[background-color]",
@@ -29,20 +32,22 @@ export const input = cv({
     "ui-field-disabled:ak-ink-0 ui-field-disabled:**:ak-ink-0",
     "ui-field-disabled:ak-edge-10",
     "ui-field-disabled:ak-layer-offset-0",
-    // The row is one tight line plus the frame padding, whether the class
-    // sits on the input itself or on a wrapper around it. Six steps of box
-    // minus two one-step margins lands the nested input on the same 4-step
-    // row as the self case, so a change to one number needs the others.
-    "leading-4",
-    "[input]:box-content [input]:h-4",
-    "[&_input]:-my-1 [&_input]:box-content [&_input]:h-6",
-    "[&_input]:outline-none",
-    // A textarea stacks rows, so it keeps the ordinary line height instead of
-    // the tight one-line row above.
-    "[textarea]:leading-normal",
-    "placeholder:ak-ink-0 [&_input]:placeholder:ak-ink-0",
+    // A native input uses the control line box; a textarea keeps its rows.
+    "[input]:box-content [input]:h-lh",
+    "[&_input]:box-content [&_input]:h-lh",
+    // Entry fields share the group outline; actions keep their own focus cue.
+    // :where keeps the type exclusions from raising specificity.
+    "[&_:is(input:not(:where([type=hidden],[type=button],[type=submit],[type=reset],[type=image],[type=checkbox],[type=radio])),textarea,select)]:outline-none",
+    "placeholder:ak-ink-0 [&_:is(input,textarea)]:placeholder:ak-ink-0",
+    // A field inside another input surface uses the outer padding and edge.
+    // The focus override also wins against its own focus-state variant.
+    "[:is(&_&)]:p-0 [:is(&_&)]:border-0 [:is(&_&)]:ring-0",
+    "[:is(&_&)]:shadow-none [:is(&_&)]:outline-none!",
+    "[:is(&_&)]:bg-transparent [:is(&_&)]:ak-layer-offset-0 [:is(&_&)]:ak-state-0",
   ],
   variants: {
+    // Disabled appearance follows the field's DOM state.
+    $disabled: null,
     /**
      * Whether to show a focus ring when the field, or the input inside it,
      * takes focus, and how thick the ring should be.
@@ -67,10 +72,7 @@ export const input = cv({
   },
   defaultVariants: {
     $rounded: "lg",
-    $p: 3,
     $border: true,
-    // Always a real border rather than a ring, so the field geometry stays the
-    // same on light and dark layers.
     $borderType: "border",
     // A field's edge is its only boundary on the surface around it, so it is
     // stronger than the named border weights provide: the lightest that keeps
@@ -78,15 +80,15 @@ export const input = cv({
     // the same weight. A variant default, not a base class, so instance weights
     // replace it instead of losing by stylesheet order.
     $edgeWeight: 45,
-    // A field sinks into the surrounding surface where a button rises off it,
-    // so the offset runs the other way: lighter on light layers, darker on dark
-    // ones. Hover then spends ak-state in the button direction, which pulls the
-    // field back toward the layer around it.
+    // Fields keep a light writing surface on light layers and a dark one on
+    // dark layers. Hover pulls the field toward the surrounding surface.
     $lightnessOffset: -1,
     $focus: true,
     $focusOffset: "inset",
   },
 });
+
+export const inputSlot = controlSlot;
 
 /**
  * Placeholder-colored text for fake input fields, like a button styled as an

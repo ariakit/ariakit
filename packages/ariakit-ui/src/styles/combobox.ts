@@ -93,7 +93,7 @@ export const comboboxItemLabel = optionLabel;
 export const comboboxItemSlot = optionSlot;
 
 // A flat select with a layer of its own is a form field, so it takes the finish
-// of the input beside it: sunk into the surface, with a real border.
+// of the input beside it: a writing surface with a real border.
 // `$layer="transparent"` keeps the see-through button for a toolbar that owns
 // the surface, and the bevel and a colored layer keep their button look.
 function isSelectField(variants: { $kind?: unknown; $layer?: unknown }) {
@@ -115,9 +115,9 @@ export const comboboxSelect = cv({
     $lightnessOffset(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
       if (defaultValue !== true) return defaultValue;
-      // The button lifts a layer of its own. A field sinks instead, like the
-      // input: lighter on light layers and darker on dark ones. A disabled
-      // field lies flat on the surface around it.
+      // Like the input, a field keeps a light writing surface on light layers
+      // and a dark one on dark layers. A disabled field uses the surrounding
+      // surface.
       if (variants.$disabled) return 0;
       return -1;
     },
@@ -128,8 +128,8 @@ export const comboboxSelect = cv({
     $borderType(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
       if (!variants.$border) return defaultValue;
-      // A real border rather than the adaptive ring, like the input, so the
-      // field keeps the same size on light and dark layers.
+      // A real border keeps the field geometry the same on light and dark
+      // layers, like the input.
       if (defaultValue != null && defaultValue !== "auto") return defaultValue;
       return "border";
     },

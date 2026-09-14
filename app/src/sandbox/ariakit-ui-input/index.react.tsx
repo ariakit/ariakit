@@ -9,7 +9,16 @@
  */
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import { Input } from "@ariakit/ui/components/input.ariakit.react";
+import {
+  Input,
+  InputGroup,
+  InputSlot,
+} from "@ariakit/ui/components/input.ariakit.react";
+import {
+  Popover,
+  PopoverDisclosure,
+  PopoverProvider,
+} from "@ariakit/ui/components/popover.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { inputPlaceholder } from "@ariakit/ui/styles/input";
 import { ListFilter, Search } from "lucide-react";
@@ -63,7 +72,7 @@ export default function InputExamples() {
         description="A field marked invalid, with a danger edge and an error message that the field references."
         code={`
           <Text render={<label />}>Email</Text>
-          <Input $edge="danger" />
+          <Input aria-invalid />
           <Text $text="danger">…</Text>
         `}
       >
@@ -79,7 +88,6 @@ export default function InputExamples() {
             defaultValue="not an email"
             aria-invalid
             aria-describedby="input-email-error"
-            $edge="danger"
           />
           <Text id="input-email-error" $text="danger" className="text-sm">
             Enter a valid email address.
@@ -129,25 +137,25 @@ export default function InputExamples() {
         title="Compact"
         description="Less padding around the text, at the same font size."
         code={`
-          <Input $p={2} />
+          <Input $p={1} />
         `}
       >
-        <Input aria-label="City" placeholder="London" $p={2} />
+        <Input aria-label="City" placeholder="London" $p={1} />
       </Example>
 
       <Example
         title="Small"
-        description="A text-sm class on the label around the field. The field takes that font size, and its padding and radius scale with it."
+        description="The small control size. The field sets its own font size, and its padding and radius scale with it."
         code={`
           <Text render={<label />}>
             Postal code
-            <Input />
+            <Input $size="sm" />
           </Text>
         `}
       >
-        <Text render={<label />} className="grid w-full gap-1.5 text-sm">
+        <Text render={<label />} className="grid w-full gap-1.5">
           <span className="font-medium">Postal code</span>
-          <Input placeholder="SW1A 1AA" />
+          <Input placeholder="SW1A 1AA" $size="sm" />
         </Text>
       </Example>
 
@@ -188,44 +196,63 @@ export default function InputExamples() {
 
       <Example
         title="Field with leading icon"
-        description="The field style on a label around a plain input, so an icon shares the box. The ring shows when the input inside takes focus."
+        description="An icon shares the field with a plain input. Clicking the field surface focuses the input."
         code={`
-          <Input render={<label />}>
-            <ListFilter />
-          </Input>
+          <InputGroup>
+            <InputSlot><ListFilter /></InputSlot>
+            <input aria-label="Filter components" />
+          </InputGroup>
         `}
       >
-        <Input
-          render={<label />}
-          focusable={false}
-          className="flex items-center gap-2"
-        >
-          <ListFilter className="ak-ink-60 size-[1em] flex-none" />
+        <InputGroup>
+          <InputSlot className="ak-ink-60">
+            <ListFilter />
+          </InputSlot>
           <input
             aria-label="Filter components"
             placeholder="Filter components"
             className="min-w-0 flex-1"
           />
-        </Input>
+        </InputGroup>
+      </Example>
+
+      <Example
+        title="Grouped Input"
+        description="Input uses the group's border, padding and size when placed inside InputGroup."
+        code={`
+          <InputGroup $size="sm">
+            <InputSlot>@</InputSlot>
+            <Input aria-label="Handle" />
+          </InputGroup>
+        `}
+      >
+        <InputGroup $size="sm">
+          <InputSlot className="ak-ink-60">@</InputSlot>
+          <Input
+            aria-label="Handle"
+            placeholder="ada"
+            className="min-w-0 flex-1"
+          />
+        </InputGroup>
       </Example>
 
       <Example
         title="Share link with copy button"
-        description="A read-only link with a prefix and an action button in one field. A label inside the field keeps the button out of it."
+        description="A read-only link with a prefix and an action button in one field. Clicking the field surface focuses the input; Copy keeps its own focus."
         code={`
-          <Input render={<div />} $p={1}>
-            <Text>https://</Text>
-            <Button $size="sm">Copy</Button>
-          </Input>
+          <InputGroup>
+            <span className="flex min-w-0 flex-1 items-center gap-2">
+              <Text>https://</Text>
+              <input aria-label="Share link" readOnly />
+            </span>
+            <InputSlot $size="2xl" $square={false}>
+              <Button $size="sm">Copy</Button>
+            </InputSlot>
+          </InputGroup>
         `}
       >
-        <Input
-          render={<div />}
-          focusable={false}
-          $p={1}
-          className="flex items-center gap-2"
-        >
-          <label className="flex min-w-0 flex-1 items-center gap-2 self-stretch ps-2">
+        <InputGroup>
+          <span className="flex min-w-0 flex-1 items-center gap-2">
             <Text className="ak-ink-60">https://</Text>
             <input
               aria-label="Share link"
@@ -233,9 +260,11 @@ export default function InputExamples() {
               readOnly
               className="min-w-0 flex-1"
             />
-          </label>
-          <Button $size="sm">Copy</Button>
-        </Input>
+          </span>
+          <InputSlot $size="2xl" $square={false}>
+            <Button $size="sm">Copy</Button>
+          </InputSlot>
+        </InputGroup>
       </Example>
 
       <Example
@@ -243,36 +272,35 @@ export default function InputExamples() {
         description="A button that looks like an empty field, to open a search dialog. The label uses the inputPlaceholder recipe."
         code={`
           <Input render={<button type="button" />}>
-            <Search />
+            <InputSlot><Search /></InputSlot>
             <Text>Search docs</Text>
-            <kbd className="ak-ink-60">⌘K</kbd>
+            <InputSlot $kind="shortcut" $size="xl"><kbd aria-hidden>⌘K</kbd></InputSlot>
           </Input>
         `}
       >
-        <Input
-          render={<button type="button" />}
-          className="flex items-center gap-2 text-start"
-        >
-          <Search className="ak-ink-60 size-[1em] flex-none" />
+        <Input render={<button type="button" />} className="text-start">
+          <InputSlot className="ak-ink-60">
+            <Search />
+          </InputSlot>
           <Text {...inputPlaceholder.jsx({ className: "flex-1 truncate" })}>
             Search docs
           </Text>
-          <kbd aria-hidden className="ak-ink-60">
-            ⌘K
-          </kbd>
+          <InputSlot $kind="shortcut" $size="xl">
+            <kbd aria-hidden>⌘K</kbd>
+          </InputSlot>
         </Input>
       </Example>
 
       <Example
         title="Inline form with submit button"
-        description="A field beside a submit button. The row stretches both to one height."
+        description="A field beside a submit button, with both centered to show their intrinsic heights."
         code={`
           <Input type="email" />
           <Button type="submit" $layer="brand" $kind="bevel">Subscribe</Button>
         `}
       >
         <form
-          className="flex w-full gap-2"
+          className="flex w-full items-center gap-2"
           onSubmit={(event) => event.preventDefault()}
         >
           <Input
@@ -288,8 +316,33 @@ export default function InputExamples() {
       </Example>
 
       <Example
+        title="Control sizes"
+        description="Each field shares its font size and padding with the button beside it. The real border adds to the field height."
+        code={`
+          <Input $size="sm" />
+          <Button $size="sm" $kind="bevel">Save</Button>
+        `}
+      >
+        <div className="grid w-full gap-3">
+          {(["xs", "sm", "md", "lg", "xl"] as const).map((size) => (
+            <div key={size} className="flex items-center gap-2">
+              <Input
+                $size={size}
+                aria-label={`${size} field`}
+                placeholder={`${size} field`}
+                className="w-0 min-w-0 flex-1"
+              />
+              <Button $size={size} $kind="bevel" aria-label={`Save ${size}`}>
+                Save
+              </Button>
+            </div>
+          ))}
+        </div>
+      </Example>
+
+      <Example
         title="On a brand layer"
-        description="The field sinks into a saturated brand surface, and its edge and placeholder adapt to it."
+        description="The field separates from a saturated brand surface, and its edge and placeholder adapt to it."
         code={`
           <Frame $layer="brand" $rounded="xl" $p={4}>
             <Input />
@@ -299,6 +352,111 @@ export default function InputExamples() {
         <Frame $layer="brand" $rounded="xl" $p={4} className="grid w-full">
           <Input aria-label="Invite email" placeholder="teammate@example.com" />
         </Frame>
+      </Example>
+
+      <Example
+        title="Field with help popup"
+        description="A help button opens a note beside the field. Clicking the note keeps focus out of the input."
+        code={`
+          <PopoverProvider>
+            <InputGroup>
+              <Input aria-label="Contact email" />
+              <InputSlot $size="2xl" $square={false}>
+                <PopoverDisclosure $size="sm">Email help</PopoverDisclosure>
+              </InputSlot>
+              <Popover portal role="note" focusable={false} autoFocusOnShow={false}>
+                Use the email address where you want to receive updates.
+              </Popover>
+            </InputGroup>
+          </PopoverProvider>
+        `}
+      >
+        <PopoverProvider>
+          <InputGroup>
+            <Input
+              aria-label="Contact email"
+              placeholder="you@example.com"
+              className="min-w-0 flex-1"
+            />
+            <InputSlot $size="2xl" $square={false}>
+              <PopoverDisclosure $size="sm">Email help</PopoverDisclosure>
+            </InputSlot>
+            <Popover
+              portal
+              role="note"
+              focusable={false}
+              autoFocusOnShow={false}
+              className="max-w-64"
+            >
+              Use the email address where you want to receive updates.
+            </Popover>
+          </InputGroup>
+        </PopoverProvider>
+      </Example>
+
+      <Example
+        title="Grouped native fields"
+        description="A textarea and a select each share one focus ring with their group."
+        code={`
+          <InputGroup>
+            <Text>Note</Text>
+            <textarea aria-label="Delivery notes" rows={2} />
+          </InputGroup>
+          <InputGroup>
+            <Text>Ship</Text>
+            <select aria-label="Delivery speed">
+              <option>Standard</option>
+              <option>Express</option>
+            </select>
+          </InputGroup>
+        `}
+      >
+        <div className="grid w-full gap-3">
+          <InputGroup>
+            <Text>Note</Text>
+            <textarea
+              aria-label="Delivery notes"
+              rows={2}
+              placeholder="Leave the package at the front desk."
+              className="min-w-0 flex-1 resize-y"
+            />
+          </InputGroup>
+          <InputGroup>
+            <Text>Ship</Text>
+            <select aria-label="Delivery speed" className="min-w-0 flex-1">
+              <option>Standard</option>
+              <option>Express</option>
+            </select>
+          </InputGroup>
+        </div>
+      </Example>
+      <Example
+        title="Field with leading reset button"
+        description="A native reset button keeps its own focus. Clicking the group padding focuses the text field."
+        code={`
+          <form>
+            <InputGroup>
+              <input type="reset" value="Clear" tabIndex={0} />
+              <Input aria-label="Draft message" />
+            </InputGroup>
+          </form>
+        `}
+      >
+        <form className="w-full">
+          <InputGroup>
+            <input
+              type="reset"
+              value="Clear"
+              tabIndex={0}
+              className="cursor-pointer"
+            />
+            <Input
+              aria-label="Draft message"
+              placeholder="Write a message"
+              className="min-w-0 flex-1"
+            />
+          </InputGroup>
+        </form>
       </Example>
     </ExampleGrid>
   );

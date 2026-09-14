@@ -5,10 +5,344 @@ import {
   forEachColorScheme,
   getCapture,
   hoverOver,
+  tabInto,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  for (const clickCount of [2, 3]) {
+    // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001553443
+    test(`preserves group prefix selection from ${clickCount} clicks`, async ({
+      page,
+      q,
+    }) => {
+      const prefix = q.text("https://", { exact: true });
+      const field = q.textbox("Share link");
+      await prefix.click({ clickCount, position: { x: 10, y: 10 } });
+      await test.expect
+        .poll(() => page.evaluate(() => getSelection()?.toString().trim()))
+        .toBe(clickCount === 2 ? "https" : "https://");
+      await test.expect(field).not.toBeFocused();
+      await prefix.click();
+      await test.expect(field).toBeFocused();
+    });
+  }
+
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001553443
+  test("preserves text selected by dragging across a group prefix", async ({
+    page,
+    q,
+  }) => {
+    const prefix = q.text("https://", { exact: true });
+    const field = q.textbox("Share link");
+    // Keep the drag away from viewport edges that trigger selection scrolling.
+    await prefix.evaluate((node) => node.scrollIntoView({ block: "center" }));
+    const box = await prefix.boundingBox();
+    test.expect(box).not.toBeNull();
+    if (!box) return;
+    await page.mouse.move(box.x + 1, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width - 1, box.y + box.height / 2, {
+      steps: 12,
+    });
+    await test.expect
+      .poll(() => page.evaluate(() => getSelection()?.toString()))
+      .toBe("https://");
+    await page.mouse.up();
+    await test.expect
+      .poll(() => page.evaluate(() => getSelection()?.toString()))
+      .toBe("https://");
+    await test.expect(field).not.toBeFocused();
+    await prefix.click();
+    await test.expect(field).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001360186
+  test("keeps a distinct keyboard focus outline on a grouped action input", async ({
+    page,
+    q,
+  }) => {
+    const action = q.button("Clear");
+    const field = q.textbox("Draft message");
+    await forEachColorScheme(page, async () => {
+      await tabInto(page, q.article("Field with leading reset button"));
+      await test.expect(action).toBeFocused();
+      await test.expect(action).not.toHaveCSS("outline-style", "none");
+      await test.expect(action).not.toHaveCSS("outline-width", "0px");
+      await page.keyboard.press("Tab");
+      await test.expect(field).toBeFocused();
+      await test.expect(field).toHaveCSS("outline-style", "none");
+      await test.expect(field.locator("..")).toHaveCSS("outline-width", "2px");
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001360182
+  test("uses adaptive placeholder ink for a grouped textarea", async ({
+    page,
+    q,
+  }) => {
+    await forEachColorScheme(page, async () => {
+      const placeholderColor = await q
+        .textbox("Draft message")
+        .evaluate((node) => getComputedStyle(node, "::placeholder").color);
+      await test.expect
+        .poll(() =>
+          q
+            .textbox("Delivery notes")
+            .evaluate((node) => getComputedStyle(node, "::placeholder").color),
+        )
+        .toBe(placeholderColor);
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001176828
+  test("skips a leading action when focusing the field from group padding", async ({
+    q,
+  }) => {
+    const field = q.textbox("Draft message");
+    await field.locator("xpath=..").click({ position: { x: 4, y: 4 } });
+    await test.expect(field).toBeFocused();
+    await q.button("Clear").click();
+    await test.expect(q.button("Clear")).toBeFocused();
+    await test.expect(field).not.toBeFocused();
+  });
+
+  for (const tag of ["textarea", "select"]) {
+    // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001152364
+    test(`uses one focus outline for a grouped ${tag}`, async ({ page, q }) => {
+      const field =
+        tag === "textarea"
+          ? q.textbox("Delivery notes")
+          : q.combobox("Delivery speed");
+      await forEachColorScheme(page, async () => {
+        await field.focus();
+        await test.expect(field).toBeFocused();
+        await test.expect(field).toHaveCSS("outline-style", "none");
+        await test
+          .expect(field.locator(".."))
+          .toHaveCSS("outline-width", "2px");
+      });
+    });
+  }
+
+  test("uses one border, padding and focus ring for a grouped Input", async ({
+    page,
+    q,
+  }) => {
+    const field = q.textbox("Handle");
+    const group = field.locator("..");
+    const standalone = q.textbox("Postal code");
+    await forEachColorScheme(page, async () => {
+      await test.expect(field).toHaveCSS("border-width", "0px");
+      await test.expect(field).toHaveCSS("padding", "0px");
+      await test
+        .expect(field)
+        .toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+      await test.expect(group).toHaveCSS("border-width", "1px");
+      await test.expect
+        .poll(async () => (await group.boundingBox())?.height)
+        .toBe((await standalone.boundingBox())?.height);
+      await test
+        .expect(field)
+        .toHaveCSS(
+          "font-size",
+          await standalone.evaluate(
+            (element) => getComputedStyle(element).fontSize,
+          ),
+        );
+      await field.click();
+      await test.expect(field).toBeFocused();
+      await test.expect(field).toHaveCSS("outline-style", "none");
+      await test.expect(group).toHaveCSS("outline-width", "2px");
+      await test
+        .expect(field)
+        .toHaveCSS(
+          "color",
+          await group.evaluate((element) => getComputedStyle(element).color),
+        );
+      await field.evaluate((element) => element.setAttribute("disabled", ""));
+      await test.expect(field).toBeDisabled();
+      const disabledColor = await q
+        .textbox("Username")
+        .evaluate((element) => getComputedStyle(element).color);
+      await test.expect(group).toHaveCSS("color", disabledColor);
+      await test.expect(field).toHaveCSS("color", disabledColor);
+      await field.evaluate((element) => element.removeAttribute("disabled"));
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r3997757472
+  test("focuses the share link from the padded field surface", async ({
+    q,
+  }) => {
+    const input = q.textbox("Share link");
+    const field = input.locator("xpath=../..");
+    const copy = q.button("Copy");
+    const box = await field.boundingBox();
+    test.expect(box).not.toBeNull();
+    if (!box) return;
+    for (const position of [
+      { x: box.width / 2, y: 2 },
+      { x: box.width / 2, y: box.height - 2 },
+      { x: 2, y: box.height / 2 },
+    ]) {
+      await copy.click();
+      await test.expect(copy).toBeFocused();
+      await field.click({ position });
+      await test.expect(input).toBeFocused();
+    }
+    await copy.click();
+    await test.expect(copy).toBeFocused();
+    await test.expect(input).not.toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7477
+  test("keeps the shared control height plus the field border", async ({
+    q,
+  }) => {
+    const box = query(q.article("Inline form with submit button"));
+    const input = box.textbox("Newsletter email");
+    const button = box.button("Subscribe");
+    await test.expect(input).toBeVisible();
+    const buttonBox = await button.boundingBox();
+    await test.expect
+      .poll(async () => (await input.boundingBox())?.height)
+      .toBe((buttonBox?.height ?? 0) + 2);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7477
+  test("shares every named control size with buttons plus the field border", async ({
+    q,
+  }) => {
+    const box = query(q.article("Control sizes"));
+    for (const size of ["xs", "sm", "md", "lg", "xl"]) {
+      const input = box.textbox(`${size} field`);
+      const button = box.button(`Save ${size}`);
+      const buttonBox = await button.boundingBox();
+      await test.expect
+        .poll(async () => (await input.boundingBox())?.height)
+        .toBe((buttonBox?.height ?? 0) + 2);
+      await test
+        .expect(input)
+        .toHaveCSS(
+          "font-size",
+          await button.evaluate((node) => getComputedStyle(node).fontSize),
+        );
+    }
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r3995200392
+  test("keeps the size controls inside their card on a narrow screen", async ({
+    page,
+    q,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const card = q.article("Control sizes");
+    const box = query(card);
+    const cardBox = await card.boundingBox();
+    test.expect(cardBox).not.toBeNull();
+    if (!cardBox) return;
+    for (const size of ["xs", "sm", "md", "lg", "xl"]) {
+      const button = box.button(`Save ${size}`);
+      await test.expect
+        .poll(async () => {
+          const rect = await button.boundingBox();
+          return rect && rect.x + rect.width;
+        })
+        .toBeLessThan(cardBox.x + cardBox.width);
+    }
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7491#discussion_r3995154902
+  test("reads invalid state from a wrapped input", async ({ page, q }) => {
+    const field = q.textbox("Filter components");
+    const wrapper = field.locator("xpath=..");
+    await forEachColorScheme(page, async () => {
+      const ordinaryEdge = await wrapper.evaluate((node) =>
+        getComputedStyle(node).getPropertyValue("--ak-edge"),
+      );
+      const dangerEdge = await query(q.article("Invalid"))
+        .textbox("Email")
+        .evaluate((node) =>
+          getComputedStyle(node).getPropertyValue("--ak-edge"),
+        );
+      await field.evaluate((node) => node.setAttribute("aria-invalid", "true"));
+      await test.expect(wrapper).toHaveCSS("--ak-edge", dangerEdge);
+      await field.evaluate((node) =>
+        node.setAttribute("aria-invalid", "false"),
+      );
+      await test.expect(wrapper).toHaveCSS("--ak-edge", ordinaryEdge);
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7477
+  test("keeps fields with slots at the plain field height", async ({ q }) => {
+    const inputBox = await q.textbox("Full name").boundingBox();
+    const fields = [
+      q.textbox("Filter components").locator("xpath=.."),
+      q.textbox("Share link").locator("xpath=../.."),
+      q.button("Search docs"),
+    ];
+    for (const field of fields) {
+      await test.expect
+        .poll(async () => (await field.boundingBox())?.height)
+        .toBe(inputBox?.height);
+    }
+    const copy = q.button("Copy");
+    const wrapper = copy.locator("xpath=../..");
+    const buttonBox = await copy.boundingBox();
+    const wrapperBox = await wrapper.boundingBox();
+    test.expect(buttonBox).not.toBeNull();
+    test.expect(wrapperBox).not.toBeNull();
+    if (!buttonBox) return;
+    if (!wrapperBox) return;
+    test.expect(buttonBox.x).toBeGreaterThan(wrapperBox.x);
+    test
+      .expect(buttonBox.x + buttonBox.width)
+      .toBeLessThan(wrapperBox.x + wrapperBox.width);
+    test.expect(buttonBox.y).toBeGreaterThan(wrapperBox.y);
+    test
+      .expect(buttonBox.y + buttonBox.height)
+      .toBeLessThan(wrapperBox.y + wrapperBox.height);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7477
+  test("updates the field edge when aria-invalid changes", async ({
+    page,
+    q,
+  }) => {
+    await forEachColorScheme(page, async () => {
+      const input = query(q.article("Invalid")).textbox("Email");
+      const invalidEdge = await input.evaluate((node) =>
+        getComputedStyle(node).getPropertyValue("--ak-edge"),
+      );
+      // The danger hue must keep its own lightness instead of being pushed to
+      // black or white by the ordinary field edge.
+      await test.expect(input).toHaveCSS(
+        "--ak-edge",
+        await input.evaluate((node) => {
+          const color = node.ownerDocument.createElement("span");
+          color.style.color = "oklch(from var(--color-danger) l c h / 0.45)";
+          node.after(color);
+          const expected = getComputedStyle(color).color;
+          color.remove();
+          return expected;
+        }),
+      );
+      await input.evaluate((node) =>
+        node.setAttribute("aria-invalid", "false"),
+      );
+      await test.expect(input).toHaveAttribute("aria-invalid", "false");
+      await test.expect
+        .poll(() =>
+          input.evaluate((node) =>
+            getComputedStyle(node).getPropertyValue("--ak-edge"),
+          ),
+        )
+        .not.toBe(invalidEdge);
+    });
+  });
+
   // Flips the disabled state the way application code does after render, which
   // is why the recipe draws the disabled look from CSS state instead of a prop.
   const setDisabled = (element: Locator, attribute = "disabled") =>
