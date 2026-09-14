@@ -301,18 +301,6 @@ body > * {
   initial-value: 0px;
 }
 
-/* Whether CSS has put a sidebar column in overlay mode. The column's recipe
-   sets it from the $overlay variant or the $overlayBelow container query, the
-   backdrop and the body read it through container style queries, and the
-   React component reads it from computed style to swap the body into a modal
-   dialog. Registered so it never transitions and so it does not inherit into a
-   nested shell's sidebar. */
-@property --shell-overlay {
-  syntax: "<number>";
-  inherits: false;
-  initial-value: 0;
-}
-
 /* Disclosure state channels: the root publishes open and group flags as
    custom properties, and descendants react through container style
    queries. */

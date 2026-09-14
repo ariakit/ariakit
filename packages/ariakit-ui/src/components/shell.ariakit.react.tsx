@@ -1,6 +1,4 @@
 import * as ak from "@ariakit/react";
-import { useMergeRefs, useSafeLayoutEffect } from "@ariakit/react-utils";
-import { getWindow } from "@ariakit/utils";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { PanelLeftIcon } from "lucide-react";
@@ -23,7 +21,6 @@ import {
   shellHeaderStart,
   shellMain,
   shellSidebar,
-  shellSidebarBackdrop,
   shellSidebarBody,
   shellSidebarToggle,
 } from "../styles/shell.ts";
@@ -39,7 +36,7 @@ export interface ShellProps
  * kind and side, so DOM order is free for reading order. A nested shell takes
  * the main cell of the shell around it.
  * @example
- * const navigation = useDialogStore({ defaultOpen: true });
+ * const navigation = useDisclosureStore({ defaultOpen: true });
  * <Shell $startWidth={64} $endWidth={48}>
  *   <ShellHeader
  *     start={<ShellSidebarToggle store={navigation} />}
@@ -307,77 +304,19 @@ export interface ShellSidebarBodyProps
   extends React.ComponentProps<"div">, VariantProps<typeof shellSidebarBody> {}
 
 /**
- * The body of a sidebar: the element that scrolls, sticks below the header and
- * becomes the dialog in overlay mode. `ShellSidebar` renders one; the `body`
- * prop customizes it.
+ * The body of a sidebar: the element that scrolls and sticks below the header.
+ * `ShellSidebar` renders one; the `body` prop customizes it.
  */
 export function ShellSidebarBody(props: ShellSidebarBodyProps) {
   const [variantProps, rest] = splitProps(props, shellSidebarBody);
   return <div {...shellSidebarBody.jsx(variantProps)} {...rest} />;
 }
 
-export interface ShellSidebarBackdropProps
-  extends
-    React.ComponentProps<"div">,
-    VariantProps<typeof shellSidebarBackdrop> {}
-
-/**
- * The backdrop of an overlay sidebar. `ShellSidebar` renders one through the
- * dialog's `backdrop` prop, so a click on it closes the drawer.
- */
-export function ShellSidebarBackdrop(props: ShellSidebarBackdropProps) {
-  const [variantProps, rest] = splitProps(props, shellSidebarBackdrop);
-  const { style, ...jsx } = shellSidebarBackdrop.jsx(variantProps);
-  return (
-    <div
-      {...jsx}
-      {...rest}
-      // Ariakit writes a fixed position on the dialog backdrop inline, and the
-      // backdrop must cover the shell rather than the window.
-      style={{ ...style, position: "absolute" }}
-    />
-  );
-}
-
-/**
- * Reads whether CSS has put the column in overlay mode: the column's
- * `--shell-overlay` flag, from the `$overlay` variant or the `$overlayBelow`
- * container query. Read once the column mounts and again whenever the column or
- * its parent, the shell root when the sidebar is a direct child, resizes;
- * observing the column catches a root font-size change. No breakpoint is
- * duplicated in JavaScript, so the component cannot disagree with the
- * stylesheet.
- */
-function useOverlayFlag(column: HTMLElement | null) {
-  const [overlay, setOverlay] = React.useState(false);
-  useSafeLayoutEffect(() => {
-    if (!column) return;
-    const win = getWindow(column);
-    const update = () => {
-      const value = win
-        .getComputedStyle(column)
-        .getPropertyValue("--shell-overlay");
-      setOverlay(value.trim() === "1");
-    };
-    update();
-    const observer = new win.ResizeObserver(update);
-    observer.observe(column);
-    if (column.parentElement) {
-      observer.observe(column.parentElement);
-    }
-    return () => observer.disconnect();
-  }, [column]);
-  return overlay;
-}
-
 export interface ShellSidebarProps
-  extends
-    ak.RoleProps<"div">,
-    Pick<ak.DialogProps, "modal">,
-    VariantProps<typeof shellSidebar> {
+  extends ak.RoleProps<"div">, VariantProps<typeof shellSidebar> {
   /**
-   * The store that owns the open state, a dialog or a disclosure store. It
-   * defaults to the store of the nearest `DialogProvider` or
+   * The store that owns the open state: a disclosure store, or a dialog store,
+   * which is one. It defaults to the store of the nearest `DialogProvider` or
    * `DisclosureProvider`. Without a store, the sidebar backs its own with the
    * `open`, `defaultOpen` and `onOpenChange` props, open by default.
    */
@@ -404,117 +343,62 @@ export interface ShellSidebarProps
 }
 
 /**
- * A side panel of a shell. It folds with a drawer motion, and in overlay mode
- * (`$overlay`, or `$overlayBelow` when the shell is narrower than a step) it
- * floats over main as a modal dialog with a backdrop, from the same element and
- * the same state. A closed sidebar takes no space and is out of the tab order
- * and the accessibility tree once its motion ends.
+ * A side panel of a shell: a column that folds with a drawer motion. A closed
+ * sidebar takes no space and is out of the tab order and the accessibility tree
+ * once its motion ends. The column is the content its toggle controls; `render`
+ * sets its element, `nav` for a primary navigation or `aside` for a
+ * complementary panel, and `aria-label` names the landmark.
  *
- * The column renders a `div`. `render` sets the landmark element around the
- * content inside the body, `nav` for a primary navigation or `aside` for a
- * complementary panel, and `aria-label` names it, and names the dialog in
- * overlay mode. Before hydration the overlay renders from CSS alone, with
- * nothing inert; modality arrives with JavaScript.
- *
- * Two toggles sharing one store: only the last one used owns the focus return
+ * Two toggles sharing one store: only the last one used reports the state,
  * while the other keeps `aria-expanded="false"`, so a shell with both a header
  * toggle and a rail toggle drives that attribute itself.
  * @example
- * <DialogProvider defaultOpen>
+ * <DisclosureProvider defaultOpen>
  *   <ShellHeader start={<ShellSidebarToggle />} />
- *   <ShellSidebar $overlayBelow="md" aria-label="Main" render={<nav />}>
+ *   <ShellSidebar aria-label="Main" render={<nav />}>
  *     …
  *   </ShellSidebar>
- * </DialogProvider>
+ * </DisclosureProvider>
  */
 export function ShellSidebar({
   store: storeProp,
   open,
   defaultOpen,
   onOpenChange,
-  modal = true,
   body,
-  render,
   children,
-  "aria-label": ariaLabel,
-  "aria-labelledby": ariaLabelledBy,
   ...props
 }: ShellSidebarProps) {
   const context = ak.useDisclosureContext();
   const providedStore = storeProp ?? context;
-  // A dialog store in every case: the same store drives the dialog the body
-  // becomes in overlay mode. A store from a prop or a provider can still be
-  // controlled through `open`, as Ariakit's own Dialog is, but it is created
-  // elsewhere, so the sidebar's own default of open applies only to a store of
-  // its own. An explicit `defaultOpen` reaches Ariakit with either store, and
-  // Ariakit throws on the conflict in development.
-  const store = ak.useDialogStore({
+  // A store from a prop or a provider can still be controlled through `open`,
+  // as Ariakit's own Dialog is, but it is created elsewhere, so the sidebar's
+  // own default of open applies only to a store of its own. An explicit
+  // `defaultOpen` reaches Ariakit with either store, and Ariakit throws on the
+  // conflict in development.
+  const store = ak.useDisclosureStore({
     store: providedStore,
     open,
     setOpen: onOpenChange,
     defaultOpen: defaultOpen ?? (providedStore ? undefined : true),
   });
-  const isOpen = ak.useStoreState(store, "open");
-  const [column, setColumn] = React.useState<HTMLDivElement | null>(null);
-  const overlay = useOverlayFlag(column);
-  const isDialog = overlay && modal;
-
   const [variantProps, rest] = splitProps(props, shellSidebar);
   const variants = shellSidebar.getVariants(variantProps);
   const bodyElement = createRender(ShellSidebarBody, body);
-  const overlayBelow =
-    variants.$overlayBelow === "none" ? undefined : variants.$overlayBelow;
-
   return (
-    <ak.Role.div
+    <ak.DisclosureContent
+      store={store}
+      // Never display: none. The column folds on a transition and hides its
+      // content through visibility once the motion ends, so the content stays
+      // in the DOM in both states.
+      hidden={false}
       data-side={variants.$side}
-      data-open={isOpen || undefined}
       data-sticky={variants.$sticky || undefined}
-      data-overlay={variants.$overlay || undefined}
-      data-overlay-below={overlayBelow}
       {...shellSidebar.jsx(variantProps)}
       {...rest}
-      ref={useMergeRefs(setColumn, rest.ref)}
     >
-      <ak.Dialog
-        store={store}
-        // In place in both modes: the body slides inside its column.
-        portal={false}
-        modal={isDialog}
-        role={isDialog ? "dialog" : "none"}
-        aria-label={isDialog ? ariaLabel : undefined}
-        aria-labelledby={isDialog ? ariaLabelledBy : undefined}
-        // The body is never display: none, so a state change transitions and
-        // its content leaves the tab order through visibility once the motion
-        // ends. Ariakit reads the same flag to lock body scroll, so the lock
-        // follows the open state explicitly.
-        hidden={false}
-        preventBodyScroll={isDialog && isOpen}
-        // Ariakit's backdrop prop is what makes a click on it close the dialog;
-        // a plain sibling does not. A panel that is never modal has no
-        // backdrop: one that closes nothing would only block the page behind
-        // it.
-        backdrop={modal ? <ShellSidebarBackdrop /> : false}
-        hideOnEscape={isDialog}
-        hideOnInteractOutside={isDialog}
-        // A callback rather than the flag: Ariakit moves focus in when the flag
-        // turns on, so a plain boolean would steal focus when the shell narrows
-        // past the step with the sidebar already open, or on the first paint of
-        // a narrow page. Focus moves in only when the drawer opens.
-        autoFocusOnShow={() => isDialog}
-        autoFocusOnHide={isDialog}
-        focusable={isDialog}
-        render={bodyElement}
-      >
-        <ak.Role.div
-          render={render}
-          aria-label={ariaLabel}
-          aria-labelledby={ariaLabelledBy}
-        >
-          {children}
-        </ak.Role.div>
-      </ak.Dialog>
-    </ak.Role.div>
+      <ak.Role.div render={bodyElement}>{children}</ak.Role.div>
+    </ak.DisclosureContent>
   );
 }
 

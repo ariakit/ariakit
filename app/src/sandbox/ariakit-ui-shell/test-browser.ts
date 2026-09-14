@@ -6,7 +6,6 @@ import {
 import { withFramework } from "#app/test-utils/preview.ts";
 import {
   expectCentered,
-  getBackdrop,
   getBox,
   getCenterOffset,
   getContent,
@@ -121,20 +120,12 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       expect(channels.width).toBe(240);
       // Closed: the end slot reserves nothing.
       expect(members.width).toBe(0);
-      // An unconditional overlay: the column keeps reserving nothing and the
-      // body floats over main from the end edge.
+      // Open, it takes its slot at the end edge.
       await q.button("Toggle members").click();
-      const body = getSidebarBody(getSidebar(q, "Members"));
-      await expect(body).toBeVisible();
-      await expect(getSidebar(q, "Members")).toHaveCSS("width", "0px");
-      await expect
-        .poll(async () => {
-          const box = await getBox(body);
-          return box.x + box.width;
-        })
-        .toBe(1440);
-      expect((await getBox(body)).width).toBe(224);
-      await expect(getBackdrop(getSidebar(q, "Members"))).toBeVisible();
+      await expect(getSidebar(q, "Members")).toHaveCSS("width", "224px");
+      const open = await getBox(getSidebar(q, "Members"));
+      expect(open.x + open.width).toBe(1440);
+      await expect(getSidebarBody(getSidebar(q, "Members"))).toBeVisible();
     });
   });
 
@@ -255,30 +246,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       expect(offset).toBeCloseTo(112, 0);
     });
 
-    test("puts a panel in overlay mode when a nested shell narrows, without the window changing", async ({
-      page,
-      q,
-    }) => {
-      await selectScenario(q, "dashboard");
-      const details = getSidebar(q, "Details");
-      const body = getSidebarBody(details);
-      // The inner shell is 1280 - 224 = 1056px wide: above the 64rem step.
-      await q.button("Toggle details").click();
-      await expect(details).toHaveCSS("width", "288px");
-      await expect(getBackdrop(details)).toBeHidden();
-      // Narrow the window under the step while the navigation is open.
-      await page.setViewportSize({ width: 1200, height: 800 });
-      await expect(details).toHaveCSS("width", "0px");
-      await expect(body).toBeVisible();
-      // A panel that is never modal renders no backdrop at all.
-      await expect(getBackdrop(details)).toHaveCount(0);
-      expect((await getBox(body)).x + 288).toBe(1200);
-      // Closing the navigation widens the inner shell past the step again.
-      await q.button("Toggle sidebar").click();
-      await expect(details).toHaveCSS("width", "288px");
-      await expect(getBackdrop(details)).toBeHidden();
-    });
-
     test("spans the gutters of main from a bleed wrapper or a bleed frame, only as a direct child of main", async ({
       q,
     }) => {
@@ -373,76 +340,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     });
   });
 
-  test.describe("phone", () => {
-    test.use({ viewport: { width: 390, height: 844 } });
-
-    test("floats an overlay sidebar over main from a column that reserves nothing", async ({
-      page,
-      q,
-    }) => {
-      const sidebar = getSidebar(q, "Documentation");
-      const body = getSidebarBody(sidebar);
-      const backdrop = getBackdrop(sidebar);
-      await expect(sidebar).toHaveCSS("width", "0px");
-      await expect(backdrop).toBeVisible();
-      const bodyBox = await getBox(body);
-      expect(bodyBox.x).toBe(0);
-      expect(bodyBox.width).toBe(256);
-      expect(bodyBox.y).toBe(HEADER_HEIGHT);
-      // Main takes the full width under the drawer.
-      expect((await getBox(q.main())).width).toBe(390);
-      // The header is inert behind the modal drawer, so Escape closes it.
-      await page.keyboard.press("Escape");
-      await expect(body).toBeHidden();
-      await expect(backdrop).toBeHidden();
-      await expect(q.link("The grid")).toBeHidden();
-    });
-
-    test("slides an end sidebar in from the end edge", async ({ page, q }) => {
-      // Close the navigation drawer first, so one drawer is open at a time.
-      await page.keyboard.press("Escape");
-      const contents = getSidebar(q, "On this page");
-      const body = getSidebarBody(contents);
-      await q.button("Toggle table of contents").click();
-      await expect(body).toBeVisible();
-      // The body slides in over the shell's duration, so its edge settles.
-      await expect
-        .poll(async () => {
-          const box = await getBox(body);
-          return box.x + box.width;
-        })
-        .toBe(390);
-      expect((await getBox(body)).width).toBe(192);
-    });
-
-    test("slides the drawer from the right edge in right to left", async ({
-      page,
-      q,
-    }) => {
-      const sidebar = getSidebar(q, "Documentation");
-      const body = getSidebarBody(sidebar);
-      // The direction switch is hidden on a narrow bar and inert behind the
-      // drawer, so it is set on a wide window first.
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await q.checkbox("Right to left").check();
-      await page.setViewportSize({ width: 390, height: 844 });
-      // The open drawer sits at the start edge, now the right one.
-      await expect
-        .poll(async () => {
-          const box = await getBox(body);
-          return box.x + box.width;
-        })
-        .toBe(390);
-      // The header is inert behind the modal drawer, so Escape closes it.
-      await page.keyboard.press("Escape");
-      await expect(body).toBeHidden();
-      // Closed, it has left through the right edge, not the left one.
-      await expect
-        .poll(async () => (await getBox(body)).x)
-        .toBeGreaterThanOrEqual(390);
-    });
-  });
-
   test.describe("captures", () => {
     test.describe.configure({ timeout: 120_000 });
 
@@ -463,18 +360,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await forEachColorScheme(page, async (colorScheme) => {
         await page.evaluate(() => window.scrollTo(0, 300));
         await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(300);
-        await visual(getViewportCapture(page, colorScheme));
-      });
-    });
-
-    test("docs site with the drawer open on a phone @visual", async ({
-      page,
-      q,
-      visual,
-    }) => {
-      await page.setViewportSize({ width: 390, height: 844 });
-      await forEachColorScheme(page, async (colorScheme) => {
-        await expect(q.dialog("Documentation")).toBeVisible();
         await visual(getViewportCapture(page, colorScheme));
       });
     });

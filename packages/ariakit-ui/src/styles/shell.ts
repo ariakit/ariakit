@@ -57,10 +57,11 @@ function getSlotWidthStyle(
 export const shell = cv({
   extend: [layer],
   class: [
-    // The backdrop of an overlay sidebar is positioned against the root, the
-    // drawer slides out of view under the root's clipped edge, and the
-    // isolation keeps the chrome's z-index ladder below Ariakit's overlays.
-    "shell relative isolate grid overflow-x-clip @container/shell",
+    // The isolation keeps the chrome's z-index ladder below Ariakit's
+    // overlays. The clip cuts a wide child of main at the shell's edge instead
+    // of letting it scroll the page sideways; clip rather than hidden, so the
+    // root is no scroll container and the sticky parts keep working.
+    "shell isolate grid overflow-x-clip @container/shell",
     // Container units fall back to the small viewport without a size
     // container, so a page-scroll shell is at least one viewport tall.
     "min-h-[100cqb]",
@@ -140,9 +141,9 @@ export const shell = cv({
       return { style: { "--shell-header-height": getSpacingValue(value) } };
     },
     /**
-     * Sets the duration of every motion in the shell: the drawer, the main
-     * area's compensation and the overlay backdrop. Numbers are milliseconds.
-     * Zero switches the motion off. Reduced motion always switches it off.
+     * Sets the duration of every motion in the shell: the fold of a sidebar and
+     * the main area's compensation. Numbers are milliseconds. Zero switches the
+     * motion off. Reduced motion always switches it off.
      */
     $duration(value?: string | number) {
       if (value == null) return;
@@ -365,72 +366,37 @@ export const shellFooterCenter = shellHeaderCenter;
 export const shellFooterEnd = shellHeaderEnd;
 
 /**
- * The rules that put a sidebar column in overlay mode: the column reserves
- * nothing and stays open so the body can slide inside it, floating over main
- * from the zero-width column, above the bars so the backdrop dims them too. The
- * flag is what the backdrop and the body read through container style queries,
- * and what the React component reads to swap the body into a modal dialog. The
- * important border reset wins over the side border, which has the same
- * specificity and can sort after it.
- */
-const overlay = cx(
-  "[--shell-overlay:1] z-5 w-0 overflow-visible bg-transparent border-x-0!",
-);
-
-/**
- * The same rules under a container query on the shell's width, so an outer
- * sidebar can make an inner shell narrow without the window changing. The steps
- * follow Tailwind's breakpoint scale. Container query sizes cannot use custom
- * properties, so each step is written out, here and again in the slot flags of
- * main, which the recipe test holds to one table.
- */
-const overlayBelow = {
-  none: "",
-  sm: cx(
-    "@max-[40rem]/shell:[--shell-overlay:1] @max-[40rem]/shell:z-5",
-    "@max-[40rem]/shell:w-0 @max-[40rem]/shell:overflow-visible",
-    "@max-[40rem]/shell:bg-transparent @max-[40rem]/shell:border-x-0!",
-  ),
-  md: cx(
-    "@max-[48rem]/shell:[--shell-overlay:1] @max-[48rem]/shell:z-5",
-    "@max-[48rem]/shell:w-0 @max-[48rem]/shell:overflow-visible",
-    "@max-[48rem]/shell:bg-transparent @max-[48rem]/shell:border-x-0!",
-  ),
-  lg: cx(
-    "@max-[64rem]/shell:[--shell-overlay:1] @max-[64rem]/shell:z-5",
-    "@max-[64rem]/shell:w-0 @max-[64rem]/shell:overflow-visible",
-    "@max-[64rem]/shell:bg-transparent @max-[64rem]/shell:border-x-0!",
-  ),
-};
-
-export type ShellOverlayBelowValue = keyof typeof overlayBelow;
-
-/**
- * A sidebar: a column that the grid sizes and that animates its width, with two
- * children: a backdrop, painted only in overlay mode, and a body that keeps the
- * full width, scrolls on its own and sticks below the header. Closing the
- * sidebar folds the column to zero while the body stays glued to the edge next
- * to main, so the panel slides out under the shell's edge.
+ * A sidebar: a column that the grid sizes and that animates its width, with one
+ * child, a body that keeps the full width, scrolls on its own and sticks below
+ * the header. Closing the sidebar folds the column to zero while the body stays
+ * glued to the edge next to main, so the panel slides out under the shell's
+ * edge, and hides the column once the motion ends, which takes its content out
+ * of the tab order and the accessibility tree.
  *
  * The column is never `display: none`, so a state change transitions and a
- * first render does not. It is not positioned: the backdrop inside it is
- * positioned against the shell root, and container units inside the column
- * would resolve against the column's own zero width in overlay mode.
+ * first render does not. It clips rather than hides its overflow: hidden would
+ * make it a scroll container and kill the sticky body.
  *
- * The React component sets `data-side`, `data-open`, `data-sticky`,
- * `data-overlay` and `data-overlay-below` on the column; static markup declares
- * them itself. The selectors here and in the main recipe read them.
+ * The React component sets `data-side`, `data-open` and `data-sticky` on the
+ * column; static markup declares them itself. The selectors here and in the
+ * main recipe read them.
  */
 export const shellSidebar = cv({
   extend: [frame],
   class: [
     "shell-sidebar row-[main] flex flex-col box-border @container/shell-sidebar",
-    // The width folds on the shell's duration. No visibility here: the body
-    // hides itself once the motion ends, in both modes.
-    "transition-[width] duration-(--shell-time) ease-(--shell-ease)",
-    // Closed, the column reserves nothing and drops its border. The state
-    // selector outranks the width and the border of the open column.
-    "ui-closed:w-0 ui-closed:border-x-0",
+    "z-2 w-(--shell-slot-width) overflow-clip",
+    // The width folds on the shell's duration. The visibility flip has no
+    // duration of its own: it waits out the fold when hiding and lands at once
+    // when showing, so the content is never hidden at the first frame of an
+    // opening.
+    "transition-[width,visibility] ease-(--shell-ease)",
+    "[transition-duration:var(--shell-time),0s]",
+    "[transition-delay:0s,var(--shell-time)]",
+    "ui-open:[transition-delay:0s,0s]",
+    // Closed, the column reserves nothing, drops its border and hides. The
+    // state selectors outrank the width and the border of the open column.
+    "ui-closed:w-0 ui-closed:border-x-0 ui-closed:invisible",
   ],
   variants: {
     /**
@@ -463,31 +429,10 @@ export const shellSidebar = cv({
       "[&>.shell-sidebar-body]:inset-bs-(--shell-header-offset)",
       "[&>.shell-sidebar-body]:max-h-[calc(100cqb-var(--shell-header-offset))]",
     ],
-    /**
-     * Puts the sidebar in overlay mode at every width: the column reserves no
-     * space, the body floats over main and a backdrop covers the shell. With
-     * JavaScript, the body is a modal dialog. The inline column's width,
-     * clipping and stacking live in the same variant, so each render emits one
-     * rule for each and the overlay rules never compete with them.
-     */
-    $overlay: {
-      true: overlay,
-      // Clip rather than hide: hidden would make the column a scroll container
-      // and kill the sticky body.
-      false: "z-2 w-(--shell-slot-width) overflow-clip",
-    },
-    /**
-     * Puts the sidebar in overlay mode when the shell is narrower than a step
-     * of Tailwind's breakpoint scale: `"sm"` (40rem), `"md"` (48rem) or `"lg"`
-     * (64rem). The step is a container query on the shell, not on the window.
-     * `"none"` keeps the sidebar inline at every width. Defaults to `"md"`.
-     */
-    $overlayBelow: overlayBelow,
   },
   defaultVariants: {
     $side: "start",
     $sticky: true,
-    $overlayBelow: "md",
     // The body brings the padding.
     $p: "none",
     $lightnessOffset: 0.5,
@@ -495,43 +440,9 @@ export const shellSidebar = cv({
 });
 
 /**
- * The backdrop of an overlay sidebar, the body's previous sibling. Positioned
- * against the shell root, so it covers the whole shell, header included, and
- * painted only while the column is in overlay mode. The React component renders
- * it through the Dialog's `backdrop` prop, so a click on it closes the drawer;
- * it overrides the fixed position Ariakit writes inline.
- */
-export const shellSidebarBackdrop = cv({
-  class: [
-    "shell-sidebar-backdrop hidden absolute inset-0 bg-black/45",
-    // It fades on the shell's duration and hides once the fade ends. The
-    // visibility flip has no duration of its own: it waits out the fade when
-    // hiding and lands at once when showing, so the backdrop is never hidden
-    // at the first frame of an opening.
-    "invisible opacity-0",
-    "transition-[opacity,visibility] ease-(--shell-ease)",
-    "[transition-duration:var(--shell-time),0s]",
-    "[transition-delay:0s,var(--shell-time)]",
-    "[@container_style(--shell-overlay:_1)]:block",
-    "[@container_style(--shell-overlay:_1)]:[.shell-sidebar[data-open]>&]:visible",
-    "[@container_style(--shell-overlay:_1)]:[.shell-sidebar[data-open]>&]:opacity-100",
-    "[@container_style(--shell-overlay:_1)]:[.shell-sidebar[data-open]>&]:[transition-delay:0s,0s]",
-    // Under the same container query as the rule that shows it, so it sorts
-    // after that rule: a plain print rule would lose to it.
-    "[@container_style(--shell-overlay:_1)]:print:hidden",
-  ],
-});
-
-/**
- * The body of a sidebar: the element that scrolls, sticks below the header and,
- * in overlay mode, becomes the dialog. It keeps the slot's full width while the
- * column folds, so nothing reflows, glued to the edge next to main. Once the
- * fold ends it is hidden, which takes its content out of the tab order and the
- * accessibility tree.
- *
- * The transition is declared for both modes, and only the animated values
- * change with state: Ariakit detects the leave animation of the dialog from the
- * computed transition duration.
+ * The body of a sidebar: the element that scrolls and sticks below the header.
+ * It keeps the slot's full width while the column folds, so nothing reflows,
+ * glued to the edge next to main.
  */
 export const shellSidebarBody = cv({
   extend: [frameBase],
@@ -540,33 +451,6 @@ export const shellSidebarBody = cv({
     "overflow-y-auto overscroll-contain",
     "[.shell-sidebar[data-side=start]>&]:ms-auto",
     "[.shell-sidebar[data-side=end]>&]:me-auto",
-    // The visibility flip has no duration of its own: it waits out the motion
-    // when hiding and lands at once when showing. A duration there would keep
-    // the body hidden for the first frame of an opening, when the dialog moves
-    // focus into it.
-    "transition-[translate,visibility] ease-(--shell-ease)",
-    "[transition-duration:var(--shell-time),0s]",
-    "[transition-delay:0s,var(--shell-time)]",
-    "[.shell-sidebar[data-open]>&]:[transition-delay:0s,0s]",
-    "[.shell-sidebar:not([data-open])>&]:invisible",
-    // Overlay mode, read from the column's flag: the body floats over main
-    // with sticky positioning inside the zero-width column, paints the
-    // column's layer with a shadow, and slides from its edge. The end side
-    // pulls the body back over main by its own width.
-    "[@container_style(--shell-overlay:_1)]:sticky",
-    "[@container_style(--shell-overlay:_1)]:inset-bs-(--shell-header-offset)",
-    "[@container_style(--shell-overlay:_1)]:max-h-[calc(100cqb-var(--shell-header-offset))]",
-    "[@container_style(--shell-overlay:_1)]:bg-(--ak-layer)",
-    "[@container_style(--shell-overlay:_1)]:shadow-[0_0_0_1px_var(--ak-edge),0_24px_48px_-12px_rgb(0_0_0/0.5)]",
-    "[@container_style(--shell-overlay:_1)]:[.shell-sidebar[data-side=end]>&]:-ms-(--shell-slot-width)",
-    "[@container_style(--shell-overlay:_1)]:[.shell-sidebar[data-side=start]:not([data-open])>&]:-translate-x-full",
-    "[@container_style(--shell-overlay:_1)]:[.shell-sidebar[data-side=end]:not([data-open])>&]:translate-x-full",
-    // Right to left mirrors the slide. The variant adds no specificity, and
-    // sorts after the rules above.
-    "rtl:[@container_style(--shell-overlay:_1)]:[.shell-sidebar[data-side=start]:not([data-open])>&]:translate-x-full",
-    "rtl:[@container_style(--shell-overlay:_1)]:[.shell-sidebar[data-side=end]:not([data-open])>&]:-translate-x-full",
-    // An overlay drawer is chrome, not content.
-    "[@container_style(--shell-overlay:_1)]:print:hidden",
   ],
   defaultVariants: {
     $p: 4,
@@ -575,9 +459,9 @@ export const shellSidebarBody = cv({
 
 /**
  * The button that opens and closes a sidebar. An Ariakit Disclosure, so it gets
- * `aria-expanded`, the link to the sidebar body and the focus return when the
- * drawer closes. With no children, or only nullish or boolean ones, it renders
- * an icon and names itself "Toggle sidebar".
+ * `aria-expanded` and the link to the sidebar column. With no children, or only
+ * nullish or boolean ones, it renders an icon and names itself "Toggle
+ * sidebar".
  */
 export const shellSidebarToggle = cv({
   extend: [button],
@@ -585,37 +469,17 @@ export const shellSidebarToggle = cv({
 
 /**
  * The flags main reads to know which slot takes space, from `:has()` chains on
- * the shell: 1 when the slot's sidebar is open and takes space, 0 when it is
- * closed, absent or an overlay. The setters sit in `:where()` and the overlay
- * overrides repeat the full chain, so the overrides win by specificity
- * regardless of order. An overlay below a step is overridden under the same
- * container query as the sidebar's own rules.
+ * the shell: 1 when the slot's sidebar is open, 0 when it is closed or absent.
  */
 const slotFlags = cx(
   // The first start sidebar: not preceded by another start sidebar.
-  "[.shell:where(:has(>.shell-sidebar[data-side=start][data-open]:not(.shell-sidebar[data-side=start]~*)))>&]:[--shell-start-1-open:1]",
-  "[.shell:has(>.shell-sidebar[data-side=start][data-overlay]:not(.shell-sidebar[data-side=start]~*))>&]:[--shell-start-1-open:0]",
-  "@max-[40rem]/shell:[.shell:has(>.shell-sidebar[data-side=start][data-overlay-below=sm]:not(.shell-sidebar[data-side=start]~*))>&]:[--shell-start-1-open:0]",
-  "@max-[48rem]/shell:[.shell:has(>.shell-sidebar[data-side=start][data-overlay-below=md]:not(.shell-sidebar[data-side=start]~*))>&]:[--shell-start-1-open:0]",
-  "@max-[64rem]/shell:[.shell:has(>.shell-sidebar[data-side=start][data-overlay-below=lg]:not(.shell-sidebar[data-side=start]~*))>&]:[--shell-start-1-open:0]",
+  "[.shell:has(>.shell-sidebar[data-side=start][data-open]:not(.shell-sidebar[data-side=start]~*))>&]:[--shell-start-1-open:1]",
   // The second start sidebar: preceded by another start sidebar.
-  "[.shell:where(:has(>.shell-sidebar[data-side=start]~.shell-sidebar[data-side=start][data-open]))>&]:[--shell-start-2-open:1]",
-  "[.shell:has(>.shell-sidebar[data-side=start]~.shell-sidebar[data-side=start][data-overlay])>&]:[--shell-start-2-open:0]",
-  "@max-[40rem]/shell:[.shell:has(>.shell-sidebar[data-side=start]~.shell-sidebar[data-side=start][data-overlay-below=sm])>&]:[--shell-start-2-open:0]",
-  "@max-[48rem]/shell:[.shell:has(>.shell-sidebar[data-side=start]~.shell-sidebar[data-side=start][data-overlay-below=md])>&]:[--shell-start-2-open:0]",
-  "@max-[64rem]/shell:[.shell:has(>.shell-sidebar[data-side=start]~.shell-sidebar[data-side=start][data-overlay-below=lg])>&]:[--shell-start-2-open:0]",
+  "[.shell:has(>.shell-sidebar[data-side=start]~.shell-sidebar[data-side=start][data-open])>&]:[--shell-start-2-open:1]",
   // The first end sidebar, next to main.
-  "[.shell:where(:has(>.shell-sidebar[data-side=end][data-open]:not(.shell-sidebar[data-side=end]~*)))>&]:[--shell-end-1-open:1]",
-  "[.shell:has(>.shell-sidebar[data-side=end][data-overlay]:not(.shell-sidebar[data-side=end]~*))>&]:[--shell-end-1-open:0]",
-  "@max-[40rem]/shell:[.shell:has(>.shell-sidebar[data-side=end][data-overlay-below=sm]:not(.shell-sidebar[data-side=end]~*))>&]:[--shell-end-1-open:0]",
-  "@max-[48rem]/shell:[.shell:has(>.shell-sidebar[data-side=end][data-overlay-below=md]:not(.shell-sidebar[data-side=end]~*))>&]:[--shell-end-1-open:0]",
-  "@max-[64rem]/shell:[.shell:has(>.shell-sidebar[data-side=end][data-overlay-below=lg]:not(.shell-sidebar[data-side=end]~*))>&]:[--shell-end-1-open:0]",
+  "[.shell:has(>.shell-sidebar[data-side=end][data-open]:not(.shell-sidebar[data-side=end]~*))>&]:[--shell-end-1-open:1]",
   // The second end sidebar, at the shell's end edge.
-  "[.shell:where(:has(>.shell-sidebar[data-side=end]~.shell-sidebar[data-side=end][data-open]))>&]:[--shell-end-2-open:1]",
-  "[.shell:has(>.shell-sidebar[data-side=end]~.shell-sidebar[data-side=end][data-overlay])>&]:[--shell-end-2-open:0]",
-  "@max-[40rem]/shell:[.shell:has(>.shell-sidebar[data-side=end]~.shell-sidebar[data-side=end][data-overlay-below=sm])>&]:[--shell-end-2-open:0]",
-  "@max-[48rem]/shell:[.shell:has(>.shell-sidebar[data-side=end]~.shell-sidebar[data-side=end][data-overlay-below=md])>&]:[--shell-end-2-open:0]",
-  "@max-[64rem]/shell:[.shell:has(>.shell-sidebar[data-side=end]~.shell-sidebar[data-side=end][data-overlay-below=lg])>&]:[--shell-end-2-open:0]",
+  "[.shell:has(>.shell-sidebar[data-side=end]~.shell-sidebar[data-side=end][data-open])>&]:[--shell-end-2-open:1]",
 );
 
 /**

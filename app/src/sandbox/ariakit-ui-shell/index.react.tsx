@@ -190,8 +190,8 @@ const docsSections = [
 
 const paragraphs = [
   "The shell assembles a header, up to two sidebars per side, a main area and a footer from optional parts, in one CSS grid. Nothing is measured and nothing is fixed to the viewport: the root declares the geometry once, and every part reads it.",
-  "Sidebars fold with a drawer motion on wide shells and become modal dialogs on narrow ones, from one element and one state. The main area keeps its content column on the shell's center whatever the sidebars are doing, and moves in step with the drawer that is folding.",
-  "Everything renders as static HTML and CSS. Modality on narrow shells is the one behavior that needs JavaScript, and until it arrives the drawer still slides and its backdrop still shows.",
+  "Sidebars fold with a drawer motion, and the main area keeps its content column on the shell's center whatever the sidebars are doing, moving in step with the sidebar that is folding.",
+  "Everything renders as static HTML and CSS. The open state is one attribute on the sidebar, so a page renders open or closed before any JavaScript runs.",
 ];
 
 /** A page-long article whose headings the table of contents links to. */
@@ -236,10 +236,9 @@ function DocsArticle() {
  * each with a toggle in the header.
  */
 function DocsScenario() {
-  const navigation = ak.useDialogStore({ defaultOpen: true });
-  // The table of contents starts closed: on a phone, where both sidebars are
-  // modal drawers, two open at once would trap each other.
-  const contents = ak.useDialogStore();
+  const navigation = ak.useDisclosureStore({ defaultOpen: true });
+  // The table of contents starts closed.
+  const contents = ak.useDisclosureStore();
   const [current, setCurrent] = useState<string>(docsSections[0].id);
   return (
     <Shell $startWidth={64} $endWidth={48}>
@@ -281,7 +280,6 @@ function DocsScenario() {
       />
       <ShellSidebar
         store={navigation}
-        $overlayBelow="md"
         aria-label="Documentation"
         render={<nav />}
       >
@@ -345,7 +343,6 @@ function DocsScenario() {
       <ShellSidebar
         store={contents}
         $side="end"
-        $overlayBelow="md"
         aria-label="On this page"
         render={<nav />}
       >
@@ -394,15 +391,11 @@ const workspaceLinks = [
  * the window changing.
  */
 function DashboardScenario() {
-  const details = ak.useDialogStore();
+  const details = ak.useDisclosureStore();
   return (
-    <ak.DialogProvider defaultOpen>
+    <ak.DisclosureProvider defaultOpen>
       <Shell $startWidth={56}>
-        <ShellSidebar
-          $overlayBelow="md"
-          aria-label="Workspace"
-          render={<nav />}
-        >
+        <ShellSidebar aria-label="Workspace" render={<nav />}>
           <Brand>Acme</Brand>
           <Nav render={<div aria-label="Workspace pages" />} className="mt-4">
             {workspaceLinks.map((link, index) => (
@@ -459,10 +452,6 @@ function DashboardScenario() {
           <ShellSidebar
             store={details}
             $side="end"
-            $overlayBelow="lg"
-            // A non-modal drawer: it floats over main below the step, but
-            // nothing becomes inert and Escape does not close it.
-            modal={false}
             aria-label="Details"
             render={<aside />}
           >
@@ -470,14 +459,13 @@ function DashboardScenario() {
               <Heading className="text-base">Details</Heading>
             </HeadingLevel>
             <p className="ak-ink-70 mt-2 text-sm">
-              Select a metric to see its history here. This panel folds to a
-              drawer when the inner shell is narrower than 64rem, which an open
-              navigation sidebar can cause on its own.
+              Select a metric to see its history here. The panel takes its space
+              from main, so the metric cards reflow when it opens.
             </p>
           </ShellSidebar>
         </Shell>
       </Shell>
-    </ak.DialogProvider>
+    </ak.DisclosureProvider>
   );
 }
 
@@ -491,15 +479,13 @@ const messages = Array.from({ length: 24 }, (_, index) => ({
 
 /**
  * A chat app: two sidebars at the start (a rail then the channel list), main
- * with its own composer, a member list at the end that always opens as a drawer
- * over the messages, and a four-line status footer. The composer sticks to the
- * bottom of the viewport while main is in view, and the footer sits at the end
- * of the page.
+ * with its own composer, a member list at the end that starts closed, and a
+ * four-line status footer. The composer sticks to the bottom of the viewport
+ * while main is in view, and the footer sits at the end of the page.
  */
 function ChatScenario() {
   const [channelsOpen, setChannelsOpen] = useState(true);
   const channelsId = useId();
-  // The member list starts closed, so a phone opens with one drawer at most.
   const members = ak.useDisclosureStore();
   return (
     <Shell $startWidth={[14, 60]} $endWidth={56}>
@@ -530,12 +516,7 @@ function ChatScenario() {
           </ShellHeaderEnd>
         }
       />
-      <ShellSidebar
-        $overlayBelow="none"
-        aria-label="Workspaces"
-        render={<nav />}
-        body={{ $p: 2 }}
-      >
+      <ShellSidebar aria-label="Workspaces" render={<nav />} body={{ $p: 2 }}>
         <ul className="grid gap-2">
           {["Acme", "Ariakit", "Bakery"].map((workspace) => (
             <li key={workspace}>
@@ -551,12 +532,11 @@ function ChatScenario() {
         </ul>
       </ShellSidebar>
       <ShellSidebar
+        id={channelsId}
         open={channelsOpen}
         onOpenChange={setChannelsOpen}
-        $overlayBelow="md"
         aria-label="Channels"
         render={<nav />}
-        body={{ id: channelsId }}
       >
         <Nav render={<div aria-label="Channel list" />}>
           {channels.map((channel, index) => (
@@ -604,8 +584,6 @@ function ChatScenario() {
       <ShellSidebar
         store={members}
         $side="end"
-        // A drawer at every width: it floats over the messages when it opens.
-        $overlay
         aria-label="Members"
         render={<aside />}
       >
@@ -677,11 +655,7 @@ function SettingsScenario() {
             </ShellHeaderEnd>
           }
         />
-        <ShellSidebar
-          $overlayBelow="sm"
-          aria-label="Settings sections"
-          render={<nav />}
-        >
+        <ShellSidebar aria-label="Settings sections" render={<nav />}>
           <SectionLinks
             label="Sections"
             sections={settingsSections}
@@ -866,12 +840,7 @@ function StaticScenario() {
   return (
     <Shell>
       <ShellHeader start={<Brand />} end={<ScenarioControls />} />
-      {/* A static panel stays inline at every width. */}
-      <ShellSidebar
-        $overlayBelow="none"
-        aria-label="Sections"
-        render={<aside />}
-      >
+      <ShellSidebar aria-label="Sections" render={<aside />}>
         <SectionLinks label="Section list" sections={settingsSections} />
       </ShellSidebar>
       <ShellMain $centered>

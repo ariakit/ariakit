@@ -16,22 +16,15 @@ export function getShell(page: Page) {
 
 /** The column of the sidebar whose landmark has the given name. */
 export function getSidebar(q: Query, name: string) {
-  const landmark = q
+  // The column is the landmark: a closed one is hidden.
+  return q
     .navigation(name, { includeHidden: true })
     .or(q.complementary(name, { includeHidden: true }));
-  // The landmark wraps the content inside the body, two levels below the
-  // column.
-  return landmark.locator("xpath=../..");
 }
 
 /** The body inside a sidebar column, the element that scrolls and sticks. */
 export function getSidebarBody(sidebar: Locator) {
   return sidebar.locator(":scope > .shell-sidebar-body");
-}
-
-/** The backdrop inside a sidebar column, painted only in overlay mode. */
-export function getBackdrop(sidebar: Locator) {
-  return sidebar.locator(":scope > .shell-sidebar-backdrop");
 }
 
 /** The first rendered child of main, which sits in the content column. */

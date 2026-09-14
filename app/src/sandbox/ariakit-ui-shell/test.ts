@@ -18,8 +18,6 @@ test("renders the docs page as one banner, one main, one contentinfo and labelle
   expect(q.contentinfo()).toBeInTheDocument();
   expect(q.navigation("Documentation")).toBeInTheDocument();
   expect(q.navigation("On this page")).toBeInTheDocument();
-  // In wide mode the sidebar body is not a dialog.
-  expect(q.dialog.maybe("Documentation")).not.toBeInTheDocument();
 });
 
 test("mirrors the variants on data attributes that the recipes select on", () => {
@@ -29,19 +27,15 @@ test("mirrors the variants on data attributes that the recipes select on", () =>
   const column = getColumn("Documentation");
   expect(column).toHaveAttribute("data-side", "start");
   expect(column).toHaveAttribute("data-sticky", "true");
-  expect(column).toHaveAttribute("data-overlay-below", "md");
-  expect(column).not.toHaveAttribute("data-overlay");
   expect(getColumn("On this page")).toHaveAttribute("data-side", "end");
   expect(q.contentinfo()).not.toHaveAttribute("data-sticky");
 });
 
-test("toggles the navigation sidebar from a disclosure linked to its body", async () => {
+test("toggles the navigation sidebar from a disclosure linked to its column", async () => {
   const toggle = q.button("Toggle sidebar");
   const column = getColumn("Documentation");
-  const body = q.navigation("Documentation").parentElement;
-  expect(body).not.toBeNull();
   expect(toggle).toHaveAttribute("aria-expanded", "true");
-  expect(toggle).toHaveAttribute("aria-controls", body?.id);
+  expect(toggle).toHaveAttribute("aria-controls", column.id);
   expect(column).toHaveAttribute("data-open", "true");
   await click(toggle);
   expect(toggle).toHaveAttribute("aria-expanded", "false");
