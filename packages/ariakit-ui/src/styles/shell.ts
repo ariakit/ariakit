@@ -268,79 +268,73 @@ export const shellHeader = cv({
 /**
  * A bar part: a flex cell that keeps its content minimum by default, so the
  * center part sits on the bar's middle while both sides fit and moves over when
- * a side needs more than its half.
+ * a side needs more than its half. The three parts extend it with their column
+ * and their resting alignment.
  */
-const barPart = cx("flex items-center gap-2");
-
-/**
- * Lets a part lose width. The cap to the track is required, or the part keeps
- * its content width and paints over its neighbor. Text children truncate with
- * the `truncate` utility; a form control keeps its intrinsic minimum unless it
- * gets `min-w-0` or a width. The clip margin keeps focus rings visible; WebKit
- * does not support it, and there the ring is clipped at the part's edge. This
- * is not a way to hide controls: a clipped control cannot be scrolled back into
- * view, and a bar that must drop buttons needs an overflow menu.
- */
-const shrink = {
-  true: "max-w-full box-border min-w-0 overflow-clip [overflow-clip-margin:0.25rem]",
-  false: "min-w-auto",
-};
-
-export const shellHeaderStart = cv({
-  class: [barPart, "shell-bar-start col-1"],
+export const shellBarPart = cv({
+  class: "flex items-center gap-2",
   variants: {
     /**
-     * Lets the part lose width instead of pushing the center part over. Its
-     * text children truncate with the `truncate` utility.
+     * Lets the part lose width instead of pushing its neighbors over. The cap
+     * to the track is required, or the part keeps its content width and paints
+     * over its neighbor. Text children truncate with the `truncate` utility; a
+     * form control keeps its intrinsic minimum unless it gets `min-w-0` or a
+     * width. The clip margin keeps focus rings visible; WebKit does not support
+     * it, and there the ring is clipped at the part's edge. This is not a way
+     * to hide controls: a clipped control cannot be scrolled back into view,
+     * and a bar that must drop buttons needs an overflow menu.
      */
-    $shrink: shrink,
+    $shrink: {
+      true: "max-w-full box-border min-w-0 overflow-clip [overflow-clip-margin:0.25rem]",
+      false: "min-w-auto",
+    },
     /**
-     * Fills the part's track instead of sitting at its edge.
+     * Fills the part's track instead of resting at its edge or on its middle.
+     * Each part adds the resting alignment it leaves, and the center part the
+     * class the bar reads.
      */
     $grow: {
       true: "justify-self-stretch",
-      false: "justify-self-start",
     },
+  },
+});
+
+export const shellHeaderStart = cv({
+  extend: [shellBarPart],
+  class: "shell-bar-start col-1",
+  variants: {
+    /**
+     * Fills the part's track instead of resting at the bar's start edge.
+     */
+    $grow: { false: "justify-self-start" },
   },
 });
 
 export const shellHeaderCenter = cv({
-  class: [barPart, "shell-bar-center col-2"],
+  extend: [shellBarPart],
+  class: "shell-bar-center col-2",
   variants: {
     /**
-     * Lets the part lose width. Paired with `$grow`, the bar becomes a fixed
+     * Takes a double share of the bar's leftover width, growing while staying
+     * centered as long as both sides fit in a quarter of the bar: the bar reads
+     * the class this emits. Beside a very wide side part it sits further off
+     * center than a plain part; `$shrink` on both sides keeps it exactly
+     * centered. Paired with `$shrink` on this part, the bar becomes a fixed
      * one-two-one split in which the center truncates while the sides still
      * have room, so avoid that pair.
      */
-    $shrink: shrink,
-    /**
-     * Takes a double share of the bar's leftover width, growing while staying
-     * centered as long as both sides fit in a quarter of the bar. Beside a very
-     * wide side part it sits further off center than a plain part; `$shrink` on
-     * both sides keeps it exactly centered. The bar reads the class this emits.
-     */
-    $grow: {
-      true: "shell-bar-grow justify-self-stretch",
-      false: "justify-self-center",
-    },
+    $grow: { true: "shell-bar-grow", false: "justify-self-center" },
   },
 });
 
 export const shellHeaderEnd = cv({
-  class: [barPart, "shell-bar-end col-3"],
+  extend: [shellBarPart],
+  class: "shell-bar-end col-3",
   variants: {
     /**
-     * Lets the part lose width instead of pushing the center part over. Its
-     * text children truncate with the `truncate` utility.
+     * Fills the part's track instead of resting at the bar's end edge.
      */
-    $shrink: shrink,
-    /**
-     * Fills the part's track instead of sitting at its edge.
-     */
-    $grow: {
-      true: "justify-self-stretch",
-      false: "justify-self-end",
-    },
+    $grow: { false: "justify-self-end" },
   },
 });
 
