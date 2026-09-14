@@ -232,8 +232,6 @@ export const shellHeader = cv({
     $sticky: true,
     // The gutters come from the bar's own inline padding.
     $p: "none",
-    // Half a step off the canvas, like the sidebars and the footer.
-    $lightnessOffset: 0.5,
   },
 });
 
@@ -330,8 +328,8 @@ export const shellFooter = cv({
     $blur: blur,
   },
   defaultVariants: {
+    // The gutters come from the bar's own inline padding.
     $p: "none",
-    $lightnessOffset: 0.5,
   },
 });
 
@@ -409,7 +407,6 @@ export const shellSidebar = cv({
     $sticky: true,
     // The body brings the padding.
     $p: "none",
-    $lightnessOffset: 0.5,
   },
 });
 
