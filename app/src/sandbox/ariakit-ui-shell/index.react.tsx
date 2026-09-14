@@ -38,7 +38,6 @@ import {
   ShellSidebarToggle,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import type { ShellHeaderProps } from "@ariakit/ui/components/shell.ariakit.react";
-import { frame } from "@ariakit/ui/styles/frame";
 import {
   Bell,
   ChartBar,
@@ -93,28 +92,30 @@ function ScenarioControls() {
   if (!state) return null;
   return (
     <>
-      <select
-        aria-label="Scenario"
-        {...frame.jsx({
-          $p: 1,
-          $rounded: "md",
-          $border: true,
-          className: "text-sm",
-        })}
-        value={state.scenario}
-        onChange={(event) => {
-          const { value } = event.currentTarget;
-          if (isScenarioId(value)) {
-            state.setScenario(value);
-          }
-        }}
+      <Frame
+        $p={1}
+        $rounded="md"
+        $border
+        className="text-sm"
+        render={
+          <select
+            aria-label="Scenario"
+            value={state.scenario}
+            onChange={(event) => {
+              const { value } = event.currentTarget;
+              if (isScenarioId(value)) {
+                state.setScenario(value);
+              }
+            }}
+          />
+        }
       >
         {Object.entries(scenarios).map(([id, label]) => (
           <option key={id} value={id}>
             {label}
           </option>
         ))}
-      </select>
+      </Frame>
       {/* A narrow bar has no room for it: a consumer container rule. */}
       <label className="flex items-center gap-1 text-sm whitespace-nowrap @max-[40rem]/shell-header:hidden">
         <input
