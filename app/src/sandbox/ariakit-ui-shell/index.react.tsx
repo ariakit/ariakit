@@ -196,7 +196,7 @@ const docsSections = [
 const paragraphs = [
   "The shell assembles a header, up to two sidebars per side, a main area and a footer from optional parts, in one CSS grid. Each sidebar declares its width, and the header declares its height. The shell reads their classes to arrange the page.",
   "Sidebars fold with a drawer motion, and the main area keeps its content column on the shell's center whatever the sidebars are doing, moving in step with the sidebar that is folding.",
-  "Everything renders as static HTML and CSS. The open state is one class on the sidebar, so a page renders open or closed before any JavaScript runs.",
+  "Everything renders as static HTML and CSS. The sidebar body uses data-open for its open state, so a page renders open or closed before any JavaScript runs.",
 ];
 
 function DocsIntro() {
