@@ -64,6 +64,32 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7532
+  // https://github.com/ariakit/ariakit/pull/7533#discussion_r4013947662
+  test("keeps sidebar borders facing main when their text direction differs", async ({
+    q,
+  }) => {
+    for (const rtl of [false, true]) {
+      await q.checkbox("Right to left").setChecked(rtl);
+      await q
+        .combobox("Sidebar text direction")
+        .selectOption(rtl ? "ltr" : "rtl");
+      for (const { name, side } of [
+        { name: "Layout navigation", side: rtl ? "left" : "right" },
+        { name: "Layout contents", side: rtl ? "right" : "left" },
+      ]) {
+        const body = q.navigation(name);
+        await expect(body).toHaveCSS("direction", rtl ? "ltr" : "rtl");
+        for (const edge of ["top", "right", "bottom", "left"]) {
+          await expect(body).toHaveCSS(
+            `border-${edge}-width`,
+            edge === side ? "2px" : "0px",
+          );
+        }
+      }
+    }
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7532
   test("inherits the parent border width and color on every facing side", async ({
     q,
     page,

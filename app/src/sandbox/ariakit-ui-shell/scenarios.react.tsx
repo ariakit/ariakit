@@ -44,6 +44,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
   const [seams, setSeams] = useState(true);
   const [inheritSeams, setInheritSeams] = useState(false);
   const [customSidebarColor, setCustomSidebarColor] = useState(false);
+  const [sidebarDirection, setSidebarDirection] = useState("inherit");
   const [seam, setSeam] = useState<Seam>("border");
   const [selection, setSelection] = useState("No section selected");
   const startId = useId();
@@ -71,6 +72,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
         aria-describedby="navigation-description"
         render={<nav title="Navigation body" />}
         className="layout-navigation"
+        dir={sidebarDirection === "inherit" ? undefined : sidebarDirection}
         $edge={customSidebarColor ? "var(--sidebar-edge)" : undefined}
         $edgeRaw={customSidebarColor}
         style={
@@ -204,6 +206,19 @@ export function GeometryScenario({ controls }: ScenarioProps) {
               Custom sidebar color
             </label>
             <label>
+              Sidebar text direction{" "}
+              <select
+                value={sidebarDirection}
+                onChange={(event) =>
+                  setSidebarDirection(event.currentTarget.value)
+                }
+              >
+                <option value="inherit">Inherit</option>
+                <option value="ltr">Left to right</option>
+                <option value="rtl">Right to left</option>
+              </select>
+            </label>
+            <label>
               Seam type{" "}
               <select
                 value={seam}
@@ -261,6 +276,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
       </ShellMain>
       <ShellSidebar
         id={endId}
+        dir={sidebarDirection === "inherit" ? undefined : sidebarDirection}
         $side="end"
         $width="xs"
         data-open={endOpen ? "" : undefined}

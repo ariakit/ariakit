@@ -88,8 +88,11 @@ export const shell = cv({
 const facingBorder = cx(
   "[&.shell-header]:border-be-(length:--border-width)",
   "[&.shell-footer]:border-bs-(length:--border-width)",
-  "[.shell-sidebar-start>&]:border-e-(length:--border-width)",
-  "[.shell-sidebar-end>&]:border-s-(length:--border-width)",
+  // The column follows the shell direction; the body can have its own dir.
+  "[.shell-sidebar-start:dir(ltr)>&]:border-r-(length:--border-width)",
+  "[.shell-sidebar-start:dir(rtl)>&]:border-l-(length:--border-width)",
+  "[.shell-sidebar-end:dir(ltr)>&]:border-l-(length:--border-width)",
+  "[.shell-sidebar-end:dir(rtl)>&]:border-r-(length:--border-width)",
 );
 
 /**
