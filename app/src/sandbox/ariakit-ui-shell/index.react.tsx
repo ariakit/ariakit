@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import * as ak from "@ariakit/react";
 import {
   Button,
   ButtonSlot,
@@ -27,15 +26,15 @@ import {
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
-  ShellBleed,
+  ShellBreakout,
   ShellFooter,
   ShellHeader,
   ShellHeaderCenter,
   ShellHeaderEnd,
   ShellHeaderStart,
+  ShellIntro,
   ShellMain,
   ShellSidebar,
-  ShellSidebarToggle,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import type { ShellHeaderProps } from "@ariakit/ui/components/shell.ariakit.react";
 import {
@@ -46,6 +45,7 @@ import {
   Inbox,
   LayoutDashboard,
   MessageSquare,
+  PanelLeft,
   PanelRight,
   SendHorizontal,
   Settings,
@@ -53,6 +53,7 @@ import {
 } from "lucide-react";
 import { createContext, useContext, useId, useState } from "react";
 import type { ReactNode } from "react";
+import { GeometryScenario, NestedScenario } from "./scenarios.react.tsx";
 
 /**
  * The sandbox is one page with one shell at a time, because a shell is the
@@ -69,6 +70,8 @@ const scenarios = {
   marketing: "Marketing page",
   bar: "Bar parts",
   static: "Static panel",
+  geometry: "Layout details",
+  nested: "Nested shells",
 } as const;
 
 type ScenarioId = keyof typeof scenarios;
@@ -136,7 +139,7 @@ function Brand({ children = "Ariakit UI" }: { children?: ReactNode }) {
     <Link
       href="#"
       tabIndex={0}
-      className="flex items-center gap-2 font-semibold no-underline"
+      className="flex items-center gap-2 font-semibold whitespace-nowrap no-underline"
     >
       <Hexagon strokeWidth={1.5} className="size-5" />
       {children}
@@ -190,41 +193,48 @@ const docsSections = [
 ] as const;
 
 const paragraphs = [
-  "The shell assembles a header, up to two sidebars per side, a main area and a footer from optional parts, in one CSS grid. Nothing is measured and nothing is fixed to the viewport: the root declares the geometry once, and every part reads it.",
+  "The shell assembles a header, up to two sidebars per side, a main area and a footer from optional parts, in one CSS grid. Each sidebar declares its width, and the header declares its height. The shell reads their classes to arrange the page.",
   "Sidebars fold with a drawer motion, and the main area keeps its content column on the shell's center whatever the sidebars are doing, moving in step with the sidebar that is folding.",
-  "Everything renders as static HTML and CSS. The open state is one attribute on the sidebar, so a page renders open or closed before any JavaScript runs.",
+  "Everything renders as static HTML and CSS. The open state is one class on the sidebar, so a page renders open or closed before any JavaScript runs.",
 ];
+
+function DocsIntro() {
+  return (
+    <Prose>
+      <HeadingLevel>
+        <Heading>Shell</Heading>
+      </HeadingLevel>
+      <p>
+        A layout component for documentation sites and applications. This page
+        is long enough to scroll, so the header and the sidebars can show how
+        they stick. Every section ends with a{" "}
+        <Link href="#introduction" tabIndex={0}>
+          link back to the top
+        </Link>
+        , so a tab through the page moves focus down it.
+      </p>
+    </Prose>
+  );
+}
 
 /** A page-long article whose headings the table of contents links to. */
 function DocsArticle() {
   return (
     <Prose>
-      <HeadingLevel>
-        <Heading>Shell</Heading>
-        <p>
-          A layout component for documentation sites and applications. This page
-          is long enough to scroll, so the header and the sidebars can show how
-          they stick. Every section ends with a{" "}
-          <Link href="#introduction" tabIndex={0}>
-            link back to the top
-          </Link>
-          , so a tab through the page moves focus down it.
-        </p>
-        <HeadingLevel>
-          {docsSections.map((section) => (
-            <section key={section.id}>
-              <Heading id={section.id}>{section.title}</Heading>
-              {paragraphs.map((text, index) => (
-                <p key={index}>{text}</p>
-              ))}
-              <p>
-                <Link href="#introduction" tabIndex={0}>
-                  Back to the top of {section.title}
-                </Link>
-              </p>
-            </section>
-          ))}
-        </HeadingLevel>
+      <HeadingLevel level={2}>
+        {docsSections.map((section) => (
+          <section key={section.id}>
+            <Heading id={section.id}>{section.title}</Heading>
+            {paragraphs.map((text, index) => (
+              <p key={index}>{text}</p>
+            ))}
+            <p>
+              <Link href="#introduction" tabIndex={0}>
+                Back to the top of {section.title}
+              </Link>
+            </p>
+          </section>
+        ))}
       </HeadingLevel>
     </Prose>
   );
@@ -232,22 +242,32 @@ function DocsArticle() {
 
 /**
  * The Ariakit docs layout: a sticky blurred header, a sticky navigation sidebar
- * under it, a centered main with a full-bleed band, a table of contents at the
- * end and a footer taller than a single line. Two stores own the two sidebars,
- * each with a toggle in the header.
+ * under it, a centered main with a full-width band, a table of contents below
+ * the intro and a footer taller than a single line. Each sidebar has a consumer
+ * toggle in the header.
  */
 function DocsScenario() {
-  const navigation = ak.useDisclosureStore({ defaultOpen: true });
-  // The table of contents starts closed.
-  const contents = ak.useDisclosureStore();
+  const [navigationOpen, setNavigationOpen] = useState(true);
+  const [contentsOpen, setContentsOpen] = useState(false);
+  const navigationId = useId();
+  const contentsId = useId();
   const [current, setCurrent] = useState<string>(docsSections[0].id);
   return (
-    <Shell $startWidth={64} $endWidth={48}>
+    <Shell>
       <ShellHeader
         $blur
         start={
           <>
-            <ShellSidebarToggle store={navigation} />
+            <Button
+              aria-label="Toggle sidebar"
+              aria-expanded={navigationOpen}
+              aria-controls={navigationId}
+              onClick={() => setNavigationOpen((open) => !open)}
+            >
+              <ButtonSlot>
+                <PanelLeft />
+              </ButtonSlot>
+            </Button>
             <Brand />
           </>
         }
@@ -266,21 +286,24 @@ function DocsScenario() {
           </ShellHeaderCenter>
         }
         end={
-          <ShellHeaderEnd $shrink>
-            <ShellSidebarToggle
-              store={contents}
+          <ShellHeaderEnd>
+            <Button
               aria-label="Toggle table of contents"
+              aria-expanded={contentsOpen}
+              aria-controls={contentsId}
+              onClick={() => setContentsOpen((open) => !open)}
             >
               <ButtonSlot>
                 <PanelRight />
               </ButtonSlot>
-            </ShellSidebarToggle>
+            </Button>
             <ScenarioControls />
           </ShellHeaderEnd>
         }
       />
       <ShellSidebar
-        store={navigation}
+        id={navigationId}
+        $open={navigationOpen}
         aria-label="Documentation"
         render={<nav />}
       >
@@ -291,6 +314,9 @@ function DocsScenario() {
           onSelect={setCurrent}
         />
       </ShellSidebar>
+      <ShellIntro $centered>
+        <DocsIntro />
+      </ShellIntro>
       <ShellMain $centered>
         {/*
           The documented consumer rule: the page is the scroll port, outside the
@@ -299,16 +325,14 @@ function DocsScenario() {
          */}
         <style>{"html { scroll-padding-block-start: 3.25rem; }"}</style>
         <DocsArticle />
-        <ShellBleed>
-          <Frame
-            $layer="brand"
-            $p={6}
-            $rounded="none"
-            className="text-center font-medium"
-          >
-            A full-bleed band inside the centered main
-          </Frame>
-        </ShellBleed>
+        <ShellBreakout
+          $span="full"
+          $layer="brand"
+          $p={6}
+          className="text-center font-medium"
+        >
+          <p>A full-width band inside the centered main</p>
+        </ShellBreakout>
         <Prose>
           <p>
             The band above spans the gutters of main while the text stays in the
@@ -317,8 +341,11 @@ function DocsScenario() {
         </Prose>
       </ShellMain>
       <ShellSidebar
-        store={contents}
+        id={contentsId}
+        $open={contentsOpen}
         $side="end"
+        $width="sm"
+        $from="body"
         aria-label="On this page"
         render={<nav />}
       >
@@ -367,81 +394,107 @@ const workspaceLinks = [
  * the window changing.
  */
 function DashboardScenario() {
-  const details = ak.useDisclosureStore();
+  const [workspaceOpen, setWorkspaceOpen] = useState(true);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const workspaceId = useId();
+  const detailsId = useId();
   return (
-    <ak.DisclosureProvider defaultOpen>
-      <Shell $startWidth={56}>
-        <ShellSidebar aria-label="Workspace" render={<nav />}>
-          <Brand>Acme</Brand>
-          <Nav render={<div aria-label="Workspace pages" />} className="mt-4">
-            {workspaceLinks.map((link, index) => (
-              <li key={link.title}>
-                <NavLink
-                  href={`#${link.title.toLowerCase()}`}
-                  tabIndex={0}
-                  aria-current={index === 0 ? "page" : undefined}
-                >
-                  <NavIcon>
-                    <link.icon strokeWidth={1.5} />
-                  </NavIcon>
-                  {link.title}
-                </NavLink>
-              </li>
-            ))}
-          </Nav>
-        </ShellSidebar>
-        <Shell $endWidth={72}>
-          <ShellHeader
-            start={<ShellSidebarToggle />}
-            center={<Heading className="text-base">Overview</Heading>}
-            end={
-              <ShellHeaderEnd $shrink>
-                <ShellSidebarToggle store={details} aria-label="Toggle details">
-                  <ButtonSlot>
-                    <PanelRight />
-                  </ButtonSlot>
-                </ShellSidebarToggle>
-                <ScenarioControls />
-              </ShellHeaderEnd>
-            }
-          />
-          <ShellMain>
-            <div
-              aria-label="Metrics"
-              role="group"
-              className="grid grid-cols-1 gap-4 @xl/shell-main:grid-cols-2 @4xl/shell-main:grid-cols-3"
+    <Shell>
+      <ShellSidebar
+        id={workspaceId}
+        $open={workspaceOpen}
+        $width="sm"
+        $collapse={false}
+        aria-label="Workspace"
+        render={<nav />}
+      >
+        <Brand>Acme</Brand>
+        <Nav render={<div aria-label="Workspace pages" />} className="mt-4">
+          {workspaceLinks.map((link, index) => (
+            <li key={link.title}>
+              <NavLink
+                href={`#${link.title.toLowerCase()}`}
+                tabIndex={0}
+                aria-current={index === 0 ? "page" : undefined}
+              >
+                <NavIcon>
+                  <link.icon strokeWidth={1.5} />
+                </NavIcon>
+                {link.title}
+              </NavLink>
+            </li>
+          ))}
+        </Nav>
+      </ShellSidebar>
+      <Shell>
+        <ShellHeader
+          start={
+            <Button
+              aria-label="Toggle sidebar"
+              aria-expanded={workspaceOpen}
+              aria-controls={workspaceId}
+              onClick={() => setWorkspaceOpen((open) => !open)}
             >
-              {metrics.map((metric) => (
-                <Frame
-                  key={metric.label}
-                  $p={4}
-                  $rounded="xl"
-                  $border
-                  $lightnessOffset={0.5}
-                >
-                  <p className="ak-ink-70 text-sm">{metric.label}</p>
-                  <p className="text-2xl font-semibold">{metric.value}</p>
-                </Frame>
-              ))}
-            </div>
-          </ShellMain>
-          <ShellSidebar
-            store={details}
-            $side="end"
-            aria-label="Details"
-            render={<aside />}
+              <ButtonSlot>
+                <PanelLeft />
+              </ButtonSlot>
+            </Button>
+          }
+          center={<Heading className="text-base">Overview</Heading>}
+          end={
+            <ShellHeaderEnd>
+              <Button
+                aria-label="Toggle details"
+                aria-expanded={detailsOpen}
+                aria-controls={detailsId}
+                onClick={() => setDetailsOpen((open) => !open)}
+              >
+                <ButtonSlot>
+                  <PanelRight />
+                </ButtonSlot>
+              </Button>
+              <ScenarioControls />
+            </ShellHeaderEnd>
+          }
+        />
+        <ShellMain>
+          <div
+            aria-label="Metrics"
+            role="group"
+            className="grid grid-cols-1 gap-4 @xl/shell-main:grid-cols-2 @4xl/shell-main:grid-cols-3"
           >
-            <HeadingLevel level={2}>
-              <Heading className="text-base">Details</Heading>
-            </HeadingLevel>
-            <p className="ak-ink-70 mt-2 text-sm">
-              Select a metric to see its history here. The panel takes its space
-              from main, so the metric cards reflow when it opens.
-            </p>
-          </ShellSidebar>
-        </Shell>
+            {metrics.map((metric) => (
+              <Frame
+                key={metric.label}
+                $p={4}
+                $rounded="xl"
+                $border
+                $lightnessOffset={0.5}
+              >
+                <p className="ak-ink-70 text-sm">{metric.label}</p>
+                <p className="text-2xl font-semibold">{metric.value}</p>
+              </Frame>
+            ))}
+          </div>
+        </ShellMain>
+        <ShellSidebar
+          id={detailsId}
+          $open={detailsOpen}
+          $side="end"
+          $width="lg"
+          aria-label="Details"
+          render={<aside />}
+        >
+          <HeadingLevel level={2}>
+            <Heading className="text-base">Details</Heading>
+          </HeadingLevel>
+          <p className="ak-ink-70 mt-2 text-sm">
+            Select a metric to see its history here. The panel takes its space
+            from main, so the metric cards reflow when it opens.
+          </p>
+        </ShellSidebar>
       </Shell>
-    </ak.DisclosureProvider>
+    </Shell>
   );
 }
 
@@ -462,9 +515,10 @@ const messages = Array.from({ length: 24 }, (_, index) => ({
 function ChatScenario() {
   const [channelsOpen, setChannelsOpen] = useState(true);
   const channelsId = useId();
-  const members = ak.useDisclosureStore();
+  const [membersOpen, setMembersOpen] = useState(false);
+  const membersId = useId();
   return (
-    <Shell $startWidth={[14, 60]} $endWidth={56}>
+    <Shell>
       <ShellHeader
         start={
           <>
@@ -483,16 +537,27 @@ function ChatScenario() {
         }
         end={
           <ShellHeaderEnd $shrink>
-            <ShellSidebarToggle store={members} aria-label="Toggle members">
+            <Button
+              aria-label="Toggle members"
+              aria-expanded={membersOpen}
+              aria-controls={membersId}
+              onClick={() => setMembersOpen((open) => !open)}
+            >
               <ButtonSlot>
                 <Users />
               </ButtonSlot>
-            </ShellSidebarToggle>
+            </Button>
             <ScenarioControls />
           </ShellHeaderEnd>
         }
       />
-      <ShellSidebar aria-label="Workspaces" render={<nav />} body={{ $p: 2 }}>
+      <ShellSidebar
+        $width="xs"
+        $collapse={false}
+        $p={2}
+        aria-label="Workspaces"
+        render={<nav />}
+      >
         <ul className="grid gap-2">
           {["Acme", "Ariakit", "Bakery"].map((workspace) => (
             <li key={workspace}>
@@ -509,8 +574,8 @@ function ChatScenario() {
       </ShellSidebar>
       <ShellSidebar
         id={channelsId}
-        open={channelsOpen}
-        onOpenChange={setChannelsOpen}
+        $open={channelsOpen}
+        $width="md"
         aria-label="Channels"
         render={<nav />}
       >
@@ -558,8 +623,10 @@ function ChatScenario() {
         </form>
       </ShellMain>
       <ShellSidebar
-        store={members}
+        id={membersId}
+        $open={membersOpen}
         $side="end"
+        $width="sm"
         aria-label="Members"
         render={<aside />}
       >
@@ -597,69 +664,81 @@ const settingsSections = [
 ] as const;
 
 /**
- * A settings page: the same shell with fewer parts. A DisclosureProvider owns
- * the sidebar, the main is centered within itself, and the shell asks for a
- * slower motion, which reduced motion still switches off.
+ * A settings page: the same shell with fewer parts. The page owns the sidebar
+ * state, the main is centered within itself, and the shell asks for a slower
+ * motion, which reduced motion still switches off.
  */
 function SettingsScenario() {
   const [current, setCurrent] = useState<string>(settingsSections[0].id);
-  const sections = ak.useDisclosureStore({ defaultOpen: true });
-  const open = ak.useStoreState(sections, "open");
+  const [open, setOpen] = useState(true);
+  const sectionsId = useId();
   return (
-    <ak.DisclosureProvider store={sections}>
-      <Shell $startWidth={56} $duration={600}>
-        <ShellHeader
-          start={
-            <>
-              {/*
-                A label only while the sidebar is closed. While it is open the
-                children are false, which counts as no content: the toggle keeps
-                its icon and its default name.
-               */}
-              <ShellSidebarToggle>{!open && "Sections"}</ShellSidebarToggle>
-              <Brand>Settings</Brand>
-            </>
-          }
-          end={
-            <ShellHeaderEnd $shrink>
-              <Button aria-label="Notifications">
+    <Shell $duration={600}>
+      <ShellHeader
+        start={
+          <>
+            <Button
+              aria-label={open ? "Toggle sidebar" : undefined}
+              aria-expanded={open}
+              aria-controls={sectionsId}
+              onClick={() => setOpen((open) => !open)}
+            >
+              {open ? (
                 <ButtonSlot>
-                  <Bell />
+                  <PanelLeft />
                 </ButtonSlot>
-              </Button>
-              <ScenarioControls />
-            </ShellHeaderEnd>
-          }
+              ) : (
+                "Sections"
+              )}
+            </Button>
+            <Brand>Settings</Brand>
+          </>
+        }
+        end={
+          <ShellHeaderEnd $shrink>
+            <Button aria-label="Notifications">
+              <ButtonSlot>
+                <Bell />
+              </ButtonSlot>
+            </Button>
+            <ScenarioControls />
+          </ShellHeaderEnd>
+        }
+      />
+      <ShellSidebar
+        id={sectionsId}
+        $open={open}
+        $width="sm"
+        aria-label="Settings sections"
+        render={<nav />}
+      >
+        <SectionLinks
+          label="Sections"
+          sections={settingsSections}
+          current={current}
+          onSelect={setCurrent}
         />
-        <ShellSidebar aria-label="Settings sections" render={<nav />}>
-          <SectionLinks
-            label="Sections"
-            sections={settingsSections}
-            current={current}
-            onSelect={setCurrent}
-          />
-        </ShellSidebar>
-        <ShellMain $centered="main" $maxWidth={160}>
-          <Prose>
+      </ShellSidebar>
+      <ShellMain $centered="main" $maxWidth={160}>
+        <Prose>
+          <HeadingLevel>
+            <Heading>Settings</Heading>
             <HeadingLevel>
-              <Heading>Settings</Heading>
-              <HeadingLevel>
-                {settingsSections.map((section) => (
-                  <section key={section.id}>
-                    <Heading id={section.id}>{section.title}</Heading>
-                    <p>{paragraphs[0]}</p>
-                    <Input
-                      aria-label={`${section.title} name`}
-                      placeholder={section.title}
-                    />
-                  </section>
-                ))}
-              </HeadingLevel>
+              {settingsSections.map((section) => (
+                <section key={section.id}>
+                  <Heading id={section.id}>{section.title}</Heading>
+                  <p>{paragraphs[0]}</p>
+                  <Input
+                    aria-label={`${section.title} name`}
+                    placeholder={section.title}
+                  />
+                </section>
+              ))}
             </HeadingLevel>
-          </Prose>
-        </ShellMain>
-      </Shell>
-    </ak.DisclosureProvider>
+          </HeadingLevel>
+        </Prose>
+      </ShellMain>
+    </Shell>
   );
 }
 
@@ -708,18 +787,16 @@ function MarketingScenario() {
             </Heading>
             <p>{paragraphs[0]}</p>
           </Prose>
-          <ShellBleed>
-            <Frame
-              $layer="brand"
-              $p={12}
-              $rounded="none"
-              className="text-center"
-            >
-              <HeadingLevel>
-                <Heading id="features">Features</Heading>
-              </HeadingLevel>
-            </Frame>
-          </ShellBleed>
+          <ShellBreakout
+            $span="full"
+            $layer="brand"
+            $p={12}
+            className="text-center"
+          >
+            <HeadingLevel>
+              <Heading id="features">Features</Heading>
+            </HeadingLevel>
+          </ShellBreakout>
           <Prose className="py-16">
             <HeadingLevel>
               <Heading id="pricing">Pricing</Heading>
@@ -809,16 +886,19 @@ function BarScenario() {
 }
 
 /**
- * A panel without a store: nothing opens or closes it, so it is a plain open
- * panel with no toggle.
+ * A permanent panel: nothing opens or closes it, and it stays visible at any
+ * shell width.
  */
 function StaticScenario() {
   return (
     <Shell>
       <ShellHeader start={<Brand />} end={<ScenarioControls />} />
-      <ShellSidebar aria-label="Sections" render={<aside />}>
+      <ShellSidebar $collapse={false} aria-label="Sections" render={<aside />}>
         <SectionLinks label="Section list" sections={settingsSections} />
       </ShellSidebar>
+      <ShellIntro $centered>
+        <DocsIntro />
+      </ShellIntro>
       <ShellMain $centered>
         <DocsArticle />
       </ShellMain>
@@ -834,6 +914,8 @@ const scenarioComponents = {
   marketing: MarketingScenario,
   bar: BarScenario,
   static: StaticScenario,
+  geometry: () => <GeometryScenario controls={<ScenarioControls />} />,
+  nested: () => <NestedScenario controls={<ScenarioControls />} />,
 } satisfies Record<ScenarioId, () => ReactNode>;
 
 export default function ShellExamples() {

@@ -21,9 +21,9 @@ const DURATION = 300;
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
   test.describe("wide", () => {
-    // Wide enough for full centering with the docs sidebars: 256 + 192 + 768
-    // + 48 + 64 = 1328.
-    test.use({ viewport: { width: 1440, height: 900 } });
+    // Full centering with the start sidebar needs 256 + 768 + 48 + 144 + 256
+    // pixels, including the two pairs of breakout tracks.
+    test.use({ viewport: { width: 1600, height: 900 } });
 
     test("moves the compensation in step with the drawer motion", async ({
       page,
@@ -116,6 +116,47 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       },
     });
 
+    for (const scenario of ["docs", "dashboard"]) {
+      // https://github.com/ariakit/ariakit/issues/7532
+      test(`${scenario} at wide and narrow widths @visual`, async ({
+        page,
+        q,
+        visual,
+      }) => {
+        await forEachColorScheme(page, async (colorScheme) => {
+          await selectScenario(q, scenario);
+          await visual({
+            ...getViewportCapture(page, colorScheme),
+            viewports: {
+              wide: { width: 1440, height: 900 },
+              narrow: { width: 560, height: 900 },
+            },
+          });
+        });
+      });
+    }
+
+    // https://github.com/ariakit/ariakit/issues/7532
+    test("flush band at the shell radius @visual", async ({
+      page,
+      q,
+      visual,
+    }) => {
+      await forEachColorScheme(page, async (colorScheme) => {
+        await selectScenario(q, "geometry");
+        await q.checkbox("Flush gutter").check();
+        const frame = page.locator('[aria-label="Flush frame"]');
+        await frame.scrollIntoViewIfNeeded();
+        await visual({
+          ...getViewportCapture(page, colorScheme),
+          viewports: {
+            wide: { width: 1440, height: 900 },
+            narrow: { width: 560, height: 900 },
+          },
+        });
+      });
+    });
+
     test("docs site @visual", async ({ page, q, visual }) => {
       await page.setViewportSize({ width: 1440, height: 900 });
       await forEachColorScheme(page, async (colorScheme) => {
@@ -202,19 +243,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       visual,
     }) => {
       await page.setViewportSize({ width: 1280, height: 800 });
-      await forEachColorScheme(page, async (colorScheme) => {
-        await page.evaluate(() => window.scrollTo(0, 300));
-        await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(300);
-        await visual(getViewportCapture(page, colorScheme));
-      });
-    });
-
-    test("blurred header in forced colors @visual", async ({
-      page,
-      visual,
-    }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.emulateMedia({ forcedColors: "active" });
       await forEachColorScheme(page, async (colorScheme) => {
         await page.evaluate(() => window.scrollTo(0, 300));
         await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(300);

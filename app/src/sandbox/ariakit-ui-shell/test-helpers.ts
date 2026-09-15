@@ -16,10 +16,12 @@ export function getShell(page: Page) {
 
 /** The column of the sidebar whose landmark has the given name. */
 export function getSidebar(q: Query, name: string) {
-  // The column is the landmark: a closed one is hidden.
   return q
     .navigation(name, { includeHidden: true })
-    .or(q.complementary(name, { includeHidden: true }));
+    .or(q.complementary(name, { includeHidden: true }))
+    .locator(
+      "xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' shell-sidebar ')][1]",
+    );
 }
 
 /** The first rendered child of main, which sits in the content column. */

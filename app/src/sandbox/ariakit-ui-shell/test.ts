@@ -20,26 +20,31 @@ test("renders the docs page as one banner, one main, one contentinfo and labelle
   expect(q.navigation("On this page")).toBeInTheDocument();
 });
 
-test("toggles the navigation sidebar from a disclosure linked to its column", async () => {
+// https://github.com/ariakit/ariakit/issues/7532
+test("keeps a consumer toggle in step with the sidebar class and body id", async () => {
   const toggle = q.button("Toggle sidebar");
   const column = getColumn("Documentation");
   expect(toggle).toHaveAttribute("aria-expanded", "true");
-  expect(toggle).toHaveAttribute("aria-controls", column.id);
-  expect(column).toHaveAttribute("data-open", "true");
+  expect(toggle).toHaveAttribute(
+    "aria-controls",
+    q.navigation("Documentation").id,
+  );
+  expect(column).toHaveClass("shell-sidebar-open");
   await click(toggle);
   expect(toggle).toHaveAttribute("aria-expanded", "false");
-  expect(column).not.toHaveAttribute("data-open");
+  expect(column).not.toHaveClass("shell-sidebar-open");
   await click(toggle);
   expect(toggle).toHaveAttribute("aria-expanded", "true");
-  expect(column).toHaveAttribute("data-open", "true");
+  expect(column).toHaveClass("shell-sidebar-open");
 });
 
+// https://github.com/ariakit/ariakit/issues/7532
 test("opens the table of contents from its own toggle without touching the navigation", async () => {
   const contents = getColumn("On this page");
-  expect(contents).not.toHaveAttribute("data-open");
+  expect(contents).not.toHaveClass("shell-sidebar-open");
   await click(q.button("Toggle table of contents"));
-  expect(contents).toHaveAttribute("data-open", "true");
-  expect(getColumn("Documentation")).toHaveAttribute("data-open", "true");
+  expect(contents).toHaveClass("shell-sidebar-open");
+  expect(getColumn("Documentation")).toHaveClass("shell-sidebar-open");
 });
 
 test("keeps the icon and the default name on a toggle whose children are false", async () => {
@@ -54,9 +59,28 @@ test("keeps the icon and the default name on a toggle whose children are false",
   expect(q.button.maybe("Toggle sidebar")).not.toBeInTheDocument();
 });
 
-test("keeps a panel without a store open, with no toggle", async () => {
+// https://github.com/ariakit/ariakit/issues/7532
+test("keeps an uncontrolled panel open, with no toggle", async () => {
   await selectScenario("static");
   expect(q.complementary("Sections")).toBeInTheDocument();
-  expect(getColumn("Sections")).toHaveAttribute("data-open", "true");
+  expect(getColumn("Sections")).toHaveClass("shell-sidebar-open");
   expect(q.button.maybe("Toggle sidebar")).not.toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/7532
+test("forwards the public sidebar props and events to its landmark body", async () => {
+  await selectScenario("geometry");
+  const toggle = q.button("Toggle layout navigation");
+  await click(toggle);
+  const body = q.navigation("Layout navigation");
+  const column = getColumn("Layout navigation");
+  expect(toggle).toHaveAttribute("aria-controls", body.id);
+  expect(body).toHaveClass("layout-navigation");
+  expect(body).toHaveAttribute("title", "Navigation body");
+  expect(body).toHaveAttribute("aria-describedby", "navigation-description");
+  expect(column).not.toHaveAttribute("id");
+  expect(column).not.toHaveAttribute("aria-label");
+  expect(column).not.toHaveClass("layout-navigation");
+  await click(q.link("Layout section"));
+  expect(q.text("Navigation selected")).toBeInTheDocument();
 });
