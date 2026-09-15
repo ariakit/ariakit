@@ -217,6 +217,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await q.combobox("Scenario").focus();
     await page.keyboard.press("Tab");
     if (await q.checkbox("Right to left").isVisible()) {
+      await expect(q.checkbox("Right to left")).toBeFocused();
       await page.keyboard.press("Tab");
     }
     await expect(toggle).toBeFocused();

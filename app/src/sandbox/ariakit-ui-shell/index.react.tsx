@@ -123,6 +123,7 @@ function ScenarioControls() {
       <label className="flex items-center gap-1 text-sm whitespace-nowrap @max-[40rem]/shell-header:hidden">
         <input
           type="checkbox"
+          tabIndex={0}
           checked={state.rtl}
           onChange={(event) => state.setRtl(event.currentTarget.checked)}
         />
