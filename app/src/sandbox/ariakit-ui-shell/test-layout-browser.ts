@@ -94,10 +94,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     expect((await getBox(start)).y).toBeCloseTo((await getBox(intro)).y, 0);
     expect((await getBox(end)).y).toBeCloseTo((await getBox(q.main())).y, 0);
     expect((await getBox(end)).y).toBeGreaterThan((await getBox(intro)).y);
-    expect((await getBox(intro)).x + (await getBox(intro)).width).toBeCloseTo(
-      1440,
-      0,
-    );
+    const introBox = await getBox(intro);
+    expect(introBox.x + introBox.width).toBeCloseTo(1440, 0);
     await page.evaluate(() => window.scrollTo(0, 500));
     await expect
       .poll(async () => (await getBox(q.navigation("Layout contents"))).y)
@@ -172,37 +170,46 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await expect(sidebar).toHaveCSS("width", "192px");
     await link.focus();
     await expect(link).toBeFocused();
-    await page.setViewportSize({ width: 740, height: 900 });
-    expect(
-      await sidebar.evaluate((node) => getComputedStyle(node).visibility),
-    ).toBe("visible");
-    await expect(toggle).toHaveAttribute("aria-expanded", "true");
-    const samples = await sidebar.evaluate(async (column) => {
+    // Start recording before the resize. Resolving a locator after it can take
+    // longer than the fold on a busy runner.
+    await using recording = await sidebar.evaluateHandle((column) => {
       const main = column.parentElement?.querySelector(".shell-main");
       if (!main) {
         throw new Error("Missing main");
       }
-      const samples: { width: number; space: number }[] = [];
-      const start = performance.now();
-      // The fixture's 600ms fold must update compensation on every frame. Final
-      // geometry alone cannot detect an intermediate jump.
-      while (performance.now() - start < 600) {
-        const style = getComputedStyle(main);
-        samples.push({
-          width: column.getBoundingClientRect().width,
-          space: Number.parseFloat(
-            style.getPropertyValue("--shell-start-1-space"),
-          ),
-        });
-        await new Promise(requestAnimationFrame);
-      }
-      return samples;
+      const samples: { width: number; space: number; visibility: string }[] =
+        [];
+      const finished = new Promise<typeof samples>((resolve) => {
+        const sample = () => {
+          const width = column.getBoundingClientRect().width;
+          samples.push({
+            width,
+            space: Number.parseFloat(
+              getComputedStyle(main).getPropertyValue("--shell-start-1-space"),
+            ),
+            visibility: getComputedStyle(column).visibility,
+          });
+          if (width === 0) {
+            resolve(samples);
+          } else {
+            requestAnimationFrame(sample);
+          }
+        };
+        sample();
+      });
+      return { finished };
     });
+    await page.setViewportSize({ width: 740, height: 900 });
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    const samples = await recording.evaluate(({ finished }) => finished);
     expect(
       samples.some((sample) => sample.width > 0 && sample.width < 192),
     ).toBe(true);
     for (const sample of samples) {
       expect(Math.abs(sample.width - sample.space)).toBeLessThan(2);
+      if (sample.width > 0) {
+        expect(sample.visibility).toBe("visible");
+      }
     }
     await expect(sidebar).toHaveCSS("width", "0px");
     await expect(link).toBeHidden();

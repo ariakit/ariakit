@@ -164,35 +164,46 @@ withFramework(import.meta.dirname, async ({ test }) => {
             linkHeight: link.getBoundingClientRect().height,
           };
         });
-        await q.button(toggle).click();
-        const samples = await body.evaluate(
-          async (node, { rtl, side }) => {
+        // Resolve the body and start recording before the click so runner
+        // latency cannot hide the intermediate fold geometry.
+        await using recording = await body.evaluateHandle(
+          (node, { rtl, side }) => {
             const column = node.closest(".shell-sidebar");
             const link = node.querySelector("a");
             if (!column || !link) {
               throw new Error("Missing sidebar parts");
             }
-            const samples = [];
-            const start = performance.now();
-            // Sample the fixture's whole 600ms fold. Final closed geometry
-            // alone cannot show whether the body detaches or its text reflows
-            // midway.
-            while (performance.now() - start < 600) {
-              const bodyBox = node.getBoundingClientRect();
-              const columnBox = column.getBoundingClientRect();
-              const edge = (side === "start") !== rtl ? "right" : "left";
-              samples.push({
-                width: bodyBox.width,
-                columnWidth: columnBox.width,
-                offset: bodyBox[edge] - columnBox[edge],
-                linkHeight: link.getBoundingClientRect().height,
-              });
-              await new Promise(requestAnimationFrame);
-            }
-            return samples;
+            const samples: {
+              width: number;
+              columnWidth: number;
+              offset: number;
+              linkHeight: number;
+            }[] = [];
+            const finished = new Promise<typeof samples>((resolve) => {
+              const sample = () => {
+                const bodyBox = node.getBoundingClientRect();
+                const columnBox = column.getBoundingClientRect();
+                const edge = (side === "start") !== rtl ? "right" : "left";
+                samples.push({
+                  width: bodyBox.width,
+                  columnWidth: columnBox.width,
+                  offset: bodyBox[edge] - columnBox[edge],
+                  linkHeight: link.getBoundingClientRect().height,
+                });
+                if (columnBox.width === 0) {
+                  resolve(samples);
+                } else {
+                  requestAnimationFrame(sample);
+                }
+              };
+              sample();
+            });
+            return { finished };
           },
           { rtl, side },
         );
+        await q.button(toggle).click();
+        const samples = await recording.evaluate(({ finished }) => finished);
         const folding = samples.filter(
           (sample) =>
             sample.columnWidth > width * 0.1 &&
