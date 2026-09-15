@@ -104,13 +104,28 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   test.describe("captures", () => {
     test.describe.configure({ timeout: 120_000 });
+    test.use({
+      visual: async ({ page, visual }, use) => {
+        await use(async (options) => {
+          // Setup clicks can leave hover styles in these layout captures. Keep
+          // the pointer outside the page, including when the viewport changes.
+          // https://github.com/ariakit/ariakit/pull/7529
+          await page.mouse.move(-1, -1);
+          await visual(options);
+        });
+      },
+    });
 
     test("docs site @visual", async ({ page, q, visual }) => {
       await page.setViewportSize({ width: 1440, height: 900 });
       await forEachColorScheme(page, async (colorScheme) => {
-        await q.button("Toggle table of contents").click();
+        const toggle = q.button("Toggle table of contents");
+        await toggle.click();
         await expect(q.navigation("On this page")).toBeVisible();
         await visual(getViewportCapture(page, colorScheme));
+        await expect
+          .poll(() => toggle.evaluate((node) => node.matches(":hover")))
+          .toBe(false);
       });
     });
 
