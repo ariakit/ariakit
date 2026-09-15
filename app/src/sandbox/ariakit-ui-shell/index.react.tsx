@@ -260,6 +260,7 @@ function DocsScenario() {
         start={
           <>
             <Button
+              className="@max-3xl/shell:hidden"
               aria-label="Toggle sidebar"
               aria-expanded={navigationOpen}
               aria-controls={navigationId}
@@ -289,6 +290,7 @@ function DocsScenario() {
         end={
           <ShellHeaderEnd>
             <Button
+              className="@max-3xl/shell:hidden"
               aria-label="Toggle table of contents"
               aria-expanded={contentsOpen}
               aria-controls={contentsId}
@@ -445,6 +447,7 @@ function DashboardScenario() {
           end={
             <ShellHeaderEnd>
               <Button
+                className="@max-3xl/shell:hidden"
                 aria-label="Toggle details"
                 aria-expanded={detailsOpen}
                 aria-controls={detailsId}
@@ -524,6 +527,7 @@ function ChatScenario() {
         start={
           <>
             <Button
+              className="@max-3xl/shell:hidden"
               aria-label="Toggle channels"
               aria-expanded={channelsOpen}
               aria-controls={channelsId}
@@ -539,6 +543,7 @@ function ChatScenario() {
         end={
           <ShellHeaderEnd $shrink>
             <Button
+              className="@max-3xl/shell:hidden"
               aria-label="Toggle members"
               aria-expanded={membersOpen}
               aria-controls={membersId}
@@ -679,6 +684,7 @@ function SettingsScenario() {
         start={
           <>
             <Button
+              className="@max-3xl/shell:hidden"
               aria-label={open ? "Toggle sidebar" : undefined}
               aria-expanded={open}
               aria-controls={sectionsId}

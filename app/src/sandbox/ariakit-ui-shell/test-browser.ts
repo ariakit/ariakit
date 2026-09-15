@@ -21,6 +21,69 @@ const HEADER_HEIGHT = 52;
 const DURATION = 300;
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
+  test.describe("responsive toggles", () => {
+    test.use({ viewport: { width: 1600, height: 900 } });
+
+    for (const scenario of ["docs", "dashboard", "chat", "settings"]) {
+      // https://github.com/ariakit/ariakit/pull/7533#discussion_r4020675160
+      test(`${scenario} hides toggles below their sidebar collapse width`, async ({
+        page,
+        q,
+      }) => {
+        await selectScenario(q, scenario);
+        const toggles = q
+          .button(undefined, { includeHidden: true })
+          .and(page.locator("[aria-controls][aria-expanded]"));
+        await expect(toggles).toHaveCount(scenario === "settings" ? 1 : 2);
+        const permanentToggle = q.button("Toggle sidebar");
+        for (const toggle of await toggles.all()) {
+          await expect(toggle).toBeVisible();
+          if ((await toggle.getAttribute("aria-expanded")) === "false") {
+            await toggle.click();
+          }
+          await expect(toggle).toHaveAttribute("aria-expanded", "true");
+          const panelId = await toggle.getAttribute("aria-controls");
+          await expect(page.locator(`[id="${panelId}"]`)).toBeVisible();
+        }
+
+        // The nested dashboard shell must use its own width, even while the
+        // outer shell stays above the default 768px collapse step.
+        await page.setViewportSize({
+          width: scenario === "dashboard" ? 900 : 560,
+          height: 900,
+        });
+        for (const toggle of await toggles.all()) {
+          const panelId = await toggle.getAttribute("aria-controls");
+          const panel = page.locator(`[id="${panelId}"]`);
+          if (
+            scenario === "dashboard" &&
+            (await toggle.getAttribute("aria-label")) === "Toggle sidebar"
+          ) {
+            await expect(toggle).toBeVisible();
+            await expect(panel).toBeVisible();
+          } else {
+            await expect(panel).toBeHidden();
+            await expect(toggle).toBeHidden();
+          }
+        }
+        if (scenario === "dashboard") {
+          await permanentToggle.click();
+          await expect(q.navigation("Workspace")).toBeHidden();
+          await permanentToggle.click();
+          await expect(q.navigation("Workspace")).toBeVisible();
+        }
+
+        await page.setViewportSize({ width: 1600, height: 900 });
+        for (const toggle of await toggles.all()) {
+          await expect(toggle).toBeVisible();
+          await expect(toggle).toHaveAttribute("aria-expanded", "true");
+          const panelId = await toggle.getAttribute("aria-controls");
+          await expect(page.locator(`[id="${panelId}"]`)).toBeVisible();
+        }
+      });
+    }
+  });
+
   test.describe("wide", () => {
     // Full centering with the start sidebar needs 256 + 768 + 48 + 144 + 256
     // pixels, including the two pairs of breakout tracks.

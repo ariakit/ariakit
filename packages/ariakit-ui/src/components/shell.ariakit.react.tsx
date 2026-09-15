@@ -36,6 +36,7 @@ export interface ShellProps
  *   <ShellHeader
  *     start={
  *       <Button
+ *         className="@max-3xl/shell:hidden"
  *         aria-expanded={open}
  *         aria-controls={sidebarId}
  *         onClick={() => setOpen(!open)}
@@ -318,16 +319,20 @@ export interface ShellSidebarProps
  * A side panel that folds with a drawer motion. The body receives `render`, the
  * id, ARIA attributes, class names, and frame variants. Use `nav` for
  * navigation or `aside` for a complementary panel, and name the landmark with
- * `aria-label`. When the fold ends, the body leaves the tab order and the
- * accessibility tree. The body draws a real border on the side that faces main.
+ * `aria-label`. A closed body leaves the tab order and the accessibility tree.
+ * The body draws a real border on the side that faces main.
  *
  * `open` controls the state, and `$collapse` hides the panel below a named
  * container width even while it is open. A consumer button controls `open` and
- * reports that same state with `aria-expanded`.
+ * reports that same state with `aria-expanded`. Hide the button below the same
+ * collapse step in the sidebar's shell container. For the default `3xl` step,
+ * use `className="@max-3xl/shell:hidden"`. With `$collapse={false}`, the button
+ * can stay visible at every width.
  * @example
  * const [open, setOpen] = useState(true);
  * const sidebarId = useId();
  * <Button
+ *   className="@max-3xl/shell:hidden"
  *   aria-expanded={open}
  *   aria-controls={sidebarId}
  *   onClick={() => setOpen(!open)}
