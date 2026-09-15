@@ -332,10 +332,11 @@ export const shellSidebar = cv({
   class: [
     "shell-sidebar flex flex-col box-border @container/shell-sidebar rounded-none!",
     "z-2 w-(--shell-slot-width) overflow-clip",
-    "[&:not(.shell-sidebar-open)]:w-0 [&:not(.shell-sidebar-open)]:invisible",
+    "[&:not(:has(>.shell-sidebar-body[data-open]))]:w-0 [&:not(:has(>.shell-sidebar-body[data-open]))]:invisible",
     "transition-[width,visibility] ease-(--shell-ease)",
     "[transition-duration:var(--shell-time),0s]",
     "[transition-delay:0s,var(--shell-time)]",
+    "[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,0s]",
   ],
   variants: {
     /**
@@ -364,32 +365,27 @@ export const shellSidebar = cv({
     $collapse: {
       false: "",
       "3xs":
-        "shell-sidebar-c-3xs @max-3xs/shell:[&.shell-sidebar-open]:w-0 @max-3xs/shell:[&.shell-sidebar-open]:invisible @max-3xs/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-3xs @max-3xs/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-3xs/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-3xs/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
       "2xs":
-        "shell-sidebar-c-2xs @max-2xs/shell:[&.shell-sidebar-open]:w-0 @max-2xs/shell:[&.shell-sidebar-open]:invisible @max-2xs/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
-      xs: "shell-sidebar-c-xs @max-xs/shell:[&.shell-sidebar-open]:w-0 @max-xs/shell:[&.shell-sidebar-open]:invisible @max-xs/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
-      sm: "shell-sidebar-c-sm @max-sm/shell:[&.shell-sidebar-open]:w-0 @max-sm/shell:[&.shell-sidebar-open]:invisible @max-sm/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
-      md: "shell-sidebar-c-md @max-md/shell:[&.shell-sidebar-open]:w-0 @max-md/shell:[&.shell-sidebar-open]:invisible @max-md/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
-      lg: "shell-sidebar-c-lg @max-lg/shell:[&.shell-sidebar-open]:w-0 @max-lg/shell:[&.shell-sidebar-open]:invisible @max-lg/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
-      xl: "shell-sidebar-c-xl @max-xl/shell:[&.shell-sidebar-open]:w-0 @max-xl/shell:[&.shell-sidebar-open]:invisible @max-xl/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-2xs @max-2xs/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-2xs/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-2xs/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+      xs: "shell-sidebar-c-xs @max-xs/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-xs/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-xs/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+      sm: "shell-sidebar-c-sm @max-sm/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-sm/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-sm/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+      md: "shell-sidebar-c-md @max-md/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-md/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-md/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+      lg: "shell-sidebar-c-lg @max-lg/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-lg/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-lg/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+      xl: "shell-sidebar-c-xl @max-xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
       "2xl":
-        "shell-sidebar-c-2xl @max-2xl/shell:[&.shell-sidebar-open]:w-0 @max-2xl/shell:[&.shell-sidebar-open]:invisible @max-2xl/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-2xl @max-2xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-2xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-2xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
       "3xl":
-        "shell-sidebar-c-3xl @max-3xl/shell:[&.shell-sidebar-open]:w-0 @max-3xl/shell:[&.shell-sidebar-open]:invisible @max-3xl/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-3xl @max-3xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-3xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-3xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
       "4xl":
-        "shell-sidebar-c-4xl @max-4xl/shell:[&.shell-sidebar-open]:w-0 @max-4xl/shell:[&.shell-sidebar-open]:invisible @max-4xl/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-4xl @max-4xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-4xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-4xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
       "5xl":
-        "shell-sidebar-c-5xl @max-5xl/shell:[&.shell-sidebar-open]:w-0 @max-5xl/shell:[&.shell-sidebar-open]:invisible @max-5xl/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-5xl @max-5xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-5xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-5xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
       "6xl":
-        "shell-sidebar-c-6xl @max-6xl/shell:[&.shell-sidebar-open]:w-0 @max-6xl/shell:[&.shell-sidebar-open]:invisible @max-6xl/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-6xl @max-6xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-6xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-6xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
       "7xl":
-        "shell-sidebar-c-7xl @max-7xl/shell:[&.shell-sidebar-open]:w-0 @max-7xl/shell:[&.shell-sidebar-open]:invisible @max-7xl/shell:[&.shell-sidebar-open]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-7xl @max-7xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-7xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-7xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
     },
-    /**
-     * Opens the sidebar unless its collapse breakpoint applies. Defaults to
-     * `true`.
-     */
-    $open: "shell-sidebar-open [&.shell-sidebar-open]:[transition-delay:0s,0s]",
     /** Selects the first row the sidebar spans. Defaults to `intro`. */
     $from: {
       intro: "row-[intro-start/body-end]",
@@ -408,7 +404,6 @@ export const shellSidebar = cv({
     $side: "start",
     $width: "md",
     $collapse: "3xl",
-    $open: true,
     $from: "intro",
     $sticky: true,
   },
@@ -434,13 +429,13 @@ export const shellSidebarBody = cv({
  */
 const slotFlags = cx(
   // The first start sidebar: not preceded by another start sidebar.
-  "[.shell:has(>.shell-sidebar-start.shell-sidebar-open:not(.shell-sidebar-start~*))>&]:[--shell-start-1-open:1]",
+  "[.shell:has(>.shell-sidebar-start:not(.shell-sidebar-start~*)>.shell-sidebar-body[data-open])>&]:[--shell-start-1-open:1]",
   // The second start sidebar: preceded by another start sidebar.
-  "[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-open)>&]:[--shell-start-2-open:1]",
+  "[.shell:has(>.shell-sidebar-start~.shell-sidebar-start>.shell-sidebar-body[data-open])>&]:[--shell-start-2-open:1]",
   // The first end sidebar, next to main.
-  "[.shell:has(>.shell-sidebar-end.shell-sidebar-open:not(.shell-sidebar-end~*))>&]:[--shell-end-1-open:1]",
+  "[.shell:has(>.shell-sidebar-end:not(.shell-sidebar-end~*)>.shell-sidebar-body[data-open])>&]:[--shell-end-1-open:1]",
   // The second end sidebar, at the shell's end edge.
-  "[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-open)>&]:[--shell-end-2-open:1]",
+  "[.shell:has(>.shell-sidebar-end~.shell-sidebar-end>.shell-sidebar-body[data-open])>&]:[--shell-end-2-open:1]",
 );
 
 /**

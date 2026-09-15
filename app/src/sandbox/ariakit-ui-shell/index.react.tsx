@@ -304,7 +304,7 @@ function DocsScenario() {
       />
       <ShellSidebar
         id={navigationId}
-        $open={navigationOpen}
+        open={navigationOpen}
         aria-label="Documentation"
         render={<nav />}
       >
@@ -343,7 +343,7 @@ function DocsScenario() {
       </ShellMain>
       <ShellSidebar
         id={contentsId}
-        $open={contentsOpen}
+        open={contentsOpen}
         $side="end"
         $width="sm"
         $from="body"
@@ -403,7 +403,7 @@ function DashboardScenario() {
     <Shell>
       <ShellSidebar
         id={workspaceId}
-        $open={workspaceOpen}
+        open={workspaceOpen}
         $width="sm"
         $collapse={false}
         aria-label="Workspace"
@@ -480,7 +480,7 @@ function DashboardScenario() {
         </ShellMain>
         <ShellSidebar
           id={detailsId}
-          $open={detailsOpen}
+          open={detailsOpen}
           $side="end"
           $width="lg"
           aria-label="Details"
@@ -575,7 +575,7 @@ function ChatScenario() {
       </ShellSidebar>
       <ShellSidebar
         id={channelsId}
-        $open={channelsOpen}
+        open={channelsOpen}
         $width="md"
         aria-label="Channels"
         render={<nav />}
@@ -625,7 +625,7 @@ function ChatScenario() {
       </ShellMain>
       <ShellSidebar
         id={membersId}
-        $open={membersOpen}
+        open={membersOpen}
         $side="end"
         $width="sm"
         aria-label="Members"
@@ -708,7 +708,7 @@ function SettingsScenario() {
       />
       <ShellSidebar
         id={sectionsId}
-        $open={open}
+        open={open}
         $width="sm"
         aria-label="Settings sections"
         render={<nav />}

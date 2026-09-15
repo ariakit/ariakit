@@ -3,6 +3,37 @@ import { withFramework } from "#app/test-utils/preview.ts";
 import { getSidebar, selectScenario } from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
+  // https://github.com/ariakit/ariakit/pull/7533#discussion_r4019535774
+  test("publishes the consumer's open state on the sidebar body", async ({
+    q,
+  }) => {
+    const toggle = q.button("Toggle sidebar");
+    const body = q.navigation("Documentation", { includeHidden: true });
+    await expect(body).toHaveAttribute("data-open", "");
+    await expect(body).not.toHaveAttribute("open");
+    await toggle.click();
+    await expect(body).not.toHaveAttribute("data-open");
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await toggle.click();
+    await expect(body).toHaveAttribute("data-open", "");
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7533#discussion_r4019535774
+  test("accepts data-open directly on the sidebar body", async ({ q }) => {
+    await selectScenario(q, "geometry");
+    const body = q.navigation("Layout contents", { includeHidden: true });
+    const toggle = q.button("Toggle layout contents");
+    await expect(body).not.toHaveAttribute("data-open");
+    await expect(body).toBeHidden();
+    await toggle.click();
+    await expect(body).toHaveAttribute("data-open", "");
+    await expect(body).toBeVisible();
+    await toggle.click();
+    await expect(body).not.toHaveAttribute("data-open");
+    await expect(body).toBeHidden();
+  });
+
   // https://github.com/ariakit/ariakit/issues/7532
   test("forwards sidebar props, padding and events to the landmark body", async ({
     q,

@@ -78,7 +78,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
             ? ({ "--sidebar-edge": "rgb(180 40 80)" } as CSSProperties)
             : undefined
         }
-        $open={startOpen}
+        open={startOpen}
         $width={wideNavigation ? "lg" : "sm"}
         $p={3}
         $border={border}
@@ -263,7 +263,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
         id={endId}
         $side="end"
         $width="xs"
-        $open={endOpen}
+        data-open={endOpen ? "" : undefined}
         $from="body"
         $collapse={false}
         $border={border}

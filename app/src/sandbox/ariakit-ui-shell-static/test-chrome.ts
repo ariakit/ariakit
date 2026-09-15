@@ -5,7 +5,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   test.use({ viewport: { width: 1280, height: 800 } });
 
   // https://github.com/ariakit/ariakit/issues/7532
-  test("renders closed from markup and opens with a plain class-based toggle", async ({
+  test("renders closed from markup and opens with a plain attribute toggle", async ({
     page,
     q,
   }) => {
@@ -25,6 +25,26 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await expect(
       query(sidebar).link("Sidebars", { includeHidden: true }),
     ).toBeHidden();
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7533#discussion_r4019526259
+  test("restores the saved sidebar state without component JavaScript", async ({
+    page,
+    q,
+  }) => {
+    const toggle = q.button("Toggle sidebar");
+    const sidebar = page.locator("#sidebar");
+    await toggle.click();
+    await page.reload();
+    await expect(sidebar).toBeVisible();
+    await expect(sidebar).toHaveAttribute("data-open", "");
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await expect(page.locator("astro-island")).toHaveCount(0);
+    await toggle.click();
+    await page.reload();
+    await expect(sidebar).toBeHidden();
+    await expect(sidebar).not.toHaveAttribute("data-open");
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
   });
 

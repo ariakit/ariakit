@@ -47,7 +47,7 @@ export interface ShellProps
  *   />
  *   <ShellSidebar
  *     id={sidebarId}
- *     $open={open}
+ *     open={open}
  *     aria-label="Documentation"
  *     render={<nav />}
  *   >
@@ -306,7 +306,13 @@ export interface ShellSidebarProps
   extends
     ak.RoleProps<"div">,
     VariantProps<typeof shellSidebar>,
-    VariantProps<typeof shellSidebarBody> {}
+    VariantProps<typeof shellSidebarBody> {
+  /**
+   * Opens the sidebar unless its collapse breakpoint applies. Defaults to
+   * `true`. Sets `data-open` on the body, which can also be set directly.
+   */
+  open?: boolean;
+}
 
 /**
  * A side panel that folds with a drawer motion. The body receives `render`, the
@@ -315,8 +321,8 @@ export interface ShellSidebarProps
  * `aria-label`. When the fold ends, the body leaves the tab order and the
  * accessibility tree. The body draws a real border on the side that faces main.
  *
- * `$open` controls the state, and `$collapse` hides the panel below a named
- * container width even while it is open. A consumer button controls `$open` and
+ * `open` controls the state, and `$collapse` hides the panel below a named
+ * container width even while it is open. A consumer button controls `open` and
  * reports that same state with `aria-expanded`.
  * @example
  * const [open, setOpen] = useState(true);
@@ -330,7 +336,7 @@ export interface ShellSidebarProps
  * </Button>
  * <ShellSidebar
  *   id={sidebarId}
- *   $open={open}
+ *   open={open}
  *   $width="md"
  *   aria-label="Main"
  *   render={<nav />}
@@ -338,7 +344,7 @@ export interface ShellSidebarProps
  *   …
  * </ShellSidebar>
  */
-export function ShellSidebar(props: ShellSidebarProps) {
+export function ShellSidebar({ open = true, ...props }: ShellSidebarProps) {
   // The first recipe receives className and style, which belong to the body.
   const [variantProps, columnProps, rest] = splitProps(
     props,
@@ -347,7 +353,11 @@ export function ShellSidebar(props: ShellSidebarProps) {
   );
   return (
     <div {...shellSidebar.jsx(columnProps)}>
-      <ak.Role.div {...shellSidebarBody.jsx(variantProps)} {...rest} />
+      <ak.Role.div
+        data-open={open ? "" : undefined}
+        {...shellSidebarBody.jsx(variantProps)}
+        {...rest}
+      />
     </div>
   );
 }
