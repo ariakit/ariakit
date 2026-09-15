@@ -100,6 +100,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         0,
       );
       await expect(sidebar).toHaveCSS("width", "0px");
+      await expect(
+        q.navigation("Settings sections", { includeHidden: true }),
+      ).toHaveCSS("display", "none");
     });
 
     test("runs the fold on the inline duration otherwise", async ({
@@ -124,25 +127,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       );
       expect(width).toBeGreaterThan(0);
       await expect(sidebar).toHaveCSS("width", "0px");
-    });
-
-    test("keeps the content visible through the closing fold and shows it at once on opening", async ({
-      q,
-    }) => {
-      await selectScenario(q, "settings");
-      const sidebar = getSidebar(q, "Settings sections");
-      const visibility = () =>
-        sidebar.evaluate((node) => getComputedStyle(node).visibility);
-      await q.button("Toggle sidebar").click();
-      // Closing: the flip waits out the 600ms fold, so the content is still
-      // visible while the column narrows.
-      expect(await visibility()).toBe("visible");
-      await expect(sidebar).toHaveCSS("visibility", "hidden");
-      // Opening: the flip lands at once, before the fold, or the column would
-      // grow empty for 600ms. The toggle is labelled while the sidebar is
-      // closed.
-      await q.button("Sections").click();
-      expect(await visibility()).toBe("visible");
     });
 
     test("keeps the icon and the default name on a toggle whose children are false", async ({

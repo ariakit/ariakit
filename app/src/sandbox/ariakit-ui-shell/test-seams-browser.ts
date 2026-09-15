@@ -190,58 +190,62 @@ withFramework(import.meta.dirname, async ({ test }) => {
             linkHeight: link.getBoundingClientRect().height,
           };
         });
-        // Resolve the body and start recording before the click so runner
-        // latency cannot hide the intermediate fold geometry.
-        await using recording = await body.evaluateHandle(
-          (node, { rtl, side }) => {
-            const column = node.closest(".shell-sidebar");
-            const link = node.querySelector("a");
-            if (!column || !link) {
-              throw new Error("Missing sidebar parts");
-            }
-            const samples: {
-              width: number;
-              columnWidth: number;
-              offset: number;
-              linkHeight: number;
-            }[] = [];
-            const finished = new Promise<typeof samples>((resolve) => {
-              const sample = () => {
-                const bodyBox = node.getBoundingClientRect();
-                const columnBox = column.getBoundingClientRect();
-                const edge = (side === "start") !== rtl ? "right" : "left";
-                samples.push({
-                  width: bodyBox.width,
-                  columnWidth: columnBox.width,
-                  offset: bodyBox[edge] - columnBox[edge],
-                  linkHeight: link.getBoundingClientRect().height,
-                });
-                if (columnBox.width === 0) {
-                  resolve(samples);
-                } else {
-                  requestAnimationFrame(sample);
-                }
-              };
-              sample();
-            });
-            return { finished };
-          },
-          { rtl, side },
-        );
-        await q.button(toggle).click();
-        const samples = await recording.evaluate(({ finished }) => finished);
-        const folding = samples.filter(
-          (sample) =>
-            sample.columnWidth > width * 0.1 &&
-            sample.columnWidth < width * 0.9,
-        );
-        expect(folding.length).toBeGreaterThan(0);
-        for (const sample of folding) {
-          expect(sample.offset).toBeCloseTo(0, 0);
-          expect(sample.width).toBeCloseTo(before.width, 0);
-          expect(sample.linkHeight).toBeCloseTo(before.linkHeight, 0);
+        for (const open of [false, true]) {
+          // Resolve the body and start recording before the click so runner
+          // latency cannot hide the intermediate fold geometry.
+          await using recording = await body.evaluateHandle(
+            (node, { rtl, side, open, width }) => {
+              const column = node.closest(".shell-sidebar");
+              const link = node.querySelector("a");
+              if (!column || !link) {
+                throw new Error("Missing sidebar parts");
+              }
+              const samples: {
+                width: number;
+                columnWidth: number;
+                offset: number;
+                linkHeight: number;
+              }[] = [];
+              const finished = new Promise<typeof samples>((resolve) => {
+                const sample = () => {
+                  const bodyBox = node.getBoundingClientRect();
+                  const columnBox = column.getBoundingClientRect();
+                  const edge = (side === "start") !== rtl ? "right" : "left";
+                  samples.push({
+                    width: bodyBox.width,
+                    columnWidth: columnBox.width,
+                    offset: bodyBox[edge] - columnBox[edge],
+                    linkHeight: link.getBoundingClientRect().height,
+                  });
+                  if (columnBox.width === (open ? width : 0)) {
+                    resolve(samples);
+                  } else {
+                    requestAnimationFrame(sample);
+                  }
+                };
+                sample();
+              });
+              return { finished };
+            },
+            { rtl, side, open, width },
+          );
+          await q.button(toggle).click();
+          const samples = await recording.evaluate(({ finished }) => finished);
+          const folding = samples.filter(
+            (sample) =>
+              sample.columnWidth > width * 0.1 &&
+              sample.columnWidth < width * 0.9,
+          );
+          expect(folding.length).toBeGreaterThan(0);
+          for (const sample of folding) {
+            // Some engines remove the body before the closing fold finishes.
+            if (!open && sample.width === 0) continue;
+            expect(sample.offset).toBeCloseTo(0, 0);
+            expect(sample.width).toBeCloseTo(before.width, 0);
+            expect(sample.linkHeight).toBeCloseTo(before.linkHeight, 0);
+          }
+          await expect(column).toHaveCSS("width", `${open ? width : 0}px`);
         }
-        await expect(column).toHaveCSS("width", "0px");
       }
     });
   }

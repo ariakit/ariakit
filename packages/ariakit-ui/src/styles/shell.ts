@@ -327,19 +327,17 @@ export const shellFooterCenter = shellHeaderCenter;
 export const shellFooterEnd = shellHeaderEnd;
 
 /**
- * A folding column around the public sidebar body. Width and visibility
- * transition together, so the landmark leaves the accessibility tree after its
- * fold and returns before opening starts. No component state is needed.
+ * A folding column around the public sidebar body. The column stays rendered at
+ * zero width while the body is removed from layout, so reopening animates
+ * without a starting style or an entrance animation on the initial render.
  */
 export const shellSidebar = cv({
   class: [
     "shell-sidebar flex flex-col box-border @container/shell-sidebar rounded-none!",
     "z-2 w-(--shell-slot-width) overflow-clip",
-    "[&:not(:has(>.shell-sidebar-body[data-open]))]:w-0 [&:not(:has(>.shell-sidebar-body[data-open]))]:invisible",
-    "transition-[width,visibility] ease-(--shell-ease)",
-    "[transition-duration:var(--shell-time),0s]",
-    "[transition-delay:0s,var(--shell-time)]",
-    "[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,0s]",
+    "[&:not(:has(>.shell-sidebar-body[data-open]))]:w-0",
+    "[&>.shell-sidebar-body:not([data-open])]:hidden",
+    "transition-[width] duration-(--shell-time) ease-(--shell-ease)",
   ],
   variants: {
     /**
@@ -368,26 +366,26 @@ export const shellSidebar = cv({
     $collapse: {
       false: "",
       "3xs":
-        "shell-sidebar-c-3xs @max-3xs/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-3xs/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-3xs/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-3xs @max-3xs/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-3xs/shell:[&>.shell-sidebar-body]:hidden",
       "2xs":
-        "shell-sidebar-c-2xs @max-2xs/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-2xs/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-2xs/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
-      xs: "shell-sidebar-c-xs @max-xs/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-xs/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-xs/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
-      sm: "shell-sidebar-c-sm @max-sm/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-sm/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-sm/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
-      md: "shell-sidebar-c-md @max-md/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-md/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-md/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
-      lg: "shell-sidebar-c-lg @max-lg/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-lg/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-lg/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
-      xl: "shell-sidebar-c-xl @max-xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-2xs @max-2xs/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-2xs/shell:[&>.shell-sidebar-body]:hidden",
+      xs: "shell-sidebar-c-xs @max-xs/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-xs/shell:[&>.shell-sidebar-body]:hidden",
+      sm: "shell-sidebar-c-sm @max-sm/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-sm/shell:[&>.shell-sidebar-body]:hidden",
+      md: "shell-sidebar-c-md @max-md/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-md/shell:[&>.shell-sidebar-body]:hidden",
+      lg: "shell-sidebar-c-lg @max-lg/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-lg/shell:[&>.shell-sidebar-body]:hidden",
+      xl: "shell-sidebar-c-xl @max-xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-xl/shell:[&>.shell-sidebar-body]:hidden",
       "2xl":
-        "shell-sidebar-c-2xl @max-2xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-2xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-2xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-2xl @max-2xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-2xl/shell:[&>.shell-sidebar-body]:hidden",
       "3xl":
-        "shell-sidebar-c-3xl @max-3xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-3xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-3xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-3xl @max-3xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-3xl/shell:[&>.shell-sidebar-body]:hidden",
       "4xl":
-        "shell-sidebar-c-4xl @max-4xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-4xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-4xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-4xl @max-4xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-4xl/shell:[&>.shell-sidebar-body]:hidden",
       "5xl":
-        "shell-sidebar-c-5xl @max-5xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-5xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-5xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-5xl @max-5xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-5xl/shell:[&>.shell-sidebar-body]:hidden",
       "6xl":
-        "shell-sidebar-c-6xl @max-6xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-6xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-6xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-6xl @max-6xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-6xl/shell:[&>.shell-sidebar-body]:hidden",
       "7xl":
-        "shell-sidebar-c-7xl @max-7xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-7xl/shell:[&:has(>.shell-sidebar-body[data-open])]:invisible @max-7xl/shell:[&:has(>.shell-sidebar-body[data-open])]:[transition-delay:0s,var(--shell-time)]",
+        "shell-sidebar-c-7xl @max-7xl/shell:[&:has(>.shell-sidebar-body[data-open])]:w-0 @max-7xl/shell:[&>.shell-sidebar-body]:hidden",
     },
     /** Selects the first row the sidebar spans. Defaults to `intro`. */
     $from: {
@@ -418,6 +416,8 @@ export const shellSidebarBody = cv({
   class: [
     "shell-sidebar-body box-border w-(--shell-slot-width) min-h-0 flex-auto",
     "overflow-y-auto overscroll-contain",
+    // Supporting browsers defer removal until the fold ends. Others hide at once.
+    "transition-[display] transition-discrete duration-(--shell-time)",
     // Unlike auto margins, end alignment also handles an overflowing body,
     // keeping its facing border against the column while the column folds.
     "[.shell-sidebar-start>&]:self-end",

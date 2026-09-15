@@ -177,8 +177,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       if (!main) {
         throw new Error("Missing main");
       }
-      const samples: { width: number; space: number; visibility: string }[] =
-        [];
+      const samples: { width: number; space: number }[] = [];
       const finished = new Promise<typeof samples>((resolve) => {
         const sample = () => {
           const width = column.getBoundingClientRect().width;
@@ -187,7 +186,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
             space: Number.parseFloat(
               getComputedStyle(main).getPropertyValue("--shell-start-1-space"),
             ),
-            visibility: getComputedStyle(column).visibility,
           });
           if (width === 0) {
             resolve(samples);
@@ -207,9 +205,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     ).toBe(true);
     for (const sample of samples) {
       expect(Math.abs(sample.width - sample.space)).toBeLessThan(2);
-      if (sample.width > 0) {
-        expect(sample.visibility).toBe("visible");
-      }
     }
     await expect(sidebar).toHaveCSS("width", "0px");
     await expect(link).toBeHidden();
