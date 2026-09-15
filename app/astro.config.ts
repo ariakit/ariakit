@@ -15,6 +15,7 @@ import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
+import { Features } from "lightningcss";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { previewConfig } from "./src/lib/preview-config.ts";
 import { previewIntegration } from "./src/lib/preview-integration.ts";
@@ -57,6 +58,13 @@ export default defineConfig({
   },
 
   vite: {
+    css: {
+      lightningcss: {
+        // Lowering :dir() to :lang() ignores explicit and inherited dir values.
+        // Keep the native selector so production layout follows HTML direction.
+        exclude: Features.DirSelector,
+      },
+    },
     // TODO: Remove this workaround once Astro isolates optimizer cache writes.
     // Isolate check/sync/dev optimizer writes so a concurrent check or lint
     // cannot invalidate the dev server's SSR modules.
