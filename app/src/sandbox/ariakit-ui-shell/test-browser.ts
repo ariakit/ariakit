@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import {
   forEachColorScheme,
+  getCapture,
   getViewportCapture,
 } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
@@ -146,9 +147,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await selectScenario(q, "geometry");
         await q.checkbox("Flush gutter").check();
         const frame = page.locator('[aria-label="Flush frame"]');
-        await frame.scrollIntoViewIfNeeded();
         await visual({
-          ...getViewportCapture(page, colorScheme),
+          ...getCapture(frame, colorScheme, { fullPage: true }),
           viewports: {
             wide: { width: 1440, height: 900 },
             narrow: { width: 560, height: 900 },
