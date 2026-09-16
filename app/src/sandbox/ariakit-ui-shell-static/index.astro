@@ -8,12 +8,9 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-// The shell from its React components, as an Astro page renders them: static
-// HTML and CSS with a persisted open state and no component JavaScript,
-// because nothing hydrates. Each component renders on its own, so the toggle
-// is a plain button rather than a disclosure sharing the sidebar's store. The
-// one script on the page flips the sidebar's open attribute the way a
-// cookie-backed inline script would.
+// Astro renders static HTML and CSS without hydrating the React components.
+// The sidebar starts closed in markup. An inline script restores a saved
+// choice before paint and a plain button changes the body attribute.
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
@@ -29,10 +26,10 @@ import {
 const sections = ["Introduction", "Installation", "Sidebars", "Centering"];
 ---
 
-<Shell $startWidth={64}>
+<Shell>
   <ShellHeader $blur>
     <ShellHeaderStart>
-      <Button id="toggle" aria-expanded="true" aria-controls="sidebar">
+      <Button id="toggle" aria-expanded="false" aria-controls="sidebar">
         Toggle sidebar
       </Button>
       <strong>Static shell</strong>
@@ -40,7 +37,7 @@ const sections = ["Introduction", "Installation", "Sidebars", "Centering"];
     <ShellHeaderCenter>Documentation</ShellHeaderCenter>
     <ShellHeaderEnd $shrink>No component JavaScript</ShellHeaderEnd>
   </ShellHeader>
-  <ShellSidebar id="sidebar">
+  <ShellSidebar id="sidebar" open={false}>
     <nav aria-label="Documentation">
       <ul class="grid gap-1">
         {
@@ -75,20 +72,16 @@ const sections = ["Introduction", "Installation", "Sidebars", "Centering"];
 </Shell>
 
 <script is:inline>
-  // The plain toggle: the open state is one attribute on the column, so a
-  // click flips it and the sidebar folds. Inline, so it ships as written: no
-  // TypeScript syntax here.
-  const column = document.getElementById("sidebar");
+  const sidebar = document.getElementById("sidebar");
   const toggle = document.getElementById("toggle");
-  if (column && toggle) {
+  if (sidebar && toggle) {
+    const savedOpen = localStorage.getItem("shell-sidebar-open") === "true";
+    sidebar.toggleAttribute("data-open", savedOpen);
+    toggle.setAttribute("aria-expanded", String(savedOpen));
     toggle.addEventListener("click", () => {
-      const open = !column.hasAttribute("data-open");
-      if (open) {
-        column.setAttribute("data-open", "true");
-      } else {
-        column.removeAttribute("data-open");
-      }
+      const open = sidebar.toggleAttribute("data-open");
       toggle.setAttribute("aria-expanded", String(open));
+      localStorage.setItem("shell-sidebar-open", String(open));
     });
   }
 </script>

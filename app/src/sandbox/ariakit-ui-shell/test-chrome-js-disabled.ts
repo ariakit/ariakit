@@ -6,11 +6,12 @@ import { getSidebar } from "./test-helpers.ts";
 withFramework(import.meta.dirname, async ({ test }) => {
   test.use({ javaScriptEnabled: false });
 
+  // https://github.com/ariakit/ariakit/issues/7532
   test("renders the persisted sidebar state without JavaScript", async ({
     q,
   }) => {
     const sidebar = getSidebar(q, "Documentation");
-    await expect(sidebar).toHaveAttribute("data-open");
+    await expect(sidebar).not.toHaveCSS("width", "0px");
     await expect(q.navigation("Documentation")).toBeVisible();
     await expect(q.navigation("On this page")).toBeHidden();
   });

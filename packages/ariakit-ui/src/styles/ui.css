@@ -238,17 +238,8 @@ body > * {
   initial-value: 16px;
 }
 
-/* Shell geometry: the shell root declares one width per sidebar slot and a
-   shared default. Registered as lengths, so an em or spacing-number width is
-   computed once on the shell that declares it rather than in each sidebar's
-   own font, and a percentage is rejected at computed-value time. They inherit
-   so that a sidebar column and its body read their slot's width. */
-@property --shell-sidebar-width {
-  syntax: "<length>";
-  inherits: true;
-  initial-value: 256px;
-}
-
+/* Parts publish their slot widths on the root. Registered lengths resolve
+   relative units once before the columns and their bodies inherit them. */
 @property --shell-start-1-width {
   syntax: "<length>";
   inherits: true;
@@ -298,6 +289,32 @@ body > * {
 @property --shell-end-2-space {
   syntax: "<length>";
   inherits: false;
+  initial-value: 0px;
+}
+
+/* Alternating offset channels carry sticky header heights through three
+   nested shells without a same-element custom-property cycle. */
+@property --shell-top {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-head {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-below-a {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-below-b {
+  syntax: "<length>";
+  inherits: true;
   initial-value: 0px;
 }
 

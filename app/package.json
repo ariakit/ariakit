@@ -109,6 +109,7 @@
     "@types/textarea-caret": "3.0.4",
     "concurrently": "10.0.5",
     "cross-env": "10.1.0",
+    "lightningcss": "1.33.0",
     "nextjs": "workspace:*",
     "pixelmatch": "7.2.0",
     "pngjs": "7.0.0",

@@ -1,15 +1,11 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import { PanelLeftIcon } from "lucide-react";
 import * as React from "react";
-import {
-  createOptionalRender,
-  createRender,
-} from "../react-utils/create-render.react.ts";
+import { createOptionalRender } from "../react-utils/create-render.react.ts";
 import {
   shell,
-  shellBleed,
+  shellBreakout,
   shellFooter,
   shellFooterCenter,
   shellFooterEnd,
@@ -18,34 +14,55 @@ import {
   shellHeaderCenter,
   shellHeaderEnd,
   shellHeaderStart,
+  shellIntro,
   shellMain,
   shellSidebar,
   shellSidebarBody,
-  shellSidebarToggle,
 } from "../styles/shell.ts";
-import { ButtonSlot } from "./button.ariakit.react.tsx";
 
 export interface ShellProps
   extends ak.RoleProps<"div">, VariantProps<typeof shell> {}
 
 /**
  * Assembles a header, up to two sidebars per side, a main area and a footer
- * from optional parts, in one CSS grid. The root declares the geometry once and
- * every part reads it. Parts must be direct children and place themselves by
- * kind and side, so DOM order is free for reading order. A nested shell takes
- * the main cell of the shell around it.
+ * from optional parts, in one CSS grid. Each sidebar declares its width and the
+ * header declares its height. Parts must be direct children and place
+ * themselves by kind and side, so DOM order is free for reading order. A nested
+ * shell takes the main cell of the shell around it.
  * @example
- * const navigation = useDisclosureStore({ defaultOpen: true });
- * <Shell $startWidth={64} $endWidth={48}>
+ * const [open, setOpen] = useState(true);
+ * const sidebarId = useId();
+ * <Shell>
  *   <ShellHeader
- *     start={<ShellSidebarToggle store={navigation} />}
+ *     start={
+ *       <Button
+ *         className="@max-3xl/shell:hidden"
+ *         aria-expanded={open}
+ *         aria-controls={sidebarId}
+ *         onClick={() => setOpen(!open)}
+ *       >
+ *         Navigation
+ *       </Button>
+ *     }
  *     center="Title"
  *   />
- *   <ShellSidebar store={navigation} aria-label="Documentation" render={<nav />}>
+ *   <ShellSidebar
+ *     id={sidebarId}
+ *     open={open}
+ *     aria-label="Documentation"
+ *     render={<nav />}
+ *   >
  *     …
  *   </ShellSidebar>
+ *   <ShellIntro $centered>…</ShellIntro>
  *   <ShellMain $centered>…</ShellMain>
- *   <ShellSidebar $side="end" aria-label="On this page" render={<aside />}>
+ *   <ShellSidebar
+ *     $side="end"
+ *     $width="sm"
+ *     $from="body"
+ *     aria-label="On this page"
+ *     render={<aside />}
+ *   >
  *     …
  *   </ShellSidebar>
  *   <ShellFooter />
@@ -153,7 +170,7 @@ export interface ShellHeaderProps
  * @example
  * <ShellHeader
  *   $blur
- *   start={<><ShellSidebarToggle store={navigation} /><Logo /></>}
+ *   start={<Logo />}
  *   center={<ShellHeaderCenter $grow><Search /></ShellHeaderCenter>}
  *   end={<ShellHeaderEnd $shrink><UserMenu /></ShellHeaderEnd>}
  * />
@@ -240,6 +257,19 @@ export function ShellFooterEnd(props: ShellHeaderPartProps) {
   return renderPartCell(shellFooterEnd, props);
 }
 
+export interface ShellIntroProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellIntro> {}
+
+/**
+ * A heading area between the header and main. It shares main's content columns
+ * and breakout lines and spans to the shell's end edge. A sidebar with
+ * `$from="body"` starts below it.
+ */
+export function ShellIntro(props: ShellIntroProps) {
+  const [variantProps, rest] = splitProps(props, shellIntro);
+  return <ak.Role.div {...shellIntro.jsx(variantProps)} {...rest} />;
+}
+
 export interface ShellMainProps
   extends ak.RoleProps<"main">, VariantProps<typeof shellMain> {}
 
@@ -259,153 +289,80 @@ export function ShellMain(props: ShellMainProps) {
   return <ak.Role.main {...shellMain.jsx(variantProps)} {...rest} />;
 }
 
-export interface ShellBleedProps
-  extends ak.RoleProps<"div">, VariantProps<typeof shellBleed> {}
+export interface ShellBreakoutProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellBreakout> {}
 
 /**
- * A direct child of main that spans its gutters, for a full-width band inside a
- * centered main. Anywhere else it keeps its content size.
+ * A band that spans main's or the intro's popout, feature, or full lines. Its
+ * children return to the content column. A narrower breakout can nest inside a
+ * wider one; keep nesting to two levels because deeper subgrids can hang
+ * Safari. Inline padding and auto margins would shift the shared columns.
  */
-export function ShellBleed(props: ShellBleedProps) {
-  const [variantProps, rest] = splitProps(props, shellBleed);
-  return <ak.Role.div {...shellBleed.jsx(variantProps)} {...rest} />;
-}
-
-export interface ShellSidebarBodyProps
-  extends React.ComponentProps<"div">, VariantProps<typeof shellSidebarBody> {}
-
-/**
- * The body of a sidebar: the element that scrolls and sticks below the header.
- * `ShellSidebar` renders one; the `body` prop customizes it.
- */
-export function ShellSidebarBody(props: ShellSidebarBodyProps) {
-  const [variantProps, rest] = splitProps(props, shellSidebarBody);
-  return <div {...shellSidebarBody.jsx(variantProps)} {...rest} />;
+export function ShellBreakout(props: ShellBreakoutProps) {
+  const [variantProps, rest] = splitProps(props, shellBreakout);
+  return <ak.Role.div {...shellBreakout.jsx(variantProps)} {...rest} />;
 }
 
 export interface ShellSidebarProps
-  extends ak.RoleProps<"div">, VariantProps<typeof shellSidebar> {
+  extends
+    ak.RoleProps<"div">,
+    VariantProps<typeof shellSidebar>,
+    VariantProps<typeof shellSidebarBody> {
   /**
-   * The store that owns the open state: a disclosure store, or a dialog store,
-   * which is one. It defaults to the store of the nearest `DialogProvider` or
-   * `DisclosureProvider`. Without a store, the sidebar backs its own with the
-   * `open`, `defaultOpen` and `onOpenChange` props, open by default. Inside a
-   * dialog, a popover or another component that gives its content a disclosure
-   * store, that store is the nearest one: pass a `store` there, or wrap the
-   * shell in a provider of its own.
-   */
-  store?: ak.DisclosureStore;
-  /**
-   * Whether the sidebar is open. It also controls a store from a `store` prop
-   * or a provider, as Ariakit's own Dialog does.
+   * Opens the sidebar unless its collapse breakpoint applies. Defaults to
+   * `true`. Sets `data-open` on the body, which can also be set directly.
    */
   open?: boolean;
-  /**
-   * Whether the sidebar starts open, when the sidebar owns its own state.
-   * Defaults to `true`. With a store from a `store` prop or a provider, pass
-   * the default to that store instead: Ariakit throws on the conflict in
-   * development.
-   */
-  defaultOpen?: boolean;
-  /**
-   * Called when the open state changes, including for a store from a `store`
-   * prop or a provider.
-   */
-  onOpenChange?: (open: boolean) => void;
-  /** Custom body element or props to render a `ShellSidebarBody`. */
-  body?: React.ReactElement | ShellSidebarBodyProps;
 }
 
 /**
- * A side panel of a shell: a column that folds with a drawer motion. A closed
- * sidebar takes no space and is out of the tab order and the accessibility tree
- * once its motion ends. The column is the content its toggle controls; `render`
- * sets its element, `nav` for a primary navigation or `aside` for a
- * complementary panel, and `aria-label` names the landmark.
+ * A side panel that folds with a drawer motion. The body receives `render`, the
+ * id, ARIA attributes, class names, and frame variants. Use `nav` for
+ * navigation or `aside` for a complementary panel, and name the landmark with
+ * `aria-label`. A closed body leaves the tab order and the accessibility tree.
+ * The body draws a real border on the side that faces main.
  *
- * Two toggles sharing one store: only the last one used reports the state,
- * while the other keeps `aria-expanded="false"`, so a shell with both a header
- * toggle and a rail toggle drives that attribute itself.
+ * `open` controls the state, and `$collapse` hides the panel below a named
+ * container width even while it is open. A consumer button controls `open` and
+ * reports that same state with `aria-expanded`. Hide the button below the same
+ * collapse step in the sidebar's shell container. For the default `3xl` step,
+ * use `className="@max-3xl/shell:hidden"`. With `$collapse={false}`, the button
+ * can stay visible at every width.
  * @example
- * <DisclosureProvider defaultOpen>
- *   <ShellHeader start={<ShellSidebarToggle />} />
- *   <ShellSidebar aria-label="Main" render={<nav />}>
- *     …
- *   </ShellSidebar>
- * </DisclosureProvider>
+ * const [open, setOpen] = useState(true);
+ * const sidebarId = useId();
+ * <Button
+ *   className="@max-3xl/shell:hidden"
+ *   aria-expanded={open}
+ *   aria-controls={sidebarId}
+ *   onClick={() => setOpen(!open)}
+ * >
+ *   Navigation
+ * </Button>
+ * <ShellSidebar
+ *   id={sidebarId}
+ *   open={open}
+ *   $width="md"
+ *   aria-label="Main"
+ *   render={<nav />}
+ * >
+ *   …
+ * </ShellSidebar>
  */
-export function ShellSidebar({
-  store: storeProp,
-  open,
-  defaultOpen,
-  onOpenChange,
-  body,
-  children,
-  ...props
-}: ShellSidebarProps) {
-  const context = ak.useDisclosureContext();
-  const providedStore = storeProp ?? context;
-  // A store from a prop or a provider can still be controlled through `open`,
-  // as Ariakit's own Dialog is, but it is created elsewhere, so the sidebar's
-  // own default of open applies only to a store of its own. An explicit
-  // `defaultOpen` reaches Ariakit with either store, and Ariakit throws on the
-  // conflict in development.
-  const store = ak.useDisclosureStore({
-    store: providedStore,
-    open,
-    setOpen: onOpenChange,
-    defaultOpen: defaultOpen ?? (providedStore ? undefined : true),
-  });
-  const [variantProps, rest] = splitProps(props, shellSidebar);
-  const bodyElement = createRender(ShellSidebarBody, body);
-  return (
-    <ak.DisclosureContent
-      store={store}
-      // Never display: none. The column folds on a transition and hides its
-      // content through visibility once the motion ends, so the content stays
-      // in the DOM in both states.
-      hidden={false}
-      {...shellSidebar.jsx(variantProps)}
-      {...rest}
-    >
-      <ak.Role.div render={bodyElement}>{children}</ak.Role.div>
-    </ak.DisclosureContent>
+export function ShellSidebar({ open = true, ...props }: ShellSidebarProps) {
+  // The first recipe receives className and style, which belong to the body.
+  const [variantProps, columnProps, rest] = splitProps(
+    props,
+    shellSidebarBody,
+    shellSidebar,
   );
-}
-
-export interface ShellSidebarToggleProps
-  extends ak.DisclosureProps, VariantProps<typeof shellSidebarToggle> {}
-
-/**
- * Opens and closes a sidebar through its store, from a `store` prop or the
- * nearest `DialogProvider` or `DisclosureProvider`. With no children, or only
- * nullish or boolean ones such as a conditional label that is off, it renders a
- * square icon button named "Toggle sidebar".
- */
-export function ShellSidebarToggle({
-  children,
-  ...props
-}: ShellSidebarToggleProps) {
-  const [variantProps, rest] = splitProps(props, shellSidebarToggle);
-  // Nothing to render means the icon and the default name: no children, or only
-  // nullish or boolean ones, alone or in a list from conditional labels.
-  const iconOnly = React.Children.toArray(children).length === 0;
-  const fallbackLabel = iconOnly ? "Toggle sidebar" : undefined;
   return (
-    <ak.Disclosure
-      {...shellSidebarToggle.jsx(variantProps)}
-      {...rest}
-      // Set after the spread, so a label prop that is present but undefined
-      // keeps the fallback.
-      aria-label={rest["aria-label"] ?? fallbackLabel}
-    >
-      {iconOnly ? (
-        <ButtonSlot>
-          <PanelLeftIcon />
-        </ButtonSlot>
-      ) : (
-        children
-      )}
-    </ak.Disclosure>
+    <div {...shellSidebar.jsx(columnProps)}>
+      <ak.Role.div
+        data-open={open ? "" : undefined}
+        {...shellSidebarBody.jsx(variantProps)}
+        {...rest}
+      />
+    </div>
   );
 }
