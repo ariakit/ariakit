@@ -69,7 +69,8 @@ export interface NavProps
   /**
    * The list that holds the rows, as an element or as `NavList` props. Set it
    * to `false` to render the children as they are, for a nav made of groups
-   * that bring their own lists.
+   * that bring their own lists. Links with default items need a `NavList` or
+   * another `ul`, `ol`, or `menu`; use `item={false}` for standalone links.
    */
   list?: React.ReactElement | NavListProps | false;
   /**
@@ -125,7 +126,6 @@ function useSettling(element: HTMLElement | null) {
 
 export function Nav({ list, glider, children, ...props }: NavProps) {
   const [variantProps, rest] = splitProps(props, nav);
-  const listEl = list === false ? null : createRender(NavList, list);
   const [element, setElement] = React.useState<HTMLElement | null>(null);
   useSettling(element);
   return (
@@ -137,7 +137,7 @@ export function Nav({ list, glider, children, ...props }: NavProps) {
       render={<ak.Role.nav ref={setElement} render={rest.render} />}
     >
       {renderGliders(glider)}
-      {listEl ? <ak.Role.ul render={listEl}>{children}</ak.Role.ul> : children}
+      {list === false ? children : createRender(NavList, list, { children })}
     </ak.Role.nav>
   );
 }
@@ -167,9 +167,16 @@ export function NavGlider(props: NavGliderProps) {
 export interface NavLinkProps
   extends ak.RoleProps<"a">, VariantProps<typeof navLink> {
   currentUrl?: string | URL;
+  /**
+   * The list item around the link. Set to `false` for a standalone link or an
+   * existing item wrapper. All other props, including `ref` and `render`,
+   * belong to the anchor. The default item needs a `NavList` or another `ul`,
+   * `ol`, or `menu` parent, including inside disclosure content.
+   */
+  item?: React.ReactElement | ak.RoleProps<"li"> | false;
 }
 
-export function NavLink({ currentUrl, ...props }: NavLinkProps) {
+export function NavLink({ currentUrl, item, ...props }: NavLinkProps) {
   const [variantProps, rest] = splitProps(props, navLink);
   const isCurrent = isCurrentPage(currentUrl, rest.href);
   const disclosures = React.useContext(NavDisclosureContext);
@@ -181,13 +188,15 @@ export function NavLink({ currentUrl, ...props }: NavLinkProps) {
     }
   }, [isCurrent, disclosures]);
 
-  return (
+  const link = (
     <ak.Role.a
       aria-current={isCurrent ? "page" : undefined}
       {...navLink.jsx(variantProps)}
       {...rest}
     />
   );
+  if (item === false) return link;
+  return createRender(ak.Role.li, item, { children: link });
 }
 
 export interface NavGroupProps

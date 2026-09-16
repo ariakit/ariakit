@@ -81,6 +81,7 @@
     "./styles/progress": "./src/styles/progress.ts",
     "./styles/prose": "./src/styles/prose.ts",
     "./styles/radio": "./src/styles/radio.ts",
+    "./styles/selected": "./src/styles/selected.ts",
     "./styles/separator": "./src/styles/separator.ts",
     "./styles/shell": "./src/styles/shell.ts",
     "./styles/table": "./src/styles/table.ts",

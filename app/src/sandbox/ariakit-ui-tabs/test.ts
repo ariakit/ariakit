@@ -1,6 +1,19 @@
 import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+// https://github.com/ariakit/ariakit/pull/7536#discussion_r4022810357
+test("changes bar placement keyboard navigation to right-to-left order", async () => {
+  await click(q.checkbox("Tabs right to left"));
+  const tabs = q.within(q.tablist("Bar placement"));
+  await click(tabs.tab("Preview"));
+  await press.ArrowLeft();
+  expect(tabs.tab("Code")).toHaveFocus();
+  expect(tabs.tab("Code")).toHaveAttribute("aria-selected", "true");
+  await press.ArrowLeft();
+  expect(tabs.tab("Project settings")).toHaveFocus();
+  expect(tabs.tab("Project settings")).toHaveAttribute("aria-selected", "true");
+});
+
 // https://github.com/ariakit/ariakit/issues/7482
 test("moves and selects tabs in right-to-left order", async () => {
   const box = q.within(q.article("Right to left"));

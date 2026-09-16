@@ -10,6 +10,23 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7536#discussion_r4023546236
+  test("keeps horizontal bar groups and their focus outline unclipped", async ({
+    q,
+    page,
+  }) => {
+    const group = q.radiogroup("Horizontal size");
+    const small = query(group).radio("Small");
+    await small.click();
+    await page.keyboard.press("ArrowRight");
+    await test.expect(query(group).radio("Large")).toBeFocused();
+    await test
+      .expect(group.locator(".glider.focus"))
+      .toHaveCSS("outline-style", "solid");
+    await test.expect(group).not.toHaveCSS("box-shadow", "none");
+    await test.expect(group).toHaveCSS("clip-path", "none");
+  });
+
   // The page capture also keeps the static states of the button group fixture
   // under visual regression: joined borders, kept corners and the selected
   // glider.
@@ -66,6 +83,55 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await hoverOver(activity);
       await visual(getCapture(box, colorScheme));
     });
+  });
+
+  test("animates the bar between rows in a vertical group", async ({
+    q,
+    browserName,
+  }) => {
+    test.skip(
+      browserName === "firefox",
+      "Firefox does not transition this anchor change, including with the original inset rule.",
+    );
+    const example = q.article("Vertical bar glider");
+    const system = query(example).radio("System");
+    const dark = query(example).radio("Dark");
+    const bar = example.locator(".glider");
+    await example.scrollIntoViewIfNeeded();
+    await test.expect(system).toBeChecked();
+    const start = await system.boundingBox();
+    const end = await dark.boundingBox();
+    if (!start || !end) throw new Error("Missing radio bounds");
+    // Hold the real position transition halfway through so its short default
+    // duration cannot finish before the geometry assertion reaches the browser.
+    await bar.evaluate((node) => {
+      node.addEventListener("transitionrun", (event) => {
+        if (!(event instanceof TransitionEvent)) return;
+        if (event.propertyName !== "top" && event.propertyName !== "bottom")
+          return;
+        for (const animation of node.getAnimations()) {
+          if (!(animation instanceof CSSTransition)) continue;
+          if (animation.transitionProperty !== event.propertyName) continue;
+          animation.pause();
+          animation.currentTime =
+            Number(animation.effect?.getTiming().duration) / 2;
+        }
+      });
+    });
+    await dark.click();
+    await test.expect(dark).toBeChecked();
+    await test.expect
+      .poll(async () => (await bar.boundingBox())?.y)
+      .toBeGreaterThan(start.y);
+    await test.expect
+      .poll(async () => (await bar.boundingBox())?.y)
+      .toBeLessThan(end.y);
+    await bar.evaluate((node) => {
+      for (const animation of node.getAnimations()) animation.finish();
+    });
+    await test.expect
+      .poll(async () => (await bar.boundingBox())?.y)
+      .toBeCloseTo(end.y, 0);
   });
 
   // A hovered control owns both of its shared edges, so each one takes the

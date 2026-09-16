@@ -1,4 +1,5 @@
 import { cv, cx } from "clava";
+import { getSpacingValue } from "../utils/styles.ts";
 import { controlGroup, controlSeparator } from "./control.ts";
 import { frame } from "./frame.ts";
 import { hasLayerBackground } from "./layer.ts";
@@ -28,6 +29,10 @@ export const glider = cv({
       bevel: ["ui-bevel", gliderCover],
       flat: gliderCover,
       bar: [
+        "glider-bar",
+        // Keep horizontal bars outside the scrolling containing block. Firefox
+        // otherwise applies the RTL scroll offset twice to anchor() insets.
+        "not-[.vertical>&]:fixed! [position-visibility:anchors-visible]",
         // The bar reads as an edge on top of the controls, not a surface
         // behind them, so it reverses the stacking the base class sets.
         "z-10",
@@ -35,18 +40,59 @@ export const glider = cv({
         // scaling the bar thickness, or high-contrast mode inflates the bar
         // from 2px to 42px.
         "[--glider-bar:calc(--spacing(0.5)+(--spacing(0.1))*var(--contrast)/100)]",
-        // The group is the containing block, and an element cannot anchor
-        // its own absolutely positioned children, so the group's edge is a
-        // plain inset rather than an anchor() on its name.
-        "not-[.vertical>&]:inset-s-[anchor(start)]",
-        "not-[.vertical>&]:bottom-0",
+        "not-[.vertical>&]:left-[anchor(left)]",
+        "not-[.vertical>&]:top-[calc(anchor(bottom)+var(--glider-bar-offset))]",
         "not-[.vertical>&]:w-[anchor-size()]",
         "not-[.vertical>&]:h-(--glider-bar)",
-        "[.vertical>&]:inset-e-0",
+        "not-[.vertical>&]:[&.glider-bar-start]:top-auto",
+        "not-[.vertical>&]:[&.glider-bar-start]:bottom-[calc(anchor(top)+var(--glider-bar-offset))]",
+        "[.vertical>&]:inset-s-[calc(anchor(end)+var(--glider-bar-offset))]",
         "[.vertical>&]:bottom-[anchor(bottom)]",
         "[.vertical>&]:w-(--glider-bar)",
         "[.vertical>&]:h-[anchor-size()]",
+        "[.vertical>&]:[&.glider-bar-start]:inset-s-auto",
+        "[.vertical>&]:[&.glider-bar-start]:inset-e-[calc(anchor(start)+var(--glider-bar-offset))]",
+        // Frame mode locates the outside edge even when the item is indented.
+        "not-[.vertical>&]:[&.glider-bar-frame]:top-auto",
+        "not-[.vertical>&]:[&.glider-bar-frame]:bottom-[anchor(--glider-frame_bottom)]",
+        "not-[.vertical>&]:[&.glider-bar-frame.glider-bar-start]:bottom-auto",
+        "not-[.vertical>&]:[&.glider-bar-frame.glider-bar-start]:top-[anchor(--glider-frame_top)]",
+        "[.vertical>&]:[&.glider-bar-frame]:inset-s-auto",
+        "[.vertical>&]:[&.glider-bar-frame]:inset-e-0",
+        "[.vertical>&]:[&.glider-bar-frame.glider-bar-start]:inset-e-auto",
+        "[.vertical>&]:[&.glider-bar-frame.glider-bar-start]:inset-s-0",
       ],
+    },
+    /** Places a bar at the start or end of the group's cross axis. */
+    $side: {
+      start: "glider-bar-start",
+      end: "glider-bar-end",
+    },
+    /**
+     * Sets the gap from the item to the bar's near edge. Numbers scale the
+     * spacing token; CSS lengths can be negative for overlap. `auto` uses frame
+     * padding minus the bar thickness, clamped at zero. `frame` aligns the bar
+     * to the group's edge even for an indented item. Set `--glider-bar` through
+     * `style` or `className` to change thickness.
+     */
+    $barOffset(value?: "auto" | "frame" | (string & {}) | number) {
+      if (value == null) return;
+      if (value === "auto") {
+        return "glider-bar-auto [--glider-bar-offset:max(0px,calc(var(--glider-padding,0px)-var(--glider-bar)))]";
+      }
+      if (value === "frame") {
+        // Firefox needs the frame anchor inside the items' scroll container.
+        // Chromium instead double-counts document scrolling for that anchor, so
+        // other engines use the group's own anchor name.
+        return [
+          "glider-bar-frame",
+          "[@supports(-moz-appearance:none)]:[:is(.glider-group,.nav):has(>&)]:before:absolute",
+          "[@supports(-moz-appearance:none)]:[:is(.glider-group,.nav):has(>&)]:before:inset-0",
+          "[@supports(-moz-appearance:none)]:[:is(.glider-group,.nav):has(>&)]:before:pointer-events-none",
+          "[@supports(-moz-appearance:none)]:[:is(.glider-group,.nav):has(>&)]:before:[anchor-name:--glider-frame]",
+        ];
+      }
+      return { style: { "--glider-bar-offset": getSpacingValue(value) } };
     },
     /**
      * Sets which control state the glider follows. A control publishes the
@@ -90,20 +136,18 @@ export const glider = cv({
         // With no control selected there is no anchor to land on, and the
         // glider would stay as a blank square at the group's start.
         "not-ui-sibling-selected:hidden",
-        "supports-anchor:[.control:has(~&)]:ui-selected:bg-transparent",
-        "supports-anchor:[.control:has(~&)]:ui-selected:border-transparent",
-        "supports-anchor:[.control:has(~&)]:ui-selected:befter:hidden",
       ],
     },
     /**
      * Animates the glider as it travels between controls.
      */
     $animated: [
+      "glider-animated",
       // display is on the list so a leaving hover glider can wait out its
       // delay first; the discrete behaviour is what lets display take part.
       // The insets are the longhands: WebKit passes over the inset-block and
       // inset-inline shorthands in a transition list.
-      "transition-[inset-inline-start,border-color,height,width,outline,display]",
+      "transition-[left,inset-inline-start,border-color,height,width,outline,display]",
       "[.vertical>&]:transition-[bottom,border-color,height,width,outline,display]",
       "duration-100 transition-discrete",
       "[.vertical>&]:duration-50",
@@ -111,6 +155,12 @@ export const glider = cv({
   },
   defaultVariants: {
     $kind: "flat",
+    $barOffset(defaultValue, variants) {
+      if (variants.$kind !== "bar") {
+        return defaultValue;
+      }
+      return defaultValue ?? "auto";
+    },
     $state: "selected",
     $animated: true,
     $p: "none",
@@ -188,9 +238,12 @@ export const glider = cv({
     // Forced colors repaint transparent borders. A cover owns the edge, so
     // remove the covered control's width as well as its border color.
     if (variants.$state === "selected") {
-      addClass(
+      addClass([
+        "supports-anchor:[.control:has(~&)]:ui-selected:bg-transparent",
+        "supports-anchor:[.control:has(~&)]:ui-selected:border-transparent",
+        "supports-anchor:[.control:has(~&)]:ui-selected:befter:hidden",
         "supports-anchor:[.control:has(~&)]:ui-selected:forced-colors:ak-frame-border-0",
-      );
+      ]);
     }
     if (variants.$state === "hover") {
       addClass(
@@ -217,8 +270,10 @@ export const gliderGroup = cv({
   extend: [controlGroup],
   // The gliders paint behind the controls, below zero on the z axis, so the
   // group opens a stacking context to keep them in front of its own surface.
-  class: "glider-group relative z-1",
+  class: "glider-group relative z-1 [--glider-padding:var(--ak-frame-padding)]",
   style: {
-    anchorScope: "--glider-hover, --glider-focus, --glider-selected",
+    anchorName: "--glider-frame",
+    anchorScope:
+      "--glider-frame, --glider-hover, --glider-focus, --glider-selected",
   },
 });

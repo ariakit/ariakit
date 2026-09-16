@@ -22,10 +22,84 @@ import {
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
 import { BookOpenIcon, BracesIcon, EyeIcon } from "lucide-react";
+import { useState } from "react";
 import {
   Example,
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
+
+function BarPlacement() {
+  const [offset, setOffset] = useState("auto");
+  const [side, setSide] = useState<"start" | "end">("end");
+  const [rtl, setRtl] = useState(false);
+  return (
+    <div className="grid gap-4">
+      <label>
+        <input
+          type="checkbox"
+          checked={rtl}
+          onChange={(event) => setRtl(event.target.checked)}
+        />{" "}
+        Tabs right to left
+      </label>
+      <label>
+        Tab bar distance{" "}
+        <select
+          value={offset}
+          onChange={(event) => setOffset(event.target.value)}
+        >
+          <option value="auto">Frame padding</option>
+          <option value="6px">6px</option>
+          <option value="frame">Frame edge</option>
+        </select>
+      </label>
+      <label>
+        Tab bar side{" "}
+        <select
+          value={side}
+          onChange={(event) =>
+            setSide(event.target.value === "start" ? "start" : "end")
+          }
+        >
+          <option value="end">Bottom</option>
+          <option value="start">Top</option>
+        </select>
+      </label>
+      <Tabs
+        defaultSelectedId="placement-preview"
+        $p={3}
+        rtl={rtl}
+        dir={rtl ? "rtl" : "ltr"}
+        className="w-64 max-w-full"
+      >
+        <TabList
+          aria-label="Bar placement"
+          $p={3}
+          className="[&>.control]:shrink-0 [&>.control]:whitespace-nowrap"
+        >
+          <Tab id="placement-preview" $kind="bevel" $selectedPush={1}>
+            Preview
+          </Tab>
+          <Tab id="placement-code" $kind="flat" $selectedOffset={2}>
+            Code
+          </Tab>
+          <Tab id="placement-settings" $kind="flat">
+            Project settings
+          </Tab>
+          <TabGlider
+            $kind="bar"
+            $barOffset={offset}
+            $side={side}
+            $animated={false}
+          />
+        </TabList>
+        <TabPanel single>
+          Switch tabs to move the bar without animation.
+        </TabPanel>
+      </Tabs>
+    </div>
+  );
+}
 
 interface ActivityTabsProps {
   name: string;
@@ -1509,6 +1583,13 @@ export default function TabsExamples() {
           </Tabs>
         </Example>
       ))}
+      <Example
+        title="Bar placement"
+        description="Set a bar's distance and side without changing the tab's surface or corner radius."
+        code={`<TabGlider $kind="bar" $barOffset={1.5} $side="end" $animated={false} />`}
+      >
+        <BarPlacement />
+      </Example>
     </ExampleGrid>
   );
 }

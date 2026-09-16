@@ -167,16 +167,15 @@ function SectionLinks({
     // recipe goes on a plain element.
     <Nav render={<div aria-label={label} />}>
       {sections.map((section) => (
-        <li key={section.id}>
-          <NavLink
-            href={`#${section.id}`}
-            tabIndex={0}
-            aria-current={current === section.id ? "page" : undefined}
-            onClick={() => onSelect?.(section.id)}
-          >
-            {section.title}
-          </NavLink>
-        </li>
+        <NavLink
+          key={section.id}
+          href={`#${section.id}`}
+          tabIndex={0}
+          aria-current={current === section.id ? "page" : undefined}
+          onClick={() => onSelect?.(section.id)}
+        >
+          {section.title}
+        </NavLink>
       ))}
     </Nav>
   );
@@ -254,7 +253,7 @@ function DocsScenario() {
   const contentsId = useId();
   const [current, setCurrent] = useState<string>(docsSections[0].id);
   return (
-    <Shell>
+    <Shell style={{ color: "inherit" }}>
       <ShellHeader
         $blur
         start={
@@ -326,7 +325,9 @@ function DocsScenario() {
           shell, so it copies the header height to keep a focused control out
           from under the sticky header.
          */}
-        <style>{"html { scroll-padding-block-start: 3.25rem; }"}</style>
+        <style>
+          {"html { scroll-padding-block-start: calc(4rem + 1px); }"}
+        </style>
         <DocsArticle />
         <ShellBreakout
           $span="full"
@@ -414,18 +415,17 @@ function DashboardScenario() {
         <Brand>Acme</Brand>
         <Nav render={<div aria-label="Workspace pages" />} className="mt-4">
           {workspaceLinks.map((link, index) => (
-            <li key={link.title}>
-              <NavLink
-                href={`#${link.title.toLowerCase()}`}
-                tabIndex={0}
-                aria-current={index === 0 ? "page" : undefined}
-              >
-                <NavIcon>
-                  <link.icon strokeWidth={1.5} />
-                </NavIcon>
-                {link.title}
-              </NavLink>
-            </li>
+            <NavLink
+              key={link.title}
+              href={`#${link.title.toLowerCase()}`}
+              tabIndex={0}
+              aria-current={index === 0 ? "page" : undefined}
+            >
+              <NavIcon>
+                <link.icon strokeWidth={1.5} />
+              </NavIcon>
+              {link.title}
+            </NavLink>
           ))}
         </Nav>
       </ShellSidebar>
@@ -587,18 +587,17 @@ function ChatScenario() {
       >
         <Nav render={<div aria-label="Channel list" />}>
           {channels.map((channel, index) => (
-            <li key={channel}>
-              <NavLink
-                href={`#${channel}`}
-                tabIndex={0}
-                aria-current={index === 0 ? "page" : undefined}
-              >
-                <NavIcon>
-                  <Hash strokeWidth={1.5} />
-                </NavIcon>
-                {channel}
-              </NavLink>
-            </li>
+            <NavLink
+              key={channel}
+              href={`#${channel}`}
+              tabIndex={0}
+              aria-current={index === 0 ? "page" : undefined}
+            >
+              <NavIcon>
+                <Hash strokeWidth={1.5} />
+              </NavIcon>
+              {channel}
+            </NavLink>
           ))}
         </Nav>
       </ShellSidebar>

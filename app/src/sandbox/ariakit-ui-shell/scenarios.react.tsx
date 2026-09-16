@@ -49,19 +49,19 @@ export function GeometryScenario({ controls }: ScenarioProps) {
   const [selection, setSelection] = useState("No section selected");
   const startId = useId();
   const endId = useId();
-  const gutter = flushGutter ? 0 : compactGutter ? 2 : 6;
+  const gutter = flushGutter ? 0 : compactGutter ? 2 : undefined;
   const border = !seams ? false : inheritSeams ? "inherit" : 2;
   const borderType = seam === "border" ? undefined : seam;
   return (
     <Shell
       $duration={600}
       $border={inheritSeams ? 3 : undefined}
+      $headerBorder={border}
       $edge={inheritSeams ? "brand" : undefined}
     >
       <ShellHeader
         $height={largeHeader ? "lg" : "md"}
-        $p={widePadding ? 12 : 6}
-        $border={border}
+        $p={widePadding ? 12 : undefined}
         $borderType={borderType}
         start={<span>Layout details</span>}
         end={controls}
@@ -94,14 +94,14 @@ export function GeometryScenario({ controls }: ScenarioProps) {
       <ShellIntro
         $centered={centered}
         $maxWidth={160}
-        $gutter={gutter}
+        $p={gutter}
         aria-label="Page introduction"
         className="py-8"
       >
         <h1>Columns and frames</h1>
         <p id="navigation-description">Select a section in the navigation.</p>
       </ShellIntro>
-      <ShellMain $centered={centered} $maxWidth={160} $gutter={gutter}>
+      <ShellMain $centered={centered} $maxWidth={160} $p={gutter}>
         <div id="layout-content" className="grid gap-4">
           <fieldset className="flex flex-wrap gap-4">
             <legend>Layout options</legend>
@@ -292,7 +292,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
         </a>
       </ShellSidebar>
       <ShellFooter
-        $p={widePadding ? 12 : 6}
+        $p={widePadding ? 12 : undefined}
         $border={border}
         $borderType={borderType}
         start={<span>Layout footer</span>}
@@ -323,7 +323,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
             Outer section
           </a>
         </ShellSidebar>
-        <ShellMain $gutter={0}>
+        <ShellMain $p={0}>
           <div className="h-40">Outer introduction</div>
           <Shell aria-label="Middle shell">
             <ShellHeader
@@ -340,7 +340,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
                 Middle section
               </a>
             </ShellSidebar>
-            <ShellMain $gutter={0}>
+            <ShellMain $p={0}>
               <div className="h-40">Middle introduction</div>
               <Shell aria-label="Inner shell">
                 <ShellHeader $height="lg" start={<span>Inner header</span>} />
