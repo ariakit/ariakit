@@ -15,12 +15,35 @@ import {
   selectScenario,
 } from "./test-helpers.ts";
 
-// Sixteen spacing steps plus the default facing border.
-const HEADER_HEIGHT = 65;
+// The default header has a 40px control, three spacing steps per side, and the
+// 1px facing border from $headerBorder: true.
+const CONTROL_HEIGHT = 40;
+const PART_PADDING = 12;
+const HEADER_BORDER = 1;
+const HEADER_HEIGHT = CONTROL_HEIGHT + PART_PADDING * 2 + HEADER_BORDER;
+const CONTENT_WIDTH = 768;
 // The shell's motion duration.
 const DURATION = 300;
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
+  // https://github.com/ariakit/ariakit/pull/7536#discussion_r4023543418
+  test("keeps the sticky sidebar below a header with a caller shell style", async ({
+    q,
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    await page.evaluate(() => window.scrollTo(0, 300));
+    await expect
+      .poll(async () => {
+        const [header, sidebar] = await Promise.all([
+          getBox(q.banner()),
+          getBox(q.navigation("Documentation")),
+        ]);
+        return sidebar.y - header.y - header.height;
+      })
+      .toBeCloseTo(0, 0);
+  });
+
   test("gives a default header button three spacing steps on each side", async ({
     q,
     page,
@@ -28,11 +51,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await page.setViewportSize({ width: 1600, height: 900 });
     const header = await getBox(q.banner());
     const button = await getBox(q.button("Toggle sidebar"));
-    expect(button.height).toBe(40);
-    expect(header.height).toBe(65);
-    expect(button.x - header.x).toBe(12);
-    expect(button.y - header.y).toBe(12);
-    expect(header.y + header.height - button.y - button.height - 1).toBe(12);
+    expect(button.height).toBeCloseTo(CONTROL_HEIGHT, 0);
+    expect(header.height).toBeCloseTo(HEADER_HEIGHT, 0);
+    expect(button.x - header.x).toBeCloseTo(PART_PADDING, 0);
+    expect(button.y - header.y).toBeCloseTo(PART_PADDING, 0);
+    expect(
+      header.y + header.height - button.y - button.height - HEADER_BORDER,
+    ).toBeCloseTo(PART_PADDING, 0);
   });
 
   test("shrinks breakouts before content and keeps only the main gutter on mobile", async ({
@@ -46,9 +71,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await page.setViewportSize({ width, height: 900 });
       await expect
         .poll(async () => (await getBox(getContent(q))).width)
-        .toBeCloseTo(Math.min(768, width - 24), 0);
-      if (width <= 768) {
-        expect((await getBox(getContent(q))).x).toBeCloseTo(12, 0);
+        .toBeCloseTo(Math.min(CONTENT_WIDTH, width - PART_PADDING * 2), 0);
+      if (width <= CONTENT_WIDTH) {
+        expect((await getBox(getContent(q))).x).toBeCloseTo(PART_PADDING, 0);
       }
     }
   });

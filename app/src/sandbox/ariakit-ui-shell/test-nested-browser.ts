@@ -21,7 +21,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
       shell.locator(":scope > .shell-header"),
     );
     const heights = [57, 65, 73];
-    const offsets = [0, 57, 122];
+    const offsets = heights.map((_, index) =>
+      heights.slice(0, index).reduce((sum, height) => sum + height, 0),
+    );
     const widths = [160, 192, 160];
     await page.evaluate(() => window.scrollTo(0, 500));
     for (const [index, name] of ["Outer", "Middle", "Inner"].entries()) {
@@ -95,20 +97,31 @@ withFramework(import.meta.dirname, async ({ test }) => {
       '[aria-label="Middle shell"] > .shell-header',
     );
     const innerHeader = inner.locator(":scope > .shell-header");
-    await inner.evaluate((node) => {
+    await page.evaluate(() => window.scrollTo(0, 500));
+    const middleBox = await getBox(middleHeader);
+    // End the inner shell halfway through its parent's sticky header so both
+    // headers occupy the hit-test point, regardless of their height presets.
+    const overlapBottom = middleBox.y + middleBox.height / 2;
+    await inner.evaluate((node, bottomInViewport) => {
       const bottom = node.getBoundingClientRect().bottom + window.scrollY;
-      // A bottom at 72px puts the 64px inner header across the middle header,
-      // which sticks between 44px and 96px.
-      window.scrollTo(0, bottom - 72);
-    });
+      window.scrollTo(0, bottom - bottomInViewport);
+    }, overlapBottom);
     await expect
       .poll(async () => (await getBox(innerHeader)).y)
-      .toBeLessThan(44);
+      .toBeLessThan(middleBox.y);
     const innerBox = await getBox(innerHeader);
+    expect(innerBox.y + innerBox.height).toBeGreaterThan(middleBox.y);
+    expect(innerBox.y + innerBox.height).toBeLessThan(
+      middleBox.y + middleBox.height,
+    );
     expect(
       await middleHeader.evaluate(
-        (node, x) => node.contains(document.elementFromPoint(x, 60)),
-        innerBox.x + 20,
+        (node, point) =>
+          node.contains(document.elementFromPoint(point.x, point.y)),
+        {
+          x: innerBox.x + 20,
+          y: (middleBox.y + innerBox.y + innerBox.height) / 2,
+        },
       ),
     ).toBe(true);
   });

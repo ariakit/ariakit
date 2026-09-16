@@ -253,7 +253,7 @@ function DocsScenario() {
   const contentsId = useId();
   const [current, setCurrent] = useState<string>(docsSections[0].id);
   return (
-    <Shell>
+    <Shell style={{ color: "inherit" }}>
       <ShellHeader
         $blur
         start={
