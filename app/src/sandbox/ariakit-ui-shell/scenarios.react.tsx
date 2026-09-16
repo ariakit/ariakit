@@ -94,14 +94,14 @@ export function GeometryScenario({ controls }: ScenarioProps) {
       <ShellIntro
         $centered={centered}
         $maxWidth={160}
-        $gutter={gutter}
+        $p={gutter}
         aria-label="Page introduction"
         className="py-8"
       >
         <h1>Columns and frames</h1>
         <p id="navigation-description">Select a section in the navigation.</p>
       </ShellIntro>
-      <ShellMain $centered={centered} $maxWidth={160} $gutter={gutter}>
+      <ShellMain $centered={centered} $maxWidth={160} $p={gutter}>
         <div id="layout-content" className="grid gap-4">
           <fieldset className="flex flex-wrap gap-4">
             <legend>Layout options</legend>
@@ -323,7 +323,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
             Outer section
           </a>
         </ShellSidebar>
-        <ShellMain $gutter={0}>
+        <ShellMain $p={0}>
           <div className="h-40">Outer introduction</div>
           <Shell aria-label="Middle shell">
             <ShellHeader
@@ -340,7 +340,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
                 Middle section
               </a>
             </ShellSidebar>
-            <ShellMain $gutter={0}>
+            <ShellMain $p={0}>
               <div className="h-40">Middle introduction</div>
               <Shell aria-label="Inner shell">
                 <ShellHeader $height="lg" start={<span>Inner header</span>} />

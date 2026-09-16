@@ -626,8 +626,8 @@ const shellContent = cv({
     },
     /**
      * Sets the minimum content gutter and block padding. Numbers scale the
-     * spacing token. Defaults to 3. An explicit `$gutter` takes precedence.
-     * `none` removes the space; `unset` leaves the CSS gutter unchanged.
+     * spacing token. Defaults to 3. `none` removes the space; `unset` leaves
+     * the CSS gutter unchanged.
      */
     $p(value?: "unset" | "none" | (string & {}) | number) {
       if (value == null) return;
@@ -637,14 +637,6 @@ const shellContent = cv({
           "--shell-gutter": getSpacingValue(value === "none" ? 0 : value),
         },
       };
-    },
-    /**
-     * Overrides `$p` for the content gutter and block padding, including zero.
-     * Numbers scale the spacing token. Prefer `$p` for new calls.
-     */
-    $gutter(value?: ShellWidth) {
-      if (value == null) return;
-      return { style: { "--shell-gutter": getSpacingValue(value) } };
     },
   },
   defaultVariants: {
