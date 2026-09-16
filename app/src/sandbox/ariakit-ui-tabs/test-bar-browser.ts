@@ -12,15 +12,26 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await expect(bar).toBeVisible();
     await expect(bar).toHaveCSS("transition-duration", "0s");
     await q.combobox("Tab bar distance").selectOption("6px");
-    const first = await getBox(tabs.first());
     await expect
-      .poll(async () => (await getBox(bar)).y - first.y - first.height)
+      .poll(async () => {
+        const [marker, item] = await Promise.all([
+          getBox(bar),
+          getBox(tabs.first()),
+        ]);
+        return marker.y - item.y - item.height;
+      })
       .toBeCloseTo(6, 0);
     await tabs.last().click();
     await expect(tabs.last()).toHaveAttribute("aria-selected", "true");
     await expect
-      .poll(async () => (await getBox(bar)).x)
-      .toBeCloseTo((await getBox(tabs.last())).x, 0);
+      .poll(async () => {
+        const [marker, item] = await Promise.all([
+          getBox(bar),
+          getBox(tabs.last()),
+        ]);
+        return marker.x - item.x;
+      })
+      .toBeCloseTo(0, 0);
     await q.combobox("Tab bar side").selectOption("start");
     await expect
       .poll(async () => {
@@ -30,8 +41,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toBeCloseTo(6, 0);
     await q.combobox("Tab bar distance").selectOption("frame");
     await expect
-      .poll(async () => (await getBox(bar)).y)
-      .toBeCloseTo((await getBox(list)).y, 0);
+      .poll(async () => (await getBox(bar)).y - (await getBox(list)).y)
+      .toBeCloseTo(0, 0);
   });
 
   // https://github.com/ariakit/ariakit/pull/7536#discussion_r4022810357
@@ -48,24 +59,32 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await page.keyboard.press("ArrowLeft");
     await expect(tab).toBeFocused();
     await expect(tab).toHaveAttribute("aria-selected", "true");
-    expect(await list.evaluate((node) => node.scrollLeft)).toBeLessThan(0);
+    await expect
+      .poll(() => list.evaluate((node) => node.scrollLeft))
+      .toBeLessThan(0);
     const bar = list.locator(":scope > .glider");
     await expect
-      .poll(async () => (await getBox(bar)).x)
-      .toBeCloseTo((await getBox(tab)).x, 0);
+      .poll(async () => {
+        const [marker, item] = await Promise.all([getBox(bar), getBox(tab)]);
+        return marker.x - item.x;
+      })
+      .toBeCloseTo(0, 0);
     await q.combobox("Tab bar distance").selectOption("frame");
     await list.evaluate((node) => {
       node.scrollLeft += 24;
     });
     await page.evaluate(() => window.scrollBy(0, 20));
     await expect
-      .poll(async () => (await getBox(bar)).x)
-      .toBeCloseTo((await getBox(tab)).x, 0);
+      .poll(async () => {
+        const [marker, item] = await Promise.all([getBox(bar), getBox(tab)]);
+        return marker.x - item.x;
+      })
+      .toBeCloseTo(0, 0);
     await expect
       .poll(async () => {
-        const box = await getBox(bar);
-        return box.y + box.height;
+        const [box, bounds] = await Promise.all([getBox(bar), getBox(list)]);
+        return box.y + box.height - bounds.y - bounds.height;
       })
-      .toBeCloseTo((await getBox(list)).y + (await getBox(list)).height, 0);
+      .toBeCloseTo(0, 0);
   });
 });
