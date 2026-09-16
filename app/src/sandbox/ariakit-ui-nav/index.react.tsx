@@ -1229,7 +1229,7 @@ export default function NavExamples() {
       <Example
         title="Link item ownership"
         description="Wrapper props stay on the list item; refs and link props stay on the anchor."
-        code={`<NavLink item={{ className: "project-item" }} href="#overview" />`}
+        code={`<Nav><NavLink item={{ className: "project-item" }} href="#overview">Overview</NavLink></Nav>`}
       >
         <LinkItems />
       </Example>
