@@ -68,6 +68,55 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
+  test("animates the bar between rows in a vertical group", async ({
+    q,
+    browserName,
+  }) => {
+    test.skip(
+      browserName === "firefox",
+      "Firefox does not transition this anchor change, including with the original inset rule.",
+    );
+    const example = q.article("Vertical bar glider");
+    const system = query(example).radio("System");
+    const dark = query(example).radio("Dark");
+    const bar = example.locator(".glider");
+    await example.scrollIntoViewIfNeeded();
+    await test.expect(system).toBeChecked();
+    const start = await system.boundingBox();
+    const end = await dark.boundingBox();
+    if (!start || !end) throw new Error("Missing radio bounds");
+    // Hold the real position transition halfway through so its short default
+    // duration cannot finish before the geometry assertion reaches the browser.
+    await bar.evaluate((node) => {
+      node.addEventListener("transitionrun", (event) => {
+        if (!(event instanceof TransitionEvent)) return;
+        if (event.propertyName !== "top" && event.propertyName !== "bottom")
+          return;
+        for (const animation of node.getAnimations()) {
+          if (!(animation instanceof CSSTransition)) continue;
+          if (animation.transitionProperty !== event.propertyName) continue;
+          animation.pause();
+          animation.currentTime =
+            Number(animation.effect?.getTiming().duration) / 2;
+        }
+      });
+    });
+    await dark.click();
+    await test.expect(dark).toBeChecked();
+    await test.expect
+      .poll(async () => (await bar.boundingBox())?.y)
+      .toBeGreaterThan(start.y);
+    await test.expect
+      .poll(async () => (await bar.boundingBox())?.y)
+      .toBeLessThan(end.y);
+    await bar.evaluate((node) => {
+      for (const animation of node.getAnimations()) animation.finish();
+    });
+    await test.expect
+      .poll(async () => (await bar.boundingBox())?.y)
+      .toBeCloseTo(end.y, 0);
+  });
+
   // A hovered control owns both of its shared edges, so each one takes the
   // hovered surface instead of darkening where two borders overlap.
   // https://github.com/ariakit/ariakit/issues/7466

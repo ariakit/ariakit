@@ -50,6 +50,7 @@ import {
   Example,
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
+import { HorizontalNavigation, LinkItems } from "./api-examples.react.tsx";
 
 function CustomLabel(props: DisclosureButtonLabelProps) {
   return <DisclosureButtonLabel {...props} />;
@@ -72,13 +73,17 @@ function NavOptionalHeadings() {
       </label>
       <Nav aria-label="Workspace navigation">
         <NavDisclosure button={headings && "Workspace pages"}>
-          <NavLink href="/workspace/members">Workspace members</NavLink>
-          <NavLink href="/workspace/settings">Workspace settings</NavLink>
+          <NavList>
+            <NavLink href="/workspace/members">Workspace members</NavLink>
+            <NavLink href="/workspace/settings">Workspace settings</NavLink>
+          </NavList>
         </NavDisclosure>
       </Nav>
       <Nav aria-label="Invitation navigation">
         <NavDisclosure button={0}>
-          <NavLink href="/invitations/settings">Invitation settings</NavLink>
+          <NavList>
+            <NavLink href="/invitations/settings">Invitation settings</NavLink>
+          </NavList>
         </NavDisclosure>
       </Nav>
     </section>
@@ -105,18 +110,17 @@ function DemoNav(props: NavProps) {
   return (
     <Nav {...props}>
       {pages.map((page) => (
-        <li key={page}>
-          <NavLink
-            href={`#${page.toLowerCase()}`}
-            aria-current={current === page ? "page" : undefined}
-            onClick={(event) => {
-              event.preventDefault();
-              setCurrent(page);
-            }}
-          >
-            {page}
-          </NavLink>
-        </li>
+        <NavLink
+          key={page}
+          href={`#${page.toLowerCase()}`}
+          aria-current={current === page ? "page" : undefined}
+          onClick={(event) => {
+            event.preventDefault();
+            setCurrent(page);
+          }}
+        >
+          {page}
+        </NavLink>
       ))}
     </Nav>
   );
@@ -151,18 +155,17 @@ function DemoSections(props: NavProps) {
             {sectionPages.map((page) => {
               const id = `${section.slug}/${page.toLowerCase()}`;
               return (
-                <li key={page}>
-                  <NavLink
-                    href={`#${id}`}
-                    aria-current={current === id ? "page" : undefined}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      setCurrent(id);
-                    }}
-                  >
-                    {page}
-                  </NavLink>
-                </li>
+                <NavLink
+                  key={page}
+                  href={`#${id}`}
+                  aria-current={current === id ? "page" : undefined}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setCurrent(id);
+                  }}
+                >
+                  {page}
+                </NavLink>
               );
             })}
           </NavList>
@@ -218,19 +221,18 @@ function DocumentationSidebar() {
               {sectionPages.map((page) => {
                 const href = `/docs/${section.slug}/${page.toLowerCase()}`;
                 return (
-                  <li key={page}>
-                    <NavLink
-                      href={href}
-                      tabIndex={0}
-                      currentUrl={currentUrl}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        setCurrentUrl(href);
-                      }}
-                    >
-                      {page}
-                    </NavLink>
-                  </li>
+                  <NavLink
+                    key={page}
+                    href={href}
+                    tabIndex={0}
+                    currentUrl={currentUrl}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setCurrentUrl(href);
+                    }}
+                  >
+                    {page}
+                  </NavLink>
                 );
               })}
             </NavList>
@@ -258,52 +260,42 @@ export default function NavExamples() {
         `}
       >
         <Nav aria-label="Rows" className="w-full">
-          <li>
-            <NavLink
-              href="/docs/overview"
-              currentUrl="/docs/installation/"
-              onClick={preventNavigation}
-            >
-              Overview
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              href="/docs/installation"
-              currentUrl="/docs/installation/"
-              onClick={preventNavigation}
-            >
-              Installation
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              href="/docs/installation#options"
-              currentUrl="/docs/installation/"
-              onClick={preventNavigation}
-            >
-              Options
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              href="/docs/usage"
-              currentUrl="/docs/installation/"
-              onClick={preventNavigation}
-            >
-              Usage
-            </NavLink>
-          </li>
-          <li>
-            {/*
-              A link without a destination is HTML's placeholder link: it leaves
-              the tab order, and aria-disabled makes it read as unavailable.
-              With an href it would still be focusable and still navigate.
-            */}
-            <NavLink role="link" aria-disabled="true">
-              Roadmap
-            </NavLink>
-          </li>
+          <NavLink
+            href="/docs/overview"
+            currentUrl="/docs/installation/"
+            onClick={preventNavigation}
+          >
+            Overview
+          </NavLink>
+          <NavLink
+            href="/docs/installation"
+            currentUrl="/docs/installation/"
+            onClick={preventNavigation}
+          >
+            Installation
+          </NavLink>
+          <NavLink
+            href="/docs/installation#options"
+            currentUrl="/docs/installation/"
+            onClick={preventNavigation}
+          >
+            Options
+          </NavLink>
+          <NavLink
+            href="/docs/usage"
+            currentUrl="/docs/installation/"
+            onClick={preventNavigation}
+          >
+            Usage
+          </NavLink>
+          {/*
+            A link without a destination is HTML's placeholder link: it leaves
+            the tab order, and aria-disabled makes it read as unavailable. With
+            an href it would still be focusable and still navigate.
+           */}
+          <NavLink role="link" aria-disabled="true">
+            Roadmap
+          </NavLink>
         </Nav>
       </Example>
 
@@ -319,17 +311,11 @@ export default function NavExamples() {
         `}
       >
         <Nav $gap={0} aria-label="Touching rows" className="w-full">
-          <li>
-            <NavLink href="#overview">Overview</NavLink>
-          </li>
-          <li>
-            <NavLink href="#installation" aria-current="page">
-              Installation
-            </NavLink>
-          </li>
-          <li>
-            <NavLink href="#usage">Usage</NavLink>
-          </li>
+          <NavLink href="#overview">Overview</NavLink>
+          <NavLink href="#installation" aria-current="page">
+            Installation
+          </NavLink>
+          <NavLink href="#usage">Usage</NavLink>
         </Nav>
       </Example>
 
@@ -360,30 +346,24 @@ export default function NavExamples() {
         `}
       >
         <Nav $iconSize={5} aria-label="Icons" className="w-full max-w-64">
-          <li>
-            <NavLink href="#getting-started">
-              <NavIcon>
-                <Rocket strokeWidth={1.5} />
-              </NavIcon>
-              Getting started
-            </NavLink>
-          </li>
-          <li>
-            <NavLink href="#styling">
-              <NavIcon>
-                <Palette strokeWidth={1.5} />
-              </NavIcon>
-              Styling
-            </NavLink>
-          </li>
-          <li>
-            <NavLink href="#accessibility" aria-current="page">
-              <NavIcon>
-                <Accessibility strokeWidth={1.5} />
-              </NavIcon>
-              Accessibility and right-to-left languages
-            </NavLink>
-          </li>
+          <NavLink href="#getting-started">
+            <NavIcon>
+              <Rocket strokeWidth={1.5} />
+            </NavIcon>
+            Getting started
+          </NavLink>
+          <NavLink href="#styling">
+            <NavIcon>
+              <Palette strokeWidth={1.5} />
+            </NavIcon>
+            Styling
+          </NavLink>
+          <NavLink href="#accessibility" aria-current="page">
+            <NavIcon>
+              <Accessibility strokeWidth={1.5} />
+            </NavIcon>
+            Accessibility and right-to-left languages
+          </NavLink>
         </Nav>
       </Example>
 
@@ -418,30 +398,22 @@ export default function NavExamples() {
           <NavGroup>
             <NavGroupLabel>Guides</NavGroupLabel>
             <NavList>
-              <li>
-                <NavLink href="#getting-started" aria-current="page">
-                  Getting started
-                </NavLink>
-              </li>
-              <li>
-                <NavLink href="#styling">Styling</NavLink>
-              </li>
+              <NavLink href="#getting-started" aria-current="page">
+                Getting started
+              </NavLink>
+              <NavLink href="#styling">Styling</NavLink>
             </NavList>
           </NavGroup>
           <NavGroup>
             <NavGroupLabel>Reference</NavGroupLabel>
             <NavList>
-              <li>
-                <NavLink href="#components">
-                  <ButtonLabel>Components</ButtonLabel>
-                  <ButtonSlot $kind="badge" $p="md" className="ms-auto">
-                    <span>12</span>
-                  </ButtonSlot>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink href="#hooks">Hooks</NavLink>
-              </li>
+              <NavLink href="#components">
+                <ButtonLabel>Components</ButtonLabel>
+                <ButtonSlot $kind="badge" $p="md" className="ms-auto">
+                  <span>12</span>
+                </ButtonSlot>
+              </NavLink>
+              <NavLink href="#hooks">Hooks</NavLink>
             </NavList>
           </NavGroup>
         </Nav>
@@ -486,22 +458,18 @@ export default function NavExamples() {
               </ButtonSlot>
             </NavButton>
           </li>
-          <li>
-            <NavLink href="#inbox">
-              <NavIcon>
-                <Inbox strokeWidth={1.5} />
-              </NavIcon>
-              Inbox
-            </NavLink>
-          </li>
-          <li>
-            <NavLink href="#settings" aria-current="page">
-              <NavIcon>
-                <Settings strokeWidth={1.5} />
-              </NavIcon>
-              Settings
-            </NavLink>
-          </li>
+          <NavLink href="#inbox">
+            <NavIcon>
+              <Inbox strokeWidth={1.5} />
+            </NavIcon>
+            Inbox
+          </NavLink>
+          <NavLink href="#settings" aria-current="page">
+            <NavIcon>
+              <Settings strokeWidth={1.5} />
+            </NavIcon>
+            Settings
+          </NavLink>
         </Nav>
       </Example>
 
@@ -540,24 +508,20 @@ export default function NavExamples() {
             }
           >
             <NavList>
-              <li>
-                <NavLink
-                  href="/docs/start/introduction"
-                  currentUrl="/docs/styling/introduction"
-                  onClick={preventNavigation}
-                >
-                  Introduction
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  href="/docs/start/installation"
-                  currentUrl="/docs/styling/introduction"
-                  onClick={preventNavigation}
-                >
-                  Installation
-                </NavLink>
-              </li>
+              <NavLink
+                href="/docs/start/introduction"
+                currentUrl="/docs/styling/introduction"
+                onClick={preventNavigation}
+              >
+                Introduction
+              </NavLink>
+              <NavLink
+                href="/docs/start/installation"
+                currentUrl="/docs/styling/introduction"
+                onClick={preventNavigation}
+              >
+                Installation
+              </NavLink>
             </NavList>
           </NavDisclosure>
           <NavDisclosure
@@ -568,24 +532,20 @@ export default function NavExamples() {
             }
           >
             <NavList>
-              <li>
-                <NavLink
-                  href="/docs/styling/introduction"
-                  currentUrl="/docs/styling/introduction"
-                  onClick={preventNavigation}
-                >
-                  Introduction
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  href="/docs/styling/themes"
-                  currentUrl="/docs/styling/introduction"
-                  onClick={preventNavigation}
-                >
-                  Themes
-                </NavLink>
-              </li>
+              <NavLink
+                href="/docs/styling/introduction"
+                currentUrl="/docs/styling/introduction"
+                onClick={preventNavigation}
+              >
+                Introduction
+              </NavLink>
+              <NavLink
+                href="/docs/styling/themes"
+                currentUrl="/docs/styling/introduction"
+                onClick={preventNavigation}
+              >
+                Themes
+              </NavLink>
             </NavList>
           </NavDisclosure>
           <NavDisclosure
@@ -596,15 +556,13 @@ export default function NavExamples() {
             }
           >
             <NavList>
-              <li>
-                <NavLink
-                  href="/docs/composition/introduction"
-                  currentUrl="/docs/styling/introduction"
-                  onClick={preventNavigation}
-                >
-                  Introduction
-                </NavLink>
-              </li>
+              <NavLink
+                href="/docs/composition/introduction"
+                currentUrl="/docs/styling/introduction"
+                onClick={preventNavigation}
+              >
+                Introduction
+              </NavLink>
             </NavList>
           </NavDisclosure>
         </Nav>
@@ -619,11 +577,11 @@ export default function NavExamples() {
             <Nav dir="${dir}">
               <NavDisclosure button="Documentation" defaultOpen>
                 <NavList>
-                  <li><NavLink href="#overview">Overview</NavLink></li>
+                  <NavLink href="#overview">Overview</NavLink>
                   <NavDisclosure button="Components" defaultOpen>
                     <NavList>
-                      <li><NavLink href="#buttons">Buttons</NavLink></li>
-                      <li><NavLink href="#dialogs">Dialogs</NavLink></li>
+                      <NavLink href="#buttons">Buttons</NavLink>
+                      <NavLink href="#dialogs">Dialogs</NavLink>
                     </NavList>
                   </NavDisclosure>
                 </NavList>
@@ -638,23 +596,17 @@ export default function NavExamples() {
           >
             <NavDisclosure button="Documentation" defaultOpen>
               <NavList>
-                <li>
-                  <NavLink href="#overview" onClick={preventNavigation}>
-                    Overview
-                  </NavLink>
-                </li>
+                <NavLink href="#overview" onClick={preventNavigation}>
+                  Overview
+                </NavLink>
                 <NavDisclosure button="Components" defaultOpen>
                   <NavList>
-                    <li>
-                      <NavLink href="#buttons" onClick={preventNavigation}>
-                        Buttons
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink href="#dialogs" onClick={preventNavigation}>
-                        Dialogs
-                      </NavLink>
-                    </li>
+                    <NavLink href="#buttons" onClick={preventNavigation}>
+                      Buttons
+                    </NavLink>
+                    <NavLink href="#dialogs" onClick={preventNavigation}>
+                      Dialogs
+                    </NavLink>
                   </NavList>
                 </NavDisclosure>
               </NavList>
@@ -697,15 +649,13 @@ export default function NavExamples() {
             }
           >
             <NavList>
-              <li>
-                <NavLink
-                  href="/docs/components/overview"
-                  currentUrl="/docs/components/forms/checkbox/"
-                  onClick={preventNavigation}
-                >
-                  Overview
-                </NavLink>
-              </li>
+              <NavLink
+                href="/docs/components/overview"
+                currentUrl="/docs/components/forms/checkbox/"
+                onClick={preventNavigation}
+              >
+                Overview
+              </NavLink>
               <NavDisclosure
                 button={
                   <NavDisclosureButton
@@ -716,35 +666,29 @@ export default function NavExamples() {
                 }
               >
                 <NavList>
-                  <li>
-                    <NavLink
-                      href="/docs/components/forms/checkbox"
-                      currentUrl="/docs/components/forms/checkbox/"
-                      onClick={preventNavigation}
-                    >
-                      Checkbox
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      href="/docs/components/forms/radio"
-                      currentUrl="/docs/components/forms/checkbox/"
-                      onClick={preventNavigation}
-                    >
-                      Radio
-                    </NavLink>
-                  </li>
+                  <NavLink
+                    href="/docs/components/forms/checkbox"
+                    currentUrl="/docs/components/forms/checkbox/"
+                    onClick={preventNavigation}
+                  >
+                    Checkbox
+                  </NavLink>
+                  <NavLink
+                    href="/docs/components/forms/radio"
+                    currentUrl="/docs/components/forms/checkbox/"
+                    onClick={preventNavigation}
+                  >
+                    Radio
+                  </NavLink>
                 </NavList>
               </NavDisclosure>
-              <li>
-                <NavLink
-                  href="/docs/components/tabs"
-                  currentUrl="/docs/components/forms/checkbox/"
-                  onClick={preventNavigation}
-                >
-                  Tabs
-                </NavLink>
-              </li>
+              <NavLink
+                href="/docs/components/tabs"
+                currentUrl="/docs/components/forms/checkbox/"
+                onClick={preventNavigation}
+              >
+                Tabs
+              </NavLink>
             </NavList>
           </NavDisclosure>
         </Nav>
@@ -927,38 +871,32 @@ export default function NavExamples() {
             <NavGroup>
               <NavGroupLabel>الأدلة</NavGroupLabel>
               <NavList>
-                <li>
-                  <NavLink href="#start">
-                    <NavIcon>
-                      <Rocket strokeWidth={1.5} />
-                    </NavIcon>
-                    البدء
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink href="#styling" aria-current="page">
-                    <NavIcon>
-                      <Palette strokeWidth={1.5} />
-                    </NavIcon>
-                    التنسيق
-                  </NavLink>
-                </li>
+                <NavLink href="#start">
+                  <NavIcon>
+                    <Rocket strokeWidth={1.5} />
+                  </NavIcon>
+                  البدء
+                </NavLink>
+                <NavLink href="#styling" aria-current="page">
+                  <NavIcon>
+                    <Palette strokeWidth={1.5} />
+                  </NavIcon>
+                  التنسيق
+                </NavLink>
               </NavList>
             </NavGroup>
             <NavGroup>
               <NavGroupLabel>المرجع</NavGroupLabel>
               <NavList>
-                <li>
-                  <NavLink href="#components">
-                    <NavIcon>
-                      <FileCode strokeWidth={1.5} />
-                    </NavIcon>
-                    <ButtonLabel>المكونات</ButtonLabel>
-                    <ButtonSlot $kind="badge" $p="md" className="ms-auto">
-                      <span>12</span>
-                    </ButtonSlot>
-                  </NavLink>
-                </li>
+                <NavLink href="#components">
+                  <NavIcon>
+                    <FileCode strokeWidth={1.5} />
+                  </NavIcon>
+                  <ButtonLabel>المكونات</ButtonLabel>
+                  <ButtonSlot $kind="badge" $p="md" className="ms-auto">
+                    <span>12</span>
+                  </ButtonSlot>
+                </NavLink>
                 <li>
                   <NavButton>
                     <NavIcon>
@@ -1008,14 +946,10 @@ export default function NavExamples() {
               }
             >
               <NavList>
-                <li>
-                  <NavLink href="#intro" aria-current="page">
-                    مقدمة
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink href="#install">التثبيت</NavLink>
-                </li>
+                <NavLink href="#intro" aria-current="page">
+                  مقدمة
+                </NavLink>
+                <NavLink href="#install">التثبيت</NavLink>
               </NavList>
             </NavDisclosure>
             <NavDisclosure
@@ -1026,9 +960,7 @@ export default function NavExamples() {
               }
             >
               <NavList>
-                <li>
-                  <NavLink href="#themes">السمات</NavLink>
-                </li>
+                <NavLink href="#themes">السمات</NavLink>
               </NavList>
             </NavDisclosure>
           </Nav>
@@ -1055,22 +987,14 @@ export default function NavExamples() {
         */}
         <Frame $layer="brand" $rounded="xl" $p={4} className="w-full">
           <Nav aria-label="On a brand layer">
-            <li>
-              <NavLink href="#overview">Overview</NavLink>
-            </li>
-            <li>
-              <NavLink href="#installation" aria-current="page">
-                Installation
-              </NavLink>
-            </li>
-            <li>
-              <NavLink href="#usage">Usage</NavLink>
-            </li>
-            <li>
-              <NavLink role="link" aria-disabled="true">
-                Roadmap
-              </NavLink>
-            </li>
+            <NavLink href="#overview">Overview</NavLink>
+            <NavLink href="#installation" aria-current="page">
+              Installation
+            </NavLink>
+            <NavLink href="#usage">Usage</NavLink>
+            <NavLink role="link" aria-disabled="true">
+              Roadmap
+            </NavLink>
           </Nav>
         </Frame>
       </Example>
@@ -1100,11 +1024,9 @@ export default function NavExamples() {
           </Ariakit.DialogDisclosure>
           <Ariakit.Dialog aria-label="Navigation dialog" modal={false}>
             <Nav>
-              <li>
-                <NavLink href="/docs" currentUrl="/docs">
-                  Documentation
-                </NavLink>
-              </li>
+              <NavLink href="/docs" currentUrl="/docs">
+                Documentation
+              </NavLink>
             </Nav>
             <Ariakit.DialogDismiss>
               Close navigation dialog
@@ -1121,7 +1043,9 @@ export default function NavExamples() {
             <NavDisclosure button="Account pages">
               <ak.DialogProvider>
                 <ak.DialogDisclosure>Open account settings</ak.DialogDisclosure>
-                <NavLink>Account overview</NavLink>
+                <NavList>
+                  <NavLink>Account overview</NavLink>
+                </NavList>
                 <ak.Dialog>
                   <ak.DialogHeading>Account settings</ak.DialogHeading>
                   <ak.DialogDismiss>Close account settings</ak.DialogDismiss>
@@ -1137,9 +1061,11 @@ export default function NavExamples() {
               <Ariakit.DialogDisclosure>
                 Open account settings
               </Ariakit.DialogDisclosure>
-              <NavLink href="/account" currentUrl="/account">
-                Account overview
-              </NavLink>
+              <NavList>
+                <NavLink href="/account" currentUrl="/account">
+                  Account overview
+                </NavLink>
+              </NavList>
               <Ariakit.Dialog aria-label="Account settings" modal={false}>
                 <Ariakit.DialogHeading>Account settings</Ariakit.DialogHeading>
                 <Ariakit.DialogDismiss>
@@ -1160,9 +1086,7 @@ export default function NavExamples() {
               <NavDisclosureButton>Project pages</NavDisclosureButton>
               <NavDisclosureContent>
                 <NavList>
-                  <li>
-                    <NavLink>All projects</NavLink>
-                  </li>
+                  <NavLink>All projects</NavLink>
                 </NavList>
               </NavDisclosureContent>
             </NavDisclosure>
@@ -1174,11 +1098,9 @@ export default function NavExamples() {
             <NavDisclosureButton>Project pages</NavDisclosureButton>
             <NavDisclosureContent>
               <NavList>
-                <li>
-                  <NavLink href="/projects" currentUrl="/account">
-                    All projects
-                  </NavLink>
-                </li>
+                <NavLink href="/projects" currentUrl="/account">
+                  All projects
+                </NavLink>
               </NavList>
             </NavDisclosureContent>
           </NavDisclosure>
@@ -1202,9 +1124,11 @@ export default function NavExamples() {
               </DisclosureButtonSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
-              <NavLink href="/pages/settings" currentUrl="/account">
-                Manage project pages
-              </NavLink>
+              <NavList>
+                <NavLink href="/pages/settings" currentUrl="/account">
+                  Manage project pages
+                </NavLink>
+              </NavList>
             </NavDisclosureContent>
           </NavDisclosure>
           <NavDisclosure defaultOpen>
@@ -1217,9 +1141,11 @@ export default function NavExamples() {
               </DisclosureButtonSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
-              <NavLink href="/pages/settings" currentUrl="/account">
-                Manage team pages
-              </NavLink>
+              <NavList>
+                <NavLink href="/pages/settings" currentUrl="/account">
+                  Manage team pages
+                </NavLink>
+              </NavList>
             </NavDisclosureContent>
           </NavDisclosure>
 
@@ -1276,18 +1202,36 @@ export default function NavExamples() {
         code={`
           <Nav>
             <NavDisclosure button={false}>
-              <NavLink>Workspace members</NavLink>
-              <NavLink>Workspace settings</NavLink>
+              <NavList>
+                <NavLink>Workspace members</NavLink>
+                <NavLink>Workspace settings</NavLink>
+              </NavList>
             </NavDisclosure>
           </Nav>
           <Nav>
             <NavDisclosure button={0}>
-              <NavLink>Invitation settings</NavLink>
+              <NavList>
+                <NavLink>Invitation settings</NavLink>
+              </NavList>
             </NavDisclosure>
           </Nav>
         `}
       >
         <NavOptionalHeadings />
+      </Example>
+      <Example
+        title="Horizontal navigation"
+        description="One scrolling row with an independently styled bar."
+        code={`<Nav $layout="horizontal" $p={3} glider={{ $kind: "bar", $animated: false }}><NavLink href="#overview">Overview</NavLink></Nav>`}
+      >
+        <HorizontalNavigation />
+      </Example>
+      <Example
+        title="Link item ownership"
+        description="Wrapper props stay on the list item; refs and link props stay on the anchor."
+        code={`<NavLink item={{ className: "project-item" }} href="#overview" />`}
+      >
+        <LinkItems />
       </Example>
     </ExampleGrid>
   );

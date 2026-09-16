@@ -15,12 +15,44 @@ import {
   selectScenario,
 } from "./test-helpers.ts";
 
-// The header height token, 3.25rem at the 16px root font size.
-const HEADER_HEIGHT = 52;
+// Sixteen spacing steps plus the default facing border.
+const HEADER_HEIGHT = 65;
 // The shell's motion duration.
 const DURATION = 300;
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
+  test("gives a default header button three spacing steps on each side", async ({
+    q,
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    const header = await getBox(q.banner());
+    const button = await getBox(q.button("Toggle sidebar"));
+    expect(button.height).toBe(40);
+    expect(header.height).toBe(65);
+    expect(button.x - header.x).toBe(12);
+    expect(button.y - header.y).toBe(12);
+    expect(header.y + header.height - button.y - button.height - 1).toBe(12);
+  });
+
+  test("shrinks breakouts before content and keeps only the main gutter on mobile", async ({
+    q,
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    await q.button("Toggle sidebar").click();
+    await expect(getSidebar(q, "Documentation")).toHaveCSS("width", "0px");
+    for (const width of [1200, 960, 820, 768, 560, 360]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect
+        .poll(async () => (await getBox(getContent(q))).width)
+        .toBeCloseTo(Math.min(768, width - 24), 0);
+      if (width <= 768) {
+        expect((await getBox(getContent(q))).x).toBeCloseTo(12, 0);
+      }
+    }
+  });
+
   test.describe("responsive toggles", () => {
     test.use({ viewport: { width: 1600, height: 900 } });
 
@@ -85,7 +117,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   test.describe("wide", () => {
-    // Full centering with the start sidebar needs 256 + 768 + 48 + 144 + 256
+    // Full centering with the start sidebar needs 256 + 768 + 24 + 144 + 256
     // pixels, including the two pairs of breakout tracks.
     test.use({ viewport: { width: 1600, height: 900 } });
 

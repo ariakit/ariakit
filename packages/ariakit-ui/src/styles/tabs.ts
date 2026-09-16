@@ -9,6 +9,7 @@ import {
 } from "./button.ts";
 import { frame } from "./frame.ts";
 import { gliderCover } from "./glider.ts";
+import { selected } from "./selected.ts";
 
 export const tabs = cv({
   extend: [frame],
@@ -21,6 +22,10 @@ export const tabs = cv({
     // third, the focus glider fourth, a folder selected glider fifth, the
     // tabs sixth, and a bar keeps the glider's own place above them all.
     "isolate",
+    // A fixed bar follows scrolling tabs without Firefox's RTL inset error.
+    // Clip at the root's outside edge, including its ring, without putting the
+    // strip in a stacking context below the panel.
+    "[&:has(>.glider-group>.glider-bar)]:[clip-path:inset(-100vmax_calc(-1*var(--tabs-ring)))]",
     // The root yields to the width its parent gives it, a grid track or a flex
     // line included, and the strip scrolls the tabs that do not fit. Without
     // this, the tabs, which never wrap, set the root's minimum width, and the
@@ -205,7 +210,7 @@ const tabFolder = cx(
 );
 
 export const tab = cv({
-  extend: [button],
+  extend: [button, selected],
   class: [
     // Sixth in the root's stack, over the panel and the gliders.
     "z-6",
@@ -220,9 +225,6 @@ export const tab = cv({
     "not-ui-selected:ak-layer-color-(--ak-layer-parent)",
     "not-ui-selected:ak-layer-lighten-0",
     "not-ui-selected:ak-layer-offset-0",
-    // The selected tab already reads as active, so hovering it must not shift
-    // its layer the way a button hover does.
-    "ui-selected:ui-hover:ak-state-0",
     // Each kind marks keyboard focus its own way, below, in place of the
     // button's ring: outside the box, that ring crosses the seam of a selected
     // folder and is cut by the strip's scroll clip. The browser's own ring
@@ -258,10 +260,11 @@ export const tab = cv({
     // flat or bevel pill takes an offset of one and a half instead, the
     // separation a raised pill gets on either theme, and stays ahead of a
     // hovered neighbour's one step.
-    $lightnessOffset(_defaultValue, variants) {
+    $selectedOffset(_defaultValue, variants) {
       if (variants.$kind === "folder") return false;
       return 1.5;
     },
+    $lightnessOffset: false,
     $lighten(defaultValue, variants) {
       if (variants.$kind === "folder") return defaultValue ?? true;
       return false;
@@ -297,7 +300,7 @@ export const tabGlider = cv({
   extend: [buttonGlider],
   // The glider's own duration-* has a vertical variant that sorts after this
   // one and would otherwise win in a vertical strip.
-  class: "duration-(--duration-tabs)!",
+  class: "[&.glider-animated]:duration-(--duration-tabs)!",
   variants: {
     /**
      * Adds `folder` to the glider's `flat`, `bevel` and `bar`: the glider takes
@@ -305,10 +308,6 @@ export const tabGlider = cv({
      * the panel. A `bar` also gives the tab it marks its hover back.
      */
     $kind: {
-      // A bar underlines the selected tab, which keeps its own fill: the wipe
-      // the glider's selected state gives a covered tab has nothing to make
-      // room for under a rule, and that fill is where keyboard focus paints.
-      bar: ["supports-anchor:[.control:has(~&)]:ui-selected:bg-(--ak-layer)!"],
       folder: [
         "ui-folder",
         gliderCover,
@@ -343,10 +342,7 @@ export const tabGlider = cv({
       ],
     },
     $state: {
-      // The glider's own selected state clears the covered tab's edge as a
-      // border-*, and the edge a tab inherits may be a ring-* instead.
       selected: [
-        "supports-anchor:[.control:has(~&)]:ui-selected:ring-transparent",
         // Third in the root's stack, over the panel and the hover glider and
         // under the focus glider, which covers a flat or bevel cover as it
         // covers the tab. A folder cover goes above the focus glider, and a
@@ -451,6 +447,12 @@ export const tabGlider = cv({
       if (variants.$state === "none") return defaultValue;
       return defaultValue ?? "var(--tab-inset)";
     },
+  },
+  refine({ variants, addClass }) {
+    if (variants.$kind === "bar") return;
+    if (variants.$state !== "selected") return;
+    // The cover owns the tab's edge, including an inherited ring.
+    addClass("supports-anchor:[.control:has(~&)]:ui-selected:ring-transparent");
   },
 });
 

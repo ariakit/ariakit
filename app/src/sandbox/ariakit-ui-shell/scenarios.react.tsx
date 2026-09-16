@@ -49,19 +49,19 @@ export function GeometryScenario({ controls }: ScenarioProps) {
   const [selection, setSelection] = useState("No section selected");
   const startId = useId();
   const endId = useId();
-  const gutter = flushGutter ? 0 : compactGutter ? 2 : 6;
+  const gutter = flushGutter ? 0 : compactGutter ? 2 : undefined;
   const border = !seams ? false : inheritSeams ? "inherit" : 2;
   const borderType = seam === "border" ? undefined : seam;
   return (
     <Shell
       $duration={600}
       $border={inheritSeams ? 3 : undefined}
+      $headerBorder={border}
       $edge={inheritSeams ? "brand" : undefined}
     >
       <ShellHeader
         $height={largeHeader ? "lg" : "md"}
-        $p={widePadding ? 12 : 6}
-        $border={border}
+        $p={widePadding ? 12 : undefined}
         $borderType={borderType}
         start={<span>Layout details</span>}
         end={controls}
@@ -292,7 +292,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
         </a>
       </ShellSidebar>
       <ShellFooter
-        $p={widePadding ? 12 : 6}
+        $p={widePadding ? 12 : undefined}
         $border={border}
         $borderType={borderType}
         start={<span>Layout footer</span>}

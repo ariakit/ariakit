@@ -167,9 +167,15 @@ export function NavGlider(props: NavGliderProps) {
 export interface NavLinkProps
   extends ak.RoleProps<"a">, VariantProps<typeof navLink> {
   currentUrl?: string | URL;
+  /**
+   * The list item around the link. Set to `false` for a standalone link or an
+   * existing item wrapper. All other props, including `ref` and `render`,
+   * belong to the anchor.
+   */
+  item?: React.ReactElement | ak.RoleProps<"li"> | false;
 }
 
-export function NavLink({ currentUrl, ...props }: NavLinkProps) {
+export function NavLink({ currentUrl, item, ...props }: NavLinkProps) {
   const [variantProps, rest] = splitProps(props, navLink);
   const isCurrent = isCurrentPage(currentUrl, rest.href);
   const disclosures = React.useContext(NavDisclosureContext);
@@ -181,12 +187,16 @@ export function NavLink({ currentUrl, ...props }: NavLinkProps) {
     }
   }, [isCurrent, disclosures]);
 
-  return (
+  const link = (
     <ak.Role.a
       aria-current={isCurrent ? "page" : undefined}
       {...navLink.jsx(variantProps)}
       {...rest}
     />
+  );
+  if (item === false) return link;
+  return (
+    <ak.Role.li render={createRender(ak.Role.li, item)}>{link}</ak.Role.li>
   );
 }
 

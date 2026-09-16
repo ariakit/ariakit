@@ -424,7 +424,7 @@ export const disclosureContent = cv({
       // they are reset first.
       "[--disclosure-guide-selected:--x] [--disclosure-guide-hover:--x]",
       "[--disclosure-guide-focus:--x]",
-      "has-[li>.control:where([aria-current='page'],[aria-current='true'])]:[--disclosure-guide-selected:--disclosure-guide-selected]",
+      "has-[li>.control:is(:checked,.selected,[aria-checked='true'],[aria-selected='true'],[aria-current]:not([aria-current='false']))]:[--disclosure-guide-selected:--disclosure-guide-selected]",
       "has-[li>.control:hover]:[--disclosure-guide-hover:--disclosure-guide-hover]",
       "has-[li>.control:is(:focus-visible,[data-focus-visible])]:[--disclosure-guide-focus:--disclosure-guide-focus]",
       "before:[anchor-name:var(--disclosure-guide-selected),var(--disclosure-guide-hover),var(--disclosure-guide-focus)]",

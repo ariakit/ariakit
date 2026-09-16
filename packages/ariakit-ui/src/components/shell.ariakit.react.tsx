@@ -281,8 +281,8 @@ export interface ShellMainProps
  * fragment link inside lands below a sticky header. The page-level scroll port
  * is outside the shell, so to keep a focused control out from under the header
  * as well, copy the header height onto it, for example
- * `html { scroll-padding-block-start: 3.25rem }`. That padding adds to the
- * margin an anchor already keeps below the header.
+ * `html { scroll-padding-block-start: calc(4rem + 1px) }`. That padding adds to
+ * the margin an anchor already keeps below the header.
  */
 export function ShellMain(props: ShellMainProps) {
   const [variantProps, rest] = splitProps(props, shellMain);

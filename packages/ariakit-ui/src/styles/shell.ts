@@ -21,9 +21,11 @@ export const shell = cv({
     "grid-rows-[[shell-start_header-start]_auto_[header-end_intro-start]_auto_[intro-end_body-start]_minmax(0,1fr)_[body-end_footer-start]_auto_[footer-end_shell-end]]",
     // Match Chrome's macOS window corner without rounding the shell itself.
     "[--shell-radius:20px]",
-    "[--shell-start-1-width:16rem] [--shell-start-2-width:16rem]",
-    "[--shell-end-1-width:16rem] [--shell-end-2-width:16rem]",
-    "[--shell-header-height:3.25rem] [--shell-main-max-width:48rem]",
+    "[--shell-start-1-width:0px] [--shell-start-2-width:0px]",
+    "[--shell-end-1-width:0px] [--shell-end-2-width:0px]",
+    "[--shell-header-interior:0px] [--shell-main-max-width:48rem]",
+    "[--shell-header-has-border:1]",
+    "[--shell-header-height:calc(var(--shell-header-interior)+var(--shell-header-border-width)*var(--shell-header-has-border))]",
     "[--shell-duration:300ms] [--shell-motion:1] motion-reduce:[--shell-motion:0]",
     "[--shell-time:calc(var(--shell-duration)*var(--shell-motion))]",
     "[--shell-ease:cubic-bezier(0.2,0,0,1)]",
@@ -38,36 +40,28 @@ export const shell = cv({
     "[.shell_&:not(.shell_.shell_*)]:[--shell-below-b:calc(var(--shell-top)+var(--shell-head))]",
     "[.shell_.shell_&]:[--shell-top:var(--shell-below-b)]",
     "[.shell_.shell_&]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head))]",
-    // Direct-child selectors keep nested parts from changing an outer shell.
-    "[&:has(>.shell-sidebar-start.shell-sidebar-w-xs:not(.shell-sidebar-start~*))]:[--shell-start-1-width:10rem]",
-    "[&:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-w-xs)]:[--shell-start-2-width:10rem]",
-    "[&:has(>.shell-sidebar-end.shell-sidebar-w-xs:not(.shell-sidebar-end~*))]:[--shell-end-1-width:10rem]",
-    "[&:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-w-xs)]:[--shell-end-2-width:10rem]",
-    "[&:has(>.shell-sidebar-start.shell-sidebar-w-sm:not(.shell-sidebar-start~*))]:[--shell-start-1-width:12rem]",
-    "[&:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-w-sm)]:[--shell-start-2-width:12rem]",
-    "[&:has(>.shell-sidebar-end.shell-sidebar-w-sm:not(.shell-sidebar-end~*))]:[--shell-end-1-width:12rem]",
-    "[&:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-w-sm)]:[--shell-end-2-width:12rem]",
-    "[&:has(>.shell-sidebar-start.shell-sidebar-w-md:not(.shell-sidebar-start~*))]:[--shell-start-1-width:16rem]",
-    "[&:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-w-md)]:[--shell-start-2-width:16rem]",
-    "[&:has(>.shell-sidebar-end.shell-sidebar-w-md:not(.shell-sidebar-end~*))]:[--shell-end-1-width:16rem]",
-    "[&:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-w-md)]:[--shell-end-2-width:16rem]",
-    "[&:has(>.shell-sidebar-start.shell-sidebar-w-lg:not(.shell-sidebar-start~*))]:[--shell-start-1-width:20rem]",
-    "[&:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-w-lg)]:[--shell-start-2-width:20rem]",
-    "[&:has(>.shell-sidebar-end.shell-sidebar-w-lg:not(.shell-sidebar-end~*))]:[--shell-end-1-width:20rem]",
-    "[&:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-w-lg)]:[--shell-end-2-width:20rem]",
-    "[&:has(>.shell-sidebar-start.shell-sidebar-w-xl:not(.shell-sidebar-start~*))]:[--shell-start-1-width:24rem]",
-    "[&:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-w-xl)]:[--shell-start-2-width:24rem]",
-    "[&:has(>.shell-sidebar-end.shell-sidebar-w-xl:not(.shell-sidebar-end~*))]:[--shell-end-1-width:24rem]",
-    "[&:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-w-xl)]:[--shell-end-2-width:24rem]",
-    "[&:has(>.shell-header-h-sm)]:[--shell-header-height:2.75rem]",
-    "[&:has(>.shell-header-h-md)]:[--shell-header-height:3.25rem]",
-    "[&:has(>.shell-header-h-lg)]:[--shell-header-height:4rem]",
     "[.shell>&]:col-[main] [.shell>&]:row-[body] [.shell>&]:min-h-0",
     "[.shell>&]:[--shell-duration:inherit] [.shell>&]:[--shell-motion:inherit]",
     "[.shell>&]:[--shell-ease:inherit] [.shell>&]:[--shell-main-max-width:inherit]",
     "print:h-auto print:min-h-0",
   ],
   variants: {
+    /**
+     * Sets the header's facing border width in pixels, also used by sticky
+     * offsets. `true` means 1px, `false` means zero, and `inherit` uses the
+     * shell's frame border width. Other parts keep their own `$border`.
+     */
+    $headerBorder(value?: "inherit" | boolean | number) {
+      if (value == null) return;
+      if (value === "inherit") {
+        return {
+          class: "[&>.shell-header]:ak-edge-inherit",
+          style: { "--shell-header-border-width": "var(--border-width, 1px)" },
+        };
+      }
+      const width = typeof value === "boolean" ? Number(value) : value;
+      return { style: { "--shell-header-border-width": `${width}px` } };
+    },
     /**
      * Sets the duration of sidebar folds and content compensation. Numbers are
      * milliseconds. Zero and reduced motion disable these animations.
@@ -79,6 +73,7 @@ export const shell = cv({
     },
   },
   defaultVariants: {
+    $headerBorder: true,
     $layer: "transparent",
     $rounded: "var(--shell-radius)",
     $p: "none",
@@ -115,12 +110,15 @@ const seam = cv({
     /** Draws one facing edge as a solid border, a dashed border, or no edge. */
     $borderType(value?: "border" | "dashed" | "none") {
       if (value === "border") {
-        return facingBorder;
+        return [facingBorder, "[--shell-facing-border:var(--border-width)]"];
       }
       if (value === "dashed") {
-        return cx(facingBorder, "border-dashed");
+        return cx(
+          facingBorder,
+          "border-dashed [--shell-facing-border:var(--border-width)]",
+        );
       }
-      return;
+      return "[--shell-facing-border:0px] [.shell:has(>&.shell-header)]:[--shell-header-has-border:0]";
     },
   },
   defaultVariants: {
@@ -178,10 +176,13 @@ export const shellHeader = cv({
     bar,
     // The bar is a query container for its own parts. Its minimum height is
     // the token that the rest of the shell reads as the header's height.
-    "shell-header row-[header] min-h-(--shell-header-height) @container/shell-header",
+    "shell-header row-[header] min-h-[calc(var(--shell-header-interior)+var(--shell-facing-border))] @container/shell-header",
+    "[--border-width:var(--shell-header-border-width,1px)]",
     "z-4",
   ],
   variants: {
+    // The root owns this width because sticky siblings use it too.
+    $border: null,
     /**
      * Keeps the header in view while its row is in view. It keeps its space, so
      * nothing flows under it. The shell reads the class this emits to publish
@@ -189,11 +190,13 @@ export const shellHeader = cv({
      * Defaults to `true`.
      */
     $sticky: "shell-header-sticky sticky inset-bs-(--shell-top)",
-    /** Publishes the header height to its shell. Defaults to `md` (3.25rem). */
+    /**
+     * Publishes the interior height plus its facing border. Defaults to `md`.
+     */
     $height: {
-      sm: "shell-header-h-sm",
-      md: "shell-header-h-md",
-      lg: "shell-header-h-lg",
+      sm: "[.shell:has(>&)]:[--shell-header-interior:--spacing(14)] [--shell-header-interior:--spacing(14)]",
+      md: "[.shell:has(>&)]:[--shell-header-interior:--spacing(16)] [--shell-header-interior:--spacing(16)]",
+      lg: "[.shell:has(>&)]:[--shell-header-interior:--spacing(18)] [--shell-header-interior:--spacing(18)]",
     },
     /**
      * Blurs the page behind the bar through a translucent surface, which falls
@@ -214,7 +217,7 @@ export const shellHeader = cv({
   defaultVariants: {
     $sticky: true,
     $height: "md",
-    $p: 6,
+    $p: 3,
   },
 });
 
@@ -303,11 +306,11 @@ export const shellFooter = cv({
     "pbs-0! pbe-[env(safe-area-inset-bottom)]!",
   ],
   variants: {
-    /** Sets the footer minimum height. Defaults to `md` (3.25rem). */
+    /** Sets the interior height plus its facing border. Defaults to `md`. */
     $height: {
-      sm: "min-h-[2.75rem]",
-      md: "min-h-[3.25rem]",
-      lg: "min-h-[4rem]",
+      sm: "min-h-[calc(--spacing(14)+var(--shell-facing-border))]",
+      md: "min-h-[calc(--spacing(16)+var(--shell-facing-border))]",
+      lg: "min-h-[calc(--spacing(18)+var(--shell-facing-border))]",
     },
     /**
      * Blurs the page behind the bar through a translucent surface, which falls
@@ -317,7 +320,7 @@ export const shellFooter = cv({
     $blur: blur,
   },
   defaultVariants: {
-    $p: 6,
+    $p: 3,
     $height: "md",
   },
 });
@@ -353,11 +356,41 @@ export const shellSidebar = cv({
      * `md`.
      */
     $width: {
-      xs: "shell-sidebar-w-xs [--shell-slot-width:10rem]",
-      sm: "shell-sidebar-w-sm [--shell-slot-width:12rem]",
-      md: "shell-sidebar-w-md [--shell-slot-width:16rem]",
-      lg: "shell-sidebar-w-lg [--shell-slot-width:20rem]",
-      xl: "shell-sidebar-w-xl [--shell-slot-width:24rem]",
+      xs: [
+        "[--shell-slot-width:10rem]",
+        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:10rem]",
+        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:10rem]",
+        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:10rem]",
+        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:10rem]",
+      ],
+      sm: [
+        "[--shell-slot-width:12rem]",
+        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:12rem]",
+        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:12rem]",
+        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:12rem]",
+        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:12rem]",
+      ],
+      md: [
+        "[--shell-slot-width:16rem]",
+        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:16rem]",
+        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:16rem]",
+        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:16rem]",
+        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:16rem]",
+      ],
+      lg: [
+        "[--shell-slot-width:20rem]",
+        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:20rem]",
+        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:20rem]",
+        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:20rem]",
+        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:20rem]",
+      ],
+      xl: [
+        "[--shell-slot-width:24rem]",
+        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:24rem]",
+        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:24rem]",
+        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:24rem]",
+        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:24rem]",
+      ],
     },
     /**
      * Folds the sidebar below a named shell-container width. Defaults to `3xl`
@@ -423,7 +456,7 @@ export const shellSidebarBody = cv({
     "[.shell-sidebar-start>&]:self-end",
     "[.shell-sidebar-end>&]:self-start",
   ],
-  defaultVariants: { $p: 4 },
+  defaultVariants: { $p: 3 },
 });
 
 /**
@@ -473,7 +506,7 @@ const centered = cx(
   "[--shell-free:calc(100%-var(--shell-content-end-space)-var(--shell-main-max-width)-var(--shell-gutter)-2*var(--shell-popout)-2*var(--shell-feature))]",
   "[--shell-track-start:clamp(var(--shell-gutter),var(--shell-free),calc(var(--shell-gutter)+var(--shell-comp-start)))]",
   "[--shell-track-end:calc(var(--shell-content-end-space)+clamp(var(--shell-gutter),var(--shell-free),calc(var(--shell-gutter)+var(--shell-comp-end))))]",
-  "grid-cols-[[full-start]_minmax(var(--shell-track-start),auto)_[feature-start]_minmax(0,var(--shell-feature))_[popout-start]_minmax(0,var(--shell-popout))_[content-start]_minmax(0,var(--shell-main-max-width))_[content-end]_minmax(0,var(--shell-popout))_[popout-end]_minmax(0,var(--shell-feature))_[feature-end]_minmax(var(--shell-track-end),auto)_[full-end]]",
+  "grid-cols-[[full-start]_minmax(var(--shell-track-start),auto)_[feature-start]_minmax(0,var(--shell-feature))_[popout-start]_minmax(0,var(--shell-popout))_[content-start]_minmax(min(var(--shell-main-max-width),max(0px,calc(100%-var(--shell-content-end-space)-2*var(--shell-gutter)))),var(--shell-main-max-width))_[content-end]_minmax(0,var(--shell-popout))_[popout-end]_minmax(0,var(--shell-feature))_[feature-end]_minmax(var(--shell-track-end),auto)_[full-end]]",
 );
 
 /**
@@ -498,7 +531,7 @@ const shellContent = cv({
     "shell-content grid content-start justify-stretch min-w-0 overflow-x-clip rounded-none!",
     // The inset is a grid track. Publish it to the frame padding channel
     // so nested frames still compute a concentric radius from that distance.
-    "[--shell-gutter:1.5rem] [--shell-popout:1rem] [--shell-feature:3.5rem]",
+    "[--shell-gutter:--spacing(3)] [--shell-popout:1rem] [--shell-feature:3.5rem]",
     "ak-frame-p-(--shell-gutter) px-0!",
     "print:overflow-visible",
     // The slot flags are declared here, so a nested shell's main never
@@ -592,9 +625,22 @@ const shellContent = cv({
       return { style: { "--shell-main-max-width": getSpacingValue(value) } };
     },
     /**
-     * Sets the minimum space beside the content column, which is also main's
-     * padding above and below it. Numbers scale the spacing token. Defaults to
-     * 1.5rem.
+     * Sets the minimum content gutter and block padding. Numbers scale the
+     * spacing token. Defaults to 3. An explicit `$gutter` takes precedence.
+     * `none` removes the space; `unset` leaves the CSS gutter unchanged.
+     */
+    $p(value?: "unset" | "none" | (string & {}) | number) {
+      if (value == null) return;
+      if (value === "unset") return;
+      return {
+        style: {
+          "--shell-gutter": getSpacingValue(value === "none" ? 0 : value),
+        },
+      };
+    },
+    /**
+     * Overrides `$p` for the content gutter and block padding, including zero.
+     * Numbers scale the spacing token. Prefer `$p` for new calls.
      */
     $gutter(value?: ShellWidth) {
       if (value == null) return;
@@ -602,7 +648,7 @@ const shellContent = cv({
     },
   },
   defaultVariants: {
-    $p: "unset",
+    $p: 3,
   },
 });
 

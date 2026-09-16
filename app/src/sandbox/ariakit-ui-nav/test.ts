@@ -37,3 +37,20 @@ test("keeps a bare fragment label separate from its description and badge", asyn
   await click(button);
   expect(q.text("Update account pages")).toBeVisible();
 });
+
+test("keeps anchor props, events, and refs on a wrapped link", async () => {
+  const nav = q.within(q.navigation("Link wrappers"));
+  const link = nav.link("Project overview");
+  expect(nav.listitem.all()).toHaveLength(3);
+  expect(link).toHaveAttribute("href", "#overview");
+  expect(link).toHaveAttribute("title", "Overview destination");
+  expect(link).toHaveClass("project-link");
+  expect(link.parentElement).toHaveClass("project-item");
+  expect(nav.link("Project activity").parentElement).toHaveClass("custom-item");
+  expect(nav.link("Project members").parentElement?.tagName).toBe("LI");
+  await click(q.button("Focus project overview"));
+  expect(link).toHaveFocus();
+  await click(link);
+  expect(q.text("Last activated element: A")).toBeVisible();
+  expect(q.within(q.navigation("Single link")).listitem.all()).toHaveLength(0);
+});

@@ -1,17 +1,19 @@
 import { cv, cx } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { button, buttonSlot } from "./button.ts";
-import { frameBase } from "./frame.ts";
+import { frame, frameBase } from "./frame.ts";
 import { glider } from "./glider.ts";
 import { padding } from "./padding.ts";
+import { selected } from "./selected.ts";
 import { text } from "./text.ts";
 
 export const nav = cv({
+  extend: [frame],
   class: [
     // Groups stack on the root at their own gap, packed at the start: a
     // stretched nav must not spread them. A nav with one list has
     // nothing to space. The marker is what a glider reads the nav through.
-    "nav grid content-start gap-(--nav-group-gap)",
+    "nav content-start gap-(--nav-gap) min-w-0",
     // Gap defaults the variants override through the style attribute.
     "[--nav-gap:--spacing(1)]",
     "[--nav-group-gap:--spacing(4)]",
@@ -28,16 +30,26 @@ export const nav = cv({
     "[--nav-px:calc(var(--nav-py)+(1lh-1cap)*0.5)]",
     // The box a glider positions against, and a stacking context that keeps
     // the glider's place in the paint order inside the nav.
-    "relative isolate",
+    "relative isolate [--glider-padding:var(--ak-frame-padding)]",
   ],
   style: {
+    anchorName: "--glider-frame",
     // A glider follows the rows through the first three names and finds the
     // guide line beside the row through the others (see navGlider). The scope
     // keeps them to this nav, so a glider never lands in another one.
     anchorScope:
-      "--glider-hover, --glider-focus, --glider-selected, --disclosure-guide-hover, --disclosure-guide-focus, --disclosure-guide-selected",
+      "--glider-frame, --glider-hover, --glider-focus, --glider-selected, --disclosure-guide-hover, --disclosure-guide-focus, --disclosure-guide-selected",
   },
   variants: {
+    /**
+     * Arranges top-level links in a column or one scrolling row. Groups and
+     * disclosures keep their own vertical layout. Defaults to `vertical`.
+     */
+    $layout: {
+      vertical: "vertical grid",
+      horizontal:
+        "horizontal flex items-start overflow-x-auto overscroll-x-contain [clip-path:inset(-100vmax_0)] [&>.control,&>ul>li>.control]:shrink-0 [&>.control,&>ul>li>.control]:whitespace-nowrap",
+    },
     /**
      * Sets the space between rows. Numbers scale the spacing token.
      */
@@ -69,17 +81,23 @@ export const nav = cv({
       };
     },
   },
+  defaultVariants: {
+    $layout: "vertical",
+    $layer: "transparent",
+    $p: "none",
+  },
 });
 
 export const navList = cv({
   // Packed at the start: a stretched list keeps its rows together rather than
   // spreading them over the height.
-  class: "grid content-start gap-(--nav-gap)",
+  class: "contents [&>li:not(.disclosure)]:contents",
 });
 
 export const navGroup = cv({
   // The label sits one row gap over its list, on the rhythm of the rows.
-  class: "grid content-start gap-(--nav-gap)",
+  class:
+    "nav-group grid content-start gap-(--nav-gap) shrink-0 [.nav.vertical>&+&]:mt-[calc(var(--nav-group-gap)-var(--nav-gap))]",
 });
 
 // The label of a group of rows. It takes the row padding above and below and
@@ -112,21 +130,15 @@ export const navIcon = cv({
 });
 
 export const navLink = cv({
-  extend: [button],
+  extend: [button, selected],
   class: [
     "justify-start text-wrap",
     "ak-dark:ak-ink-70",
     // Links read as plain rows until they're current.
-    "not-ui-nav-current:font-normal",
+    "not-ui-selected:font-normal",
     "ui-hover:ak-ink-100",
-    // The current link holds a raised surface outlined from the inside.
-    "ui-nav-current:ak-layer ui-nav-current:ak-layer-5",
-    "ui-nav-current:ak-ink-100",
-    "ui-nav-current:ak-edge-0",
-    "ui-nav-current:ring ui-nav-current:ring-inset",
-    // A current link is already lifted, so hovering must not lift it again.
-    // The stacked form sorts after the button's own single-variant hover.
-    "ui-nav-current:ui-hover:ak-state-0",
+    // Current links keep full text contrast on their pushed surface.
+    "ui-selected:ak-ink-100",
     // The row gap plus the control's extra side padding, which an icon slot
     // takes off, so a link with an icon lines up with the disclosure rows
     // around it. $gap is off below, so this is the only gap utility here.
@@ -136,6 +148,7 @@ export const navLink = cv({
     // Idle links sit flush with the surface around them; hover and current
     // still paint their own states.
     $lightnessOffset: false,
+    $selectedPush: true,
     $gap: "none",
   },
 });
@@ -180,6 +193,10 @@ export const navGlider = cv({
     // NavDisclosureContentBody), so a cover shows through it. Two gliders
     // paint in tree order: a later one over an earlier one.
     "z-0",
+    // Firefox offsets an absolutely positioned anchor twice when its RTL
+    // container scrolls. Fixed positioning follows the anchor's visible box.
+    // The nav clips only its inline axis, so a bar can sit beyond its padding.
+    "[.horizontal>&]:fixed!",
     // A row a disclosure is still revealing is clipped by the content around
     // it. The glider goes with the row while
     // none of it shows.
@@ -199,6 +216,7 @@ export const navGlider = cv({
       if (value === "bevel") return ["ui-bevel", navGliderCover];
       if (value !== "bar") return;
       return [
+        "glider-bar",
         // The bar reads as an edge on top of the rows, not a surface behind
         // them, so it reverses the stacking the base class sets.
         "z-10",
@@ -206,23 +224,27 @@ export const navGlider = cv({
         // scaling the bar thickness, or high-contrast mode inflates the bar
         // from 2px to 42px.
         "[--glider-bar:calc(--spacing(0.5)+(--spacing(0.1))*var(--contrast)/100)]",
-        "top-[anchor(top)] h-[anchor-size()] w-(--glider-bar)",
+        "[.vertical>&]:top-[anchor(top)] [.vertical>&]:h-[anchor-size()] [.vertical>&]:w-(--glider-bar)",
+        "[.vertical>&]:inset-e-[calc(anchor(start)+var(--glider-bar-offset))]",
+        "[.vertical>&]:[&.glider-bar-end]:inset-e-auto",
+        "[.vertical>&]:[&.glider-bar-end]:inset-s-[calc(anchor(end)+var(--glider-bar-offset))]",
+        // An automatic start bar keeps the nearest disclosure guide when one
+        // exists. Otherwise the gap comes from this nav's frame padding.
+        "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-e-auto",
+        "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-s-[calc(anchor(var(--glider-guide)_center,calc(anchor(start)-var(--glider-bar-offset)-var(--glider-bar)/2))-var(--glider-bar)/2)]",
+        "[.vertical>&]:[&.glider-bar-frame]:inset-e-auto",
+        "[.vertical>&]:[&.glider-bar-frame]:inset-s-0",
+        "[.vertical>&]:[&.glider-bar-frame.glider-bar-end]:inset-s-auto",
+        "[.vertical>&]:[&.glider-bar-frame.glider-bar-end]:inset-e-0",
+        "[.horizontal>&]:left-[anchor(left)] [.horizontal>&]:w-[anchor-size()] [.horizontal>&]:h-(--glider-bar)",
+        "[.horizontal>&]:top-[calc(anchor(bottom)+var(--glider-bar-offset))]",
+        "[.horizontal>&]:[&.glider-bar-start]:top-auto",
+        "[.horizontal>&]:[&.glider-bar-start]:bottom-[calc(anchor(top)+var(--glider-bar-offset))]",
+        "[.horizontal>&]:[&.glider-bar-frame]:top-auto",
+        "[.horizontal>&]:[&.glider-bar-frame]:bottom-[anchor(--glider-frame_bottom)]",
+        "[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:bottom-auto",
+        "[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:top-[anchor(--glider-frame_top)]",
       ];
-    },
-    /**
-     * The side a bar sits on. At the `start` it is centred on the guide line of
-     * the disclosure content around the row, when there is one, and otherwise
-     * it sits on the row's start edge. At the `end` it sits on the row's end
-     * edge.
-     */
-    $side: {
-      // The guide is a named anchor the content publishes only while one of its
-      // rows is in the glider's state (see $guide in disclosure.ts). With none
-      // to find, the fallback puts the bar's centre half a bar past the row's
-      // start edge.
-      start:
-        "inset-s-[calc(anchor(var(--glider-guide)_center,calc(anchor(start)+var(--glider-bar)/2))-var(--glider-bar)/2)]",
-      end: "inset-e-[anchor(end)]",
     },
     /**
      * Sets which row state the glider follows. A row publishes the matching
@@ -241,33 +263,33 @@ export const navGlider = cv({
         return [
           "[position-anchor:--glider-hover] ease-linear",
           "[--glider-guide:--disclosure-guide-hover]",
-          "[&~*_li>.control]:ui-hover:[--glider-hover:--glider-hover]",
+          "[&~.control,&~*_li>.control]:ui-hover:[--glider-hover:--glider-hover]",
           // The pointer is crossing the gap between two rows, so the glider
           // waits on the last one for the next instead of leaving at once.
-          "[.nav:hover:not(:has(li>.control:hover))>&]:delay-250",
+          "[.nav:hover:not(:has(:is(li>.control,.nav>.control):hover))>&]:delay-250",
           // With no row under the pointer the anchor is gone, and a glider
           // that stayed would fall to a point at the nav's start. It leaves
           // instead, after the delay above.
-          "[.nav:not(:has(li>.control:hover))>&]:hidden",
+          "[.nav:not(:has(:is(li>.control,.nav>.control):hover))>&]:hidden",
           // The glider sits behind the row it covers, so the row has to stop
           // painting its own surface or it hides the glider. A disclosure
           // button paints its hover as a gradient, which the second rule
           // takes off.
-          "supports-anchor:[&~*_li>.control]:ui-hover:bg-transparent!",
-          "supports-anchor:[&~*_li>.control]:ui-hover:bg-none!",
-          "supports-anchor:[&~*_li>.control]:ui-hover:border-transparent",
-          "supports-anchor:[&~*_li>.control]:ui-hover:befter:hidden",
+          "supports-anchor:[&~.control,&~*_li>.control]:ui-hover:bg-transparent!",
+          "supports-anchor:[&~.control,&~*_li>.control]:ui-hover:bg-none!",
+          "supports-anchor:[&~.control,&~*_li>.control]:ui-hover:border-transparent",
+          "supports-anchor:[&~.control,&~*_li>.control]:ui-hover:befter:hidden",
         ];
       }
       if (value === "focus") {
         return [
           "[position-anchor:--glider-focus] focus",
           "[--glider-guide:--disclosure-guide-focus]",
-          "[&~*_li>.control]:ui-focus-visible:[--glider-focus:--glider-focus]",
+          "[&~.control,&~*_li>.control]:ui-focus-visible:[--glider-focus:--glider-focus]",
           // The ring is drawn only while one of the rows has keyboard focus;
           // the row's own ring goes with it.
-          "[&:has(~*_li>.control:is(:focus-visible,[data-focus-visible]))]:outline-2",
-          "supports-anchor:[&~*_li>.control]:ui-focus-visible:outline-none",
+          "[&:has(~.control:is(:focus-visible,[data-focus-visible]),~*_li>.control:is(:focus-visible,[data-focus-visible]))]:outline-2",
+          "supports-anchor:[&~.control,&~*_li>.control]:ui-focus-visible:outline-none",
           "ak-outline ak-outline-brand outline-offset-1",
         ];
       }
@@ -275,13 +297,13 @@ export const navGlider = cv({
         return [
           "[position-anchor:--glider-selected] selected",
           "[--glider-guide:--disclosure-guide-selected]",
-          "[&~*_li>.control]:ui-nav-current:[--glider-selected:--glider-selected]",
+          "[&~.control,&~*_li>.control]:ui-selected:[--glider-selected:--glider-selected]",
           // With no current row there is no anchor to land on, and the glider
           // would stay as a blank square at the nav's start. A current row in
           // a closed disclosure counts as none, from the moment the content
           // starts to close: the glider is outside the content, so it would
           // stay in view while the content folds up.
-          "not-[&:has(~*_li>.control:where([aria-current='page'],[aria-current='true']):not(:is([hidden],[data-leave])_*))]:hidden",
+          "not-[&:has(~.control:is(:checked,.selected,[aria-checked='true'],[aria-selected='true'],[aria-current]:not([aria-current='false'])),~*_li>.control:is(:checked,.selected,[aria-checked='true'],[aria-selected='true'],[aria-current]:not([aria-current='false'])):not(:is([hidden],[data-leave])_*))]:hidden",
         ];
       }
       return;
@@ -295,10 +317,6 @@ export const navGlider = cv({
     },
   },
   defaultVariants: {
-    $side(defaultValue, variants) {
-      if (variants.$kind !== "bar") return;
-      return defaultValue ?? "start";
-    },
     // A cover takes the row's own radius; a bar has none (see glider.ts), and
     // keeps none inside a disclosure body, where a nested frame would round its
     // ends to stay concentric.
@@ -310,22 +328,21 @@ export const navGlider = cv({
       if (variants.$kind !== "bar") return defaultValue;
       return defaultValue ?? true;
     },
-    // A selected cover is the current row's surface: one step off the surface
-    // around it, as the row's own is (see navLink), with the row's inset ring.
+    // A selected cover takes the same pushed surface as the current row.
     $lightnessOffset(defaultValue, variants) {
       if (variants.$state !== "selected") return defaultValue;
       if (variants.$kind === "bar") return defaultValue;
-      return 1;
+      return false;
     },
-    $borderType(defaultValue, variants) {
+    $lightnessPush(defaultValue, variants) {
       if (variants.$state !== "selected") return defaultValue;
       if (variants.$kind === "bar") return defaultValue;
-      return "inset";
+      return defaultValue ?? true;
     },
     $border(defaultValue, variants) {
       if (variants.$state !== "selected") return defaultValue;
       if (variants.$kind === "bar") return defaultValue;
-      return defaultValue ?? true;
+      return defaultValue ?? false;
     },
   },
   refine({ variants, addClass }) {
@@ -336,19 +353,18 @@ export const navGlider = cv({
       // current row's glider leaves at once with a closing disclosure.
       addClass(
         variants.$state === "hover"
-          ? "transition-[top,inset-inline-start,inset-inline-end,border-color,height,width,outline,display]"
-          : "transition-[top,inset-inline-start,inset-inline-end,border-color,height,width,outline]",
+          ? "transition-[top,left,inset-inline-start,inset-inline-end,border-color,height,width,outline,display]"
+          : "transition-[top,left,inset-inline-start,inset-inline-end,border-color,height,width,outline]",
       );
     }
     if (variants.$state !== "selected") return;
     if (variants.$kind === "bar") return;
-    // The current row hands its raised surface and its inset ring over to a
-    // cover, which draws both (see the defaults above). Beside a bar the row
-    // keeps them.
+    // A cover takes over the row's surface. Beside a bar the row keeps its
+    // surface, including any caller-provided edge.
     addClass([
-      "supports-anchor:[&~*_li>.control]:ui-nav-current:bg-transparent",
-      "supports-anchor:[&~*_li>.control]:ui-nav-current:ring-0",
-      "supports-anchor:[&~*_li>.control]:ui-nav-current:befter:hidden",
+      "supports-anchor:[&~.control,&~*_li>.control]:ui-selected:bg-transparent",
+      "supports-anchor:[&~.control,&~*_li>.control]:ui-selected:ring-0",
+      "supports-anchor:[&~.control,&~*_li>.control]:ui-selected:befter:hidden",
     ]);
   },
 });
@@ -370,6 +386,7 @@ export const navDisclosureContentBody = cv({
   // nothing, so it must not open a layer of its own.
   extend: [frameBase],
   class: [
+    "grid content-start gap-(--nav-gap)",
     "[--nav-body-padding:calc(var(--nav-gap)*0.5)]",
     "[--nav-body-radius:calc(var(--disclosure-radius)+var(--nav-body-padding))]",
     // Pull a row back by its control inset so its text starts on the body. A
