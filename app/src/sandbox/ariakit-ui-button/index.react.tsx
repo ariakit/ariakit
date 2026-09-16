@@ -1258,6 +1258,37 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Horizontal bar glider"
+        description="A bar marks the checked item while the focus glider keeps its full outline at the group edge."
+        code={`
+        <ak.RadioProvider defaultValue="small">
+          <ak.RadioGroup render={<ButtonGroup $border $borderType="ring" $p={0} />}>
+            <ak.Radio value="small" render={<Button />}>Small</ak.Radio>
+            <ak.Radio value="large" render={<Button />}>Large</ak.Radio>
+            <ButtonGlider $kind="bar" $animated={false} />
+            <ButtonGlider $state="focus" $animated={false} />
+          </ak.RadioGroup>
+        </ak.RadioProvider>
+      `}
+      >
+        <ak.RadioProvider defaultValue="small">
+          <ak.RadioGroup
+            aria-label="Horizontal size"
+            render={<ButtonGroup $border $borderType="ring" $p={0} />}
+          >
+            <ak.Radio value="small" render={<Button />}>
+              Small
+            </ak.Radio>
+            <ak.Radio value="large" render={<Button />}>
+              Large
+            </ak.Radio>
+            <ButtonGlider $kind="bar" $animated={false} />
+            <ButtonGlider $state="focus" $animated={false} />
+          </ak.RadioGroup>
+        </ak.RadioProvider>
+      </Example>
+
+      <Example
         title="Vertical bar glider"
         description="A vertical radio group. A bar along the end edge marks the checked row."
         code={`

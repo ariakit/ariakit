@@ -155,7 +155,12 @@ export const glider = cv({
   },
   defaultVariants: {
     $kind: "flat",
-    $barOffset: "auto",
+    $barOffset(defaultValue, variants) {
+      if (variants.$kind !== "bar") {
+        return defaultValue;
+      }
+      return defaultValue ?? "auto";
+    },
     $state: "selected",
     $animated: true,
     $p: "none",
@@ -265,12 +270,7 @@ export const gliderGroup = cv({
   extend: [controlGroup],
   // The gliders paint behind the controls, below zero on the z axis, so the
   // group opens a stacking context to keep them in front of its own surface.
-  class: [
-    "glider-group relative z-1 [--glider-padding:var(--ak-frame-padding)]",
-    // Clip a fixed bar along the scrolling axis. Tabs keep this clip on their
-    // root so the strip does not trap folder tabs below the panel's surface.
-    "[&:has(>.glider-bar):not(.vertical,.tabs>*)]:[clip-path:inset(-100vmax_0)]",
-  ],
+  class: "glider-group relative z-1 [--glider-padding:var(--ak-frame-padding)]",
   style: {
     anchorName: "--glider-frame",
     anchorScope:

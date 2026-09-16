@@ -10,6 +10,23 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7536#discussion_r4023546236
+  test("keeps horizontal bar groups and their focus outline unclipped", async ({
+    q,
+    page,
+  }) => {
+    const group = q.radiogroup("Horizontal size");
+    const small = query(group).radio("Small");
+    await small.click();
+    await page.keyboard.press("ArrowRight");
+    await test.expect(query(group).radio("Large")).toBeFocused();
+    await test
+      .expect(group.locator(".glider.focus"))
+      .toHaveCSS("outline-style", "solid");
+    await test.expect(group).not.toHaveCSS("box-shadow", "none");
+    await test.expect(group).toHaveCSS("clip-path", "none");
+  });
+
   // The page capture also keeps the static states of the button group fixture
   // under visual regression: joined borders, kept corners and the selected
   // glider.
