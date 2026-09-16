@@ -260,9 +260,9 @@ export const navGlider = cv({
      * Only a link is current.
      */
     $state(value?: "none" | "hover" | "focus" | "selected") {
-      // Each state names the guide a bar centres on (see $side). A state
-      // without one names a guide nothing publishes, which keeps the bar on the
-      // fallback: the dummy the rows carry is a real anchor.
+      // Each state names the guide used by automatic $barOffset (glider.ts). A
+      // state without one names a guide nothing publishes, which keeps the bar
+      // on the fallback: the dummy the rows carry is a real anchor.
       if (value === "none") return "[--glider-guide:--glider-no-guide]";
       if (value === "hover") {
         return [
@@ -308,7 +308,7 @@ export const navGlider = cv({
           // a closed disclosure counts as none, from the moment the content
           // starts to close: the glider is outside the content, so it would
           // stay in view while the content folds up.
-          "not-[&:has(~.control:is(:checked,.selected,[aria-checked='true'],[aria-selected='true'],[aria-current]:not([aria-current='false'])),~*_li>.control:is(:checked,.selected,[aria-checked='true'],[aria-selected='true'],[aria-current]:not([aria-current='false'])):not(:is([hidden],[data-leave])_*))]:hidden",
+          "not-ui-nav-glider-selected:hidden",
         ];
       }
       return;

@@ -390,12 +390,6 @@ body > * {
   }
 }
 
-@custom-variant ui-nav-current {
-  &:where([aria-current="true"], [aria-current="page"]) {
-    @slot;
-  }
-}
-
 @custom-variant ui-disabled {
   &:is(:disabled, [aria-disabled="true"]) {
     @slot;
@@ -632,6 +626,43 @@ body > * {
     [aria-checked="true"],
     [aria-selected="true"],
     [aria-current]:not([aria-current="false"])
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-has-selected-row {
+  &:has(
+    li > .control:is(
+      :checked,
+      .selected,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+  ) {
+    @slot;
+  }
+}
+
+/* A nav glider precedes its rows, including those inside groups and lists.
+   Closing disclosure contents stop supplying a visible selected row. */
+@custom-variant ui-nav-glider-selected {
+  &:has(
+    ~ .control:is(
+      :checked,
+      .selected,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    ),
+    ~ * li > .control:is(
+      :checked,
+      .selected,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    ):not(:is([hidden], [data-leave]) *)
   ) {
     @slot;
   }

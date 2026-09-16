@@ -4,7 +4,8 @@ import { getLightnessStyleClass } from "../utils/styles.ts";
 /** Shared surface effects for checked, selected, and current items. */
 export const selected = cv({
   class: [
-    "[--selected-offset:initial] [--selected-push:initial]",
+    // Only offset is read unconditionally below; push supplies its own value.
+    "[--selected-offset:initial]",
     // A selected item keeps its own offset when hovered instead of taking
     // the button's hover offset. Without an override, preserve its resting fill.
     "ui-selected:ui-hover:ak-state-(--selected-offset,0)",
