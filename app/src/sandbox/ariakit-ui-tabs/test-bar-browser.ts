@@ -34,14 +34,19 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toBeCloseTo((await getBox(list)).y, 0);
   });
 
-  test("keeps the bar aligned while scrolling tabs in RTL", async ({
+  // https://github.com/ariakit/ariakit/pull/7536#discussion_r4022810357
+  test("keeps the bar aligned while navigating and scrolling tabs in RTL", async ({
     q,
     page,
   }) => {
     await q.checkbox("Tabs right to left").check();
     const list = q.tablist("Bar placement");
     const tab = query(list).tab("Project settings");
-    await tab.click();
+    await query(list).tab("Preview").click();
+    await page.keyboard.press("ArrowLeft");
+    await expect(query(list).tab("Code")).toBeFocused();
+    await page.keyboard.press("ArrowLeft");
+    await expect(tab).toBeFocused();
     await expect(tab).toHaveAttribute("aria-selected", "true");
     expect(await list.evaluate((node) => node.scrollLeft)).toBeLessThan(0);
     const bar = list.locator(":scope > .glider");

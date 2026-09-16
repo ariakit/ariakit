@@ -68,6 +68,7 @@ function BarPlacement() {
       <Tabs
         defaultSelectedId="placement-preview"
         $p={3}
+        rtl={rtl}
         dir={rtl ? "rtl" : "ltr"}
         className="w-64 max-w-full"
       >
