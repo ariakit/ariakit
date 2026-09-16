@@ -3,6 +3,60 @@ import { withFramework } from "#app/test-utils/preview.ts";
 import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
+  // https://github.com/ariakit/ariakit/pull/7536#discussion_r4023270769
+  test("keeps a custom ordered list in one scrolling row", async ({ q }) => {
+    await q.checkbox("Ordered navigation list").check();
+    const nav = q.navigation("Project pages");
+    await expect(nav.locator("ol")).toHaveCSS("display", "contents");
+    for (const link of await query(nav).link().all()) {
+      await expect(link).toHaveCSS("flex-shrink", "0");
+      await expect(link).toHaveCSS("white-space", "nowrap");
+    }
+    await expect
+      .poll(() => nav.evaluate((node) => node.scrollWidth > node.clientWidth))
+      .toBe(true);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7536#discussion_r4023270759
+  for (const rtl of [false, true]) {
+    test(`spaces horizontal groups while their rows stay vertical${rtl ? " in RTL" : ""}`, async ({
+      q,
+    }) => {
+      if (rtl) {
+        await q.checkbox("Right to left").check();
+      }
+      const nav = q.navigation("Project groups");
+      const groups = query(nav).group();
+      for (const [option, gap] of [
+        ["8", 32],
+        ["4", 16],
+      ] as const) {
+        await q.combobox("Group spacing").selectOption(option);
+        await expect
+          .poll(async () => {
+            const [first, second] = await Promise.all([
+              getBox(groups.first()),
+              getBox(groups.last()),
+            ]);
+            return rtl
+              ? first.x - second.x - second.width
+              : second.x - first.x - first.width;
+          })
+          .toBeCloseTo(gap, 0);
+      }
+      for (const names of [
+        ["Project overview", "Project activity"],
+        ["People", "Teams"],
+      ]) {
+        const [firstName, secondName] = names;
+        const first = await getBox(query(nav).link(firstName));
+        const second = await getBox(query(nav).link(secondName));
+        expect(second.y).toBeGreaterThanOrEqual(first.y + first.height);
+        expect(second.x).toBeCloseTo(first.x, 0);
+      }
+    });
+  }
+
   for (const dir of ["ltr", "rtl"]) {
     test(`aligns nested disclosure rows with sibling links in ${dir}`, async ({
       q,

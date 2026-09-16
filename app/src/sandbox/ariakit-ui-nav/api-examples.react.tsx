@@ -11,7 +11,11 @@ import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import {
   Nav,
   NavGlider,
+  NavDisclosure,
+  NavGroup,
+  NavGroupLabel,
   NavLink,
+  NavList,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import { useRef, useState } from "react";
 
@@ -21,6 +25,8 @@ export function HorizontalNavigation() {
   const [gap, setGap] = useState("auto");
   const [side, setSide] = useState<"start" | "end">("end");
   const [padded, setPadded] = useState(true);
+  const [ordered, setOrdered] = useState(false);
+  const [groupGap, setGroupGap] = useState(8);
   return (
     <section
       aria-label="Horizontal navigation example"
@@ -41,6 +47,14 @@ export function HorizontalNavigation() {
           onChange={(event) => setPadded(event.target.checked)}
         />{" "}
         Add frame padding
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          checked={ordered}
+          onChange={(event) => setOrdered(event.target.checked)}
+        />{" "}
+        Ordered navigation list
       </label>
       <label>
         Bar distance{" "}
@@ -69,6 +83,7 @@ export function HorizontalNavigation() {
         $rounded="lg"
         dir={rtl ? "rtl" : "ltr"}
         aria-label="Project pages"
+        list={ordered ? <NavList render={<ol />} /> : undefined}
         className="w-80 max-w-full"
         glider={{
           $kind: "bar",
@@ -96,6 +111,42 @@ export function HorizontalNavigation() {
         )}
       </Nav>
       <p>Current project page: {current}</p>
+      <label>
+        Group spacing{" "}
+        <select
+          value={groupGap}
+          onChange={(event) => setGroupGap(Number(event.target.value))}
+        >
+          <option value={8}>Wide</option>
+          <option value={4}>Default</option>
+        </select>
+      </label>
+      <Nav
+        aria-label="Project groups"
+        list={false}
+        $layout="horizontal"
+        $groupGap={groupGap}
+        dir={rtl ? "rtl" : "ltr"}
+      >
+        <NavGroup>
+          <NavGroupLabel>Project</NavGroupLabel>
+          <NavList>
+            <NavLink href="#overview">Project overview</NavLink>
+            <NavLink href="#activity">Project activity</NavLink>
+          </NavList>
+        </NavGroup>
+        <NavGroup>
+          <NavGroupLabel>Workspace</NavGroupLabel>
+          <NavList>
+            <NavDisclosure button="Members" defaultOpen>
+              <NavList>
+                <NavLink href="#people">People</NavLink>
+                <NavLink href="#teams">Teams</NavLink>
+              </NavList>
+            </NavDisclosure>
+          </NavList>
+        </NavGroup>
+      </Nav>
     </section>
   );
 }

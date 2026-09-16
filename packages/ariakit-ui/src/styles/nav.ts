@@ -10,9 +10,8 @@ import { text } from "./text.ts";
 export const nav = cv({
   extend: [frame],
   class: [
-    // Groups stack on the root at their own gap, packed at the start: a
-    // stretched nav must not spread them. A nav with one list has
-    // nothing to space. The marker is what a glider reads the nav through.
+    // Rows use the root gap; adjacent groups add their own spacing. Pack them
+    // at the start so a stretched nav does not spread its rows.
     "nav content-start gap-(--nav-gap) min-w-0",
     // Gap defaults the variants override through the style attribute.
     "[--nav-gap:--spacing(1)]",
@@ -48,7 +47,7 @@ export const nav = cv({
     $layout: {
       vertical: "vertical grid",
       horizontal:
-        "horizontal flex items-start overflow-x-auto overscroll-x-contain [clip-path:inset(-100vmax_0)] [&>.control,&>ul>li>.control]:shrink-0 [&>.control,&>ul>li>.control]:whitespace-nowrap",
+        "horizontal flex items-start overflow-x-auto overscroll-x-contain [clip-path:inset(-100vmax_0)] [&>.control,&>.nav-list>li>.control]:shrink-0 [&>.control,&>.nav-list>li>.control]:whitespace-nowrap",
     },
     /**
      * Sets the space between rows. Numbers scale the spacing token.
@@ -91,13 +90,13 @@ export const nav = cv({
 
 export const navList = cv({
   // Disclosures keep a layout box for their indentation and vertical flow.
-  class: "contents [&>li:not(.nav-disclosure)]:contents",
+  class: "nav-list contents [&>li:not(.nav-disclosure)]:contents",
 });
 
 export const navGroup = cv({
   // The label sits one row gap over its list, on the rhythm of the rows.
   class:
-    "nav-group grid content-start gap-(--nav-gap) shrink-0 [.nav.vertical>&+&]:mt-[calc(var(--nav-group-gap)-var(--nav-gap))]",
+    "nav-group grid content-start gap-(--nav-gap) shrink-0 [.nav.vertical>&+&]:mt-[calc(var(--nav-group-gap)-var(--nav-gap))] [.nav.horizontal>&+&]:ms-[calc(var(--nav-group-gap)-var(--nav-gap))]",
 });
 
 // The label of a group of rows. It takes the row padding above and below and
@@ -244,6 +243,12 @@ export const navGlider = cv({
         "[.horizontal>&]:[&.glider-bar-frame]:bottom-[anchor(--glider-frame_bottom)]",
         "[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:bottom-auto",
         "[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:top-[anchor(--glider-frame_top)]",
+        // Other engines can use this positioned nav's own frame edges. This
+        // keeps document scrolling out of a second fixed-position anchor.
+        "[@supports_not_(-moz-appearance:none)]:[.horizontal>&]:[&.glider-bar-frame]:absolute!",
+        "[@supports_not_(-moz-appearance:none)]:[.horizontal>&]:[&.glider-bar-frame]:bottom-0",
+        "[@supports_not_(-moz-appearance:none)]:[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:bottom-auto",
+        "[@supports_not_(-moz-appearance:none)]:[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:top-0",
       ];
     },
     /**
