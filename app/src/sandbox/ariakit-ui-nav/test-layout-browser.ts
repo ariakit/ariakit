@@ -3,6 +3,45 @@ import { withFramework } from "#app/test-utils/preview.ts";
 import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
+  for (const dir of ["ltr", "rtl"]) {
+    test(`aligns nested disclosure rows with sibling links in ${dir}`, async ({
+      q,
+    }) => {
+      const nav = q.navigation(`Disclosures without icons (${dir})`);
+      const overview = query(nav).link("Overview");
+      const components = query(nav).button("Components");
+      await expect
+        .poll(async () => {
+          const linkEdge = await overview.evaluate(
+            (node, rtl) => node.getBoundingClientRect()[rtl ? "right" : "left"],
+            dir === "rtl",
+          );
+          const buttonEdge = await components.evaluate(
+            (node, rtl) => node.getBoundingClientRect()[rtl ? "right" : "left"],
+            dir === "rtl",
+          );
+          return buttonEdge - linkEdge;
+        })
+        .toBeCloseTo(0, 0);
+    });
+  }
+
+  test("preserves default link corners in plain and nested navigation", async ({
+    q,
+  }) => {
+    for (const name of ["Rows", "Disclosures without icons (ltr)"]) {
+      const link = query(q.navigation(name)).link("Overview");
+      for (const corner of [
+        "top-left",
+        "top-right",
+        "bottom-left",
+        "bottom-right",
+      ]) {
+        await expect(link).toHaveCSS(`border-${corner}-radius`, "6px");
+      }
+    }
+  });
+
   test("places a nonanimated bar at the frame edge or an explicit distance", async ({
     q,
   }) => {

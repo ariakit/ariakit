@@ -9,6 +9,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await selectScenario(q, "geometry");
     await q.button("Toggle layout navigation").click();
     await q.button("Toggle layout contents").click();
+    await expect(getSidebar(q, "Layout navigation")).toHaveCSS(
+      "width",
+      "192px",
+    );
+    await expect(getSidebar(q, "Layout contents")).toHaveCSS("width", "160px");
   });
 
   // https://github.com/ariakit/ariakit/issues/7532
@@ -191,53 +196,73 @@ withFramework(import.meta.dirname, async ({ test }) => {
           };
         });
         for (const open of [false, true]) {
-          // Resolve the body and start recording before the click so runner
-          // latency cannot hide the intermediate fold geometry.
-          await using recording = await body.evaluateHandle(
-            (node, { rtl, side, open, width }) => {
+          // Pause the width transition when it starts so CI load cannot skip
+          // the intermediate geometry that this test inspects.
+          await using folding = await column.evaluateHandle((node) => {
+            const started = new Promise<Animation>((resolve, reject) => {
+              node.addEventListener(
+                "transitionrun",
+                function onTransition(event) {
+                  if (event.target !== node) return;
+                  if (
+                    !("propertyName" in event) ||
+                    event.propertyName !== "width"
+                  )
+                    return;
+                  node.removeEventListener("transitionrun", onTransition);
+                  const animation = node
+                    .getAnimations()
+                    .find(
+                      (animation) =>
+                        "transitionProperty" in animation &&
+                        animation.transitionProperty === "width",
+                    );
+                  if (!animation) {
+                    reject(new Error("Missing width transition"));
+                    return;
+                  }
+                  animation.pause();
+                  resolve(animation);
+                },
+              );
+            });
+            return { started };
+          });
+          await q.button(toggle).click();
+          await using animation = await folding.evaluateHandle(
+            ({ started }) => started,
+          );
+          const samples = await body.evaluate(
+            (node, { rtl, side, animation }) => {
               const column = node.closest(".shell-sidebar");
               const link = node.querySelector("a");
               if (!column || !link) {
                 throw new Error("Missing sidebar parts");
               }
-              const samples: {
-                width: number;
-                columnWidth: number;
-                offset: number;
-                linkHeight: number;
-              }[] = [];
-              const finished = new Promise<typeof samples>((resolve) => {
-                const sample = () => {
+              const duration = Number(animation.effect?.getTiming().duration);
+              if (!duration) throw new Error("Missing fold duration");
+              try {
+                return [0.25, 0.5, 0.75].map((progress) => {
+                  animation.currentTime = duration * progress;
                   const bodyBox = node.getBoundingClientRect();
                   const columnBox = column.getBoundingClientRect();
                   const edge = (side === "start") !== rtl ? "right" : "left";
-                  samples.push({
+                  return {
                     width: bodyBox.width,
                     columnWidth: columnBox.width,
                     offset: bodyBox[edge] - columnBox[edge],
                     linkHeight: link.getBoundingClientRect().height,
-                  });
-                  if (columnBox.width === (open ? width : 0)) {
-                    resolve(samples);
-                  } else {
-                    requestAnimationFrame(sample);
-                  }
-                };
-                sample();
-              });
-              return { finished };
+                  };
+                });
+              } finally {
+                animation.finish();
+              }
             },
-            { rtl, side, open, width },
+            { rtl, side, animation },
           );
-          await q.button(toggle).click();
-          const samples = await recording.evaluate(({ finished }) => finished);
-          const folding = samples.filter(
-            (sample) =>
-              sample.columnWidth > width * 0.1 &&
-              sample.columnWidth < width * 0.9,
-          );
-          expect(folding.length).toBeGreaterThan(0);
-          for (const sample of folding) {
+          for (const sample of samples) {
+            expect(sample.columnWidth).toBeGreaterThan(0);
+            expect(sample.columnWidth).toBeLessThan(width);
             // Some engines remove the body before the closing fold finishes.
             if (!open && sample.width === 0) continue;
             expect(sample.offset).toBeCloseTo(0, 0);

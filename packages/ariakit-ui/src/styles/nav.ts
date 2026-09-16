@@ -84,14 +84,14 @@ export const nav = cv({
   defaultVariants: {
     $layout: "vertical",
     $layer: "transparent",
+    $rounded: "md",
     $p: "none",
   },
 });
 
 export const navList = cv({
-  // Packed at the start: a stretched list keeps its rows together rather than
-  // spreading them over the height.
-  class: "contents [&>li:not(.disclosure)]:contents",
+  // Disclosures keep a layout box for their indentation and vertical flow.
+  class: "contents [&>li:not(.nav-disclosure)]:contents",
 });
 
 export const navGroup = cv({
@@ -371,6 +371,7 @@ export const navGlider = cv({
 
 export const navDisclosure = cv({
   class: [
+    "nav-disclosure",
     // Nav icons size the disclosure icon slot when an ancestor sets them.
     "[@container_style(--nav-icon-size)]:[--disclosure-icon-size:var(--nav-icon-size)]",
   ],
