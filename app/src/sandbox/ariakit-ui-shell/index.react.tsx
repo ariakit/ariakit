@@ -32,9 +32,11 @@ import {
   ShellHeaderCenter,
   ShellHeaderEnd,
   ShellHeaderStart,
-  ShellIntro,
+  ShellMainIntro,
   ShellMain,
+  ShellMainBody,
   ShellSidebar,
+  ShellSidebarBody,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import type { ShellHeaderProps } from "@ariakit/ui/components/shell.ariakit.react";
 import {
@@ -53,6 +55,7 @@ import {
 } from "lucide-react";
 import { createContext, useContext, useId, useState } from "react";
 import type { ReactNode } from "react";
+import { PartsScenario } from "./parts.react.tsx";
 import { GeometryScenario, NestedScenario } from "./scenarios.react.tsx";
 
 /**
@@ -72,6 +75,7 @@ const scenarios = {
   static: "Static panel",
   geometry: "Layout details",
   nested: "Nested shells",
+  parts: "Main and sidebar parts",
 } as const;
 
 type ScenarioId = keyof typeof scenarios;
@@ -195,7 +199,7 @@ const docsSections = [
 const paragraphs = [
   "The shell assembles a header, up to two sidebars per side, a main area and a footer from optional parts, in one CSS grid. Each sidebar declares its width, and the header declares its height. The shell reads their classes to arrange the page.",
   "Sidebars fold with a drawer motion, and the main area keeps its content column on the shell's center whatever the sidebars are doing, moving in step with the sidebar that is folding.",
-  "Everything renders as static HTML and CSS. The sidebar body uses data-open for its open state, so a page renders open or closed before any JavaScript runs.",
+  "Everything renders as static HTML and CSS. The sidebar panel uses data-open for its open state, so a page renders open or closed before any JavaScript runs.",
 ];
 
 function DocsIntro() {
@@ -309,40 +313,44 @@ function DocsScenario() {
         aria-label="Documentation"
         render={<nav />}
       >
-        <SectionLinks
-          label="Documentation sections"
-          sections={docsSections}
-          current={current}
-          onSelect={setCurrent}
-        />
+        <ShellSidebarBody>
+          <SectionLinks
+            label="Documentation sections"
+            sections={docsSections}
+            current={current}
+            onSelect={setCurrent}
+          />
+        </ShellSidebarBody>
       </ShellSidebar>
-      <ShellIntro $centered>
-        <DocsIntro />
-      </ShellIntro>
-      <ShellMain $centered>
-        {/*
+      <ShellMain>
+        <ShellMainIntro $centered>
+          <DocsIntro />
+        </ShellMainIntro>
+        <ShellMainBody $centered>
+          {/*
           The documented consumer rule: the page is the scroll port, outside the
           shell, so it copies the header height to keep a focused control out
           from under the sticky header.
          */}
-        <style>
-          {"html { scroll-padding-block-start: calc(4rem + 1px); }"}
-        </style>
-        <DocsArticle />
-        <ShellBreakout
-          $span="full"
-          $layer="brand"
-          $p={6}
-          className="text-center font-medium"
-        >
-          <p>A full-width band inside the centered main</p>
-        </ShellBreakout>
-        <Prose>
-          <p>
-            The band above spans the gutters of main while the text stays in the
-            content column.
-          </p>
-        </Prose>
+          <style>
+            {"html { scroll-padding-block-start: calc(4rem + 1px); }"}
+          </style>
+          <DocsArticle />
+          <ShellBreakout
+            $span="full"
+            $layer="brand"
+            $p={6}
+            className="text-center font-medium"
+          >
+            <p>A full-width band inside the centered main</p>
+          </ShellBreakout>
+          <Prose>
+            <p>
+              The band above spans the gutters of main while the text stays in
+              the content column.
+            </p>
+          </Prose>
+        </ShellMainBody>
       </ShellMain>
       <ShellSidebar
         id={contentsId}
@@ -353,7 +361,9 @@ function DocsScenario() {
         aria-label="On this page"
         render={<nav />}
       >
-        <SectionLinks label="Page sections" sections={docsSections} />
+        <ShellSidebarBody>
+          <SectionLinks label="Page sections" sections={docsSections} />
+        </ShellSidebarBody>
       </ShellSidebar>
       <ShellFooter
         start={
@@ -412,22 +422,24 @@ function DashboardScenario() {
         aria-label="Workspace"
         render={<nav />}
       >
-        <Brand>Acme</Brand>
-        <Nav render={<div aria-label="Workspace pages" />} className="mt-4">
-          {workspaceLinks.map((link, index) => (
-            <NavLink
-              key={link.title}
-              href={`#${link.title.toLowerCase()}`}
-              tabIndex={0}
-              aria-current={index === 0 ? "page" : undefined}
-            >
-              <NavIcon>
-                <link.icon strokeWidth={1.5} />
-              </NavIcon>
-              {link.title}
-            </NavLink>
-          ))}
-        </Nav>
+        <ShellSidebarBody>
+          <Brand>Acme</Brand>
+          <Nav render={<div aria-label="Workspace pages" />} className="mt-4">
+            {workspaceLinks.map((link, index) => (
+              <NavLink
+                key={link.title}
+                href={`#${link.title.toLowerCase()}`}
+                tabIndex={0}
+                aria-current={index === 0 ? "page" : undefined}
+              >
+                <NavIcon>
+                  <link.icon strokeWidth={1.5} />
+                </NavIcon>
+                {link.title}
+              </NavLink>
+            ))}
+          </Nav>
+        </ShellSidebarBody>
       </ShellSidebar>
       <Shell>
         <ShellHeader
@@ -462,24 +474,26 @@ function DashboardScenario() {
           }
         />
         <ShellMain>
-          <div
-            aria-label="Metrics"
-            role="group"
-            className="grid grid-cols-1 gap-4 @xl/shell-main:grid-cols-2 @4xl/shell-main:grid-cols-3"
-          >
-            {metrics.map((metric) => (
-              <Frame
-                key={metric.label}
-                $p={4}
-                $rounded="xl"
-                $border
-                $lightnessOffset={0.5}
-              >
-                <p className="ak-ink-70 text-sm">{metric.label}</p>
-                <p className="text-2xl font-semibold">{metric.value}</p>
-              </Frame>
-            ))}
-          </div>
+          <ShellMainBody>
+            <div
+              aria-label="Metrics"
+              role="group"
+              className="grid grid-cols-1 gap-4 @xl/shell-main-body:grid-cols-2 @4xl/shell-main-body:grid-cols-3"
+            >
+              {metrics.map((metric) => (
+                <Frame
+                  key={metric.label}
+                  $p={4}
+                  $rounded="xl"
+                  $border
+                  $lightnessOffset={0.5}
+                >
+                  <p className="ak-ink-70 text-sm">{metric.label}</p>
+                  <p className="text-2xl font-semibold">{metric.value}</p>
+                </Frame>
+              ))}
+            </div>
+          </ShellMainBody>
         </ShellMain>
         <ShellSidebar
           id={detailsId}
@@ -489,13 +503,15 @@ function DashboardScenario() {
           aria-label="Details"
           render={<aside />}
         >
-          <HeadingLevel level={2}>
-            <Heading className="text-base">Details</Heading>
-          </HeadingLevel>
-          <p className="ak-ink-70 mt-2 text-sm">
-            Select a metric to see its history here. The panel takes its space
-            from main, so the metric cards reflow when it opens.
-          </p>
+          <ShellSidebarBody>
+            <HeadingLevel level={2}>
+              <Heading className="text-base">Details</Heading>
+            </HeadingLevel>
+            <p className="ak-ink-70 mt-2 text-sm">
+              Select a metric to see its history here. The panel takes its space
+              from main, so the metric cards reflow when it opens.
+            </p>
+          </ShellSidebarBody>
         </ShellSidebar>
       </Shell>
     </Shell>
@@ -560,23 +576,24 @@ function ChatScenario() {
       <ShellSidebar
         $width="xs"
         $collapse={false}
-        $p={2}
         aria-label="Workspaces"
         render={<nav />}
       >
-        <ul className="grid gap-2">
-          {["Acme", "Ariakit", "Bakery"].map((workspace) => (
-            <li key={workspace}>
-              <Button
-                aria-label={workspace}
-                $rounded="full"
-                className="size-10"
-              >
-                {workspace.charAt(0)}
-              </Button>
-            </li>
-          ))}
-        </ul>
+        <ShellSidebarBody $p={2}>
+          <ul className="grid gap-2">
+            {["Acme", "Ariakit", "Bakery"].map((workspace) => (
+              <li key={workspace}>
+                <Button
+                  aria-label={workspace}
+                  $rounded="full"
+                  className="size-10"
+                >
+                  {workspace.charAt(0)}
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </ShellSidebarBody>
       </ShellSidebar>
       <ShellSidebar
         id={channelsId}
@@ -585,47 +602,51 @@ function ChatScenario() {
         aria-label="Channels"
         render={<nav />}
       >
-        <Nav render={<div aria-label="Channel list" />}>
-          {channels.map((channel, index) => (
-            <NavLink
-              key={channel}
-              href={`#${channel}`}
-              tabIndex={0}
-              aria-current={index === 0 ? "page" : undefined}
-            >
-              <NavIcon>
-                <Hash strokeWidth={1.5} />
-              </NavIcon>
-              {channel}
-            </NavLink>
-          ))}
-        </Nav>
+        <ShellSidebarBody>
+          <Nav render={<div aria-label="Channel list" />}>
+            {channels.map((channel, index) => (
+              <NavLink
+                key={channel}
+                href={`#${channel}`}
+                tabIndex={0}
+                aria-current={index === 0 ? "page" : undefined}
+              >
+                <NavIcon>
+                  <Hash strokeWidth={1.5} />
+                </NavIcon>
+                {channel}
+              </NavLink>
+            ))}
+          </Nav>
+        </ShellSidebarBody>
       </ShellSidebar>
-      <ShellMain $centered="main" $maxWidth={200}>
-        <ol aria-label="Messages" className="grid gap-4">
-          {messages.map((message) => (
-            <li key={message.id} id={`message-${message.id}`}>
-              <p className="text-sm font-semibold">{message.author}</p>
-              <p className="ak-ink-80">{message.text}</p>
-            </li>
-          ))}
-        </ol>
-        <form
-          className="sticky bottom-0 mt-4 flex gap-2 pt-2"
-          onSubmit={(event) => event.preventDefault()}
-        >
-          <Input
-            aria-label="Message"
-            placeholder="Message #general"
-            className="w-full min-w-0"
-          />
-          <Button type="submit" $layer="brand" $kind="bevel">
-            <ButtonSlot>
-              <SendHorizontal />
-            </ButtonSlot>
-            Send
-          </Button>
-        </form>
+      <ShellMain>
+        <ShellMainBody $centered="main" $maxWidth={200}>
+          <ol aria-label="Messages" className="grid gap-4">
+            {messages.map((message) => (
+              <li key={message.id} id={`message-${message.id}`}>
+                <p className="text-sm font-semibold">{message.author}</p>
+                <p className="ak-ink-80">{message.text}</p>
+              </li>
+            ))}
+          </ol>
+          <form
+            className="sticky bottom-0 mt-4 flex gap-2 pt-2"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <Input
+              aria-label="Message"
+              placeholder="Message #general"
+              className="w-full min-w-0"
+            />
+            <Button type="submit" $layer="brand" $kind="bevel">
+              <ButtonSlot>
+                <SendHorizontal />
+              </ButtonSlot>
+              Send
+            </Button>
+          </form>
+        </ShellMainBody>
       </ShellMain>
       <ShellSidebar
         id={membersId}
@@ -635,17 +656,19 @@ function ChatScenario() {
         aria-label="Members"
         render={<aside />}
       >
-        <HeadingLevel level={2}>
-          <Heading className="text-base">Members</Heading>
-        </HeadingLevel>
-        <ul className="mt-2 grid gap-2 text-sm">
-          {["Ada", "Grace", "Linus", "Margaret", "Tim"].map((member) => (
-            <li key={member} className="flex items-center gap-2">
-              <MessageSquare className="size-4" strokeWidth={1.5} />
-              {member}
-            </li>
-          ))}
-        </ul>
+        <ShellSidebarBody>
+          <HeadingLevel level={2}>
+            <Heading className="text-base">Members</Heading>
+          </HeadingLevel>
+          <ul className="mt-2 grid gap-2 text-sm">
+            {["Ada", "Grace", "Linus", "Margaret", "Tim"].map((member) => (
+              <li key={member} className="flex items-center gap-2">
+                <MessageSquare className="size-4" strokeWidth={1.5} />
+                {member}
+              </li>
+            ))}
+          </ul>
+        </ShellSidebarBody>
       </ShellSidebar>
       <ShellFooter
         start={
@@ -718,31 +741,35 @@ function SettingsScenario() {
         aria-label="Settings sections"
         render={<nav />}
       >
-        <SectionLinks
-          label="Sections"
-          sections={settingsSections}
-          current={current}
-          onSelect={setCurrent}
-        />
+        <ShellSidebarBody>
+          <SectionLinks
+            label="Sections"
+            sections={settingsSections}
+            current={current}
+            onSelect={setCurrent}
+          />
+        </ShellSidebarBody>
       </ShellSidebar>
-      <ShellMain $centered="main" $maxWidth={160}>
-        <Prose>
-          <HeadingLevel>
-            <Heading>Settings</Heading>
+      <ShellMain>
+        <ShellMainBody $centered="main" $maxWidth={160}>
+          <Prose>
             <HeadingLevel>
-              {settingsSections.map((section) => (
-                <section key={section.id}>
-                  <Heading id={section.id}>{section.title}</Heading>
-                  <p>{paragraphs[0]}</p>
-                  <Input
-                    aria-label={`${section.title} name`}
-                    placeholder={section.title}
-                  />
-                </section>
-              ))}
+              <Heading>Settings</Heading>
+              <HeadingLevel>
+                {settingsSections.map((section) => (
+                  <section key={section.id}>
+                    <Heading id={section.id}>{section.title}</Heading>
+                    <p>{paragraphs[0]}</p>
+                    <Input
+                      aria-label={`${section.title} name`}
+                      placeholder={section.title}
+                    />
+                  </section>
+                ))}
+              </HeadingLevel>
             </HeadingLevel>
-          </HeadingLevel>
-        </Prose>
+          </Prose>
+        </ShellMainBody>
       </ShellMain>
     </Shell>
   );
@@ -785,33 +812,35 @@ function MarketingScenario() {
           </ShellHeaderEnd>
         }
       />
-      <ShellMain $centered $maxWidth={256}>
-        <HeadingLevel>
-          <Prose className="py-16 text-center">
-            <Heading className="text-4xl">
-              Build the page around the content
-            </Heading>
-            <p>{paragraphs[0]}</p>
-          </Prose>
-          <ShellBreakout
-            $span="full"
-            $layer="brand"
-            $p={12}
-            className="text-center"
-          >
-            <HeadingLevel>
-              <Heading id="features">Features</Heading>
-            </HeadingLevel>
-          </ShellBreakout>
-          <Prose className="py-16">
-            <HeadingLevel>
-              <Heading id="pricing">Pricing</Heading>
-              <p>{paragraphs[1]}</p>
-              <Heading id="docs">Docs</Heading>
-              <p>{paragraphs[2]}</p>
-            </HeadingLevel>
-          </Prose>
-        </HeadingLevel>
+      <ShellMain>
+        <ShellMainBody $centered $maxWidth={256}>
+          <HeadingLevel>
+            <Prose className="py-16 text-center">
+              <Heading className="text-4xl">
+                Build the page around the content
+              </Heading>
+              <p>{paragraphs[0]}</p>
+            </Prose>
+            <ShellBreakout
+              $span="full"
+              $layer="brand"
+              $p={12}
+              className="text-center"
+            >
+              <HeadingLevel>
+                <Heading id="features">Features</Heading>
+              </HeadingLevel>
+            </ShellBreakout>
+            <Prose className="py-16">
+              <HeadingLevel>
+                <Heading id="pricing">Pricing</Heading>
+                <p>{paragraphs[1]}</p>
+                <Heading id="docs">Docs</Heading>
+                <p>{paragraphs[2]}</p>
+              </HeadingLevel>
+            </Prose>
+          </HeadingLevel>
+        </ShellMainBody>
       </ShellMain>
       <ShellFooter
         start={<p className="ak-ink-70 py-4 text-sm">Copyright 2026 Ariakit</p>}
@@ -867,25 +896,27 @@ function BarScenario() {
   return (
     <Shell>
       <ShellHeader {...partsProps} />
-      <ShellMain $centered>
-        <fieldset className="grid gap-2">
-          <legend className="font-medium">Policy</legend>
-          {Object.entries(barPolicies).map(([id, label]) => (
-            <label key={id} className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="bar-policy"
-                value={id}
-                checked={policy === id}
-                onChange={() => setPolicy(id as BarPolicy)}
-              />
-              {label}
-            </label>
-          ))}
-        </fieldset>
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <ScenarioControls />
-        </div>
+      <ShellMain>
+        <ShellMainBody $centered>
+          <fieldset className="grid gap-2">
+            <legend className="font-medium">Policy</legend>
+            {Object.entries(barPolicies).map(([id, label]) => (
+              <label key={id} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="bar-policy"
+                  value={id}
+                  checked={policy === id}
+                  onChange={() => setPolicy(id as BarPolicy)}
+                />
+                {label}
+              </label>
+            ))}
+          </fieldset>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <ScenarioControls />
+          </div>
+        </ShellMainBody>
       </ShellMain>
     </Shell>
   );
@@ -900,13 +931,17 @@ function StaticScenario() {
     <Shell>
       <ShellHeader start={<Brand />} end={<ScenarioControls />} />
       <ShellSidebar $collapse={false} aria-label="Sections" render={<aside />}>
-        <SectionLinks label="Section list" sections={settingsSections} />
+        <ShellSidebarBody>
+          <SectionLinks label="Section list" sections={settingsSections} />
+        </ShellSidebarBody>
       </ShellSidebar>
-      <ShellIntro $centered>
-        <DocsIntro />
-      </ShellIntro>
-      <ShellMain $centered>
-        <DocsArticle />
+      <ShellMain>
+        <ShellMainIntro $centered>
+          <DocsIntro />
+        </ShellMainIntro>
+        <ShellMainBody $centered>
+          <DocsArticle />
+        </ShellMainBody>
       </ShellMain>
     </Shell>
   );
@@ -922,6 +957,7 @@ const scenarioComponents = {
   static: StaticScenario,
   geometry: () => <GeometryScenario controls={<ScenarioControls />} />,
   nested: () => <NestedScenario controls={<ScenarioControls />} />,
+  parts: () => <PartsScenario controls={<ScenarioControls />} />,
 } satisfies Record<ScenarioId, () => ReactNode>;
 
 export default function ShellExamples() {

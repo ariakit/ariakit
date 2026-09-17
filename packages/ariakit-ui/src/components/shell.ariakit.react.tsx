@@ -14,10 +14,15 @@ import {
   shellHeaderCenter,
   shellHeaderEnd,
   shellHeaderStart,
-  shellIntro,
+  shellMainIntro,
   shellMain,
+  shellMainBody,
+  shellMainHeader,
   shellSidebar,
+  shellSidebarPanel,
+  shellSidebarHeader,
   shellSidebarBody,
+  shellSidebarFooter,
 } from "../styles/shell.ts";
 
 export interface ShellProps
@@ -52,10 +57,13 @@ export interface ShellProps
  *     aria-label="Documentation"
  *     render={<nav />}
  *   >
- *     …
+ *     <ShellSidebarBody>…</ShellSidebarBody>
  *   </ShellSidebar>
- *   <ShellIntro $centered>…</ShellIntro>
- *   <ShellMain $centered>…</ShellMain>
+ *   <ShellMain>
+ *     <ShellMainHeader $centered>…</ShellMainHeader>
+ *     <ShellMainIntro $centered>…</ShellMainIntro>
+ *     <ShellMainBody $centered>…</ShellMainBody>
+ *   </ShellMain>
  *   <ShellSidebar
  *     $side="end"
  *     $width="sm"
@@ -63,7 +71,7 @@ export interface ShellProps
  *     aria-label="On this page"
  *     render={<aside />}
  *   >
- *     …
+ *     <ShellSidebarBody>…</ShellSidebarBody>
  *   </ShellSidebar>
  *   <ShellFooter />
  * </Shell>
@@ -257,36 +265,82 @@ export function ShellFooterEnd(props: ShellHeaderPartProps) {
   return renderPartCell(shellFooterEnd, props);
 }
 
-export interface ShellIntroProps
-  extends ak.RoleProps<"div">, VariantProps<typeof shellIntro> {}
+export interface ShellMainIntroProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellMainIntro> {}
 
 /**
- * A heading area between the header and main. It shares main's content columns
- * and breakout lines and spans to the shell's end edge. A sidebar with
- * `$from="body"` starts below it.
+ * An introduction inside `ShellMain`, before `ShellMainBody`. Its content
+ * aligns with the body, and its surface spans the adjacent end columns whose
+ * sidebars start at the body. Use `$centered` to center its content.
  */
-export function ShellIntro(props: ShellIntroProps) {
-  const [variantProps, rest] = splitProps(props, shellIntro);
-  return <ak.Role.div {...shellIntro.jsx(variantProps)} {...rest} />;
+export function ShellMainIntro(props: ShellMainIntroProps) {
+  const [variantProps, rest] = splitProps(props, shellMainIntro);
+  return <ak.Role.div {...shellMainIntro.jsx(variantProps)} {...rest} />;
 }
 
 export interface ShellMainProps
   extends ak.RoleProps<"main">, VariantProps<typeof shellMain> {}
 
 /**
- * The main area of a shell. Its content reacts to the width main has through
- * the `shell-main` container, and with `$centered` its content column stays on
- * the shell's center whatever the sidebars are doing. Every direct child is a
- * grid item, so margins do not collapse: use `Prose` as the text container. A
- * fragment link inside lands below a sticky header. The page-level scroll port
- * is outside the shell, so to keep a focused control out from under the header
- * as well, copy the header height onto it, for example
- * `html { scroll-padding-block-start: calc(4rem + 1px) }`. That padding adds to
- * the margin an anchor already keeps below the header.
+ * The main landmark contains `ShellMainHeader`, `ShellMainIntro`, and
+ * `ShellMainBody`. Each part is optional. It shares the shell's grid through
+ * subgrid, so do not add size containment. In a nested main landmark, render
+ * this part as a `div` to keep one main landmark on the page.
+ *
+ * `$p` sets a shared gutter. Use a CSS length for responsive padding, such as
+ * `$p="var(--page-gutter)"` with
+ * `className="[--page-gutter:1rem] @3xl/shell:[--page-gutter:2rem]"`. The query
+ * uses the nearest shell width. A part's own `$p` overrides this value.
+ * `$maxWidth` sets the shared maximum content width for centered parts. Use a
+ * number or CSS length here to keep their columns aligned when text sizes
+ * differ. Percentages resolve against each part's width, so a header or intro
+ * that spans end columns can have a wider content column. A part's own
+ * `$maxWidth` overrides the shared value.
+ * @example
+ * <ShellMain $p={4}>
+ *   <ShellMainHeader $centered><div>Page actions</div></ShellMainHeader>
+ *   <ShellMainIntro $centered><h1>Page title</h1></ShellMainIntro>
+ *   <ShellMainBody $centered><p>Page content</p></ShellMainBody>
+ * </ShellMain>
  */
 export function ShellMain(props: ShellMainProps) {
   const [variantProps, rest] = splitProps(props, shellMain);
   return <ak.Role.main {...shellMain.jsx(variantProps)} {...rest} />;
+}
+
+export interface ShellMainHeaderProps
+  extends ak.RoleProps<"header">, VariantProps<typeof shellMainHeader> {}
+
+/**
+ * A main header that sticks below the shell header by default. Its outer height
+ * matches `ShellHeader` unless `$height` sets a local preset. Borders are
+ * contained inside that height. Its surface spans adjacent end columns whose
+ * sidebars start at the intro or body; content stays aligned with the body. Use
+ * `$sticky={false}` for a static header. Direct element children occupy the
+ * content column; wrap text in an element such as `div`.
+ */
+export function ShellMainHeader(props: ShellMainHeaderProps) {
+  const [variantProps, rest] = splitProps(props, shellMainHeader);
+  return <ak.Role.header {...shellMainHeader.jsx(variantProps)} {...rest} />;
+}
+
+export interface ShellMainBodyProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellMainBody> {}
+
+/**
+ * The main content grid. The `shell-main-body` query container follows the
+ * available body width. `$centered` keeps the content on the shell's center;
+ * `$centered="main"` centers it within the body. Direct children are grid
+ * items; use `Prose` for text with collapsing margins.
+ *
+ * Fragment links clear the configured sticky headers. For keyboard focus, also
+ * set scroll padding on the page's scroll port to their total height, for
+ * example `html { scroll-padding-block-start: 130px }` for two default headers.
+ * Content must fit the configured header heights.
+ */
+export function ShellMainBody(props: ShellMainBodyProps) {
+  const [variantProps, rest] = splitProps(props, shellMainBody);
+  return <ak.Role.div {...shellMainBody.jsx(variantProps)} {...rest} />;
 }
 
 export interface ShellBreakoutProps
@@ -307,20 +361,22 @@ export interface ShellSidebarProps
   extends
     ak.RoleProps<"div">,
     VariantProps<typeof shellSidebar>,
-    VariantProps<typeof shellSidebarBody> {
+    VariantProps<typeof shellSidebarPanel> {
   /**
    * Opens the sidebar unless its collapse breakpoint applies. Defaults to
-   * `true`. Sets `data-open` on the body, which can also be set directly.
+   * `true`. Sets `data-open` on the panel, which can also be set directly.
    */
   open?: boolean;
 }
 
 /**
- * A side panel that folds with a drawer motion. The body receives `render`, the
- * id, ARIA attributes, class names, and frame variants. Use `nav` for
+ * A side panel that folds with a drawer motion. The panel receives `render`,
+ * the id, ARIA attributes, class names, and frame variants. Use `nav` for
  * navigation or `aside` for a complementary panel, and name the landmark with
- * `aria-label`. A closed body leaves the tab order and the accessibility tree.
- * The body draws a real border on the side that faces main.
+ * `aria-label`. A closed panel leaves the tab order and the accessibility tree.
+ * The panel draws a real border on the side that faces main. Put scrollable
+ * content in `ShellSidebarBody`, even when there is no header or footer. The
+ * panel itself does not scroll.
  *
  * `open` controls the state, and `$collapse` hides the panel below a named
  * container width even while it is open. A consumer button controls `open` and
@@ -346,23 +402,53 @@ export interface ShellSidebarProps
  *   aria-label="Main"
  *   render={<nav />}
  * >
- *   …
+ *   <ShellSidebarBody>…</ShellSidebarBody>
  * </ShellSidebar>
  */
 export function ShellSidebar({ open = true, ...props }: ShellSidebarProps) {
-  // The first recipe receives className and style, which belong to the body.
+  // The first recipe receives className and style, which belong to the panel.
   const [variantProps, columnProps, rest] = splitProps(
     props,
-    shellSidebarBody,
+    shellSidebarPanel,
     shellSidebar,
   );
   return (
     <div {...shellSidebar.jsx(columnProps)}>
       <ak.Role.div
         data-open={open ? "" : undefined}
-        {...shellSidebarBody.jsx(variantProps)}
+        {...shellSidebarPanel.jsx(variantProps)}
         {...rest}
       />
     </div>
   );
+}
+
+export interface ShellSidebarHeaderProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellSidebarHeader> {}
+
+/**
+ * A fixed header inside the sidebar panel. It shares `ShellHeader`'s outer
+ * height by default; a local `$height` includes the local border.
+ */
+export function ShellSidebarHeader(props: ShellSidebarHeaderProps) {
+  const [variantProps, rest] = splitProps(props, shellSidebarHeader);
+  return <ak.Role.div {...shellSidebarHeader.jsx(variantProps)} {...rest} />;
+}
+
+export interface ShellSidebarBodyProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellSidebarBody> {}
+
+/** The scrollable center between a sidebar's optional header and footer. */
+export function ShellSidebarBody(props: ShellSidebarBodyProps) {
+  const [variantProps, rest] = splitProps(props, shellSidebarBody);
+  return <ak.Role.div {...shellSidebarBody.jsx(variantProps)} {...rest} />;
+}
+
+export interface ShellSidebarFooterProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellSidebarFooter> {}
+
+/** A fixed footer after the sidebar's scrollable body. */
+export function ShellSidebarFooter(props: ShellSidebarFooterProps) {
+  const [variantProps, rest] = splitProps(props, shellSidebarFooter);
+  return <ak.Role.div {...shellSidebarFooter.jsx(variantProps)} {...rest} />;
 }

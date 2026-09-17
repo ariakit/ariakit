@@ -26,7 +26,7 @@ export function getSidebar(q: Query, name: string) {
 
 /** The first rendered child of main, which sits in the content column. */
 export function getContent(q: Query) {
-  return q.main().locator(":scope > :not(style)").first();
+  return q.main().locator(":scope > .shell-main-body > :not(style)").first();
 }
 
 export async function getBox(locator: Locator) {

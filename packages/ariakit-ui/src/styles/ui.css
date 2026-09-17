@@ -264,6 +264,32 @@ body > * {
   initial-value: 256px;
 }
 
+/* Shared geometry resolves relative units at its owning shell or main, so
+   a part's text size does not change inherited heights, offsets, or gutters. */
+@property --shell-header-step {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 4px;
+}
+
+@property --shell-local-header-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 65px;
+}
+
+@property --shell-gutter {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 12px;
+}
+
+@property --shell-main-max-width {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 768px;
+}
+
 /* The space each sidebar slot takes: its width while its sidebar is open and
    takes space, zero otherwise. The shell main transitions them on the shell's
    duration so its centering moves in step with the drawer that is folding.
@@ -316,6 +342,396 @@ body > * {
   syntax: "<length>";
   inherits: true;
   initial-value: 0px;
+}
+
+/* Main and sidebar columns resolve state from their owning shell. Keep these
+   rules in one utility to avoid repeating selectors in arbitrary class names. */
+@utility shell-slot-state {
+  /* Reset inherited state so nested shells only read their own sidebars. */
+  --shell-start-1-open: 0;
+  --shell-start-2-open: 0;
+  --shell-end-1-open: 0;
+  --shell-end-2-open: 0;
+  --shell-start-1-fit: 1;
+  --shell-start-2-fit: 1;
+  --shell-end-1-fit: 1;
+  --shell-end-2-fit: 1;
+  --shell-end-1-from-main: 0;
+  --shell-end-1-from-body: 0;
+  --shell-header-free-1: calc(
+    1 - var(--shell-end-1-open) * var(--shell-end-1-fit) *
+      var(--shell-end-1-from-main)
+  );
+  --shell-intro-free-1: calc(
+    1 - var(--shell-end-1-open) * var(--shell-end-1-fit) *
+      (1 - var(--shell-end-1-from-body))
+  );
+  --shell-end-2-from-main: 0;
+  --shell-end-2-from-body: 0;
+  --shell-header-free-2: calc(
+    1 - var(--shell-end-2-open) * var(--shell-end-2-fit) *
+      var(--shell-end-2-from-main)
+  );
+  --shell-intro-free-2: calc(
+    1 - var(--shell-end-2-open) * var(--shell-end-2-fit) *
+      (1 - var(--shell-end-2-from-body))
+  );
+
+  .shell:has(
+      > .shell-sidebar-start:not(.shell-sidebar-start ~ *)
+        > .shell-sidebar-panel[data-open]
+    )
+    > & {
+    --shell-start-1-open: 1;
+  }
+  .shell:has(
+      > .shell-sidebar-start
+        ~ .shell-sidebar-start
+        > .shell-sidebar-panel[data-open]
+    )
+    > & {
+    --shell-start-2-open: 1;
+  }
+  .shell:has(
+      > .shell-sidebar-end:not(.shell-sidebar-end ~ *)
+        > .shell-sidebar-panel[data-open]
+    )
+    > & {
+    --shell-end-1-open: 1;
+  }
+  .shell:has(
+      > .shell-sidebar-end
+        ~ .shell-sidebar-end
+        > .shell-sidebar-panel[data-open]
+    )
+    > & {
+    --shell-end-2-open: 1;
+  }
+  .shell:has(
+      > .shell-sidebar-end:not(.shell-sidebar-end ~ *).shell-sidebar-from-main
+    )
+    > & {
+    --shell-end-1-from-main: 1;
+  }
+  .shell:has(
+      > .shell-sidebar-end:not(.shell-sidebar-end ~ *).shell-sidebar-from-body
+    )
+    > & {
+    --shell-end-1-from-body: 1;
+  }
+  .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-from-main)
+    > & {
+    --shell-end-2-from-main: 1;
+  }
+  .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-from-body)
+    > & {
+    --shell-end-2-from-body: 1;
+  }
+
+  /* A query cannot style its own container. Each shell child receives the
+     breakpoint flags separately from the open-state flags. */
+  @variant @max-3xs/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-3xs:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-3xs
+      )
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-3xs:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-3xs)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
+  @variant @max-2xs/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-2xs:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-2xs
+      )
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-2xs:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-2xs)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
+  @variant @max-xs/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-xs:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-xs)
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-xs:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-xs)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
+  @variant @max-sm/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-sm:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-sm)
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-sm:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-sm)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
+  @variant @max-md/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-md:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-md)
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-md:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-md)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
+  @variant @max-lg/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-lg:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-lg)
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-lg:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-lg)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
+  @variant @max-xl/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-xl:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-xl)
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-xl:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-xl)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
+  @variant @max-2xl/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-2xl:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-2xl
+      )
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-2xl:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-2xl)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
+  @variant @max-3xl/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-3xl:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-3xl
+      )
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-3xl:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-3xl)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
+  @variant @max-4xl/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-4xl:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-4xl
+      )
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-4xl:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-4xl)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
+  @variant @max-5xl/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-5xl:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-5xl
+      )
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-5xl:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-5xl)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
+  @variant @max-6xl/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-6xl:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-6xl
+      )
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-6xl:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-6xl)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
+  @variant @max-7xl/shell {
+    .shell:has(
+        > .shell-sidebar-start.shell-sidebar-c-7xl:not(.shell-sidebar-start ~ *)
+      )
+      > & {
+      --shell-start-1-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-c-7xl
+      )
+      > & {
+      --shell-start-2-fit: 0;
+    }
+    .shell:has(
+        > .shell-sidebar-end.shell-sidebar-c-7xl:not(.shell-sidebar-end ~ *)
+      )
+      > & {
+      --shell-end-1-fit: 0;
+    }
+    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-c-7xl)
+      > & {
+      --shell-end-2-fit: 0;
+    }
+  }
 }
 
 /* Disclosure state channels: the root publishes open and group flags as

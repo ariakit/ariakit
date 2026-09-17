@@ -52,7 +52,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await q.checkbox("Flush gutter").check();
     await expect(flush).toHaveCSS("border-bottom-left-radius", "20px");
     expect((await getBox(flush)).width).toBeCloseTo(
-      (await getBox(q.main())).width,
+      (await getBox(q.main().locator(":scope > .shell-main-body"))).width,
       0,
     );
   });
@@ -68,14 +68,20 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await expect(start).toHaveCSS("width", "192px");
     await expect(end).toHaveCSS("width", "160px");
     await expect
-      .poll(async () => (await getBox(q.main())).x)
+      .poll(
+        async () =>
+          (await getBox(q.main().locator(":scope > .shell-main-body"))).x,
+      )
       .toBeCloseTo(192, 0);
     await q.checkbox("Wide navigation").check();
     await q.checkbox("Large header").check();
     await expect(start).toHaveCSS("width", "320px");
     await expect(end).toHaveCSS("width", "160px");
     await expect
-      .poll(async () => (await getBox(q.main())).x)
+      .poll(
+        async () =>
+          (await getBox(q.main().locator(":scope > .shell-main-body"))).x,
+      )
       .toBeCloseTo(320, 0);
     await expect(q.banner()).toHaveCSS("height", "74px");
     await expect(q.navigation("Layout navigation")).toHaveCSS("top", "74px");
@@ -92,7 +98,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const end = getSidebar(q, "Layout contents");
     const intro = page.locator('[aria-label="Page introduction"]');
     expect((await getBox(start)).y).toBeCloseTo((await getBox(intro)).y, 0);
-    expect((await getBox(end)).y).toBeCloseTo((await getBox(q.main())).y, 0);
+    expect((await getBox(end)).y).toBeCloseTo(
+      (await getBox(q.main().locator(":scope > .shell-main-body"))).y,
+      0,
+    );
     expect((await getBox(end)).y).toBeGreaterThan((await getBox(intro)).y);
     const introBox = await getBox(intro);
     expect(introBox.x + introBox.width).toBeCloseTo(1440, 0);
@@ -101,7 +110,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .poll(async () => (await getBox(q.navigation("Layout contents"))).y)
       .toBeCloseTo(66, 0);
     await expect(page.locator(".shell")).toHaveCSS("overflow-x", "visible");
-    await expect(q.main()).toHaveCSS("overflow-x", "clip");
+    await expect(q.main()).toHaveCSS("overflow-x", "visible");
+    await expect(q.main().locator(":scope > .shell-main-body")).toHaveCSS(
+      "overflow-x",
+      "clip",
+    );
     await expect(intro).toHaveCSS("overflow-x", "clip");
   });
 
@@ -132,7 +145,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       }
       expect(popout.width).toBeGreaterThanOrEqual(content.width);
       expect(feature.width).toBeGreaterThanOrEqual(popout.width);
-      expect(full.width).toBeCloseTo((await getBox(q.main())).width, 0);
+      expect(full.width).toBeCloseTo(
+        (await getBox(q.main().locator(":scope > .shell-main-body"))).width,
+        0,
+      );
       const nested = await getBox(
         page.locator('[aria-label="Nested popout band"]'),
       );
