@@ -317,9 +317,10 @@ export interface ShellMainHeaderProps
  * contained inside that height. Its surface spans adjacent end columns whose
  * sidebars start at the intro or body; content stays aligned with the body. Use
  * `$sticky={false}` for a static header. `$show="3xl"` shows it at shell widths
- * of 48rem and above; `$show={false}` hides it at every width. A hidden header
- * takes no space and has no sticky offset. Direct element children occupy the
- * content column; wrap text in an element such as `div`.
+ * of 48rem and above; `$show="max-3xl"` shows it only below 48rem.
+ * `$show={false}` hides it at every width. A hidden header takes no space and
+ * has no sticky offset. Direct element children occupy the content column; wrap
+ * text in an element such as `div`.
  */
 export function ShellMainHeader(props: ShellMainHeaderProps) {
   const [variantProps, rest] = splitProps(props, shellMainHeader);
@@ -365,8 +366,8 @@ export interface ShellSidebarProps
     VariantProps<typeof shellSidebar>,
     VariantProps<typeof shellSidebarPanel> {
   /**
-   * Opens the sidebar unless its collapse breakpoint applies. Defaults to
-   * `true`. Sets `data-open` on the panel, which can also be set directly.
+   * Opens the sidebar when its `$show` condition matches. Defaults to `true`.
+   * Sets `data-open` on the panel, which can also be set directly.
    */
   open?: boolean;
 }
@@ -381,12 +382,14 @@ export interface ShellSidebarProps
  * panel itself does not scroll. It starts beside the main header by default;
  * use `$from="intro"` or `$from="body"` to start below it.
  *
- * `open` controls the state, and `$collapse` hides the panel below a named
- * container width even while it is open. A consumer button controls `open` and
- * reports that same state with `aria-expanded`. Hide the button below the same
- * collapse step in the sidebar's shell container. For the default `3xl` step,
- * use `className="@max-3xl/shell:hidden"`. With `$collapse={false}`, the button
- * can stay visible at every width.
+ * `open` controls the state, and `$show` selects the shell-container widths
+ * where an open panel appears. It defaults to `"3xl"` (48rem and above).
+ * `$show="max-3xl"` shows it only below 48rem; `true` allows every width and
+ * `false` hides it at every width. A consumer button controls `open` and
+ * reports that same state with `aria-expanded`. Show the button at the same
+ * widths as the sidebar: use `className="@max-3xl/shell:hidden"` for the
+ * default or `className="@3xl/shell:hidden"` for `$show="max-3xl"`. With
+ * `$show={true}`, the button can stay visible at every width.
  * @example
  * const [open, setOpen] = useState(true);
  * const sidebarId = useId();

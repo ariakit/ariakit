@@ -24,20 +24,53 @@ import type { ReactNode } from "react";
 
 const starts = ["default", "main", "intro", "body"] as const;
 type Start = (typeof starts)[number];
-const headerVisibility = {
+const visibilityValues = {
   default: undefined,
   always: true,
   never: false,
   "5xl": "5xl",
+  "max-5xl": "max-5xl",
 } as const;
-type HeaderVisibility = keyof typeof headerVisibility;
+type Visibility = keyof typeof visibilityValues;
 
 function isStart(value: string): value is Start {
   return starts.some((start) => start === value);
 }
 
-function isHeaderVisibility(value: string): value is HeaderVisibility {
-  return Object.hasOwn(headerVisibility, value);
+function isVisibility(value: string): value is Visibility {
+  return Object.hasOwn(visibilityValues, value);
+}
+
+interface VisibilitySelectProps {
+  children: ReactNode;
+  value: Visibility;
+  onChange: (value: Visibility) => void;
+}
+
+function VisibilitySelect({
+  children,
+  value,
+  onChange,
+}: VisibilitySelectProps) {
+  return (
+    <label>
+      {children}{" "}
+      <select
+        value={value}
+        onChange={(event) => {
+          if (isVisibility(event.currentTarget.value)) {
+            onChange(event.currentTarget.value);
+          }
+        }}
+      >
+        <option value="default">Default</option>
+        <option value="always">Always</option>
+        <option value="never">Never</option>
+        <option value="5xl">At least 5xl</option>
+        <option value="max-5xl">Below 5xl</option>
+      </select>
+    </label>
+  );
 }
 
 export function PartsScenario({ controls }: { controls: ReactNode }) {
@@ -45,9 +78,12 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
   const [spacingGutter, setSpacingGutter] = useState(false);
   const [from, setFrom] = useState<Start>("intro");
   const [endOpen, setEndOpen] = useState(true);
+  const [startVisibility, setStartVisibility] = useState<Visibility>("always");
+  const [endVisibility, setEndVisibility] = useState<Visibility>("default");
+  const [secondStart, setSecondStart] = useState(false);
   const [secondEnd, setSecondEnd] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
-  const [visibility, setVisibility] = useState<HeaderVisibility>("default");
+  const [visibility, setVisibility] = useState<Visibility>("default");
   const [showIntro, setShowIntro] = useState(true);
   const [showGlobalHeader, setShowGlobalHeader] = useState(true);
   const [sticky, setSticky] = useState(true);
@@ -73,7 +109,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
       )}
       <ShellSidebar
         $width="xs"
-        $collapse={false}
+        $show={visibilityValues[startVisibility]}
         aria-label="Part navigation"
         render={<nav />}
       >
@@ -91,6 +127,16 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
         </ShellSidebarBody>
         <ShellSidebarFooter>Navigation footer</ShellSidebarFooter>
       </ShellSidebar>
+      {secondStart && (
+        <ShellSidebar
+          $width="xs"
+          $show={visibilityValues[startVisibility]}
+          aria-label="More navigation"
+          render={<nav />}
+        >
+          <ShellSidebarBody>More navigation</ShellSidebarBody>
+        </ShellSidebar>
+      )}
       <ShellMain
         $p={spacingGutter ? 3 : "var(--page-gutter)"}
         $maxWidth={120}
@@ -99,7 +145,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
         {showHeader && (
           <ShellMainHeader
             className={textSize}
-            $show={headerVisibility[visibility]}
+            $show={visibilityValues[visibility]}
             $height={height}
             $sticky={sticky}
             $border={5}
@@ -212,22 +258,9 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
               />{" "}
               Main header
             </label>
-            <label>
-              Main header visibility{" "}
-              <select
-                value={visibility}
-                onChange={(event) => {
-                  if (isHeaderVisibility(event.currentTarget.value)) {
-                    setVisibility(event.currentTarget.value);
-                  }
-                }}
-              >
-                <option value="default">Default</option>
-                <option value="always">Always</option>
-                <option value="never">Never</option>
-                <option value="5xl">At least 5xl</option>
-              </select>
-            </label>
+            <VisibilitySelect value={visibility} onChange={setVisibility}>
+              Main header visibility
+            </VisibilitySelect>
             <label>
               <input
                 type="checkbox"
@@ -320,6 +353,25 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
                 Taller nested main header
               </label>
             )}
+            <VisibilitySelect
+              value={startVisibility}
+              onChange={setStartVisibility}
+            >
+              Start sidebar visibility
+            </VisibilitySelect>
+            <VisibilitySelect value={endVisibility} onChange={setEndVisibility}>
+              End sidebar visibility
+            </VisibilitySelect>
+            <label>
+              <input
+                type="checkbox"
+                checked={secondStart}
+                onChange={(event) =>
+                  setSecondStart(event.currentTarget.checked)
+                }
+              />{" "}
+              Second start sidebar
+            </label>
           </section>
           <Shell aria-label="Nested parts shell" className="mt-4 max-w-3xl">
             <ShellHeader start="Nested header" />
@@ -358,6 +410,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
       </ShellMain>
       <ShellSidebar
         $side="end"
+        $show={visibilityValues[endVisibility]}
         $from={from === "default" ? undefined : from}
         $width="xs"
         open={endOpen}
@@ -369,6 +422,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
       {secondEnd && (
         <ShellSidebar
           $side="end"
+          $show={visibilityValues[endVisibility]}
           $from="body"
           $width="xs"
           aria-label="More details"
