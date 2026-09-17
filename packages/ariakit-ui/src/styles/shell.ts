@@ -581,8 +581,7 @@ export const shellSidebarHeader = cv({
 /** The scrollable center of a sidebar panel. */
 export const shellSidebarBody = cv({
   extend: [frameBase],
-  class:
-    "shell-sidebar-body min-h-0 flex-auto overflow-y-auto overscroll-contain rounded-none!",
+  class: "shell-sidebar-body min-h-0 flex-auto overflow-y-auto rounded-none!",
   defaultVariants: { $p: 3 },
 });
 
