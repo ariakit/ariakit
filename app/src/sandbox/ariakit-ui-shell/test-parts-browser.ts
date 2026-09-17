@@ -28,13 +28,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   for (const from of ["intro", "body"]) {
-    test(`collapses the main header and releases sticky ${from} sidebars`, async ({
+    test(`shows the main header above its breakpoint and releases sticky ${from} sidebars below it`, async ({
       q,
       page,
     }) => {
       await q.combobox("End sidebar starts at").selectOption(from);
       await q.checkbox("Second end sidebar").check();
-      await q.checkbox("Collapse main header").check();
+      await q.combobox("Main header visibility").selectOption("5xl");
       const header = page.locator(".shell-main-header");
       const nestedHeader = page.locator(
         '[aria-label="Nested parts shell"] > .shell-header',
@@ -66,9 +66,55 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expect(nestedHeader).toHaveCSS("top", "128px");
       await q.checkbox("Sticky main header").uncheck();
       await expect(q.complementary("Part details")).toHaveCSS("top", "64px");
-      await q.checkbox("Collapse main header").uncheck();
+      await q.combobox("Main header visibility").selectOption("always");
       await q.checkbox("Narrow shell").check();
       await expect(header).toBeVisible();
+    });
+
+    test(`hides the main header at every width and releases sticky ${from} sidebars`, async ({
+      q,
+      page,
+    }) => {
+      await q.combobox("End sidebar starts at").selectOption(from);
+      await q.checkbox("Second end sidebar").check();
+      const header = page.locator(".shell-main-header");
+      const nestedHeader = page.locator(
+        '[aria-label="Nested parts shell"] > .shell-header',
+      );
+      for (const width of [1440, 1000]) {
+        await page.setViewportSize({ width, height: 900 });
+        await q.combobox("Main header visibility").selectOption("never");
+        await expect(header).toBeHidden();
+        for (const name of ["Part details", "More details"]) {
+          await expect(q.complementary(name)).toBeVisible();
+          await expect(q.complementary(name)).toHaveCSS("top", "64px");
+          await expect(q.complementary(name)).toHaveCSS("max-height", "836px");
+        }
+        await expect(nestedHeader).toHaveCSS("top", "64px");
+        await expect(nestedHeader).toBeVisible();
+        await expect(q.region("Main content")).toHaveCSS(
+          "scroll-margin-block-start",
+          "80px",
+        );
+        await page.evaluate(() => window.scrollTo(0, 0));
+        expect((await getBox(page.locator(".shell-main-intro"))).y).toBeCloseTo(
+          64,
+          0,
+        );
+        await page.evaluate(() => window.scrollTo(0, 700));
+        await expect
+          .poll(async () => (await getBox(q.complementary("Part details"))).y)
+          .toBeCloseTo(64, 0);
+        for (const visibility of ["always", "default"]) {
+          await q.combobox("Main header visibility").selectOption(visibility);
+          await expect(header).toBeVisible();
+          await expect(q.complementary("Part details")).toHaveCSS(
+            "top",
+            "128px",
+          );
+          await expect(nestedHeader).toHaveCSS("top", "128px");
+        }
+      }
     });
   }
 
