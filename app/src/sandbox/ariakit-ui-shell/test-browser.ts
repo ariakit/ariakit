@@ -15,12 +15,11 @@ import {
   selectScenario,
 } from "./test-helpers.ts";
 
-// The default header has a 40px control, three spacing steps per side, and the
-// 1px facing border from $headerBorder: true.
+// The default header contains its facing border within its 64px outer height.
 const CONTROL_HEIGHT = 40;
 const PART_PADDING = 12;
 const HEADER_BORDER = 1;
-const HEADER_HEIGHT = CONTROL_HEIGHT + PART_PADDING * 2 + HEADER_BORDER;
+const HEADER_HEIGHT = CONTROL_HEIGHT + PART_PADDING * 2;
 const CONTENT_WIDTH = 768;
 // The shell's motion duration.
 const DURATION = 300;
@@ -44,7 +43,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toBeCloseTo(0, 0);
   });
 
-  test("gives a default header button three spacing steps on each side", async ({
+  test("centers a default header button inside the border", async ({
     q,
     page,
   }) => {
@@ -54,10 +53,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     expect(button.height).toBeCloseTo(CONTROL_HEIGHT, 0);
     expect(header.height).toBeCloseTo(HEADER_HEIGHT, 0);
     expect(button.x - header.x).toBeCloseTo(PART_PADDING, 0);
-    expect(button.y - header.y).toBeCloseTo(PART_PADDING, 0);
+    expect(button.y - header.y).toBeCloseTo(
+      PART_PADDING - HEADER_BORDER / 2,
+      0,
+    );
     expect(
       header.y + header.height - button.y - button.height - HEADER_BORDER,
-    ).toBeCloseTo(PART_PADDING, 0);
+    ).toBeCloseTo(PART_PADDING - HEADER_BORDER / 2, 0);
   });
 
   test("shrinks breakouts before content and keeps only the main gutter on mobile", async ({

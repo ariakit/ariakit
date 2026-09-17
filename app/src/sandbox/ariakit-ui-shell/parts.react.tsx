@@ -22,7 +22,7 @@ import {
 import { useState } from "react";
 import type { ReactNode } from "react";
 
-const starts = ["main", "intro", "body"] as const;
+const starts = ["default", "main", "intro", "body"] as const;
 type Start = (typeof starts)[number];
 
 function isStart(value: string): value is Start {
@@ -36,6 +36,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
   const [endOpen, setEndOpen] = useState(true);
   const [secondEnd, setSecondEnd] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
+  const [collapseHeader, setCollapseHeader] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [showGlobalHeader, setShowGlobalHeader] = useState(true);
   const [sticky, setSticky] = useState(true);
@@ -51,13 +52,15 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
   const center = centered ? (mainCentered ? "main" : true) : false;
   const height = compact ? "sm" : undefined;
   return (
-    <Shell
-      $headerBorder={wideBorder ? 3 : 1}
-      className={narrowShell ? "max-w-[60rem]" : undefined}
-    >
-      {showGlobalHeader && <ShellHeader start="Shell parts" end={controls} />}
+    <Shell className={narrowShell ? "max-w-[60rem]" : undefined}>
+      {showGlobalHeader && (
+        <ShellHeader
+          $border={wideBorder ? 3 : 1}
+          start="Shell parts"
+          end={controls}
+        />
+      )}
       <ShellSidebar
-        $from="main"
         $width="xs"
         $collapse={false}
         aria-label="Part navigation"
@@ -85,6 +88,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
         {showHeader && (
           <ShellMainHeader
             className={textSize}
+            $collapse={collapseHeader ? "5xl" : false}
             $height={height}
             $sticky={sticky}
             $border={5}
@@ -196,6 +200,16 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
                 onChange={(event) => setShowHeader(event.currentTarget.checked)}
               />{" "}
               Main header
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={collapseHeader}
+                onChange={(event) =>
+                  setCollapseHeader(event.currentTarget.checked)
+                }
+              />{" "}
+              Collapse main header
             </label>
             <label>
               <input
@@ -327,7 +341,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
       </ShellMain>
       <ShellSidebar
         $side="end"
-        $from={from}
+        $from={from === "default" ? undefined : from}
         $width="xs"
         open={endOpen}
         aria-label="Part details"

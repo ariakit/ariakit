@@ -58,12 +58,12 @@ export function GeometryScenario({ controls }: ScenarioProps) {
     <Shell
       $duration={600}
       $border={inheritSeams ? 3 : undefined}
-      $headerBorder={border}
       $edge={inheritSeams ? "brand" : undefined}
     >
       <ShellHeader
         $height={largeHeader ? "lg" : "md"}
         $p={widePadding ? 12 : undefined}
+        $border={border}
         $borderType={borderType}
         start={<span>Layout details</span>}
         end={controls}
