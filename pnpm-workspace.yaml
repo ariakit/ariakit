@@ -36,7 +36,7 @@ overrides:
   "@ariakit/utils": "workspace:*"
 
 patchedDependencies:
-  "@changesets/apply-release-plan@8.1.0": patches/@changesets__apply-release-plan@8.1.0.patch
+  "@changesets/apply-release-plan@8.1.1": patches/@changesets__apply-release-plan@8.1.1.patch
 
 peerDependencyRules:
   allowedVersions:
