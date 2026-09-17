@@ -717,6 +717,13 @@ export const shellMain = cv({
     $p(value?: "unset" | "none" | (string & {}) | number) {
       return contentVariants.$p(value);
     },
+    /**
+     * Sets the shared maximum content width. Numbers scale the main's spacing
+     * token. Parts inherit this width unless they set their own `$maxWidth`.
+     */
+    $maxWidth(value?: ShellWidth) {
+      return contentVariants.$maxWidth(value);
+    },
   },
   defaultVariants: { $p: 3 },
 });

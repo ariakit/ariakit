@@ -44,6 +44,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
   const [centered, setCentered] = useState(false);
   const [mainCentered, setMainCentered] = useState(false);
   const [localPadding, setLocalPadding] = useState(false);
+  const [introMaxWidth, setIntroMaxWidth] = useState("");
   const [narrowShell, setNarrowShell] = useState(false);
   const center = centered ? (mainCentered ? "main" : true) : false;
   const height = compact ? "sm" : undefined;
@@ -76,6 +77,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
       </ShellSidebar>
       <ShellMain
         $p={spacingGutter ? 3 : "var(--page-gutter)"}
+        $maxWidth={120}
         className="[--page-gutter:1rem] @5xl/shell:[--page-gutter:2rem]"
       >
         {showHeader && (
@@ -85,7 +87,6 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
             $sticky={sticky}
             $border={5}
             $centered={center}
-            $maxWidth={120}
           >
             <div aria-label="Main actions">Page actions</div>
           </ShellMainHeader>
@@ -94,19 +95,36 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
           <ShellMainIntro
             className={textSize}
             $centered={center}
-            $maxWidth={120}
+            $maxWidth={introMaxWidth || undefined}
             $p={localPadding ? 2 : undefined}
           >
             <h1>Explicit shell parts</h1>
           </ShellMainIntro>
         )}
-        <ShellMainBody $centered={center} $maxWidth={120}>
+        <ShellMainBody $centered={center}>
           <section
             id="part-content"
             aria-label="Main content"
             className="grid gap-3"
           >
             {!showGlobalHeader && controls}
+            <label>
+              Intro maximum width{" "}
+              <select
+                value={introMaxWidth}
+                onChange={(event) =>
+                  setIntroMaxWidth(event.currentTarget.value)
+                }
+              >
+                <option value="">Shared</option>
+                <option value="50%">Half the part</option>
+                <option value="calc(100% - 10rem)">Part minus 10rem</option>
+                <option value="min(40rem, 80%)">
+                  Smaller of 40rem and 80%
+                </option>
+                <option value="20rem">20rem</option>
+              </select>
+            </label>
             <label>
               Local text size{" "}
               <select

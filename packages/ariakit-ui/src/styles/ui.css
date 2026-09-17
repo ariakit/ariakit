@@ -284,6 +284,12 @@ body > * {
   initial-value: 12px;
 }
 
+@property --shell-main-max-width {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 768px;
+}
+
 /* The space each sidebar slot takes: its width while its sidebar is open and
    takes space, zero otherwise. The shell main transitions them on the shell's
    duration so its centering moves in step with the drawer that is folding.

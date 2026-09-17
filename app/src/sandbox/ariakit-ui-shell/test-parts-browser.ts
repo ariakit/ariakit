@@ -75,44 +75,81 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(nestedHeader).toHaveCSS("top", "0px");
   });
 
-  test("keeps shared heights and gutters when local text sizes differ", async ({
+  test("preserves local percentage and length maximum widths", async ({
     q,
     page,
   }) => {
-    await q.checkbox("Use spacing gutter").check();
-    const mainHeader = page.locator(".shell-main-header");
-    const sidebarHeader = page.locator(".shell-sidebar-header");
-    const actions = page.locator('[aria-label="Main actions"]');
-    const content = q.region("Main content");
-    const nestedHeader = page.locator(
-      '[aria-label="Nested parts shell"] > .shell-header',
-    );
-    for (const size of ["text-sm", "text-lg"]) {
-      await q.combobox("Local text size").selectOption(size);
-      for (const header of [mainHeader, sidebarHeader]) {
-        await expect(header).toHaveCSS("height", "65px");
-      }
-      const contentBox = await getBox(content);
-      expect(contentBox.x - (await getBox(q.main())).x).toBeCloseTo(12, 0);
-      for (const part of [actions, q.heading("Explicit shell parts")]) {
-        expect((await getBox(part)).x).toBeCloseTo(contentBox.x, 0);
-        expect((await getBox(part)).width).toBeCloseTo(contentBox.width, 0);
-      }
-      await expect(nestedHeader).toHaveCSS("top", "130px");
-      await q.checkbox("Compact local headers").check();
-      for (const header of [mainHeader, sidebarHeader]) {
-        await expect(header).toHaveCSS("height", "56px");
-      }
-      await expect(nestedHeader).toHaveCSS("top", "121px");
-      await page.evaluate(() => window.scrollTo(0, 900));
-      const headerBox = await getBox(mainHeader);
-      expect((await getBox(q.complementary("Part details"))).y).toBeCloseTo(
-        headerBox.y + headerBox.height,
+    await q.checkbox("Center parts").check();
+    const intro = page.locator(".shell-main-intro");
+    const width = (await getBox(intro)).width;
+    const cases = [
+      ["50%", width / 2],
+      ["calc(100% - 10rem)", width - 160],
+      ["min(40rem, 80%)", Math.min(640, width * 0.8)],
+      ["20rem", 320],
+    ] as const;
+    for (const [value, expected] of cases) {
+      await q.combobox("Intro maximum width").selectOption(value);
+      await expect
+        .poll(
+          async () => (await getBox(q.heading("Explicit shell parts"))).width,
+        )
+        .toBeCloseTo(expected, 0);
+      expect((await getBox(q.region("Main content"))).width).toBeCloseTo(
+        480,
         0,
       );
-      await q.checkbox("Compact local headers").uncheck();
+      expect(
+        (await getBox(page.locator('[aria-label="Main actions"]'))).width,
+      ).toBeCloseTo(480, 0);
     }
   });
+
+  for (const centered of [false, true]) {
+    test(`keeps shared geometry in ${centered ? "centered" : "fluid"} parts when text sizes differ`, async ({
+      q,
+      page,
+    }) => {
+      await q.checkbox("Use spacing gutter").check();
+      await q.checkbox("Center parts").setChecked(centered);
+      const mainHeader = page.locator(".shell-main-header");
+      const sidebarHeader = page.locator(".shell-sidebar-header");
+      const actions = page.locator('[aria-label="Main actions"]');
+      const content = q.region("Main content");
+      const nestedHeader = page.locator(
+        '[aria-label="Nested parts shell"] > .shell-header',
+      );
+      for (const size of ["text-sm", "text-lg"]) {
+        await q.combobox("Local text size").selectOption(size);
+        for (const header of [mainHeader, sidebarHeader]) {
+          await expect(header).toHaveCSS("height", "65px");
+        }
+        const contentBox = await getBox(content);
+        if (centered) {
+          expect(contentBox.width).toBeCloseTo(480, 0);
+        } else {
+          expect(contentBox.x - (await getBox(q.main())).x).toBeCloseTo(12, 0);
+        }
+        for (const part of [actions, q.heading("Explicit shell parts")]) {
+          expect((await getBox(part)).x).toBeCloseTo(contentBox.x, 0);
+          expect((await getBox(part)).width).toBeCloseTo(contentBox.width, 0);
+        }
+        await expect(nestedHeader).toHaveCSS("top", "130px");
+        await q.checkbox("Compact local headers").check();
+        for (const header of [mainHeader, sidebarHeader]) {
+          await expect(header).toHaveCSS("height", "56px");
+        }
+        await expect(nestedHeader).toHaveCSS("top", "121px");
+        await page.evaluate(() => window.scrollTo(0, 900));
+        const headerBox = await getBox(mainHeader);
+        expect((await getBox(q.complementary("Part details"))).y).toBeCloseTo(
+          headerBox.y + headerBox.height,
+          0,
+        );
+        await q.checkbox("Compact local headers").uncheck();
+      }
+    });
+  }
 
   for (const rtl of [false, true]) {
     test(`spans only adjacent free end columns and aligns content in ${rtl ? "RTL" : "LTR"}`, async ({
