@@ -704,10 +704,10 @@ export const shellMain = cv({
     // Resolve registered slot lengths here; the parts inherit the totals.
     "[--shell-header-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-header-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-header-free-1)*var(--shell-header-free-2))]",
     "[--shell-intro-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-intro-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-intro-free-1)*var(--shell-intro-free-2))]",
-    // Nested shells inside main also clear its sticky local header.
+    // Nested shells inside main also clear its sticky local header. Only the
+    // first two levels publish offsets: the supported third level consumes them.
     "[.shell:not(.shell_*)>&]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
     "[.shell_.shell:not(.shell_.shell_.shell)>&]:[--shell-below-b:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
-    "[.shell_.shell_.shell>&]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
   ],
   variants: {
     /**

@@ -75,6 +75,43 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(nestedHeader).toHaveCSS("top", "0px");
   });
 
+  test("includes nested main headers in the three-level sticky chain", async ({
+    q,
+    page,
+  }) => {
+    await q.checkbox("Nested main headers").check();
+    const middle = page.locator('[aria-label="Nested parts shell"]');
+    const inner = page.locator('[aria-label="Inner parts shell"]');
+    const middleHeader = middle.locator(
+      ":scope > .shell-main > .shell-main-header",
+    );
+    const innerHeader = inner.locator(":scope > .shell-header");
+    const innerMainHeader = inner.locator(
+      ":scope > .shell-main > .shell-main-header",
+    );
+    await expect(middle.locator(":scope > .shell-header")).toHaveCSS(
+      "top",
+      "130px",
+    );
+    await expect(middleHeader).toHaveCSS("top", "195px");
+    await expect(middleHeader).toHaveCSS("height", "56px");
+    await expect(innerHeader).toHaveCSS("top", "251px");
+    await expect(innerMainHeader).toHaveCSS("top", "316px");
+    await expect(innerMainHeader).toHaveCSS("height", "72px");
+    await q.checkbox("Taller nested main header").check();
+    await expect(middleHeader).toHaveCSS("height", "72px");
+    await expect(middleHeader).toHaveCSS("top", "195px");
+    await expect(innerHeader).toHaveCSS("top", "267px");
+    await expect(innerMainHeader).toHaveCSS("top", "332px");
+    await page.evaluate(() => window.scrollTo(0, 1200));
+    await expect
+      .poll(async () => (await getBox(innerHeader)).y)
+      .toBeCloseTo(267, 0);
+    await expect
+      .poll(async () => (await getBox(innerMainHeader)).y)
+      .toBeCloseTo(332, 0);
+  });
+
   test("preserves local percentage and length maximum widths", async ({
     q,
     page,

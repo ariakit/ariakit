@@ -46,6 +46,8 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
   const [localPadding, setLocalPadding] = useState(false);
   const [introMaxWidth, setIntroMaxWidth] = useState("");
   const [narrowShell, setNarrowShell] = useState(false);
+  const [nestedHeaders, setNestedHeaders] = useState(false);
+  const [tallerNestedHeader, setTallerNestedHeader] = useState(false);
   const center = centered ? (mainCentered ? "main" : true) : false;
   const height = compact ? "sm" : undefined;
   return (
@@ -264,6 +266,28 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
               />{" "}
               Narrow shell
             </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={nestedHeaders}
+                onChange={(event) =>
+                  setNestedHeaders(event.currentTarget.checked)
+                }
+              />
+              Nested main headers
+            </label>
+            {nestedHeaders && (
+              <label>
+                <input
+                  type="checkbox"
+                  checked={tallerNestedHeader}
+                  onChange={(event) =>
+                    setTallerNestedHeader(event.currentTarget.checked)
+                  }
+                />
+                Taller nested main header
+              </label>
+            )}
           </section>
           <Shell aria-label="Nested parts shell" className="mt-4 max-w-3xl">
             <ShellHeader start="Nested header" />
@@ -272,8 +296,27 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
               $p="var(--nested-gutter)"
               className="[--nested-gutter:1rem] @5xl/shell:[--nested-gutter:2rem]"
             >
+              {nestedHeaders && (
+                <ShellMainHeader $height={tallerNestedHeader ? "lg" : "sm"}>
+                  <div>Nested actions</div>
+                </ShellMainHeader>
+              )}
               <ShellMainBody>
                 <p>Nested body</p>
+                {nestedHeaders && (
+                  <Shell aria-label="Inner parts shell">
+                    <ShellHeader start="Inner header" />
+                    <ShellMain render={<div />}>
+                      <ShellMainHeader $height="lg">
+                        <div>Inner actions</div>
+                      </ShellMainHeader>
+                      <ShellMainBody>
+                        <p>Inner body</p>
+                        <div className="h-[1200px]" />
+                      </ShellMainBody>
+                    </ShellMain>
+                  </Shell>
+                )}
                 <div className="h-[1200px]" />
               </ShellMainBody>
             </ShellMain>
