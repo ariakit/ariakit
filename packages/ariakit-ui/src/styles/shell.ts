@@ -629,7 +629,9 @@ export const shellMain = cv({
     },
     /**
      * Sets the shared maximum content width. Numbers scale the main's spacing
-     * token. Parts inherit this width unless they set their own `$maxWidth`.
+     * token. Parts inherit this value unless they set their own `$maxWidth`.
+     * Use a number or length to keep parts aligned. Percentages resolve against
+     * each part's width; the header and intro can span end columns.
      */
     $maxWidth(value?: ShellWidth) {
       return contentVariants.$maxWidth(value);

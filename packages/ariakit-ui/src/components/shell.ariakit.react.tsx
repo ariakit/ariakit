@@ -291,9 +291,11 @@ export interface ShellMainProps
  * `$p="var(--page-gutter)"` with
  * `className="[--page-gutter:1rem] @3xl/shell:[--page-gutter:2rem]"`. The query
  * uses the nearest shell width. A part's own `$p` overrides this value.
- * `$maxWidth` sets the shared maximum content width for centered parts. Set it
- * here to keep their columns aligned when their text sizes differ. A part's own
- * `$maxWidth` overrides the shared width.
+ * `$maxWidth` sets the shared maximum content width for centered parts. Use a
+ * number or CSS length here to keep their columns aligned when text sizes
+ * differ. Percentages resolve against each part's width, so a header or intro
+ * that spans end columns can have a wider content column. A part's own
+ * `$maxWidth` overrides the shared value.
  * @example
  * <ShellMain $p={4}>
  *   <ShellMainHeader $centered><div>Page actions</div></ShellMainHeader>
