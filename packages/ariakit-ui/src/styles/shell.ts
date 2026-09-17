@@ -335,103 +335,13 @@ export const shellFooterCenter = shellHeaderCenter;
 export const shellFooterEnd = shellHeaderEnd;
 
 /**
- * The flags main reads to know which slot takes space, from `:has()` chains on
- * the shell: 1 when the slot's sidebar is open, 0 when it is closed or absent.
- */
-const slotFlags = cx(
-  // The first start sidebar: not preceded by another start sidebar.
-  "[.shell:has(>.shell-sidebar-start:not(.shell-sidebar-start~*)>.shell-sidebar-panel[data-open])>&]:[--shell-start-1-open:1]",
-  // The second start sidebar: preceded by another start sidebar.
-  "[.shell:has(>.shell-sidebar-start~.shell-sidebar-start>.shell-sidebar-panel[data-open])>&]:[--shell-start-2-open:1]",
-  // The first end sidebar, next to main.
-  "[.shell:has(>.shell-sidebar-end:not(.shell-sidebar-end~*)>.shell-sidebar-panel[data-open])>&]:[--shell-end-1-open:1]",
-  // The second end sidebar, at the shell's end edge.
-  "[.shell:has(>.shell-sidebar-end~.shell-sidebar-end>.shell-sidebar-panel[data-open])>&]:[--shell-end-2-open:1]",
-);
-
-const slotState = cx(
-  // The slot flags are declared here, so a nested shell's main never
-  // inherits an outer shell's flags.
-  "[--shell-start-1-open:0] [--shell-start-2-open:0]",
-  "[--shell-end-1-open:0] [--shell-end-2-open:0]",
-  "[--shell-start-1-fit:1] [--shell-start-2-fit:1]",
-  "[--shell-end-1-fit:1] [--shell-end-2-fit:1]",
-  slotFlags,
-  // A query cannot style its own container. Apply breakpoint flags on
-  // content below the shell, separately from the open-state flags.
-  "@max-3xs/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-3xs:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-3xs/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-3xs)>&]:[--shell-start-2-fit:0]",
-  "@max-3xs/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-3xs:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-3xs/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-3xs)>&]:[--shell-end-2-fit:0]",
-  "@max-2xs/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-2xs:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-2xs/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-2xs)>&]:[--shell-start-2-fit:0]",
-  "@max-2xs/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-2xs:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-2xs/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-2xs)>&]:[--shell-end-2-fit:0]",
-  "@max-xs/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-xs:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-xs/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-xs)>&]:[--shell-start-2-fit:0]",
-  "@max-xs/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-xs:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-xs/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-xs)>&]:[--shell-end-2-fit:0]",
-  "@max-sm/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-sm:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-sm/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-sm)>&]:[--shell-start-2-fit:0]",
-  "@max-sm/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-sm:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-sm/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-sm)>&]:[--shell-end-2-fit:0]",
-  "@max-md/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-md:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-md/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-md)>&]:[--shell-start-2-fit:0]",
-  "@max-md/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-md:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-md/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-md)>&]:[--shell-end-2-fit:0]",
-  "@max-lg/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-lg:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-lg/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-lg)>&]:[--shell-start-2-fit:0]",
-  "@max-lg/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-lg:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-lg/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-lg)>&]:[--shell-end-2-fit:0]",
-  "@max-xl/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-xl:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-xl/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-xl)>&]:[--shell-start-2-fit:0]",
-  "@max-xl/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-xl:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-xl/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-xl)>&]:[--shell-end-2-fit:0]",
-  "@max-2xl/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-2xl:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-2xl/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-2xl)>&]:[--shell-start-2-fit:0]",
-  "@max-2xl/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-2xl:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-2xl/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-2xl)>&]:[--shell-end-2-fit:0]",
-  "@max-3xl/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-3xl:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-3xl/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-3xl)>&]:[--shell-start-2-fit:0]",
-  "@max-3xl/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-3xl:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-3xl/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-3xl)>&]:[--shell-end-2-fit:0]",
-  "@max-4xl/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-4xl:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-4xl/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-4xl)>&]:[--shell-start-2-fit:0]",
-  "@max-4xl/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-4xl:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-4xl/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-4xl)>&]:[--shell-end-2-fit:0]",
-  "@max-5xl/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-5xl:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-5xl/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-5xl)>&]:[--shell-start-2-fit:0]",
-  "@max-5xl/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-5xl:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-5xl/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-5xl)>&]:[--shell-end-2-fit:0]",
-  "@max-6xl/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-6xl:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-6xl/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-6xl)>&]:[--shell-start-2-fit:0]",
-  "@max-6xl/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-6xl:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-6xl/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-6xl)>&]:[--shell-end-2-fit:0]",
-  "@max-7xl/shell:[.shell:has(>.shell-sidebar-start.shell-sidebar-c-7xl:not(.shell-sidebar-start~*))>&]:[--shell-start-1-fit:0]",
-  "@max-7xl/shell:[.shell:has(>.shell-sidebar-start~.shell-sidebar-start.shell-sidebar-c-7xl)>&]:[--shell-start-2-fit:0]",
-  "@max-7xl/shell:[.shell:has(>.shell-sidebar-end.shell-sidebar-c-7xl:not(.shell-sidebar-end~*))>&]:[--shell-end-1-fit:0]",
-  "@max-7xl/shell:[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-c-7xl)>&]:[--shell-end-2-fit:0]",
-
-  "[--shell-end-1-from-main:0] [--shell-end-1-from-body:0]",
-  "[.shell:has(>.shell-sidebar-end:not(.shell-sidebar-end~*).shell-sidebar-from-main)>&]:[--shell-end-1-from-main:1]",
-  "[.shell:has(>.shell-sidebar-end:not(.shell-sidebar-end~*).shell-sidebar-from-body)>&]:[--shell-end-1-from-body:1]",
-  "[--shell-header-free-1:calc(1-var(--shell-end-1-open)*var(--shell-end-1-fit)*var(--shell-end-1-from-main))]",
-  "[--shell-intro-free-1:calc(1-var(--shell-end-1-open)*var(--shell-end-1-fit)*(1-var(--shell-end-1-from-body)))]",
-  "[--shell-end-2-from-main:0] [--shell-end-2-from-body:0]",
-  "[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-from-main)>&]:[--shell-end-2-from-main:1]",
-  "[.shell:has(>.shell-sidebar-end~.shell-sidebar-end.shell-sidebar-from-body)>&]:[--shell-end-2-from-body:1]",
-  "[--shell-header-free-2:calc(1-var(--shell-end-2-open)*var(--shell-end-2-fit)*var(--shell-end-2-from-main))]",
-  "[--shell-intro-free-2:calc(1-var(--shell-end-2-open)*var(--shell-end-2-fit)*(1-var(--shell-end-2-from-body)))]",
-);
-
-/**
  * A folding column around the public sidebar panel. The column stays rendered
  * at zero width while the panel is removed from layout, so reopening animates
  * without a starting style or an entrance animation on the initial render.
  */
 export const shellSidebar = cv({
   class: [
-    slotState,
+    "shell-slot-state",
     "[--shell-sidebar-head:0px]",
     // Keep the panel's offset while its own column closes or collapses.
     "[&.shell-sidebar-end]:[--shell-sidebar-head:calc(var(--shell-main-head)*(1-var(--shell-end-1-from-main)))]",
@@ -699,7 +609,7 @@ const contentVariants = {
 export const shellMain = cv({
   class: [
     "shell-main col-[main-start/shell-end] row-[main-start/body-end] grid grid-cols-subgrid grid-rows-subgrid min-w-0",
-    slotState,
+    "shell-slot-state",
     slotSpaces,
     // Resolve registered slot lengths here; the parts inherit the totals.
     "[--shell-header-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-header-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-header-free-1)*var(--shell-header-free-2))]",
