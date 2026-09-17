@@ -264,6 +264,26 @@ body > * {
   initial-value: 256px;
 }
 
+/* Shared geometry resolves relative units at its owning shell or main, so
+   a part's text size does not change inherited heights, offsets, or gutters. */
+@property --shell-header-step {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 4px;
+}
+
+@property --shell-local-header-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 65px;
+}
+
+@property --shell-gutter {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 12px;
+}
+
 /* The space each sidebar slot takes: its width while its sidebar is open and
    takes space, zero otherwise. The shell main transitions them on the shell's
    duration so its centering moves in step with the drawer that is folding.

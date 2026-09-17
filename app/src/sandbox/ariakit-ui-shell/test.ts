@@ -14,14 +14,14 @@ function getColumn(label: string) {
 
 test("renders the docs page as one banner, one main, one contentinfo and labelled navigations", () => {
   expect(q.banner()).toBeInTheDocument();
-  expect(q.main()).toBeInTheDocument();
+  expect(q.main()).toContainElement(q.heading("Shell", { level: 1 }));
   expect(q.contentinfo()).toBeInTheDocument();
   expect(q.navigation("Documentation")).toBeInTheDocument();
   expect(q.navigation("On this page")).toBeInTheDocument();
 });
 
 // https://github.com/ariakit/ariakit/issues/7532
-test("keeps a consumer toggle in step with the sidebar open attribute and body id", async () => {
+test("keeps a consumer toggle in step with the sidebar open attribute and panel id", async () => {
   const toggle = q.button("Toggle sidebar");
   const body = q.navigation("Documentation");
   expect(toggle).toHaveAttribute("aria-expanded", "true");
@@ -69,7 +69,7 @@ test("keeps an uncontrolled panel open, with no toggle", async () => {
 });
 
 // https://github.com/ariakit/ariakit/issues/7532
-test("forwards the public sidebar props and events to its landmark body", async () => {
+test("forwards the public sidebar props and events to its landmark panel", async () => {
   await selectScenario("geometry");
   const toggle = q.button("Toggle layout navigation");
   await click(toggle);
@@ -87,7 +87,7 @@ test("forwards the public sidebar props and events to its landmark body", async 
 });
 
 // https://github.com/ariakit/ariakit/pull/7533#discussion_r4019535774
-test("accepts data-open directly on the sidebar body", async () => {
+test("accepts data-open directly on the sidebar panel", async () => {
   await selectScenario("geometry");
   const contents = q.navigation("Layout contents");
   expect(contents).not.toHaveAttribute("data-open");
