@@ -418,7 +418,7 @@ function DashboardScenario() {
         id={workspaceId}
         open={workspaceOpen}
         $width="sm"
-        $collapse={false}
+        $show
         aria-label="Workspace"
         render={<nav />}
       >
@@ -573,12 +573,7 @@ function ChatScenario() {
           </ShellHeaderEnd>
         }
       />
-      <ShellSidebar
-        $width="xs"
-        $collapse={false}
-        aria-label="Workspaces"
-        render={<nav />}
-      >
+      <ShellSidebar $width="xs" $show aria-label="Workspaces" render={<nav />}>
         <ShellSidebarBody $p={2}>
           <ul className="grid gap-2">
             {["Acme", "Ariakit", "Bakery"].map((workspace) => (
@@ -930,7 +925,7 @@ function StaticScenario() {
   return (
     <Shell>
       <ShellHeader start={<Brand />} end={<ScenarioControls />} />
-      <ShellSidebar $collapse={false} aria-label="Sections" render={<aside />}>
+      <ShellSidebar $show aria-label="Sections" render={<aside />}>
         <ShellSidebarBody>
           <SectionLinks label="Section list" sections={settingsSections} />
         </ShellSidebarBody>

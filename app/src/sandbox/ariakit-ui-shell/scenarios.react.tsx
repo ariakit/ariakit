@@ -287,7 +287,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
         $width="xs"
         data-open={endOpen ? "" : undefined}
         $from="body"
-        $collapse={false}
+        $show
         $border={border}
         $borderType={borderType}
         render={<nav />}
@@ -323,7 +323,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
         />
         <ShellSidebar
           $width="xs"
-          $collapse={false}
+          $show
           aria-label="Outer navigation"
           render={<nav />}
         >
@@ -343,7 +343,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
               />
               <ShellSidebar
                 $width="sm"
-                $collapse={false}
+                $show
                 aria-label="Middle navigation"
                 render={<nav />}
               >
@@ -363,7 +363,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
                     />
                     <ShellSidebar
                       $width="xs"
-                      $collapse={false}
+                      $show
                       aria-label="Inner navigation"
                       render={<nav />}
                     >

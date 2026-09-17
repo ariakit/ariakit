@@ -71,6 +71,53 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expect(header).toBeVisible();
     });
 
+    test(`shows the main header below its breakpoint and releases sticky ${from} sidebars above it`, async ({
+      q,
+      page,
+    }) => {
+      await q.combobox("End sidebar starts at").selectOption(from);
+      await q.checkbox("Second end sidebar").check();
+      await q.combobox("Main header visibility").selectOption("max-5xl");
+      const header = page.locator(".shell-main-header");
+      const nestedHeader = page.locator(
+        '[aria-label="Nested parts shell"] > .shell-header',
+      );
+      await expect(header).toBeHidden();
+      for (const width of [1023, 1024, 1440]) {
+        await page.setViewportSize({ width, height: 900 });
+        const visible = width < 1024;
+        await expect(header).toBeVisible({ visible });
+        for (const name of ["Part details", "More details"]) {
+          await expect(q.complementary(name)).toHaveCSS(
+            "top",
+            visible ? "128px" : "64px",
+          );
+          await expect(q.complementary(name)).toHaveCSS(
+            "max-height",
+            visible ? "772px" : "836px",
+          );
+        }
+        await expect(nestedHeader).toHaveCSS("top", visible ? "128px" : "64px");
+        await expect(q.region("Main content")).toHaveCSS(
+          "scroll-margin-block-start",
+          visible ? "144px" : "80px",
+        );
+      }
+      await q.checkbox("Narrow shell").check();
+      await expect(header).toBeVisible();
+      await expect(q.complementary("Part details")).toHaveCSS("top", "128px");
+      await page.evaluate(() => window.scrollTo(0, 700));
+      await expect
+        .poll(async () => (await getBox(q.complementary("Part details"))).y)
+        .toBeCloseTo(128, 0);
+      await q.checkbox("Narrow shell").uncheck();
+      await expect(header).toBeHidden();
+      await page.evaluate(() => window.scrollTo(0, 700));
+      await expect
+        .poll(async () => (await getBox(q.complementary("Part details"))).y)
+        .toBeCloseTo(64, 0);
+    });
+
     test(`hides the main header at every width and releases sticky ${from} sidebars`, async ({
       q,
       page,
@@ -117,6 +164,65 @@ withFramework(import.meta.dirname, async ({ test }) => {
       }
     });
   }
+
+  test("applies sidebar visibility to all four columns and preserves closed state", async ({
+    q,
+    page,
+  }) => {
+    await q.checkbox("Second start sidebar").check();
+    await q.checkbox("Second end sidebar").check();
+    const names = [
+      "Part navigation",
+      "More navigation",
+      "Part details",
+      "More details",
+    ];
+    const cases = [
+      ["never", 1440, false],
+      ["never", 700, false],
+      ["always", 700, true],
+      ["default", 767, false],
+      ["default", 768, true],
+      ["5xl", 1023, false],
+      ["5xl", 1024, true],
+      ["max-5xl", 1023, true],
+      ["max-5xl", 1024, false],
+    ] as const;
+    for (const [visibility, width, visible] of cases) {
+      await page.setViewportSize({ width, height: 900 });
+      await q.combobox("Start sidebar visibility").selectOption(visibility);
+      await q.combobox("End sidebar visibility").selectOption(visibility);
+      for (const name of names) {
+        await expect(getSidebar(q, name)).toHaveCSS(
+          "width",
+          visible ? "160px" : "0px",
+        );
+        await expect(getSidebar(q, name).locator(":scope > *")).toBeVisible({
+          visible,
+        });
+      }
+      expect(
+        (await getBox(q.main().locator(":scope > .shell-main-body"))).width,
+      ).toBeCloseTo(width - (visible ? 640 : 0), 0);
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await q.checkbox("Narrow shell").check();
+    for (const name of names) {
+      await expect(getSidebar(q, name)).toHaveCSS("width", "160px");
+    }
+    await q.checkbox("Open end sidebar").uncheck();
+    await expect(getSidebar(q, "Part details")).toHaveCSS("width", "0px");
+    await q.checkbox("Narrow shell").uncheck();
+    for (const name of names) {
+      await expect(getSidebar(q, name)).toHaveCSS("width", "0px");
+    }
+    await q.checkbox("Narrow shell").check();
+    await expect(getSidebar(q, "More details")).toHaveCSS("width", "160px");
+    await expect(getSidebar(q, "Part details")).toHaveCSS("width", "0px");
+    await expect(q.checkbox("Open end sidebar")).not.toBeChecked();
+    await q.checkbox("Open end sidebar").check();
+    await expect(getSidebar(q, "Part details")).toHaveCSS("width", "160px");
+  });
 
   test("keeps the introduction and local header in one main landmark", async ({
     q,
