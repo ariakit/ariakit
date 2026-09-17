@@ -293,9 +293,9 @@ export interface ShellMainProps
  * uses the nearest shell width. A part's own `$p` overrides this value.
  * @example
  * <ShellMain $p={4}>
- *   <ShellMainHeader $centered>Page actions</ShellMainHeader>
+ *   <ShellMainHeader $centered><div>Page actions</div></ShellMainHeader>
  *   <ShellMainIntro $centered><h1>Page title</h1></ShellMainIntro>
- *   <ShellMainBody $centered>Page content</ShellMainBody>
+ *   <ShellMainBody $centered><p>Page content</p></ShellMainBody>
  * </ShellMain>
  */
 export function ShellMain(props: ShellMainProps) {
@@ -311,7 +311,8 @@ export interface ShellMainHeaderProps
  * matches `ShellHeader` unless `$height` sets a local preset. Borders are
  * contained inside that height. Its surface spans adjacent end columns whose
  * sidebars start at the intro or body; content stays aligned with the body. Use
- * `$sticky={false}` for a static header.
+ * `$sticky={false}` for a static header. Direct element children occupy the
+ * content column; wrap text in an element such as `div`.
  */
 export function ShellMainHeader(props: ShellMainHeaderProps) {
   const [variantProps, rest] = splitProps(props, shellMainHeader);
@@ -368,7 +369,9 @@ export interface ShellSidebarProps
  * the id, ARIA attributes, class names, and frame variants. Use `nav` for
  * navigation or `aside` for a complementary panel, and name the landmark with
  * `aria-label`. A closed panel leaves the tab order and the accessibility tree.
- * The panel draws a real border on the side that faces main.
+ * The panel draws a real border on the side that faces main. Put scrollable
+ * content in `ShellSidebarBody`, even when there is no header or footer. The
+ * panel itself does not scroll.
  *
  * `open` controls the state, and `$collapse` hides the panel below a named
  * container width even while it is open. A consumer button controls `open` and
