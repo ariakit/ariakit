@@ -67,7 +67,7 @@
     "glob": "13.0.6",
     "happy-dom": "20.14.5",
     "jsdom": "30.0.1",
-    "lefthook": "2.1.12",
+    "lefthook": "2.1.14",
     "open-cli": "9.0.0",
     "oxfmt": "0.67.0",
     "oxlint": "1.82.0",
