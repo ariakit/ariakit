@@ -433,8 +433,9 @@ export const shellSidebar = cv({
   class: [
     slotState,
     "[--shell-sidebar-head:0px]",
-    "[&.shell-sidebar-end]:[--shell-sidebar-head:calc(var(--shell-main-head)*var(--shell-header-free-1))]",
-    "[.shell-sidebar-end~&.shell-sidebar-end]:[--shell-sidebar-head:calc(var(--shell-main-head)*var(--shell-header-free-1)*var(--shell-header-free-2))]",
+    // Keep the panel's offset while its own column closes or collapses.
+    "[&.shell-sidebar-end]:[--shell-sidebar-head:calc(var(--shell-main-head)*(1-var(--shell-end-1-from-main)))]",
+    "[.shell-sidebar-end~&.shell-sidebar-end]:[--shell-sidebar-head:calc(var(--shell-main-head)*var(--shell-header-free-1)*(1-var(--shell-end-2-from-main)))]",
     "shell-sidebar flex flex-col box-border @container/shell-sidebar rounded-none!",
     "z-2 w-(--shell-slot-width) overflow-clip",
     "[&:not(:has(>.shell-sidebar-panel[data-open]))]:w-0",

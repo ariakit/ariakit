@@ -253,55 +253,84 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
   test("aligns main parts throughout an interrupted end-sidebar fold", async ({
     q,
-    page,
   }) => {
     await q.checkbox("Center parts").check();
     await q.combobox("End sidebar starts at").selectOption("main");
     const sidebar = getSidebar(q, "Part details");
     await expect(sidebar).toHaveCSS("width", "160px");
-    // Observe every frame across the fold and reversal. Endpoint assertions
-    // cannot detect a part jumping while the column is still moving.
-    await using recording = await page.evaluateHandle(() => {
+    const toggle = q.checkbox("Open end sidebar");
+    await using input = await toggle.elementHandle();
+    // Reverse inside the frame recorder. A test-process round trip can miss the
+    // entire fold on a busy runner.
+    await using recording = await sidebar.evaluateHandle((column, input) => {
+      if (!(input instanceof HTMLInputElement))
+        throw new Error("Missing toggle");
       const header = document.querySelector('[aria-label="Main actions"]');
       const intro = document.querySelector(".shell-main-intro > h1");
       const body = document.querySelector('[aria-label="Main content"]');
-      if (!header || !intro || !body) throw new Error("Missing main parts");
+      const panel = column.firstElementChild;
+      if (!header || !intro || !body || !panel)
+        throw new Error("Missing main parts");
       const parts = [header, intro];
       const contentElement = body;
-      const start = performance.now();
-      const finished = new Promise<number>((resolve) => {
-        let largest = 0;
+      const panelElement = panel;
+      const toggleElement = input;
+      const initialWidth = column.getBoundingClientRect().width;
+      const initialTop = panel.getBoundingClientRect().top;
+      const finished = new Promise<{
+        alignment: number;
+        panelShift: number;
+        reversed: boolean;
+      }>((resolve) => {
+        let alignment = 0;
+        let panelShift = 0;
+        let reversed = false;
         function sample() {
+          const width = column.getBoundingClientRect().width;
           const content = contentElement.getBoundingClientRect();
           for (const part of parts) {
             const box = part.getBoundingClientRect();
-            largest = Math.max(
-              largest,
+            alignment = Math.max(
+              alignment,
               Math.abs(box.x - content.x),
               Math.abs(box.width - content.width),
             );
           }
-          if (performance.now() - start < 700) {
-            requestAnimationFrame(sample);
+          if (panelElement.getClientRects().length) {
+            panelShift = Math.max(
+              panelShift,
+              Math.abs(panelElement.getBoundingClientRect().top - initialTop),
+            );
+          }
+          if (
+            !reversed &&
+            !toggleElement.checked &&
+            width > 0 &&
+            width < initialWidth
+          ) {
+            reversed = true;
+            toggleElement.click();
+          }
+          if (
+            (!reversed && !toggleElement.checked && width === 0) ||
+            (reversed && width === initialWidth)
+          ) {
+            resolve({ alignment, panelShift, reversed });
           } else {
-            resolve(largest);
+            requestAnimationFrame(sample);
           }
         }
         sample();
       });
       return { finished };
-    });
-    await q.checkbox("Open end sidebar").uncheck();
-    await expect
-      .poll(async () => {
-        const { width } = await getBox(sidebar);
-        return width > 0 && width < 160;
-      })
-      .toBe(true);
-    await q.checkbox("Open end sidebar").check();
-    expect(await recording.evaluate(({ finished }) => finished)).toBeLessThan(
-      2,
-    );
+    }, input);
+    // check/uncheck verify the final state, which the recorder reverses.
+    await toggle.click();
+    const result = await recording.evaluate(({ finished }) => finished);
+    expect(result.reversed).toBe(true);
+    expect(result.alignment).toBeLessThan(2);
+    expect(result.panelShift).toBeLessThan(2);
+    await expect(toggle).toBeChecked();
     await expect(sidebar).toHaveCSS("width", "160px");
   });
 });
