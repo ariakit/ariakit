@@ -349,10 +349,13 @@ body > * {
 @utility shell-slot-state {
   /* Resolve the main header offset on shell children so container queries can
      remove it without querying the shell's own size from the shell itself. */
-  --shell-main-header-fit: 1;
+  --shell-main-header-visible: 1;
+  .shell:has(> .shell-main > .shell-main-header-hidden) > & {
+    --shell-main-header-visible: 0;
+  }
   .shell:has(> .shell-main > .shell-main-header-sticky) > & {
     --shell-main-head: calc(
-      var(--shell-main-header-height) * var(--shell-main-header-fit)
+      var(--shell-main-header-height) * var(--shell-main-header-visible)
     );
   }
 
@@ -440,8 +443,8 @@ body > * {
   /* A query cannot style its own container. Each shell child receives the
      breakpoint flags separately from the open-state flags. */
   @variant @max-3xs/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-3xs) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-3xs) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-3xs:not(.shell-sidebar-start ~ *)
@@ -467,8 +470,8 @@ body > * {
     }
   }
   @variant @max-2xs/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-2xs) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-2xs) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-2xs:not(.shell-sidebar-start ~ *)
@@ -494,8 +497,8 @@ body > * {
     }
   }
   @variant @max-xs/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-xs) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-xs) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-xs:not(.shell-sidebar-start ~ *)
@@ -519,8 +522,8 @@ body > * {
     }
   }
   @variant @max-sm/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-sm) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-sm) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-sm:not(.shell-sidebar-start ~ *)
@@ -544,8 +547,8 @@ body > * {
     }
   }
   @variant @max-md/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-md) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-md) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-md:not(.shell-sidebar-start ~ *)
@@ -569,8 +572,8 @@ body > * {
     }
   }
   @variant @max-lg/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-lg) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-lg) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-lg:not(.shell-sidebar-start ~ *)
@@ -594,8 +597,8 @@ body > * {
     }
   }
   @variant @max-xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-xl) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-xl) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-xl:not(.shell-sidebar-start ~ *)
@@ -619,8 +622,8 @@ body > * {
     }
   }
   @variant @max-2xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-2xl) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-2xl) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-2xl:not(.shell-sidebar-start ~ *)
@@ -646,8 +649,8 @@ body > * {
     }
   }
   @variant @max-3xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-3xl) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-3xl) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-3xl:not(.shell-sidebar-start ~ *)
@@ -673,8 +676,8 @@ body > * {
     }
   }
   @variant @max-4xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-4xl) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-4xl) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-4xl:not(.shell-sidebar-start ~ *)
@@ -700,8 +703,8 @@ body > * {
     }
   }
   @variant @max-5xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-5xl) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-5xl) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-5xl:not(.shell-sidebar-start ~ *)
@@ -727,8 +730,8 @@ body > * {
     }
   }
   @variant @max-6xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-6xl) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-6xl) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-6xl:not(.shell-sidebar-start ~ *)
@@ -754,8 +757,8 @@ body > * {
     }
   }
   @variant @max-7xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-c-7xl) > & {
-      --shell-main-header-fit: 0;
+    .shell:has(> .shell-main > .shell-main-header-show-7xl) > & {
+      --shell-main-header-visible: 0;
     }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-7xl:not(.shell-sidebar-start ~ *)

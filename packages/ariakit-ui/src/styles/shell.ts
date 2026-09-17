@@ -634,24 +634,26 @@ export const shellMainHeader = cv({
     $sticky:
       "shell-main-header-sticky sticky inset-bs-[calc(var(--shell-top)+var(--shell-head))]",
     /**
-     * Hides the header below a named shell-container width and removes its
-     * sticky offset. Defaults to `false`, keeping it at every width.
+     * Shows the header at or above a named shell-container width. `true` keeps
+     * it at every width; `false` hides it at every width. A hidden header takes
+     * no space and has no sticky offset. Defaults to `true`.
      */
-    $collapse: {
-      false: "",
-      "3xs": "shell-main-header-c-3xs @max-3xs/shell:hidden",
-      "2xs": "shell-main-header-c-2xs @max-2xs/shell:hidden",
-      xs: "shell-main-header-c-xs @max-xs/shell:hidden",
-      sm: "shell-main-header-c-sm @max-sm/shell:hidden",
-      md: "shell-main-header-c-md @max-md/shell:hidden",
-      lg: "shell-main-header-c-lg @max-lg/shell:hidden",
-      xl: "shell-main-header-c-xl @max-xl/shell:hidden",
-      "2xl": "shell-main-header-c-2xl @max-2xl/shell:hidden",
-      "3xl": "shell-main-header-c-3xl @max-3xl/shell:hidden",
-      "4xl": "shell-main-header-c-4xl @max-4xl/shell:hidden",
-      "5xl": "shell-main-header-c-5xl @max-5xl/shell:hidden",
-      "6xl": "shell-main-header-c-6xl @max-6xl/shell:hidden",
-      "7xl": "shell-main-header-c-7xl @max-7xl/shell:hidden",
+    $show: {
+      true: "",
+      false: "shell-main-header-hidden hidden",
+      "3xs": "shell-main-header-show-3xs @max-3xs/shell:hidden",
+      "2xs": "shell-main-header-show-2xs @max-2xs/shell:hidden",
+      xs: "shell-main-header-show-xs @max-xs/shell:hidden",
+      sm: "shell-main-header-show-sm @max-sm/shell:hidden",
+      md: "shell-main-header-show-md @max-md/shell:hidden",
+      lg: "shell-main-header-show-lg @max-lg/shell:hidden",
+      xl: "shell-main-header-show-xl @max-xl/shell:hidden",
+      "2xl": "shell-main-header-show-2xl @max-2xl/shell:hidden",
+      "3xl": "shell-main-header-show-3xl @max-3xl/shell:hidden",
+      "4xl": "shell-main-header-show-4xl @max-4xl/shell:hidden",
+      "5xl": "shell-main-header-show-5xl @max-5xl/shell:hidden",
+      "6xl": "shell-main-header-show-6xl @max-6xl/shell:hidden",
+      "7xl": "shell-main-header-show-7xl @max-7xl/shell:hidden",
     },
     /**
      * Sets the outer height, including the border. Defaults to the shell
@@ -665,7 +667,7 @@ export const shellMainHeader = cv({
     /** Blurs the page behind the header through a translucent surface. */
     $blur: blur,
   },
-  defaultVariants: { $p: "unset", $sticky: true },
+  defaultVariants: { $p: "unset", $sticky: true, $show: true },
 });
 
 /** The introduction inside the main landmark, above its body. */

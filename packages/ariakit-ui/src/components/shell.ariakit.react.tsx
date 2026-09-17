@@ -316,9 +316,10 @@ export interface ShellMainHeaderProps
  * matches `ShellHeader` unless `$height` sets a local preset. Borders are
  * contained inside that height. Its surface spans adjacent end columns whose
  * sidebars start at the intro or body; content stays aligned with the body. Use
- * `$sticky={false}` for a static header. `$collapse="3xl"` hides it below a
- * 48rem shell width and removes its sticky offset. Direct element children
- * occupy the content column; wrap text in an element such as `div`.
+ * `$sticky={false}` for a static header. `$show="3xl"` shows it at shell widths
+ * of 48rem and above; `$show={false}` hides it at every width. A hidden header
+ * takes no space and has no sticky offset. Direct element children occupy the
+ * content column; wrap text in an element such as `div`.
  */
 export function ShellMainHeader(props: ShellMainHeaderProps) {
   const [variantProps, rest] = splitProps(props, shellMainHeader);

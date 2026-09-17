@@ -24,9 +24,20 @@ import type { ReactNode } from "react";
 
 const starts = ["default", "main", "intro", "body"] as const;
 type Start = (typeof starts)[number];
+const headerVisibility = {
+  default: undefined,
+  always: true,
+  never: false,
+  "5xl": "5xl",
+} as const;
+type HeaderVisibility = keyof typeof headerVisibility;
 
 function isStart(value: string): value is Start {
   return starts.some((start) => start === value);
+}
+
+function isHeaderVisibility(value: string): value is HeaderVisibility {
+  return Object.hasOwn(headerVisibility, value);
 }
 
 export function PartsScenario({ controls }: { controls: ReactNode }) {
@@ -36,7 +47,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
   const [endOpen, setEndOpen] = useState(true);
   const [secondEnd, setSecondEnd] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
-  const [collapseHeader, setCollapseHeader] = useState(false);
+  const [visibility, setVisibility] = useState<HeaderVisibility>("default");
   const [showIntro, setShowIntro] = useState(true);
   const [showGlobalHeader, setShowGlobalHeader] = useState(true);
   const [sticky, setSticky] = useState(true);
@@ -88,7 +99,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
         {showHeader && (
           <ShellMainHeader
             className={textSize}
-            $collapse={collapseHeader ? "5xl" : false}
+            $show={headerVisibility[visibility]}
             $height={height}
             $sticky={sticky}
             $border={5}
@@ -202,14 +213,20 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
               Main header
             </label>
             <label>
-              <input
-                type="checkbox"
-                checked={collapseHeader}
-                onChange={(event) =>
-                  setCollapseHeader(event.currentTarget.checked)
-                }
-              />{" "}
-              Collapse main header
+              Main header visibility{" "}
+              <select
+                value={visibility}
+                onChange={(event) => {
+                  if (isHeaderVisibility(event.currentTarget.value)) {
+                    setVisibility(event.currentTarget.value);
+                  }
+                }}
+              >
+                <option value="default">Default</option>
+                <option value="always">Always</option>
+                <option value="never">Never</option>
+                <option value="5xl">At least 5xl</option>
+              </select>
             </label>
             <label>
               <input
