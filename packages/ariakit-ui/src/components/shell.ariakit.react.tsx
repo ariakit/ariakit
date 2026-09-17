@@ -5,7 +5,10 @@ import * as React from "react";
 import { createOptionalRender } from "../react-utils/create-render.react.ts";
 import {
   shell,
-  shellBreakout,
+  shellMainContent,
+  shellMainPopout,
+  shellMainFeature,
+  shellMainFull,
   shellFooter,
   shellFooterCenter,
   shellFooterEnd,
@@ -60,9 +63,9 @@ export interface ShellProps
  *     <ShellSidebarBody>…</ShellSidebarBody>
  *   </ShellSidebar>
  *   <ShellMain>
- *     <ShellMainHeader $centered>…</ShellMainHeader>
- *     <ShellMainIntro $centered>…</ShellMainIntro>
- *     <ShellMainBody $centered>…</ShellMainBody>
+ *     <ShellMainHeader>…</ShellMainHeader>
+ *     <ShellMainIntro>…</ShellMainIntro>
+ *     <ShellMainBody>…</ShellMainBody>
  *   </ShellMain>
  *   <ShellSidebar
  *     $side="end"
@@ -271,7 +274,8 @@ export interface ShellMainIntroProps
 /**
  * An introduction inside `ShellMain`, before `ShellMainBody`. Its content
  * aligns with the body, and its surface spans the adjacent end columns whose
- * sidebars start at the body. Use `$centered` to center its content.
+ * sidebars start at the body. Direct element children use the centered content
+ * column; named main bands can select a wider span.
  */
 export function ShellMainIntro(props: ShellMainIntroProps) {
   const [variantProps, rest] = splitProps(props, shellMainIntro);
@@ -291,16 +295,16 @@ export interface ShellMainProps
  * `$p="var(--page-gutter)"` with
  * `className="[--page-gutter:1rem] @3xl/shell:[--page-gutter:2rem]"`. The query
  * uses the nearest shell width. A part's own `$p` overrides this value.
- * `$maxWidth` sets the shared maximum content width for centered parts. Use a
- * number or CSS length here to keep their columns aligned when text sizes
- * differ. Percentages resolve against each part's width, so a header or intro
- * that spans end columns can have a wider content column. A part's own
- * `$maxWidth` overrides the shared value.
+ * `$maxWidth` sets the shared maximum content width. Use a number or CSS length
+ * here to keep their columns aligned when text sizes differ. Percentages
+ * resolve against each part's width, so a header or intro that spans end
+ * columns can have a wider content column. A part's own `$maxWidth` overrides
+ * the shared value.
  * @example
  * <ShellMain $p={4}>
- *   <ShellMainHeader $centered><div>Page actions</div></ShellMainHeader>
- *   <ShellMainIntro $centered><h1>Page title</h1></ShellMainIntro>
- *   <ShellMainBody $centered><p>Page content</p></ShellMainBody>
+ *   <ShellMainHeader><div>Page actions</div></ShellMainHeader>
+ *   <ShellMainIntro><h1>Page title</h1></ShellMainIntro>
+ *   <ShellMainBody><p>Page content</p></ShellMainBody>
  * </ShellMain>
  */
 export function ShellMain(props: ShellMainProps) {
@@ -332,9 +336,10 @@ export interface ShellMainBodyProps
 
 /**
  * The main content grid. The `shell-main-body` query container follows the
- * available body width. `$centered` keeps the content on the shell's center;
- * `$centered="main"` centers it within the body. Direct children are grid
- * items; use `Prose` for text with collapsing margins.
+ * available body width. Direct element children use the centered content
+ * column. Use `ShellMainPopout`, `ShellMainFeature`, or `ShellMainFull` as a
+ * direct child to select a wider span. Children are grid items; use `Prose` for
+ * text with collapsing margins.
  *
  * Fragment links clear the configured sticky headers. For keyboard focus, also
  * set scroll padding on the page's scroll port to their total height, for
@@ -346,18 +351,67 @@ export function ShellMainBody(props: ShellMainBodyProps) {
   return <ak.Role.div {...shellMainBody.jsx(variantProps)} {...rest} />;
 }
 
-export interface ShellBreakoutProps
-  extends ak.RoleProps<"div">, VariantProps<typeof shellBreakout> {}
+export interface ShellMainContentProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellMainContent> {}
 
 /**
- * A band that spans main's or the intro's popout, feature, or full lines. Its
- * children return to the content column. A narrower breakout can nest inside a
- * wider one; keep nesting to two levels because deeper subgrids can hang
- * Safari. Inline padding and auto margins would shift the shared columns.
+ * Selects the centered content column inside a main header, intro, body, or
+ * wider main band. Direct element children fill this column.
  */
-export function ShellBreakout(props: ShellBreakoutProps) {
-  const [variantProps, rest] = splitProps(props, shellBreakout);
-  return <ak.Role.div {...shellBreakout.jsx(variantProps)} {...rest} />;
+export function ShellMainContent(props: ShellMainContentProps) {
+  const [variantProps, rest] = splitProps(props, shellMainContent);
+  return <ak.Role.div {...shellMainContent.jsx(variantProps)} {...rest} />;
+}
+
+export interface ShellMainPopoutProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellMainPopout> {}
+
+/**
+ * Extends past the content column into the popout tracks. Direct element
+ * children fill its width. Use `ShellMainContent` inside to return to the
+ * content column. It must be a direct child of a main header, intro, body, or
+ * wider main band.
+ */
+export function ShellMainPopout(props: ShellMainPopoutProps) {
+  const [variantProps, rest] = splitProps(props, shellMainPopout);
+  return <ak.Role.div {...shellMainPopout.jsx(variantProps)} {...rest} />;
+}
+
+export interface ShellMainFeatureProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellMainFeature> {}
+
+/**
+ * Extends past the popout tracks into the feature tracks. Direct element
+ * children fill its width. Use a narrower main band inside to select its
+ * columns. It must be a direct child of a main header, intro, body, or full
+ * band.
+ */
+export function ShellMainFeature(props: ShellMainFeatureProps) {
+  const [variantProps, rest] = splitProps(props, shellMainFeature);
+  return <ak.Role.div {...shellMainFeature.jsx(variantProps)} {...rest} />;
+}
+
+export interface ShellMainFullProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellMainFull> {}
+
+/**
+ * Fills a main header, intro, or body's width, including the outer gutters.
+ * Direct element children fill its width. Use a narrower main band inside to
+ * select its columns. Keep main bands to two nested levels: deeper subgrids can
+ * hang Safari. Inline padding and auto margins shift the shared columns; put
+ * padding on a child element instead.
+ * @example
+ * <ShellMainBody>
+ *   <p>Centered content</p>
+ *   <ShellMainFull $layer="brand">
+ *     <p>Full-width content</p>
+ *     <ShellMainContent><p>Centered content in the band</p></ShellMainContent>
+ *   </ShellMainFull>
+ * </ShellMainBody>
+ */
+export function ShellMainFull(props: ShellMainFullProps) {
+  const [variantProps, rest] = splitProps(props, shellMainFull);
+  return <ak.Role.div {...shellMainFull.jsx(variantProps)} {...rest} />;
 }
 
 export interface ShellSidebarProps

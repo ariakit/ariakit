@@ -26,7 +26,8 @@ import {
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
-  ShellBreakout,
+  ShellMainContent,
+  ShellMainFull,
   ShellFooter,
   ShellHeader,
   ShellHeaderCenter,
@@ -323,10 +324,10 @@ function DocsScenario() {
         </ShellSidebarBody>
       </ShellSidebar>
       <ShellMain>
-        <ShellMainIntro $centered>
+        <ShellMainIntro>
           <DocsIntro />
         </ShellMainIntro>
-        <ShellMainBody $centered>
+        <ShellMainBody>
           {/*
           The documented consumer rule: the page is the scroll port, outside the
           shell, so it copies the header height to keep a focused control out
@@ -336,14 +337,15 @@ function DocsScenario() {
             {"html { scroll-padding-block-start: calc(4rem + 1px); }"}
           </style>
           <DocsArticle />
-          <ShellBreakout
-            $span="full"
+          <ShellMainFull
             $layer="brand"
             $p={6}
             className="text-center font-medium"
           >
-            <p>A full-width band inside the centered main</p>
-          </ShellBreakout>
+            <ShellMainContent>
+              <p>A full-width band inside the centered main</p>
+            </ShellMainContent>
+          </ShellMainFull>
           <Prose>
             <p>
               The band above spans the gutters of main while the text stays in
@@ -616,7 +618,7 @@ function ChatScenario() {
         </ShellSidebarBody>
       </ShellSidebar>
       <ShellMain>
-        <ShellMainBody $centered="main" $maxWidth={200}>
+        <ShellMainBody $maxWidth={200}>
           <ol aria-label="Messages" className="grid gap-4">
             {messages.map((message) => (
               <li key={message.id} id={`message-${message.id}`}>
@@ -688,8 +690,8 @@ const settingsSections = [
 
 /**
  * A settings page: the same shell with fewer parts. The page owns the sidebar
- * state, the main is centered within itself, and the shell asks for a slower
- * motion, which reduced motion still switches off.
+ * state, the main uses the centered content column, and the shell asks for a
+ * slower motion, which reduced motion still switches off.
  */
 function SettingsScenario() {
   const [current, setCurrent] = useState<string>(settingsSections[0].id);
@@ -746,7 +748,7 @@ function SettingsScenario() {
         </ShellSidebarBody>
       </ShellSidebar>
       <ShellMain>
-        <ShellMainBody $centered="main" $maxWidth={160}>
+        <ShellMainBody $maxWidth={160}>
           <Prose>
             <HeadingLevel>
               <Heading>Settings</Heading>
@@ -808,7 +810,7 @@ function MarketingScenario() {
         }
       />
       <ShellMain>
-        <ShellMainBody $centered $maxWidth={256}>
+        <ShellMainBody $maxWidth={256}>
           <HeadingLevel>
             <Prose className="py-16 text-center">
               <Heading className="text-4xl">
@@ -816,16 +818,11 @@ function MarketingScenario() {
               </Heading>
               <p>{paragraphs[0]}</p>
             </Prose>
-            <ShellBreakout
-              $span="full"
-              $layer="brand"
-              $p={12}
-              className="text-center"
-            >
+            <ShellMainFull $layer="brand" $p={12} className="text-center">
               <HeadingLevel>
                 <Heading id="features">Features</Heading>
               </HeadingLevel>
-            </ShellBreakout>
+            </ShellMainFull>
             <Prose className="py-16">
               <HeadingLevel>
                 <Heading id="pricing">Pricing</Heading>
@@ -892,7 +889,7 @@ function BarScenario() {
     <Shell>
       <ShellHeader {...partsProps} />
       <ShellMain>
-        <ShellMainBody $centered>
+        <ShellMainBody>
           <fieldset className="grid gap-2">
             <legend className="font-medium">Policy</legend>
             {Object.entries(barPolicies).map(([id, label]) => (
@@ -931,10 +928,10 @@ function StaticScenario() {
         </ShellSidebarBody>
       </ShellSidebar>
       <ShellMain>
-        <ShellMainIntro $centered>
+        <ShellMainIntro>
           <DocsIntro />
         </ShellMainIntro>
-        <ShellMainBody $centered>
+        <ShellMainBody>
           <DocsArticle />
         </ShellMainBody>
       </ShellMain>

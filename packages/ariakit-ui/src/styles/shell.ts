@@ -550,16 +550,17 @@ const centered = cx(
  * content column, so margins do not collapse; `Prose` is the text container to
  * use. Anchors inside land below a sticky header.
  *
- * With `$centered`, the content column stays on the shell's center whatever the
- * sidebars are doing: each slot's declared width times its open flag is a
- * transitioned length, and the difference between the sides is spent as the
- * emptier gutter, in step with the drawer that is folding. Full centering needs
- * the shell to be at least as wide as the open sidebars plus the content
- * maximum plus two gutters plus the difference between the sides; below that
- * the content column drifts toward the sidebar by up to half its width before
- * it gives up width.
+ * The content column stays on the shell's center whatever the sidebars are
+ * doing: each slot's declared width times its open flag is a transitioned
+ * length, and the difference between the sides is spent as the emptier gutter,
+ * in step with the drawer that is folding. Full centering needs the shell to be
+ * at least as wide as the open sidebars plus the content maximum plus two
+ * gutters plus the difference between the sides; below that the content column
+ * drifts toward the sidebar by up to half its width before it gives up width.
  */
 const content = cx(
+  centered,
+  compensation,
   "shell-content grid justify-stretch min-w-0 rounded-none!",
   // The inset is a grid track. Publish it to the frame padding channel
   // so nested frames still compute a concentric radius from that distance.
@@ -572,19 +573,6 @@ const content = cx(
 );
 
 const contentVariants = {
-  /**
-   * Centers the content column: on the shell's center, compensating for the
-   * sidebars, or with `"main"` within main only, with no compensation. The
-   * full-width template lives in the same variant, so each render emits one
-   * template and the two never compete.
-   */
-  $centered: {
-    true: [centered, compensation],
-    // No compensation: the same template with both offsets at zero.
-    main: [centered, "[--shell-comp-start:0px] [--shell-comp-end:0px]"],
-    false:
-      "grid-cols-[[full-start]_var(--shell-gutter)_[feature-start]_0_[popout-start]_0_[content-start]_minmax(0,1fr)_[content-end]_0_[popout-end]_0_[feature-end]_calc(var(--shell-gutter)+var(--shell-content-end-space))_[full-end]]",
-  },
   /**
    * Sets the maximum width of a centered content column. Numbers scale the
    * spacing token. Defaults to 48rem.
@@ -738,28 +726,46 @@ export const shellMainBody = cv({
 });
 
 /**
- * A band across named content columns. Children return to the content column,
- * and a narrower breakout can nest inside it. Keep nesting to two levels:
- * deeply nested subgrids can hang WebKit. Do not add a query container, auto
- * margins, or inline padding: each breaks the inherited column alignment.
+ * A band across named main columns. Children fill the band's width, and a
+ * narrower band can nest inside it. Keep nesting to two levels: deeply nested
+ * subgrids can hang WebKit. Do not add a query container, auto margins, or
+ * inline padding: each breaks the inherited column alignment.
  * https://bugs.webkit.org/show_bug.cgi?id=268595
  */
-export const shellBreakout = cv({
+const mainBand = cv({
   extend: [frame],
   class: [
-    "shell-breakout grid grid-cols-subgrid rounded-none! px-0!",
-    "[.shell-content>&]:contain-inline-size [.shell-breakout>&]:contain-inline-size",
-    "[&>*]:col-[content] [&>*]:min-w-0",
+    "shell-main-band grid grid-cols-subgrid min-w-0 rounded-none! px-0!",
+    "[.shell-content>&]:contain-inline-size [.shell-main-band>&]:contain-inline-size",
+    "[&>*]:col-span-full [&>*]:min-w-0",
   ],
-  variants: {
-    /** Chooses how far the band extends past content. Defaults to `full`. */
-    $span: {
-      popout:
-        "[.shell-content>&]:col-[popout] [.shell-breakout>&]:col-[popout]",
-      feature:
-        "[.shell-content>&]:col-[feature] [.shell-breakout>&]:col-[feature]",
-      full: "[.shell-content>&]:col-[full] [.shell-breakout>&]:col-[full]",
-    },
-  },
-  defaultVariants: { $span: "full", $p: "none" },
+  defaultVariants: { $p: "none" },
+});
+
+/** The centered content column, including inside a wider main band. */
+export const shellMainContent = cv({
+  extend: [mainBand],
+  class:
+    "shell-main-content [.shell-content>&]:col-[content] [.shell-main-band>&]:col-[content]",
+});
+
+/** Extends one step beyond the centered content column. */
+export const shellMainPopout = cv({
+  extend: [mainBand],
+  class:
+    "shell-main-popout [.shell-content>&]:col-[popout] [.shell-main-band>&]:col-[popout]",
+});
+
+/** Extends beyond the popout column, while leaving the outer gutters. */
+export const shellMainFeature = cv({
+  extend: [mainBand],
+  class:
+    "shell-main-feature [.shell-content>&]:col-[feature] [.shell-main-band>&]:col-[feature]",
+});
+
+/** Fills the main part's width, including its outer gutters. */
+export const shellMainFull = cv({
+  extend: [mainBand],
+  class:
+    "shell-main-full [.shell-content>&]:col-[full] [.shell-main-band>&]:col-[full]",
 });

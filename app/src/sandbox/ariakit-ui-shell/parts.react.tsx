@@ -89,14 +89,12 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
   const [sticky, setSticky] = useState(true);
   const [compact, setCompact] = useState(false);
   const [wideBorder, setWideBorder] = useState(false);
-  const [centered, setCentered] = useState(false);
-  const [mainCentered, setMainCentered] = useState(false);
+  const [unbounded, setUnbounded] = useState(false);
   const [localPadding, setLocalPadding] = useState(false);
   const [introMaxWidth, setIntroMaxWidth] = useState("");
   const [narrowShell, setNarrowShell] = useState(false);
   const [nestedHeaders, setNestedHeaders] = useState(false);
   const [tallerNestedHeader, setTallerNestedHeader] = useState(false);
-  const center = centered ? (mainCentered ? "main" : true) : false;
   const height = compact ? "sm" : undefined;
   return (
     <Shell className={narrowShell ? "max-w-[60rem]" : undefined}>
@@ -139,7 +137,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
       )}
       <ShellMain
         $p={spacingGutter ? 3 : "var(--page-gutter)"}
-        $maxWidth={120}
+        $maxWidth={unbounded ? "100%" : 120}
         className="[--page-gutter:1rem] @5xl/shell:[--page-gutter:2rem]"
       >
         {showHeader && (
@@ -149,7 +147,6 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
             $height={height}
             $sticky={sticky}
             $border={5}
-            $centered={center}
           >
             <div aria-label="Main actions">Page actions</div>
           </ShellMainHeader>
@@ -157,14 +154,13 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
         {showIntro && (
           <ShellMainIntro
             className={textSize}
-            $centered={center}
             $maxWidth={introMaxWidth || undefined}
             $p={localPadding ? 2 : undefined}
           >
             <h1>Explicit shell parts</h1>
           </ShellMainIntro>
         )}
-        <ShellMainBody $centered={center}>
+        <ShellMainBody>
           <section
             id="part-content"
             aria-label="Main content"
@@ -296,20 +292,10 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
             <label>
               <input
                 type="checkbox"
-                checked={centered}
-                onChange={(event) => setCentered(event.currentTarget.checked)}
+                checked={unbounded}
+                onChange={(event) => setUnbounded(event.currentTarget.checked)}
               />{" "}
-              Center parts
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={mainCentered}
-                onChange={(event) =>
-                  setMainCentered(event.currentTarget.checked)
-                }
-              />{" "}
-              Center within main
+              Unbounded content
             </label>
             <label>
               <input
