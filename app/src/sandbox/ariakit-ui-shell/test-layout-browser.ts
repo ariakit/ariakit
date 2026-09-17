@@ -9,10 +9,17 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await selectScenario(q, "geometry");
   });
 
+  test("centers direct children by default", async ({ q }) => {
+    const content = await getBox(q.main().locator("#layout-content"));
+    expect(content.width).toBeCloseTo(640, 0);
+    expect(content.x + content.width / 2).toBeCloseTo(720, 0);
+  });
+
   // https://github.com/ariakit/ariakit/issues/7532
   test("aligns the default bar padding and main gutter and changes them independently", async ({
     q,
   }) => {
+    await q.checkbox("Unbounded content").check();
     const content = q.main().locator("#layout-content");
     const headerText = q.banner().locator(".shell-bar-start > span");
     const footerText = q.text("Layout footer", { exact: true });
@@ -120,12 +127,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   for (const width of [1440, 560]) {
     // https://github.com/ariakit/ariakit/issues/7532
-    test(`aligns breakout text and nested subgrids at ${width}px without a wide table shrinking the content`, async ({
+    test(`places plain children across their band and explicit content in the centered column at ${width}px without a wide table shrinking the content`, async ({
       page,
       q,
     }) => {
       await page.setViewportSize({ width, height: 900 });
-      await q.checkbox("Centered content").check();
       const content = await getBox(q.main().locator("#layout-content"));
       const bands = [];
       for (const name of ["Popout", "Feature", "Full"]) {
@@ -133,15 +139,23 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         const text = await getBox(
           query(band).text(`${name} text`, { exact: true }),
         );
-        expect(text.x).toBeCloseTo(content.x, 0);
-        expect(text.width).toBeCloseTo(content.width, 0);
+        const bandBox = await getBox(band);
+        expect(text.x).toBeCloseTo(bandBox.x, 0);
+        expect(text.width).toBeCloseTo(bandBox.width, 0);
+        const centeredText = await getBox(
+          query(band).text(`Content inside ${name.toLowerCase()}`, {
+            exact: true,
+          }),
+        );
+        expect(centeredText.x).toBeCloseTo(content.x, 0);
+        expect(centeredText.width).toBeCloseTo(content.width, 0);
         await expect(band).toHaveCSS("padding-left", "0px");
         await expect(band).toHaveCSS("container-type", "normal");
         bands.push(await getBox(band));
       }
       const [popout, feature, full] = bands;
       if (!popout || !feature || !full) {
-        throw new Error("Missing breakout");
+        throw new Error("Missing main band");
       }
       expect(popout.width).toBeGreaterThanOrEqual(content.width);
       expect(feature.width).toBeGreaterThanOrEqual(popout.width);
@@ -149,11 +163,21 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         (await getBox(q.main().locator(":scope > .shell-main-body"))).width,
         0,
       );
-      const nested = await getBox(
-        page.locator('[aria-label="Nested popout band"]'),
+      for (const [name, outer] of [
+        ["popout", popout],
+        ["feature", feature],
+      ] as const) {
+        const nested = await getBox(
+          page.locator(`[aria-label="Nested ${name} band"]`),
+        );
+        expect(nested.x).toBeCloseTo(outer.x, 0);
+        expect(nested.width).toBeCloseTo(outer.width, 0);
+      }
+      const explicitContent = await getBox(
+        page.locator('[aria-label="Content band"]'),
       );
-      expect(nested.x).toBeCloseTo(popout.x, 0);
-      expect(nested.width).toBeCloseTo(popout.width, 0);
+      expect(explicitContent.x).toBeCloseTo(content.x, 0);
+      expect(explicitContent.width).toBeCloseTo(content.width, 0);
       if (width === 1440) {
         expect(content.width).toBeCloseTo(640, 0);
         expect(popout.width).toBeCloseTo(672, 0);
@@ -161,14 +185,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       } else {
         expect(content.width).toBeGreaterThan(300);
       }
-      await q.checkbox("Centered content").uncheck();
-      const fluidContent = await getBox(q.main().locator("#layout-content"));
-      expect(
-        (await getBox(page.locator('[aria-label="Popout band"]'))).width,
-      ).toBeCloseTo(fluidContent.width, 0);
-      expect(
-        (await getBox(page.locator('[aria-label="Feature band"]'))).width,
-      ).toBeCloseTo(fluidContent.width, 0);
     });
   }
 
@@ -178,7 +194,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     q,
   }) => {
     await page.setViewportSize({ width: 800, height: 900 });
-    await q.checkbox("Centered content").check();
     await q.button("Toggle layout navigation").click();
     const sidebar = getSidebar(q, "Layout navigation");
     const link = query(sidebar).link("Layout section");
@@ -233,7 +248,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     }
     await expect(toggle).toBeFocused();
     await page.setViewportSize({ width: 800, height: 900 });
-    await q.checkbox("Centered content").check();
     await expect(link).toBeVisible();
     await expect(sidebar).toHaveCSS("width", "192px");
     await expect(toggle).toHaveAttribute("aria-expanded", "true");
@@ -253,8 +267,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const end = getSidebar(q, "Layout contents");
     const heading = q.heading("Columns and frames");
     const content = q.main().locator("#layout-content");
-    for (const centered of [false, true]) {
-      await q.checkbox("Centered content").setChecked(centered);
+    for (const unbounded of [false, true]) {
+      await q.checkbox("Unbounded content").setChecked(unbounded);
       for (const open of [false, true, false]) {
         if ((await toggle.getAttribute("aria-expanded")) !== String(open)) {
           await toggle.click();

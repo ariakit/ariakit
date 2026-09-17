@@ -332,7 +332,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
     page,
   }) => {
-    await q.checkbox("Center parts").check();
     const intro = page.locator(".shell-main-intro");
     const width = (await getBox(intro)).width;
     const cases = [
@@ -358,13 +357,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     }
   });
 
-  for (const centered of [false, true]) {
-    test(`keeps shared geometry in ${centered ? "centered" : "fluid"} parts when text sizes differ`, async ({
+  for (const unbounded of [false, true]) {
+    test(`keeps shared geometry in ${unbounded ? "unbounded" : "bounded"} parts when text sizes differ`, async ({
       q,
       page,
     }) => {
       await q.checkbox("Use spacing gutter").check();
-      await q.checkbox("Center parts").setChecked(centered);
+      await q.checkbox("Unbounded content").setChecked(unbounded);
       const mainHeader = page.locator(".shell-main-header");
       const sidebarHeader = page.locator(".shell-sidebar-header");
       const actions = page.locator('[aria-label="Main actions"]');
@@ -378,7 +377,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
           await expect(header).toHaveCSS("height", "64px");
         }
         const contentBox = await getBox(content);
-        if (centered) {
+        if (!unbounded) {
           expect(contentBox.width).toBeCloseTo(480, 0);
         } else {
           expect(contentBox.x - (await getBox(q.main())).x).toBeCloseTo(12, 0);
@@ -436,9 +435,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
           "top",
           from === "main" ? "64px" : "128px",
         );
-        for (const mode of ["fluid", "shell", "main"]) {
-          await q.checkbox("Center parts").setChecked(mode !== "fluid");
-          await q.checkbox("Center within main").setChecked(mode === "main");
+        for (const unbounded of [false, true]) {
+          await q.checkbox("Unbounded content").setChecked(unbounded);
           const content = await getBox(bodyContent);
           for (const part of [headerContent, introContent]) {
             await expect
@@ -518,6 +516,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
     page,
   }) => {
+    await q.checkbox("Unbounded content").check();
     const header = page.locator('[aria-label="Main actions"]');
     const intro = q.heading("Explicit shell parts");
     const body = q.region("Main content");
@@ -544,7 +543,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("aligns main parts throughout an interrupted end-sidebar fold", async ({
     q,
   }) => {
-    await q.checkbox("Center parts").check();
     await q.combobox("End sidebar starts at").selectOption("main");
     const sidebar = getSidebar(q, "Part details");
     await expect(sidebar).toHaveCSS("width", "160px");

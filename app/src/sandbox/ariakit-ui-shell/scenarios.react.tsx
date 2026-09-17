@@ -11,7 +11,10 @@ import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Shell,
-  ShellBreakout,
+  ShellMainContent,
+  ShellMainPopout,
+  ShellMainFeature,
+  ShellMainFull,
   ShellFooter,
   ShellHeader,
   ShellMainIntro,
@@ -37,7 +40,7 @@ function isSeam(value: string): value is Seam {
 export function GeometryScenario({ controls }: ScenarioProps) {
   const [startOpen, setStartOpen] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
-  const [centered, setCentered] = useState(false);
+  const [unbounded, setUnbounded] = useState(false);
   const [compactGutter, setCompactGutter] = useState(false);
   const [flushGutter, setFlushGutter] = useState(false);
   const [widePadding, setWidePadding] = useState(false);
@@ -97,8 +100,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
       </ShellSidebar>
       <ShellMain>
         <ShellMainIntro
-          $centered={centered}
-          $maxWidth={160}
+          $maxWidth={unbounded ? "100%" : 160}
           $p={gutter}
           aria-label="Page introduction"
           className="py-8"
@@ -106,7 +108,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
           <h1>Columns and frames</h1>
           <p id="navigation-description">Select a section in the navigation.</p>
         </ShellMainIntro>
-        <ShellMainBody $centered={centered} $maxWidth={160} $p={gutter}>
+        <ShellMainBody $maxWidth={unbounded ? "100%" : 160} $p={gutter}>
           <div id="layout-content" className="grid gap-4">
             <fieldset className="flex flex-wrap gap-4">
               <legend>Layout options</legend>
@@ -127,10 +129,12 @@ export function GeometryScenario({ controls }: ScenarioProps) {
               <label>
                 <input
                   type="checkbox"
-                  checked={centered}
-                  onChange={(event) => setCentered(event.currentTarget.checked)}
+                  checked={unbounded}
+                  onChange={(event) =>
+                    setUnbounded(event.currentTarget.checked)
+                  }
                 />{" "}
-                Centered content
+                Unbounded content
               </label>
               <label>
                 <input
@@ -244,17 +248,32 @@ export function GeometryScenario({ controls }: ScenarioProps) {
           <Frame $rounded="8px" $p={2} aria-label="Inset frame">
             Inset frame
           </Frame>
-          <ShellBreakout $span="popout" $p={4} aria-label="Popout band">
+          <ShellMainContent aria-label="Content band">
+            <p>Content text</p>
+          </ShellMainContent>
+          <ShellMainPopout $p={4} aria-label="Popout band">
             <p>Popout text</p>
-          </ShellBreakout>
-          <ShellBreakout $span="feature" $p={4} aria-label="Feature band">
+            <ShellMainContent>
+              <p>Content inside popout</p>
+            </ShellMainContent>
+          </ShellMainPopout>
+          <ShellMainFeature $p={4} aria-label="Feature band">
             <p>Feature text</p>
-          </ShellBreakout>
-          <ShellBreakout $span="full" $p={4} aria-label="Full band">
+            <ShellMainContent>
+              <p>Content inside feature</p>
+            </ShellMainContent>
+          </ShellMainFeature>
+          <ShellMainFull $p={4} aria-label="Full band">
             <p>Full text</p>
-            <ShellBreakout $span="popout" aria-label="Nested popout band">
+            <ShellMainContent>
+              <p>Content inside full</p>
+            </ShellMainContent>
+            <ShellMainPopout aria-label="Nested popout band">
               <p>Nested popout text</p>
-            </ShellBreakout>
+            </ShellMainPopout>
+            <ShellMainFeature aria-label="Nested feature band">
+              <p>Nested feature text</p>
+            </ShellMainFeature>
             <table className="w-[1200px]">
               <caption>Wide data table</caption>
               <tbody>
@@ -263,21 +282,20 @@ export function GeometryScenario({ controls }: ScenarioProps) {
                 </tr>
               </tbody>
             </table>
-          </ShellBreakout>
+          </ShellMainFull>
           <div className="h-[1000px]">
             <p>Scroll to see the contents below the introduction.</p>
           </div>
-          <ShellBreakout $span="full" $p={0} aria-label="Flush band">
+          <ShellMainFull $p={0} aria-label="Flush band">
             <Frame
               $rounded="8px"
               $p={6}
               $layer="brand"
-              className="col-span-full!"
               aria-label="Flush frame"
             >
               A band at the shell edge
             </Frame>
-          </ShellBreakout>
+          </ShellMainFull>
         </ShellMainBody>
       </ShellMain>
       <ShellSidebar
