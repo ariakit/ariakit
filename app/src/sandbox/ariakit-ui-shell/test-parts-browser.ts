@@ -337,14 +337,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // Reverse inside the frame recorder. A test-process round trip can miss the
     // entire fold on a busy runner.
     await using recording = await sidebar.evaluateHandle((column, input) => {
-      if (!(input instanceof HTMLInputElement))
+      if (!(input instanceof HTMLInputElement)) {
         throw new Error("Missing toggle");
+      }
       const header = document.querySelector('[aria-label="Main actions"]');
       const intro = document.querySelector(".shell-main-intro > h1");
       const body = document.querySelector('[aria-label="Main content"]');
       const panel = column.firstElementChild;
-      if (!header || !intro || !body || !panel)
+      if (!header || !intro || !body || !panel) {
         throw new Error("Missing main parts");
+      }
       const parts = [header, intro];
       const contentElement = body;
       const panelElement = panel;

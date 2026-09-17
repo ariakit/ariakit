@@ -153,8 +153,9 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
               <select
                 value={from}
                 onChange={(event) => {
-                  if (isStart(event.currentTarget.value))
+                  if (isStart(event.currentTarget.value)) {
                     setFrom(event.currentTarget.value);
+                  }
                 }}
               >
                 {starts.map((start) => (
