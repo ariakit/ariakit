@@ -20,7 +20,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const headers = shells.map((shell) =>
       shell.locator(":scope > .shell-header"),
     );
-    const heights = [57, 65, 73];
+    const heights = [56, 64, 72];
     const offsets = heights.map((_, index) =>
       heights.slice(0, index).reduce((sum, height) => sum + height, 0),
     );
@@ -52,15 +52,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const [outerHeader, middleHeader, innerHeader] = headers;
     if (!outerHeader || !middleHeader || !innerHeader)
       throw new Error("Missing headers");
-    await expect(outerHeader).toHaveCSS("height", "57px");
-    await expect(middleHeader).toHaveCSS("height", "73px");
+    await expect(outerHeader).toHaveCSS("height", "56px");
+    await expect(middleHeader).toHaveCSS("height", "72px");
     await expect
       .poll(async () => (await getBox(innerHeader)).y)
-      .toBeCloseTo(130, 0);
+      .toBeCloseTo(128, 0);
     await expect
       .poll(async () => (await getBox(q.navigation("Inner navigation"))).y)
-      .toBeCloseTo(203, 0);
-    await expect(q.navigation("Outer navigation")).toHaveCSS("top", "57px");
+      .toBeCloseTo(200, 0);
+    await expect(q.navigation("Outer navigation")).toHaveCSS("top", "56px");
   });
 
   // https://github.com/ariakit/ariakit/issues/7532

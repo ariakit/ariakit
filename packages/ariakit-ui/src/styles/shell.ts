@@ -23,17 +23,14 @@ export const shell = cv({
     "[--shell-radius:20px]",
     "[--shell-start-1-width:0px] [--shell-start-2-width:0px]",
     "[--shell-end-1-width:0px] [--shell-end-2-width:0px]",
-    "[--shell-header-interior:0px] [--shell-main-max-width:48rem]",
-    "[--shell-header-has-border:1]",
-    "[--shell-header-height:calc(var(--shell-header-interior)+var(--shell-header-border-width)*var(--shell-header-has-border))]",
+    "[--shell-header-height:0px] [--shell-main-max-width:48rem]",
     "[--shell-duration:300ms] [--shell-motion:1] motion-reduce:[--shell-motion:0]",
     "[--shell-time:calc(var(--shell-duration)*var(--shell-motion))]",
     "[--shell-ease:cubic-bezier(0.2,0,0,1)]",
     "[--shell-header-step:--spacing(1)]",
-    "[--shell-local-header-height:calc(--spacing(16)+1px)]",
+    "[--shell-local-header-height:calc(var(--shell-header-step)*16)]",
     "[&:has(>.shell-header)]:[--shell-local-header-height:var(--shell-header-height)]",
     "[--shell-main-header-height:var(--shell-local-header-height)] [--shell-main-head:0px]",
-    "[&:has(>.shell-main>.shell-main-header-sticky)]:[--shell-main-head:var(--shell-main-header-height)]",
     "[--shell-head:0px]",
     "[&:has(>.shell-header-sticky)]:[--shell-head:var(--shell-header-height)]",
     // Alternating registered lengths avoid same-element custom-property
@@ -52,22 +49,6 @@ export const shell = cv({
   ],
   variants: {
     /**
-     * Sets the header's facing border width in pixels, also used by sticky
-     * offsets. `true` means 1px, `false` means zero, and `inherit` uses the
-     * shell's frame border width. Other parts keep their own `$border`.
-     */
-    $headerBorder(value?: "inherit" | boolean | number) {
-      if (value == null) return;
-      if (value === "inherit") {
-        return {
-          class: "[&>.shell-header]:ak-edge-inherit",
-          style: { "--shell-header-border-width": "var(--border-width, 1px)" },
-        };
-      }
-      const width = typeof value === "boolean" ? Number(value) : value;
-      return { style: { "--shell-header-border-width": `${width}px` } };
-    },
-    /**
      * Sets the duration of sidebar folds and content compensation. Numbers are
      * milliseconds. Zero and reduced motion disable these animations.
      */
@@ -78,7 +59,6 @@ export const shell = cv({
     },
   },
   defaultVariants: {
-    $headerBorder: true,
     $layer: "transparent",
     $rounded: "var(--shell-radius)",
     $p: "none",
@@ -123,7 +103,7 @@ const seam = cv({
           "border-dashed [--shell-facing-border:var(--border-width)]",
         );
       }
-      return "[--shell-facing-border:0px] [.shell:has(>&.shell-header)]:[--shell-header-has-border:0]";
+      return "[--shell-facing-border:0px]";
     },
   },
   defaultVariants: {
@@ -181,13 +161,10 @@ export const shellHeader = cv({
     bar,
     // The bar is a query container for its own parts. Its minimum height is
     // the token that the rest of the shell reads as the header's height.
-    "shell-header row-[header] min-h-[calc(var(--shell-header-interior)+var(--shell-facing-border))] @container/shell-header",
-    "[--border-width:var(--shell-header-border-width,1px)]",
+    "shell-header row-[header] box-border min-h-(--shell-header-height) @container/shell-header",
     "z-4",
   ],
   variants: {
-    // The root owns this width because sticky siblings use it too.
-    $border: null,
     /**
      * Keeps the header in view while its row is in view. It keeps its space, so
      * nothing flows under it. The shell reads the class this emits to publish
@@ -196,12 +173,12 @@ export const shellHeader = cv({
      */
     $sticky: "shell-header-sticky sticky inset-bs-(--shell-top)",
     /**
-     * Publishes the interior height plus its facing border. Defaults to `md`.
+     * Sets the outer height, including the border. Defaults to `md`.
      */
     $height: {
-      sm: "[.shell:has(>&)]:[--shell-header-interior:--spacing(14)] [--shell-header-interior:--spacing(14)]",
-      md: "[.shell:has(>&)]:[--shell-header-interior:--spacing(16)] [--shell-header-interior:--spacing(16)]",
-      lg: "[.shell:has(>&)]:[--shell-header-interior:--spacing(18)] [--shell-header-interior:--spacing(18)]",
+      sm: "[.shell:has(>&)]:[--shell-header-height:calc(var(--shell-header-step)*14)] [--shell-header-height:calc(var(--shell-header-step)*14)]",
+      md: "[.shell:has(>&)]:[--shell-header-height:calc(var(--shell-header-step)*16)] [--shell-header-height:calc(var(--shell-header-step)*16)]",
+      lg: "[.shell:has(>&)]:[--shell-header-height:calc(var(--shell-header-step)*18)] [--shell-header-height:calc(var(--shell-header-step)*18)]",
     },
     /**
      * Blurs the page behind the bar through a translucent surface, which falls
@@ -430,7 +407,7 @@ export const shellSidebar = cv({
       "7xl":
         "shell-sidebar-c-7xl @max-7xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-7xl/shell:[&>.shell-sidebar-panel]:hidden",
     },
-    /** Selects the first row the sidebar spans. Defaults to `intro`. */
+    /** Selects the first row the sidebar spans. Defaults to `main`. */
     $from: {
       main: "shell-sidebar-from-main row-[main-start/body-end]",
       intro: "shell-sidebar-from-intro row-[intro-start/body-end]",
@@ -449,7 +426,7 @@ export const shellSidebar = cv({
     $side: "start",
     $width: "md",
     $collapse: "3xl",
-    $from: "intro",
+    $from: "main",
     $sticky: true,
   },
 });
@@ -656,6 +633,26 @@ export const shellMainHeader = cv({
      */
     $sticky:
       "shell-main-header-sticky sticky inset-bs-[calc(var(--shell-top)+var(--shell-head))]",
+    /**
+     * Hides the header below a named shell-container width and removes its
+     * sticky offset. Defaults to `false`, keeping it at every width.
+     */
+    $collapse: {
+      false: "",
+      "3xs": "shell-main-header-c-3xs @max-3xs/shell:hidden",
+      "2xs": "shell-main-header-c-2xs @max-2xs/shell:hidden",
+      xs: "shell-main-header-c-xs @max-xs/shell:hidden",
+      sm: "shell-main-header-c-sm @max-sm/shell:hidden",
+      md: "shell-main-header-c-md @max-md/shell:hidden",
+      lg: "shell-main-header-c-lg @max-lg/shell:hidden",
+      xl: "shell-main-header-c-xl @max-xl/shell:hidden",
+      "2xl": "shell-main-header-c-2xl @max-2xl/shell:hidden",
+      "3xl": "shell-main-header-c-3xl @max-3xl/shell:hidden",
+      "4xl": "shell-main-header-c-4xl @max-4xl/shell:hidden",
+      "5xl": "shell-main-header-c-5xl @max-5xl/shell:hidden",
+      "6xl": "shell-main-header-c-6xl @max-6xl/shell:hidden",
+      "7xl": "shell-main-header-c-7xl @max-7xl/shell:hidden",
+    },
     /**
      * Sets the outer height, including the border. Defaults to the shell
      * header.

@@ -9,6 +9,69 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await selectScenario(q, "parts");
   });
 
+  test("starts sidebars beside the main header by default", async ({
+    q,
+    page,
+  }) => {
+    await q.combobox("End sidebar starts at").selectOption("default");
+    const header = page.locator(".shell-main-header");
+    for (const name of ["Part navigation", "Part details"]) {
+      expect((await getBox(getSidebar(q, name))).y).toBeCloseTo(
+        (await getBox(header)).y,
+        0,
+      );
+    }
+    expect((await getBox(header)).width).toBeCloseTo(
+      (await getBox(q.main().locator(":scope > .shell-main-body"))).width,
+      0,
+    );
+  });
+
+  for (const from of ["intro", "body"]) {
+    test(`collapses the main header and releases sticky ${from} sidebars`, async ({
+      q,
+      page,
+    }) => {
+      await q.combobox("End sidebar starts at").selectOption(from);
+      await q.checkbox("Second end sidebar").check();
+      await q.checkbox("Collapse main header").check();
+      const header = page.locator(".shell-main-header");
+      const nestedHeader = page.locator(
+        '[aria-label="Nested parts shell"] > .shell-header',
+      );
+      await expect(header).toBeVisible();
+      await q.checkbox("Narrow shell").check();
+      await expect(header).toBeHidden();
+      for (const name of ["Part details", "More details"]) {
+        await expect(q.complementary(name)).toBeVisible();
+        await expect(q.complementary(name)).toHaveCSS("top", "64px");
+        await expect(q.complementary(name)).toHaveCSS("max-height", "836px");
+      }
+      await expect(nestedHeader).toHaveCSS("top", "64px");
+      await expect(q.region("Main content")).toHaveCSS(
+        "scroll-margin-block-start",
+        "80px",
+      );
+      expect((await getBox(page.locator(".shell-main-intro"))).y).toBeCloseTo(
+        64,
+        0,
+      );
+      await page.evaluate(() => window.scrollTo(0, 700));
+      await expect
+        .poll(async () => (await getBox(q.complementary("Part details"))).y)
+        .toBeCloseTo(64, 0);
+      await q.checkbox("Narrow shell").uncheck();
+      await expect(header).toBeVisible();
+      await expect(q.complementary("Part details")).toHaveCSS("top", "128px");
+      await expect(nestedHeader).toHaveCSS("top", "128px");
+      await q.checkbox("Sticky main header").uncheck();
+      await expect(q.complementary("Part details")).toHaveCSS("top", "64px");
+      await q.checkbox("Collapse main header").uncheck();
+      await q.checkbox("Narrow shell").check();
+      await expect(header).toBeVisible();
+    });
+  }
+
   test("keeps the introduction and local header in one main landmark", async ({
     q,
     page,
@@ -38,7 +101,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       '[aria-label="Nested parts shell"] > .shell-header',
     );
     for (const header of [mainHeader, sidebarHeader]) {
-      await expect(header).toHaveCSS("height", "65px");
+      await expect(header).toHaveCSS("height", "64px");
       await expect(header).toHaveCSS("border-bottom-width", "5px");
     }
     const headerBox = await getBox(mainHeader);
@@ -49,29 +112,30 @@ withFramework(import.meta.dirname, async ({ test }) => {
       headerBox.y + (headerBox.height - 5) / 2,
       0,
     );
-    await expect(nestedHeader).toHaveCSS("top", "130px");
-    await expect(q.complementary("Part details")).toHaveCSS("top", "130px");
-    await expect(q.navigation("Part navigation")).toHaveCSS("top", "65px");
+    await expect(nestedHeader).toHaveCSS("top", "128px");
+    await expect(q.complementary("Part details")).toHaveCSS("top", "128px");
+    await expect(q.navigation("Part navigation")).toHaveCSS("top", "64px");
     await q.checkbox("Wide global border").check();
-    for (const header of [mainHeader, sidebarHeader]) {
-      await expect(header).toHaveCSS("height", "67px");
+    await expect(q.banner()).toHaveCSS("border-bottom-width", "3px");
+    for (const header of [q.banner(), mainHeader, sidebarHeader]) {
+      await expect(header).toHaveCSS("height", "64px");
     }
     await q.checkbox("Compact local headers").check();
     for (const header of [mainHeader, sidebarHeader]) {
       await expect(header).toHaveCSS("height", "56px");
     }
-    await expect(nestedHeader).toHaveCSS("top", "123px");
+    await expect(nestedHeader).toHaveCSS("top", "120px");
     await page.evaluate(() => window.scrollTo(0, 700));
     await expect
       .poll(async () => (await getBox(mainHeader)).y)
-      .toBeCloseTo(67, 0);
+      .toBeCloseTo(64, 0);
     await q.checkbox("Sticky main header").uncheck();
-    await expect(nestedHeader).toHaveCSS("top", "67px");
-    await expect(q.complementary("Part details")).toHaveCSS("top", "67px");
+    await expect(nestedHeader).toHaveCSS("top", "64px");
+    await expect(q.complementary("Part details")).toHaveCSS("top", "64px");
     await q.checkbox("Global header").uncheck();
     await expect(mainHeader).toHaveCSS("height", "56px");
     await q.checkbox("Compact local headers").uncheck();
-    await expect(mainHeader).toHaveCSS("height", "65px");
+    await expect(mainHeader).toHaveCSS("height", "64px");
     await expect(nestedHeader).toHaveCSS("top", "0px");
   });
 
@@ -91,25 +155,25 @@ withFramework(import.meta.dirname, async ({ test }) => {
     );
     await expect(middle.locator(":scope > .shell-header")).toHaveCSS(
       "top",
-      "130px",
+      "128px",
     );
-    await expect(middleHeader).toHaveCSS("top", "195px");
+    await expect(middleHeader).toHaveCSS("top", "192px");
     await expect(middleHeader).toHaveCSS("height", "56px");
-    await expect(innerHeader).toHaveCSS("top", "251px");
-    await expect(innerMainHeader).toHaveCSS("top", "316px");
+    await expect(innerHeader).toHaveCSS("top", "248px");
+    await expect(innerMainHeader).toHaveCSS("top", "312px");
     await expect(innerMainHeader).toHaveCSS("height", "72px");
     await q.checkbox("Taller nested main header").check();
     await expect(middleHeader).toHaveCSS("height", "72px");
-    await expect(middleHeader).toHaveCSS("top", "195px");
-    await expect(innerHeader).toHaveCSS("top", "267px");
-    await expect(innerMainHeader).toHaveCSS("top", "332px");
+    await expect(middleHeader).toHaveCSS("top", "192px");
+    await expect(innerHeader).toHaveCSS("top", "264px");
+    await expect(innerMainHeader).toHaveCSS("top", "328px");
     await page.evaluate(() => window.scrollTo(0, 1200));
     await expect
       .poll(async () => (await getBox(innerHeader)).y)
-      .toBeCloseTo(267, 0);
+      .toBeCloseTo(264, 0);
     await expect
       .poll(async () => (await getBox(innerMainHeader)).y)
-      .toBeCloseTo(332, 0);
+      .toBeCloseTo(328, 0);
   });
 
   test("preserves local percentage and length maximum widths", async ({
@@ -159,7 +223,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       for (const size of ["text-sm", "text-lg"]) {
         await q.combobox("Local text size").selectOption(size);
         for (const header of [mainHeader, sidebarHeader]) {
-          await expect(header).toHaveCSS("height", "65px");
+          await expect(header).toHaveCSS("height", "64px");
         }
         const contentBox = await getBox(content);
         if (centered) {
@@ -171,12 +235,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
           expect((await getBox(part)).x).toBeCloseTo(contentBox.x, 0);
           expect((await getBox(part)).width).toBeCloseTo(contentBox.width, 0);
         }
-        await expect(nestedHeader).toHaveCSS("top", "130px");
+        await expect(nestedHeader).toHaveCSS("top", "128px");
         await q.checkbox("Compact local headers").check();
         for (const header of [mainHeader, sidebarHeader]) {
           await expect(header).toHaveCSS("height", "56px");
         }
-        await expect(nestedHeader).toHaveCSS("top", "121px");
+        await expect(nestedHeader).toHaveCSS("top", "120px");
         await page.evaluate(() => window.scrollTo(0, 900));
         const headerBox = await getBox(mainHeader);
         expect((await getBox(q.complementary("Part details"))).y).toBeCloseTo(
@@ -214,11 +278,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
         );
         await expect(q.complementary("Part details")).toHaveCSS(
           "top",
-          from === "main" ? "65px" : "130px",
+          from === "main" ? "64px" : "128px",
         );
         await expect(q.complementary("More details")).toHaveCSS(
           "top",
-          from === "main" ? "65px" : "130px",
+          from === "main" ? "64px" : "128px",
         );
         for (const mode of ["fluid", "shell", "main"]) {
           await q.checkbox("Center parts").setChecked(mode !== "fluid");
@@ -244,7 +308,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       expect(
         (await getBox(header)).width - (await getBox(body)).width,
       ).toBeCloseTo(160, 0);
-      await expect(q.complementary("More details")).toHaveCSS("top", "130px");
+      await expect(q.complementary("More details")).toHaveCSS("top", "128px");
       await q.checkbox("Open end sidebar").check();
       await page.setViewportSize({ width: 700, height: 900 });
       await expect(getSidebar(q, "Part details")).toHaveCSS("width", "0px");
@@ -275,7 +339,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       0,
     );
     await expect(q.main()).toHaveCSS("top", "auto");
-    expect((await getBox(q.main())).y).toBeCloseTo(65, 0);
+    expect((await getBox(q.main())).y).toBeCloseTo(64, 0);
   });
 
   test("keeps sidebar header and footer fixed while its body scrolls", async ({
@@ -295,7 +359,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const panelBox = await getBox(panel);
     expect(panelBox.y + panelBox.height).toBeLessThanOrEqual(900);
     await page.evaluate(() => window.scrollTo(0, 400));
-    await expect.poll(async () => (await getBox(header)).y).toBeCloseTo(65, 0);
+    await expect.poll(async () => (await getBox(header)).y).toBeCloseTo(64, 0);
   });
 
   test("selects shared padding from the nearest shell width and supports local overrides", async ({

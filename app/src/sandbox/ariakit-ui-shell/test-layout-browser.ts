@@ -24,7 +24,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       (await getBox(footerText)).x,
       0,
     );
-    await expect(q.banner()).toHaveCSS("height", "66px");
+    await expect(q.banner()).toHaveCSS("height", "64px");
     await q.checkbox("Compact gutter").check();
     expect((await getBox(content)).x).toBeCloseTo(8, 0);
     expect((await getBox(headerText)).x).toBeCloseTo(12, 0);
@@ -32,7 +32,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     expect((await getBox(content)).x).toBeCloseTo(8, 0);
     expect((await getBox(headerText)).x).toBeCloseTo(48, 0);
     expect((await getBox(footerText)).x).toBeCloseTo(48, 0);
-    await expect(q.banner()).toHaveCSS("height", "66px");
+    await expect(q.banner()).toHaveCSS("height", "64px");
   });
 
   // https://github.com/ariakit/ariakit/issues/7532
@@ -83,8 +83,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           (await getBox(q.main().locator(":scope > .shell-main-body"))).x,
       )
       .toBeCloseTo(320, 0);
-    await expect(q.banner()).toHaveCSS("height", "74px");
-    await expect(q.navigation("Layout navigation")).toHaveCSS("top", "74px");
+    await expect(q.banner()).toHaveCSS("height", "72px");
+    await expect(q.navigation("Layout navigation")).toHaveCSS("top", "72px");
   });
 
   // https://github.com/ariakit/ariakit/issues/7532
@@ -108,7 +108,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await page.evaluate(() => window.scrollTo(0, 500));
     await expect
       .poll(async () => (await getBox(q.navigation("Layout contents"))).y)
-      .toBeCloseTo(66, 0);
+      .toBeCloseTo(64, 0);
     await expect(page.locator(".shell")).toHaveCSS("overflow-x", "visible");
     await expect(q.main()).toHaveCSS("overflow-x", "visible");
     await expect(q.main().locator(":scope > .shell-main-body")).toHaveCSS(

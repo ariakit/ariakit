@@ -316,8 +316,9 @@ export interface ShellMainHeaderProps
  * matches `ShellHeader` unless `$height` sets a local preset. Borders are
  * contained inside that height. Its surface spans adjacent end columns whose
  * sidebars start at the intro or body; content stays aligned with the body. Use
- * `$sticky={false}` for a static header. Direct element children occupy the
- * content column; wrap text in an element such as `div`.
+ * `$sticky={false}` for a static header. `$collapse="3xl"` hides it below a
+ * 48rem shell width and removes its sticky offset. Direct element children
+ * occupy the content column; wrap text in an element such as `div`.
  */
 export function ShellMainHeader(props: ShellMainHeaderProps) {
   const [variantProps, rest] = splitProps(props, shellMainHeader);
@@ -335,7 +336,7 @@ export interface ShellMainBodyProps
  *
  * Fragment links clear the configured sticky headers. For keyboard focus, also
  * set scroll padding on the page's scroll port to their total height, for
- * example `html { scroll-padding-block-start: 130px }` for two default headers.
+ * example `html { scroll-padding-block-start: 128px }` for two default headers.
  * Content must fit the configured header heights.
  */
 export function ShellMainBody(props: ShellMainBodyProps) {
@@ -376,7 +377,8 @@ export interface ShellSidebarProps
  * `aria-label`. A closed panel leaves the tab order and the accessibility tree.
  * The panel draws a real border on the side that faces main. Put scrollable
  * content in `ShellSidebarBody`, even when there is no header or footer. The
- * panel itself does not scroll.
+ * panel itself does not scroll. It starts beside the main header by default;
+ * use `$from="intro"` or `$from="body"` to start below it.
  *
  * `open` controls the state, and `$collapse` hides the panel below a named
  * container width even while it is open. A consumer button controls `open` and

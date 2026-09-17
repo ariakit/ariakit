@@ -275,7 +275,7 @@ body > * {
 @property --shell-local-header-height {
   syntax: "<length>";
   inherits: true;
-  initial-value: 65px;
+  initial-value: 64px;
 }
 
 @property --shell-gutter {
@@ -347,6 +347,15 @@ body > * {
 /* Main and sidebar columns resolve state from their owning shell. Keep these
    rules in one utility to avoid repeating selectors in arbitrary class names. */
 @utility shell-slot-state {
+  /* Resolve the main header offset on shell children so container queries can
+     remove it without querying the shell's own size from the shell itself. */
+  --shell-main-header-fit: 1;
+  .shell:has(> .shell-main > .shell-main-header-sticky) > & {
+    --shell-main-head: calc(
+      var(--shell-main-header-height) * var(--shell-main-header-fit)
+    );
+  }
+
   /* Reset inherited state so nested shells only read their own sidebars. */
   --shell-start-1-open: 0;
   --shell-start-2-open: 0;
@@ -431,6 +440,9 @@ body > * {
   /* A query cannot style its own container. Each shell child receives the
      breakpoint flags separately from the open-state flags. */
   @variant @max-3xs/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-3xs) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-3xs:not(.shell-sidebar-start ~ *)
       )
@@ -455,6 +467,9 @@ body > * {
     }
   }
   @variant @max-2xs/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-2xs) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-2xs:not(.shell-sidebar-start ~ *)
       )
@@ -479,6 +494,9 @@ body > * {
     }
   }
   @variant @max-xs/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-xs) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-xs:not(.shell-sidebar-start ~ *)
       )
@@ -501,6 +519,9 @@ body > * {
     }
   }
   @variant @max-sm/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-sm) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-sm:not(.shell-sidebar-start ~ *)
       )
@@ -523,6 +544,9 @@ body > * {
     }
   }
   @variant @max-md/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-md) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-md:not(.shell-sidebar-start ~ *)
       )
@@ -545,6 +569,9 @@ body > * {
     }
   }
   @variant @max-lg/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-lg) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-lg:not(.shell-sidebar-start ~ *)
       )
@@ -567,6 +594,9 @@ body > * {
     }
   }
   @variant @max-xl/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-xl) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-xl:not(.shell-sidebar-start ~ *)
       )
@@ -589,6 +619,9 @@ body > * {
     }
   }
   @variant @max-2xl/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-2xl) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-2xl:not(.shell-sidebar-start ~ *)
       )
@@ -613,6 +646,9 @@ body > * {
     }
   }
   @variant @max-3xl/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-3xl) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-3xl:not(.shell-sidebar-start ~ *)
       )
@@ -637,6 +673,9 @@ body > * {
     }
   }
   @variant @max-4xl/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-4xl) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-4xl:not(.shell-sidebar-start ~ *)
       )
@@ -661,6 +700,9 @@ body > * {
     }
   }
   @variant @max-5xl/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-5xl) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-5xl:not(.shell-sidebar-start ~ *)
       )
@@ -685,6 +727,9 @@ body > * {
     }
   }
   @variant @max-6xl/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-6xl) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-6xl:not(.shell-sidebar-start ~ *)
       )
@@ -709,6 +754,9 @@ body > * {
     }
   }
   @variant @max-7xl/shell {
+    .shell:has(> .shell-main > .shell-main-header-c-7xl) > & {
+      --shell-main-header-fit: 0;
+    }
     .shell:has(
         > .shell-sidebar-start.shell-sidebar-c-7xl:not(.shell-sidebar-start ~ *)
       )
