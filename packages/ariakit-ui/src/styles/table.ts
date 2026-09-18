@@ -7,7 +7,7 @@ import { edge, getEdgeColorValue, getEdgeWeightValue } from "./edge.ts";
 import { frame } from "./frame.ts";
 import { hover } from "./hover.ts";
 import { layer } from "./layer.ts";
-import { padding } from "./padding.ts";
+import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
 const tableEdgeInputs = cx(
@@ -143,7 +143,7 @@ const tableBorderVariants = {
 };
 
 export const table = cv({
-  extend: [padding],
+  extend: [textFrame],
   class: [
     tableEdgeInputs,
     "relative w-full border-separate border-spacing-0",
@@ -153,7 +153,7 @@ export const table = cv({
     "[--table-row-line:max(var(--table-border-bs,0),var(--table-border-be,0))]",
     "[--table-cell-line:max(var(--table-border-s,0),var(--table-border-e,0))]",
     // The cells pad like a control, with the frame padding above and below
-    // and the optical side padding on top (see --py and --px in padding.ts).
+    // and the optical side padding on top (see --py and --px in text-frame.ts).
     // Both are measured in the table's own line box and font and registered
     // as lengths (see ui.css), so a head row in smaller text pads like a
     // body row and its text stays on the column below. The table element

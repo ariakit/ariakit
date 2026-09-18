@@ -2,15 +2,19 @@ import { cv } from "clava";
 import { frame } from "./frame.ts";
 
 /**
- * A frame that spends its padding the way a control does: the frame padding
- * above and below the content, and on the sides that padding plus an optical
- * extra, so a line of text sits as far from a rounded edge as it looks to. The
- * two are published as `--py` and `--px`, measured in the element's own font,
- * for the slots and gaps that line up with them. Extend this in place of
- * `frame` wherever a line of text sits in a padded box: a control, a nav group
- * label or a list row. Extending both would apply the frame twice.
+ * A frame for a line of text. It spends its padding the way a control does: the
+ * frame padding above and below the content, and on the sides that padding plus
+ * an optical extra, so a line of text sits as far from a rounded edge as it
+ * looks to. The two are published as `--py` and `--px`, measured in the
+ * element's own font, for the slots and gaps that line up with them. Extend
+ * this in place of `frame` wherever a line of text sits in a padded box: a
+ * control, a nav group label or a list row. Extending both would apply the
+ * frame twice.
+ *
+ * Despite the name, this has nothing to do with the `text` recipe, which colors
+ * text. This one only shapes the box around it.
  */
-export const padding = cv({
+export const textFrame = cv({
   extend: [frame],
   variants: {
     /**

@@ -80,6 +80,9 @@ export const button = cv({
     $layer: "transparent",
     $gapY: "none",
     $hoverOffset: true,
+    // A dimmed button, and the slots that follow its ink, read at full strength
+    // under the pointer.
+    $hoverInk: 100,
     $focus: true,
     $active: true,
     $lightnessOffset(defaultValue, variants) {
@@ -127,6 +130,7 @@ export const button = cv({
       $hoverDarken: false,
       $hoverSaturate: false,
       $hoverDesaturate: false,
+      $hoverInk: false,
       $active: false,
     });
   },

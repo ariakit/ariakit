@@ -2,10 +2,25 @@ import { cv } from "clava";
 import {
   getChromaStyleClass,
   getLightnessStyleClass,
+  getScaledStyleClass,
 } from "../utils/styles.ts";
 
 export const hover = cv({
   variants: {
+    /**
+     * Sets the strength of the element's text while it is hovered, from `0` to
+     * `100`, in place of its resting `$ink`. The amount inherits, so the slots
+     * of a control follow it. Set to `false` to clear a default set by a
+     * component.
+     */
+    $hoverInk(value?: (string & {}) | number | false) {
+      return getScaledStyleClass({
+        value,
+        allowZero: true,
+        property: "--hover-ink",
+        class: "ui-hover:ak-ink-(--hover-ink)",
+      });
+    },
     /**
      * Automatically adjusts the layer's lightness when the element is hovered.
      * The background color becomes lighter or darker depending on its current

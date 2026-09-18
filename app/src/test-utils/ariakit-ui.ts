@@ -198,6 +198,23 @@ export async function hoverOver(
     .toBe(true);
 }
 
+/**
+ * Reads the alpha of an element's computed text color: the ink of a layer, or
+ * of the text and icons that inherit it. An opaque color reads as 1.
+ */
+export function inkAlpha(element: Locator) {
+  return element.evaluate((node) => {
+    const color = getComputedStyle(node).color;
+    // The ak-* colors serialize to the modern syntax, with the alpha after a
+    // slash. A plain sRGB color serializes to the legacy form, where only
+    // rgba() carries an alpha, as its fourth component.
+    const modern = /\/\s*([\d.]+)\s*\)$/.exec(color)?.[1];
+    const legacy = /^rgba\((?:[^,]+,){3}\s*([\d.]+)\s*\)$/.exec(color)?.[1];
+    const alpha = modern ?? legacy;
+    return alpha ? Number(alpha) : 1;
+  });
+}
+
 /** Waits until an element has focus that the engine shows as keyboard focus. */
 export async function expectFocusVisible(element: Locator) {
   await expect(element).toBeFocused();

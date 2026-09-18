@@ -14,11 +14,15 @@ export const badge = cv({
     "min-w-[calc(1lh+(var(--ak-frame-padding,0px)+var(--ak-frame-border,0px))*2)]",
   ],
   defaultVariants: {
+    // A badge is a surface of its own, so it paints the layer it opens, in the
+    // surface's color lifted off it or in a color asked for by name.
+    $layer: true,
     $rounded: "full",
     $size: "xs",
     $p: 1,
     $px(defaultValue, variants) {
-      // Replace padding's fallback for pills; explicit padding still wins.
+      // Replace the text frame's fallback for pills; explicit padding still
+      // wins.
       if (defaultValue !== "md") return defaultValue;
       if (variants.$rounded === "full") return "lg";
       return defaultValue;

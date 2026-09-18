@@ -226,6 +226,12 @@ export const frameBase = cv({
 export const frame = cv({
   extend: [edge, frameBase],
   defaultVariants: {
+    // A frame is geometry, not a surface. It opens a layer only to give its
+    // text and edges a color context, and paints nothing until a layer variant
+    // or a state moves the color, so whatever sits behind it stays visible: a
+    // glider, a gradient, or content scrolling under a sticky bar. A frame that
+    // is a surface of its own sets `$layer` to `true` or to a color.
+    $layer: "transparent",
     // These two clear variants declared by `edge`. They belong here rather than
     // in `edge` because a computed default only sees the variants its own
     // component declares or extends, so in `edge` they could not read $border.

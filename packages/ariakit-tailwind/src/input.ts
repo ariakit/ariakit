@@ -736,7 +736,9 @@ const inputs = {
   edgeH: _ak.prop("edge-h"),
   edgeA: _ak.prop("edge-alpha", { initial: 0.1 }),
   textPushL: _ak.prop("text-push-lightness", { initial: 0 }),
-  textA: _ak.prop("text-alpha", { initial: 1 }),
+  // Typed, so the layer utility's style query reads a resolved number: an
+  // amount written as `calc(100 / 100)` counts as 1 and skips the ink formula.
+  textA: _ak.prop.number("text-alpha", { initial: 1, inherits: true }),
   textColor: _ak.prop("text-color"),
   textRelativeL: _ak.prop("text-relative-lightness", { initial: 0 }),
   textRelativeC: _ak.prop("text-relative-chroma", { initial: 0 }),
@@ -1353,6 +1355,9 @@ const textMinimumAlpha = fn.add(
   fn.mul(vars.contrastT, TEXT_CONTRAST_SCALE),
 );
 const textAlpha = fn.max(textMinimumAlpha, inputs.textA);
+// The text color of a layer and of `ink-*`. The alpha input inherits, so a
+// nested layer keeps the ink of the element around it and only clamps it to its
+// own floor; `ink-100` on the nested layer restores full strength.
 const inkText = fn.oklch(vars.layer, {
   l: vars.textForegroundContrastL,
   c: 0,
@@ -1371,6 +1376,12 @@ utility(
   at.apply`ring-[color:${vars.edge}]`,
   set(vars.layer, layer),
   set(vars.text, vars.layerScheme),
+  // The ink amount inherits, so a layer under dimmed text dims its own text
+  // with the floor of its own color. The formula costs a relative color per
+  // layer, so it runs only where the inherited amount is below 1. The amount
+  // is a typed number, so `ink-100` and an untouched amount both read as 1
+  // and keep the scheme color computed above.
+  at.container.not(fn.style(inputs.textA, 1), set(vars.text, inkText)),
   set(vars.edge, edge),
   set(vars.layerBand, layerBand),
   set(vars.layerScheme, layerScheme),

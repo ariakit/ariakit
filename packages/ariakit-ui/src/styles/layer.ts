@@ -39,6 +39,8 @@ export function hasLayerBackground(variants: VariantProps<typeof layer>) {
     if (key === "$layer") {
       return value !== "transparent";
     }
+    // Ink colors the text, not the layer.
+    if (key === "$ink") return false;
     return !!layer.class({ $layer: false, [key]: value });
   });
 }
@@ -82,6 +84,21 @@ export const layer = cv({
         class: "ak-layer ak-layer-color-(--layer-color)",
         style: { "--layer-color": value },
       };
+    },
+    /**
+     * Sets the strength of the layer's own text, from `0` to `100`. `0` is the
+     * faintest text that still passes the contrast check, and `100` is full
+     * strength. The amount inherits: the layers inside this one, such as the
+     * slots of a control, keep it until one of them sets its own. Set to
+     * `false` to clear a default set by a component.
+     */
+    $ink(value?: (string & {}) | number | false) {
+      return getScaledStyleClass({
+        value,
+        allowZero: true,
+        property: "--ink",
+        class: "ak-ink-(--ink)",
+      });
     },
     /**
      * Inverts the layer's base background color.

@@ -2055,6 +2055,35 @@ export default function ButtonExamples() {
           Sync without border
         </ak.Button>
       </Example>
+      <Example
+        title="Dimmed button"
+        description="$ink dims the label and the slots together, because the ink inherits through the slot layers. A badge only dims down to its own readable floor. The button returns to full strength under the pointer through its $hoverInk default, unless that default is cleared."
+        code={`
+          <Button $ink={60}>
+            <ButtonSlot><Share2 /></ButtonSlot>
+            <ButtonLabel>Share</ButtonLabel>
+            <ButtonSlot $kind="badge">9</ButtonSlot>
+          </Button>
+          <Button $ink={60} $hoverInk={false}>
+            <ButtonSlot><Share2 /></ButtonSlot>
+            <ButtonLabel>Stay dim</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button $ink={60}>
+          <ButtonSlot>
+            <Share2 />
+          </ButtonSlot>
+          <ButtonLabel>Share</ButtonLabel>
+          <ButtonSlot $kind="badge">9</ButtonSlot>
+        </Button>
+        <Button $ink={60} $hoverInk={false}>
+          <ButtonSlot>
+            <Share2 />
+          </ButtonSlot>
+          <ButtonLabel>Stay dim</ButtonLabel>
+        </Button>
+      </Example>
     </ExampleGrid>
   );
 }

@@ -10,8 +10,8 @@ import {
   optionLabel,
   optionSlot,
 } from "./option.ts";
-import { padding } from "./padding.ts";
 import { popover } from "./popover.ts";
+import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
 export const comboboxInput = cv({
@@ -59,7 +59,7 @@ export const comboboxGroup = cv({
 });
 
 export const comboboxGroupLabel = cv({
-  extend: [padding, text],
+  extend: [textFrame, text],
   class: "cursor-default text-sm font-medium ak-ink-50",
   defaultVariants: {
     $p: 2,
