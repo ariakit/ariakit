@@ -1,3 +1,4 @@
+import type { Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
@@ -77,6 +78,128 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           return buttonEdge - linkEdge;
         })
         .toBeCloseTo(0, 0);
+    });
+  }
+
+  for (const dir of ["ltr", "rtl"] as const) {
+    test(`keeps section rows and an end bar on the nav's end edge in ${dir}`, async ({
+      page,
+      q,
+    }) => {
+      const nav = q.navigation(`End bar across sections (${dir})`);
+      const bar = nav.locator(":scope > .glider");
+      const overview = query(nav).link("Overview");
+      const styling = query(nav).button("Styling");
+      const themes = query(nav).link("Themes");
+      const tokens = query(nav).link("Tokens");
+      const components = query(nav).button("Components");
+      const buttonLink = query(nav).link("Button");
+      const padded = query(nav).button("Padded");
+      const alpha = query(nav).link("Alpha");
+      // The start and end edges of a box in the nav's direction. The bar's
+      // start edge is the one that faces the row it follows.
+      const start = async (locator: Locator) => {
+        const box = await getBox(locator);
+        return dir === "rtl" ? box.x + box.width : box.x;
+      };
+      const end = async (locator: Locator) => {
+        const box = await getBox(locator);
+        return dir === "rtl" ? box.x : box.x + box.width;
+      };
+      await nav.scrollIntoViewIfNeeded();
+      // A row in a section ends where its button and a top-level link end, with
+      // a guide and without one.
+      await expect
+        .poll(async () => (await end(styling)) - (await end(overview)))
+        .toBeCloseTo(0, 0);
+      for (const row of [themes, buttonLink]) {
+        await expect
+          .poll(async () => (await end(row)) - (await end(overview)))
+          .toBeCloseTo(0, 0);
+      }
+      // The bar starts on the end edge of the current row, so it keeps one line
+      // as the current row moves from the top level into the sections.
+      await overview.click();
+      await expect
+        .poll(async () => (await start(bar)) - (await end(overview)))
+        .toBeCloseTo(0, 0);
+      const line = await start(bar);
+      for (const row of [themes, buttonLink]) {
+        await row.click();
+        await expect.poll(() => start(bar)).toBeCloseTo(line, 0);
+      }
+      // A body the caller pads insets its rows' end edge, and the bar with it,
+      // by that padding: $p={3} is three spacing steps, 12px at the sandbox's
+      // 16px font. The start edge keeps the label indent, so it stays where the
+      // rows of the unpadded section without a guide start.
+      const inset = dir === "rtl" ? -12 : 12;
+      await alpha.click();
+      await expect
+        .poll(async () => (await end(padded)) - (await end(alpha)))
+        .toBeCloseTo(inset, 0);
+      await expect
+        .poll(async () => line - (await start(bar)))
+        .toBeCloseTo(inset, 0);
+      await expect
+        .poll(async () => (await start(alpha)) - (await start(buttonLink)))
+        .toBeCloseTo(0, 0);
+      // Rows keep their button's radius, in the padded body too.
+      for (const [row, header] of [
+        [themes, styling],
+        [alpha, padded],
+      ] as const) {
+        const radius = await header.evaluate(
+          (node) => getComputedStyle(node).borderRadius,
+        );
+        await expect(row).toHaveCSS("border-radius", radius);
+      }
+      // One nav gap under a button, between its rows and after its last one.
+      // The padded body keeps that gap and pads its rows inside it.
+      const gap = await nav.evaluate((node) =>
+        Number.parseFloat(getComputedStyle(node).rowGap),
+      );
+      const below = async (upper: Locator, lower: Locator) => {
+        const [top, bottom] = await Promise.all([getBox(upper), getBox(lower)]);
+        return bottom.y - top.y - top.height;
+      };
+      expect(await below(styling, themes)).toBeCloseTo(gap, 0);
+      expect(await below(themes, tokens)).toBeCloseTo(gap, 0);
+      expect(await below(tokens, components)).toBeCloseTo(gap, 0);
+      expect(await below(padded, alpha)).toBeCloseTo(gap + 12, 0);
+      // The guide runs along the section's rows: it starts one nav gap under
+      // the button, where the first row starts, and ends with the last row, one
+      // nav gap before the next button. It is a pseudo-element of the content
+      // the button controls, so its edges come from its computed insets there.
+      const contentId = await styling.getAttribute("aria-controls");
+      const content = nav.locator(`[id="${contentId}"]`);
+      const guide = await content.evaluate((node) => {
+        const style = getComputedStyle(node, "::before");
+        const box = node.getBoundingClientRect();
+        return {
+          top: box.top + Number.parseFloat(style.top),
+          bottom: box.bottom - Number.parseFloat(style.bottom),
+        };
+      });
+      const [stylingBox, tokensBox, componentsBox] = await Promise.all([
+        getBox(styling),
+        getBox(tokens),
+        getBox(components),
+      ]);
+      expect(guide.top - stylingBox.y - stylingBox.height).toBeCloseTo(gap, 0);
+      expect(guide.bottom - tokensBox.y - tokensBox.height).toBeCloseTo(0, 0);
+      expect(componentsBox.y - guide.bottom).toBeCloseTo(gap, 0);
+      // A row's focus ring paints past its box, on the content's clip edge
+      // where the row ends, so the content stops clipping while a row has
+      // keyboard focus, and only then. The ring is not hit-testable, so the
+      // computed overflow is what a test can read.
+      const componentsContentId =
+        await components.getAttribute("aria-controls");
+      const componentsContent = nav.locator(`[id="${componentsContentId}"]`);
+      await expect(componentsContent).toHaveCSS("overflow", "clip");
+      await components.focus();
+      await page.keyboard.press("Tab");
+      await expect(buttonLink).toBeFocused();
+      await expect(componentsContent).toHaveCSS("overflow", "visible");
     });
   }
 
