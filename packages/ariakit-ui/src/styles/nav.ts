@@ -84,7 +84,6 @@ export const nav = cv({
     $layout: "vertical",
     $layer: "transparent",
     $rounded: "md",
-    $p: "none",
   },
 });
 
@@ -105,13 +104,14 @@ export const navGroup = cv({
 // em-based spacing step would come out smaller in it.
 export const navGroupLabel = cv({
   extend: [textFrame, text],
-  class: ["ak-ink-60 font-medium text-[0.875em] text-start"],
+  class: ["font-medium text-[0.875em] text-start"],
   defaultVariants: {
     // The label pads like a row, with the lengths the nav measured in its own
     // font rather than the label's smaller one.
     $p: "var(--nav-py)",
     $px: "var(--nav-px)",
     $rounded: "md",
+    $ink: 60,
   },
 });
 

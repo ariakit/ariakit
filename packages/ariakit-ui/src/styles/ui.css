@@ -17,8 +17,6 @@
   --spacing: 0.25em;
   --spacing-px: 1px;
 
-  --container-wider: 92rem;
-
   --duration-tabs: 100ms;
   --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
 
@@ -74,7 +72,7 @@
 
 :root {
   @variant dark {
-    --color-canvas: oklch(16.34% 0.0091 264.28);
+    --color-canvas: oklch(19.34% 0.0091 264.28);
     --color-success: var(--color-green-700);
     --color-warning: var(--color-yellow-400);
     --color-danger: var(--color-red-400);

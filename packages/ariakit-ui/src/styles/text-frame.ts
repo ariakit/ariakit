@@ -23,12 +23,13 @@ export const textFrame = cv({
      * value replaces the side padding, such as one measured on an ancestor and
      * passed down as a length (`var(--nav-px)`).
      */
-    $px(value?: "sm" | "md" | "lg" | "xl" | (string & {})) {
+    $px(value?: "sm" | "md" | "lg" | "xl" | "2xl" | (string & {})) {
       if (value == null) return;
       if (value === "sm") return "[--px-scale:0]";
       if (value === "md") return "[--px-scale:0.5]";
       if (value === "lg") return "[--px-scale:0.75]";
       if (value === "xl") return "[--px-scale:1.25]";
+      if (value === "2xl") return "[--px-scale:1.5]";
       return { style: { "--px": value } };
     },
   },

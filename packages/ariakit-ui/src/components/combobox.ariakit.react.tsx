@@ -384,7 +384,7 @@ export function ComboboxSelect({
   ...props
 }: ComboboxSelectProps) {
   const [variantProps, rest] = splitProps(props, comboboxSelect);
-  const arrow = chevron !== false && <ComboboxSelectArrow />;
+  const arrow = chevron !== false && <ComboboxSelectArrow $mx="closeGap" />;
   const iconElement = isRenderable(icon) && (
     <ComboboxItemSlot>{icon}</ComboboxItemSlot>
   );

@@ -136,8 +136,7 @@ const seam = cv({
  */
 const bar = cx(
   "col-[shell] grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-0!",
-  "pl-[max(var(--ak-frame-padding),env(safe-area-inset-left))]",
-  "pr-[max(var(--ak-frame-padding),env(safe-area-inset-right))]",
+  "px-[max(var(--ak-frame-padding),env(safe-area-inset-left))]",
   // A growing center part takes a double share of the leftover, so it grows
   // while staying centered as long as both sides fit in a quarter of the bar.
   // The part announces it with the class its $grow variant emits.
@@ -569,9 +568,9 @@ const content = cx(
   // The inset is a grid track. Publish it to the frame padding channel
   // so nested frames still compute a concentric radius from that distance.
   "[--shell-popout:1rem] [--shell-feature:3.5rem]",
-  "ak-frame-p-(--shell-gutter) px-0!",
+  "ak-frame-p-(--shell-gutter) px-0",
   "print:overflow-visible",
-  "[&>*]:col-[content] [&>*]:min-w-0",
+  "*:col-[content] *:min-w-0",
   // A fragment link lands below a sticky header.
   "[&_[id]]:[scroll-margin-block-start:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+1rem)]",
 );
@@ -741,7 +740,7 @@ const mainBand = cv({
   class: [
     "shell-main-band grid grid-cols-subgrid min-w-0 rounded-none! px-0!",
     "[.shell-content>&]:contain-inline-size [.shell-main-band>&]:contain-inline-size",
-    "[&>*]:col-span-full [&>*]:min-w-0",
+    "*:col-span-full *:min-w-0",
   ],
   defaultVariants: { $p: "none" },
 });
