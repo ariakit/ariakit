@@ -409,6 +409,13 @@ export const navDisclosureContentBody = cv({
     // icon or indicator.
     "[&_li>.control:not(.disclosure-button)]:-ms-(--px)",
     "[&_li:has(>.disclosure-button)]:-ms-(--disclosure-px)",
+    // A row can sit on an edge where the disclosure content clips: its end and
+    // the last row's bottom while the body has no padding, and its start where
+    // nothing indents the body (no guide, no leading icon), which a caller's
+    // padding never changes. So rows here draw their focus ring inside their
+    // box, like the disclosure button above them. This outranks a row's own
+    // $focusOffset on purpose: an outset ring would be cut.
+    "[&_li>.control]:-outline-offset-2",
   ],
   // No $p: the body pads nothing by itself, so its rows end where the button
   // ends and a bar or a cover on a row lands where it does on a top-level row.

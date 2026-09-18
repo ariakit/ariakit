@@ -394,11 +394,6 @@ export const disclosurePlus = cv({
 export const disclosureContent = cv({
   class: [
     "relative z-1 max-h-0 overflow-clip rounded-b-[inherit]",
-    // A row's focus ring paints past its box, and a row of a nav body sits on
-    // this content's edges. While a row has keyboard focus the content stops
-    // clipping; it is open then, so nothing overflows. WebKit has no clip
-    // margin to let just the ring through.
-    "has-[li>.control:is(:focus-visible,[data-focus-visible])]:overflow-visible",
     "transition-[content-visibility,height,max-height]",
     // A disclosure nested in the content is not a member of the group around
     // it, so the flag stops here.

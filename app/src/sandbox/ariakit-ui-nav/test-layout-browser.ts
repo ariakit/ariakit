@@ -188,18 +188,18 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       expect(guide.top - stylingBox.y - stylingBox.height).toBeCloseTo(gap, 0);
       expect(guide.bottom - tokensBox.y - tokensBox.height).toBeCloseTo(0, 0);
       expect(componentsBox.y - guide.bottom).toBeCloseTo(gap, 0);
-      // A row's focus ring paints past its box, on the content's clip edge
-      // where the row ends, so the content stops clipping while a row has
-      // keyboard focus, and only then. The ring is not hit-testable, so the
-      // computed overflow is what a test can read.
-      const componentsContentId =
-        await components.getAttribute("aria-controls");
-      const componentsContent = nav.locator(`[id="${componentsContentId}"]`);
-      await expect(componentsContent).toHaveCSS("overflow", "clip");
+      // A section row ends on the edge where its content clips, so it draws its
+      // keyboard focus ring inside its box, where the clip cannot cut it. A
+      // top-level link keeps the ring outside its box.
       await components.focus();
       await page.keyboard.press("Tab");
       await expect(buttonLink).toBeFocused();
-      await expect(componentsContent).toHaveCSS("overflow", "visible");
+      await expect(buttonLink).toHaveCSS("outline-width", "2px");
+      await expect(buttonLink).toHaveCSS("outline-offset", "-2px");
+      await expect(overview).toHaveCSS("outline-offset", "1px");
+      // A padded body still leaves its rows on the content's start edge, so its
+      // rows keep the inset too.
+      await expect(alpha).toHaveCSS("outline-offset", "-2px");
     });
   }
 
