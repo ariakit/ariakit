@@ -3,12 +3,12 @@ import { includes } from "../utils/includes.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
 import { hasLayerBackground, isLayerColor, layer } from "./layer.ts";
-import { padding } from "./padding.ts";
+import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
 // A control and a control group set their font size the same way, and every
 // other measurement in this file derives from it through 1cap, 1em and 1lh. The
-// padding itself, --px and --py, comes from the padding recipe.
+// padding itself, --px and --py, comes from the text frame recipe.
 const fontSizeVariants = {
   /**
    * Sets the element’s font size. This affects the entire element, including
@@ -27,7 +27,7 @@ const fontSizeVariants = {
 };
 
 export const control = cv({
-  extend: [padding, text],
+  extend: [textFrame, text],
   class: [
     "control ak-frame-join-item group/control relative flex justify-center",
     "ui-hover:ak-frame-join-active ui-selected:ak-frame-join-active ui-focus-visible:ak-frame-join-active",
@@ -192,7 +192,7 @@ export const controlSlot = cv({
       icon: "",
       // A key chord reads the same way in every locale, so the bidi algorithm
       // must not reorder its keys in a right-to-left row.
-      shortcut: "[direction:ltr] ak-ink-60",
+      shortcut: "[direction:ltr]",
       avatar: "overflow-clip",
       badge: "*:text-[0.8125em]",
     },
@@ -229,18 +229,24 @@ export const controlSlot = cv({
     $kind: "icon",
     $size: "md",
     $layer(defaultValue, variants) {
-      // Replace only layer's own default. A more specific value, from an
-      // extender or a color, was asked for deliberately.
-      if (defaultValue !== true) return defaultValue;
-      if (variants.$kind === "badge") return "brand";
+      // Replace only frame's own default, the see-through layer that gives an
+      // icon its color context. A more specific value, from an extender or a
+      // color, was asked for deliberately.
+      if (defaultValue !== "transparent") return defaultValue;
       // A badge, an avatar and a floating slot are surfaces of their own and
-      // paint the layer they open. Any other slot opens one only to give its
-      // icon a color context, and paints it when a layer variant moves the
-      // color. Otherwise the control's own surface shows through: a see-through
-      // control, or one standing aside for a glider.
+      // paint the layer they open. Any other slot keeps the see-through layer
+      // and paints it when a layer variant moves the color. Otherwise the
+      // control's own surface shows through: a see-through control, or one
+      // standing aside for a glider.
+      if (variants.$kind === "badge") return "brand";
       if (variants.$kind === "avatar") return true;
       if (variants.$floating) return true;
-      return "transparent";
+      return defaultValue;
+    },
+    $ink(defaultValue, variants) {
+      // A shortcut reads softer than the label beside it.
+      if (variants.$kind !== "shortcut") return defaultValue;
+      return defaultValue ?? 60;
     },
     $lightnessOffset(defaultValue, variants) {
       if (variants.$kind !== "avatar") return defaultValue;

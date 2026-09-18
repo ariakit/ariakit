@@ -174,16 +174,6 @@ export const glider = cv({
       if (variants.$kind === "bar") return false;
       return defaultValue;
     },
-    $layer(defaultValue, variants) {
-      if (variants.$state !== "focus") return defaultValue;
-      // A bar is the indicator itself and keeps its fill.
-      if (variants.$kind === "bar") return defaultValue;
-      // A focus cover draws its indicator and paints nothing. It keeps the
-      // layer, which colours the indicator, and replaces only layer's own
-      // default: a colour asked for by an extender or a caller stays.
-      if (defaultValue !== true) return defaultValue;
-      return "transparent";
-    },
     // A glider's lift counts from the group's surface, which is where a control
     // in a glider group rests. A hover glider takes the one step a hovered
     // control takes, and a selected glider one more. Controls that lift at rest

@@ -1,7 +1,35 @@
-import { tabInto } from "#app/test-utils/ariakit-ui.ts";
+import { hoverOver, inkAlpha, tabInto } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // The ink inherits through the slot layers, so the icon dims with the label
+  // and both come back to full strength under the pointer.
+  test("dims the slots with the label and restores them on hover", async ({
+    q,
+  }) => {
+    const example = query(q.article("Dimmed button"));
+    const button = example.button("Share 9");
+    const label = example.text("Share");
+    const icon = button.locator("svg");
+    // The badge slot wraps its text in a span; the innermost one is the text.
+    const badge = button.locator("span", { hasText: /^9$/ }).last();
+    const labelAlpha = await inkAlpha(label);
+    test.expect(labelAlpha).toBeLessThan(1);
+    test.expect(await inkAlpha(icon)).toBe(labelAlpha);
+    // The badge paints its own color, so it stops at its own readable floor.
+    const badgeAlpha = await inkAlpha(badge);
+    test.expect(badgeAlpha).toBeGreaterThan(labelAlpha);
+    test.expect(badgeAlpha).toBeLessThan(1);
+    await hoverOver(button);
+    await test.expect.poll(() => inkAlpha(label)).toBe(1);
+    await test.expect.poll(() => inkAlpha(icon)).toBe(1);
+
+    const dim = example.button("Stay dim");
+    await hoverOver(dim);
+    await test.expect.poll(() => inkAlpha(dim.locator("svg"))).toBe(labelAlpha);
+    test.expect(await inkAlpha(example.text("Stay dim"))).toBe(labelAlpha);
+  });
+
   // https://github.com/ariakit/ariakit/pull/7489#discussion_r3995226174
   test("preserves the selected avatar color when its kind changes", async ({
     q,

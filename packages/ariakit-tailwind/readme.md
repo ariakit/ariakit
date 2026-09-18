@@ -612,10 +612,14 @@ The utility changes contrast settings only. Use `ak-ink-0` to dim text to the di
 
 Controls the opacity of text inside a layer, which is useful for secondary text, captions, and disabled states. It only sets text color, so it works either on the same element as [`ak-layer`](#ak-layer) (styling the layer's own text) or on a descendant element.
 
+The requested opacity inherits. A nested `ak-layer` keeps the ink of the element around it and recomputes the readable floor against its own background, so an icon slot or a badge inside dimmed text dims with it. Use `ak-ink-100` on the nested element to bring it back to full strength. Text colored with [`ak-text`](#ak-text) keeps its own adaptive color at full opacity, regardless of the ink around it.
+
 ```html
 <div class="ak-layer ak-layer-canvas ak-ink-70">
   Layer with its own text at least 70% opaque
   <p class="ak-ink-0">Nested text at minimum readable opacity</p>
+  <span class="ak-layer ak-layer-primary">Nested layer, still 70% ink</span>
+  <span class="ak-layer ak-layer-primary ak-ink-100">Back to full ink</span>
 </div>
 ```
 

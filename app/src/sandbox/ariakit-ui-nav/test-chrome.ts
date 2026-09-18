@@ -1,6 +1,35 @@
+import {
+  expectMedia,
+  hoverOver,
+  inkAlpha,
+} from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // On a dark layer an idle row dims its label, and the ink inherits through
+  // the icon slot layer, so the icon dims with it. A hovered or current row
+  // brings both back to full strength.
+  test("dims a row's icon with its label on a dark layer", async ({
+    page,
+    q,
+  }) => {
+    await page.emulateMedia({ colorScheme: "dark" });
+    await expectMedia(page, "(prefers-color-scheme: dark)");
+    const nav = query(q.navigation("Icons"));
+    const idle = nav.link("Getting started");
+    const idleAlpha = await inkAlpha(idle);
+    test.expect(idleAlpha).toBeLessThan(1);
+    test.expect(await inkAlpha(idle.locator("svg"))).toBe(idleAlpha);
+
+    const current = nav.link(/^Accessibility/);
+    test.expect(await inkAlpha(current)).toBe(1);
+    test.expect(await inkAlpha(current.locator("svg"))).toBe(1);
+
+    await hoverOver(idle);
+    await test.expect.poll(() => inkAlpha(idle)).toBe(1);
+    await test.expect.poll(() => inkAlpha(idle.locator("svg"))).toBe(1);
+  });
+
   // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998773048
   test("keeps a bare fragment label separate from its description and badge", async ({
     q,

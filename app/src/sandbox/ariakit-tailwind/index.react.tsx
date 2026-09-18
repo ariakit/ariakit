@@ -120,6 +120,26 @@ function Layers() {
           <Cell className="ak-state-100" />
         </Layer>
       </Layer>
+      {/*
+       * The ink amount inherits through nested layers. Each nested layer clamps
+       * it to its own readable floor, and ak-ink-100 restores full strength.
+       */}
+      <Layer
+        label="ak-ink-<number> inherits"
+        className="ak-layer ak-ink-70 ak-frame ak-frame-cover ak-frame-border flex-col"
+      >
+        <Layer className="ak-layer ak-frame ak-frame-cover ak-frame-border ak-frame-row">
+          <Cell label="inherited" />
+          <Cell label="ak-ink-100" className="ak-ink-100" />
+          <Cell label="ak-ink-0" className="ak-ink-0" />
+          <Cell label="ak-layer-blue-600" className="ak-layer-blue-600" />
+          <Cell
+            label="ak-layer-blue-600 ak-ink-100"
+            className="ak-layer-blue-600 ak-ink-100"
+          />
+          <Cell label="ak-layer-20" className="ak-layer-20" />
+        </Layer>
+      </Layer>
       <Layer
         label="ak-layer-invert"
         className="ak-layer ak-layer-l-[calc(1-l)] ak-layer-min-25 ak-frame ak-frame-full/1 ak-frame-force ak-frame-border ak-edge-min-c-30 ak-edge-raw *:ak-text"

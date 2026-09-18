@@ -2,7 +2,7 @@ import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { edge } from "./edge.ts";
 import { layer } from "./layer.ts";
-import { padding } from "./padding.ts";
+import { textFrame } from "./text-frame.ts";
 
 // Surface lightness on the $lightnessOffset scale: the counter chip, and the
 // empty check slot beside a bullet or a dash. Those two glyphs paint no
@@ -113,10 +113,10 @@ export const list = cv({
 });
 
 // The marker and the guide are absolute, so a row must stay their positioning
-// context. A row pads like a control (see padding.ts), so its text sits where a
-// control's would.
+// context. A row pads like a control (see text-frame.ts), so its text sits
+// where a control's would.
 const listRow = cv({
-  extend: [padding],
+  extend: [textFrame],
   class: [
     "relative",
     // A row freezes the line height it inherits into a length, so every
@@ -140,7 +140,7 @@ export const listItem = cv({
   class: [
     // The marker column is one line box at the frame padding, where a control
     // puts its icon slot, and the text starts one control inset past it: the
-    // frame padding plus the optical side padding (see --px in padding.ts).
+    // frame padding plus the optical side padding (see --px in text-frame.ts).
     // The longhand wins over the padding shorthand by stylesheet order.
     "ps-[calc(var(--px)+1lh)]",
     // ui-list-item-blocks matches an item that contains a block element.

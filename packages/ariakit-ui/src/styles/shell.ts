@@ -107,6 +107,10 @@ const seam = cv({
     },
   },
   defaultVariants: {
+    // The bars and the sidebar parts are surfaces that content scrolls under,
+    // so they paint the layer they open instead of keeping the frame's
+    // see-through default.
+    $layer: true,
     $border: true,
     $borderType(defaultValue) {
       // Frame's adaptive and inherited defaults do not draw one-sided edges.

@@ -3,8 +3,8 @@ import { getSpacingValue } from "../utils/styles.ts";
 import { button, buttonSlot } from "./button.ts";
 import { frame, frameBase } from "./frame.ts";
 import { glider } from "./glider.ts";
-import { padding } from "./padding.ts";
 import { selected } from "./selected.ts";
+import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
 export const nav = cv({
@@ -21,7 +21,7 @@ export const nav = cv({
     "[--nav-row-gap:--spacing(3)]",
     // A row's padding, and where its content starts past its edge: the
     // control's default padding and its optical side padding on top (see
-    // --py and --px in padding.ts). Both are measured in the nav's own line
+    // --py and --px in text-frame.ts). Both are measured in the nav's own line
     // box and font and registered as lengths (see ui.css), so a group
     // label in smaller text pads like a row and insets its text to the same
     // pixel.
@@ -104,7 +104,7 @@ export const navGroup = cv({
 // (see --nav-py and --nav-px there): the label's own text is smaller, and the
 // em-based spacing step would come out smaller in it.
 export const navGroupLabel = cv({
-  extend: [padding, text],
+  extend: [textFrame, text],
   class: ["ak-ink-60 font-medium text-[0.875em] text-start"],
   defaultVariants: {
     // The label pads like a row, with the lengths the nav measured in its own
@@ -132,12 +132,12 @@ export const navLink = cv({
   extend: [button, selected],
   class: [
     "justify-start text-wrap",
+    // Idle links on a dark layer read softer than their surface, and the
+    // icon slot follows, because the ink inherits. The button's hover ink and
+    // the selected ink below bring a row back to full strength.
     "ak-dark:ak-ink-70",
     // Links read as plain rows until they're current.
     "not-ui-selected:font-normal",
-    "ui-hover:ak-ink-100",
-    // Current links keep full text contrast on their pushed surface.
-    "ui-selected:ak-ink-100",
     // The row gap plus the control's extra side padding, which an icon slot
     // takes off, so a link with an icon lines up with the disclosure rows
     // around it. $gap is off below, so this is the only gap utility here.
@@ -148,6 +148,8 @@ export const navLink = cv({
     // still paint their own states.
     $lightnessOffset: false,
     $selectedPush: true,
+    // Current links keep full text contrast on their pushed surface.
+    $selectedInk: 100,
     $gap: "none",
   },
 });
