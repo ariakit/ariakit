@@ -175,6 +175,80 @@ function DemoSections(props: NavProps) {
   );
 }
 
+const endBarPages = ["Overview", "Usage"];
+
+interface EndBarSectionsProps {
+  dir: "ltr" | "rtl";
+}
+
+/**
+ * Top-level links and three open sections behind one bar on the end edge: a
+ * section with an icon and its guide, one without either, and one whose body
+ * the caller pads. The current link moves on click, so the bar can be compared
+ * between a top-level row and a row in each section.
+ */
+function EndBarSections({ dir }: EndBarSectionsProps) {
+  const [current, setCurrent] = useState("Overview");
+  // WebKit leaves links out of the Tab order unless full keyboard access is on,
+  // so every link takes an explicit tab index for the keyboard test.
+  const link = (page: string) => (
+    <NavLink
+      key={page}
+      href={`#${page.toLowerCase()}`}
+      tabIndex={0}
+      aria-current={current === page ? "page" : undefined}
+      onClick={(event) => {
+        event.preventDefault();
+        setCurrent(page);
+      }}
+    >
+      {page}
+    </NavLink>
+  );
+  return (
+    <Nav
+      dir={dir}
+      aria-label={`End bar across sections (${dir})`}
+      glider={{ $kind: "bar", $animated: false, $side: "end" }}
+      className="w-full"
+    >
+      {endBarPages.map(link)}
+      <NavDisclosure
+        defaultOpen
+        button={
+          <NavDisclosureButton icon={<Palette strokeWidth={1.5} />}>
+            Styling
+          </NavDisclosureButton>
+        }
+      >
+        <NavList>{["Themes", "Tokens"].map(link)}</NavList>
+      </NavDisclosure>
+      <NavDisclosure
+        defaultOpen
+        button={
+          <NavDisclosureButton indicator="chevron-right-end">
+            Components
+          </NavDisclosureButton>
+        }
+        content={{ guide: false }}
+      >
+        <NavList>{["Button", "Dialog"].map(link)}</NavList>
+      </NavDisclosure>
+      <NavDisclosure
+        defaultOpen
+        button={
+          <NavDisclosureButton indicator="chevron-right-end">
+            Padded
+          </NavDisclosureButton>
+        }
+        content={{ guide: false, body: { $p: 3 } }}
+      >
+        <NavList>{["Alpha", "Beta"].map(link)}</NavList>
+      </NavDisclosure>
+    </Nav>
+  );
+}
+
 const INITIAL_SIDEBAR_URL = "/docs/styling/introduction";
 
 /**
@@ -790,6 +864,47 @@ export default function NavExamples() {
           className="w-full"
         />
       </Example>
+
+      {(["ltr", "rtl"] as const).map((dir) => (
+        <Example
+          key={dir}
+          title={`End bar across sections (${dir})`}
+          description="A bar on the end edge marks the current row among the top-level links and in the open sections alike. The rows of a section end where their button ends and sit one nav gap under it, where their guide starts too, so the bar keeps one line. A body the caller pads keeps its rows on the label and insets their end edge, and the bar, by that padding."
+          code={`
+            <Nav dir="${dir}" glider={{ $kind: "bar", $animated: false, $side: "end" }}>
+              <NavLink>Overview</NavLink>
+              <NavDisclosure
+                defaultOpen
+                button={<NavDisclosureButton icon={<Palette />}>Styling</NavDisclosureButton>}
+              >
+                <NavList>
+                  <NavLink>Themes</NavLink>
+                </NavList>
+              </NavDisclosure>
+              <NavDisclosure
+                defaultOpen
+                button={<NavDisclosureButton indicator="chevron-right-end">Components</NavDisclosureButton>}
+                content={{ guide: false }}
+              >
+                <NavList>
+                  <NavLink>Button</NavLink>
+                </NavList>
+              </NavDisclosure>
+              <NavDisclosure
+                defaultOpen
+                button={<NavDisclosureButton indicator="chevron-right-end">Padded</NavDisclosureButton>}
+                content={{ guide: false, body: { $p: 3 } }}
+              >
+                <NavList>
+                  <NavLink>Alpha</NavLink>
+                </NavList>
+              </NavDisclosure>
+            </Nav>
+          `}
+        >
+          <EndBarSections dir={dir} />
+        </Example>
+      ))}
 
       <Example
         title="Sidebar"

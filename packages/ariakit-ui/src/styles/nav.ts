@@ -386,26 +386,45 @@ export const navDisclosure = cv({
     // The body indents by the row gap, the same one the button spends. The
     // style attribute is what beats the disclosure root's own gap.
     "--disclosure-gap": "var(--nav-row-gap, calc(var(--spacing) * 3))",
+    // The body sits one nav gap under the button, the gap between rows, and the
+    // guide starts there with it. The style attribute is what beats the root's
+    // zero.
+    "--disclosure-body-offset": "var(--nav-gap, calc(var(--spacing) * 1))",
   },
 });
 
 export const navDisclosureContentBody = cv({
-  // frameBase, not frame: the body takes the padding and radius and paints
-  // nothing, so it must not open a layer of its own.
+  // frameBase, not frame: the body takes the radius, and any padding a caller
+  // gives it, and paints nothing, so it must not open a layer of its own.
   extend: [frameBase],
   class: [
     "grid content-start gap-(--nav-gap)",
-    "[--nav-body-padding:calc(var(--nav-gap)*0.5)]",
-    "[--nav-body-radius:calc(var(--disclosure-radius)+var(--nav-body-padding))]",
+    // The rows are nested frames, so their radius is this one minus the body's
+    // padding, which puts them on the disclosure's radius, the one its button
+    // has, while a caller's padding stays under the frame system's 1rem cutoff
+    // (see $p in frame.ts).
+    "[--nav-body-radius:calc(var(--disclosure-radius)+var(--ak-frame-padding))]",
     // Pull a row back by its control inset so its text starts on the body. A
     // nested disclosure moves as a whole, so its guide stays under its leading
     // icon or indicator.
     "[&_li>.control:not(.disclosure-button)]:-ms-(--px)",
     "[&_li:has(>.disclosure-button)]:-ms-(--disclosure-px)",
+    // A row can sit on an edge where the disclosure content clips: its end and
+    // the last row's bottom while the body has no padding, and its start where
+    // nothing indents the body (no guide, no leading icon), which a caller's
+    // padding never changes. So rows here draw their focus ring inside their
+    // box, like the disclosure button above them. This outranks a row's own
+    // $focusOffset on purpose: an outset ring would be cut.
+    "[&_li>.control]:-outline-offset-2",
   ],
+  // No $p: the body pads nothing by itself, so its rows end where the button
+  // ends and a bar or a cover on a row lands where it does on a top-level row.
+  // The gap under the button comes from the disclosure (see navDisclosure), and
+  // a caller's $p pads the rows inside it on every side but the start, which
+  // keeps the label indent, with the content padding on, as a nav disclosure
+  // keeps it by default.
   defaultVariants: {
     $forceRounded: true,
     $rounded: "var(--nav-body-radius)",
-    $p: "var(--nav-body-padding)",
   },
 });

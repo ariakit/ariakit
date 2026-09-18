@@ -66,6 +66,12 @@ export const disclosure = cv({
     // disclosure clears it before its own content sets one. A list root
     // sets its own through the style attribute, which wins over this.
     "[--disclosure-ps:initial]",
+    // How far under the button the body sits, where the guide starts too.
+    // Nothing by itself; a nav sets the gap between its rows through the style
+    // attribute, so a section's rows and their guide keep the rhythm of the
+    // rows around them. Registered as a length (see ui.css), so the body and
+    // the content's guide, which both read it, spend the same pixels.
+    "[--disclosure-body-offset:0px]",
     // The gap between a slot and the label, before the button adds the
     // extra side padding back (see $gap below). The body spends it too, so
     // a body under an icon lands on the label.
@@ -428,7 +434,9 @@ export const disclosureContent = cv({
       "has-[li>.control:hover]:[--disclosure-guide-hover:--disclosure-guide-hover]",
       "has-[li>.control:is(:focus-visible,[data-focus-visible])]:[--disclosure-guide-focus:--disclosure-guide-focus]",
       "before:[anchor-name:var(--disclosure-guide-selected),var(--disclosure-guide-hover),var(--disclosure-guide-focus)]",
-      "before:absolute before:inset-y-0 before:ak-layer",
+      // The line runs along the body: from the body offset under the button
+      // to the content's end.
+      "before:absolute before:top-(--disclosure-body-offset) before:bottom-0 before:ak-layer",
       // The line is one border, so it takes the layer's edge colour and the
       // pseudo-element's box is as wide as the line.
       "before:border-e-(length:--disclosure-guide-width,1px)",
@@ -467,8 +475,13 @@ export const disclosureContentBody = cv({
     // padding. It has to cross this start padding instead, plus its own
     // border like the frame system adds, to run edge to edge.
     "[&>.ak-frame-cover]:-ms-[calc(var(--disclosure-body-ps)+var(--ak-frame-border))]",
-    // Split adds the separating padding and border between button and body.
-    "pbs-[calc(var(--ak-frame-padding)*var(--disclosure-content-padding,0))]",
+    // The body offset under the button (see the root), where the guide
+    // starts, plus the padding a split or a content-padding layout puts
+    // between the button and the body. Padding, not margin: a margin would
+    // collapse through the content, which clips without a formatting context,
+    // and keep a closed content the offset tall.
+    "pbs-[calc(var(--disclosure-body-offset)+var(--ak-frame-padding)*var(--disclosure-content-padding,0))]",
+    // Split adds the border between button and body.
     "border-bs-[calc(var(--disclosure-border)*var(--disclosure-split,0))]",
   ],
   variants: {
