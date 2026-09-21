@@ -51,7 +51,7 @@ test("keeps move requests independent when only activeId is shared", async () =>
 });
 
 // https://github.com/ariakit/ariakit/pull/7572#discussion_r4067003752
-test("preserves item focus when only moves are shared", async () => {
+test("focuses an item after an explicit move with a moves-only source", async () => {
   await click(q.button("Focus green"));
   expect(q.button("Green")).toHaveFocus();
   expect(q.text("Moves: 1")).toBeVisible();
