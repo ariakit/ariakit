@@ -54,13 +54,15 @@ function SharedMoveCount() {
 }
 
 export default function Example() {
-  // The shared source has focus state but no composite methods.
   const [sharedState] = useState(() =>
     createStore<{ activeId: string | null; moves: number }>({
       activeId: null,
       moves: 0,
     }),
   );
+  // This store supplies move() for the controls. The provider receives
+  // sharedState directly to exercise a source without composite methods.
+  // https://github.com/ariakit/ariakit/pull/7572#discussion_r4067006099
   const first = Ariakit.useCompositeStore({ store: sharedState });
   const second = Ariakit.useCompositeStore();
   const [secondDocument, setSecondDocument] = useState(false);
