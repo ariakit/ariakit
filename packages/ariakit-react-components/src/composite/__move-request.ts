@@ -31,6 +31,9 @@ export function getMoveRequest(
   const cached = moveRequests.get(key);
   if (cached) return cached;
   const sourceState = source?.getState();
+  // A shared request needs both its move count and target. A source without
+  // activeId cannot track the composite's requested target.
+  // https://github.com/ariakit/ariakit/pull/7572#discussion_r4067003752
   if (
     source &&
     sourceState &&

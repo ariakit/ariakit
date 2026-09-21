@@ -73,4 +73,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Focus second palette").click();
     await test.expect(q.toolbar("Second palette")).toBeFocused();
   });
+
+  // https://github.com/ariakit/ariakit/pull/7572#discussion_r4067003752
+  test("preserves item focus when only moves are shared", async ({ q }) => {
+    await q.button("Focus green").click();
+    await test.expect(q.button("Green", { exact: true })).toBeFocused();
+    await test.expect(q.text("Moves: 1")).toBeVisible();
+  });
 });

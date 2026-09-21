@@ -32,6 +32,27 @@ function SharedSelection() {
   );
 }
 
+function SharedMoveCount() {
+  const [moveCount] = useState(() => createStore({ moves: 0 }));
+  const palette = Ariakit.useCompositeStore({ store: moveCount });
+  const moves = Ariakit.useStoreState(moveCount, "moves");
+  return (
+    <section>
+      <Ariakit.Button onClick={() => palette.move("green")}>
+        Focus green
+      </Ariakit.Button>
+      <Ariakit.Composite
+        store={palette}
+        role="toolbar"
+        aria-label="Counted palette"
+      >
+        <Ariakit.CompositeItem id="green">Green</Ariakit.CompositeItem>
+      </Ariakit.Composite>
+      <output>Moves: {moves}</output>
+    </section>
+  );
+}
+
 export default function Example() {
   // The shared source has focus state but no composite methods.
   const [sharedState] = useState(() =>
@@ -80,6 +101,7 @@ export default function Example() {
         </Ariakit.CompositeProvider>
       )}
       <SharedSelection />
+      <SharedMoveCount />
     </main>
   );
 }
