@@ -79,6 +79,15 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(example.link("Manage team pages")).toBeHidden();
   });
 
+  test("names a link by its label and describes it by its description", async ({
+    q,
+  }) => {
+    const nav = query(q.navigation("Link descriptions"));
+    const link = nav.link("Workspace settings and preferences");
+    await test.expect(link).toHaveAttribute("href", "#settings");
+    await test.expect(link).toHaveAccessibleDescription("Members and billing");
+  });
+
   test("marks only the link that matches the current URL", async ({ q }) => {
     const rows = query(q.navigation("Rows"));
     await test

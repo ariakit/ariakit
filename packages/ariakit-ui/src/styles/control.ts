@@ -343,6 +343,14 @@ export const controlSlot = cv({
   },
 });
 
+// For a slot that leads a label and can be wider than the line, such as an icon
+// sized by its container. The slot then overflows its box on both sides, and
+// the end margin grows by the far-side overflow so the gap to the label holds.
+// Tailwind emits me-* after the slot's own mx-*, so this margin wins by order.
+export const controlSlotOverflow = cx(
+  "me-[calc(var(--mx)+max(0px,(var(--size)-1lh)/2))]",
+);
+
 export const controlContent = cv({
   class: [
     // A marker the control around it can read: a stacked choice card lays

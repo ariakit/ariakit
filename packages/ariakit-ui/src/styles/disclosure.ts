@@ -7,6 +7,7 @@ import {
   buttonLabel,
   buttonSlot,
 } from "./button.ts";
+import { controlSlotOverflow } from "./control.ts";
 import { edge } from "./edge.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
@@ -309,7 +310,7 @@ export const disclosureButtonSlot = cv({
     // An icon wider than the line overflows its box on both sides. The end
     // margin grows by the far-side overflow so the gap to the label holds,
     // and --disclosure-lead adds the same amount for the body.
-    "me-[calc(var(--mx)+max(0px,(var(--size)-1lh)/2))]",
+    controlSlotOverflow,
   ],
   variants: {
     /**
