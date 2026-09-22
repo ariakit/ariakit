@@ -22,7 +22,7 @@ env:
   LEFTHOOK: "0"
   pnpm_config_verify_deps_before_run: "false"
   # Pin the commit containing .github/ariviso before enabling diagnostics.
-  ARIVISO_EXECUTOR_SOURCE: "ecfd678493c00815ec39681ce1a49da1d36abb6a"
+  ARIVISO_EXECUTOR_SOURCE: "9f8e6efbd2677a119556e39ab8f5b49459a11270"
 
 jobs:
   build:
