@@ -81,6 +81,52 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     });
   }
 
+  // https://github.com/ariakit/ariakit/issues/7574
+  test("keeps badges and avatars on the line box on every nav row", async ({
+    q,
+  }) => {
+    const navigation = q.navigation("Badges and avatars");
+    const nav = query(navigation);
+    const inbox = nav.button(/^Inbox/);
+    const drafts = nav.link(/^Drafts/);
+    const height = async (locator: Locator) => (await getBox(locator)).height;
+    await navigation.scrollIntoViewIfNeeded();
+    // $iconSize={5} is five spacing steps, 20px at the sandbox's 16px font,
+    // which is smaller than the row's line box. A section row's icon and a
+    // NavIcon read it through different properties, so both are measured.
+    const lineHeight = await inbox.evaluate((node) =>
+      Number.parseFloat(getComputedStyle(node).lineHeight),
+    );
+    expect(lineHeight).toBeGreaterThan(20);
+    const sectionIcon = inbox
+      .locator(":scope > .disclosure-button-slot")
+      .first();
+    const linkIcon = drafts.locator(".control-slot").first();
+    await expect.poll(() => height(sectionIcon)).toBeCloseTo(20, 0);
+    await expect.poll(() => height(linkIcon)).toBeCloseTo(20, 0);
+    // A badge and an avatar keep the line box every control slot gives them,
+    // after the label of a section row or a link row and in the icon column:
+    // the icon size sizes only the icons.
+    const slots = [
+      ["link badge", drafts, "3"],
+      ["link avatar", nav.link(/^Profile/), "JD"],
+      ["section badge", inbox, "12"],
+      ["section avatar", nav.button(/^Design/), "MK"],
+      ["icon column badge", nav.link(/Notifications/), "9"],
+      ["icon column avatar", nav.link(/Ana Lima/), "AL"],
+    ] as const;
+    const heights = () =>
+      Promise.all(
+        slots.map(async ([name, row, text]) => {
+          const slot = row.locator(".control-slot").filter({ hasText: text });
+          return [name, await height(slot)];
+        }),
+      );
+    await expect
+      .poll(heights)
+      .toEqual(slots.map(([name]) => [name, expect.closeTo(lineHeight, 0)]));
+  });
+
   for (const dir of ["ltr", "rtl"] as const) {
     test(`keeps section rows and an end bar on the nav's end edge in ${dir}`, async ({
       page,

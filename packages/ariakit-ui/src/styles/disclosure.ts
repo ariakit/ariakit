@@ -7,6 +7,7 @@ import {
   buttonLabel,
   buttonSlot,
 } from "./button.ts";
+import { getIconSlotSize } from "./control.ts";
 import { edge } from "./edge.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
@@ -295,29 +296,34 @@ export const disclosureButtonDescription = cv({
 });
 
 // A slot in the button's row: the icon that leads the label, or a badge, an
-// avatar or a shortcut anywhere in the row. It is a control slot, so it takes
-// the size and the first-line alignment every other control slot gets. A slot
-// starts one padding in, and its margins take the control's extra side padding
-// off its box, which the button's gap adds back (see $gap there): the label
-// after it lands where --disclosure-lead says, whatever the icon size is. That
-// lead is one line box wide, so only a line-sized slot, an icon or a square
-// avatar, can lead the label and keep the body under it.
+// avatar or a shortcut after it. It is a control slot, so it takes the size and
+// the first-line alignment every other control slot gets: the icon follows the
+// root's icon size, a badge or an avatar takes the one-line box (see
+// getIconSlotSize). An icon starts one padding in, and its margins take the
+// control's extra side padding off its box, which the button's gap adds back
+// (see $gap there): the label after it lands where --disclosure-lead says,
+// whatever the icon size is. Only an icon can lead the label and keep the body
+// under it: a badge or an avatar spaces the label by its side bearing, and an
+// avatar's margins also resolve against the cap height its font-size-adjust
+// sets (see $mx and refine in control.ts), neither of which the lead counts.
 export const disclosureButtonSlot = cv({
   extend: [buttonSlot],
   class: "disclosure-button-slot",
   variants: {
     /**
      * Extends the slot sizes with `auto`, which follows the root's `$iconSize`
-     * and otherwise the text size. An icon wider than the line keeps its gap to
-     * the label through the slot's `auto` margin (see `$mx` in control.ts), and
-     * `--disclosure-lead` adds the same overflow for the body.
+     * and otherwise the text size. It is the default for an icon; a badge, an
+     * avatar or a shortcut keeps the size every other control slot gives it. An
+     * icon wider than the line keeps its gap to the label through the slot's
+     * `auto` margin (see `$mx` in control.ts), and `--disclosure-lead` adds the
+     * same overflow for the body.
      */
     $size: {
       auto: "[--size:var(--disclosure-icon-size,1em)]",
     },
   },
   defaultVariants: {
-    $size: "auto",
+    $size: getIconSlotSize,
   },
 });
 

@@ -352,6 +352,24 @@ export const controlSlot = cv({
   },
 });
 
+/**
+ * The `$size` default of a slot whose container sizes its icon, such as a nav
+ * row or a disclosure button. Only an icon takes that size, through the
+ * extender's `auto` size. A badge, an avatar or a shortcut keeps the size every
+ * other control slot gives it: the one-line box for a badge or an avatar (see
+ * `PADDED_SLOT_SIZES`), the text size for a shortcut.
+ */
+export function getIconSlotSize<Size extends string>(
+  defaultValue: Size | undefined,
+  variants: { $kind?: string },
+) {
+  if (variants.$kind !== "icon") return defaultValue;
+  // Replace only controlSlot's own `md` default (see its defaultVariants), so
+  // an extender's size still applies.
+  if (defaultValue !== "md") return defaultValue;
+  return "auto" as const;
+}
+
 export const controlContent = cv({
   class: [
     // A marker the control around it can read: a stacked choice card lays

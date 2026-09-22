@@ -289,7 +289,8 @@ export interface NavIconProps
 
 /**
  * Renders the icon slot of a nav row, sized by the Nav icon-size variable. It
- * keeps the line height so the label aligns with the icon.
+ * keeps the line height so the label aligns with the icon. A badge or an avatar
+ * in it takes the one-line box every control slot gives them instead.
  */
 export function NavIcon(props: NavIconProps) {
   const [variantProps, rest] = splitProps(props, navIcon);

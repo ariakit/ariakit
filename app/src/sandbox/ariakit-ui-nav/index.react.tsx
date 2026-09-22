@@ -1286,6 +1286,124 @@ export default function NavExamples() {
       </Example>
 
       <Example
+        title="Badges and avatars"
+        description="A badge or an avatar keeps the one-line box of every control slot: after the label of a section row or a link row, and in the icon column of a link row. The nav's icon size sizes only the icons."
+        code={`
+          <Nav $iconSize={5}>
+            <NavDisclosure defaultOpen button={
+              <NavDisclosureButton icon={<Inbox />} label="Inbox">
+                <DisclosureButtonSlot $kind="badge" $p="md">12</DisclosureButtonSlot>
+              </NavDisclosureButton>
+            }>
+              <NavList>
+                <NavLink>Unread</NavLink>
+                <NavLink>Archive</NavLink>
+              </NavList>
+            </NavDisclosure>
+            <NavDisclosure button={
+              <NavDisclosureButton icon={<Palette />} label="Design">
+                <DisclosureButtonSlot $kind="avatar">MK</DisclosureButtonSlot>
+              </NavDisclosureButton>
+            }>
+              <NavList>
+                <NavLink>Members</NavLink>
+              </NavList>
+            </NavDisclosure>
+            <NavLink>
+              <NavIcon>
+                <FileCode />
+              </NavIcon>
+              <NavLinkLabel>Drafts</NavLinkLabel>
+              <NavLinkSlot $kind="badge" $p="md">3</NavLinkSlot>
+            </NavLink>
+            <NavLink>
+              <NavIcon>
+                <Settings />
+              </NavIcon>
+              <NavLinkLabel>Profile</NavLinkLabel>
+              <NavLinkSlot $kind="avatar">JD</NavLinkSlot>
+            </NavLink>
+            <NavLink>
+              <NavIcon $kind="badge" $p="md">
+                <span>9</span>
+              </NavIcon>
+              <NavLinkLabel>Notifications</NavLinkLabel>
+            </NavLink>
+            <NavLink>
+              <NavIcon $kind="avatar">AL</NavIcon>
+              <NavLinkLabel>Ana Lima</NavLinkLabel>
+            </NavLink>
+          </Nav>
+        `}
+      >
+        <Nav $iconSize={5} aria-label="Badges and avatars" className="w-full">
+          <NavDisclosure
+            defaultOpen
+            button={
+              <NavDisclosureButton
+                icon={<Inbox strokeWidth={1.5} />}
+                label="Inbox"
+              >
+                <DisclosureButtonSlot $kind="badge" $p="md">
+                  12
+                </DisclosureButtonSlot>
+              </NavDisclosureButton>
+            }
+          >
+            <NavList>
+              <NavLink href="#unread">Unread</NavLink>
+              <NavLink href="#archive">Archive</NavLink>
+            </NavList>
+          </NavDisclosure>
+          <NavDisclosure
+            button={
+              <NavDisclosureButton
+                icon={<Palette strokeWidth={1.5} />}
+                label="Design"
+              >
+                <DisclosureButtonSlot $kind="avatar">MK</DisclosureButtonSlot>
+              </NavDisclosureButton>
+            }
+          >
+            <NavList>
+              <NavLink href="#members">Members</NavLink>
+            </NavList>
+          </NavDisclosure>
+          <NavLink href="#drafts">
+            <NavIcon>
+              <FileCode strokeWidth={1.5} />
+            </NavIcon>
+            <NavLinkLabel>Drafts</NavLinkLabel>
+            <NavLinkSlot $kind="badge" $p="md">
+              3
+            </NavLinkSlot>
+          </NavLink>
+          <NavLink href="#profile">
+            <NavIcon>
+              <Settings strokeWidth={1.5} />
+            </NavIcon>
+            <NavLinkLabel>Profile</NavLinkLabel>
+            <NavLinkSlot $kind="avatar">JD</NavLinkSlot>
+          </NavLink>
+          <NavLink href="#notifications">
+            {/*
+              The badge kind scales a child element, and NavIcon does not wrap
+              its text in one as NavLinkSlot does.
+              https://github.com/ariakit/ariakit/issues/7579
+            */}
+            <NavIcon $kind="badge" $p="md">
+              <span>9</span>
+            </NavIcon>
+            <NavLinkLabel>Notifications</NavLinkLabel>
+          </NavLink>
+          <NavLink href="#ana-lima">
+            <NavIcon $kind="avatar">AL</NavIcon>
+            <NavLinkLabel>Ana Lima</NavLinkLabel>
+          </NavLink>
+        </Nav>
+      </Example>
+
+      <Example
         title="Custom label styles"
         description="A caller's className and style on NavButtonContent survive next to its own classes."
         code={`
