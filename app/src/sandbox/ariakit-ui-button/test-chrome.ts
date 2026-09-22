@@ -1,5 +1,6 @@
 import { hoverOver, inkAlpha, tabInto } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
+import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
   // The ink inherits through the slot layers, so the icon dims with the label
@@ -83,5 +84,52 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await vertical.radio("Dark").click();
     await test.expect(vertical.radio("Dark")).toBeChecked();
     await test.expect(vertical.radio("System")).not.toBeChecked();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7537
+  test("follows only the clicked link when idle links carry an empty or false aria-current", async ({
+    q,
+    page,
+  }) => {
+    const example = q.article("Empty, false, and unknown current values");
+    const links = query(example);
+    const overview = links.link("Overview");
+    const activity = links.link("Activity");
+    const glider = example.locator(".glider");
+    // Each slash sits right after the link before it, so both sit next to
+    // Activity, and each also sits next to a link with an empty value.
+    const firstSlash = overview.locator("xpath=following-sibling::*[1]");
+    const secondSlash = activity.locator("xpath=following-sibling::*[1]");
+    const transparent = "rgba(0, 0, 0, 0)";
+    // Every link carries an empty or false value, so none is current: the
+    // glider has nothing to land on, and every slash shows.
+    await test.expect(overview).toHaveAttribute("aria-current", "");
+    await test.expect(activity).toHaveAttribute("aria-current", "false");
+    await test.expect(glider).toHaveCSS("display", "none");
+    await test
+      .expect(firstSlash)
+      .not.toHaveCSS("border-right-color", transparent);
+    await test
+      .expect(secondSlash)
+      .not.toHaveCSS("border-right-color", transparent);
+    // The token on Activity counts as current. The pointer leaves the group, so
+    // only the current link can still hide a slash.
+    await activity.click();
+    await test.expect(activity).toHaveAttribute("aria-current", "active");
+    await page.mouse.move(0, 0);
+    await test.expect
+      .poll(async () => {
+        const [box, link] = await Promise.all([
+          getBox(glider),
+          getBox(activity),
+        ]);
+        return box.x - link.x;
+      })
+      .toBeCloseTo(0, 0);
+    // A slash eases its border color over 200ms. One that only the pointer hid
+    // would still read transparent right after the pointer left.
+    await page.waitForTimeout(200);
+    await test.expect(firstSlash).toHaveCSS("border-right-color", transparent);
+    await test.expect(secondSlash).toHaveCSS("border-right-color", transparent);
   });
 });
