@@ -49,15 +49,21 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
 withCaptures(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000661269
-  test("keeps the empty message borderless in forced colors @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Empty state");
-      await captureInView(visual, box, colorScheme);
-    });
-  });
+  test(
+    "keeps the empty message borderless in forced colors @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/combobox/keeps-the-empty-message-borderless-in-forced-colors",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await page.emulateMedia({ forcedColors: "active" });
+      await forEachColorScheme(page, async (colorScheme) => {
+        const box = q.article("Empty state");
+        await captureInView(visual, box, colorScheme);
+      });
+    },
+  );
 });

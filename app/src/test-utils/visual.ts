@@ -4,6 +4,7 @@ import { invariant } from "@ariakit/utils";
 import type { Locator, Page, TestInfo } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { slugify } from "#app/lib/string.ts";
+import { captureAriviso } from "./ariviso.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;
 const CLIP_STABILITY_INTERVAL = 16;
@@ -28,6 +29,14 @@ type Viewports = Record<string, ViewportSize>;
 type Styles = Record<string, CSSProperties>;
 
 export interface ScreenshotOptions {
+  /**
+   * Stable Ariviso item key. Defaults to the test's ariviso:item annotation.
+   */
+  item?: string;
+  /** Stable key for another capture of the same item. */
+  capture?: string;
+  /** Framework of a generic preview capture. */
+  framework?: string;
   /**
    * Viewports to capture.
    */
@@ -428,6 +437,16 @@ export async function visual(
             clipMargin,
             fullPage,
           });
+          if (process.env.ARIVISO_CAPTURE === "true") {
+            await captureAriviso(page, {
+              options,
+              screenshot: screenshotOptions,
+              viewport: viewportName,
+              style: styleName,
+              testInfo,
+            });
+            return;
+          }
           await expect(page).toHaveScreenshot(fileSnapshotName, {
             ...screenshotOptions,
             // A page-sized pixel allowance can hide changes to small controls.

@@ -10,9 +10,13 @@ withCaptures(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974019400
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974543567
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974545415
-  test("page @visual", async ({ page, visual }) => {
-    await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
-    );
-  });
+  test(
+    "page @visual",
+    { annotation: { type: "ariviso:item", description: "ui/layer/page" } },
+    async ({ page, visual }) => {
+      await forEachColorScheme(page, (colorScheme) =>
+        capturePage(page, visual, colorScheme),
+      );
+    },
+  );
 });

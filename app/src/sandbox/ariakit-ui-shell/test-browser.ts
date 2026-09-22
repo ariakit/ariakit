@@ -241,136 +241,181 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     for (const scenario of ["docs", "dashboard"]) {
       // https://github.com/ariakit/ariakit/issues/7532
-      test(`${scenario} at wide and narrow widths @visual`, async ({
-        page,
-        q,
-        visual,
-      }) => {
+      test(
+        `${scenario} at wide and narrow widths @visual`,
+        {
+          annotation: {
+            type: "ariviso:item",
+            description: `ui/shell/${scenario}-responsive`,
+          },
+        },
+        async ({ page, q, visual }) => {
+          await forEachColorScheme(page, async (colorScheme) => {
+            await selectScenario(q, scenario);
+            await visual({
+              ...getViewportCapture(page, colorScheme),
+              viewports: {
+                wide: { width: 1440, height: 900 },
+                narrow: { width: 560, height: 900 },
+              },
+            });
+          });
+        },
+      );
+    }
+
+    // https://github.com/ariakit/ariakit/issues/7532
+    test(
+      "flush band at the shell radius @visual",
+      {
+        annotation: {
+          type: "ariviso:item",
+          description: "ui/shell/flush-band-at-the-shell-radius",
+        },
+      },
+      async ({ page, q, visual }) => {
         await forEachColorScheme(page, async (colorScheme) => {
-          await selectScenario(q, scenario);
+          await selectScenario(q, "geometry");
+          await q.checkbox("Flush gutter").check();
+          const frame = page.locator('[aria-label="Flush frame"]');
           await visual({
-            ...getViewportCapture(page, colorScheme),
+            ...getCapture(frame, colorScheme, { fullPage: true }),
             viewports: {
               wide: { width: 1440, height: 900 },
               narrow: { width: 560, height: 900 },
             },
           });
         });
-      });
-    }
+      },
+    );
 
-    // https://github.com/ariakit/ariakit/issues/7532
-    test("flush band at the shell radius @visual", async ({
-      page,
-      q,
-      visual,
-    }) => {
-      await forEachColorScheme(page, async (colorScheme) => {
-        await selectScenario(q, "geometry");
-        await q.checkbox("Flush gutter").check();
-        const frame = page.locator('[aria-label="Flush frame"]');
-        await visual({
-          ...getCapture(frame, colorScheme, { fullPage: true }),
-          viewports: {
-            wide: { width: 1440, height: 900 },
-            narrow: { width: 560, height: 900 },
-          },
+    test(
+      "docs site @visual",
+      {
+        annotation: { type: "ariviso:item", description: "ui/shell/docs-site" },
+      },
+      async ({ page, q, visual }) => {
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await forEachColorScheme(page, async (colorScheme) => {
+          const toggle = q.button("Toggle table of contents");
+          await toggle.click();
+          await expect(q.navigation("On this page")).toBeVisible();
+          await visual(getViewportCapture(page, colorScheme));
+          await expect
+            .poll(() => toggle.evaluate((node) => node.matches(":hover")))
+            .toBe(false);
         });
-      });
-    });
+      },
+    );
 
-    test("docs site @visual", async ({ page, q, visual }) => {
-      await page.setViewportSize({ width: 1440, height: 900 });
-      await forEachColorScheme(page, async (colorScheme) => {
-        const toggle = q.button("Toggle table of contents");
-        await toggle.click();
-        await expect(q.navigation("On this page")).toBeVisible();
-        await visual(getViewportCapture(page, colorScheme));
-        await expect
-          .poll(() => toggle.evaluate((node) => node.matches(":hover")))
-          .toBe(false);
-      });
-    });
+    test(
+      "sidebar combinations and right-to-left layout @visual",
+      {
+        annotation: {
+          type: "ariviso:item",
+          description: "ui/shell/sidebar-combinations-and-right-to-left-layout",
+        },
+      },
+      async ({ page, q, visual }) => {
+        const viewport = { width: 1440, height: 900 };
+        await page.setViewportSize(viewport);
+        await forEachColorScheme(page, async (colorScheme) => {
+          for (const direction of ["ltr", "rtl"]) {
+            await q.checkbox("Right to left").setChecked(direction === "rtl");
+            for (const [capture, sidebar] of [
+              ["both-closed", "Toggle sidebar"],
+              ["contents-only", "Toggle table of contents"],
+              ["both-open", "Toggle sidebar"],
+              ["navigation-only", "Toggle table of contents"],
+            ]) {
+              await q.button(sidebar).click();
+              await visual({
+                ...getViewportCapture(page, colorScheme),
+                id: direction,
+                capture: `${direction}-${capture}`,
+                viewports: { wide: viewport },
+              });
+            }
+          }
+        });
+      },
+    );
 
-    test("sidebar combinations and right-to-left layout @visual", async ({
-      page,
-      q,
-      visual,
-    }) => {
-      const viewport = { width: 1440, height: 900 };
-      await page.setViewportSize(viewport);
-      await forEachColorScheme(page, async (colorScheme) => {
-        for (const direction of ["ltr", "rtl"]) {
-          await q.checkbox("Right to left").setChecked(direction === "rtl");
-          for (const sidebar of [
-            "Toggle sidebar",
-            "Toggle table of contents",
-            "Toggle sidebar",
-            "Toggle table of contents",
+    test(
+      "sticky sidebar above the footer @visual",
+      {
+        annotation: {
+          type: "ariviso:item",
+          description: "ui/shell/sticky-sidebar-above-the-footer",
+        },
+      },
+      async ({ page, q, visual }) => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await forEachColorScheme(page, async (colorScheme) => {
+          await page.evaluate(() =>
+            window.scrollTo(0, document.documentElement.scrollHeight),
+          );
+          await expect(q.contentinfo()).toBeInViewport({ ratio: 1 });
+          await visual(getViewportCapture(page, colorScheme));
+        });
+      },
+    );
+
+    test(
+      "bar sizing at a narrow width @visual",
+      {
+        annotation: {
+          type: "ariviso:item",
+          description: "ui/shell/bar-sizing-at-a-narrow-width",
+        },
+      },
+      async ({ page, q, visual }) => {
+        const viewport = { width: 560, height: 400 };
+        await page.setViewportSize(viewport);
+        await forEachColorScheme(page, async (colorScheme) => {
+          await selectScenario(q, "bar");
+          for (const [capture, sizing] of [
+            ["shrink-sides", "Shrink the sides"],
+            ["grow-center", "Grow the center"],
           ]) {
-            await q.button(sidebar).click();
+            await q.radio(sizing).check();
             await visual({
               ...getViewportCapture(page, colorScheme),
-              id: direction,
-              viewports: { wide: viewport },
+              id: sizing,
+              capture,
+              viewports: { narrow: viewport },
             });
           }
-        }
-      });
-    });
-
-    test("sticky sidebar above the footer @visual", async ({
-      page,
-      q,
-      visual,
-    }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await forEachColorScheme(page, async (colorScheme) => {
-        await page.evaluate(() =>
-          window.scrollTo(0, document.documentElement.scrollHeight),
-        );
-        await expect(q.contentinfo()).toBeInViewport({ ratio: 1 });
-        await visual(getViewportCapture(page, colorScheme));
-      });
-    });
-
-    test("bar sizing at a narrow width @visual", async ({
-      page,
-      q,
-      visual,
-    }) => {
-      const viewport = { width: 560, height: 400 };
-      await page.setViewportSize(viewport);
-      await forEachColorScheme(page, async (colorScheme) => {
-        await selectScenario(q, "bar");
-        for (const sizing of ["Shrink the sides", "Grow the center"]) {
-          await q.radio(sizing).check();
+          await selectScenario(q, "marketing");
           await visual({
             ...getViewportCapture(page, colorScheme),
-            id: sizing,
+            id: "stacked",
+            capture: "stacked",
             viewports: { narrow: viewport },
           });
-        }
-        await selectScenario(q, "marketing");
-        await visual({
-          ...getViewportCapture(page, colorScheme),
-          id: "stacked",
-          viewports: { narrow: viewport },
         });
-      });
-    });
+      },
+    );
 
-    test("docs site scrolled under the blurred header @visual", async ({
-      page,
-      visual,
-    }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await forEachColorScheme(page, async (colorScheme) => {
-        await page.evaluate(() => window.scrollTo(0, 300));
-        await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(300);
-        await visual(getViewportCapture(page, colorScheme));
-      });
-    });
+    test(
+      "docs site scrolled under the blurred header @visual",
+      {
+        annotation: {
+          type: "ariviso:item",
+          description: "ui/shell/docs-site-scrolled-under-the-blurred-header",
+        },
+      },
+      async ({ page, visual }) => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await forEachColorScheme(page, async (colorScheme) => {
+          await page.evaluate(() => window.scrollTo(0, 300));
+          await expect
+            .poll(() => page.evaluate(() => window.scrollY))
+            .toBe(300);
+          await visual(getViewportCapture(page, colorScheme));
+        });
+      },
+    );
 
     for (const scenario of [
       "dashboard",
@@ -379,14 +424,23 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       "settings",
       "bar",
     ]) {
-      test(`${scenario} @visual`, async ({ page, q, visual }) => {
-        await page.setViewportSize({ width: 1280, height: 800 });
-        await forEachColorScheme(page, async (colorScheme) => {
-          await selectScenario(q, scenario);
-          await expect(q.combobox("Scenario")).toHaveValue(scenario);
-          await visual(getViewportCapture(page, colorScheme));
-        });
-      });
+      test(
+        `${scenario} @visual`,
+        {
+          annotation: {
+            type: "ariviso:item",
+            description: `ui/shell/scenario-${scenario}`,
+          },
+        },
+        async ({ page, q, visual }) => {
+          await page.setViewportSize({ width: 1280, height: 800 });
+          await forEachColorScheme(page, async (colorScheme) => {
+            await selectScenario(q, scenario);
+            await expect(q.combobox("Scenario")).toHaveValue(scenario);
+            await visual(getViewportCapture(page, colorScheme));
+          });
+        },
+      );
     }
   });
 });

@@ -2,6 +2,7 @@ import { query } from "@ariakit/test/playwright";
 import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
+import { getCaptureSections, pageCaptureSections } from "./ariviso-pages.ts";
 import { gotoAndSettle, withFramework } from "./preview.ts";
 import type { ScreenshotOptions } from "./visual.ts";
 import { viewports } from "./visual.ts";
@@ -109,6 +110,32 @@ export async function capturePage(
 ) {
   const main = query(page).main();
   await page.evaluate(() => document.fonts.ready);
+  if (process.env.ARIVISO_CAPTURE === "true") {
+    const item = test
+      .info()
+      .annotations.find(
+        (annotation) => annotation.type === "ariviso:item",
+      )?.description;
+    const declarations = item && pageCaptureSections[item];
+    if (!declarations) {
+      throw new Error(
+        "Declare stable Ariviso page sections for this visual item",
+      );
+    }
+    const sections = await getCaptureSections(main, declarations);
+    const extraCaptures = Math.max(0, sections.length - 1);
+    test.setTimeout(test.info().timeout + extraCaptures * SCREENSHOT_TIMEOUT);
+    for (const { key, element } of sections) {
+      await visual(
+        getCapture(element, colorScheme, {
+          capture: key,
+          fullPage: true,
+          clipMargin: 8,
+        }),
+      );
+    }
+    return;
+  }
   const { height } = await main.evaluate((node) =>
     node.getBoundingClientRect(),
   );

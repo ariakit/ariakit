@@ -103,150 +103,204 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       node.setAttribute(name, name === "disabled" ? "" : "true");
     }, attribute);
 
-  test("page @visual", async ({ page, visual }) => {
-    await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
-    );
-  });
+  test(
+    "page @visual",
+    { annotation: { type: "ariviso:item", description: "ui/input/page" } },
+    async ({ page, visual }) => {
+      await forEachColorScheme(page, (colorScheme) =>
+        capturePage(page, visual, colorScheme),
+      );
+    },
+  );
 
   // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001152364
   // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001360186
-  test("rings grouped fields and their leading actions on keyboard focus @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Field with leading reset button");
-      await tabInto(page, box);
-      await expectFocusVisible(q.button("Clear"));
-      await captureInView(visual, box, colorScheme, { id: "action" });
-      await page.keyboard.press("Tab");
-      await expectFocusVisible(q.textbox("Draft message"));
-      await captureInView(visual, box, colorScheme, { id: "field" });
-      for (const field of [
-        q.textbox("Delivery notes"),
-        q.combobox("Delivery speed"),
-        q.textbox("Handle"),
-      ]) {
-        await tabTo(page, field);
-        await expectFocusVisible(field);
-        await captureInView(visual, field.locator(".."), colorScheme);
-      }
-    });
-  });
+  test(
+    "rings grouped fields and their leading actions on keyboard focus @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/input/rings-grouped-fields-and-their-leading-actions-on-keyboard-focus",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await forEachColorScheme(page, async (colorScheme) => {
+        const box = q.article("Field with leading reset button");
+        await tabInto(page, box);
+        await expectFocusVisible(q.button("Clear"));
+        await captureInView(visual, box, colorScheme, {
+          id: "action",
+          capture: "action",
+        });
+        await page.keyboard.press("Tab");
+        await expectFocusVisible(q.textbox("Draft message"));
+        await captureInView(visual, box, colorScheme, {
+          id: "field",
+          capture: "field",
+        });
+        for (const { capture, field } of [
+          { capture: "delivery-notes", field: q.textbox("Delivery notes") },
+          { capture: "delivery-speed", field: q.combobox("Delivery speed") },
+          { capture: "handle", field: q.textbox("Handle") },
+        ]) {
+          await tabTo(page, field);
+          await expectFocusVisible(field);
+          await captureInView(visual, field.locator(".."), colorScheme, {
+            capture,
+          });
+        }
+      });
+    },
+  );
 
-  test("rings the wrapper when the input inside takes focus @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Field with leading icon");
-      const input = query(box).textbox("Filter components");
-      await input.click();
-      await test.expect(input).toBeFocused();
-      await captureInView(visual, box, colorScheme);
-    });
-  });
+  test(
+    "rings the wrapper when the input inside takes focus @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/input/rings-the-wrapper-when-the-input-inside-takes-focus",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await forEachColorScheme(page, async (colorScheme) => {
+        const box = q.article("Field with leading icon");
+        const input = query(box).textbox("Filter components");
+        await input.click();
+        await test.expect(input).toBeFocused();
+        await captureInView(visual, box, colorScheme);
+      });
+    },
+  );
 
   // A disabled field used to compute the same styles as an enabled one, and the
   // label around the input still takes the pointer, so its hover tint has to be
   // turned off by the same disabled state.
-  test("dims the wrapper of a disabled input and keeps it unlit on hover @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Field with leading icon");
-      const input = query(box).textbox("Filter components");
-      await setDisabled(input);
-      await test.expect(input).toBeDisabled();
-      await hoverOver(input.locator("xpath=.."), { x: 4, y: 4 });
-      await visual(getCapture(box, colorScheme));
-    });
-  });
+  test(
+    "dims the wrapper of a disabled input and keeps it unlit on hover @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/input/dims-the-wrapper-of-a-disabled-input-and-keeps-it-unlit-on-hover",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await forEachColorScheme(page, async (colorScheme) => {
+        const box = q.article("Field with leading icon");
+        const input = query(box).textbox("Filter components");
+        await setDisabled(input);
+        await test.expect(input).toBeDisabled();
+        await hoverOver(input.locator("xpath=.."), { x: 4, y: 4 });
+        await visual(getCapture(box, colorScheme));
+      });
+    },
+  );
 
   // The wrapper read only a natively disabled input, so an input that stays
   // focusable with aria-disabled left the wrapper enabled and hoverable.
-  test("dims the wrapper of an aria-disabled input and keeps it unlit on hover @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Field with leading icon");
-      const input = query(box).textbox("Filter components");
-      await setDisabled(input, "aria-disabled");
-      await test.expect(input).toHaveAttribute("aria-disabled", "true");
-      await hoverOver(input.locator("xpath=.."), { x: 4, y: 4 });
-      await visual(getCapture(box, colorScheme));
-    });
-  });
+  test(
+    "dims the wrapper of an aria-disabled input and keeps it unlit on hover @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/input/dims-the-wrapper-of-an-aria-disabled-input-and-keeps-it-unlit-on-hover",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await forEachColorScheme(page, async (colorScheme) => {
+        const box = q.article("Field with leading icon");
+        const input = query(box).textbox("Filter components");
+        await setDisabled(input, "aria-disabled");
+        await test.expect(input).toHaveAttribute("aria-disabled", "true");
+        await hoverOver(input.locator("xpath=.."), { x: 4, y: 4 });
+        await visual(getCapture(box, colorScheme));
+      });
+    },
+  );
 
   // A disabled button inside a wrapper, such as a send button that waits for
   // text, must not make the editable field look or behave disabled.
-  test("keeps a wrapper enabled and lit on hover when only its button is disabled @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Share link with copy button");
-      const button = query(box).button("Copy");
-      await setDisabled(button);
-      await test.expect(button).toBeDisabled();
-      await hoverOver(query(box).text("https://"));
-      await visual(getCapture(box, colorScheme));
-    });
-  });
+  test(
+    "keeps a wrapper enabled and lit on hover when only its button is disabled @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/input/keeps-a-wrapper-enabled-and-lit-on-hover-when-only-its-button-is-disabled",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await forEachColorScheme(page, async (colorScheme) => {
+        const box = q.article("Share link with copy button");
+        const button = query(box).button("Copy");
+        await setDisabled(button);
+        await test.expect(button).toBeDisabled();
+        await hoverOver(query(box).text("https://"));
+        await visual(getCapture(box, colorScheme));
+      });
+    },
+  );
 
   // A button-type input is a button too, so a disabled submit input must leave
   // the field enabled like a disabled button element does.
-  test("keeps a wrapper enabled and lit on hover when only its submit input is disabled @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Share link with copy button");
-      await query(box)
-        .button("Copy")
-        .evaluate((node) => {
-          const submit = document.createElement("input");
-          submit.type = "submit";
-          submit.value = "Send";
-          submit.disabled = true;
-          node.after(submit);
-        });
-      await test.expect(query(box).button("Send")).toBeDisabled();
-      await hoverOver(query(box).text("https://"));
-      await visual(getCapture(box, colorScheme));
-    });
-  });
+  test(
+    "keeps a wrapper enabled and lit on hover when only its submit input is disabled @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/input/keeps-a-wrapper-enabled-and-lit-on-hover-when-only-its-submit-input-is-disabled",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await forEachColorScheme(page, async (colorScheme) => {
+        const box = q.article("Share link with copy button");
+        await query(box)
+          .button("Copy")
+          .evaluate((node) => {
+            const submit = document.createElement("input");
+            submit.type = "submit";
+            submit.value = "Send";
+            submit.disabled = true;
+            node.after(submit);
+          });
+        await test.expect(query(box).button("Send")).toBeDisabled();
+        await hoverOver(query(box).text("https://"));
+        await visual(getCapture(box, colorScheme));
+      });
+    },
+  );
 
   // The field stays enabled while any control in it still takes entry, such as
   // a link beside a locked choice of expiry.
-  test("keeps a wrapper enabled and lit on hover when only its select is disabled @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Share link with copy button");
-      await query(box)
-        .button("Copy")
-        .evaluate((node) => {
-          const select = document.createElement("select");
-          select.setAttribute("aria-label", "Expiry");
-          select.disabled = true;
-          select.append(new Option("7 days"));
-          node.before(select);
-        });
-      await test.expect(query(box).combobox("Expiry")).toBeDisabled();
-      await hoverOver(query(box).text("https://"));
-      await visual(getCapture(box, colorScheme));
-    });
-  });
+  test(
+    "keeps a wrapper enabled and lit on hover when only its select is disabled @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/input/keeps-a-wrapper-enabled-and-lit-on-hover-when-only-its-select-is-disabled",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await forEachColorScheme(page, async (colorScheme) => {
+        const box = q.article("Share link with copy button");
+        await query(box)
+          .button("Copy")
+          .evaluate((node) => {
+            const select = document.createElement("select");
+            select.setAttribute("aria-label", "Expiry");
+            select.disabled = true;
+            select.append(new Option("7 days"));
+            node.before(select);
+          });
+        await test.expect(query(box).combobox("Expiry")).toBeDisabled();
+        await hoverOver(query(box).text("https://"));
+        await visual(getCapture(box, colorScheme));
+      });
+    },
+  );
 });

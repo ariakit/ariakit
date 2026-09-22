@@ -62,17 +62,25 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // WebKit cannot emulate forced colors. Keep this existing capture in the
     // two engines that apply the requested media feature.
     // https://github.com/ariakit/ariakit/issues/7532
-    test("blurred header in forced colors @visual", async ({
-      page,
-      visual,
-    }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.emulateMedia({ forcedColors: "active" });
-      await forEachColorScheme(page, async (colorScheme) => {
-        await page.evaluate(() => window.scrollTo(0, 300));
-        await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(300);
-        await visual(getViewportCapture(page, colorScheme));
-      });
-    });
+    test(
+      "blurred header in forced colors @visual",
+      {
+        annotation: {
+          type: "ariviso:item",
+          description: "ui/shell/blurred-header-in-forced-colors",
+        },
+      },
+      async ({ page, visual }) => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.emulateMedia({ forcedColors: "active" });
+        await forEachColorScheme(page, async (colorScheme) => {
+          await page.evaluate(() => window.scrollTo(0, 300));
+          await expect
+            .poll(() => page.evaluate(() => window.scrollY))
+            .toBe(300);
+          await visual(getViewportCapture(page, colorScheme));
+        });
+      },
+    );
   });
 });

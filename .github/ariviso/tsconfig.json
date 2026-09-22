@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": true,
+    "paths": {
+      "@playwright/test": ["./node_modules/@playwright/test/index.mjs"],
+      "@ariviso/playwright": [
+        "./node_modules/@ariviso/playwright/dist/index.js"
+      ]
+    }
+  }
+}

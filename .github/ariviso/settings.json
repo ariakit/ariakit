@@ -1,0 +1,21 @@
+{
+  "repository": "ariakit/ariakit",
+  "repositoryId": "104133653",
+  "workflow": ".github/workflows/ariviso-diagnostic.yml",
+  "server": "https://ariviso-preview.ariakit.workers.dev",
+  "comparisonEngineVersion": "rgba-visible-1",
+  "comparisonPolicy": {
+    "id": "visible-exact-v1",
+    "channelThreshold": 0,
+    "maxChangedPixels": 0,
+    "maxChangedRatio": 0
+  },
+  "packages": {
+    "playwright": {
+      "sha256": "87b4489bb643404a0b761237aac37e4ef35342bcd0fcb67729c4c5c11075734d"
+    },
+    "cli": {
+      "sha256": "cd057b393481d35d11282ce6b87d78fe48c2e98c6f2e56f2ab3ea32e2b51eddd"
+    }
+  }
+}

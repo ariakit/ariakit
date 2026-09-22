@@ -7,21 +7,30 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
-  test("page @visual", async ({ page, visual }) => {
-    await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
-    );
-  });
+  test(
+    "page @visual",
+    { annotation: { type: "ariviso:item", description: "ui/heading/page" } },
+    async ({ page, visual }) => {
+      await forEachColorScheme(page, (colorScheme) =>
+        capturePage(page, visual, colorScheme),
+      );
+    },
+  );
 
-  test("underlines a permalink on hover @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Permalink");
-      await hoverOver(query(box).link("Anchored heading"));
-      await visual(getCapture(box, colorScheme));
-    });
-  });
+  test(
+    "underlines a permalink on hover @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description: "ui/heading/underlines-a-permalink-on-hover",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await forEachColorScheme(page, async (colorScheme) => {
+        const box = q.article("Permalink");
+        await hoverOver(query(box).link("Anchored heading"));
+        await visual(getCapture(box, colorScheme));
+      });
+    },
+  );
 });

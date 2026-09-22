@@ -14,11 +14,15 @@ function textStart(box: Locator) {
 }
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
-  test("page @visual", async ({ page, visual }) => {
-    await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
-    );
-  });
+  test(
+    "page @visual",
+    { annotation: { type: "ariviso:item", description: "ui/text-frame/page" } },
+    async ({ page, visual }) => {
+      await forEachColorScheme(page, (colorScheme) =>
+        capturePage(page, visual, colorScheme),
+      );
+    },
+  );
 
   // The optical side padding depends on the font metrics of each engine, so the
   // alignment is checked in every desktop project.

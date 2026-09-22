@@ -10,92 +10,130 @@ import {
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000661269
-  test("keeps a filled control boundary in forced colors @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await captureInView(visual, q.article("Control surfaces"), colorScheme);
-    });
-  });
+  test(
+    "keeps a filled control boundary in forced colors @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/button/keeps-a-filled-control-boundary-in-forced-colors",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await page.emulateMedia({ forcedColors: "active" });
+      await forEachColorScheme(page, async (colorScheme) => {
+        await captureInView(visual, q.article("Control surfaces"), colorScheme);
+      });
+    },
+  );
 
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000661269
-  test("keeps glider boundaries and inherited widths in forced colors @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await captureInView(visual, q.article("Glider"), colorScheme, {
-        id: "joined",
+  test(
+    "keeps glider boundaries and inherited widths in forced colors @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/button/keeps-glider-boundaries-and-inherited-widths-in-forced-colors",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await page.emulateMedia({ forcedColors: "active" });
+      await forEachColorScheme(page, async (colorScheme) => {
+        await captureInView(visual, q.article("Glider"), colorScheme, {
+          id: "joined",
+          capture: "joined",
+        });
+        const links = q.article("Current link gliders");
+        await hoverOver(query(links).link("Activity"));
+        await test
+          .expect(links.locator(".glider:not(.selected):not(.focus)"))
+          .toBeVisible();
+        await captureInView(visual, links, colorScheme, {
+          id: "hover",
+          capture: "hover",
+        });
       });
-      const links = q.article("Current link gliders");
-      await hoverOver(query(links).link("Activity"));
-      await test
-        .expect(links.locator(".glider:not(.selected):not(.focus)"))
-        .toBeVisible();
-      await captureInView(visual, links, colorScheme, { id: "hover" });
-    });
-  });
+    },
+  );
 
   // https://github.com/ariakit/ariakit/issues/7476
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r3995296714
-  test("keeps disabled layers borderless and preserves bevels in forced colors @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await expectMedia(page, "(forced-colors: active)");
-      await captureInView(visual, q.article("Layer disabled"), colorScheme);
-    });
-  });
+  test(
+    "keeps disabled layers borderless and preserves bevels in forced colors @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/button/keeps-disabled-layers-borderless-and-preserves-bevels-in-forced-colors",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await page.emulateMedia({ forcedColors: "active" });
+      await forEachColorScheme(page, async (colorScheme) => {
+        await expectMedia(page, "(forced-colors: active)");
+        await captureInView(visual, q.article("Layer disabled"), colorScheme);
+      });
+    },
+  );
 
   // https://github.com/ariakit/ariakit/issues/7476
-  test("keeps filled and bevel button boundaries in forced colors @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await expectMedia(page, "(forced-colors: active)");
-      for (const title of [
-        "Default",
-        "Lifted",
-        "Pushed",
-        "Contrast",
-        "Desaturated",
-        "Brand",
-        "Bevel",
-        "Inverted",
-      ]) {
-        await captureInView(visual, q.article(title), colorScheme, {
-          id: title,
+  test(
+    "keeps filled and bevel button boundaries in forced colors @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/button/keeps-filled-and-bevel-button-boundaries-in-forced-colors",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await page.emulateMedia({ forcedColors: "active" });
+      await forEachColorScheme(page, async (colorScheme) => {
+        await expectMedia(page, "(forced-colors: active)");
+        for (const [capture, title] of [
+          ["default", "Default"],
+          ["lifted", "Lifted"],
+          ["pushed", "Pushed"],
+          ["contrast", "Contrast"],
+          ["desaturated", "Desaturated"],
+          ["brand", "Brand"],
+          ["bevel", "Bevel"],
+          ["inverted", "Inverted"],
+        ]) {
+          await captureInView(visual, q.article(title), colorScheme, {
+            id: title,
+            capture,
+          });
+        }
+        const box = q.article("Thick focus ring");
+        const button = query(box).button("Move");
+        await tabTo(page, button);
+        await expectFocusVisible(button);
+        await captureInView(visual, box, colorScheme, {
+          id: "focus",
+          capture: "focus",
         });
-      }
-      const box = q.article("Thick focus ring");
-      const button = query(box).button("Move");
-      await tabTo(page, button);
-      await expectFocusVisible(button);
-      await captureInView(visual, box, colorScheme, { id: "focus" });
-    });
-  });
+      });
+    },
+  );
 
   // https://github.com/ariakit/ariakit/issues/7476
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r3996535606
-  test("preserves explicit ring and inset button edges in forced colors @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await captureInView(visual, q.article("Ring borders"), colorScheme);
-    });
-  });
+  test(
+    "preserves explicit ring and inset button edges in forced colors @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "ui/button/preserves-explicit-ring-and-inset-button-edges-in-forced-colors",
+      },
+    },
+    async ({ page, q, visual }) => {
+      await page.emulateMedia({ forcedColors: "active" });
+      await forEachColorScheme(page, async (colorScheme) => {
+        await captureInView(visual, q.article("Ring borders"), colorScheme);
+      });
+    },
+  );
 });

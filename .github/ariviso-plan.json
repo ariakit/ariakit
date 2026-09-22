@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "repositoryId": "104133653",
+  "workflow": ".github/workflows/ariviso-diagnostic.yml",
+  "invocation": ["playwright", "test", "--config", "playwright.config.mjs"],
+  "discovery": {
+    "executorDigest": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "shards": []
+}

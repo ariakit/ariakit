@@ -49,3 +49,10 @@ worker-configuration.d.ts
 # claude code
 .claude/worktrees
 .claude/scheduled_tasks.lock
+
+# Ariviso diagnostic job files
+.ariviso-trusted
+.ariviso
+.ariviso-results
+.ariviso-test-results
+.ariviso-packages

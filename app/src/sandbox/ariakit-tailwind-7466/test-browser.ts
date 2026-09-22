@@ -53,33 +53,39 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   // Hovering the middle item checks both shared edges. Sample the paint
   // variants here; the full matrix above checks geometry and stacking.
-  for (const [title, colorScheme, contrast] of [
-    ["Applied", "light", "no-preference"],
-    ["Border 2", "dark", "no-preference"],
-    ["Border 2", "light", "more"],
-    ["Border 2", "dark", "more"],
-    ["Ring 2", "light", "no-preference"],
-    ["Fractional ring", "dark", "no-preference"],
-    ["Vertical ring", "light", "no-preference"],
-    ["RTL", "light", "no-preference"],
+  for (const [key, title, colorScheme, contrast] of [
+    ["applied", "Applied", "light", "no-preference"],
+    ["border-2", "Border 2", "dark", "no-preference"],
+    ["border-2", "Border 2", "light", "more"],
+    ["border-2", "Border 2", "dark", "more"],
+    ["ring-2", "Ring 2", "light", "no-preference"],
+    ["fractional-ring", "Fractional ring", "dark", "no-preference"],
+    ["vertical-ring", "Vertical ring", "light", "no-preference"],
+    ["rtl", "RTL", "light", "no-preference"],
   ] as const) {
     // https://github.com/ariakit/ariakit/issues/7466
-    test(`${title} joins edges through hover (${colorScheme}, ${contrast}) @visual`, async ({
-      page,
-      q,
-      visual,
-    }) => {
-      await page.emulateMedia({ colorScheme, contrast });
-      const week = query(q.group(title)).button("Week");
-      await week.scrollIntoViewIfNeeded();
-      await week.hover();
-      await expect(week).toHaveCSS("z-index", "1");
-      await visual({
-        element: q.group(title),
-        id: `${title}-Week`,
-        styles: {},
-      });
-    });
+    test(
+      `${title} joins edges through hover (${colorScheme}, ${contrast}) @visual`,
+      {
+        annotation: {
+          type: "ariviso:item",
+          description: `tailwind/7466/joined-hover-${key}`,
+        },
+      },
+      async ({ page, q, visual }) => {
+        await page.emulateMedia({ colorScheme, contrast });
+        const week = query(q.group(title)).button("Week");
+        await week.scrollIntoViewIfNeeded();
+        await week.hover();
+        await expect(week).toHaveCSS("z-index", "1");
+        await visual({
+          element: q.group(title),
+          id: `${title}-Week`,
+          capture: "week",
+          styles: {},
+        });
+      },
+    );
   }
 
   // https://github.com/ariakit/ariakit/issues/7466
@@ -133,29 +139,37 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7466
-  test("later active items own boundaries shared by two active items @visual", async ({
-    q,
-    visual,
-  }) => {
-    const group = query(q.group("Border 2"));
-    const day = group.button("Day");
-    const week = group.button("Week");
-    await day.click();
-    await week.click();
-    await expect(day).toHaveAttribute("aria-pressed", "true");
-    await expect(week).toHaveAttribute("aria-pressed", "true");
-    await day.hover();
-    await expect(day).toHaveCSS("z-index", "1");
-    await expect(week).toHaveCSS("z-index", "1");
-    await visual({
-      element: q.group("Border 2"),
-      id: "selected-selected",
-      styles: {},
-    });
-    await week.click();
-    await day.hover();
-    await expect(week).toHaveCSS("z-index", "0");
-  });
+  test(
+    "later active items own boundaries shared by two active items @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "tailwind/7466/later-active-items-own-boundaries-shared-by-two-active-items",
+      },
+    },
+    async ({ q, visual }) => {
+      const group = query(q.group("Border 2"));
+      const day = group.button("Day");
+      const week = group.button("Week");
+      await day.click();
+      await week.click();
+      await expect(day).toHaveAttribute("aria-pressed", "true");
+      await expect(week).toHaveAttribute("aria-pressed", "true");
+      await day.hover();
+      await expect(day).toHaveCSS("z-index", "1");
+      await expect(week).toHaveCSS("z-index", "1");
+      await visual({
+        element: q.group("Border 2"),
+        id: "selected-selected",
+        capture: "selected-selected",
+        styles: {},
+      });
+      await week.click();
+      await day.hover();
+      await expect(week).toHaveCSS("z-index", "0");
+    },
+  );
 
   // https://github.com/ariakit/ariakit/issues/7466
   test("keeps cover geometry, padding, and skipped siblings", async ({ q }) => {
@@ -198,21 +212,27 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7466
-  test("allows explicit focus stacking above an active neighbor @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    const group = query(q.group("Focus priority"));
-    const week = group.button("Week");
-    const month = group.button("Month");
-    await page.keyboard.press("Tab");
-    await week.focus();
-    await expect(week).toBeFocused();
-    await expect(week).toHaveCSS("z-index", "10");
-    await expect(month).toHaveCSS("z-index", "1");
-    await visual({ element: q.group("Focus priority"), styles: {} });
-  });
+  test(
+    "allows explicit focus stacking above an active neighbor @visual",
+    {
+      annotation: {
+        type: "ariviso:item",
+        description:
+          "tailwind/7466/allows-explicit-focus-stacking-above-an-active-neighbor",
+      },
+    },
+    async ({ page, q, visual }) => {
+      const group = query(q.group("Focus priority"));
+      const week = group.button("Week");
+      const month = group.button("Month");
+      await page.keyboard.press("Tab");
+      await week.focus();
+      await expect(week).toBeFocused();
+      await expect(week).toHaveCSS("z-index", "10");
+      await expect(month).toHaveCSS("z-index", "1");
+      await visual({ element: q.group("Focus priority"), styles: {} });
+    },
+  );
 
   // https://github.com/ariakit/ariakit/issues/7466
   test("preserves native Tailwind rings with programmatic focus", async ({
