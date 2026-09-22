@@ -250,6 +250,58 @@ function EndBarSections({ dir }: EndBarSectionsProps) {
   );
 }
 
+/**
+ * Links whose author marks idle rows with an empty or false aria-current and
+ * the current row with a token ARIA does not list. ARIA reads the first two as
+ * not current and the unknown token as current. React's types reject the empty
+ * value and the unknown token, so the values pass through a plain record, the
+ * way markup outside React would carry them.
+ */
+function LooseCurrentSections() {
+  const [current, setCurrent] = useState("Overview");
+  const link = (page: string, idle: "" | "false") => {
+    const currentProps: Record<string, string> = {
+      "aria-current": current === page ? "active" : idle,
+    };
+    return (
+      <NavLink
+        href={`#${page.toLowerCase()}`}
+        {...currentProps}
+        onClick={(event) => {
+          event.preventDefault();
+          setCurrent(page);
+        }}
+      >
+        {page}
+      </NavLink>
+    );
+  };
+  return (
+    <Nav
+      $iconSize={5}
+      aria-label="Empty, false, and unknown current values"
+      glider={{ $kind: "bar", $animated: false }}
+      className="w-full"
+    >
+      {link("Overview", "")}
+      <NavDisclosure
+        defaultOpen
+        button={
+          <NavDisclosureButton icon={<Palette strokeWidth={1.5} />}>
+            Styling
+          </NavDisclosureButton>
+        }
+      >
+        <NavList>
+          {link("Themes", "")}
+          {link("Tokens", "false")}
+        </NavList>
+      </NavDisclosure>
+      {link("Changelog", "false")}
+    </Nav>
+  );
+}
+
 const INITIAL_SIDEBAR_URL = "/docs/styling/introduction";
 
 /**
@@ -906,6 +958,28 @@ export default function NavExamples() {
           <EndBarSections dir={dir} />
         </Example>
       ))}
+
+      <Example
+        title="Empty, false, and unknown current values"
+        description="Idle links carry an empty or false aria-current, which does not count as current, and the current link carries a token ARIA does not list, which does. The rows, the bar, and the guide line follow only the current link. Click a link to move it. With the current link in the section, close the section to leave no current row in view."
+        code={`
+          <Nav $iconSize={5} glider={{ $kind: "bar", $animated: false }}>
+            <NavLink aria-current="active">Overview</NavLink>
+            <NavDisclosure
+              defaultOpen
+              button={<NavDisclosureButton icon={<Palette />}>Styling</NavDisclosureButton>}
+            >
+              <NavList>
+                <NavLink aria-current="">Themes</NavLink>
+                <NavLink aria-current={false}>Tokens</NavLink>
+              </NavList>
+            </NavDisclosure>
+            <NavLink aria-current={false}>Changelog</NavLink>
+          </Nav>
+        `}
+      >
+        <LooseCurrentSections />
+      </Example>
 
       <Example
         title="Sidebar"

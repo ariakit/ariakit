@@ -73,6 +73,48 @@ function AvatarShape() {
   );
 }
 
+/**
+ * Links whose author marks idle links with an empty or false aria-current and
+ * the clicked link with a token ARIA does not list. ARIA reads the first two as
+ * not current and the unknown token as current. React's types reject the empty
+ * value and the unknown token, so the values pass through a plain record, the
+ * way markup outside React would carry them.
+ */
+function LooseCurrentLinks() {
+  const [current, setCurrent] = useState<string>();
+  const link = (name: string, idle: "" | "false") => {
+    const currentProps: Record<string, string> = {
+      "aria-current": current === name ? "active" : idle,
+    };
+    return (
+      <Button
+        render={
+          <a
+            href={`#${name.toLowerCase()}`}
+            {...currentProps}
+            onClick={(event) => {
+              event.preventDefault();
+              setCurrent(name);
+            }}
+          />
+        }
+      >
+        {name}
+      </Button>
+    );
+  };
+  return (
+    <ButtonGroup aria-label="Sections" $border>
+      {link("Overview", "")}
+      <ButtonSeparator $kind="slash" />
+      {link("Activity", "false")}
+      <ButtonSeparator $kind="slash" />
+      {link("Settings", "")}
+      <ButtonGlider />
+    </ButtonGroup>
+  );
+}
+
 export default function ButtonExamples() {
   const firstInitial = "W";
   const lastInitial = "W";
@@ -1349,6 +1391,23 @@ export default function ButtonExamples() {
           <ButtonGlider $state="hover" />
           <ButtonGlider $state="focus" />
         </ButtonGroup>
+      </Example>
+
+      <Example
+        title="Empty, false, and unknown current values"
+        description="Idle links carry an empty or false aria-current, which does not count as current, and a clicked link carries a token ARIA does not list, which does. The glider stays away until a link is clicked, and then only the slashes next to that link hide."
+        code={`
+          <ButtonGroup $border>
+            <Button render={<a aria-current="" />}>Overview</Button>
+            <ButtonSeparator $kind="slash" />
+            <Button render={<a aria-current={false} />}>Activity</Button>
+            <ButtonSeparator $kind="slash" />
+            <Button render={<a aria-current="" />}>Settings</Button>
+            <ButtonGlider />
+          </ButtonGroup>
+        `}
+      >
+        <LooseCurrentLinks />
       </Example>
 
       <Example
