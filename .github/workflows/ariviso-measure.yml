@@ -1,0 +1,106 @@
+name: Ariviso capture measurement
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/ariviso-measure/**
+      - .github/workflows/ariviso-measure.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ariviso-measure-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+env:
+  LEFTHOOK: "0"
+  pnpm_config_verify_deps_before_run: "false"
+
+jobs:
+  build:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 12.5.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24.18.0
+      - run: pnpm install --frozen-lockfile --no-runtime --filter app...
+      - run: pnpm run build-app
+        env:
+          CLOUDFLARE_ENV: preview
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ariviso-measure-build
+          path: |
+            app/dist
+            app/.wrangler/deploy/config.json
+            nextjs/.open-next
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 2
+
+  measure:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - browser: chromium
+            os: ubuntu-24.04
+          - browser: firefox
+            os: ubuntu-24.04
+          - browser: webkit
+            os: macos-15
+    env:
+      ARIVISO_BROWSER: ${{ matrix.browser }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 12.5.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24.18.0
+      - run: pnpm install --frozen-lockfile --no-runtime --filter app...
+      - name: Install the separate measurement runtime
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/ariviso-measure-runtime/ariviso" "$RUNNER_TEMP/ariviso-measure-runtime/ariviso-measure"
+          cp .github/ariviso/* "$RUNNER_TEMP/ariviso-measure-runtime/ariviso/"
+          cp .github/ariviso-measure/* "$RUNNER_TEMP/ariviso-measure-runtime/ariviso-measure/"
+          cd "$RUNNER_TEMP/ariviso-measure-runtime/ariviso"
+          npm ci --ignore-scripts --no-audit --no-fund --workspaces=false
+          node node_modules/playwright/cli.js install --with-deps "$ARIVISO_BROWSER"
+      - name: Install the existing checksum-pinned adapter
+        env:
+          ARIVISO_PLAYWRIGHT_TARBALL_URL: ${{ secrets.ARIVISO_PLAYWRIGHT_TARBALL_URL }}
+        run: node "$RUNNER_TEMP/ariviso-measure-runtime/ariviso-measure/install.mjs"
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: ariviso-measure-build
+      - name: Measure three complete captures and encrypt all raw evidence
+        run: node "$RUNNER_TEMP/ariviso-measure-runtime/ariviso-measure/measure.mjs"
+      - name: Preserve encrypted evidence and aggregate metrics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ariviso-measure-${{ matrix.browser }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ariviso-evidence-${{ matrix.browser }}/public/evidence.enc
+            ${{ runner.temp }}/ariviso-evidence-${{ matrix.browser }}/public/summary.json
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
