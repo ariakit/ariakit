@@ -7,6 +7,7 @@ import {
   buttonLabel,
   buttonSlot,
 } from "./button.ts";
+import { getIconSlotSize } from "./control.ts";
 import { frame, frameBase } from "./frame.ts";
 import { glider } from "./glider.ts";
 import { selected } from "./selected.ts";
@@ -128,7 +129,8 @@ export const navGroupLabel = cv({
 const navIconSizeVariants = {
   /**
    * Extends the slot sizes with `auto`, which follows the nav's `$iconSize` and
-   * otherwise the text size.
+   * otherwise the text size. It is the default for an icon; a badge, an avatar
+   * or a shortcut keeps the size every other control slot gives it.
    */
   $size: {
     auto: "[--size:var(--nav-icon-size,1em)]",
@@ -137,15 +139,16 @@ const navIconSizeVariants = {
 
 // The icon slot of a nav row, sized by the nav's icon size. It is a control
 // slot, so its outer box is one line square whatever the icon size: that is
-// what keeps a wrapping label aligned to it. A standalone nav row, such as a
-// brand link, can use it on its own.
+// what keeps a wrapping label aligned to it. A badge or an avatar in it takes
+// the one-line box instead (see getIconSlotSize). A standalone nav row, such as
+// a brand link, can use it on its own.
 export const navIcon = cv({
   extend: [buttonSlot],
   variants: {
     ...navIconSizeVariants,
   },
   defaultVariants: {
-    $size: "auto",
+    $size: getIconSlotSize,
   },
 });
 
@@ -185,15 +188,7 @@ export const navLinkSlot = cv({
     ...navIconSizeVariants,
   },
   defaultVariants: {
-    $size(defaultValue, variants) {
-      // Only an icon takes the nav's icon size. A badge, an avatar or a
-      // shortcut keeps the size every other control slot gives it.
-      if (variants.$kind !== "icon") return defaultValue;
-      // Replace only the control slot's own default, so an extender's size
-      // still applies.
-      if (defaultValue !== "md") return defaultValue;
-      return "auto";
-    },
+    $size: getIconSlotSize,
   },
 });
 
