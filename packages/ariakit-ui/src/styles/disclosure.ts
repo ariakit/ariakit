@@ -7,7 +7,6 @@ import {
   buttonLabel,
   buttonSlot,
 } from "./button.ts";
-import { controlSlotOverflow } from "./control.ts";
 import { edge } from "./edge.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
@@ -305,17 +304,13 @@ export const disclosureButtonDescription = cv({
 // avatar, can lead the label and keep the body under it.
 export const disclosureButtonSlot = cv({
   extend: [buttonSlot],
-  class: [
-    "disclosure-button-slot",
-    // An icon wider than the line overflows its box on both sides. The end
-    // margin grows by the far-side overflow so the gap to the label holds,
-    // and --disclosure-lead adds the same amount for the body.
-    controlSlotOverflow,
-  ],
+  class: "disclosure-button-slot",
   variants: {
     /**
      * Extends the slot sizes with `auto`, which follows the root's `$iconSize`
-     * and otherwise the text size.
+     * and otherwise the text size. An icon wider than the line keeps its gap to
+     * the label through the slot's `auto` margin (see `$mx` in control.ts), and
+     * `--disclosure-lead` adds the same overflow for the body.
      */
     $size: {
       auto: "[--size:var(--disclosure-icon-size,1em)]",

@@ -7,7 +7,6 @@ import {
   buttonLabel,
   buttonSlot,
 } from "./button.ts";
-import { controlSlotOverflow } from "./control.ts";
 import { frame, frameBase } from "./frame.ts";
 import { glider } from "./glider.ts";
 import { selected } from "./selected.ts";
@@ -122,16 +121,19 @@ export const navGroupLabel = cv({
   },
 });
 
-// The icon of a nav row, sized by the nav. navIcon and the auto size of
-// navLinkSlot share it, so an icon the nav sizes is the same in both.
-const navRowIcon = cx(
-  // The nav's icon size, and otherwise the text size.
-  "[--size:var(--nav-icon-size,1em)]",
-  // An icon wider than the line keeps its gap to the label, so the label stays
-  // on the label column of a disclosure row, whose icon slot does the same
-  // (see disclosureButtonSlot).
-  controlSlotOverflow,
-);
+// The size of an icon the nav sizes. navIcon and navLinkSlot share it, so that
+// icon is the same in both. The auto size brings the auto margin (see $mx in
+// control.ts), so an icon wider than the line keeps its label on the label
+// column of a disclosure row, whose icon slot gets the same margin.
+const navIconSizeVariants = {
+  /**
+   * Extends the slot sizes with `auto`, which follows the nav's `$iconSize` and
+   * otherwise the text size.
+   */
+  $size: {
+    auto: "[--size:var(--nav-icon-size,1em)]",
+  },
+};
 
 // The icon slot of a nav row, sized by the nav's icon size. It is a control
 // slot, so its outer box is one line square whatever the icon size: that is
@@ -139,10 +141,11 @@ const navRowIcon = cx(
 // brand link, can use it on its own.
 export const navIcon = cv({
   extend: [buttonSlot],
-  class: navRowIcon,
+  variants: {
+    ...navIconSizeVariants,
+  },
   defaultVariants: {
-    // The size comes from the class above, not from a named step.
-    $size: "unset",
+    $size: "auto",
   },
 });
 
@@ -179,13 +182,7 @@ export const navLink = cv({
 export const navLinkSlot = cv({
   extend: [buttonSlot],
   variants: {
-    /**
-     * Extends the slot sizes with `auto`, which follows the nav's `$iconSize`
-     * and otherwise the text size.
-     */
-    $size: {
-      auto: navRowIcon,
-    },
+    ...navIconSizeVariants,
   },
   defaultVariants: {
     $size(defaultValue, variants) {
