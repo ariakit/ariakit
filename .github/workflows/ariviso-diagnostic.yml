@@ -1,0 +1,37 @@
+name: Ariviso diagnostic
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Measure runner profiles before enabling complete captures
+        type: choice
+        options: [probe, capture]
+        default: probe
+  push:
+    branches: [main]
+  pull_request:
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+concurrency:
+  group: ariviso-diagnostic-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    if: >-
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) &&
+      (vars.ARIVISO_DIAGNOSTIC_ENABLED == 'true' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request')
+    # Replace with the reviewed executor workflow commit after its source pin is set.
+    uses: ariakit/ariakit/.github/workflows/ariviso-capture.yml@dad3fca26eb57cf5a9276a885fc14d4b82a43320
+    with:
+      mode: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || vars.ARIVISO_DIAGNOSTIC_ENABLED == 'true' && 'capture' || 'probe' }}
+    secrets:
+      ARIVISO_PLAYWRIGHT_TARBALL_URL: ${{ secrets.ARIVISO_PLAYWRIGHT_TARBALL_URL }}
+      ARIVISO_CLI_TARBALL_URL: ${{ secrets.ARIVISO_CLI_TARBALL_URL }}
