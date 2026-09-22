@@ -32,7 +32,19 @@ The adapter is loaded only when the immutable CI configuration sets `ARIVISO_CAP
 5. After copying the reviewed hosted profile digests, run `node .github/ariviso/plan.mjs`. This deliberately writes the complete trusted plan to `.github/ariviso-plan.json` and prints its plan and executor digests. The service reads that whole JSON document from trusted `main`; set `ARIVISO_TRUSTED_PLAN_PATH=.github/ariviso-plan.json`. Keep the generated file outside `.github/ariviso`, because the executor digest includes every `.mjs` and `.json` file in that directory. Review and commit the generated plan with the updated executor source. Then update both immutable workflow pins using the sequence in step 2. Register the matching plan digest, discovery executor digest, exact job names, and policy digest with the service. Register the `visible-exact-v1` policy only with the separately reviewed measurement decision.
 6. Dispatch mode `capture`. The three jobs measure the runner again and reject an environment outside the registered allowlist before tests start. Check that the complete suite, uploads, receipt artifacts, service comparison, and fresh baseline review finish. Repeat on unchanged content to measure drift. Then set `ARIVISO_DIAGNOSTIC_ENABLED=true` for push, pull request, and merge queue diagnostics.
 
-A hosted image or font change requires another deliberate trusted profile update. A code change to the executor or its trusted settings changes the executor digest and plan digest. Regenerate `.github/ariviso-plan.json`, then update the service configuration and both immutable pins together. The initial plan has no shards and is intentionally invalid. Empty environment lists prevent plan generation and capture, while probe mode can measure the profiles. A placeholder package hash or missing download secret also prevents capture. Replace zero workflow pins before publishing the caller.
+A hosted image or font change requires another deliberate trusted profile update. A code change to the executor or its trusted settings changes the executor digest and plan digest. Regenerate `.github/ariviso-plan.json`, then update the service configuration and both immutable pins together. Empty environment lists prevent plan generation and capture, while probe mode can measure the profiles. A plan without shards is invalid. A placeholder package hash or missing download secret also prevents capture. Replace zero workflow pins before publishing the caller.
+
+## Measured hosted profiles
+
+The committed allowlists come from [the successful profile-only run](https://github.com/ariakit/ariakit/actions/runs/35708007382) on September 22, 2026. Its immutable reusable workflow was `dad3fca26eb57cf5a9276a885fc14d4b82a43320`, with executor source `ecfd678493c00815ec39681ce1a49da1d36abb6a`. All three artifact archive hashes and every profile digest were verified before generating the plan. Each browser contributes 96 profiles, including both forced-color states.
+
+| Browser  | Version       | Runner image              | Architecture | Font files |
+| -------- | ------------- | ------------------------- | ------------ | ---------- |
+| Chromium | 153.0.8010.12 | ubuntu24 / 20260907.300.1 | x64          | 122        |
+| Firefox  | 155.0         | ubuntu24 / 20260907.300.1 | x64          | 122        |
+| WebKit   | 26.6          | macos15 / 20260907.0337.1 | arm64        | 414        |
+
+The probe took no screenshots and requested no service identity token. The generated plan still requires trusted-main review and service registration before capture. Full capture, comparison, drift measurement, and required-check cutover remain separate launch checks.
 
 ## Completeness and authority
 
