@@ -32,7 +32,7 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   RefObject,
 } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import { getMoveRequest } from "./__move-request.ts";
@@ -173,18 +173,16 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   // `true` after a `move(null)` call. The composite element rarely changes, so
   // this doesn't add renders while navigating.
   const compositeElement = useStoreState(store, "compositeElement");
-  // Identifies this instance to the store's move request. A ref survives the
-  // effect re-runs of the same instance, including StrictMode's double
-  // invocation, but not a remount, which is exactly the distinction the request
-  // needs.
-  const instanceRef = useRef({});
+  // Keep the consumer stable through effect re-runs, but replace it when the
+  // core store changes so switching back cannot replay its consumed request.
+  // oxlint-disable-next-line exhaustive-deps, react/memo-dependencies, typescript/unbound-method -- core store identity
+  const instance = useMemo(() => ({}), [store.getState]);
 
   // Present the active item.
   useEffect(() => {
     const moveRequest = getMoveRequest(store);
     if (!moves) return;
     if (!focusOnMove) return;
-    const instance = instanceRef.current;
     if (!mayActOnMove(store, instance)) return;
     const { activeId } = store.getState();
     if (activeId == null) return;
@@ -199,8 +197,16 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
       scrollIntoView,
       onConsume: () => consumeMove(store, instance, moves),
     });
+  }, [
+    store,
+    moves,
+    focusOnMove,
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- store invalidation signal
-  }, [store, moves, focusOnMove, compositeElement, present, scrollIntoView]);
+    compositeElement,
+    present,
+    scrollIntoView,
+    instance,
+  ]);
 
   // If composite.move(null) has been called, the composite container should
   // receive focus.
@@ -208,7 +214,6 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
     const moveRequest = getMoveRequest(store);
     if (!moves) return;
     if (!compositeElement) return;
-    const instance = instanceRef.current;
     if (!mayActOnMove(store, instance)) return;
     const { activeId } = store.getState();
     const isSelfActive = activeId === null;
@@ -242,7 +247,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
       }
       compositeElement.focus({ preventScroll: true });
     }
-  }, [store, moves, compositeElement, previousElementRef]);
+  }, [store, moves, compositeElement, previousElementRef, instance]);
 
   return null;
 });

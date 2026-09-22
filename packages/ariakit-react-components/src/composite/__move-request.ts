@@ -1,5 +1,8 @@
 import type * as Core from "@ariakit/components/composite/composite-store";
 import { sync } from "@ariakit/store";
+import { hasOwnProperty } from "@ariakit/utils";
+
+type MoveStore = NonNullable<Core.CompositeStoreProps["store"]>;
 
 const cancelled = Symbol("cancelled");
 
@@ -17,13 +20,33 @@ interface MoveRequest {
  * only counts requests, so a fresh instance can't tell whether a move was
  * consumed or what target a pending move asked for.
  */
-const moveRequests = new WeakMap<Core.CompositeStore["item"], MoveRequest>();
+const moveRequests = new WeakMap<MoveStore["getState"], MoveRequest>();
 
-export function getMoveRequest(store: Core.CompositeStore) {
+export function getMoveRequest(
+  store: MoveStore,
+  source?: MoveStore,
+): MoveRequest {
   // Store hooks can return wrapper objects that share the same core store.
-  const key = store.item;
+  // oxlint-disable-next-line typescript/unbound-method -- identity key, never called
+  const key = store.getState;
   const cached = moveRequests.get(key);
   if (cached) return cached;
+  const sourceState = source?.getState();
+  // Share request history only when the source tracks both moves and activeId.
+  // Otherwise, track requests locally without resetting inherited move counts.
+  // https://github.com/ariakit/ariakit/pull/7572#discussion_r4067214071
+  if (
+    source &&
+    sourceState &&
+    hasOwnProperty(sourceState, "moves") &&
+    hasOwnProperty(sourceState, "activeId")
+  ) {
+    // Preserve requests across provider remounts. Bind only new core stores:
+    // source prop changes take effect after the core store is replaced.
+    const request = getMoveRequest(source);
+    moveRequests.set(key, request);
+    return request;
+  }
   const request: MoveRequest = {
     consumedBy: null,
     targetId: store.getState().activeId,
