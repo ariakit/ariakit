@@ -65,17 +65,17 @@ export const disclosure = cv({
     "[--disclosure-px:calc(var(--disclosure-padding)+(1lh-1cap)*0.5)]",
     // A start indent set by a content or a list root inherits, so a nested
     // disclosure clears it before its own content sets one. A list root
-    // sets its own through the style attribute, which wins over this.
+    // sets its own through $indent, which wins over this.
     "[--disclosure-ps:initial]",
     // How far under the button the body sits, where the guide starts too.
-    // Nothing by itself; a nav sets the gap between its rows through the style
-    // attribute, so a section's rows and their guide keep the rhythm of the
+    // Nothing by itself; a nav sets the gap between its rows through
+    // $bodyOffset, so a section's rows and their guide keep the rhythm of the
     // rows around them. Registered as a length (see ui.css), so the body and
     // the content's guide, which both read it, spend the same pixels.
     "[--disclosure-body-offset:0px]",
     // The gap between a slot and the label, before the button adds the
     // extra side padding back (see $gap below). The body spends it too, so
-    // a body under an icon lands on the label.
+    // a body under an icon lands on the label. $slotGap replaces it.
     "[--disclosure-gap:max(--spacing(2),var(--disclosure-padding)/2)]",
     // Where the label starts when a slot leads it. A slot starts one padding
     // in and, with the gap above, ends the label one line plus the gap past
@@ -134,6 +134,55 @@ export const disclosure = cv({
       if (value == null) return;
       return {
         style: { "--disclosure-icon-size": getSpacingValue(value) },
+      };
+    },
+    // The channels below go in the style attribute, so they win over the root's
+    // class defaults. Unset, they write nothing and those defaults hold.
+    /**
+     * Sets the gap between a slot and the label. The body indents by it too, so
+     * a body under an icon still lands on the label. Defaults to half the frame
+     * padding, never tighter than the base spacing step. Numbers scale the
+     * spacing token.
+     */
+    $slotGap(value?: string | number) {
+      if (value == null) return;
+      return {
+        style: { "--disclosure-gap": getSpacingValue(value) },
+      };
+    },
+    /**
+     * Sets how far under the button the body sits, where the content's guide
+     * starts too. Defaults to none. Numbers scale the spacing token.
+     */
+    $bodyOffset(value?: string | number) {
+      if (value == null) return;
+      return {
+        style: { "--disclosure-body-offset": getSpacingValue(value) },
+      };
+    },
+    /**
+     * Sets the start indent of the button's label and of the body, in place of
+     * the button's own start padding. A slot that leads the label, or a guide
+     * on the content, indents the body to the label instead (see
+     * `$leadingIcon`). Numbers scale the spacing token.
+     */
+    $indent(value?: string | number) {
+      if (value == null) return;
+      return {
+        style: { "--disclosure-ps": getSpacingValue(value) },
+      };
+    },
+    /**
+     * Whether a slot leads the button's label, which indents the body past it.
+     * Left unset, the root detects a leading slot by itself. Set it to replace
+     * that detection, such as on a list row, which indents by its marker.
+     */
+    $leadingIcon(value?: boolean) {
+      if (value == null) return;
+      // A style entry, because the detection rule above is variant-gated and
+      // sorts after any plain class that could set the flag.
+      return {
+        style: { "--disclosure-icon": value ? "1" : "0" },
       };
     },
   },

@@ -1618,6 +1618,43 @@ export default function NavExamples() {
           </NavDisclosure>
         </Nav>
       </Example>
+
+      <Example
+        title="Row overrides"
+        description="A row can replace the defaults its nav gives it. Settings forces square corners and takes more room under its button, where its guide starts too, while Account keeps the defaults."
+        code={`
+          <Nav>
+            <NavDisclosure button="Account">…</NavDisclosure>
+            <NavDisclosure $rounded="none" $forceRounded $bodyOffset={3} button="Settings">
+              <NavList>
+                <NavLink>Profile</NavLink>
+                <NavLink>Billing</NavLink>
+              </NavList>
+            </NavDisclosure>
+          </Nav>
+        `}
+      >
+        <Nav aria-label="Row overrides" className="w-full">
+          <NavDisclosure defaultOpen button="Account">
+            <NavList>
+              <NavLink href="#override-members">Members</NavLink>
+              <NavLink href="#override-security">Security</NavLink>
+            </NavList>
+          </NavDisclosure>
+          <NavDisclosure
+            $rounded="none"
+            $forceRounded
+            $bodyOffset={3}
+            defaultOpen
+            button="Settings"
+          >
+            <NavList>
+              <NavLink href="#override-profile">Profile</NavLink>
+              <NavLink href="#override-billing">Billing</NavLink>
+            </NavList>
+          </NavDisclosure>
+        </Nav>
+      </Example>
     </ExampleGrid>
   );
 }

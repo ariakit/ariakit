@@ -22,11 +22,7 @@ import {
   disclosurePlus,
 } from "../styles/disclosure.ts";
 
-export interface DisclosureProps
-  extends
-    Omit<ak.RoleProps<"div">, "content">,
-    Pick<ak.DisclosureProviderProps, "open" | "setOpen" | "defaultOpen">,
-    VariantProps<typeof disclosure> {
+export interface DisclosureOwnProps {
   /** Custom button element or props to render a `DisclosureButton`. */
   button?: React.ReactNode | DisclosureButtonProps;
   /** Custom content element or props to render a `DisclosureContent`. */
@@ -46,6 +42,19 @@ export interface DisclosureProps
   split?: boolean;
 }
 
+export type DisclosureProps<
+  R extends Pick<typeof disclosure, "getVariants"> = typeof disclosure,
+> = Omit<ak.RoleProps<"div">, "content"> &
+  Pick<ak.DisclosureProviderProps, "open" | "setOpen" | "defaultOpen"> &
+  VariantProps<R> &
+  DisclosureOwnProps & {
+    /**
+     * The recipe applied to the root in place of `disclosure`. It must extend
+     * it.
+     */
+    recipe?: R;
+  };
+
 /**
  * High-level disclosure that wires button and content through a provider.
  * @example
@@ -58,7 +67,10 @@ export interface DisclosureProps
  *   Content
  * </Disclosure>
  */
-export function Disclosure({
+export function Disclosure<
+  R extends Pick<typeof disclosure, "getVariants"> = typeof disclosure,
+>({
+  recipe,
   open,
   setOpen,
   defaultOpen,
@@ -67,17 +79,19 @@ export function Disclosure({
   content,
   decoration,
   ...props
-}: DisclosureProps) {
+}: DisclosureProps<R>) {
   const store = ak.useDisclosureStore({ open, setOpen, defaultOpen });
   const isOpen = ak.useStoreState(store, "open");
-  const [variantProps, rest] = splitProps(props, disclosure);
+  // The recipe accepts every base variant, which is all the component reads.
+  const styles = (recipe ?? disclosure) as typeof disclosure;
+  const [variantProps, rest] = splitProps(props, styles);
   const buttonEl = createOptionalRender(DisclosureButton, button);
   const contentEl = createRender(DisclosureContent, content);
   return (
     <ak.DisclosureProvider store={store}>
       <ak.Role
         data-open={isOpen || undefined}
-        {...disclosure.jsx({
+        {...styles.jsx({
           ...variantProps,
           $split: variantProps.$split ?? split,
         })}
@@ -116,8 +130,7 @@ export type DisclosureIndicator =
   | "plus-next"
   | "plus-end";
 
-export interface DisclosureButtonProps
-  extends ak.DisclosureProps, VariantProps<typeof disclosureButton> {
+export interface DisclosureButtonOwnProps {
   /**
    * Label content, a custom label element, or `DisclosureButtonLabel` props.
    * When omitted, children form the label. When set, children render beside the
@@ -136,6 +149,19 @@ export interface DisclosureButtonProps
   indicator?: DisclosureIndicator | false;
 }
 
+export type DisclosureButtonProps<
+  R extends Pick<typeof disclosureButton, "getVariants"> =
+    typeof disclosureButton,
+> = ak.DisclosureProps &
+  VariantProps<R> &
+  DisclosureButtonOwnProps & {
+    /**
+     * The recipe applied to the button in place of `disclosureButton`. It must
+     * extend it.
+     */
+    recipe?: R;
+  };
+
 function renderIndicator(indicator: DisclosureIndicator) {
   const $end = indicator.endsWith("-end");
   if (indicator.startsWith("plus")) {
@@ -152,18 +178,24 @@ function renderIndicator(indicator: DisclosureIndicator) {
   );
 }
 
-export function DisclosureButton({
+export function DisclosureButton<
+  R extends Pick<typeof disclosureButton, "getVariants"> =
+    typeof disclosureButton,
+>({
+  recipe,
   label,
   description,
   icon,
   indicator = isRenderable(icon) ? "chevron-down-end" : "chevron-right-start",
   ...props
-}: DisclosureButtonProps) {
+}: DisclosureButtonProps<R>) {
   const context = ak.useDisclosureContext();
   const isOpen = ak.useStoreState(props.store ?? context, "open");
   const baseId = React.useId();
   const descriptionId = `${baseId}-description`;
-  const [variantProps, rest] = splitProps(props, disclosureButton);
+  // The recipe accepts every base variant, which is all the component reads.
+  const styles = (recipe ?? disclosureButton) as typeof disclosureButton;
+  const [variantProps, rest] = splitProps(props, styles);
   // Fragments need an element to carry the label's ID and styles.
   const isFragment =
     React.isValidElement(label) && label.type === React.Fragment;
@@ -205,7 +237,7 @@ export function DisclosureButton({
       aria-labelledby={hasDescription ? labelEl?.props.id : undefined}
       aria-describedby={hasDescription && hasLabel ? descriptionId : undefined}
       data-open={isOpen || undefined}
-      {...disclosureButton.jsx(variantProps)}
+      {...styles.jsx(variantProps)}
       {...rest}
     >
       {atStart && indicatorEl}
@@ -279,12 +311,25 @@ export function DisclosureContent({
   );
 }
 
-export interface DisclosureContentBodyProps
-  extends
-    React.ComponentProps<"div">,
-    VariantProps<typeof disclosureContentBody> {}
+export type DisclosureContentBodyProps<
+  R extends Pick<typeof disclosureContentBody, "getVariants"> =
+    typeof disclosureContentBody,
+> = React.ComponentProps<"div"> &
+  VariantProps<R> & {
+    /**
+     * The recipe applied to the body in place of `disclosureContentBody`. It
+     * must extend it.
+     */
+    recipe?: R;
+  };
 
-export function DisclosureContentBody(props: DisclosureContentBodyProps) {
-  const [variantProps, rest] = splitProps(props, disclosureContentBody);
-  return <div {...disclosureContentBody.jsx(variantProps)} {...rest} />;
+export function DisclosureContentBody<
+  R extends Pick<typeof disclosureContentBody, "getVariants"> =
+    typeof disclosureContentBody,
+>({ recipe, ...props }: DisclosureContentBodyProps<R>) {
+  // The recipe accepts every base variant, which is all the component reads.
+  const styles = (recipe ??
+    disclosureContentBody) as typeof disclosureContentBody;
+  const [variantProps, rest] = splitProps(props, styles);
+  return <div {...styles.jsx(variantProps)} {...rest} />;
 }

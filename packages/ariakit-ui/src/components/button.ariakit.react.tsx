@@ -12,21 +12,30 @@ import {
   buttonSlot,
 } from "../styles/button.ts";
 
-export interface ButtonProps
-  extends ak.ButtonProps, VariantProps<typeof button> {}
+export type ButtonProps<
+  R extends Pick<typeof button, "getVariants"> = typeof button,
+> = ak.ButtonProps &
+  VariantProps<R> & {
+    /** The recipe applied in place of `button`. It must extend it. */
+    recipe?: R;
+  };
 
 /**
  * @see https://ariakit.com/react/examples/button
  */
-export function Button(props: ButtonProps) {
-  const [variantProps, rest] = splitProps(props, button);
+export function Button<
+  R extends Pick<typeof button, "getVariants"> = typeof button,
+>({ recipe, ...props }: ButtonProps<R>) {
+  // The recipe accepts every base variant, which is all the component reads.
+  const styles = (recipe ?? button) as typeof button;
+  const [variantProps, rest] = splitProps(props, styles);
   const disabled =
     props.disabled ||
     props["aria-disabled"] === true ||
     props["aria-disabled"] === "true";
   return (
     <ak.Button
-      {...button.jsx({
+      {...styles.jsx({
         ...variantProps,
         $disabled: variantProps.$disabled ?? disabled,
       })}
