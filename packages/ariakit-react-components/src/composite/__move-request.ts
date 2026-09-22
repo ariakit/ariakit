@@ -1,5 +1,6 @@
 import type * as Core from "@ariakit/components/composite/composite-store";
 import { sync } from "@ariakit/store";
+import { hasOwnProperty } from "@ariakit/utils";
 
 type MoveStore = NonNullable<Core.CompositeStoreProps["store"]>;
 
@@ -37,8 +38,8 @@ export function getMoveRequest(
   if (
     source &&
     sourceState &&
-    Object.hasOwn(sourceState, "moves") &&
-    Object.hasOwn(sourceState, "activeId")
+    hasOwnProperty(sourceState, "moves") &&
+    hasOwnProperty(sourceState, "activeId")
   ) {
     // Preserve requests across provider remounts. Bind only new core stores:
     // source prop changes take effect after the core store is replaced.
