@@ -1054,6 +1054,35 @@ export default function ListExamples() {
       >
         <StatusMarker />
       </Example>
+
+      <Example
+        title="Leading marker"
+        description="A row can count its marker as a slot that leads its label, so its open content starts past the marker. Version 3.0 does, while Version 2.9 keeps its content under the dash."
+        stretch
+        code={`
+          <List>
+            <ListDisclosure $leadingIcon button="Version 3.0">
+              …
+            </ListDisclosure>
+            <ListDisclosure button="Version 2.9">
+              …
+            </ListDisclosure>
+          </List>
+        `}
+      >
+        <List>
+          <li>
+            <ListDisclosure $leadingIcon defaultOpen button="Version 3.0">
+              <p>Menus can open on hover.</p>
+            </ListDisclosure>
+          </li>
+          <li>
+            <ListDisclosure defaultOpen button="Version 2.9">
+              <p>Dialogs keep focus in nested frames.</p>
+            </ListDisclosure>
+          </li>
+        </List>
+      </Example>
     </ExampleGrid>
   );
 }

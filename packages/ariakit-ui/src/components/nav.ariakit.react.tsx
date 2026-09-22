@@ -12,6 +12,7 @@ import {
   navButton,
   navButtonContent,
   navDisclosure,
+  navDisclosureButton,
   navDisclosureContentBody,
   navGlider,
   navGroup,
@@ -297,8 +298,10 @@ export function NavIcon(props: NavIconProps) {
   return <ak.Role.span {...navIcon.jsx(variantProps)} {...rest} />;
 }
 
-export interface NavDisclosureProps
-  extends DisclosureProps, VariantProps<typeof navDisclosure> {
+export interface NavDisclosureProps extends Omit<
+  DisclosureProps<typeof navDisclosure>,
+  "recipe"
+> {
   button?: React.ReactNode | NavDisclosureButtonProps;
   content?: React.ReactElement | NavDisclosureContentProps;
 }
@@ -325,55 +328,36 @@ function NavDisclosureRoot(props: ak.RoleProps<"li">) {
  * gliders, so an opaque root would hide the covers of its rows.
  */
 export function NavDisclosure({
-  // Parameter defaults rather than props on the element below, so a value that
-  // a caller forwards unset, as a wrapper with an optional prop does, still
-  // lands on the row instead of reaching it as undefined.
-  //
-  // The row and its content are already spaced apart, so the button needs no
-  // hover ramp between them.
-  $contentPadding = true,
-  // A nav row is a field-sized frame with control-sized padding.
-  $rounded = "lg",
-  $p = 2,
-  $layer = "transparent",
+  button,
+  content,
   ...props
 }: NavDisclosureProps) {
-  const [variantProps, rest] = splitProps(props, navDisclosure);
-  const button = createOptionalRender(NavDisclosureButton, rest.button);
-  const content = createRender(NavDisclosureContent, rest.content);
   return (
     <Disclosure
-      $contentPadding={$contentPadding}
-      $rounded={$rounded}
-      $p={$p}
-      $layer={$layer}
-      {...navDisclosure.jsx(variantProps)}
-      {...rest}
-      button={button}
-      content={content}
-      render={<NavDisclosureRoot render={rest.render} />}
+      // The order carries the contract: the recipe first, the caller's props
+      // second, the composed slots last.
+      recipe={navDisclosure}
+      {...props}
+      button={createOptionalRender(NavDisclosureButton, button)}
+      content={createRender(NavDisclosureContent, content)}
+      render={<NavDisclosureRoot render={props.render} />}
     />
   );
 }
 
-export interface NavButtonProps
-  extends ButtonProps, VariantProps<typeof navButton> {}
+export interface NavButtonProps extends Omit<
+  ButtonProps<typeof navButton>,
+  "recipe"
+> {}
 
 /**
  * Renders a standalone nav row. Use `NavButtonContent` for its label and the
  * `render` prop for a row that should be an anchor.
  */
 export function NavButton(props: NavButtonProps) {
-  const [variantProps, rest] = splitProps(props, navButton);
-  return (
-    <Button
-      $rounded="lg"
-      // The row sits flush with the surface around it, like a nav link.
-      $lightnessOffset={false}
-      {...navButton.jsx(variantProps)}
-      {...rest}
-    />
-  );
+  // The order carries the contract: the recipe first, the caller's props
+  // second.
+  return <Button recipe={navButton} {...props} />;
 }
 
 export interface NavButtonContentProps extends ak.RoleProps<"span"> {}
@@ -386,8 +370,10 @@ export function NavButtonContent(props: NavButtonContentProps) {
   return <ak.Role.span {...navButtonContent.jsx(variantProps)} {...rest} />;
 }
 
-export interface NavDisclosureButtonProps
-  extends DisclosureButtonProps, VariantProps<typeof navButton> {}
+export interface NavDisclosureButtonProps extends Omit<
+  DisclosureButtonProps<typeof navDisclosureButton>,
+  "recipe"
+> {}
 
 export function NavDisclosureButton({
   label,
@@ -395,20 +381,19 @@ export function NavDisclosureButton({
   indicator = isRenderable(icon) ? "chevron-right-end" : "chevron-right-start",
   ...props
 }: NavDisclosureButtonProps) {
-  const [variantProps, rest] = splitProps(props, navButton);
   const labelProps =
-    label === undefined && isRenderable(rest.children)
-      ? { children: rest.children }
+    label === undefined && isRenderable(props.children)
+      ? { children: props.children }
       : label;
   const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
   return (
     <DisclosureButton
+      // The order carries the contract: the recipe first, the caller's props
+      // second, the composed label and children last.
+      recipe={navDisclosureButton}
       icon={icon}
       indicator={indicator}
-      // The nav row spaces its icon and label through its own gap classes.
-      $gap="none"
-      {...navButton.jsx(variantProps)}
-      {...rest}
+      {...props}
       label={
         labelEl
           ? React.cloneElement(labelEl, {
@@ -419,7 +404,7 @@ export function NavDisclosureButton({
           : null
       }
     >
-      {label !== undefined && rest.children}
+      {label !== undefined && props.children}
     </DisclosureButton>
   );
 }
@@ -433,20 +418,13 @@ export function NavDisclosureContent(props: NavDisclosureContentProps) {
   return <DisclosureContent guide {...props} body={body} />;
 }
 
-export interface NavDisclosureContentBodyProps
-  extends
-    DisclosureContentBodyProps,
-    VariantProps<typeof navDisclosureContentBody> {}
+export interface NavDisclosureContentBodyProps extends Omit<
+  DisclosureContentBodyProps<typeof navDisclosureContentBody>,
+  "recipe"
+> {}
 
 export function NavDisclosureContentBody(props: NavDisclosureContentBodyProps) {
-  const [variantProps, rest] = splitProps(props, navDisclosureContentBody);
-  return (
-    <DisclosureContentBody
-      // The body paints no surface of its own: a nav glider that covers a row
-      // inside it paints under the content, and it has to show through.
-      $layer="transparent"
-      {...navDisclosureContentBody.jsx(variantProps)}
-      {...rest}
-    />
-  );
+  // The order carries the contract: the recipe first, the caller's props
+  // second.
+  return <DisclosureContentBody recipe={navDisclosureContentBody} {...props} />;
 }

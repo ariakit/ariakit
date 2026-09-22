@@ -1,5 +1,10 @@
 import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
+import {
+  disclosure,
+  disclosureButton,
+  disclosureContentBody,
+} from "./disclosure.ts";
 import { edge } from "./edge.ts";
 import { layer } from "./layer.ts";
 import { textFrame } from "./text-frame.ts";
@@ -336,21 +341,27 @@ export const listItemGuide = cv({
 });
 
 export const listDisclosure = cv({
-  extend: [listRow],
-  // The style attribute, so these win over the disclosure root's own resets.
-  style: {
+  // Both reach the frame, which clava applies once. The row comes last, so its
+  // radius and padding defaults win over the disclosure's: the row supplies its
+  // own frame geometry.
+  extend: [disclosure, listRow],
+  defaultVariants: {
+    // The row turns the layer off; the disclosure root needs the transparent
+    // one.
+    $layer: "transparent",
     // The content indents only where a guide joins the rows, and then to the
     // text of the button: one control inset and one line box in, like a plain
     // row's. The root pads nothing itself (see disclosure.ts), but it still
     // publishes the padding channels the formula reads.
-    "--disclosure-ps":
+    $indent:
       "calc(var(--py) + (var(--px) - var(--py) + 1lh) * var(--list-guide))",
     // A row indents by its marker gutter, never by an icon in its button.
-    "--disclosure-icon": "0",
+    $leadingIcon: false,
   },
 });
 
 export const listDisclosureButton = cv({
+  extend: [disclosureButton],
   class: [
     // The button is a control with its own padding channels, and its label
     // starts where a plain row's text does.
@@ -364,6 +375,7 @@ export const listDisclosureButton = cv({
 });
 
 export const listDisclosureContentBody = cv({
+  extend: [disclosureContentBody],
   class: [
     "grid gap-(--list-item-gap)",
     "in-[.list]:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
