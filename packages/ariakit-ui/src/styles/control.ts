@@ -132,16 +132,25 @@ export const controlSlot = cv({
      * slot size. The larger the slot, the larger the margin. Set to `closeGap`
      * to move the slot closer to the control's text.
      *
-     * The margin goes on the sibling element beside the slot, so the text must
-     * be wrapped in a label element such as `ButtonLabel`. A sibling selector
-     * cannot see a bare text node, and the margin would land on the next
-     * element instead, which may be another slot.
+     * A named margin goes on the sibling element beside the slot, so the text
+     * must be wrapped in a label element such as `ButtonLabel`. A sibling
+     * selector cannot see a bare text node, and the margin would land on the
+     * next element instead, which may be another slot.
+     *
+     * `auto` is for a slot that leads a label with a size an extender takes
+     * from its container, such as an icon size set on a nav. Its margin sits on
+     * the slot itself. It follows an `auto` size by default.
      *
      * A stacked card sets `--control-inline` to 0, which drops these margins
      * along with the slot's own.
      */
     $mx: {
       unset: "",
+      // A size from the container can be wider than the line. The slot then
+      // overflows its box on both sides, and its own end margin grows by the
+      // far-side overflow so the gap to the label holds. Tailwind emits me-*
+      // after the slot's own mx-*, so this margin wins by order.
+      auto: "me-[calc(var(--mx)+max(0px,(var(--size,1lh)-1lh)/2)*var(--control-inline,1))]",
       closeGap:
         "[&+*]:ms-[calc(var(--spacing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--spacing)*-1*var(--control-inline,1))]",
       xs: "[&+*]:ms-[calc(var(--sidebearing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--sidebearing)*-1*var(--control-inline,1))]",

@@ -1,6 +1,12 @@
 import { cv, cx } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
-import { button, buttonSlot } from "./button.ts";
+import {
+  button,
+  buttonContent,
+  buttonDescription,
+  buttonLabel,
+  buttonSlot,
+} from "./button.ts";
 import { frame, frameBase } from "./frame.ts";
 import { glider } from "./glider.ts";
 import { selected } from "./selected.ts";
@@ -115,16 +121,31 @@ export const navGroupLabel = cv({
   },
 });
 
+// The size of an icon the nav sizes. navIcon and navLinkSlot share it, so that
+// icon is the same in both. The auto size brings the auto margin (see $mx in
+// control.ts), so an icon wider than the line keeps its label on the label
+// column of a disclosure row, whose icon slot gets the same margin.
+const navIconSizeVariants = {
+  /**
+   * Extends the slot sizes with `auto`, which follows the nav's `$iconSize` and
+   * otherwise the text size.
+   */
+  $size: {
+    auto: "[--size:var(--nav-icon-size,1em)]",
+  },
+};
+
 // The icon slot of a nav row, sized by the nav's icon size. It is a control
 // slot, so its outer box is one line square whatever the icon size: that is
 // what keeps a wrapping label aligned to it. A standalone nav row, such as a
 // brand link, can use it on its own.
 export const navIcon = cv({
   extend: [buttonSlot],
-  class: "[--size:var(--nav-icon-size,1em)]",
+  variants: {
+    ...navIconSizeVariants,
+  },
   defaultVariants: {
-    // The size comes from the class above, not from a named step.
-    $size: "unset",
+    $size: "auto",
   },
 });
 
@@ -151,6 +172,59 @@ export const navLink = cv({
     // Current links keep full text contrast on their pushed surface.
     $selectedInk: 100,
     $gap: "none",
+  },
+});
+
+// A slot in a link's row: the icon that leads the label, or a badge, an avatar
+// or a shortcut anywhere in the row. It is a control slot, so the label after
+// its icon starts where the label of a disclosure row starts, whatever the
+// nav's icon size is.
+export const navLinkSlot = cv({
+  extend: [buttonSlot],
+  variants: {
+    ...navIconSizeVariants,
+  },
+  defaultVariants: {
+    $size(defaultValue, variants) {
+      // Only an icon takes the nav's icon size. A badge, an avatar or a
+      // shortcut keeps the size every other control slot gives it.
+      if (variants.$kind !== "icon") return defaultValue;
+      // Replace only the control slot's own default, so an extender's size
+      // still applies.
+      if (defaultValue !== "md") return defaultValue;
+      return "auto";
+    },
+  },
+});
+
+// The label and the description stacked under it. A link turns the control's
+// own gaps off to space its row by the nav's row gap (see navLink), so the
+// content brings the two it reads.
+export const navLinkContent = cv({
+  extend: [buttonContent],
+  class: [
+    // The control's default gap, between a label and a description that share
+    // one line.
+    "[--gap:calc(var(--px)-var(--sidebearing))]",
+    // The gap a disclosure row puts under its label (see $gapY in
+    // disclosure.ts), so a link and a disclosure button with a description
+    // stack alike.
+    "[--gap-y:min(var(--py)/2,--spacing(2))]",
+  ],
+});
+
+export const navLinkLabel = cv({
+  extend: [buttonLabel],
+  defaultVariants: {
+    // A link's text wraps; a button's own label truncates to hold one line.
+    $truncate: false,
+  },
+});
+
+export const navLinkDescription = cv({
+  extend: [buttonDescription],
+  defaultVariants: {
+    $truncate: false,
   },
 });
 

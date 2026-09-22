@@ -18,6 +18,10 @@ import {
   navGroupLabel,
   navIcon,
   navLink,
+  navLinkContent,
+  navLinkDescription,
+  navLinkLabel,
+  navLinkSlot,
   navList,
 } from "../styles/nav.ts";
 import { isCurrentPage } from "../utils/is-current-page.ts";
@@ -197,6 +201,67 @@ export function NavLink({ currentUrl, item, ...props }: NavLinkProps) {
   );
   if (item === false) return link;
   return createRender(ak.Role.li, item, { children: link });
+}
+
+export interface NavLinkSlotProps
+  extends ak.RoleProps<"span">, VariantProps<typeof navLinkSlot> {}
+
+/**
+ * Renders an icon, badge, avatar, or shortcut in the row of a `NavLink`. With
+ * the default `icon` kind and size it is the same icon slot as `NavIcon`, sized
+ * by the Nav icon size. `NavIcon` renders that icon in any nav row, such as a
+ * `NavButton`.
+ */
+export function NavLinkSlot(props: NavLinkSlotProps) {
+  const [variantProps, rest] = splitProps(props, navLinkSlot);
+  const variants = navLinkSlot.getVariants(variantProps);
+  return (
+    <ak.Role.span {...navLinkSlot.jsx(variantProps)} {...rest}>
+      {variants.$kind === "badge" ? (
+        <span>{rest.children}</span>
+      ) : (
+        rest.children
+      )}
+    </ak.Role.span>
+  );
+}
+
+export interface NavLinkContentProps
+  extends ak.RoleProps<"span">, VariantProps<typeof navLinkContent> {}
+
+/**
+ * Wraps the `NavLinkLabel` and `NavLinkDescription` of a `NavLink` and fills
+ * the row, so a slot after it sits at the end.
+ */
+export function NavLinkContent(props: NavLinkContentProps) {
+  const [variantProps, rest] = splitProps(props, navLinkContent);
+  return <ak.Role.span {...navLinkContent.jsx(variantProps)} {...rest} />;
+}
+
+export interface NavLinkLabelProps
+  extends ak.RoleProps<"span">, VariantProps<typeof navLinkLabel> {}
+
+/**
+ * Renders the label of a `NavLink`. Wrap the text in it when a `NavLinkSlot`
+ * sits beside it: the slot spaces itself from the element next to it.
+ */
+export function NavLinkLabel(props: NavLinkLabelProps) {
+  const [variantProps, rest] = splitProps(props, navLinkLabel);
+  return <ak.Role.span {...navLinkLabel.jsx(variantProps)} {...rest} />;
+}
+
+export interface NavLinkDescriptionProps
+  extends ak.RoleProps<"span">, VariantProps<typeof navLinkDescription> {}
+
+/**
+ * Renders secondary text under the `NavLinkLabel` of a `NavLink`. It is part of
+ * the link's content, so it is part of the link's accessible name too. To keep
+ * it out of the name, give the label and the description an `id` and pass them
+ * to the link as `aria-labelledby` and `aria-describedby`.
+ */
+export function NavLinkDescription(props: NavLinkDescriptionProps) {
+  const [variantProps, rest] = splitProps(props, navLinkDescription);
+  return <ak.Role.span {...navLinkDescription.jsx(variantProps)} {...rest} />;
 }
 
 export interface NavGroupProps

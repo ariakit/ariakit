@@ -203,6 +203,162 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     });
   }
 
+  // Measures a row's leading icon slot and its label from the row's start edge.
+  // The icon leads every measured row. A disclosure's indicator is a slot too,
+  // and it sits at the end of its row.
+  const measureRow = async (row: Locator, label: string) => {
+    const [rowBox, iconBox, labelBox] = await Promise.all([
+      getBox(row),
+      getBox(row.locator(".control-slot").first()),
+      getBox(query(row).text(label)),
+    ]);
+    return {
+      iconStart: iconBox.x - rowBox.x,
+      iconWidth: iconBox.width,
+      iconHeight: iconBox.height,
+      iconGap: labelBox.x - iconBox.x - iconBox.width,
+      labelStart: labelBox.x - rowBox.x,
+      labelBottom: labelBox.y + labelBox.height,
+    };
+  };
+
+  test("aligns a link's slot, label, and description with a disclosure row", async ({
+    q,
+  }) => {
+    const nav = query(q.navigation("Link descriptions"));
+    const measure = async (
+      row: Locator,
+      label: string,
+      description: RegExp,
+    ) => {
+      const [metrics, descriptionBox] = await Promise.all([
+        measureRow(row, label),
+        getBox(query(row).text(description)),
+      ]);
+      const descriptionGap = descriptionBox.y - metrics.labelBottom;
+      return { ...metrics, descriptionGap };
+    };
+    const link = () => measure(nav.link(/^Inbox/), "Inbox", /^Messages/);
+    const button = () => measure(nav.button("Projects"), "Projects", /^Pages/);
+    await q.navigation("Link descriptions").scrollIntoViewIfNeeded();
+    // $iconSize={5} is five spacing steps, 20px at the sandbox's 16px font.
+    await expect.poll(async () => (await link()).iconWidth).toBeCloseTo(20, 0);
+    const [linkRow, buttonRow] = await Promise.all([link(), button()]);
+    expect(linkRow.iconHeight).toBeCloseTo(20, 0);
+    expect(linkRow.iconWidth).toBeCloseTo(buttonRow.iconWidth, 0);
+    expect(linkRow.iconStart).toBeCloseTo(buttonRow.iconStart, 0);
+    expect(linkRow.labelStart).toBeCloseTo(buttonRow.labelStart, 0);
+    expect(buttonRow.descriptionGap).toBeGreaterThan(0);
+    expect(linkRow.descriptionGap).toBeCloseTo(buttonRow.descriptionGap, 0);
+  });
+
+  test("keeps a link's badge on the line box and wraps its label and description", async ({
+    q,
+  }) => {
+    const nav = query(q.navigation("Link descriptions"));
+    const inbox = nav.link(/^Inbox/);
+    const getLineHeight = (locator: Locator) =>
+      locator.evaluate((node) =>
+        Number.parseFloat(getComputedStyle(node).lineHeight),
+      );
+    await inbox.scrollIntoViewIfNeeded();
+    // A badge keeps the line box every control slot gives it: the nav's icon
+    // size, 20px here, sizes only the icon.
+    const badge = inbox.locator(".control-slot").last();
+    await expect(badge).toHaveText("4");
+    const lineHeight = await getLineHeight(inbox);
+    expect(lineHeight).toBeGreaterThan(20);
+    await expect
+      .poll(async () => (await getBox(badge)).height)
+      .toBeCloseTo(lineHeight, 0);
+    // The content fills the row, so the badge ends up at the row's end, closer
+    // to it than its own width.
+    const [rowBox, badgeBox] = await Promise.all([
+      getBox(inbox),
+      getBox(badge),
+    ]);
+    const endSpace = rowBox.x + rowBox.width - badgeBox.x - badgeBox.width;
+    expect(endSpace).toBeGreaterThanOrEqual(0);
+    expect(endSpace).toBeLessThan(badgeBox.width);
+    // The label and the description wrap where a button's own would truncate,
+    // and each stays inside its own row.
+    const settings = nav.link("Workspace settings and preferences");
+    const wrappingTexts = [
+      [settings, query(settings).text("Workspace settings and preferences")],
+      [inbox, query(inbox).text(/^Messages/)],
+    ] as const;
+    for (const [row, text] of wrappingTexts) {
+      const [ownRowBox, box, textLineHeight] = await Promise.all([
+        getBox(row),
+        getBox(text),
+        getLineHeight(text),
+      ]);
+      expect(box.height).toBeGreaterThanOrEqual(textLineHeight * 2);
+      expect(box.x + box.width).toBeLessThanOrEqual(
+        ownRowBox.x + ownRowBox.width,
+      );
+    }
+  });
+
+  test("spaces a link's description from the label it shares a line with", async ({
+    q,
+  }) => {
+    const releases = query(q.navigation("Link descriptions")).link(/^Releases/);
+    const label = query(releases).text("Releases");
+    const description = query(releases).text("2 drafts");
+    await releases.scrollIntoViewIfNeeded();
+    // A link turns the control's own gap off, so the content has to bring one.
+    const columnGap = await releases
+      .locator(".control-content")
+      .evaluate((node) => Number.parseFloat(getComputedStyle(node).columnGap));
+    expect(columnGap).toBeGreaterThan(0);
+    await expect
+      .poll(async () => {
+        const [labelBox, descriptionBox] = await Promise.all([
+          getBox(label),
+          getBox(description),
+        ]);
+        return descriptionBox.x - labelBox.x - labelBox.width;
+      })
+      .toBeCloseTo(columnGap, 0);
+    // The description stays on the label's line instead of under it.
+    const [labelBox, descriptionBox] = await Promise.all([
+      getBox(label),
+      getBox(description),
+    ]);
+    expect(descriptionBox.y).toBeLessThan(labelBox.y + labelBox.height);
+  });
+
+  test("keeps a link's label on a disclosure row's label column behind an icon wider than the line", async ({
+    q,
+  }) => {
+    const nav = query(q.navigation("Wide icons"));
+    const button = () => measureRow(nav.button("Projects"), "Projects");
+    await q.navigation("Wide icons").scrollIntoViewIfNeeded();
+    // $iconSize={8} is eight spacing steps, 32px at the sandbox's 16px font,
+    // which is wider than the row's line box.
+    const lineHeight = await nav
+      .button("Projects")
+      .evaluate((node) => Number.parseFloat(getComputedStyle(node).lineHeight));
+    expect(lineHeight).toBeLessThan(32);
+    await expect
+      .poll(async () => (await button()).iconWidth)
+      .toBeCloseTo(32, 0);
+    const buttonRow = await button();
+    // The end margin takes the icon's overflow off, so the gap left between a
+    // wide icon and its label is the nav's row gap: three spacing steps, 12px.
+    // The margin wins over the slot's own by stylesheet order, in the
+    // disclosure row too, so the rows are not only compared to each other.
+    expect(buttonRow.iconGap).toBeCloseTo(12, 0);
+    // One row has its icon in a NavLinkSlot, the other in a NavIcon.
+    for (const name of ["Inbox", "Settings"]) {
+      const linkRow = await measureRow(nav.link(name), name);
+      expect(linkRow.iconWidth).toBeCloseTo(32, 0);
+      expect(linkRow.labelStart).toBeCloseTo(buttonRow.labelStart, 0);
+      expect(linkRow.iconGap).toBeCloseTo(buttonRow.iconGap, 0);
+    }
+  });
+
   test("preserves default link corners in plain and nested navigation", async ({
     q,
   }) => {

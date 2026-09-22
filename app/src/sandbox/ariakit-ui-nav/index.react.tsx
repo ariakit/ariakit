@@ -8,10 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as Ariakit from "@ariakit/react";
-import {
-  ButtonLabel,
-  ButtonSlot,
-} from "@ariakit/ui/components/button.ariakit.react";
+import { ButtonSlot } from "@ariakit/ui/components/button.ariakit.react";
 import {
   DisclosureButtonLabel,
   DisclosureButtonSlot,
@@ -30,6 +27,10 @@ import {
   NavGroupLabel,
   NavIcon,
   NavLink,
+  NavLinkContent,
+  NavLinkDescription,
+  NavLinkLabel,
+  NavLinkSlot,
   NavList,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import {
@@ -457,10 +458,10 @@ export default function NavExamples() {
               <NavGroupLabel>Reference</NavGroupLabel>
               <NavList>
                 <NavLink>
-                  <ButtonLabel>Components</ButtonLabel>
-                  <ButtonSlot $kind="badge" $p="md">
+                  <NavLinkLabel>Components</NavLinkLabel>
+                  <NavLinkSlot $kind="badge" $p="md">
                     12
-                  </ButtonSlot>
+                  </NavLinkSlot>
                 </NavLink>
                 <NavLink>Hooks</NavLink>
               </NavList>
@@ -482,10 +483,10 @@ export default function NavExamples() {
             <NavGroupLabel>Reference</NavGroupLabel>
             <NavList>
               <NavLink href="#components">
-                <ButtonLabel>Components</ButtonLabel>
-                <ButtonSlot $kind="badge" $p="md" className="ms-auto">
+                <NavLinkLabel>Components</NavLinkLabel>
+                <NavLinkSlot $kind="badge" $p="md" className="ms-auto">
                   <span>12</span>
-                </ButtonSlot>
+                </NavLinkSlot>
               </NavLink>
               <NavLink href="#hooks">Hooks</NavLink>
             </NavList>
@@ -963,10 +964,10 @@ export default function NavExamples() {
                     <NavIcon>
                       <FileCode />
                     </NavIcon>
-                    <ButtonLabel>المكونات</ButtonLabel>
-                    <ButtonSlot $kind="badge" $p="md">
+                    <NavLinkLabel>المكونات</NavLinkLabel>
+                    <NavLinkSlot $kind="badge" $p="md">
                       12
-                    </ButtonSlot>
+                    </NavLinkSlot>
                   </NavLink>
                   <NavButton>
                     <NavIcon>
@@ -1007,10 +1008,10 @@ export default function NavExamples() {
                   <NavIcon>
                     <FileCode strokeWidth={1.5} />
                   </NavIcon>
-                  <ButtonLabel>المكونات</ButtonLabel>
-                  <ButtonSlot $kind="badge" $p="md" className="ms-auto">
+                  <NavLinkLabel>المكونات</NavLinkLabel>
+                  <NavLinkSlot $kind="badge" $p="md" className="ms-auto">
                     <span>12</span>
-                  </ButtonSlot>
+                  </NavLinkSlot>
                 </NavLink>
                 <li>
                   <NavButton>
@@ -1347,6 +1348,157 @@ export default function NavExamples() {
         code={`<Nav><NavLink item={{ className: "project-item" }} href="#overview">Overview</NavLink></Nav>`}
       >
         <LinkItems />
+      </Example>
+      <Example
+        title="Link descriptions"
+        description="A link with a slot, a label and a description lines up with a disclosure row beside it. Only the icon takes the nav's icon size, the text wraps, and a description can share the label's line."
+        code={`
+          <Nav $iconSize={5}>
+            <NavLink>
+              <NavLinkSlot>
+                <Inbox />
+              </NavLinkSlot>
+              <NavLinkContent>
+                <NavLinkLabel>Inbox</NavLinkLabel>
+                <NavLinkDescription>Messages that wait for a reply</NavLinkDescription>
+              </NavLinkContent>
+              <NavLinkSlot $kind="badge" $p="md">4</NavLinkSlot>
+            </NavLink>
+            <NavLink>
+              <NavLinkSlot>
+                <Rocket />
+              </NavLinkSlot>
+              <NavLinkContent $orientation="horizontal">
+                <NavLinkLabel>Releases</NavLinkLabel>
+                <NavLinkDescription>2 drafts</NavLinkDescription>
+              </NavLinkContent>
+            </NavLink>
+            <NavDisclosure>
+              <NavDisclosureButton icon={<Blocks />} label="Projects" description="Pages grouped by project" />
+              <NavDisclosureContent>
+                <NavList>
+                  <NavLink>All projects</NavLink>
+                </NavList>
+              </NavDisclosureContent>
+            </NavDisclosure>
+          </Nav>
+        `}
+      >
+        <Nav
+          $iconSize={5}
+          aria-label="Link descriptions"
+          className="w-full max-w-64"
+        >
+          <NavLink href="#inbox" aria-current="page">
+            <NavLinkSlot>
+              <Inbox strokeWidth={1.5} />
+            </NavLinkSlot>
+            <NavLinkContent>
+              <NavLinkLabel>Inbox</NavLinkLabel>
+              <NavLinkDescription>
+                Messages that wait for a reply from you or your team
+              </NavLinkDescription>
+            </NavLinkContent>
+            <NavLinkSlot $kind="badge" $p="md">
+              4
+            </NavLinkSlot>
+          </NavLink>
+          {/*
+            The ids keep the description out of the link's name. Without them,
+            as on the other rows, a link is named by all of its content.
+           */}
+          <NavLink
+            href="#settings"
+            aria-labelledby="nav-settings-label"
+            aria-describedby="nav-settings-description"
+          >
+            <NavLinkSlot>
+              <Settings strokeWidth={1.5} />
+            </NavLinkSlot>
+            <NavLinkContent>
+              <NavLinkLabel id="nav-settings-label">
+                Workspace settings and preferences
+              </NavLinkLabel>
+              <NavLinkDescription id="nav-settings-description">
+                Members and billing
+              </NavLinkDescription>
+            </NavLinkContent>
+          </NavLink>
+          <NavLink href="#releases">
+            <NavLinkSlot>
+              <Rocket strokeWidth={1.5} />
+            </NavLinkSlot>
+            <NavLinkContent $orientation="horizontal">
+              <NavLinkLabel>Releases</NavLinkLabel>
+              <NavLinkDescription>2 drafts</NavLinkDescription>
+            </NavLinkContent>
+          </NavLink>
+          <NavDisclosure>
+            <NavDisclosureButton
+              icon={<Blocks strokeWidth={1.5} />}
+              label="Projects"
+              description="Pages grouped by project"
+            />
+            <NavDisclosureContent>
+              <NavList>
+                <NavLink href="#projects">All projects</NavLink>
+              </NavList>
+            </NavDisclosureContent>
+          </NavDisclosure>
+        </Nav>
+      </Example>
+      <Example
+        title="Wide icons"
+        description="An icon wider than the line keeps its gap to the label. A link keeps the label column of a disclosure row, with a NavLinkSlot and with a NavIcon."
+        code={`
+          <Nav $iconSize={8}>
+            <NavLink>
+              <NavLinkSlot>
+                <Inbox />
+              </NavLinkSlot>
+              <NavLinkLabel>Inbox</NavLinkLabel>
+            </NavLink>
+            <NavLink>
+              <NavIcon>
+                <Settings />
+              </NavIcon>
+              <NavLinkLabel>Settings</NavLinkLabel>
+            </NavLink>
+            <NavDisclosure>
+              <NavDisclosureButton icon={<Blocks />}>Projects</NavDisclosureButton>
+              <NavDisclosureContent>
+                <NavList>
+                  <NavLink>All projects</NavLink>
+                </NavList>
+              </NavDisclosureContent>
+            </NavDisclosure>
+          </Nav>
+        `}
+      >
+        <Nav $iconSize={8} aria-label="Wide icons" className="w-full max-w-64">
+          <NavLink href="#wide-inbox">
+            <NavLinkSlot>
+              <Inbox strokeWidth={1.5} />
+            </NavLinkSlot>
+            <NavLinkLabel>Inbox</NavLinkLabel>
+          </NavLink>
+          <NavLink href="#wide-settings">
+            <NavIcon>
+              <Settings strokeWidth={1.5} />
+            </NavIcon>
+            <NavLinkLabel>Settings</NavLinkLabel>
+          </NavLink>
+          <NavDisclosure>
+            <NavDisclosureButton icon={<Blocks strokeWidth={1.5} />}>
+              Projects
+            </NavDisclosureButton>
+            <NavDisclosureContent>
+              <NavList>
+                <NavLink href="#wide-projects">All projects</NavLink>
+              </NavList>
+            </NavDisclosureContent>
+          </NavDisclosure>
+        </Nav>
       </Example>
     </ExampleGrid>
   );

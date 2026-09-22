@@ -38,6 +38,13 @@ test("keeps a bare fragment label separate from its description and badge", asyn
   expect(q.text("Update account pages")).toBeVisible();
 });
 
+test("names a link by its label and describes it by its description", () => {
+  const nav = q.within(q.navigation("Link descriptions"));
+  const link = nav.link("Workspace settings and preferences");
+  expect(link).toHaveAttribute("href", "#settings");
+  expect(link).toHaveAccessibleDescription("Members and billing");
+});
+
 test("keeps anchor props, events, and refs on a wrapped link", async () => {
   const nav = q.within(q.navigation("Link wrappers"));
   const link = nav.link("Project overview");
