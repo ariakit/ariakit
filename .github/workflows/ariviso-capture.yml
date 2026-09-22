@@ -1,0 +1,173 @@
+name: Ariviso capture executor
+
+on:
+  workflow_call:
+    inputs:
+      mode:
+        description: Probe runner profiles or capture the complete visual suite
+        type: string
+        default: capture
+    secrets:
+      ARIVISO_PLAYWRIGHT_TARBALL_URL:
+        description: Signed URL for the checksum-pinned public adapter package
+        required: false
+      ARIVISO_CLI_TARBALL_URL:
+        description: Signed URL for the checksum-pinned public CLI package
+        required: false
+
+permissions:
+  contents: read
+
+env:
+  LEFTHOOK: "0"
+  pnpm_config_verify_deps_before_run: "false"
+  # Pin the commit containing .github/ariviso before enabling diagnostics.
+  ARIVISO_EXECUTOR_SOURCE: "ecfd678493c00815ec39681ce1a49da1d36abb6a"
+
+jobs:
+  build:
+    name: build
+    if: inputs.mode == 'capture'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 12.5.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24.18.0
+      - run: pnpm install --frozen-lockfile --no-runtime --filter app...
+      - name: Build the candidate applications
+        env:
+          CLOUDFLARE_ENV: preview
+        run: pnpm run build-app
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ariviso-candidate-build
+          path: |
+            app/dist
+            app/.wrangler/deploy/config.json
+            nextjs/.open-next
+          retention-days: 7
+          include-hidden-files: true
+          if-no-files-found: error
+
+  capture:
+    name: ${{ matrix.browser }}
+    needs: build
+    if: always() && (inputs.mode == 'probe' || needs.build.result == 'success')
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - browser: chromium
+            os: ubuntu-24.04
+          - browser: firefox
+            os: ubuntu-24.04
+          - browser: webkit
+            os: macos-15
+    env:
+      ARIVISO_BROWSER: ${{ matrix.browser }}
+    steps:
+      - name: Validate the fixed invocation
+        env:
+          MODE: ${{ inputs.mode }}
+        run: test "$MODE" = probe || test "$MODE" = capture
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Read immutable executor configuration
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: ariakit/ariakit
+          ref: ${{ env.ARIVISO_EXECUTOR_SOURCE }}
+          path: .ariviso-trusted
+          persist-credentials: false
+          sparse-checkout: .github/ariviso
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 12.5.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24.18.0
+      - name: Install the immutable executor outside the candidate workspace
+        env:
+          ARIVISO_EXECUTOR_DIRECTORY: ${{ runner.temp }}/ariviso-executor
+        run: |
+          echo "ARIVISO_EXECUTOR_DIRECTORY=$ARIVISO_EXECUTOR_DIRECTORY" >> "$GITHUB_ENV"
+          rm -rf "$ARIVISO_EXECUTOR_DIRECTORY" app/.ariviso-results
+          mkdir -p "$ARIVISO_EXECUTOR_DIRECTORY"
+          cp .ariviso-trusted/.github/ariviso/* "$ARIVISO_EXECUTOR_DIRECTORY/"
+          cd "$ARIVISO_EXECUTOR_DIRECTORY"
+          npm ci --ignore-scripts --no-audit --no-fund --workspaces=false
+      - run: pnpm install --frozen-lockfile --no-runtime --filter app...
+      - name: Install the selected browser
+        run: node "$ARIVISO_EXECUTOR_DIRECTORY/node_modules/playwright/cli.js" install --with-deps "$ARIVISO_BROWSER"
+      - name: Measure the actual runner and fonts
+        run: node "$ARIVISO_EXECUTOR_DIRECTORY/environment.mjs"
+      - name: Upload measured environment
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ariviso-environment-${{ matrix.browser }}-${{ github.run_attempt }}
+          path: app/.ariviso-results/environment-${{ matrix.browser }}.json
+          retention-days: 7
+          include-hidden-files: true
+          if-no-files-found: error
+      - name: Install checksum-pinned diagnostic packages
+        if: inputs.mode == 'capture'
+        env:
+          ARIVISO_PLAYWRIGHT_TARBALL_URL: ${{ secrets.ARIVISO_PLAYWRIGHT_TARBALL_URL }}
+          ARIVISO_CLI_TARBALL_URL: ${{ secrets.ARIVISO_CLI_TARBALL_URL }}
+        run: node "$ARIVISO_EXECUTOR_DIRECTORY/install.mjs"
+      - name: Download the candidate build
+        if: inputs.mode == 'capture'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: ariviso-candidate-build
+      - name: Bind the manifest to the signed current job
+        if: inputs.mode == 'capture'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node "$ARIVISO_EXECUTOR_DIRECTORY/context.mjs"
+      - name: Capture the entire configured visual suite
+        if: inputs.mode == 'capture'
+        working-directory: ${{ env.ARIVISO_EXECUTOR_DIRECTORY }}
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = Linux ]; then
+            xvfb-run node node_modules/playwright/cli.js test --config playwright.config.mjs
+          else
+            node node_modules/playwright/cli.js test --config playwright.config.mjs
+          fi
+      - name: Submit the complete shard
+        if: inputs.mode == 'capture'
+        working-directory: app
+        run: |
+          export ARIVISO_SERVER="$(node --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; const {server}=JSON.parse(fs.readFileSync(path.join(process.env.ARIVISO_EXECUTOR_DIRECTORY,"settings.json"),"utf8")); console.log(new URL(server).origin)')"
+          node "$ARIVISO_EXECUTOR_DIRECTORY/node_modules/ariviso/dist/bin.js" upload --manifest .ariviso-results/manifest.json
+          node "$ARIVISO_EXECUTOR_DIRECTORY/node_modules/ariviso/dist/bin.js" finalize --manifest .ariviso-results/manifest.json
+      - name: Read the reporter's discovery receipt name
+        if: inputs.mode == 'capture'
+        id: receipt
+        run: |
+          node --input-type=module -e 'import fs from "node:fs"; const receipt=JSON.parse(fs.readFileSync("app/.ariviso-results/receipt.json","utf8")); if (!/^ariviso-discovery-[1-9][0-9]*-[1-9][0-9]*-(chromium|firefox|webkit)-[a-f0-9]{64}$/.test(receipt.artifactName)) throw Error("Invalid discovery receipt"); fs.appendFileSync(process.env.GITHUB_OUTPUT,`name=${receipt.artifactName}\n`);'
+      - name: Bind discovery to successful GitHub artifact metadata
+        if: inputs.mode == 'capture'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ${{ steps.receipt.outputs.name }}
+          path: app/.ariviso-results/receipt.json
+          overwrite: false
+          retention-days: 7
+          include-hidden-files: true
+          if-no-files-found: error
