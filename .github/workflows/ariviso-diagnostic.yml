@@ -29,7 +29,7 @@ jobs:
       (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) &&
       (vars.ARIVISO_DIAGNOSTIC_ENABLED == 'true' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request')
     # Replace with the reviewed executor workflow commit after its source pin is set.
-    uses: ariakit/ariakit/.github/workflows/ariviso-capture.yml@dad3fca26eb57cf5a9276a885fc14d4b82a43320
+    uses: ariakit/ariakit/.github/workflows/ariviso-capture.yml@65df80f33998f17204f53067af1181373c5c5190
     with:
       mode: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || vars.ARIVISO_DIAGNOSTIC_ENABLED == 'true' && 'capture' || 'probe' }}
     secrets:
