@@ -1,5 +1,5 @@
 import * as ak from "@ariakit/react";
-import type { VariantProps } from "clava";
+import type { RecipeLike, VariantProps, VariantPropsWithRecipe } from "clava";
 import { splitProps } from "clava";
 import {
   button,
@@ -12,22 +12,28 @@ import {
   buttonSlot,
 } from "../styles/button.ts";
 
+// The recipe member only documents the prop. VariantPropsWithRecipe still makes
+// it required when the recipe adds variants.
 export type ButtonProps<
-  R extends Pick<typeof button, "getVariants"> = typeof button,
+  R extends RecipeLike<typeof button, R> = typeof button,
 > = ak.ButtonProps &
-  VariantProps<R> & {
-    /** The recipe applied in place of `button`. It must extend it. */
+  VariantPropsWithRecipe<typeof button, R> & {
+    /**
+     * The recipe applied in place of `button`. It must supply every `button`
+     * variant.
+     */
     recipe?: R;
   };
 
 /**
  * @see https://ariakit.com/react/examples/button
  */
-export function Button<
-  R extends Pick<typeof button, "getVariants"> = typeof button,
->({ recipe, ...props }: ButtonProps<R>) {
-  // The recipe accepts every base variant, which is all the component reads.
-  const styles = (recipe ?? button) as typeof button;
+export function Button<R extends RecipeLike<typeof button, R> = typeof button>({
+  recipe,
+  $disabled,
+  ...props
+}: ButtonProps<R>) {
+  const styles = recipe ?? button;
   const [variantProps, rest] = splitProps(props, styles);
   const disabled =
     props.disabled ||
@@ -35,10 +41,7 @@ export function Button<
     props["aria-disabled"] === "true";
   return (
     <ak.Button
-      {...styles.jsx({
-        ...variantProps,
-        $disabled: variantProps.$disabled ?? disabled,
-      })}
+      {...styles.jsx({ ...variantProps, $disabled: $disabled ?? disabled })}
       {...rest}
     />
   );
