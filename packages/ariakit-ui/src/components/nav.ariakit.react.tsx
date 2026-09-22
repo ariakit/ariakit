@@ -290,11 +290,22 @@ export interface NavIconProps
 /**
  * Renders the icon slot of a nav row, sized by the Nav icon-size variable. It
  * keeps the line height so the label aligns with the icon. A badge or an avatar
- * in it takes the one-line box every control slot gives them instead.
+ * in it takes the one-line box every control slot gives them instead. Like
+ * `NavLinkSlot`, it wraps the children of the `badge` kind in a `<span>`, which
+ * scales the badge text.
  */
 export function NavIcon(props: NavIconProps) {
   const [variantProps, rest] = splitProps(props, navIcon);
-  return <ak.Role.span {...navIcon.jsx(variantProps)} {...rest} />;
+  const variants = navIcon.getVariants(variantProps);
+  return (
+    <ak.Role.span {...navIcon.jsx(variantProps)} {...rest}>
+      {variants.$kind === "badge" ? (
+        <span>{rest.children}</span>
+      ) : (
+        rest.children
+      )}
+    </ak.Role.span>
+  );
 }
 
 export interface NavDisclosureProps
