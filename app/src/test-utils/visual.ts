@@ -335,18 +335,19 @@ async function withStyles(
     }
     return originalStyles;
   }, styles);
-  try {
-    await fn?.();
-  } finally {
-    await page.evaluate((originalStyles) => {
-      const el = document.documentElement;
-      if (originalStyles) {
-        el.setAttribute("style", originalStyles);
-      } else {
-        el.removeAttribute("style");
-      }
-    }, originalStyles);
-  }
+  await fn?.();
+  // Skip the restore when fn fails. After a test timeout, Playwright closes the
+  // page, and the failed restore would replace the error that names the step
+  // where the test stopped.
+  // https://github.com/ariakit/ariakit/issues/7601
+  await page.evaluate((originalStyles) => {
+    const el = document.documentElement;
+    if (originalStyles) {
+      el.setAttribute("style", originalStyles);
+    } else {
+      el.removeAttribute("style");
+    }
+  }, originalStyles);
 }
 
 async function withViewport(
@@ -360,12 +361,10 @@ async function withViewport(
   }
   const original = page.viewportSize();
   await page.setViewportSize(viewport);
-  try {
-    await fn?.();
-  } finally {
-    if (original) {
-      await page.setViewportSize(original);
-    }
+  await fn?.();
+  // Skip the restore when fn fails, as in withStyles.
+  if (original) {
+    await page.setViewportSize(original);
   }
 }
 
