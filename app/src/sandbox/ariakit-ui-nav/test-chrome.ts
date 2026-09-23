@@ -1,3 +1,4 @@
+import type { Locator } from "@playwright/test";
 import {
   expectMedia,
   hoverOver,
@@ -41,9 +42,13 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test
       .expect(button)
       .toHaveAccessibleDescription("Manage account pages");
+    // The chevron that leads the row is a slot too, so the badge is found by
+    // its text.
     await test
-      .expect(button.locator(":scope > .disclosure-button-slot"))
-      .toHaveText("3");
+      .expect(
+        button.locator(":scope > .control-slot").filter({ hasText: /^3$/ }),
+      )
+      .toHaveCount(1);
     await button.click();
     await test.expect(q.text("Update account pages")).toBeVisible();
   });
@@ -78,6 +83,22 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toHaveCount(1);
     await button.click();
     await test.expect(example.link("Manage team pages")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7579
+  test("scales the text of a badge in the icon column like the other nav badges", async ({
+    q,
+  }) => {
+    const nav = query(q.navigation("Badges and avatars"));
+    const fontSize = (locator: Locator) =>
+      locator.evaluate((node) => getComputedStyle(node).fontSize);
+    const rowSize = await fontSize(nav.link(/Notifications/));
+    const badgeSize = await fontSize(nav.text("3"));
+    test
+      .expect(Number.parseFloat(badgeSize))
+      .toBeLessThan(Number.parseFloat(rowSize));
+    await test.expect(nav.text("12")).toHaveCSS("font-size", badgeSize);
+    await test.expect(nav.text("9")).toHaveCSS("font-size", badgeSize);
   });
 
   test("names a link by its label and describes it by its description", async ({

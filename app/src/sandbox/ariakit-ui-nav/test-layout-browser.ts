@@ -82,50 +82,82 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   }
 
   // https://github.com/ariakit/ariakit/issues/7574
-  test("keeps badges and avatars on the line box on every nav row", async ({
-    q,
-  }) => {
-    const navigation = q.navigation("Badges and avatars");
-    const nav = query(navigation);
-    const inbox = nav.button(/^Inbox/);
-    const drafts = nav.link(/^Drafts/);
-    const height = async (locator: Locator) => (await getBox(locator)).height;
-    await navigation.scrollIntoViewIfNeeded();
-    // $iconSize={5} is five spacing steps, 20px at the sandbox's 16px font,
-    // which is smaller than the row's line box. A section row's icon and a
-    // NavIcon read it through different properties, so both are measured.
-    const lineHeight = await inbox.evaluate((node) =>
-      Number.parseFloat(getComputedStyle(node).lineHeight),
-    );
-    expect(lineHeight).toBeGreaterThan(20);
-    const sectionIcon = inbox
-      .locator(":scope > .disclosure-button-slot")
-      .first();
-    const linkIcon = drafts.locator(".control-slot").first();
-    await expect.poll(() => height(sectionIcon)).toBeCloseTo(20, 0);
-    await expect.poll(() => height(linkIcon)).toBeCloseTo(20, 0);
-    // A badge and an avatar keep the line box every control slot gives them,
-    // after the label of a section row or a link row and in the icon column:
-    // the icon size sizes only the icons.
-    const slots = [
-      ["link badge", drafts, "3"],
-      ["link avatar", nav.link(/^Profile/), "JD"],
-      ["section badge", inbox, "12"],
-      ["section avatar", nav.button(/^Design/), "MK"],
-      ["icon column badge", nav.link(/Notifications/), "9"],
-      ["icon column avatar", nav.link(/Ana Lima/), "AL"],
-    ] as const;
-    const heights = () =>
-      Promise.all(
-        slots.map(async ([name, row, text]) => {
-          const slot = row.locator(".control-slot").filter({ hasText: text });
-          return [name, await height(slot)];
-        }),
-      );
-    await expect
-      .poll(heights)
-      .toEqual(slots.map(([name]) => [name, expect.closeTo(lineHeight, 0)]));
-  });
+  // https://github.com/ariakit/ariakit/issues/7579
+  for (const [slotSize, size] of [
+    ["text", 16],
+    ["5", 20],
+    ["8", 32],
+  ] as const) {
+    test(`sizes badges and avatars like the icons and lines up their labels at slot size ${slotSize}`, async ({
+      q,
+    }) => {
+      const navigation = q.navigation("Badges and avatars");
+      const nav = query(navigation);
+      const inbox = nav.button(/^Inbox/);
+      const design = nav.button(/^Design/);
+      const drafts = nav.link(/^Drafts/);
+      const profile = nav.link(/^Profile/);
+      const notifications = nav.link(/Notifications/);
+      const anaLima = nav.link(/Ana Lima/);
+      const slot = (row: Locator, text: string) =>
+        row.locator(".control-slot").filter({ hasText: text });
+      await q.combobox("Slot size").selectOption(slotSize);
+      await navigation.scrollIntoViewIfNeeded();
+      // The text size is 16px at the sandbox's font, and $slotSize={5} and
+      // $slotSize={8} are five and eight spacing steps, 20px and 32px. A badge
+      // or an avatar takes that size like an icon, before or after the label,
+      // in a section row and a link row alike.
+      const squares = [
+        inbox.locator(":scope > .disclosure-button-slot").first(),
+        drafts.locator(".control-slot").first(),
+        slot(notifications, "9"),
+        slot(anaLima, "AL"),
+        slot(drafts, "3"),
+        slot(profile, "JD"),
+        slot(design, "MK"),
+      ];
+      for (const square of squares) {
+        await expect
+          .poll(async () => {
+            const box = await getBox(square);
+            return [box.width, box.height];
+          })
+          .toEqual([expect.closeTo(size, 0), expect.closeTo(size, 0)]);
+      }
+      // Two digits can be wider than the slot, so that badge keeps only the
+      // slot's height.
+      const twoDigits = await getBox(slot(inbox, "12"));
+      expect(twoDigits.height).toBeCloseTo(size, 0);
+      // Every label starts on the column of an icon row's label, whether an
+      // icon, a one-digit badge or an avatar leads it.
+      const column = (await getBox(query(drafts).text("Drafts"))).x;
+      const labels = [
+        query(inbox).text("Inbox"),
+        query(design).text("Design"),
+        query(profile).text("Profile"),
+        query(notifications).text("Notifications"),
+        query(anaLima).text("Ana Lima"),
+      ];
+      for (const label of labels) {
+        expect((await getBox(label)).x).toBeCloseTo(column, 0);
+      }
+      // A slot after the label keeps the gap that the icon before it keeps,
+      // also when the slot is wider than the line.
+      for (const [row, name, text] of [
+        [drafts, "Drafts", "3"],
+        [profile, "Profile", "JD"],
+      ] as const) {
+        const [icon, label, trailing] = await Promise.all([
+          getBox(row.locator(".control-slot").first()),
+          getBox(query(row).text(name)),
+          getBox(slot(row, text)),
+        ]);
+        const leadingGap = label.x - icon.x - icon.width;
+        const trailingGap = trailing.x - label.x - label.width;
+        expect(trailingGap).toBeCloseTo(leadingGap, 0);
+      }
+    });
+  }
 
   for (const dir of ["ltr", "rtl"] as const) {
     test(`keeps section rows and an end bar on the nav's end edge in ${dir}`, async ({
@@ -287,7 +319,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const link = () => measure(nav.link(/^Inbox/), "Inbox", /^Messages/);
     const button = () => measure(nav.button("Projects"), "Projects", /^Pages/);
     await q.navigation("Link descriptions").scrollIntoViewIfNeeded();
-    // $iconSize={5} is five spacing steps, 20px at the sandbox's 16px font.
+    // $slotSize={5} is five spacing steps, 20px at the sandbox's 16px font.
     await expect.poll(async () => (await link()).iconWidth).toBeCloseTo(20, 0);
     const [linkRow, buttonRow] = await Promise.all([link(), button()]);
     expect(linkRow.iconHeight).toBeCloseTo(20, 0);
@@ -298,7 +330,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     expect(linkRow.descriptionGap).toBeCloseTo(buttonRow.descriptionGap, 0);
   });
 
-  test("keeps a link's badge on the line box and wraps its label and description", async ({
+  // https://github.com/ariakit/ariakit/issues/7579
+  test("sizes a link's badge like its icon and wraps its label and description", async ({
     q,
   }) => {
     const nav = query(q.navigation("Link descriptions"));
@@ -308,15 +341,15 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         Number.parseFloat(getComputedStyle(node).lineHeight),
       );
     await inbox.scrollIntoViewIfNeeded();
-    // A badge keeps the line box every control slot gives it: the nav's icon
-    // size, 20px here, sizes only the icon.
+    // A badge after the label takes the nav's slot size like the icon that
+    // leads the row: $slotSize={5}, 20px at the sandbox's 16px font, which is
+    // smaller than the row's line box.
     const badge = inbox.locator(".control-slot").last();
     await expect(badge).toHaveText("4");
-    const lineHeight = await getLineHeight(inbox);
-    expect(lineHeight).toBeGreaterThan(20);
+    expect(await getLineHeight(inbox)).toBeGreaterThan(20);
     await expect
       .poll(async () => (await getBox(badge)).height)
-      .toBeCloseTo(lineHeight, 0);
+      .toBeCloseTo(20, 0);
     // The content fills the row, so the badge ends up at the row's end, closer
     // to it than its own width.
     const [rowBox, badgeBox] = await Promise.all([
@@ -381,7 +414,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const nav = query(q.navigation("Wide icons (ltr)"));
     const button = () => measureRow(nav.button("Projects"), "Projects");
     await q.navigation("Wide icons (ltr)").scrollIntoViewIfNeeded();
-    // $iconSize={8} is eight spacing steps, 32px at the sandbox's 16px font,
+    // $slotSize={8} is eight spacing steps, 32px at the sandbox's 16px font,
     // which is wider than the row's line box.
     const lineHeight = await nav
       .button("Projects")
@@ -396,7 +429,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // The margin wins over the slot's own by stylesheet order, in the
     // disclosure row too, so the rows are not only compared to each other.
     expect(buttonRow.iconGap).toBeCloseTo(12, 0);
-    // One row has its icon in a NavLinkSlot, the other in a NavIcon.
     for (const name of ["Inbox", "Settings"]) {
       const linkRow = await measureRow(nav.link(name), name);
       expect(linkRow.iconWidth).toBeCloseTo(32, 0);
@@ -469,6 +501,90 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       expect(chevronColumn).toBeLessThan(iconColumn - 1);
     });
   }
+
+  // https://github.com/ariakit/ariakit/pull/7584
+  test("sizes one slot or a whole section apart from the nav", async ({
+    q,
+  }) => {
+    const nav = query(q.navigation("Slot overrides"));
+    const wide = query(q.navigation("Wide icons (ltr)"));
+    await q.navigation("Slot overrides").scrollIntoViewIfNeeded();
+    // The nav's $slotSize={5} is 20px at the sandbox's 16px font, and 8 is
+    // 32px. A slot with $size={8} measures like a slot in a nav whose slots are
+    // all 32px, so its label keeps that nav's label column.
+    await expect
+      .poll(
+        async () => (await measureRow(nav.link("Inbox"), "Inbox")).iconWidth,
+      )
+      .toBeCloseTo(20, 0);
+    const [settings, wideSettings] = await Promise.all([
+      measureRow(nav.link("Settings"), "Settings"),
+      measureRow(wide.link("Settings"), "Settings"),
+    ]);
+    expect(settings.iconWidth).toBeCloseTo(32, 0);
+    expect(settings.iconStart).toBeCloseTo(wideSettings.iconStart, 0);
+    expect(settings.labelStart).toBeCloseTo(wideSettings.labelStart, 0);
+    // A section with $slotSize={8} sizes its own icon and indent, and every
+    // slot inside it, while the rows around it keep the nav's size.
+    const design = nav.button(/^Design/);
+    const [designRow, wideProjects] = await Promise.all([
+      measureRow(design, "Design"),
+      measureRow(wide.button("Projects"), "Projects"),
+    ]);
+    expect(designRow.iconWidth).toBeCloseTo(32, 0);
+    expect(designRow.labelStart).toBeCloseTo(wideProjects.labelStart, 0);
+    const badge = design.locator(".control-slot").filter({ hasText: "4" });
+    expect((await getBox(badge)).height).toBeCloseTo(32, 0);
+    const [guidelines, members] = await Promise.all([
+      measureRow(nav.link("Guidelines"), "Guidelines"),
+      measureRow(nav.link(/Members$/), "Members"),
+    ]);
+    expect(guidelines.iconWidth).toBeCloseTo(32, 0);
+    expect(members.iconWidth).toBeCloseTo(32, 0);
+    expect(members.iconHeight).toBeCloseTo(32, 0);
+    expect(members.labelStart).toBeCloseTo(guidelines.labelStart, 0);
+    // A nested section with its own $slotSize={5} wins over the section around
+    // it.
+    const [tokens, colors] = await Promise.all([
+      measureRow(nav.button("Tokens"), "Tokens"),
+      measureRow(nav.link("Colors"), "Colors"),
+    ]);
+    expect(tokens.iconWidth).toBeCloseTo(20, 0);
+    expect(colors.iconWidth).toBeCloseTo(20, 0);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7584
+  test("fits two wide initials in an avatar at the text size", async ({
+    q,
+  }) => {
+    const nav = query(q.navigation("Initials"));
+    const will = nav.link(/Will Williams$/);
+    const avatar = will.locator(".control-slot").first();
+    await will.scrollIntoViewIfNeeded();
+    // Without $slotSize the slots take the text size, 16px at the sandbox's
+    // font. A cap height tied to the font instead of the slot made "WW" wider
+    // than the avatar there.
+    await expect
+      .poll(async () => (await getBox(avatar)).width)
+      .toBeCloseTo(16, 0);
+    const [box, text] = await Promise.all([
+      getBox(avatar),
+      avatar.evaluate((node) => {
+        const range = node.ownerDocument.createRange();
+        range.selectNodeContents(node);
+        const rect = range.getBoundingClientRect();
+        return { x: rect.x, width: rect.width };
+      }),
+    ]);
+    expect(text.x).toBeGreaterThanOrEqual(box.x);
+    expect(text.x + text.width).toBeLessThanOrEqual(box.x + box.width);
+    // The avatar still leads its label on the icon rows' label column.
+    const [willRow, inboxRow] = await Promise.all([
+      measureRow(will, "Will Williams"),
+      measureRow(nav.link("Inbox"), "Inbox"),
+    ]);
+    expect(willRow.labelStart).toBeCloseTo(inboxRow.labelStart, 0);
+  });
 
   // https://github.com/ariakit/ariakit/issues/7553
   test("lets a row override its corners and the offset of its body", async ({
