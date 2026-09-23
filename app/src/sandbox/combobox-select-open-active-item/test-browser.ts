@@ -166,6 +166,79 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
             (await target.getAttribute("id"))!,
           );
       });
+
+      // https://github.com/ariakit/ariakit/issues/7612
+      test(`${name} move made while the real-focus popup is positioning keeps focus`, async ({
+        page,
+        q,
+      }) => {
+        await q.combobox("Real-focus vegetable").click();
+
+        const listbox = q.listbox("Real-focus vegetable");
+        await test.expect(listbox).toHaveAttribute("data-placing");
+
+        await page.keyboard.press(key);
+        const target = query(listbox).option(item);
+        await test.expect(target).toBeFocused();
+
+        await q.button("Finish real-focus vegetable positioning").click();
+        await test.expect(listbox).not.toHaveAttribute("data-placing");
+        // Dialog queues auto-focus after placement, and there is no positive
+        // state for focus staying put once that microtask has run.
+        await flushFrames(page);
+        await test.expect(target).toBeFocused();
+        await test.expect(target).toHaveAttribute("data-active-item");
+      });
     }
+
+    // https://github.com/ariakit/ariakit/issues/7612
+    test("move made before the popup repositions stays active", async ({
+      page,
+      q,
+    }) => {
+      const select = q.combobox("Vegetable");
+      await select.click();
+
+      const listbox = q.listbox("Vegetable");
+      await q.button("Finish vegetable positioning").click();
+      await test.expect(listbox).not.toHaveAttribute("data-placing");
+      // Lets the initial auto-focus run before the move, so the move below
+      // happens after the popup is placed. No state marks that microtask.
+      await flushFrames(page);
+      await test
+        .expect(query(listbox).option("Artichoke"))
+        .toHaveAttribute("data-active-item");
+
+      await page.keyboard.press("ArrowDown");
+      const broccoli = query(listbox).option("Broccoli");
+      await test.expect(broccoli).toHaveAttribute("data-active-item");
+
+      await q.button("Reposition vegetable popup").click();
+      await test.expect(listbox).toHaveAttribute("data-placing");
+
+      await q.button("Finish vegetable positioning").click();
+      await test.expect(listbox).not.toHaveAttribute("data-placing");
+      // Dialog queues auto-focus after placement, and there is no positive
+      // state for the active item staying put once that microtask has run.
+      await flushFrames(page);
+      await test.expect(select).toBeFocused();
+      await test.expect(broccoli).toHaveAttribute("data-active-item");
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7612
+  test("Managed vegetable popup focuses its autoFocus element when the user doesn't move", async ({
+    q,
+  }) => {
+    const select = q.combobox("Managed vegetable");
+    await select.click();
+
+    const listbox = q.listbox("Managed vegetable");
+    await test.expect(listbox).toHaveAttribute("data-placing");
+    await test.expect(select).toBeFocused();
+
+    await q.button("Finish managed vegetable positioning").click();
+    await test.expect(listbox).not.toHaveAttribute("data-placing");
+    await test.expect(query(listbox).button("Manage vegetables")).toBeFocused();
   });
 });

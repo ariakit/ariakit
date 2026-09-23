@@ -17,6 +17,7 @@ import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
+import { getMovedItemRef } from "./__utils.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxListOptions } from "./combobox-list.tsx";
 import { useComboboxList } from "./combobox-list.tsx";
@@ -229,7 +230,13 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       // Keep this a boolean, since a callback would always be truthy and defeat
       // the dialog's early-out for popups that take no focus at all.
       autoFocusOnShow: hasSelect,
-      initialFocus: hasSelect ? inputElement : undefined,
+      // Without an input, the popup focuses the selected item by default. It
+      // only does so once it's placed, and the user may have moved to another
+      // item by then. Focusing the selected item would make it active again.
+      // https://github.com/ariakit/ariakit/issues/7612
+      initialFocus: hasSelect
+        ? inputElement || getMovedItemRef(store)
+        : undefined,
       finalFocus: selectElement || compositeElement,
       preserveTabOrderAnchor: null,
       ...props,

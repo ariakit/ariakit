@@ -1,12 +1,17 @@
 import { useSafeLayoutEffect } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import { getWindow } from "@ariakit/utils";
+import type { RefObject } from "react";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const openingMovesByStore = new WeakMap<ComboboxStore, number>();
 const scrollItemIntoViewByStore = new WeakMap<
   ComboboxStore,
   (element: HTMLElement) => void
+>();
+const movedItemRefByStore = new WeakMap<
+  ComboboxStore,
+  RefObject<HTMLElement | null>
 >();
 
 function scrollIntoViewNearest(element: HTMLElement) {
@@ -133,4 +138,26 @@ export function getScrollItemIntoView(store?: ComboboxStore) {
   };
   scrollItemIntoViewByStore.set(store, scrollItemIntoView);
   return scrollItemIntoView;
+}
+
+/**
+ * Returns the store's ref to the item that the user moved to since the select
+ * popup opened. Its value is `null` until the user moves. It reads the current
+ * store state when accessed, so the popup's delayed initial focus can find the
+ * item without subscribing to movement.
+ */
+export function getMovedItemRef(store: ComboboxStore) {
+  const cached = movedItemRefByStore.get(store);
+  if (cached) return cached;
+  const movedItemRef: RefObject<HTMLElement | null> = {
+    get current() {
+      const openingMoves = openingMovesByStore.get(store);
+      if (openingMoves == null) return null;
+      const { activeId, moves } = store.getState();
+      if (moves === openingMoves) return null;
+      return store.item(activeId)?.element || null;
+    },
+  };
+  movedItemRefByStore.set(store, movedItemRef);
+  return movedItemRef;
 }

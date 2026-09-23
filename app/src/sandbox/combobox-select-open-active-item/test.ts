@@ -97,7 +97,60 @@ describe("Vegetable", () => {
       expect(select).toHaveFocus();
       expect(activeText("Vegetable")).toBe(item);
     });
+
+    // https://github.com/ariakit/ariakit/issues/7612
+    test(`${name} move made while the real-focus popup is positioning keeps focus`, async () => {
+      await click(q.combobox("Real-focus vegetable"));
+
+      const listbox = q.listbox("Real-focus vegetable");
+      expect(listbox).toHaveAttribute("data-placing");
+
+      await move();
+      const target = q.within(listbox).option(item);
+      expect(target).toHaveFocus();
+
+      await click(q.button("Finish real-focus vegetable positioning"));
+      expect(listbox).not.toHaveAttribute("data-placing");
+      expect(target).toHaveFocus();
+      expect(target).toHaveAttribute("data-active-item");
+    });
   }
+
+  // https://github.com/ariakit/ariakit/issues/7612
+  test("move made before the popup repositions stays active", async () => {
+    const select = q.combobox("Vegetable");
+    await click(select);
+
+    const listbox = q.listbox("Vegetable");
+    await click(q.button("Finish vegetable positioning"));
+    expect(listbox).not.toHaveAttribute("data-placing");
+    expect(activeText("Vegetable")).toBe("Artichoke");
+
+    await press.ArrowDown();
+    expect(activeText("Vegetable")).toBe("Broccoli");
+
+    await click(q.button("Reposition vegetable popup"));
+    expect(listbox).toHaveAttribute("data-placing");
+
+    await click(q.button("Finish vegetable positioning"));
+    expect(listbox).not.toHaveAttribute("data-placing");
+    expect(select).toHaveFocus();
+    expect(activeText("Vegetable")).toBe("Broccoli");
+  });
+});
+
+// https://github.com/ariakit/ariakit/issues/7612
+test("Managed vegetable popup focuses its autoFocus element when the user doesn't move", async () => {
+  const select = q.combobox("Managed vegetable");
+  await click(select);
+
+  const listbox = q.listbox("Managed vegetable");
+  expect(listbox).toHaveAttribute("data-placing");
+  expect(select).toHaveFocus();
+
+  await click(q.button("Finish managed vegetable positioning"));
+  expect(listbox).not.toHaveAttribute("data-placing");
+  expect(q.within(listbox).button("Manage vegetables")).toHaveFocus();
 });
 
 for (const label of ["No-autofocus status", "Real-focus status"]) {

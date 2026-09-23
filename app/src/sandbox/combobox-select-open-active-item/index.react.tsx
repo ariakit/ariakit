@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 
 const fruits = ["Apple", "Banana", "Grape", "Orange"];
 const statuses = ["Draft", "Published", "Archived"];
@@ -59,38 +59,33 @@ function FocusOwnerSelect({ label, virtualFocus }: FocusOwnerSelectProps) {
   );
 }
 
-// TODO: Remove this workaround when
-// https://github.com/ariakit/ariakit/issues/7612 is fixed. The popup focuses
-// the selected item once it's placed. This ref reads the active item at that
-// point instead, so a move made while the popup was positioning stays active.
-function createActiveItemRef(combobox: Ariakit.ComboboxStore) {
-  return {
-    get current() {
-      const { activeId } = combobox.getState();
-      return combobox.item(activeId)?.element ?? null;
-    },
-  };
+interface PositioningSelectProps {
+  label: string;
+  virtualFocus?: boolean;
+  /** Renders a button with this text and `autoFocus` before the items. */
+  autoFocusButton?: string;
 }
 
 // Holds the popup at its unplaced origin until the button releases the
 // positioning, so the user can move through the items before the popup takes
 // focus.
-function PositioningSelect() {
+function PositioningSelect({
+  label,
+  virtualFocus,
+  autoFocusButton,
+}: PositioningSelectProps) {
   const releaseRef = useRef<(() => void) | null>(null);
   const combobox = Ariakit.useComboboxStore({
     defaultSelectedValue: "Artichoke",
+    virtualFocus,
   });
-  const activeItemRef = useMemo(
-    () => createActiveItemRef(combobox),
-    [combobox],
-  );
+  const name = label.toLowerCase();
   return (
     <Ariakit.ComboboxProvider store={combobox}>
-      <Ariakit.ComboboxSelectLabel>Vegetable</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect />
       <Ariakit.ComboboxPopover
-        initialFocus={activeItemRef}
-        // The button that releases the positioning is outside the popup.
+        // The buttons that control the positioning are outside the popup.
         hideOnInteractOutside={false}
         updatePosition={({ updatePosition }) =>
           new Promise<void>((resolve) => {
@@ -100,18 +95,30 @@ function PositioningSelect() {
           })
         }
       >
+        {autoFocusButton && (
+          <Ariakit.Button autoFocus>{autoFocusButton}</Ariakit.Button>
+        )}
         {vegetables.map((value) => (
           <Ariakit.ComboboxItem key={value} value={value} />
         ))}
       </Ariakit.ComboboxPopover>
-      {/* Refuses focus so the select keeps it, as it would when positioning
-      ends on its own. */}
+      {/* Both buttons refuse focus so the widget keeps it, as it would when
+      positioning happens on its own. */}
       <button
         type="button"
         onMouseDown={(event) => event.preventDefault()}
         onClick={() => releaseRef.current?.()}
       >
-        Finish vegetable positioning
+        {`Finish ${name} positioning`}
+      </button>
+      {/* Starts another positioning pass while the popup is open, as a moved
+      anchor would. */}
+      <button
+        type="button"
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={combobox.render}
+      >
+        {`Reposition ${name} popup`}
       </button>
     </Ariakit.ComboboxProvider>
   );
@@ -143,7 +150,12 @@ export default function Example() {
       />
       <FocusOwnerSelect label="No-autofocus status" />
       <FocusOwnerSelect label="Real-focus status" virtualFocus={false} />
-      <PositioningSelect />
+      <PositioningSelect label="Vegetable" />
+      <PositioningSelect label="Real-focus vegetable" virtualFocus={false} />
+      <PositioningSelect
+        label="Managed vegetable"
+        autoFocusButton="Manage vegetables"
+      />
     </>
   );
 }
