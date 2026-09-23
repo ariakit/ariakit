@@ -42,9 +42,13 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test
       .expect(button)
       .toHaveAccessibleDescription("Manage account pages");
+    // The chevron that leads the row is a slot too, so the badge is found by
+    // its text.
     await test
-      .expect(button.locator(":scope > .disclosure-button-slot"))
-      .toHaveText("3");
+      .expect(
+        button.locator(":scope > .control-slot").filter({ hasText: /^3$/ }),
+      )
+      .toHaveCount(1);
     await button.click();
     await test.expect(q.text("Update account pages")).toBeVisible();
   });
