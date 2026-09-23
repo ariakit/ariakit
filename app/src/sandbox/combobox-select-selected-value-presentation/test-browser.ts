@@ -91,10 +91,21 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const select = q.combobox("Selected fruit");
     await select.click();
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
-    await page.keyboard.type("ly");
 
+    const apple = q.option("Apple");
     const lychee = q.option("Lychee");
-    await test.expect(lychee).toHaveAttribute("data-active-item");
+    // A runner stall of over 500ms between "l" and "y" splits the typeahead
+    // query and leaves Lemon active. Home restarts from Apple with an empty
+    // query, so a retry can't reach Lychee by cycling through the "l" items.
+    // https://github.com/ariakit/ariakit/issues/7610
+    await test
+      .expect(async () => {
+        await page.keyboard.press("Home");
+        await test.expect(apple).toHaveAttribute("data-active-item");
+        await page.keyboard.type("ly");
+        await test.expect(lychee).toHaveAttribute("data-active-item");
+      })
+      .toPass();
     await test.expect(lychee).toBeInViewport();
     await test.expect(select).toBeFocused();
   });
