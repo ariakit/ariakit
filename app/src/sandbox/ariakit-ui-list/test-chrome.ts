@@ -1,3 +1,4 @@
+import type { Locator } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
@@ -152,6 +153,34 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(completed.img("Checked")).toBeVisible();
     await test.expect(unchecked.img("Unchecked")).toBeVisible();
     await test.expect(checked.img("Checked")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7553
+  test("starts a row's open content past its marker when the marker leads", async ({
+    q,
+  }) => {
+    const box = query(q.article("Leading marker"));
+    const getStart = (locator: Locator) =>
+      locator.evaluate((node) => node.getBoundingClientRect().left);
+    const getEnd = (locator: Locator) =>
+      locator.evaluate((node) => node.getBoundingClientRect().right);
+    const leadingMarker = box.button("Version 3.0").locator(".list-marker");
+    const plainMarker = box.button("Version 2.9").locator(".list-marker");
+    const leadingText = box.text("Menus can open on hover.");
+    const plainText = box.text("Dialogs keep focus in nested frames.");
+    await test.expect(leadingText).toBeVisible();
+    await test.expect(plainText).toBeVisible();
+    await test.expect
+      .poll(
+        async () =>
+          (await getStart(leadingText)) - (await getEnd(leadingMarker)),
+      )
+      .toBeGreaterThanOrEqual(0);
+    await test.expect
+      .poll(
+        async () => (await getStart(plainText)) - (await getEnd(plainMarker)),
+      )
+      .toBeLessThan(0);
   });
 
   test("keeps the name and the description of markers whose props are undefined", async ({

@@ -1,5 +1,5 @@
 import * as ak from "@ariakit/react";
-import type { VariantProps } from "clava";
+import type { RecipeLike, VariantProps, VariantPropsWithRecipe } from "clava";
 import { splitProps } from "clava";
 import {
   button,
@@ -12,24 +12,36 @@ import {
   buttonSlot,
 } from "../styles/button.ts";
 
-export interface ButtonProps
-  extends ak.ButtonProps, VariantProps<typeof button> {}
+// The recipe member only documents the prop. VariantPropsWithRecipe still makes
+// it required when the recipe adds variants.
+export type ButtonProps<
+  R extends RecipeLike<typeof button, R> = typeof button,
+> = ak.ButtonProps &
+  VariantPropsWithRecipe<typeof button, R> & {
+    /**
+     * The recipe applied in place of `button`. It must supply every `button`
+     * variant.
+     */
+    recipe?: R;
+  };
 
 /**
  * @see https://ariakit.com/react/examples/button
  */
-export function Button(props: ButtonProps) {
-  const [variantProps, rest] = splitProps(props, button);
+export function Button<R extends RecipeLike<typeof button, R> = typeof button>({
+  recipe,
+  $disabled,
+  ...props
+}: ButtonProps<R>) {
+  const styles = recipe ?? button;
+  const [variantProps, rest] = splitProps(props, styles);
   const disabled =
     props.disabled ||
     props["aria-disabled"] === true ||
     props["aria-disabled"] === "true";
   return (
     <ak.Button
-      {...button.jsx({
-        ...variantProps,
-        $disabled: variantProps.$disabled ?? disabled,
-      })}
+      {...styles.jsx({ ...variantProps, $disabled: $disabled ?? disabled })}
       {...rest}
     />
   );

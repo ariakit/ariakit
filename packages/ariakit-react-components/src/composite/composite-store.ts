@@ -24,7 +24,7 @@ export function useCompositeStoreProps<T extends Core.CompositeStore>(
   props: CompositeStoreProps,
 ) {
   store = useCollectionStoreProps(store, update, props);
-  getMoveRequest(store);
+  getMoveRequest(store, props.store);
   useStoreProps(store, props, "activeId", "setActiveId");
   const focusOrderProps = {
     compositeElementInFocusOrder:

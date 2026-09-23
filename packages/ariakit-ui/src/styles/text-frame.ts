@@ -8,8 +8,8 @@ import { frame } from "./frame.ts";
  * looks to. The two are published as `--py` and `--px`, measured in the
  * element's own font, for the slots and gaps that line up with them. Extend
  * this in place of `frame` wherever a line of text sits in a padded box: a
- * control, a nav group label or a list row. Extending both would apply the
- * frame twice.
+ * control, a nav group label or a list row. Extending both is redundant: clava
+ * applies a base that two extensions reach only once.
  *
  * Despite the name, this has nothing to do with the `text` recipe, which colors
  * text. This one only shapes the box around it.

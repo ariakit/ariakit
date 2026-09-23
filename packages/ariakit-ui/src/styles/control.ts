@@ -132,16 +132,25 @@ export const controlSlot = cv({
      * slot size. The larger the slot, the larger the margin. Set to `closeGap`
      * to move the slot closer to the control's text.
      *
-     * The margin goes on the sibling element beside the slot, so the text must
-     * be wrapped in a label element such as `ButtonLabel`. A sibling selector
-     * cannot see a bare text node, and the margin would land on the next
-     * element instead, which may be another slot.
+     * A named margin goes on the sibling element beside the slot, so the text
+     * must be wrapped in a label element such as `ButtonLabel`. A sibling
+     * selector cannot see a bare text node, and the margin would land on the
+     * next element instead, which may be another slot.
+     *
+     * `auto` is for a slot that leads a label with a size an extender takes
+     * from its container, such as an icon size set on a nav. Its margin sits on
+     * the slot itself. It follows an `auto` size by default.
      *
      * A stacked card sets `--control-inline` to 0, which drops these margins
      * along with the slot's own.
      */
     $mx: {
       unset: "",
+      // A size from the container can be wider than the line. The slot then
+      // overflows its box on both sides, and its own end margin grows by the
+      // far-side overflow so the gap to the label holds. Tailwind emits me-*
+      // after the slot's own mx-*, so this margin wins by order.
+      auto: "me-[calc(var(--mx)+max(0px,(var(--size,1lh)-1lh)/2)*var(--control-inline,1))]",
       closeGap:
         "[&+*]:ms-[calc(var(--spacing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--spacing)*-1*var(--control-inline,1))]",
       xs: "[&+*]:ms-[calc(var(--sidebearing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--sidebearing)*-1*var(--control-inline,1))]",
@@ -186,7 +195,11 @@ export const controlSlot = cv({
     },
     /**
      * Sets the element’s kind. When you use the `badge` kind, wrap text in a
-     * `<span>` element so it’s styled correctly.
+     * `<span>` element so it’s styled correctly. The badge trims that element
+     * to the height of its capitals. To truncate the text, use
+     * `block overflow-x-clip text-ellipsis whitespace-nowrap` and a maximum
+     * width on the element that holds it. These clip only the inline axis,
+     * while `truncate` also clips the descenders.
      */
     $kind: {
       icon: "",
@@ -194,7 +207,11 @@ export const controlSlot = cv({
       // must not reorder its keys in a right-to-left row.
       shortcut: "[direction:ltr]",
       avatar: "overflow-clip",
-      badge: "*:text-[0.8125em]",
+      // The slot centers the text box. Trimmed to the capitals, that box no
+      // longer carries the half-leading that each engine rounds differently,
+      // which left the text off center in Chromium and Firefox.
+      // https://github.com/ariakit/ariakit/issues/7588
+      badge: "*:text-[0.8125em] *:[text-box:cap_alphabetic]",
     },
     /**
      * Sets the slot to be a square.
@@ -342,6 +359,24 @@ export const controlSlot = cv({
     }
   },
 });
+
+/**
+ * The `$size` default of a slot whose container sizes its icon, such as a nav
+ * row or a disclosure button. Only an icon takes that size, through the
+ * extender's `auto` size. A badge, an avatar or a shortcut keeps the size every
+ * other control slot gives it: the one-line box for a badge or an avatar (see
+ * `PADDED_SLOT_SIZES`), the text size for a shortcut.
+ */
+export function getIconSlotSize<Size extends string>(
+  defaultValue: Size | undefined,
+  variants: { $kind?: string },
+) {
+  if (variants.$kind !== "icon") return defaultValue;
+  // Replace only controlSlot's own `md` default (see its defaultVariants), so
+  // an extender's size still applies.
+  if (defaultValue !== "md") return defaultValue;
+  return "auto" as const;
+}
 
 export const controlContent = cv({
   class: [

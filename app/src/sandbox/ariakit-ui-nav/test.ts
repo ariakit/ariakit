@@ -1,5 +1,49 @@
 import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
+import {
+  getClassTokens,
+  getDisclosureParts,
+} from "../ariakit-ui-disclosure/disclosure.test-helper.ts";
+
+// https://github.com/ariakit/ariakit/issues/7553
+test("renders every nav row without repeated or important gap classes", () => {
+  const buttons = q.button
+    .all()
+    .filter((button) => button.parentElement?.matches(".nav-disclosure"));
+  expect(buttons).not.toHaveLength(0);
+  const rows: Element[] = [
+    q.within(q.navigation("Command row")).button(/^Search/),
+  ];
+  for (const button of buttons) {
+    const { root, body } = getDisclosureParts(button);
+    rows.push(root, button, body);
+  }
+  for (const element of rows) {
+    const tokens = getClassTokens(element);
+    expect(tokens).toEqual([...new Set(tokens)]);
+    expect(
+      tokens.filter((token) => token.startsWith("gap-") && token.endsWith("!")),
+    ).toEqual([]);
+  }
+});
+
+// https://github.com/ariakit/ariakit/issues/7553
+test("lets a nav disclosure override the defaults of its row", () => {
+  const nav = q.within(q.navigation("Row overrides"));
+  const { root: account } = getDisclosureParts(nav.button("Account"));
+  const { root: settings } = getDisclosureParts(nav.button("Settings"));
+  expect(account).toHaveClass("ak-frame-lg");
+  expect(account).toHaveAttribute(
+    "style",
+    "--frame-padding: calc(var(--spacing) * (2)); --disclosure-gap: var(--nav-row-gap, calc(var(--spacing) * 3)); --disclosure-body-offset: var(--nav-gap, calc(var(--spacing) * 1));",
+  );
+  expect(settings).toHaveClass("ak-frame-none");
+  expect(settings).not.toHaveClass("ak-frame-lg");
+  expect(settings).toHaveAttribute(
+    "style",
+    "--frame-padding: calc(var(--spacing) * (2)); --disclosure-gap: var(--nav-row-gap, calc(var(--spacing) * 3)); --disclosure-body-offset: calc(var(--spacing) * (3));",
+  );
+});
 
 // https://github.com/ariakit/ariakit/pull/7494#discussion_r3995263562
 test("keeps a disclosure badge beside the label without a description", async () => {
@@ -36,6 +80,13 @@ test("keeps a bare fragment label separate from its description and badge", asyn
   ).toHaveTextContent("3");
   await click(button);
   expect(q.text("Update account pages")).toBeVisible();
+});
+
+test("names a link by its label and describes it by its description", () => {
+  const nav = q.within(q.navigation("Link descriptions"));
+  const link = nav.link("Workspace settings and preferences");
+  expect(link).toHaveAttribute("href", "#settings");
+  expect(link).toHaveAccessibleDescription("Members and billing");
 });
 
 test("keeps anchor props, events, and refs on a wrapped link", async () => {

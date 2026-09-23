@@ -8,10 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as Ariakit from "@ariakit/react";
-import {
-  ButtonLabel,
-  ButtonSlot,
-} from "@ariakit/ui/components/button.ariakit.react";
+import { ButtonSlot } from "@ariakit/ui/components/button.ariakit.react";
 import {
   DisclosureButtonLabel,
   DisclosureButtonSlot,
@@ -30,6 +27,10 @@ import {
   NavGroupLabel,
   NavIcon,
   NavLink,
+  NavLinkContent,
+  NavLinkDescription,
+  NavLinkLabel,
+  NavLinkSlot,
   NavList,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import {
@@ -249,6 +250,58 @@ function EndBarSections({ dir }: EndBarSectionsProps) {
   );
 }
 
+/**
+ * Links whose author marks idle rows with an empty or false aria-current and
+ * the current row with a token ARIA does not list. ARIA reads the first two as
+ * not current and the unknown token as current. React's types reject the empty
+ * value and the unknown token, so the values pass through a plain record, the
+ * way markup outside React would carry them.
+ */
+function LooseCurrentSections() {
+  const [current, setCurrent] = useState("Overview");
+  const link = (page: string, idle: "" | "false") => {
+    const currentProps: Record<string, string> = {
+      "aria-current": current === page ? "active" : idle,
+    };
+    return (
+      <NavLink
+        href={`#${page.toLowerCase()}`}
+        {...currentProps}
+        onClick={(event) => {
+          event.preventDefault();
+          setCurrent(page);
+        }}
+      >
+        {page}
+      </NavLink>
+    );
+  };
+  return (
+    <Nav
+      $iconSize={5}
+      aria-label="Empty, false, and unknown current values"
+      glider={{ $kind: "bar", $animated: false }}
+      className="w-full"
+    >
+      {link("Overview", "")}
+      <NavDisclosure
+        defaultOpen
+        button={
+          <NavDisclosureButton icon={<Palette strokeWidth={1.5} />}>
+            Styling
+          </NavDisclosureButton>
+        }
+      >
+        <NavList>
+          {link("Themes", "")}
+          {link("Tokens", "false")}
+        </NavList>
+      </NavDisclosure>
+      {link("Changelog", "false")}
+    </Nav>
+  );
+}
+
 const INITIAL_SIDEBAR_URL = "/docs/styling/introduction";
 
 /**
@@ -457,10 +510,10 @@ export default function NavExamples() {
               <NavGroupLabel>Reference</NavGroupLabel>
               <NavList>
                 <NavLink>
-                  <ButtonLabel>Components</ButtonLabel>
-                  <ButtonSlot $kind="badge" $p="md">
+                  <NavLinkLabel>Components</NavLinkLabel>
+                  <NavLinkSlot $kind="badge" $p="md">
                     12
-                  </ButtonSlot>
+                  </NavLinkSlot>
                 </NavLink>
                 <NavLink>Hooks</NavLink>
               </NavList>
@@ -482,10 +535,10 @@ export default function NavExamples() {
             <NavGroupLabel>Reference</NavGroupLabel>
             <NavList>
               <NavLink href="#components">
-                <ButtonLabel>Components</ButtonLabel>
-                <ButtonSlot $kind="badge" $p="md" className="ms-auto">
+                <NavLinkLabel>Components</NavLinkLabel>
+                <NavLinkSlot $kind="badge" $p="md" className="ms-auto">
                   <span>12</span>
-                </ButtonSlot>
+                </NavLinkSlot>
               </NavLink>
               <NavLink href="#hooks">Hooks</NavLink>
             </NavList>
@@ -907,6 +960,28 @@ export default function NavExamples() {
       ))}
 
       <Example
+        title="Empty, false, and unknown current values"
+        description="Idle links carry an empty or false aria-current, which does not count as current, and the current link carries a token ARIA does not list, which does. The rows, the bar, and the guide line follow only the current link. Click a link to move it. With the current link in the section, close the section to leave no current row in view."
+        code={`
+          <Nav $iconSize={5} glider={{ $kind: "bar", $animated: false }}>
+            <NavLink aria-current="active">Overview</NavLink>
+            <NavDisclosure
+              defaultOpen
+              button={<NavDisclosureButton icon={<Palette />}>Styling</NavDisclosureButton>}
+            >
+              <NavList>
+                <NavLink aria-current="">Themes</NavLink>
+                <NavLink aria-current={false}>Tokens</NavLink>
+              </NavList>
+            </NavDisclosure>
+            <NavLink aria-current={false}>Changelog</NavLink>
+          </Nav>
+        `}
+      >
+        <LooseCurrentSections />
+      </Example>
+
+      <Example
         title="Sidebar"
         description="A documentation sidebar. A cover follows the pointer, the current cover moves between sections on click, and a ring follows the keyboard."
         code={`
@@ -963,10 +1038,10 @@ export default function NavExamples() {
                     <NavIcon>
                       <FileCode />
                     </NavIcon>
-                    <ButtonLabel>المكونات</ButtonLabel>
-                    <ButtonSlot $kind="badge" $p="md">
+                    <NavLinkLabel>المكونات</NavLinkLabel>
+                    <NavLinkSlot $kind="badge" $p="md">
                       12
-                    </ButtonSlot>
+                    </NavLinkSlot>
                   </NavLink>
                   <NavButton>
                     <NavIcon>
@@ -1007,10 +1082,10 @@ export default function NavExamples() {
                   <NavIcon>
                     <FileCode strokeWidth={1.5} />
                   </NavIcon>
-                  <ButtonLabel>المكونات</ButtonLabel>
-                  <ButtonSlot $kind="badge" $p="md" className="ms-auto">
+                  <NavLinkLabel>المكونات</NavLinkLabel>
+                  <NavLinkSlot $kind="badge" $p="md" className="ms-auto">
                     <span>12</span>
-                  </ButtonSlot>
+                  </NavLinkSlot>
                 </NavLink>
                 <li>
                   <NavButton>
@@ -1285,6 +1360,124 @@ export default function NavExamples() {
       </Example>
 
       <Example
+        title="Badges and avatars"
+        description="A badge or an avatar keeps the one-line box of every control slot: after the label of a section row or a link row, and in the icon column of a link row. The nav's icon size sizes only the icons."
+        code={`
+          <Nav $iconSize={5}>
+            <NavDisclosure defaultOpen button={
+              <NavDisclosureButton icon={<Inbox />} label="Inbox">
+                <DisclosureButtonSlot $kind="badge" $p="md">12</DisclosureButtonSlot>
+              </NavDisclosureButton>
+            }>
+              <NavList>
+                <NavLink>Unread</NavLink>
+                <NavLink>Archive</NavLink>
+              </NavList>
+            </NavDisclosure>
+            <NavDisclosure button={
+              <NavDisclosureButton icon={<Palette />} label="Design">
+                <DisclosureButtonSlot $kind="avatar">MK</DisclosureButtonSlot>
+              </NavDisclosureButton>
+            }>
+              <NavList>
+                <NavLink>Members</NavLink>
+              </NavList>
+            </NavDisclosure>
+            <NavLink>
+              <NavIcon>
+                <FileCode />
+              </NavIcon>
+              <NavLinkLabel>Drafts</NavLinkLabel>
+              <NavLinkSlot $kind="badge" $p="md">3</NavLinkSlot>
+            </NavLink>
+            <NavLink>
+              <NavIcon>
+                <Settings />
+              </NavIcon>
+              <NavLinkLabel>Profile</NavLinkLabel>
+              <NavLinkSlot $kind="avatar">JD</NavLinkSlot>
+            </NavLink>
+            <NavLink>
+              <NavIcon $kind="badge" $p="md">
+                <span>9</span>
+              </NavIcon>
+              <NavLinkLabel>Notifications</NavLinkLabel>
+            </NavLink>
+            <NavLink>
+              <NavIcon $kind="avatar">AL</NavIcon>
+              <NavLinkLabel>Ana Lima</NavLinkLabel>
+            </NavLink>
+          </Nav>
+        `}
+      >
+        <Nav $iconSize={5} aria-label="Badges and avatars" className="w-full">
+          <NavDisclosure
+            defaultOpen
+            button={
+              <NavDisclosureButton
+                icon={<Inbox strokeWidth={1.5} />}
+                label="Inbox"
+              >
+                <DisclosureButtonSlot $kind="badge" $p="md">
+                  12
+                </DisclosureButtonSlot>
+              </NavDisclosureButton>
+            }
+          >
+            <NavList>
+              <NavLink href="#unread">Unread</NavLink>
+              <NavLink href="#archive">Archive</NavLink>
+            </NavList>
+          </NavDisclosure>
+          <NavDisclosure
+            button={
+              <NavDisclosureButton
+                icon={<Palette strokeWidth={1.5} />}
+                label="Design"
+              >
+                <DisclosureButtonSlot $kind="avatar">MK</DisclosureButtonSlot>
+              </NavDisclosureButton>
+            }
+          >
+            <NavList>
+              <NavLink href="#members">Members</NavLink>
+            </NavList>
+          </NavDisclosure>
+          <NavLink href="#drafts">
+            <NavIcon>
+              <FileCode strokeWidth={1.5} />
+            </NavIcon>
+            <NavLinkLabel>Drafts</NavLinkLabel>
+            <NavLinkSlot $kind="badge" $p="md">
+              3
+            </NavLinkSlot>
+          </NavLink>
+          <NavLink href="#profile">
+            <NavIcon>
+              <Settings strokeWidth={1.5} />
+            </NavIcon>
+            <NavLinkLabel>Profile</NavLinkLabel>
+            <NavLinkSlot $kind="avatar">JD</NavLinkSlot>
+          </NavLink>
+          <NavLink href="#notifications">
+            {/*
+              The badge kind scales a child element, and NavIcon does not wrap
+              its text in one as NavLinkSlot does.
+              https://github.com/ariakit/ariakit/issues/7579
+            */}
+            <NavIcon $kind="badge" $p="md">
+              <span>9</span>
+            </NavIcon>
+            <NavLinkLabel>Notifications</NavLinkLabel>
+          </NavLink>
+          <NavLink href="#ana-lima">
+            <NavIcon $kind="avatar">AL</NavIcon>
+            <NavLinkLabel>Ana Lima</NavLinkLabel>
+          </NavLink>
+        </Nav>
+      </Example>
+
+      <Example
         title="Custom label styles"
         description="A caller's className and style on NavButtonContent survive next to its own classes."
         code={`
@@ -1347,6 +1540,194 @@ export default function NavExamples() {
         code={`<Nav><NavLink item={{ className: "project-item" }} href="#overview">Overview</NavLink></Nav>`}
       >
         <LinkItems />
+      </Example>
+      <Example
+        title="Link descriptions"
+        description="A link with a slot, a label and a description lines up with a disclosure row beside it. Only the icon takes the nav's icon size, the text wraps, and a description can share the label's line."
+        code={`
+          <Nav $iconSize={5}>
+            <NavLink>
+              <NavLinkSlot>
+                <Inbox />
+              </NavLinkSlot>
+              <NavLinkContent>
+                <NavLinkLabel>Inbox</NavLinkLabel>
+                <NavLinkDescription>Messages that wait for a reply</NavLinkDescription>
+              </NavLinkContent>
+              <NavLinkSlot $kind="badge" $p="md">4</NavLinkSlot>
+            </NavLink>
+            <NavLink>
+              <NavLinkSlot>
+                <Rocket />
+              </NavLinkSlot>
+              <NavLinkContent $orientation="horizontal">
+                <NavLinkLabel>Releases</NavLinkLabel>
+                <NavLinkDescription>2 drafts</NavLinkDescription>
+              </NavLinkContent>
+            </NavLink>
+            <NavDisclosure>
+              <NavDisclosureButton icon={<Blocks />} label="Projects" description="Pages grouped by project" />
+              <NavDisclosureContent>
+                <NavList>
+                  <NavLink>All projects</NavLink>
+                </NavList>
+              </NavDisclosureContent>
+            </NavDisclosure>
+          </Nav>
+        `}
+      >
+        <Nav
+          $iconSize={5}
+          aria-label="Link descriptions"
+          className="w-full max-w-64"
+        >
+          <NavLink href="#inbox" aria-current="page">
+            <NavLinkSlot>
+              <Inbox strokeWidth={1.5} />
+            </NavLinkSlot>
+            <NavLinkContent>
+              <NavLinkLabel>Inbox</NavLinkLabel>
+              <NavLinkDescription>
+                Messages that wait for a reply from you or your team
+              </NavLinkDescription>
+            </NavLinkContent>
+            <NavLinkSlot $kind="badge" $p="md">
+              4
+            </NavLinkSlot>
+          </NavLink>
+          {/*
+            The ids keep the description out of the link's name. Without them,
+            as on the other rows, a link is named by all of its content.
+           */}
+          <NavLink
+            href="#settings"
+            aria-labelledby="nav-settings-label"
+            aria-describedby="nav-settings-description"
+          >
+            <NavLinkSlot>
+              <Settings strokeWidth={1.5} />
+            </NavLinkSlot>
+            <NavLinkContent>
+              <NavLinkLabel id="nav-settings-label">
+                Workspace settings and preferences
+              </NavLinkLabel>
+              <NavLinkDescription id="nav-settings-description">
+                Members and billing
+              </NavLinkDescription>
+            </NavLinkContent>
+          </NavLink>
+          <NavLink href="#releases">
+            <NavLinkSlot>
+              <Rocket strokeWidth={1.5} />
+            </NavLinkSlot>
+            <NavLinkContent $orientation="horizontal">
+              <NavLinkLabel>Releases</NavLinkLabel>
+              <NavLinkDescription>2 drafts</NavLinkDescription>
+            </NavLinkContent>
+          </NavLink>
+          <NavDisclosure>
+            <NavDisclosureButton
+              icon={<Blocks strokeWidth={1.5} />}
+              label="Projects"
+              description="Pages grouped by project"
+            />
+            <NavDisclosureContent>
+              <NavList>
+                <NavLink href="#projects">All projects</NavLink>
+              </NavList>
+            </NavDisclosureContent>
+          </NavDisclosure>
+        </Nav>
+      </Example>
+      <Example
+        title="Wide icons"
+        description="An icon wider than the line keeps its gap to the label. A link keeps the label column of a disclosure row, with a NavLinkSlot and with a NavIcon."
+        code={`
+          <Nav $iconSize={8}>
+            <NavLink>
+              <NavLinkSlot>
+                <Inbox />
+              </NavLinkSlot>
+              <NavLinkLabel>Inbox</NavLinkLabel>
+            </NavLink>
+            <NavLink>
+              <NavIcon>
+                <Settings />
+              </NavIcon>
+              <NavLinkLabel>Settings</NavLinkLabel>
+            </NavLink>
+            <NavDisclosure>
+              <NavDisclosureButton icon={<Blocks />}>Projects</NavDisclosureButton>
+              <NavDisclosureContent>
+                <NavList>
+                  <NavLink>All projects</NavLink>
+                </NavList>
+              </NavDisclosureContent>
+            </NavDisclosure>
+          </Nav>
+        `}
+      >
+        <Nav $iconSize={8} aria-label="Wide icons" className="w-full max-w-64">
+          <NavLink href="#wide-inbox">
+            <NavLinkSlot>
+              <Inbox strokeWidth={1.5} />
+            </NavLinkSlot>
+            <NavLinkLabel>Inbox</NavLinkLabel>
+          </NavLink>
+          <NavLink href="#wide-settings">
+            <NavIcon>
+              <Settings strokeWidth={1.5} />
+            </NavIcon>
+            <NavLinkLabel>Settings</NavLinkLabel>
+          </NavLink>
+          <NavDisclosure>
+            <NavDisclosureButton icon={<Blocks strokeWidth={1.5} />}>
+              Projects
+            </NavDisclosureButton>
+            <NavDisclosureContent>
+              <NavList>
+                <NavLink href="#wide-projects">All projects</NavLink>
+              </NavList>
+            </NavDisclosureContent>
+          </NavDisclosure>
+        </Nav>
+      </Example>
+
+      <Example
+        title="Row overrides"
+        description="A row can replace the defaults its nav gives it. Settings forces square corners and takes more room under its button, where its guide starts too, while Account keeps the defaults."
+        code={`
+          <Nav>
+            <NavDisclosure button="Account">…</NavDisclosure>
+            <NavDisclosure $rounded="none" $forceRounded $bodyOffset={3} button="Settings">
+              <NavList>
+                <NavLink>Profile</NavLink>
+                <NavLink>Billing</NavLink>
+              </NavList>
+            </NavDisclosure>
+          </Nav>
+        `}
+      >
+        <Nav aria-label="Row overrides" className="w-full">
+          <NavDisclosure defaultOpen button="Account">
+            <NavList>
+              <NavLink href="#override-members">Members</NavLink>
+              <NavLink href="#override-security">Security</NavLink>
+            </NavList>
+          </NavDisclosure>
+          <NavDisclosure
+            $rounded="none"
+            $forceRounded
+            $bodyOffset={3}
+            defaultOpen
+            button="Settings"
+          >
+            <NavList>
+              <NavLink href="#override-profile">Profile</NavLink>
+              <NavLink href="#override-billing">Billing</NavLink>
+            </NavList>
+          </NavDisclosure>
+        </Nav>
       </Example>
     </ExampleGrid>
   );
