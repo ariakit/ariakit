@@ -8,6 +8,11 @@ import {
   buttonSlot,
 } from "./button.ts";
 import { getIconSlotSize } from "./control.ts";
+import {
+  disclosure,
+  disclosureButton,
+  disclosureContentBody,
+} from "./disclosure.ts";
 import { frame, frameBase } from "./frame.ts";
 import { glider } from "./glider.ts";
 import { selected } from "./selected.ts";
@@ -223,18 +228,25 @@ export const navLinkDescription = cv({
   },
 });
 
-// Shared row alignment for disclosure buttons and standalone navigation links.
+// A standalone nav row, such as a brand row, that is a button or, through
+// render, an anchor.
 export const navButton = cv({
+  extend: [button],
   class: [
     // A row fills its list item. A button element would otherwise shrink to
     // its content, and a trailing slot would stop short of the row's end.
     "w-full justify-start overflow-clip whitespace-normal text-start",
-    // Every row keeps the one gap, plus the control's extra side padding
-    // that an icon slot takes off, with the nav's default for a row outside
-    // a nav, such as a brand row. Important, because a disclosure
-    // button spends its own gap channel on the same property.
-    "gap-[calc(var(--nav-row-gap,--spacing(3))+var(--px)-var(--py))]!",
+    // The row gap plus the control's extra side padding, which an icon slot
+    // takes off, with the nav's default for a row outside a nav. $gap is off
+    // below, so this is the only gap utility here.
+    "gap-[calc(var(--nav-row-gap,--spacing(3))+var(--px)-var(--py))]",
   ],
+  defaultVariants: {
+    $rounded: "lg",
+    // The row sits flush with the surface around it, like a nav link.
+    $lightnessOffset: false,
+    $gap: "none",
+  },
 });
 
 export const navButtonContent = cv({
@@ -446,26 +458,44 @@ export const navGlider = cv({
 });
 
 export const navDisclosure = cv({
+  extend: [disclosure],
   class: [
     "nav-disclosure",
     // Nav icons size the disclosure icon slot when an ancestor sets them.
     "[@container_style(--nav-icon-size)]:[--disclosure-icon-size:var(--nav-icon-size)]",
   ],
-  style: {
-    // The body indents by the row gap, the same one the button spends. The
-    // style attribute is what beats the disclosure root's own gap.
-    "--disclosure-gap": "var(--nav-row-gap, calc(var(--spacing) * 3))",
+  defaultVariants: {
+    // The row and its content are already spaced apart, so the button needs no
+    // hover ramp between them.
+    $contentPadding: true,
+    // A nav row is a field-sized frame with control-sized padding.
+    $rounded: "lg",
+    $p: 2,
+    // The root paints no surface, so the gliders under a nested section's rows
+    // show through it (see NavDisclosure).
+    $layer: "transparent",
+    // The body indents by the row gap, the same one the button spends.
+    $slotGap: "var(--nav-row-gap, calc(var(--spacing) * 3))",
     // The body sits one nav gap under the button, the gap between rows, and the
-    // guide starts there with it. The style attribute is what beats the root's
-    // zero.
-    "--disclosure-body-offset": "var(--nav-gap, calc(var(--spacing) * 1))",
+    // guide starts there with it.
+    $bodyOffset: "var(--nav-gap, calc(var(--spacing) * 1))",
   },
 });
 
+// The button of a nav disclosure. Its gap is the disclosure button's auto gap,
+// which spends the row gap navDisclosure sets through $slotGap, so its label
+// lines up with the rows around it. Its vertical gap stays the disclosure
+// button's own, tighter than that: the button is a flex row that does not wrap,
+// so nothing in it moves.
+export const navDisclosureButton = cv({
+  extend: [disclosureButton],
+  class: "whitespace-normal",
+});
+
 export const navDisclosureContentBody = cv({
-  // frameBase, not frame: the body takes the radius, and any padding a caller
-  // gives it, and paints nothing, so it must not open a layer of its own.
-  extend: [frameBase],
+  // frameBase for the radius, and any padding a caller gives it. The disclosure
+  // body already brings the edge and the layer.
+  extend: [disclosureContentBody, frameBase],
   class: [
     "grid content-start gap-(--nav-gap)",
     // The rows are nested frames, so their radius is this one minus the body's
@@ -493,6 +523,9 @@ export const navDisclosureContentBody = cv({
   // keeps the label indent, with the content padding on, as a nav disclosure
   // keeps it by default.
   defaultVariants: {
+    // The body paints no surface of its own: a nav glider that covers a row
+    // inside it paints under the content, and it has to show through.
+    $layer: "transparent",
     $forceRounded: true,
     $rounded: "var(--nav-body-radius)",
   },

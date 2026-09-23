@@ -405,6 +405,45 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     }
   });
 
+  // https://github.com/ariakit/ariakit/issues/7553
+  test("lets a row override its corners and the offset of its body", async ({
+    q,
+  }) => {
+    const nav = q.navigation("Row overrides");
+    const account = query(nav).button("Account");
+    const members = query(nav).link("Members");
+    const settings = query(nav).button("Settings");
+    const profile = query(nav).link("Profile");
+    await nav.scrollIntoViewIfNeeded();
+    const gap = await nav.evaluate((node) =>
+      Number.parseFloat(getComputedStyle(node).rowGap),
+    );
+    const below = async (upper: Locator, lower: Locator) => {
+      const [top, bottom] = await Promise.all([getBox(upper), getBox(lower)]);
+      return bottom.y - top.y - top.height;
+    };
+    // Account keeps the nav gap under its button. Settings sets $bodyOffset={3}
+    // instead: three spacing steps, 12px at the sandbox's 16px font.
+    await expect.poll(() => below(account, members)).toBeCloseTo(gap, 0);
+    await expect.poll(() => below(settings, profile)).toBeCloseTo(12, 0);
+    // The guide starts at the body offset too. It is a pseudo-element of the
+    // content the button controls.
+    const contentId = await settings.getAttribute("aria-controls");
+    const guideTop = await nav
+      .locator(`[id="${contentId}"]`)
+      .evaluate((node) => {
+        const style = getComputedStyle(node, "::before");
+        return node.getBoundingClientRect().top + Number.parseFloat(style.top);
+      });
+    const settingsBox = await getBox(settings);
+    expect(guideTop - settingsBox.y - settingsBox.height).toBeCloseTo(12, 0);
+    // A row nested in the nav frame is concentric with it, so its own radius
+    // shows only when forced. $rounded="none" then replaces the nav row's
+    // radius, and the button stays concentric with it.
+    await expect(account).not.toHaveCSS("border-top-left-radius", "0px");
+    await expect(settings).toHaveCSS("border-top-left-radius", "0px");
+  });
+
   test("preserves default link corners in plain and nested navigation", async ({
     q,
   }) => {

@@ -5,6 +5,7 @@ import {
   inkAlpha,
 } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
+import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
   // On a dark layer an idle row dims its label, and the ink inherits through
@@ -278,5 +279,72 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
     await fixture.button("Open account settings").click();
     await test.expect(q.dialog("Account settings")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7537
+  test("follows only the current link when idle links carry an empty or false aria-current", async ({
+    q,
+  }) => {
+    const nav = q.navigation("Empty, false, and unknown current values");
+    const rows = query(nav);
+    const bar = nav.locator(":scope > .glider");
+    const overview = rows.link("Overview");
+    const themes = rows.link("Themes");
+    const tokens = rows.link("Tokens");
+    const changelog = rows.link("Changelog");
+    const styling = rows.button("Styling");
+    const barEdges = async () => {
+      const box = await getBox(bar);
+      return {
+        top: box.y,
+        end: box.x + box.width,
+        center: box.x + box.width / 2,
+      };
+    };
+    await nav.scrollIntoViewIfNeeded();
+    // Idle links drop to the normal weight; the current link keeps the heavier
+    // weight of a button.
+    await test.expect(overview).toHaveAttribute("aria-current", "active");
+    await test.expect(themes).toHaveAttribute("aria-current", "");
+    await test.expect(tokens).toHaveAttribute("aria-current", "false");
+    await test.expect(changelog).toHaveAttribute("aria-current", "false");
+    await test.expect(overview).not.toHaveCSS("font-weight", "400");
+    for (const link of [themes, tokens, changelog]) {
+      await test.expect(link).toHaveCSS("font-weight", "400");
+    }
+    // No row of the section is current, so its guide line stays unnamed, and
+    // Changelog is not current either, so the bar sits on the start edge of
+    // Overview.
+    const overviewBox = await getBox(overview);
+    await test.expect
+      .poll(async () => (await barEdges()).top)
+      .toBeCloseTo(overviewBox.y, 0);
+    await test.expect
+      .poll(async () => (await barEdges()).end)
+      .toBeCloseTo(overviewBox.x, 0);
+    // The token on Themes counts as current, so the bar moves onto the guide
+    // line, which runs down the center of the section's icon.
+    await themes.click();
+    await test.expect(themes).toHaveAttribute("aria-current", "active");
+    await test.expect(themes).not.toHaveCSS("font-weight", "400");
+    for (const link of [overview, tokens, changelog]) {
+      await test.expect(link).toHaveCSS("font-weight", "400");
+    }
+    const [themesBox, iconBox] = await Promise.all([
+      getBox(themes),
+      getBox(styling.locator(".control-slot").first()),
+    ]);
+    await test.expect
+      .poll(async () => (await barEdges()).top)
+      .toBeCloseTo(themesBox.y, 0);
+    await test.expect
+      .poll(async () => (await barEdges()).center)
+      .toBeCloseTo(iconBox.x + iconBox.width / 2, 0);
+    // A current row in a closed section counts as none, and neither the empty
+    // value on Overview nor the false one on Changelog counts, so the bar
+    // leaves.
+    await styling.click();
+    await test.expect(styling).toHaveAttribute("aria-expanded", "false");
+    await test.expect(bar).toHaveCSS("display", "none");
   });
 });

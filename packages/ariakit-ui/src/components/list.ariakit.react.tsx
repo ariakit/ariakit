@@ -21,6 +21,7 @@ import {
 import { progressCircularFill } from "../styles/progress.ts";
 import type {
   DisclosureButtonProps,
+  DisclosureContentBodyProps,
   DisclosureContentProps,
   DisclosureProps,
 } from "./disclosure.ariakit.react.tsx";
@@ -186,8 +187,10 @@ export function ListItemGuide(props: ListItemGuideProps) {
   return <span {...listItemGuide.jsx(variantProps)} {...rest} />;
 }
 
-export interface ListDisclosureProps
-  extends DisclosureProps, VariantProps<typeof listDisclosure> {
+export interface ListDisclosureProps extends Omit<
+  DisclosureProps<typeof listDisclosure>,
+  "recipe"
+> {
   button?: React.ReactNode | ListDisclosureButtonProps;
   content?: React.ReactElement | ListDisclosureContentProps;
 }
@@ -203,36 +206,36 @@ export interface ListDisclosureProps
  *   </li>
  * </List>
  */
-export function ListDisclosure(props: ListDisclosureProps) {
-  const [variantProps, rest] = splitProps(props, listDisclosure);
-  const button = createOptionalRender(ListDisclosureButton, rest.button);
-  const content = createRender(ListDisclosureContent, rest.content);
+export function ListDisclosure({
+  button,
+  content,
+  decoration,
+  ...props
+}: ListDisclosureProps) {
   return (
     <Disclosure
-      // The list row supplies its own frame geometry.
-      $rounded="unset"
-      $p="unset"
-      {...listDisclosure.jsx(variantProps)}
-      {...rest}
+      // The order carries the contract: the recipe first, the caller's props
+      // second, the composed slots last.
+      recipe={listDisclosure}
+      {...props}
       // The guide has to span the whole row, open content included, so it goes
       // on the disclosure root instead of on the button. A caller's own
       // decoration keeps its place alongside it.
       decoration={
         <>
-          {rest.decoration}
+          {decoration}
           <ListItemGuide />
         </>
       }
-      button={button}
-      content={content}
+      button={createOptionalRender(ListDisclosureButton, button)}
+      content={createRender(ListDisclosureContent, content)}
     />
   );
 }
 
 export interface ListDisclosureButtonProps
   extends
-    DisclosureButtonProps,
-    VariantProps<typeof listDisclosureButton>,
+    Omit<DisclosureButtonProps<typeof listDisclosureButton>, "recipe">,
     Pick<ListItemMarkerProps, "checked" | "progress"> {}
 
 export function ListDisclosureButton({
@@ -242,18 +245,19 @@ export function ListDisclosureButton({
   indicator = "chevron-down-next",
   ...props
 }: ListDisclosureButtonProps) {
-  const [variantProps, rest] = splitProps(props, listDisclosureButton);
   const labelProps =
-    label === undefined && isRenderable(rest.children)
-      ? { children: rest.children }
+    label === undefined && isRenderable(props.children)
+      ? { children: props.children }
       : label;
   const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
   const marker = <ListItemMarker checked={checked} progress={progress} />;
   return (
     <DisclosureButton
+      // The order carries the contract: the recipe first, the caller's props
+      // second, the composed label and children last.
+      recipe={listDisclosureButton}
       indicator={indicator}
-      {...listDisclosureButton.jsx(variantProps)}
-      {...rest}
+      {...props}
       label={
         labelEl
           ? React.cloneElement(labelEl, {
@@ -268,31 +272,31 @@ export function ListDisclosureButton({
       }
     >
       {!labelEl && marker}
-      {label !== undefined && rest.children}
+      {label !== undefined && props.children}
     </DisclosureButton>
   );
 }
 
-export interface ListDisclosureContentProps extends DisclosureContentProps {}
+export interface ListDisclosureContentProps extends DisclosureContentProps {
+  body?: React.ReactElement | ListDisclosureContentBodyProps;
+}
 
 export function ListDisclosureContent(props: ListDisclosureContentProps) {
   const body = createRender(ListDisclosureContentBody, props.body);
   return <DisclosureContent {...props} body={body} />;
 }
 
-export interface ListDisclosureContentBodyProps
-  extends
-    React.ComponentProps<"div">,
-    VariantProps<typeof listDisclosureContentBody> {}
+export interface ListDisclosureContentBodyProps extends Omit<
+  DisclosureContentBodyProps<typeof listDisclosureContentBody>,
+  "recipe"
+> {}
 
 export function ListDisclosureContentBody(
   props: ListDisclosureContentBodyProps,
 ) {
-  const [variantProps, rest] = splitProps(props, listDisclosureContentBody);
+  // The order carries the contract: the recipe first, the caller's props
+  // second.
   return (
-    <DisclosureContentBody
-      {...listDisclosureContentBody.jsx(variantProps)}
-      {...rest}
-    />
+    <DisclosureContentBody recipe={listDisclosureContentBody} {...props} />
   );
 }
