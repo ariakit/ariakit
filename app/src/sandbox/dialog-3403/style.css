@@ -67,3 +67,13 @@
   font-size: 1.25rem;
   line-height: 1.75rem;
 }
+
+/* The route dialog has no transition. After it enters, Escape hides it in the
+   keydown task, so its browser test doesn't wait for leave frames or a timer
+   that a stalled CI runner can delay.
+   https://github.com/ariakit/ariakit/issues/7606 */
+.dialog-no-transition {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}

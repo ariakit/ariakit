@@ -41,9 +41,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
       includeHidden: true,
     });
     await test.expect(dialog).toBeVisible();
+    // The enter state is where Ariakit finds that this dialog has no
+    // transition, so Escape then hides it in the keydown task instead of after
+    // leave frames that a stalled CI runner can delay.
+    // https://github.com/ariakit/ariakit/issues/7606
+    await test.expect(dialog).toHaveAttribute("data-enter", "true");
 
     await page.keyboard.press("Escape");
+    await test.expect(dialog).toBeHidden();
     await test.expect(dialog).toBeAttached();
-    await test.expect(dialog).not.toBeVisible();
   });
 });

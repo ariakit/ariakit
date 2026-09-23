@@ -65,7 +65,7 @@ function RouteDialogWithoutUnmountOnHide() {
           setRoute("/");
         }}
         backdrop={false}
-        className="dialog"
+        className="dialog dialog-no-transition"
         render={(props) => (
           <div hidden={props.hidden}>
             <div {...props} />
