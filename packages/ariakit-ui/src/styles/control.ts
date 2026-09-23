@@ -195,7 +195,11 @@ export const controlSlot = cv({
     },
     /**
      * Sets the element’s kind. When you use the `badge` kind, wrap text in a
-     * `<span>` element so it’s styled correctly.
+     * `<span>` element so it’s styled correctly. The badge trims that element
+     * to the height of its capitals. To truncate the text, use
+     * `block overflow-x-clip text-ellipsis whitespace-nowrap` and a maximum
+     * width on the element that holds it. These clip only the inline axis,
+     * while `truncate` also clips the descenders.
      */
     $kind: {
       icon: "",
@@ -203,7 +207,11 @@ export const controlSlot = cv({
       // must not reorder its keys in a right-to-left row.
       shortcut: "[direction:ltr]",
       avatar: "overflow-clip",
-      badge: "*:text-[0.8125em]",
+      // The slot centers the text box. Trimmed to the capitals, that box no
+      // longer carries the half-leading that each engine rounds differently,
+      // which left the text off center in Chromium and Firefox.
+      // https://github.com/ariakit/ariakit/issues/7588
+      badge: "*:text-[0.8125em] *:[text-box:cap_alphabetic]",
     },
     /**
      * Sets the slot to be a square.
