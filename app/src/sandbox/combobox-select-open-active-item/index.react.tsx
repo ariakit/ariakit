@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 
 const fruits = ["Apple", "Banana", "Grape", "Orange"];
 const statuses = ["Draft", "Published", "Archived"];
@@ -59,16 +59,37 @@ function FocusOwnerSelect({ label, virtualFocus }: FocusOwnerSelectProps) {
   );
 }
 
+// TODO: Remove this workaround when
+// https://github.com/ariakit/ariakit/issues/7612 is fixed. The popup focuses
+// the selected item once it's placed. This ref reads the active item at that
+// point instead, so a move made while the popup was positioning stays active.
+function createActiveItemRef(combobox: Ariakit.ComboboxStore) {
+  return {
+    get current() {
+      const { activeId } = combobox.getState();
+      return combobox.item(activeId)?.element ?? null;
+    },
+  };
+}
+
 // Holds the popup at its unplaced origin until the button releases the
 // positioning, so the user can move through the items before the popup takes
 // focus.
 function PositioningSelect() {
   const releaseRef = useRef<(() => void) | null>(null);
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Artichoke",
+  });
+  const activeItemRef = useMemo(
+    () => createActiveItemRef(combobox),
+    [combobox],
+  );
   return (
-    <Ariakit.ComboboxProvider defaultSelectedValue="Artichoke">
+    <Ariakit.ComboboxProvider store={combobox}>
       <Ariakit.ComboboxSelectLabel>Vegetable</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect />
       <Ariakit.ComboboxPopover
+        initialFocus={activeItemRef}
         // The button that releases the positioning is outside the popup.
         hideOnInteractOutside={false}
         updatePosition={({ updatePosition }) =>
