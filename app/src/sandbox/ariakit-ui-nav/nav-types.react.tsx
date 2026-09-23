@@ -7,11 +7,13 @@ import type {
   NavDisclosureProps,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import {
+  Nav,
   NavButton,
   NavDisclosure,
   NavDisclosureButton,
   NavDisclosureContent,
   NavDisclosureContentBody,
+  NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import { disclosureContentBody } from "@ariakit/ui/styles/disclosure";
 import {
@@ -83,4 +85,24 @@ expectTypeOf<NavDisclosureContentProps>().toExtend<
 <NavDisclosure
   button={{ $gap: "auto", label: "Docs" }}
   content={{ body: { $prose: true } }}
+/>;
+
+// https://github.com/ariakit/ariakit/pull/7584
+// The nav and a section size their slots through $slotSize, and one slot takes
+// a number, a length, or a named size.
+<Nav $slotSize={5} />;
+<NavDisclosure $slotSize={8} button="Docs" />;
+<NavSlot $size={8} />;
+<NavSlot $size="2rem" />;
+<NavSlot $size="xl" />;
+
+// https://github.com/ariakit/ariakit/pull/7584
+<Nav
+  // @ts-expect-error The nav sizes its slots through $slotSize.
+  $iconSize={5}
+/>;
+<NavDisclosure
+  // @ts-expect-error A section leaves out the disclosure's own $iconSize.
+  $iconSize={8}
+  button="Docs"
 />;

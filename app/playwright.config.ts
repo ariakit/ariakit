@@ -4,6 +4,12 @@ if (process.argv.includes("--headed")) {
   process.env.PWHEADED = "true";
 }
 
+// Playwright waits for document.fonts.ready before each screenshot, and Firefox
+// can leave that promise pending after a navigation. visual() waits for the
+// font faces themselves instead.
+// https://github.com/microsoft/playwright/issues/35200#issuecomment-2726751684
+process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY = "1";
+
 const CI = !!process.env.CI;
 const HEADED = process.env.PWHEADED === "true";
 const slowMo = HEADED ? 150 : undefined;

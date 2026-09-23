@@ -27,6 +27,7 @@ import {
   comboboxLabel,
   comboboxPopover,
 } from "../styles/combobox.ts";
+import { wrapsSlotChildren } from "../styles/control.ts";
 
 export interface ComboboxProps
   extends
@@ -300,7 +301,7 @@ export function ComboboxItemSlot(props: ComboboxItemSlotProps) {
   const variants = comboboxItemSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...comboboxItemSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (
         rest.children

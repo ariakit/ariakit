@@ -176,6 +176,15 @@ body > * {
   --choice-mark-dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
 }
 
+/* The optical extra a text frame adds to its frame padding (see
+   text-frame.ts). Registered, it computes in the frame's own font, so a slot
+   that adjusts its font metrics, such as an avatar, inherits the length. */
+@property --text-frame-inset {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Disclosure geometry: the root measures its icon column in its own line
    box and font, and publishes the results as lengths. Registered, they
    compute on the root, so a button or a body with a line height of its own

@@ -8,11 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as Ariakit from "@ariakit/react";
-import { ButtonSlot } from "@ariakit/ui/components/button.ariakit.react";
-import {
-  DisclosureButtonLabel,
-  DisclosureButtonSlot,
-} from "@ariakit/ui/components/disclosure.ariakit.react";
+import { DisclosureButtonLabel } from "@ariakit/ui/components/disclosure.ariakit.react";
 import type { DisclosureButtonLabelProps } from "@ariakit/ui/components/disclosure.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import type { NavProps } from "@ariakit/ui/components/nav.ariakit.react";
@@ -25,13 +21,12 @@ import {
   NavDisclosureContent,
   NavGroup,
   NavGroupLabel,
-  NavIcon,
   NavLink,
   NavLinkContent,
   NavLinkDescription,
   NavLinkLabel,
-  NavLinkSlot,
   NavList,
+  NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Accessibility,
@@ -141,7 +136,7 @@ const sectionPages = ["Introduction", "Installation", "Quickstart"];
 function DemoSections(props: NavProps) {
   const [current, setCurrent] = useState("styling/introduction");
   return (
-    <Nav $iconSize={5} {...props}>
+    <Nav $slotSize={5} {...props}>
       {sections.map((section) => (
         <NavDisclosure
           key={section.slug}
@@ -278,7 +273,7 @@ function LooseCurrentSections() {
   };
   return (
     <Nav
-      $iconSize={5}
+      $slotSize={5}
       aria-label="Empty, false, and unknown current values"
       glider={{ $kind: "bar", $animated: false }}
       className="w-full"
@@ -319,16 +314,16 @@ function DocumentationSidebar() {
       $rounded="2xl"
       $lightnessOffset={0.5}
       $border
-      className="grid w-64 gap-2 [--nav-icon-size:--spacing(5)]"
+      className="grid w-64 gap-2 [--nav-slot-size:--spacing(5)]"
     >
       <NavButton render={<a href="/docs" onClick={preventNavigation} />}>
-        <NavIcon>
+        <NavSlot>
           <Hexagon strokeWidth={1.5} />
-        </NavIcon>
+        </NavSlot>
         <NavButtonContent>Ariakit UI</NavButtonContent>
-        <ButtonSlot $kind="badge" className="ms-auto">
-          <span>beta</span>
-        </ButtonSlot>
+        <NavSlot $kind="badge" $p="auto" className="ms-auto">
+          beta
+        </NavSlot>
       </NavButton>
       <Nav
         aria-label="Documentation sections"
@@ -367,6 +362,83 @@ function DocumentationSidebar() {
         ))}
       </Nav>
     </Frame>
+  );
+}
+
+function BadgesAndAvatars() {
+  const [slotSize, setSlotSize] = useState("5");
+  return (
+    <div className="grid w-full gap-3">
+      <label>
+        Slot size{" "}
+        <select
+          value={slotSize}
+          onChange={(event) => setSlotSize(event.target.value)}
+        >
+          <option value="text">Text size</option>
+          <option value="5">5</option>
+          <option value="8">8</option>
+        </select>
+      </label>
+      <Nav
+        $slotSize={slotSize === "text" ? undefined : Number(slotSize)}
+        aria-label="Badges and avatars"
+        className="w-full"
+      >
+        <NavDisclosure
+          defaultOpen
+          button={
+            <NavDisclosureButton
+              icon={<Inbox strokeWidth={1.5} />}
+              label="Inbox"
+            >
+              <NavSlot $kind="badge">12</NavSlot>
+            </NavDisclosureButton>
+          }
+        >
+          <NavList>
+            <NavLink href="#unread">Unread</NavLink>
+            <NavLink href="#archive">Archive</NavLink>
+          </NavList>
+        </NavDisclosure>
+        <NavDisclosure
+          button={
+            <NavDisclosureButton
+              icon={<Palette strokeWidth={1.5} />}
+              label="Design"
+            >
+              <NavSlot $kind="avatar">MK</NavSlot>
+            </NavDisclosureButton>
+          }
+        >
+          <NavList>
+            <NavLink href="#members">Members</NavLink>
+          </NavList>
+        </NavDisclosure>
+        <NavLink href="#drafts">
+          <NavSlot>
+            <FileCode strokeWidth={1.5} />
+          </NavSlot>
+          <NavLinkLabel>Drafts</NavLinkLabel>
+          <NavSlot $kind="badge">3</NavSlot>
+        </NavLink>
+        <NavLink href="#profile">
+          <NavSlot>
+            <Settings strokeWidth={1.5} />
+          </NavSlot>
+          <NavLinkLabel>Profile</NavLinkLabel>
+          <NavSlot $kind="avatar">JD</NavSlot>
+        </NavLink>
+        <NavLink href="#notifications">
+          <NavSlot $kind="badge">9</NavSlot>
+          <NavLinkLabel>Notifications</NavLinkLabel>
+        </NavLink>
+        <NavLink href="#ana-lima">
+          <NavSlot $kind="avatar">AL</NavSlot>
+          <NavLinkLabel>Ana Lima</NavLinkLabel>
+        </NavLink>
+      </Nav>
+    </div>
   );
 }
 
@@ -450,45 +522,45 @@ export default function NavExamples() {
         title="Icons"
         description="The icon stays on the first line when a long label wraps."
         code={`
-          <Nav $iconSize={5}>
+          <Nav $slotSize={5}>
             <NavLink>
-              <NavIcon>
+              <NavSlot>
                 <Rocket />
-              </NavIcon>
+              </NavSlot>
               Getting started
             </NavLink>
             <NavLink>
-              <NavIcon>
+              <NavSlot>
                 <Palette />
-              </NavIcon>
+              </NavSlot>
               Styling
             </NavLink>
             <NavLink>
-              <NavIcon>
+              <NavSlot>
                 <Accessibility />
-              </NavIcon>
+              </NavSlot>
               …
             </NavLink>
           </Nav>
         `}
       >
-        <Nav $iconSize={5} aria-label="Icons" className="w-full max-w-64">
+        <Nav $slotSize={5} aria-label="Icons" className="w-full max-w-64">
           <NavLink href="#getting-started">
-            <NavIcon>
+            <NavSlot>
               <Rocket strokeWidth={1.5} />
-            </NavIcon>
+            </NavSlot>
             Getting started
           </NavLink>
           <NavLink href="#styling">
-            <NavIcon>
+            <NavSlot>
               <Palette strokeWidth={1.5} />
-            </NavIcon>
+            </NavSlot>
             Styling
           </NavLink>
           <NavLink href="#accessibility" aria-current="page">
-            <NavIcon>
+            <NavSlot>
               <Accessibility strokeWidth={1.5} />
-            </NavIcon>
+            </NavSlot>
             Accessibility and right-to-left languages
           </NavLink>
         </Nav>
@@ -511,9 +583,9 @@ export default function NavExamples() {
               <NavList>
                 <NavLink>
                   <NavLinkLabel>Components</NavLinkLabel>
-                  <NavLinkSlot $kind="badge" $p="md">
+                  <NavSlot $kind="badge">
                     12
-                  </NavLinkSlot>
+                  </NavSlot>
                 </NavLink>
                 <NavLink>Hooks</NavLink>
               </NavList>
@@ -536,9 +608,9 @@ export default function NavExamples() {
             <NavList>
               <NavLink href="#components">
                 <NavLinkLabel>Components</NavLinkLabel>
-                <NavLinkSlot $kind="badge" $p="md" className="ms-auto">
-                  <span>12</span>
-                </NavLinkSlot>
+                <NavSlot $kind="badge" className="ms-auto">
+                  12
+                </NavSlot>
               </NavLink>
               <NavLink href="#hooks">Hooks</NavLink>
             </NavList>
@@ -550,51 +622,51 @@ export default function NavExamples() {
         title="Command row"
         description="A button row next to link rows, with the same height and icon column. Its keyboard shortcut goes to the end of the row."
         code={`
-          <Nav $iconSize={5}>
+          <Nav $slotSize={5}>
             <NavButton>
-              <NavIcon>
+              <NavSlot>
                 <Search />
-              </NavIcon>
+              </NavSlot>
               <NavButtonContent>Search</NavButtonContent>
-              <ButtonSlot $kind="shortcut">⌘K</ButtonSlot>
+              <NavSlot $kind="shortcut">⌘K</NavSlot>
             </NavButton>
             <NavLink>
-              <NavIcon>
+              <NavSlot>
                 <Inbox />
-              </NavIcon>
+              </NavSlot>
               Inbox
             </NavLink>
             <NavLink>
-              <NavIcon>
+              <NavSlot>
                 <Settings />
-              </NavIcon>
+              </NavSlot>
               Settings
             </NavLink>
           </Nav>
         `}
       >
-        <Nav $iconSize={5} aria-label="Command row" className="w-full">
+        <Nav $slotSize={5} aria-label="Command row" className="w-full">
           <li>
             <NavButton>
-              <NavIcon>
+              <NavSlot>
                 <Search strokeWidth={1.5} />
-              </NavIcon>
+              </NavSlot>
               <NavButtonContent>Search</NavButtonContent>
-              <ButtonSlot $kind="shortcut" className="ms-auto">
+              <NavSlot $kind="shortcut" className="ms-auto">
                 ⌘K
-              </ButtonSlot>
+              </NavSlot>
             </NavButton>
           </li>
           <NavLink href="#inbox">
-            <NavIcon>
+            <NavSlot>
               <Inbox strokeWidth={1.5} />
-            </NavIcon>
+            </NavSlot>
             Inbox
           </NavLink>
           <NavLink href="#settings" aria-current="page">
-            <NavIcon>
+            <NavSlot>
               <Settings strokeWidth={1.5} />
-            </NavIcon>
+            </NavSlot>
             Settings
           </NavLink>
         </Nav>
@@ -604,7 +676,7 @@ export default function NavExamples() {
         title="Disclosures"
         description="Sections that open and close, with a guide line under each icon. A section that holds the current link opens by itself."
         code={`
-          <Nav $iconSize={5}>
+          <Nav $slotSize={5}>
             <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />}>Getting started</NavDisclosureButton>}>
               <NavList>
                 <NavLink>Introduction</NavLink>
@@ -625,7 +697,7 @@ export default function NavExamples() {
           </Nav>
         `}
       >
-        <Nav $iconSize={5} aria-label="Disclosures" className="w-full">
+        <Nav $slotSize={5} aria-label="Disclosures" className="w-full">
           <NavDisclosure
             defaultOpen
             button={
@@ -746,7 +818,7 @@ export default function NavExamples() {
         title="Nested disclosures"
         description="A section inside a section, both closed at first. The current link deep inside opens every section around it, and its cover shows there."
         code={`
-          <Nav $iconSize={5} glider={[…]}>
+          <Nav $slotSize={5} glider={[…]}>
             <NavDisclosure button={<NavDisclosureButton icon={<Blocks />}>Components</NavDisclosureButton>}>
               <NavList>
                 <NavLink>Overview</NavLink>
@@ -763,7 +835,7 @@ export default function NavExamples() {
         `}
       >
         <Nav
-          $iconSize={5}
+          $slotSize={5}
           aria-label="Nested disclosures"
           glider={[{ $state: "hover" }, {}]}
           className="w-full"
@@ -844,7 +916,7 @@ export default function NavExamples() {
         title="Bar on the guide line"
         description="A thin bar on the guide line marks the current row, which keeps its own surface. Click a link in the other section to move the bar."
         code={`
-          <Nav $iconSize={5} glider={{ $kind: "bar" }}>
+          <Nav $slotSize={5} glider={{ $kind: "bar" }}>
             <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />} />}>
               <NavList>
                 <NavLink>Introduction</NavLink>
@@ -864,7 +936,7 @@ export default function NavExamples() {
         title="Bar beside a cover"
         description="A brand bar and a cover mark the current row together. The cover takes the surface of the row, and the bar stays on the guide line."
         code={`
-          <Nav $iconSize={5} glider={[…]}>
+          <Nav $slotSize={5} glider={[…]}>
             <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />} />}>
               <NavList>
                 <NavLink>Introduction</NavLink>
@@ -963,7 +1035,7 @@ export default function NavExamples() {
         title="Empty, false, and unknown current values"
         description="Idle links carry an empty or false aria-current, which does not count as current, and the current link carries a token ARIA does not list, which does. The rows, the bar, and the guide line follow only the current link. Click a link to move it. With the current link in the section, close the section to leave no current row in view."
         code={`
-          <Nav $iconSize={5} glider={{ $kind: "bar", $animated: false }}>
+          <Nav $slotSize={5} glider={{ $kind: "bar", $animated: false }}>
             <NavLink aria-current="active">Overview</NavLink>
             <NavDisclosure
               defaultOpen
@@ -987,13 +1059,13 @@ export default function NavExamples() {
         code={`
           <Frame render={<aside />} $p={2} $rounded="2xl" $lightnessOffset={0.5} $border>
             <NavButton render={<a />}>
-              <NavIcon>
+              <NavSlot>
                 <Hexagon />
-              </NavIcon>
+              </NavSlot>
               <NavButtonContent>Ariakit UI</NavButtonContent>
-              <ButtonSlot $kind="badge">
+              <NavSlot $kind="badge" $p="auto">
                 beta
-              </ButtonSlot>
+              </NavSlot>
             </NavButton>
             <Nav glider={[…]}>
               <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />} />}>
@@ -1013,20 +1085,20 @@ export default function NavExamples() {
         description="In a right-to-left direction the labels, the icons, the badge and the shortcut are mirrored. The shortcut keeps its keys in order."
         code={`
           <div dir="rtl">
-            <Nav list={false} $iconSize={5}>
+            <Nav list={false} $slotSize={5}>
               <NavGroup>
                 <NavGroupLabel>الأدلة</NavGroupLabel>
                 <NavList>
                   <NavLink>
-                    <NavIcon>
+                    <NavSlot>
                       <Rocket />
-                    </NavIcon>
+                    </NavSlot>
                     البدء
                   </NavLink>
                   <NavLink>
-                    <NavIcon>
+                    <NavSlot>
                       <Palette />
-                    </NavIcon>
+                    </NavSlot>
                     التنسيق
                   </NavLink>
                 </NavList>
@@ -1035,20 +1107,20 @@ export default function NavExamples() {
                 <NavGroupLabel>المرجع</NavGroupLabel>
                 <NavList>
                   <NavLink>
-                    <NavIcon>
+                    <NavSlot>
                       <FileCode />
-                    </NavIcon>
+                    </NavSlot>
                     <NavLinkLabel>المكونات</NavLinkLabel>
-                    <NavLinkSlot $kind="badge" $p="md">
+                    <NavSlot $kind="badge">
                       12
-                    </NavLinkSlot>
+                    </NavSlot>
                   </NavLink>
                   <NavButton>
-                    <NavIcon>
+                    <NavSlot>
                       <Search />
-                    </NavIcon>
+                    </NavSlot>
                     <NavButtonContent>بحث</NavButtonContent>
-                    <ButtonSlot $kind="shortcut">⌘K</ButtonSlot>
+                    <NavSlot $kind="shortcut">⌘K</NavSlot>
                   </NavButton>
                 </NavList>
               </NavGroup>
@@ -1057,20 +1129,20 @@ export default function NavExamples() {
         `}
       >
         <div dir="rtl" lang="ar" className="w-full">
-          <Nav list={false} $iconSize={5} aria-label="التنقل">
+          <Nav list={false} $slotSize={5} aria-label="التنقل">
             <NavGroup>
               <NavGroupLabel>الأدلة</NavGroupLabel>
               <NavList>
                 <NavLink href="#start">
-                  <NavIcon>
+                  <NavSlot>
                     <Rocket strokeWidth={1.5} />
-                  </NavIcon>
+                  </NavSlot>
                   البدء
                 </NavLink>
                 <NavLink href="#styling" aria-current="page">
-                  <NavIcon>
+                  <NavSlot>
                     <Palette strokeWidth={1.5} />
-                  </NavIcon>
+                  </NavSlot>
                   التنسيق
                 </NavLink>
               </NavList>
@@ -1079,23 +1151,23 @@ export default function NavExamples() {
               <NavGroupLabel>المرجع</NavGroupLabel>
               <NavList>
                 <NavLink href="#components">
-                  <NavIcon>
+                  <NavSlot>
                     <FileCode strokeWidth={1.5} />
-                  </NavIcon>
+                  </NavSlot>
                   <NavLinkLabel>المكونات</NavLinkLabel>
-                  <NavLinkSlot $kind="badge" $p="md" className="ms-auto">
-                    <span>12</span>
-                  </NavLinkSlot>
+                  <NavSlot $kind="badge" className="ms-auto">
+                    12
+                  </NavSlot>
                 </NavLink>
                 <li>
                   <NavButton>
-                    <NavIcon>
+                    <NavSlot>
                       <Search strokeWidth={1.5} />
-                    </NavIcon>
+                    </NavSlot>
                     <NavButtonContent>بحث</NavButtonContent>
-                    <ButtonSlot $kind="shortcut" className="ms-auto">
+                    <NavSlot $kind="shortcut" className="ms-auto">
                       ⌘K
-                    </ButtonSlot>
+                    </NavSlot>
                   </NavButton>
                 </li>
               </NavList>
@@ -1109,7 +1181,7 @@ export default function NavExamples() {
         description="In a right-to-left direction the guide lines, the indents and the bar are mirrored, and the closed chevron points left."
         code={`
           <div dir="rtl">
-            <Nav $iconSize={5} glider={{ $kind: "bar" }}>
+            <Nav $slotSize={5} glider={{ $kind: "bar" }}>
               <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />}>البدء</NavDisclosureButton>}>
                 <NavList>
                   <NavLink>مقدمة</NavLink>
@@ -1126,7 +1198,7 @@ export default function NavExamples() {
         `}
       >
         <div dir="rtl" lang="ar" className="w-full">
-          <Nav $iconSize={5} glider={{ $kind: "bar" }} aria-label="الأقسام">
+          <Nav $slotSize={5} glider={{ $kind: "bar" }} aria-label="الأقسام">
             <NavDisclosure
               defaultOpen
               button={
@@ -1299,19 +1371,17 @@ export default function NavExamples() {
 
       <Example
         title="Disclosure badges"
-        description="An explicit label keeps its badge beside the text, with or without a description."
+        description="An explicit label keeps its NavSlot badge beside the text, with or without a description."
         code={`
           <NavDisclosureButton label="Team pages" description="All pages in this workspace">
-            <DisclosureButtonSlot $kind="badge" $p="md">3</DisclosureButtonSlot>
+            <NavSlot $kind="badge">3</NavSlot>
           </NavDisclosureButton>
         `}
       >
         <Nav>
           <NavDisclosure defaultOpen>
             <NavDisclosureButton label="Project pages">
-              <DisclosureButtonSlot $kind="badge" $p="md">
-                3
-              </DisclosureButtonSlot>
+              <NavSlot $kind="badge">3</NavSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
               <NavList>
@@ -1326,9 +1396,7 @@ export default function NavExamples() {
               label={<CustomLabel id="nav-pages-label">Team pages</CustomLabel>}
               description="All pages in this workspace"
             >
-              <DisclosureButtonSlot $kind="badge" $p="md">
-                3
-              </DisclosureButtonSlot>
+              <NavSlot $kind="badge">3</NavSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
               <NavList>
@@ -1348,9 +1416,7 @@ export default function NavExamples() {
               }
               description="Manage account pages"
             >
-              <DisclosureButtonSlot $kind="badge" $p="md">
-                3
-              </DisclosureButtonSlot>
+              <NavSlot $kind="badge">3</NavSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
               <p>Update account pages</p>
@@ -1361,12 +1427,12 @@ export default function NavExamples() {
 
       <Example
         title="Badges and avatars"
-        description="A badge or an avatar keeps the one-line box of every control slot: after the label of a section row or a link row, and in the icon column of a link row. The nav's icon size sizes only the icons."
+        description="A badge or an avatar in a NavSlot takes the nav's slot size before or after the label, in a link row and a section row alike, so its label lines up with the icon rows. A badge is round, so one digit fits the slot size. The select changes the nav's slot size."
         code={`
-          <Nav $iconSize={5}>
+          <Nav $slotSize={5}>
             <NavDisclosure defaultOpen button={
               <NavDisclosureButton icon={<Inbox />} label="Inbox">
-                <DisclosureButtonSlot $kind="badge" $p="md">12</DisclosureButtonSlot>
+                <NavSlot $kind="badge">12</NavSlot>
               </NavDisclosureButton>
             }>
               <NavList>
@@ -1376,7 +1442,7 @@ export default function NavExamples() {
             </NavDisclosure>
             <NavDisclosure button={
               <NavDisclosureButton icon={<Palette />} label="Design">
-                <DisclosureButtonSlot $kind="avatar">MK</DisclosureButtonSlot>
+                <NavSlot $kind="avatar">MK</NavSlot>
               </NavDisclosureButton>
             }>
               <NavList>
@@ -1384,95 +1450,171 @@ export default function NavExamples() {
               </NavList>
             </NavDisclosure>
             <NavLink>
-              <NavIcon>
+              <NavSlot>
                 <FileCode />
-              </NavIcon>
+              </NavSlot>
               <NavLinkLabel>Drafts</NavLinkLabel>
-              <NavLinkSlot $kind="badge" $p="md">3</NavLinkSlot>
+              <NavSlot $kind="badge">3</NavSlot>
             </NavLink>
             <NavLink>
-              <NavIcon>
+              <NavSlot>
                 <Settings />
-              </NavIcon>
+              </NavSlot>
               <NavLinkLabel>Profile</NavLinkLabel>
-              <NavLinkSlot $kind="avatar">JD</NavLinkSlot>
+              <NavSlot $kind="avatar">JD</NavSlot>
             </NavLink>
             <NavLink>
-              <NavIcon $kind="badge" $p="md">
-                <span>9</span>
-              </NavIcon>
+              <NavSlot $kind="badge">9</NavSlot>
               <NavLinkLabel>Notifications</NavLinkLabel>
             </NavLink>
             <NavLink>
-              <NavIcon $kind="avatar">AL</NavIcon>
+              <NavSlot $kind="avatar">AL</NavSlot>
               <NavLinkLabel>Ana Lima</NavLinkLabel>
             </NavLink>
           </Nav>
         `}
       >
-        <Nav $iconSize={5} aria-label="Badges and avatars" className="w-full">
-          <NavDisclosure
-            defaultOpen
-            button={
-              <NavDisclosureButton
-                icon={<Inbox strokeWidth={1.5} />}
-                label="Inbox"
-              >
-                <DisclosureButtonSlot $kind="badge" $p="md">
-                  12
-                </DisclosureButtonSlot>
+        <BadgesAndAvatars />
+      </Example>
+
+      <Example
+        title="Slot overrides"
+        description="One slot takes a size of its own, and a section sizes every slot inside it. The label after a larger slot starts where it would in a nav of that size."
+        code={`
+          <Nav $slotSize={5}>
+            <NavLink>
+              <NavSlot>
+                <Inbox />
+              </NavSlot>
+              <NavLinkLabel>Inbox</NavLinkLabel>
+            </NavLink>
+            <NavLink>
+              <NavSlot $size={8}>
+                <Settings />
+              </NavSlot>
+              <NavLinkLabel>Settings</NavLinkLabel>
+            </NavLink>
+            <NavDisclosure $slotSize={8} defaultOpen button={
+              <NavDisclosureButton icon={<Palette />} label="Design">
+                <NavSlot $kind="badge">4</NavSlot>
               </NavDisclosureButton>
-            }
-          >
-            <NavList>
-              <NavLink href="#unread">Unread</NavLink>
-              <NavLink href="#archive">Archive</NavLink>
-            </NavList>
-          </NavDisclosure>
+            }>
+              <NavList>
+                <NavLink>
+                  <NavSlot>
+                    <FileCode />
+                  </NavSlot>
+                  <NavLinkLabel>Guidelines</NavLinkLabel>
+                </NavLink>
+                <NavLink>
+                  <NavSlot $kind="avatar">MK</NavSlot>
+                  <NavLinkLabel>Members</NavLinkLabel>
+                </NavLink>
+                <NavDisclosure $slotSize={5} defaultOpen button={
+                  <NavDisclosureButton icon={<Blocks />} label="Tokens" />
+                }>
+                  <NavList>
+                    <NavLink>
+                      <NavSlot>
+                        <Hexagon />
+                      </NavSlot>
+                      <NavLinkLabel>Colors</NavLinkLabel>
+                    </NavLink>
+                  </NavList>
+                </NavDisclosure>
+              </NavList>
+            </NavDisclosure>
+          </Nav>
+        `}
+      >
+        <Nav $slotSize={5} aria-label="Slot overrides" className="w-full">
+          <NavLink href="#inbox">
+            <NavSlot>
+              <Inbox strokeWidth={1.5} />
+            </NavSlot>
+            <NavLinkLabel>Inbox</NavLinkLabel>
+          </NavLink>
+          <NavLink href="#settings">
+            <NavSlot $size={8}>
+              <Settings strokeWidth={1.5} />
+            </NavSlot>
+            <NavLinkLabel>Settings</NavLinkLabel>
+          </NavLink>
           <NavDisclosure
+            $slotSize={8}
+            defaultOpen
             button={
               <NavDisclosureButton
                 icon={<Palette strokeWidth={1.5} />}
                 label="Design"
               >
-                <DisclosureButtonSlot $kind="avatar">MK</DisclosureButtonSlot>
+                <NavSlot $kind="badge">4</NavSlot>
               </NavDisclosureButton>
             }
           >
             <NavList>
-              <NavLink href="#members">Members</NavLink>
+              <NavLink href="#guidelines">
+                <NavSlot>
+                  <FileCode strokeWidth={1.5} />
+                </NavSlot>
+                <NavLinkLabel>Guidelines</NavLinkLabel>
+              </NavLink>
+              <NavLink href="#members">
+                <NavSlot $kind="avatar">MK</NavSlot>
+                <NavLinkLabel>Members</NavLinkLabel>
+              </NavLink>
+              <NavDisclosure
+                $slotSize={5}
+                defaultOpen
+                button={
+                  <NavDisclosureButton
+                    icon={<Blocks strokeWidth={1.5} />}
+                    label="Tokens"
+                  />
+                }
+              >
+                <NavList>
+                  <NavLink href="#colors">
+                    <NavSlot>
+                      <Hexagon strokeWidth={1.5} />
+                    </NavSlot>
+                    <NavLinkLabel>Colors</NavLinkLabel>
+                  </NavLink>
+                </NavList>
+              </NavDisclosure>
             </NavList>
           </NavDisclosure>
-          <NavLink href="#drafts">
-            <NavIcon>
-              <FileCode strokeWidth={1.5} />
-            </NavIcon>
-            <NavLinkLabel>Drafts</NavLinkLabel>
-            <NavLinkSlot $kind="badge" $p="md">
-              3
-            </NavLinkSlot>
+        </Nav>
+      </Example>
+
+      <Example
+        title="Initials"
+        description="Without a slot size, the slots take the text size. The initials scale with the avatar, so two wide letters still fit."
+        code={`
+          <Nav>
+            <NavLink>
+              <NavSlot $kind="avatar">WW</NavSlot>
+              <NavLinkLabel>Will Williams</NavLinkLabel>
+            </NavLink>
+            <NavLink>
+              <NavSlot>
+                <Inbox />
+              </NavSlot>
+              <NavLinkLabel>Inbox</NavLinkLabel>
+            </NavLink>
+          </Nav>
+        `}
+      >
+        <Nav aria-label="Initials" className="w-full">
+          <NavLink href="#will-williams">
+            <NavSlot $kind="avatar">WW</NavSlot>
+            <NavLinkLabel>Will Williams</NavLinkLabel>
           </NavLink>
-          <NavLink href="#profile">
-            <NavIcon>
-              <Settings strokeWidth={1.5} />
-            </NavIcon>
-            <NavLinkLabel>Profile</NavLinkLabel>
-            <NavLinkSlot $kind="avatar">JD</NavLinkSlot>
-          </NavLink>
-          <NavLink href="#notifications">
-            {/*
-              The badge kind scales a child element, and NavIcon does not wrap
-              its text in one as NavLinkSlot does.
-              https://github.com/ariakit/ariakit/issues/7579
-            */}
-            <NavIcon $kind="badge" $p="md">
-              <span>9</span>
-            </NavIcon>
-            <NavLinkLabel>Notifications</NavLinkLabel>
-          </NavLink>
-          <NavLink href="#ana-lima">
-            <NavIcon $kind="avatar">AL</NavIcon>
-            <NavLinkLabel>Ana Lima</NavLinkLabel>
+          <NavLink href="#inbox">
+            <NavSlot>
+              <Inbox strokeWidth={1.5} />
+            </NavSlot>
+            <NavLinkLabel>Inbox</NavLinkLabel>
           </NavLink>
         </Nav>
       </Example>
@@ -1483,7 +1625,7 @@ export default function NavExamples() {
         code={`
           <Nav>
             <NavButton>
-              <NavIcon>A</NavIcon>
+              <NavSlot>A</NavSlot>
               <NavButtonContent>Account menu</NavButtonContent>
             </NavButton>
           </Nav>
@@ -1492,7 +1634,7 @@ export default function NavExamples() {
         <Nav aria-label="Account navigation">
           <li>
             <NavButton>
-              <NavIcon aria-hidden>A</NavIcon>
+              <NavSlot aria-hidden>A</NavSlot>
               <NavButtonContent
                 className="font-semibold"
                 style={{ color: "rgb(128, 0, 128)" }}
@@ -1543,23 +1685,23 @@ export default function NavExamples() {
       </Example>
       <Example
         title="Link descriptions"
-        description="A link with a slot, a label and a description lines up with a disclosure row beside it. Only the icon takes the nav's icon size, the text wraps, and a description can share the label's line."
+        description="A link with a slot, a label and a description lines up with a disclosure row beside it. The slots take the nav's slot size, the text wraps, and a description can share the label's line."
         code={`
-          <Nav $iconSize={5}>
+          <Nav $slotSize={5}>
             <NavLink>
-              <NavLinkSlot>
+              <NavSlot>
                 <Inbox />
-              </NavLinkSlot>
+              </NavSlot>
               <NavLinkContent>
                 <NavLinkLabel>Inbox</NavLinkLabel>
                 <NavLinkDescription>Messages that wait for a reply</NavLinkDescription>
               </NavLinkContent>
-              <NavLinkSlot $kind="badge" $p="md">4</NavLinkSlot>
+              <NavSlot $kind="badge">4</NavSlot>
             </NavLink>
             <NavLink>
-              <NavLinkSlot>
+              <NavSlot>
                 <Rocket />
-              </NavLinkSlot>
+              </NavSlot>
               <NavLinkContent $orientation="horizontal">
                 <NavLinkLabel>Releases</NavLinkLabel>
                 <NavLinkDescription>2 drafts</NavLinkDescription>
@@ -1577,23 +1719,21 @@ export default function NavExamples() {
         `}
       >
         <Nav
-          $iconSize={5}
+          $slotSize={5}
           aria-label="Link descriptions"
           className="w-full max-w-64"
         >
           <NavLink href="#inbox" aria-current="page">
-            <NavLinkSlot>
+            <NavSlot>
               <Inbox strokeWidth={1.5} />
-            </NavLinkSlot>
+            </NavSlot>
             <NavLinkContent>
               <NavLinkLabel>Inbox</NavLinkLabel>
               <NavLinkDescription>
                 Messages that wait for a reply from you or your team
               </NavLinkDescription>
             </NavLinkContent>
-            <NavLinkSlot $kind="badge" $p="md">
-              4
-            </NavLinkSlot>
+            <NavSlot $kind="badge">4</NavSlot>
           </NavLink>
           {/*
             The ids keep the description out of the link's name. Without them,
@@ -1604,9 +1744,9 @@ export default function NavExamples() {
             aria-labelledby="nav-settings-label"
             aria-describedby="nav-settings-description"
           >
-            <NavLinkSlot>
+            <NavSlot>
               <Settings strokeWidth={1.5} />
-            </NavLinkSlot>
+            </NavSlot>
             <NavLinkContent>
               <NavLinkLabel id="nav-settings-label">
                 Workspace settings and preferences
@@ -1617,9 +1757,9 @@ export default function NavExamples() {
             </NavLinkContent>
           </NavLink>
           <NavLink href="#releases">
-            <NavLinkSlot>
+            <NavSlot>
               <Rocket strokeWidth={1.5} />
-            </NavLinkSlot>
+            </NavSlot>
             <NavLinkContent $orientation="horizontal">
               <NavLinkLabel>Releases</NavLinkLabel>
               <NavLinkDescription>2 drafts</NavLinkDescription>
@@ -1639,59 +1779,87 @@ export default function NavExamples() {
           </NavDisclosure>
         </Nav>
       </Example>
-      <Example
-        title="Wide icons"
-        description="An icon wider than the line keeps its gap to the label. A link keeps the label column of a disclosure row, with a NavLinkSlot and with a NavIcon."
-        code={`
-          <Nav $iconSize={8}>
-            <NavLink>
-              <NavLinkSlot>
-                <Inbox />
-              </NavLinkSlot>
+      {(["ltr", "rtl"] as const).map((dir) => (
+        <Example
+          key={dir}
+          title={`Wide icons (${dir})`}
+          description="An icon wider than the line keeps its gap to the label. A link keeps the label column of a disclosure row. A section without an icon keeps its links on its own label column."
+          code={`
+            <Nav $slotSize={8} dir="${dir}">
+              <NavLink>
+                <NavSlot>
+                  <Inbox />
+                </NavSlot>
+                <NavLinkLabel>Inbox</NavLinkLabel>
+              </NavLink>
+              <NavLink>
+                <NavSlot>
+                  <Settings />
+                </NavSlot>
+                <NavLinkLabel>Settings</NavLinkLabel>
+              </NavLink>
+              <NavDisclosure>
+                <NavDisclosureButton icon={<Blocks />}>Projects</NavDisclosureButton>
+                <NavDisclosureContent>
+                  <NavList>
+                    <NavLink>All projects</NavLink>
+                  </NavList>
+                </NavDisclosureContent>
+              </NavDisclosure>
+              <NavDisclosure button="Archive" defaultOpen>
+                <NavList>
+                  <NavLink>2025</NavLink>
+                  <NavDisclosure button="Older" defaultOpen>
+                    <NavList>
+                      <NavLink>2024</NavLink>
+                    </NavList>
+                  </NavDisclosure>
+                </NavList>
+              </NavDisclosure>
+            </Nav>
+          `}
+        >
+          <Nav
+            $slotSize={8}
+            dir={dir}
+            aria-label={`Wide icons (${dir})`}
+            className="w-full max-w-64"
+          >
+            <NavLink href="#wide-inbox">
+              <NavSlot>
+                <Inbox strokeWidth={1.5} />
+              </NavSlot>
               <NavLinkLabel>Inbox</NavLinkLabel>
             </NavLink>
-            <NavLink>
-              <NavIcon>
-                <Settings />
-              </NavIcon>
+            <NavLink href="#wide-settings">
+              <NavSlot>
+                <Settings strokeWidth={1.5} />
+              </NavSlot>
               <NavLinkLabel>Settings</NavLinkLabel>
             </NavLink>
             <NavDisclosure>
-              <NavDisclosureButton icon={<Blocks />}>Projects</NavDisclosureButton>
+              <NavDisclosureButton icon={<Blocks strokeWidth={1.5} />}>
+                Projects
+              </NavDisclosureButton>
               <NavDisclosureContent>
                 <NavList>
-                  <NavLink>All projects</NavLink>
+                  <NavLink href="#wide-projects">All projects</NavLink>
                 </NavList>
               </NavDisclosureContent>
             </NavDisclosure>
-          </Nav>
-        `}
-      >
-        <Nav $iconSize={8} aria-label="Wide icons" className="w-full max-w-64">
-          <NavLink href="#wide-inbox">
-            <NavLinkSlot>
-              <Inbox strokeWidth={1.5} />
-            </NavLinkSlot>
-            <NavLinkLabel>Inbox</NavLinkLabel>
-          </NavLink>
-          <NavLink href="#wide-settings">
-            <NavIcon>
-              <Settings strokeWidth={1.5} />
-            </NavIcon>
-            <NavLinkLabel>Settings</NavLinkLabel>
-          </NavLink>
-          <NavDisclosure>
-            <NavDisclosureButton icon={<Blocks strokeWidth={1.5} />}>
-              Projects
-            </NavDisclosureButton>
-            <NavDisclosureContent>
+            <NavDisclosure button="Archive" defaultOpen>
               <NavList>
-                <NavLink href="#wide-projects">All projects</NavLink>
+                <NavLink href="#wide-archive-2025">2025</NavLink>
+                <NavDisclosure button="Older" defaultOpen>
+                  <NavList>
+                    <NavLink href="#wide-archive-2024">2024</NavLink>
+                  </NavList>
+                </NavDisclosure>
               </NavList>
-            </NavDisclosureContent>
-          </NavDisclosure>
-        </Nav>
-      </Example>
+            </NavDisclosure>
+          </Nav>
+        </Example>
+      ))}
 
       <Example
         title="Row overrides"

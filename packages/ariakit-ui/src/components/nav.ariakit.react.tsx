@@ -7,6 +7,7 @@ import {
   createRender,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
+import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   nav,
   navButton,
@@ -17,13 +18,12 @@ import {
   navGlider,
   navGroup,
   navGroupLabel,
-  navIcon,
   navLink,
   navLinkContent,
   navLinkDescription,
   navLinkLabel,
-  navLinkSlot,
   navList,
+  navSlot,
 } from "../styles/nav.ts";
 import { isCurrentPage } from "../utils/is-current-page.ts";
 import type { ButtonProps } from "./button.ariakit.react.tsx";
@@ -204,21 +204,25 @@ export function NavLink({ currentUrl, item, ...props }: NavLinkProps) {
   return createRender(ak.Role.li, item, { children: link });
 }
 
-export interface NavLinkSlotProps
-  extends ak.RoleProps<"span">, VariantProps<typeof navLinkSlot> {}
+export interface NavSlotProps
+  extends ak.RoleProps<"span">, VariantProps<typeof navSlot> {}
 
 /**
- * Renders an icon, badge, avatar, or shortcut in the row of a `NavLink`. With
- * the default `icon` kind and size it is the same icon slot as `NavIcon`, sized
- * by the Nav icon size. `NavIcon` renders that icon in any nav row, such as a
- * `NavButton`.
+ * Renders an icon, badge, avatar, or shortcut in a nav row: a `NavLink`, a
+ * `NavButton`, or after the label of a `NavDisclosureButton`. Every kind but a
+ * shortcut takes the nav's `$slotSize`, before or after the label, so the
+ * labels after an icon, a badge, and an avatar line up. A badge pads round by
+ * default, so a one-digit count is a circle the slot size; pass `$p="auto"` for
+ * a word. It wraps the children of the `badge` and `shortcut` kinds in a
+ * `<span>`, which scales the badge text and keeps the shortcut keys left to
+ * right.
  */
-export function NavLinkSlot(props: NavLinkSlotProps) {
-  const [variantProps, rest] = splitProps(props, navLinkSlot);
-  const variants = navLinkSlot.getVariants(variantProps);
+export function NavSlot(props: NavSlotProps) {
+  const [variantProps, rest] = splitProps(props, navSlot);
+  const variants = navSlot.getVariants(variantProps);
   return (
-    <ak.Role.span {...navLinkSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+    <ak.Role.span {...navSlot.jsx(variantProps)} {...rest}>
+      {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (
         rest.children
@@ -243,8 +247,11 @@ export interface NavLinkLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof navLinkLabel> {}
 
 /**
- * Renders the label of a `NavLink`. Wrap the text in it when a `NavLinkSlot`
- * sits beside it: the slot spaces itself from the element next to it.
+ * Renders the label of a `NavLink`. Wrap the text in it when a `NavSlot`
+ * follows it, or when a `NavSlot` with a named `$size`, such as `xl`, sits
+ * beside it: a slot spaces itself through the element next to it, which a bare
+ * text node is not. A slot after a bare text label that is wider than the line
+ * sits closer to the text.
  */
 export function NavLinkLabel(props: NavLinkLabelProps) {
   const [variantProps, rest] = splitProps(props, navLinkLabel);
@@ -285,22 +292,12 @@ export function NavGroupLabel(props: NavGroupLabelProps) {
   return <ak.GroupLabel {...navGroupLabel.jsx(variantProps)} {...rest} />;
 }
 
-export interface NavIconProps
-  extends ak.RoleProps<"span">, VariantProps<typeof navIcon> {}
-
-/**
- * Renders the icon slot of a nav row, sized by the Nav icon-size variable. It
- * keeps the line height so the label aligns with the icon. A badge or an avatar
- * in it takes the one-line box every control slot gives them instead.
- */
-export function NavIcon(props: NavIconProps) {
-  const [variantProps, rest] = splitProps(props, navIcon);
-  return <ak.Role.span {...navIcon.jsx(variantProps)} {...rest} />;
-}
-
+// The recipe keeps the disclosure's $iconSize, which sizes only the section's
+// own icon and indent. A section takes $slotSize instead, which sizes the nav
+// slots inside it too.
 export interface NavDisclosureProps extends Omit<
   DisclosureProps<typeof navDisclosure>,
-  "recipe"
+  "recipe" | "$iconSize"
 > {
   button?: React.ReactNode | NavDisclosureButtonProps;
   content?: React.ReactElement | NavDisclosureContentProps;
@@ -351,8 +348,9 @@ export interface NavButtonProps extends Omit<
 > {}
 
 /**
- * Renders a standalone nav row. Use `NavButtonContent` for its label and the
- * `render` prop for a row that should be an anchor.
+ * Renders a standalone nav row. Use `NavSlot` for its icon, badge, avatar, or
+ * shortcut, `NavButtonContent` for its label, and the `render` prop for a row
+ * that should be an anchor.
  */
 export function NavButton(props: NavButtonProps) {
   // The order carries the contract: the recipe first, the caller's props
@@ -375,6 +373,11 @@ export interface NavDisclosureButtonProps extends Omit<
   "recipe"
 > {}
 
+/**
+ * Renders the button of a `NavDisclosure`. Its `icon` leads the label on the
+ * nav's icon column. With an explicit `label`, the children follow the label,
+ * such as a `NavSlot` with a count.
+ */
 export function NavDisclosureButton({
   label,
   icon,

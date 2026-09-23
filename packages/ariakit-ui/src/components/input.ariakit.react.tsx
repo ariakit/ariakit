@@ -10,6 +10,7 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import type { MouseEvent } from "react";
 import { useRef } from "react";
+import { wrapsSlotChildren } from "../styles/control.ts";
 import { input, inputSlot } from "../styles/input.ts";
 
 export interface InputProps
@@ -84,7 +85,7 @@ export function InputSlot(props: InputSlotProps) {
   const variants = inputSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...inputSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (
         rest.children

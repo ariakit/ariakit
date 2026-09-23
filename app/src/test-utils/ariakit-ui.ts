@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { gotoAndSettle, withFramework } from "./preview.ts";
 import type { ScreenshotOptions } from "./visual.ts";
-import { viewports } from "./visual.ts";
+import { viewports, waitForFonts } from "./visual.ts";
 
 // Helpers for the tests of the ariakit-ui-* sandboxes, which render the
 // examples of one Ariakit UI component in a grid of boxes built with
@@ -108,7 +108,7 @@ export async function capturePage(
   colorScheme: ColorScheme,
 ) {
   const main = query(page).main();
-  await page.evaluate(() => document.fonts.ready);
+  await waitForFonts(page);
   const { height } = await main.evaluate((node) =>
     node.getBoundingClientRect(),
   );
@@ -212,6 +212,28 @@ export function inkAlpha(element: Locator) {
     const legacy = /^rgba\((?:[^,]+,){3}\s*([\d.]+)\s*\)$/.exec(color)?.[1];
     const alpha = modern ?? legacy;
     return alpha ? Number(alpha) : 1;
+  });
+}
+
+/**
+ * Measures how far the capitals of a text element sit above the center of its
+ * parent box, such as a badge. No layout API reports where the capitals are, so
+ * a probe as tall as them sits on the text baseline.
+ */
+export function getCapsOffset(text: Locator) {
+  return text.evaluate((node) => {
+    const box = node.parentElement;
+    if (!box) {
+      throw new Error("Missing parent box");
+    }
+    const probe = node.ownerDocument.createElement("span");
+    probe.style.display = "inline-block";
+    probe.style.height = "1cap";
+    node.append(probe);
+    const caps = probe.getBoundingClientRect();
+    probe.remove();
+    const rect = box.getBoundingClientRect();
+    return rect.top + rect.height / 2 - (caps.top + caps.height / 2);
   });
 }
 

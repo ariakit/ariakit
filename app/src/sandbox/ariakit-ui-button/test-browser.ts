@@ -3,13 +3,36 @@ import {
   capturePage,
   expectFocusVisible,
   forEachColorScheme,
+  getCapsOffset,
   getCapture,
   hoverOver,
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7584
+  test("keeps an initials avatar as far from the start edge as from the top", async ({
+    q,
+  }) => {
+    const button = query(q.article("Initial avatar")).button(/Will Williams/);
+    const avatar = button.locator(".control-slot").first();
+    await button.scrollIntoViewIfNeeded();
+    // A one-line slot sits one frame padding from the start edge, as far as
+    // from the top. The avatar adjusts its font, so margins measured in its own
+    // font would pull it closer to the edge.
+    await test.expect
+      .poll(async () => {
+        const [outer, inner] = await Promise.all([
+          getBox(button),
+          getBox(avatar),
+        ]);
+        return inner.x - outer.x - (inner.y - outer.y);
+      })
+      .toBeCloseTo(0, 0);
+  });
+
   // https://github.com/ariakit/ariakit/pull/7536#discussion_r4023546236
   test("keeps horizontal bar groups and their focus outline unclipped", async ({
     q,
@@ -28,28 +51,44 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   // Each engine rounds the half-leading of a line box its own way, so the badge
-  // text centers only once its box is trimmed to the capitals. No layout API
-  // reports where the capitals are, so a probe as tall as them sits on the text
-  // baseline.
+  // text centers only once its box is trimmed to the capitals.
   // https://github.com/ariakit/ariakit/issues/7588
   test("centers the badge text in its slot", async ({ q }) => {
     const text = query(q.article("Count badge")).text("12");
     await test.expect(text).toBeVisible();
-    const offset = await text.evaluate((node) => {
-      const slot = node.parentElement;
-      if (!slot) {
-        throw new Error("Missing badge slot");
-      }
-      const probe = node.ownerDocument.createElement("span");
-      probe.style.display = "inline-block";
-      probe.style.height = "1cap";
-      node.append(probe);
-      const caps = probe.getBoundingClientRect();
-      probe.remove();
-      const box = slot.getBoundingClientRect();
-      return box.top + box.height / 2 - (caps.top + caps.height / 2);
-    });
-    test.expect(offset).toBeCloseTo(0, 1);
+    test.expect(await getCapsOffset(text)).toBeCloseTo(0, 1);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7589
+  test("keeps the keys of a shortcut in order in a right-to-left row", async ({
+    q,
+  }) => {
+    const box = q.article("Right to left shortcut");
+    const [command, key] = await Promise.all([
+      getBox(query(box).text("⌘")),
+      getBox(query(box).text("S")),
+    ]);
+    test.expect(command.x).toBeLessThan(key.x);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7589
+  test("sizes an icon key and spaces the keys of a shortcut as its slot does", async ({
+    q,
+  }) => {
+    const box = q.article("Icon shortcut key");
+    const slot = box.locator(".control-slot").filter({ hasText: "K" });
+    const [slotBox, iconBox, keyBox] = await Promise.all([
+      getBox(slot),
+      getBox(slot.locator("svg")),
+      getBox(query(box).text("K")),
+    ]);
+    // A shortcut slot is as tall as its text, and an icon in it fills it.
+    test.expect(iconBox.height).toBeCloseTo(slotBox.height, 0);
+    const gap = await slot.evaluate((node) =>
+      Number.parseFloat(getComputedStyle(node).columnGap),
+    );
+    test.expect(gap).toBeGreaterThan(0);
+    test.expect(keyBox.x - iconBox.x - iconBox.width).toBeCloseTo(gap, 0);
   });
 
   // The page capture also keeps the static states of the button group fixture

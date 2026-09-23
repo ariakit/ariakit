@@ -75,9 +75,12 @@ test("keeps a bare fragment label separate from its description and badge", asyn
     .within(q.article("Disclosure badges"))
     .button("Account pages");
   expect(button).toHaveAccessibleDescription("Manage account pages");
-  expect(
-    button.querySelector(":scope > .disclosure-button-slot"),
-  ).toHaveTextContent("3");
+  // The chevron that leads the row is a slot too, so the badge is found by its
+  // text.
+  const badges = Array.from(
+    button.querySelectorAll(":scope > .control-slot"),
+  ).filter((slot) => slot.textContent === "3");
+  expect(badges).toHaveLength(1);
   await click(button);
   expect(q.text("Update account pages")).toBeVisible();
 });

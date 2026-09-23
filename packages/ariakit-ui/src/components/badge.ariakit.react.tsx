@@ -2,6 +2,7 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { badge, badgeLabel, badgeSlot } from "../styles/badge.ts";
+import { wrapsSlotChildren } from "../styles/control.ts";
 
 export interface BadgeProps
   extends ak.RoleProps<"span">, VariantProps<typeof badge> {}
@@ -37,7 +38,7 @@ export function BadgeSlot(props: BadgeSlotProps) {
   const variants = badgeSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...badgeSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (
         rest.children

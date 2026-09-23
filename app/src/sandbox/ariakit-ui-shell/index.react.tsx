@@ -20,8 +20,8 @@ import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import {
   Nav,
-  NavIcon,
   NavLink,
+  NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
@@ -434,9 +434,9 @@ function DashboardScenario() {
                 tabIndex={0}
                 aria-current={index === 0 ? "page" : undefined}
               >
-                <NavIcon>
+                <NavSlot>
                   <link.icon strokeWidth={1.5} />
-                </NavIcon>
+                </NavSlot>
                 {link.title}
               </NavLink>
             ))}
@@ -608,9 +608,9 @@ function ChatScenario() {
                 tabIndex={0}
                 aria-current={index === 0 ? "page" : undefined}
               >
-                <NavIcon>
+                <NavSlot>
                   <Hash strokeWidth={1.5} />
-                </NavIcon>
+                </NavSlot>
                 {channel}
               </NavLink>
             ))}

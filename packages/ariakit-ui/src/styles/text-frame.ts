@@ -30,7 +30,12 @@ export const textFrame = cv({
       if (value === "lg") return "[--px-scale:0.75]";
       if (value === "xl") return "[--px-scale:1.25]";
       if (value === "2xl") return "[--px-scale:1.5]";
-      return { style: { "--px": value } };
+      return {
+        style: {
+          "--px": value,
+          "--text-frame-inset": `calc(${value} - var(--ak-frame-padding,0px))`,
+        },
+      };
     },
   },
   defaultVariants: {
@@ -50,6 +55,11 @@ export const textFrame = cv({
       // this formula.
       "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
       "[--py:var(--ak-frame-padding,0px)]",
+      // The optical extra alone, registered as a length (see ui.css), so it is
+      // measured once in this element's font. A slot that adjusts its own font
+      // metrics, such as an avatar, rebuilds --px from it and the frame
+      // padding (see controlSlot). A raw $px writes its own inset.
+      "[--text-frame-inset:calc((1lh-1cap)*var(--px-scale))]",
       "px-(--px) py-(--py)",
     ]);
   },
