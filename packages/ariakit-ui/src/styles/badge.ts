@@ -95,6 +95,36 @@ export const badge = cv({
   },
 });
 
-export const badgeLabel = controlLabel;
+export const badgeLabel = cv({
+  extend: [controlLabel],
+  class: [
+    // Each engine rounds the ascent, descent and leading of a line box in its
+    // own way, which leaves the capitals up to half a pixel off its center, a
+    // visible share of a badge's padding. The trim drops those rounded metrics,
+    // and the padding gives back exactly the room it took, so the label keeps
+    // the height of its line box. A browser without text-box skips both. A
+    // label that a browser with text-box cannot trim, such as a flex container,
+    // grows by the padding.
+    // https://github.com/ariakit/ariakit/issues/7592
+    "[text-box:cap_alphabetic] supports-[text-box:cap_alphabetic]:py-[calc((1lh-1cap)/2)]",
+    // The padding rounds down to the layout unit, which would leave one line of
+    // text a fraction of a pixel short of its line box.
+    "min-h-lh",
+  ],
+  variants: {
+    /**
+     * Truncates the label to one line with an ellipsis, clipped with
+     * `overflow-x: clip`. A label with `overflow: hidden`, as `truncate` sets,
+     * is a scroll container, which Firefox does not trim, so the padding would
+     * make the badge taller.
+     */
+    $truncate(value?: boolean) {
+      if (!value) return;
+      // Without a scroll container, a flex item keeps its content width unless
+      // its minimum width is reset.
+      return "min-w-0 overflow-x-clip text-ellipsis whitespace-nowrap";
+    },
+  },
+});
 
 export const badgeSlot = controlSlot;

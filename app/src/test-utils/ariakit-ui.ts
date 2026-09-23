@@ -215,6 +215,28 @@ export function inkAlpha(element: Locator) {
   });
 }
 
+/**
+ * Measures how far the capitals of a text element sit above the center of its
+ * parent box, such as a badge. No layout API reports where the capitals are, so
+ * a probe as tall as them sits on the text baseline.
+ */
+export function getCapsOffset(text: Locator) {
+  return text.evaluate((node) => {
+    const box = node.parentElement;
+    if (!box) {
+      throw new Error("Missing parent box");
+    }
+    const probe = node.ownerDocument.createElement("span");
+    probe.style.display = "inline-block";
+    probe.style.height = "1cap";
+    node.append(probe);
+    const caps = probe.getBoundingClientRect();
+    probe.remove();
+    const rect = box.getBoundingClientRect();
+    return rect.top + rect.height / 2 - (caps.top + caps.height / 2);
+  });
+}
+
 /** Waits until an element has focus that the engine shows as keyboard focus. */
 export async function expectFocusVisible(element: Locator) {
   await expect(element).toBeFocused();
