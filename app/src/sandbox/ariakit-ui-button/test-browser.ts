@@ -27,6 +27,31 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await test.expect(group).toHaveCSS("clip-path", "none");
   });
 
+  // Each engine rounds the half-leading of a line box its own way, so the badge
+  // text centers only once its box is trimmed to the capitals. No layout API
+  // reports where the capitals are, so a probe as tall as them sits on the text
+  // baseline.
+  // https://github.com/ariakit/ariakit/issues/7588
+  test("centers the badge text in its slot", async ({ q }) => {
+    const text = query(q.article("Count badge")).text("12");
+    await test.expect(text).toBeVisible();
+    const offset = await text.evaluate((node) => {
+      const slot = node.parentElement;
+      if (!slot) {
+        throw new Error("Missing badge slot");
+      }
+      const probe = node.ownerDocument.createElement("span");
+      probe.style.display = "inline-block";
+      probe.style.height = "1cap";
+      node.append(probe);
+      const caps = probe.getBoundingClientRect();
+      probe.remove();
+      const box = slot.getBoundingClientRect();
+      return box.top + box.height / 2 - (caps.top + caps.height / 2);
+    });
+    test.expect(offset).toBeCloseTo(0, 1);
+  });
+
   // The page capture also keeps the static states of the button group fixture
   // under visual regression: joined borders, kept corners and the selected
   // glider.
