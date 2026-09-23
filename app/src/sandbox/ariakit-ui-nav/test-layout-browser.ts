@@ -405,6 +405,63 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     }
   });
 
+  // https://github.com/ariakit/ariakit/issues/7590
+  test("keeps a section's links on its own label column behind an icon wider than the line", async ({
+    q,
+  }) => {
+    const navigation = q.navigation("Wide icons");
+    const nav = query(navigation);
+    // Where the label text of a row starts. A link given plain text has no
+    // label element, so the text itself is measured.
+    const getLabelStart = (row: Locator, label: string) =>
+      row.evaluate((node, labelText) => {
+        const { ownerDocument } = node;
+        const walker = ownerDocument.createTreeWalker(
+          node,
+          NodeFilter.SHOW_TEXT,
+        );
+        for (
+          let textNode = walker.nextNode();
+          textNode;
+          textNode = walker.nextNode()
+        ) {
+          if (textNode.textContent?.trim() !== labelText) continue;
+          const range = ownerDocument.createRange();
+          range.selectNodeContents(textNode);
+          return range.getBoundingClientRect().left;
+        }
+        throw new Error(`No text in the row reads ${labelText}`);
+      }, label);
+    await navigation.scrollIntoViewIfNeeded();
+    const projects = nav.button("Projects");
+    await projects.click();
+    await expect(projects).toHaveAttribute("aria-expanded", "true");
+    const sections = [
+      [projects, "Projects", nav.link("All projects"), "All projects"],
+      // A section without an icon leads its label with the start chevron.
+      [nav.button("Archive"), "Archive", nav.link("2025"), "2025"],
+      [nav.button("Older"), "Older", nav.link("2024"), "2024"],
+    ] as const;
+    for (const [button, buttonLabel, link, linkLabel] of sections) {
+      await expect
+        .poll(async () => {
+          const [buttonStart, linkStart] = await Promise.all([
+            getLabelStart(button, buttonLabel),
+            getLabelStart(link, linkLabel),
+          ]);
+          return linkStart - buttonStart;
+        })
+        .toBeCloseTo(0, 0);
+    }
+    // The chevron is narrower than the line, so the label after it keeps the
+    // chevron's column rather than the wide icon's, and its links follow it.
+    const [iconColumn, chevronColumn] = await Promise.all([
+      getLabelStart(projects, "Projects"),
+      getLabelStart(nav.button("Archive"), "Archive"),
+    ]);
+    expect(chevronColumn).toBeLessThan(iconColumn - 1);
+  });
+
   // https://github.com/ariakit/ariakit/issues/7553
   test("lets a row override its corners and the offset of its body", async ({
     q,

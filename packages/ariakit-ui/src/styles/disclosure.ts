@@ -80,19 +80,22 @@ export const disclosure = cv({
     // Where the label starts when a slot leads it. A slot starts one padding
     // in and, with the gap above, ends the label one line plus the gap past
     // it whatever the icon size (see disclosureButtonSlot); an icon wider
-    // than the line pushes the label over by its far-side overflow. These
-    // three are registered as lengths (see ui.css), so they are measured
-    // in the root's own line box and font once, and a body with a line height
-    // of its own, such as prose, still lands on the label. The button is
-    // expected to keep the root's line height.
-    "[--disclosure-lead:calc(var(--disclosure-padding)+1lh+var(--disclosure-gap)+max(0px,(var(--disclosure-icon-size,1em)-1lh)/2))]",
-    // Whether a slot leads the label; the content reads it through a style
-    // query to indent past the slot. The leading slot is the button's first
-    // child, or the one right after a start indicator. A slot later in the
-    // row, such as a badge before an end indicator, indents nothing. Custom
-    // properties inherit, so a nested disclosure clears it before it tests
-    // its own button. :where() keeps the rule at utility weight, so it wins
-    // by order alone.
+    // than the line pushes the label over by its far-side overflow. Only a
+    // leading slot counts it (see --disclosure-icon below): a start indicator
+    // keeps its own size whatever the icon size. These three are registered
+    // as lengths (see ui.css), so they are measured in the root's own line box
+    // and font once, and a body with a line height of its own, such as prose,
+    // still lands on the label. The button is expected to keep the root's
+    // line height.
+    "[--disclosure-lead:calc(var(--disclosure-padding)+1lh+var(--disclosure-gap)+max(0px,(var(--disclosure-icon-size,1em)-1lh)/2)*var(--disclosure-icon,0))]",
+    // Whether a slot leads the label. The lead above counts the icon overflow
+    // only then, and the content reads the flag through a style query to
+    // indent past the slot. The leading slot is the button's first child, or
+    // the one right after a start indicator. A slot later in the row, such as
+    // a badge before an end indicator, indents nothing. Custom properties
+    // inherit, so a nested disclosure clears it before it tests its own
+    // button. :where() keeps the rule at utility weight, so it wins by order
+    // alone.
     "[--disclosure-icon:0]",
     "[&:has(>:where(.disclosure-button)>:where(.disclosure-button-slot):where(:first-child,[data-disclosure-indicator]:first-child+*))]:[--disclosure-icon:1]",
     // Open is signalled by native details or by the wrapper's data-open.

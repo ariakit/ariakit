@@ -1641,7 +1641,7 @@ export default function NavExamples() {
       </Example>
       <Example
         title="Wide icons"
-        description="An icon wider than the line keeps its gap to the label. A link keeps the label column of a disclosure row, with a NavLinkSlot and with a NavIcon."
+        description="An icon wider than the line keeps its gap to the label. A link keeps the label column of a disclosure row, with a NavLinkSlot and with a NavIcon. A section without an icon keeps its links on its own label column."
         code={`
           <Nav $iconSize={8}>
             <NavLink>
@@ -1663,6 +1663,16 @@ export default function NavExamples() {
                   <NavLink>All projects</NavLink>
                 </NavList>
               </NavDisclosureContent>
+            </NavDisclosure>
+            <NavDisclosure button="Archive" defaultOpen>
+              <NavList>
+                <NavLink>2025</NavLink>
+                <NavDisclosure button="Older" defaultOpen>
+                  <NavList>
+                    <NavLink>2024</NavLink>
+                  </NavList>
+                </NavDisclosure>
+              </NavList>
             </NavDisclosure>
           </Nav>
         `}
@@ -1689,6 +1699,16 @@ export default function NavExamples() {
                 <NavLink href="#wide-projects">All projects</NavLink>
               </NavList>
             </NavDisclosureContent>
+          </NavDisclosure>
+          <NavDisclosure button="Archive" defaultOpen>
+            <NavList>
+              <NavLink href="#wide-archive-2025">2025</NavLink>
+              <NavDisclosure button="Older" defaultOpen>
+                <NavList>
+                  <NavLink href="#wide-archive-2024">2024</NavLink>
+                </NavList>
+              </NavDisclosure>
+            </NavList>
           </NavDisclosure>
         </Nav>
       </Example>
