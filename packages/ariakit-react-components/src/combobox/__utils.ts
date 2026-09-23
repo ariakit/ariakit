@@ -3,7 +3,7 @@ import { sync } from "@ariakit/store";
 import { getWindow } from "@ariakit/utils";
 import type { ComboboxStore } from "./combobox-store.ts";
 
-const openingMovesByStore = new WeakMap<ComboboxStore, number>();
+const openingMovesBySelect = new WeakMap<HTMLElement, number>();
 const scrollItemIntoViewByStore = new WeakMap<
   ComboboxStore,
   (element: HTMLElement) => void
@@ -93,20 +93,24 @@ export function useTrackComboboxSelectPresentation(store?: ComboboxStore) {
     // The select stays mounted across the whole open cycle, while virtualized
     // items can mount after navigation. Record the baseline once here so every
     // item compares against the same opening movement without subscribing.
-    const stop = sync(store, ["open"], (state) => {
+    // Items can read another store object that shares this state, like the one
+    // ComboboxProvider creates around a store the select also receives, so the
+    // baseline is keyed by the select element that all of them share.
+    // https://github.com/ariakit/ariakit/issues/7617
+    return sync(store, ["open"], (state) => {
+      if (!state.open) return;
       // Arrow keys move while the popup is still closed. Capture that movement
       // at each open so the opening presentation still centers; only movement
       // after this point should switch back to nearest-edge scrolling.
-      if (state.open) {
-        openingMovesByStore.set(store, store.getState().moves);
-      } else {
-        openingMovesByStore.delete(store);
-      }
+      const { moves, selectElement } = store.getState();
+      if (!selectElement) return;
+      openingMovesBySelect.set(selectElement, moves);
+      // Runs when the popup closes or the select unmounts, and removes the
+      // entry recorded here even if the store's select element changed since.
+      return () => {
+        openingMovesBySelect.delete(selectElement);
+      };
     });
-    return () => {
-      stop();
-      openingMovesByStore.delete(store);
-    };
   }, [store]);
 }
 
@@ -121,7 +125,7 @@ export function getScrollItemIntoView(store?: ComboboxStore) {
   const scrollItemIntoView = (element: HTMLElement) => {
     const { contentElement, moves, selectElement } = store.getState();
     if (!selectElement) return scrollIntoViewNearest(element);
-    if (moves !== openingMovesByStore.get(store)) {
+    if (moves !== openingMovesBySelect.get(selectElement)) {
       return scrollIntoViewNearest(element);
     }
     if (!contentElement?.contains(element)) {

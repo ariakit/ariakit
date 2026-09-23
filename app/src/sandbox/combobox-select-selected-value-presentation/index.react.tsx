@@ -601,20 +601,18 @@ interface ProviderStoreFixtureProps {
   storeOn: "select" | "popover";
 }
 
-function ProviderStoreFixture({ label }: ProviderStoreFixtureProps) {
+function ProviderStoreFixture({ label, storeOn }: ProviderStoreFixtureProps) {
   const combobox = Ariakit.useComboboxStore({
     defaultSelectedValue: "Mango",
   });
   return (
     <Ariakit.ComboboxProvider store={combobox}>
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
-      {/* TODO: Remove this workaround when
-      https://github.com/ariakit/ariakit/issues/7617 is fixed. Passing the store
-      to both the select and the popover makes the items read the same store
-      object as the select, so they find the move count it records on open. */}
-      <Ariakit.ComboboxSelect store={combobox} />
+      <Ariakit.ComboboxSelect
+        store={storeOn === "select" ? combobox : undefined}
+      />
       <Ariakit.ComboboxPopover
-        store={combobox}
+        store={storeOn === "popover" ? combobox : undefined}
         style={{
           background: "white",
           border: "1px solid gray",
