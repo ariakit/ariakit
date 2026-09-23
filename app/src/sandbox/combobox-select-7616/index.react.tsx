@@ -17,7 +17,16 @@ function FruitSelect() {
     <Ariakit.ComboboxProvider defaultSelectedValue="Fruit 1">
       <Ariakit.ComboboxSelectLabel>Fruit</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect />
-      <Ariakit.ComboboxPopover onClose={preventClose} style={popoverStyle}>
+      {/* TODO: Remove this workaround when
+      https://github.com/ariakit/ariakit/issues/7616 is fixed. Rejecting Escape
+      and outside interactions keeps the popup from requesting a close that
+      onClose would prevent. */}
+      <Ariakit.ComboboxPopover
+        hideOnEscape={false}
+        hideOnInteractOutside={false}
+        onClose={preventClose}
+        style={popoverStyle}
+      >
         {fruits.map((value) => (
           <Ariakit.ComboboxItem key={value} value={value} />
         ))}
@@ -31,7 +40,14 @@ function VegetableSelect() {
     <Ariakit.SelectProvider defaultValue="Vegetable 1">
       <Ariakit.SelectLabel>Vegetable</Ariakit.SelectLabel>
       <Ariakit.Select />
-      <Ariakit.SelectPopover onClose={preventClose} style={popoverStyle}>
+      {/* TODO: Remove this workaround when
+      https://github.com/ariakit/ariakit/issues/7616 is fixed. */}
+      <Ariakit.SelectPopover
+        hideOnEscape={false}
+        hideOnInteractOutside={false}
+        onClose={preventClose}
+        style={popoverStyle}
+      >
         {vegetables.map((value) => (
           <Ariakit.SelectItem key={value} value={value} />
         ))}
