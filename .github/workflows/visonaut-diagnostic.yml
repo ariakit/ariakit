@@ -1,0 +1,39 @@
+name: Visonaut diagnostic
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [probe, capture]
+        default: probe
+  pull_request:
+  push:
+    branches: [main]
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+jobs:
+  probe:
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.mode == 'probe') ||
+      (github.event_name == 'pull_request' && github.head_ref == 'codex/visonaut-trusted-prep' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    uses: ./.github/workflows/visonaut-capture.yml
+    with:
+      mode: probe
+
+  capture:
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.mode == 'capture' && github.ref == 'refs/heads/main') ||
+      (vars.VISONAUT_DIAGNOSTIC_ENABLED == 'true' && github.event_name != 'workflow_dispatch' &&
+       (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository))
+    # The service also verifies the resolved reusable workflow SHA from OIDC.
+    uses: ariakit/ariakit/.github/workflows/visonaut-capture.yml@main
+    with:
+      mode: capture

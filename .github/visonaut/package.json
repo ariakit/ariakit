@@ -1,0 +1,10 @@
+{
+  "name": "ariakit-visonaut-executor",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@playwright/test": "1.63.0",
+    "@visonaut/playwright": "0.1.0",
+    "visonaut": "0.1.0"
+  }
+}

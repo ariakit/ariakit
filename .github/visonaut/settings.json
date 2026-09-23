@@ -1,0 +1,13 @@
+{
+  "repository": "ariakit/ariakit",
+  "repositoryId": "104133653",
+  "workflow": ".github/workflows/visonaut-diagnostic.yml",
+  "server": "https://preview.visonaut.com",
+  "comparisonEngineVersion": "rgba-visible-1",
+  "comparisonPolicy": {
+    "id": "visible-exact-v1",
+    "channelThreshold": 0,
+    "maxChangedPixels": 0,
+    "maxChangedRatio": 0
+  }
+}
