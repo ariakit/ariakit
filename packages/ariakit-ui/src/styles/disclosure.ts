@@ -352,9 +352,8 @@ export const disclosureButtonDescription = cv({
 // control's extra side padding off its box, which the button's gap adds back
 // (see $gap there): the label after it lands where --disclosure-lead says,
 // whatever the icon size is. Only an icon can lead the label and keep the body
-// under it: a badge or an avatar spaces the label by its side bearing, and an
-// avatar's margins also resolve against the cap height its font-size-adjust
-// sets (see $mx and refine in control.ts), neither of which the lead counts.
+// under it: a badge or an avatar spaces the label by its side bearing (see $mx
+// in control.ts), which the lead does not count.
 export const disclosureButtonSlot = cv({
   extend: [buttonSlot],
   class: "disclosure-button-slot",

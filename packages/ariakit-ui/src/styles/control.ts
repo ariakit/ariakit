@@ -97,6 +97,36 @@ export const control = cv({
 // rows already provides that room, so those slots keep their requested size.
 const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
 
+const SLOT_SIZE_CLASSES = {
+  unset: "",
+  xs: "[--size:1ex]",
+  sm: "[--size:1cap]",
+  md: "[--size:1em]",
+  lg: "[--size:0.875lh]",
+  xl: "[--size:1lh]",
+  "2xl": "[--size:calc(1lh+var(--py)/var(--row-span))]",
+  full: "[--size:calc(1lh+var(--py)*2/var(--row-span))]",
+};
+
+export type SlotSize = keyof typeof SLOT_SIZE_CLASSES;
+
+/**
+ * Returns whether a value is one of the named slot sizes, such as `md` or `xl`.
+ */
+export function isSlotSize(value: unknown): value is SlotSize {
+  if (typeof value !== "string") return false;
+  return Object.hasOwn(SLOT_SIZE_CLASSES, value);
+}
+
+/**
+ * Returns the class of a named slot size, or `undefined` for any other value,
+ * so an extender that replaces `$size` with a function keeps the named sizes.
+ */
+export function getSlotSizeClass(value: unknown) {
+  if (!isSlotSize(value)) return;
+  return SLOT_SIZE_CLASSES[value];
+}
+
 export const controlSlot = cv({
   extend: [frame],
   class: [
@@ -117,16 +147,7 @@ export const controlSlot = cv({
     /**
      * Sets the slot size.
      */
-    $size: {
-      unset: "",
-      xs: "[--size:1ex]",
-      sm: "[--size:1cap]",
-      md: "[--size:1em]",
-      lg: "[--size:0.875lh]",
-      xl: "[--size:1lh]",
-      "2xl": "[--size:calc(1lh+var(--py)/var(--row-span))]",
-      full: "[--size:calc(1lh+var(--py)*2/var(--row-span))]",
-    },
+    $size: SLOT_SIZE_CLASSES,
     /**
      * Controls the slot's horizontal margin. By default, it's set based on the
      * slot size. The larger the slot, the larger the margin. Set to `closeGap`
@@ -138,7 +159,7 @@ export const controlSlot = cv({
      * next element instead, which may be another slot.
      *
      * `auto` is for a slot that leads a label with a size an extender takes
-     * from its container, such as an icon size set on a nav. Its margin sits on
+     * from its container, such as a slot size set on a nav. Its margin sits on
      * the slot itself. It follows an `auto` size by default.
      *
      * A stacked card sets `--control-inline` to 0, which drops these margins
@@ -355,9 +376,18 @@ export const controlSlot = cv({
       // Larger slots have room for the label's text size.
       if (variants.$size === "2xl") return;
       if (variants.$size === "full") return;
-      // Keep the parent's line height before adjusting font metrics, which also
-      // affect normal line height. A 0.45em cap height gives initials room.
-      addClass("leading-[1lh] [font-size-adjust:cap-height_0.45]");
+      addClass([
+        // Keep the parent's line height before adjusting font metrics, which
+        // also affect normal line height. Initials get a cap height of 0.3
+        // times the slot size at any size: 0.45em in a 24px slot at a 16px
+        // font. tan(atan2(a,b)) is a/b as a number; Firefox cannot divide one
+        // length by another in calc() yet.
+        "leading-[1lh] [font-size-adjust:cap-height_calc(0.3*tan(atan2(var(--size,1lh),1em)))]",
+        // The adjustment also changes 1cap here, and the inherited --px would
+        // measure it again for the margins. The frame's inset, a length
+        // measured in the frame's font, keeps the avatar on the icon column.
+        "[--px:calc(var(--py)+var(--text-frame-inset))]",
+      ]);
     }
     if (includes(PADDED_SLOT_SIZES, variants.$size)) {
       setVariants({ $size: "xl" });
@@ -366,10 +396,10 @@ export const controlSlot = cv({
 });
 
 /**
- * The `$size` default of a slot whose container sizes its icon, such as a nav
- * row or a disclosure button. Only an icon takes that size, through the
- * extender's `auto` size. A badge, an avatar or a shortcut keeps the size every
- * other control slot gives it: the one-line box for a badge or an avatar (see
+ * The `$size` default of a slot whose container sizes its icon, such as a
+ * disclosure button. Only an icon takes that size, through the extender's
+ * `auto` size. A badge, an avatar or a shortcut keeps the size every other
+ * control slot gives it: the one-line box for a badge or an avatar (see
  * `PADDED_SLOT_SIZES`), the text size for a shortcut.
  */
 export function getIconSlotSize<Size extends string>(

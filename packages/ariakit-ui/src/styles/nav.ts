@@ -7,7 +7,8 @@ import {
   buttonLabel,
   buttonSlot,
 } from "./button.ts";
-import { getIconSlotSize } from "./control.ts";
+import type { SlotSize } from "./control.ts";
+import { getSlotSizeClass, isSlotSize } from "./control.ts";
 import {
   disclosure,
   disclosureButton,
@@ -80,15 +81,15 @@ export const nav = cv({
       };
     },
     /**
-     * Sets the icon slot size for nav icons and nav disclosures. It must live
-     * on the root or an ancestor: the consumers read it as an inherited
-     * property or through container style queries, which read the nearest
-     * ancestor container. Numbers scale the spacing token.
+     * Sets the size of every nav slot but a shortcut, and of nav disclosure
+     * icons. It must live on the root or an ancestor: the consumers read it as
+     * an inherited property or through container style queries, which read the
+     * nearest ancestor container. Numbers scale the spacing token.
      */
-    $iconSize(value?: string | number) {
+    $slotSize(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--nav-icon-size": getSpacingValue(value) },
+        style: { "--nav-slot-size": getSpacingValue(value) },
       };
     },
   },
@@ -127,33 +128,80 @@ export const navGroupLabel = cv({
   },
 });
 
-// The size of an icon the nav sizes. navIcon and navLinkSlot share it, so that
-// icon is the same in both. The auto size brings the auto margin (see $mx in
-// control.ts), so an icon wider than the line keeps its label on the label
-// column of a disclosure row, whose icon slot gets the same margin.
-const navIconSizeVariants = {
-  /**
-   * Extends the slot sizes with `auto`, which follows the nav's `$iconSize` and
-   * otherwise the text size. It is the default for an icon; a badge, an avatar
-   * or a shortcut keeps the size every other control slot gives it.
-   */
-  $size: {
-    auto: "[--size:var(--nav-icon-size,1em)]",
-  },
-};
-
-// The icon slot of a nav row, sized by the nav's icon size. It is a control
-// slot, so its outer box is one line square whatever the icon size: that is
-// what keeps a wrapping label aligned to it. A badge or an avatar in it takes
-// the one-line box instead (see getIconSlotSize). A standalone nav row, such as
-// a brand link, can use it on its own.
-export const navIcon = cv({
+// The nav's slot size for every slot kind. It is a static default because the
+// control slot's refine runs first and turns a badge or an avatar at a named
+// size into the line box; a computed default would come too late.
+const navSlotBase = cv({
   extend: [buttonSlot],
   variants: {
-    ...navIconSizeVariants,
+    /**
+     * Sets the slot size. `auto`, the default for every kind but a shortcut,
+     * follows the nav's `$slotSize` and otherwise the text size, so a badge or
+     * an avatar lines up with the icons around it. For one slot that differs
+     * from the nav, a number scales the spacing token like `$slotSize`, and a
+     * length is used as is; the label after it stays on the label column. The
+     * named sizes are those of every control slot: `xs` to `lg` turn a badge or
+     * an avatar into the one-line `xl`, and `xl` and larger space the label by
+     * a margin of their own.
+     */
+    $size(value?: SlotSize | "auto" | number | (string & {})) {
+      if (value == null) return;
+      if (value === "auto") return "[--size:var(--nav-slot-size,1em)]";
+      const named = getSlotSizeClass(value);
+      if (named != null) return named;
+      return { style: { "--size": getSpacingValue(value) } };
+    },
+    // The control slot's auto margin gives the overflow of a slot wider than
+    // the line to its start side, which only suits a slot that leads the label.
+    // A slot after another element, such as a count after the label, keeps the
+    // row's gap before it and the row's padding after it instead. A slot no
+    // wider than the line keeps its margins.
+    $mx: {
+      auto: [
+        "[*+&]:[--mx:calc((var(--py)-var(--px)+max(0px,var(--my)))*var(--control-inline,1))]",
+        "[*+&]:me-(--mx)",
+      ],
+    },
   },
   defaultVariants: {
-    $size: getIconSlotSize,
+    $size: "auto",
+  },
+});
+
+// A slot in a nav row: the icon that leads the label, or a badge, an avatar or
+// a shortcut anywhere in the row. It is a control slot, so its outer box is one
+// line square whatever its size, and the label after it starts where the label
+// of a disclosure row starts. A standalone nav row, such as a brand link, can
+// use it on its own.
+export const navSlot = cv({
+  extend: [navSlotBase],
+  defaultVariants: {
+    $size(defaultValue, variants) {
+      // A shortcut is text, so it keeps the text size.
+      if (variants.$kind !== "shortcut") return defaultValue;
+      if (defaultValue !== "auto") return defaultValue;
+      return "md";
+    },
+    $p(defaultValue, variants) {
+      // A badge in a nav row holds a short count. The round padding keeps one
+      // digit inside the slot size, so the badge is a circle on the icon
+      // column; the control slot's auto padding would widen it past the icons.
+      if (variants.$kind !== "badge") return defaultValue;
+      if (defaultValue !== "auto") return defaultValue;
+      return "md";
+    },
+    $mx(defaultValue, variants) {
+      // A number or a length sizes the slot like auto, so it takes the auto
+      // margin too. The control slot's own default copies the size, which is
+      // not a margin value then.
+      if (variants.$size == null) return defaultValue;
+      if (variants.$size === "auto") return defaultValue;
+      if (isSlotSize(variants.$size)) return defaultValue;
+      if (defaultValue != null && defaultValue !== variants.$size) {
+        return defaultValue;
+      }
+      return "auto";
+    },
   },
 });
 
@@ -180,20 +228,6 @@ export const navLink = cv({
     // Current links keep full text contrast on their pushed surface.
     $selectedInk: 100,
     $gap: "none",
-  },
-});
-
-// A slot in a link's row: the icon that leads the label, or a badge, an avatar
-// or a shortcut anywhere in the row. It is a control slot, so the label after
-// its icon starts where the label of a disclosure row starts, whatever the
-// nav's icon size is.
-export const navLinkSlot = cv({
-  extend: [buttonSlot],
-  variants: {
-    ...navIconSizeVariants,
-  },
-  defaultVariants: {
-    $size: getIconSlotSize,
   },
 });
 
@@ -461,9 +495,25 @@ export const navDisclosure = cv({
   extend: [disclosure],
   class: [
     "nav-disclosure",
-    // Nav icons size the disclosure icon slot when an ancestor sets them.
-    "[@container_style(--nav-icon-size)]:[--disclosure-icon-size:var(--nav-icon-size)]",
+    // An ancestor's nav slot size sizes the disclosure icon slot.
+    "[@container_style(--nav-slot-size)]:[--disclosure-icon-size:var(--nav-slot-size)]",
   ],
+  variants: {
+    /**
+     * Sets the nav slot size for this section: its own icon, the indent of its
+     * content, and every nav slot inside it, as the nav's `$slotSize` does for
+     * the whole nav. It writes the disclosure's icon size as well, after the
+     * disclosure's own `$iconSize`, so it wins over that one. Numbers scale the
+     * spacing token.
+     */
+    $slotSize(value?: string | number) {
+      if (value == null) return;
+      const size = getSpacingValue(value);
+      return {
+        style: { "--disclosure-icon-size": size, "--nav-slot-size": size },
+      };
+    },
+  },
   defaultVariants: {
     // The row and its content are already spaced apart, so the button needs no
     // hover ramp between them.
