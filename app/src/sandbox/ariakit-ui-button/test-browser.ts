@@ -8,8 +8,30 @@ import {
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7584
+  test("keeps an initials avatar as far from the start edge as from the top", async ({
+    q,
+  }) => {
+    const button = query(q.article("Initial avatar")).button(/Will Williams/);
+    const avatar = button.locator(".control-slot").first();
+    await button.scrollIntoViewIfNeeded();
+    // A one-line slot sits one frame padding from the start edge, as far as
+    // from the top. The avatar adjusts its font, so margins measured in its own
+    // font would pull it closer to the edge.
+    await test.expect
+      .poll(async () => {
+        const [outer, inner] = await Promise.all([
+          getBox(button),
+          getBox(avatar),
+        ]);
+        return inner.x - outer.x - (inner.y - outer.y);
+      })
+      .toBeCloseTo(0, 0);
+  });
+
   // https://github.com/ariakit/ariakit/pull/7536#discussion_r4023546236
   test("keeps horizontal bar groups and their focus outline unclipped", async ({
     q,

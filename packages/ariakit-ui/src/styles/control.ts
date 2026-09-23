@@ -342,9 +342,18 @@ export const controlSlot = cv({
       // Larger slots have room for the label's text size.
       if (variants.$size === "2xl") return;
       if (variants.$size === "full") return;
-      // Keep the parent's line height before adjusting font metrics, which also
-      // affect normal line height. A 0.45em cap height gives initials room.
-      addClass("leading-[1lh] [font-size-adjust:cap-height_0.45]");
+      addClass([
+        // Keep the parent's line height before adjusting font metrics, which
+        // also affect normal line height. Initials get a cap height of 0.3
+        // times the slot size at any size: 0.45em in a 24px slot at a 16px
+        // font. tan(atan2(a,b)) is a/b as a number; Firefox cannot divide one
+        // length by another in calc() yet.
+        "leading-[1lh] [font-size-adjust:cap-height_calc(0.3*tan(atan2(var(--size,1lh),1em)))]",
+        // The adjustment also changes 1cap here, and the inherited --px would
+        // measure it again for the margins. The frame's inset, a length
+        // measured in the frame's font, keeps the avatar on the icon column.
+        "[--px:calc(var(--py)+var(--text-frame-inset))]",
+      ]);
     }
     if (includes(PADDED_SLOT_SIZES, variants.$size)) {
       setVariants({ $size: "xl" });
