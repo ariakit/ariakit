@@ -1779,59 +1779,87 @@ export default function NavExamples() {
           </NavDisclosure>
         </Nav>
       </Example>
-      <Example
-        title="Wide icons"
-        description="An icon wider than the line keeps its gap to the label. A link keeps the label column of a disclosure row."
-        code={`
-          <Nav $slotSize={8}>
-            <NavLink>
+      {(["ltr", "rtl"] as const).map((dir) => (
+        <Example
+          key={dir}
+          title={`Wide icons (${dir})`}
+          description="An icon wider than the line keeps its gap to the label. A link keeps the label column of a disclosure row. A section without an icon keeps its links on its own label column."
+          code={`
+            <Nav $slotSize={8} dir="${dir}">
+              <NavLink>
+                <NavSlot>
+                  <Inbox />
+                </NavSlot>
+                <NavLinkLabel>Inbox</NavLinkLabel>
+              </NavLink>
+              <NavLink>
+                <NavSlot>
+                  <Settings />
+                </NavSlot>
+                <NavLinkLabel>Settings</NavLinkLabel>
+              </NavLink>
+              <NavDisclosure>
+                <NavDisclosureButton icon={<Blocks />}>Projects</NavDisclosureButton>
+                <NavDisclosureContent>
+                  <NavList>
+                    <NavLink>All projects</NavLink>
+                  </NavList>
+                </NavDisclosureContent>
+              </NavDisclosure>
+              <NavDisclosure button="Archive" defaultOpen>
+                <NavList>
+                  <NavLink>2025</NavLink>
+                  <NavDisclosure button="Older" defaultOpen>
+                    <NavList>
+                      <NavLink>2024</NavLink>
+                    </NavList>
+                  </NavDisclosure>
+                </NavList>
+              </NavDisclosure>
+            </Nav>
+          `}
+        >
+          <Nav
+            $slotSize={8}
+            dir={dir}
+            aria-label={`Wide icons (${dir})`}
+            className="w-full max-w-64"
+          >
+            <NavLink href="#wide-inbox">
               <NavSlot>
-                <Inbox />
+                <Inbox strokeWidth={1.5} />
               </NavSlot>
               <NavLinkLabel>Inbox</NavLinkLabel>
             </NavLink>
-            <NavLink>
+            <NavLink href="#wide-settings">
               <NavSlot>
-                <Settings />
+                <Settings strokeWidth={1.5} />
               </NavSlot>
               <NavLinkLabel>Settings</NavLinkLabel>
             </NavLink>
             <NavDisclosure>
-              <NavDisclosureButton icon={<Blocks />}>Projects</NavDisclosureButton>
+              <NavDisclosureButton icon={<Blocks strokeWidth={1.5} />}>
+                Projects
+              </NavDisclosureButton>
               <NavDisclosureContent>
                 <NavList>
-                  <NavLink>All projects</NavLink>
+                  <NavLink href="#wide-projects">All projects</NavLink>
                 </NavList>
               </NavDisclosureContent>
             </NavDisclosure>
-          </Nav>
-        `}
-      >
-        <Nav $slotSize={8} aria-label="Wide icons" className="w-full max-w-64">
-          <NavLink href="#wide-inbox">
-            <NavSlot>
-              <Inbox strokeWidth={1.5} />
-            </NavSlot>
-            <NavLinkLabel>Inbox</NavLinkLabel>
-          </NavLink>
-          <NavLink href="#wide-settings">
-            <NavSlot>
-              <Settings strokeWidth={1.5} />
-            </NavSlot>
-            <NavLinkLabel>Settings</NavLinkLabel>
-          </NavLink>
-          <NavDisclosure>
-            <NavDisclosureButton icon={<Blocks strokeWidth={1.5} />}>
-              Projects
-            </NavDisclosureButton>
-            <NavDisclosureContent>
+            <NavDisclosure button="Archive" defaultOpen>
               <NavList>
-                <NavLink href="#wide-projects">All projects</NavLink>
+                <NavLink href="#wide-archive-2025">2025</NavLink>
+                <NavDisclosure button="Older" defaultOpen>
+                  <NavList>
+                    <NavLink href="#wide-archive-2024">2024</NavLink>
+                  </NavList>
+                </NavDisclosure>
               </NavList>
-            </NavDisclosureContent>
-          </NavDisclosure>
-        </Nav>
-      </Example>
+            </NavDisclosure>
+          </Nav>
+        </Example>
+      ))}
 
       <Example
         title="Row overrides"

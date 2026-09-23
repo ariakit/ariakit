@@ -411,9 +411,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   test("keeps a link's label on a disclosure row's label column behind an icon wider than the line", async ({
     q,
   }) => {
-    const nav = query(q.navigation("Wide icons"));
+    const nav = query(q.navigation("Wide icons (ltr)"));
     const button = () => measureRow(nav.button("Projects"), "Projects");
-    await q.navigation("Wide icons").scrollIntoViewIfNeeded();
+    await q.navigation("Wide icons (ltr)").scrollIntoViewIfNeeded();
     // $slotSize={8} is eight spacing steps, 32px at the sandbox's 16px font,
     // which is wider than the row's line box.
     const lineHeight = await nav
@@ -437,12 +437,77 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     }
   });
 
+  for (const dir of ["ltr", "rtl"]) {
+    // https://github.com/ariakit/ariakit/issues/7590
+    test(`keeps a section's links on its own label column behind an icon wider than the line in ${dir}`, async ({
+      q,
+    }) => {
+      const navigation = q.navigation(`Wide icons (${dir})`);
+      const nav = query(navigation);
+      // Where the label text of a row starts. A link given plain text has no
+      // label element, so the text itself is measured. The right edge is
+      // negated in RTL, so a larger value sits further from the start edge in
+      // both directions.
+      const getLabelStart = (row: Locator, label: string) =>
+        row.evaluate(
+          (node, { labelText, rtl }) => {
+            const { ownerDocument } = node;
+            const walker = ownerDocument.createTreeWalker(
+              node,
+              NodeFilter.SHOW_TEXT,
+            );
+            for (
+              let textNode = walker.nextNode();
+              textNode;
+              textNode = walker.nextNode()
+            ) {
+              if (textNode.textContent?.trim() !== labelText) continue;
+              const range = ownerDocument.createRange();
+              range.selectNodeContents(textNode);
+              const rect = range.getBoundingClientRect();
+              return rtl ? -rect.right : rect.left;
+            }
+            throw new Error(`No text in the row reads ${labelText}`);
+          },
+          { labelText: label, rtl: dir === "rtl" },
+        );
+      await navigation.scrollIntoViewIfNeeded();
+      const projects = nav.button("Projects");
+      await projects.click();
+      await expect(projects).toHaveAttribute("aria-expanded", "true");
+      const sections = [
+        [projects, "Projects", nav.link("All projects"), "All projects"],
+        // A section without an icon leads its label with the start chevron.
+        [nav.button("Archive"), "Archive", nav.link("2025"), "2025"],
+        [nav.button("Older"), "Older", nav.link("2024"), "2024"],
+      ] as const;
+      for (const [button, buttonLabel, link, linkLabel] of sections) {
+        await expect
+          .poll(async () => {
+            const [buttonStart, linkStart] = await Promise.all([
+              getLabelStart(button, buttonLabel),
+              getLabelStart(link, linkLabel),
+            ]);
+            return linkStart - buttonStart;
+          })
+          .toBeCloseTo(0, 0);
+      }
+      // The chevron is narrower than the line, so the label after it keeps the
+      // chevron's column rather than the wide icon's, and its links follow it.
+      const [iconColumn, chevronColumn] = await Promise.all([
+        getLabelStart(projects, "Projects"),
+        getLabelStart(nav.button("Archive"), "Archive"),
+      ]);
+      expect(chevronColumn).toBeLessThan(iconColumn - 1);
+    });
+  }
+
   // https://github.com/ariakit/ariakit/pull/7584
   test("sizes one slot or a whole section apart from the nav", async ({
     q,
   }) => {
     const nav = query(q.navigation("Slot overrides"));
-    const wide = query(q.navigation("Wide icons"));
+    const wide = query(q.navigation("Wide icons (ltr)"));
     await q.navigation("Slot overrides").scrollIntoViewIfNeeded();
     // The nav's $slotSize={5} is 20px at the sandbox's 16px font, and 8 is
     // 32px. A slot with $size={8} measures like a slot in a nav whose slots are
