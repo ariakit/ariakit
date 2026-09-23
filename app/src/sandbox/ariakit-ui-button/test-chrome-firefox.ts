@@ -7,6 +7,7 @@ import {
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000661269
@@ -15,6 +16,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/button/test-chrome-firefox/keeps-a-filled-control-boundary-in-forced-colors",
+    );
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       await captureInView(visual, q.article("Control surfaces"), colorScheme);
@@ -27,6 +31,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/button/test-chrome-firefox/keeps-glider-boundaries-and-inherited-widths-in-forced-colors",
+    );
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       await captureInView(visual, q.article("Glider"), colorScheme, {
@@ -48,6 +55,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/button/test-chrome-firefox/keeps-disabled-layers-borderless-and-preserves-bevels-in-forced-colors",
+    );
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       await expectMedia(page, "(forced-colors: active)");
@@ -61,6 +71,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/button/test-chrome-firefox/keeps-filled-and-bevel-button-boundaries-in-forced-colors",
+    );
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       await expectMedia(page, "(forced-colors: active)");
@@ -93,6 +106,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/button/test-chrome-firefox/preserves-explicit-ring-and-inset-button-edges-in-forced-colors",
+    );
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       await captureInView(visual, q.article("Ring borders"), colorScheme);

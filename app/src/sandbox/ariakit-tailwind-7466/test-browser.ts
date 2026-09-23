@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
   for (const colorScheme of ["light", "dark"] as const) {
@@ -53,15 +54,55 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   // Hovering the middle item checks both shared edges. Sample the paint
   // variants here; the full matrix above checks geometry and stacking.
-  for (const [title, colorScheme, contrast] of [
-    ["Applied", "light", "no-preference"],
-    ["Border 2", "dark", "no-preference"],
-    ["Border 2", "light", "more"],
-    ["Border 2", "dark", "more"],
-    ["Ring 2", "light", "no-preference"],
-    ["Fractional ring", "dark", "no-preference"],
-    ["Vertical ring", "light", "no-preference"],
-    ["RTL", "light", "no-preference"],
+  for (const [title, colorScheme, contrast, item] of [
+    [
+      "Applied",
+      "light",
+      "no-preference",
+      "tailwind/7466/test-browser/applied-joins-edges-through-hover-light-no-preference",
+    ],
+    [
+      "Border 2",
+      "dark",
+      "no-preference",
+      "tailwind/7466/test-browser/border-2-joins-edges-through-hover-dark-no-preference",
+    ],
+    [
+      "Border 2",
+      "light",
+      "more",
+      "tailwind/7466/test-browser/border-2-joins-edges-through-hover-light-more",
+    ],
+    [
+      "Border 2",
+      "dark",
+      "more",
+      "tailwind/7466/test-browser/border-2-joins-edges-through-hover-dark-more",
+    ],
+    [
+      "Ring 2",
+      "light",
+      "no-preference",
+      "tailwind/7466/test-browser/ring-2-joins-edges-through-hover-light-no-preference",
+    ],
+    [
+      "Fractional ring",
+      "dark",
+      "no-preference",
+      "tailwind/7466/test-browser/fractional-ring-joins-edges-through-hover-dark-no-preference",
+    ],
+    [
+      "Vertical ring",
+      "light",
+      "no-preference",
+      "tailwind/7466/test-browser/vertical-ring-joins-edges-through-hover-light-no-preference",
+    ],
+    [
+      "RTL",
+      "light",
+      "no-preference",
+      "tailwind/7466/test-browser/rtl-joins-edges-through-hover-light-no-preference",
+    ],
   ] as const) {
     // https://github.com/ariakit/ariakit/issues/7466
     test(`${title} joins edges through hover (${colorScheme}, ${contrast}) @visual`, async ({
@@ -69,6 +110,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       q,
       visual,
     }) => {
+      setVisonautItem(item);
       await page.emulateMedia({ colorScheme, contrast });
       const week = query(q.group(title)).button("Week");
       await week.scrollIntoViewIfNeeded();
@@ -137,6 +179,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "tailwind/7466/test-browser/later-active-items-own-boundaries-shared-by-two-active-items",
+    );
     const group = query(q.group("Border 2"));
     const day = group.button("Day");
     const week = group.button("Week");
@@ -203,6 +248,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "tailwind/7466/test-browser/allows-explicit-focus-stacking-above-an-active-neighbor",
+    );
     const group = query(q.group("Focus priority"));
     const week = group.button("Week");
     const month = group.button("Month");

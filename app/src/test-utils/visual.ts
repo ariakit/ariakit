@@ -4,6 +4,7 @@ import { invariant } from "@ariakit/utils";
 import type { Locator, Page, TestInfo } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { slugify } from "#app/lib/string.ts";
+import { captureVisonaut } from "./visonaut.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;
 const CLIP_STABILITY_INTERVAL = 16;
@@ -31,6 +32,12 @@ type Viewports = Record<string, ViewportSize>;
 type Styles = Record<string, CSSProperties>;
 
 export interface ScreenshotOptions {
+  /** Stable Visonaut item key for generic previews. */
+  item?: string;
+  /** Stable key for another capture; defaults to the existing id. */
+  capture?: string;
+  /** Framework of a generic preview capture. */
+  framework?: string;
   /**
    * Viewports to capture.
    */
@@ -50,7 +57,7 @@ export interface ScreenshotOptions {
    */
   style?: CSSProperties;
   /**
-   * Additional identifier to disambiguate screenshots (e.g., path slug).
+   * Additional identifier to disambiguate captures (e.g., path slug).
    */
   id?: string;
   /**
@@ -65,9 +72,8 @@ export interface ScreenshotOptions {
    */
   fullPage?: boolean;
   /**
-   * How long each screenshot assertion may take, in milliseconds, including the
-   * two identical captures that a new baseline needs. Without it, the
-   * configured expect timeout applies.
+   * How long capture stabilization may take. For repository screenshots, this
+   * includes the two identical captures that a new baseline needs.
    */
   timeout?: number;
 }
@@ -417,6 +423,7 @@ export async function visual(
     fullPage = false,
     timeout,
   } = options;
+  const visonautExecutor = process.env.VISONAUT_EXECUTOR_DIRECTORY;
 
   const viewportEntries = Object.entries(viewports);
   const stylesEntries = Object.entries(styles);
@@ -429,12 +436,13 @@ export async function visual(
     await withViewport(page, viewport, async () => {
       for (const [styleName, style] of stylesEntries) {
         await withStyles(page, { ...style, ...defaultStyle }, async () => {
-          const variants = [viewportName, styleName];
-          const fileSnapshotName = getFileSnapshotName({
-            id,
-            testInfo,
-            variants,
-          });
+          const fileSnapshotName = visonautExecutor
+            ? null
+            : getFileSnapshotName({
+                id,
+                testInfo,
+                variants: [viewportName, styleName],
+              });
           await page.waitForLoadState("domcontentloaded");
           await waitForFonts(page);
           if (fullPage && element) {
@@ -453,16 +461,24 @@ export async function visual(
             clipMargin,
             fullPage,
           });
-          await expect(page).toHaveScreenshot(fileSnapshotName, {
-            ...screenshotOptions,
-            // A page-sized pixel allowance can hide changes to small controls.
-            ...(fullPage && { maxDiffPixelRatio: 0 }),
-            timeout,
-          });
-          // Touch the screenshot file so the CI stale-detection step (which
-          // deletes files older than a pre-run marker) knows this screenshot is
-          // still expected by a test.
-          touchScreenshot(testInfo, fileSnapshotName);
+          if (fileSnapshotName) {
+            await expect(page).toHaveScreenshot(fileSnapshotName, {
+              ...screenshotOptions,
+              // Page-sized tolerance can hide changes to small controls.
+              ...(fullPage && { maxDiffPixelRatio: 0 }),
+              timeout,
+            });
+            // Mark this file as used so CI's stale cleanup keeps it.
+            touchScreenshot(testInfo, fileSnapshotName);
+          } else {
+            await captureVisonaut(page, {
+              options,
+              screenshot: screenshotOptions,
+              viewport: viewportName,
+              style: styleName,
+              testInfo,
+            });
+          }
         });
       }
     });

@@ -1,0 +1,229 @@
+name: Visonaut capture executor
+
+on:
+  workflow_call:
+    inputs:
+      mode:
+        type: string
+        default: capture
+
+permissions:
+  contents: read
+
+env:
+  LEFTHOOK: "0"
+  pnpm_config_verify_deps_before_run: "false"
+  # Source commit reviewed on main; update with the plan and npm integrity lock.
+  VISONAUT_EXECUTOR_SOURCE: "9c43cf1a541989e784aa5067bfc4c5d420f34f5c"
+
+jobs:
+  build:
+    if: inputs.mode == 'capture'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 12.5.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24.18.0
+      - run: pnpm install --frozen-lockfile --no-runtime --filter app...
+      - name: Build candidate applications
+        env:
+          CLOUDFLARE_ENV: preview
+        run: pnpm run build-app
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: visonaut-candidate-build
+          path: |
+            app/dist
+            app/.wrangler/deploy/config.json
+            nextjs/.open-next
+          retention-days: 7
+          include-hidden-files: true
+          if-no-files-found: error
+
+  render:
+    name: render-${{ matrix.browser }}
+    needs: build
+    if: always() && (inputs.mode == 'probe' || needs.build.result == 'success')
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { browser: chromium, os: ubuntu-24.04 }
+          - { browser: firefox, os: ubuntu-24.04 }
+          - { browser: webkit, os: macos-15 }
+    env:
+      VISONAUT_BROWSER: ${{ matrix.browser }}
+      VISONAUT_PACKAGE_DIRECTORY: ${{ runner.temp }}/visonaut-packages
+    steps:
+      - name: Validate fixed invocation
+        env:
+          MODE: ${{ inputs.mode }}
+        run: test "$MODE" = probe || test "$MODE" = capture
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Checkout trusted main executor
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: ariakit/ariakit
+          ref: ${{ env.VISONAUT_EXECUTOR_SOURCE }}
+          path: .visonaut-trusted
+          persist-credentials: false
+          sparse-checkout: |
+            .github/visonaut
+            .github/visonaut-plan.json
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 12.5.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24.18.0
+      - name: Install pinned executor outside candidate checkout
+        env:
+          EXECUTOR: ${{ runner.temp }}/visonaut-executor
+        run: |
+          echo "VISONAUT_EXECUTOR_DIRECTORY=$EXECUTOR" >> "$GITHUB_ENV"
+          mkdir -p "$EXECUTOR"
+          cp .visonaut-trusted/.github/visonaut/* "$EXECUTOR/"
+          cp .visonaut-trusted/.github/visonaut-plan.json "$(dirname "$EXECUTOR")/visonaut-plan.json"
+          cd "$EXECUTOR"
+          npm ci --ignore-scripts --no-audit --no-fund --workspaces=false
+      - name: Download two exact client packages with signed job identity
+        run: node "$VISONAUT_EXECUTOR_DIRECTORY/bootstrap.mjs" download render
+      - name: Install verified temporary client packages
+        run: node "$VISONAUT_EXECUTOR_DIRECTORY/bootstrap.mjs" install
+      - run: env -u ACTIONS_ID_TOKEN_REQUEST_URL -u ACTIONS_ID_TOKEN_REQUEST_TOKEN pnpm install --frozen-lockfile --no-runtime --filter app...
+      - name: Use one trusted Playwright instance
+        run: |
+          node -e 'const path = require("node:path"); const candidate = require("./app/node_modules/@playwright/test/package.json").version; const trusted = require(path.join(process.env.VISONAUT_EXECUTOR_DIRECTORY, "node_modules/@playwright/test/package.json")).version; if (candidate !== trusted) throw new Error("Playwright versions differ")'
+          for package in app packages/ariakit-test packages/ariakit-scripts; do
+            test -L "$package/node_modules/@playwright/test"
+            rm "$package/node_modules/@playwright/test"
+            ln -s "$VISONAUT_EXECUTOR_DIRECTORY/node_modules/@playwright/test" "$package/node_modules/@playwright/test"
+          done
+      - name: Install selected browser
+        run: node "$VISONAUT_EXECUTOR_DIRECTORY/node_modules/playwright/cli.js" install --with-deps "$VISONAUT_BROWSER"
+      - name: Measure runner and fonts
+        run: node "$VISONAUT_EXECUTOR_DIRECTORY/runner.mjs" probe
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: visonaut-environment-${{ matrix.browser }}-${{ github.run_attempt }}
+          path: app/.visonaut-results/environment-${{ matrix.browser }}.json
+          retention-days: 7
+          include-hidden-files: true
+          if-no-files-found: error
+      - if: inputs.mode == 'capture'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: visonaut-candidate-build
+      - if: inputs.mode == 'capture'
+        run: node "$VISONAUT_EXECUTOR_DIRECTORY/runner.mjs" render-context
+      - name: Capture complete @visual suite
+        if: inputs.mode == 'capture'
+        working-directory: ${{ env.VISONAUT_EXECUTOR_DIRECTORY }}
+        run: |
+          if [ "$RUNNER_OS" = Linux ]; then
+            env -u ACTIONS_ID_TOKEN_REQUEST_URL -u ACTIONS_ID_TOKEN_REQUEST_TOKEN xvfb-run node node_modules/playwright/cli.js test --config playwright.config.mjs
+          else
+            env -u ACTIONS_ID_TOKEN_REQUEST_URL -u ACTIONS_ID_TOKEN_REQUEST_TOKEN node node_modules/playwright/cli.js test --config playwright.config.mjs
+          fi
+      - name: Verify complete trusted item set
+        if: inputs.mode == 'capture'
+        run: node "$VISONAUT_EXECUTOR_DIRECTORY/runner.mjs" items
+      - name: Encrypt private capture shard
+        if: inputs.mode == 'capture'
+        run: node "$VISONAUT_EXECUTOR_DIRECTORY/runner.mjs" encrypt "${{ runner.temp }}/visonaut-shard-$VISONAUT_BROWSER.enc"
+      - if: inputs.mode == 'capture'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: visonaut-shard-${{ matrix.browser }}
+          path: ${{ runner.temp }}/visonaut-shard-${{ matrix.browser }}.enc
+          retention-days: 7
+          if-no-files-found: error
+
+  capture:
+    name: ${{ matrix.browser }}
+    needs: [build, render]
+    if: always() && inputs.mode == 'capture' && needs.build.result == 'success'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { browser: chromium, os: ubuntu-24.04 }
+          - { browser: firefox, os: ubuntu-24.04 }
+          - { browser: webkit, os: macos-15 }
+    env:
+      VISONAUT_BROWSER: ${{ matrix.browser }}
+      VISONAUT_PACKAGE_DIRECTORY: ${{ runner.temp }}/visonaut-packages
+    steps:
+      - name: Checkout trusted main executor only
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: ariakit/ariakit
+          ref: ${{ env.VISONAUT_EXECUTOR_SOURCE }}
+          path: .visonaut-trusted
+          persist-credentials: false
+          sparse-checkout: |
+            .github/visonaut
+            .github/visonaut-plan.json
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24.18.0
+      - name: Install pinned executor outside candidate checkout
+        env:
+          EXECUTOR: ${{ runner.temp }}/visonaut-executor
+        run: |
+          echo "VISONAUT_EXECUTOR_DIRECTORY=$EXECUTOR" >> "$GITHUB_ENV"
+          mkdir -p "$EXECUTOR"
+          cp .visonaut-trusted/.github/visonaut/* "$EXECUTOR/"
+          cp .visonaut-trusted/.github/visonaut-plan.json "$(dirname "$EXECUTOR")/visonaut-plan.json"
+          cd "$EXECUTOR"
+          npm ci --ignore-scripts --no-audit --no-fund --workspaces=false
+      - name: Download two exact client packages with signed job identity
+        run: node "$VISONAUT_EXECUTOR_DIRECTORY/bootstrap.mjs" download capture
+      - name: Install verified temporary client packages
+        run: node "$VISONAUT_EXECUTOR_DIRECTORY/bootstrap.mjs" install
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: visonaut-shard-${{ matrix.browser }}
+          path: ${{ runner.temp }}/visonaut-transfer
+      - name: Decrypt and bind to signed submission job
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node "$VISONAUT_EXECUTOR_DIRECTORY/runner.mjs" submit "${{ runner.temp }}/visonaut-transfer/visonaut-shard-$VISONAUT_BROWSER.enc"
+      - name: Submit complete shard
+        working-directory: app
+        run: |
+          VISONAUT_SERVER="$(node --input-type=module -e 'import fs from "node:fs"; import path from "node:path"; const {server}=JSON.parse(fs.readFileSync(path.join(process.env.VISONAUT_EXECUTOR_DIRECTORY,"settings.json"),"utf8")); console.log(new URL(server).origin)')"
+          export VISONAUT_SERVER
+          node "$VISONAUT_EXECUTOR_DIRECTORY/node_modules/visonaut/dist/bin.js" upload --manifest .visonaut-results/manifest.json
+          node "$VISONAUT_EXECUTOR_DIRECTORY/node_modules/visonaut/dist/bin.js" finalize --manifest .visonaut-results/manifest.json
+      - name: Read reporter receipt name
+        id: receipt
+        run: node "$VISONAUT_EXECUTOR_DIRECTORY/runner.mjs" receipt-name
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ${{ steps.receipt.outputs.name }}
+          path: app/.visonaut-results/receipt.json
+          overwrite: false
+          retention-days: 7
+          include-hidden-files: true
+          if-no-files-found: error

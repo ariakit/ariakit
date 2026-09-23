@@ -5,6 +5,7 @@ import {
   forEachColorScheme,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/issues/7480
@@ -76,6 +77,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   test("page @visual", async ({ page, visual }) => {
+    setVisonautItem("ui/progress/test-browser/page");
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),
     );
@@ -88,6 +90,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/progress/test-browser/keeps-bars-and-rings-visible-in-forced-colors",
+    );
     // The emulation lasts across the reloads of each color scheme.
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
@@ -109,6 +114,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/progress/test-browser/draws-the-track-edge-only-on-a-bordered-track-in-high-contrast",
+    );
     await page.emulateMedia({ contrast: "more" });
     await forEachColorScheme(page, async (colorScheme) => {
       await expectMedia(page, "(prefers-contrast: more)");
@@ -128,6 +136,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/progress/test-browser/moves-the-bar-and-the-ring-to-a-new-value",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Value change");
       const scope = query(box);

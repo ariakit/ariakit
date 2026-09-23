@@ -8,12 +8,14 @@ import {
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // The page capture also keeps the custom navigation label styles of the nav
   // fixtures under visual regression.
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972223730
   test("page @visual", async ({ page, visual }) => {
+    setVisonautItem("ui/nav/test-browser/page");
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),
     );
@@ -26,6 +28,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/nav/test-browser/shows-the-hover-cover-on-a-row-of-a-nested-section",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Nested disclosures");
       await hoverOver(query(box).link("Radio"));
@@ -38,6 +43,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/nav/test-browser/moves-the-sidebar-current-cover-on-click-and-the-focus-ring-with-the-keyboard",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Sidebar");
       const quickstart = query(box).link("Quickstart").first();

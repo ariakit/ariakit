@@ -5,6 +5,7 @@ import {
   getCapsOffset,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // Each engine rounds the half-leading of a line box its own way, so the label
@@ -31,6 +32,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   test("page @visual", async ({ page, visual }) => {
+    setVisonautItem("ui/badge/test-browser/page");
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),
     );

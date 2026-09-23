@@ -9,6 +9,7 @@ import {
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
@@ -98,6 +99,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550181
   // https://github.com/ariakit/ariakit/issues/7466
   test("page @visual", async ({ page, visual }) => {
+    setVisonautItem("ui/button/test-browser/page");
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),
     );
@@ -108,6 +110,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/button/test-browser/shows-the-thick-focus-ring-on-keyboard-focus",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Thick focus ring");
       const button = query(box).button("Move");
@@ -122,6 +127,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/button/test-browser/moves-the-segmented-control-glider-to-the-clicked-radio",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Segmented control");
       const grid = query(query(box).radiogroup("View")).radio("Grid");
@@ -136,12 +144,14 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/button/test-browser/moves-the-hover-glider-over-a-hovered-link",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Current link gliders");
       const activity = query(box).link("Activity");
-      // A synthesized pointer move that scrolls the group into view does not
-      // apply :hover in WebKit until the pointer enters another element, so the
-      // pointer passes over Settings on its way to Activity.
+      // In WebKit, a synthesized move that scrolls the group does not apply
+      // :hover until the pointer enters another element. Move across Settings.
       await activity.scrollIntoViewIfNeeded();
       await query(box).link("Settings").hover();
       await hoverOver(activity);
@@ -201,12 +211,22 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // A hovered control owns both of its shared edges, so each one takes the
   // hovered surface instead of darkening where two borders overlap.
   // https://github.com/ariakit/ariakit/issues/7466
-  for (const title of ["Horizontal", "Joined vertical"]) {
+  for (const { title, item } of [
+    {
+      title: "Horizontal",
+      item: "ui/button/test-browser/tints-both-shared-edges-of-the-hovered-middle-control-in-horizontal",
+    },
+    {
+      title: "Joined vertical",
+      item: "ui/button/test-browser/tints-both-shared-edges-of-the-hovered-middle-control-in-joined-vertical",
+    },
+  ]) {
     test(`tints both shared edges of the hovered middle control in ${title} @visual`, async ({
       page,
       q,
       visual,
     }) => {
+      setVisonautItem(item);
       await forEachColorScheme(page, async (colorScheme) => {
         const group = q.group(title);
         await hoverOver(query(group).button("Week"));

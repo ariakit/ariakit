@@ -4,6 +4,7 @@ import {
   forEachColorScheme,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 
 // Where the text of a padded box starts: its left edge plus its side padding.
 function textStart(box: Locator) {
@@ -15,6 +16,7 @@ function textStart(box: Locator) {
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   test("page @visual", async ({ page, visual }) => {
+    setVisonautItem("ui/text-frame/test-browser/page");
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),
     );

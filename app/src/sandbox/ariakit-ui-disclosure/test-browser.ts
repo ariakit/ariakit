@@ -5,9 +5,11 @@ import {
   hoverOver,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   test("page @visual", async ({ page, visual }) => {
+    setVisonautItem("ui/disclosure/test-browser/page");
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),
     );
@@ -15,6 +17,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
 
   // https://github.com/ariakit/ariakit/issues/7478
   test("default shape on hover @visual", async ({ page, q, visual }) => {
+    setVisonautItem("ui/disclosure/test-browser/default-shape-on-hover");
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Default");
       const button = query(box).button("What is Ariakit?");

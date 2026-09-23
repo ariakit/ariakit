@@ -8,6 +8,7 @@ import {
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // A tile's top row is as tall as its largest slot. A badge beside that slot
@@ -25,6 +26,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   test("page @visual", async ({ page, visual }) => {
+    setVisonautItem("ui/checkbox/test-browser/page");
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),
     );
@@ -35,6 +37,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/checkbox/test-browser/draws-the-ring-of-a-focused-field-on-its-box",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Checkbox field");
       const input = query(box).checkbox("Remember me");

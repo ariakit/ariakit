@@ -90,18 +90,25 @@ export function withFramework(
     ? ["react"]
     : getPreviewFrameworksSync(dirname);
   for (const framework of frameworkNames) {
-    test.describe(framework, { tag: `@${framework}` }, () => {
-      test.beforeEach(async ({ page, javaScriptEnabled }) => {
-        await gotoAndSettle(page, `/${framework}/previews/${id}/`);
-        // Generated Astro previews contain one eager client:load island. Its
-        // wrapper marks the document from a mount effect after the example
-        // commits. JavaScript-disabled previews skip the check, while Next.js
-        // previews contain no Astro island and pass through it immediately.
-        if (javaScriptEnabled) {
-          await page.waitForFunction(isPreviewHydrated);
-        }
-      });
-      return callback({ id, framework, query, test });
-    });
+    test.describe(
+      framework,
+      {
+        tag: `@${framework}`,
+        annotation: { type: "visonaut:framework", description: framework },
+      },
+      () => {
+        test.beforeEach(async ({ page, javaScriptEnabled }) => {
+          await gotoAndSettle(page, `/${framework}/previews/${id}/`);
+          // Generated Astro previews contain one eager client:load island. Its
+          // wrapper marks the document from a mount effect after the example
+          // commits. JavaScript-disabled previews skip the check, while Next.js
+          // previews contain no Astro island and pass through it immediately.
+          if (javaScriptEnabled) {
+            await page.waitForFunction(isPreviewHydrated);
+          }
+        });
+        return callback({ id, framework, query, test });
+      },
+    );
   }
 }

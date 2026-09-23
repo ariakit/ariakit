@@ -26,9 +26,10 @@ const SCREENSHOT_TIMEOUT = 30_000;
 // Keep compact grids in one image and split taller grids at row boundaries.
 const SINGLE_CAPTURE_HEIGHT = 1280;
 const ROWS_PER_CAPTURE = 3;
+const VISONAUT_MAX_CAPTURE_PIXELS = 2_100_000;
 
 // WebP stores each side in 14 bits and every engine fails to encode a taller
-// capture. toHaveScreenshot captures at CSS scale, so the unit is CSS pixels.
+// capture. Visonaut captures at CSS scale, so the unit is CSS pixels.
 const MAX_SCREENSHOT_HEIGHT = 16_383;
 
 /**
@@ -145,14 +146,29 @@ export async function capturePage(
     );
     const bounds = await sections.evaluateAll((elements) => {
       const rects = elements.map((element) => element.getBoundingClientRect());
-      return (
-        Math.max(...rects.map((rect) => rect.bottom)) -
-        Math.min(...rects.map((rect) => rect.top))
-      );
+      return {
+        width:
+          Math.max(...rects.map((rect) => rect.right)) -
+          Math.min(...rects.map((rect) => rect.left)),
+        height:
+          Math.max(...rects.map((rect) => rect.bottom)) -
+          Math.min(...rects.map((rect) => rect.top)),
+      };
     });
     // Half the 16px grid gap keeps adjacent rows outside the capture.
     const clipMargin = 8;
-    expect(bounds + clipMargin * 2).toBeLessThanOrEqual(MAX_SCREENSHOT_HEIGHT);
+    expect(bounds.height + clipMargin * 2).toBeLessThanOrEqual(
+      MAX_SCREENSHOT_HEIGHT,
+    );
+    if (
+      process.env.CI &&
+      process.env.VISONAUT_EXECUTOR_DIRECTORY &&
+      (Math.ceil(bounds.width) + clipMargin * 2 + 2) *
+        (Math.ceil(bounds.height) + clipMargin * 2 + 2) >
+        VISONAUT_MAX_CAPTURE_PIXELS
+    ) {
+      throw new Error("Visonaut page capture exceeds the codec pixel limit");
+    }
     await visual(
       getCapture(sections, colorScheme, {
         id: `rows-${index + 1}-${Math.min(index + ROWS_PER_CAPTURE, rows.length)}`,

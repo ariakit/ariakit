@@ -1,0 +1,34 @@
+name: Visonaut diagnostic
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Measure runner profiles before enabling complete captures
+        type: choice
+        options: [probe, capture]
+        default: probe
+  push:
+    branches: [main]
+  pull_request:
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+concurrency:
+  group: visonaut-diagnostic-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    if: >-
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) &&
+      (vars.VISONAUT_DIAGNOSTIC_ENABLED == 'true' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request')
+    # Use the reviewed workflow commit with its immutable executor-source pin.
+    uses: ariakit/ariakit/.github/workflows/visonaut-capture.yml@2298d55a0e9013d4fd9d347ce9100e51830e03ca
+    with:
+      mode: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || vars.VISONAUT_DIAGNOSTIC_ENABLED == 'true' && 'capture' || 'probe' }}

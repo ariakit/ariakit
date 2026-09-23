@@ -1,0 +1,2409 @@
+{
+  "schemaVersion": 2,
+  "items": {
+    "previews/combobox-group/custom-items/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none",
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none",
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none",
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none"
+      ]
+    },
+    "previews/combobox-group/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none",
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none",
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none",
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none"
+      ]
+    },
+    "previews/separator/_component/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none",
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none",
+        "solid/desktop/dark/dark/no-preference/none",
+        "solid/desktop/light/light/no-preference/none",
+        "solid/mobile/dark/dark/no-preference/none",
+        "solid/mobile/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none",
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none",
+        "solid/desktop/dark/dark/no-preference/none",
+        "solid/desktop/light/light/no-preference/none",
+        "solid/mobile/dark/dark/no-preference/none",
+        "solid/mobile/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none",
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none",
+        "solid/desktop/dark/dark/no-preference/none",
+        "solid/desktop/light/light/no-preference/none",
+        "solid/mobile/dark/dark/no-preference/none",
+        "solid/mobile/light/light/no-preference/none"
+      ]
+    },
+    "tailwind/7466/test-browser/allows-explicit-focus-stacking-above-an-active-neighbor/main": {
+      "c": ["react/default/default/light/no-preference/none"],
+      "f": ["react/default/default/light/no-preference/none"],
+      "s": ["react/default/default/light/no-preference/none"]
+    },
+    "tailwind/7466/test-browser/applied-joins-edges-through-hover-light-no-preference/applied-week": {
+      "c": ["react/default/default/light/no-preference/none"],
+      "f": ["react/default/default/light/no-preference/none"],
+      "s": ["react/default/default/light/no-preference/none"]
+    },
+    "tailwind/7466/test-browser/border-2-joins-edges-through-hover-dark-more/border-2-week": {
+      "c": ["react/default/default/dark/more/none"],
+      "f": ["react/default/default/dark/more/none"],
+      "s": ["react/default/default/dark/more/none"]
+    },
+    "tailwind/7466/test-browser/border-2-joins-edges-through-hover-dark-no-preference/border-2-week": {
+      "c": ["react/default/default/dark/no-preference/none"],
+      "f": ["react/default/default/dark/no-preference/none"],
+      "s": ["react/default/default/dark/no-preference/none"]
+    },
+    "tailwind/7466/test-browser/border-2-joins-edges-through-hover-light-more/border-2-week": {
+      "c": ["react/default/default/light/more/none"],
+      "f": ["react/default/default/light/more/none"],
+      "s": ["react/default/default/light/more/none"]
+    },
+    "tailwind/7466/test-browser/fractional-ring-joins-edges-through-hover-dark-no-preference/fractional-ring-week": {
+      "c": ["react/default/default/dark/no-preference/none"],
+      "f": ["react/default/default/dark/no-preference/none"],
+      "s": ["react/default/default/dark/no-preference/none"]
+    },
+    "tailwind/7466/test-browser/later-active-items-own-boundaries-shared-by-two-active-items/selected-selected": {
+      "c": ["react/default/default/light/no-preference/none"],
+      "f": ["react/default/default/light/no-preference/none"],
+      "s": ["react/default/default/light/no-preference/none"]
+    },
+    "tailwind/7466/test-browser/ring-2-joins-edges-through-hover-light-no-preference/ring-2-week": {
+      "c": ["react/default/default/light/no-preference/none"],
+      "f": ["react/default/default/light/no-preference/none"],
+      "s": ["react/default/default/light/no-preference/none"]
+    },
+    "tailwind/7466/test-browser/rtl-joins-edges-through-hover-light-no-preference/rtl-week": {
+      "c": ["react/default/default/light/no-preference/none"],
+      "f": ["react/default/default/light/no-preference/none"],
+      "s": ["react/default/default/light/no-preference/none"]
+    },
+    "tailwind/7466/test-browser/vertical-ring-joins-edges-through-hover-light-no-preference/vertical-ring-week": {
+      "c": ["react/default/default/light/no-preference/none"],
+      "f": ["react/default/default/light/no-preference/none"],
+      "s": ["react/default/default/light/no-preference/none"]
+    },
+    "ui/badge/test-browser/page/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/badge/test-chrome-firefox/keeps-badge-boundaries-in-forced-colors/brand": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/badge/test-chrome-firefox/keeps-badge-boundaries-in-forced-colors/default": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-browser/moves-the-hover-glider-over-a-hovered-link/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/moves-the-segmented-control-glider-to-the-clicked-radio/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/page/rows-1-3": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/page/rows-10-12": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/page/rows-13-15": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/page/rows-16-18": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/page/rows-19-21": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/page/rows-22-24": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/page/rows-25-27": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/page/rows-28-29": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/page/rows-4-6": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/page/rows-7-9": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/shows-the-thick-focus-ring-on-keyboard-focus/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/tints-both-shared-edges-of-the-hovered-middle-control-in-horizontal/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-browser/tints-both-shared-edges-of-the-hovered-middle-control-in-joined-vertical/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-a-filled-control-boundary-in-forced-colors/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-disabled-layers-borderless-and-preserves-bevels-in-forced-colors/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-filled-and-bevel-button-boundaries-in-forced-colors/bevel": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-filled-and-bevel-button-boundaries-in-forced-colors/brand": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-filled-and-bevel-button-boundaries-in-forced-colors/contrast": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-filled-and-bevel-button-boundaries-in-forced-colors/default": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-filled-and-bevel-button-boundaries-in-forced-colors/desaturated": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-filled-and-bevel-button-boundaries-in-forced-colors/focus": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-filled-and-bevel-button-boundaries-in-forced-colors/inverted": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-filled-and-bevel-button-boundaries-in-forced-colors/lifted": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-filled-and-bevel-button-boundaries-in-forced-colors/pushed": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-glider-boundaries-and-inherited-widths-in-forced-colors/hover": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/keeps-glider-boundaries-and-inherited-widths-in-forced-colors/joined": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/button/test-chrome-firefox/preserves-explicit-ring-and-inset-button-edges-in-forced-colors/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/checkbox/test-browser/draws-the-ring-of-a-focused-field-on-its-box/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/checkbox/test-browser/page/rows-1-3": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/checkbox/test-browser/page/rows-10-10": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/checkbox/test-browser/page/rows-4-6": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/checkbox/test-browser/page/rows-7-9": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/code/test-browser/page/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/combobox/test-browser/aligns-custom-icons-and-selected-options/initial": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/combobox/test-browser/aligns-custom-icons-and-selected-options/sms-selected": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/combobox/test-browser/colors-the-status-select-with-the-chosen-status/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/combobox/test-browser/keeps-long-options-inside-a-narrow-viewport/long-selection": {
+      "c": [
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none"
+      ]
+    },
+    "ui/combobox/test-browser/keeps-long-options-inside-a-narrow-viewport/long-suggestion": {
+      "c": [
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/mobile/dark/dark/no-preference/none",
+        "react/mobile/light/light/no-preference/none"
+      ]
+    },
+    "ui/combobox/test-browser/keeps-the-combobox-list-spacing-with-optional-position-props/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/combobox/test-browser/keeps-the-select-list-spacing-with-optional-position-props/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/combobox/test-browser/page/rows-1-3": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/combobox/test-browser/page/rows-10-11": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/combobox/test-browser/page/rows-4-6": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/combobox/test-browser/page/rows-7-9": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/combobox/test-chrome-firefox/keeps-the-empty-message-borderless-in-forced-colors/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/dialog/test-browser/opens-a-nested-dialog-over-the-dialog-that-opened-it/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/dialog/test-browser/opens-the-release-notes-dialog/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/dialog/test-browser/opens-the-success-dialog/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/dialog/test-browser/opens-the-upgrade-to-pro-dialog/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/dialog/test-browser/page/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/disclosure/test-browser/default-shape-on-hover/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/disclosure/test-browser/page/rows-1-3": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/disclosure/test-browser/page/rows-4-6": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/disclosure/test-browser/page/rows-7-9": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/heading/test-browser/page/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/heading/test-browser/underlines-a-permalink-on-hover/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/dims-the-wrapper-of-a-disabled-input-and-keeps-it-unlit-on-hover/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/dims-the-wrapper-of-an-aria-disabled-input-and-keeps-it-unlit-on-hover/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/keeps-a-wrapper-enabled-and-lit-on-hover-when-only-its-button-is-disabled/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/keeps-a-wrapper-enabled-and-lit-on-hover-when-only-its-select-is-disabled/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/keeps-a-wrapper-enabled-and-lit-on-hover-when-only-its-submit-input-is-disabled/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/page/rows-1-3": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/page/rows-4-6": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/page/rows-7-7": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/rings-grouped-fields-and-their-leading-actions-on-keyboard-focus/action": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/rings-grouped-fields-and-their-leading-actions-on-keyboard-focus/delivery-notes": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/rings-grouped-fields-and-their-leading-actions-on-keyboard-focus/delivery-speed": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/rings-grouped-fields-and-their-leading-actions-on-keyboard-focus/field": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/rings-grouped-fields-and-their-leading-actions-on-keyboard-focus/handle": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/input/test-browser/rings-the-wrapper-when-the-input-inside-takes-focus/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/kbd/test-browser/page/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/layer/test-browser/page/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/link/test-browser/keeps-the-focus-ring-against-an-inline-link/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/link/test-browser/offsets-the-focus-ring-of-a-standalone-link/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/link/test-browser/page/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/list/test-browser/page/rows-1-3": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/list/test-browser/page/rows-10-10": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/list/test-browser/page/rows-4-6": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/list/test-browser/page/rows-7-9": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/list/test-chrome-firefox/keeps-marker-shapes-and-guides-in-forced-colors/rows-1-3": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/list/test-chrome-firefox/keeps-marker-shapes-and-guides-in-forced-colors/rows-10-10": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/list/test-chrome-firefox/keeps-marker-shapes-and-guides-in-forced-colors/rows-4-6": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/list/test-chrome-firefox/keeps-marker-shapes-and-guides-in-forced-colors/rows-7-9": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/nav/test-browser/moves-the-sidebar-current-cover-on-click-and-the-focus-ring-with-the-keyboard/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/nav/test-browser/page/rows-1-3": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/nav/test-browser/page/rows-10-12": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/nav/test-browser/page/rows-4-6": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/nav/test-browser/page/rows-7-9": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/nav/test-browser/shows-the-hover-cover-on-a-row-of-a-nested-section/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/popover/test-browser/floats-the-live-popover-away-from-its-disclosure/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/popover/test-browser/page/rows-1-3": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/popover/test-browser/page/rows-4-4": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/popover/test-chrome-firefox/keeps-the-frame-and-popover-boundaries-in-forced-colors/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/progress/test-browser/draws-the-track-edge-only-on-a-bordered-track-in-high-contrast/bordered": {
+      "c": [
+        "react/desktop/dark/dark/more/none",
+        "react/desktop/light/light/more/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/more/none",
+        "react/desktop/light/light/more/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/more/none",
+        "react/desktop/light/light/more/none"
+      ]
+    },
+    "ui/progress/test-browser/draws-the-track-edge-only-on-a-bordered-track-in-high-contrast/borderless": {
+      "c": [
+        "react/desktop/dark/dark/more/none",
+        "react/desktop/light/light/more/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/more/none",
+        "react/desktop/light/light/more/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/more/none",
+        "react/desktop/light/light/more/none"
+      ]
+    },
+    "ui/progress/test-browser/keeps-bars-and-rings-visible-in-forced-colors/bar": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/progress/test-browser/keeps-bars-and-rings-visible-in-forced-colors/ring": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/progress/test-browser/moves-the-bar-and-the-ring-to-a-new-value/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/progress/test-browser/page/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/prose/test-browser/page/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/radio/test-browser/keeps-a-card-of-a-disabled-grid-unlit-on-hover/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/radio/test-browser/lights-an-enabled-card-on-hover/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/radio/test-browser/page/rows-1-3": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/radio/test-browser/page/rows-4-6": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/radio/test-browser/page/rows-7-9": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/separator/test-browser/page/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/bar-sizing-at-a-narrow-width/grow-the-center": {
+      "c": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/bar-sizing-at-a-narrow-width/shrink-the-sides": {
+      "c": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/bar-sizing-at-a-narrow-width/stacked": {
+      "c": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/bar/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/chat/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/dashboard-at-wide-and-narrow-widths/main": {
+      "c": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none",
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none",
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none",
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/dashboard/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/docs-at-wide-and-narrow-widths/main": {
+      "c": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none",
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none",
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none",
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/docs-site-scrolled-under-the-blurred-header/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/docs-site/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/flush-band-at-the-shell-radius/main": {
+      "c": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none",
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none",
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/narrow/dark/dark/no-preference/none",
+        "react/narrow/light/light/no-preference/none",
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/marketing/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/settings/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/sidebar-combinations-and-right-to-left-layout/ltr-both-closed": {
+      "c": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/sidebar-combinations-and-right-to-left-layout/ltr-both-open": {
+      "c": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/sidebar-combinations-and-right-to-left-layout/ltr-contents-only": {
+      "c": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/sidebar-combinations-and-right-to-left-layout/ltr-navigation-only": {
+      "c": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/sidebar-combinations-and-right-to-left-layout/rtl-both-closed": {
+      "c": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/sidebar-combinations-and-right-to-left-layout/rtl-both-open": {
+      "c": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/sidebar-combinations-and-right-to-left-layout/rtl-contents-only": {
+      "c": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/sidebar-combinations-and-right-to-left-layout/rtl-navigation-only": {
+      "c": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/wide/dark/dark/no-preference/none",
+        "react/wide/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-browser/captures/sticky-sidebar-above-the-footer/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/shell/test-chrome-firefox/captures/blurred-header-in-forced-colors/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/table/test-browser/draws-a-focused-cells-ring-inside-the-cell/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/keeps-missing-hours-under-their-header-after-adding-a-contributor/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/keeps-the-names-pinned-over-the-scrolled-columns/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/page/rows-1-3": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/page/rows-10-12": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/page/rows-13-15": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/page/rows-16-16": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/page/rows-4-6": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/page/rows-7-9": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/paints-row-borders-above-pinned-cells-while-scrolling/failed-focus": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/paints-row-borders-above-pinned-cells-while-scrolling/failed-static": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/paints-row-borders-above-pinned-cells-while-scrolling/ready-to-test-static": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/paints-the-pinned-cell-over-the-cells-scrolled-under-it/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/rounds-the-ring-of-the-focused-last-row/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/scrolls-the-names-with-the-columns-when-they-are-unpinned/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/shares-cell-border-geometry-with-focus-without-adding-hover-edges/focus": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/shares-cell-border-geometry-with-focus-without-adding-hover-edges/hover": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/shares-row-borders-with-focus-across-hover-selection-and-pinned-cells/focus": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/shares-row-borders-with-focus-across-hover-selection-and-pinned-cells/selected": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/shows-the-hovered-row-through-ordinary-cells/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/table/test-browser/shows-the-selected-row-through-ordinary-cells/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/tabs/test-browser/moves-the-focus-glider-to-a-tab-without-selecting-it/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/tabs/test-browser/moves-the-hover-glider-over-a-hovered-tab/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/tabs/test-browser/page/rows-1-3": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/tabs/test-browser/page/rows-10-12": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/tabs/test-browser/page/rows-4-6": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/tabs/test-browser/page/rows-7-9": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/tabs/test-chrome-firefox/keeps-unselected-tabs-borderless-in-forced-colors/bevel-glider": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/tabs/test-chrome-firefox/keeps-unselected-tabs-borderless-in-forced-colors/bevel-tabs": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/tabs/test-chrome-firefox/keeps-unselected-tabs-borderless-in-forced-colors/borderless-bevel-glider": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/tabs/test-chrome-firefox/keeps-unselected-tabs-borderless-in-forced-colors/borderless-flat-glider": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/tabs/test-chrome-firefox/keeps-unselected-tabs-borderless-in-forced-colors/flat-glider": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/tabs/test-chrome-firefox/keeps-unselected-tabs-borderless-in-forced-colors/flat-tabs": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/active",
+        "react/desktop/light/light/no-preference/active"
+      ]
+    },
+    "ui/text-frame/test-browser/page/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/tooltip/test-browser/page/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    },
+    "ui/tooltip/test-browser/shows-the-live-tooltip-over-its-anchor-on-hover/main": {
+      "c": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "f": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ],
+      "s": [
+        "react/desktop/dark/dark/no-preference/none",
+        "react/desktop/light/light/no-preference/none"
+      ]
+    }
+  }
+}

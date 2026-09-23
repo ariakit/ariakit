@@ -4,6 +4,7 @@ import {
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972224343
@@ -54,6 +55,9 @@ withCaptures(import.meta.dirname, async ({ test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/combobox/test-chrome-firefox/keeps-the-empty-message-borderless-in-forced-colors",
+    );
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Empty state");

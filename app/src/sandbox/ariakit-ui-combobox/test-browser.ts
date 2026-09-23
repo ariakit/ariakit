@@ -7,6 +7,7 @@ import {
   OVERLAY_CLIP_MARGIN,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // The fixture section sits at the end of the sandbox, so it is scrolled to
@@ -21,6 +22,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972223972
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550839
   test("page @visual", async ({ page, visual }) => {
+    setVisonautItem("ui/combobox/test-browser/page");
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),
     );
@@ -32,6 +34,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/combobox/test-browser/keeps-long-options-inside-a-narrow-viewport",
+    );
     const viewport = { width: 400, height: 800 };
     await page.setViewportSize(viewport);
     await forEachColorScheme(page, async (colorScheme) => {
@@ -58,6 +63,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/combobox/test-browser/aligns-custom-icons-and-selected-options",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const select = q.combobox("Notifications");
       await select.click();
@@ -71,7 +79,10 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
           .toHaveAttribute("aria-hidden", "true");
       }
       await visual(
-        getCapture(list, colorScheme, { clipMargin: OVERLAY_CLIP_MARGIN }),
+        getCapture(list, colorScheme, {
+          capture: "initial",
+          clipMargin: OVERLAY_CLIP_MARGIN,
+        }),
       );
       await sms.click();
       await test.expect(sms).toHaveAttribute("aria-selected", "true");
@@ -79,7 +90,10 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await test.expect(email).toHaveAttribute("aria-selected", "false");
       await test.expect(select).toHaveText("SMS");
       await visual(
-        getCapture(list, colorScheme, { clipMargin: OVERLAY_CLIP_MARGIN }),
+        getCapture(list, colorScheme, {
+          capture: "sms-selected",
+          clipMargin: OVERLAY_CLIP_MARGIN,
+        }),
       );
     });
   });
@@ -89,6 +103,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/combobox/test-browser/colors-the-status-select-with-the-chosen-status",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const select = q.combobox("Review status");
       await select.click();
@@ -129,6 +146,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/combobox/test-browser/keeps-the-combobox-list-spacing-with-optional-position-props",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       await scrollToTop(q.region("Project editor"));
       await q.combobox("Assignee").click();
@@ -146,6 +166,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/combobox/test-browser/keeps-the-select-list-spacing-with-optional-position-props",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       await scrollToTop(q.region("Project editor"));
       await q.combobox("Status").click();

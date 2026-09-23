@@ -1,5 +1,5 @@
 import { test } from "#app/test-utils/fixtures.ts";
-import { viewports } from "#app/test-utils/visual.ts";
+import { defaultStyles, viewports } from "#app/test-utils/visual.ts";
 
 const TIMEOUT_PER_STEP = 20_000;
 
@@ -25,9 +25,27 @@ test("previews @visual", async ({ page, baseURL, visual }) => {
     await test.step(
       path,
       async () => {
-        await page.goto(path);
-        const id = path.replace(/^\/+/, "");
-        await visual({ id, viewports });
+        if (!process.env.VISONAUT_EXECUTOR_DIRECTORY) {
+          await page.goto(path);
+          await visual({ id: path.replace(/^\/+/, ""), viewports });
+          return;
+        }
+        const match = /^\/(react|solid)\/previews\/(.+?)\/?$/.exec(path);
+        const framework = match?.[1];
+        const preview = match?.[2];
+        if (!framework || !preview) {
+          throw new Error(`Invalid visual preview path: ${path}`);
+        }
+        for (const colorScheme of ["light", "dark"] as const) {
+          await page.emulateMedia({ colorScheme });
+          await page.goto(path);
+          await visual({
+            item: `previews/${preview}`,
+            framework,
+            viewports,
+            styles: { [colorScheme]: defaultStyles[colorScheme] },
+          });
+        }
       },
       { timeout: TIMEOUT_PER_STEP },
     );

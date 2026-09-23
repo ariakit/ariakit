@@ -22,6 +22,7 @@ coverage
 # misc
 .DS_Store
 *.pem
+!.github/visonaut/transfer-public.pem
 
 # debug
 npm-debug.log*
@@ -49,3 +50,10 @@ worker-configuration.d.ts
 # claude code
 .claude/worktrees
 .claude/scheduled_tasks.lock
+
+# Visonaut diagnostic job files
+.visonaut-trusted
+.visonaut
+.visonaut-results
+.visonaut-test-results
+.visonaut-packages

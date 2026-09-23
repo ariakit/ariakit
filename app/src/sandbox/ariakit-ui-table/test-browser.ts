@@ -8,6 +8,7 @@ import {
   hoverOver,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   test("shares cell border geometry with focus without adding hover edges @visual", async ({
@@ -15,6 +16,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/table/test-browser/shares-cell-border-geometry-with-focus-without-adding-hover-edges",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Cell edge override");
       const fixture = query(box);
@@ -38,6 +42,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/table/test-browser/shares-row-borders-with-focus-across-hover-selection-and-pinned-cells",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Row edge override");
       const fixture = query(box);
@@ -63,6 +70,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/table/test-browser/paints-row-borders-above-pinned-cells-while-scrolling",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Row edge override");
       const fixture = query(box);
@@ -71,7 +81,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const cases = [
         { name: "Failed Needs review", cell: "Failed", focus: false },
         { name: "Failed Needs review", cell: "Failed", focus: true },
-        { name: "Pending Ready to test", cell: "Ready to test", focus: false },
+        {
+          name: "Pending Ready to test",
+          cell: "Ready to test",
+          focus: false,
+        },
       ];
       for (const { name, cell, focus } of cases) {
         const row = fixture.row(name);
@@ -118,6 +132,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974548937
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974552570
   test("page @visual", async ({ page, visual }) => {
+    setVisonautItem("ui/table/test-browser/page");
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),
     );
@@ -128,6 +143,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/table/test-browser/draws-a-focused-cells-ring-inside-the-cell",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Selected rows");
       const grid = query(box);
@@ -147,6 +165,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/table/test-browser/rounds-the-ring-of-the-focused-last-row",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Focusable rows");
       await query(box)
@@ -164,6 +185,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/table/test-browser/paints-the-pinned-cell-over-the-cells-scrolled-under-it",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Table cell layer");
       await scrollCellsUnderPinnedCell(query(box).grid());
@@ -177,6 +201,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/table/test-browser/shows-the-hovered-row-through-ordinary-cells",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Table cell layer");
       await scrollCellsUnderPinnedCell(query(box).grid());
@@ -191,6 +218,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/table/test-browser/shows-the-selected-row-through-ordinary-cells",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Table cell layer");
       await scrollCellsUnderPinnedCell(query(box).grid());
@@ -210,6 +240,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/table/test-browser/keeps-the-names-pinned-over-the-scrolled-columns",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Table rows");
       await scrollCellsUnderPinnedCell(query(box).table("Team hours"));
@@ -223,6 +256,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/table/test-browser/scrolls-the-names-with-the-columns-when-they-are-unpinned",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Table rows");
       const pin = query(box).checkbox("Pin contributor names");
@@ -239,6 +275,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/table/test-browser/keeps-missing-hours-under-their-header-after-adding-a-contributor",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Table rows");
       await query(box).button("Add contributor").click();

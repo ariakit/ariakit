@@ -5,6 +5,7 @@ import {
   getViewportCapture,
 } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 import {
   expectCentered,
   getBox,
@@ -239,13 +240,23 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       },
     });
 
-    for (const scenario of ["docs", "dashboard"]) {
+    for (const { scenario, item } of [
+      {
+        scenario: "docs",
+        item: "ui/shell/test-browser/captures/docs-at-wide-and-narrow-widths",
+      },
+      {
+        scenario: "dashboard",
+        item: "ui/shell/test-browser/captures/dashboard-at-wide-and-narrow-widths",
+      },
+    ]) {
       // https://github.com/ariakit/ariakit/issues/7532
       test(`${scenario} at wide and narrow widths @visual`, async ({
         page,
         q,
         visual,
       }) => {
+        setVisonautItem(item);
         await forEachColorScheme(page, async (colorScheme) => {
           await selectScenario(q, scenario);
           await visual({
@@ -265,6 +276,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       q,
       visual,
     }) => {
+      setVisonautItem(
+        "ui/shell/test-browser/captures/flush-band-at-the-shell-radius",
+      );
       await forEachColorScheme(page, async (colorScheme) => {
         await selectScenario(q, "geometry");
         await q.checkbox("Flush gutter").check();
@@ -280,6 +294,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     });
 
     test("docs site @visual", async ({ page, q, visual }) => {
+      setVisonautItem("ui/shell/test-browser/captures/docs-site");
       await page.setViewportSize({ width: 1440, height: 900 });
       await forEachColorScheme(page, async (colorScheme) => {
         const toggle = q.button("Toggle table of contents");
@@ -297,21 +312,25 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       q,
       visual,
     }) => {
+      setVisonautItem(
+        "ui/shell/test-browser/captures/sidebar-combinations-and-right-to-left-layout",
+      );
       const viewport = { width: 1440, height: 900 };
       await page.setViewportSize(viewport);
       await forEachColorScheme(page, async (colorScheme) => {
         for (const direction of ["ltr", "rtl"]) {
           await q.checkbox("Right to left").setChecked(direction === "rtl");
-          for (const sidebar of [
-            "Toggle sidebar",
-            "Toggle table of contents",
-            "Toggle sidebar",
-            "Toggle table of contents",
+          for (const { id, sidebar } of [
+            { id: "both-closed", sidebar: "Toggle sidebar" },
+            { id: "contents-only", sidebar: "Toggle table of contents" },
+            { id: "both-open", sidebar: "Toggle sidebar" },
+            { id: "navigation-only", sidebar: "Toggle table of contents" },
           ]) {
             await q.button(sidebar).click();
             await visual({
               ...getViewportCapture(page, colorScheme),
               id: direction,
+              capture: `${direction}-${id}`,
               viewports: { wide: viewport },
             });
           }
@@ -324,6 +343,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       q,
       visual,
     }) => {
+      setVisonautItem(
+        "ui/shell/test-browser/captures/sticky-sidebar-above-the-footer",
+      );
       await page.setViewportSize({ width: 1280, height: 800 });
       await forEachColorScheme(page, async (colorScheme) => {
         await page.evaluate(() =>
@@ -339,6 +361,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       q,
       visual,
     }) => {
+      setVisonautItem(
+        "ui/shell/test-browser/captures/bar-sizing-at-a-narrow-width",
+      );
       const viewport = { width: 560, height: 400 };
       await page.setViewportSize(viewport);
       await forEachColorScheme(page, async (colorScheme) => {
@@ -364,6 +389,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       page,
       visual,
     }) => {
+      setVisonautItem(
+        "ui/shell/test-browser/captures/docs-site-scrolled-under-the-blurred-header",
+      );
       await page.setViewportSize({ width: 1280, height: 800 });
       await forEachColorScheme(page, async (colorScheme) => {
         await page.evaluate(() => window.scrollTo(0, 300));
@@ -372,14 +400,21 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       });
     });
 
-    for (const scenario of [
-      "dashboard",
-      "chat",
-      "marketing",
-      "settings",
-      "bar",
+    for (const { scenario, item } of [
+      {
+        scenario: "dashboard",
+        item: "ui/shell/test-browser/captures/dashboard",
+      },
+      { scenario: "chat", item: "ui/shell/test-browser/captures/chat" },
+      {
+        scenario: "marketing",
+        item: "ui/shell/test-browser/captures/marketing",
+      },
+      { scenario: "settings", item: "ui/shell/test-browser/captures/settings" },
+      { scenario: "bar", item: "ui/shell/test-browser/captures/bar" },
     ]) {
       test(`${scenario} @visual`, async ({ page, q, visual }) => {
+        setVisonautItem(item);
         await page.setViewportSize({ width: 1280, height: 800 });
         await forEachColorScheme(page, async (colorScheme) => {
           await selectScenario(q, scenario);

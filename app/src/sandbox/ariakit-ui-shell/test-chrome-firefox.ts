@@ -4,6 +4,7 @@ import {
   getViewportCapture,
 } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 import { selectScenario } from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -66,6 +67,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
       page,
       visual,
     }) => {
+      setVisonautItem(
+        "ui/shell/test-chrome-firefox/captures/blurred-header-in-forced-colors",
+      );
       await page.setViewportSize({ width: 1280, height: 800 });
       await page.emulateMedia({ forcedColors: "active" });
       await forEachColorScheme(page, async (colorScheme) => {

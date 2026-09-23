@@ -10,6 +10,7 @@ import {
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { setVisonautItem } from "#app/test-utils/visonaut.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   for (const clickCount of [2, 3]) {
@@ -104,6 +105,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     }, attribute);
 
   test("page @visual", async ({ page, visual }) => {
+    setVisonautItem("ui/input/test-browser/page");
     await forEachColorScheme(page, (colorScheme) =>
       capturePage(page, visual, colorScheme),
     );
@@ -116,6 +118,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/input/test-browser/rings-grouped-fields-and-their-leading-actions-on-keyboard-focus",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Field with leading reset button");
       await tabInto(page, box);
@@ -124,14 +129,16 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await page.keyboard.press("Tab");
       await expectFocusVisible(q.textbox("Draft message"));
       await captureInView(visual, box, colorScheme, { id: "field" });
-      for (const field of [
-        q.textbox("Delivery notes"),
-        q.combobox("Delivery speed"),
-        q.textbox("Handle"),
+      for (const { id, field } of [
+        { id: "delivery-notes", field: q.textbox("Delivery notes") },
+        { id: "delivery-speed", field: q.combobox("Delivery speed") },
+        { id: "handle", field: q.textbox("Handle") },
       ]) {
         await tabTo(page, field);
         await expectFocusVisible(field);
-        await captureInView(visual, field.locator(".."), colorScheme);
+        await captureInView(visual, field.locator(".."), colorScheme, {
+          capture: id,
+        });
       }
     });
   });
@@ -141,6 +148,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/input/test-browser/rings-the-wrapper-when-the-input-inside-takes-focus",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Field with leading icon");
       const input = query(box).textbox("Filter components");
@@ -158,6 +168,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/input/test-browser/dims-the-wrapper-of-a-disabled-input-and-keeps-it-unlit-on-hover",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Field with leading icon");
       const input = query(box).textbox("Filter components");
@@ -175,6 +188,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/input/test-browser/dims-the-wrapper-of-an-aria-disabled-input-and-keeps-it-unlit-on-hover",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Field with leading icon");
       const input = query(box).textbox("Filter components");
@@ -192,6 +208,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/input/test-browser/keeps-a-wrapper-enabled-and-lit-on-hover-when-only-its-button-is-disabled",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Share link with copy button");
       const button = query(box).button("Copy");
@@ -209,6 +228,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/input/test-browser/keeps-a-wrapper-enabled-and-lit-on-hover-when-only-its-submit-input-is-disabled",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Share link with copy button");
       await query(box)
@@ -233,6 +255,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    setVisonautItem(
+      "ui/input/test-browser/keeps-a-wrapper-enabled-and-lit-on-hover-when-only-its-select-is-disabled",
+    );
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Share link with copy button");
       await query(box)
