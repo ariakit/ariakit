@@ -67,9 +67,11 @@ jobs:
             os: macos-15
     env:
       VISONAUT_BROWSER: ${{ matrix.browser }}
-      VISONAUT_EXECUTOR_DIRECTORY: ${{ runner.temp }}/visonaut-executor
-      VISONAUT_TRUSTED_PLAN: ${{ runner.temp }}/visonaut-plan.json
     steps:
+      - name: Set isolated executor paths
+        run: |
+          echo "VISONAUT_EXECUTOR_DIRECTORY=$RUNNER_TEMP/visonaut-executor" >> "$GITHUB_ENV"
+          echo "VISONAUT_TRUSTED_PLAN=$RUNNER_TEMP/visonaut-plan.json" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
@@ -156,9 +158,10 @@ jobs:
         browser: [chromium, firefox, webkit]
     env:
       VISONAUT_BROWSER: ${{ matrix.browser }}
-      VISONAUT_EXECUTOR_DIRECTORY: ${{ runner.temp }}/visonaut-executor
       VISONAUT_SERVER: https://preview.visonaut.com
     steps:
+      - name: Set isolated executor path
+        run: echo "VISONAUT_EXECUTOR_DIRECTORY=$RUNNER_TEMP/visonaut-executor" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: ${{ job.workflow_repository }}
