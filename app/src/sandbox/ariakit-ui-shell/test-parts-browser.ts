@@ -52,6 +52,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
         "scroll-margin-block-start",
         "80px",
       );
+      // Playwright can scroll the page to click "Narrow shell", such as when it
+      // retries the click while the columns still move.
+      // https://github.com/ariakit/ariakit/issues/7595
+      await page.evaluate(() => window.scrollTo(0, 0));
       expect((await getBox(page.locator(".shell-main-intro"))).y).toBeCloseTo(
         64,
         0,
