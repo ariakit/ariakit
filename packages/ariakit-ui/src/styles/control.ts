@@ -215,18 +215,25 @@ export const controlSlot = cv({
       return getFrameRoundedClass(value);
     },
     /**
-     * Sets the element’s kind. When you use the `badge` kind, wrap text in a
-     * `<span>` element so it’s styled correctly. The badge trims that element
-     * to the height of its capitals. To truncate the text, use
+     * Sets the element’s kind. The `badge` and `shortcut` kinds style one
+     * element around the content. The slot components render it as a `<span>`,
+     * so wrap the content in one yourself only when you use this recipe
+     * directly. The badge trims that element to the height of its capitals. To
+     * truncate the badge text, put it in an element of your own with
      * `block overflow-x-clip text-ellipsis whitespace-nowrap` and a maximum
-     * width on the element that holds it. These clip only the inline axis,
-     * while `truncate` also clips the descenders.
+     * width. These clip only the inline axis, while `truncate` also clips the
+     * descenders.
      */
     $kind: {
       icon: "",
-      // A key chord reads the same way in every locale, so the bidi algorithm
-      // must not reorder its keys in a right-to-left row.
-      shortcut: "[direction:ltr]",
+      shortcut: [
+        // A key chord reads the same way in every locale, so the child element
+        // lays out its keys left to right, with the slot's alignment and gap.
+        // The slot keeps the row's direction, so its own margins follow it.
+        "*:flex *:[align-items:inherit] *:[gap:inherit] *:[direction:ltr]",
+        // An icon among the keys takes the size of an icon in the slot itself.
+        "*:[&>svg]:block *:[&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
+      ],
       avatar: "overflow-clip",
       // The slot centers the text box. Trimmed to the capitals, that box no
       // longer carries the half-leading that each engine rounds differently,
@@ -406,6 +413,15 @@ export function getIconSlotSize<Size extends string>(
   // an extender's size still applies.
   if (defaultValue !== "md") return defaultValue;
   return "auto" as const;
+}
+
+/**
+ * Whether a control slot of this `$kind` styles its content through one child
+ * element, so a component must wrap the slot's children in a `<span>`. A badge
+ * scales the text in it, and a shortcut keeps its keys left to right in it.
+ */
+export function wrapsSlotChildren(kind?: string) {
+  return kind === "badge" || kind === "shortcut";
 }
 
 export const controlContent = cv({

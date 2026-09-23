@@ -11,6 +11,7 @@ import {
   buttonSeparator,
   buttonSlot,
 } from "../styles/button.ts";
+import { wrapsSlotChildren } from "../styles/control.ts";
 
 // The recipe member only documents the prop. VariantPropsWithRecipe still makes
 // it required when the recipe adds variants.
@@ -124,7 +125,7 @@ export function ButtonSlot(props: ButtonSlotProps) {
   const variants = buttonSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...buttonSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (
         rest.children

@@ -1,6 +1,7 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   radio,
   radioCard,
@@ -149,7 +150,7 @@ export function RadioCardSlot(props: RadioCardSlotProps) {
   const variants = radioCardSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...radioCardSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (
         rest.children

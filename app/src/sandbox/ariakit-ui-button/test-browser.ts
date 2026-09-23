@@ -74,6 +74,38 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     test.expect(offset).toBeCloseTo(0, 1);
   });
 
+  // https://github.com/ariakit/ariakit/issues/7589
+  test("keeps the keys of a shortcut in order in a right-to-left row", async ({
+    q,
+  }) => {
+    const box = q.article("Right to left shortcut");
+    const [command, key] = await Promise.all([
+      getBox(query(box).text("⌘")),
+      getBox(query(box).text("S")),
+    ]);
+    test.expect(command.x).toBeLessThan(key.x);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7589
+  test("sizes an icon key and spaces the keys of a shortcut as its slot does", async ({
+    q,
+  }) => {
+    const box = q.article("Icon shortcut key");
+    const slot = box.locator(".control-slot").filter({ hasText: "K" });
+    const [slotBox, iconBox, keyBox] = await Promise.all([
+      getBox(slot),
+      getBox(slot.locator("svg")),
+      getBox(query(box).text("K")),
+    ]);
+    // A shortcut slot is as tall as its text, and an icon in it fills it.
+    test.expect(iconBox.height).toBeCloseTo(slotBox.height, 0);
+    const gap = await slot.evaluate((node) =>
+      Number.parseFloat(getComputedStyle(node).columnGap),
+    );
+    test.expect(gap).toBeGreaterThan(0);
+    test.expect(keyBox.x - iconBox.x - iconBox.width).toBeCloseTo(gap, 0);
+  });
+
   // The page capture also keeps the static states of the button group fixture
   // under visual regression: joined borders, kept corners and the selected
   // glider.

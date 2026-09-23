@@ -7,6 +7,7 @@ import {
   createRender,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
+import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   nav,
   navButton,
@@ -212,15 +213,16 @@ export interface NavSlotProps
  * shortcut takes the nav's `$slotSize`, before or after the label, so the
  * labels after an icon, a badge, and an avatar line up. A badge pads round by
  * default, so a one-digit count is a circle the slot size; pass `$p="auto"` for
- * a word. It wraps the children of the `badge` kind in a `<span>`, which scales
- * the badge text.
+ * a word. It wraps the children of the `badge` and `shortcut` kinds in a
+ * `<span>`, which scales the badge text and keeps the shortcut keys left to
+ * right.
  */
 export function NavSlot(props: NavSlotProps) {
   const [variantProps, rest] = splitProps(props, navSlot);
   const variants = navSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...navSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (
         rest.children
