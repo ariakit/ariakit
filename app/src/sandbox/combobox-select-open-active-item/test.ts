@@ -72,6 +72,34 @@ describe("Status", () => {
   });
 });
 
+describe("Vegetable", () => {
+  const moves = [
+    { name: "Typeahead", move: () => press("c"), item: "Carrot" },
+    { name: "ArrowDown", move: () => press.ArrowDown(), item: "Broccoli" },
+  ];
+
+  for (const { name, move, item } of moves) {
+    // https://github.com/ariakit/ariakit/issues/7612
+    test(`${name} move made while the popup is positioning stays active`, async () => {
+      const select = q.combobox("Vegetable");
+      await click(select);
+
+      // Positioning is held, so the popup hasn't taken its initial focus.
+      const listbox = q.listbox("Vegetable");
+      expect(listbox).toHaveAttribute("data-placing");
+      expect(activeText("Vegetable")).toBe("Artichoke");
+
+      await move();
+      expect(activeText("Vegetable")).toBe(item);
+
+      await click(q.button("Finish vegetable positioning"));
+      expect(listbox).not.toHaveAttribute("data-placing");
+      expect(select).toHaveFocus();
+      expect(activeText("Vegetable")).toBe(item);
+    });
+  }
+});
+
 for (const label of ["No-autofocus status", "Real-focus status"]) {
   // https://github.com/ariakit/ariakit/pull/6832
   test(`${label} moves from the focused select`, async () => {

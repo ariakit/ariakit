@@ -1,4 +1,4 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
   for (const label of ["Mounted fruit", "Unmounted fruit"]) {
@@ -125,4 +125,47 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         .toHaveAttribute("data-active-item");
     });
   }
+
+  test.describe("Vegetable", () => {
+    const moves = [
+      { name: "Typeahead", key: "c", item: "Carrot" },
+      { name: "ArrowDown", key: "ArrowDown", item: "Broccoli" },
+    ];
+
+    for (const { name, key, item } of moves) {
+      // https://github.com/ariakit/ariakit/issues/7612
+      test(`${name} move made while the popup is positioning stays active`, async ({
+        page,
+        q,
+      }) => {
+        const select = q.combobox("Vegetable");
+        await select.click();
+
+        // Positioning is held, so the popup hasn't taken its initial focus.
+        const listbox = q.listbox("Vegetable");
+        await test.expect(listbox).toHaveAttribute("data-placing");
+        await test
+          .expect(query(listbox).option("Artichoke"))
+          .toHaveAttribute("data-active-item");
+
+        await page.keyboard.press(key);
+        const target = query(listbox).option(item);
+        await test.expect(target).toHaveAttribute("data-active-item");
+
+        await q.button("Finish vegetable positioning").click();
+        await test.expect(listbox).not.toHaveAttribute("data-placing");
+        // Dialog queues auto-focus after placement, and there is no positive
+        // state for the active item staying put once that microtask has run.
+        await flushFrames(page);
+        await test.expect(select).toBeFocused();
+        await test.expect(target).toHaveAttribute("data-active-item");
+        await test
+          .expect(select)
+          .toHaveAttribute(
+            "aria-activedescendant",
+            (await target.getAttribute("id"))!,
+          );
+      });
+    }
+  });
 });

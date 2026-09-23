@@ -1,7 +1,17 @@
 import * as Ariakit from "@ariakit/react";
+import { useRef } from "react";
 
 const fruits = ["Apple", "Banana", "Grape", "Orange"];
 const statuses = ["Draft", "Published", "Archived"];
+const vegetables = [
+  "Artichoke",
+  "Broccoli",
+  "Carrot",
+  "Garlic",
+  "Leek",
+  "Lettuce",
+  "Onion",
+];
 
 interface SelectProps {
   label: string;
@@ -49,6 +59,43 @@ function FocusOwnerSelect({ label, virtualFocus }: FocusOwnerSelectProps) {
   );
 }
 
+// Holds the popup at its unplaced origin until the button releases the
+// positioning, so the user can move through the items before the popup takes
+// focus.
+function PositioningSelect() {
+  const releaseRef = useRef<(() => void) | null>(null);
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Artichoke">
+      <Ariakit.ComboboxSelectLabel>Vegetable</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxPopover
+        // The button that releases the positioning is outside the popup.
+        hideOnInteractOutside={false}
+        updatePosition={({ updatePosition }) =>
+          new Promise<void>((resolve) => {
+            releaseRef.current = () => {
+              void updatePosition().then(resolve);
+            };
+          })
+        }
+      >
+        {vegetables.map((value) => (
+          <Ariakit.ComboboxItem key={value} value={value} />
+        ))}
+      </Ariakit.ComboboxPopover>
+      {/* Refuses focus so the select keeps it, as it would when positioning
+      ends on its own. */}
+      <button
+        type="button"
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={() => releaseRef.current?.()}
+      >
+        Finish vegetable positioning
+      </button>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -75,6 +122,7 @@ export default function Example() {
       />
       <FocusOwnerSelect label="No-autofocus status" />
       <FocusOwnerSelect label="Real-focus status" virtualFocus={false} />
+      <PositioningSelect />
     </>
   );
 }
