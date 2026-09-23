@@ -8,6 +8,7 @@ import {
   createRender,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
+import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   disclosure,
   disclosureButton,
@@ -273,7 +274,7 @@ export function DisclosureButtonSlot(props: DisclosureButtonSlotProps) {
   const variants = disclosureButtonSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...disclosureButtonSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (
         rest.children

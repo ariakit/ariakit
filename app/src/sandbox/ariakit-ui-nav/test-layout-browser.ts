@@ -127,6 +127,51 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toEqual(slots.map(([name]) => [name, expect.closeTo(lineHeight, 0)]));
   });
 
+  // https://github.com/ariakit/ariakit/issues/7589
+  test("keeps a pushed shortcut at the row end with its keys in order in RTL", async ({
+    q,
+  }) => {
+    // How far the ⌘K shortcut, which an auto start margin pushes along its row,
+    // ends from the end edge of that row in the row's direction.
+    const getShortcutEnd = async (
+      name: string,
+      label: RegExp,
+      rtl: boolean,
+    ) => {
+      const nav = q.navigation(name);
+      const row = query(nav).button(label);
+      const shortcut = row.locator(".control-slot").filter({ hasText: "⌘K" });
+      await nav.scrollIntoViewIfNeeded();
+      const [rowBox, shortcutBox] = await Promise.all([
+        getBox(row),
+        getBox(shortcut),
+      ]);
+      return rtl
+        ? shortcutBox.x - rowBox.x
+        : rowBox.x + rowBox.width - shortcutBox.x - shortcutBox.width;
+    };
+    const ltrEnd = await getShortcutEnd("Command row", /^Search/, false);
+    await expect
+      .poll(() => getShortcutEnd("التنقل", /^بحث/, true))
+      .toBeCloseTo(ltrEnd, 0);
+    // The keys are one text node, so a range measures each key on its own.
+    const shortcut = query(q.navigation("التنقل")).text("⌘K");
+    const keys = await shortcut.evaluate((node) => {
+      const text = node.firstChild;
+      if (!text) {
+        throw new Error("The shortcut has no text");
+      }
+      const range = node.ownerDocument.createRange();
+      const getX = (index: number) => {
+        range.setStart(text, index);
+        range.setEnd(text, index + 1);
+        return range.getBoundingClientRect().x;
+      };
+      return { command: getX(0), key: getX(1) };
+    });
+    expect(keys.command).toBeLessThan(keys.key);
+  });
+
   for (const dir of ["ltr", "rtl"] as const) {
     test(`keeps section rows and an end bar on the nav's end edge in ${dir}`, async ({
       page,

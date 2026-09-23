@@ -7,6 +7,7 @@ import {
   createRender,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
+import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   nav,
   navButton,
@@ -218,7 +219,7 @@ export function NavLinkSlot(props: NavLinkSlotProps) {
   const variants = navLinkSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...navLinkSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (
         rest.children
@@ -295,7 +296,16 @@ export interface NavIconProps
  */
 export function NavIcon(props: NavIconProps) {
   const [variantProps, rest] = splitProps(props, navIcon);
-  return <ak.Role.span {...navIcon.jsx(variantProps)} {...rest} />;
+  const variants = navIcon.getVariants(variantProps);
+  return (
+    <ak.Role.span {...navIcon.jsx(variantProps)} {...rest}>
+      {wrapsSlotChildren(variants.$kind) ? (
+        <span>{rest.children}</span>
+      ) : (
+        rest.children
+      )}
+    </ak.Role.span>
+  );
 }
 
 export interface NavDisclosureProps extends Omit<

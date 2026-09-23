@@ -1398,9 +1398,7 @@ export default function NavExamples() {
               <NavLinkSlot $kind="avatar">JD</NavLinkSlot>
             </NavLink>
             <NavLink>
-              <NavIcon $kind="badge" $p="md">
-                <span>9</span>
-              </NavIcon>
+              <NavIcon $kind="badge" $p="md">9</NavIcon>
               <NavLinkLabel>Notifications</NavLinkLabel>
             </NavLink>
             <NavLink>
@@ -1460,13 +1458,8 @@ export default function NavExamples() {
             <NavLinkSlot $kind="avatar">JD</NavLinkSlot>
           </NavLink>
           <NavLink href="#notifications">
-            {/*
-              The badge kind scales a child element, and NavIcon does not wrap
-              its text in one as NavLinkSlot does.
-              https://github.com/ariakit/ariakit/issues/7579
-            */}
             <NavIcon $kind="badge" $p="md">
-              <span>9</span>
+              9
             </NavIcon>
             <NavLinkLabel>Notifications</NavLinkLabel>
           </NavLink>

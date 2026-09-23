@@ -26,6 +26,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   ChevronDown,
+  Command,
   FolderOpen,
   Plus,
   Settings,
@@ -655,6 +656,54 @@ export default function ButtonExamples() {
           <ButtonLabel>Save</ButtonLabel>
           <ButtonSlot $kind="shortcut">
             <kbd>⌘S</kbd>
+          </ButtonSlot>
+        </Button>
+      </Example>
+
+      <Example
+        title="Right to left shortcut"
+        description="In right-to-left text, the shortcut ends the row on the left, and its keys keep their order."
+        code={`
+          <div dir="rtl">
+            <Button>
+              <ButtonLabel>حفظ</ButtonLabel>
+              <ButtonSlot $kind="shortcut">
+                <kbd>⌘</kbd>
+                <kbd>S</kbd>
+              </ButtonSlot>
+            </Button>
+          </div>
+        `}
+      >
+        <div dir="rtl" lang="ar" className="w-full">
+          <Button>
+            <ButtonLabel>حفظ</ButtonLabel>
+            <ButtonSlot $kind="shortcut">
+              <kbd>⌘</kbd>
+              <kbd>S</kbd>
+            </ButtonSlot>
+          </Button>
+        </div>
+      </Example>
+
+      <Example
+        title="Icon shortcut key"
+        description="A key drawn as an icon takes the size of an icon slot, and a gap on the slot spaces the keys."
+        code={`
+          <Button>
+            <ButtonLabel>Search</ButtonLabel>
+            <ButtonSlot $kind="shortcut" className="gap-1">
+              <Command />
+              <kbd>K</kbd>
+            </ButtonSlot>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonLabel>Search</ButtonLabel>
+          <ButtonSlot $kind="shortcut" className="gap-1">
+            <Command />
+            <kbd>K</kbd>
           </ButtonSlot>
         </Button>
       </Example>

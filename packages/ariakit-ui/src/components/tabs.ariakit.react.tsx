@@ -4,6 +4,7 @@ import { splitProps } from "clava";
 import { Fragment, isValidElement } from "react";
 import type { ComponentProps } from "react";
 import { createRender } from "../react-utils/create-render.react.ts";
+import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   tab,
   tabGlider,
@@ -171,7 +172,7 @@ export function TabSlot(props: TabSlotProps) {
   const variants = tabSlot.getVariants(variantProps);
   return (
     <span {...tabSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (
         rest.children

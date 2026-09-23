@@ -15,6 +15,7 @@ import {
   checkboxField,
   checkboxLabel,
 } from "../styles/checkbox.ts";
+import { wrapsSlotChildren } from "../styles/control.ts";
 
 export interface CheckboxProps
   extends ak.CheckboxProps, VariantProps<typeof checkbox> {}
@@ -132,7 +133,7 @@ export function CheckboxCardSlot(props: CheckboxCardSlotProps) {
   const variants = checkboxCardSlot.getVariants(variantProps);
   return (
     <ak.Role.span {...checkboxCardSlot.jsx(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (
         rest.children
