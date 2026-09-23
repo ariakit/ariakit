@@ -241,4 +241,54 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(listbox).not.toHaveAttribute("data-placing");
     await test.expect(query(listbox).button("Manage vegetables")).toBeFocused();
   });
+
+  // https://github.com/ariakit/ariakit/pull/7614#discussion_r4082271058
+  test("Store-prop vegetable move made while the popup is positioning stays active", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Store-prop vegetable");
+    await select.click();
+
+    const listbox = q.listbox("Store-prop vegetable");
+    await test.expect(listbox).toHaveAttribute("data-placing");
+
+    await page.keyboard.press("c");
+    const carrot = query(listbox).option("Carrot");
+    await test.expect(carrot).toHaveAttribute("data-active-item");
+
+    await q.button("Finish store-prop vegetable positioning").click();
+    await test.expect(listbox).not.toHaveAttribute("data-placing");
+    // Dialog queues auto-focus after placement, and there is no positive state
+    // for the active item staying put once that microtask has run.
+    await flushFrames(page);
+    await test.expect(select).toBeFocused();
+    await test.expect(carrot).toHaveAttribute("data-active-item");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7612
+  test("Unmounted vegetable move made while the popup is positioning stays active", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Unmounted vegetable");
+    await select.click();
+
+    // The popup mounts only once it opens, so this also covers a popover that
+    // starts tracking movement after the popup is already open.
+    const listbox = q.listbox("Unmounted vegetable");
+    await test.expect(listbox).toHaveAttribute("data-placing");
+
+    await page.keyboard.press("c");
+    const carrot = query(listbox).option("Carrot");
+    await test.expect(carrot).toHaveAttribute("data-active-item");
+
+    await q.button("Finish unmounted vegetable positioning").click();
+    await test.expect(listbox).not.toHaveAttribute("data-placing");
+    // Dialog queues auto-focus after placement, and there is no positive state
+    // for the active item staying put once that microtask has run.
+    await flushFrames(page);
+    await test.expect(select).toBeFocused();
+    await test.expect(carrot).toHaveAttribute("data-active-item");
+  });
 });

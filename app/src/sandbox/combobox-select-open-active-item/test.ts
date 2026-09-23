@@ -153,6 +153,42 @@ test("Managed vegetable popup focuses its autoFocus element when the user doesn'
   expect(q.within(listbox).button("Manage vegetables")).toHaveFocus();
 });
 
+// https://github.com/ariakit/ariakit/pull/7614#discussion_r4082271058
+test("Store-prop vegetable move made while the popup is positioning stays active", async () => {
+  const select = q.combobox("Store-prop vegetable");
+  await click(select);
+
+  const listbox = q.listbox("Store-prop vegetable");
+  expect(listbox).toHaveAttribute("data-placing");
+
+  await press("c");
+  expect(activeText("Store-prop vegetable")).toBe("Carrot");
+
+  await click(q.button("Finish store-prop vegetable positioning"));
+  expect(listbox).not.toHaveAttribute("data-placing");
+  expect(select).toHaveFocus();
+  expect(activeText("Store-prop vegetable")).toBe("Carrot");
+});
+
+// https://github.com/ariakit/ariakit/issues/7612
+test("Unmounted vegetable move made while the popup is positioning stays active", async () => {
+  const select = q.combobox("Unmounted vegetable");
+  await click(select);
+
+  // The popup mounts only once it opens, so this also covers a popover that
+  // starts tracking movement after the popup is already open.
+  const listbox = q.listbox("Unmounted vegetable");
+  expect(listbox).toHaveAttribute("data-placing");
+
+  await press("c");
+  expect(activeText("Unmounted vegetable")).toBe("Carrot");
+
+  await click(q.button("Finish unmounted vegetable positioning"));
+  expect(listbox).not.toHaveAttribute("data-placing");
+  expect(select).toHaveFocus();
+  expect(activeText("Unmounted vegetable")).toBe("Carrot");
+});
+
 for (const label of ["No-autofocus status", "Real-focus status"]) {
   // https://github.com/ariakit/ariakit/pull/6832
   test(`${label} moves from the focused select`, async () => {

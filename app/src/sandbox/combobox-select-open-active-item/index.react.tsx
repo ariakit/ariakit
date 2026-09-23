@@ -64,6 +64,13 @@ interface PositioningSelectProps {
   virtualFocus?: boolean;
   /** Renders a button with this text and `autoFocus` before the items. */
   autoFocusButton?: string;
+  /**
+   * Passes the store to the select directly, while the popup still reads it
+   * from the provider, which wraps it in a store of its own.
+   */
+  selectStoreProp?: boolean;
+  /** Mounts the popup only once it opens. */
+  unmountOnHide?: boolean;
 }
 
 // Holds the popup at its unplaced origin until the button releases the
@@ -73,6 +80,8 @@ function PositioningSelect({
   label,
   virtualFocus,
   autoFocusButton,
+  selectStoreProp,
+  unmountOnHide,
 }: PositioningSelectProps) {
   const releaseRef = useRef<(() => void) | null>(null);
   const combobox = Ariakit.useComboboxStore({
@@ -83,8 +92,9 @@ function PositioningSelect({
   return (
     <Ariakit.ComboboxProvider store={combobox}>
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
-      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxSelect store={selectStoreProp ? combobox : undefined} />
       <Ariakit.ComboboxPopover
+        unmountOnHide={unmountOnHide}
         // The buttons that control the positioning are outside the popup.
         hideOnInteractOutside={false}
         updatePosition={({ updatePosition }) =>
@@ -156,6 +166,8 @@ export default function Example() {
         label="Managed vegetable"
         autoFocusButton="Manage vegetables"
       />
+      <PositioningSelect label="Store-prop vegetable" selectStoreProp />
+      <PositioningSelect label="Unmounted vegetable" unmountOnHide />
     </>
   );
 }

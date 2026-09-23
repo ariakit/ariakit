@@ -2,16 +2,13 @@ import { useSafeLayoutEffect } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import { getWindow } from "@ariakit/utils";
 import type { RefObject } from "react";
+import { useMemo } from "react";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const openingMovesByStore = new WeakMap<ComboboxStore, number>();
 const scrollItemIntoViewByStore = new WeakMap<
   ComboboxStore,
   (element: HTMLElement) => void
->();
-const movedItemRefByStore = new WeakMap<
-  ComboboxStore,
-  RefObject<HTMLElement | null>
 >();
 
 function scrollIntoViewNearest(element: HTMLElement) {
@@ -140,24 +137,37 @@ export function getScrollItemIntoView(store?: ComboboxStore) {
   return scrollItemIntoView;
 }
 
-/**
- * Returns the store's ref to the item that the user moved to since the select
- * popup opened. Its value is `null` until the user moves. It reads the current
- * store state when accessed, so the popup's delayed initial focus can find the
- * item without subscribing to movement.
- */
-export function getMovedItemRef(store: ComboboxStore) {
-  const cached = movedItemRefByStore.get(store);
-  if (cached) return cached;
-  const movedItemRef: RefObject<HTMLElement | null> = {
+function createMovedItemTracker(store: ComboboxStore) {
+  let openingMoves: number | null = null;
+  const ref: RefObject<HTMLElement | null> = {
     get current() {
-      const openingMoves = openingMovesByStore.get(store);
       if (openingMoves == null) return null;
       const { activeId, moves } = store.getState();
       if (moves === openingMoves) return null;
       return store.item(activeId)?.element || null;
     },
   };
-  movedItemRefByStore.set(store, movedItemRef);
-  return movedItemRef;
+  // `sync` also runs on subscription, which records the baseline for a popup
+  // that only mounts once it's open.
+  const track = () =>
+    sync(store, ["open"], (state) => {
+      openingMoves = state.open ? store.getState().moves : null;
+    });
+  return { ref, track };
+}
+
+/**
+ * Returns a ref to the item that the user moved to since the popup opened. Its
+ * value is `null` until the user moves. It reads the current store state when
+ * accessed, so the popup's delayed initial focus can find the item without
+ * subscribing to movement.
+ */
+export function useMovedItemRef(store: ComboboxStore) {
+  const tracker = useMemo(() => createMovedItemTracker(store), [store]);
+  // The popup records its own opening baseline. The select can hold another
+  // store object with the same state, such as when only the select receives the
+  // store prop and the provider wraps it in a store of its own.
+  // https://github.com/ariakit/ariakit/pull/7614#discussion_r4082271058
+  useSafeLayoutEffect(() => tracker.track(), [tracker]);
+  return tracker.ref;
 }
