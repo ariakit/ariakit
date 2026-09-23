@@ -215,12 +215,14 @@ export const controlSlot = cv({
       return getFrameRoundedClass(value);
     },
     /**
-     * Sets the element’s kind. When you use the `badge` or `shortcut` kind,
-     * wrap the content in one `<span>` element so it’s styled correctly. The
-     * badge trims that element to the height of its capitals. To truncate the
-     * badge text, use `block overflow-x-clip text-ellipsis whitespace-nowrap`
-     * and a maximum width on the element that holds it. These clip only the
-     * inline axis, while `truncate` also clips the descenders.
+     * Sets the element’s kind. The `badge` and `shortcut` kinds style one
+     * element around the content. The slot components render it as a `<span>`,
+     * so wrap the content in one yourself only when you use this recipe
+     * directly. The badge trims that element to the height of its capitals. To
+     * truncate the badge text, put it in an element of your own with
+     * `block overflow-x-clip text-ellipsis whitespace-nowrap` and a maximum
+     * width. These clip only the inline axis, while `truncate` also clips the
+     * descenders.
      */
     $kind: {
       icon: "",
