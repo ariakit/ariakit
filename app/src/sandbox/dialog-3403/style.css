@@ -53,6 +53,15 @@
   transform: scale(1);
 }
 
+/* The dialogs that unmount on hide and their backdrops leave over 2s so that
+   browser tests can still see the leave state after they click Close on busy
+   CI runners.
+   https://github.com/ariakit/ariakit/issues/7603 */
+.backdrop[data-leave],
+.dialog-long-leave[data-leave] {
+  transition-duration: 2s;
+}
+
 .heading {
   margin: 0;
   font-size: 1.25rem;
