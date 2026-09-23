@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { gotoAndSettle, withFramework } from "./preview.ts";
 import type { ScreenshotOptions } from "./visual.ts";
-import { viewports } from "./visual.ts";
+import { viewports, waitForFonts } from "./visual.ts";
 
 // Helpers for the tests of the ariakit-ui-* sandboxes, which render the
 // examples of one Ariakit UI component in a grid of boxes built with
@@ -108,7 +108,7 @@ export async function capturePage(
   colorScheme: ColorScheme,
 ) {
   const main = query(page).main();
-  await page.evaluate(() => document.fonts.ready);
+  await waitForFonts(page);
   const { height } = await main.evaluate((node) =>
     node.getBoundingClientRect(),
   );

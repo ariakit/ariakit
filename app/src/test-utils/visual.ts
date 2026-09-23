@@ -9,6 +9,9 @@ const DEFAULT_CLIP_MARGIN = 16;
 const CLIP_STABILITY_INTERVAL = 16;
 const CLIP_STABILITY_DURATION = 100;
 const CLIP_STABILITY_TIMEOUT = 1000;
+// A font from the local server loads in milliseconds. The bound turns a load
+// that never finishes into a clear failure well within the test budget.
+const FONTS_TIMEOUT = 10_000;
 const countMap = new Map<string, number>();
 
 interface Rect {
@@ -366,6 +369,29 @@ async function withViewport(
   }
 }
 
+/**
+ * Waits until no web font on the page is loading. Firefox can leave
+ * `document.fonts` loading after a navigation when no font face is loading, and
+ * `document.fonts.ready` then never settles, so this reads each face instead.
+ * https://github.com/ariakit/ariakit/issues/7597
+ */
+export async function waitForFonts(page: Page) {
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          // A layout flush starts the loads of the fonts that the current
+          // styles need.
+          document.documentElement.getBoundingClientRect();
+          return [...document.fonts]
+            .filter((face) => face.status === "loading")
+            .map((face) => `${face.family} ${face.unicodeRange}`);
+        }),
+      { message: "Font faces still loading", timeout: FONTS_TIMEOUT },
+    )
+    .toEqual([]);
+}
+
 export async function visual(
   page: Page,
   options: ScreenshotOptions = {},
@@ -411,7 +437,7 @@ export async function visual(
             variants,
           });
           await page.waitForLoadState("domcontentloaded");
-          await page.evaluate(() => document.fonts?.ready?.catch(() => {}));
+          await waitForFonts(page);
           if (fullPage && element) {
             // Sticky and fixed parts paint at the current scroll position, so a
             // document capture taken while scrolled would draw them over the
