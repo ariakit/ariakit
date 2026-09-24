@@ -18,7 +18,6 @@ import {
   getActiveElement,
   isTextField,
   fireBlurEvent,
-  fireKeyboardEvent,
   isSelfTarget,
   hasFocus,
   invariant,
@@ -35,6 +34,7 @@ import type {
 import { useEffect, useMemo, useRef } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
+import { fireProxiedKeyboardEvent } from "./__keyboard-event-proxy.ts";
 import { getMoveRequest } from "./__move-request.ts";
 import {
   CompositeScopedContextProvider,
@@ -97,7 +97,9 @@ function useKeyboardEventProxy(
     if (activeElement !== previousElement) {
       activeElement.focus({ preventScroll: true });
     }
-    if (!fireKeyboardEvent(activeElement, event.type, eventInit)) {
+    if (
+      !fireProxiedKeyboardEvent(activeElement, event.nativeEvent, eventInit)
+    ) {
       event.preventDefault();
     }
     // The event will be triggered on the composite item and then propagated up
