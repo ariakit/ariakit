@@ -194,8 +194,10 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       acceptedEscapeRef.current = null;
       onCloseProp?.(event);
       if (event.defaultPrevented) {
-        // Dialog restores its open state synchronously after a prevented close.
-        // Preserve the original baseline across that false-to-true rollback.
+        // Only a close that already set open to false, like a direct setState
+        // call, gets here closed. Dialog restores it synchronously, so keep the
+        // original baseline across that false-to-true rollback.
+        if (store.getState().open) return;
         preserveCaptureOnNextOpenRef.current =
           captureSelectedValueBeforeCloseRef.current;
         queueMicrotask(() => {

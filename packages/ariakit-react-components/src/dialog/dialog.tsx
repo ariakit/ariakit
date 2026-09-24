@@ -38,6 +38,7 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { getKeyboardEventSource } from "../composite/__keyboard-event-proxy.ts";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import {
   isHidden,
@@ -207,23 +208,56 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const ref = useRef<HTMLType>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
   const hasDefaultModalPortal = modal && portal && !props.portalElement;
+  // Stays true while this dialog handles a hide request, from the close event
+  // through the commit of the open state.
+  const handlingHideRef = useRef(false);
+
+  // Dispatches the cancelable close event and returns whether the dialog can
+  // close.
+  const dispatchClose = useEvent(() => {
+    const dialog = ref.current;
+    if (!dialog) return true;
+    const event = new Event("close", { bubbles: false, cancelable: true });
+    if (onClose) {
+      dialog.addEventListener("close", onClose, { once: true });
+    }
+    dialog.dispatchEvent(event);
+    return !event.defaultPrevented;
+  });
 
   const store = useDialogStore({
     store: storeProp || context,
     open: openProp,
+    // Handles an open state that changed without a hide request, such as a
+    // direct setState call, after the change. A prevented close reopens the
+    // dialog.
     setOpen(open) {
       if (open) return;
-      const dialog = ref.current;
-      if (!dialog) return;
-      const event = new Event("close", { bubbles: false, cancelable: true });
-      if (onClose) {
-        dialog.addEventListener("close", onClose, { once: true });
-      }
-      dialog.dispatchEvent(event);
-      if (!event.defaultPrevented) return;
+      // The hide request handler below has already dispatched the close event.
+      if (handlingHideRef.current) return;
+      if (dispatchClose()) return;
       store.setOpen(true);
     },
   });
+
+  // Dispatches the close event before the store commits a hide request. A
+  // prevented close doesn't change the open state, so the popup state that
+  // listens to it, such as the active item, stays the same.
+  // https://github.com/ariakit/ariakit/issues/7616
+  useSafeLayoutEffect(() => {
+    return store.unstable_onHideRequest((hide) => {
+      // A hide request made during this one, for example from onClose, would
+      // dispatch the close event again. The current request decides instead.
+      if (handlingHideRef.current) return;
+      handlingHideRef.current = true;
+      try {
+        if (!dispatchClose()) return;
+        hide();
+      } finally {
+        handlingHideRef.current = false;
+      }
+    });
+  }, [store, dispatchClose]);
 
   // domReady can be also the portal node element so it's updated when the
   // portal node changes (like in between re-renders), triggering effects again.
@@ -688,6 +722,14 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         { accepted: boolean; defaultPrevented: boolean }
       >(),
   );
+  // Composite dispatches a copy of the key press on its active item, so one
+  // Escape can reach the dialog as two events. Both share one decision and one
+  // hide request, keyed by the event the user triggered, so hideOnEscape and
+  // onClose don't run twice.
+  // https://github.com/ariakit/ariakit/issues/7623
+  const [escapeKeyPresses] = useState(
+    () => new WeakMap<Event, { accepted: boolean; hidden: boolean }>(),
+  );
 
   const onKeyDownProp = props.onKeyDown;
   const onKeyDownCaptureProp = props.onKeyDownCapture;
@@ -717,18 +759,29 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // Ignore the event if the current dialog is marked by another dialog. This
     // guarantees that only the topmost dialog will close on Escape.
     if (isElementMarked(dialog)) return false;
-    const accepted = hideOnEscapeProp(event);
+    const source = getKeyboardEventSource(event);
+    let keyPress = escapeKeyPresses.get(source);
+    if (!keyPress) {
+      keyPress = { accepted: hideOnEscapeProp(event), hidden: false };
+      escapeKeyPresses.set(source, keyPress);
+    }
     escapeEvents.set(event, {
-      accepted,
+      accepted: keyPress.accepted,
       defaultPrevented: event.defaultPrevented,
     });
-    return accepted;
+    return keyPress.accepted;
   });
 
   const hideOnEscapeEvent = useEvent((event: KeyboardEvent) => {
     const accepted = acceptEscape(event);
     escapeEvents.delete(event);
     if (!accepted) return false;
+    const keyPress = escapeKeyPresses.get(getKeyboardEventSource(event));
+    // The other event of the same key press already asked to hide the dialog.
+    if (keyPress?.hidden) return true;
+    if (keyPress) {
+      keyPress.hidden = true;
+    }
     store.hide();
     return true;
   });
@@ -1036,9 +1089,18 @@ export interface DialogOptions<T extends ElementType = TagName>
    * event. The only difference is that this event can be canceled with
    * `event.preventDefault()`, which will prevent the dialog from hiding.
    *
-   * It's important to note that this event only fires when the dialog store's
-   * [`open`](https://ariakit.com/reference/use-dialog-store#open) state is set
-   * to `false`. If the controlled
+   * This event fires when a close is requested through the dialog store's
+   * `hide`, `setOpen`, or `toggle` functions. This includes the requests the
+   * dialog makes itself, such as on Escape or when the user interacts outside
+   * the dialog, and those from other components, such as a disclosure button or
+   * an item that hides the popup on click. In this case, the event fires before
+   * the store's [`open`](https://ariakit.com/reference/use-dialog-store#open)
+   * state changes, so preventing it leaves the dialog as it was.
+   *
+   * The event also fires when the `open` state is set to `false` in another
+   * way, such as a direct `setState` call. In this case, the state is already
+   * `false` when the event fires, and preventing the event sets it back to
+   * `true`. If the controlled
    * [`open`](https://ariakit.com/reference/dialog#open) prop value changes, or
    * if the dialog's visibility is altered in any other way (such as unmounting
    * the dialog without adjusting the open state), this event won't be
