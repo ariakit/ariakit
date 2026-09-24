@@ -97,16 +97,24 @@ export function useTrackComboboxSelectPresentation(store?: ComboboxStore) {
     // ComboboxProvider creates around a store the select also receives, so the
     // baseline is keyed by the select element that all of them share.
     // https://github.com/ariakit/ariakit/issues/7617
-    return sync(store, ["open"], (state) => {
-      if (!state.open) return;
+    let openingMoves: number | null = null;
+    return sync(store, ["open", "selectElement"], (state) => {
+      if (!state.open) {
+        openingMoves = null;
+        return;
+      }
       // Arrow keys move while the popup is still closed. Capture that movement
       // at each open so the opening presentation still centers; only movement
-      // after this point should switch back to nearest-edge scrolling.
-      const { moves, selectElement } = store.getState();
+      // after this point should switch back to nearest-edge scrolling. A select
+      // element that replaces the previous one while the popup stays open keeps
+      // the baseline captured when it opened.
+      // https://github.com/ariakit/ariakit/pull/7619#discussion_r4088440311
+      openingMoves ??= store.getState().moves;
+      const { selectElement } = store.getState();
       if (!selectElement) return;
-      openingMovesBySelect.set(selectElement, moves);
-      // Runs when the popup closes or the select unmounts, and removes the
-      // entry recorded here even if the store's select element changed since.
+      openingMovesBySelect.set(selectElement, openingMoves);
+      // Runs when the popup closes, the select element changes, or the select
+      // unmounts, and removes the entry recorded for this element.
       return () => {
         openingMovesBySelect.delete(selectElement);
       };

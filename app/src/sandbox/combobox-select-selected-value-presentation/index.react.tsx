@@ -626,6 +626,32 @@ function ProviderStoreFixture({ label, storeOn }: ProviderStoreFixtureProps) {
   );
 }
 
+function SelectElementSwapFixture() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Mango",
+  });
+  const open = Ariakit.useStoreState(combobox, "open");
+  return (
+    <Ariakit.ComboboxProvider store={combobox}>
+      <Ariakit.ComboboxSelectLabel>Swapping fruit</Ariakit.ComboboxSelectLabel>
+      {/* The key replaces the select's DOM node when the popup opens. */}
+      <Ariakit.ComboboxSelect
+        render={<button key={open ? "open" : "closed"} />}
+      />
+      <Ariakit.ComboboxPopover
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          maxHeight: 120,
+          overflow: "auto",
+        }}
+      >
+        <FruitItems />
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 function NativeAutoFocusFixture() {
   const dialog = Ariakit.useDialogStore();
   const shadowHostRef = useRef<HTMLDivElement>(null);
@@ -1186,6 +1212,9 @@ export default function Example() {
       </div>
       <div style={{ marginTop: 200 }}>
         <ProviderStoreFixture label="Popover-store fruit" storeOn="popover" />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <SelectElementSwapFixture />
       </div>
     </>
   );
