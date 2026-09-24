@@ -186,6 +186,78 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await expectVerticallyCentered(q.listbox(), mango);
   });
 
+  for (const storeOn of ["select", "popover"]) {
+    // https://github.com/ariakit/ariakit/issues/7617
+    test(`centers a new selection on reopen when only the ${storeOn} receives the store`, async ({
+      page,
+      q,
+    }) => {
+      const label =
+        storeOn === "select" ? "Select-store fruit" : "Popover-store fruit";
+      const select = q.combobox(label);
+      const listbox = q.listbox(label);
+      const mango = q.option("Mango");
+      const jackfruit = q.option("Jackfruit");
+      await select.click();
+      await test.expect(mango).toHaveAttribute("data-active-item");
+      await expectVerticallyCentered(listbox, mango);
+
+      for (let i = 0; i < 6; i += 1) {
+        await page.keyboard.press("ArrowUp");
+      }
+      await test.expect(jackfruit).toHaveAttribute("data-active-item");
+      await page.keyboard.press("Enter");
+      await test.expect(select).toHaveText("Jackfruit");
+      await test.expect(listbox).not.toBeVisible();
+      await test.expect(select).toBeFocused();
+
+      await select.click();
+
+      await test.expect(jackfruit).toHaveAttribute("data-active-item");
+      await expectVerticallyCentered(listbox, jackfruit);
+    });
+  }
+
+  // An arrow-key open records a non-zero move count, while a click reopen
+  // starts from zero, so the reopen only centers if the close cleared the
+  // earlier baseline.
+  // https://github.com/ariakit/ariakit/pull/7619#discussion_r4088465011
+  test("centers the selected item on a click reopen after an arrow-key open", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Centered fruit");
+    const listbox = q.listbox();
+    const jackfruit = q.option("Jackfruit");
+    await select.focus();
+    await select.press("ArrowDown");
+    await test.expect(q.option("Mango")).toHaveAttribute("data-active-item");
+
+    for (let i = 0; i < 6; i += 1) {
+      await page.keyboard.press("ArrowUp");
+    }
+    await test.expect(jackfruit).toHaveAttribute("data-active-item");
+    await page.keyboard.press("Enter");
+    await test.expect(select).toHaveText("Jackfruit");
+    await test.expect(listbox).not.toBeVisible();
+
+    await select.click();
+
+    await test.expect(jackfruit).toHaveAttribute("data-active-item");
+    await expectVerticallyCentered(listbox, jackfruit);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7619#discussion_r4088440311
+  test("centers the selected item when the select element is replaced on open", async ({
+    q,
+  }) => {
+    await q.combobox("Swapping fruit").click();
+
+    const mango = q.option("Mango");
+    await test.expect(mango).toHaveAttribute("data-active-item");
+    await expectVerticallyCentered(q.listbox("Swapping fruit"), mango);
+  });
+
   test("does not re-render inactive items when the popup opens", async ({
     page,
     q,

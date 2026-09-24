@@ -592,6 +592,66 @@ function OversizedInlineOverflowFixture({
   );
 }
 
+interface ProviderStoreFixtureProps {
+  label: string;
+  /**
+   * The component that receives the store through its `store` prop. The other
+   * one reads it from the provider, which wraps it in a store of its own.
+   */
+  storeOn: "select" | "popover";
+}
+
+function ProviderStoreFixture({ label, storeOn }: ProviderStoreFixtureProps) {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Mango",
+  });
+  return (
+    <Ariakit.ComboboxProvider store={combobox}>
+      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect
+        store={storeOn === "select" ? combobox : undefined}
+      />
+      <Ariakit.ComboboxPopover
+        store={storeOn === "popover" ? combobox : undefined}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          maxHeight: 120,
+          overflow: "auto",
+        }}
+      >
+        <FruitItems />
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
+function SelectElementSwapFixture() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Mango",
+  });
+  const open = Ariakit.useStoreState(combobox, "open");
+  return (
+    <Ariakit.ComboboxProvider store={combobox}>
+      <Ariakit.ComboboxSelectLabel>Swapping fruit</Ariakit.ComboboxSelectLabel>
+      {/* The key replaces the select's DOM node when the popup opens. */}
+      <Ariakit.ComboboxSelect
+        render={<button key={open ? "open" : "closed"} />}
+      />
+      <Ariakit.ComboboxPopover
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          maxHeight: 120,
+          overflow: "auto",
+        }}
+      >
+        <FruitItems />
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 function NativeAutoFocusFixture() {
   const dialog = Ariakit.useDialogStore();
   const shadowHostRef = useRef<HTMLDivElement>(null);
@@ -1146,6 +1206,15 @@ export default function Example() {
       </div>
       <div style={{ marginTop: 200 }}>
         <OversizedInlineOverflowFixture direction="rtl" />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <ProviderStoreFixture label="Select-store fruit" storeOn="select" />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <ProviderStoreFixture label="Popover-store fruit" storeOn="popover" />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <SelectElementSwapFixture />
       </div>
     </>
   );
