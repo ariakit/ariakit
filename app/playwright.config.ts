@@ -1,4 +1,6 @@
+import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
+import { measureEnvironment } from "@visonaut/playwright/ci";
 
 if (process.argv.includes("--headed")) {
   process.env.PWHEADED = "true";
@@ -22,6 +24,34 @@ const nextjsPort = Number(process.env.NEXTJS_PORT) || 3000;
 const inspectorPort = Number(process.env.APP_INSPECTOR_PORT) || (CI ? 9339 : 0);
 const nextjsInspectorPort =
   Number(process.env.NEXTJS_INSPECTOR_PORT) || (CI ? 9340 : 0);
+const visualShard = CI ? process.env.VISONAUT_SHARD : undefined;
+if (visualShard && visualShard !== "linux" && visualShard !== "safari") {
+  throw new Error(`Unknown Visonaut shard: ${visualShard}`);
+}
+
+function requiredEnv(name: string) {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} is required for Visonaut capture`);
+  return value;
+}
+
+const visualProjects =
+  visualShard === "linux" ? ["chrome", "firefox"] : ["safari"];
+const captureDirectory = visualShard
+  ? path.join(requiredEnv("RUNNER_TEMP"), `visonaut-${visualShard}`)
+  : undefined;
+const captureEnvironment = captureDirectory
+  ? await measureEnvironment({
+      appPackageFile: path.join(process.cwd(), "package.json"),
+      applicationFontPackage: "@fontsource-variable/inter",
+      comparisonPolicyDigest: requiredEnv("VISONAUT_COMPARISON_POLICY_DIGEST"),
+      comparisonEngineVersion: "rgba-visible-1",
+      outputDirectory: captureDirectory,
+    })
+  : undefined;
+const visualMetadata = captureEnvironment
+  ? { visonaut: { profile: captureEnvironment.profile } }
+  : undefined;
 
 function inspectorPortArg(port: number) {
   if (!port) return "";
@@ -40,7 +70,46 @@ export default defineConfig({
   workers: HEADED || PERF ? 1 : CI ? "100%" : "80%",
   forbidOnly: CI,
   reportSlowTests: null,
-  reporter: CI ? [["github"], ["dot"]] : [["list"]],
+  reporter: visualShard
+    ? [
+        ["github"],
+        ["dot"],
+        [
+          "@visonaut/playwright/reporter",
+          {
+            outputFile: path.join(captureDirectory!, "manifest.json"),
+            run: {
+              repository: requiredEnv("GITHUB_REPOSITORY"),
+              repositoryId: requiredEnv("GITHUB_REPOSITORY_ID"),
+              workflowRunId: requiredEnv("GITHUB_RUN_ID"),
+              workflowAttempt: Number(requiredEnv("GITHUB_RUN_ATTEMPT")),
+              testedSha: requiredEnv("GITHUB_SHA"),
+              planDigest: requiredEnv("VISONAUT_PACKAGE_SHA256"),
+            },
+            shard: {
+              key: visualShard,
+              jobId: "1",
+              sourceAttempt: Number(requiredEnv("GITHUB_RUN_ATTEMPT")),
+            },
+            discovery: {
+              executorDigest: requiredEnv("VISONAUT_PACKAGE_SHA256"),
+              repositoryRoot: path.resolve(process.cwd(), ".."),
+              expectedProjects: visualProjects,
+              expectedInvocation: [
+                "--project",
+                ...visualProjects,
+                "--grep",
+                "@visual",
+                "--output",
+                "test-results/test-visual",
+              ],
+            },
+          },
+        ],
+      ]
+    : CI
+      ? [["github"], ["dot"]]
+      : [["list"]],
   retries: 1,
   testDir: "src",
   snapshotPathTemplate: "{testDir}/{testFileDir}/__snapshots__/{arg}{ext}",
@@ -111,6 +180,7 @@ export default defineConfig({
     : [
         {
           name: "chrome",
+          metadata: visualMetadata,
           testMatch: testMatchersFor("chrome", "browser"),
           use: {
             ...devices["Desktop Chrome"],
@@ -121,12 +191,14 @@ export default defineConfig({
         },
         {
           name: "firefox",
+          metadata: visualMetadata,
           testMatch: testMatchersFor("firefox", "browser"),
           retries: CI ? 2 : 1,
           use: devices["Desktop Firefox"],
         },
         {
           name: "safari",
+          metadata: visualMetadata,
           testMatch: testMatchersFor("safari", "browser"),
           use: {
             ...devices["Desktop Safari"],

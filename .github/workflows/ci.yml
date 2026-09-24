@@ -18,7 +18,7 @@ concurrency:
 jobs:
   plan:
     name: Plan
-    if: github.event_name == 'pull_request'
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     outputs:
       main: ${{ steps.plan.outputs.main }}
@@ -44,9 +44,9 @@ jobs:
       - name: Plan CI
         id: plan
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref || 'main' }}
         run: node packages/ariakit-scripts/src/ci-run.ts plan
 
   main:
@@ -61,7 +61,7 @@ jobs:
   app:
     name: App
     needs: plan
-    if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.plan.outputs.app == 'true') }}
+    if: ${{ !cancelled() && (github.event_name == 'push' || needs.plan.outputs.app == 'true') }}
     permissions:
       actions: read
       contents: read
@@ -145,13 +145,6 @@ jobs:
 
       - name: Verify CI results
         env:
-          CI_EVENT: ${{ github.event_name }}
-          APP_RESULT: ${{ needs.app.result }}
           CI_PLAN: ${{ needs.plan.outputs.plan }}
           CI_RESULTS: ${{ toJSON(needs) }}
-        run: |
-          if [ "$CI_EVENT" = merge_group ]; then
-            test "$APP_RESULT" = success
-          else
-            node packages/ariakit-scripts/src/ci-run.ts gate
-          fi
+        run: node packages/ariakit-scripts/src/ci-run.ts gate

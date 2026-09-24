@@ -24,6 +24,7 @@ export interface CIPlan {
 
 export interface CreateCIPlanOptions {
   baseRef?: string;
+  requireApp?: boolean;
   changedLockfileImporters?: string[];
   packageJSONChanges?: PackageJSONChange[];
 }
@@ -39,6 +40,7 @@ export interface RunCIPlanOptions {
   head: string;
   baseRef: string;
   output: string;
+  requireApp?: boolean;
 }
 
 export interface CIGateResult {
@@ -432,6 +434,10 @@ export function createCIPlan(
     addFileReasons(plan, file);
   }
 
+  if (options.requireApp) {
+    addReason(plan, "app", "Merge queue requires visual checks");
+  }
+
   if (plan.baseRef && plan.baseRef !== "main") {
     plan.workflows.release_preview = false;
     plan.reasons.release_preview = [];
@@ -687,6 +693,7 @@ export function runCIPlan(options: RunCIPlanOptions) {
   const files = getChangedFiles(options.base, options.head);
   const plan = createCIPlan(files, {
     baseRef: options.baseRef,
+    requireApp: options.requireApp,
     changedLockfileImporters: getLockfileImporterChanges(
       options.base,
       options.head,

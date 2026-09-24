@@ -148,252 +148,157 @@ jobs:
           path: app/test-results
           retention-days: 7
 
-  render_chrome:
-    name: render / ${{ matrix.shard }}
+  visual:
+    name: ${{ matrix.name }}
     needs: [build, build-nextjs]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
     permissions:
       contents: read
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - os: ubuntu-24.04
-            shard: chrome
-            project: chrome
-            browser: chromium
-            device: Desktop Chrome
-            patterns: '["/test[^/]*-(chrome|browser)","/tests/[^/]*-(chrome|browser)"]'
-            retries: 1
-    steps: &render_steps
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+          - os: ubuntu-latest
+            name: Visual
+            engines: chromium firefox
+            projects: chrome firefox
+            test: xvfb-run pnpm -F app exec playwright test
+            shard: linux
+          - os: macos-latest
+            name: Visual (Safari)
+            engines: webkit
+            projects: safari
+            test: pnpm -F app exec playwright test
+            shard: safari
+    env:
+      VISUAL_TEST: "true"
+      VISONAUT_SHARD: ${{ matrix.shard }}
+      VISONAUT_PACKAGE_SHA256: bab64dabc7998022d860e778a85dccba67d2fb30ad6f5496209ce8ec4f734984
+      VISONAUT_COMPARISON_POLICY_DIGEST: 395f2b596a2e9cf4f8ce86b8643c48856f326773becf337cee6e66faba289249
+    steps:
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: ./.github/workflows/setup
         with:
           filters: app...
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+      - uses: ./.github/workflows/install-playwright
+        with:
+          engines: ${{ matrix.engines }}
+          workspace: app
+      - uses: actions/download-artifact@v8
         with:
           name: app-build
           path: app
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+      - uses: actions/download-artifact@v8
         with:
           name: nextjs-dist
           path: nextjs/.open-next
-      - uses: ./.github/workflows/install-playwright
-        with:
-          engines: ${{ matrix.browser }}
-          workspace: app
-      - name: Verify the installed Visonaut capture package
-        shell: bash
-        env:
-          VISONAUT_PACKAGE_SHA256: 2f76340162dcc41d06f169b0cc162489a67a42ca32f08bee0d16604c87e58551
-        run: |
-          set -euo pipefail
-          archive="$(cd "$RUNNER_TEMP" && npm pack @visonaut/playwright@0.2.0 --silent)"
-          actual="$(shasum -a 256 "$RUNNER_TEMP/$archive" | cut -d ' ' -f 1)"
-          if [ "$actual" != "$VISONAUT_PACKAGE_SHA256" ]; then
-            echo "::error::The Visonaut adapter checksum does not match"
-            exit 1
-          fi
-          mkdir -p "$RUNNER_TEMP/visonaut-adapter"
-          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP/visonaut-adapter"
-          diff -qr -x node_modules "$RUNNER_TEMP/visonaut-adapter/package" app/node_modules/@visonaut/playwright
-      - name: Render the complete visual collection without OIDC
-        shell: bash
-        env:
-          VISONAUT_SHARD: ${{ matrix.shard }}
-          VISONAUT_PROJECT: ${{ matrix.project }}
-          VISONAUT_BROWSER: ${{ matrix.browser }}
-          VISONAUT_DEVICE: ${{ matrix.device }}
-          VISONAUT_TEST_PATTERNS: ${{ matrix.patterns }}
-          VISONAUT_RETRIES: ${{ matrix.retries }}
-          VISONAUT_PACKAGE_SHA256: 2f76340162dcc41d06f169b0cc162489a67a42ca32f08bee0d16604c87e58551
-          VISONAUT_COMPARISON_POLICY_DIGEST: 395f2b596a2e9cf4f8ce86b8643c48856f326773becf337cee6e66faba289249
-          VISONAUT_WEB_SERVERS: >-
-            [{"command":"pnpm run preview --port 4321","cwd":"app","url":"http://localhost:4321","timeout":120000,"env":{"APP_INSPECTOR_PORT":"9339","CLOUDFLARE_INCLUDE_PROCESS_ENV":"true","NEXTJS_PORT":"3000"}},{"command":"pnpm -F nextjs exec opennextjs-cloudflare preview --port 3000 --inspector-port 9340","cwd":".","url":"http://localhost:3000","timeout":120000}]
-        run: |
-          pnpm --filter app exec visonaut-capture render \
-            --repository-root "$GITHUB_WORKSPACE" \
-            --test-dir app/src \
-            --test-patterns "$VISONAUT_TEST_PATTERNS" \
-            --project "$VISONAUT_PROJECT" \
-            --browser "$VISONAUT_BROWSER" \
-            --device "$VISONAUT_DEVICE" \
-            --base-url http://localhost:4321 \
-            --shard "$VISONAUT_SHARD" \
-            --font-package @fontsource-variable/inter \
-            --comparison-policy-digest "$VISONAUT_COMPARISON_POLICY_DIGEST" \
-            --bundle-sha256 "$VISONAUT_PACKAGE_SHA256" \
-            --output "$RUNNER_TEMP/visonaut-$VISONAUT_SHARD.enc" \
-            --retries "$VISONAUT_RETRIES" \
-            --workers 4
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+      - name: Test visual
+        run: ${{ matrix.test }} --project ${{ matrix.projects }} --grep @visual --output test-results/test-visual
+      - name: Encrypt captures
+        run: pnpm -F app exec visonaut pack --dir "$RUNNER_TEMP/visonaut-$VISONAUT_SHARD" --output "$RUNNER_TEMP/visonaut-$VISONAUT_SHARD.enc"
+      - uses: actions/upload-artifact@v7
         with:
           name: visonaut-transfer-${{ matrix.shard }}
           path: ${{ runner.temp }}/visonaut-${{ matrix.shard }}.enc
           if-no-files-found: error
-          overwrite: false
           retention-days: 1
+      - name: Upload test results to GitHub
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-test-results-${{ matrix.os }}
+          path: app/test-results
+          if-no-files-found: ignore
+          retention-days: 7
 
-  render_firefox:
-    name: render / ${{ matrix.shard }}
-    needs: [build, build-nextjs]
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 120
-    permissions:
-      contents: read
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-24.04
-            shard: firefox
-            project: firefox
-            browser: firefox
-            device: Desktop Firefox
-            patterns: '["/test[^/]*-(firefox|browser)","/tests/[^/]*-(firefox|browser)"]'
-            retries: 2
-    steps: *render_steps
-
-  render_safari:
-    name: render / ${{ matrix.shard }}
-    needs: [build, build-nextjs]
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 120
-    permissions:
-      contents: read
-    strategy:
-      matrix:
-        include:
-          - os: macos-latest
-            shard: safari
-            project: safari
-            browser: webkit
-            device: Desktop Safari
-            patterns: '["/test[^/]*-(safari|browser)","/tests/[^/]*-(safari|browser)"]'
-            retries: 3
-    steps: *render_steps
-
-  upload_chrome:
+  upload:
     name: upload / ${{ matrix.shard }}
-    needs: render_chrome
-    env:
-      VISONAUT_WORKFLOW_SOURCE_SHA: ${{ vars.VISONAUT_WORKFLOW_SOURCE_SHA }}
+    needs: visual
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     permissions:
       actions: read
       id-token: write
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - os: ubuntu-24.04
-            shard: chrome
+          - os: ubuntu-latest
+            shard: linux
             browser: chromium
-    steps: &upload_steps
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+          - os: macos-latest
+            shard: safari
+            browser: webkit
+    env:
+      VISONAUT_WORKFLOW_SOURCE_SHA: ${{ vars.VISONAUT_WORKFLOW_SOURCE_SHA }}
+      VISONAUT_SHARD: ${{ matrix.shard }}
+      VISONAUT_PACKAGE_SHA256: bab64dabc7998022d860e778a85dccba67d2fb30ad6f5496209ce8ec4f734984
+      VISONAUT_CLI_SHA256: 18cc35a0f1198b1e77ed18d844941cdf0e9acc12f20b0d98b54e406a0f11105b
+      VISONAUT_COMPARISON_POLICY_DIGEST: 395f2b596a2e9cf4f8ce86b8643c48856f326773becf337cee6e66faba289249
+      VISONAUT_FONT_PACKAGE: "@fontsource-variable/inter"
+    steps:
+      - uses: actions/setup-node@v7
         with:
           node-version: 24.18.0
-      - &install_package
-        name: Install verified Visonaut commands
+      - &install_visonaut
+        name: Install verified Visonaut CLI
         shell: bash
-        env:
-          VISONAUT_PACKAGE_SHA256: 2f76340162dcc41d06f169b0cc162489a67a42ca32f08bee0d16604c87e58551
-          VISONAUT_CLI_SHA256: 4354bbf9f28d8b9097fdfb9c53bf7b66900472db775a8977147c00a9929abcba
         run: |
           set -euo pipefail
-          adapter="$(cd "$RUNNER_TEMP" && npm pack @visonaut/playwright@0.2.0 --silent)"
-          cli="$(cd "$RUNNER_TEMP" && npm pack visonaut@0.2.0 --silent)"
-          if [ "$(shasum -a 256 "$RUNNER_TEMP/$adapter" | cut -d ' ' -f 1)" != "$VISONAUT_PACKAGE_SHA256" ] ||
-             [ "$(shasum -a 256 "$RUNNER_TEMP/$cli" | cut -d ' ' -f 1)" != "$VISONAUT_CLI_SHA256" ]; then
-            echo "::error::A Visonaut package checksum does not match"
-            exit 1
-          fi
-          npm install --prefix "$RUNNER_TEMP/visonaut-tools" --ignore-scripts --no-audit --no-fund \
-            "$RUNNER_TEMP/$adapter" "$RUNNER_TEMP/$cli"
+          packages=(
+            "@visonaut/playwright@0.3.0:$VISONAUT_PACKAGE_SHA256"
+            "visonaut@0.3.0:$VISONAUT_CLI_SHA256"
+            "@playwright/test@1.63.0:fc594f36b7b4aafece614ec6852ad728423215a76edd0a2a1821bb0c49539c4e"
+            "playwright@1.63.0:195a5ee9bfed7c6e9c03965950e32e5e4dbedaa02e740e5a530eb4b87dae050c"
+            "playwright-core@1.63.0:208593d4e1bcd8f8fe5f869cad1cc332dc7f1d70dc1d58c102dc3ac36e30f26c"
+            "pngjs@7.0.0:c4b71873d48a692dd5eeb1dcb62185c7aafe40f2180c7cc7f30ec71e89a080be"
+          )
+          archives=()
+          for entry in "${packages[@]}"; do
+            archive="$(cd "$RUNNER_TEMP" && npm pack "${entry%%:*}" --silent)"
+            actual="$(shasum -a 256 "$RUNNER_TEMP/$archive" | cut -d ' ' -f 1)"
+            test "$actual" = "${entry#*:}"
+            archives+=("$RUNNER_TEMP/$archive")
+          done
+          npm install --prefix "$RUNNER_TEMP/visonaut-tools" --offline --ignore-scripts --no-audit --no-fund "${archives[@]}"
           echo "$RUNNER_TEMP/visonaut-tools/node_modules/.bin" >> "$GITHUB_PATH"
-      - name: Match the render job's system fonts
-        env:
-          VISONAUT_BROWSER: ${{ matrix.browser }}
-        run: playwright install-deps "$VISONAUT_BROWSER"
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+      - name: Match visual job fonts
+        run: playwright install-deps ${{ matrix.browser }}
+      - uses: actions/download-artifact@v8
         with:
           name: visonaut-transfer-${{ matrix.shard }}
           path: ${{ runner.temp }}/visonaut-transfer
-      - name: Stage the signed visual collection
-        id: stage
-        shell: bash
+      - name: Upload captures
+        id: upload
         env:
           GH_TOKEN: ${{ github.token }}
-          VISONAUT_SHARD: ${{ matrix.shard }}
-          VISONAUT_PACKAGE_SHA256: 2f76340162dcc41d06f169b0cc162489a67a42ca32f08bee0d16604c87e58551
-          VISONAUT_COMPARISON_POLICY_DIGEST: 395f2b596a2e9cf4f8ce86b8643c48856f326773becf337cee6e66faba289249
-        run: |
-          visonaut-capture upload \
-            --shard "$VISONAUT_SHARD" \
-            --font-package @fontsource-variable/inter \
-            --comparison-policy-digest "$VISONAUT_COMPARISON_POLICY_DIGEST" \
-            --bundle-sha256 "$VISONAUT_PACKAGE_SHA256" \
-            --input "$RUNNER_TEMP/visonaut-transfer/visonaut-$VISONAUT_SHARD.enc" \
-            --output-directory "$RUNNER_TEMP/visonaut-submission-$VISONAUT_SHARD"
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        run: visonaut upload --bundle "$RUNNER_TEMP/visonaut-transfer/visonaut-$VISONAUT_SHARD.enc"
+      - uses: actions/upload-artifact@v7
         with:
-          name: ${{ steps.stage.outputs.name }}
-          path: ${{ runner.temp }}/visonaut-submission-${{ matrix.shard }}/receipt.json
+          name: ${{ steps.upload.outputs.name }}
+          path: ${{ runner.temp }}/visonaut-upload-${{ matrix.shard }}/receipt.json
           if-no-files-found: error
-          overwrite: false
           retention-days: 7
-
-  upload_firefox:
-    name: upload / ${{ matrix.shard }}
-    needs: render_firefox
-    env:
-      VISONAUT_WORKFLOW_SOURCE_SHA: ${{ vars.VISONAUT_WORKFLOW_SOURCE_SHA }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
-    permissions:
-      actions: read
-      id-token: write
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-24.04
-            shard: firefox
-            browser: firefox
-    steps: *upload_steps
-
-  upload_safari:
-    name: upload / ${{ matrix.shard }}
-    needs: render_safari
-    env:
-      VISONAUT_WORKFLOW_SOURCE_SHA: ${{ vars.VISONAUT_WORKFLOW_SOURCE_SHA }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
-    permissions:
-      actions: read
-      id-token: write
-    strategy:
-      matrix:
-        include:
-          - os: macos-latest
-            shard: safari
-            browser: webkit
-    steps: *upload_steps
 
   submit:
     name: submit
-    needs: [upload_chrome, upload_firefox, upload_safari]
-    runs-on: ubuntu-24.04
+    needs: upload
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       id-token: write
+    env:
+      VISONAUT_PACKAGE_SHA256: bab64dabc7998022d860e778a85dccba67d2fb30ad6f5496209ce8ec4f734984
+      VISONAUT_CLI_SHA256: 18cc35a0f1198b1e77ed18d844941cdf0e9acc12f20b0d98b54e406a0f11105b
     steps:
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24.18.0
-      - *install_package
-      - name: Submit after every signed upload succeeds
-        run: visonaut submit --run "$GITHUB_RUN_ID"
+      - *install_visonaut
+      - run: visonaut submit --run "$GITHUB_RUN_ID"
 
   deploy-preview:
     # Keep PR previews and the existing main deployment; merge-queue runs only test.
