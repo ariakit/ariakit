@@ -3,39 +3,45 @@ import { useState } from "react";
 
 const fruits = ["Apple", "Banana", "Cherry", "Grape", "Orange"];
 
-function usePreventClose() {
+function useClose() {
   const [count, setCount] = useState(0);
-  const countPreventedClose = () => setCount((count) => count + 1);
-  const preventClose = (event: Event) => {
+  const [keepOpen, setKeepOpen] = useState(true);
+  const onClose = (event: Event) => {
+    setCount((count) => count + 1);
+    if (!keepOpen) return;
     event.preventDefault();
-    countPreventedClose();
   };
-  return [count, preventClose, countPreventedClose] as const;
+  return { count, keepOpen, setKeepOpen, onClose };
 }
 
-interface FruitItemsProps {
-  search: string;
-  onPreventClose: () => void;
+interface CloseStatusProps {
+  label: string;
+  close: ReturnType<typeof useClose>;
 }
 
-function FruitItems({ search, onPreventClose }: FruitItemsProps) {
+function CloseStatus({ label, close }: CloseStatusProps) {
+  return (
+    <>
+      <label>
+        <Ariakit.Checkbox
+          checked={close.keepOpen}
+          onChange={(event) => close.setKeepOpen(event.target.checked)}
+        />
+        Keep {label} open
+      </label>
+      <p>
+        {label} close events: {close.count}
+      </p>
+    </>
+  );
+}
+
+function FruitItems({ search }: { search: string }) {
   const matches = fruits.filter((fruit) =>
     fruit.toLowerCase().includes(search.toLowerCase()),
   );
   return matches.map((fruit) => (
-    <Ariakit.ComboboxItem
-      key={fruit}
-      value={fruit}
-      setValueOnClick={false}
-      // The item hides the linked combobox store, which resets the popup before
-      // onClose can prevent the close, so the item makes that decision instead.
-      // TODO: Remove this workaround when
-      // https://github.com/ariakit/ariakit/issues/7621 is fixed.
-      hideOnClick={() => {
-        onPreventClose();
-        return false;
-      }}
-    />
+    <Ariakit.ComboboxItem key={fruit} value={fruit} setValueOnClick={false} />
   ));
 }
 
@@ -43,19 +49,19 @@ function FruitItems({ search, onPreventClose }: FruitItemsProps) {
 // combobox option.
 function MenuFruits() {
   const [search, setSearch] = useState("");
-  const [count, preventClose, countPreventedClose] = usePreventClose();
+  const close = useClose();
   return (
     <Ariakit.ComboboxProvider resetValueOnHide setValue={setSearch}>
       <Ariakit.MenuProvider>
         <Ariakit.MenuButton>Menu</Ariakit.MenuButton>
-        <Ariakit.Menu onClose={preventClose}>
+        <Ariakit.Menu onClose={close.onClose}>
           <Ariakit.Combobox autoSelect aria-label="Menu search" />
           <Ariakit.ComboboxList>
-            <FruitItems search={search} onPreventClose={countPreventedClose} />
+            <FruitItems search={search} />
           </Ariakit.ComboboxList>
         </Ariakit.Menu>
       </Ariakit.MenuProvider>
-      <p>Menu closes prevented: {count}</p>
+      <CloseStatus label="Menu" close={close} />
     </Ariakit.ComboboxProvider>
   );
 }
@@ -63,14 +69,14 @@ function MenuFruits() {
 // The combobox store extends the dialog store through the disclosure option.
 function DialogFruits() {
   const [search, setSearch] = useState("");
-  const [count, preventClose, countPreventedClose] = usePreventClose();
+  const close = useClose();
   const dialog = Ariakit.useDialogStore();
   return (
     <>
       <Ariakit.DialogDisclosure store={dialog}>Dialog</Ariakit.DialogDisclosure>
       <Ariakit.Dialog
         store={dialog}
-        onClose={preventClose}
+        onClose={close.onClose}
         aria-label="Dialog"
         style={{ position: "relative", zIndex: 1 }}
       >
@@ -81,11 +87,11 @@ function DialogFruits() {
         >
           <Ariakit.Combobox autoSelect aria-label="Dialog search" />
           <Ariakit.ComboboxList>
-            <FruitItems search={search} onPreventClose={countPreventedClose} />
+            <FruitItems search={search} />
           </Ariakit.ComboboxList>
         </Ariakit.ComboboxProvider>
       </Ariakit.Dialog>
-      <p>Dialog closes prevented: {count}</p>
+      <CloseStatus label="Dialog" close={close} />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { init } from "@ariakit/store";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import { createComboboxStore } from "../combobox/combobox-store.ts";
+import { createDialogStore } from "../dialog/dialog-store.ts";
 import { createMenubarStore } from "../menubar/menubar-store.ts";
 import { createPopoverStore } from "../popover/popover-store.ts";
 import { createMenuStore } from "./menu-store.ts";
@@ -111,5 +112,36 @@ test("keeps an explicit placement of a menu with a combobox", () => {
   const menu = createMenuStore({ combobox, placement: "left-start" });
   const stop = init(menu);
   expect(menu.getState().placement).toBe("left-start");
+  stop();
+});
+
+// https://github.com/ariakit/ariakit/issues/7621
+test("a hide request on the combobox store runs the handler of the menu", () => {
+  const combobox = createComboboxStore({ defaultOpen: true });
+  const menu = createMenuStore({ combobox });
+  // Like the store of the Dialog that renders the menu.
+  const dialog = createDialogStore({ store: menu });
+  const stop = init(dialog);
+  let canHide = false;
+  const handler = vi.fn((hide: () => void) => {
+    if (!canHide) return;
+    hide();
+  });
+  const unregister = dialog.unstable_onHideRequest(handler);
+
+  combobox.hide();
+  menu.hide();
+  expect(handler).toHaveBeenCalledTimes(2);
+  expect(combobox.getState().open).toBe(true);
+  expect(menu.getState().open).toBe(true);
+
+  canHide = true;
+  combobox.hide();
+  expect(handler).toHaveBeenCalledTimes(3);
+  expect(combobox.getState().open).toBe(false);
+  expect(menu.getState().open).toBe(false);
+  expect(dialog.getState().open).toBe(false);
+
+  unregister();
   stop();
 });

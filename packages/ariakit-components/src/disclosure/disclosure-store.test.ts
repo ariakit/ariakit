@@ -128,3 +128,39 @@ test("a later hide handler can reject a request that an earlier one allows", () 
   unsubscribe();
   stop();
 });
+
+// https://github.com/ariakit/ariakit/issues/7621
+test("a hide request on a store linked through the disclosure option runs the handler", () => {
+  // Like a Dialog store and the store of a combobox that receives it through
+  // the disclosure option.
+  const dialog = createDisclosureStore({ defaultOpen: true });
+  const store = createDisclosureStore({ disclosure: dialog });
+  const stop = init(store);
+  const openChanges: boolean[] = [];
+  const unsubscribe = subscribe(dialog, ["open"], (state) => {
+    openChanges.push(state.open);
+  });
+  let canHide = false;
+  const handler = vi.fn((hide: () => void) => {
+    if (!canHide) return;
+    hide();
+  });
+  const unregister = dialog.unstable_onHideRequest(handler);
+
+  store.hide();
+  store.toggle();
+  store.setOpen(false);
+  expect(handler).toHaveBeenCalledTimes(3);
+  expect(openChanges).toEqual([]);
+  expect(store.getState().open).toBe(true);
+
+  canHide = true;
+  store.hide();
+  expect(handler).toHaveBeenCalledTimes(4);
+  expect(openChanges).toEqual([false]);
+  expect(store.getState().open).toBe(false);
+
+  unregister();
+  unsubscribe();
+  stop();
+});

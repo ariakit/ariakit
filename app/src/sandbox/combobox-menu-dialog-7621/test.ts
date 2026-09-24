@@ -20,7 +20,7 @@ for (const label of labels) {
       expect(q.dialog(label)).toBeVisible();
       expect(q.combobox(`${label} search`)).toHaveValue("an");
       expect(q.option("Orange")).toHaveAttribute("data-active-item");
-      expect(q.text(`${label} closes prevented: 1`)).toBeVisible();
+      expect(q.text(`${label} close events: 1`)).toBeVisible();
     });
 
     // https://github.com/ariakit/ariakit/issues/7621
@@ -33,7 +33,20 @@ for (const label of labels) {
       expect(q.dialog(label)).toBeVisible();
       expect(q.combobox(`${label} search`)).toHaveValue("an");
       expect(q.option("Orange")).toHaveAttribute("data-active-item");
-      expect(q.text(`${label} closes prevented: 1`)).toBeVisible();
+      expect(q.text(`${label} close events: 1`)).toBeVisible();
+    });
+
+    // https://github.com/ariakit/ariakit/issues/7621
+    test("an allowed close from Enter on an item closes the popup once", async () => {
+      await click(q.checkbox(`Keep ${label} open`));
+      await click(q.button(label));
+      await type("an");
+      await press.ArrowDown();
+      expect(q.option("Orange")).toHaveAttribute("data-active-item");
+
+      await press.Enter();
+      expect(q.dialog.maybe(label)).not.toBeInTheDocument();
+      expect(q.text(`${label} close events: 1`)).toBeVisible();
     });
   });
 }

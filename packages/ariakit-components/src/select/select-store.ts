@@ -18,6 +18,7 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.ts";
 import { createCompositeStore } from "../composite/composite-store.ts";
+import { withHideRequest } from "../disclosure/__hide-request.ts";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
@@ -42,24 +43,27 @@ export function createSelectStore({
   combobox,
   ...props
 }: SelectStoreProps = {}): SelectStore {
-  const store = mergeStore(
-    props.store,
-    omit(combobox, [
-      "value",
-      "items",
-      "renderedItems",
-      "compositeElement",
-      "baseElement",
-      "arrowElement",
-      "anchorElement",
-      "contentElement",
-      "popoverElement",
-      "disclosureElement",
-      "inputElement",
-      "labelElement",
-      "selectElement",
-      "selectLabelElement",
-    ]),
+  const store = withHideRequest(
+    mergeStore(
+      props.store,
+      omit(combobox, [
+        "value",
+        "items",
+        "renderedItems",
+        "compositeElement",
+        "baseElement",
+        "arrowElement",
+        "anchorElement",
+        "contentElement",
+        "popoverElement",
+        "disclosureElement",
+        "inputElement",
+        "labelElement",
+        "selectElement",
+        "selectLabelElement",
+      ]),
+    ),
+    combobox,
   );
 
   throwOnConflictingProps(props, store);

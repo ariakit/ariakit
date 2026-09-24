@@ -25,7 +25,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
           .toHaveAttribute("data-active-item");
 
         await page.keyboard.press("Enter");
-        await test.expect(q.text(`${label} closes prevented: 1`)).toBeVisible();
+        await test.expect(q.text(`${label} close events: 1`)).toBeVisible();
         // The state below must not change. A close that went through would
         // reopen the popup, and the menu would take its initial focus again
         // after a positioning pass that no state tracks. Cross its frames.
@@ -50,7 +50,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
           .toHaveAttribute("data-active-item");
 
         await q.option("Orange").click();
-        await test.expect(q.text(`${label} closes prevented: 1`)).toBeVisible();
+        await test.expect(q.text(`${label} close events: 1`)).toBeVisible();
         // The state below must not change. A close that went through would
         // reopen the popup, and the menu would take its initial focus again
         // after a positioning pass that no state tracks. Cross its frames.
@@ -60,6 +60,25 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await test
           .expect(q.option("Orange"))
           .toHaveAttribute("data-active-item");
+      });
+
+      // https://github.com/ariakit/ariakit/issues/7621
+      test("an allowed close from Enter on an item closes the popup once", async ({
+        page,
+        q,
+      }) => {
+        await q.checkbox(`Keep ${label} open`).click();
+        await q.button(label).click();
+        await test.expect(q.combobox(`${label} search`)).toBeFocused();
+        await page.keyboard.type("an");
+        await page.keyboard.press("ArrowDown");
+        await test
+          .expect(q.option("Orange"))
+          .toHaveAttribute("data-active-item");
+
+        await page.keyboard.press("Enter");
+        await test.expect(q.dialog(label)).toBeHidden();
+        await test.expect(q.text(`${label} close events: 1`)).toBeVisible();
       });
     });
   }
