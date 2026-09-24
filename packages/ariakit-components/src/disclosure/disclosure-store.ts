@@ -8,8 +8,28 @@ import {
   throwOnConflictingProps,
 } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
-import { defaultValue } from "@ariakit/utils";
+import { applyState, defaultValue } from "@ariakit/utils";
 import type { SetState } from "@ariakit/utils";
+
+type OnHideRequest = DisclosureStoreFunctions["unstable_onHideRequest"];
+type RequestHide = DisclosureStoreFunctions["unstable_requestHide"];
+type HideHandler = Parameters<OnHideRequest>[0];
+
+function getParentHideRequest(
+  store?: Store &
+    Partial<
+      Pick<
+        DisclosureStoreFunctions,
+        "unstable_onHideRequest" | "unstable_requestHide"
+      >
+    >,
+) {
+  const onHideRequest = store?.unstable_onHideRequest;
+  const requestHide = store?.unstable_requestHide;
+  if (!onHideRequest) return;
+  if (!requestHide) return;
+  return { onHideRequest, requestHide };
+}
 
 /**
  * Creates a disclosure store.
@@ -73,13 +93,59 @@ export function createDisclosureStore(
     }),
   );
 
+  // Stores connected through the store option share the open state, so they
+  // also share the hide handlers, which the topmost store keeps. A request on
+  // any of them, such as a combobox item hiding the combobox store, reaches the
+  // handler of a Dialog that extends another one.
+  const parentHideRequest = getParentHideRequest(props.store);
+  const hideHandlers = new Set<HideHandler>();
+
+  const onHideRequest: OnHideRequest =
+    parentHideRequest?.onHideRequest ??
+    ((handler) => {
+      hideHandlers.add(handler);
+      return () => {
+        hideHandlers.delete(handler);
+      };
+    });
+
+  const requestHide: RequestHide =
+    parentHideRequest?.requestHide ??
+    ((hide) => {
+      // Each handler receives a function that runs the next handler, and the
+      // last one hides. A handler that doesn't call it keeps the content open,
+      // so the open state doesn't change at all.
+      const handlers = [...hideHandlers];
+      const runHandler = (index: number) => {
+        const handler = handlers[index];
+        if (!handler) {
+          hide();
+          return;
+        }
+        handler(() => runHandler(index + 1));
+      };
+      runHandler(0);
+    });
+
+  const setOpen: DisclosureStoreFunctions["setOpen"] = (value) => {
+    const { open } = disclosure.getState();
+    const nextOpen = applyState(value, open);
+    if (!open || nextOpen) {
+      disclosure.setState("open", nextOpen);
+      return;
+    }
+    requestHide(() => disclosure.setState("open", false));
+  };
+
   return {
     ...disclosure,
     disclosure: props.disclosure,
-    setOpen: (value) => disclosure.setState("open", value),
+    setOpen,
     show: () => disclosure.setState("open", true),
-    hide: () => disclosure.setState("open", false),
-    toggle: () => disclosure.setState("open", (open) => !open),
+    hide: () => setOpen(false),
+    toggle: () => setOpen((open) => !open),
+    unstable_onHideRequest: onHideRequest,
+    unstable_requestHide: requestHide,
     stopAnimation: () => disclosure.setState("animating", false),
     setContentElement: (value) => disclosure.setState("contentElement", value),
     setDisclosureElement: (value) =>
@@ -205,6 +271,25 @@ export interface DisclosureStoreFunctions extends Pick<
    * store.show();
    */
   setDisclosureElement: SetState<DisclosureStoreState["disclosureElement"]>;
+  /**
+   * Registers a handler that runs when `hide`, `toggle`, or `setOpen` would set
+   * the `open` state to `false` on this store or on any store connected to it
+   * through the `store` option. The handler receives a `hide` function. Calling
+   * it synchronously, at most once, lets the request continue, and returning
+   * without calling it keeps the content open. Returns a function that
+   * unregisters the handler.
+   * @deprecated
+   * @private
+   */
+  unstable_onHideRequest: (handler: (hide: () => void) => void) => () => void;
+  /**
+   * Runs the hide handlers registered on the stores connected through the
+   * `store` option, and calls `hide` when every handler lets the request
+   * continue.
+   * @deprecated
+   * @private
+   */
+  unstable_requestHide: (hide: () => void) => void;
 }
 
 export interface DisclosureStoreOptions extends StoreOptions<
