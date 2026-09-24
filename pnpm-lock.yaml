@@ -504,8 +504,8 @@ importers:
         specifier: 3.0.4
         version: 3.0.4
       '@visonaut/playwright':
-        specifier: 0.1.0
-        version: 0.1.0(@playwright/test@1.63.0)
+        specifier: 0.2.0
+        version: 0.2.0(@playwright/test@1.63.0)
       clava:
         specifier: 0.7.0
         version: 0.7.0
@@ -530,6 +530,9 @@ importers:
       rimraf:
         specifier: 6.1.3
         version: 6.1.3
+      visonaut:
+        specifier: 0.2.0
+        version: 0.2.0
       vite:
         specifier: 8.3.0
         version: 8.3.0(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0)
@@ -5795,9 +5798,10 @@ packages:
       vue-router:
         optional: true
 
-  '@visonaut/playwright@0.1.0':
-    resolution: {integrity: sha512-3Rq/BXoVkENJwUBXI5Srm7i6M4wm+O7yKsSHeGoljXNrt1de1b/jEEuwwuVaDIPdIzOtzh/6Wou3oHk21vDqWg==}
+  '@visonaut/playwright@0.2.0':
+    resolution: {integrity: sha512-6hD1LdQqnl8lS03xkzrJDg3+fgUsDHAeaaxpCEQICeBe2+J8/KQeXy/oy5Ft8q+V7vTMJjZCkFq2ZNaVWCshxA==}
     engines: {node: 24.18.0}
+    hasBin: true
     peerDependencies:
       '@playwright/test': 1.63.0
 
@@ -10513,6 +10517,11 @@ packages:
 
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
+
+  visonaut@0.2.0:
+    resolution: {integrity: sha512-LC8ZiOnqredZD5bYuFObodWMajsZ48Ug+vaZEl1lr6j3M+AAtvn+OnXgMMQt6dbdjFYd+gPPeYfzomleQ11Wpg==}
+    engines: {node: '>=24.18.0 <25'}
+    hasBin: true
 
   vite-plugin-solid@2.11.14:
     resolution: {integrity: sha512-7ZVBt8rpoyqmlwin2kRIUveaHoF6/kulY7gsnD+qFh4nS29V4OPAnw+ojoAspXIjObiL9o1xh9a/nTuYHm02Rw==}
@@ -15357,10 +15366,11 @@ snapshots:
       next: 14.2.35(@babel/core@7.29.0(supports-color@8.1.1))(@playwright/test@1.62.0)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
 
-  '@visonaut/playwright@0.1.0(@playwright/test@1.63.0)':
+  '@visonaut/playwright@0.2.0(@playwright/test@1.63.0)':
     dependencies:
       '@playwright/test': 1.63.0
       pngjs: 7.0.0
+      visonaut: 0.2.0
 
   '@vitejs/plugin-react@5.2.0(supports-color@10.2.2)(vite@8.3.0(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0))':
     dependencies:
@@ -20943,6 +20953,8 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
+
+  visonaut@0.2.0: {}
 
   vite-plugin-solid@2.11.14(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.1))(solid-js@1.9.15)(supports-color@10.2.2)(vite@8.3.0(@types/node@24.13.6)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0)):
     dependencies:

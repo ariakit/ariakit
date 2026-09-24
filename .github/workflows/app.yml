@@ -165,40 +165,7 @@ jobs:
             device: Desktop Chrome
             patterns: '["/test[^/]*-(chrome|browser)","/tests/[^/]*-(chrome|browser)"]'
             retries: 1
-    steps:
-      &render_steps # Install the verified archives before candidate setup can change the job environment.
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-        with:
-          node-version: 24.18.0
-      - &install_package
-        name: Install the checksum-verified Visonaut capture runtime
-        shell: bash
-        env:
-          VISONAUT_PACKAGE_URL: ${{ secrets.VISONAUT_DIRECT_PLAYWRIGHT_TARBALL_URL }}
-          VISONAUT_CLI_URL: ${{ secrets.VISONAUT_CLI_TARBALL_URL }}
-          VISONAUT_PACKAGE_SHA256: 98f8497e030fbe87778a06cdc46ef5b90d575519e7c8c21677e2be00747fa432
-          VISONAUT_CLI_SHA256: 5d4cc8cbe135ce04aebbd793879a9f1afd53282cc58a6f8cbadf7236c65970e4
-        run: |
-          set -euo pipefail
-          archive="$RUNNER_TEMP/visonaut-playwright.tgz"
-          directory="$RUNNER_TEMP/visonaut-capture"
-          curl --fail --silent --show-error --max-redirs 0 --retry 3 "$VISONAUT_PACKAGE_URL" --output "$archive"
-          actual="$(shasum -a 256 "$archive" | cut -d ' ' -f 1)"
-          if [ "$actual" != "$VISONAUT_PACKAGE_SHA256" ]; then
-            echo "::error::The Visonaut adapter checksum does not match"
-            exit 1
-          fi
-          mkdir -p "$directory"
-          tar -xzf "$archive" -C "$directory"
-          cp "$directory/package/ci/runtime-lock.json" "$directory/package/ci/package-lock.json"
-          (cd "$directory/package/ci" && npm ci --ignore-scripts --no-audit --no-fund)
-          cli_archive="$RUNNER_TEMP/visonaut-cli.tgz"
-          curl --fail --silent --show-error --max-redirs 0 --retry 3 "$VISONAUT_CLI_URL" --output "$cli_archive"
-          node "$directory/package/ci/bootstrap-cli.mjs" \
-            "$directory/package/ci" "$cli_archive" "$VISONAUT_CLI_SHA256" "0.2.0-preview.0"
-          echo "VISONAUT_CAPTURE_BIN=$directory/package/ci/bin.mjs" >> "$GITHUB_ENV"
-          echo "VISONAUT_PLAYWRIGHT_CLI=$directory/package/ci/node_modules/playwright/cli.js" >> "$GITHUB_ENV"
-          echo "VISONAUT_CLI_BIN=$directory/package/ci/node_modules/visonaut/dist/bin.js" >> "$GITHUB_ENV"
+    steps: &render_steps
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
@@ -213,32 +180,25 @@ jobs:
         with:
           name: nextjs-dist
           path: nextjs/.open-next
-      - name: Use the pinned adapter and one Playwright test runtime
+      - uses: ./.github/workflows/install-playwright
+        with:
+          engines: ${{ matrix.browser }}
+          workspace: app
+      - name: Verify the installed Visonaut capture package
         shell: bash
+        env:
+          VISONAUT_PACKAGE_SHA256: 2f76340162dcc41d06f169b0cc162489a67a42ca32f08bee0d16604c87e58551
         run: |
           set -euo pipefail
-          package="$RUNNER_TEMP/visonaut-capture/package"
-          # Both workspace packages import Playwright through their own pnpm links.
-          for workspace in app packages/ariakit-test packages/ariakit-scripts; do
-            module="$workspace/node_modules/@playwright/test"
-            if [ ! -L "$module" ]; then
-              echo "::error::$module is not the expected pnpm link"
-              exit 1
-            fi
-            rm "$module"
-            ln -s "$package/ci/node_modules/@playwright/test" "$module"
-          done
-          module=app/node_modules/@visonaut/playwright
-          if [ ! -L "$module" ]; then
-            echo "::error::$module is not the expected pnpm link"
+          archive="$(cd "$RUNNER_TEMP" && npm pack @visonaut/playwright@0.2.0 --silent)"
+          actual="$(shasum -a 256 "$RUNNER_TEMP/$archive" | cut -d ' ' -f 1)"
+          if [ "$actual" != "$VISONAUT_PACKAGE_SHA256" ]; then
+            echo "::error::The Visonaut adapter checksum does not match"
             exit 1
           fi
-          rm "$module"
-          ln -s "$package" "$module"
-      - name: Install the pinned Playwright browser
-        env:
-          VISONAUT_BROWSER: ${{ matrix.browser }}
-        run: node "$VISONAUT_PLAYWRIGHT_CLI" install --with-deps "$VISONAUT_BROWSER"
+          mkdir -p "$RUNNER_TEMP/visonaut-adapter"
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP/visonaut-adapter"
+          diff -qr -x node_modules "$RUNNER_TEMP/visonaut-adapter/package" app/node_modules/@visonaut/playwright
       - name: Render the complete visual collection without OIDC
         shell: bash
         env:
@@ -248,12 +208,12 @@ jobs:
           VISONAUT_DEVICE: ${{ matrix.device }}
           VISONAUT_TEST_PATTERNS: ${{ matrix.patterns }}
           VISONAUT_RETRIES: ${{ matrix.retries }}
-          VISONAUT_PACKAGE_SHA256: 98f8497e030fbe87778a06cdc46ef5b90d575519e7c8c21677e2be00747fa432
+          VISONAUT_PACKAGE_SHA256: 2f76340162dcc41d06f169b0cc162489a67a42ca32f08bee0d16604c87e58551
           VISONAUT_COMPARISON_POLICY_DIGEST: 395f2b596a2e9cf4f8ce86b8643c48856f326773becf337cee6e66faba289249
           VISONAUT_WEB_SERVERS: >-
             [{"command":"pnpm run preview --port 4321","cwd":"app","url":"http://localhost:4321","timeout":120000,"env":{"APP_INSPECTOR_PORT":"9339","CLOUDFLARE_INCLUDE_PROCESS_ENV":"true","NEXTJS_PORT":"3000"}},{"command":"pnpm -F nextjs exec opennextjs-cloudflare preview --port 3000 --inspector-port 9340","cwd":".","url":"http://localhost:3000","timeout":120000}]
         run: |
-          node "$VISONAUT_CAPTURE_BIN" render \
+          pnpm --filter app exec visonaut-capture render \
             --repository-root "$GITHUB_WORKSPACE" \
             --test-dir app/src \
             --test-patterns "$VISONAUT_TEST_PATTERNS" \
@@ -334,11 +294,28 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24.18.0
-      - *install_package
+      - &install_package
+        name: Install verified Visonaut commands
+        shell: bash
+        env:
+          VISONAUT_PACKAGE_SHA256: 2f76340162dcc41d06f169b0cc162489a67a42ca32f08bee0d16604c87e58551
+          VISONAUT_CLI_SHA256: 4354bbf9f28d8b9097fdfb9c53bf7b66900472db775a8977147c00a9929abcba
+        run: |
+          set -euo pipefail
+          adapter="$(cd "$RUNNER_TEMP" && npm pack @visonaut/playwright@0.2.0 --silent)"
+          cli="$(cd "$RUNNER_TEMP" && npm pack visonaut@0.2.0 --silent)"
+          if [ "$(shasum -a 256 "$RUNNER_TEMP/$adapter" | cut -d ' ' -f 1)" != "$VISONAUT_PACKAGE_SHA256" ] ||
+             [ "$(shasum -a 256 "$RUNNER_TEMP/$cli" | cut -d ' ' -f 1)" != "$VISONAUT_CLI_SHA256" ]; then
+            echo "::error::A Visonaut package checksum does not match"
+            exit 1
+          fi
+          npm install --prefix "$RUNNER_TEMP/visonaut-tools" --ignore-scripts --no-audit --no-fund \
+            "$RUNNER_TEMP/$adapter" "$RUNNER_TEMP/$cli"
+          echo "$RUNNER_TEMP/visonaut-tools/node_modules/.bin" >> "$GITHUB_PATH"
       - name: Match the render job's system fonts
         env:
           VISONAUT_BROWSER: ${{ matrix.browser }}
-        run: node "$VISONAUT_PLAYWRIGHT_CLI" install-deps "$VISONAUT_BROWSER"
+        run: playwright install-deps "$VISONAUT_BROWSER"
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: visonaut-transfer-${{ matrix.shard }}
@@ -349,10 +326,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           VISONAUT_SHARD: ${{ matrix.shard }}
-          VISONAUT_PACKAGE_SHA256: 98f8497e030fbe87778a06cdc46ef5b90d575519e7c8c21677e2be00747fa432
+          VISONAUT_PACKAGE_SHA256: 2f76340162dcc41d06f169b0cc162489a67a42ca32f08bee0d16604c87e58551
           VISONAUT_COMPARISON_POLICY_DIGEST: 395f2b596a2e9cf4f8ce86b8643c48856f326773becf337cee6e66faba289249
         run: |
-          node "$VISONAUT_CAPTURE_BIN" upload \
+          visonaut-capture upload \
             --shard "$VISONAUT_SHARD" \
             --font-package @fontsource-variable/inter \
             --comparison-policy-digest "$VISONAUT_COMPARISON_POLICY_DIGEST" \
@@ -416,7 +393,7 @@ jobs:
           node-version: 24.18.0
       - *install_package
       - name: Submit after every signed upload succeeds
-        run: node "$VISONAUT_CLI_BIN" submit --run "$GITHUB_RUN_ID"
+        run: visonaut submit --run "$GITHUB_RUN_ID"
 
   deploy-preview:
     # Keep PR previews and the existing main deployment; merge-queue runs only test.
