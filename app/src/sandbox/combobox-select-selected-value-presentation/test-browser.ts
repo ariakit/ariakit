@@ -1,4 +1,4 @@
-import type { Locator } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 import {
   expectVerticallyCentered,
@@ -874,7 +874,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   // leaves the list where it was.
   // https://github.com/ariakit/ariakit/issues/7620
   test("does not center the selected item when a popup without initial focus opens while focus is elsewhere", async ({
-    page,
     q,
   }) => {
     const open = q.button("Open programmatic fruit");
@@ -882,12 +881,86 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
     const listbox = q.listbox("Programmatic fruit");
     await test.expect(listbox).toBeVisible();
+    // Presentations scroll on the store update that ends placement, before
+    // `data-placing` goes away, so the position below is already settled.
     await test.expect(listbox).not.toHaveAttribute("data-placing");
-    // A presentation that never starts has no positive state to await, and one
-    // that did start would scroll as soon as placement ends.
-    await flushFrames(page);
     await test.expect(listbox).toHaveJSProperty("scrollTop", 0);
     await test.expect(open).toBeFocused();
+  });
+
+  // Closes "Parked fruit" with its list scrolled to the top, so the selected
+  // item is out of view when the focused select opens again.
+  const closeParkedListAtTop = async (page: Page) => {
+    const q = query(page);
+    const select = q.combobox("Parked fruit");
+    await select.click();
+    await q.button("Finish Parked fruit positioning").click();
+    await test.expect(q.listbox()).not.toHaveAttribute("data-placing");
+    await page.keyboard.press("Home");
+    await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
+    await test.expect(q.listbox()).toHaveJSProperty("scrollTop", 0);
+    await page.keyboard.press("Escape");
+    await test.expect(select).toHaveAttribute("aria-expanded", "false");
+  };
+
+  // A move made while the popup is positioning presents its own target, so the
+  // open must not scroll toward the selected item before it. Apricot is visible
+  // but not first, so a stray scroll can't be undone by the move's own one.
+  // https://github.com/ariakit/ariakit/issues/7620
+  test("keeps the list in place when a move is made while a reopened popup is positioning", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Parked fruit");
+    const finish = q.button("Finish Parked fruit positioning");
+    const listbox = q.listbox();
+    await closeParkedListAtTop(page);
+
+    await reopenFocusedSelect(select, "click");
+    await test.expect(listbox).toHaveAttribute("data-placing");
+    await page.keyboard.press("Home");
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.option("Apricot")).toHaveAttribute("data-active-item");
+    await finish.click();
+
+    // Presentations scroll on the store update that ends placement, before
+    // `data-placing` goes away, so the position below is already settled.
+    await test.expect(listbox).not.toHaveAttribute("data-placing");
+    await test.expect(listbox).toHaveJSProperty("scrollTop", 0);
+    await test.expect(select).toBeFocused();
+  });
+
+  // A move must not start the open's presentation again either. Moving back to
+  // the selected item would give it a target, and the highlight that follows
+  // isn't a move, so it wouldn't end it before placement does.
+  // https://github.com/ariakit/ariakit/issues/7620
+  test("keeps the list in place when a highlight follows moves while a reopened popup is positioning", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Parked fruit");
+    const finish = q.button("Finish Parked fruit positioning");
+    const listbox = q.listbox();
+    const apple = q.option("Apple");
+    await closeParkedListAtTop(page);
+
+    await reopenFocusedSelect(select, "click");
+    await test.expect(listbox).toHaveAttribute("data-placing");
+    await page.keyboard.press("ArrowUp");
+    await page.keyboard.press("ArrowDown");
+    await test
+      .expect(q.option("Watermelon"))
+      .toHaveAttribute("data-active-item");
+    // Highlights Apple without a move.
+    await q.button("Refresh Parked fruit list").click();
+    await test.expect(apple).toHaveAttribute("data-active-item");
+    await finish.click();
+
+    // Presentations scroll on the store update that ends placement, before
+    // `data-placing` goes away, so the position below is already settled.
+    await test.expect(listbox).not.toHaveAttribute("data-placing");
+    await test.expect(listbox).toHaveJSProperty("scrollTop", 0);
+    await test.expect(select).toBeFocused();
   });
 
   // https://github.com/ariakit/ariakit/issues/7620

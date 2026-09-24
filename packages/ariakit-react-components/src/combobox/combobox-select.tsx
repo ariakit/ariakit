@@ -315,8 +315,12 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     // https://github.com/ariakit/ariakit/issues/7620
     useSafeLayoutEffect(() => {
       if (!store) return;
-      return sync(store, ["open"], (state) => {
+      return sync(store, ["open", "moves"], (state, prevState) => {
         if (!state.open) return;
+        // A move presents its own target, so it supersedes this request, as it
+        // supersedes the composite's first-open presentation. The store cancels
+        // the pending request through its cleanup before this call.
+        if (state.moves !== prevState.moves) return;
         const { selectElement } = store.getState();
         if (!selectElement) return;
         if (!ownsFocus(selectElement)) return;
