@@ -70,7 +70,7 @@
     "lefthook": "2.1.14",
     "open-cli": "9.0.0",
     "oxfmt": "0.69.0",
-    "oxlint": "1.83.0",
+    "oxlint": "1.84.0",
     "oxlint-plugin-comment-reflow": "0.2.1",
     "oxlint-tsgolint": "7.0.2002",
     "pkg-pr-new": "0.0.88",
