@@ -9,7 +9,12 @@ import {
 withCaptures(import.meta.dirname, async ({ test }) => {
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({
+        page,
+        visual,
+        colorScheme,
+        item: "ariakit-ui-popover/page",
+      }),
     );
   });
 
@@ -23,7 +28,10 @@ withCaptures(import.meta.dirname, async ({ test }) => {
       const popover = q.dialog("Design review");
       await test.expect(popover).toBeVisible();
       await visual(
-        getCapture(popover, colorScheme, { clipMargin: OVERLAY_CLIP_MARGIN }),
+        getCapture(popover, colorScheme, {
+          item: "ariakit-ui-popover/live-popover",
+          clipMargin: OVERLAY_CLIP_MARGIN,
+        }),
       );
     });
   });

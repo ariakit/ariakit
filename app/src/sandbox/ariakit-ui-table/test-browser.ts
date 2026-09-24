@@ -23,13 +23,23 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       for (const name of ["Plain cell edges", "Colored cell edges"]) {
         await hoverOver(query(fixture.table(name)).cell("Failed"));
       }
-      await visual(getCapture(box, colorScheme, { id: "hover" }));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-table/cell-edge/hover",
+          id: "hover",
+        }),
+      );
       await checkbox.focus();
       await page.keyboard.press("Tab");
       await expectFocusVisible(
         query(fixture.table("Plain cell edges")).cell("Failed"),
       );
-      await visual(getCapture(box, colorScheme, { id: "focus" }));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-table/cell-edge/focus",
+          id: "focus",
+        }),
+      );
     });
   });
 
@@ -47,13 +57,23 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await hoverOver(row);
       await fixture.checkbox("Select Failed row").check();
       await test.expect(row).toHaveAttribute("aria-selected", "true");
-      await visual(getCapture(box, colorScheme, { id: "selected" }));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-table/row-edge/selected",
+          id: "selected",
+        }),
+      );
       await checkbox.uncheck();
       await checkbox.check();
       await checkbox.focus();
       await page.keyboard.press("Tab");
       await expectFocusVisible(row);
-      await visual(getCapture(box, colorScheme, { id: "focus" }));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-table/row-edge/focus",
+          id: "focus",
+        }),
+      );
     });
   });
 
@@ -69,11 +89,26 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await fixture.checkbox("Scroll row borders").check();
       const scroller = fixture.grid().locator("xpath=..");
       const cases = [
-        { name: "Failed Needs review", cell: "Failed", focus: false },
-        { name: "Failed Needs review", cell: "Failed", focus: true },
-        { name: "Pending Ready to test", cell: "Ready to test", focus: false },
+        {
+          key: "failed-static",
+          name: "Failed Needs review",
+          cell: "Failed",
+          focus: false,
+        },
+        {
+          key: "failed-focus",
+          name: "Failed Needs review",
+          cell: "Failed",
+          focus: true,
+        },
+        {
+          key: "pending-static",
+          name: "Pending Ready to test",
+          cell: "Ready to test",
+          focus: false,
+        },
       ];
-      for (const { name, cell, focus } of cases) {
+      for (const { key, name, cell, focus } of cases) {
         const row = fixture.row(name);
         await scroller.evaluate((node) => {
           node.scrollLeft = 0;
@@ -93,6 +128,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
           .toBeGreaterThan(0);
         await visual(
           getCapture(box, colorScheme, {
+            item: `ariakit-ui-table/scrolled-row/${key}`,
             id: cell + "-" + (focus ? "focus" : "static"),
           }),
         );
@@ -119,7 +155,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974552570
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({ page, visual, colorScheme, item: "ariakit-ui-table/page" }),
     );
   });
 
@@ -136,7 +172,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await page.keyboard.press("ArrowDown");
       await page.keyboard.press("ArrowRight");
       await expectFocusVisible(grid.rowheader("Glider"));
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-table/focused-cell-ring",
+      });
     });
   });
 
@@ -154,7 +195,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         .focus();
       await page.keyboard.press("End");
       await expectFocusVisible(query(box).row(/^Table /));
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-table/focused-last-row-ring",
+      });
     });
   });
 
@@ -167,7 +213,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Table cell layer");
       await scrollCellsUnderPinnedCell(query(box).grid());
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-table/pinned-cell-over-scrolled",
+      });
     });
   });
 
@@ -181,7 +232,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const box = q.article("Table cell layer");
       await scrollCellsUnderPinnedCell(query(box).grid());
       await hoverOver(query(box).text("Disabled surface"));
-      await visual(getCapture(box, colorScheme));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-table/hovered-row-through-cells",
+        }),
+      );
     });
   });
 
@@ -198,7 +253,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await test
         .expect(query(box).row())
         .toHaveAttribute("aria-selected", "true");
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-table/selected-row-through-cells",
+      });
     });
   });
 
@@ -213,7 +273,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Table rows");
       await scrollCellsUnderPinnedCell(query(box).table("Team hours"));
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-table/pinned-names",
+      });
     });
   });
 
@@ -229,7 +294,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await pin.uncheck();
       await test.expect(pin).not.toBeChecked();
       await scrollCellsUnderPinnedCell(query(box).table("Team hours"));
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-table/unpinned-names",
+      });
     });
   });
 
@@ -243,7 +313,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const box = q.article("Table rows");
       await query(box).button("Add contributor").click();
       await test.expect(query(box).row(/^Katherine\b/)).toBeVisible();
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-table/added-contributor",
+      });
     });
   });
 });

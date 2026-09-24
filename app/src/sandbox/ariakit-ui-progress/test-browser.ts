@@ -77,7 +77,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
 
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({
+        page,
+        visual,
+        colorScheme,
+        item: "ariakit-ui-progress/page",
+      }),
     );
   });
 
@@ -92,10 +97,18 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       await expectMedia(page, "(forced-colors: active)");
-      await captureInView(visual, q.article("Default"), colorScheme, {
+      await captureInView({
+        visual,
+        box: q.article("Default"),
+        colorScheme,
+        item: "ariakit-ui-progress/forced-colors/bar",
         id: "bar",
       });
-      await captureInView(visual, q.article("Ring with label"), colorScheme, {
+      await captureInView({
+        visual,
+        box: q.article("Ring with label"),
+        colorScheme,
+        item: "ariakit-ui-progress/forced-colors/ring",
         id: "ring",
       });
     });
@@ -112,10 +125,18 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await page.emulateMedia({ contrast: "more" });
     await forEachColorScheme(page, async (colorScheme) => {
       await expectMedia(page, "(prefers-contrast: more)");
-      await captureInView(visual, q.article("Default"), colorScheme, {
+      await captureInView({
+        visual,
+        box: q.article("Default"),
+        colorScheme,
+        item: "ariakit-ui-progress/high-contrast/bordered-track",
         id: "bordered",
       });
-      await captureInView(visual, q.article("Borderless track"), colorScheme, {
+      await captureInView({
+        visual,
+        box: q.article("Borderless track"),
+        colorScheme,
+        item: "ariakit-ui-progress/high-contrast/borderless-track",
         id: "borderless",
       });
     });
@@ -135,7 +156,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await test
         .expect(scope.progressbar("Build bar"))
         .toHaveAttribute("aria-valuenow", "0.5");
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-progress/value-change",
+      });
     });
   });
 });

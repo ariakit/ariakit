@@ -53,15 +53,15 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   // Hovering the middle item checks both shared edges. Sample the paint
   // variants here; the full matrix above checks geometry and stacking.
-  for (const [title, colorScheme, contrast] of [
-    ["Applied", "light", "no-preference"],
-    ["Border 2", "dark", "no-preference"],
-    ["Border 2", "light", "more"],
-    ["Border 2", "dark", "more"],
-    ["Ring 2", "light", "no-preference"],
-    ["Fractional ring", "dark", "no-preference"],
-    ["Vertical ring", "light", "no-preference"],
-    ["RTL", "light", "no-preference"],
+  for (const [key, title, colorScheme, contrast] of [
+    ["applied-light", "Applied", "light", "no-preference"],
+    ["border-dark", "Border 2", "dark", "no-preference"],
+    ["border-light-contrast", "Border 2", "light", "more"],
+    ["border-dark-contrast", "Border 2", "dark", "more"],
+    ["ring-light", "Ring 2", "light", "no-preference"],
+    ["fractional-ring-dark", "Fractional ring", "dark", "no-preference"],
+    ["vertical-ring-light", "Vertical ring", "light", "no-preference"],
+    ["rtl-light", "RTL", "light", "no-preference"],
   ] as const) {
     // https://github.com/ariakit/ariakit/issues/7466
     test(`${title} joins edges through hover (${colorScheme}, ${contrast}) @visual`, async ({
@@ -75,6 +75,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await week.hover();
       await expect(week).toHaveCSS("z-index", "1");
       await visual({
+        item: `ariakit-tailwind-7466/${key}-week-hover`,
         element: q.group(title),
         id: `${title}-Week`,
         styles: {},
@@ -148,6 +149,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await expect(day).toHaveCSS("z-index", "1");
     await expect(week).toHaveCSS("z-index", "1");
     await visual({
+      item: "ariakit-tailwind-7466/selected-active-edges",
       element: q.group("Border 2"),
       id: "selected-selected",
       styles: {},
@@ -211,7 +213,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await expect(week).toBeFocused();
     await expect(week).toHaveCSS("z-index", "10");
     await expect(month).toHaveCSS("z-index", "1");
-    await visual({ element: q.group("Focus priority"), styles: {} });
+    await visual({
+      item: "ariakit-tailwind-7466/focus-priority",
+      element: q.group("Focus priority"),
+      styles: {},
+    });
   });
 
   // https://github.com/ariakit/ariakit/issues/7466

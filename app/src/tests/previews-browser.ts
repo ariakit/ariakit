@@ -1,3 +1,4 @@
+import { isFramework } from "#app/lib/framework.ts";
 import { test } from "#app/test-utils/fixtures.ts";
 import { viewports } from "#app/test-utils/visual.ts";
 
@@ -27,7 +28,17 @@ test("previews @visual", async ({ page, baseURL, visual }) => {
       async () => {
         await page.goto(path);
         const id = path.replace(/^\/+/, "");
-        await visual({ id, viewports });
+        const preview = /^([^/]+)\/previews\/(.+?)\/?$/.exec(id);
+        const framework = preview?.[1];
+        if (!isFramework(framework) || !preview?.[2]) {
+          throw new Error(`Unexpected preview path: ${path}`);
+        }
+        await visual({
+          item: `previews/${preview[2]}`,
+          framework,
+          id,
+          viewports,
+        });
       },
       { timeout: TIMEOUT_PER_STEP },
     );

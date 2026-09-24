@@ -81,7 +81,7 @@ export async function forEachColorScheme(
 export function getCapture(
   element: Locator,
   colorScheme: ColorScheme,
-  options: ScreenshotOptions = {},
+  options: ScreenshotOptions,
 ) {
   return {
     element,
@@ -97,16 +97,31 @@ export function getCapture(
  * covers the whole page. The root element spans the whole document, and a
  * capture that is not full-page trims its clip to the viewport.
  */
-export function getViewportCapture(page: Page, colorScheme: ColorScheme) {
-  return getCapture(page.locator("html"), colorScheme, { clipMargin: 0 });
+export function getViewportCapture(
+  page: Page,
+  colorScheme: ColorScheme,
+  item: string,
+) {
+  return getCapture(page.locator("html"), colorScheme, {
+    item,
+    clipMargin: 0,
+  });
+}
+
+interface CapturePageParams {
+  page: Page;
+  visual: Visual;
+  colorScheme: ColorScheme;
+  item: string;
 }
 
 /** Captures a compact grid whole, or a tall grid in groups of three rows. */
-export async function capturePage(
-  page: Page,
-  visual: Visual,
-  colorScheme: ColorScheme,
-) {
+export async function capturePage({
+  page,
+  visual,
+  colorScheme,
+  item,
+}: CapturePageParams) {
   const main = query(page).main();
   await waitForFonts(page);
   const { height } = await main.evaluate((node) =>
@@ -115,7 +130,7 @@ export async function capturePage(
   if (height <= SINGLE_CAPTURE_HEIGHT) {
     // The grid pads itself, so a margin would only add canvas.
     await visual(
-      getCapture(main, colorScheme, { fullPage: true, clipMargin: 0 }),
+      getCapture(main, colorScheme, { item, fullPage: true, clipMargin: 0 }),
     );
     return;
   }
@@ -155,6 +170,7 @@ export async function capturePage(
     expect(bounds + clipMargin * 2).toBeLessThanOrEqual(MAX_SCREENSHOT_HEIGHT);
     await visual(
       getCapture(sections, colorScheme, {
+        item: `${item}/rows-${index + 1}-${Math.min(index + ROWS_PER_CAPTURE, rows.length)}`,
         id: `rows-${index + 1}-${Math.min(index + ROWS_PER_CAPTURE, rows.length)}`,
         fullPage: true,
         clipMargin,
@@ -169,12 +185,18 @@ export async function capturePage(
  * element it reaches. Not for a hover state: the scroll would move the box away
  * from the pointer.
  */
-export async function captureInView(
-  visual: Visual,
-  box: Locator,
-  colorScheme: ColorScheme,
-  options?: ScreenshotOptions,
-) {
+interface CaptureInViewParams extends ScreenshotOptions {
+  visual: Visual;
+  box: Locator;
+  colorScheme: ColorScheme;
+}
+
+export async function captureInView({
+  visual,
+  box,
+  colorScheme,
+  ...options
+}: CaptureInViewParams) {
   await box.evaluate((node) => {
     node.scrollIntoView({ block: "center" });
   });

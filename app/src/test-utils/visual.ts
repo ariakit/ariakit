@@ -3,6 +3,9 @@ import path from "node:path";
 import { invariant } from "@ariakit/utils";
 import type { Locator, Page, TestInfo } from "@playwright/test";
 import { expect, test } from "@playwright/test";
+import { visual as captureVisual } from "@visonaut/playwright";
+import { isFramework } from "#app/lib/framework.ts";
+import type { Framework } from "#app/lib/schemas.ts";
 import { slugify } from "#app/lib/string.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;
@@ -31,6 +34,10 @@ type Viewports = Record<string, ViewportSize>;
 type Styles = Record<string, CSSProperties>;
 
 export interface ScreenshotOptions {
+  /** Stable identity of the captured UI state across runs. */
+  item: string;
+  /** Framework variant when the test itself has no framework tag. */
+  framework?: Framework;
   /**
    * Viewports to capture.
    */
@@ -393,7 +400,7 @@ export async function waitForFonts(page: Page) {
 
 export async function visual(
   page: Page,
-  options: ScreenshotOptions = {},
+  options: ScreenshotOptions,
   testInfo = test.info(),
 ) {
   expect(
@@ -408,6 +415,8 @@ export async function visual(
   await page.emulateMedia({ reducedMotion: "reduce" });
 
   const {
+    item,
+    framework: selectedFramework,
     id,
     viewports = { default: page.viewportSize()! },
     styles = defaultStyles,
@@ -430,11 +439,6 @@ export async function visual(
       for (const [styleName, style] of stylesEntries) {
         await withStyles(page, { ...style, ...defaultStyle }, async () => {
           const variants = [viewportName, styleName];
-          const fileSnapshotName = getFileSnapshotName({
-            id,
-            testInfo,
-            variants,
-          });
           await page.waitForLoadState("domcontentloaded");
           await waitForFonts(page);
           if (fullPage && element) {
@@ -452,6 +456,66 @@ export async function visual(
             element,
             clipMargin,
             fullPage,
+          });
+          // The trusted capture config supplies this measured profile. Ordinary
+          // CI keeps using the repository's screenshot assertions below.
+          if (testInfo.project.metadata.visonaut?.profile) {
+            const browser = page.context().browser();
+            invariant(browser, "Visonaut requires a connected browser");
+            const browserName = browser.browserType().name();
+            if (
+              browserName !== "chromium" &&
+              browserName !== "firefox" &&
+              browserName !== "webkit"
+            ) {
+              throw new Error(`Unsupported browser: ${browserName}`);
+            }
+            const framework =
+              selectedFramework ??
+              testInfo.tags.map((tag) => tag.slice(1)).find(isFramework);
+            const media = await page.evaluate(() => ({
+              colorScheme: matchMedia("(prefers-color-scheme: dark)").matches
+                ? ("dark" as const)
+                : ("light" as const),
+              contrast: matchMedia("(prefers-contrast: more)").matches
+                ? ("more" as const)
+                : ("no-preference" as const),
+              forcedColors: matchMedia("(forced-colors: active)").matches
+                ? ("active" as const)
+                : ("none" as const),
+            }));
+            await captureVisual(page, {
+              item,
+              variant: {
+                key: [
+                  framework,
+                  testInfo.project.name,
+                  viewportName,
+                  styleName,
+                  media.colorScheme,
+                  media.contrast,
+                  media.forcedColors,
+                ]
+                  .filter(Boolean)
+                  .join("-"),
+                browser: browserName,
+                ...(framework && { framework }),
+                ...media,
+                dimensions: {
+                  project: testInfo.project.name,
+                  viewport: viewportName,
+                  style: styleName,
+                },
+              },
+              screenshot: screenshotOptions,
+              timeout,
+            });
+            return;
+          }
+          const fileSnapshotName = getFileSnapshotName({
+            id,
+            testInfo,
+            variants,
           });
           await expect(page).toHaveScreenshot(fileSnapshotName, {
             ...screenshotOptions,

@@ -14,9 +14,18 @@ withCaptures(import.meta.dirname, async ({ test }) => {
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
-      for (const title of ["Default", "Brand"]) {
+      for (const [key, title] of [
+        ["default", "Default"],
+        ["brand", "Brand"],
+      ] as const) {
         const box = q.article(title);
-        await captureInView(visual, box, colorScheme, { id: title });
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: `ariakit-ui-badge/forced-colors/${key}`,
+          id: title,
+        });
       }
     });
   });

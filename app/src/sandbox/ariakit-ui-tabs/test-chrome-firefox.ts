@@ -15,20 +15,26 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
-      for (const title of [
-        "Flat tabs",
-        "Bevel tabs",
-        "Flat glider",
-        "Bevel glider",
-        "Borderless flat glider",
-        "Borderless bevel glider",
-      ]) {
+      for (const [key, title] of [
+        ["flat-tabs", "Flat tabs"],
+        ["bevel-tabs", "Bevel tabs"],
+        ["flat-glider", "Flat glider"],
+        ["bevel-glider", "Bevel glider"],
+        ["borderless-flat-glider", "Borderless flat glider"],
+        ["borderless-bevel-glider", "Borderless bevel glider"],
+      ] as const) {
         const box = q.article(title);
         const selected = query(box).tab("Usage");
         await selected.click();
         await query(box).heading(title).click();
         await test.expect(selected).toHaveAttribute("aria-selected", "true");
-        await captureInView(visual, box, colorScheme, { id: title });
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: `ariakit-ui-tabs/forced-colors/${key}`,
+          id: title,
+        });
       }
     });
   });

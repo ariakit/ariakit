@@ -17,7 +17,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
-      await captureInView(visual, q.article("Control surfaces"), colorScheme);
+      await captureInView({
+        visual,
+        box: q.article("Control surfaces"),
+        colorScheme,
+        item: "ariakit-ui-button/forced-colors/control-surfaces",
+      });
     });
   });
 
@@ -29,7 +34,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
-      await captureInView(visual, q.article("Glider"), colorScheme, {
+      await captureInView({
+        visual,
+        box: q.article("Glider"),
+        colorScheme,
+        item: "ariakit-ui-button/forced-colors/glider",
         id: "joined",
       });
       const links = q.article("Current link gliders");
@@ -37,7 +46,13 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await test
         .expect(links.locator(".glider:not(.selected):not(.focus)"))
         .toBeVisible();
-      await captureInView(visual, links, colorScheme, { id: "hover" });
+      await captureInView({
+        visual,
+        box: links,
+        colorScheme,
+        item: "ariakit-ui-button/forced-colors/glider-hover",
+        id: "hover",
+      });
     });
   });
 
@@ -51,7 +66,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       await expectMedia(page, "(forced-colors: active)");
-      await captureInView(visual, q.article("Layer disabled"), colorScheme);
+      await captureInView({
+        visual,
+        box: q.article("Layer disabled"),
+        colorScheme,
+        item: "ariakit-ui-button/forced-colors/disabled-layer",
+      });
     });
   });
 
@@ -64,17 +84,21 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       await expectMedia(page, "(forced-colors: active)");
-      for (const title of [
-        "Default",
-        "Lifted",
-        "Pushed",
-        "Contrast",
-        "Desaturated",
-        "Brand",
-        "Bevel",
-        "Inverted",
-      ]) {
-        await captureInView(visual, q.article(title), colorScheme, {
+      for (const [key, title] of [
+        ["default", "Default"],
+        ["lifted", "Lifted"],
+        ["pushed", "Pushed"],
+        ["contrast", "Contrast"],
+        ["desaturated", "Desaturated"],
+        ["brand", "Brand"],
+        ["bevel", "Bevel"],
+        ["inverted", "Inverted"],
+      ] as const) {
+        await captureInView({
+          visual,
+          box: q.article(title),
+          colorScheme,
+          item: `ariakit-ui-button/forced-colors/${key}`,
           id: title,
         });
       }
@@ -82,7 +106,13 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const button = query(box).button("Move");
       await tabTo(page, button);
       await expectFocusVisible(button);
-      await captureInView(visual, box, colorScheme, { id: "focus" });
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-button/forced-colors/focus-ring",
+        id: "focus",
+      });
     });
   });
 
@@ -95,7 +125,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
-      await captureInView(visual, q.article("Ring borders"), colorScheme);
+      await captureInView({
+        visual,
+        box: q.article("Ring borders"),
+        colorScheme,
+        item: "ariakit-ui-button/forced-colors/ring-borders",
+      });
     });
   });
 });

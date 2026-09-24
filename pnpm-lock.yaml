@@ -503,6 +503,9 @@ importers:
       '@types/textarea-caret':
         specifier: 3.0.4
         version: 3.0.4
+      '@visonaut/playwright':
+        specifier: 0.1.0
+        version: 0.1.0(@playwright/test@1.63.0)
       clava:
         specifier: 0.7.0
         version: 0.7.0
@@ -5791,6 +5794,12 @@ packages:
         optional: true
       vue-router:
         optional: true
+
+  '@visonaut/playwright@0.1.0':
+    resolution: {integrity: sha512-3Rq/BXoVkENJwUBXI5Srm7i6M4wm+O7yKsSHeGoljXNrt1de1b/jEEuwwuVaDIPdIzOtzh/6Wou3oHk21vDqWg==}
+    engines: {node: 24.18.0}
+    peerDependencies:
+      '@playwright/test': 1.63.0
 
   '@vitejs/plugin-react@5.2.0':
     resolution: {integrity: sha512-YmKkfhOAi3wsB1PhJq5Scj3GXMn3WvtQ/JC0xoopuHoXSdmtdStOpFrYaT1kie2YgFBcIe64ROzMYRjCrYOdYw==}
@@ -15347,6 +15356,11 @@ snapshots:
     optionalDependencies:
       next: 14.2.35(@babel/core@7.29.0(supports-color@8.1.1))(@playwright/test@1.62.0)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
+
+  '@visonaut/playwright@0.1.0(@playwright/test@1.63.0)':
+    dependencies:
+      '@playwright/test': 1.63.0
+      pngjs: 7.0.0
 
   '@vitejs/plugin-react@5.2.0(supports-color@10.2.2)(vite@8.3.0(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0))':
     dependencies:
