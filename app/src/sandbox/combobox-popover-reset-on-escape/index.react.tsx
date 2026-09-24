@@ -39,8 +39,9 @@ function Select({
 
 // One keypress reaches the dialog twice, because a composite re-dispatches it
 // onto the active item. The counts make the proxy dispatch visible and prove
-// the public resetOnEscape callback runs once for an accepted close, and not at
-// all when the popover stays open.
+// that hideOnEscape runs once per keypress, and that the public resetOnEscape
+// callback runs once for an accepted close, and not at all when the popover
+// stays open.
 function Counted({
   controlled,
   vetoClose,
@@ -56,6 +57,7 @@ function Counted({
 }) {
   const [reset, setReset] = useState(0);
   const [close, setClose] = useState(0);
+  const [escape, setEscape] = useState(0);
   const [events, setEvents] = useState<string[]>([]);
   const hasOneShotVeto = !!(vetoOnce || vetoBeforeMove || vetoWithSelection);
   const [vetoReady, setVetoReady] = useState(!hasOneShotVeto);
@@ -91,6 +93,9 @@ function Counted({
       <div role="status" aria-label={`${ariaLabel} counts`}>
         {`reset:${reset} close:${close} events:${events.join(",")}`}
       </div>
+      <div role="status" aria-label={`${ariaLabel} hideOnEscape calls`}>
+        {escape}
+      </div>
       {hasOneShotVeto && (
         <div role="status" aria-label={`${label} ready`}>
           {vetoReady ? "ready" : "waiting"}
@@ -116,6 +121,10 @@ function Counted({
         resetOnEscape={() => {
           setReset((value) => value + 1);
           setEvents((value) => [...value, "reset"]);
+          return true;
+        }}
+        hideOnEscape={() => {
+          setEscape((value) => value + 1);
           return true;
         }}
       >
