@@ -1,8 +1,12 @@
 name: CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
     types: [opened, synchronize, reopened]
+  merge_group:
+    types: [checks_requested]
 
 permissions:
   contents: read
@@ -14,6 +18,7 @@ concurrency:
 jobs:
   plan:
     name: Plan
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     outputs:
       main: ${{ steps.plan.outputs.main }}
@@ -56,11 +61,12 @@ jobs:
   app:
     name: App
     needs: plan
-    if: needs.plan.outputs.app == 'true'
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.plan.outputs.app == 'true') }}
     permissions:
       actions: read
       contents: read
       deployments: write
+      id-token: write
       statuses: write
     uses: ./.github/workflows/app.yml
     secrets: inherit
@@ -113,7 +119,7 @@ jobs:
 
   gate:
     name: Gate
-    if: always()
+    if: always() && github.event_name != 'push'
     needs:
       - plan
       - main
@@ -139,6 +145,13 @@ jobs:
 
       - name: Verify CI results
         env:
+          CI_EVENT: ${{ github.event_name }}
+          APP_RESULT: ${{ needs.app.result }}
           CI_PLAN: ${{ needs.plan.outputs.plan }}
           CI_RESULTS: ${{ toJSON(needs) }}
-        run: node packages/ariakit-scripts/src/ci-run.ts gate
+        run: |
+          if [ "$CI_EVENT" = merge_group ]; then
+            test "$APP_RESULT" = success
+          else
+            node packages/ariakit-scripts/src/ci-run.ts gate
+          fi
