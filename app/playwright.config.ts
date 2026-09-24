@@ -147,6 +147,8 @@ export default defineConfig({
       pathTemplate: "{testDir}/{testFileDir}/__screenshots__/{arg}{ext}",
     },
   },
+  // The trusted reporter checks the configured project list, not only the
+  // projects selected by Playwright's command-line flags.
   projects: PERF
     ? [
         {
@@ -222,5 +224,7 @@ export default defineConfig({
           testMatch: testMatchersFor("android", "mobile"),
           use: devices["Pixel 5"],
         },
-      ],
+      ].filter(
+        (project) => !visualShard || visualProjects.includes(project.name),
+      ),
 });
