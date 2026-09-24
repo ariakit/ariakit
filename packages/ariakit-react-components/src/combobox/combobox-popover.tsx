@@ -17,7 +17,7 @@ import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
-import { useMovedItemRef } from "./__utils.ts";
+import { getMovedItemRef } from "./__utils.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxListOptions } from "./combobox-list.tsx";
 import { useComboboxList } from "./combobox-list.tsx";
@@ -81,7 +81,6 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     const selectElement = useStoreState(store, "selectElement");
     const hiddenByClickOutsideRef = useRef(false);
     const hasSelect = !!selectElement;
-    const movedItemRef = useMovedItemRef(store);
 
     const selectOnMove = useStoreState(store, "selectOnMove");
     const acceptedEscapeRef = useRef<{
@@ -235,7 +234,9 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       // only does so once it's placed, and the user may have moved to another
       // item by then. Focusing the selected item would make it active again.
       // https://github.com/ariakit/ariakit/issues/7612
-      initialFocus: hasSelect ? inputElement || movedItemRef : undefined,
+      initialFocus: hasSelect
+        ? inputElement || getMovedItemRef(store)
+        : undefined,
       finalFocus: selectElement || compositeElement,
       preserveTabOrderAnchor: null,
       ...props,
