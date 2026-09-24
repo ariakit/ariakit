@@ -1,6 +1,5 @@
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
-import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 
 const fruits = ["Apple", "Banana", "Orange"];
 const blocks = ["Paragraph", "Heading", "List"];
@@ -31,33 +30,14 @@ function CloseRequests({ label, count }: CloseRequestsProps) {
   return <p>{`${label} close requests: ${count}`}</p>;
 }
 
-// TODO: Remove this workaround when
-// https://github.com/ariakit/ariakit/issues/7622 is fixed. Menu and Hovercard
-// request extra closes when they accept Escape, so the popup rejects the key
-// and requests its own close once. Stopping the key press keeps parent dialogs
-// and menus, which stop ignoring Escape once this popup closes, from closing
-// too.
-function hideOnceOnEscape(store: { hide: () => void }) {
-  return (event: KeyboardEvent | ReactKeyboardEvent) => {
-    store.hide();
-    event.stopPropagation();
-    return false;
-  };
-}
-
 function ActionsMenu() {
   const [count, onClose] = useCloseRequests();
-  const menu = Ariakit.useMenuStore();
   return (
     <section>
       <CloseRequests label="Actions" count={count} />
-      <Ariakit.MenuProvider store={menu}>
+      <Ariakit.MenuProvider>
         <Ariakit.MenuButton>Actions</Ariakit.MenuButton>
-        <Ariakit.Menu
-          onClose={onClose}
-          hideOnEscape={hideOnceOnEscape(menu)}
-          style={popupStyle}
-        >
+        <Ariakit.Menu onClose={onClose} style={popupStyle}>
           <Ariakit.MenuItem>Edit</Ariakit.MenuItem>
           <Ariakit.MenuItem>Share</Ariakit.MenuItem>
         </Ariakit.Menu>
@@ -68,19 +48,14 @@ function ActionsMenu() {
 
 function ProfileHovercard() {
   const [count, onClose] = useCloseRequests();
-  const hovercard = Ariakit.useHovercardStore();
   return (
     <section>
       <CloseRequests label="Profile" count={count} />
-      <Ariakit.HovercardProvider store={hovercard}>
+      <Ariakit.HovercardProvider>
         <Ariakit.HovercardAnchor href="#profile">
           @ariakit
         </Ariakit.HovercardAnchor>
-        <Ariakit.Hovercard
-          onClose={onClose}
-          hideOnEscape={hideOnceOnEscape(hovercard)}
-          style={popupStyle}
-        >
+        <Ariakit.Hovercard onClose={onClose} style={popupStyle}>
           <Ariakit.HovercardHeading>Ariakit profile</Ariakit.HovercardHeading>
           <p>Toolkit for building accessible web apps.</p>
         </Ariakit.Hovercard>
@@ -91,19 +66,14 @@ function ProfileHovercard() {
 
 function BoldTooltip() {
   const [count, onClose] = useCloseRequests();
-  const tooltip = Ariakit.useTooltipStore();
   return (
     <section>
       <CloseRequests label="Bold" count={count} />
-      <Ariakit.TooltipProvider store={tooltip}>
+      <Ariakit.TooltipProvider>
         <Ariakit.TooltipAnchor render={<Ariakit.Button />}>
           Bold
         </Ariakit.TooltipAnchor>
-        <Ariakit.Tooltip
-          onClose={onClose}
-          hideOnEscape={hideOnceOnEscape(tooltip)}
-          style={popupStyle}
-        >
+        <Ariakit.Tooltip onClose={onClose} style={popupStyle}>
           Make the text bold
         </Ariakit.Tooltip>
       </Ariakit.TooltipProvider>
@@ -188,19 +158,13 @@ function SearchableFruitComboboxSelect() {
 
 function BlockMenuCombobox() {
   const [count, onClose] = useCloseRequests();
-  const combobox = Ariakit.useComboboxStore();
-  const menu = Ariakit.useMenuStore({ combobox });
   return (
     <section>
       <CloseRequests label="Add block" count={count} />
-      <Ariakit.ComboboxProvider store={combobox}>
-        <Ariakit.MenuProvider store={menu}>
+      <Ariakit.ComboboxProvider>
+        <Ariakit.MenuProvider>
           <Ariakit.MenuButton>Add block</Ariakit.MenuButton>
-          <Ariakit.Menu
-            onClose={onClose}
-            hideOnEscape={hideOnceOnEscape(menu)}
-            style={popupStyle}
-          >
+          <Ariakit.Menu onClose={onClose} style={popupStyle}>
             <Ariakit.Combobox autoSelect aria-label="Search blocks" />
             <Ariakit.ComboboxList>
               {blocks.map((value) => (
