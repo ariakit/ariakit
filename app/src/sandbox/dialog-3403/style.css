@@ -53,8 +53,27 @@
   transform: scale(1);
 }
 
+/* The dialogs that unmount on hide and their backdrops leave over 2s so that
+   browser tests can still see the leave state after they click Close on busy
+   CI runners.
+   https://github.com/ariakit/ariakit/issues/7603 */
+.backdrop[data-leave],
+.dialog-long-leave[data-leave] {
+  transition-duration: 2s;
+}
+
 .heading {
   margin: 0;
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+/* The route dialog has no transition. After it enters, Escape hides it in the
+   keydown task, so its browser test doesn't wait for leave frames or a timer
+   that a stalled CI runner can delay.
+   https://github.com/ariakit/ariakit/issues/7606 */
+.dialog-no-transition {
+  opacity: 1;
+  transform: none;
+  transition: none;
 }

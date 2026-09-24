@@ -208,12 +208,14 @@ export const choiceCard = cv({
     /**
      * Sets the card's flow. `vertical` makes the card a tile: the slot and the
      * check share the top row, one at each end, and the content fills the row
-     * below, whatever its source order. The slot drops the margins that seat it
-     * on a line of text, so it lines up with the label under it. The flag is
-     * set on the card's parts, so a slot inside the content drops them too,
-     * while a control inside the tile, such as a badge, resets it for its own
-     * slots and keeps their margins. As on any frame, `vertical` also rounds
-     * nested `$cover` frames for a column.
+     * below, whatever its source order. Each part in the top row keeps its own
+     * height and sits at the top, so a badge there stays a pill beside a taller
+     * slot. The slot drops the margins that seat it on a line of text, so it
+     * lines up with the label under it. The flag is set on the card's parts, so
+     * a slot inside the content drops them too, while a control inside the
+     * tile, such as a badge, resets it for its own slots and keeps their
+     * margins. As on any frame, `vertical` also rounds nested `$cover` frames
+     * for a column.
      */
     $orientation: {
       vertical: [
@@ -224,6 +226,12 @@ export const choiceCard = cv({
         // utilities that sort after justify-between, so only the important
         // flag puts the check at the end of the row.
         "justify-between!",
+        // By default, a row stretches each part to the height of its tallest
+        // part. The slot and the check set their own height, but a badge would
+        // take the height of the slot. The alignment sits in `:where()`, so it
+        // has no specificity and an items-* class on the card still wins.
+        // https://github.com/ariakit/ariakit/issues/7599
+        "[:where(&)]:items-start",
         "[&>.control-content]:basis-full [&>.control-content]:order-1",
       ],
     },

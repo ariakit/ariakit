@@ -14,8 +14,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // failure below unambiguously points at the backdrop leave transition.
     await test.expect(q.button("Show dialog")).toBeFocused();
     // On close, the backdrop must receive data-leave and remain visible while
-    // its 500ms exit transition runs. Before the fix, the dialog hides
-    // instantly and data-leave is never applied.
+    // its 2s exit transition runs. Before the fix, the dialog hides instantly
+    // and data-leave is never applied.
     await test.expect(backdrop).toHaveAttribute("data-leave", "true");
     await test.expect(backdrop).toBeVisible();
     await test.expect(backdrop).toBeHidden();

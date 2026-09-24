@@ -4,6 +4,9 @@ import * as Ariakit from "@ariakit/react";
 // The backdrop must finish its own leave transition even when the panel has no
 // transition or a shorter one. Keep these styles inline because Vitest does not
 // process this sandbox's CSS imports in happy-dom.
+// The backdrops leave over 2s so that browser tests can still see the leave
+// state after they click Close on busy CI runners.
+// https://github.com/ariakit/ariakit/issues/7603
 const css = `
   .backdrop {
     background: rgb(0 0 0 / 0.4);
@@ -15,7 +18,7 @@ const css = `
   .backdrop[data-enter] {
     opacity: 1;
   }
-  .backdrop-long[data-leave] {
+  .backdrop[data-leave] {
     transition-duration: 2s;
   }
   .dialog {
@@ -68,7 +71,7 @@ export default function Example() {
       </Ariakit.Dialog>
       <Ariakit.Dialog
         store={fastDialog}
-        backdrop={<div className="backdrop backdrop-long" />}
+        backdrop={<div className="backdrop" />}
         className="dialog dialog-fast"
       >
         <Ariakit.DialogHeading>Fast</Ariakit.DialogHeading>

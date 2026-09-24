@@ -237,6 +237,13 @@ export function getCapsOffset(text: Locator) {
   });
 }
 
+/** Measures the height of the badge around a badge label. */
+export function getBadgeHeight(label: Locator) {
+  return label
+    .locator("..")
+    .evaluate((badge) => badge.getBoundingClientRect().height);
+}
+
 /** Waits until an element has focus that the engine shows as keyboard focus. */
 export async function expectFocusVisible(element: Locator) {
   await expect(element).toBeFocused();

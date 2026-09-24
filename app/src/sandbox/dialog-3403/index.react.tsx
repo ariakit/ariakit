@@ -13,7 +13,7 @@ function DialogWithStore() {
         store={dialog}
         unmountOnHide
         backdrop={<div className="backdrop" />}
-        className="dialog"
+        className="dialog dialog-long-leave"
       >
         <Ariakit.DialogHeading className="heading">
           Dialog with store
@@ -37,7 +37,7 @@ function DialogWithoutStore() {
         onClose={() => setOpen(false)}
         unmountOnHide
         backdrop={<div className="backdrop" />}
-        className="dialog"
+        className="dialog dialog-long-leave"
       >
         <Ariakit.DialogHeading className="heading">
           Dialog without store
@@ -65,7 +65,7 @@ function RouteDialogWithoutUnmountOnHide() {
           setRoute("/");
         }}
         backdrop={false}
-        className="dialog"
+        className="dialog dialog-no-transition"
         render={(props) => (
           <div hidden={props.hidden}>
             <div {...props} />

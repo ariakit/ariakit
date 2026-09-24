@@ -1,16 +1,10 @@
-import type { Locator } from "@playwright/test";
 import {
   capturePage,
   forEachColorScheme,
+  getBadgeHeight,
   getCapsOffset,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
-
-function getBadgeHeight(label: Locator) {
-  return label
-    .locator("..")
-    .evaluate((badge) => badge.getBoundingClientRect().height);
-}
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // Each engine rounds the half-leading of a line box its own way, so the label
