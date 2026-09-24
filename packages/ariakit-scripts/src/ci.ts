@@ -24,7 +24,7 @@ export interface CIPlan {
 
 export interface CreateCIPlanOptions {
   baseRef?: string;
-  requireApp?: boolean;
+  mergeGroup?: boolean;
   changedLockfileImporters?: string[];
   packageJSONChanges?: PackageJSONChange[];
 }
@@ -40,7 +40,7 @@ export interface RunCIPlanOptions {
   head: string;
   baseRef: string;
   output: string;
-  requireApp?: boolean;
+  mergeGroup?: boolean;
 }
 
 export interface CIGateResult {
@@ -434,8 +434,12 @@ export function createCIPlan(
     addFileReasons(plan, file);
   }
 
-  if (options.requireApp) {
+  if (options.mergeGroup) {
     addReason(plan, "app", "Merge queue requires visual checks");
+    // Release previews publish packages for a PR; a merge group has no PR
+    // branch to receive that publication.
+    plan.workflows.release_preview = false;
+    plan.reasons.release_preview = [];
   }
 
   if (plan.baseRef && plan.baseRef !== "main") {
@@ -693,7 +697,7 @@ export function runCIPlan(options: RunCIPlanOptions) {
   const files = getChangedFiles(options.base, options.head);
   const plan = createCIPlan(files, {
     baseRef: options.baseRef,
-    requireApp: options.requireApp,
+    mergeGroup: options.mergeGroup,
     changedLockfileImporters: getLockfileImporterChanges(
       options.base,
       options.head,

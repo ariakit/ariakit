@@ -16,7 +16,7 @@ jobs:
     permissions:
       contents: read
     env:
-      WRITEBACK_ALLOWED: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+      WRITEBACK_ALLOWED: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -25,7 +25,7 @@ jobs:
           # can fetch and rebase onto `origin/$HEAD_REF` cleanly. Otherwise
           # the merge ref includes commits from `main` that are absent from
           # the PR branch, which causes rebase conflicts.
-          ref: ${{ github.head_ref || github.ref_name }}
+          ref: ${{ github.event_name == 'merge_group' && github.sha || github.head_ref || github.ref_name }}
           persist-credentials: false
 
       - name: Set up environment
@@ -79,6 +79,10 @@ jobs:
             exit 0
           fi
           echo "has_changes=true" >> "$GITHUB_OUTPUT"
+
+      - name: Check generated files
+        if: github.event_name == 'merge_group' && steps.patch.outputs.has_changes == 'true'
+        run: exit 1
 
       - name: Commit or create PR
         if: >
