@@ -5,19 +5,37 @@ const fruits = ["Apple", "Banana", "Cherry", "Grape", "Orange"];
 
 function usePreventClose() {
   const [count, setCount] = useState(0);
+  const countPreventedClose = () => setCount((count) => count + 1);
   const preventClose = (event: Event) => {
     event.preventDefault();
-    setCount((count) => count + 1);
+    countPreventedClose();
   };
-  return [count, preventClose] as const;
+  return [count, preventClose, countPreventedClose] as const;
 }
 
-function FruitItems({ search }: { search: string }) {
+interface FruitItemsProps {
+  search: string;
+  onPreventClose: () => void;
+}
+
+function FruitItems({ search, onPreventClose }: FruitItemsProps) {
   const matches = fruits.filter((fruit) =>
     fruit.toLowerCase().includes(search.toLowerCase()),
   );
   return matches.map((fruit) => (
-    <Ariakit.ComboboxItem key={fruit} value={fruit} setValueOnClick={false} />
+    <Ariakit.ComboboxItem
+      key={fruit}
+      value={fruit}
+      setValueOnClick={false}
+      // The item hides the linked combobox store, which resets the popup before
+      // onClose can prevent the close, so the item makes that decision instead.
+      // TODO: Remove this workaround when
+      // https://github.com/ariakit/ariakit/issues/7621 is fixed.
+      hideOnClick={() => {
+        onPreventClose();
+        return false;
+      }}
+    />
   ));
 }
 
@@ -25,7 +43,7 @@ function FruitItems({ search }: { search: string }) {
 // combobox option.
 function MenuFruits() {
   const [search, setSearch] = useState("");
-  const [count, preventClose] = usePreventClose();
+  const [count, preventClose, countPreventedClose] = usePreventClose();
   return (
     <Ariakit.ComboboxProvider resetValueOnHide setValue={setSearch}>
       <Ariakit.MenuProvider>
@@ -33,7 +51,7 @@ function MenuFruits() {
         <Ariakit.Menu onClose={preventClose}>
           <Ariakit.Combobox autoSelect aria-label="Menu search" />
           <Ariakit.ComboboxList>
-            <FruitItems search={search} />
+            <FruitItems search={search} onPreventClose={countPreventedClose} />
           </Ariakit.ComboboxList>
         </Ariakit.Menu>
       </Ariakit.MenuProvider>
@@ -45,7 +63,7 @@ function MenuFruits() {
 // The combobox store extends the dialog store through the disclosure option.
 function DialogFruits() {
   const [search, setSearch] = useState("");
-  const [count, preventClose] = usePreventClose();
+  const [count, preventClose, countPreventedClose] = usePreventClose();
   const dialog = Ariakit.useDialogStore();
   return (
     <>
@@ -63,7 +81,7 @@ function DialogFruits() {
         >
           <Ariakit.Combobox autoSelect aria-label="Dialog search" />
           <Ariakit.ComboboxList>
-            <FruitItems search={search} />
+            <FruitItems search={search} onPreventClose={countPreventedClose} />
           </Ariakit.ComboboxList>
         </Ariakit.ComboboxProvider>
       </Ariakit.Dialog>
