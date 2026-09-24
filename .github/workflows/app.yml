@@ -187,6 +187,11 @@ jobs:
         with:
           engines: ${{ matrix.engines }}
           workspace: app
+      # The browser cache excludes system fonts. Match the signed upload job
+      # even when the Playwright install action hits its browser cache.
+      - name: Install visual fonts
+        if: matrix.shard == 'linux'
+        run: pnpm -F app exec playwright install-deps chromium
       - uses: actions/download-artifact@v8
         with:
           name: app-build
