@@ -845,6 +845,52 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   }
 
   // https://github.com/ariakit/ariakit/issues/7620
+  test("centers the selected item when a filterable popup without initial focus opens", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Filterable persisting fruit");
+    const watermelon = q.option("Watermelon");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    await expectVerticallyCentered(q.listbox(), watermelon);
+    await test.expect(select).toBeFocused();
+
+    await q.listbox().hover();
+    await page.mouse.wheel(0, -2000);
+    await test.expect(watermelon).not.toBeInViewport();
+    await page.keyboard.press("Escape");
+    await test.expect(select).toHaveAttribute("aria-expanded", "false");
+
+    await reopenFocusedSelect(select, "click");
+
+    await expectVerticallyCentered(q.listbox(), watermelon);
+    await test.expect(select).toBeFocused();
+  });
+
+  // Centering is for opens that the select drives, so an open from elsewhere
+  // leaves the list where it was.
+  // https://github.com/ariakit/ariakit/issues/7620
+  test("does not center the selected item when a popup without initial focus opens while focus is elsewhere", async ({
+    page,
+    q,
+  }) => {
+    const open = q.button("Open programmatic fruit");
+    await open.click();
+
+    const listbox = q.listbox("Programmatic fruit");
+    await test.expect(listbox).toBeVisible();
+    await test.expect(listbox).not.toHaveAttribute("data-placing");
+    // A presentation that never starts has no positive state to await, and one
+    // that did start would scroll as soon as placement ends.
+    await flushFrames(page);
+    await test.expect(listbox).toHaveJSProperty("scrollTop", 0);
+    await test.expect(open).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7620
   test("centers a new selection when an unmounted popup without initial focus reopens", async ({
     q,
   }) => {
