@@ -1,7 +1,18 @@
 import * as Ariakit from "@ariakit/react";
+import { ComboboxRenderer } from "@ariakit/react-components/combobox/combobox-renderer";
+import { useRef } from "react";
 
 const fruits = ["Apple", "Banana", "Grape", "Orange"];
 const statuses = ["Draft", "Published", "Archived"];
+const vegetables = [
+  "Artichoke",
+  "Broccoli",
+  "Carrot",
+  "Garlic",
+  "Leek",
+  "Lettuce",
+  "Onion",
+];
 
 interface SelectProps {
   label: string;
@@ -49,6 +60,190 @@ function FocusOwnerSelect({ label, virtualFocus }: FocusOwnerSelectProps) {
   );
 }
 
+interface PositioningSelectProps {
+  label: string;
+  virtualFocus?: boolean;
+  /** Renders a button with this text and `autoFocus` before the items. */
+  autoFocusButton?: string;
+  /**
+   * Passes the store to the select directly, while the popup still reads it
+   * from the provider, which wraps it in a store of its own.
+   */
+  selectStoreProp?: boolean;
+  /** Mounts the popup only once it opens. */
+  unmountOnHide?: boolean;
+  /** Renders a heading and a dismiss button before a nested list of items. */
+  dismissible?: boolean;
+}
+
+// Holds the popup at its unplaced origin until the button releases the
+// positioning, so the user can move through the items before the popup takes
+// focus.
+function PositioningSelect({
+  label,
+  virtualFocus,
+  autoFocusButton,
+  selectStoreProp,
+  unmountOnHide,
+  dismissible,
+}: PositioningSelectProps) {
+  const releaseRef = useRef<(() => void) | null>(null);
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Artichoke",
+    virtualFocus,
+  });
+  const name = label.toLowerCase();
+  const items = vegetables.map((value) => (
+    <Ariakit.ComboboxItem key={value} value={value} />
+  ));
+  return (
+    <Ariakit.ComboboxProvider store={combobox}>
+      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={selectStoreProp ? combobox : undefined} />
+      <Ariakit.ComboboxPopover
+        unmountOnHide={unmountOnHide}
+        // The buttons that control the positioning are outside the popup.
+        hideOnInteractOutside={false}
+        updatePosition={({ updatePosition }) =>
+          new Promise<void>((resolve) => {
+            releaseRef.current = () => {
+              void updatePosition().then(resolve);
+            };
+          })
+        }
+      >
+        {dismissible && (
+          <>
+            <Ariakit.ComboboxHeading>{`${label} options`}</Ariakit.ComboboxHeading>
+            <Ariakit.ComboboxDismiss>
+              {`Dismiss ${name} options`}
+            </Ariakit.ComboboxDismiss>
+          </>
+        )}
+        {autoFocusButton && (
+          <Ariakit.Button autoFocus>{autoFocusButton}</Ariakit.Button>
+        )}
+        {dismissible ? (
+          <Ariakit.ComboboxList>{items}</Ariakit.ComboboxList>
+        ) : (
+          items
+        )}
+      </Ariakit.ComboboxPopover>
+      {/* Both buttons refuse focus so the widget keeps it, as it would when
+      positioning happens on its own. */}
+      <button
+        type="button"
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={() => releaseRef.current?.()}
+      >
+        {`Finish ${name} positioning`}
+      </button>
+      {/* Starts another positioning pass while the popup is open, as a moved
+      anchor would. */}
+      <button
+        type="button"
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={combobox.render}
+      >
+        {`Reposition ${name} popup`}
+      </button>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
+const countries = [
+  "Argentina",
+  "Australia",
+  "Austria",
+  "Belgium",
+  "Brazil",
+  "Bulgaria",
+  "Cambodia",
+  "Cameroon",
+  "Canada",
+  "Chile",
+  "China",
+  "Colombia",
+  "Denmark",
+  "Ecuador",
+  "Egypt",
+  "Estonia",
+  "Finland",
+  "France",
+  "Germany",
+  "Ghana",
+  "Greece",
+  "Hungary",
+  "Iceland",
+  "India",
+  "Ireland",
+  "Italy",
+  "Jamaica",
+  "Japan",
+  "Kenya",
+  "Latvia",
+  "Mexico",
+  "Morocco",
+  "Nepal",
+  "Norway",
+  "Peru",
+  "Poland",
+  "Portugal",
+  "Romania",
+  "Spain",
+  "Sweden",
+  "Thailand",
+  "Turkey",
+  "Uganda",
+  "Ukraine",
+  "Uruguay",
+  "Vietnam",
+  "Yemen",
+  "Zambia",
+].map((value) => ({ id: `country-${value.toLowerCase()}`, value }));
+
+// Like PositioningSelect, but with a long virtualized list, so the item the
+// user moves to while the popup is positioning is scrolled out of view.
+function VirtualPositioningSelect() {
+  const releaseRef = useRef<(() => void) | null>(null);
+  const combobox = Ariakit.useComboboxStore({
+    defaultItems: countries,
+    defaultSelectedValue: "Argentina",
+  });
+  return (
+    <Ariakit.ComboboxProvider store={combobox}>
+      <Ariakit.ComboboxSelectLabel>Virtual country</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxPopover
+        hideOnInteractOutside={false}
+        // Virtualized items are absolutely positioned, so they don't give the
+        // popup any width of their own.
+        style={{ width: 200, maxHeight: 200, overflow: "auto" }}
+        updatePosition={({ updatePosition }) =>
+          new Promise<void>((resolve) => {
+            releaseRef.current = () => {
+              void updatePosition().then(resolve);
+            };
+          })
+        }
+      >
+        <ComboboxRenderer items={countries} itemSize={32} overscan={1}>
+          {({ value, ...item }) => (
+            <Ariakit.ComboboxItem key={item.id} {...item} value={value} />
+          )}
+        </ComboboxRenderer>
+      </Ariakit.ComboboxPopover>
+      <button
+        type="button"
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={() => releaseRef.current?.()}
+      >
+        Finish virtual country positioning
+      </button>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -75,6 +270,21 @@ export default function Example() {
       />
       <FocusOwnerSelect label="No-autofocus status" />
       <FocusOwnerSelect label="Real-focus status" virtualFocus={false} />
+      <PositioningSelect label="Vegetable" />
+      <PositioningSelect label="Real-focus vegetable" virtualFocus={false} />
+      <PositioningSelect
+        label="Managed vegetable"
+        autoFocusButton="Manage vegetables"
+      />
+      <PositioningSelect label="Store-prop vegetable" selectStoreProp />
+      <PositioningSelect label="Unmounted vegetable" unmountOnHide />
+      <PositioningSelect label="Dismissible vegetable" dismissible />
+      <PositioningSelect
+        label="Real-focus dismissible vegetable"
+        virtualFocus={false}
+        dismissible
+      />
+      <VirtualPositioningSelect />
     </>
   );
 }

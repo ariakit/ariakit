@@ -101,6 +101,7 @@ test("keeps the previewed value when the popover is toggled closed after a consu
 });
 
 // https://github.com/ariakit/ariakit/pull/6832#discussion_r3650306380
+// https://github.com/ariakit/ariakit/issues/7623
 test("reports one closing Escape per keypress", async () => {
   await click(q.combobox("Counted"));
   expect(q.status("Counted counts")).toHaveTextContent(
@@ -111,6 +112,7 @@ test("reports one closing Escape per keypress", async () => {
   expect(q.status("Counted counts")).toHaveTextContent(
     "reset:1 close:1 events:close,reset",
   );
+  expect(q.status("Counted hideOnEscape calls")).toHaveTextContent(/^1$/);
 });
 
 test("reports one reset for a controlled close request", async () => {
@@ -133,6 +135,7 @@ test("reports nothing when a descendant keeps the popover open", async () => {
   );
 });
 
+// https://github.com/ariakit/ariakit/issues/7623
 test("doesn't reset when onClose prevents the close", async () => {
   await click(q.combobox("Vetoed"));
   await press.ArrowDown();
@@ -141,8 +144,9 @@ test("doesn't reset when onClose prevents the close", async () => {
   expect(q.listbox()).toBeVisible();
   expect(q.combobox("Vetoed")).toHaveTextContent("Banana");
   expect(q.status("Vetoed counts")).toHaveTextContent(
-    "reset:0 close:2 events:close,close",
+    "reset:0 close:1 events:close",
   );
+  expect(q.status("Vetoed hideOnEscape calls")).toHaveTextContent(/^1$/);
 });
 
 test("preserves the original baseline after a prevented close", async () => {

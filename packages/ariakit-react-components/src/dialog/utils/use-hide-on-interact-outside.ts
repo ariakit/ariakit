@@ -214,6 +214,15 @@ export function useHideOnInteractOutside({
     focusedRef,
   };
 
+  const hide = () => {
+    store.hide();
+    // A prevented close keeps the dialog open without changing its open state,
+    // which would otherwise reset this flag. Reset it here so that a later
+    // close still restores focus.
+    if (!store.getState().open) return;
+    interactedOutsideRef.current = false;
+  };
+
   useEventOutside({
     ...props,
     type: "click",
@@ -250,7 +259,7 @@ export function useHideOnInteractOutside({
       }
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
       interactedOutsideRef.current = true;
-      store.hide();
+      hide();
     },
   });
 
@@ -270,7 +279,7 @@ export function useHideOnInteractOutside({
       ) {
         interactedOutsideRef.current = true;
       }
-      store.hide();
+      hide();
     },
   });
 
@@ -280,7 +289,7 @@ export function useHideOnInteractOutside({
     listener: (event) => {
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
       interactedOutsideRef.current = true;
-      store.hide();
+      hide();
     },
   });
 }

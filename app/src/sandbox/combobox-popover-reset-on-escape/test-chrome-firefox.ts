@@ -91,6 +91,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(select).toHaveText("Apple");
   });
 
+  // https://github.com/ariakit/ariakit/issues/7623
   test("runs reset once for one accepted Escape", async ({ page, q }) => {
     const select = q.combobox("Counted");
     const counts = q.status("Counted counts");
@@ -101,6 +102,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(q.listbox()).toBeHidden();
     await test.expect(counts).toHaveText("reset:1 close:1 events:close,reset");
+    await test.expect(q.status("Counted hideOnEscape calls")).toHaveText("1");
   });
 
   test("runs reset once for a controlled close request", async ({
@@ -120,6 +122,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(counts).toHaveText(/^reset:1\b/);
   });
 
+  // https://github.com/ariakit/ariakit/issues/7623
   test("doesn't reset when onClose prevents the close", async ({ page, q }) => {
     const select = q.combobox("Vetoed");
     const counts = q.status("Vetoed counts");
@@ -131,7 +134,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(q.listbox()).toBeVisible();
     await test.expect(select).toHaveText("Banana");
-    await test.expect(counts).toHaveText("reset:0 close:2 events:close,close");
+    await test.expect(counts).toHaveText("reset:0 close:1 events:close");
+    await test.expect(q.status("Vetoed hideOnEscape calls")).toHaveText("1");
   });
 
   test("preserves the original baseline after a prevented close", async ({
