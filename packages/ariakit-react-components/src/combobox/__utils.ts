@@ -1,12 +1,17 @@
 import { useSafeLayoutEffect } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import { getWindow } from "@ariakit/utils";
+import type { RefObject } from "react";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const openingMovesBySelect = new WeakMap<HTMLElement, number>();
 const scrollItemIntoViewByStore = new WeakMap<
   ComboboxStore,
   (element: HTMLElement) => void
+>();
+const movedItemRefByStore = new WeakMap<
+  ComboboxStore,
+  RefObject<HTMLElement | null>
 >();
 
 function scrollIntoViewNearest(element: HTMLElement) {
@@ -145,4 +150,32 @@ export function getScrollItemIntoView(store?: ComboboxStore) {
   };
   scrollItemIntoViewByStore.set(store, scrollItemIntoView);
   return scrollItemIntoView;
+}
+
+/**
+ * Returns a ref to the item that the user moved to since the select popup
+ * opened. Its value is `null` until the user moves. It reads the current store
+ * state when accessed, so the popup's delayed initial focus can find the item
+ * without subscribing to movement. Each store gets one stable ref, because the
+ * dialog runs its initial focus again whenever `initialFocus` changes.
+ */
+export function getMovedItemRef(store: ComboboxStore) {
+  const cached = movedItemRefByStore.get(store);
+  if (cached) {
+    return cached;
+  }
+  const ref: RefObject<HTMLElement | null> = {
+    get current() {
+      const { activeId, moves, selectElement } = store.getState();
+      if (!selectElement) return null;
+      // The baseline includes the arrow key that opened the popup, so only a
+      // move made in the open popup counts.
+      const openingMoves = openingMovesBySelect.get(selectElement);
+      if (openingMoves == null) return null;
+      if (moves === openingMoves) return null;
+      return store.item(activeId)?.element || null;
+    },
+  };
+  movedItemRefByStore.set(store, ref);
+  return ref;
 }
