@@ -52,6 +52,24 @@ function slugify(value: string) {
   return value.toLowerCase().replace(/\s+/g, "-");
 }
 
+// TODO: Remove this workaround when
+// https://github.com/ariakit/ariakit/issues/7620 is fixed. Takes the place of
+// `autoFocusOnShow={false}`. The popover calls it once it's positioned, with
+// the selected item it would focus. Returning false keeps focus on the select,
+// as `autoFocusOnShow={false}` does.
+function centerSelectedItem(element: HTMLElement | null) {
+  if (!element) return false;
+  if (element.getAttribute("role") !== "option") return false;
+  const list = element.closest<HTMLElement>("[role='listbox']");
+  if (!list) return false;
+  const itemRect = element.getBoundingClientRect();
+  const listRect = list.getBoundingClientRect();
+  const itemCenter = itemRect.top + itemRect.height / 2;
+  const listCenter = listRect.top + list.clientTop + list.clientHeight / 2;
+  list.scrollBy({ top: itemCenter - listCenter });
+  return false;
+}
+
 interface FruitItemsProps {
   /**
    * Renders explicit item ids, so an item that is replaced comes back under the
@@ -145,7 +163,7 @@ interface FixtureProps {
    * Whether the popup takes focus once it is placed. Turning it off leaves the
    * presentation as the only thing that can bring an item into view.
    */
-  autoFocusOnShow?: boolean;
+  autoFocusOnShow?: Ariakit.ComboboxPopoverProps["autoFocusOnShow"];
   defaultSelectedValue: string | string[];
   focusTarget?: boolean;
   focusTrapTarget?: boolean;
@@ -453,7 +471,7 @@ function ProgrammaticOpenAfterMoveFixture() {
       </button>
       <Ariakit.ComboboxPopover
         store={combobox}
-        autoFocusOnShow={false}
+        autoFocusOnShow={centerSelectedItem}
         hideOnInteractOutside={false}
         style={{
           background: "white",
@@ -593,7 +611,7 @@ function OversizedInlineOverflowFixture({
 }
 
 interface ProviderStoreFixtureProps {
-  autoFocusOnShow?: boolean;
+  autoFocusOnShow?: Ariakit.ComboboxPopoverProps["autoFocusOnShow"];
   label: string;
   /**
    * The component that receives the store through its `store` prop. The other
@@ -1093,7 +1111,7 @@ export default function Example() {
       keeps them, "Remounting fruit" replaces every one of them. */}
       <div style={{ marginTop: 200 }}>
         <Fixture
-          autoFocusOnShow={false}
+          autoFocusOnShow={centerSelectedItem}
           defaultSelectedValue="Watermelon"
           itemIdPrefix="persisting"
           label="Persisting fruit"
@@ -1226,7 +1244,7 @@ export default function Example() {
       hidden, so every open starts from a list scrolled to the top. */}
       <div style={{ marginTop: 200 }}>
         <Fixture
-          autoFocusOnShow={false}
+          autoFocusOnShow={centerSelectedItem}
           defaultSelectedValue="Watermelon"
           label="Unmounting fruit"
           unmountOnHide
@@ -1234,14 +1252,14 @@ export default function Example() {
       </div>
       <div style={{ marginTop: 200 }}>
         <ProviderStoreFixture
-          autoFocusOnShow={false}
+          autoFocusOnShow={centerSelectedItem}
           label="Select-store persisting fruit"
           storeOn="select"
         />
       </div>
       <div style={{ marginTop: 200 }}>
         <ProviderStoreFixture
-          autoFocusOnShow={false}
+          autoFocusOnShow={centerSelectedItem}
           label="Popover-store persisting fruit"
           storeOn="popover"
         />
