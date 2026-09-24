@@ -730,6 +730,138 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(select).toBeFocused();
   });
 
+  const reopenFocusedSelect = async (
+    select: Locator,
+    reopen: "click" | "Enter" | "Space",
+  ) => {
+    await test.expect(select).toBeFocused();
+    if (reopen === "click") {
+      await select.click();
+    } else {
+      await select.press(reopen);
+    }
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+  };
+
+  const selectSixItemsUp = async (select: Locator, target: Locator) => {
+    const page = select.page();
+    for (let i = 0; i < 6; i += 1) {
+      await page.keyboard.press("ArrowUp");
+    }
+    await test.expect(target).toHaveAttribute("data-active-item");
+    await page.keyboard.press("Enter");
+    await test.expect(select).toHaveAttribute("aria-expanded", "false");
+  };
+
+  // The select keeps focus while its popup is closed, so reopening it fires no
+  // focus event, and the popup's own initial focus is off. The selection sits
+  // at the edge of the list the popup left behind.
+  for (const reopen of ["click", "Enter", "Space"] as const) {
+    // https://github.com/ariakit/ariakit/issues/7620
+    test(`centers a new selection when ${reopen} reopens a popup without initial focus`, async ({
+      q,
+    }) => {
+      const select = q.combobox("Persisting fruit");
+      const pineapple = q.option("Pineapple");
+      await select.click();
+      await expectVerticallyCentered(q.listbox(), q.option("Watermelon"));
+      await selectSixItemsUp(select, pineapple);
+      await test.expect(select).toHaveText("Pineapple");
+
+      await reopenFocusedSelect(select, reopen);
+
+      await test.expect(pineapple).toHaveAttribute("data-active-item");
+      await expectVerticallyCentered(q.listbox(), pineapple);
+      await test.expect(select).toBeFocused();
+    });
+  }
+
+  // https://github.com/ariakit/ariakit/issues/7620
+  test("centers the selected item when a popup without initial focus reopens after Escape", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Persisting fruit");
+    const watermelon = q.option("Watermelon");
+    await select.click();
+    await expectVerticallyCentered(q.listbox(), watermelon);
+    await page.keyboard.press("Home");
+    await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
+    await test.expect(watermelon).not.toBeInViewport();
+    await page.keyboard.press("Escape");
+    await test.expect(select).toHaveAttribute("aria-expanded", "false");
+
+    // A click leaves no key event for the select to forward to the active item,
+    // and forwarding one would focus the item and present it along the way.
+    await reopenFocusedSelect(select, "click");
+
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    await expectVerticallyCentered(q.listbox(), watermelon);
+    await test.expect(select).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7620
+  test("centers a new selection when a select sharing the popup store reopens", async ({
+    q,
+  }) => {
+    const select = q.combobox("Programmatic fruit");
+    const jackfruit = q.option("Jackfruit");
+    await select.click();
+    await expectVerticallyCentered(q.listbox(), q.option("Mango"));
+    await selectSixItemsUp(select, jackfruit);
+    await test.expect(select).toHaveText("Jackfruit");
+
+    await reopenFocusedSelect(select, "click");
+
+    await test.expect(jackfruit).toHaveAttribute("data-active-item");
+    await expectVerticallyCentered(q.listbox(), jackfruit);
+    await test.expect(select).toBeFocused();
+  });
+
+  // The select and the items read different store objects here, as in the
+  // provider-store selects above.
+  for (const storeOn of ["select", "popover"]) {
+    // https://github.com/ariakit/ariakit/issues/7620
+    test(`centers a new selection when a popup without initial focus reopens and only the ${storeOn} receives the store`, async ({
+      q,
+    }) => {
+      const label =
+        storeOn === "select"
+          ? "Select-store persisting fruit"
+          : "Popover-store persisting fruit";
+      const select = q.combobox(label);
+      const jackfruit = q.option("Jackfruit");
+      await select.click();
+      await expectVerticallyCentered(q.listbox(), q.option("Mango"));
+      await selectSixItemsUp(select, jackfruit);
+      await test.expect(select).toHaveText("Jackfruit");
+
+      await reopenFocusedSelect(select, "click");
+
+      await test.expect(jackfruit).toHaveAttribute("data-active-item");
+      await expectVerticallyCentered(q.listbox(), jackfruit);
+      await test.expect(select).toBeFocused();
+    });
+  }
+
+  // https://github.com/ariakit/ariakit/issues/7620
+  test("centers a new selection when an unmounted popup without initial focus reopens", async ({
+    q,
+  }) => {
+    const select = q.combobox("Unmounting fruit");
+    const pineapple = q.option("Pineapple");
+    await select.click();
+    await expectVerticallyCentered(q.listbox(), q.option("Watermelon"));
+    await selectSixItemsUp(select, pineapple);
+    await test.expect(select).toHaveText("Pineapple");
+
+    await reopenFocusedSelect(select, "click");
+
+    await test.expect(pineapple).toHaveAttribute("data-active-item");
+    await expectVerticallyCentered(q.listbox(), pineapple);
+    await test.expect(select).toBeFocused();
+  });
+
   // https://github.com/ariakit/ariakit/issues/7021
   test("presents a far selected item replaced under a stable id", async ({
     q,
