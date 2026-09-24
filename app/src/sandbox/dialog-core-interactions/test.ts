@@ -46,6 +46,41 @@ test("closes on outside click without restoring disclosure focus", async () => {
   expect(disclosure).not.toHaveFocus();
 });
 
+// The fix for #7616 runs onClose before the open state changes, so the outside
+// interaction must be recorded before the close request for this to hold.
+// https://github.com/ariakit/ariakit/issues/7616
+test("closes on a synchronous outside click without restoring disclosure focus", async () => {
+  const disclosure = q.button("Show details");
+  await click(disclosure);
+  expect(q.dialog("Details")).toBeVisible();
+
+  await click(q.text("Text outside the details"));
+  expect(q.dialog.maybe("Details")).not.toBeInTheDocument();
+  expect(document.body).toHaveFocus();
+});
+
+// The fix for #7616 runs onClose before the open state changes, so hiding the
+// store from onClose must not dispatch the close event again.
+// https://github.com/ariakit/ariakit/issues/7616
+test("closes once when onClose hides the store on Escape", async () => {
+  await click(q.button("Show settings"));
+  expect(q.dialog("Settings")).toBeVisible();
+
+  await press.Escape();
+  expect(q.dialog.maybe("Settings")).not.toBeInTheDocument();
+  expect(q.text("Settings close events: 1")).toBeVisible();
+});
+
+// https://github.com/ariakit/ariakit/issues/7616
+test("closes once when onClose hides the store from the dismiss button", async () => {
+  await click(q.button("Show settings"));
+  expect(q.dialog("Settings")).toBeVisible();
+
+  await click(q.button("Close settings"));
+  expect(q.dialog.maybe("Settings")).not.toBeInTheDocument();
+  expect(q.text("Settings close events: 1")).toBeVisible();
+});
+
 for (const trigger of ["click", "Enter", "Space"] as const) {
   test(`closes from the dismiss button with ${trigger}`, async () => {
     const disclosure = q.button("Show modal");
