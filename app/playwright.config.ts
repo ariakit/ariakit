@@ -24,10 +24,12 @@ const nextjsPort = Number(process.env.NEXTJS_PORT) || 3000;
 const inspectorPort = Number(process.env.APP_INSPECTOR_PORT) || (CI ? 9339 : 0);
 const nextjsInspectorPort =
   Number(process.env.NEXTJS_INSPECTOR_PORT) || (CI ? 9340 : 0);
-const visualShard = CI ? process.env.VISONAUT_SHARD : undefined;
-if (visualShard && visualShard !== "linux" && visualShard !== "safari") {
-  throw new Error(`Unknown Visonaut shard: ${visualShard}`);
-}
+const visualShard =
+  CI && process.env.VISUAL_TEST === "true"
+    ? process.platform === "darwin"
+      ? "safari"
+      : "linux"
+    : undefined;
 
 function requiredEnv(name: string) {
   const value = process.env[name];
@@ -38,7 +40,7 @@ function requiredEnv(name: string) {
 const visualProjects =
   visualShard === "linux" ? ["chrome", "firefox"] : ["safari"];
 const captureDirectory = visualShard
-  ? path.join(requiredEnv("RUNNER_TEMP"), `visonaut-${visualShard}`)
+  ? path.join(requiredEnv("RUNNER_TEMP"), "visonaut")
   : undefined;
 const captureEnvironment = captureDirectory
   ? await measureEnvironment({
