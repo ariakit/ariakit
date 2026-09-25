@@ -176,37 +176,38 @@ jobs:
         uses: actions/checkout@v7
         with:
           persist-credentials: false
+
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
           filters: |
             app...
             root
+
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
         with:
           engines: ${{ matrix.engines }}
           workspace: app
-      # The browser cache does not include Linux system fonts.
-      - name: Install visual fonts
-        if: runner.os == 'Linux'
-        run: pnpm -F app exec playwright install-deps chromium
+
       - name: Download app artifact
         uses: actions/download-artifact@v8
         with:
           name: app-build
           path: app
+
       - name: Download Next.js artifact
         uses: actions/download-artifact@v8
         with:
           name: nextjs-dist
           path: nextjs/.open-next
+
       - name: Test visual
         run: ${{ matrix.test }} --project ${{ matrix.projects }} --grep @visual --output test-results/test-visual
+
       - name: Encrypt captures
-        run: |
-          export PATH="$GITHUB_WORKSPACE/node_modules/.bin:$PATH"
-          visonaut pack --dir "${{ runner.temp }}/visonaut" --output "${{ runner.temp }}/visonaut-${{ runner.os }}.enc"
+        run: pnpm exec visonaut pack --dir "${{ runner.temp }}/visonaut" --output "${{ runner.temp }}/visonaut-${{ runner.os }}.enc"
+
       - name: Upload encrypted captures
         uses: actions/upload-artifact@v7
         with:
@@ -214,6 +215,7 @@ jobs:
           path: ${{ runner.temp }}/visonaut-${{ runner.os }}.enc
           if-no-files-found: error
           retention-days: 1
+
       - name: Upload test results to GitHub
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
@@ -230,35 +232,41 @@ jobs:
     timeout-minutes: 30
     permissions:
       actions: read
+      contents: read
       id-token: write
     env:
       VISONAUT_WORKFLOW_SOURCE_SHA: ${{ vars.VISONAUT_WORKFLOW_SOURCE_SHA }}
     steps:
-      - name: Set up Node
-        uses: actions/setup-node@v7
+      - name: Checkout trusted toolchain
+        uses: actions/checkout@v7
         with:
-          node-version: 24.18.0
-      - name: Set up pnpm
-        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+          ref: main
+          persist-credentials: false
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
         with:
-          version: 12.5.1
-          run_install: false
+          install: "false"
+
       - name: Install Visonaut
         run: |
           mkdir -p "$RUNNER_TEMP/visonaut-tools"
           pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact visonaut@0.3.2
           echo "$RUNNER_TEMP/visonaut-tools/node_modules/.bin" >> "$GITHUB_PATH"
+
       - name: Download captures
         uses: actions/download-artifact@v8
         with:
           pattern: visonaut-transfer-*
           path: ${{ runner.temp }}/visonaut-transfer
           merge-multiple: true
+
       - name: Submit captures
         id: submit
         env:
           GH_TOKEN: ${{ github.token }}
         run: visonaut submit --bundle "linux=$RUNNER_TEMP/visonaut-transfer/visonaut-Linux.enc" --bundle "safari=$RUNNER_TEMP/visonaut-transfer/visonaut-macOS.enc"
+
       - name: Upload receipt
         uses: actions/upload-artifact@v7
         with:

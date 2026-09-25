@@ -43,3 +43,13 @@ runs:
       run: |
         read -r -a engines <<< "$ENGINES"
         pnpm --filter "$WORKSPACE" exec playwright install --with-deps "${engines[@]}"
+
+    - name: Install Playwright system dependencies
+      if: runner.os == 'Linux' && steps.cache-playwright.outputs.cache-hit == 'true'
+      shell: bash
+      env:
+        ENGINES: ${{ inputs.engines }}
+        WORKSPACE: ${{ inputs.workspace }}
+      run: |
+        read -r -a engines <<< "$ENGINES"
+        pnpm --filter "$WORKSPACE" exec playwright install-deps "${engines[@]}"
