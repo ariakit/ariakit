@@ -1,5 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
+import type { KeyboardEvent } from "react";
 
 const fruits = ["Apple", "Banana", "Orange"];
 const blocks = ["Paragraph", "Heading", "List"];
@@ -191,26 +192,43 @@ function BlockMenuCombobox() {
   );
 }
 
+// TODO: Remove this workaround once
+// https://github.com/ariakit/ariakit/issues/7632 is fixed. Closes the popover
+// on Escape and stops the key press at the combobox, so the dialog doesn't also
+// close when the popover has an active item.
+function hideOnEscapeCapture(store: Ariakit.ComboboxStore) {
+  return (event: KeyboardEvent) => {
+    if (event.key !== "Escape") return;
+    if (!store.getState().open) return;
+    event.stopPropagation();
+    store.hide();
+  };
+}
+
 // The popovers here close normally, so one Escape must close only the topmost
 // popover and keep the dialog open.
 function OrderDialog() {
+  const topping = Ariakit.useComboboxStore();
+  const side = Ariakit.useComboboxStore({ defaultSelectedValue: "Apple" });
   return (
     <Ariakit.DialogProvider>
       <Ariakit.DialogDisclosure>Open order</Ariakit.DialogDisclosure>
       <Ariakit.Dialog style={dialogStyle}>
         <Ariakit.DialogHeading>Order</Ariakit.DialogHeading>
-        <Ariakit.ComboboxProvider>
+        <Ariakit.ComboboxProvider store={topping}>
           <Ariakit.ComboboxLabel>Topping</Ariakit.ComboboxLabel>
-          <Ariakit.Combobox />
+          <Ariakit.Combobox onKeyDownCapture={hideOnEscapeCapture(topping)} />
           <Ariakit.ComboboxPopover style={popupStyle}>
             {fruits.map((value) => (
               <Ariakit.ComboboxItem key={value} value={value} />
             ))}
           </Ariakit.ComboboxPopover>
         </Ariakit.ComboboxProvider>
-        <Ariakit.ComboboxProvider defaultSelectedValue="Apple">
+        <Ariakit.ComboboxProvider store={side}>
           <Ariakit.ComboboxSelectLabel>Side</Ariakit.ComboboxSelectLabel>
-          <Ariakit.ComboboxSelect />
+          <Ariakit.ComboboxSelect
+            onKeyDownCapture={hideOnEscapeCapture(side)}
+          />
           <Ariakit.ComboboxPopover style={popupStyle}>
             {fruits.map((value) => (
               <Ariakit.ComboboxItem key={value} value={value} />
