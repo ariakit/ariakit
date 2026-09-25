@@ -7,7 +7,7 @@ import {
 withCaptures(import.meta.dirname, async ({ test }) => {
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({ page, visual, colorScheme, item: "ariakit-ui-prose/page" }),
     );
   });
 });

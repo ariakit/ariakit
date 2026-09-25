@@ -1,6 +1,8 @@
 name: CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -14,6 +16,7 @@ concurrency:
 jobs:
   plan:
     name: Plan
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     outputs:
       main: ${{ steps.plan.outputs.main }}
@@ -56,11 +59,12 @@ jobs:
   app:
     name: App
     needs: plan
-    if: needs.plan.outputs.app == 'true'
+    if: ${{ !cancelled() && (github.event_name == 'push' || needs.plan.outputs.app == 'true') }}
     permissions:
       actions: read
       contents: read
       deployments: write
+      id-token: write
       statuses: write
     uses: ./.github/workflows/app.yml
     secrets: inherit
@@ -113,7 +117,7 @@ jobs:
 
   gate:
     name: Gate
-    if: always()
+    if: always() && github.event_name != 'push'
     needs:
       - plan
       - main
@@ -124,7 +128,10 @@ jobs:
       - docs
       - og_images
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
+      actions: read
+      checks: read
       contents: read
     steps:
       - name: Checkout repository
@@ -142,3 +149,63 @@ jobs:
           CI_PLAN: ${{ needs.plan.outputs.plan }}
           CI_RESULTS: ${{ toJSON(needs) }}
         run: node packages/ariakit-scripts/src/ci-run.ts gate
+
+      - name: Verify Visonaut review
+        if: needs.app.result == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          jobs="$(gh api --method GET -f filter=latest -f per_page=100 \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs")"
+          submit_job="$(jq -c --argjson run "$GITHUB_RUN_ID" '
+            if .total_count > 100 then error("CI job list exceeds one page") else
+              [.jobs[] | select(.name == "App / Visual / Submit" and .run_id == $run and
+                .status == "completed" and .conclusion == "success")]
+              | if length == 1 then .[0] else error("Successful submit job is unavailable") end
+            end
+          ' <<< "$jobs")"
+          submit_attempt="$(jq -r '.run_attempt' <<< "$submit_job")"
+          submit_started="$(jq -r '.started_at' <<< "$submit_job")"
+          test "$submit_started" != "null"
+          attempt_start="$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$submit_attempt" \
+            --jq '.created_at')"
+          test "$attempt_start" != "null"
+          # A Gate-only rerun gives reused jobs a new run_attempt but retains
+          # their original started_at. Use the attempt that actually ran submit.
+          while [[ "$submit_started" < "$attempt_start" ]]; do
+            (( submit_attempt > 1 )) || exit 1
+            submit_attempt=$((submit_attempt - 1))
+            attempt_start="$(gh api \
+              "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$submit_attempt" \
+              --jq '.created_at')"
+            test "$attempt_start" != "null"
+          done
+
+          for ((poll = 0; poll < 40; poll += 1)); do
+            checks="$(gh api --method GET -f check_name=Visonaut -f app_id=5028451 \
+              -f per_page=100 "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs")"
+            result="$(jq -r --arg sha "$GITHUB_SHA" --arg started "$attempt_start" '
+              if .total_count > 100 then error("Visonaut check list exceeds one page") else
+                [.check_runs[] | select(.name == "Visonaut" and .app.id == 5028451 and
+                  .head_sha == $sha and
+                  ((.external_id // "") | . == "visonaut:pre:" + $sha or
+                    startswith("visonaut:pre:" + $sha + ":")) and
+                  ((.started_at // "") >= $started))]
+                | (max_by(.id) // {})
+                | if .status != "completed" then "pending"
+                  elif .conclusion == "success" then "success"
+                  else "failure" end
+              end
+            ' <<< "$checks")"
+            case "$result" in
+              success) echo "Visonaut review passed for this capture attempt."; exit 0 ;;
+              failure) echo "Visonaut review failed for this capture attempt."; exit 1 ;;
+            esac
+            sleep 12
+          done
+
+          echo "Visonaut review is still pending. Review it, then rerun Gate."
+          exit 1

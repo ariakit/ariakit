@@ -1,9 +1,9 @@
-import { utimesSync } from "node:fs";
-import path from "node:path";
 import { invariant } from "@ariakit/utils";
-import type { Locator, Page, TestInfo } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
-import { slugify } from "#app/lib/string.ts";
+import { visual as captureVisual } from "@visonaut/playwright";
+import { isFramework } from "#app/lib/framework.ts";
+import type { Framework } from "#app/lib/schemas.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;
 const CLIP_STABILITY_INTERVAL = 16;
@@ -12,7 +12,6 @@ const CLIP_STABILITY_TIMEOUT = 1000;
 // A font from the local server loads in milliseconds. The bound turns a load
 // that never finishes into a clear failure well within the test budget.
 const FONTS_TIMEOUT = 10_000;
-const countMap = new Map<string, number>();
 
 interface Rect {
   x: number;
@@ -31,6 +30,10 @@ type Viewports = Record<string, ViewportSize>;
 type Styles = Record<string, CSSProperties>;
 
 export interface ScreenshotOptions {
+  /** Stable identity of the captured UI state across runs. */
+  item: string;
+  /** Framework variant when the test itself has no framework tag. */
+  framework?: Framework;
   /**
    * Viewports to capture.
    */
@@ -50,10 +53,6 @@ export interface ScreenshotOptions {
    */
   style?: CSSProperties;
   /**
-   * Additional identifier to disambiguate screenshots (e.g., path slug).
-   */
-  id?: string;
-  /**
    * Margin (px) around cropped content.
    * @default 16
    */
@@ -64,11 +63,7 @@ export interface ScreenshotOptions {
    * @default false
    */
   fullPage?: boolean;
-  /**
-   * How long each screenshot assertion may take, in milliseconds, including the
-   * two identical captures that a new baseline needs. Without it, the
-   * configured expect timeout applies.
-   */
+  /** Capture deadline in milliseconds, including two stable screenshots. */
   timeout?: number;
 }
 
@@ -81,75 +76,6 @@ export const defaultStyles = {
   light: { "--color-canvas": "oklch(99.33% 0.0011 197.14)" },
   dark: { "--color-canvas": "oklch(16.34% 0.0091 264.28)" },
 } satisfies Styles;
-
-function getSnapshotTitlePart(part: string) {
-  return part.replace(/@\S+/g, "").trim();
-}
-
-function getTestFileDir(testInfo: TestInfo) {
-  const testDir =
-    testInfo.project.testDir || path.join(testInfo.config.rootDir, "src");
-  return path.dirname(path.relative(testDir, testInfo.file));
-}
-
-function getSnapshotCount(testInfo: TestInfo, baseName: string) {
-  const countKey = `${testInfo.file}:${testInfo.project.name}:${baseName}`;
-  const count = countMap.get(countKey) || 0;
-  countMap.set(countKey, count + 1);
-  return count;
-}
-
-function getFileSnapshotName(params: {
-  id?: string;
-  testInfo: TestInfo;
-  variants?: string[];
-}) {
-  const { testInfo, variants = [], id } = params;
-  const titleParts = testInfo.titlePath
-    .map(getSnapshotTitlePart)
-    .filter(Boolean);
-  const filteredTitleParts = titleParts
-    .filter((part) => !part.endsWith(".ts"))
-    .filter((part) => part !== "visual")
-    .slice(-2);
-  const idParts = id
-    ? id
-        .split("/")
-        .filter(Boolean)
-        .filter((part) => part !== "previews")
-    : [];
-  const parts =
-    idParts.length > 0 &&
-    filteredTitleParts.length === 1 &&
-    filteredTitleParts[0] === "previews"
-      ? [...idParts, ...variants]
-      : [...filteredTitleParts, ...idParts, ...variants];
-  const baseName = slugify(parts.join("-"));
-  const count = getSnapshotCount(testInfo, baseName);
-  const countSuffix = count > 0 ? `-${count}` : "";
-  return `${baseName}${countSuffix}-${testInfo.project.name}.webp`;
-}
-
-function touchScreenshot(testInfo: TestInfo, fileName: string) {
-  const testDir =
-    testInfo.project.testDir || path.join(testInfo.config.rootDir, "src");
-  const screenshotPath = path.join(
-    testDir,
-    getTestFileDir(testInfo),
-    "__screenshots__",
-    fileName,
-  );
-  try {
-    const now = new Date();
-    utimesSync(screenshotPath, now, now);
-  } catch (error) {
-    if (error && typeof error === "object" && "code" in error) {
-      // File may not exist yet on the first run.
-      if (error.code === "ENOENT") return;
-    }
-    throw error;
-  }
-}
 
 function getCombinedClip(a: Rect, b: Rect) {
   const x = Math.min(a.x, b.x);
@@ -393,7 +319,7 @@ export async function waitForFonts(page: Page) {
 
 export async function visual(
   page: Page,
-  options: ScreenshotOptions = {},
+  options: ScreenshotOptions,
   testInfo = test.info(),
 ) {
   expect(
@@ -408,7 +334,8 @@ export async function visual(
   await page.emulateMedia({ reducedMotion: "reduce" });
 
   const {
-    id,
+    item,
+    framework: selectedFramework,
     viewports = { default: page.viewportSize()! },
     styles = defaultStyles,
     style: defaultStyle = {},
@@ -429,12 +356,6 @@ export async function visual(
     await withViewport(page, viewport, async () => {
       for (const [styleName, style] of stylesEntries) {
         await withStyles(page, { ...style, ...defaultStyle }, async () => {
-          const variants = [viewportName, styleName];
-          const fileSnapshotName = getFileSnapshotName({
-            id,
-            testInfo,
-            variants,
-          });
           await page.waitForLoadState("domcontentloaded");
           await waitForFonts(page);
           if (fullPage && element) {
@@ -453,16 +374,60 @@ export async function visual(
             clipMargin,
             fullPage,
           });
-          await expect(page).toHaveScreenshot(fileSnapshotName, {
-            ...screenshotOptions,
-            // A page-sized pixel allowance can hide changes to small controls.
-            ...(fullPage && { maxDiffPixelRatio: 0 }),
+          invariant(
+            testInfo.project.metadata.visonaut?.profile,
+            "The visual job must measure its Visonaut profile",
+          );
+          const browser = page.context().browser();
+          invariant(browser, "Visonaut requires a connected browser");
+          const browserName = browser.browserType().name();
+          if (
+            browserName !== "chromium" &&
+            browserName !== "firefox" &&
+            browserName !== "webkit"
+          ) {
+            throw new Error(`Unsupported browser: ${browserName}`);
+          }
+          const framework =
+            selectedFramework ??
+            testInfo.tags.map((tag) => tag.slice(1)).find(isFramework);
+          const media = await page.evaluate(() => ({
+            colorScheme: matchMedia("(prefers-color-scheme: dark)").matches
+              ? ("dark" as const)
+              : ("light" as const),
+            contrast: matchMedia("(prefers-contrast: more)").matches
+              ? ("more" as const)
+              : ("no-preference" as const),
+            forcedColors: matchMedia("(forced-colors: active)").matches
+              ? ("active" as const)
+              : ("none" as const),
+          }));
+          await captureVisual(page, {
+            item,
+            variant: {
+              key: [
+                framework,
+                testInfo.project.name,
+                viewportName,
+                styleName,
+                media.colorScheme,
+                media.contrast,
+                media.forcedColors,
+              ]
+                .filter(Boolean)
+                .join("-"),
+              browser: browserName,
+              ...(framework && { framework }),
+              ...media,
+              dimensions: {
+                project: testInfo.project.name,
+                viewport: viewportName,
+                style: styleName,
+              },
+            },
+            screenshot: screenshotOptions,
             timeout,
           });
-          // Touch the screenshot file so the CI stale-detection step (which
-          // deletes files older than a pre-run marker) knows this screenshot is
-          // still expected by a test.
-          touchScreenshot(testInfo, fileSnapshotName);
         });
       }
     });

@@ -21,15 +21,14 @@ export type ColorScheme = (typeof colorSchemes)[number];
 // Safari on the macOS runners can take several seconds for one capture of a
 // tall sandbox, and a new baseline needs two identical captures in a row, which
 // the default five seconds do not cover.
-const SCREENSHOT_TIMEOUT = 30_000;
+const CAPTURE_TIMEOUT = 30_000;
 
 // Keep compact grids in one image and split taller grids at row boundaries.
 const SINGLE_CAPTURE_HEIGHT = 1280;
 const ROWS_PER_CAPTURE = 3;
 
-// WebP stores each side in 14 bits and every engine fails to encode a taller
-// capture. toHaveScreenshot captures at CSS scale, so the unit is CSS pixels.
-const MAX_SCREENSHOT_HEIGHT = 16_383;
+// Keep the existing capture-height bound at CSS scale.
+const MAX_CAPTURE_HEIGHT = 16_383;
 
 /**
  * Room around an overlay that renders in a portal, so its capture takes in the
@@ -81,13 +80,13 @@ export async function forEachColorScheme(
 export function getCapture(
   element: Locator,
   colorScheme: ColorScheme,
-  options: ScreenshotOptions = {},
+  options: ScreenshotOptions,
 ) {
   return {
     element,
     viewports: { desktop: viewports.desktop },
     styles: { [colorScheme]: {} },
-    timeout: SCREENSHOT_TIMEOUT,
+    timeout: CAPTURE_TIMEOUT,
     ...options,
   } satisfies ScreenshotOptions;
 }
@@ -97,16 +96,31 @@ export function getCapture(
  * covers the whole page. The root element spans the whole document, and a
  * capture that is not full-page trims its clip to the viewport.
  */
-export function getViewportCapture(page: Page, colorScheme: ColorScheme) {
-  return getCapture(page.locator("html"), colorScheme, { clipMargin: 0 });
+export function getViewportCapture(
+  page: Page,
+  colorScheme: ColorScheme,
+  item: string,
+) {
+  return getCapture(page.locator("html"), colorScheme, {
+    item,
+    clipMargin: 0,
+  });
+}
+
+interface CapturePageParams {
+  page: Page;
+  visual: Visual;
+  colorScheme: ColorScheme;
+  item: string;
 }
 
 /** Captures a compact grid whole, or a tall grid in groups of three rows. */
-export async function capturePage(
-  page: Page,
-  visual: Visual,
-  colorScheme: ColorScheme,
-) {
+export async function capturePage({
+  page,
+  visual,
+  colorScheme,
+  item,
+}: CapturePageParams) {
   const main = query(page).main();
   await waitForFonts(page);
   const { height } = await main.evaluate((node) =>
@@ -115,7 +129,7 @@ export async function capturePage(
   if (height <= SINGLE_CAPTURE_HEIGHT) {
     // The grid pads itself, so a margin would only add canvas.
     await visual(
-      getCapture(main, colorScheme, { fullPage: true, clipMargin: 0 }),
+      getCapture(main, colorScheme, { item, fullPage: true, clipMargin: 0 }),
     );
     return;
   }
@@ -135,9 +149,9 @@ export async function capturePage(
     return rows;
   });
   expect(rows.length).toBeGreaterThan(0);
-  // Each extra image needs its own screenshot assertion budget in this scheme.
+  // Each extra image needs its own capture budget.
   const extraCaptures = Math.ceil(rows.length / ROWS_PER_CAPTURE) - 1;
-  test.setTimeout(test.info().timeout + extraCaptures * SCREENSHOT_TIMEOUT);
+  test.setTimeout(test.info().timeout + extraCaptures * CAPTURE_TIMEOUT);
   for (let index = 0; index < rows.length; index += ROWS_PER_CAPTURE) {
     const group = rows.slice(index, index + ROWS_PER_CAPTURE).flat();
     const sections = main.locator(
@@ -152,10 +166,10 @@ export async function capturePage(
     });
     // Half the 16px grid gap keeps adjacent rows outside the capture.
     const clipMargin = 8;
-    expect(bounds + clipMargin * 2).toBeLessThanOrEqual(MAX_SCREENSHOT_HEIGHT);
+    expect(bounds + clipMargin * 2).toBeLessThanOrEqual(MAX_CAPTURE_HEIGHT);
     await visual(
       getCapture(sections, colorScheme, {
-        id: `rows-${index + 1}-${Math.min(index + ROWS_PER_CAPTURE, rows.length)}`,
+        item: `${item}/rows-${index + 1}-${Math.min(index + ROWS_PER_CAPTURE, rows.length)}`,
         fullPage: true,
         clipMargin,
       }),
@@ -169,12 +183,18 @@ export async function capturePage(
  * element it reaches. Not for a hover state: the scroll would move the box away
  * from the pointer.
  */
-export async function captureInView(
-  visual: Visual,
-  box: Locator,
-  colorScheme: ColorScheme,
-  options?: ScreenshotOptions,
-) {
+interface CaptureInViewParams extends ScreenshotOptions {
+  visual: Visual;
+  box: Locator;
+  colorScheme: ColorScheme;
+}
+
+export async function captureInView({
+  visual,
+  box,
+  colorScheme,
+  ...options
+}: CaptureInViewParams) {
   await box.evaluate((node) => {
     node.scrollIntoView({ block: "center" });
   });
