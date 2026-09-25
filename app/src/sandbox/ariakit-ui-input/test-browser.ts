@@ -105,7 +105,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
 
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({ page, visual, colorScheme, item: "ariakit-ui-input/page" }),
     );
   });
 
@@ -120,18 +120,33 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const box = q.article("Field with leading reset button");
       await tabInto(page, box);
       await expectFocusVisible(q.button("Clear"));
-      await captureInView(visual, box, colorScheme, { id: "action" });
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-input/grouped-focus/action",
+      });
       await page.keyboard.press("Tab");
       await expectFocusVisible(q.textbox("Draft message"));
-      await captureInView(visual, box, colorScheme, { id: "field" });
-      for (const field of [
-        q.textbox("Delivery notes"),
-        q.combobox("Delivery speed"),
-        q.textbox("Handle"),
-      ]) {
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-input/grouped-focus/field",
+      });
+      for (const [fieldName, field] of [
+        ["delivery-notes", q.textbox("Delivery notes")],
+        ["delivery-speed", q.combobox("Delivery speed")],
+        ["handle", q.textbox("Handle")],
+      ] as const) {
         await tabTo(page, field);
         await expectFocusVisible(field);
-        await captureInView(visual, field.locator(".."), colorScheme);
+        await captureInView({
+          visual,
+          box: field.locator(".."),
+          colorScheme,
+          item: `ariakit-ui-input/grouped-focus/${fieldName}`,
+        });
       }
     });
   });
@@ -146,7 +161,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const input = query(box).textbox("Filter components");
       await input.click();
       await test.expect(input).toBeFocused();
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-input/wrapper-focus",
+      });
     });
   });
 
@@ -164,7 +184,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await setDisabled(input);
       await test.expect(input).toBeDisabled();
       await hoverOver(input.locator("xpath=.."), { x: 4, y: 4 });
-      await visual(getCapture(box, colorScheme));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-input/disabled-input-hover",
+        }),
+      );
     });
   });
 
@@ -181,7 +205,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await setDisabled(input, "aria-disabled");
       await test.expect(input).toHaveAttribute("aria-disabled", "true");
       await hoverOver(input.locator("xpath=.."), { x: 4, y: 4 });
-      await visual(getCapture(box, colorScheme));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-input/aria-disabled-input-hover",
+        }),
+      );
     });
   });
 
@@ -198,7 +226,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await setDisabled(button);
       await test.expect(button).toBeDisabled();
       await hoverOver(query(box).text("https://"));
-      await visual(getCapture(box, colorScheme));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-input/disabled-button-hover",
+        }),
+      );
     });
   });
 
@@ -222,7 +254,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         });
       await test.expect(query(box).button("Send")).toBeDisabled();
       await hoverOver(query(box).text("https://"));
-      await visual(getCapture(box, colorScheme));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-input/disabled-submit-hover",
+        }),
+      );
     });
   });
 
@@ -246,7 +282,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         });
       await test.expect(query(box).combobox("Expiry")).toBeDisabled();
       await hoverOver(query(box).text("https://"));
-      await visual(getCapture(box, colorScheme));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-input/disabled-select-hover",
+        }),
+      );
     });
   });
 });

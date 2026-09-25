@@ -9,7 +9,12 @@ import {
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({
+        page,
+        visual,
+        colorScheme,
+        item: "ariakit-ui-disclosure/page",
+      }),
     );
   });
 
@@ -25,7 +30,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       // https://github.com/ariakit/ariakit/pull/7494#discussion_r3995263559
       await box.evaluate((node) => node.scrollIntoView({ block: "center" }));
       await hoverOver(button);
-      await visual(getCapture(box, colorScheme));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-disclosure/default-hover",
+        }),
+      );
       await test.expect
         .poll(() => button.evaluate((node) => node.matches(":hover")))
         .toBe(true);

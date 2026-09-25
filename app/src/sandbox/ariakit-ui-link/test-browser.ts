@@ -10,7 +10,7 @@ import {
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({ page, visual, colorScheme, item: "ariakit-ui-link/page" }),
     );
   });
 
@@ -25,7 +25,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const link = query(box).link("styling guide");
       await tabTo(page, link);
       await expectFocusVisible(link);
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-link/inline-link-focus",
+      });
     });
   });
 
@@ -39,7 +44,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const link = query(box).link("View all");
       await tabTo(page, link);
       await expectFocusVisible(link);
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-link/standalone-link-focus",
+      });
     });
   });
 });

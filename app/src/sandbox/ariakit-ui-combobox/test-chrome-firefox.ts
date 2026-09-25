@@ -57,7 +57,12 @@ withCaptures(import.meta.dirname, async ({ test }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Empty state");
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-combobox/forced-colors/empty-message",
+      });
     });
   });
 });

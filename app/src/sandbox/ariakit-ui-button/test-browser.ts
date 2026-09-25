@@ -99,7 +99,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/issues/7466
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({
+        page,
+        visual,
+        colorScheme,
+        item: "ariakit-ui-button/page",
+      }),
     );
   });
 
@@ -113,7 +118,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const button = query(box).button("Move");
       await tabTo(page, button);
       await expectFocusVisible(button);
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-button/thick-focus-ring",
+      });
     });
   });
 
@@ -127,7 +137,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const grid = query(query(box).radiogroup("View")).radio("Grid");
       await grid.click();
       await test.expect(grid).toBeChecked();
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-button/segmented-control-click",
+      });
     });
   });
 
@@ -145,7 +160,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await activity.scrollIntoViewIfNeeded();
       await query(box).link("Settings").hover();
       await hoverOver(activity);
-      await visual(getCapture(box, colorScheme));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-button/current-link-hover",
+        }),
+      );
     });
   });
 
@@ -201,7 +220,10 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // A hovered control owns both of its shared edges, so each one takes the
   // hovered surface instead of darkening where two borders overlap.
   // https://github.com/ariakit/ariakit/issues/7466
-  for (const title of ["Horizontal", "Joined vertical"]) {
+  for (const [key, title] of [
+    ["horizontal", "Horizontal"],
+    ["joined-vertical", "Joined vertical"],
+  ] as const) {
     test(`tints both shared edges of the hovered middle control in ${title} @visual`, async ({
       page,
       q,
@@ -210,7 +232,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await forEachColorScheme(page, async (colorScheme) => {
         const group = q.group(title);
         await hoverOver(query(group).button("Week"));
-        await visual(getCapture(group, colorScheme));
+        await visual(
+          getCapture(group, colorScheme, {
+            item: `ariakit-ui-button/shared-edge-hover/${key}`,
+          }),
+        );
       });
     });
   }

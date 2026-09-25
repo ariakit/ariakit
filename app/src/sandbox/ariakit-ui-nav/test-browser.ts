@@ -15,7 +15,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972223730
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({ page, visual, colorScheme, item: "ariakit-ui-nav/page" }),
     );
   });
 
@@ -29,7 +29,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await forEachColorScheme(page, async (colorScheme) => {
       const box = q.article("Nested disclosures");
       await hoverOver(query(box).link("Radio"));
-      await visual(getCapture(box, colorScheme));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-nav/nested-section-hover",
+        }),
+      );
     });
   });
 
@@ -46,7 +50,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const introduction = query(box).link("Introduction").nth(1);
       await tabTo(page, introduction);
       await expectFocusVisible(introduction);
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-nav/sidebar-current-focus",
+      });
     });
   });
 });

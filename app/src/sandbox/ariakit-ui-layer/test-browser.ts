@@ -12,7 +12,7 @@ withCaptures(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974545415
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({ page, visual, colorScheme, item: "ariakit-ui-layer/page" }),
     );
   });
 });

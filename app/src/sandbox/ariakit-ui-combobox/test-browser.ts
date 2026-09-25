@@ -22,7 +22,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550839
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({
+        page,
+        visual,
+        colorScheme,
+        item: "ariakit-ui-combobox/page",
+      }),
     );
   });
 
@@ -35,13 +40,16 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     const viewport = { width: 400, height: 800 };
     await page.setViewportSize(viewport);
     await forEachColorScheme(page, async (colorScheme) => {
-      for (const name of ["Long suggestion", "Long selection"]) {
+      for (const [key, name] of [
+        ["suggestion", "Long suggestion"],
+        ["selection", "Long selection"],
+      ] as const) {
         await q.combobox(name).click();
         const list = q.listbox(name);
         await test.expect(list).toBeVisible();
         await visual(
           getCapture(list, colorScheme, {
-            id: name,
+            item: `ariakit-ui-combobox/narrow-list/${key}`,
             viewports: { mobile: viewport },
           }),
         );
@@ -71,7 +79,10 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
           .toHaveAttribute("aria-hidden", "true");
       }
       await visual(
-        getCapture(list, colorScheme, { clipMargin: OVERLAY_CLIP_MARGIN }),
+        getCapture(list, colorScheme, {
+          item: "ariakit-ui-combobox/custom-icons/initial",
+          clipMargin: OVERLAY_CLIP_MARGIN,
+        }),
       );
       await sms.click();
       await test.expect(sms).toHaveAttribute("aria-selected", "true");
@@ -79,7 +90,10 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await test.expect(email).toHaveAttribute("aria-selected", "false");
       await test.expect(select).toHaveText("SMS");
       await visual(
-        getCapture(list, colorScheme, { clipMargin: OVERLAY_CLIP_MARGIN }),
+        getCapture(list, colorScheme, {
+          item: "ariakit-ui-combobox/custom-icons/selected",
+          clipMargin: OVERLAY_CLIP_MARGIN,
+        }),
       );
     });
   });
@@ -95,7 +109,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await q.option("Published").click();
       await test.expect(select).toHaveText("Published");
       await test.expect(q.listbox("Review status")).toBeHidden();
-      await captureInView(visual, q.article("Status select"), colorScheme);
+      await captureInView({
+        visual,
+        box: q.article("Status select"),
+        colorScheme,
+        item: "ariakit-ui-combobox/status-select",
+      });
     });
   });
 
@@ -135,7 +154,10 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const list = q.listbox("Assignee");
       await test.expect(list).toBeVisible();
       await visual(
-        getCapture(list, colorScheme, { clipMargin: OVERLAY_CLIP_MARGIN }),
+        getCapture(list, colorScheme, {
+          item: "ariakit-ui-combobox/combobox-list-spacing",
+          clipMargin: OVERLAY_CLIP_MARGIN,
+        }),
       );
     });
   });
@@ -152,7 +174,10 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const list = q.listbox("Status");
       await test.expect(list).toBeVisible();
       await visual(
-        getCapture(list, colorScheme, { clipMargin: OVERLAY_CLIP_MARGIN }),
+        getCapture(list, colorScheme, {
+          item: "ariakit-ui-combobox/select-list-spacing",
+          clipMargin: OVERLAY_CLIP_MARGIN,
+        }),
       );
     });
   });

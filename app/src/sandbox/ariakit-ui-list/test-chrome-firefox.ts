@@ -14,7 +14,12 @@ withCaptures(import.meta.dirname, async ({ test }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       await expectMedia(page, "(forced-colors: active)");
-      await capturePage(page, visual, colorScheme);
+      await capturePage({
+        page,
+        visual,
+        colorScheme,
+        item: "ariakit-ui-list/forced-colors/page",
+      });
     });
   });
 });
