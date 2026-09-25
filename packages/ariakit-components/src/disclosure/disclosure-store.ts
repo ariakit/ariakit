@@ -98,13 +98,24 @@ export function createDisclosureStore(
   // any of them, such as a combobox item hiding the combobox store, reaches the
   // handler of a Dialog that extends another one.
   const parentHideRequest = getParentHideRequest(props.store);
-  const hideHandlers = new Set<HideHandler>();
+  // Counts the registrations of each handler, so a handler that two links
+  // register runs once and stays until both unregister it.
+  const hideHandlers = new Map<HideHandler, number>();
 
   const onHideRequest: OnHideRequest =
     parentHideRequest?.onHideRequest ??
     ((handler) => {
-      hideHandlers.add(handler);
+      // A link to a store that already shares these handlers would register
+      // this request on itself and run it forever.
+      if (handler === requestHide) return () => {};
+      hideHandlers.set(handler, (hideHandlers.get(handler) ?? 0) + 1);
       return () => {
+        const count = hideHandlers.get(handler);
+        if (count == null) return;
+        if (count > 1) {
+          hideHandlers.set(handler, count - 1);
+          return;
+        }
         hideHandlers.delete(handler);
       };
     });
@@ -115,7 +126,7 @@ export function createDisclosureStore(
       // Each handler receives a function that runs the next handler, and the
       // last one hides. A handler that doesn't call it keeps the content open,
       // so the open state doesn't change at all.
-      const handlers = [...hideHandlers];
+      const handlers = [...hideHandlers.keys()];
       const runHandler = (index: number) => {
         const handler = handlers[index];
         if (!handler) {
@@ -126,6 +137,17 @@ export function createDisclosureStore(
       };
       runHandler(0);
     });
+
+  // A store linked through the disclosure option shares the open state too, so
+  // its hide requests also run the handlers of the disclosure store, such as
+  // those of a Dialog that renders it. Registering the request function itself
+  // keeps a single handler when stores that share hide handlers link the same
+  // disclosure store.
+  // https://github.com/ariakit/ariakit/issues/7621
+  setup(disclosure, () => {
+    if (!props.disclosure) return;
+    return onHideRequest(props.disclosure.unstable_requestHide);
+  });
 
   const setOpen: DisclosureStoreFunctions["setOpen"] = (value) => {
     const { open } = disclosure.getState();
@@ -274,10 +296,12 @@ export interface DisclosureStoreFunctions extends Pick<
   /**
    * Registers a handler that runs when `hide`, `toggle`, or `setOpen` would set
    * the `open` state to `false` on this store or on any store connected to it
-   * through the `store` option. The handler receives a `hide` function. Calling
-   * it synchronously, at most once, lets the request continue, and returning
-   * without calling it keeps the content open. Returns a function that
-   * unregisters the handler.
+   * through the `store` option. It also runs for a request on a linked store:
+   * one that receives this store through the `disclosure` option, or one that
+   * this store receives through the `popover` or `combobox` options. The
+   * handler receives a `hide` function. Calling it synchronously, at most once,
+   * lets the request continue, and returning without calling it keeps the
+   * content open. Returns a function that unregisters the handler.
    * @deprecated
    * @private
    */
