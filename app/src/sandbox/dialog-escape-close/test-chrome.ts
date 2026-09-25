@@ -104,4 +104,68 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // A menu with a combobox has the dialog role.
     await test.expect(q.dialog("Add block")).toBeVisible();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7632
+  test("Escape closes only the Combobox popover in a Dialog", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open order").click();
+    await test.expect(q.dialog("Order")).toBeVisible();
+    await q.combobox("Topping").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Topping")).toBeVisible();
+    await test
+      .expect(q.option("Apple"))
+      .not.toHaveAttribute("data-active-item");
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Topping")).toBeHidden();
+    await test.expect(q.dialog("Order")).toBeVisible();
+    await test.expect(q.combobox("Topping")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Order")).toBeHidden();
+    await test.expect(q.button("Open order")).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7632
+  test("Escape closes only the Combobox popover with an active item in a Dialog", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open order").click();
+    await test.expect(q.dialog("Order")).toBeVisible();
+    await q.combobox("Topping").focus();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Topping")).toBeHidden();
+    await test.expect(q.dialog("Order")).toBeVisible();
+    await test.expect(q.combobox("Topping")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Order")).toBeHidden();
+    await test.expect(q.button("Open order")).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7632
+  test("Escape closes only the ComboboxSelect popover in a Dialog", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open order").click();
+    await test.expect(q.dialog("Order")).toBeVisible();
+    await q.combobox("Side").click();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.option("Banana")).toHaveAttribute("data-active-item");
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Side")).toBeHidden();
+    await test.expect(q.dialog("Order")).toBeVisible();
+    await test.expect(q.combobox("Side")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Order")).toBeHidden();
+    await test.expect(q.button("Open order")).toBeFocused();
+  });
 });

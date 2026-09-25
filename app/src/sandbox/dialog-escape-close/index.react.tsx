@@ -10,8 +10,16 @@ const popupStyle = {
   padding: 8,
 };
 
-// Every popup here keeps itself open and counts the close requests it gets,
-// like a popup that asks the user to confirm before it closes.
+const dialogStyle = {
+  ...popupStyle,
+  position: "fixed",
+  top: 24,
+  left: 24,
+} as const;
+
+// The popups outside OrderDialog keep themselves open and count the close
+// requests they get, like a popup that asks the user to confirm before it
+// closes.
 function useCloseRequests() {
   const [count, setCount] = useState(0);
   const onClose = (event: Event) => {
@@ -183,6 +191,37 @@ function BlockMenuCombobox() {
   );
 }
 
+// The popovers here close normally, so one Escape must close only the topmost
+// popover and keep the dialog open.
+function OrderDialog() {
+  return (
+    <Ariakit.DialogProvider>
+      <Ariakit.DialogDisclosure>Open order</Ariakit.DialogDisclosure>
+      <Ariakit.Dialog style={dialogStyle}>
+        <Ariakit.DialogHeading>Order</Ariakit.DialogHeading>
+        <Ariakit.ComboboxProvider>
+          <Ariakit.ComboboxLabel>Topping</Ariakit.ComboboxLabel>
+          <Ariakit.Combobox />
+          <Ariakit.ComboboxPopover style={popupStyle}>
+            {fruits.map((value) => (
+              <Ariakit.ComboboxItem key={value} value={value} />
+            ))}
+          </Ariakit.ComboboxPopover>
+        </Ariakit.ComboboxProvider>
+        <Ariakit.ComboboxProvider defaultSelectedValue="Apple">
+          <Ariakit.ComboboxSelectLabel>Side</Ariakit.ComboboxSelectLabel>
+          <Ariakit.ComboboxSelect />
+          <Ariakit.ComboboxPopover style={popupStyle}>
+            {fruits.map((value) => (
+              <Ariakit.ComboboxItem key={value} value={value} />
+            ))}
+          </Ariakit.ComboboxPopover>
+        </Ariakit.ComboboxProvider>
+      </Ariakit.Dialog>
+    </Ariakit.DialogProvider>
+  );
+}
+
 export default function Example() {
   return (
     <div style={{ display: "grid", gap: 24, justifyItems: "start" }}>
@@ -194,6 +233,7 @@ export default function Example() {
       <FruitCombobox />
       <SearchableFruitComboboxSelect />
       <BlockMenuCombobox />
+      <OrderDialog />
     </div>
   );
 }
