@@ -6,10 +6,6 @@ on:
 permissions:
   contents: read
 
-env:
-  PERF_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
-  PERF_BASE_REF: ${{ github.event.pull_request.base.ref || 'main' }}
-
 concurrency:
   group: perf-${{ github.ref }}
   cancel-in-progress: true
@@ -80,7 +76,7 @@ jobs:
       - name: Checkout baseline repository
         uses: actions/checkout@v7
         with:
-          ref: ${{ env.PERF_BASE_SHA }}
+          ref: ${{ github.event.pull_request.base.sha }}
           persist-credentials: false
 
       # Keep the current setup action in a separate checkout while the
@@ -97,10 +93,10 @@ jobs:
         continue-on-error: true
         uses: actions/github-script@v9
         env:
-          BRANCH_REF: ${{ env.PERF_BASE_REF }}
+          BRANCH_REF: ${{ github.event.pull_request.base.ref }}
         with:
           script: |
-            const baseSha = process.env.PERF_BASE_SHA;
+            const baseSha = '${{ github.event.pull_request.base.sha }}';
             const branchRef = process.env.BRANCH_REF;
             const runs = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
@@ -250,7 +246,8 @@ jobs:
         run: |
           BASELINE_DIR="$RUNNER_TEMP/perf-node-baseline"
           echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"
-          git worktree add --detach "$BASELINE_DIR" "$PERF_BASE_SHA"
+          git worktree add --detach "$BASELINE_DIR" \
+            ${{ github.event.pull_request.base.sha }}
 
       - name: Copy benchmark files to baseline
         run: |
@@ -384,7 +381,7 @@ jobs:
       # enough signal for noisy results.
       PERF_ITERATIONS: 5
       PERF_WARMUP: 1
-      PERF_SOURCE_BASE_URL: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
+      PERF_SOURCE_BASE_URL: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha }}
       # Each matrix job benchmarks one perf test file and runs its own
       # interleaved baseline-vs-current rounds on this one runner, so the paired
       # same-runner comparison is preserved. The post job runs perf-compare once
@@ -411,8 +408,8 @@ jobs:
 
       - name: Set up baseline worktree
         env:
-          BASE_SHA: ${{ env.PERF_BASE_SHA }}
-          BASE_REF: ${{ env.PERF_BASE_REF }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           BASELINE_DIR="$RUNNER_TEMP/perf-baseline"
           echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"
@@ -713,8 +710,8 @@ jobs:
 
       - name: Set up baseline worktree
         env:
-          BASE_SHA: ${{ env.PERF_BASE_SHA }}
-          BASE_REF: ${{ env.PERF_BASE_REF }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           BASELINE_DIR="$RUNNER_TEMP/perf-node-baseline"
           echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"

@@ -15,7 +15,6 @@ function runCICommand(command: string | undefined) {
       head: getEnvironmentVariable("HEAD_SHA"),
       baseRef: getEnvironmentVariable("BASE_REF"),
       output: getEnvironmentVariable("GITHUB_OUTPUT"),
-      mergeGroup: process.env.GITHUB_EVENT_NAME === "merge_group",
     });
     return;
   }

@@ -5,8 +5,6 @@ on:
     branches: [main]
   pull_request:
     types: [opened, synchronize, reopened]
-  merge_group:
-    types: [checks_requested]
 
 permissions:
   contents: read
@@ -44,9 +42,9 @@ jobs:
       - name: Plan CI
         id: plan
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
-          BASE_REF: ${{ github.event.pull_request.base.ref || 'main' }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: node packages/ariakit-scripts/src/ci-run.ts plan
 
   main:
@@ -130,7 +128,10 @@ jobs:
       - docs
       - og_images
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
+      actions: read
+      checks: read
       contents: read
     steps:
       - name: Checkout repository
@@ -148,3 +149,50 @@ jobs:
           CI_PLAN: ${{ needs.plan.outputs.plan }}
           CI_RESULTS: ${{ toJSON(needs) }}
         run: node packages/ariakit-scripts/src/ci-run.ts gate
+
+      - name: Verify Visonaut review
+        if: needs.app.result == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          jobs="$(gh api --method GET -f filter=latest -f per_page=100 \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs")"
+          submit_attempt="$(jq -r --argjson run "$GITHUB_RUN_ID" '
+            if .total_count > 100 then error("CI job list exceeds one page") else
+              [.jobs[] | select(.name == "App / submit" and .run_id == $run and
+                .status == "completed" and .conclusion == "success")]
+              | if length == 1 then .[0].run_attempt else error("Successful submit job is unavailable") end
+            end
+          ' <<< "$jobs")"
+          attempt_start="$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$submit_attempt" \
+            --jq '.created_at')"
+          test "$attempt_start" != "null"
+
+          for ((poll = 0; poll < 40; poll += 1)); do
+            checks="$(gh api --method GET -f check_name=Visonaut -f app_id=5028451 \
+              -f per_page=100 "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs")"
+            result="$(jq -r --arg sha "$GITHUB_SHA" --arg started "$attempt_start" '
+              if .total_count > 100 then error("Visonaut check list exceeds one page") else
+                [.check_runs[] | select(.name == "Visonaut" and .app.id == 5028451 and
+                  .head_sha == $sha and
+                  ((.external_id // "") | . == "visonaut:pre:" + $sha or
+                    startswith("visonaut:pre:" + $sha + ":")) and
+                  ((.started_at // "") >= $started))]
+                | (max_by(.id) // {})
+                | if .status != "completed" then "pending"
+                  elif .conclusion == "success" then "success"
+                  else "failure" end
+              end
+            ' <<< "$checks")"
+            case "$result" in
+              success) echo "Visonaut review passed for this capture attempt."; exit 0 ;;
+              failure) echo "Visonaut review failed for this capture attempt."; exit 1 ;;
+            esac
+            sleep 12
+          done
+
+          echo "Visonaut review is still pending. Review it, then rerun Gate."
+          exit 1

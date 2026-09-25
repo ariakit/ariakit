@@ -57,16 +57,6 @@ test("keeps core checks on every pull request", () => {
   });
 });
 
-test("requires App on merge groups even when only docs change", () => {
-  const plan = createCIPlan(["readme.md"], {
-    baseRef: "main",
-    mergeGroup: true,
-  });
-
-  expectSelectedWorkflows(plan, ["main", "app"]);
-  expect(() => assertCIGate(plan, getResults(plan))).not.toThrow();
-});
-
 test("fails closed without dependency details and for CI infrastructure", () => {
   for (const file of [
     "pnpm-lock.yaml",
@@ -548,12 +538,6 @@ test("runs release previews for changesets only on main pull requests", () => {
     createCIPlan([".changeset/example.md"], { baseRef: "next" }).workflows
       .release_preview,
   ).toBe(false);
-  const mergeGroup = createCIPlan([".changeset/example.md"], {
-    baseRef: "main",
-    mergeGroup: true,
-  });
-  expectSelectedWorkflows(mergeGroup, ["main", "app"]);
-  expect(() => assertCIGate(mergeGroup, getResults(mergeGroup))).not.toThrow();
 });
 
 test("keeps labels out of CI plans", () => {
