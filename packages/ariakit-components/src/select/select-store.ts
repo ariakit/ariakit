@@ -127,6 +127,14 @@ export function createSelectStore({
 
   const select = createStore(initialState, composite, popover, store);
 
+  // The select shares the open state with the combobox, so a hide request on
+  // the combobox, like a combobox item hiding it, also runs the handlers of the
+  // select, such as those of the Dialog that renders its popover.
+  // https://github.com/ariakit/ariakit/issues/7621
+  setup(select, () =>
+    combobox?.unstable_onHideRequest(popover.unstable_requestHide),
+  );
+
   // Initialize an unset value from the first enabled item.
   setup(select, () =>
     sync(select, ["value", "items"], (state) => {
