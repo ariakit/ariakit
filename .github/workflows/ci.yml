@@ -159,17 +159,30 @@ jobs:
           set -euo pipefail
           jobs="$(gh api --method GET -f filter=latest -f per_page=100 \
             "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs")"
-          submit_attempt="$(jq -r --argjson run "$GITHUB_RUN_ID" '
+          submit_job="$(jq -c --argjson run "$GITHUB_RUN_ID" '
             if .total_count > 100 then error("CI job list exceeds one page") else
               [.jobs[] | select(.name == "App / submit" and .run_id == $run and
                 .status == "completed" and .conclusion == "success")]
-              | if length == 1 then .[0].run_attempt else error("Successful submit job is unavailable") end
+              | if length == 1 then .[0] else error("Successful submit job is unavailable") end
             end
           ' <<< "$jobs")"
+          submit_attempt="$(jq -r '.run_attempt' <<< "$submit_job")"
+          submit_started="$(jq -r '.started_at' <<< "$submit_job")"
+          test "$submit_started" != "null"
           attempt_start="$(gh api \
             "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$submit_attempt" \
             --jq '.created_at')"
           test "$attempt_start" != "null"
+          # A Gate-only rerun gives reused jobs a new run_attempt but retains
+          # their original started_at. Use the attempt that actually ran submit.
+          while [[ "$submit_started" < "$attempt_start" ]]; do
+            (( submit_attempt > 1 )) || exit 1
+            submit_attempt=$((submit_attempt - 1))
+            attempt_start="$(gh api \
+              "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$submit_attempt" \
+              --jq '.created_at')"
+            test "$attempt_start" != "null"
+          done
 
           for ((poll = 0; poll < 40; poll += 1)); do
             checks="$(gh api --method GET -f check_name=Visonaut -f app_id=5028451 \
