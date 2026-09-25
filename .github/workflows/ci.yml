@@ -161,7 +161,7 @@ jobs:
             "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs")"
           submit_job="$(jq -c --argjson run "$GITHUB_RUN_ID" '
             if .total_count > 100 then error("CI job list exceeds one page") else
-              [.jobs[] | select(.name == "App / Submit" and .run_id == $run and
+              [.jobs[] | select(.name == "App / Submit / combined" and .run_id == $run and
                 .status == "completed" and .conclusion == "success")]
               | if length == 1 then .[0] else error("Successful submit job is unavailable") end
             end

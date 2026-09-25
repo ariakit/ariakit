@@ -8,7 +8,6 @@ permissions:
 
 env:
   VISONAUT_SERVER: https://visonaut.com
-  # Capture and signed upload must measure the same approved comparison policy.
   VISONAUT_COMPARISON_POLICY_DIGEST: 395f2b596a2e9cf4f8ce86b8643c48856f326773becf337cee6e66faba289249
   VISONAUT_PACKAGE_SHA256: bab64dabc7998022d860e778a85dccba67d2fb30ad6f5496209ce8ec4f734984
 
@@ -184,16 +183,17 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
-          filters: app...
-      - name: Use app binaries
-        run: echo "$GITHUB_WORKSPACE/app/node_modules/.bin" >> "$GITHUB_PATH"
+          filters: |
+            app...
+            root
+      - name: Use root binaries
+        run: echo "$GITHUB_WORKSPACE/node_modules/.bin" >> "$GITHUB_PATH"
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
         with:
           engines: ${{ matrix.engines }}
           workspace: app
-      # The browser cache excludes system fonts. Match the signed upload job
-      # even when the Playwright install action hits its browser cache.
+      # The browser cache excludes system fonts; install these on cache hits too.
       - name: Install visual fonts
         if: matrix.shard == 'linux'
         run: pnpm -F app exec playwright install-deps chromium
@@ -227,44 +227,29 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-  upload:
-    name: Upload / ${{ matrix.name }}
+  submit:
+    name: Submit / combined
     needs: visual
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       actions: read
       id-token: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            name: Linux
-            shard: linux
-            browser: chromium
-          - os: macos-latest
-            name: Safari
-            shard: safari
-            browser: webkit
     env:
       VISONAUT_WORKFLOW_SOURCE_SHA: ${{ vars.VISONAUT_WORKFLOW_SOURCE_SHA }}
-      VISONAUT_SHARD: ${{ matrix.shard }}
-      VISONAUT_CLI_SHA256: 18cc35a0f1198b1e77ed18d844941cdf0e9acc12f20b0d98b54e406a0f11105b
-      VISONAUT_FONT_PACKAGE: "@fontsource-variable/inter"
+      VISONAUT_CLI_SHA256: 97c38007b972673617e68ee9b32387174deeb5ab08ef74e01eab10dd28c415d3
     steps:
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
           node-version: 24.18.0
-      - &install_visonaut
-        name: Install verified Visonaut CLI
+      - name: Install verified Visonaut CLI
         shell: bash
         run: |
           set -euo pipefail
           packages=(
             "@visonaut/playwright@0.3.0:$VISONAUT_PACKAGE_SHA256"
-            "visonaut@0.3.0:$VISONAUT_CLI_SHA256"
+            "visonaut@0.3.1:$VISONAUT_CLI_SHA256"
             "@playwright/test@1.63.0:fc594f36b7b4aafece614ec6852ad728423215a76edd0a2a1821bb0c49539c4e"
             "playwright@1.63.0:195a5ee9bfed7c6e9c03965950e32e5e4dbedaa02e740e5a530eb4b87dae050c"
             "playwright-core@1.63.0:208593d4e1bcd8f8fe5f869cad1cc332dc7f1d70dc1d58c102dc3ac36e30f26c"
@@ -279,43 +264,28 @@ jobs:
           done
           npm install --prefix "$RUNNER_TEMP/visonaut-tools" --offline --ignore-scripts --no-audit --no-fund "${archives[@]}"
           echo "$RUNNER_TEMP/visonaut-tools/node_modules/.bin" >> "$GITHUB_PATH"
-      - name: Match visual job fonts
-        run: playwright install-deps ${{ matrix.browser }}
-      - name: Download encrypted captures
+      - name: Download Linux captures
         uses: actions/download-artifact@v8
         with:
-          name: visonaut-transfer-${{ matrix.shard }}
+          name: visonaut-transfer-linux
           path: ${{ runner.temp }}/visonaut-transfer
-      - name: Upload captures
-        id: upload
+      - name: Download Safari captures
+        uses: actions/download-artifact@v8
+        with:
+          name: visonaut-transfer-safari
+          path: ${{ runner.temp }}/visonaut-transfer
+      - name: Submit captures
+        id: submit
         env:
           GH_TOKEN: ${{ github.token }}
-        run: visonaut upload --bundle "$RUNNER_TEMP/visonaut-transfer/visonaut-$VISONAUT_SHARD.enc"
+        run: visonaut submit --bundle "linux=$RUNNER_TEMP/visonaut-transfer/visonaut-linux.enc" --bundle "safari=$RUNNER_TEMP/visonaut-transfer/visonaut-safari.enc"
       - name: Upload receipt
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ steps.upload.outputs.name }}
-          path: ${{ runner.temp }}/visonaut-upload-${{ matrix.shard }}/receipt.json
+          name: ${{ steps.submit.outputs.name }}
+          path: ${{ steps.submit.outputs.path }}
           if-no-files-found: error
           retention-days: 7
-
-  submit:
-    name: Submit
-    needs: upload
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      id-token: write
-    env:
-      VISONAUT_CLI_SHA256: 18cc35a0f1198b1e77ed18d844941cdf0e9acc12f20b0d98b54e406a0f11105b
-    steps:
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24.18.0
-      - *install_visonaut
-      - name: Submit capture run
-        run: visonaut submit --run "$GITHUB_RUN_ID"
 
   deploy-preview:
     # Keep PR previews and the existing main deployment; merge-queue runs only test.
