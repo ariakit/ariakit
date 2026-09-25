@@ -4,12 +4,14 @@ import {
   useBooleanEvent,
   useEvent,
   useMergeRefs,
+  useSafeLayoutEffect,
   useWrapElement,
   createElement,
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
+import { sync } from "@ariakit/store";
 import {
   toArray,
   disabledFromProps,
@@ -25,6 +27,7 @@ import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { useComposite } from "../composite/composite.tsx";
+import { usePresentItem } from "../composite/utils.ts";
 import { isCompositeMoveKey } from "../focusable/__utils.ts";
 import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
@@ -303,6 +306,32 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       ...props,
     });
     const scrollItemIntoView = getScrollItemIntoView(store);
+    const present = usePresentItem(store);
+
+    // Without the popup's initial focus, the only focus handler that presents
+    // the selected item is the select's own composite one. It doesn't run when
+    // the select already has focus, or when an input in the popup is the
+    // composite, so the open presents the item while the select owns focus.
+    // https://github.com/ariakit/ariakit/issues/7620
+    useSafeLayoutEffect(() => {
+      if (!store) return;
+      return sync(store, ["open", "moves"], (state, prevState) => {
+        if (!state.open) return;
+        // A move presents its own target, so it supersedes this request, as it
+        // supersedes the composite's first-open presentation. The store cancels
+        // the pending request through its cleanup before this call.
+        if (state.moves !== prevState.moves) return;
+        const { selectElement } = store.getState();
+        if (!selectElement) return;
+        if (!ownsFocus(selectElement)) return;
+        return present({
+          markedOnly: true,
+          requireFocus: true,
+          scrollIntoView: scrollItemIntoView,
+        });
+      });
+    }, [store, present, scrollItemIntoView]);
+
     props = useCompositeTypeahead<TagName>({ store, ...props });
     const onKeyDownCaptureProp = props.onKeyDownCapture;
     const onKeyUpCaptureProp = props.onKeyUpCapture;
