@@ -15,7 +15,6 @@ import type {
   DialogStoreState,
 } from "../dialog/dialog-store.ts";
 import { createDialogStore } from "../dialog/dialog-store.ts";
-import { withHideRequest } from "../disclosure/__hide-request.ts";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
@@ -31,20 +30,17 @@ export function createPopoverStore({
   popover: otherPopover,
   ...props
 }: PopoverStoreProps = {}): PopoverStore {
-  const store = withHideRequest(
-    mergeStore(
-      props.store,
-      omit(otherPopover, [
-        "arrowElement",
-        "anchorElement",
-        "contentElement",
-        "popoverElement",
-        "disclosureElement",
-        // Two popovers sharing a store are still positioned independently.
-        "unstable_placing",
-      ]),
-    ),
-    otherPopover,
+  const store = mergeStore(
+    props.store,
+    omit(otherPopover, [
+      "arrowElement",
+      "anchorElement",
+      "contentElement",
+      "popoverElement",
+      "disclosureElement",
+      // Two popovers sharing a store are still positioned independently.
+      "unstable_placing",
+    ]),
   );
 
   throwOnConflictingProps(props, store);
@@ -84,6 +80,14 @@ export function createPopoverStore({
       syncedAnchorElement = state.disclosureElement;
       popover.setState("anchorElement", syncedAnchorElement);
     }),
+  );
+
+  // The popovers share the open state, so a hide request on the other popover
+  // also runs the handlers of this one, such as those of the Dialog that
+  // renders it.
+  // https://github.com/ariakit/ariakit/issues/7621
+  setup(popover, () =>
+    otherPopover?.unstable_onHideRequest(dialog.unstable_requestHide),
   );
 
   return {

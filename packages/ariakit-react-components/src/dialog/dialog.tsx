@@ -1090,13 +1090,14 @@ export interface DialogOptions<T extends ElementType = TagName>
    * `event.preventDefault()`, which will prevent the dialog from hiding.
    *
    * This event fires when a close is requested through the `hide`, `setOpen`,
-   * or `toggle` functions of the dialog store or of a store linked to it, such
-   * as the store of a combobox in a menu, or of a combobox that receives the
-   * dialog store through the `disclosure` option. This includes the requests
-   * the dialog makes itself, such as on Escape or when the user interacts
-   * outside the dialog, and those from other components, such as a disclosure
-   * button or an item that hides the popup on click. In this case, the event
-   * fires before the store's
+   * or `toggle` functions of the dialog store, of a store that the dialog store
+   * receives through the `combobox` or `popover` options, such as the combobox
+   * store of a menu, or of a store that receives the dialog store through the
+   * `disclosure` option, such as a combobox in the dialog. This includes the
+   * requests the dialog makes itself, such as on Escape or when the user
+   * interacts outside the dialog, and those from other components, such as a
+   * disclosure button or an item that hides the popup on click. In this case,
+   * the event fires before the store's
    * [`open`](https://ariakit.com/reference/use-dialog-store#open) state
    * changes, so preventing it leaves the dialog as it was.
    *

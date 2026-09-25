@@ -164,3 +164,39 @@ test("a hide request on a store linked through the disclosure option runs the ha
   unsubscribe();
   stop();
 });
+
+// https://github.com/ariakit/ariakit/issues/7621
+test("a hide request on a store with both the store and disclosure options runs the handler", () => {
+  const dialog = createDisclosureStore({ defaultOpen: true });
+  const other = createDisclosureStore({ defaultOpen: true });
+  const store = createDisclosureStore({ store: other, disclosure: dialog });
+  const stop = init(store);
+  const handler = vi.fn();
+  const unregister = dialog.unstable_onHideRequest(handler);
+
+  store.hide();
+  other.hide();
+  expect(handler).toHaveBeenCalledTimes(2);
+  expect(dialog.getState().open).toBe(true);
+  expect(other.getState().open).toBe(true);
+  expect(store.getState().open).toBe(true);
+
+  unregister();
+  stop();
+});
+
+// https://github.com/ariakit/ariakit/issues/7621
+test("a store linked to a store that shares its hide handlers doesn't run the request again", () => {
+  const dialog = createDisclosureStore({ defaultOpen: true });
+  const store = createDisclosureStore({ store: dialog, disclosure: dialog });
+  const stop = init(store);
+  const handler = vi.fn((hide: () => void) => hide());
+  const unregister = dialog.unstable_onHideRequest(handler);
+
+  store.hide();
+  expect(handler).toHaveBeenCalledTimes(1);
+  expect(dialog.getState().open).toBe(false);
+
+  unregister();
+  stop();
+});

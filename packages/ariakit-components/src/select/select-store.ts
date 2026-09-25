@@ -18,7 +18,6 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.ts";
 import { createCompositeStore } from "../composite/composite-store.ts";
-import { withHideRequest } from "../disclosure/__hide-request.ts";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
@@ -43,27 +42,24 @@ export function createSelectStore({
   combobox,
   ...props
 }: SelectStoreProps = {}): SelectStore {
-  const store = withHideRequest(
-    mergeStore(
-      props.store,
-      omit(combobox, [
-        "value",
-        "items",
-        "renderedItems",
-        "compositeElement",
-        "baseElement",
-        "arrowElement",
-        "anchorElement",
-        "contentElement",
-        "popoverElement",
-        "disclosureElement",
-        "inputElement",
-        "labelElement",
-        "selectElement",
-        "selectLabelElement",
-      ]),
-    ),
-    combobox,
+  const store = mergeStore(
+    props.store,
+    omit(combobox, [
+      "value",
+      "items",
+      "renderedItems",
+      "compositeElement",
+      "baseElement",
+      "arrowElement",
+      "anchorElement",
+      "contentElement",
+      "popoverElement",
+      "disclosureElement",
+      "inputElement",
+      "labelElement",
+      "selectElement",
+      "selectLabelElement",
+    ]),
   );
 
   throwOnConflictingProps(props, store);
@@ -130,6 +126,14 @@ export function createSelectStore({
   };
 
   const select = createStore(initialState, composite, popover, store);
+
+  // The select shares the open state with the combobox, so a hide request on
+  // the combobox, like a combobox item hiding it, also runs the handlers of the
+  // select, such as those of the Dialog that renders its popover.
+  // https://github.com/ariakit/ariakit/issues/7621
+  setup(select, () =>
+    combobox?.unstable_onHideRequest(popover.unstable_requestHide),
+  );
 
   // Initialize an unset value from the first enabled item.
   setup(select, () =>

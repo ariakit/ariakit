@@ -145,3 +145,76 @@ test("a hide request on the combobox store runs the handler of the menu", () => 
   unregister();
   stop();
 });
+
+// https://github.com/ariakit/ariakit/issues/7621
+test("a hide request on the combobox store runs the handler of a menu that receives another store", () => {
+  const combobox = createComboboxStore({ defaultOpen: true });
+  // Like a MenuProvider that receives a menu store through the store prop and
+  // the combobox store from the ComboboxProvider context.
+  const outer = createMenuStore({ defaultOpen: true });
+  const menu = createMenuStore({ store: outer, combobox });
+  const dialog = createDialogStore({ store: menu });
+  const stop = init(dialog);
+  let canHide = false;
+  const handler = vi.fn((hide: () => void) => {
+    if (!canHide) return;
+    hide();
+  });
+  const unregister = dialog.unstable_onHideRequest(handler);
+
+  combobox.hide();
+  expect(handler).toHaveBeenCalledTimes(1);
+  expect(combobox.getState().open).toBe(true);
+  expect(menu.getState().open).toBe(true);
+
+  canHide = true;
+  combobox.hide();
+  expect(handler).toHaveBeenCalledTimes(2);
+  expect(combobox.getState().open).toBe(false);
+  expect(menu.getState().open).toBe(false);
+
+  unregister();
+  stop();
+});
+
+// https://github.com/ariakit/ariakit/issues/7621
+test("a hide request on the combobox store runs the handler once when menus that share handlers link it", () => {
+  const combobox = createComboboxStore({ defaultOpen: true });
+  // Like a menu store created inside a ComboboxProvider and passed to a
+  // MenuProvider in the same ComboboxProvider.
+  const outer = createMenuStore({ combobox });
+  const menu = createMenuStore({ store: outer, combobox });
+  const dialog = createDialogStore({ store: menu });
+  const stop = init(dialog);
+  const handler = vi.fn((hide: () => void) => hide());
+  const unregister = dialog.unstable_onHideRequest(handler);
+
+  combobox.hide();
+  expect(handler).toHaveBeenCalledTimes(1);
+  expect(combobox.getState().open).toBe(false);
+  expect(menu.getState().open).toBe(false);
+
+  unregister();
+  stop();
+});
+
+// https://github.com/ariakit/ariakit/issues/7621
+test("a hide request on the combobox store still runs the handler after one of two menus that share handlers is destroyed", () => {
+  const combobox = createComboboxStore({ defaultOpen: true });
+  const outer = createMenuStore({ combobox });
+  const inner = createMenuStore({ store: outer, combobox });
+  const dialog = createDialogStore({ store: outer });
+  const stopDialog = init(dialog);
+  const stopInner = init(inner);
+  const handler = vi.fn();
+  const unregister = dialog.unstable_onHideRequest(handler);
+
+  stopInner();
+  combobox.hide();
+  expect(handler).toHaveBeenCalledTimes(1);
+  expect(combobox.getState().open).toBe(true);
+  expect(outer.getState().open).toBe(true);
+
+  unregister();
+  stopDialog();
+});
