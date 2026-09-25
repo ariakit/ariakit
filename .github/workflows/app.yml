@@ -228,7 +228,7 @@ jobs:
           retention-days: 7
 
   upload:
-    name: upload / ${{ matrix.shard }}
+    name: Upload / ${{ matrix.name }}
     needs: visual
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
@@ -240,9 +240,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
+            name: Linux
             shard: linux
             browser: chromium
           - os: macos-latest
+            name: Safari
             shard: safari
             browser: webkit
     env:
@@ -298,7 +300,7 @@ jobs:
           retention-days: 7
 
   submit:
-    name: submit
+    name: Submit
     needs: upload
     runs-on: ubuntu-latest
     timeout-minutes: 10
