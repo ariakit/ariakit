@@ -79,3 +79,20 @@ test("Escape from tooltip content restores its anchor", async () => {
   expect(q.tooltip.maybe("Tooltip content")).not.toBeInTheDocument();
   expect(anchor).toHaveFocus();
 });
+
+// https://github.com/ariakit/ariakit/issues/7622
+test("Escape keeps the tooltip closed when the anchor has pointer focus", async () => {
+  const anchor = q.link("Tooltip anchor");
+  await hover(anchor);
+  expect(await q.tooltip.wait("Tooltip content")).toBeVisible();
+  await click(anchor);
+  expect(anchor).toHaveFocus();
+  expect(anchor).not.toHaveAttribute("data-focus-visible");
+  expect(q.tooltip("Tooltip content")).toBeVisible();
+
+  // The key press makes the anchor focus-visible, which shows the tooltip in
+  // other cases.
+  await press.Escape();
+  expect(anchor).toHaveAttribute("data-focus-visible");
+  expect(q.tooltip.maybe("Tooltip content")).not.toBeInTheDocument();
+});
