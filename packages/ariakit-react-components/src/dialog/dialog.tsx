@@ -756,13 +756,17 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const dialog = ref.current;
     if (!mounted) return false;
     if (!dialog) return false;
-    // Ignore the event if the current dialog is marked by another dialog. This
-    // guarantees that only the topmost dialog will close on Escape.
-    if (isElementMarked(dialog)) return false;
     const source = getKeyboardEventSource(event);
     let keyPress = escapeKeyPresses.get(source);
     if (!keyPress) {
-      keyPress = { accepted: hideOnEscapeProp(event), hidden: false };
+      // Ignore the key press if the current dialog is marked by another dialog.
+      // This guarantees that only the topmost dialog will close on Escape. The
+      // decision covers the whole key press, because a nested popup can close
+      // on the copy that Composite dispatches and remove the marks before the
+      // original event reaches this dialog.
+      // https://github.com/ariakit/ariakit/issues/7632
+      const accepted = !isElementMarked(dialog) && hideOnEscapeProp(event);
+      keyPress = { accepted, hidden: false };
       escapeKeyPresses.set(source, keyPress);
     }
     escapeEvents.set(event, {
@@ -806,6 +810,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       escapeEvents.delete(nativeEvent);
       return;
     }
+    // Decide before descendants handle the key press. When React listens on the
+    // document, this runs before the document listeners below, so a nested
+    // popup can't close and remove its marks first.
+    // https://github.com/ariakit/ariakit/issues/7632
+    if (!acceptEscape(nativeEvent)) return;
+    // Hide now if the key press stops here, since it won't reach this dialog
+    // again. hideOnEscape can stop it too.
     const stoppedAtDialog =
       event.isPropagationStopped() || nativeEvent.cancelBubble;
     if (!stoppedAtDialog) return;
