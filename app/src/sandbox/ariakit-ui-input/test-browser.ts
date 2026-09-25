@@ -125,7 +125,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         box,
         colorScheme,
         item: "ariakit-ui-input/grouped-focus/action",
-        id: "action",
       });
       await page.keyboard.press("Tab");
       await expectFocusVisible(q.textbox("Draft message"));
@@ -134,7 +133,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         box,
         colorScheme,
         item: "ariakit-ui-input/grouped-focus/field",
-        id: "field",
       });
       for (const [fieldName, field] of [
         ["delivery-notes", q.textbox("Delivery notes")],

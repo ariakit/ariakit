@@ -39,7 +39,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         box: q.article("Glider"),
         colorScheme,
         item: "ariakit-ui-button/forced-colors/glider",
-        id: "joined",
       });
       const links = q.article("Current link gliders");
       await hoverOver(query(links).link("Activity"));
@@ -51,7 +50,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         box: links,
         colorScheme,
         item: "ariakit-ui-button/forced-colors/glider-hover",
-        id: "hover",
       });
     });
   });
@@ -99,7 +97,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
           box: q.article(title),
           colorScheme,
           item: `ariakit-ui-button/forced-colors/${key}`,
-          id: title,
         });
       }
       const box = q.article("Thick focus ring");
@@ -111,7 +108,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         box,
         colorScheme,
         item: "ariakit-ui-button/forced-colors/focus-ring",
-        id: "focus",
       });
     });
   });

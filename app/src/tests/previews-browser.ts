@@ -36,7 +36,6 @@ test("previews @visual", async ({ page, baseURL, visual }) => {
         await visual({
           item: `previews/${preview[2]}`,
           framework,
-          id,
           viewports,
         });
       },

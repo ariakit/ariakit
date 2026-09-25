@@ -26,7 +26,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await visual(
         getCapture(box, colorScheme, {
           item: "ariakit-ui-table/cell-edge/hover",
-          id: "hover",
         }),
       );
       await checkbox.focus();
@@ -37,7 +36,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await visual(
         getCapture(box, colorScheme, {
           item: "ariakit-ui-table/cell-edge/focus",
-          id: "focus",
         }),
       );
     });
@@ -60,7 +58,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await visual(
         getCapture(box, colorScheme, {
           item: "ariakit-ui-table/row-edge/selected",
-          id: "selected",
         }),
       );
       await checkbox.uncheck();
@@ -71,7 +68,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await visual(
         getCapture(box, colorScheme, {
           item: "ariakit-ui-table/row-edge/focus",
-          id: "focus",
         }),
       );
     });
@@ -92,23 +88,20 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         {
           key: "failed-static",
           name: "Failed Needs review",
-          cell: "Failed",
           focus: false,
         },
         {
           key: "failed-focus",
           name: "Failed Needs review",
-          cell: "Failed",
           focus: true,
         },
         {
           key: "pending-static",
           name: "Pending Ready to test",
-          cell: "Ready to test",
           focus: false,
         },
       ];
-      for (const { key, name, cell, focus } of cases) {
+      for (const { key, name, focus } of cases) {
         const row = fixture.row(name);
         await scroller.evaluate((node) => {
           node.scrollLeft = 0;
@@ -129,7 +122,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         await visual(
           getCapture(box, colorScheme, {
             item: `ariakit-ui-table/scrolled-row/${key}`,
-            id: cell + "-" + (focus ? "focus" : "static"),
           }),
         );
       }

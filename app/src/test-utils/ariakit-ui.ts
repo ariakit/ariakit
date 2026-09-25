@@ -21,15 +21,14 @@ export type ColorScheme = (typeof colorSchemes)[number];
 // Safari on the macOS runners can take several seconds for one capture of a
 // tall sandbox, and a new baseline needs two identical captures in a row, which
 // the default five seconds do not cover.
-const SCREENSHOT_TIMEOUT = 30_000;
+const CAPTURE_TIMEOUT = 30_000;
 
 // Keep compact grids in one image and split taller grids at row boundaries.
 const SINGLE_CAPTURE_HEIGHT = 1280;
 const ROWS_PER_CAPTURE = 3;
 
-// WebP stores each side in 14 bits and every engine fails to encode a taller
-// capture. toHaveScreenshot captures at CSS scale, so the unit is CSS pixels.
-const MAX_SCREENSHOT_HEIGHT = 16_383;
+// Keep the existing capture-height bound at CSS scale.
+const MAX_CAPTURE_HEIGHT = 16_383;
 
 /**
  * Room around an overlay that renders in a portal, so its capture takes in the
@@ -87,7 +86,7 @@ export function getCapture(
     element,
     viewports: { desktop: viewports.desktop },
     styles: { [colorScheme]: {} },
-    timeout: SCREENSHOT_TIMEOUT,
+    timeout: CAPTURE_TIMEOUT,
     ...options,
   } satisfies ScreenshotOptions;
 }
@@ -150,9 +149,9 @@ export async function capturePage({
     return rows;
   });
   expect(rows.length).toBeGreaterThan(0);
-  // Each extra image needs its own screenshot assertion budget in this scheme.
+  // Each extra image needs its own capture budget.
   const extraCaptures = Math.ceil(rows.length / ROWS_PER_CAPTURE) - 1;
-  test.setTimeout(test.info().timeout + extraCaptures * SCREENSHOT_TIMEOUT);
+  test.setTimeout(test.info().timeout + extraCaptures * CAPTURE_TIMEOUT);
   for (let index = 0; index < rows.length; index += ROWS_PER_CAPTURE) {
     const group = rows.slice(index, index + ROWS_PER_CAPTURE).flat();
     const sections = main.locator(
@@ -167,11 +166,10 @@ export async function capturePage({
     });
     // Half the 16px grid gap keeps adjacent rows outside the capture.
     const clipMargin = 8;
-    expect(bounds + clipMargin * 2).toBeLessThanOrEqual(MAX_SCREENSHOT_HEIGHT);
+    expect(bounds + clipMargin * 2).toBeLessThanOrEqual(MAX_CAPTURE_HEIGHT);
     await visual(
       getCapture(sections, colorScheme, {
         item: `${item}/rows-${index + 1}-${Math.min(index + ROWS_PER_CAPTURE, rows.length)}`,
-        id: `rows-${index + 1}-${Math.min(index + ROWS_PER_CAPTURE, rows.length)}`,
         fullPage: true,
         clipMargin,
       }),

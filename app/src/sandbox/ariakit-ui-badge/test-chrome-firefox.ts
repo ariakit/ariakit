@@ -24,7 +24,6 @@ withCaptures(import.meta.dirname, async ({ test }) => {
           box,
           colorScheme,
           item: `ariakit-ui-badge/forced-colors/${key}`,
-          id: title,
         });
       }
     });

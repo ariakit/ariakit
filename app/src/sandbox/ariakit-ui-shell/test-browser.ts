@@ -324,7 +324,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
                 colorScheme,
                 `ariakit-ui-shell/sidebar-combinations/${direction}-${state}`,
               ),
-              id: direction,
               viewports: { wide: viewport },
             });
           }
@@ -373,7 +372,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
               colorScheme,
               `ariakit-ui-shell/bar-sizing/${key}`,
             ),
-            id: sizing,
             viewports: { narrow: viewport },
           });
         }
@@ -384,7 +382,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
             colorScheme,
             "ariakit-ui-shell/bar-sizing/stacked",
           ),
-          id: "stacked",
           viewports: { narrow: viewport },
         });
       });

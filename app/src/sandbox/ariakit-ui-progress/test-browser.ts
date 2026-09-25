@@ -102,14 +102,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         box: q.article("Default"),
         colorScheme,
         item: "ariakit-ui-progress/forced-colors/bar",
-        id: "bar",
       });
       await captureInView({
         visual,
         box: q.article("Ring with label"),
         colorScheme,
         item: "ariakit-ui-progress/forced-colors/ring",
-        id: "ring",
       });
     });
   });
@@ -130,14 +128,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         box: q.article("Default"),
         colorScheme,
         item: "ariakit-ui-progress/high-contrast/bordered-track",
-        id: "bordered",
       });
       await captureInView({
         visual,
         box: q.article("Borderless track"),
         colorScheme,
         item: "ariakit-ui-progress/high-contrast/borderless-track",
-        id: "borderless",
       });
     });
   });

@@ -50,7 +50,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         await visual(
           getCapture(list, colorScheme, {
             item: `ariakit-ui-combobox/narrow-list/${key}`,
-            id: name,
             viewports: { mobile: viewport },
           }),
         );

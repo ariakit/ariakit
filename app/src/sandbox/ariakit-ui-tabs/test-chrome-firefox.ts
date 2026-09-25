@@ -33,7 +33,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
           box,
           colorScheme,
           item: `ariakit-ui-tabs/forced-colors/${key}`,
-          id: title,
         });
       }
     });

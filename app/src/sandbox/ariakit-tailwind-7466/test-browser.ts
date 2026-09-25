@@ -77,7 +77,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await visual({
         item: `ariakit-tailwind-7466/${key}-week-hover`,
         element: q.group(title),
-        id: `${title}-Week`,
         styles: {},
       });
     });
@@ -151,7 +150,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await visual({
       item: "ariakit-tailwind-7466/selected-active-edges",
       element: q.group("Border 2"),
-      id: "selected-selected",
       styles: {},
     });
     await week.click();

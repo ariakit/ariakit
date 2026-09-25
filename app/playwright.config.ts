@@ -140,13 +140,6 @@ export default defineConfig({
       slowMo,
     },
   },
-  expect: {
-    toHaveScreenshot: {
-      threshold: 0,
-      maxDiffPixelRatio: 0.0005,
-      pathTemplate: "{testDir}/{testFileDir}/__screenshots__/{arg}{ext}",
-    },
-  },
   // The trusted reporter checks the configured project list, not only the
   // projects selected by Playwright's command-line flags.
   projects: PERF
