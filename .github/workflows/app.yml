@@ -8,6 +8,9 @@ permissions:
 
 env:
   VISONAUT_SERVER: https://visonaut.com
+  # Capture and signed upload must measure the same approved comparison policy.
+  VISONAUT_COMPARISON_POLICY_DIGEST: 395f2b596a2e9cf4f8ce86b8643c48856f326773becf337cee6e66faba289249
+  VISONAUT_PACKAGE_SHA256: bab64dabc7998022d860e778a85dccba67d2fb30ad6f5496209ce8ec4f734984
 
 jobs:
   build:
@@ -163,27 +166,29 @@ jobs:
             name: Visual
             engines: chromium firefox
             projects: chrome firefox
-            test: xvfb-run pnpm -F app exec playwright test
+            test: xvfb-run pnpm -F app run test-visual
             shard: linux
           - os: macos-latest
             name: Visual (Safari)
             engines: webkit
             projects: safari
-            test: pnpm -F app exec playwright test
+            test: pnpm -F app run test-visual
             shard: safari
     env:
-      VISUAL_TEST: "true"
       VISONAUT_SHARD: ${{ matrix.shard }}
-      VISONAUT_PACKAGE_SHA256: bab64dabc7998022d860e778a85dccba67d2fb30ad6f5496209ce8ec4f734984
-      VISONAUT_COMPARISON_POLICY_DIGEST: 395f2b596a2e9cf4f8ce86b8643c48856f326773becf337cee6e66faba289249
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout repository
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - uses: ./.github/workflows/setup
+      - name: Set up environment
+        uses: ./.github/workflows/setup
         with:
           filters: app...
-      - uses: ./.github/workflows/install-playwright
+      - name: Use app binaries
+        run: echo "$GITHUB_WORKSPACE/app/node_modules/.bin" >> "$GITHUB_PATH"
+      - name: Install Playwright
+        uses: ./.github/workflows/install-playwright
         with:
           engines: ${{ matrix.engines }}
           workspace: app
@@ -192,19 +197,22 @@ jobs:
       - name: Install visual fonts
         if: matrix.shard == 'linux'
         run: pnpm -F app exec playwright install-deps chromium
-      - uses: actions/download-artifact@v8
+      - name: Download app artifact
+        uses: actions/download-artifact@v8
         with:
           name: app-build
           path: app
-      - uses: actions/download-artifact@v8
+      - name: Download Next.js artifact
+        uses: actions/download-artifact@v8
         with:
           name: nextjs-dist
           path: nextjs/.open-next
       - name: Test visual
         run: ${{ matrix.test }} --project ${{ matrix.projects }} --grep @visual --output test-results/test-visual
       - name: Encrypt captures
-        run: pnpm -F app exec visonaut pack --dir "$RUNNER_TEMP/visonaut-$VISONAUT_SHARD" --output "$RUNNER_TEMP/visonaut-$VISONAUT_SHARD.enc"
-      - uses: actions/upload-artifact@v7
+        run: visonaut pack --dir "$RUNNER_TEMP/visonaut-$VISONAUT_SHARD" --output "$RUNNER_TEMP/visonaut-$VISONAUT_SHARD.enc"
+      - name: Upload encrypted captures
+        uses: actions/upload-artifact@v7
         with:
           name: visonaut-transfer-${{ matrix.shard }}
           path: ${{ runner.temp }}/visonaut-${{ matrix.shard }}.enc
@@ -240,12 +248,11 @@ jobs:
     env:
       VISONAUT_WORKFLOW_SOURCE_SHA: ${{ vars.VISONAUT_WORKFLOW_SOURCE_SHA }}
       VISONAUT_SHARD: ${{ matrix.shard }}
-      VISONAUT_PACKAGE_SHA256: bab64dabc7998022d860e778a85dccba67d2fb30ad6f5496209ce8ec4f734984
       VISONAUT_CLI_SHA256: 18cc35a0f1198b1e77ed18d844941cdf0e9acc12f20b0d98b54e406a0f11105b
-      VISONAUT_COMPARISON_POLICY_DIGEST: 395f2b596a2e9cf4f8ce86b8643c48856f326773becf337cee6e66faba289249
       VISONAUT_FONT_PACKAGE: "@fontsource-variable/inter"
     steps:
-      - uses: actions/setup-node@v7
+      - name: Set up Node
+        uses: actions/setup-node@v7
         with:
           node-version: 24.18.0
       - &install_visonaut
@@ -272,7 +279,8 @@ jobs:
           echo "$RUNNER_TEMP/visonaut-tools/node_modules/.bin" >> "$GITHUB_PATH"
       - name: Match visual job fonts
         run: playwright install-deps ${{ matrix.browser }}
-      - uses: actions/download-artifact@v8
+      - name: Download encrypted captures
+        uses: actions/download-artifact@v8
         with:
           name: visonaut-transfer-${{ matrix.shard }}
           path: ${{ runner.temp }}/visonaut-transfer
@@ -281,7 +289,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: visonaut upload --bundle "$RUNNER_TEMP/visonaut-transfer/visonaut-$VISONAUT_SHARD.enc"
-      - uses: actions/upload-artifact@v7
+      - name: Upload receipt
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.upload.outputs.name }}
           path: ${{ runner.temp }}/visonaut-upload-${{ matrix.shard }}/receipt.json
@@ -296,14 +305,15 @@ jobs:
     permissions:
       id-token: write
     env:
-      VISONAUT_PACKAGE_SHA256: bab64dabc7998022d860e778a85dccba67d2fb30ad6f5496209ce8ec4f734984
       VISONAUT_CLI_SHA256: 18cc35a0f1198b1e77ed18d844941cdf0e9acc12f20b0d98b54e406a0f11105b
     steps:
-      - uses: actions/setup-node@v7
+      - name: Set up Node
+        uses: actions/setup-node@v7
         with:
           node-version: 24.18.0
       - *install_visonaut
-      - run: visonaut submit --run "$GITHUB_RUN_ID"
+      - name: Submit capture run
+        run: visonaut submit --run "$GITHUB_RUN_ID"
 
   deploy-preview:
     # Keep PR previews and the existing main deployment; merge-queue runs only test.
