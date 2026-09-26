@@ -58,10 +58,21 @@ function Notice() {
 // marks the popover too, and #7647 keeps both open.
 // https://github.com/ariakit/ariakit/issues/7647
 function SnackCombobox() {
+  const combobox = Ariakit.useComboboxStore();
   return (
-    <Ariakit.ComboboxProvider>
+    <Ariakit.ComboboxProvider store={combobox}>
       <Ariakit.ComboboxLabel>Snack</Ariakit.ComboboxLabel>
-      <Ariakit.Combobox />
+      <Ariakit.Combobox
+        // TODO: Remove this workaround after the fix lands.
+        // https://github.com/ariakit/ariakit/issues/7646
+        onKeyDownCapture={(event) => {
+          if (event.key !== "Escape") return;
+          if (!combobox.getState().open) return;
+          // Without an active item, Composite doesn't dispatch a copy of the
+          // key press, so other dialogs reject it before the popover closes.
+          combobox.setActiveId(null);
+        }}
+      />
       <Ariakit.ComboboxPopover unmountOnHide style={popupStyle}>
         {fruits.map((value) => (
           <Ariakit.ComboboxItem key={value} value={value} />
