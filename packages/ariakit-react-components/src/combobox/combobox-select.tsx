@@ -53,8 +53,18 @@ function getSelectedValues(select: HTMLSelectElement) {
   return Array.from(select.selectedOptions).map((option) => option.value);
 }
 
+function isShadowRoot(node: Node): node is ShadowRoot {
+  return node.nodeType === node.DOCUMENT_FRAGMENT_NODE && "host" in node;
+}
+
 function ownsFocus(element: HTMLElement) {
-  return getActiveElement(element) === element;
+  const root = element.getRootNode();
+  // Inside a shadow tree, the document reports the shadow host as its active
+  // element, so only the shadow root knows whether the element has focus.
+  const activeElement = isShadowRoot(root)
+    ? root.activeElement
+    : getActiveElement(element);
+  return activeElement === element;
 }
 
 // When moving through the items while the select list is closed, we don't want
