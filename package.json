@@ -63,7 +63,7 @@
     "concurrently": "10.0.5",
     "cross-env": "10.1.0",
     "cross-spawn": "7.0.6",
-    "fs-extra": "11.4.0",
+    "fs-extra": "11.4.1",
     "glob": "13.0.6",
     "happy-dom": "20.14.5",
     "jsdom": "30.1.1",
