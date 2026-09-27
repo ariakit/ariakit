@@ -299,8 +299,8 @@ importers:
         specifier: npm:typescript@7.0.2
         version: typescript@7.0.2
       visonaut:
-        specifier: 0.3.2
-        version: 0.3.2(@playwright/test@1.63.0)
+        specifier: 0.3.4
+        version: 0.3.4(@playwright/test@1.63.0)
       vite:
         specifier: 8.3.0
         version: 8.3.0(@types/node@24.13.6)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0)
@@ -10527,8 +10527,8 @@ packages:
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
 
-  visonaut@0.3.2:
-    resolution: {integrity: sha512-u6y3evmN0HFrkU1zVhYcJthQTjOjk7JKgYAdF6JQyHtHbNRPiJOSsXnnYob+CbwZDTWeqLDZsSLdSL/p5LNmtw==}
+  visonaut@0.3.4:
+    resolution: {integrity: sha512-2+BVVhMjVNX+KnjY3/Hb0BJFI5PE2Gx/BL+CmQl/gRLeS45NgAXgQ2HYaAU5Pq0wKNs/V4nLrJ6iObHNK7/kHw==}
     engines: {node: '>=24.18.0 <25'}
     hasBin: true
 
@@ -20962,7 +20962,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  visonaut@0.3.2(@playwright/test@1.63.0):
+  visonaut@0.3.4(@playwright/test@1.63.0):
     dependencies:
       '@visonaut/playwright': 0.3.1(@playwright/test@1.63.0)
     transitivePeerDependencies:
