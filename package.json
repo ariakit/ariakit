@@ -57,7 +57,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.1",
-    "@vitest/coverage-v8": "5.0.1",
+    "@vitest/coverage-v8": "5.0.2",
     "chalk": "6.0.0",
     "chokidar": "5.0.0",
     "concurrently": "10.0.5",
@@ -85,7 +85,7 @@
     "visonaut": "0.3.4",
     "vite": "8.3.1",
     "vite-plugin-solid": "2.11.14",
-    "vitest": "5.0.1",
+    "vitest": "5.0.2",
     "vitest-fail-on-console": "0.10.1"
   },
   "devEngines": {
