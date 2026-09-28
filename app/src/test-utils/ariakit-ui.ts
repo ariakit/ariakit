@@ -3,7 +3,7 @@ import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { slugify } from "#app/lib/string.ts";
-import { gotoAndSettle, withFramework } from "./preview.ts";
+import { withFramework } from "./preview.ts";
 import type { ScreenshotOptions, ScreenshotRegion } from "./visual.ts";
 import { viewports, waitForFonts } from "./visual.ts";
 
@@ -66,7 +66,7 @@ export async function forEachColorScheme(
     await page.emulateMedia({ colorScheme });
     // A new navigation rather than a reload, which would restore the scroll
     // position of the previous scheme after the capture started scrolling.
-    await gotoAndSettle(page, url);
+    await page.goto(url, { waitUntil: "load" });
     await page.waitForFunction(isPreviewHydrated);
     await capture(colorScheme);
   }
