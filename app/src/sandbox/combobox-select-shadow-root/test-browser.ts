@@ -39,6 +39,27 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
   }
 
+  // The select keeps focus while its searchable popup is open, so Escape starts
+  // on the select, not on the search input inside the popup.
+  for (const label of ["Searchable fruit", "Portaled searchable fruit"]) {
+    // https://github.com/ariakit/ariakit/issues/7671
+    test(`closes the searchable popup with Escape in a shadow root (${label})`, async ({
+      page,
+      q,
+    }) => {
+      const select = q.combobox(label);
+      await select.click();
+      await test.expect(select).toHaveAttribute("aria-expanded", "true");
+      await test.expect(q.dialog(`${label} options`)).toBeVisible();
+      await test.expect(select).toBeFocused();
+
+      await page.keyboard.press("Escape");
+      await test.expect(select).toHaveAttribute("aria-expanded", "false");
+      await test.expect(q.dialog(`${label} options`)).toBeHidden();
+      await test.expect(select).toBeFocused();
+    });
+  }
+
   // https://github.com/ariakit/ariakit/issues/7641
   test("centers a new selection when a focused select in a shadow root reopens a popup without initial focus", async ({
     page,

@@ -846,16 +846,20 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       if (escapeEvents.has(event)) return;
       const dialog = ref.current;
       if (!dialog) return;
-      const target = event.target;
+      // A key press inside a shadow tree reaches the document retargeted to the
+      // shadow host, so the composed path holds the element that received it.
+      // Both count, since `contains` doesn't cross shadow boundaries and the
+      // host can be the only one of them that belongs to this dialog.
+      // https://github.com/ariakit/ariakit/issues/7671
       // Guard against non-node targets (e.g. a synthetic event dispatched on
       // window) so `contains` doesn't throw. `isNode` rather than `isElement`
       // keeps non-element nodes working with `contains`, as before.
-      if (!isNode(target)) return;
+      const targets = [event.target, event.composedPath()[0]].filter(isNode);
       const { disclosureElement } = store.getState();
       // This considers valid targets the elements that belong to this dialog
       // tree, including elements marked as outside by this dialog so Escape can
       // close the topmost dialog even when focus is outside.
-      const isValidTarget = () => {
+      const isValidTarget = (target: Node) => {
         if (isElement(target) && target.tagName === "BODY") return true;
         if (contains(dialog, target)) return true;
         if (!disclosureElement) return true;
@@ -870,7 +874,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         }
         return false;
       };
-      if (!isValidTarget()) return;
+      if (!targets.some(isValidTarget)) return;
       if (!acceptEscape(event)) return;
       if (!event.cancelBubble) return;
       hideOnEscapeEvent(event);

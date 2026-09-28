@@ -96,6 +96,52 @@ function FruitSelect({ label, autoFocusOnShow }: FruitSelectProps) {
   );
 }
 
+interface SearchableFruitSelectProps {
+  label: string;
+  /**
+   * Keeps the popover in the shadow root with the select instead of moving it
+   * to the document body.
+   */
+  inShadowRoot?: boolean;
+}
+
+function SearchableFruitSelect({
+  label,
+  inShadowRoot,
+}: SearchableFruitSelectProps) {
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Lemon">
+      <div style={{ display: "flex", gap: 8, marginBlock: 8 }}>
+        <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect />
+      </div>
+      <Ariakit.ComboboxPopover
+        portal={!inShadowRoot}
+        autoFocusOnShow={false}
+        aria-label={`${label} options`}
+        gutter={4}
+        style={{
+          maxHeight: 200,
+          overflow: "auto",
+          background: "Canvas",
+          border: "1px solid GrayText",
+        }}
+      >
+        <Ariakit.ComboboxInput aria-label={`Search ${label}`} />
+        <Ariakit.ComboboxList>
+          {fruits.map((fruit) => (
+            <Ariakit.ComboboxItem
+              key={fruit}
+              value={fruit}
+              style={{ display: "block", padding: "4px 8px" }}
+            />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 interface HeldFruitSelectProps {
   label: string;
   /**
@@ -181,6 +227,8 @@ export default function Example() {
         label="Fruit without initial focus"
         autoFocusOnShow={false}
       />
+      <SearchableFruitSelect label="Searchable fruit" inShadowRoot />
+      <SearchableFruitSelect label="Portaled searchable fruit" />
       <HeldFruitSelect label="Held fruit" />
       <HeldFruitSelect label="Held searchable fruit" searchable />
     </ShadowHost>
