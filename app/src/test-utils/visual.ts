@@ -1,7 +1,11 @@
 import { invariant } from "@ariakit/utils";
 import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
-import { visual as captureVisual } from "@visonaut/playwright";
+import {
+  visual as captureVisual,
+  visualBatch as captureVisualBatch,
+} from "@visonaut/playwright";
+import type { Variant } from "@visonaut/playwright";
 import { isFramework } from "#app/lib/framework.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 
@@ -12,6 +16,10 @@ const CLIP_STABILITY_TIMEOUT = 1000;
 // A font from the local server loads in milliseconds. The bound turns a load
 // that never finishes into a clear failure well within the test budget.
 const FONTS_TIMEOUT = 10_000;
+
+// Keep the source within the card dimension bound and Visonaut's pixel limit.
+const MAX_BATCH_CAPTURE_DIMENSION = 16_383;
+const MAX_BATCH_CAPTURE_PIXELS = 32_000_000;
 
 interface Rect {
   x: number;
@@ -28,6 +36,12 @@ interface ViewportSize {
 type CSSProperties = Record<string, string | number>;
 type Viewports = Record<string, ViewportSize>;
 type Styles = Record<string, CSSProperties>;
+
+export interface ScreenshotRegion {
+  /** Stable suffix appended to the parent capture's item. */
+  name: string;
+  element: Locator | string;
+}
 
 export interface ScreenshotOptions {
   /** Stable identity of the captured UI state across runs. */
@@ -48,6 +62,8 @@ export interface ScreenshotOptions {
    * `fullPage` to capture an element that is taller than the viewport.
    */
   element?: Locator | string;
+  /** Separate items cropped from one stable full-page capture. */
+  regions?: ScreenshotRegion[];
   /**
    * Optional CSS properties to apply to <html> for all variants.
    */
@@ -317,6 +333,64 @@ export async function waitForFonts(page: Page) {
     .toEqual([]);
 }
 
+interface CaptureRegionsParams extends Pick<
+  ScreenshotOptions,
+  "item" | "clipMargin" | "timeout"
+> {
+  page: Page;
+  regions: ScreenshotRegion[];
+  variant: Variant;
+}
+
+async function captureRegions({
+  page,
+  item,
+  regions,
+  clipMargin,
+  variant,
+  timeout,
+}: CaptureRegionsParams) {
+  const prepareRegion = async (region: ScreenshotRegion) => {
+    const options = { element: region.element, clipMargin, fullPage: true };
+    await waitForStableScreenshotClip(page, options);
+    const clip = await getScreenshotClip(page, options);
+    invariant(clip, "Missing screenshot region");
+    // Batch crops index image pixels, so fractional CSS bounds need rounding.
+    return { item: `${item}/${region.name}`, clip: getRectsClip([clip], 0) };
+  };
+  const size = await page.evaluate(() => ({
+    width: Math.max(
+      innerWidth,
+      document.documentElement.scrollWidth,
+      document.body.scrollWidth,
+    ),
+    height: Math.max(
+      innerHeight,
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight,
+    ),
+  }));
+  // Large documents still use clipped captures within the image size limits.
+  if (
+    size.width > MAX_BATCH_CAPTURE_DIMENSION ||
+    size.height > MAX_BATCH_CAPTURE_DIMENSION ||
+    size.width * size.height > MAX_BATCH_CAPTURE_PIXELS
+  ) {
+    for (const region of regions) {
+      const { item, clip } = await prepareRegion(region);
+      await captureVisual(page, {
+        item,
+        variant,
+        timeout,
+        screenshot: { fullPage: true, clip },
+      });
+    }
+    return;
+  }
+  const items = await Promise.all(regions.map(prepareRegion));
+  await captureVisualBatch(page, { variant, items, timeout });
+}
+
 export async function visual(
   page: Page,
   options: ScreenshotOptions,
@@ -340,6 +414,7 @@ export async function visual(
     styles = defaultStyles,
     style: defaultStyle = {},
     element,
+    regions,
     clipMargin = DEFAULT_CLIP_MARGIN,
     fullPage = false,
     timeout,
@@ -358,18 +433,13 @@ export async function visual(
         await withStyles(page, { ...style, ...defaultStyle }, async () => {
           await page.waitForLoadState("domcontentloaded");
           await waitForFonts(page);
-          if (fullPage && element) {
+          if ((fullPage && element) || regions) {
             // Sticky and fixed parts paint at the current scroll position, so a
             // document capture taken while scrolled would draw them over the
             // element.
             await page.evaluate(() => window.scrollTo(0, 0));
           }
           await waitForStableScreenshotClip(page, {
-            element,
-            clipMargin,
-            fullPage,
-          });
-          const screenshotOptions = await getPlaywrightScreenshotOptions(page, {
             element,
             clipMargin,
             fullPage,
@@ -402,8 +472,7 @@ export async function visual(
               ? ("active" as const)
               : ("none" as const),
           }));
-          await captureVisual(page, {
-            item,
+          const captureOptions = {
             variant: {
               key: [
                 framework,
@@ -424,9 +493,28 @@ export async function visual(
                 viewport: viewportName,
                 style: styleName,
               },
-            },
-            screenshot: screenshotOptions,
+            } satisfies Variant,
             timeout,
+          };
+          if (regions) {
+            await captureRegions({
+              page,
+              item,
+              regions,
+              clipMargin,
+              ...captureOptions,
+            });
+            return;
+          }
+          const screenshotOptions = await getPlaywrightScreenshotOptions(page, {
+            element,
+            clipMargin,
+            fullPage,
+          });
+          await captureVisual(page, {
+            item,
+            ...captureOptions,
+            screenshot: screenshotOptions,
           });
         });
       }

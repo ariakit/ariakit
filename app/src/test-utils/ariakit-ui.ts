@@ -2,8 +2,9 @@ import { query } from "@ariakit/test/playwright";
 import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
+import { slugify } from "#app/lib/string.ts";
 import { gotoAndSettle, withFramework } from "./preview.ts";
-import type { ScreenshotOptions } from "./visual.ts";
+import type { ScreenshotOptions, ScreenshotRegion } from "./visual.ts";
 import { viewports, waitForFonts } from "./visual.ts";
 
 // Helpers for the tests of the ariakit-ui-* sandboxes, which render the
@@ -23,10 +24,6 @@ export type ColorScheme = (typeof colorSchemes)[number];
 // the default five seconds do not cover.
 const CAPTURE_TIMEOUT = 30_000;
 
-// Keep compact grids in one image and split taller grids at row boundaries.
-const SINGLE_CAPTURE_HEIGHT = 1280;
-const ROWS_PER_CAPTURE = 3;
-
 // Keep the existing capture-height bound at CSS scale.
 const MAX_CAPTURE_HEIGHT = 16_383;
 
@@ -43,8 +40,7 @@ export const OVERLAY_CLIP_MARGIN = 64;
 export function withCaptures(dirname: string, callback: WithFrameworkCallback) {
   withFramework(dirname, async (params) => {
     params.test.use({ viewport: viewports.desktop });
-    // A test loads the sandbox once per color scheme and takes up to two
-    // captures in each, every one within the screenshot budget.
+    // Page captures extend this budget for each extra example card.
     params.test.describe.configure({ timeout: 120_000 });
     return callback(params);
   });
@@ -114,7 +110,7 @@ interface CapturePageParams {
   item: string;
 }
 
-/** Captures a compact grid whole, or a tall grid in groups of three rows. */
+/** Captures each example card with an identity independent of its grid row. */
 export async function capturePage({
   page,
   visual,
@@ -123,58 +119,34 @@ export async function capturePage({
 }: CapturePageParams) {
   const main = query(page).main();
   await waitForFonts(page);
-  const { height } = await main.evaluate((node) =>
-    node.getBoundingClientRect(),
-  );
-  if (height <= SINGLE_CAPTURE_HEIGHT) {
-    // The grid pads itself, so a margin would only add canvas.
-    await visual(
-      getCapture(main, colorScheme, { item, fullPage: true, clipMargin: 0 }),
-    );
-    return;
-  }
-
-  const boxes = main.locator(":scope > article");
-  const rows = await boxes.evaluateAll((elements) => {
-    const rows: number[][] = [];
-    let previousTop: number | undefined;
-    for (const [index, element] of elements.entries()) {
-      const { top } = element.getBoundingClientRect();
-      if (top !== previousTop) {
-        rows.push([]);
-        previousTop = top;
-      }
-      rows.at(-1)?.push(index + 1);
-    }
-    return rows;
-  });
-  expect(rows.length).toBeGreaterThan(0);
-  // Each extra image needs its own capture budget.
-  const extraCaptures = Math.ceil(rows.length / ROWS_PER_CAPTURE) - 1;
+  const boxes = await main.locator(":scope > article").all();
+  expect(boxes.length).toBeGreaterThan(0);
+  // Oversize pages fall back to a separate capture budget for each card.
+  const extraCaptures = boxes.length - 1;
   test.setTimeout(test.info().timeout + extraCaptures * CAPTURE_TIMEOUT);
-  for (let index = 0; index < rows.length; index += ROWS_PER_CAPTURE) {
-    const group = rows.slice(index, index + ROWS_PER_CAPTURE).flat();
-    const sections = main.locator(
-      group.map((child) => `:scope > article:nth-child(${child})`).join(","),
+  const regions: ScreenshotRegion[] = [];
+  // Half the 16px grid gap keeps adjacent cards outside each crop.
+  const clipMargin = 8;
+  for (const box of boxes) {
+    const title =
+      (
+        await query(box.locator(":scope > header")).heading().textContent()
+      )?.trim() ?? "";
+    expect(title).toBeTruthy();
+    const height = await box.evaluate(
+      (node) => node.getBoundingClientRect().height,
     );
-    const bounds = await sections.evaluateAll((elements) => {
-      const rects = elements.map((element) => element.getBoundingClientRect());
-      return (
-        Math.max(...rects.map((rect) => rect.bottom)) -
-        Math.min(...rects.map((rect) => rect.top))
-      );
-    });
-    // Half the 16px grid gap keeps adjacent rows outside the capture.
-    const clipMargin = 8;
-    expect(bounds + clipMargin * 2).toBeLessThanOrEqual(MAX_CAPTURE_HEIGHT);
-    await visual(
-      getCapture(sections, colorScheme, {
-        item: `${item}/rows-${index + 1}-${Math.min(index + ROWS_PER_CAPTURE, rows.length)}`,
-        fullPage: true,
-        clipMargin,
-      }),
-    );
+    expect(height + clipMargin * 2).toBeLessThanOrEqual(MAX_CAPTURE_HEIGHT);
+    regions.push({ name: slugify(title), element: box });
   }
+  await visual(
+    getCapture(main, colorScheme, {
+      item,
+      regions,
+      fullPage: true,
+      clipMargin,
+    }),
+  );
 }
 
 /**
