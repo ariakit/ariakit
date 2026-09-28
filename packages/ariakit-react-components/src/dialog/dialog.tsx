@@ -87,6 +87,11 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 const isSafariBrowser = isSafari();
 const openModalPortals = new WeakSet<HTMLElement>();
+// Escape key presses that already hid a dialog, keyed by the event the user
+// triggered. Other dialogs reject them, because the popup that closed can
+// remove its marks before a dialog outside its React tree sees the key press.
+// https://github.com/ariakit/ariakit/issues/7646
+const escapeKeyPressesThatHid = new WeakSet<Event>();
 
 function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   const activeElement = getActiveElement(dialog);
@@ -765,7 +770,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // on the copy that Composite dispatches and remove the marks before the
       // original event reaches this dialog.
       // https://github.com/ariakit/ariakit/issues/7632
-      const accepted = !isElementMarked(dialog) && hideOnEscapeProp(event);
+      const isTopmost =
+        !isElementMarked(dialog) && !escapeKeyPressesThatHid.has(source);
+      const accepted = isTopmost && hideOnEscapeProp(event);
       keyPress = { accepted, hidden: false };
       escapeKeyPresses.set(source, keyPress);
     }
@@ -780,12 +787,14 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const accepted = acceptEscape(event);
     escapeEvents.delete(event);
     if (!accepted) return false;
-    const keyPress = escapeKeyPresses.get(getKeyboardEventSource(event));
+    const source = getKeyboardEventSource(event);
+    const keyPress = escapeKeyPresses.get(source);
     // The other event of the same key press already asked to hide the dialog.
     if (keyPress?.hidden) return true;
     if (keyPress) {
       keyPress.hidden = true;
     }
+    escapeKeyPressesThatHid.add(source);
     store.hide();
     return true;
   });
