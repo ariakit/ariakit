@@ -4,6 +4,7 @@ import { subscribe } from "@ariakit/store";
 import {
   getActiveElement,
   getDocument,
+  hasFocus,
   isTextField,
   isVisible,
 } from "@ariakit/utils";
@@ -32,6 +33,14 @@ export function getTreeActiveElement(node?: Node | null) {
     return root.activeElement;
   }
   return getActiveElement(node);
+}
+
+/**
+ * Like `hasFocus`, but also sees focus on `element` when it is inside a shadow
+ * tree.
+ */
+export function hasTreeFocus(element: Element) {
+  return hasFocus(element) || getTreeActiveElement(element) === element;
 }
 
 /** Marks the brief window between a focused item's ref cleanup and removal. */
