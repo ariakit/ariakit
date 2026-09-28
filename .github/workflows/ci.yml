@@ -184,7 +184,7 @@ jobs:
             test "$attempt_start" != "null"
           done
 
-          for ((poll = 0; poll < 40; poll += 1)); do
+          for ((poll = 0; poll < 65; poll += 1)); do
             checks="$(gh api --method GET -f check_name=Visonaut -f app_id=5028451 \
               -f per_page=100 "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs")"
             result="$(jq -r --arg sha "$GITHUB_SHA" --arg started "$attempt_start" '
