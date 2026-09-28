@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { slugify } from "#app/lib/string.ts";
 import { gotoAndSettle, withFramework } from "./preview.ts";
-import type { ScreenshotOptions } from "./visual.ts";
+import type { ScreenshotOptions, ScreenshotRegion } from "./visual.ts";
 import { viewports, waitForFonts } from "./visual.ts";
 
 // Helpers for the tests of the ariakit-ui-* sandboxes, which render the
@@ -121,9 +121,12 @@ export async function capturePage({
   await waitForFonts(page);
   const boxes = await main.locator(":scope > article").all();
   expect(boxes.length).toBeGreaterThan(0);
-  // Each extra image needs its own capture budget.
+  // Oversize pages fall back to a separate capture budget for each card.
   const extraCaptures = boxes.length - 1;
   test.setTimeout(test.info().timeout + extraCaptures * CAPTURE_TIMEOUT);
+  const regions: ScreenshotRegion[] = [];
+  // Half the 16px grid gap keeps adjacent cards outside each crop.
+  const clipMargin = 8;
   for (const box of boxes) {
     const title =
       (
@@ -133,17 +136,17 @@ export async function capturePage({
     const height = await box.evaluate(
       (node) => node.getBoundingClientRect().height,
     );
-    // Half the 16px grid gap keeps adjacent cards outside the capture.
-    const clipMargin = 8;
     expect(height + clipMargin * 2).toBeLessThanOrEqual(MAX_CAPTURE_HEIGHT);
-    await visual(
-      getCapture(box, colorScheme, {
-        item: `${item}/${slugify(title)}`,
-        fullPage: true,
-        clipMargin,
-      }),
-    );
+    regions.push({ name: slugify(title), element: box });
   }
+  await visual(
+    getCapture(main, colorScheme, {
+      item,
+      regions,
+      fullPage: true,
+      clipMargin,
+    }),
+  );
 }
 
 /**
