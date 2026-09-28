@@ -11,14 +11,10 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import {
-  getActiveElement,
-  invariant,
-  isFocusable,
-  isSelfTarget,
-} from "@ariakit/utils";
+import { invariant, isFocusable, isSelfTarget } from "@ariakit/utils";
 import type { ElementType, FocusEvent } from "react";
 import { useContext, useMemo, useRef, useState } from "react";
+import { getTreeActiveElement } from "../composite/utils.ts";
 import { DialogHeadingContext } from "../dialog/dialog-context.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
@@ -78,7 +74,7 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       if (!isFocusable(compositeElement)) return;
       const list = event.currentTarget;
       queueMicrotask(() => {
-        if (getActiveElement(list) !== list) return;
+        if (getTreeActiveElement(list) !== list) return;
         compositeElement.focus();
       });
     });
