@@ -15,7 +15,6 @@ import { sync } from "@ariakit/store";
 import {
   toArray,
   disabledFromProps,
-  getActiveElement,
   getPopupRole,
   queueBeforeEvent,
   invariant,
@@ -27,7 +26,7 @@ import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { useComposite } from "../composite/composite.tsx";
-import { usePresentItem } from "../composite/utils.ts";
+import { getTreeActiveElement, usePresentItem } from "../composite/utils.ts";
 import { isCompositeMoveKey } from "../focusable/__utils.ts";
 import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
@@ -53,18 +52,8 @@ function getSelectedValues(select: HTMLSelectElement) {
   return Array.from(select.selectedOptions).map((option) => option.value);
 }
 
-function isShadowRoot(node: Node): node is ShadowRoot {
-  return node.nodeType === node.DOCUMENT_FRAGMENT_NODE && "host" in node;
-}
-
 function ownsFocus(element: HTMLElement) {
-  const root = element.getRootNode();
-  // Inside a shadow tree, the document reports the shadow host as its active
-  // element, so only the shadow root knows whether the element has focus.
-  const activeElement = isShadowRoot(root)
-    ? root.activeElement
-    : getActiveElement(element);
-  return activeElement === element;
+  return getTreeActiveElement(element) === element;
 }
 
 // When moving through the items while the select list is closed, we don't want
@@ -337,6 +326,10 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
         return present({
           markedOnly: true,
           requireFocus: true,
+          // The composite element can be a search input in a portaled popup,
+          // outside the select's shadow tree, where only the shadow host shows
+          // as focused. So the select names itself as the focus owner.
+          focusOwner: selectElement,
           scrollIntoView: scrollItemIntoView,
         });
       });

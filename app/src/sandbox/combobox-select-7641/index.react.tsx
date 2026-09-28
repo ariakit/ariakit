@@ -96,6 +96,82 @@ function FruitSelect({ label, autoFocusOnShow }: FruitSelectProps) {
   );
 }
 
+interface HeldFruitSelectProps {
+  label: string;
+  /**
+   * Adds a search input to the popup and portals the popup out of the shadow
+   * root, so the input, which becomes the composite element, is in the document
+   * while the select stays in the shadow tree.
+   */
+  searchable?: boolean;
+}
+
+/**
+ * A select whose popup waits for its positioning until a button in the same
+ * shadow root releases it, the way a popup waiting for layout to settle does.
+ * The popup doesn't hide on outside interaction, so focus can move to that
+ * button while the popup keeps its pending scroll.
+ */
+function HeldFruitSelect({ label, searchable }: HeldFruitSelectProps) {
+  const releaseRef = useRef<(() => void) | null>(null);
+  const updatePosition = async (props: {
+    updatePosition: () => Promise<void>;
+  }) => {
+    await new Promise<void>((resolve) => {
+      releaseRef.current = resolve;
+    });
+    await props.updatePosition();
+  };
+  const items = fruits.map((fruit) => (
+    <Ariakit.ComboboxItem
+      key={fruit}
+      value={fruit}
+      style={{ display: "block", padding: "4px 8px" }}
+    />
+  ));
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Lemon">
+      <div style={{ display: "flex", gap: 8, marginBlock: 8 }}>
+        <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect />
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => {
+            releaseRef.current?.();
+            releaseRef.current = null;
+          }}
+        >
+          Finish {label} positioning
+        </button>
+      </div>
+      <Ariakit.ComboboxPopover
+        portal={!!searchable}
+        autoFocusOnShow={false}
+        hideOnInteractOutside={false}
+        updatePosition={updatePosition}
+        aria-label={`${label} options`}
+        gutter={4}
+        style={{
+          maxHeight: 200,
+          overflow: "auto",
+          background: "Canvas",
+          border: "1px solid GrayText",
+        }}
+      >
+        {searchable ? (
+          <>
+            <Ariakit.ComboboxInput aria-label="Search fruits" />
+            <Ariakit.ComboboxList>{items}</Ariakit.ComboboxList>
+          </>
+        ) : (
+          items
+        )}
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 export default function Example() {
   return (
     <ShadowHost>
@@ -105,6 +181,8 @@ export default function Example() {
         label="Fruit without initial focus"
         autoFocusOnShow={false}
       />
+      <HeldFruitSelect label="Held fruit" />
+      <HeldFruitSelect label="Held searchable fruit" searchable />
     </ShadowHost>
   );
 }
