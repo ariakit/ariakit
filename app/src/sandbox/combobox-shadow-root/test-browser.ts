@@ -32,5 +32,24 @@ withFramework(import.meta.dirname, async ({ test }) => {
         .expect(q.option(`${prefix} Banana`))
         .toHaveAttribute("data-active-item");
     });
+
+    // Same cause as above: the auto select effect checks that the combobox has
+    // focus, and the document reports the shadow host instead.
+    // https://github.com/ariakit/ariakit/issues/7677
+    test(`activates the first item when typing in a shadow root (${label})`, async ({
+      page,
+      q,
+    }) => {
+      const combobox = q.combobox(label);
+      await combobox.click();
+      await page.keyboard.type("a");
+      await test.expect(combobox).toHaveValue("a");
+
+      const apple = q.option(`${prefix} Apple`);
+      await test.expect(apple).toHaveAttribute("data-active-item");
+
+      await page.keyboard.press("Enter");
+      await test.expect(combobox).toHaveValue("Apple");
+    });
   }
 });
