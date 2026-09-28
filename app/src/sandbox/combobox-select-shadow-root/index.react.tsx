@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import type { KeyboardEvent, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -109,26 +109,11 @@ function SearchableFruitSelect({
   label,
   inShadowRoot,
 }: SearchableFruitSelectProps) {
-  const store = Ariakit.useComboboxStore({ defaultSelectedValue: "Lemon" });
-  // TODO: Remove this workaround when
-  // https://github.com/ariakit/ariakit/issues/7671 is fixed. The popover's
-  // Escape listener sees the shadow host as the target, so it ignores the key
-  // press, and the select doesn't forward Escape to a popup with an input.
-  const closeOnEscape = (event: KeyboardEvent<HTMLElement>) => {
-    if (event.key !== "Escape") return;
-    if (!store.getState().open) return;
-    event.stopPropagation();
-    store.hide();
-  };
   return (
-    <Ariakit.ComboboxProvider store={store}>
+    <Ariakit.ComboboxProvider defaultSelectedValue="Lemon">
       <div style={{ display: "flex", gap: 8, marginBlock: 8 }}>
         <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
-        {/* The portaled variant doesn't get the workaround, so it keeps
-        covering the library's own Escape handling. */}
-        <Ariakit.ComboboxSelect
-          onKeyDown={inShadowRoot ? closeOnEscape : undefined}
-        />
+        <Ariakit.ComboboxSelect />
       </div>
       <Ariakit.ComboboxPopover
         portal={!inShadowRoot}
