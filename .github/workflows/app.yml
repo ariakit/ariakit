@@ -251,7 +251,9 @@ jobs:
       - name: Install Visonaut
         run: |
           mkdir -p "$RUNNER_TEMP/visonaut-tools"
-          pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact visonaut@0.3.5
+          visonaut_version="$(node -p 'require("./package.json").devDependencies.visonaut')"
+          [[ "$visonaut_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact "visonaut@$visonaut_version"
           echo "$RUNNER_TEMP/visonaut-tools/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Download captures
