@@ -76,6 +76,7 @@ export default defineConfig({
     ? [
         ["github"],
         ["dot"],
+        ["./src/test-utils/visual-duration-reporter.ts"],
         [
           "@visonaut/playwright/reporter",
           {
