@@ -947,6 +947,8 @@ const docsPackages: Array<{ dir: string; targets: DocsTarget[] }> = [
   { dir: "ariakit-react-utils", targets: [{}] },
   { dir: "ariakit-store", targets: [{}] },
   { dir: "ariakit-react-store", targets: [{ entry: "src/index.tsx" }] },
+  { dir: "ariakit-solid-utils", targets: [{}] },
+  { dir: "ariakit-solid-store", targets: [{}] },
   {
     dir: "ariakit-test",
     targets: [

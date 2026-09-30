@@ -29,7 +29,11 @@ const contentGroups: Record<string, ContentGroup> = {
     label: "Components",
     path: (framework) => `${framework}/components`,
   },
-
+  "ariakit-solid": {
+    type: "components",
+    label: "Components",
+    path: (framework) => `${framework}/components`,
+  },
   "ariakit-tailwind": {
     type: "styles",
     label: "Styles",

@@ -1,0 +1,59 @@
+# @ariakit/solid-utils
+
+## 0.1.8
+
+- Updated dependencies: `@ariakit/utils@0.2.1`
+
+## 0.1.7
+
+- Updated dependencies: `@ariakit/utils@0.2.0`
+
+## 0.1.6
+
+- Updated dependencies: `@ariakit/utils@0.1.6`
+
+## 0.1.5
+
+- Updated dependencies: `@ariakit/utils@0.1.5`
+
+## 0.1.4
+
+- Fixed `createRef().reset()` so function initial values are restored without being invoked.
+- Fixed Solid component hooks such as [`VisuallyHidden`](https://ariakit.com/reference/visually-hidden) and [`FocusTrapRegion`](https://ariakit.com/reference/focus-trap-region) to return usable props when called without arguments, matching their optional props type.
+- Updated dependencies: `@ariakit/utils@0.1.4`
+
+## 0.1.3
+
+- Updated dependencies: `@ariakit/utils@0.1.3`
+
+## 0.1.2
+
+- Fixed runtime `process.env.NODE_ENV` checks in published package output, including test-only behavior and development warnings.
+- Updated dependencies: `@ariakit/utils@0.1.2`
+
+## 0.1.1
+
+- Release artifacts now include npm trusted publishing provenance.
+- Updated dependencies: `@ariakit/utils@0.1.1`
+
+## 0.1.0
+
+### Added standalone utility and store packages
+
+The shared utility and store helpers are now available as pure ESM packages with a single public entrypoint:
+
+```ts
+import { invariant } from "@ariakit/utils";
+import { createStore } from "@ariakit/store";
+import { useStoreState } from "@ariakit/react-store";
+```
+
+React consumers importing from `@ariakit/react` can continue to use `useStoreState` there. The standalone store packages are available for direct utility imports, and `@ariakit/react-components/store` exposes the React store helpers for component internals.
+
+### Other updates
+
+- Updated dependencies: `@ariakit/utils@0.1.0`
+
+## 0.0.0
+
+Initial release.

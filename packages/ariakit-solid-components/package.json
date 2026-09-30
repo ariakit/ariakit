@@ -1,0 +1,51 @@
+{
+  "name": "@ariakit/solid-components",
+  "version": "0.1.8",
+  "description": "Ariakit Solid components",
+  "keywords": [
+    "ariakit",
+    "solid",
+    "components"
+  ],
+  "homepage": "https://ariakit.com",
+  "license": "MIT",
+  "author": {
+    "name": "Dani Guardiola",
+    "email": "hi@daniguardio.la",
+    "url": "https://dio.la"
+  },
+  "contributors": [
+    {
+      "name": "Diego Haz",
+      "email": "hazdiego@gmail.com",
+      "url": "https://github.com/diegohaz"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-solid-components"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "ariakit build",
+    "clean": "ariakit clean"
+  },
+  "dependencies": {
+    "@ariakit/components": "workspace:*",
+    "@ariakit/solid-utils": "workspace:*",
+    "@ariakit/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@ariakit/scripts": "workspace:*",
+    "solid-js": "1.9.15"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.8"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  }
+}

@@ -1,3 +1,5 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import pagesConfig from "./build-pages/config.js";
 import PagesWebpackPlugin from "./build-pages/pages-webpack-plugin.js";
 import { redirects } from "./redirects.js";
@@ -104,6 +106,16 @@ const nextConfig = {
     config.module.rules.push({
       // .solid.tsx files anywhere
       test: /\.solid\.tsx$/,
+      ...solidRule,
+    });
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    config.module.rules.push({
+      // .tsx files in the @ariakit/solid and @ariakit/solid-components packages
+      test: /\.tsx?$/,
+      include: [
+        path.resolve(__dirname, "../packages/ariakit-solid"),
+        path.resolve(__dirname, "../packages/ariakit-solid-components"),
+      ],
       ...solidRule,
     });
 
