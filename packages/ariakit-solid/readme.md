@@ -60,30 +60,9 @@ Yarn:
 yarn add @ariakit/solid
 ```
 
-## Usage
+## Development status
 
-  <!-- TODO: make sure the example is accurate once these components are implemented -->
-
-```jsx
-import { createSignal } from "solid-js";
-import { render } from "solid-js/web";
-import { Button, Dialog, DialogHeading } from "@ariakit/solid";
-
-function App() {
-  const [open, setOpen] = createSignal(false);
-  return (
-    <>
-      <Button onClick={() => setOpen(true)}>Open dialog</Button>
-      <Dialog open={open()} onClose={() => setOpen(false)}>
-        <DialogHeading>Ariakit</DialogHeading>
-        <p>Welcome to Ariakit!</p>
-      </Dialog>
-    </>
-  );
-}
-
-render(() => <App />, document.getElementById("root")!);
-```
+The implementation on `solid-reboot` is being rebuilt from scratch. This package currently contains scaffolding and an empty entrypoint. Follow [Ariakit Solid #7687](https://github.com/ariakit/ariakit/issues/7687) for progress.
 
 ## Core Team
 
