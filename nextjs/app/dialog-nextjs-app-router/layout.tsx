@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import LoginLink from "./login-link.tsx";
 
 export default function Layout(props: {
   children: ReactNode;
@@ -6,6 +7,7 @@ export default function Layout(props: {
 }) {
   return (
     <main>
+      <LoginLink />
       {props.children}
       {props.login}
     </main>
