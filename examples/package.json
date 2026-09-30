@@ -9,7 +9,6 @@
   "dependencies": {
     "@ariakit/react": "workspace:*",
     "@ariakit/react-components": "workspace:*",
-    "@ariakit/solid": "workspace:*",
     "@radix-ui/react-popover": "1.1.23",
     "@radix-ui/react-select": "2.3.7",
     "clsx": "2.1.1",

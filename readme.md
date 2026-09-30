@@ -33,7 +33,6 @@
 ## Packages
 
 - [@ariakit/react](packages/ariakit-react)
-- [@ariakit/solid](packages/ariakit-solid) (experimental)
 - [@ariakit/tailwind](packages/ariakit-tailwind) (experimental)
 
 ## Core Team

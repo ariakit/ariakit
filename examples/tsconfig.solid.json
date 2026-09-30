@@ -1,5 +1,0 @@
-{
-  "extends": "../tsconfig.solid.json",
-  "include": ["env.d.ts", "**/*.solid.tsx"],
-  "exclude": []
-}

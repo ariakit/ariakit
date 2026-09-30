@@ -86,26 +86,15 @@ const previews = defineCollection({
 });
 
 const references = defineCollection({
-  loader: jsdoc(
-    {
-      framework: "react",
-      corePath: join(
-        import.meta.dirname,
-        "../../packages/ariakit-react-components",
-      ),
-      packagePath: join(import.meta.dirname, "../../packages/ariakit-react"),
-      // watch: true,
-    },
-    {
-      framework: "solid",
-      corePath: join(
-        import.meta.dirname,
-        "../../packages/ariakit-solid-components",
-      ),
-      packagePath: join(import.meta.dirname, "../../packages/ariakit-solid"),
-      // watch: true,
-    },
-  ),
+  loader: jsdoc({
+    framework: "react",
+    corePath: join(
+      import.meta.dirname,
+      "../../packages/ariakit-react-components",
+    ),
+    packagePath: join(import.meta.dirname, "../../packages/ariakit-react"),
+    // watch: true,
+  }),
 });
 
 export const collections = {

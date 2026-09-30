@@ -18,7 +18,6 @@
     "@ariakit/react-components": "workspace:*",
     "@ariakit/react-store": "workspace:*",
     "@ariakit/react-utils": "workspace:*",
-    "@ariakit/solid": "workspace:*",
     "@ariakit/store": "workspace:*",
     "@ariakit/utils": "workspace:*",
     "@babel/core": "7.29.0",
