@@ -5,5 +5,7 @@ reviews:
   poem: false
   high_level_summary_in_walkthrough: true
   auto_review:
+    base_branches:
+      - ^solid-reboot$
     ignore_title_keywords:
       - Publish
