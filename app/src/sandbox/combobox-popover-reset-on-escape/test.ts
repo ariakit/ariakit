@@ -285,6 +285,39 @@ test("captures the baseline when an already-open store replaces the store", asyn
   expect(q.combobox("Store replacement")).toHaveTextContent("Banana");
 });
 
+// https://github.com/ariakit/ariakit/issues/7627
+test("restores the value committed before an arrow key reopened the popover", async () => {
+  q.combobox("Keyboard open").focus();
+  await press.ArrowDown();
+  expect(q.listbox()).toBeVisible();
+  await press.ArrowDown();
+  expect(q.combobox("Keyboard open")).toHaveTextContent("Banana");
+  await press.Enter();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
+  expect(q.combobox("Keyboard open")).toHaveTextContent("Banana");
+  await press.ArrowDown();
+  expect(q.listbox()).toBeVisible();
+  await press.ArrowDown();
+  expect(q.combobox("Keyboard open")).toHaveTextContent("Grape");
+  await press.Escape();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
+  expect(q.combobox("Keyboard open")).toHaveTextContent("Banana");
+});
+
+// https://github.com/ariakit/ariakit/issues/7627
+test("restores a value set while closed after an arrow key opened the popover", async () => {
+  await click(q.button("Select Banana while closed"));
+  expect(q.combobox("Keyboard open")).toHaveTextContent("Banana");
+  q.combobox("Keyboard open").focus();
+  await press.ArrowDown();
+  expect(q.listbox()).toBeVisible();
+  await press.ArrowDown();
+  expect(q.combobox("Keyboard open")).toHaveTextContent("Grape");
+  await press.Escape();
+  expect(q.listbox.maybe()).not.toBeInTheDocument();
+  expect(q.combobox("Keyboard open")).toHaveTextContent("Banana");
+});
+
 // https://github.com/ariakit/ariakit/pull/6832#discussion_r3650306657
 test("doesn't steal focus after focus leaves the popover", async () => {
   await click(q.combobox("Render counted"));

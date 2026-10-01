@@ -214,6 +214,37 @@ function ControlledOpen() {
   );
 }
 
+// An arrow key moves through the items before it opens the popover, so the
+// popover opens with movement already recorded.
+// https://github.com/ariakit/ariakit/issues/7627
+function KeyboardOpen() {
+  const store = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Apple",
+    selectOnMove: true,
+  });
+
+  return (
+    <Ariakit.ComboboxProvider store={store}>
+      <Ariakit.ComboboxSelect aria-label="Keyboard open">
+        <Ariakit.ComboboxSelectedValue />
+      </Ariakit.ComboboxSelect>
+      <button
+        type="button"
+        onClick={() => {
+          store.setSelectedValue("Banana");
+        }}
+      >
+        Select Banana while closed
+      </button>
+      <Ariakit.ComboboxPopover>
+        {values.map((value) => (
+          <Ariakit.ComboboxItem key={value} value={value} />
+        ))}
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 function RenderCounted() {
   const store = Ariakit.useComboboxStore({
     defaultSelectedValue: "Apple",
@@ -347,6 +378,7 @@ export default function Example() {
       <Counted vetoWithSelection />
       <DescendantClose />
       <ControlledOpen />
+      <KeyboardOpen />
       <RenderCounted />
       <StoreReplacement />
       <button type="button">External focus target</button>
