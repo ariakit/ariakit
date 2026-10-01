@@ -69,7 +69,7 @@ The sections below explain that translation starting with `createElement`, then 
 
 ## Rendering system
 
-`createElement(Type, props)` handles the [render prop](https://ariakit.com/guide/composition) and `wrapElement`, which wraps the rendered element, for example in a context provider.
+`createElement(Type, props)` renders the default tag (`Type`) unless the [render prop](https://ariakit.com/guide/composition) supplies a replacement. `wrapElement` wraps the rendered element, for example in a context provider.
 
 [React's helper](../ariakit-react-utils/src/system.tsx) creates a React element, which React renders afterward. Its callback/default branches can be summarized as:
 
