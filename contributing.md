@@ -1,5 +1,7 @@
 # Contributing
 
+For the Solid port, see [Contributing to Ariakit Solid](contributing-solid.md) for React/Solid comparisons, implementation rationale, tradeoffs, and current gaps.
+
 > Join the [Ariakit Discord server](https://discord.gg/WyHvnXsvMs) to connect with other contributors!
 
 ## Basic tutorial

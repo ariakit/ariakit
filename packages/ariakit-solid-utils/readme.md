@@ -17,7 +17,7 @@ npm i @ariakit/solid-utils
 
 ## Development status
 
-The implementation on `solid-reboot` is being rebuilt from scratch for Solid 2. This package contains the initial rendering system; component hooks and prop composition are still being developed. Follow [Ariakit Solid #7687](https://github.com/ariakit/ariakit/issues/7687) for progress.
+The implementation on `solid-reboot` is being rebuilt from scratch for Solid 2. This package contains the initial rendering system; component hooks and prop composition are still being developed. Follow [Ariakit Solid #7687](https://github.com/ariakit/ariakit/issues/7687) for progress. See [Contributing to Ariakit Solid](../../contributing-solid.md) for React/Solid comparisons and implementation rationale.
 
 <!-- ariakit-docs:start -->
 
