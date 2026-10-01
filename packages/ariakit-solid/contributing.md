@@ -19,14 +19,14 @@ For example, [React's Button](../ariakit-react-components/src/button/button.tsx)
 
 ```tsx
 function Button(props) {
-  const htmlProps = useButton(withDefaultButtonType(props));
+  const htmlProps = useButton(props);
   return createElement(TagName, htmlProps);
 }
 ```
 
 Context-only components such as [DialogProvider](../ariakit-react-components/src/dialog/dialog-provider.tsx) and [HeadingLevel](../ariakit-react-components/src/heading/heading-level.tsx) do not use this prop-hook/rendering split.
 
-Here `TagName` is `"button"`, `props` comes from `<Button ... />`, and `withDefaultButtonType` supplies the default button type.
+Here `TagName` is `"button"` and `props` comes from `<Button ... />`.
 
 Hooks compose behavior by calling other hooks and passing props through them. `useButton` adds button semantics and calls [useCommand](../ariakit-react-components/src/command/command.tsx) for keyboard activation; `useCommand` calls [useFocusable](../ariakit-react-components/src/focusable/focusable.tsx) for focus behavior. The returned props carry all those layers to the renderer.
 
@@ -61,27 +61,11 @@ function useCommand(props) {
 
 Each hook adds its own props and passes the result to the next hook. `useButton` does not render a `Command` component; it incorporates `useCommand`'s returned props into the props that `Button` eventually renders.
 
-### Solid: the same split, reactive props throughout
+### Solid: the same hooks and components
 
-The Solid port keeps the same hooks and components. A hook such as `useButton` will still accept props, call other prop hooks, and return props. The `use` prefix identifies its React counterpart; it does not mean that Solid follows React's hook execution rules.
+The Solid port keeps this structure: hooks accept props, call other prop hooks, and return props; components render the result. Solid runs the component and its hooks during setup, then updates through reactive computations instead of rerunning them as React does.
 
-React reruns the component and its hooks on updates. Solid normally runs them once during setup, then updates the affected reactive computations and DOM bindings. That changes how the hook is written:
-
-- React state becomes Solid signals; derived values use reactive reads or memos instead of relying on the next render.
-- Returned props need getters or another live view so later reads see current values. Spreading them into a plain object during setup can freeze those values.
-- Effects, context, refs, and cleanup use Solid's APIs under the component's reactive owner. Their timing must preserve the React behavior, rather than follow a one-to-one API rename.
-
-The intended component shape is therefore:
-
-```tsx
-// Component hooks and Button are not implemented yet.
-function Button(props) {
-  const htmlProps = useButton(props);
-  return createElement("button", htmlProps);
-}
-```
-
-Solid refs already travel through props, so this does not need React's `forwardRef` wrapper. Button defaults and Ariakit's prop composition rules still need their own translation. The previous port used this same hook/component split; the current implementation starts with the rendering helper described below.
+The sections below explain that translation starting with `createElement`, then prop types and prop composition. Component hooks are not implemented yet; their state and lifecycle translations will be documented alongside their implementations.
 
 ## Rendering system
 
