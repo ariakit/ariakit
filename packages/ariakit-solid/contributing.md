@@ -69,27 +69,9 @@ The sections below explain that translation starting with `createElement`, then 
 
 ## Rendering system
 
-`createElement(Type, props)` renders the default tag (`Type`) unless `render` supplies a replacement. A render callback receives the forwarded props; `wrapElement` receives the resulting element and can surround it with another component. For example, in React:
+`createElement(Type, props)` handles the [render prop](https://ariakit.com/guide/composition) and `wrapElement`, which wraps the rendered element, for example in a context provider.
 
-```tsx
-<Role
-  role="status"
-  render={(props) => <section {...props} />}
-  wrapElement={(element) => <main>{element}</main>}
->
-  Saved
-</Role>
-```
-
-Result:
-
-```html
-<main>
-  <section role="status">Saved</section>
-</main>
-```
-
-[React's helper](../ariakit-react-utils/src/system.tsx) creates an element description, which React renders afterward. Its callback/default branches can be summarized as:
+[React's helper](../ariakit-react-utils/src/system.tsx) creates a React element, which React renders afterward. Its callback/default branches can be summarized as:
 
 ```tsx
 function createElement(Type, props) {
@@ -99,27 +81,9 @@ function createElement(Type, props) {
 }
 ```
 
-[Solid's helper](../ariakit-solid-utils/src/system.tsx) has the same arguments. It keeps props live and defers element creation until the wrapper is in place:
+[Solid's helper](../ariakit-solid-utils/src/system.tsx) performs the same work using `omit` from `solid-js` and `dynamic` from `@solidjs/web`. The following steps explain each part of the translation. React's element-cloning branch is covered under [element-form rendering](#element-form-rendering).
 
-```tsx
-import { dynamic } from "@solidjs/web";
-import { omit } from "solid-js";
-
-function createElement(Type, props) {
-  const rest = omit(props, "render", "wrapElement");
-  const Render = dynamic(() => props.render ?? Type);
-  const renderElement = () => <Render {...rest} />;
-  const Element = dynamic(() => {
-    const wrapElement = props.wrapElement;
-    return wrapElement ? () => wrapElement(renderElement) : renderElement;
-  });
-  return <Element />;
-}
-```
-
-The key difference is what gets wrapped: React passes an element description; Solid passes a function that creates the subtree inside the wrapper's context. React's additional element-cloning branch is covered under [element-form rendering](#element-form-rendering).
-
-### Keep forwarded props reactive
+### 1. Omit rendering options without copying props
 
 React separates rendering options with object rest:
 
@@ -147,7 +111,7 @@ createElement("div", {
 
 `children: count()` would read the signal while constructing the object. The getter lets the renderer read it reactively. Direct JSX expressions and spreads are handled by Solid's compiler.
 
-### Select the element or render callback
+### 2. Select the renderer
 
 React's helper has three branches: clone a supplied React element with merged props, call a render callback, or render the default `Type`.
 
@@ -155,25 +119,25 @@ Solid currently implements the callback and default branches:
 
 ```tsx
 const Render = dynamic(() => props.render ?? Type);
-const renderElement = () => <Render {...rest} />;
 ```
 
-Solid 2's `dynamic` tracks the renderer selection and owns the rendered subtree. `renderElement` defers creation so a wrapper can establish context first.
-
-```tsx
-createElement("button", {
-  children: "Save",
-  render: (props) => <button {...props} type="button" />,
-});
-```
+Solid 2's `dynamic` tracks `props.render` and selects either that renderer or the default `Type`. Unlike reading `render` once during setup, this selection reacts to changes.
 
 As in React's callback branch, the callback decides where to forward children, attributes, events, and refs. Additional callback props are not automatically composed: `onClick={myHandler}` after `{...props}` can replace the forwarded handler.
 
 Changing the renderer can replace the subtree. Component hooks that detect their underlying element only during setup need separate handling; renderer replacement alone does not rerun those hooks. React documents this constraint in its [render options](../ariakit-react-utils/src/types.ts).
 
-### Create children under the wrapper
+### 3. Defer element creation
 
-React passes an element description to `wrapElement`:
+```tsx
+const renderElement = () => <Render {...rest} />;
+```
+
+The function forwards the filtered props to the selected renderer, but does not create the subtree yet. Calling it later lets a wrapper establish context before child components run.
+
+### 4. Apply the wrapper
+
+React passes a React element to `wrapElement`:
 
 ```tsx
 // React
