@@ -8,16 +8,16 @@ import type { Props } from "./types.ts";
  * wrapper. Unlike React elements, Solid JSX has already been instantiated;
  * element substitution therefore uses a callback in this initial contract.
  */
-export function createElement<T extends ValidComponent>(
+export function createInstance<T extends ValidComponent>(
   Type: T,
   props: Props<T>,
 ) {
-  const rest = omit(props, "render", "wrapElement");
+  const rest = omit(props, "render", "wrapInstance");
   const Render = dynamic(() => props.render ?? Type);
   const renderElement = () => <Render {...rest} />;
   const Element = dynamic(() => {
-    const wrapElement = props.wrapElement;
-    return wrapElement ? () => wrapElement(renderElement) : renderElement;
+    const wrapInstance = props.wrapInstance;
+    return wrapInstance ? () => wrapInstance(renderElement) : renderElement;
   });
   return <Element />;
 }

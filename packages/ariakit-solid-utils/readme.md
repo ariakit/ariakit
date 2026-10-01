@@ -23,17 +23,17 @@ The implementation on `solid-reboot` is being rebuilt from scratch for Solid 2. 
 
 ## API reference
 
-- [`createElement`](#createelement)
+- [`createInstance`](#createinstance)
 - [`HTMLProps`](#htmlprops)
 - [`RenderProp`](#renderprop)
-- [`WrapElement`](#wrapelement)
+- [`WrapInstance`](#wrapinstance)
 - [`Options`](#options)
 - [`Props`](#props)
 
-### `createElement`
+### `createInstance`
 
 ```ts
-function createElement<T extends ValidComponent>(
+function createInstance<T extends ValidComponent>(
   Type: T,
   props: Props<T>,
 ): import("@solidjs/web").JSX.Element;
@@ -69,10 +69,10 @@ type RenderProp<T extends ValidComponent> = (
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
-### `WrapElement`
+### `WrapInstance`
 
 ```ts
-type WrapElement = (element: () => JSX.Element) => JSX.Element;
+type WrapInstance = (element: () => JSX.Element) => JSX.Element;
 ```
 
 <div align="right">
@@ -84,7 +84,7 @@ type WrapElement = (element: () => JSX.Element) => JSX.Element;
 ```ts
 interface Options<T extends ValidComponent> {
   render?: RenderProp<T>;
-  wrapElement?: WrapElement;
+  wrapInstance?: WrapInstance;
 }
 ```
 

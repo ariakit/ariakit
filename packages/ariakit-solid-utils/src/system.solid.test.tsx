@@ -3,7 +3,7 @@ import { render } from "@solidjs/web";
 import { createContext, createSignal, Show, useContext } from "solid-js";
 import { testSystem } from "../../ariakit-test/src/__system-tests.ts";
 import type { SystemScenario } from "../../ariakit-test/src/__system-tests.ts";
-import { createElement } from "./index.ts";
+import { createInstance } from "./index.ts";
 import type { RenderProp } from "./index.ts";
 
 const renderDiv: RenderProp<"div"> = (props) => <div {...props} />;
@@ -24,7 +24,7 @@ function ReplacementFixture() {
   return (
     <>
       <button onClick={() => setOriginal(false)}>Switch element</button>
-      {createElement("div", {
+      {createInstance("div", {
         role: "status",
         "aria-label": "View",
         children: "Swappable",
@@ -41,7 +41,7 @@ function NativeFixture() {
   return (
     <>
       <button onClick={() => setCount(count() + 1)}>Increment</button>
-      {createElement("div", {
+      {createInstance("div", {
         role: "status",
         "aria-label": "Counter",
         get title() {
@@ -60,7 +60,7 @@ function RenderFixture() {
   let ref: HTMLButtonElement | undefined;
   return (
     <>
-      {createElement("button", {
+      {createInstance("button", {
         ref: (element) => {
           ref = element;
         },
@@ -87,13 +87,13 @@ function WrapperFixture() {
       </button>
       <Show when={show()}>
         {(_visible) =>
-          createElement("div", {
+          createInstance("div", {
             role: "status",
             "aria-label": "Context",
             get children() {
               return <ContextValue />;
             },
-            wrapElement: (element) => (
+            wrapInstance: (element) => (
               <Context value="Wrapped">{element()}</Context>
             ),
           })

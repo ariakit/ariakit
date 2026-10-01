@@ -10,11 +10,11 @@ export type RenderProp<T extends ValidComponent> = (
 
 // Solid creates elements eagerly. Defer creation until inside the wrapper so
 // providers and cleanup scopes own the rendered subtree.
-export type WrapElement = (element: () => JSX.Element) => JSX.Element;
+export type WrapInstance = (element: () => JSX.Element) => JSX.Element;
 
 export interface Options<T extends ValidComponent> {
   render?: RenderProp<T>;
-  wrapElement?: WrapElement;
+  wrapInstance?: WrapInstance;
 }
 
 export type Props<T extends ValidComponent> = HTMLProps<T> & Options<T>;

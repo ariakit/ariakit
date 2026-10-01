@@ -65,11 +65,11 @@ Each hook adds its own props and passes the result to the next hook. `useButton`
 
 The Solid port keeps this structure: hooks accept props, call other prop hooks, and return props; components render the result. Solid runs the component and its hooks during setup, then updates through reactive computations instead of rerunning them as React does.
 
-The sections below explain that translation starting with `createElement`, then prop types and prop composition. Component hooks are not implemented yet; their state and lifecycle translations will be documented alongside their implementations.
+The sections below explain that translation starting with Solid's `createInstance` (React's `createElement`), then prop types and prop composition. Component hooks are not implemented yet; their state and lifecycle translations will be documented alongside their implementations.
 
 ## Rendering system
 
-`createElement(Type, props)` renders the default tag (`Type`) unless the [render prop](https://ariakit.com/guide/composition) supplies a replacement. `wrapElement` wraps the rendered element, for example in a context provider.
+React's `createElement(Type, props)` renders the default tag (`Type`) unless the [render prop](https://ariakit.com/guide/composition) supplies a replacement. `wrapElement` wraps the rendered element, for example in a context provider.
 
 [React's helper](../ariakit-react-utils/src/system.tsx) creates a React element, which React renders afterward. Its callback/default branches can be summarized as:
 
@@ -81,7 +81,11 @@ function createElement(Type, props) {
 }
 ```
 
-[Solid's helper](../ariakit-solid-utils/src/system.tsx) performs the same work using `omit` from `solid-js` and `dynamic` from `@solidjs/web`. The following steps explain each part of the translation. React's element-cloning branch is covered under [element-form rendering](#element-form-rendering).
+[Solid's `createInstance`](../ariakit-solid-utils/src/system.tsx) performs the same work using `omit` from `solid-js` and `dynamic` from `@solidjs/web`.
+
+The names `createInstance` and `wrapInstance` reflect Solid JSX instantiating components when evaluated, whereas React JSX creates React elements for later rendering. `wrapInstance` corresponds to React's `wrapElement`, but receives a function that creates the subtree.
+
+The following steps explain each part of the translation. React's element-cloning branch is covered under [element-form rendering](#element-form-rendering).
 
 ### 1. Omit rendering options without copying props
 
@@ -94,7 +98,7 @@ const { wrapElement, render, ...rest } = props;
 React runs the component again on updates, so this copy contains the current values. Solid normally runs the component once; an eager copy can capture values that should keep changing. Solid therefore uses a live filtered view:
 
 ```ts
-const rest = omit(props, "render", "wrapElement");
+const rest = omit(props, "render", "wrapInstance");
 ```
 
 `omit` keeps reads connected to the original props and prevents internal rendering options from reaching the DOM. It filters props; it does not merge handlers, apply defaults, or compose refs.
@@ -102,7 +106,7 @@ const rest = omit(props, "render", "wrapElement");
 The same rule applies when constructing props manually:
 
 ```tsx
-createElement("div", {
+createInstance("div", {
   get children() {
     return count();
   },
@@ -150,17 +154,17 @@ The child components execute later under the provider. Solid JSX can instantiate
 
 ```tsx
 // Solid
-wrapElement: (element) => <Context value="Wrapped">{element()}</Context>;
+wrapInstance: (instance) => <Context value="Wrapped">{instance()}</Context>;
 ```
 
-Calling `element()` inside the provider gives the subtree that context and its cleanup scope. Creating the subtree first and wrapping the resulting value is too late.
+Calling `instance()` inside the provider gives the subtree that context and its cleanup scope. Creating the subtree first and wrapping the resulting value is too late.
 
 The outer `dynamic` selects whether to use the wrapper:
 
 ```tsx
 const Element = dynamic(() => {
-  const wrapElement = props.wrapElement;
-  return wrapElement ? () => wrapElement(renderElement) : renderElement;
+  const wrapInstance = props.wrapInstance;
+  return wrapInstance ? () => wrapInstance(renderElement) : renderElement;
 });
 return <Element />;
 ```
@@ -191,8 +195,8 @@ Compare [React types](../ariakit-react-utils/src/types.ts) with [Solid types](..
 | --------------- | ---------------------------------------------------------------------------------------------------- |
 | `HTMLProps<T>`  | Solid's `ComponentProps<T>` plus `data-*` attributes, instead of React's `ComponentPropsWithRef<T>`. |
 | `RenderProp<T>` | Receives `HTMLProps<T>` and returns Solid `JSX.Element`, instead of React `ReactNode`.               |
-| `WrapElement`   | Receives `() => JSX.Element` instead of a React element, preserving creation timing.                 |
-| `Options<T>`    | Declares internal `render` and `wrapElement` options.                                                |
+| `WrapInstance`  | Receives `() => JSX.Element` instead of React's `WrapElement` argument, preserving creation timing.  |
+| `Options<T>`    | Declares internal `render` and `wrapInstance` options.                                               |
 | `Props<T>`      | Combines element props with those options.                                                           |
 
 `T` connects the default renderer to its props. React also has a custom-options parameter, `Props<T, P>`, and removes custom-option keys from `HTMLProps<T, P>`. Those types, polymorphic hook signatures, and element-form rendering types still need translation.
@@ -212,7 +216,7 @@ React's [forwardRef](../ariakit-react-utils/src/system.tsx) also removes `undefi
 
 Solid's composition must retain these rules without copying reactive values into stale objects. Native prop merging alone does not establish Ariakit's handler, ref, or precedence semantics.
 
-React's `createHook` wraps the prop hook described above. The previous Solid port also used `createHook` and `withOptions` for hook wrapping, option extraction, and defaults. Neither is rebuilt yet. Multiple hooks also need to compose wrappers in a defined order, rather than replacing one another's `wrapElement`.
+React's `createHook` wraps the prop hook described above. The previous Solid port also used `createHook` and `withOptions` for hook wrapping, option extraction, and defaults. Neither is rebuilt yet. Multiple hooks also need to compose wrappers in a defined order, rather than replacing one another's `wrapInstance`.
 
 ## Shared tests
 
