@@ -1,6 +1,6 @@
 # Contributing to Ariakit Solid
 
-Translate Ariakit React's behavior into Solid 2, including accessibility, component composition, SSR, and hydration. Reuse framework-independent logic. See the [repository guide](../../contributing.md) for setup and [#7687](https://github.com/ariakit/ariakit/issues/7687) for progress.
+This guide explains how Ariakit React's implementation maps to Solid 2, with code comparisons and the reasons for each difference. See the [repository guide](../../contributing.md) for setup and [#7687](https://github.com/ariakit/ariakit/issues/7687) for progress.
 
 ## Rendering system
 
