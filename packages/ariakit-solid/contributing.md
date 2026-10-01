@@ -8,9 +8,13 @@ This guide explains those translations and their rationale. See the [repository 
 
 ## Rendering system
 
-Ariakit components use a shared `createElement` helper to turn their final props into an element. Component hooks prepare attributes, event handlers, and refs for the component's behavior; this helper handles how the result is rendered. It also supports changing the element through `render` and surrounding it with another component through `wrapElement`.
+Props start with the attributes and children supplied in JSX, such as `role="status"` and `Saved` in `<Role role="status">Saved</Role>`. From there:
 
-For example, [React's `Role`](../ariakit-react-components/src/role/role.tsx) defaults to a `div` and passes its props straight to the helper. Here is its rendering code with type annotations omitted:
+1. The component receives those values as its `props` argument.
+2. Components with behavior, such as [Button](../ariakit-react-components/src/button/button.tsx), pass them through a hook that adds attributes, event handlers, and refs. [Role](../ariakit-react-components/src/role/role.tsx) passes them through unchanged.
+3. The component calls `createElement(Type, props)`, where `Type` is its default tag and `props` contains the values to render.
+
+Here is React's `Role` rendering code with type annotations omitted:
 
 ```tsx
 import { createElement, forwardRef } from "@ariakit/react-utils";
@@ -22,18 +26,29 @@ const Role = forwardRef(function Role(props) {
 });
 ```
 
-With `<Role role="status">Saved</Role>`, the call is effectively `createElement("div", { role: "status", children: "Saved" })`, producing `<div role="status">Saved</div>`. Components such as [Button](../ariakit-react-components/src/button/button.tsx) first run their behavior hook, then pass the resulting props to the same helper. `Role` is not yet implemented in Solid, but its rendering helper is.
+The helper renders that default tag unless `render` supplies a replacement. A render callback receives the forwarded props; `wrapElement` receives the resulting element and can surround it with another component. For example, in React:
 
-The helper's two arguments and rendering options are:
+```tsx
+<Role
+  role="status"
+  render={(props) => <section {...props} />}
+  wrapElement={(element) => <main>{element}</main>}
+>
+  Saved
+</Role>
+```
 
-- `Type`: the component's default HTML tag or component, supplied by the caller. In the `Role` example, it is `"div"`.
-- `props`: the props supplied by the component, including any attributes, children, handlers, refs, and rendering options.
-- `props.render`: an optional replacement for the default element. A callback receives the forwarded props and returns the replacement JSX.
-- `props.wrapElement`: an optional function that surrounds the result, for example with a context provider that supplies values to child components.
+Result:
+
+```html
+<main>
+  <section role="status">Saved</section>
+</main>
+```
+
+`Role` is not yet implemented in Solid, but its rendering helper is.
 
 [React's helper](../ariakit-react-utils/src/system.tsx) creates an element description, which React renders afterward. Its callback/default branches can be summarized as:
-
-For the callback/default path, React creates an element description and then wraps it:
 
 ```tsx
 function createElement(Type, props) {
