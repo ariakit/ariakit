@@ -69,25 +69,7 @@ The sections below explain that translation starting with `createElement`, then 
 
 ## Rendering system
 
-Props start with the attributes and children supplied in JSX, such as `role="status"` and `Saved` in `<Role role="status">Saved</Role>`. From there:
-
-1. The component receives those values as its `props` argument.
-2. Components with behavior, such as [Button](../ariakit-react-components/src/button/button.tsx), pass them through a hook that adds attributes, event handlers, and refs. [Role](../ariakit-react-components/src/role/role.tsx) passes them through unchanged.
-3. The component calls `createElement(Type, props)`, where `Type` is its default tag and `props` contains the values to render.
-
-React's `Role` passes its props straight to the rendering helper:
-
-```tsx
-import { createElement } from "@ariakit/react-utils";
-
-const TagName = "div";
-
-function Role(props) {
-  return createElement(TagName, props);
-}
-```
-
-The helper renders that default tag unless `render` supplies a replacement. A render callback receives the forwarded props; `wrapElement` receives the resulting element and can surround it with another component. For example, in React:
+`createElement(Type, props)` renders the default tag (`Type`) unless `render` supplies a replacement. A render callback receives the forwarded props; `wrapElement` receives the resulting element and can surround it with another component. For example, in React:
 
 ```tsx
 <Role
@@ -106,8 +88,6 @@ Result:
   <section role="status">Saved</section>
 </main>
 ```
-
-`Role` is not yet implemented in Solid, but its rendering helper is.
 
 [React's helper](../ariakit-react-utils/src/system.tsx) creates an element description, which React renders afterward. Its callback/default branches can be summarized as:
 
