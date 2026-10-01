@@ -85,47 +85,23 @@ function createElement(Type, props) {
 
 The names `createInstance` and `wrapInstance` reflect Solid JSX instantiating components when evaluated, whereas React JSX creates React elements for later rendering. `wrapInstance` corresponds to React's `wrapElement`, but receives a function that creates the subtree.
 
-The following steps explain each part of the translation. React's element-cloning branch is covered under [element-form rendering](#element-form-rendering).
+### 1. Omit rendering options
 
-### 1. Omit rendering options without copying props
-
-React separates rendering options with object rest:
-
-```ts
-const { wrapElement, render, ...rest } = props;
-```
-
-React runs the component again on updates, so this copy contains the current values. Solid normally runs the component once; an eager copy can capture values that should keep changing. Solid therefore uses a live filtered view:
+Instead of React's object rest destructuring, Solid uses `omit` to exclude `render` and `wrapInstance` from the forwarded props while preserving reactive reads. See the [Solid 2 documentation](https://v2.solidjs.com) for native helper APIs.
 
 ```ts
 const rest = omit(props, "render", "wrapInstance");
 ```
 
-`omit` keeps reads connected to the original props and prevents internal rendering options from reaching the DOM. It filters props; it does not merge handlers, apply defaults, or compose refs.
-
-The same rule applies when constructing props manually:
-
-```tsx
-createInstance("div", {
-  get children() {
-    return count();
-  },
-});
-```
-
-`children: count()` would read the signal while constructing the object. The getter lets the renderer read it reactively. Direct JSX expressions and spreads are handled by Solid's compiler.
-
 ### 2. Select the renderer
 
-React's helper has three branches: clone a supplied React element with merged props, call a render callback, or render the default `Type`.
-
-Solid currently implements the callback and default branches:
+Solid selects the render callback or default `Type` with `dynamic`:
 
 ```tsx
 const Render = dynamic(() => props.render ?? Type);
 ```
 
-Solid 2's `dynamic` tracks `props.render` and selects either that renderer or the default `Type`. Unlike reading `render` once during setup, this selection reacts to changes.
+This keeps the renderer selection reactive.
 
 As in React's callback branch, the callback decides where to forward children, attributes, events, and refs. Additional callback props are not automatically composed: `onClick={myHandler}` after `{...props}` can replace the forwarded handler.
 
@@ -150,14 +126,14 @@ wrapElement: (element) => (
 );
 ```
 
-The child components execute later under the provider. Solid JSX can instantiate children when evaluated, so Solid passes a function that creates the subtree:
+Solid's `wrapInstance` receives a factory so the provider is established before the subtree is created:
 
 ```tsx
 // Solid
 wrapInstance: (instance) => <Context value="Wrapped">{instance()}</Context>;
 ```
 
-Calling `instance()` inside the provider gives the subtree that context and its cleanup scope. Creating the subtree first and wrapping the resulting value is too late.
+Calling `instance()` inside the provider gives the subtree its context and cleanup scope.
 
 The outer `dynamic` selects whether to use the wrapper:
 
@@ -169,9 +145,9 @@ const Element = dynamic(() => {
 return <Element />;
 ```
 
-The inner selector chooses the renderer; the outer selector chooses its wrapper. Returning a function delays wrapper execution until rendering. This preserves ownership, but changes React's wrapper argument from an element to a factory that must be called at the intended location.
+Returning a function delays wrapper execution until rendering. This is why `wrapInstance` accepts a factory instead of React's element argument.
 
-When manually supplying child JSX, use a getter if creation must happen under the wrapper. This is how the [Solid context fixture](../ariakit-solid-utils/src/system.solid.test.tsx) creates its context-reading child.
+The [Solid context fixture](../ariakit-solid-utils/src/system.solid.test.tsx) also defers child creation so its context reads happen under the wrapper.
 
 ### Element-form rendering
 
@@ -238,7 +214,7 @@ pnpm test system.react.test.tsx system.solid.test.tsx --run
 - [Library](../../tsconfig.solid.json) and [test](../../tsconfig.solid.test.json) TypeScript configurations use `jsxImportSource: "@solidjs/web"`.
 - The [shared fixture loader](../../vitest.setup.framework.ts) mounts Solid fixtures with `createComponent`, `Loading`, and web `render`, then disposes them after the test. The system tests mount their own fixtures.
 
-The Astro app and legacy website still have Solid 1 integrations. New Solid 2 fixtures need compatible preview wiring before they can run there. For lifecycle translations, consult the [Solid 2 migration guide](https://v2.solidjs.com/migration/from-solid-1): scheduling and effects changed, so React effects cannot be translated by name alone.
+The Astro app and legacy website still have Solid 1 integrations. New Solid 2 fixtures need compatible preview wiring before they can run there. Solid 2 API changes are documented in the [migration guide](https://v2.solidjs.com/migration/from-solid-1).
 
 Package builds rewrite export metadata. Build separately, then clean before tests and type checks:
 
