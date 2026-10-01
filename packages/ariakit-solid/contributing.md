@@ -10,7 +10,7 @@ This guide explains those translations and their rationale. See the [repository 
 
 ### React: behavior hooks and rendering components
 
-Most Ariakit React components have two parts:
+The standard pattern for Ariakit React components that render DOM elements has two parts:
 
 - A **behavior hook**, such as `useButton`, receives props and returns props with the component's accessibility attributes, event handlers, and refs. It can also manage state, effects, and context.
 - A **component**, such as `Button`, receives the props supplied in JSX, calls that hook, then renders the returned props with `createElement`.
@@ -24,24 +24,48 @@ const Button = forwardRef(function Button(props) {
 });
 ```
 
+Context-only components such as [DialogProvider](../ariakit-react-components/src/dialog/dialog-provider.tsx) and [HeadingLevel](../ariakit-react-components/src/heading/heading-level.tsx) do not use this prop-hook/rendering split.
+
 Here `TagName` is `"button"`, `props` comes from `<Button ... />`, and `withDefaultButtonType` supplies the default button type. Ariakit's `forwardRef` makes the caller's ref available to the implementation as a prop.
 
 Hooks compose behavior by calling other hooks and passing props through them. `useButton` adds button semantics and calls [useCommand](../ariakit-react-components/src/command/command.tsx) for keyboard activation; `useCommand` calls [useFocusable](../ariakit-react-components/src/focusable/focusable.tsx) for focus behavior. The returned props carry all those layers to the renderer.
 
-This split also lets a contributor reuse behavior without using the corresponding component:
+Here is that prop flow inside the hooks, abbreviated to show composition. State, effects, handler implementations, type annotations, and the `createHook` wrappers are omitted:
 
 ```tsx
-function MyButton(props) {
-  const htmlProps = useButton(props);
-  return <Role {...htmlProps} />;
+function useButton(props) {
+  // Setup above computes ref, tagName, and isNativeButton.
+  props = {
+    role: !isNativeButton && tagName !== "a" ? "button" : undefined,
+    ...props,
+    ref: useMergeRefs(ref, props.ref),
+  };
+
+  props = useCommand(props);
+  return props;
+}
+
+function useCommand(props) {
+  // Setup above creates keyboard handlers and other command props.
+  props = {
+    ...props,
+    onKeyDown,
+    onKeyUp,
+    onBlur,
+  };
+
+  props = useFocusable(props);
+  return props;
 }
 ```
 
+Each hook adds its own props and passes the result to the next hook. `useButton` does not render a `Command` component; it incorporates `useCommand`'s returned props into the props that `Button` eventually renders.
+
 ### Solid: the same split, reactive props throughout
 
-The Solid port keeps behavior functions separate from rendering components. A function such as `useButton` will still accept props, compose lower-level behavior, and return props. The `use` prefix identifies its React counterpart; it does not mean that Solid follows React's hook execution rules.
+The Solid port keeps the same hooks and components. A hook such as `useButton` will still accept props, call other prop hooks, and return props. The `use` prefix identifies its React counterpart; it does not mean that Solid follows React's hook execution rules.
 
-React reruns the component and its hooks on updates. Solid normally runs them once during setup, then updates the affected reactive computations and DOM bindings. That changes how the behavior function is written:
+React reruns the component and its hooks on updates. Solid normally runs them once during setup, then updates the affected reactive computations and DOM bindings. That changes how the hook is written:
 
 - React state becomes Solid signals; derived values use reactive reads or memos instead of relying on the next render.
 - Returned props need getters or another live view so later reads see current values. Spreading them into a plain object during setup can freeze those values.
@@ -260,7 +284,7 @@ React's [forwardRef](../ariakit-react-utils/src/system.tsx) also removes `undefi
 
 Solid's composition must retain these rules without copying reactive values into stale objects. Native prop merging alone does not establish Ariakit's handler, ref, or precedence semantics.
 
-React's `createHook` wraps the behavior function described above. The previous Solid port also used `createHook` and `withOptions` for hook wrapping, option extraction, and defaults. Neither is rebuilt yet. Multiple hooks also need to compose wrappers in a defined order, rather than replacing one another's `wrapElement`.
+React's `createHook` wraps the prop hook described above. The previous Solid port also used `createHook` and `withOptions` for hook wrapping, option extraction, and defaults. Neither is rebuilt yet. Multiple hooks also need to compose wrappers in a defined order, rather than replacing one another's `wrapElement`.
 
 ## Shared tests
 
