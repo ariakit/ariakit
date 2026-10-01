@@ -26,8 +26,11 @@ import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { useComposite } from "../composite/composite.tsx";
-import { getTreeActiveElement, usePresentItem } from "../composite/utils.ts";
-import { isCompositeMoveKey } from "../focusable/__utils.ts";
+import { usePresentItem } from "../composite/utils.ts";
+import {
+  getTreeActiveElement,
+  isCompositeMoveKey,
+} from "../focusable/__utils.ts";
 import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
