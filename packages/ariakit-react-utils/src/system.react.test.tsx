@@ -1,7 +1,7 @@
 import { render } from "@ariakit/test/react";
 import { createContext, useContext, useRef, useState } from "react";
-import { testSystem } from "./__system-contract.ts";
-import type { SystemScenario } from "./__system-contract.ts";
+import { testSystem } from "../../ariakit-test/src/__system-tests.ts";
+import type { SystemScenario } from "../../ariakit-test/src/__system-tests.ts";
 import { createElement as createSystemElement } from "./system.tsx";
 import type { RenderProp, WrapElement } from "./types.ts";
 

@@ -1,6 +1,6 @@
-import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 import type * as _Matchers from "../../../vitest.d.ts";
+import { click, q } from "./index.ts";
 
 export type SystemScenario = "native" | "render" | "wrapper" | "replacement";
 

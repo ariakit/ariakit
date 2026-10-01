@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { render } from "@solidjs/web";
 import { createContext, createSignal, Show, useContext } from "solid-js";
-import { testSystem } from "../../ariakit-react-utils/src/__system-contract.ts";
-import type { SystemScenario } from "../../ariakit-react-utils/src/__system-contract.ts";
+import { testSystem } from "../../ariakit-test/src/__system-tests.ts";
+import type { SystemScenario } from "../../ariakit-test/src/__system-tests.ts";
 import { createElement } from "./index.ts";
 import type { RenderProp } from "./index.ts";
 
