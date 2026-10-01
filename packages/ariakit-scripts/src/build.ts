@@ -1,9 +1,9 @@
 import { lstatSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
+import solidPlugin from "@solidjs/vite-plugin";
 import { build as rolldownBuild } from "rolldown";
 import { dts } from "rolldown-plugin-dts";
-import solidPlugin from "vite-plugin-solid";
 import { cleanLegacyBuild } from "./legacy-clean.ts";
 import { escapeRegExp } from "./regexp.ts";
 import { normalizePath, readPackageJson } from "./utils.ts";
