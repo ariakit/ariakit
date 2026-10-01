@@ -14,10 +14,10 @@ import type { Options, Props } from "@ariakit/react-utils";
 import { invariant, isFocusable, isSelfTarget } from "@ariakit/utils";
 import type { ElementType, FocusEvent } from "react";
 import { useContext, useMemo, useRef, useState } from "react";
-import { getTreeActiveElement } from "../composite/utils.ts";
 import { DialogHeadingContext } from "../dialog/dialog-context.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
+import { getTreeActiveElement } from "../focusable/__utils.ts";
 import {
   ComboboxHeadingContext,
   ComboboxListRoleContext,

@@ -4,11 +4,11 @@ import { subscribe } from "@ariakit/store";
 import {
   getActiveElement,
   getDocument,
-  hasFocus,
   isTextField,
   isVisible,
 } from "@ariakit/utils";
 import { useCallback, useRef } from "react";
+import { getTreeActiveElement } from "../focusable/__utils.ts";
 import type { CompositeStore, CompositeStoreState } from "./composite-store.ts";
 
 export const flipItems = Core.flipItems;
@@ -16,32 +16,6 @@ export const findFirstEnabledItem = Core.findFirstEnabledItem;
 export const groupItemsByRows = Core.groupItemsByRows;
 
 const unmountingItems = new WeakSet<Element>();
-
-function isShadowRoot(node: Node): node is ShadowRoot {
-  return node.nodeType === node.DOCUMENT_FRAGMENT_NODE && "host" in node;
-}
-
-/**
- * Returns the focused element as seen from the tree that contains `node`.
- * Inside a shadow tree, the document reports the shadow host as its active
- * element, so only the shadow root knows which element in it has focus. Focus
- * outside that tree, such as in a portal, is still read from the document.
- */
-export function getTreeActiveElement(node?: Node | null) {
-  const root = node?.getRootNode();
-  if (root && isShadowRoot(root) && root.activeElement) {
-    return root.activeElement;
-  }
-  return getActiveElement(node);
-}
-
-/**
- * Like `hasFocus`, but also sees focus on `element` when it is inside a shadow
- * tree.
- */
-export function hasTreeFocus(element: Element) {
-  return hasFocus(element) || getTreeActiveElement(element) === element;
-}
 
 /** Marks the brief window between a focused item's ref cleanup and removal. */
 export function markItemUnmounting(element: Element) {
