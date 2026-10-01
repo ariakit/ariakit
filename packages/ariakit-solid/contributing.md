@@ -6,6 +6,29 @@ Translate Ariakit React's behavior into Solid 2, including accessibility, compon
 
 Compare [React's `createElement`](../ariakit-react-utils/src/system.tsx) with [Solid's implementation](../ariakit-solid-utils/src/system.tsx). Both select an underlying element, forward props, and apply `wrapElement`.
 
+For the callback/default path, React creates an element description and then wraps it:
+
+```tsx
+const { wrapElement, render, ...rest } = props;
+const element = render ? render(rest) : <Type {...rest} />;
+return wrapElement ? wrapElement(element) : element;
+```
+
+Solid keeps props live and defers element creation until the wrapper is in place:
+
+```tsx
+const rest = omit(props, "render", "wrapElement");
+const Render = dynamic(() => props.render ?? Type);
+const renderElement = () => <Render {...rest} />;
+const Element = dynamic(() => {
+  const wrapElement = props.wrapElement;
+  return wrapElement ? () => wrapElement(renderElement) : renderElement;
+});
+return <Element />;
+```
+
+The key difference is what gets wrapped: React passes an element description; Solid passes a function that creates the subtree inside the wrapper's context. React's additional element-cloning branch is covered under [element-form rendering](#element-form-rendering).
+
 ### Keep forwarded props reactive
 
 React separates rendering options with object rest:
