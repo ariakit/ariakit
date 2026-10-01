@@ -8,6 +8,7 @@ import {
 } from "./mark-tree-outside.ts";
 import { assignStyle, setAttribute, setCSSProperty } from "./orchestrate.ts";
 import { supportsInert } from "./supports-inert.ts";
+import { restoreCleanups } from "./tree-cleanup.ts";
 import {
   createWalkTreeSnapshot,
   walkTreeOutside,
@@ -200,13 +201,13 @@ test("markTreeOutside skips backdrops and restores marks", () => {
   const outsideChild = getElement("outside-child");
   const backdrop = getElement("backdrop");
 
-  const restoreMarks = markTreeOutside("dialog", [dialog]);
+  const marks = markTreeOutside("dialog", [dialog]);
 
   expect(isElementMarked(outside, "dialog")).toBe(true);
   expect(isElementMarked(outsideChild, "dialog")).toBe(true);
   expect(isElementMarked(backdrop, "dialog")).toBe(false);
 
-  restoreMarks();
+  restoreCleanups(marks);
 
   expect(isElementMarked(outside, "dialog")).toBe(false);
   expect(isElementMarked(outsideChild, "dialog")).toBe(false);
@@ -230,7 +231,7 @@ test("markTreeInside marks the given elements and restores them", () => {
   const outside = getElement("outside");
 
   const restoreInsideMarks = markTreeInside(dialog, [dialog, persistent]);
-  const restoreMarks = markTreeOutside("dialog", [dialog, persistent]);
+  const marks = markTreeOutside("dialog", [dialog, persistent]);
 
   expect(isElementInside(dialog, dialog)).toBe(true);
   expect(isElementInside(persistent, dialog)).toBe(true);
@@ -241,7 +242,7 @@ test("markTreeInside marks the given elements and restores them", () => {
   expect(isElementMarked(persistent, "dialog")).toBe(false);
   expect(isElementMarked(outside, "dialog")).toBe(true);
 
-  restoreMarks();
+  restoreCleanups(marks);
   restoreInsideMarks();
 
   expect(isElementInside(dialog, dialog)).toBe(false);
@@ -282,18 +283,18 @@ test("markTreeOutside restores previous marks after nested cleanup", () => {
   const dialogTwo = getElement("dialog-two");
   const outside = getElement("outside");
 
-  const restoreOne = markTreeOutside("one", [dialogOne]);
-  const restoreTwo = markTreeOutside("two", [dialogTwo]);
+  const marksOne = markTreeOutside("one", [dialogOne]);
+  const marksTwo = markTreeOutside("two", [dialogTwo]);
 
   expect(isElementMarked(outside, "one")).toBe(true);
   expect(isElementMarked(outside, "two")).toBe(true);
 
-  restoreTwo();
+  restoreCleanups(marksTwo);
 
   expect(isElementMarked(outside, "one")).toBe(true);
   expect(isElementMarked(outside, "two")).toBe(false);
 
-  restoreOne();
+  restoreCleanups(marksOne);
 
   expect(isElementMarked(outside, "one")).toBe(false);
   expect(isElementMarked(outside, "two")).toBe(false);
@@ -314,7 +315,7 @@ test("markAndDisableTreeOutside skips focus traps and restores disabled elements
   const focusTrap = getElement("focus-trap");
   const outside = getElement("outside");
 
-  const restoreTree = markAndDisableTreeOutside("dialog", [dialog]);
+  const tree = markAndDisableTreeOutside("dialog", [dialog]);
 
   expect(isElementMarked(outside, "dialog")).toBe(true);
   // Focus traps are marked as outside the dialog, but not disabled.
@@ -330,7 +331,7 @@ test("markAndDisableTreeOutside skips focus traps and restores disabled elements
     expect(focusTrap.style.pointerEvents).toBe("");
   }
 
-  restoreTree();
+  restoreCleanups(tree);
 
   expect(isElementMarked(outside, "dialog")).toBe(false);
   expect(isElementMarked(focusTrap, "dialog")).toBe(false);
@@ -340,5 +341,131 @@ test("markAndDisableTreeOutside skips focus traps and restores disabled elements
   } else {
     expect(outside.hasAttribute("aria-hidden")).toBe(false);
     expect(outside.style.pointerEvents).toBe("");
+  }
+});
+
+// https://github.com/ariakit/ariakit/issues/7697
+test("markAndDisableTreeOutside keeps disabled elements between walks", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="dialog"></div>
+      <section id="outside">
+        <button>Button</button>
+      </section>
+      <section id="container" role="group">
+        <div id="nested"></div>
+        <div id="nested-sibling"></div>
+      </section>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const outside = getElement("outside");
+  const container = getElement("container");
+  const nested = getElement("nested");
+  const nestedSibling = getElement("nested-sibling");
+
+  const isDisabled = (element: HTMLElement) => {
+    if (supportsInert()) {
+      return element.inert;
+    }
+    return element.getAttribute("aria-hidden") === "true";
+  };
+
+  const tree = markAndDisableTreeOutside("dialog", [dialog]);
+
+  expect(isDisabled(outside)).toBe(true);
+  expect(isDisabled(container)).toBe(true);
+
+  const observer = new MutationObserver(() => {});
+  observer.observe(outside, { attributes: true, subtree: true });
+
+  // The nested dialog makes its container part of the modal context.
+  const nestedTree = markAndDisableTreeOutside(
+    "dialog",
+    [dialog, nested],
+    tree,
+  );
+
+  expect(observer.takeRecords()).toEqual([]);
+  expect(isDisabled(outside)).toBe(true);
+  expect(isElementMarked(outside, "dialog")).toBe(true);
+  expect(isDisabled(container)).toBe(false);
+  expect(isElementMarked(container, "dialog")).toBe(true);
+  expect(container.getAttribute("role")).toBe("none");
+  expect(isDisabled(nestedSibling)).toBe(true);
+
+  const finalTree = markAndDisableTreeOutside("dialog", [dialog], nestedTree);
+
+  expect(observer.takeRecords()).toEqual([]);
+  expect(isDisabled(outside)).toBe(true);
+  expect(isDisabled(container)).toBe(true);
+  expect(container.getAttribute("role")).toBe("group");
+  expect(isDisabled(nestedSibling)).toBe(false);
+
+  restoreCleanups(finalTree);
+  observer.disconnect();
+
+  expect(isDisabled(outside)).toBe(false);
+  expect(isDisabled(container)).toBe(false);
+  expect(isElementMarked(outside, "dialog")).toBe(false);
+  expect(isElementMarked(container, "dialog")).toBe(false);
+});
+
+// https://github.com/ariakit/ariakit/issues/7697
+test("markAndDisableTreeOutside disables tabbable elements again without inert", () => {
+  const inert = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "inert");
+  if (!inert) throw new Error("The test environment does not support inert");
+  // @ts-expect-error Remove inert to exercise the fallback.
+  delete HTMLElement.prototype.inert;
+
+  try {
+    document.body.innerHTML = `
+      <div id="root">
+        <div id="dialog"></div>
+        <section id="container">
+          <div id="nested"></div>
+          <div id="nested-sibling">
+            <button id="button">Button</button>
+          </div>
+        </section>
+      </div>
+    `;
+
+    const dialog = getElement("dialog");
+    const container = getElement("container");
+    const nested = getElement("nested");
+    const nestedSibling = getElement("nested-sibling");
+    const button = getElement("button");
+
+    const tree = markAndDisableTreeOutside("dialog", [dialog]);
+
+    expect(container.getAttribute("aria-hidden")).toBe("true");
+    expect(button.getAttribute("tabindex")).toBe("-1");
+
+    // The container is restored before the sibling of the nested dialog is
+    // disabled, so the button is tabbable when the walk disables the sibling.
+    const nestedTree = markAndDisableTreeOutside(
+      "dialog",
+      [dialog, nested],
+      tree,
+    );
+
+    expect(container.hasAttribute("aria-hidden")).toBe(false);
+    expect(nestedSibling.getAttribute("aria-hidden")).toBe("true");
+    expect(button.getAttribute("tabindex")).toBe("-1");
+
+    const finalTree = markAndDisableTreeOutside("dialog", [dialog], nestedTree);
+
+    expect(container.getAttribute("aria-hidden")).toBe("true");
+    expect(nestedSibling.hasAttribute("aria-hidden")).toBe(false);
+    expect(button.getAttribute("tabindex")).toBe("-1");
+
+    restoreCleanups(finalTree);
+
+    expect(container.hasAttribute("aria-hidden")).toBe(false);
+    expect(button.hasAttribute("tabindex")).toBe(false);
+  } finally {
+    Object.defineProperty(HTMLElement.prototype, "inert", inert);
   }
 });

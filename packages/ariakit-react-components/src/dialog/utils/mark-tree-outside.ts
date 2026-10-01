@@ -1,9 +1,10 @@
 import {
   addAncestorMarkCleanup,
   addElementMarkCleanup,
-  restoreCleanups,
+  finishCleanupWalk,
+  startCleanupWalk,
 } from "./tree-cleanup.ts";
-import type { Elements } from "./tree-cleanup.ts";
+import type { Cleanups, Elements } from "./tree-cleanup.ts";
 import { walkTreeOutside } from "./walk-tree-outside.ts";
 export {
   isElementInside,
@@ -13,24 +14,26 @@ export {
   markTreeInside,
 } from "./tree-cleanup.ts";
 
-export function markTreeOutside(id: string, elements: Elements) {
-  const cleanups: Array<() => void> = [];
+// Marks the element tree outside the dialog. With `previousCleanups`, the
+// function keeps the marks that still apply and restores only the other ones.
+export function markTreeOutside(
+  id: string,
+  elements: Elements,
+  previousCleanups?: Cleanups,
+) {
+  const walk = startCleanupWalk(previousCleanups);
   const ids = elements.map((el) => el?.id);
 
   walkTreeOutside(
     id,
     elements,
     (element) => {
-      addElementMarkCleanup({ cleanups, element, id, ids });
+      addElementMarkCleanup({ walk, element, id, ids });
     },
     (ancestor, element) => {
-      addAncestorMarkCleanup({ cleanups, ancestor, element, id });
+      addAncestorMarkCleanup({ walk, ancestor, element, id });
     },
   );
 
-  const restoreAccessibilityTree = () => {
-    restoreCleanups(cleanups);
-  };
-
-  return restoreAccessibilityTree;
+  return finishCleanupWalk(walk);
 }

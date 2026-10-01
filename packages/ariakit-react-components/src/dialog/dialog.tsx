@@ -76,6 +76,8 @@ import {
   markTreeOutside,
 } from "./utils/mark-tree-outside.ts";
 import { supportsInert } from "./utils/supports-inert.ts";
+import { restoreCleanups } from "./utils/tree-cleanup.ts";
+import type { Cleanups } from "./utils/tree-cleanup.ts";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.ts";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.tsx";
 import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.ts";
@@ -495,6 +497,34 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   const getPersistentElementsProp = useEvent(getPersistentElements);
 
+  const treeRef = useRef<{
+    restoreInsideMarks: () => void;
+    outsideCleanups: Cleanups;
+  }>(null);
+
+  // Restores the element tree around the dialog element. The next effect
+  // updates the tree and has no cleanup. Thus, a change in the nested dialogs
+  // does not restore and disable again the elements that stay outside.
+  // https://github.com/ariakit/ariakit/issues/7697
+  useSafeLayoutEffect(() => {
+    return () => {
+      const tree = treeRef.current;
+      if (!tree) return;
+      treeRef.current = null;
+      tree.restoreInsideMarks();
+      restoreCleanups(tree.outsideCleanups);
+    };
+  }, [
+    id,
+    store,
+    canTakeTreeSnapshot,
+    contentElement,
+    modal,
+    hasDefaultModalPortal,
+    getPersistentElementsProp,
+    unstable_treeSnapshotKey,
+  ]);
+
   // Disables/enables the element tree around the modal dialog element.
   useSafeLayoutEffect(() => {
     if (!id) return;
@@ -509,20 +539,24 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       ...(openingCohortRef.current?.peers || []),
       ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
     ];
+    const previousTree = treeRef.current;
+    previousTree?.restoreInsideMarks();
     // Mark known dialog elements before first focus. Re-check disclosure live
     // because hovercards and tooltips may replace it while open.
     // https://github.com/ariakit/ariakit/issues/6344
     const restoreInsideMarks = markTreeInside(dialog, allElements);
-    if (modal) {
-      return chain(
-        restoreInsideMarks,
-        markAndDisableTreeOutside(id, allElements),
-      );
-    }
-    return chain(
-      restoreInsideMarks,
-      markTreeOutside(id, [disclosureElement, ...allElements]),
-    );
+    const outsideCleanups = modal
+      ? markAndDisableTreeOutside(
+          id,
+          allElements,
+          previousTree?.outsideCleanups,
+        )
+      : markTreeOutside(
+          id,
+          [disclosureElement, ...allElements],
+          previousTree?.outsideCleanups,
+        );
+    treeRef.current = { restoreInsideMarks, outsideCleanups };
   }, [
     id,
     store,

@@ -12,10 +12,12 @@ import {
 import { supportsInert } from "./supports-inert.ts";
 import {
   addAncestorMarkCleanup,
+  addCleanup,
   addElementMarkCleanup,
-  restoreCleanups,
+  finishCleanupWalk,
+  startCleanupWalk,
 } from "./tree-cleanup.ts";
-import type { Cleanups, Elements, Ids } from "./tree-cleanup.ts";
+import type { CleanupWalk, Cleanups, Elements, Ids } from "./tree-cleanup.ts";
 import { walkTreeOutside } from "./walk-tree-outside.ts";
 
 export function disableTree(
@@ -53,14 +55,14 @@ export function disableTree(
 }
 
 interface AddDisabledElementCleanupParams {
-  cleanups: Cleanups;
+  walk: CleanupWalk;
   element: Element;
   elements: Elements;
   ids: Ids;
 }
 
 function addDisabledElementCleanup({
-  cleanups,
+  walk,
   element,
   elements,
   ids,
@@ -75,11 +77,16 @@ function addDisabledElementCleanup({
   // snapshot taken on open predates.
   // https://github.com/ariakit/ariakit/issues/7310
   if (isHiddenDismiss(element, ...ids)) return;
-  cleanups.push(disableTree(element, elements));
+  addCleanup({
+    walk,
+    element,
+    kind: "disable",
+    setup: () => disableTree(element, elements),
+  });
 }
 
 function addRoleNoneCleanup(
-  cleanups: Cleanups,
+  walk: CleanupWalk,
   ancestor: Element,
   elements: Elements,
 ) {
@@ -88,32 +95,44 @@ function addRoleNoneCleanup(
   // readers.
   if (!ancestor.hasAttribute("role")) return;
   if (elements.some((el) => el && contains(el, ancestor))) return;
-  cleanups.push(setAttribute(ancestor, "role", "none"));
+  addCleanup({
+    walk,
+    element: ancestor,
+    kind: "role",
+    setup: () => setAttribute(ancestor, "role", "none"),
+  });
 }
 
 // Marks and disables the element tree outside the dialog in a single walk.
 // Modal dialogs always need both marking and disabling outside elements, so
 // this combines their callbacks to avoid walking the tree twice on open.
-export function markAndDisableTreeOutside(id: string, elements: Elements) {
-  const cleanups: Array<() => void> = [];
+//
+// With `previousCleanups`, the elements that stay disabled are not touched.
+// Each `inert` change invalidates the style of the whole subtree, so restoring
+// and disabling the same elements again is expensive on large pages.
+// https://github.com/ariakit/ariakit/issues/7697
+export function markAndDisableTreeOutside(
+  id: string,
+  elements: Elements,
+  previousCleanups?: Cleanups,
+) {
+  const walk = startCleanupWalk(previousCleanups);
   const ids = elements.map((el) => el?.id);
 
   walkTreeOutside(
     id,
     elements,
     (element) => {
-      addElementMarkCleanup({ cleanups, element, id, ids });
-      addDisabledElementCleanup({ cleanups, element, elements, ids });
+      addElementMarkCleanup({ walk, element, id, ids });
+      addDisabledElementCleanup({ walk, element, elements, ids });
     },
     (ancestor, element) => {
-      addAncestorMarkCleanup({ cleanups, ancestor, element, id });
-      addRoleNoneCleanup(cleanups, ancestor, elements);
+      addAncestorMarkCleanup({ walk, ancestor, element, id });
+      addRoleNoneCleanup(walk, ancestor, elements);
     },
   );
 
-  const restoreTreeOutside = () => {
-    restoreCleanups(cleanups);
-  };
-
-  return restoreTreeOutside;
+  // This synchronously restores the elements that are no longer outside, so
+  // that they can receive focus in the same commit.
+  return finishCleanupWalk(walk);
 }
