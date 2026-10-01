@@ -2,7 +2,7 @@
 
 Ariakit Solid is a port of Ariakit React to Solid 2. Its goal is the same API, behavior, accessibility, and component composition, with React-specific code translated into Solid's rendering and reactivity model. Framework-independent utilities and stores remain shared.
 
-The implementation is being rebuilt from scratch, informed by the previous port. React remains the reference for behavior; differences on the Solid side address framework constraints rather than introduce a separate component design.
+React remains the reference for behavior; differences on the Solid side address framework constraints rather than introduce a separate component design.
 
 This guide explains those translations through code comparisons and their rationale. See the [repository guide](../../contributing.md) for setup and [#7687](https://github.com/ariakit/ariakit/issues/7687) for progress.
 
