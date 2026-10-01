@@ -15,22 +15,22 @@ The standard pattern for Ariakit React components that render DOM elements has t
 - A **behavior hook**, such as `useButton`, receives props and returns props with the component's accessibility attributes, event handlers, and refs. It can also manage state, effects, and context.
 - A **component**, such as `Button`, receives the props supplied in JSX, calls that hook, then renders the returned props with `createElement`.
 
-For example, [React's Button](../ariakit-react-components/src/button/button.tsx) renders like this, with type annotations omitted:
+For example, [React's Button](../ariakit-react-components/src/button/button.tsx) renders like this:
 
 ```tsx
-const Button = forwardRef(function Button(props) {
+function Button(props) {
   const htmlProps = useButton(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
-});
+}
 ```
 
 Context-only components such as [DialogProvider](../ariakit-react-components/src/dialog/dialog-provider.tsx) and [HeadingLevel](../ariakit-react-components/src/heading/heading-level.tsx) do not use this prop-hook/rendering split.
 
-Here `TagName` is `"button"`, `props` comes from `<Button ... />`, and `withDefaultButtonType` supplies the default button type. Ariakit's `forwardRef` makes the caller's ref available to the implementation as a prop.
+Here `TagName` is `"button"`, `props` comes from `<Button ... />`, and `withDefaultButtonType` supplies the default button type.
 
 Hooks compose behavior by calling other hooks and passing props through them. `useButton` adds button semantics and calls [useCommand](../ariakit-react-components/src/command/command.tsx) for keyboard activation; `useCommand` calls [useFocusable](../ariakit-react-components/src/focusable/focusable.tsx) for focus behavior. The returned props carry all those layers to the renderer.
 
-Here is that prop flow inside the hooks, abbreviated to show composition. State, effects, handler implementations, type annotations, and the `createHook` wrappers are omitted:
+Here is that prop flow inside the hooks, abbreviated to show composition. State, effects, handler implementations, and the `createHook` wrappers are omitted:
 
 ```tsx
 function useButton(props) {
@@ -91,16 +91,16 @@ Props start with the attributes and children supplied in JSX, such as `role="sta
 2. Components with behavior, such as [Button](../ariakit-react-components/src/button/button.tsx), pass them through a hook that adds attributes, event handlers, and refs. [Role](../ariakit-react-components/src/role/role.tsx) passes them through unchanged.
 3. The component calls `createElement(Type, props)`, where `Type` is its default tag and `props` contains the values to render.
 
-Here is React's `Role` rendering code with type annotations omitted:
+React's `Role` passes its props straight to the rendering helper:
 
 ```tsx
-import { createElement, forwardRef } from "@ariakit/react-utils";
+import { createElement } from "@ariakit/react-utils";
 
 const TagName = "div";
 
-const Role = forwardRef(function Role(props) {
+function Role(props) {
   return createElement(TagName, props);
-});
+}
 ```
 
 The helper renders that default tag unless `render` supplies a replacement. A render callback receives the forwarded props; `wrapElement` receives the resulting element and can surround it with another component. For example, in React:
