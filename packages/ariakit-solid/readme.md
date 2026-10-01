@@ -77,4 +77,4 @@ Browser testing provided by
 
 ## Contributing
 
-Follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/main/contributing.md).
+See [Contributing to Ariakit Solid](contributing.md) for implementation details and their React counterparts, and the [repository guide](../../contributing.md) for setup.
