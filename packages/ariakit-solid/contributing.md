@@ -6,6 +6,59 @@ React remains the reference for behavior; differences on the Solid side address 
 
 This guide explains those translations and their rationale. See the [repository guide](../../contributing.md) for setup and [#7687](https://github.com/ariakit/ariakit/issues/7687) for progress.
 
+## Component structure
+
+### React: behavior hooks and rendering components
+
+Most Ariakit React components have two parts:
+
+- A **behavior hook**, such as `useButton`, receives props and returns props with the component's accessibility attributes, event handlers, and refs. It can also manage state, effects, and context.
+- A **component**, such as `Button`, receives the props supplied in JSX, calls that hook, then renders the returned props with `createElement`.
+
+For example, [React's Button](../ariakit-react-components/src/button/button.tsx) renders like this, with type annotations omitted:
+
+```tsx
+const Button = forwardRef(function Button(props) {
+  const htmlProps = useButton(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
+});
+```
+
+Here `TagName` is `"button"`, `props` comes from `<Button ... />`, and `withDefaultButtonType` supplies the default button type. Ariakit's `forwardRef` makes the caller's ref available to the implementation as a prop.
+
+Hooks compose behavior by calling other hooks and passing props through them. `useButton` adds button semantics and calls [useCommand](../ariakit-react-components/src/command/command.tsx) for keyboard activation; `useCommand` calls [useFocusable](../ariakit-react-components/src/focusable/focusable.tsx) for focus behavior. The returned props carry all those layers to the renderer.
+
+This split also lets a contributor reuse behavior without using the corresponding component:
+
+```tsx
+function MyButton(props) {
+  const htmlProps = useButton(props);
+  return <Role {...htmlProps} />;
+}
+```
+
+### Solid: the same split, reactive props throughout
+
+The Solid port keeps behavior functions separate from rendering components. A function such as `useButton` will still accept props, compose lower-level behavior, and return props. The `use` prefix identifies its React counterpart; it does not mean that Solid follows React's hook execution rules.
+
+React reruns the component and its hooks on updates. Solid normally runs them once during setup, then updates the affected reactive computations and DOM bindings. That changes how the behavior function is written:
+
+- React state becomes Solid signals; derived values use reactive reads or memos instead of relying on the next render.
+- Returned props need getters or another live view so later reads see current values. Spreading them into a plain object during setup can freeze those values.
+- Effects, context, refs, and cleanup use Solid's APIs under the component's reactive owner. Their timing must preserve the React behavior, rather than follow a one-to-one API rename.
+
+The intended component shape is therefore:
+
+```tsx
+// Component hooks and Button are not implemented yet.
+function Button(props) {
+  const htmlProps = useButton(props);
+  return createElement("button", htmlProps);
+}
+```
+
+Solid refs already travel through props, so this does not need React's `forwardRef` wrapper. Button defaults and Ariakit's prop composition rules still need their own translation. The previous port used this same hook/component split; the current implementation starts with the rendering helper described below.
+
 ## Rendering system
 
 Props start with the attributes and children supplied in JSX, such as `role="status"` and `Saved` in `<Role role="status">Saved</Role>`. From there:
@@ -207,7 +260,7 @@ React's [forwardRef](../ariakit-react-utils/src/system.tsx) also removes `undefi
 
 Solid's composition must retain these rules without copying reactive values into stale objects. Native prop merging alone does not establish Ariakit's handler, ref, or precedence semantics.
 
-React's `createHook` returns props that another component hook can extend. Its Solid equivalent must keep reads reactive through each layer. The previous port used `createHook` and `withOptions` for hook wrapping, option extraction, and defaults. Neither is rebuilt yet. Multiple hooks also need to compose wrappers in a defined order, rather than replacing one another's `wrapElement`.
+React's `createHook` wraps the behavior function described above. The previous Solid port also used `createHook` and `withOptions` for hook wrapping, option extraction, and defaults. Neither is rebuilt yet. Multiple hooks also need to compose wrappers in a defined order, rather than replacing one another's `wrapElement`.
 
 ## Shared tests
 
