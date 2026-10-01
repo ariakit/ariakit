@@ -8,27 +8,57 @@ This guide explains those translations and their rationale. See the [repository 
 
 ## Rendering system
 
-Compare [React's `createElement`](../ariakit-react-utils/src/system.tsx) with [Solid's implementation](../ariakit-solid-utils/src/system.tsx). Both select an underlying element, forward props, and apply `wrapElement`.
+Ariakit components use a shared `createElement` helper to turn their final props into an element. Component hooks prepare attributes, event handlers, and refs for the component's behavior; this helper handles how the result is rendered. It also supports changing the element through `render` and surrounding it with another component through `wrapElement`.
+
+For example, [React's `Role`](../ariakit-react-components/src/role/role.tsx) defaults to a `div` and passes its props straight to the helper. Here is its rendering code with type annotations omitted:
+
+```tsx
+import { createElement, forwardRef } from "@ariakit/react-utils";
+
+const TagName = "div";
+
+const Role = forwardRef(function Role(props) {
+  return createElement(TagName, props);
+});
+```
+
+With `<Role role="status">Saved</Role>`, the call is effectively `createElement("div", { role: "status", children: "Saved" })`, producing `<div role="status">Saved</div>`. Components such as [Button](../ariakit-react-components/src/button/button.tsx) first run their behavior hook, then pass the resulting props to the same helper. `Role` is not yet implemented in Solid, but its rendering helper is.
+
+The helper's two arguments and rendering options are:
+
+- `Type`: the component's default HTML tag or component, supplied by the caller. In the `Role` example, it is `"div"`.
+- `props`: the props supplied by the component, including any attributes, children, handlers, refs, and rendering options.
+- `props.render`: an optional replacement for the default element. A callback receives the forwarded props and returns the replacement JSX.
+- `props.wrapElement`: an optional function that surrounds the result, for example with a context provider that supplies values to child components.
+
+[React's helper](../ariakit-react-utils/src/system.tsx) creates an element description, which React renders afterward. Its callback/default branches can be summarized as:
 
 For the callback/default path, React creates an element description and then wraps it:
 
 ```tsx
-const { wrapElement, render, ...rest } = props;
-const element = render ? render(rest) : <Type {...rest} />;
-return wrapElement ? wrapElement(element) : element;
+function createElement(Type, props) {
+  const { wrapElement, render, ...rest } = props;
+  const element = render ? render(rest) : <Type {...rest} />;
+  return wrapElement ? wrapElement(element) : element;
+}
 ```
 
-Solid keeps props live and defers element creation until the wrapper is in place:
+[Solid's helper](../ariakit-solid-utils/src/system.tsx) has the same arguments. It keeps props live and defers element creation until the wrapper is in place:
 
 ```tsx
-const rest = omit(props, "render", "wrapElement");
-const Render = dynamic(() => props.render ?? Type);
-const renderElement = () => <Render {...rest} />;
-const Element = dynamic(() => {
-  const wrapElement = props.wrapElement;
-  return wrapElement ? () => wrapElement(renderElement) : renderElement;
-});
-return <Element />;
+import { dynamic } from "@solidjs/web";
+import { omit } from "solid-js";
+
+function createElement(Type, props) {
+  const rest = omit(props, "render", "wrapElement");
+  const Render = dynamic(() => props.render ?? Type);
+  const renderElement = () => <Render {...rest} />;
+  const Element = dynamic(() => {
+    const wrapElement = props.wrapElement;
+    return wrapElement ? () => wrapElement(renderElement) : renderElement;
+  });
+  return <Element />;
+}
 ```
 
 The key difference is what gets wrapped: React passes an element description; Solid passes a function that creates the subtree inside the wrapper's context. React's additional element-cloning branch is covered under [element-form rendering](#element-form-rendering).
