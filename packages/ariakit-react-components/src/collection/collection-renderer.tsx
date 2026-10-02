@@ -83,13 +83,7 @@ interface ItemObject extends AnyObject, NestedRendererItemProps {
   element?: HTMLElement | null;
 }
 
-type Item =
-  | ItemObject
-  | Omit<string, string>
-  | Omit<number, string>
-  | Omit<boolean, string>
-  | null
-  | undefined;
+type Item = ItemObject | string | number | boolean | null | undefined;
 
 type Items<T extends Item> = number | readonly T[];
 
