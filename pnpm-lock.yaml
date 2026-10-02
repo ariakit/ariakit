@@ -851,12 +851,6 @@ importers:
       '@ariakit/utils':
         specifier: workspace:*
         version: link:../ariakit-utils
-      '@solid-primitives/props':
-        specifier: ^3.2.3
-        version: 3.2.4(solid-js@1.9.15)
-      '@solid-primitives/utils':
-        specifier: ^6.4.0
-        version: 6.4.1(solid-js@1.9.15)
     devDependencies:
       '@ariakit/scripts':
         specifier: workspace:*
@@ -5246,16 +5240,6 @@ packages:
   '@smithy/util-waiter@4.6.2':
     resolution: {integrity: sha512-TNNK01i1HiSAR6hBF94J7q338JgEaHPrP8QKRSeQBsbSbw5O4+YGdZYitmsTeEWvHGX+2R/oQ7BzxyAjeZxuWg==}
     engines: {node: '>=18.0.0'}
-
-  '@solid-primitives/props@3.2.4':
-    resolution: {integrity: sha512-MXXdvi2TSB6d+0N6ueA/HP1j/Kh9SEc4WdF1ZDMLwPagxW6pIHHSS9xbRO0RjqSVpNP4j0nxCWT1hx3CkJNhNA==}
-    peerDependencies:
-      solid-js: ^1.6.12
-
-  '@solid-primitives/utils@6.4.1':
-    resolution: {integrity: sha512-ISSB5QX1qP2ynrheIpYwc4oKR5Ny4siNuUyf1qZniy+Il+p/PtDB0QK1Dnle8noiHpwRD3gpPdubOC3qI/Zamg==}
-    peerDependencies:
-      solid-js: ^1.6.12
 
   '@speed-highlight/core@1.2.24':
     resolution: {integrity: sha512-qeW2e1l78afw8VhRPfPQ1Gjj+KU5XFQ/OFV5ti6eTa9bruO7mJyZtA4vw0ofqmA3tKCkROE9xLk3VZoeRc98nw==}
@@ -14867,15 +14851,6 @@ snapshots:
     dependencies:
       '@smithy/core': 3.33.3
       tslib: 2.8.1
-
-  '@solid-primitives/props@3.2.4(solid-js@1.9.15)':
-    dependencies:
-      '@solid-primitives/utils': 6.4.1(solid-js@1.9.15)
-      solid-js: 1.9.15
-
-  '@solid-primitives/utils@6.4.1(solid-js@1.9.15)':
-    dependencies:
-      solid-js: 1.9.15
 
   '@speed-highlight/core@1.2.24': {}
 

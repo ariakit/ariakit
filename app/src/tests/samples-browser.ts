@@ -43,7 +43,7 @@ test("combobox sample and variant work in their iframes", async ({
   );
 });
 
-for (const framework of ["react", "solid"]) {
+for (const framework of ["react"]) {
   test(`${framework} separator page uses its framework preview`, async ({
     page,
     q,
