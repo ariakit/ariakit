@@ -81,7 +81,7 @@ function createElement(Type, props) {
 }
 ```
 
-[Solid's `createInstance`](../ariakit-solid-utils/src/system.tsx) performs the same work using `omit` from `solid-js` and `dynamic` from `@solidjs/web`.
+[Solid's `createInstance`](../ariakit-solid-utils/src/system.tsx) performs the same work using [`omit`](https://v2.solidjs.com/reference/solid-js/stores/omit) from `solid-js` and [`dynamic`](https://v2.solidjs.com/reference/solid-web/components/dynamic) from `@solidjs/web`.
 
 The names `createInstance` and `wrapInstance` reflect Solid JSX instantiating components when evaluated, whereas React JSX creates React elements for later rendering. `wrapInstance` corresponds to React's `wrapElement`, but receives a function that creates the subtree.
 
@@ -95,7 +95,7 @@ const rest = omit(props, "render", "wrapInstance");
 
 ### 2. Select the renderer
 
-Solid selects the render callback or default `Type` with `dynamic`:
+Solid selects the render callback or default `Type` with [`dynamic`](https://v2.solidjs.com/reference/solid-web/components/dynamic):
 
 ```tsx
 const Render = dynamic(() => props.render ?? Type);
@@ -135,7 +135,7 @@ wrapInstance: (instance) => <Context value="Wrapped">{instance()}</Context>;
 
 Calling `instance()` inside the provider gives the subtree its context and cleanup scope.
 
-The outer `dynamic` selects whether to use the wrapper:
+The outer [`dynamic`](https://v2.solidjs.com/reference/solid-web/components/dynamic) selects whether to use the wrapper:
 
 ```tsx
 const Element = dynamic(() => {
@@ -167,13 +167,13 @@ That preserves convenient element syntax and allows prop composition before crea
 
 Compare [React types](../ariakit-react-utils/src/types.ts) with [Solid types](../ariakit-solid-utils/src/types.ts).
 
-| Type            | Solid translation                                                                                    |
-| --------------- | ---------------------------------------------------------------------------------------------------- |
-| `HTMLProps<T>`  | Solid's `ComponentProps<T>` plus `data-*` attributes, instead of React's `ComponentPropsWithRef<T>`. |
-| `RenderProp<T>` | Receives `HTMLProps<T>` and returns Solid `JSX.Element`, instead of React `ReactNode`.               |
-| `WrapInstance`  | Receives `() => JSX.Element` instead of React's `WrapElement` argument, preserving creation timing.  |
-| `Options<T>`    | Declares internal `render` and `wrapInstance` options.                                               |
-| `Props<T>`      | Combines element props with those options.                                                           |
+| Type            | Solid translation                                                                                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HTMLProps<T>`  | Solid's [`ComponentProps<T>`](https://v2.solidjs.com/reference/solid-js/types/component-types) plus `data-*` attributes, instead of React's `ComponentPropsWithRef<T>`. |
+| `RenderProp<T>` | Receives `HTMLProps<T>` and returns Solid [`JSX.Element`](https://v2.solidjs.com/reference/solid-js/types/jsx-types), instead of React `ReactNode`.                     |
+| `WrapInstance`  | Receives `() => JSX.Element` instead of React's `WrapElement` argument, preserving creation timing.                                                                     |
+| `Options<T>`    | Declares internal `render` and `wrapInstance` options.                                                                                                                  |
+| `Props<T>`      | Combines element props with those options.                                                                                                                              |
 
 `T` connects the default renderer to its props. React also has a custom-options parameter, `Props<T, P>`, and removes custom-option keys from `HTMLProps<T, P>`. Those types, polymorphic hook signatures, and element-form rendering types still need translation.
 
@@ -212,7 +212,7 @@ pnpm test system.react.test.tsx system.solid.test.tsx --run
 - Web rendering and JSX types come from `@solidjs/web`; reactive primitives come from `solid-js`. Both currently use `2.0.0-rc.13`. Keep their versions compatible.
 - [Library builds](../ariakit-scripts/src/build.ts) and [Vitest](../../vitest.config.ts) use `@solidjs/vite-plugin`. The builder emits DOM JavaScript and retains JSX source for consumer compilation.
 - [Library](../../tsconfig.solid.json) and [test](../../tsconfig.solid.test.json) TypeScript configurations use `jsxImportSource: "@solidjs/web"`.
-- The [shared fixture loader](../../vitest.setup.framework.ts) mounts Solid fixtures with `createComponent`, `Loading`, and web `render`, then disposes them after the test. The system tests mount their own fixtures.
+- The [shared fixture loader](../../vitest.setup.framework.ts) mounts Solid fixtures with [`Loading`](https://v2.solidjs.com/reference/solid-js/components-jsx/loading), and web [`render`](https://v2.solidjs.com/reference/solid-web/rendering-ssr/render), then disposes them after the test. The system tests mount their own fixtures.
 
 The Astro app and legacy website still have Solid 1 integrations. New Solid 2 fixtures need compatible preview wiring before they can run there. Solid 2 API changes are documented in the [migration guide](https://v2.solidjs.com/migration/from-solid-1).
 
