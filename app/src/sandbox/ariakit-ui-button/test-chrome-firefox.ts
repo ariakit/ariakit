@@ -54,36 +54,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
-  // https://github.com/ariakit/ariakit/issues/7591
-  test("keeps slot badge and avatar boundaries in forced colors", async ({
-    page,
-    q,
-  }) => {
-    const getBorderWidth = (name: string, button: string | RegExp) => {
-      const slot = query(q.article(name))
-        .button(button)
-        .locator(".control-slot");
-      return slot.evaluate(
-        (element) => getComputedStyle(element).borderTopWidth,
-      );
-    };
-    await expectMedia(page, "(forced-colors: none)");
-    await test.expect
-      .poll(() => getBorderWidth("Count badge", /Inbox/))
-      .toBe("0px");
-    await test.expect
-      .poll(() => getBorderWidth("Initial avatar", /Will Williams/))
-      .toBe("0px");
-    await page.emulateMedia({ forcedColors: "active" });
-    await expectMedia(page, "(forced-colors: active)");
-    await test.expect
-      .poll(() => getBorderWidth("Count badge", /Inbox/))
-      .toBe("1px");
-    await test.expect
-      .poll(() => getBorderWidth("Initial avatar", /Will Williams/))
-      .toBe("1px");
-  });
-
   // https://github.com/ariakit/ariakit/issues/7476
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r3995296714
   test("keeps disabled layers borderless and preserves bevels in forced colors @visual", async ({
@@ -104,6 +74,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7476
+  // https://github.com/ariakit/ariakit/issues/7591
   test("keeps filled and bevel button boundaries in forced colors @visual", async ({
     page,
     q,
@@ -121,6 +92,8 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         ["brand", "Brand"],
         ["bevel", "Bevel"],
         ["inverted", "Inverted"],
+        ["count-badge", "Count badge"],
+        ["initial-avatar", "Initial avatar"],
       ] as const) {
         await captureInView({
           visual,
