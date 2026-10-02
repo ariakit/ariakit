@@ -28,7 +28,8 @@ This guide covers more advanced topics. Pick the topics based on your needs.
 
 16. [Versioning](#versioning)
 17. [Writing end-to-end tests](#writing-end-to-end-tests)
-18. [Linting and formatting](#linting-and-formatting)
+18. [Reviewing visual changes](#reviewing-visual-changes)
+19. [Linting and formatting](#linting-and-formatting)
 
 <br>
 
@@ -557,6 +558,30 @@ Or in debug mode:
 ```bash
 pnpm -F app run test --project=chrome --debug my-component
 ```
+
+<div align="right">
+    <a href="#advanced-tutorial">&uarr; back to top</a></b>
+</div>
+
+## Reviewing visual changes
+
+The native CI `Plan` job selects the checks needed for your pull request. If `Plan CI` reports `app=false`, the final step runs `visonaut submit --no-visual`. This command uses the Plan job's signed CI identity. Visonaut validates the run, attempt, and tested commit before completing the check without capturing images.
+
+If Plan reports `app=true`, `App / Visual Capture (linux)` and `App / Visual Capture (safari)` run visual tests in Chrome, Firefox, and Safari. They upload capture images and metadata as ordinary GitHub artifacts, which are kept for one day. Anyone who can download these artifacts can read their contents.
+
+`App / Visual Submit` submits both capture shards:
+
+```sh
+visonaut submit --shard linux --shard safari
+```
+
+Successful capture and Submit jobs do not approve visual changes. Check the Visonaut result. If it requires review, open the linked review and ask a maintainer to review the changes.
+
+For local comparisons, a capture profile change does not require review when the image size and pixels are unchanged. Image size changes and profile changes with different pixels still require review.
+
+Gate checks the results of the selected CI jobs. The separate required Visonaut check blocks merging until visual review passes. Complete any required review and wait for the Visonaut check to pass. You do not need to rerun Gate only because the visual review is complete.
+
+If Submit fails, inspect its logs. You can rerun Submit if the tested commit is unchanged and both capture artifacts are still available. If a required capture artifact is missing or expired, select **Re-run all jobs** for the CI workflow. This runs both capture jobs and Submit again. Rerunning only Submit cannot recreate missing capture artifacts.
 
 <div align="right">
     <a href="#advanced-tutorial">&uarr; back to top</a></b>
