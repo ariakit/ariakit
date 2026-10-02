@@ -16,8 +16,10 @@ concurrency:
 jobs:
   plan:
     name: Plan
-    if: github.event_name != 'push'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     outputs:
       main: ${{ steps.plan.outputs.main }}
       app: ${{ steps.plan.outputs.app }}
@@ -28,24 +30,44 @@ jobs:
       og_images: ${{ steps.plan.outputs.og_images }}
       plan: ${{ steps.plan.outputs.plan }}
     steps:
-      - name: Checkout repository
+      - name: Checkout event history
         uses: actions/checkout@v7
         with:
+          path: .visonaut-event
           fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout trusted planner
+        uses: actions/checkout@v7
+        with:
+          ref: c87988effdff42edf4934ded906aa32ee3c04b66
+          path: .visonaut-planner
           persist-credentials: false
 
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version-file: package.json
+          node-version-file: .visonaut-planner/package.json
 
       - name: Plan CI
         id: plan
+        working-directory: .visonaut-event
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
-        run: node packages/ariakit-scripts/src/ci-run.ts plan
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            echo "app=true" >> "$GITHUB_OUTPUT"
+          else
+            node ../.visonaut-planner/packages/ariakit-scripts/src/ci-run.ts plan
+          fi
+
+      - name: Submit without visual tests
+        if: steps.plan.outputs.app == 'false'
+        env:
+          VISONAUT_SERVER: https://visonaut.com
+        run: npm exec --yes --ignore-scripts --package=visonaut@0.5.3 -- visonaut submit --no-visual
 
   main:
     name: Main
@@ -59,7 +81,7 @@ jobs:
   app:
     name: App
     needs: plan
-    if: ${{ !cancelled() && (github.event_name == 'push' || needs.plan.outputs.app == 'true') }}
+    if: needs.plan.result == 'success' && needs.plan.outputs.app == 'true'
     permissions:
       actions: read
       contents: read
@@ -161,7 +183,7 @@ jobs:
             "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs")"
           submit_job="$(jq -c --argjson run "$GITHUB_RUN_ID" '
             if .total_count > 100 then error("CI job list exceeds one page") else
-              [.jobs[] | select(.name == "App / Visual / Submit" and .run_id == $run and
+              [.jobs[] | select(.name == "App / Visual Submit" and .run_id == $run and
                 .status == "completed" and .conclusion == "success")]
               | if length == 1 then .[0] else error("Successful submit job is unavailable") end
             end
