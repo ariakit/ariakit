@@ -236,7 +236,9 @@ function KeyboardOpen() {
       >
         Select Banana while closed
       </button>
-      <Ariakit.ComboboxPopover>
+      {/* TODO: Remove unmountOnHide when this issue is fixed:
+      https://github.com/ariakit/ariakit/issues/7627 */}
+      <Ariakit.ComboboxPopover unmountOnHide>
         {values.map((value) => (
           <Ariakit.ComboboxItem key={value} value={value} />
         ))}
