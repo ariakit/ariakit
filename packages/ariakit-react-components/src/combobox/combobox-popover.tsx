@@ -100,8 +100,8 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     // reset from another Composite interaction must not re-arm it.
     useEffect(() => {
       const initialState = store.getState();
-      captureSelectedValueRef.current =
-        initialState.open && !initialState.moves;
+      captureSelectedValueRef.current = initialState.open;
+      let openingMoves = initialState.moves;
       selectedValueBeforeMoveRef.current = initialState.selectedValue;
       return sync(
         store,
@@ -123,8 +123,14 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
             } else {
               captureSelectedValueRef.current = true;
             }
+            // The store can already count moves when the popover opens. An
+            // arrow key or a typed character on a closed select moves through
+            // the items first. Only a later move is the user moving through the
+            // open popover.
+            // https://github.com/ariakit/ariakit/issues/7627
+            openingMoves = state.moves;
           }
-          if (state.moves) {
+          if (state.moves !== openingMoves) {
             captureSelectedValueRef.current = false;
           }
           if (!captureSelectedValueRef.current) return;

@@ -214,6 +214,20 @@ function ControlledOpen() {
   );
 }
 
+function SelectBananaInPopup() {
+  const store = Ariakit.useComboboxContext();
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        store?.setSelectedValue("Banana");
+      }}
+    >
+      Select Banana in popup
+    </button>
+  );
+}
+
 // An arrow key moves through the items before it opens the popover, so the
 // popover opens with movement already recorded.
 // https://github.com/ariakit/ariakit/issues/7627
@@ -236,9 +250,7 @@ function KeyboardOpen() {
       >
         Select Banana while closed
       </button>
-      {/* TODO: Remove unmountOnHide when this issue is fixed:
-      https://github.com/ariakit/ariakit/issues/7627 */}
-      <Ariakit.ComboboxPopover unmountOnHide>
+      <Ariakit.ComboboxPopover>
         {values.map((value) => (
           <Ariakit.ComboboxItem key={value} value={value} />
         ))}
@@ -381,6 +393,14 @@ export default function Example() {
       <DescendantClose />
       <ControlledOpen />
       <KeyboardOpen />
+      {/* A selection made in the popup before the first move there is part of
+      the value that Escape restores, however the popup was opened. */}
+      <Select label="Selection in popup" unmount={false}>
+        <SelectBananaInPopup />
+      </Select>
+      <Select label="Selection in unmounted popup" unmount>
+        <SelectBananaInPopup />
+      </Select>
       <RenderCounted />
       <StoreReplacement />
       <button type="button">External focus target</button>

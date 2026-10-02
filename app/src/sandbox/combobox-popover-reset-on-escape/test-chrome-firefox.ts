@@ -283,6 +283,52 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(select).toHaveText("Banana");
   });
 
+  // https://github.com/ariakit/ariakit/issues/7627
+  test("restores a value typed while closed after a click opened the popover", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Keyboard open");
+    await select.focus();
+    await page.keyboard.press("b");
+    await test.expect(select).toHaveText("Banana");
+    await test.expect(q.listbox()).toBeHidden();
+
+    await select.click();
+    await test.expect(q.listbox()).toBeVisible();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(select).toHaveText("Grape");
+
+    await page.keyboard.press("Escape");
+
+    await test.expect(q.listbox()).toBeHidden();
+    await test.expect(select).toHaveText("Banana");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7627
+  for (const label of ["Selection in popup", "Selection in unmounted popup"]) {
+    test(`tracks selection changes after an arrow key opened the popover (${label})`, async ({
+      page,
+      q,
+    }) => {
+      const select = q.combobox(label);
+      await select.focus();
+      await page.keyboard.press("ArrowDown");
+      await test.expect(q.listbox()).toBeVisible();
+      await q.button("Select Banana in popup").click();
+      await test.expect(select).toHaveText("Banana");
+
+      await select.focus();
+      await page.keyboard.press("End");
+      await test.expect(select).toHaveText("Grape");
+
+      await page.keyboard.press("Escape");
+
+      await test.expect(q.listbox()).toBeHidden();
+      await test.expect(select).toHaveText("Banana");
+    });
+  }
+
   // https://github.com/ariakit/ariakit/pull/6832#discussion_r3650305278
   test("doesn't render the popover when the selected value changes", async ({
     page,
