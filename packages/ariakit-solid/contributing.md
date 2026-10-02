@@ -99,7 +99,7 @@ function createInstance(Type, props) {
 }
 ```
 
-Solid JSX creates instances rather than React elements, so the equivalents are named `createInstance` and `wrapInstance`.
+The names `createInstance` and `wrapInstance` reflect how Solid runs components when JSX is evaluated, while React creates elements for later rendering.
 
 ### 1. Omit rendering options
 
