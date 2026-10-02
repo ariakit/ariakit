@@ -2,27 +2,6 @@ name: app
 
 on:
   workflow_call:
-    inputs:
-      plan:
-        type: boolean
-        default: false
-    outputs:
-      main:
-        value: ${{ jobs.plan.outputs.main }}
-      app:
-        value: ${{ jobs.plan.outputs.app }}
-      perf:
-        value: ${{ jobs.plan.outputs.perf }}
-      plus:
-        value: ${{ jobs.plan.outputs.plus }}
-      release_preview:
-        value: ${{ jobs.plan.outputs.release_preview }}
-      docs:
-        value: ${{ jobs.plan.outputs.docs }}
-      og_images:
-        value: ${{ jobs.plan.outputs.og_images }}
-      plan:
-        value: ${{ jobs.plan.outputs.plan }}
 
 permissions:
   contents: read
@@ -32,121 +11,8 @@ env:
   VISONAUT_PACKAGE_SHA256: 7e8c77bf386518619fd2a04a8b5a1509fa5a1db1c2a84827b26132672999d3a5
 
 jobs:
-  plan:
-    name: Plan
-    if: inputs.plan
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    outputs:
-      main: ${{ steps.plan.outputs.main }}
-      app: ${{ steps.plan.outputs.app }}
-      perf: ${{ steps.plan.outputs.perf }}
-      plus: ${{ steps.plan.outputs.plus }}
-      release_preview: ${{ steps.plan.outputs.release_preview }}
-      docs: ${{ steps.plan.outputs.docs }}
-      og_images: ${{ steps.plan.outputs.og_images }}
-      plan: ${{ steps.plan.outputs.plan }}
-    steps:
-      - name: Checkout event history
-        uses: actions/checkout@v7
-        with:
-          path: .visonaut-event
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Checkout trusted planner
-        uses: actions/checkout@v7
-        with:
-          ref: c87988effdff42edf4934ded906aa32ee3c04b66
-          path: .visonaut-planner
-          persist-credentials: false
-
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: .visonaut-planner/package.json
-
-      - name: Plan CI
-        id: plan
-        working-directory: .visonaut-event
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-        run: |
-          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
-            echo "app=true" >> "$GITHUB_OUTPUT"
-          else
-            node ../.visonaut-planner/packages/ariakit-scripts/src/ci-run.ts plan
-          fi
-
-  report:
-    name: Report
-    if: inputs.plan
-    needs: plan
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24.18.0
-
-      - name: Report successful Plan
-        env:
-          VISUAL_REQUIRED: ${{ needs.plan.outputs.app }}
-        run: |
-          node --input-type=module <<'NODE'
-          const required = process.env.VISUAL_REQUIRED;
-          if (required !== "true" && required !== "false") {
-            throw new Error("Plan must report an explicit app result.");
-          }
-          const origin = process.env.VISONAUT_SERVER;
-          const identityUrl = new URL(process.env.ACTIONS_ID_TOKEN_REQUEST_URL);
-          identityUrl.searchParams.set("audience", `${origin}/plan-report`);
-          const identityResponse = await fetch(identityUrl, {
-            headers: {
-              Authorization: `Bearer ${process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}`,
-            },
-            redirect: "error",
-            signal: AbortSignal.timeout(30_000),
-          });
-          if (!identityResponse.ok) {
-            throw new Error(`Plan identity is unavailable (HTTP ${identityResponse.status}).`);
-          }
-          const identity = await identityResponse.json();
-          if (typeof identity.value !== "string" || !identity.value) {
-            throw new Error("Plan identity is invalid.");
-          }
-          const response = await fetch(`${origin}/v1/plan`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${identity.value}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              schemaVersion: 1,
-              workflowRunId: process.env.GITHUB_RUN_ID,
-              workflowAttempt: Number(process.env.GITHUB_RUN_ATTEMPT),
-              testedSha: process.env.GITHUB_SHA,
-              planResult: "success",
-              visualRequired: required === "true",
-            }),
-            redirect: "error",
-            signal: AbortSignal.timeout(30_000),
-          });
-          await response.body?.cancel();
-          if (response.status !== 204) {
-            throw new Error(`Plan report failed (HTTP ${response.status}).`);
-          }
-          NODE
-
   build:
     name: Build app
-    if: ${{ !inputs.plan }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -176,7 +42,6 @@ jobs:
 
   build-nextjs:
     name: Build Next.js app
-    if: ${{ !inputs.plan }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -285,7 +150,7 @@ jobs:
           retention-days: 7
 
   visual:
-    name: Visual capture / ${{ matrix.shard }}
+    name: Visual Capture (${{ matrix.shard }})
     needs: [build, build-nextjs]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
@@ -357,7 +222,7 @@ jobs:
           retention-days: 7
 
   submit:
-    name: Visual / Submit
+    name: Visual Submit
     needs: visual
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -367,8 +232,8 @@ jobs:
       id-token: write
     env:
       VISONAUT_WORKFLOW_SOURCE_SHA: ${{ vars.VISONAUT_WORKFLOW_SOURCE_SHA }}
-      VISONAUT_CAPTURE_JOB_PREFIX: "App / Visual capture / "
-      VISONAUT_SUBMIT_JOB_NAME: "App / Visual / Submit"
+      VISONAUT_CAPTURE_JOB_NAME: "App / Visual Capture ({shard})"
+      VISONAUT_SUBMIT_JOB_NAME: "App / Visual Submit"
     steps:
       - name: Checkout trusted toolchain
         uses: actions/checkout@v7
@@ -384,7 +249,7 @@ jobs:
       - name: Install Visonaut
         run: |
           mkdir -p "$RUNNER_TEMP/visonaut-tools"
-          pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact "visonaut@0.4.0"
+          pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact "visonaut@0.5.0"
           echo "$RUNNER_TEMP/visonaut-tools/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Submit captures
@@ -405,7 +270,7 @@ jobs:
     # Keep PR previews and the existing main deployment; merge-queue runs only test.
     name: Preview
     needs: [build, build-nextjs]
-    if: ${{ always() && !inputs.plan && github.event_name != 'merge_group' }}
+    if: ${{ always() && github.event_name != 'merge_group' }}
     permissions:
       actions: read
       contents: read
