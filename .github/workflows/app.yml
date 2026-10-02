@@ -8,8 +8,7 @@ permissions:
 
 env:
   VISONAUT_SERVER: https://visonaut.com
-  VISONAUT_COMPARISON_POLICY_DIGEST: 6a97812c0ad3a5e8e006904995e75f8f15671260fb2ee53d31a1527c7d990fd1
-  VISONAUT_PACKAGE_SHA256: 5d29257230b1d822b846af7670741e3195a58fddbe7c8cac61dedd3a8a403179
+  VISONAUT_PACKAGE_SHA256: 7e8c77bf386518619fd2a04a8b5a1509fa5a1db1c2a84827b26132672999d3a5
 
 jobs:
   build:
@@ -151,7 +150,7 @@ jobs:
           retention-days: 7
 
   visual:
-    name: ${{ matrix.name }}
+    name: Visual Capture (${{ matrix.shard }})
     needs: [build, build-nextjs]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
@@ -162,12 +161,12 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            name: Visual
+            shard: linux
             engines: chromium firefox
             projects: chrome firefox
             test: xvfb-run pnpm -F app run test-visual
           - os: macos-latest
-            name: Visual (Safari)
+            shard: safari
             engines: webkit
             projects: safari
             test: pnpm -F app run test-visual
@@ -205,14 +204,11 @@ jobs:
       - name: Test visual
         run: ${{ matrix.test }} --project ${{ matrix.projects }} --grep @visual --output test-results/test-visual
 
-      - name: Encrypt captures
-        run: pnpm exec visonaut pack --dir "${{ runner.temp }}/visonaut" --output "${{ runner.temp }}/visonaut-${{ runner.os }}.enc"
-
-      - name: Upload encrypted captures
+      - name: Upload captures
         uses: actions/upload-artifact@v7
         with:
-          name: visonaut-transfer-${{ runner.os }}
-          path: ${{ runner.temp }}/visonaut-${{ runner.os }}.enc
+          name: visonaut-capture-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}
+          path: ${{ runner.temp }}/visonaut
           if-no-files-found: error
           retention-days: 1
 
@@ -226,21 +222,23 @@ jobs:
           retention-days: 7
 
   submit:
-    name: Visual / Submit
+    name: Visual Submit
     needs: visual
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     permissions:
       actions: read
       contents: read
       id-token: write
     env:
       VISONAUT_WORKFLOW_SOURCE_SHA: ${{ vars.VISONAUT_WORKFLOW_SOURCE_SHA }}
+      VISONAUT_CAPTURE_JOB_NAME: "App / Visual Capture ({shard})"
+      VISONAUT_SUBMIT_JOB_NAME: "App / Visual Submit"
     steps:
       - name: Checkout trusted toolchain
         uses: actions/checkout@v7
         with:
-          ref: main
+          ref: c87988effdff42edf4934ded906aa32ee3c04b66
           persist-credentials: false
 
       - name: Set up environment
@@ -251,23 +249,14 @@ jobs:
       - name: Install Visonaut
         run: |
           mkdir -p "$RUNNER_TEMP/visonaut-tools"
-          visonaut_version="$(node -p 'require("./package.json").devDependencies.visonaut')"
-          [[ "$visonaut_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
-          pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact "visonaut@$visonaut_version"
+          pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact "visonaut@0.5.3"
           echo "$RUNNER_TEMP/visonaut-tools/node_modules/.bin" >> "$GITHUB_PATH"
-
-      - name: Download captures
-        uses: actions/download-artifact@v8
-        with:
-          pattern: visonaut-transfer-*
-          path: ${{ runner.temp }}/visonaut-transfer
-          merge-multiple: true
 
       - name: Submit captures
         id: submit
         env:
           GH_TOKEN: ${{ github.token }}
-        run: visonaut submit --bundle "linux=$RUNNER_TEMP/visonaut-transfer/visonaut-Linux.enc" --bundle "safari=$RUNNER_TEMP/visonaut-transfer/visonaut-macOS.enc"
+        run: visonaut submit --shard linux --shard safari
 
       - name: Upload receipt
         uses: actions/upload-artifact@v7
@@ -275,13 +264,13 @@ jobs:
           name: ${{ steps.submit.outputs.name }}
           path: ${{ steps.submit.outputs.path }}
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 1
 
   deploy-preview:
     # Keep PR previews and the existing main deployment; merge-queue runs only test.
     name: Preview
     needs: [build, build-nextjs]
-    if: always() && github.event_name != 'merge_group'
+    if: ${{ always() && github.event_name != 'merge_group' }}
     permissions:
       actions: read
       contents: read
