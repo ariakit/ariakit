@@ -83,6 +83,22 @@ function createElement(Type, props) {
 
 [Solid's `createInstance`](../ariakit-solid-utils/src/system.tsx) performs the same work using [`omit`](https://v2.solidjs.com/reference/solid-js/stores/omit) from `solid-js` and [`dynamic`](https://v2.solidjs.com/reference/solid-web/components/dynamic) from `@solidjs/web`.
 
+```tsx
+import { dynamic } from "@solidjs/web";
+import { omit } from "solid-js";
+
+function createInstance(Type, props) {
+  const rest = omit(props, "render", "wrapInstance");
+  const Render = dynamic(() => props.render ?? Type);
+  const renderElement = () => <Render {...rest} />;
+  const Element = dynamic(() => {
+    const wrapInstance = props.wrapInstance;
+    return wrapInstance ? () => wrapInstance(renderElement) : renderElement;
+  });
+  return <Element />;
+}
+```
+
 The names `createInstance` and `wrapInstance` reflect Solid JSX instantiating components when evaluated, whereas React JSX creates React elements for later rendering. `wrapInstance` corresponds to React's `wrapElement`, but receives a function that creates the subtree.
 
 ### 1. Omit rendering options
