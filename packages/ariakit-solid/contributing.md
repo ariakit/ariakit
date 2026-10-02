@@ -117,11 +117,7 @@ Solid selects the render callback or default `Type` with [`dynamic`](https://v2.
 const Render = dynamic(() => props.render ?? Type);
 ```
 
-This keeps the renderer selection reactive.
-
-As in React, the render callback must pass the received props to the element it returns. If it replaces Ariakit's `onClick` with its own handler, Ariakit's handler will not run; the rendering helper does not combine them.
-
-Changing `render` can replace the DOM element and its children. It does not rerun the surrounding Solid component or its hooks.
+If `props.render` changes, `dynamic` switches to the new renderer, or back to `Type` if `render` is removed.
 
 ### 3. Defer element creation
 
