@@ -99,7 +99,7 @@ function createInstance(Type, props) {
 }
 ```
 
-The names `createInstance` and `wrapInstance` reflect Solid JSX instantiating components when evaluated, whereas React JSX creates React elements for later rendering. `wrapInstance` corresponds to React's `wrapElement`, but receives a function that creates the subtree.
+Solid JSX creates instances rather than React elements, so the equivalents are named `createInstance` and `wrapInstance`.
 
 ### 1. Omit rendering options
 
@@ -119,9 +119,9 @@ const Render = dynamic(() => props.render ?? Type);
 
 This keeps the renderer selection reactive.
 
-As in React's callback branch, the callback decides where to forward children, attributes, events, and refs. Additional callback props are not automatically composed: `onClick={myHandler}` after `{...props}` can replace the forwarded handler.
+As in React, the render callback must pass the received props to the element it returns. If it replaces Ariakit's `onClick` with its own handler, Ariakit's handler will not run; the rendering helper does not combine them.
 
-Changing the renderer can replace the subtree. Component hooks that detect their underlying element only during setup need separate handling; renderer replacement alone does not rerun those hooks. React documents this constraint in its [render options](../ariakit-react-utils/src/types.ts).
+Changing `render` can replace the DOM element and its children. It does not rerun the surrounding Solid component or its hooks.
 
 ### 3. Defer element creation
 
