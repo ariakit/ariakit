@@ -127,11 +127,11 @@ If `props.render` changes, `dynamic` switches to the new renderer, or back to `T
 const renderElement = () => <Render {...rest} />;
 ```
 
-The function forwards the filtered props to the selected renderer, but does not create the subtree yet. Calling it later lets a wrapper establish context before child components run.
+`renderElement()` renders `<Render {...rest} />`. Keeping it in a function lets `wrapInstance` decide when to render it, as explained below.
 
 ### 4. Apply the wrapper
 
-React passes a React element to `wrapElement`:
+`wrapElement` can surround the component with a context provider. React passes it an element, whose components have not run yet:
 
 ```tsx
 // React
@@ -140,14 +140,16 @@ wrapElement: (element) => (
 );
 ```
 
-Solid's `wrapInstance` receives a factory so the provider is established before the subtree is created:
+In Solid, those components would run before the wrapper if we passed already-evaluated JSX. Instead, `wrapInstance` receives the `renderElement` function from the previous step:
 
 ```tsx
 // Solid
-wrapInstance: (instance) => <Context value="Wrapped">{instance()}</Context>;
+wrapInstance: (renderInstance) => (
+  <Context value="Wrapped">{renderInstance()}</Context>
+);
 ```
 
-Calling `instance()` inside the provider gives the subtree its context and cleanup scope.
+Here, `renderInstance()` runs inside the provider, so the rendered components can read its `"Wrapped"` value.
 
 The outer [`dynamic`](https://v2.solidjs.com/reference/solid-web/components/dynamic) selects whether to use the wrapper:
 
@@ -159,9 +161,9 @@ const Element = dynamic(() => {
 return <Element />;
 ```
 
-Returning a function delays wrapper execution until rendering. This is why `wrapInstance` accepts a factory instead of React's element argument.
+When `<Element />` renders, it calls `wrapInstance(renderElement)` if a wrapper is supplied, or renders `renderElement` directly otherwise. `dynamic` updates this choice when `wrapInstance` changes.
 
-The [Solid context fixture](../ariakit-solid-utils/src/system.solid.test.tsx) also defers child creation so its context reads happen under the wrapper.
+The [Solid context fixture](../ariakit-solid-utils/src/system.solid.test.tsx) tests this by reading the wrapper's context value from a child component.
 
 ### Element-form rendering
 
