@@ -45,7 +45,7 @@ import type {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
-import { hasTreeFocus } from "../composite/utils.ts";
+import { hasTreeFocus } from "../focusable/__utils.ts";
 import { getScrollItemIntoView } from "./__utils.ts";
 import {
   useComboboxProviderContext,
