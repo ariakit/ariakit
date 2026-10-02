@@ -423,6 +423,7 @@ test("markAndDisableTreeOutside disables tabbable elements again without inert",
     document.body.innerHTML = `
       <div id="root">
         <div id="dialog"></div>
+        <section id="outside"></section>
         <section id="container">
           <div id="nested"></div>
           <div id="nested-sibling">
@@ -437,20 +438,25 @@ test("markAndDisableTreeOutside disables tabbable elements again without inert",
     const nested = getElement("nested");
     const nestedSibling = getElement("nested-sibling");
     const button = getElement("button");
+    const outside = getElement("outside");
 
     const tree = markAndDisableTreeOutside("dialog", [dialog]);
 
     expect(container.getAttribute("aria-hidden")).toBe("true");
     expect(button.getAttribute("tabindex")).toBe("-1");
 
-    // The container is restored before the sibling of the nested dialog is
-    // disabled, so the button is tabbable when the walk disables the sibling.
+    // A button that mounts in an element that stays disabled in the next walk.
+    const lateButton = document.createElement("button");
+    outside.append(lateButton);
+
     const nestedTree = markAndDisableTreeOutside(
       "dialog",
       [dialog, nested],
       tree,
     );
 
+    expect(outside.getAttribute("aria-hidden")).toBe("true");
+    expect(lateButton.getAttribute("tabindex")).toBe("-1");
     expect(container.hasAttribute("aria-hidden")).toBe(false);
     expect(nestedSibling.getAttribute("aria-hidden")).toBe("true");
     expect(button.getAttribute("tabindex")).toBe("-1");
@@ -460,11 +466,13 @@ test("markAndDisableTreeOutside disables tabbable elements again without inert",
     expect(container.getAttribute("aria-hidden")).toBe("true");
     expect(nestedSibling.hasAttribute("aria-hidden")).toBe(false);
     expect(button.getAttribute("tabindex")).toBe("-1");
+    expect(lateButton.getAttribute("tabindex")).toBe("-1");
 
     restoreCleanups(finalTree);
 
     expect(container.hasAttribute("aria-hidden")).toBe(false);
     expect(button.hasAttribute("tabindex")).toBe(false);
+    expect(lateButton.hasAttribute("tabindex")).toBe(false);
   } finally {
     Object.defineProperty(HTMLElement.prototype, "inert", inert);
   }

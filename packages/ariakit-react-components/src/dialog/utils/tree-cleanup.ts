@@ -1,4 +1,4 @@
-import { chain, noop } from "@ariakit/utils";
+import { chain } from "@ariakit/utils";
 import { isBackdrop } from "./is-backdrop.ts";
 import { setProperty } from "./orchestrate.ts";
 
@@ -80,16 +80,15 @@ export function isElementMarked(element: Element, id?: string) {
   } while (true);
 }
 
-// The state of one tree walk. The walk collects the cleanups that it keeps from
-// the previous walk and the setups of the new ones.
+// The state of one tree walk. The walk moves the cleanups that it keeps from
+// the previous walk.
 export interface CleanupWalk {
   cleanups: Cleanups;
   previousCleanups?: Cleanups;
-  setups: Array<() => void>;
 }
 
 export function startCleanupWalk(previousCleanups?: Cleanups): CleanupWalk {
-  return { cleanups: new Map(), previousCleanups, setups: [] };
+  return { cleanups: new Map(), previousCleanups };
 }
 
 export interface AddCleanupParams {
@@ -102,7 +101,7 @@ export interface AddCleanupParams {
 /**
  * Adds the cleanup of an element to the walk. If the previous walk has a
  * cleanup for the same element and kind, the function moves that cleanup and
- * drops `setup`. Otherwise, `finishCleanupWalk` calls `setup`.
+ * does not call `setup`.
  */
 export function addCleanup({ walk, element, kind, setup }: AddCleanupParams) {
   const elementCleanups: ElementCleanups =
@@ -112,30 +111,17 @@ export function addCleanup({ walk, element, kind, setup }: AddCleanupParams) {
   walk.cleanups.set(element, elementCleanups);
   const previousElementCleanups = walk.previousCleanups?.get(element);
   const previousCleanup = previousElementCleanups?.get(kind);
-  if (previousCleanup) {
-    previousElementCleanups?.delete(kind);
-    elementCleanups.set(kind, previousCleanup);
-    return;
-  }
-  // Reserve the key until `finishCleanupWalk` calls the setup.
-  elementCleanups.set(kind, noop);
-  walk.setups.push(() => {
-    elementCleanups.set(kind, setup());
-  });
+  previousElementCleanups?.delete(kind);
+  elementCleanups.set(kind, previousCleanup ?? setup());
 }
 
 /**
- * Restores the cleanups that the walk did not keep from the previous walk, and
- * then calls the new setups. This order matters when a setup reads the state
- * that a previous cleanup restores. For example, without `inert` support,
- * `disableTree` disables only the elements that are tabbable.
+ * Restores the cleanups that the walk did not keep from the previous walk. They
+ * belong to elements that are no longer part of the walk.
  */
 export function finishCleanupWalk(walk: CleanupWalk) {
   if (walk.previousCleanups) {
     restoreCleanups(walk.previousCleanups);
-  }
-  for (const setup of walk.setups) {
-    setup();
   }
   return walk.cleanups;
 }

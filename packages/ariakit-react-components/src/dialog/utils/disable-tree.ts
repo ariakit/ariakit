@@ -15,6 +15,7 @@ import {
   addCleanup,
   addElementMarkCleanup,
   finishCleanupWalk,
+  restoreCleanups,
   startCleanupWalk,
 } from "./tree-cleanup.ts";
 import type { CleanupWalk, Cleanups, Elements, Ids } from "./tree-cleanup.ts";
@@ -116,6 +117,12 @@ export function markAndDisableTreeOutside(
   elements: Elements,
   previousCleanups?: Cleanups,
 ) {
+  // TODO: Remove this when all supported browsers have `inert`. Without it,
+  // `disableTree` disables only the elements that are tabbable at that time, so
+  // the walk must disable the whole tree again.
+  if (previousCleanups && !supportsInert()) {
+    restoreCleanups(previousCleanups);
+  }
   const walk = startCleanupWalk(previousCleanups);
   const ids = elements.map((el) => el?.id);
 
