@@ -1,6 +1,6 @@
 import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
-import { measureEnvironment } from "@visonaut/playwright/ci";
+import { measureEnvironment } from "@visonaut/playwright/environment";
 
 if (process.argv.includes("--headed")) {
   process.env.PWHEADED = "true";
@@ -46,8 +46,6 @@ const captureEnvironment = captureDirectory
   ? await measureEnvironment({
       appPackageFile: path.join(process.cwd(), "package.json"),
       applicationFontPackage: "@fontsource-variable/inter",
-      comparisonPolicyDigest: requiredEnv("VISONAUT_COMPARISON_POLICY_DIGEST"),
-      comparisonEngineVersion: "rgba-visible-1",
       outputDirectory: captureDirectory,
     })
   : undefined;

@@ -32,6 +32,7 @@ import type {
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   accessibleWhenDisabledSymbol,
+  hasTreeFocus,
   isCompositeMoveKey,
   trulyDisabledAttribute,
 } from "./__utils.ts";
@@ -328,7 +329,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       // Some extensions like 1password dispatches some keydown events on
       // autofill and immediately moves focus to the next field. That's why we
       // need to check if the current element is still focused.
-      if (!hasFocus(element)) return;
+      if (!hasTreeFocus(element)) return;
       onFocusVisible?.(event);
       if (event.defaultPrevented) return;
       // Make sure data-focus-visible is applied visually at the same time as
