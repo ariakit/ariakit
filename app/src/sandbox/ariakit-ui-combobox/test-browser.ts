@@ -2,11 +2,13 @@ import type { Locator } from "@playwright/test";
 import {
   captureInView,
   capturePage,
+  expectMedia,
   forEachColorScheme,
   getCapture,
   OVERLAY_CLIP_MARGIN,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import type { ColorScheme } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // The fixture section sits at the end of the sandbox, so it is scrolled to
@@ -20,15 +22,26 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // The page capture covers the select sizes and static thumbnail highlight.
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972223972
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550839
-  test("page @visual", async ({ page, visual }) => {
-    await forEachColorScheme(page, (colorScheme) =>
+  test("page @visual", async ({ page, q, visual }) => {
+    const capture = (colorScheme: ColorScheme) =>
       capturePage({
         page,
         visual,
         colorScheme,
         item: "ariakit-ui-combobox/page",
-      }),
-    );
+      });
+    await forEachColorScheme(page, capture);
+    // The forced-colors variant of the same capture. The static list of the
+    // Open suggestions card renders Cashews as the active option.
+    // https://github.com/ariakit/ariakit/issues/7518
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      await expectMedia(page, "(forced-colors: active)");
+      await test
+        .expect(query(q.article("Open suggestions")).option("Cashews"))
+        .toHaveAttribute("data-active-item", "true");
+      await capture(colorScheme);
+    });
   });
 
   // https://github.com/ariakit/ariakit/issues/7473
