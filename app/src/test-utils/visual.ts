@@ -1,9 +1,13 @@
-import { utimesSync } from "node:fs";
-import path from "node:path";
 import { invariant } from "@ariakit/utils";
-import type { Locator, Page, TestInfo } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
-import { slugify } from "#app/lib/string.ts";
+import {
+  visual as captureVisual,
+  visualBatch as captureVisualBatch,
+} from "@visonaut/playwright";
+import type { Variant } from "@visonaut/playwright";
+import { isFramework } from "#app/lib/framework.ts";
+import type { Framework } from "#app/lib/schemas.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;
 const CLIP_STABILITY_INTERVAL = 16;
@@ -12,7 +16,10 @@ const CLIP_STABILITY_TIMEOUT = 1000;
 // A font from the local server loads in milliseconds. The bound turns a load
 // that never finishes into a clear failure well within the test budget.
 const FONTS_TIMEOUT = 10_000;
-const countMap = new Map<string, number>();
+
+// Keep the source within the card dimension bound and Visonaut's pixel limit.
+const MAX_BATCH_CAPTURE_DIMENSION = 16_383;
+const MAX_BATCH_CAPTURE_PIXELS = 32_000_000;
 
 interface Rect {
   x: number;
@@ -30,7 +37,17 @@ type CSSProperties = Record<string, string | number>;
 type Viewports = Record<string, ViewportSize>;
 type Styles = Record<string, CSSProperties>;
 
+export interface ScreenshotRegion {
+  /** Stable suffix appended to the parent capture's item. */
+  name: string;
+  element: Locator | string;
+}
+
 export interface ScreenshotOptions {
+  /** Stable identity of the captured UI state across runs. */
+  item: string;
+  /** Framework variant when the test itself has no framework tag. */
+  framework?: Framework;
   /**
    * Viewports to capture.
    */
@@ -45,14 +62,12 @@ export interface ScreenshotOptions {
    * `fullPage` to capture an element that is taller than the viewport.
    */
   element?: Locator | string;
+  /** Separate items cropped from one stable full-page capture. */
+  regions?: ScreenshotRegion[];
   /**
    * Optional CSS properties to apply to <html> for all variants.
    */
   style?: CSSProperties;
-  /**
-   * Additional identifier to disambiguate screenshots (e.g., path slug).
-   */
-  id?: string;
   /**
    * Margin (px) around cropped content.
    * @default 16
@@ -64,11 +79,7 @@ export interface ScreenshotOptions {
    * @default false
    */
   fullPage?: boolean;
-  /**
-   * How long each screenshot assertion may take, in milliseconds, including the
-   * two identical captures that a new baseline needs. Without it, the
-   * configured expect timeout applies.
-   */
+  /** Capture deadline in milliseconds, including two stable screenshots. */
   timeout?: number;
 }
 
@@ -81,75 +92,6 @@ export const defaultStyles = {
   light: { "--color-canvas": "oklch(99.33% 0.0011 197.14)" },
   dark: { "--color-canvas": "oklch(16.34% 0.0091 264.28)" },
 } satisfies Styles;
-
-function getSnapshotTitlePart(part: string) {
-  return part.replace(/@\S+/g, "").trim();
-}
-
-function getTestFileDir(testInfo: TestInfo) {
-  const testDir =
-    testInfo.project.testDir || path.join(testInfo.config.rootDir, "src");
-  return path.dirname(path.relative(testDir, testInfo.file));
-}
-
-function getSnapshotCount(testInfo: TestInfo, baseName: string) {
-  const countKey = `${testInfo.file}:${testInfo.project.name}:${baseName}`;
-  const count = countMap.get(countKey) || 0;
-  countMap.set(countKey, count + 1);
-  return count;
-}
-
-function getFileSnapshotName(params: {
-  id?: string;
-  testInfo: TestInfo;
-  variants?: string[];
-}) {
-  const { testInfo, variants = [], id } = params;
-  const titleParts = testInfo.titlePath
-    .map(getSnapshotTitlePart)
-    .filter(Boolean);
-  const filteredTitleParts = titleParts
-    .filter((part) => !part.endsWith(".ts"))
-    .filter((part) => part !== "visual")
-    .slice(-2);
-  const idParts = id
-    ? id
-        .split("/")
-        .filter(Boolean)
-        .filter((part) => part !== "previews")
-    : [];
-  const parts =
-    idParts.length > 0 &&
-    filteredTitleParts.length === 1 &&
-    filteredTitleParts[0] === "previews"
-      ? [...idParts, ...variants]
-      : [...filteredTitleParts, ...idParts, ...variants];
-  const baseName = slugify(parts.join("-"));
-  const count = getSnapshotCount(testInfo, baseName);
-  const countSuffix = count > 0 ? `-${count}` : "";
-  return `${baseName}${countSuffix}-${testInfo.project.name}.webp`;
-}
-
-function touchScreenshot(testInfo: TestInfo, fileName: string) {
-  const testDir =
-    testInfo.project.testDir || path.join(testInfo.config.rootDir, "src");
-  const screenshotPath = path.join(
-    testDir,
-    getTestFileDir(testInfo),
-    "__screenshots__",
-    fileName,
-  );
-  try {
-    const now = new Date();
-    utimesSync(screenshotPath, now, now);
-  } catch (error) {
-    if (error && typeof error === "object" && "code" in error) {
-      // File may not exist yet on the first run.
-      if (error.code === "ENOENT") return;
-    }
-    throw error;
-  }
-}
 
 function getCombinedClip(a: Rect, b: Rect) {
   const x = Math.min(a.x, b.x);
@@ -391,9 +333,67 @@ export async function waitForFonts(page: Page) {
     .toEqual([]);
 }
 
+interface CaptureRegionsParams extends Pick<
+  ScreenshotOptions,
+  "item" | "clipMargin" | "timeout"
+> {
+  page: Page;
+  regions: ScreenshotRegion[];
+  variant: Variant;
+}
+
+async function captureRegions({
+  page,
+  item,
+  regions,
+  clipMargin,
+  variant,
+  timeout,
+}: CaptureRegionsParams) {
+  const prepareRegion = async (region: ScreenshotRegion) => {
+    const options = { element: region.element, clipMargin, fullPage: true };
+    await waitForStableScreenshotClip(page, options);
+    const clip = await getScreenshotClip(page, options);
+    invariant(clip, "Missing screenshot region");
+    // Batch crops index image pixels, so fractional CSS bounds need rounding.
+    return { item: `${item}/${region.name}`, clip: getRectsClip([clip], 0) };
+  };
+  const size = await page.evaluate(() => ({
+    width: Math.max(
+      innerWidth,
+      document.documentElement.scrollWidth,
+      document.body.scrollWidth,
+    ),
+    height: Math.max(
+      innerHeight,
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight,
+    ),
+  }));
+  // Large documents still use clipped captures within the image size limits.
+  if (
+    size.width > MAX_BATCH_CAPTURE_DIMENSION ||
+    size.height > MAX_BATCH_CAPTURE_DIMENSION ||
+    size.width * size.height > MAX_BATCH_CAPTURE_PIXELS
+  ) {
+    for (const region of regions) {
+      const { item, clip } = await prepareRegion(region);
+      await captureVisual(page, {
+        item,
+        variant,
+        timeout,
+        screenshot: { fullPage: true, clip },
+      });
+    }
+    return;
+  }
+  const items = await Promise.all(regions.map(prepareRegion));
+  await captureVisualBatch(page, { variant, items, timeout });
+}
+
 export async function visual(
   page: Page,
-  options: ScreenshotOptions = {},
+  options: ScreenshotOptions,
   testInfo = test.info(),
 ) {
   expect(
@@ -408,11 +408,13 @@ export async function visual(
   await page.emulateMedia({ reducedMotion: "reduce" });
 
   const {
-    id,
+    item,
+    framework: selectedFramework,
     viewports = { default: page.viewportSize()! },
     styles = defaultStyles,
     style: defaultStyle = {},
     element,
+    regions,
     clipMargin = DEFAULT_CLIP_MARGIN,
     fullPage = false,
     timeout,
@@ -429,15 +431,9 @@ export async function visual(
     await withViewport(page, viewport, async () => {
       for (const [styleName, style] of stylesEntries) {
         await withStyles(page, { ...style, ...defaultStyle }, async () => {
-          const variants = [viewportName, styleName];
-          const fileSnapshotName = getFileSnapshotName({
-            id,
-            testInfo,
-            variants,
-          });
           await page.waitForLoadState("domcontentloaded");
           await waitForFonts(page);
-          if (fullPage && element) {
+          if ((fullPage && element) || regions) {
             // Sticky and fixed parts paint at the current scroll position, so a
             // document capture taken while scrolled would draw them over the
             // element.
@@ -448,21 +444,78 @@ export async function visual(
             clipMargin,
             fullPage,
           });
+          invariant(
+            testInfo.project.metadata.visonaut?.profile,
+            "The visual job must measure its Visonaut profile",
+          );
+          const browser = page.context().browser();
+          invariant(browser, "Visonaut requires a connected browser");
+          const browserName = browser.browserType().name();
+          if (
+            browserName !== "chromium" &&
+            browserName !== "firefox" &&
+            browserName !== "webkit"
+          ) {
+            throw new Error(`Unsupported browser: ${browserName}`);
+          }
+          const framework =
+            selectedFramework ??
+            testInfo.tags.map((tag) => tag.slice(1)).find(isFramework);
+          const media = await page.evaluate(() => ({
+            colorScheme: matchMedia("(prefers-color-scheme: dark)").matches
+              ? ("dark" as const)
+              : ("light" as const),
+            contrast: matchMedia("(prefers-contrast: more)").matches
+              ? ("more" as const)
+              : ("no-preference" as const),
+            forcedColors: matchMedia("(forced-colors: active)").matches
+              ? ("active" as const)
+              : ("none" as const),
+          }));
+          const captureOptions = {
+            variant: {
+              key: [
+                framework,
+                testInfo.project.name,
+                viewportName,
+                styleName,
+                media.colorScheme,
+                media.contrast,
+                media.forcedColors,
+              ]
+                .filter(Boolean)
+                .join("-"),
+              browser: browserName,
+              ...(framework && { framework }),
+              ...media,
+              dimensions: {
+                project: testInfo.project.name,
+                viewport: viewportName,
+                style: styleName,
+              },
+            } satisfies Variant,
+            timeout,
+          };
+          if (regions) {
+            await captureRegions({
+              page,
+              item,
+              regions,
+              clipMargin,
+              ...captureOptions,
+            });
+            return;
+          }
           const screenshotOptions = await getPlaywrightScreenshotOptions(page, {
             element,
             clipMargin,
             fullPage,
           });
-          await expect(page).toHaveScreenshot(fileSnapshotName, {
-            ...screenshotOptions,
-            // A page-sized pixel allowance can hide changes to small controls.
-            ...(fullPage && { maxDiffPixelRatio: 0 }),
-            timeout,
+          await captureVisual(page, {
+            item,
+            ...captureOptions,
+            screenshot: screenshotOptions,
           });
-          // Touch the screenshot file so the CI stale-detection step (which
-          // deletes files older than a pre-run marker) knows this screenshot is
-          // still expected by a test.
-          touchScreenshot(testInfo, fileSnapshotName);
         });
       }
     });

@@ -6,16 +6,12 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import {
-  fireEvent,
-  hasFocusWithin,
-  invariant,
-  isFalsyBooleanCallback,
-} from "@ariakit/utils";
+import { fireEvent, hasFocusWithin, invariant } from "@ariakit/utils";
 import type { ElementType, MutableRefObject } from "react";
 import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import { isCapturedDisclosure } from "../dialog/utils/__captured-disclosures.ts";
+import { useEscapeClose } from "../dialog/utils/__use-escape-close.ts";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
 import { useMenuProviderContext } from "./menu-context.tsx";
@@ -228,6 +224,14 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     };
   }
 
+  // Escape closes the whole menu tree, so the parent menus close once this menu
+  // closes on Escape.
+  const escapeClose = useEscapeClose({
+    hideOnEscape,
+    onClose: props.onClose,
+    onEscapeClose: () => parentMenu?.hideAll(),
+  });
+
   props = useHovercard({
     store,
     alwaysVisible,
@@ -235,11 +239,8 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     autoFocusOnShow: autoFocusOnShowProp,
     finalFocus: finalFocusElement,
     ...props,
-    hideOnEscape(event) {
-      if (isFalsyBooleanCallback(hideOnEscape, event)) return false;
-      store?.hideAll();
-      return true;
-    },
+    hideOnEscape: escapeClose.hideOnEscape,
+    onClose: escapeClose.onClose,
     hideOnHoverOutside(event) {
       const disclosureElement = store?.getState().disclosureElement;
       const getHideOnHoverOutside = () => {

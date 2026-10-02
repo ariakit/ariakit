@@ -249,7 +249,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await forEachColorScheme(page, async (colorScheme) => {
           await selectScenario(q, scenario);
           await visual({
-            ...getViewportCapture(page, colorScheme),
+            ...getViewportCapture(
+              page,
+              colorScheme,
+              `ariakit-ui-shell/${scenario}-responsive`,
+            ),
             viewports: {
               wide: { width: 1440, height: 900 },
               narrow: { width: 560, height: 900 },
@@ -270,7 +274,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await q.checkbox("Flush gutter").check();
         const frame = page.locator('[aria-label="Flush frame"]');
         await visual({
-          ...getCapture(frame, colorScheme, { fullPage: true }),
+          ...getCapture(frame, colorScheme, {
+            item: "ariakit-ui-shell/flush-band",
+            fullPage: true,
+          }),
           viewports: {
             wide: { width: 1440, height: 900 },
             narrow: { width: 560, height: 900 },
@@ -285,7 +292,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         const toggle = q.button("Toggle table of contents");
         await toggle.click();
         await expect(q.navigation("On this page")).toBeVisible();
-        await visual(getViewportCapture(page, colorScheme));
+        await visual(
+          getViewportCapture(page, colorScheme, "ariakit-ui-shell/docs-site"),
+        );
         await expect
           .poll(() => toggle.evaluate((node) => node.matches(":hover")))
           .toBe(false);
@@ -302,16 +311,19 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await forEachColorScheme(page, async (colorScheme) => {
         for (const direction of ["ltr", "rtl"]) {
           await q.checkbox("Right to left").setChecked(direction === "rtl");
-          for (const sidebar of [
-            "Toggle sidebar",
-            "Toggle table of contents",
-            "Toggle sidebar",
-            "Toggle table of contents",
-          ]) {
+          for (const [state, sidebar] of [
+            ["sidebar-closed", "Toggle sidebar"],
+            ["toc-closed", "Toggle table of contents"],
+            ["sidebar-open", "Toggle sidebar"],
+            ["toc-open", "Toggle table of contents"],
+          ] as const) {
             await q.button(sidebar).click();
             await visual({
-              ...getViewportCapture(page, colorScheme),
-              id: direction,
+              ...getViewportCapture(
+                page,
+                colorScheme,
+                `ariakit-ui-shell/sidebar-combinations/${direction}-${state}`,
+              ),
               viewports: { wide: viewport },
             });
           }
@@ -330,7 +342,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           window.scrollTo(0, document.documentElement.scrollHeight),
         );
         await expect(q.contentinfo()).toBeInViewport({ ratio: 1 });
-        await visual(getViewportCapture(page, colorScheme));
+        await visual(
+          getViewportCapture(
+            page,
+            colorScheme,
+            "ariakit-ui-shell/sticky-sidebar-footer",
+          ),
+        );
       });
     });
 
@@ -343,18 +361,27 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await page.setViewportSize(viewport);
       await forEachColorScheme(page, async (colorScheme) => {
         await selectScenario(q, "bar");
-        for (const sizing of ["Shrink the sides", "Grow the center"]) {
+        for (const [key, sizing] of [
+          ["shrink-sides", "Shrink the sides"],
+          ["grow-center", "Grow the center"],
+        ] as const) {
           await q.radio(sizing).check();
           await visual({
-            ...getViewportCapture(page, colorScheme),
-            id: sizing,
+            ...getViewportCapture(
+              page,
+              colorScheme,
+              `ariakit-ui-shell/bar-sizing/${key}`,
+            ),
             viewports: { narrow: viewport },
           });
         }
         await selectScenario(q, "marketing");
         await visual({
-          ...getViewportCapture(page, colorScheme),
-          id: "stacked",
+          ...getViewportCapture(
+            page,
+            colorScheme,
+            "ariakit-ui-shell/bar-sizing/stacked",
+          ),
           viewports: { narrow: viewport },
         });
       });
@@ -368,7 +395,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await forEachColorScheme(page, async (colorScheme) => {
         await page.evaluate(() => window.scrollTo(0, 300));
         await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(300);
-        await visual(getViewportCapture(page, colorScheme));
+        await visual(
+          getViewportCapture(
+            page,
+            colorScheme,
+            "ariakit-ui-shell/docs-site-scrolled",
+          ),
+        );
       });
     });
 
@@ -384,7 +417,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await forEachColorScheme(page, async (colorScheme) => {
           await selectScenario(q, scenario);
           await expect(q.combobox("Scenario")).toHaveValue(scenario);
-          await visual(getViewportCapture(page, colorScheme));
+          await visual(
+            getViewportCapture(
+              page,
+              colorScheme,
+              `ariakit-ui-shell/${scenario}-default`,
+            ),
+          );
         });
       });
     }

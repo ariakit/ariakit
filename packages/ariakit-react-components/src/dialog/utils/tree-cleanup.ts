@@ -3,8 +3,16 @@ import { isBackdrop } from "./is-backdrop.ts";
 import { setProperty } from "./orchestrate.ts";
 
 export type Elements = Array<Element | null>;
-export type Cleanups = Array<() => void>;
 export type Ids = Array<string | undefined>;
+
+type CleanupKind = "mark" | "ancestorMark" | "disable" | "role";
+
+// Keyed by element and kind, so the next walk can keep the cleanups of the
+// elements that stay in the same state instead of restoring and setting them
+// again.
+export type Cleanups = Map<Element, ElementCleanups>;
+
+type ElementCleanups = Map<CleanupKind, () => void>;
 
 type MarkKind = "outside" | "ancestor";
 
@@ -72,32 +80,83 @@ export function isElementMarked(element: Element, id?: string) {
   } while (true);
 }
 
-export interface AddElementMarkCleanupParams {
+// The state of one tree walk. The walk moves the cleanups that it keeps from
+// the previous walk.
+export interface CleanupWalk {
   cleanups: Cleanups;
+  previousCleanups?: Cleanups;
+}
+
+export function startCleanupWalk(previousCleanups?: Cleanups): CleanupWalk {
+  return { cleanups: new Map(), previousCleanups };
+}
+
+export interface AddCleanupParams {
+  walk: CleanupWalk;
+  element: Element;
+  kind: CleanupKind;
+  setup: () => () => void;
+}
+
+/**
+ * Adds the cleanup of an element to the walk. If the previous walk has a
+ * cleanup for the same element and kind, the function moves that cleanup and
+ * does not call `setup`.
+ */
+export function addCleanup({ walk, element, kind, setup }: AddCleanupParams) {
+  const elementCleanups: ElementCleanups =
+    walk.cleanups.get(element) ?? new Map();
+  // A walk can visit the same ancestor once for each dialog element.
+  if (elementCleanups.has(kind)) return;
+  walk.cleanups.set(element, elementCleanups);
+  const previousElementCleanups = walk.previousCleanups?.get(element);
+  const previousCleanup = previousElementCleanups?.get(kind);
+  previousElementCleanups?.delete(kind);
+  elementCleanups.set(kind, previousCleanup ?? setup());
+}
+
+/**
+ * Restores the cleanups that the walk did not keep from the previous walk. They
+ * belong to elements that are no longer part of the walk.
+ */
+export function finishCleanupWalk(walk: CleanupWalk) {
+  if (walk.previousCleanups) {
+    restoreCleanups(walk.previousCleanups);
+  }
+  return walk.cleanups;
+}
+
+export interface AddElementMarkCleanupParams {
+  walk: CleanupWalk;
   element: Element;
   id: string;
   ids: Ids;
 }
 
 export function addElementMarkCleanup({
-  cleanups,
+  walk,
   element,
   id,
   ids,
 }: AddElementMarkCleanupParams) {
   if (isBackdrop(element, ...ids)) return;
-  cleanups.push(markElement(element, id));
+  addCleanup({
+    walk,
+    element,
+    kind: "mark",
+    setup: () => markElement(element, id),
+  });
 }
 
 export interface AddAncestorMarkCleanupParams {
-  cleanups: Cleanups;
+  walk: CleanupWalk;
   ancestor: Element;
   element: Element;
   id: string;
 }
 
 export function addAncestorMarkCleanup({
-  cleanups,
+  walk,
   ancestor,
   element,
   id,
@@ -106,13 +165,19 @@ export function addAncestorMarkCleanup({
   const isAnotherDialogAncestor =
     element.hasAttribute("data-dialog") && element.id !== id;
   if (isAnotherDialogAncestor) return;
-  cleanups.push(markAncestor(ancestor, id));
+  addCleanup({
+    walk,
+    element: ancestor,
+    kind: "ancestorMark",
+    setup: () => markAncestor(ancestor, id),
+  });
 }
 
 export function restoreCleanups(cleanups: Cleanups) {
-  // Run in reverse so the most recently set properties restore first, matching
-  // the previous unshift-based order without its O(n²) cost.
-  for (let index = cleanups.length - 1; index >= 0; index -= 1) {
-    cleanups[index]?.();
+  for (const elementCleanups of cleanups.values()) {
+    for (const cleanup of elementCleanups.values()) {
+      cleanup();
+    }
   }
+  cleanups.clear();
 }

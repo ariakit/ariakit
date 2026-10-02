@@ -8,8 +8,18 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { createStore, sync } from "@ariakit/store";
-import { chain, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
-import type { ElementType, FocusEvent, MouseEvent } from "react";
+import {
+  chain,
+  hasFocusWithin,
+  invariant,
+  isFalsyBooleanCallback,
+} from "@ariakit/utils";
+import type {
+  ElementType,
+  FocusEvent,
+  MouseEvent,
+  SyntheticEvent,
+} from "react";
 import { useEffect, useRef } from "react";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
@@ -34,6 +44,11 @@ function createRemoveStoreCallback(store: TooltipStore) {
     if (activeStore !== store) return;
     globalStore.setState("activeStore", null);
   };
+}
+
+function isEscapeKeyEvent(event: Event) {
+  if (!("key" in event)) return false;
+  return event.key === "Escape";
 }
 
 function hideStore(store: TooltipStore | null) {
@@ -80,6 +95,37 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       });
     }, [store]);
 
+    // When the tooltip closes with focus inside it, such as after Escape in the
+    // tooltip, Dialog returns focus to the anchor in the same task. The anchor
+    // becomes focus-visible on that focus, which must not open the tooltip
+    // again.
+    // https://github.com/ariakit/ariakit/issues/7622
+    const returningFocusRef = useRef(false);
+    const returnedFocusRef = useRef<Event | null>(null);
+
+    useEffect(() => {
+      return sync(store, ["open"], (state) => {
+        if (state.open) return;
+        if (!store) return;
+        const { contentElement } = store.getState();
+        if (!contentElement) return;
+        if (!hasFocusWithin(contentElement)) return;
+        returningFocusRef.current = true;
+        setTimeout(() => {
+          returningFocusRef.current = false;
+        });
+      });
+    }, [store]);
+
+    const onFocusProp = props.onFocus;
+
+    const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
+      onFocusProp?.(event);
+      if (!returningFocusRef.current) return;
+      returningFocusRef.current = false;
+      returnedFocusRef.current = event.nativeEvent;
+    });
+
     useEffect(() => {
       if (!store) return;
       const removeStore = createRemoveStoreCallback(store);
@@ -123,9 +169,15 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
 
     const onFocusVisibleProp = props.onFocusVisible;
 
-    const onFocusVisible = useEvent((event: FocusEvent<HTMLType>) => {
+    const onFocusVisible = useEvent((event: SyntheticEvent<HTMLType>) => {
       onFocusVisibleProp?.(event);
       if (event.defaultPrevented) return;
+      // Escape dismisses the tooltip, and Focusable makes the anchor
+      // focus-visible after the key press, which must not show the tooltip
+      // again.
+      // https://github.com/ariakit/ariakit/issues/7622
+      if (isEscapeKeyEvent(event.nativeEvent)) return;
+      if (event.nativeEvent === returnedFocusRef.current) return;
       store?.setAnchorElement(event.currentTarget);
       store?.show();
     });
@@ -162,6 +214,7 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       "aria-labelledby": props["aria-label"] == null ? labelledBy : undefined,
       ...props,
       onMouseEnter,
+      onFocus,
       onFocusVisible,
       onBlur,
     };

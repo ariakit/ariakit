@@ -12,7 +12,7 @@ import {
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({ page, visual, colorScheme, item: "ariakit-ui-tabs/page" }),
     );
   });
 
@@ -28,7 +28,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       // pointer passes over Usage on its way to Preview.
       await query(box).tab("Usage").hover();
       await hoverOver(query(box).tab("Preview"));
-      await visual(getCapture(box, colorScheme));
+      await visual(
+        getCapture(box, colorScheme, { item: "ariakit-ui-tabs/hovered-tab" }),
+      );
     });
   });
 
@@ -46,7 +48,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await page.keyboard.press("ArrowRight");
       await expectFocusVisible(usage);
       await test.expect(usage).toHaveAttribute("aria-selected", "false");
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-tabs/focused-tab",
+      });
     });
   });
 });

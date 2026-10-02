@@ -15,7 +15,12 @@ withCaptures(import.meta.dirname, async ({ test }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       await expectMedia(page, "(forced-colors: active)");
-      await captureInView(visual, q.article("Default"), colorScheme);
+      await captureInView({
+        visual,
+        box: q.article("Default"),
+        colorScheme,
+        item: "ariakit-ui-popover/forced-colors/default",
+      });
     });
   });
 });

@@ -354,6 +354,10 @@ export const controlSlot = cv({
     const paintsSurface =
       variants.$kind === "badge" || variants.$kind === "avatar";
     if (!paintsSurface) return;
+    // Forced colors remove the slot's fill, which may be its only boundary.
+    if (variants.$border == null && hasLayerBackground(variants)) {
+      addClass("forced-colors:ak-frame-border");
+    }
     addClass([
       // Mix the fill into its parent before ink is calculated, so disabled
       // text keeps the contrast chosen for the resulting surface.

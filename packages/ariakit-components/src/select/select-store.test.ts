@@ -1,5 +1,5 @@
 import { init } from "@ariakit/store";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import { createComboboxStore } from "../combobox/combobox-store.ts";
 import { createSelectStore } from "./select-store.ts";
 
@@ -36,4 +36,21 @@ test("keeps select and combobox element state separate", () => {
 
   stopSelect();
   stopCombobox();
+});
+
+// https://github.com/ariakit/ariakit/issues/7621
+test("a hide request on the combobox store runs the handler of the select", () => {
+  const combobox = createComboboxStore({ defaultOpen: true });
+  const select = createSelectStore({ combobox });
+  const stop = init(select);
+  const handler = vi.fn();
+  const unregister = select.unstable_onHideRequest(handler);
+
+  combobox.hide();
+  expect(handler).toHaveBeenCalledTimes(1);
+  expect(combobox.getState().open).toBe(true);
+  expect(select.getState().open).toBe(true);
+
+  unregister();
+  stop();
 });

@@ -32,7 +32,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
 
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({ page, visual, colorScheme, item: "ariakit-ui-badge/page" }),
     );
   });
 });

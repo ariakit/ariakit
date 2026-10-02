@@ -71,7 +71,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await forEachColorScheme(page, async (colorScheme) => {
         await page.evaluate(() => window.scrollTo(0, 300));
         await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(300);
-        await visual(getViewportCapture(page, colorScheme));
+        await visual(
+          getViewportCapture(
+            page,
+            colorScheme,
+            "ariakit-ui-shell/forced-colors/blurred-header",
+          ),
+        );
       });
     });
   });

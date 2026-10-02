@@ -117,6 +117,16 @@ export function createMenuStore({
 
   const menu = createStore(initialState, composite, hovercard, store);
 
+  // The menu shares the open state with the combobox, so a hide request on the
+  // combobox, like a combobox item hiding it, also runs the handlers of the
+  // menu, such as those of the Dialog that renders it. Registering the request
+  // function itself keeps a single handler when menus that share hide handlers
+  // link the same combobox.
+  // https://github.com/ariakit/ariakit/issues/7621
+  setup(menu, () =>
+    combobox?.unstable_onHideRequest(hovercard.unstable_requestHide),
+  );
+
   setup(menu, () =>
     sync(menu, ["mounted"], (state) => {
       if (state.mounted) return;

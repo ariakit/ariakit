@@ -10,7 +10,12 @@ import {
 withCaptures(import.meta.dirname, async ({ test }) => {
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({
+        page,
+        visual,
+        colorScheme,
+        item: "ariakit-ui-tooltip/page",
+      }),
     );
   });
 
@@ -24,7 +29,10 @@ withCaptures(import.meta.dirname, async ({ test }) => {
       const tooltip = q.tooltip("Publish to the public site");
       await test.expect(tooltip).toBeVisible();
       await visual(
-        getCapture(tooltip, colorScheme, { clipMargin: OVERLAY_CLIP_MARGIN }),
+        getCapture(tooltip, colorScheme, {
+          item: "ariakit-ui-tooltip/live-tooltip-hover",
+          clipMargin: OVERLAY_CLIP_MARGIN,
+        }),
       );
     });
   });

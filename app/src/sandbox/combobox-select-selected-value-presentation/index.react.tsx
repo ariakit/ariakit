@@ -593,6 +593,7 @@ function OversizedInlineOverflowFixture({
 }
 
 interface ProviderStoreFixtureProps {
+  autoFocusOnShow?: boolean;
   label: string;
   /**
    * The component that receives the store through its `store` prop. The other
@@ -601,7 +602,11 @@ interface ProviderStoreFixtureProps {
   storeOn: "select" | "popover";
 }
 
-function ProviderStoreFixture({ label, storeOn }: ProviderStoreFixtureProps) {
+function ProviderStoreFixture({
+  autoFocusOnShow,
+  label,
+  storeOn,
+}: ProviderStoreFixtureProps) {
   const combobox = Ariakit.useComboboxStore({
     defaultSelectedValue: "Mango",
   });
@@ -613,6 +618,7 @@ function ProviderStoreFixture({ label, storeOn }: ProviderStoreFixtureProps) {
       />
       <Ariakit.ComboboxPopover
         store={storeOn === "popover" ? combobox : undefined}
+        autoFocusOnShow={autoFocusOnShow}
         style={{
           background: "white",
           border: "1px solid gray",
@@ -1215,6 +1221,40 @@ export default function Example() {
       </div>
       <div style={{ marginTop: 200 }}>
         <SelectElementSwapFixture />
+      </div>
+      {/* Like "Persisting fruit", but the items unmount while the popup is
+      hidden, so every open starts from a list scrolled to the top. */}
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          autoFocusOnShow={false}
+          defaultSelectedValue="Watermelon"
+          label="Unmounting fruit"
+          unmountOnHide
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <ProviderStoreFixture
+          autoFocusOnShow={false}
+          label="Select-store persisting fruit"
+          storeOn="select"
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <ProviderStoreFixture
+          autoFocusOnShow={false}
+          label="Popover-store persisting fruit"
+          storeOn="popover"
+        />
+      </div>
+      {/* The input is the composite here, so the select has no composite focus
+      handler to present the selected item even on the first open. */}
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          autoFocusOnShow={false}
+          defaultSelectedValue="Watermelon"
+          input
+          label="Filterable persisting fruit"
+        />
       </div>
     </>
   );

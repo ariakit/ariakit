@@ -56,7 +56,7 @@ function toPerfMeasureOptions(options: PerfOptions = {}): PerfMeasureOptions {
 }
 
 export const test = base.extend<{
-  visual: (options?: ScreenshotOptions) => Promise<void>;
+  visual: (options: ScreenshotOptions) => Promise<void>;
   perf: {
     measure: (
       interaction: PerfCallback,

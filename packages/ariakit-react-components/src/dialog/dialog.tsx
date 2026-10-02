@@ -76,6 +76,8 @@ import {
   markTreeOutside,
 } from "./utils/mark-tree-outside.ts";
 import { supportsInert } from "./utils/supports-inert.ts";
+import { restoreCleanups } from "./utils/tree-cleanup.ts";
+import type { Cleanups } from "./utils/tree-cleanup.ts";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.ts";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.tsx";
 import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.ts";
@@ -87,6 +89,11 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 const isSafariBrowser = isSafari();
 const openModalPortals = new WeakSet<HTMLElement>();
+// Escape key presses that already hid a dialog, keyed by the event the user
+// triggered. Other dialogs reject them, because the popup that closed can
+// remove its marks before a dialog outside its React tree sees the key press.
+// https://github.com/ariakit/ariakit/issues/7646
+const escapeKeyPressesThatHid = new WeakSet<Event>();
 
 function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   const activeElement = getActiveElement(dialog);
@@ -490,6 +497,34 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   const getPersistentElementsProp = useEvent(getPersistentElements);
 
+  const treeRef = useRef<{
+    restoreInsideMarks: () => void;
+    outsideCleanups: Cleanups;
+  }>(null);
+
+  // Restores the element tree around the dialog element. The next effect
+  // updates the tree and has no cleanup. Thus, a change in the nested dialogs
+  // does not restore and disable again the elements that stay outside.
+  // https://github.com/ariakit/ariakit/issues/7697
+  useSafeLayoutEffect(() => {
+    return () => {
+      const tree = treeRef.current;
+      if (!tree) return;
+      treeRef.current = null;
+      tree.restoreInsideMarks();
+      restoreCleanups(tree.outsideCleanups);
+    };
+  }, [
+    id,
+    store,
+    canTakeTreeSnapshot,
+    contentElement,
+    modal,
+    hasDefaultModalPortal,
+    getPersistentElementsProp,
+    unstable_treeSnapshotKey,
+  ]);
+
   // Disables/enables the element tree around the modal dialog element.
   useSafeLayoutEffect(() => {
     if (!id) return;
@@ -504,20 +539,24 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       ...(openingCohortRef.current?.peers || []),
       ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
     ];
+    const previousTree = treeRef.current;
+    previousTree?.restoreInsideMarks();
     // Mark known dialog elements before first focus. Re-check disclosure live
     // because hovercards and tooltips may replace it while open.
     // https://github.com/ariakit/ariakit/issues/6344
     const restoreInsideMarks = markTreeInside(dialog, allElements);
-    if (modal) {
-      return chain(
-        restoreInsideMarks,
-        markAndDisableTreeOutside(id, allElements),
-      );
-    }
-    return chain(
-      restoreInsideMarks,
-      markTreeOutside(id, [disclosureElement, ...allElements]),
-    );
+    const outsideCleanups = modal
+      ? markAndDisableTreeOutside(
+          id,
+          allElements,
+          previousTree?.outsideCleanups,
+        )
+      : markTreeOutside(
+          id,
+          [disclosureElement, ...allElements],
+          previousTree?.outsideCleanups,
+        );
+    treeRef.current = { restoreInsideMarks, outsideCleanups };
   }, [
     id,
     store,
@@ -756,13 +795,19 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const dialog = ref.current;
     if (!mounted) return false;
     if (!dialog) return false;
-    // Ignore the event if the current dialog is marked by another dialog. This
-    // guarantees that only the topmost dialog will close on Escape.
-    if (isElementMarked(dialog)) return false;
     const source = getKeyboardEventSource(event);
     let keyPress = escapeKeyPresses.get(source);
     if (!keyPress) {
-      keyPress = { accepted: hideOnEscapeProp(event), hidden: false };
+      // Ignore the key press if the current dialog is marked by another dialog.
+      // This guarantees that only the topmost dialog will close on Escape. The
+      // decision covers the whole key press, because a nested popup can close
+      // on the copy that Composite dispatches and remove the marks before the
+      // original event reaches this dialog.
+      // https://github.com/ariakit/ariakit/issues/7632
+      const isTopmost =
+        !isElementMarked(dialog) && !escapeKeyPressesThatHid.has(source);
+      const accepted = isTopmost && hideOnEscapeProp(event);
+      keyPress = { accepted, hidden: false };
       escapeKeyPresses.set(source, keyPress);
     }
     escapeEvents.set(event, {
@@ -776,12 +821,14 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const accepted = acceptEscape(event);
     escapeEvents.delete(event);
     if (!accepted) return false;
-    const keyPress = escapeKeyPresses.get(getKeyboardEventSource(event));
+    const source = getKeyboardEventSource(event);
+    const keyPress = escapeKeyPresses.get(source);
     // The other event of the same key press already asked to hide the dialog.
     if (keyPress?.hidden) return true;
     if (keyPress) {
       keyPress.hidden = true;
     }
+    escapeKeyPressesThatHid.add(source);
     store.hide();
     return true;
   });
@@ -806,6 +853,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       escapeEvents.delete(nativeEvent);
       return;
     }
+    // Decide before descendants handle the key press. When React listens on the
+    // document, this runs before the document listeners below, so a nested
+    // popup can't close and remove its marks first.
+    // https://github.com/ariakit/ariakit/issues/7632
+    if (!acceptEscape(nativeEvent)) return;
+    // Hide now if the key press stops here, since it won't reach this dialog
+    // again. hideOnEscape can stop it too.
     const stoppedAtDialog =
       event.isPropagationStopped() || nativeEvent.cancelBubble;
     if (!stoppedAtDialog) return;
@@ -826,16 +880,20 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       if (escapeEvents.has(event)) return;
       const dialog = ref.current;
       if (!dialog) return;
-      const target = event.target;
+      // A key press inside a shadow tree reaches the document retargeted to the
+      // shadow host, so the composed path holds the element that received it.
+      // Both count, since `contains` doesn't cross shadow boundaries and the
+      // host can be the only one of them that belongs to this dialog.
+      // https://github.com/ariakit/ariakit/issues/7671
       // Guard against non-node targets (e.g. a synthetic event dispatched on
       // window) so `contains` doesn't throw. `isNode` rather than `isElement`
       // keeps non-element nodes working with `contains`, as before.
-      if (!isNode(target)) return;
+      const targets = [event.target, event.composedPath()[0]].filter(isNode);
       const { disclosureElement } = store.getState();
       // This considers valid targets the elements that belong to this dialog
       // tree, including elements marked as outside by this dialog so Escape can
       // close the topmost dialog even when focus is outside.
-      const isValidTarget = () => {
+      const isValidTarget = (target: Node) => {
         if (isElement(target) && target.tagName === "BODY") return true;
         if (contains(dialog, target)) return true;
         if (!disclosureElement) return true;
@@ -850,7 +908,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         }
         return false;
       };
-      if (!isValidTarget()) return;
+      if (!targets.some(isValidTarget)) return;
       if (!acceptEscape(event)) return;
       if (!event.cancelBubble) return;
       hideOnEscapeEvent(event);
@@ -1089,13 +1147,17 @@ export interface DialogOptions<T extends ElementType = TagName>
    * event. The only difference is that this event can be canceled with
    * `event.preventDefault()`, which will prevent the dialog from hiding.
    *
-   * This event fires when a close is requested through the dialog store's
-   * `hide`, `setOpen`, or `toggle` functions. This includes the requests the
-   * dialog makes itself, such as on Escape or when the user interacts outside
-   * the dialog, and those from other components, such as a disclosure button or
-   * an item that hides the popup on click. In this case, the event fires before
-   * the store's [`open`](https://ariakit.com/reference/use-dialog-store#open)
-   * state changes, so preventing it leaves the dialog as it was.
+   * This event fires when a close is requested through the `hide`, `setOpen`,
+   * or `toggle` functions of the dialog store, of a store that the dialog store
+   * receives through the `combobox` or `popover` options, such as the combobox
+   * store of a menu, or of a store that receives the dialog store through the
+   * `disclosure` option, such as a combobox in the dialog. This includes the
+   * requests the dialog makes itself, such as on Escape or when the user
+   * interacts outside the dialog, and those from other components, such as a
+   * disclosure button or an item that hides the popup on click. In this case,
+   * the event fires before the store's
+   * [`open`](https://ariakit.com/reference/use-dialog-store#open) state
+   * changes, so preventing it leaves the dialog as it was.
    *
    * The event also fires when the `open` state is set to `false` in another
    * way, such as a direct `setState` call. In this case, the state is already

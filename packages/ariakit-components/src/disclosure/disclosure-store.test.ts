@@ -128,3 +128,75 @@ test("a later hide handler can reject a request that an earlier one allows", () 
   unsubscribe();
   stop();
 });
+
+// https://github.com/ariakit/ariakit/issues/7621
+test("a hide request on a store linked through the disclosure option runs the handler", () => {
+  // Like a Dialog store and the store of a combobox that receives it through
+  // the disclosure option.
+  const dialog = createDisclosureStore({ defaultOpen: true });
+  const store = createDisclosureStore({ disclosure: dialog });
+  const stop = init(store);
+  const openChanges: boolean[] = [];
+  const unsubscribe = subscribe(dialog, ["open"], (state) => {
+    openChanges.push(state.open);
+  });
+  let canHide = false;
+  const handler = vi.fn((hide: () => void) => {
+    if (!canHide) return;
+    hide();
+  });
+  const unregister = dialog.unstable_onHideRequest(handler);
+
+  store.hide();
+  store.toggle();
+  store.setOpen(false);
+  expect(handler).toHaveBeenCalledTimes(3);
+  expect(openChanges).toEqual([]);
+  expect(store.getState().open).toBe(true);
+
+  canHide = true;
+  store.hide();
+  expect(handler).toHaveBeenCalledTimes(4);
+  expect(openChanges).toEqual([false]);
+  expect(store.getState().open).toBe(false);
+
+  unregister();
+  unsubscribe();
+  stop();
+});
+
+// https://github.com/ariakit/ariakit/issues/7621
+test("a hide request on a store with both the store and disclosure options runs the handler", () => {
+  const dialog = createDisclosureStore({ defaultOpen: true });
+  const other = createDisclosureStore({ defaultOpen: true });
+  const store = createDisclosureStore({ store: other, disclosure: dialog });
+  const stop = init(store);
+  const handler = vi.fn();
+  const unregister = dialog.unstable_onHideRequest(handler);
+
+  store.hide();
+  other.hide();
+  expect(handler).toHaveBeenCalledTimes(2);
+  expect(dialog.getState().open).toBe(true);
+  expect(other.getState().open).toBe(true);
+  expect(store.getState().open).toBe(true);
+
+  unregister();
+  stop();
+});
+
+// https://github.com/ariakit/ariakit/issues/7621
+test("a store linked to a store that shares its hide handlers doesn't run the request again", () => {
+  const dialog = createDisclosureStore({ defaultOpen: true });
+  const store = createDisclosureStore({ store: dialog, disclosure: dialog });
+  const stop = init(store);
+  const handler = vi.fn((hide: () => void) => hide());
+  const unregister = dialog.unstable_onHideRequest(handler);
+
+  store.hide();
+  expect(handler).toHaveBeenCalledTimes(1);
+  expect(dialog.getState().open).toBe(false);
+
+  unregister();
+  stop();
+});

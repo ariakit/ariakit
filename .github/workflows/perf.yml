@@ -101,7 +101,7 @@ jobs:
             const runs = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: 'app.yml',
+              workflow_id: 'ci.yml',
               branch: branchRef,
               head_sha: baseSha,
               // Only push runs build exactly at head_sha. Pull request runs
@@ -114,7 +114,7 @@ jobs:
             const run = runs.data.workflow_runs[0];
             if (!run) {
               core.notice(
-                `No successful push app.yml run found for base SHA ${baseSha}. ` +
+                `No successful push CI run found for base SHA ${baseSha}. ` +
                   'Building base artifacts in this job.',
               );
               return;

@@ -1,5 +1,5 @@
 import { createStore, init } from "@ariakit/store";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import { createPopoverStore } from "./popover-store.ts";
 
 test("syncs the disclosure element with the anchor element", () => {
@@ -100,5 +100,22 @@ test("updates an inherited disclosure fallback", () => {
   store.setDisclosureElement(nextDisclosure);
 
   expect(store.getState().anchorElement).toBe(nextDisclosure);
+  stop();
+});
+
+// https://github.com/ariakit/ariakit/issues/7621
+test("a hide request on a store linked through the popover option runs the handler", () => {
+  const popover = createPopoverStore({ defaultOpen: true });
+  const store = createPopoverStore({ popover });
+  const stop = init(store);
+  const handler = vi.fn();
+  const unregister = store.unstable_onHideRequest(handler);
+
+  popover.hide();
+  expect(handler).toHaveBeenCalledTimes(1);
+  expect(popover.getState().open).toBe(true);
+  expect(store.getState().open).toBe(true);
+
+  unregister();
   stop();
 });

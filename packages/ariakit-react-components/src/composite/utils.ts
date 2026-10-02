@@ -8,6 +8,7 @@ import {
   isVisible,
 } from "@ariakit/utils";
 import { useCallback, useRef } from "react";
+import { getTreeActiveElement } from "../focusable/__utils.ts";
 import type { CompositeStore, CompositeStoreState } from "./composite-store.ts";
 
 export const flipItems = Core.flipItems;
@@ -70,7 +71,7 @@ function getPopupElement(store: CompositeStore) {
  */
 export function ownsFocus(store: CompositeStore) {
   const { compositeElement } = store.getState();
-  const activeElement = getActiveElement(compositeElement);
+  const activeElement = getTreeActiveElement(compositeElement);
   if (!activeElement) return false;
   if (compositeElement?.contains(activeElement)) return true;
   if (isItem(store, activeElement)) return true;
@@ -99,6 +100,12 @@ export interface PresentItemParams {
   /** Whether to abandon the presentation if the composite loses DOM focus. */
   requireFocus?: boolean;
   /**
+   * The element whose focus `requireFocus` tracks. Defaults to the element
+   * focused when the presentation starts, as seen from the composite element.
+   * @private
+   */
+  focusOwner?: Element | null;
+  /**
    * Determines how the item is scrolled into view when it's presented.
    * @private
    */
@@ -123,6 +130,7 @@ function presentItem({
   focus,
   markedOnly,
   requireFocus,
+  focusOwner,
   scrollIntoView,
   onConsume,
 }: PresentItemParams) {
@@ -134,15 +142,15 @@ function presentItem({
   let wasMounted = false;
   let wasOpen = false;
   const compositeAtStart = store.getState().compositeElement;
-  const activeAtStart = getActiveElement(compositeAtStart);
-  const owner = requireFocus ? activeAtStart : null;
+  const activeAtStart = getTreeActiveElement(compositeAtStart);
+  const owner = requireFocus ? focusOwner || activeAtStart : null;
   // Only focus that would leave the control itself is this widget's to
   // withhold, and that is decided once rather than per pass.
   // https://github.com/ariakit/ariakit/pull/7098#discussion_r3742291859
   const startedOnComposite = !!compositeAtStart?.contains(activeAtStart);
   const stillOwnsFocus = (target: HTMLElement) => {
     if (!owner) return true;
-    const activeElement = getActiveElement(owner);
+    const activeElement = getTreeActiveElement(owner);
     // Whoever asked for this still has focus.
     if (activeElement === owner) return true;
     // Item/container handoffs still belong to the composite; only focus leaving

@@ -82,6 +82,14 @@ export function createPopoverStore({
     }),
   );
 
+  // The popovers share the open state, so a hide request on the other popover
+  // also runs the handlers of this one, such as those of the Dialog that
+  // renders it.
+  // https://github.com/ariakit/ariakit/issues/7621
+  setup(popover, () =>
+    otherPopover?.unstable_onHideRequest(dialog.unstable_requestHide),
+  );
+
   return {
     ...dialog,
     ...popover,

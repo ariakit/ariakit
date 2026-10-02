@@ -19,6 +19,8 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - rolldown-plugin-react-forward-ref@0.2.0
+  - "@visonaut/playwright"
+  - visonaut
 
 overrides:
   "@ariakit/components": "workspace:*"

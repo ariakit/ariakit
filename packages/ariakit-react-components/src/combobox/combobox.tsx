@@ -45,6 +45,7 @@ import type {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
+import { hasTreeFocus } from "../focusable/__utils.ts";
 import { getScrollItemIntoView } from "./__utils.ts";
 import {
   useComboboxProviderContext,
@@ -410,7 +411,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       const state = store.getState();
       const { compositeElement, activeId, selectElement, selectedValue } =
         state;
-      if (compositeElement && !hasFocus(compositeElement)) return;
+      if (compositeElement && !hasTreeFocus(compositeElement)) return;
       // Wait for the popover to finish placing itself before moving to an item,
       // so the move doesn't present an item inside a popup that is still at its
       // pre-placement origin. Read live, because the render snapshot in the

@@ -19,7 +19,6 @@ import {
   hasFocusWithin,
   chain,
   invariant,
-  isFalsyBooleanCallback,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, FocusEvent, RefObject } from "react";
@@ -32,6 +31,7 @@ import {
   useState,
 } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
+import { useEscapeClose } from "../dialog/utils/__use-escape-close.ts";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
 import {
@@ -394,6 +394,23 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       (state) => modal || state.autoFocusOnShow,
     );
 
+    // Focus returns to the anchor after the hovercard closes on Escape. An
+    // anchor that shows the hovercard when it becomes focus-visible, such as a
+    // menubar item, opens it again on the next frame, so it hides again if it's
+    // open two frames later.
+    const escapeClose = useEscapeClose({
+      hideOnEscape,
+      onClose: props.onClose,
+      onEscapeClose() {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if (!store?.getState().open) return;
+            store.hide();
+          });
+        });
+      },
+    });
+
     props = usePopover({
       store,
       modal,
@@ -401,18 +418,8 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       autoFocusOnShow,
       ...props,
       portalRef,
-      hideOnEscape(event) {
-        if (isFalsyBooleanCallback(hideOnEscape, event)) return false;
-        // Hide again on the next frame to avoid the popover being shown again
-        // when the user presses the escape key and trigger focusVisible on the
-        // anchor element (which is the case of tooltip anchor).
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            store?.hide();
-          });
-        });
-        return true;
-      },
+      hideOnEscape: escapeClose.hideOnEscape,
+      onClose: escapeClose.onClose,
     });
 
     return props;

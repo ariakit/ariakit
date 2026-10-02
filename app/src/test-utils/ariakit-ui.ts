@@ -2,8 +2,9 @@ import { query } from "@ariakit/test/playwright";
 import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
-import { gotoAndSettle, withFramework } from "./preview.ts";
-import type { ScreenshotOptions } from "./visual.ts";
+import { slugify } from "#app/lib/string.ts";
+import { withFramework } from "./preview.ts";
+import type { ScreenshotOptions, ScreenshotRegion } from "./visual.ts";
 import { viewports, waitForFonts } from "./visual.ts";
 
 // Helpers for the tests of the ariakit-ui-* sandboxes, which render the
@@ -21,15 +22,10 @@ export type ColorScheme = (typeof colorSchemes)[number];
 // Safari on the macOS runners can take several seconds for one capture of a
 // tall sandbox, and a new baseline needs two identical captures in a row, which
 // the default five seconds do not cover.
-const SCREENSHOT_TIMEOUT = 30_000;
+const CAPTURE_TIMEOUT = 30_000;
 
-// Keep compact grids in one image and split taller grids at row boundaries.
-const SINGLE_CAPTURE_HEIGHT = 1280;
-const ROWS_PER_CAPTURE = 3;
-
-// WebP stores each side in 14 bits and every engine fails to encode a taller
-// capture. toHaveScreenshot captures at CSS scale, so the unit is CSS pixels.
-const MAX_SCREENSHOT_HEIGHT = 16_383;
+// Keep the existing capture-height bound at CSS scale.
+const MAX_CAPTURE_HEIGHT = 16_383;
 
 /**
  * Room around an overlay that renders in a portal, so its capture takes in the
@@ -44,8 +40,7 @@ export const OVERLAY_CLIP_MARGIN = 64;
 export function withCaptures(dirname: string, callback: WithFrameworkCallback) {
   withFramework(dirname, async (params) => {
     params.test.use({ viewport: viewports.desktop });
-    // A test loads the sandbox once per color scheme and takes up to two
-    // captures in each, every one within the screenshot budget.
+    // Page captures extend this budget for each extra example card.
     params.test.describe.configure({ timeout: 120_000 });
     return callback(params);
   });
@@ -71,7 +66,7 @@ export async function forEachColorScheme(
     await page.emulateMedia({ colorScheme });
     // A new navigation rather than a reload, which would restore the scroll
     // position of the previous scheme after the capture started scrolling.
-    await gotoAndSettle(page, url);
+    await page.goto(url, { waitUntil: "load" });
     await page.waitForFunction(isPreviewHydrated);
     await capture(colorScheme);
   }
@@ -81,13 +76,13 @@ export async function forEachColorScheme(
 export function getCapture(
   element: Locator,
   colorScheme: ColorScheme,
-  options: ScreenshotOptions = {},
+  options: ScreenshotOptions,
 ) {
   return {
     element,
     viewports: { desktop: viewports.desktop },
     styles: { [colorScheme]: {} },
-    timeout: SCREENSHOT_TIMEOUT,
+    timeout: CAPTURE_TIMEOUT,
     ...options,
   } satisfies ScreenshotOptions;
 }
@@ -97,70 +92,61 @@ export function getCapture(
  * covers the whole page. The root element spans the whole document, and a
  * capture that is not full-page trims its clip to the viewport.
  */
-export function getViewportCapture(page: Page, colorScheme: ColorScheme) {
-  return getCapture(page.locator("html"), colorScheme, { clipMargin: 0 });
+export function getViewportCapture(
+  page: Page,
+  colorScheme: ColorScheme,
+  item: string,
+) {
+  return getCapture(page.locator("html"), colorScheme, {
+    item,
+    clipMargin: 0,
+  });
 }
 
-/** Captures a compact grid whole, or a tall grid in groups of three rows. */
-export async function capturePage(
-  page: Page,
-  visual: Visual,
-  colorScheme: ColorScheme,
-) {
+interface CapturePageParams {
+  page: Page;
+  visual: Visual;
+  colorScheme: ColorScheme;
+  item: string;
+}
+
+/** Captures each example card with an identity independent of its grid row. */
+export async function capturePage({
+  page,
+  visual,
+  colorScheme,
+  item,
+}: CapturePageParams) {
   const main = query(page).main();
   await waitForFonts(page);
-  const { height } = await main.evaluate((node) =>
-    node.getBoundingClientRect(),
+  const boxes = await main.locator(":scope > article").all();
+  expect(boxes.length).toBeGreaterThan(0);
+  // Oversize pages fall back to a separate capture budget for each card.
+  const extraCaptures = boxes.length - 1;
+  test.setTimeout(test.info().timeout + extraCaptures * CAPTURE_TIMEOUT);
+  const regions: ScreenshotRegion[] = [];
+  // Half the 16px grid gap keeps adjacent cards outside each crop.
+  const clipMargin = 8;
+  for (const box of boxes) {
+    const title =
+      (
+        await query(box.locator(":scope > header")).heading().textContent()
+      )?.trim() ?? "";
+    expect(title).toBeTruthy();
+    const height = await box.evaluate(
+      (node) => node.getBoundingClientRect().height,
+    );
+    expect(height + clipMargin * 2).toBeLessThanOrEqual(MAX_CAPTURE_HEIGHT);
+    regions.push({ name: slugify(title), element: box });
+  }
+  await visual(
+    getCapture(main, colorScheme, {
+      item,
+      regions,
+      fullPage: true,
+      clipMargin,
+    }),
   );
-  if (height <= SINGLE_CAPTURE_HEIGHT) {
-    // The grid pads itself, so a margin would only add canvas.
-    await visual(
-      getCapture(main, colorScheme, { fullPage: true, clipMargin: 0 }),
-    );
-    return;
-  }
-
-  const boxes = main.locator(":scope > article");
-  const rows = await boxes.evaluateAll((elements) => {
-    const rows: number[][] = [];
-    let previousTop: number | undefined;
-    for (const [index, element] of elements.entries()) {
-      const { top } = element.getBoundingClientRect();
-      if (top !== previousTop) {
-        rows.push([]);
-        previousTop = top;
-      }
-      rows.at(-1)?.push(index + 1);
-    }
-    return rows;
-  });
-  expect(rows.length).toBeGreaterThan(0);
-  // Each extra image needs its own screenshot assertion budget in this scheme.
-  const extraCaptures = Math.ceil(rows.length / ROWS_PER_CAPTURE) - 1;
-  test.setTimeout(test.info().timeout + extraCaptures * SCREENSHOT_TIMEOUT);
-  for (let index = 0; index < rows.length; index += ROWS_PER_CAPTURE) {
-    const group = rows.slice(index, index + ROWS_PER_CAPTURE).flat();
-    const sections = main.locator(
-      group.map((child) => `:scope > article:nth-child(${child})`).join(","),
-    );
-    const bounds = await sections.evaluateAll((elements) => {
-      const rects = elements.map((element) => element.getBoundingClientRect());
-      return (
-        Math.max(...rects.map((rect) => rect.bottom)) -
-        Math.min(...rects.map((rect) => rect.top))
-      );
-    });
-    // Half the 16px grid gap keeps adjacent rows outside the capture.
-    const clipMargin = 8;
-    expect(bounds + clipMargin * 2).toBeLessThanOrEqual(MAX_SCREENSHOT_HEIGHT);
-    await visual(
-      getCapture(sections, colorScheme, {
-        id: `rows-${index + 1}-${Math.min(index + ROWS_PER_CAPTURE, rows.length)}`,
-        fullPage: true,
-        clipMargin,
-      }),
-    );
-  }
 }
 
 /**
@@ -169,12 +155,18 @@ export async function capturePage(
  * element it reaches. Not for a hover state: the scroll would move the box away
  * from the pointer.
  */
-export async function captureInView(
-  visual: Visual,
-  box: Locator,
-  colorScheme: ColorScheme,
-  options?: ScreenshotOptions,
-) {
+interface CaptureInViewParams extends ScreenshotOptions {
+  visual: Visual;
+  box: Locator;
+  colorScheme: ColorScheme;
+}
+
+export async function captureInView({
+  visual,
+  box,
+  colorScheme,
+  ...options
+}: CaptureInViewParams) {
   await box.evaluate((node) => {
     node.scrollIntoView({ block: "center" });
   });

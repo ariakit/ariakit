@@ -26,7 +26,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
 
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, (colorScheme) =>
-      capturePage(page, visual, colorScheme),
+      capturePage({
+        page,
+        visual,
+        colorScheme,
+        item: "ariakit-ui-checkbox/page",
+      }),
     );
   });
 
@@ -40,7 +45,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const input = query(box).checkbox("Remember me");
       await tabTo(page, input);
       await expectFocusVisible(input);
-      await captureInView(visual, box, colorScheme);
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-checkbox/focused-field-ring",
+      });
     });
   });
 });
