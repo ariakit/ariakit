@@ -72,6 +72,51 @@ describe("Status", () => {
   });
 });
 
+for (const label of [
+  "Dismissible status",
+  "Multiple dismissible status",
+  "Real-focus dismissible status",
+]) {
+  describe(label, () => {
+    const realFocus = label.startsWith("Real-focus");
+    const opens = [
+      { name: "click", open: () => click(q.combobox(label)) },
+      {
+        name: "Enter",
+        open: async () => {
+          await focus(q.combobox(label));
+          await press.Enter();
+        },
+      },
+    ];
+
+    for (const { name, open } of opens) {
+      // https://github.com/ariakit/ariakit/issues/7626
+      test(`arrow keys move through the items after opening with ${name} and nothing selected`, async () => {
+        const select = q.combobox(label);
+        await open();
+
+        // The dismiss button comes before the list, so it's the popup's first
+        // tabbable element.
+        expect(q.dialog(`${label} options`)).toBeVisible();
+        expect(select).toHaveFocus();
+        expect(activeText(label)).toBeUndefined();
+
+        await press.ArrowDown();
+        const listbox = q.listbox(`${label} options`);
+        const draft = q.within(listbox).option("Draft");
+        expect(draft).toHaveAttribute("data-active-item");
+        expect(realFocus ? draft : select).toHaveFocus();
+
+        await press("p");
+        const published = q.within(listbox).option("Published");
+        expect(published).toHaveAttribute("data-active-item");
+        expect(realFocus ? published : select).toHaveFocus();
+      });
+    }
+  });
+}
+
 describe("Vegetable", () => {
   const moves = [
     { name: "Typeahead", move: () => press("c"), item: "Carrot" },

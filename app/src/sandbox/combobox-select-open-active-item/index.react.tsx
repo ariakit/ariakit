@@ -60,6 +60,42 @@ function FocusOwnerSelect({ label, virtualFocus }: FocusOwnerSelectProps) {
   );
 }
 
+interface DismissibleSelectProps {
+  label: string;
+  defaultSelectedValue: string | string[];
+  virtualFocus?: boolean;
+}
+
+// Renders a heading and a dismiss button before a nested list of items, so the
+// dismiss button is the popup's first tabbable element, and nothing is selected
+// to take the popup's initial focus instead.
+function DismissibleSelect({
+  label,
+  defaultSelectedValue,
+  virtualFocus,
+}: DismissibleSelectProps) {
+  return (
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue={defaultSelectedValue}
+      virtualFocus={virtualFocus}
+    >
+      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxPopover>
+        <Ariakit.ComboboxHeading>{`${label} options`}</Ariakit.ComboboxHeading>
+        <Ariakit.ComboboxDismiss>
+          {`Dismiss ${label.toLowerCase()} options`}
+        </Ariakit.ComboboxDismiss>
+        <Ariakit.ComboboxList>
+          {statuses.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 interface PositioningSelectProps {
   label: string;
   virtualFocus?: boolean;
@@ -270,6 +306,16 @@ export default function Example() {
       />
       <FocusOwnerSelect label="No-autofocus status" />
       <FocusOwnerSelect label="Real-focus status" virtualFocus={false} />
+      <DismissibleSelect label="Dismissible status" defaultSelectedValue="" />
+      <DismissibleSelect
+        label="Multiple dismissible status"
+        defaultSelectedValue={[]}
+      />
+      <DismissibleSelect
+        label="Real-focus dismissible status"
+        defaultSelectedValue=""
+        virtualFocus={false}
+      />
       <PositioningSelect label="Vegetable" />
       <PositioningSelect label="Real-focus vegetable" virtualFocus={false} />
       <PositioningSelect

@@ -126,6 +126,57 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     });
   }
 
+  for (const label of [
+    "Dismissible status",
+    "Multiple dismissible status",
+    "Real-focus dismissible status",
+  ]) {
+    test.describe(label, () => {
+      const realFocus = label.startsWith("Real-focus");
+
+      for (const open of ["click", "Enter"]) {
+        // https://github.com/ariakit/ariakit/issues/7626
+        test(`arrow keys move through the items after opening with ${open} and nothing selected`, async ({
+          page,
+          q,
+        }) => {
+          const select = q.combobox(label);
+          if (open === "click") {
+            await select.click();
+          } else {
+            await select.focus();
+            await page.keyboard.press(open);
+          }
+
+          // The dismiss button comes before the list, so it's the popup's first
+          // tabbable element.
+          const dialog = q.dialog(`${label} options`);
+          await test.expect(dialog).toBeVisible();
+          await test.expect(dialog).not.toHaveAttribute("data-placing");
+          // Dialog queues auto-focus after placement, and there is no positive
+          // state for focus staying out of the dismiss button once that
+          // microtask has run.
+          await flushFrames(page);
+          await test.expect(select).toBeFocused();
+          await test
+            .expect(select)
+            .not.toHaveAttribute("aria-activedescendant");
+
+          await page.keyboard.press("ArrowDown");
+          const listbox = q.listbox(`${label} options`);
+          const draft = query(listbox).option("Draft");
+          await test.expect(draft).toHaveAttribute("data-active-item");
+          await test.expect(realFocus ? draft : select).toBeFocused();
+
+          await page.keyboard.press("p");
+          const published = query(listbox).option("Published");
+          await test.expect(published).toHaveAttribute("data-active-item");
+          await test.expect(realFocus ? published : select).toBeFocused();
+        });
+      }
+    });
+  }
+
   test.describe("Vegetable", () => {
     const moves = [
       { name: "Typeahead", key: "c", item: "Carrot" },
