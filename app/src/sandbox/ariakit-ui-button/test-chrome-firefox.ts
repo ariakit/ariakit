@@ -74,6 +74,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7476
+  // https://github.com/ariakit/ariakit/issues/7591
   test("keeps filled and bevel button boundaries in forced colors @visual", async ({
     page,
     q,
@@ -91,6 +92,8 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         ["brand", "Brand"],
         ["bevel", "Bevel"],
         ["inverted", "Inverted"],
+        ["count-badge", "Count badge"],
+        ["initial-avatar", "Initial avatar"],
       ] as const) {
         await captureInView({
           visual,
