@@ -67,7 +67,7 @@ jobs:
         if: steps.plan.outputs.app == 'false'
         env:
           VISONAUT_SERVER: https://visonaut.com
-        run: npm exec --yes --ignore-scripts --package=visonaut@0.5.2 -- visonaut submit --no-visual
+        run: npm exec --yes --ignore-scripts --package=visonaut@0.5.3 -- visonaut submit --no-visual
 
   main:
     name: Main
