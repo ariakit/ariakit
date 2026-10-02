@@ -101,6 +101,8 @@ function createInstance(Type, props) {
 
 The names `createInstance` and `wrapInstance` reflect how Solid runs components when JSX is evaluated, while React creates elements for later rendering.
 
+In both helpers, `Type` is a tag name such as `"div"` or the component function itself, such as `MyComponent`, not `<MyComponent />`.
+
 ### 1. Omit rendering options
 
 Instead of React's object rest destructuring, Solid uses [`omit`](https://v2.solidjs.com/reference/solid-js/stores/omit) to exclude `render` and `wrapInstance` from the forwarded props while preserving reactive reads.
