@@ -16,36 +16,12 @@ concurrency:
 jobs:
   plan:
     name: Plan
-    if: github.event_name != 'push'
-    runs-on: ubuntu-latest
-    outputs:
-      main: ${{ steps.plan.outputs.main }}
-      app: ${{ steps.plan.outputs.app }}
-      perf: ${{ steps.plan.outputs.perf }}
-      plus: ${{ steps.plan.outputs.plus }}
-      release_preview: ${{ steps.plan.outputs.release_preview }}
-      docs: ${{ steps.plan.outputs.docs }}
-      og_images: ${{ steps.plan.outputs.og_images }}
-      plan: ${{ steps.plan.outputs.plan }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: package.json
-
-      - name: Plan CI
-        id: plan
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-        run: node packages/ariakit-scripts/src/ci-run.ts plan
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/app.yml
+    with:
+      plan: true
 
   main:
     name: Main
