@@ -74,6 +74,7 @@ function DismissibleSelect({
   defaultSelectedValue,
   virtualFocus,
 }: DismissibleSelectProps) {
+  const listRef = useRef<HTMLDivElement>(null);
   return (
     <Ariakit.ComboboxProvider
       defaultSelectedValue={defaultSelectedValue}
@@ -81,12 +82,15 @@ function DismissibleSelect({
     >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect />
-      <Ariakit.ComboboxPopover>
+      {/* TODO: Remove initialFocus and the list ref once
+      https://github.com/ariakit/ariakit/issues/7626 is fixed. The list sends
+      the focus it receives back to the select. */}
+      <Ariakit.ComboboxPopover initialFocus={listRef}>
         <Ariakit.ComboboxHeading>{`${label} options`}</Ariakit.ComboboxHeading>
         <Ariakit.ComboboxDismiss>
           {`Dismiss ${label.toLowerCase()} options`}
         </Ariakit.ComboboxDismiss>
-        <Ariakit.ComboboxList>
+        <Ariakit.ComboboxList ref={listRef}>
           {statuses.map((value) => (
             <Ariakit.ComboboxItem key={value} value={value} />
           ))}
