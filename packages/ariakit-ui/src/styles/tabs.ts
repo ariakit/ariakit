@@ -121,6 +121,14 @@ const tabStartCurve = cx(
   "ui-selected:before:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet,var(--tabs-radius)))]",
 );
 
+// Forced colors remove the fill, the only mark of a selected folder under a
+// root with no edge, so the selected folder keeps an edge there. A root with an
+// edge keeps its own width.
+// https://github.com/ariakit/ariakit/issues/7519
+const tabSelectedEdge = cx(
+  "ui-selected:forced-colors:ak-frame-border-[length:max(1px,var(--border-width,1px))]",
+);
+
 // The transparent background covers the layer the hover shifts, so a flat or
 // bevel tab paints it back on its own box. The extra variant sorts this after
 // the rule at rest. Keyboard focus paints the box in the brand layer, selected
@@ -169,6 +177,7 @@ const tabFolder = cx(
   // An unselected tab has no edge of its own, hovered or not.
   "not-ui-selected:border-transparent not-ui-selected:ring-0",
   "not-ui-selected:ui-hover:border-transparent",
+  tabSelectedEdge,
   // The hover and the keyboard focus paint the layer the tab resolved as a
   // pill --tab-inset inside the tab's box, on the pseudo-element the curves
   // leave free while the tab is not selected. The pseudo-element is placed
@@ -314,6 +323,7 @@ export const tabGlider = cv({
         // The curves take the root's radius, as the tab's do.
         "[--folder-radius:var(--tabs-radius)]",
         tabStartCurve,
+        tabSelectedEdge,
         // Only the selected folder glider reaches over the seam, as far as the
         // tab would. A hover or focus glider covers the tab.
         "ui-selected:[--glider-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",

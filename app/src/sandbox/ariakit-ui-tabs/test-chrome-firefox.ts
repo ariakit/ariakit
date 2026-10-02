@@ -8,6 +8,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r3997273277
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000461790
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000913151
+  // https://github.com/ariakit/ariakit/issues/7519
   test("keeps unselected tabs borderless in forced colors @visual", async ({
     page,
     q,
@@ -16,6 +17,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       for (const [key, title] of [
+        ["edgeless", "Edgeless"],
         ["flat-tabs", "Flat tabs"],
         ["bevel-tabs", "Bevel tabs"],
         ["flat-glider", "Flat glider"],
