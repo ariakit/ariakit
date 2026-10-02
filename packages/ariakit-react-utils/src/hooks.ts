@@ -3,7 +3,7 @@
  * @module Hooks
  */
 
-import { canUseDOM, addGlobalEventListener } from "@ariakit/utils";
+import { canUseDOM, addGlobalEventListener, noop } from "@ariakit/utils";
 import type { AnyFunction } from "@ariakit/utils";
 import type {
   ComponentType,
@@ -413,7 +413,11 @@ export function useMetadataProps<T, K extends keyof any>(
   const parent = props.onLoadedMetadataCapture;
   const onLoadedMetadataCapture = useMemo(() => {
     return Object.assign(
-      () => {},
+      // The React Compiler hoists a function expression that captures nothing
+      // to module scope, so every call would add metadata to the same
+      // function. Binding creates a new function for each result.
+      // https://github.com/ariakit/ariakit/issues/7633
+      noop.bind(null),
       parent,
       ...(value !== undefined ? [{ [key]: value }] : []),
     );
