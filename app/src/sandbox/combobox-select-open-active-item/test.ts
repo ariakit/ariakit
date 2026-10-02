@@ -88,6 +88,13 @@ for (const label of [
           await press.Enter();
         },
       },
+      {
+        name: "ArrowDown",
+        open: async () => {
+          await focus(q.combobox(label));
+          await press.ArrowDown();
+        },
+      },
     ];
 
     for (const { name, open } of opens) {
@@ -116,6 +123,38 @@ for (const label of [
     }
   });
 }
+
+// https://github.com/ariakit/ariakit/issues/7626
+test("Portal status opens without an active item when nothing is selected", async () => {
+  const select = q.combobox("Portal status");
+  await click(select);
+
+  expect(q.listbox("Portal status")).toBeVisible();
+  expect(select).toHaveFocus();
+  expect(activeText("Portal status")).toBeUndefined();
+
+  await press.ArrowDown();
+  expect(activeText("Portal status")).toBe("Draft");
+});
+
+// https://github.com/ariakit/ariakit/issues/7626
+test("Real-focus multiple status keeps the item that typeahead activated before opening", async () => {
+  const select = q.combobox("Real-focus multiple status");
+  await focus(select);
+  await press("p");
+  expect(select).toHaveFocus();
+
+  await press.Enter();
+  const listbox = q.listbox("Real-focus multiple status");
+  const published = q.within(listbox).option("Published");
+  expect(published).toHaveFocus();
+  expect(published).toHaveAttribute("data-active-item");
+
+  await press.ArrowDown();
+  const archived = q.within(listbox).option("Archived");
+  expect(archived).toHaveFocus();
+  expect(archived).toHaveAttribute("data-active-item");
+});
 
 describe("Vegetable", () => {
   const moves = [
@@ -230,6 +269,20 @@ test("Managed vegetable move made while the popup is positioning wins over its a
   expect(activeText("Managed vegetable")).toBe("Carrot");
 });
 
+// https://github.com/ariakit/ariakit/issues/7626
+test("Empty managed vegetable popup focuses its autoFocus element with nothing selected", async () => {
+  const select = q.combobox("Empty managed vegetable");
+  await click(select);
+
+  const listbox = q.listbox("Empty managed vegetable");
+  expect(listbox).toHaveAttribute("data-placing");
+  expect(select).toHaveFocus();
+
+  await click(q.button("Finish empty managed vegetable positioning"));
+  expect(listbox).not.toHaveAttribute("data-placing");
+  expect(q.within(listbox).button("Manage empty vegetables")).toHaveFocus();
+});
+
 // https://github.com/ariakit/ariakit/pull/7614#discussion_r4082271058
 test("Store-prop vegetable move made while the popup is positioning stays active", async () => {
   const select = q.combobox("Store-prop vegetable");
@@ -311,6 +364,30 @@ test("Real-focus dismissible vegetable move made while the popup is positioning 
   const garlic = q.within(listbox).option("Garlic");
   expect(garlic).toHaveFocus();
   expect(garlic).toHaveAttribute("data-active-item");
+});
+
+// https://github.com/ariakit/ariakit/issues/7626
+test("Multiple dismissible vegetable popup keeps focus in the list when its only selected item is unchecked while positioning", async () => {
+  const select = q.combobox("Multiple dismissible vegetable");
+  await click(select);
+
+  const dialog = q.dialog("Multiple dismissible vegetable options");
+  expect(dialog).toHaveAttribute("data-placing");
+
+  // Nothing is selected by the time the popup takes its initial focus.
+  const listbox = q.listbox("Multiple dismissible vegetable options");
+  const artichoke = q.within(listbox).option("Artichoke");
+  await click(artichoke);
+  expect(artichoke).toHaveAttribute("aria-selected", "false");
+
+  await click(q.button("Finish multiple dismissible vegetable positioning"));
+  expect(dialog).not.toHaveAttribute("data-placing");
+  expect(select).toHaveFocus();
+
+  // In happy-dom, no item is active once the popup has taken its initial focus,
+  // so only the browser test asserts the item that the arrow key moves to.
+  await press.ArrowDown();
+  expect(activeText("Multiple dismissible vegetable")).toBeDefined();
 });
 
 for (const label of ["No-autofocus status", "Real-focus status"]) {

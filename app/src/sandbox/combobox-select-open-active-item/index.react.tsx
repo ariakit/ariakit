@@ -19,14 +19,26 @@ interface SelectProps {
   values: string[];
   defaultSelectedValue: string | string[];
   unmount: boolean;
+  virtualFocus?: boolean;
+  portal?: boolean;
 }
 
-function Select({ label, values, defaultSelectedValue, unmount }: SelectProps) {
+function Select({
+  label,
+  values,
+  defaultSelectedValue,
+  unmount,
+  virtualFocus,
+  portal,
+}: SelectProps) {
   return (
-    <Ariakit.ComboboxProvider defaultSelectedValue={defaultSelectedValue}>
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue={defaultSelectedValue}
+      virtualFocus={virtualFocus}
+    >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect />
-      <Ariakit.ComboboxPopover unmountOnHide={unmount}>
+      <Ariakit.ComboboxPopover unmountOnHide={unmount} portal={portal}>
         {values.map((value) => (
           <Ariakit.ComboboxItem key={value} value={value} />
         ))}
@@ -74,7 +86,6 @@ function DismissibleSelect({
   defaultSelectedValue,
   virtualFocus,
 }: DismissibleSelectProps) {
-  const listRef = useRef<HTMLDivElement>(null);
   return (
     <Ariakit.ComboboxProvider
       defaultSelectedValue={defaultSelectedValue}
@@ -82,15 +93,12 @@ function DismissibleSelect({
     >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect />
-      {/* TODO: Remove initialFocus and the list ref once
-      https://github.com/ariakit/ariakit/issues/7626 is fixed. The list sends
-      the focus it receives back to the select. */}
-      <Ariakit.ComboboxPopover initialFocus={listRef}>
+      <Ariakit.ComboboxPopover>
         <Ariakit.ComboboxHeading>{`${label} options`}</Ariakit.ComboboxHeading>
         <Ariakit.ComboboxDismiss>
           {`Dismiss ${label.toLowerCase()} options`}
         </Ariakit.ComboboxDismiss>
-        <Ariakit.ComboboxList ref={listRef}>
+        <Ariakit.ComboboxList>
           {statuses.map((value) => (
             <Ariakit.ComboboxItem key={value} value={value} />
           ))}
@@ -102,6 +110,8 @@ function DismissibleSelect({
 
 interface PositioningSelectProps {
   label: string;
+  /** An array makes the select multi-selectable. */
+  defaultSelectedValue?: string | string[];
   virtualFocus?: boolean;
   /** Renders a button with this text and `autoFocus` before the items. */
   autoFocusButton?: string;
@@ -121,6 +131,7 @@ interface PositioningSelectProps {
 // focus.
 function PositioningSelect({
   label,
+  defaultSelectedValue = "Artichoke",
   virtualFocus,
   autoFocusButton,
   selectStoreProp,
@@ -129,7 +140,7 @@ function PositioningSelect({
 }: PositioningSelectProps) {
   const releaseRef = useRef<(() => void) | null>(null);
   const combobox = Ariakit.useComboboxStore({
-    defaultSelectedValue: "Artichoke",
+    defaultSelectedValue,
     virtualFocus,
   });
   const name = label.toLowerCase();
@@ -308,6 +319,20 @@ export default function Example() {
         defaultSelectedValue={[]}
         unmount={false}
       />
+      <Select
+        label="Real-focus multiple status"
+        values={statuses}
+        defaultSelectedValue={[]}
+        unmount={false}
+        virtualFocus={false}
+      />
+      <Select
+        label="Portal status"
+        values={statuses}
+        defaultSelectedValue=""
+        unmount={false}
+        portal
+      />
       <FocusOwnerSelect label="No-autofocus status" />
       <FocusOwnerSelect label="Real-focus status" virtualFocus={false} />
       <DismissibleSelect label="Dismissible status" defaultSelectedValue="" />
@@ -326,12 +351,22 @@ export default function Example() {
         label="Managed vegetable"
         autoFocusButton="Manage vegetables"
       />
+      <PositioningSelect
+        label="Empty managed vegetable"
+        defaultSelectedValue=""
+        autoFocusButton="Manage empty vegetables"
+      />
       <PositioningSelect label="Store-prop vegetable" selectStoreProp />
       <PositioningSelect label="Unmounted vegetable" unmountOnHide />
       <PositioningSelect label="Dismissible vegetable" dismissible />
       <PositioningSelect
         label="Real-focus dismissible vegetable"
         virtualFocus={false}
+        dismissible
+      />
+      <PositioningSelect
+        label="Multiple dismissible vegetable"
+        defaultSelectedValue={["Artichoke"]}
         dismissible
       />
       <VirtualPositioningSelect />
