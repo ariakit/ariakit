@@ -87,7 +87,7 @@ The names `createInstance` and `wrapInstance` reflect Solid JSX instantiating co
 
 ### 1. Omit rendering options
 
-Instead of React's object rest destructuring, Solid uses `omit` to exclude `render` and `wrapInstance` from the forwarded props while preserving reactive reads. See the [Solid 2 documentation](https://v2.solidjs.com) for native helper APIs.
+Instead of React's object rest destructuring, Solid uses [`omit`](https://v2.solidjs.com/reference/solid-js/stores/omit) to exclude `render` and `wrapInstance` from the forwarded props while preserving reactive reads.
 
 ```ts
 const rest = omit(props, "render", "wrapInstance");
