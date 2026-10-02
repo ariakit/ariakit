@@ -68,10 +68,27 @@ export const comboboxGroupLabel = cv({
 
 export const comboboxItem = cv({
   extend: [option],
-  class: "data-active-item:ak-state-5",
+  class: [
+    "data-active-item:ak-state-5",
+    // Forced colors drop the state background, so the active row takes the
+    // system selection colors. Without opting out of the automatic
+    // adjustment, the browser paints a Canvas backplate behind the text, which
+    // hides HighlightText. With the opt-out, every descendant keeps its own
+    // authored color, so all of them name HighlightText, including nested
+    // ones such as a description inside the item content.
+    "data-active-item:forced-colors:forced-color-adjust-none",
+    "data-active-item:forced-colors:bg-[Highlight]",
+    "data-active-item:forced-colors:text-[HighlightText]",
+    "data-active-item:forced-colors:**:text-[HighlightText]",
+  ],
   variants: {
     /** Paints the highlighted appearance for static content. */
-    $highlighted: "ak-state-5",
+    $highlighted: [
+      "ak-state-5",
+      "forced-colors:forced-color-adjust-none",
+      "forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+      "forced-colors:**:text-[HighlightText]",
+    ],
   },
   defaultVariants: {
     $hoverOffset: false,
