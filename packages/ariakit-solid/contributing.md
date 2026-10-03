@@ -167,7 +167,7 @@ When `<Element />` renders, it calls `wrapInstance(renderContent)` if a wrapper 
 
 React also accepts `render={<button />}`. Its helper reads the element's props and ref, merges them with Ariakit's, then clones the element.
 
-> **WIP:** The Solid equivalent is required alongside render callbacks and is not implemented yet.
+> **WIP:** Element-form rendering is not implemented yet in Solid.
 
 ## Prop types
 
@@ -189,12 +189,12 @@ Compare [React types](../ariakit-react-utils/src/types.ts) with [Solid types](..
 
 React's element branch uses [mergeProps](../ariakit-react-utils/src/misc.ts) and [useMergeRefs](../ariakit-react-utils/src/hooks.ts).
 
-The React behavior to preserve is:
+React merges props as follows:
 
-- Combine class names; merge style objects with override properties winning.
-- Ignore ordinary overrides holding `undefined`.
-- Run override event handlers before base handlers; preserve base handlers when an override is not a function. Component handlers may inspect `defaultPrevented`.
-- Deliver the element to both Ariakit's ref and the supplied element's ref.
+- Class names are combined; style objects are merged with override properties winning.
+- Ordinary overrides holding `undefined` are ignored.
+- Override event handlers run before base handlers; base handlers are preserved when an override is not a function. Component handlers may inspect `defaultPrevented`.
+- Both Ariakit's ref and the supplied element's ref receive the element.
 
 React's [forwardRef](../ariakit-react-utils/src/system.tsx) also removes `undefined` props before the component implementation runs. Keep this boundary rule separate from a live DOM attribute becoming `undefined`, which removes the attribute.
 
