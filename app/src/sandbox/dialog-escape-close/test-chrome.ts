@@ -228,4 +228,32 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await page.keyboard.press("Escape");
     await test.expect(q.tooltip("Search garnishes")).toBeHidden();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7647
+  test("Escape closes the Tooltip that opened after the Combobox popover of its anchor", async ({
+    page,
+    q,
+  }) => {
+    const combobox = q.combobox("Garnish");
+    // Ariakit resets hover intent on scroll, so the input must be in view
+    // before the pointer moves over it.
+    await combobox.scrollIntoViewIfNeeded();
+    await combobox.focus();
+    await test.expect(q.tooltip("Search garnishes")).toBeVisible();
+    // The tooltip is the only open popup, so Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.tooltip("Search garnishes")).toBeHidden();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Garnish")).toBeVisible();
+    // The listbox is open, so the tooltip opens last this time.
+    await combobox.hover();
+    await test.expect(q.tooltip("Search garnishes")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.tooltip("Search garnishes")).toBeHidden();
+    await test.expect(q.listbox("Garnish")).toBeVisible();
+    await test.expect(q.combobox("Garnish")).toBeFocused();
+    // The listbox is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Garnish")).toBeHidden();
+  });
 });

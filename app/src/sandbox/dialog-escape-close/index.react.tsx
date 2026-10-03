@@ -253,8 +253,9 @@ function NoticeDialog() {
   );
 }
 
-// The tooltip opens before the listbox, which also stays in the DOM while it's
-// hidden. One Escape must close only the listbox.
+// The tooltip and the listbox can open in either order, and both stay in the
+// DOM while they're hidden. One Escape must close only the popup that opened
+// last.
 function GarnishTooltipCombobox() {
   return (
     <section>

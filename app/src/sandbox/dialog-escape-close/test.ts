@@ -130,3 +130,24 @@ test("Escape closes the Combobox popover before the Tooltip of its input", async
   await press.Escape();
   expect(q.tooltip.maybe("Search garnishes")).not.toBeInTheDocument();
 });
+
+// https://github.com/ariakit/ariakit/issues/7647
+test("Escape closes the Tooltip that opened after the Combobox popover of its anchor", async () => {
+  await focus(q.combobox("Garnish"));
+  expect(await q.tooltip.wait("Search garnishes")).toBeVisible();
+  // The tooltip is the only open popup, so Escape closes it.
+  await press.Escape();
+  expect(q.tooltip.maybe("Search garnishes")).not.toBeInTheDocument();
+  await press.ArrowDown();
+  expect(q.listbox("Garnish")).toBeVisible();
+  // The listbox is open, so the tooltip opens last this time.
+  await hover(q.combobox("Garnish"));
+  expect(await q.tooltip.wait("Search garnishes")).toBeVisible();
+  await press.Escape();
+  expect(q.tooltip.maybe("Search garnishes")).not.toBeInTheDocument();
+  expect(q.listbox("Garnish")).toBeVisible();
+  expect(q.combobox("Garnish")).toHaveFocus();
+  // The listbox is the topmost popup again, so the next Escape closes it.
+  await press.Escape();
+  expect(q.listbox.maybe("Garnish")).not.toBeInTheDocument();
+});
