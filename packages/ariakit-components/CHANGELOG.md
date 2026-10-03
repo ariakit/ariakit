@@ -1,5 +1,10 @@
 # @ariakit/components
 
+## 0.1.14
+
+- Fixed disclosure stores setting the [`open`](https://ariakit.com/reference/use-disclosure-store#open) state to `false` before a framework `Dialog` could prevent a close requested through [`hide`](https://ariakit.com/reference/use-disclosure-store#hide), [`setOpen`](https://ariakit.com/reference/use-disclosure-store#setopen-1), or [`toggle`](https://ariakit.com/reference/use-disclosure-store#toggle). This applies to all stores built on the disclosure store, such as the dialog and combobox stores.
+- Fixed a close requested on a store passed through the [`popover`](https://ariakit.com/reference/use-popover-store#popover) or [`combobox`](https://ariakit.com/reference/use-menu-store#combobox) options, or on a store that receives another one through the [`disclosure`](https://ariakit.com/reference/use-disclosure-store#disclosure) option, setting the [`open`](https://ariakit.com/reference/use-disclosure-store#open) state to `false` before a framework `Dialog` rendered with the other store could prevent it. This applies to all stores built on the disclosure store, such as the dialog, combobox, and menu stores.
+
 ## 0.1.13
 
 ### Shared HTML element list
