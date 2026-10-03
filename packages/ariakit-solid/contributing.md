@@ -171,9 +171,7 @@ React also accepts `render={<button />}`. Its helper reads the element's props a
 
 ## Prop types
 
-Compare [React types](../ariakit-react-utils/src/types.ts) with [Solid types](../ariakit-solid-utils/src/types.ts).
-
-| Ariakit React                                                                                                | Ariakit Solid                                                                                                                                      |
+| [Ariakit React](../ariakit-react-utils/src/types.ts)                                                         | [Ariakit Solid](../ariakit-solid-utils/src/types.ts)                                                                                               |
 | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `HTMLProps<T, P>`: `ComponentPropsWithRef<T>` without custom-option keys from `P`, plus `data-*` attributes. | `HTMLProps<T>`: [`ComponentProps<T>`](https://v2.solidjs.com/reference/solid-js/types/component-types) plus `data-*` attributes.                   |
 | `RenderProp<P>`: `(props: P) => ReactNode`.                                                                  | `RenderProp<T>`: `(props: HTMLProps<T>) => JSX.Element`, using Solid's [`JSX.Element`](https://v2.solidjs.com/reference/solid-js/types/jsx-types). |
@@ -181,7 +179,7 @@ Compare [React types](../ariakit-react-utils/src/types.ts) with [Solid types](..
 | `Options`: `render` accepts an element or callback; `wrapElement` accepts a wrapper.                         | `Options<T>`: `render` accepts a callback; `wrapInstance` accepts a wrapper.                                                                       |
 | `Props<T, P>`: `P & HTMLProps<T, P>`.                                                                        | `Props<T>`: `HTMLProps<T> & Options<T>`.                                                                                                           |
 
-`T` connects the default renderer to its props.
+`T` is the tag name or component type. For example, `HTMLProps<"button">` gives the props accepted by a button.
 
 > **WIP:** Custom-option types, polymorphic hook signatures, and element-form rendering types are not implemented yet in Solid.
 
@@ -204,32 +202,4 @@ React's `createHook` wraps the prop hook described above.
 
 ## Shared tests
 
-[Shared assertions](../ariakit-test/src/__system-tests.ts) define the expected behavior. [React](../ariakit-react-utils/src/system.react.test.tsx) and [Solid](../ariakit-solid-utils/src/system.solid.test.tsx) fixtures provide their own state, refs, context, and mount/dispose functions.
-
-This shares expectations while keeping framework setup separate. When adding a scenario, reproduce the same interaction in both fixtures. The current scenarios cover live props, attribute removal, DOM identity, renderer changes, events, refs, and wrapper context across remounting.
-
-The Solid suite uses jsdom because happy-dom dropped numeric `0` when the native Solid renderer assigned it to `textContent`. This keeps the zero-child case covered without a production workaround. The suite does not yet cover element-form rendering, ref composition, SSR/hydration, or every wrapper change.
-
-```sh
-# Run from the repository root.
-pnpm test system.react.test.tsx system.solid.test.tsx --run
-```
-
-## Solid 2 toolchain
-
-- Web rendering and JSX types come from `@solidjs/web`; reactive primitives come from `solid-js`. Both currently use `2.0.0-rc.13`. Keep their versions compatible.
-- [Library builds](../ariakit-scripts/src/build.ts) and [Vitest](../../vitest.config.ts) use `@solidjs/vite-plugin`. The builder emits DOM JavaScript and retains JSX source for consumer compilation.
-- [Library](../../tsconfig.solid.json) and [test](../../tsconfig.solid.test.json) TypeScript configurations use `jsxImportSource: "@solidjs/web"`.
-- The [shared fixture loader](../../vitest.setup.framework.ts) mounts Solid fixtures with [`Loading`](https://v2.solidjs.com/reference/solid-js/components-jsx/loading), and web [`render`](https://v2.solidjs.com/reference/solid-web/rendering-ssr/render), then disposes them after the test. The system tests mount their own fixtures.
-
-The Astro app and legacy website still have Solid 1 integrations. New Solid 2 fixtures need compatible preview wiring before they can run there. Solid 2 API changes are documented in the [migration guide](https://v2.solidjs.com/migration/from-solid-1).
-
-Package builds rewrite export metadata. Build separately, then clean before tests and type checks:
-
-```sh
-pnpm -F @ariakit/solid-utils run build
-pnpm clean
-pnpm tsc
-pnpm test system.react.test.tsx system.solid.test.tsx --run
-pnpm lint-fix
-```
+> **WIP:** Documentation for the shared React and Solid tests is coming soon.
