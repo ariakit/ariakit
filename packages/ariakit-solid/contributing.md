@@ -163,8 +163,6 @@ return <Element />;
 
 When `<Element />` renders, it calls `wrapInstance(renderContent)` if a wrapper is supplied, or renders `renderContent` directly otherwise. `dynamic` updates this choice when `wrapInstance` changes.
 
-The local `wrapInstance` captures the selected wrapper for the deferred call. Reading `props.wrapInstance` again inside that call would require checking it again, since the prop can change.
-
 ### Element-form rendering
 
 React also accepts `render={<button />}`. Its helper reads the element's props and ref, merges them with Ariakit's, then clones the element. Solid needs an equivalent deferred representation because an already-created DOM node cannot be cloned with the same component/context semantics.
