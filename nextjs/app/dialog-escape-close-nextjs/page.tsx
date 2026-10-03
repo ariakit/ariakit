@@ -71,6 +71,23 @@ function SnackCombobox() {
   );
 }
 
+// The popover stays in the DOM while it's hidden, so the notice marks it when
+// the notice opens first. One Escape must still close only the popover.
+// https://github.com/ariakit/ariakit/issues/7647
+function DrinkCombobox() {
+  return (
+    <Ariakit.ComboboxProvider>
+      <Ariakit.ComboboxLabel>Drink</Ariakit.ComboboxLabel>
+      <Ariakit.Combobox />
+      <Ariakit.ComboboxPopover style={popupStyle}>
+        {fruits.map((value) => (
+          <Ariakit.ComboboxItem key={value} value={value} />
+        ))}
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 // Next.js renders React into the document, so React handles key presses outside
 // portals before the Escape listeners that Dialog adds to the document. The
 // non-modal popover has no portal, so its combobox popover can close before the
@@ -95,6 +112,7 @@ export default function Page() {
       </Ariakit.PopoverProvider>
       <Notice />
       <SnackCombobox />
+      <DrinkCombobox />
     </div>
   );
 }
