@@ -165,17 +165,9 @@ When `<Element />` renders, it calls `wrapInstance(renderContent)` if a wrapper 
 
 ### Element-form rendering
 
-React also accepts `render={<button />}`. Its helper reads the element's props and ref, merges them with Ariakit's, then clones the element. Solid needs an equivalent deferred representation because an already-created DOM node cannot be cloned with the same component/context semantics.
+React also accepts `render={<button />}`. Its helper reads the element's props and ref, merges them with Ariakit's, then clones the element.
 
-**This form is required alongside callbacks and is not implemented yet.** The previous port's `As` delayed creation until Ariakit supplied props:
-
-```tsx
-// Previous port syntax, not currently available.
-<Role render={<As.button type="button" />} />
-<Role render={<As component={MyButton} />} />
-```
-
-That preserves convenient element syntax and allows prop composition before creation. The Solid 2 representation remains to be chosen; it must preserve live props, wrapper context, ref composition, and useful types.
+> **WIP:** The Solid equivalent is required alongside render callbacks and is not implemented yet.
 
 ## Prop types
 
@@ -189,11 +181,13 @@ Compare [React types](../ariakit-react-utils/src/types.ts) with [Solid types](..
 | `Options<T>`    | Declares internal `render` and `wrapInstance` options.                                                                                                                  |
 | `Props<T>`      | Combines element props with those options.                                                                                                                              |
 
-`T` connects the default renderer to its props. React also has a custom-options parameter, `Props<T, P>`, and removes custom-option keys from `HTMLProps<T, P>`. Those types, polymorphic hook signatures, and element-form rendering types still need translation.
+`T` connects the default renderer to its props. React also has a custom-options parameter, `Props<T, P>`, and removes custom-option keys from `HTMLProps<T, P>`.
+
+> **WIP:** Custom-option types, polymorphic hook signatures, and element-form rendering types are not implemented yet in Solid.
 
 ## Prop composition and component hooks
 
-React's element branch uses [mergeProps](../ariakit-react-utils/src/misc.ts) and [useMergeRefs](../ariakit-react-utils/src/hooks.ts). The Solid helper forwards props but does not yet implement this composition.
+React's element branch uses [mergeProps](../ariakit-react-utils/src/misc.ts) and [useMergeRefs](../ariakit-react-utils/src/hooks.ts).
 
 The React behavior to preserve is:
 
@@ -204,9 +198,9 @@ The React behavior to preserve is:
 
 React's [forwardRef](../ariakit-react-utils/src/system.tsx) also removes `undefined` props before the component implementation runs. Keep this boundary rule separate from a live DOM attribute becoming `undefined`, which removes the attribute.
 
-Solid's composition must retain these rules without copying reactive values into stale objects. Native prop merging alone does not establish Ariakit's handler, ref, or precedence semantics.
+React's `createHook` wraps the prop hook described above.
 
-React's `createHook` wraps the prop hook described above. The previous Solid port also used `createHook` and `withOptions` for hook wrapping, option extraction, and defaults. Neither is rebuilt yet. Multiple hooks also need to compose wrappers in a defined order, rather than replacing one another's `wrapInstance`.
+> **WIP:** Prop composition and component hooks are not implemented yet in Solid.
 
 ## Shared tests
 
