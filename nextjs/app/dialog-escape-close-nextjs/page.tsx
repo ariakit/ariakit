@@ -79,7 +79,9 @@ function DrinkCombobox() {
     <Ariakit.ComboboxProvider>
       <Ariakit.ComboboxLabel>Drink</Ariakit.ComboboxLabel>
       <Ariakit.Combobox />
-      <Ariakit.ComboboxPopover style={popupStyle}>
+      {/* TODO: Remove unmountOnHide when the fix for
+      https://github.com/ariakit/ariakit/issues/7647 is released. */}
+      <Ariakit.ComboboxPopover unmountOnHide style={popupStyle}>
         {fruits.map((value) => (
           <Ariakit.ComboboxItem key={value} value={value} />
         ))}

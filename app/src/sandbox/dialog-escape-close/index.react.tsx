@@ -243,7 +243,9 @@ function NoticeDialog() {
       <Ariakit.ComboboxProvider>
         <Ariakit.ComboboxLabel>Drink</Ariakit.ComboboxLabel>
         <Ariakit.Combobox />
-        <Ariakit.ComboboxPopover style={popupStyle}>
+        {/* TODO: Remove unmountOnHide when the fix for
+        https://github.com/ariakit/ariakit/issues/7647 is released. */}
+        <Ariakit.ComboboxPopover unmountOnHide style={popupStyle}>
           {fruits.map((value) => (
             <Ariakit.ComboboxItem key={value} value={value} />
           ))}
@@ -263,8 +265,12 @@ function GarnishTooltipCombobox() {
         <Ariakit.ComboboxProvider>
           <Ariakit.ComboboxLabel>Garnish</Ariakit.ComboboxLabel>
           <Ariakit.TooltipAnchor render={<Ariakit.Combobox />} />
-          <Ariakit.Tooltip style={popupStyle}>Search garnishes</Ariakit.Tooltip>
-          <Ariakit.ComboboxPopover style={popupStyle}>
+          {/* TODO: Remove unmountOnHide from both popups when the fix for
+          https://github.com/ariakit/ariakit/issues/7647 is released. */}
+          <Ariakit.Tooltip unmountOnHide style={popupStyle}>
+            Search garnishes
+          </Ariakit.Tooltip>
+          <Ariakit.ComboboxPopover unmountOnHide style={popupStyle}>
             {fruits.map((value) => (
               <Ariakit.ComboboxItem key={value} value={value} />
             ))}
