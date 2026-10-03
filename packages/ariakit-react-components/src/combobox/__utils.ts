@@ -2,6 +2,7 @@ import { useSafeLayoutEffect } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import { getWindow } from "@ariakit/utils";
 import type { RefObject } from "react";
+import { autoFocusSelector } from "../dialog/utils/__auto-focus-selector.ts";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const openingMovesBySelect = new WeakMap<HTMLElement, number>();
@@ -9,7 +10,7 @@ const scrollItemIntoViewByStore = new WeakMap<
   ComboboxStore,
   (element: HTMLElement) => void
 >();
-const movedItemRefByStore = new WeakMap<
+const selectInitialFocusRefByStore = new WeakMap<
   ComboboxStore,
   RefObject<HTMLElement | null>
 >();
@@ -153,29 +154,41 @@ export function getScrollItemIntoView(store?: ComboboxStore) {
 }
 
 /**
- * Returns a ref to the item that the user moved to since the select popup
- * opened. Its value is `null` until the user moves. It reads the current store
- * state when accessed, so the popup's delayed initial focus can find the item
- * without subscribing to movement. Each store gets one stable ref, because the
- * dialog runs its initial focus again whenever `initialFocus` changes.
+ * Returns a ref to the initial focus element of a select popup without an
+ * input. It's the item that the user moved to since the popup opened. Until the
+ * user moves, it's `null` when the popup has an element to auto focus, such as
+ * the selected item, so the dialog focuses that element. Otherwise, it's the
+ * active item or, without one, the popup itself. It reads the current store
+ * state when accessed, so the popup's delayed initial focus can find the
+ * element without subscribing to movement. Each store gets one stable ref,
+ * because the dialog runs its initial focus again whenever `initialFocus`
+ * changes.
  */
-export function getMovedItemRef(store: ComboboxStore) {
-  const cached = movedItemRefByStore.get(store);
+export function getSelectInitialFocusRef(store: ComboboxStore) {
+  const cached = selectInitialFocusRefByStore.get(store);
   if (cached) {
     return cached;
   }
   const ref: RefObject<HTMLElement | null> = {
     get current() {
-      const { activeId, moves, selectElement } = store.getState();
+      const { activeId, contentElement, moves, selectElement } =
+        store.getState();
       if (!selectElement) return null;
       // The baseline includes the arrow key that opened the popup, so only a
       // move made in the open popup counts.
       const openingMoves = openingMovesBySelect.get(selectElement);
-      if (openingMoves == null) return null;
-      if (moves === openingMoves) return null;
-      return store.item(activeId)?.element || null;
+      const moved = openingMoves != null && moves !== openingMoves;
+      const activeItem = store.item(activeId)?.element;
+      if (moved && activeItem) return activeItem;
+      if (!contentElement) return null;
+      if (contentElement.querySelector(autoFocusSelector)) return null;
+      // The dialog would otherwise focus the first tabbable element, which may
+      // be outside the list, like a dismiss button. The popup sends focus to
+      // the select, which clears the active item with real focus.
+      // https://github.com/ariakit/ariakit/issues/7626
+      return activeItem || contentElement;
     },
   };
-  movedItemRefByStore.set(store, ref);
+  selectInitialFocusRefByStore.set(store, ref);
   return ref;
 }

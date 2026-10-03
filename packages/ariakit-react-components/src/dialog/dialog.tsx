@@ -60,6 +60,7 @@ import {
 } from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 import { useDialogStore } from "./dialog-store.ts";
+import { autoFocusSelector } from "./utils/__auto-focus-selector.ts";
 import {
   captureDisclosure,
   isCapturedDisclosure,
@@ -596,9 +597,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // with the autofocus attribute. If it's an Ariakit component, the
       // Focusable component will consume the autoFocus prop and add the
       // data-autofocus attribute to the element instead.
-      contentElement.querySelector<HTMLElement>(
-        "[data-autofocus=true],[autofocus]",
-      ) ||
+      contentElement.querySelector<HTMLElement>(autoFocusSelector) ||
       // We have to fallback to the first focusable element otherwise portaled
       // dialogs with preserveTabOrder set to true will not receive focus
       // properly because the elements aren't tabbable until the dialog receives

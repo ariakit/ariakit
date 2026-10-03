@@ -126,6 +126,102 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     });
   }
 
+  for (const label of [
+    "Dismissible status",
+    "Multiple dismissible status",
+    "Real-focus dismissible status",
+  ]) {
+    test.describe(label, () => {
+      const realFocus = label.startsWith("Real-focus");
+
+      for (const open of ["click", "Enter", "ArrowDown"]) {
+        // https://github.com/ariakit/ariakit/issues/7626
+        test(`arrow keys move through the items after opening with ${open} and nothing selected`, async ({
+          page,
+          q,
+        }) => {
+          const select = q.combobox(label);
+          if (open === "click") {
+            await select.click();
+          } else {
+            await select.focus();
+            await page.keyboard.press(open);
+          }
+
+          // The dismiss button comes before the list, so it's the popup's first
+          // tabbable element.
+          const dialog = q.dialog(`${label} options`);
+          await test.expect(dialog).toBeVisible();
+          await test.expect(dialog).not.toHaveAttribute("data-placing");
+          // Dialog queues auto-focus after placement, and there is no positive
+          // state for focus staying out of the dismiss button once that
+          // microtask has run.
+          await flushFrames(page);
+          await test.expect(select).toBeFocused();
+          await test
+            .expect(select)
+            .not.toHaveAttribute("aria-activedescendant");
+
+          await page.keyboard.press("ArrowDown");
+          const listbox = q.listbox(`${label} options`);
+          const draft = query(listbox).option("Draft");
+          await test.expect(draft).toHaveAttribute("data-active-item");
+          await test.expect(realFocus ? draft : select).toBeFocused();
+
+          await page.keyboard.press("p");
+          const published = query(listbox).option("Published");
+          await test.expect(published).toHaveAttribute("data-active-item");
+          await test.expect(realFocus ? published : select).toBeFocused();
+        });
+      }
+    });
+  }
+
+  // https://github.com/ariakit/ariakit/issues/7626
+  test("Portal status opens without an active item when nothing is selected", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Portal status");
+    await select.click();
+
+    const listbox = q.listbox("Portal status");
+    await test.expect(listbox).toBeVisible();
+    await test.expect(listbox).not.toHaveAttribute("data-placing");
+    // Dialog queues auto-focus after placement, and there is no positive state
+    // for the absence of an active item once that microtask has run.
+    await flushFrames(page);
+    await test.expect(select).toBeFocused();
+    await test.expect(select).not.toHaveAttribute("aria-activedescendant");
+
+    await page.keyboard.press("ArrowDown");
+    await test
+      .expect(query(listbox).option("Draft"))
+      .toHaveAttribute("data-active-item");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7626
+  test("Real-focus multiple status keeps the item that typeahead activated before opening", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Real-focus multiple status");
+    await select.focus();
+    await page.keyboard.press("p");
+    await test.expect(select).toBeFocused();
+
+    await page.keyboard.press("Enter");
+    const listbox = q.listbox("Real-focus multiple status");
+    const published = query(listbox).option("Published");
+    await test.expect(published).toBeFocused();
+    await test.expect(published).toHaveAttribute("data-active-item");
+
+    await page.keyboard.press("ArrowDown");
+    const archived = query(listbox).option("Archived");
+    await test.expect(archived).toBeFocused();
+    await test.expect(archived).toHaveAttribute("data-active-item");
+  });
+
   test.describe("Vegetable", () => {
     const moves = [
       { name: "Typeahead", key: "c", item: "Carrot" },
@@ -284,6 +380,24 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(carrot).toHaveAttribute("data-active-item");
   });
 
+  // https://github.com/ariakit/ariakit/issues/7626
+  test("Empty managed vegetable popup focuses its autoFocus element with nothing selected", async ({
+    q,
+  }) => {
+    const select = q.combobox("Empty managed vegetable");
+    await select.click();
+
+    const listbox = q.listbox("Empty managed vegetable");
+    await test.expect(listbox).toHaveAttribute("data-placing");
+    await test.expect(select).toBeFocused();
+
+    await q.button("Finish empty managed vegetable positioning").click();
+    await test.expect(listbox).not.toHaveAttribute("data-placing");
+    await test
+      .expect(query(listbox).button("Manage empty vegetables"))
+      .toBeFocused();
+  });
+
   // https://github.com/ariakit/ariakit/pull/7614#discussion_r4082271058
   test("Store-prop vegetable move made while the popup is positioning stays active", async ({
     page,
@@ -403,6 +517,41 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const garlic = query(listbox).option("Garlic");
     await test.expect(garlic).toBeFocused();
     await test.expect(garlic).toHaveAttribute("data-active-item");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7626
+  test("Multiple dismissible vegetable popup keeps focus in the list when its only selected item is unchecked while positioning", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Multiple dismissible vegetable");
+    await select.click();
+
+    const dialog = q.dialog("Multiple dismissible vegetable options");
+    await test.expect(dialog).toHaveAttribute("data-placing");
+
+    // Nothing is selected by the time the popup takes its initial focus.
+    const listbox = q.listbox("Multiple dismissible vegetable options");
+    const artichoke = query(listbox).option("Artichoke");
+    await artichoke.click();
+    await test.expect(artichoke).toHaveAttribute("aria-selected", "false");
+
+    await q.button("Finish multiple dismissible vegetable positioning").click();
+    await test.expect(dialog).not.toHaveAttribute("data-placing");
+    // Dialog queues auto-focus after placement, and there is no positive state
+    // for focus staying out of the dismiss button once that microtask has run.
+    await flushFrames(page);
+    await test.expect(select).toBeFocused();
+
+    await page.keyboard.press("ArrowDown");
+    const broccoli = query(listbox).option("Broccoli");
+    await test.expect(broccoli).toHaveAttribute("data-active-item");
+    await test
+      .expect(select)
+      .toHaveAttribute(
+        "aria-activedescendant",
+        (await broccoli.getAttribute("id"))!,
+      );
   });
 
   // https://github.com/ariakit/ariakit/issues/7612
