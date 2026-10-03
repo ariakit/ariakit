@@ -483,16 +483,17 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     };
   }, [id, canTakeTreeSnapshot, hasDefaultModalPortal, portalNode]);
 
+  // The portal node itself must not be a dependency of the effect below.
+  const isOpenAndReady = !!canTakeTreeSnapshot;
+
   // Records the order in which the dialogs open. When two dialogs mark each
-  // other, Escape closes the one that opened last.
+  // other, Escape closes the one that opened last. A dialog takes its place
+  // when it starts to mark the tree, and keeps it while it stays open.
   // https://github.com/ariakit/ariakit/issues/7647
   useSafeLayoutEffect(() => {
-    if (!id) return;
-    if (!canTakeTreeSnapshot) return;
-    const dialog = ref.current;
-    if (!dialog) return;
-    return addOpenDialog(dialog);
-  }, [id, canTakeTreeSnapshot]);
+    if (!isOpenAndReady) return;
+    return addOpenDialog(ref);
+  }, [isOpenAndReady]);
 
   useSafeLayoutEffect(() => {
     if (!id) return;

@@ -1,16 +1,20 @@
+import type { RefObject } from "react";
 import { isElementMarked } from "./tree-cleanup.ts";
 
-// The open dialogs, in the order that they opened.
-const openDialogs = new Set<Element>();
+type DialogRef = RefObject<Element | null>;
+
+// The open dialogs, in the order that they opened. Each one is a ref, so a
+// dialog keeps its place when its element changes while it's open.
+const openDialogs = new Set<DialogRef>();
 
 /**
  * Adds the dialog after the dialogs that are already open. The returned
  * function removes it.
  */
-export function addOpenDialog(dialog: Element) {
-  openDialogs.add(dialog);
+export function addOpenDialog(dialogRef: DialogRef) {
+  openDialogs.add(dialogRef);
   return () => {
-    openDialogs.delete(dialog);
+    openDialogs.delete(dialogRef);
   };
 }
 
@@ -27,11 +31,12 @@ export function hasDialogAbove(dialog: Element) {
   if (!isElementMarked(dialog)) return false;
   let openedAfterDialog = false;
   let isAboveEarlierDialog = false;
-  for (const openDialog of openDialogs) {
+  for (const { current: openDialog } of openDialogs) {
     if (openDialog === dialog) {
       openedAfterDialog = true;
       continue;
     }
+    if (!openDialog) continue;
     if (!isElementMarked(dialog, openDialog.id)) continue;
     if (openedAfterDialog) return true;
     // A dialog that opened before is above too, unless the dialogs mark each

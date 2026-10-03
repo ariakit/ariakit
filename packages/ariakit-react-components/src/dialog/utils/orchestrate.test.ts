@@ -490,7 +490,7 @@ test("hasDialogAbove counts a mark that doesn't come from the open dialogs", () 
   const dialog = getElement("dialog");
   const layer = getElement("layer");
 
-  const removeDialog = addOpenDialog(dialog);
+  const removeDialog = addOpenDialog({ current: dialog });
   const dialogMarks = markTreeOutside("dialog", [dialog]);
 
   expect(hasDialogAbove(dialog)).toBe(false);

@@ -274,4 +274,51 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await page.keyboard.press("Escape");
     await test.expect(q.dialog("Welcome")).toBeHidden();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7722
+  test("Escape closes the Combobox popover before a Dialog outside its tree after the popover element changes", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open reminder").click();
+    await test.expect(q.dialog("Reminder")).toBeVisible();
+    await q.combobox("Sauce").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Sauce")).toBeVisible();
+    // No item matches, so the listbox renders another element.
+    await page.keyboard.type("zz");
+    await test.expect(q.listbox("Sauce")).toHaveText("No results");
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Sauce")).toBeHidden();
+    await test.expect(q.dialog("Reminder")).toBeVisible();
+    await test.expect(q.combobox("Sauce")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Reminder")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7722
+  test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog id and portal change", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open banner").click();
+    await test.expect(q.dialog("Banner")).toHaveAttribute("id", "banner-empty");
+    await q.combobox("Dip").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Dip")).toBeVisible();
+    // The field has a value, so the banner moves and gets another id.
+    await page.keyboard.type("a");
+    await test
+      .expect(q.dialog("Banner"))
+      .toHaveAttribute("id", "banner-filled");
+    await test.expect(q.listbox("Dip")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Dip")).toBeHidden();
+    await test.expect(q.dialog("Banner")).toBeVisible();
+    await test.expect(q.combobox("Dip")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Banner")).toBeHidden();
+  });
 });

@@ -1,4 +1,4 @@
-import { click, focus, hover, press, q } from "@ariakit/test";
+import { click, focus, hover, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 async function pressEscapeOnce(label: string) {
@@ -165,4 +165,43 @@ test("Escape closes only the Popover that opened together with the Dialog around
   // The dialog is the topmost popup again, so the next Escape closes it.
   await press.Escape();
   expect(q.dialog.maybe("Welcome")).not.toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/7722
+test("Escape closes the Combobox popover before a Dialog outside its tree after the popover element changes", async () => {
+  await click(q.button("Open reminder"));
+  expect(q.dialog("Reminder")).toBeVisible();
+  await focus(q.combobox("Sauce"));
+  await press.ArrowDown();
+  expect(q.listbox("Sauce")).toBeVisible();
+  // No item matches, so the listbox renders another element.
+  await type("zz");
+  expect(q.listbox("Sauce")).toHaveTextContent("No results");
+  await press.Escape();
+  expect(q.listbox.maybe("Sauce")).not.toBeInTheDocument();
+  expect(q.dialog("Reminder")).toBeVisible();
+  expect(q.combobox("Sauce")).toHaveFocus();
+  // The dialog is the topmost popup again, so the next Escape closes it.
+  await press.Escape();
+  expect(q.dialog.maybe("Reminder")).not.toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/7722
+test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog id and portal change", async () => {
+  await click(q.button("Open banner"));
+  expect(q.dialog("Banner")).toHaveAttribute("id", "banner-empty");
+  await focus(q.combobox("Dip"));
+  await press.ArrowDown();
+  expect(q.listbox("Dip")).toBeVisible();
+  // The field has a value, so the banner moves and gets another id.
+  await type("a");
+  expect(q.dialog("Banner")).toHaveAttribute("id", "banner-filled");
+  expect(q.listbox("Dip")).toBeVisible();
+  await press.Escape();
+  expect(q.listbox.maybe("Dip")).not.toBeInTheDocument();
+  expect(q.dialog("Banner")).toBeVisible();
+  expect(q.combobox("Dip")).toHaveFocus();
+  // The dialog is the topmost popup again, so the next Escape closes it.
+  await press.Escape();
+  expect(q.dialog.maybe("Banner")).not.toBeInTheDocument();
 });

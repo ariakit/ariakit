@@ -305,6 +305,87 @@ function WelcomeDialog() {
   );
 }
 
+// The listbox renders another element when no item matches the value, so its
+// element changes while it's open. One Escape must still close only the
+// listbox.
+function ReminderDialog() {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const matches = fruits.filter((fruit) =>
+    fruit.toLowerCase().includes(value.toLowerCase()),
+  );
+  return (
+    <section>
+      <Ariakit.Button onClick={() => setOpen(true)}>
+        Open reminder
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        hideOnInteractOutside={false}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Reminder</Ariakit.DialogHeading>
+        <p>Sauces are made to order.</p>
+      </Ariakit.Dialog>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Sauce</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover
+          render={matches.length ? <div /> : <section />}
+          style={popupStyle}
+        >
+          {matches.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+          {!matches.length && <div>No results</div>}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+// The banner moves to another region and gets another id when the field has a
+// value, so its portal node and its id change while both popups are open. The
+// banner must keep its place in the open order, so one Escape must still close
+// only the listbox.
+function BannerDialog() {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const [emptyRegion, setEmptyRegion] = useState<HTMLElement | null>(null);
+  const [filledRegion, setFilledRegion] = useState<HTMLElement | null>(null);
+  return (
+    <section>
+      <Ariakit.Button onClick={() => setOpen(true)}>Open banner</Ariakit.Button>
+      <div ref={setEmptyRegion} />
+      <div ref={setFilledRegion} />
+      <Ariakit.Dialog
+        id={value ? "banner-filled" : "banner-empty"}
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        portal
+        portalElement={value ? filledRegion : emptyRegion}
+        hideOnInteractOutside={false}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Banner</Ariakit.DialogHeading>
+        <p>Dips are free today.</p>
+      </Ariakit.Dialog>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Dip</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
 export default function Example() {
   return (
     <div style={{ display: "grid", gap: 24, justifyItems: "start" }}>
@@ -320,6 +401,8 @@ export default function Example() {
       <NoticeDialog />
       <GarnishTooltipCombobox />
       <WelcomeDialog />
+      <ReminderDialog />
+      <BannerDialog />
     </div>
   );
 }
