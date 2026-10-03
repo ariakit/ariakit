@@ -1,5 +1,9 @@
 # @ariakit/react-utils
 
+## 0.2.7
+
+- Fixed `useMetadataProps` sharing one metadata function between all calls when the React Compiler compiled the package source.
+
 ## 0.2.6
 
 - Updated dependencies: `@ariakit/utils@0.2.1`, `@ariakit/store@0.1.10`

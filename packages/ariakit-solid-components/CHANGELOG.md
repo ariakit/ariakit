@@ -1,5 +1,9 @@
 # @ariakit/solid-components
 
+## 0.1.9
+
+- Updated dependencies: `@ariakit/components@0.1.14`
+
 ## 0.1.8
 
 ### More HTML helpers for `Role`
