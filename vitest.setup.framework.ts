@@ -23,13 +23,14 @@ async function loadReact(dir: string) {
 }
 
 async function loadSolid(dir: string) {
-  const { createComponent, render, Suspense } = await import("solid-js/web");
+  const { createComponent, Loading } = await import("solid-js");
+  const { render } = await import("@solidjs/web");
   const component = await importDefault(`./${dir}/index.solid.tsx`);
   const div = document.createElement("div");
   document.body.appendChild(div);
   const dispose = render(
     () =>
-      createComponent(Suspense, {
+      createComponent(Loading, {
         fallback: null,
         get children() {
           return createComponent(component, {});

@@ -1,9 +1,9 @@
 import { dirname, join } from "node:path";
+import solidPlugin from "@solidjs/vite-plugin";
 import reactPlugin from "@vitejs/plugin-react";
 import { globSync } from "glob";
 import { version as reactVersion } from "react";
 import reactForwardRef from "rolldown-plugin-react-forward-ref";
-import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./app/src/lib/source.ts";
 
