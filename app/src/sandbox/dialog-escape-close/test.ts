@@ -151,3 +151,18 @@ test("Escape closes the Tooltip that opened after the Combobox popover of its an
   await press.Escape();
   expect(q.listbox.maybe("Garnish")).not.toBeInTheDocument();
 });
+
+// https://github.com/ariakit/ariakit/issues/7647
+test("Escape closes only the Popover that opened together with the Dialog around it", async () => {
+  await click(q.button("Open welcome"));
+  expect(q.dialog("Welcome")).toBeVisible();
+  expect(q.dialog("Tips")).toBeVisible();
+  // The popover doesn't take focus, so the key press starts in the dialog.
+  expect(q.button("Tips")).toHaveFocus();
+  await press.Escape();
+  expect(q.dialog.maybe("Tips")).not.toBeInTheDocument();
+  expect(q.dialog("Welcome")).toBeVisible();
+  // The dialog is the topmost popup again, so the next Escape closes it.
+  await press.Escape();
+  expect(q.dialog.maybe("Welcome")).not.toBeInTheDocument();
+});

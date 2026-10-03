@@ -66,6 +66,7 @@ import {
   isCapturedDisclosure,
 } from "./utils/__captured-disclosures.ts";
 import { isHiddenDismiss } from "./utils/__is-hidden-dismiss.ts";
+import { addOpenDialog, hasDialogAbove } from "./utils/__open-dialogs.ts";
 import {
   disableTree,
   markAndDisableTreeOutside,
@@ -482,6 +483,17 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     };
   }, [id, canTakeTreeSnapshot, hasDefaultModalPortal, portalNode]);
 
+  // Records the order in which the dialogs open. When two dialogs mark each
+  // other, Escape closes the one that opened last.
+  // https://github.com/ariakit/ariakit/issues/7647
+  useSafeLayoutEffect(() => {
+    if (!id) return;
+    if (!canTakeTreeSnapshot) return;
+    const dialog = ref.current;
+    if (!dialog) return;
+    return addOpenDialog(dialog);
+  }, [id, canTakeTreeSnapshot]);
+
   useSafeLayoutEffect(() => {
     if (!id) return;
     if (!canTakeTreeSnapshot) return;
@@ -797,14 +809,15 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const source = getKeyboardEventSource(event);
     let keyPress = escapeKeyPresses.get(source);
     if (!keyPress) {
-      // Ignore the key press if the current dialog is marked by another dialog.
-      // This guarantees that only the topmost dialog will close on Escape. The
-      // decision covers the whole key press, because a nested popup can close
-      // on the copy that Composite dispatches and remove the marks before the
-      // original event reaches this dialog.
+      // Ignore the key press if another dialog is above the current dialog,
+      // which is the case when that dialog marks it. This guarantees that only
+      // the topmost dialog will close on Escape. The decision covers the whole
+      // key press, because a nested popup can close on the copy that Composite
+      // dispatches and remove the marks before the original event reaches this
+      // dialog.
       // https://github.com/ariakit/ariakit/issues/7632
       const isTopmost =
-        !isElementMarked(dialog) && !escapeKeyPressesThatHid.has(source);
+        !hasDialogAbove(dialog) && !escapeKeyPressesThatHid.has(source);
       const accepted = isTopmost && hideOnEscapeProp(event);
       keyPress = { accepted, hidden: false };
       escapeKeyPresses.set(source, keyPress);

@@ -256,4 +256,22 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await page.keyboard.press("Escape");
     await test.expect(q.listbox("Garnish")).toBeHidden();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7647
+  test("Escape closes only the Popover that opened together with the Dialog around it", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open welcome").click();
+    await test.expect(q.dialog("Welcome")).toBeVisible();
+    await test.expect(q.dialog("Tips")).toBeVisible();
+    // The popover doesn't take focus, so the key press starts in the dialog.
+    await test.expect(q.button("Tips")).toBeFocused();
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Tips")).toBeHidden();
+    await test.expect(q.dialog("Welcome")).toBeVisible();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Welcome")).toBeHidden();
+  });
 });

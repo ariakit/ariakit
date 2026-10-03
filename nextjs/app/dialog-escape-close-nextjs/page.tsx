@@ -55,8 +55,7 @@ function Notice() {
 
 // The popover mounts only after the notice opens, so the notice ignores the
 // copy that Composite dispatches on the active item. Otherwise, the notice
-// marks the popover too, and #7647 keeps both open.
-// https://github.com/ariakit/ariakit/issues/7647
+// marks the popover too, which is the case that DrinkCombobox covers.
 function SnackCombobox() {
   return (
     <Ariakit.ComboboxProvider>
@@ -79,9 +78,7 @@ function DrinkCombobox() {
     <Ariakit.ComboboxProvider>
       <Ariakit.ComboboxLabel>Drink</Ariakit.ComboboxLabel>
       <Ariakit.Combobox />
-      {/* TODO: Remove unmountOnHide when the fix for
-      https://github.com/ariakit/ariakit/issues/7647 is released. */}
-      <Ariakit.ComboboxPopover unmountOnHide style={popupStyle}>
+      <Ariakit.ComboboxPopover style={popupStyle}>
         {fruits.map((value) => (
           <Ariakit.ComboboxItem key={value} value={value} />
         ))}

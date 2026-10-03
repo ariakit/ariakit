@@ -243,9 +243,7 @@ function NoticeDialog() {
       <Ariakit.ComboboxProvider>
         <Ariakit.ComboboxLabel>Drink</Ariakit.ComboboxLabel>
         <Ariakit.Combobox />
-        {/* TODO: Remove unmountOnHide when the fix for
-        https://github.com/ariakit/ariakit/issues/7647 is released. */}
-        <Ariakit.ComboboxPopover unmountOnHide style={popupStyle}>
+        <Ariakit.ComboboxPopover style={popupStyle}>
           {fruits.map((value) => (
             <Ariakit.ComboboxItem key={value} value={value} />
           ))}
@@ -265,18 +263,44 @@ function GarnishTooltipCombobox() {
         <Ariakit.ComboboxProvider>
           <Ariakit.ComboboxLabel>Garnish</Ariakit.ComboboxLabel>
           <Ariakit.TooltipAnchor render={<Ariakit.Combobox />} />
-          {/* TODO: Remove unmountOnHide from both popups when the fix for
-          https://github.com/ariakit/ariakit/issues/7647 is released. */}
-          <Ariakit.Tooltip unmountOnHide style={popupStyle}>
-            Search garnishes
-          </Ariakit.Tooltip>
-          <Ariakit.ComboboxPopover unmountOnHide style={popupStyle}>
+          <Ariakit.Tooltip style={popupStyle}>Search garnishes</Ariakit.Tooltip>
+          <Ariakit.ComboboxPopover style={popupStyle}>
             {fruits.map((value) => (
               <Ariakit.ComboboxItem key={value} value={value} />
             ))}
           </Ariakit.ComboboxPopover>
         </Ariakit.ComboboxProvider>
       </Ariakit.TooltipProvider>
+    </section>
+  );
+}
+
+// The dialog mounts when it opens, and the popover inside it is open from the
+// start. Both open in the same render, where the effects of the popover run
+// first. One Escape must still close only the popover.
+function WelcomeDialog() {
+  const [open, setOpen] = useState(false);
+  return (
+    <section>
+      <Ariakit.Button onClick={() => setOpen(true)}>
+        Open welcome
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        unmountOnHide
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Welcome</Ariakit.DialogHeading>
+        <Ariakit.PopoverProvider defaultOpen>
+          <Ariakit.PopoverDisclosure>Tips</Ariakit.PopoverDisclosure>
+          <Ariakit.Popover autoFocusOnShow={false} style={popupStyle}>
+            <Ariakit.PopoverHeading>Tips</Ariakit.PopoverHeading>
+            <p>Press Escape to close this popup.</p>
+          </Ariakit.Popover>
+        </Ariakit.PopoverProvider>
+      </Ariakit.Dialog>
     </section>
   );
 }
@@ -295,6 +319,7 @@ export default function Example() {
       <OrderDialog />
       <NoticeDialog />
       <GarnishTooltipCombobox />
+      <WelcomeDialog />
     </div>
   );
 }
