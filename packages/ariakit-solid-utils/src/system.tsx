@@ -14,10 +14,10 @@ export function createInstance<T extends ValidComponent>(
 ) {
   const rest = omit(props, "render", "wrapInstance");
   const Render = dynamic(() => props.render ?? Type);
-  const renderElement = () => <Render {...rest} />;
+  const renderContent = () => <Render {...rest} />;
   const Element = dynamic(() => {
     const wrapInstance = props.wrapInstance;
-    return wrapInstance ? () => wrapInstance(renderElement) : renderElement;
+    return wrapInstance ? () => wrapInstance(renderContent) : renderContent;
   });
   return <Element />;
 }

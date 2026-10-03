@@ -90,10 +90,10 @@ import { omit } from "solid-js";
 function createInstance(Type, props) {
   const rest = omit(props, "render", "wrapInstance");
   const Render = dynamic(() => props.render ?? Type);
-  const renderElement = () => <Render {...rest} />;
+  const renderContent = () => <Render {...rest} />;
   const Element = dynamic(() => {
     const wrapInstance = props.wrapInstance;
-    return wrapInstance ? () => wrapInstance(renderElement) : renderElement;
+    return wrapInstance ? () => wrapInstance(renderContent) : renderContent;
   });
   return <Element />;
 }
@@ -121,13 +121,13 @@ const Render = dynamic(() => props.render ?? Type);
 
 If `props.render` changes, `dynamic` switches to the new renderer, or back to `Type` if `render` is removed.
 
-### 3. Defer element creation
+### 3. Defer rendering
 
 ```tsx
-const renderElement = () => <Render {...rest} />;
+const renderContent = () => <Render {...rest} />;
 ```
 
-`renderElement()` renders `<Render {...rest} />`. Keeping it in a function lets `wrapInstance` decide when to render it, as explained below.
+`renderContent()` renders `<Render {...rest} />`. Keeping it in a function lets `wrapInstance` decide when to render it, as explained below.
 
 ### 4. Apply the wrapper
 
@@ -140,7 +140,7 @@ wrapElement: (element) => (
 );
 ```
 
-In Solid, those components would run before the wrapper if we passed already-evaluated JSX. Instead, `wrapInstance` receives the `renderElement` function from the previous step:
+In Solid, those components would run before the wrapper if we passed already-evaluated JSX. Instead, `wrapInstance` receives the `renderContent` function from the previous step:
 
 ```tsx
 // Solid
@@ -156,12 +156,12 @@ The outer [`dynamic`](https://v2.solidjs.com/reference/solid-web/components/dyna
 ```tsx
 const Element = dynamic(() => {
   const wrapInstance = props.wrapInstance;
-  return wrapInstance ? () => wrapInstance(renderElement) : renderElement;
+  return wrapInstance ? () => wrapInstance(renderContent) : renderContent;
 });
 return <Element />;
 ```
 
-When `<Element />` renders, it calls `wrapInstance(renderElement)` if a wrapper is supplied, or renders `renderElement` directly otherwise. `dynamic` updates this choice when `wrapInstance` changes.
+When `<Element />` renders, it calls `wrapInstance(renderContent)` if a wrapper is supplied, or renders `renderContent` directly otherwise. `dynamic` updates this choice when `wrapInstance` changes.
 
 The [Solid context fixture](../ariakit-solid-utils/src/system.solid.test.tsx) tests this by reading the wrapper's context value from a child component.
 
