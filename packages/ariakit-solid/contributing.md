@@ -173,15 +173,15 @@ React also accepts `render={<button />}`. Its helper reads the element's props a
 
 Compare [React types](../ariakit-react-utils/src/types.ts) with [Solid types](../ariakit-solid-utils/src/types.ts).
 
-| Type            | Solid translation                                                                                                                                                       |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `HTMLProps<T>`  | Solid's [`ComponentProps<T>`](https://v2.solidjs.com/reference/solid-js/types/component-types) plus `data-*` attributes, instead of React's `ComponentPropsWithRef<T>`. |
-| `RenderProp<T>` | Receives `HTMLProps<T>` and returns Solid [`JSX.Element`](https://v2.solidjs.com/reference/solid-js/types/jsx-types), instead of React `ReactNode`.                     |
-| `WrapInstance`  | Receives `() => JSX.Element` instead of React's `WrapElement` argument, preserving creation timing.                                                                     |
-| `Options<T>`    | Declares internal `render` and `wrapInstance` options.                                                                                                                  |
-| `Props<T>`      | Combines element props with those options.                                                                                                                              |
+| Ariakit React                                                                                                | Ariakit Solid                                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HTMLProps<T, P>`: `ComponentPropsWithRef<T>` without custom-option keys from `P`, plus `data-*` attributes. | `HTMLProps<T>`: [`ComponentProps<T>`](https://v2.solidjs.com/reference/solid-js/types/component-types) plus `data-*` attributes.                   |
+| `RenderProp<P>`: `(props: P) => ReactNode`.                                                                  | `RenderProp<T>`: `(props: HTMLProps<T>) => JSX.Element`, using Solid's [`JSX.Element`](https://v2.solidjs.com/reference/solid-js/types/jsx-types). |
+| `WrapElement`: `(element: ReactElement) => ReactElement`.                                                    | `WrapInstance`: `(content: () => JSX.Element) => JSX.Element`.                                                                                     |
+| `Options`: `render` accepts an element or callback; `wrapElement` accepts a wrapper.                         | `Options<T>`: `render` accepts a callback; `wrapInstance` accepts a wrapper.                                                                       |
+| `Props<T, P>`: `P & HTMLProps<T, P>`.                                                                        | `Props<T>`: `HTMLProps<T> & Options<T>`.                                                                                                           |
 
-`T` connects the default renderer to its props. React also has a custom-options parameter, `Props<T, P>`, and removes custom-option keys from `HTMLProps<T, P>`.
+`T` connects the default renderer to its props.
 
 > **WIP:** Custom-option types, polymorphic hook signatures, and element-form rendering types are not implemented yet in Solid.
 
