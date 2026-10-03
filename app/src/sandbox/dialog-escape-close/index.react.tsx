@@ -17,7 +17,7 @@ const dialogStyle = {
   left: 24,
 } as const;
 
-// The popups outside OrderDialog keep themselves open and count the close
+// The popups that use this hook keep themselves open and count the close
 // requests they get, like a popup that asks the user to confirm before it
 // closes.
 function useCloseRequests() {
@@ -222,6 +222,89 @@ function OrderDialog() {
   );
 }
 
+// Neither popup here is a React ancestor of the other one, and the listbox
+// stays in the DOM while it's hidden. One Escape must close only the popup that
+// opened last.
+function NoticeDialog() {
+  const [open, setOpen] = useState(false);
+  return (
+    <section>
+      <Ariakit.Button onClick={() => setOpen(true)}>Open notice</Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        hideOnInteractOutside={false}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Notice</Ariakit.DialogHeading>
+        <p>Drinks are served after 5pm.</p>
+      </Ariakit.Dialog>
+      <Ariakit.ComboboxProvider>
+        <Ariakit.ComboboxLabel>Drink</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+// The tooltip and the listbox can open in either order, and both stay in the
+// DOM while they're hidden. One Escape must close only the popup that opened
+// last.
+function GarnishTooltipCombobox() {
+  return (
+    <section>
+      <Ariakit.TooltipProvider>
+        <Ariakit.ComboboxProvider>
+          <Ariakit.ComboboxLabel>Garnish</Ariakit.ComboboxLabel>
+          <Ariakit.TooltipAnchor render={<Ariakit.Combobox />} />
+          <Ariakit.Tooltip style={popupStyle}>Search garnishes</Ariakit.Tooltip>
+          <Ariakit.ComboboxPopover style={popupStyle}>
+            {fruits.map((value) => (
+              <Ariakit.ComboboxItem key={value} value={value} />
+            ))}
+          </Ariakit.ComboboxPopover>
+        </Ariakit.ComboboxProvider>
+      </Ariakit.TooltipProvider>
+    </section>
+  );
+}
+
+// The dialog mounts when it opens, and the popover inside it is open from the
+// start. Both open in the same render, where the effects of the popover run
+// first. One Escape must still close only the popover.
+function WelcomeDialog() {
+  const [open, setOpen] = useState(false);
+  return (
+    <section>
+      <Ariakit.Button onClick={() => setOpen(true)}>
+        Open welcome
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        unmountOnHide
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Welcome</Ariakit.DialogHeading>
+        <Ariakit.PopoverProvider defaultOpen>
+          <Ariakit.PopoverDisclosure>Tips</Ariakit.PopoverDisclosure>
+          <Ariakit.Popover autoFocusOnShow={false} style={popupStyle}>
+            <Ariakit.PopoverHeading>Tips</Ariakit.PopoverHeading>
+            <p>Press Escape to close this popup.</p>
+          </Ariakit.Popover>
+        </Ariakit.PopoverProvider>
+      </Ariakit.Dialog>
+    </section>
+  );
+}
+
 export default function Example() {
   return (
     <div style={{ display: "grid", gap: 24, justifyItems: "start" }}>
@@ -234,6 +317,9 @@ export default function Example() {
       <SearchableFruitComboboxSelect />
       <BlockMenuCombobox />
       <OrderDialog />
+      <NoticeDialog />
+      <GarnishTooltipCombobox />
+      <WelcomeDialog />
     </div>
   );
 }
