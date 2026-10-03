@@ -171,13 +171,13 @@ React also accepts `render={<button />}`. Its helper reads the element's props a
 
 ## Prop types
 
-| [Ariakit React](../ariakit-react-utils/src/types.ts)                                                         | [Ariakit Solid](../ariakit-solid-utils/src/types.ts)                                                                                               |
-| ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `HTMLProps<T, P>`: `ComponentPropsWithRef<T>` without custom-option keys from `P`, plus `data-*` attributes. | `HTMLProps<T>`: [`ComponentProps<T>`](https://v2.solidjs.com/reference/solid-js/types/component-types) plus `data-*` attributes.                   |
-| `RenderProp<P>`: `(props: P) => ReactNode`.                                                                  | `RenderProp<T>`: `(props: HTMLProps<T>) => JSX.Element`, using Solid's [`JSX.Element`](https://v2.solidjs.com/reference/solid-js/types/jsx-types). |
-| `WrapElement`: `(element: ReactElement) => ReactElement`.                                                    | `WrapInstance`: `(content: () => JSX.Element) => JSX.Element`.                                                                                     |
-| `Options`: `render` accepts an element or callback; `wrapElement` accepts a wrapper.                         | `Options<T>`: `render` accepts a callback; `wrapInstance` accepts a wrapper.                                                                       |
-| `Props<T, P>`: `P & HTMLProps<T, P>`.                                                                        | `Props<T>`: `HTMLProps<T> & Options<T>`.                                                                                                           |
+| Type         | [Ariakit React](../ariakit-react-utils/src/types.ts)                                                         | [Ariakit Solid](../ariakit-solid-utils/src/types.ts)                                                                                               |
+| ------------ | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HTMLProps`  | `HTMLProps<T, P>`: `ComponentPropsWithRef<T>` without custom-option keys from `P`, plus `data-*` attributes. | `HTMLProps<T>`: [`ComponentProps<T>`](https://v2.solidjs.com/reference/solid-js/types/component-types) plus `data-*` attributes.                   |
+| `RenderProp` | `RenderProp<P>`: `(props: P) => ReactNode`.                                                                  | `RenderProp<T>`: `(props: HTMLProps<T>) => JSX.Element`, using Solid's [`JSX.Element`](https://v2.solidjs.com/reference/solid-js/types/jsx-types). |
+| Wrapper      | `WrapElement`: `(element: ReactElement) => ReactElement`.                                                    | `WrapInstance`: `(content: () => JSX.Element) => JSX.Element`.                                                                                     |
+| `Options`    | `Options`: `render` accepts an element or callback; `wrapElement` accepts a wrapper.                         | `Options<T>`: `render` accepts a callback; `wrapInstance` accepts a wrapper.                                                                       |
+| `Props`      | `Props<T, P>`: `P & HTMLProps<T, P>`.                                                                        | `Props<T>`: `HTMLProps<T> & Options<T>`.                                                                                                           |
 
 `T` is the tag name or component type. For example, `HTMLProps<"button">` gives the props accepted by a button.
 
