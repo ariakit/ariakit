@@ -127,7 +127,7 @@ If `props.render` changes, `dynamic` switches to the new renderer, or back to `T
 const renderContent = () => <Render {...rest} />;
 ```
 
-`renderContent()` renders `<Render {...rest} />`. Keeping it in a function lets `wrapInstance` decide when to render it, as explained below.
+Keeping this in a function lets `wrapInstance` decide when to render it, as explained below.
 
 ### 4. Apply the wrapper
 
@@ -163,7 +163,7 @@ return <Element />;
 
 When `<Element />` renders, it calls `wrapInstance(renderContent)` if a wrapper is supplied, or renders `renderContent` directly otherwise. `dynamic` updates this choice when `wrapInstance` changes.
 
-The [Solid context fixture](../ariakit-solid-utils/src/system.solid.test.tsx) tests this by reading the wrapper's context value from a child component.
+The local `wrapInstance` captures the selected wrapper for the deferred call. Reading `props.wrapInstance` again inside that call would require checking it again, since the prop can change.
 
 ### Element-form rendering
 
