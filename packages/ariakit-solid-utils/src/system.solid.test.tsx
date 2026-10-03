@@ -1,122 +1,96 @@
 // @vitest-environment jsdom
+import { q } from "@ariakit/test";
 import { render } from "@solidjs/web";
-import { createContext, createSignal, Show, useContext } from "solid-js";
-import { testSystem } from "../../ariakit-test/src/__system-tests.ts";
-import type { SystemScenario } from "../../ariakit-test/src/__system-tests.ts";
+import type { JSX } from "@solidjs/web";
+import { createContext, createSignal, useContext } from "solid-js";
+import { expect, onTestFinished, test } from "vitest";
 import { createInstance } from "./index.ts";
-import type { RenderProp } from "./index.ts";
+import type { RenderProp, WrapInstance } from "./index.ts";
 
-const renderDiv: RenderProp<"div"> = (props) => <div {...props} />;
-const renderSection: RenderProp<"div"> = (props) => (
-  <section role={props.role} aria-label={props["aria-label"]}>
-    {props.children}
-  </section>
-);
-
-const Context = createContext("Unwrapped");
+const Context = createContext<() => string>(() => "Unwrapped");
 
 function ContextValue() {
-  return <span>{useContext(Context)}</span>;
+  const value = useContext(Context);
+  return <span>{value()}</span>;
 }
 
-function ReplacementFixture() {
-  const [original, setOriginal] = createSignal(true);
-  return (
-    <>
-      <button onClick={() => setOriginal(false)}>Switch element</button>
-      {createInstance("div", {
-        role: "status",
-        "aria-label": "View",
-        children: "Swappable",
-        get render() {
-          return original() ? renderDiv : renderSection;
-        },
-      })}
-    </>
-  );
-}
-
-function NativeFixture() {
-  const [count, setCount] = createSignal(0);
-  return (
-    <>
-      <button onClick={() => setCount(count() + 1)}>Increment</button>
-      {createInstance("div", {
-        role: "status",
-        "aria-label": "Counter",
-        get title() {
-          return count() === 0 ? "Initial" : undefined;
-        },
-        get children() {
-          return count();
-        },
-      })}
-    </>
-  );
-}
-
-function RenderFixture() {
-  const [count, setCount] = createSignal(0);
-  let ref: HTMLButtonElement | undefined;
-  return (
-    <>
-      {createInstance("button", {
-        ref: (element) => {
-          ref = element;
-        },
-        get "data-count"() {
-          return count();
-        },
-        onClick: () => setCount(count() + 1),
-        get children() {
-          return `Count: ${count()}`;
-        },
-        render: (props) => <button {...props} />,
-      })}
-      <button onClick={() => ref?.focus()}>Focus counter</button>
-    </>
-  );
-}
-
-function WrapperFixture() {
-  const [show, setShow] = createSignal(true);
-  return (
-    <>
-      <button onClick={() => setShow(!show())}>
-        {show() ? "Hide" : "Show"}
-      </button>
-      <Show when={show()}>
-        {(_visible) =>
-          createInstance("div", {
-            role: "status",
-            "aria-label": "Context",
-            get children() {
-              return <ContextValue />;
-            },
-            wrapInstance: (element) => (
-              <Context value="Wrapped">{element()}</Context>
-            ),
-          })
-        }
-      </Show>
-    </>
-  );
-}
-
-const fixtures = {
-  replacement: ReplacementFixture,
-  native: NativeFixture,
-  render: RenderFixture,
-  wrapper: WrapperFixture,
-} satisfies Record<SystemScenario, () => unknown>;
-
-testSystem(async (scenario) => {
+function mount(content: () => JSX.Element) {
   const container = document.createElement("div");
   document.body.appendChild(container);
-  const Fixture = fixtures[scenario];
-  const dispose = render(() => <Fixture />, container);
-  return () => {
+  const dispose = render(content, container);
+  onTestFinished(() => {
     dispose();
     container.remove();
-  };
+  });
+}
+
+test.each([false, true])(
+  "adding, changing, and removing wrappers updates context (render callback: %s)",
+  async (customRender) => {
+    const [wrapper, setWrapper] = createSignal<WrapInstance>();
+    const wrapFirst: WrapInstance = (content) => (
+      <Context value={() => "First"}>{content()}</Context>
+    );
+    const wrapSecond: WrapInstance = (content) => (
+      <Context value={() => "Second"}>{content()}</Context>
+    );
+    mount(() =>
+      createInstance("div", {
+        role: "status",
+        get children() {
+          return <ContextValue />;
+        },
+        render: customRender
+          ? (props) => <section role={props.role}>{props.children}</section>
+          : undefined,
+        get wrapInstance() {
+          return wrapper();
+        },
+      }),
+    );
+
+    await expect.poll(() => q.status().textContent).toBe("Unwrapped");
+    setWrapper(() => wrapFirst);
+    await expect.poll(() => q.status().textContent).toBe("First");
+    setWrapper(() => wrapSecond);
+    await expect.poll(() => q.status().textContent).toBe("Second");
+    setWrapper(undefined);
+    await expect.poll(() => q.status().textContent).toBe("Unwrapped");
+  },
+);
+
+test("renderer changes and removal keep the current wrapper context", async () => {
+  const [renderer, setRenderer] = createSignal<RenderProp<"div">>();
+  const [value, setValue] = createSignal("First");
+  const renderSection: RenderProp<"div"> = (props) => (
+    <section role={props.role}>{props.children}</section>
+  );
+  const renderArticle: RenderProp<"div"> = (props) => (
+    <article role={props.role}>{props.children}</article>
+  );
+  mount(() =>
+    createInstance("div", {
+      role: "status",
+      get children() {
+        return <ContextValue />;
+      },
+      get render() {
+        return renderer();
+      },
+      wrapInstance: (content) => <Context value={value}>{content()}</Context>,
+    }),
+  );
+
+  await expect.poll(() => q.status().textContent).toBe("First");
+  setRenderer(() => renderSection);
+  await expect.poll(() => q.status().tagName).toBe("SECTION");
+  expect(q.status().textContent).toBe("First");
+  setValue("Second");
+  await expect.poll(() => q.status().textContent).toBe("Second");
+  setRenderer(() => renderArticle);
+  await expect.poll(() => q.status().tagName).toBe("ARTICLE");
+  expect(q.status().textContent).toBe("Second");
+  setRenderer(undefined);
+  await expect.poll(() => q.status().tagName).toBe("DIV");
+  expect(q.status().textContent).toBe("Second");
 });

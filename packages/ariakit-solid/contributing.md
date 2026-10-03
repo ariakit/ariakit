@@ -200,6 +200,6 @@ React's `createHook` wraps the prop hook described above.
 
 > **WIP:** Prop composition and component hooks are not implemented yet in Solid.
 
-## Shared tests
+## Tests
 
-> **WIP:** Documentation for the shared React and Solid tests is coming soon.
+> **WIP:** Documentation for the Solid tests is coming soon.
