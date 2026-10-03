@@ -507,8 +507,8 @@ importers:
         specifier: 3.0.4
         version: 3.0.4
       '@visonaut/playwright':
-        specifier: 0.4.0
-        version: 0.4.0(@playwright/test@1.63.0)
+        specifier: 0.4.1
+        version: 0.4.1(@playwright/test@1.63.0)
       clava:
         specifier: 0.7.0
         version: 0.7.0
@@ -5808,8 +5808,8 @@ packages:
       vue-router:
         optional: true
 
-  '@visonaut/playwright@0.4.0':
-    resolution: {integrity: sha512-18RgEwqkaUHQhyVkWwEhUs3RJCmXAgz4jnp2bapI8EjMLkrWP66STDg+8vHH3blS4eZxn1v3Tt/jEKFr0C63lg==}
+  '@visonaut/playwright@0.4.1':
+    resolution: {integrity: sha512-/KW+shaOoy1DHBWO+4tJpyZUZmxxmo7A/efHD0hQaO4um/9sU+eADWVLyN/iieJK1HG81kBYEUaoHl5bkt+6Dw==}
     engines: {node: 24.18.0}
     peerDependencies:
       '@playwright/test': 1.63.0
@@ -15393,7 +15393,7 @@ snapshots:
       next: 14.2.35(@babel/core@7.29.0(supports-color@8.1.1))(@playwright/test@1.62.0)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
 
-  '@visonaut/playwright@0.4.0(@playwright/test@1.63.0)':
+  '@visonaut/playwright@0.4.1(@playwright/test@1.63.0)':
     dependencies:
       '@playwright/test': 1.63.0
       pngjs: 7.0.0
