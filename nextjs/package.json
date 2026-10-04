@@ -27,7 +27,7 @@
   "devDependencies": {
     "@opennextjs/cloudflare": "1.20.7",
     "@tailwindcss/postcss": "4.3.3",
-    "@types/node": "24.19.0",
+    "@types/node": "24.19.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "babel-plugin-react-compiler": "1.0.0",
