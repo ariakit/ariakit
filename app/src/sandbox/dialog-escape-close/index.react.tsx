@@ -359,6 +359,9 @@ function OfferDialog() {
         open={open}
         onClose={() => setOpen(false)}
         modal={false}
+        // TODO: Remove this workaround after the fix lands.
+        // https://github.com/ariakit/ariakit/issues/7728
+        portal
         hideOnInteractOutside={false}
         render={value ? <section /> : <div />}
         style={popupStyle}
