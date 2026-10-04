@@ -1,4 +1,5 @@
 import { afterEach, expect, test } from "vitest";
+import { addOpenDialog, hasDialogAbove } from "./__open-dialogs.ts";
 import { markAndDisableTreeOutside } from "./disable-tree.ts";
 import {
   isElementInside,
@@ -476,4 +477,33 @@ test("markAndDisableTreeOutside disables tabbable elements again without inert",
   } finally {
     Object.defineProperty(HTMLElement.prototype, "inert", inert);
   }
+});
+
+test("hasDialogAbove counts a mark that doesn't come from the open dialogs", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="dialog" data-dialog></div>
+      <div id="layer"></div>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const layer = getElement("layer");
+
+  const removeDialog = addOpenDialog({ current: dialog });
+  const dialogMarks = markTreeOutside("dialog", [dialog]);
+
+  expect(hasDialogAbove(dialog)).toBe(false);
+
+  // Another copy of this module shares the marks, but not the open dialogs.
+  const layerMarks = markTreeOutside("layer", [layer]);
+
+  expect(hasDialogAbove(dialog)).toBe(true);
+
+  restoreCleanups(layerMarks);
+
+  expect(hasDialogAbove(dialog)).toBe(false);
+
+  restoreCleanups(dialogMarks);
+  removeDialog();
 });

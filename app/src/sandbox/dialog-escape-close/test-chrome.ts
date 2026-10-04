@@ -168,4 +168,157 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(q.dialog("Order")).toBeHidden();
     await test.expect(q.button("Open order")).toBeFocused();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7647
+  test("Escape closes the Combobox popover before a Dialog outside its tree", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open notice").click();
+    await test.expect(q.dialog("Notice")).toBeVisible();
+    await q.combobox("Drink").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Drink")).toBeVisible();
+    await test
+      .expect(q.option("Apple"))
+      .not.toHaveAttribute("data-active-item");
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Drink")).toBeHidden();
+    await test.expect(q.dialog("Notice")).toBeVisible();
+    await test.expect(q.combobox("Drink")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Notice")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7647
+  test("Escape closes the Combobox popover with an active item before a Dialog outside its tree", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open notice").click();
+    await test.expect(q.dialog("Notice")).toBeVisible();
+    await q.combobox("Drink").focus();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Drink")).toBeHidden();
+    await test.expect(q.dialog("Notice")).toBeVisible();
+    await test.expect(q.combobox("Drink")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Notice")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7647
+  test("Escape closes the Combobox popover before the Tooltip of its input", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox("Garnish").focus();
+    await test.expect(q.tooltip("Search garnishes")).toBeVisible();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Garnish")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Garnish")).toBeHidden();
+    await test.expect(q.tooltip("Search garnishes")).toBeVisible();
+    await test.expect(q.combobox("Garnish")).toBeFocused();
+    // The tooltip is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.tooltip("Search garnishes")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7647
+  test("Escape closes the Tooltip that opened after the Combobox popover of its anchor", async ({
+    page,
+    q,
+  }) => {
+    const combobox = q.combobox("Garnish");
+    // Ariakit resets hover intent on scroll, so the input must be in view
+    // before the pointer moves over it.
+    await combobox.scrollIntoViewIfNeeded();
+    await combobox.focus();
+    await test.expect(q.tooltip("Search garnishes")).toBeVisible();
+    // The tooltip is the only open popup, so Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.tooltip("Search garnishes")).toBeHidden();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Garnish")).toBeVisible();
+    // The listbox is open, so the tooltip opens last this time.
+    await combobox.hover();
+    await test.expect(q.tooltip("Search garnishes")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.tooltip("Search garnishes")).toBeHidden();
+    await test.expect(q.listbox("Garnish")).toBeVisible();
+    await test.expect(q.combobox("Garnish")).toBeFocused();
+    // The listbox is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Garnish")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7647
+  test("Escape closes only the Popover that opened together with the Dialog around it", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open welcome").click();
+    await test.expect(q.dialog("Welcome")).toBeVisible();
+    await test.expect(q.dialog("Tips")).toBeVisible();
+    // The popover doesn't take focus, so the key press starts in the dialog.
+    await test.expect(q.button("Tips")).toBeFocused();
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Tips")).toBeHidden();
+    await test.expect(q.dialog("Welcome")).toBeVisible();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Welcome")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7722
+  test("Escape closes the Combobox popover before a Dialog outside its tree after the popover element changes", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open reminder").click();
+    await test.expect(q.dialog("Reminder")).toBeVisible();
+    await q.combobox("Sauce").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Sauce")).toBeVisible();
+    // No item matches, so the listbox renders another element.
+    await page.keyboard.type("zz");
+    await test.expect(q.listbox("Sauce")).toHaveText("No results");
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Sauce")).toBeHidden();
+    await test.expect(q.dialog("Reminder")).toBeVisible();
+    await test.expect(q.combobox("Sauce")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Reminder")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7722
+  test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog id and portal change", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open banner").click();
+    await test.expect(q.dialog("Banner")).toHaveAttribute("id", "banner-empty");
+    await q.combobox("Dip").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Dip")).toBeVisible();
+    // The field has a value, so the banner moves and gets another id.
+    await page.keyboard.type("a");
+    await test
+      .expect(q.dialog("Banner"))
+      .toHaveAttribute("id", "banner-filled");
+    await test.expect(q.listbox("Dip")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Dip")).toBeHidden();
+    await test.expect(q.dialog("Banner")).toBeVisible();
+    await test.expect(q.combobox("Dip")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Banner")).toBeHidden();
+  });
 });
