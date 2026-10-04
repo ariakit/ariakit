@@ -206,6 +206,23 @@ test("Escape closes the Combobox popover before a Dialog outside its tree after 
   expect(q.dialog.maybe("Offer")).not.toBeInTheDocument();
 });
 
+// https://github.com/ariakit/ariakit/issues/7728
+test("Clicking an element that appears after the Popover opened keeps it open after the Dialog element changes", async () => {
+  await click(q.button("Open recipe"));
+  expect(q.dialog("Recipe").tagName).toBe("DIV");
+  await click(q.button("Add comment"));
+  expect(q.dialog("Comments")).toBeVisible();
+  expect(q.textbox("Comment text")).toHaveFocus();
+  // The field has a value, so the recipe renders another element and the send
+  // button appears.
+  await type("a");
+  expect(q.dialog("Recipe").tagName).toBe("SECTION");
+  // The popover has had focus, so only the elements that were in the page when
+  // it opened count as outside, and the send button isn't one of them.
+  await click(q.button("Send comment"));
+  expect(q.dialog("Comments")).toBeVisible();
+});
+
 // https://github.com/ariakit/ariakit/issues/7722
 test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog id and portal change", async () => {
   await click(q.button("Open banner"));

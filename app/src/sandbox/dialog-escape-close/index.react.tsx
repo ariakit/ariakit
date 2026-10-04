@@ -359,9 +359,6 @@ function OfferDialog() {
         open={open}
         onClose={() => setOpen(false)}
         modal={false}
-        // TODO: Remove this workaround after the fix lands.
-        // https://github.com/ariakit/ariakit/issues/7728
-        portal
         hideOnInteractOutside={false}
         render={value ? <section /> : <div />}
         style={popupStyle}
@@ -378,6 +375,43 @@ function OfferDialog() {
           ))}
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+// The recipe renders another element when the field has a value, so its element
+// changes while the popover is open. The send button appears with the value,
+// after the popover opened, so clicking it must not count as an interaction
+// outside the popover.
+function RecipeDialog() {
+  const [open, setOpen] = useState(false);
+  const [comment, setComment] = useState("");
+  return (
+    <section>
+      <Ariakit.Button onClick={() => setOpen(true)}>Open recipe</Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        hideOnInteractOutside={false}
+        render={comment ? <section /> : <div />}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Recipe</Ariakit.DialogHeading>
+        <p>Serves four.</p>
+      </Ariakit.Dialog>
+      <Ariakit.PopoverProvider>
+        <Ariakit.PopoverDisclosure>Add comment</Ariakit.PopoverDisclosure>
+        <Ariakit.Popover style={popupStyle}>
+          <Ariakit.PopoverHeading>Comments</Ariakit.PopoverHeading>
+          <input
+            aria-label="Comment text"
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
+          />
+        </Ariakit.Popover>
+      </Ariakit.PopoverProvider>
+      {comment && <Ariakit.Button>Send comment</Ariakit.Button>}
     </section>
   );
 }
@@ -439,6 +473,7 @@ export default function Example() {
       <WelcomeDialog />
       <ReminderDialog />
       <OfferDialog />
+      <RecipeDialog />
       <BannerDialog />
     </div>
   );
