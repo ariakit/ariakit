@@ -423,12 +423,9 @@ function ShadowRoot({ name, children }: ShadowRootProps) {
 // The dialog in the shadow root has the same id as the one in the document,
 // which is allowed because ids are unique only in their root. The popups in the
 // document don't mark it, so one Escape must still close only the listbox, and
-// the next one must close only the dialog in the document. The dialog in the
-// shadow root opens first, because interacting with it later would close the
-// listbox.
+// the next one must close only the dialog in the document.
 function MemoDialog() {
   const [open, setOpen] = useState(false);
-  const [shadowOpen, setShadowOpen] = useState(false);
   return (
     <section>
       <Ariakit.Button onClick={() => setOpen(true)}>Open memo</Ariakit.Button>
@@ -453,21 +450,19 @@ function MemoDialog() {
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
       <ShadowRoot name="memo">
-        <Ariakit.Button onClick={() => setShadowOpen(true)}>
-          Open shadow memo
-        </Ariakit.Button>
-        <Ariakit.Dialog
-          id="memo"
-          open={shadowOpen}
-          onClose={() => setShadowOpen(false)}
-          modal={false}
-          hideOnEscape={false}
-          hideOnInteractOutside={false}
-          style={popupStyle}
-        >
-          <Ariakit.DialogHeading>Shadow memo</Ariakit.DialogHeading>
-          <p>Escape is disabled in this dialog.</p>
-        </Ariakit.Dialog>
+        <Ariakit.DialogProvider>
+          <Ariakit.DialogDisclosure>Open shadow memo</Ariakit.DialogDisclosure>
+          <Ariakit.Dialog
+            id="memo"
+            modal={false}
+            hideOnEscape={false}
+            hideOnInteractOutside={false}
+            style={popupStyle}
+          >
+            <Ariakit.DialogHeading>Shadow memo</Ariakit.DialogHeading>
+            <p>Escape is disabled in this dialog.</p>
+          </Ariakit.Dialog>
+        </Ariakit.DialogProvider>
       </ShadowRoot>
     </section>
   );

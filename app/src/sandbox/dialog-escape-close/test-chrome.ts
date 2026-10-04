@@ -327,12 +327,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     page,
     q,
   }) => {
-    // The dialog in the shadow root opens first and ignores Escape, so it stays
-    // open.
-    await q.button("Open shadow memo").click();
-    await test.expect(q.dialog("Shadow memo")).toBeVisible();
     await q.button("Open memo").click();
     await test.expect(q.dialog("Memo")).toBeVisible();
+    // The dialog in the shadow root opens before the listbox and ignores
+    // Escape, so it stays open.
+    await q.button("Open shadow memo").click();
+    await test.expect(q.dialog("Shadow memo")).toBeVisible();
     await q.combobox("Cheese").focus();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("ArrowDown");

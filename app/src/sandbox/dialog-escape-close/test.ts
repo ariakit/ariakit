@@ -216,12 +216,12 @@ test("Escape closes the Combobox popover before a Dialog outside its tree after 
 // https://github.com/ariakit/ariakit/issues/7726
 test("Escape closes the Combobox popover before a Dialog outside its tree when a Dialog in a shadow root has the same id", async () => {
   const shadow = queryShadowRoot("memo");
-  // The dialog in the shadow root opens first and ignores Escape, so it stays
-  // open.
-  await click(shadow.button("Open shadow memo"));
-  expect(shadow.dialog("Shadow memo")).toBeVisible();
   await click(q.button("Open memo"));
   expect(q.dialog("Memo")).toBeVisible();
+  // The dialog in the shadow root opens before the listbox and ignores Escape,
+  // so it stays open.
+  await click(shadow.button("Open shadow memo"));
+  expect(shadow.dialog("Shadow memo")).toBeVisible();
   await focus(q.combobox("Cheese"));
   await press.ArrowDown();
   await press.ArrowDown();
