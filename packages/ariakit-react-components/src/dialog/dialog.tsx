@@ -66,7 +66,13 @@ import {
   isCapturedDisclosure,
 } from "./utils/__captured-disclosures.ts";
 import { isHiddenDismiss } from "./utils/__is-hidden-dismiss.ts";
-import { addOpenDialog, hasDialogAbove } from "./utils/__open-dialogs.ts";
+import {
+  addOpenDialog,
+  getEarlierOpenDialogElements,
+  hasDialogAbove,
+  notifyOpenDialogElementChange,
+} from "./utils/__open-dialogs.ts";
+import { addToWalkTreeSnapshot } from "./utils/__walk-tree-snapshot.ts";
 import {
   disableTree,
   markAndDisableTreeOutside,
@@ -486,14 +492,39 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // The portal node itself must not be a dependency of the effect below.
   const isOpenAndReady = !!canTakeTreeSnapshot;
 
+  // Counts the changes of the elements of the dialogs that opened before this
+  // one, so the effect that marks the tree runs again.
+  const [earlierDialogElementChanges, setEarlierDialogElementChanges] =
+    useState(0);
+
   // Records the order in which the dialogs open. When two dialogs mark each
   // other, Escape closes the one that opened last. A dialog takes its place
   // when it starts to mark the tree, and keeps it while it stays open.
   // https://github.com/ariakit/ariakit/issues/7647
   useSafeLayoutEffect(() => {
     if (!isOpenAndReady) return;
-    return addOpenDialog(ref);
+    return addOpenDialog(ref, () => {
+      setEarlierDialogElementChanges((count) => count + 1);
+    });
   }, [isOpenAndReady]);
+
+  // Tells the dialogs that opened after this one when React replaces the
+  // element of this dialog while it's open.
+  // https://github.com/ariakit/ariakit/issues/7728
+  const previousContentElementRef = useRef<HTMLElement | null>(null);
+
+  useSafeLayoutEffect(() => {
+    if (!isOpenAndReady) {
+      previousContentElementRef.current = null;
+      return;
+    }
+    if (!contentElement) return;
+    const previousContentElement = previousContentElementRef.current;
+    previousContentElementRef.current = contentElement;
+    if (!previousContentElement) return;
+    if (previousContentElement === contentElement) return;
+    notifyOpenDialogElementChange(ref);
+  }, [isOpenAndReady, contentElement]);
 
   useSafeLayoutEffect(() => {
     if (!id) return;
@@ -508,6 +539,18 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // dialogs.
     return createWalkTreeSnapshot(id, [dialog]);
   }, [id, canTakeTreeSnapshot, unstable_treeSnapshotKey]);
+
+  // The snapshot has the dialogs that were already open, but React can replace
+  // their elements, and the new elements aren't in the snapshot. This adds the
+  // current ones, so this dialog marks them too. The elements that other parts
+  // of the page add later stay out of the snapshot.
+  // https://github.com/ariakit/ariakit/issues/7728
+  useSafeLayoutEffect(() => {
+    if (!id) return;
+    if (!canTakeTreeSnapshot) return;
+    const earlierDialogs = getEarlierOpenDialogElements(ref);
+    return addToWalkTreeSnapshot(id, earlierDialogs);
+  }, [id, canTakeTreeSnapshot, earlierDialogElementChanges]);
 
   const getPersistentElementsProp = useEvent(getPersistentElements);
 
@@ -581,6 +624,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     getPersistentElementsProp,
     nestedDialogs,
     unstable_treeSnapshotKey,
+    earlierDialogElementChanges,
   ]);
 
   const mayAutoFocusOnShow = !!autoFocusOnShow;

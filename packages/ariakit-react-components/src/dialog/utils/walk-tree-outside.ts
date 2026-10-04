@@ -1,14 +1,14 @@
 import { contains, getDocument, chain } from "@ariakit/utils";
+import {
+  addToWalkTreeSnapshot,
+  getSnapshotPropertyName,
+} from "./__walk-tree-snapshot.ts";
 import { setProperty } from "./orchestrate.ts";
 
 type Elements = Array<Element | null>;
 
 // We don't need to walk through certain tags.
 const ignoreTags = ["SCRIPT", "STYLE"];
-
-function getSnapshotPropertyName(id: string) {
-  return `__ariakit-dialog-snapshot-${id}` as keyof Element;
-}
 
 function inSnapshot(id: string, element: Element) {
   const doc = getDocument(element);
@@ -69,17 +69,14 @@ export function walkTreeOutside(
 
 export function createWalkTreeSnapshot(id: string, elements: Elements) {
   const { body } = getDocument(elements[0]);
-  const cleanups: Array<() => void> = [];
+  const snapshotElements: Element[] = [];
 
-  const markElement = (element: Element) => {
-    cleanups.push(setProperty(element, getSnapshotPropertyName(id), true));
-  };
-
-  walkTreeOutside(id, elements, markElement);
-
-  return chain(setProperty(body, getSnapshotPropertyName(id), true), () => {
-    for (const cleanup of cleanups) {
-      cleanup();
-    }
+  walkTreeOutside(id, elements, (element) => {
+    snapshotElements.push(element);
   });
+
+  return chain(
+    setProperty(body, getSnapshotPropertyName(id), true),
+    addToWalkTreeSnapshot(id, snapshotElements),
+  );
 }

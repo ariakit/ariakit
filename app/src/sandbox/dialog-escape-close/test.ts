@@ -186,6 +186,43 @@ test("Escape closes the Combobox popover before a Dialog outside its tree after 
   expect(q.dialog.maybe("Reminder")).not.toBeInTheDocument();
 });
 
+// https://github.com/ariakit/ariakit/issues/7728
+test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog element changes", async () => {
+  await click(q.button("Open offer"));
+  expect(q.dialog("Offer").tagName).toBe("DIV");
+  await focus(q.combobox("Spread"));
+  await press.ArrowDown();
+  expect(q.listbox("Spread")).toBeVisible();
+  // The field has a value, so the offer renders another element.
+  await type("a");
+  expect(q.dialog("Offer").tagName).toBe("SECTION");
+  expect(q.listbox("Spread")).toBeVisible();
+  await press.Escape();
+  expect(q.listbox.maybe("Spread")).not.toBeInTheDocument();
+  expect(q.dialog("Offer")).toBeVisible();
+  expect(q.combobox("Spread")).toHaveFocus();
+  // The dialog is the topmost popup again, so the next Escape closes it.
+  await press.Escape();
+  expect(q.dialog.maybe("Offer")).not.toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/7728
+test("Clicking an element that appears after the Popover opened keeps it open after the Dialog element changes", async () => {
+  await click(q.button("Open recipe"));
+  expect(q.dialog("Recipe").tagName).toBe("DIV");
+  await click(q.button("Add comment"));
+  expect(q.dialog("Comments")).toBeVisible();
+  expect(q.textbox("Comment text")).toHaveFocus();
+  // The field has a value, so the recipe renders another element and the send
+  // button appears.
+  await type("a");
+  expect(q.dialog("Recipe").tagName).toBe("SECTION");
+  // The popover has had focus, so only the elements that were in the page when
+  // it opened count as outside, and the send button isn't one of them.
+  await click(q.button("Send comment"));
+  expect(q.dialog("Comments")).toBeVisible();
+});
+
 // https://github.com/ariakit/ariakit/issues/7722
 test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog id and portal change", async () => {
   await click(q.button("Open banner"));

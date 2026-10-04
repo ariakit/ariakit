@@ -1,5 +1,11 @@
 import { afterEach, expect, test } from "vitest";
-import { addOpenDialog, hasDialogAbove } from "./__open-dialogs.ts";
+import {
+  addOpenDialog,
+  getEarlierOpenDialogElements,
+  hasDialogAbove,
+  notifyOpenDialogElementChange,
+} from "./__open-dialogs.ts";
+import { addToWalkTreeSnapshot } from "./__walk-tree-snapshot.ts";
 import { markAndDisableTreeOutside } from "./disable-tree.ts";
 import {
   isElementInside,
@@ -184,6 +190,56 @@ test("walkTreeOutside skips elements outside the active snapshot", () => {
   restoreSnapshot();
 
   expect(getWalkedElementIds("dialog", [dialog])).toEqual(["before", "after"]);
+});
+
+test("addToWalkTreeSnapshot handles a very large number of elements", () => {
+  // Passing every cleanup to one function call as an argument overflows the
+  // stack in the engines that limit the number of arguments.
+  const elements = Array.from({ length: 200_000 }, () =>
+    document.createElement("section"),
+  );
+
+  let restoreSnapshot: (() => void) | undefined;
+  expect(() => {
+    restoreSnapshot = addToWalkTreeSnapshot("dialog", elements);
+  }).not.toThrow();
+
+  restoreSnapshot?.();
+});
+
+test("walkTreeOutside walks elements added to the snapshot", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="dialog"></div>
+      <section id="earlier"></section>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const earlier = getElement("earlier");
+  const root = getElement("root");
+  const restoreSnapshot = createWalkTreeSnapshot("dialog", [dialog]);
+
+  // React replaces the element that was in the snapshot, and the page adds an
+  // unrelated element.
+  const replacement = document.createElement("section");
+  replacement.id = "replacement";
+  earlier.replaceWith(replacement);
+  const later = document.createElement("section");
+  later.id = "later";
+  root.append(later);
+
+  expect(getWalkedElementIds("dialog", [dialog])).toEqual([]);
+
+  const restoreAdded = addToWalkTreeSnapshot("dialog", [replacement]);
+
+  expect(getWalkedElementIds("dialog", [dialog])).toEqual(["replacement"]);
+
+  restoreAdded();
+
+  expect(getWalkedElementIds("dialog", [dialog])).toEqual([]);
+
+  restoreSnapshot();
 });
 
 test("markTreeOutside skips backdrops and restores marks", () => {
@@ -506,4 +562,59 @@ test("hasDialogAbove counts a mark that doesn't come from the open dialogs", () 
 
   restoreCleanups(dialogMarks);
   removeDialog();
+});
+
+test("getEarlierOpenDialogElements returns the elements of the dialogs that opened before", () => {
+  document.body.innerHTML = `
+    <div id="first"></div>
+    <div id="parent">
+      <div id="child"></div>
+    </div>
+    <div id="last"></div>
+  `;
+
+  const first = getElement("first");
+  const parent = getElement("parent");
+  const child = getElement("child");
+  const last = getElement("last");
+
+  const removeFirst = addOpenDialog({ current: first });
+  const removeParent = addOpenDialog({ current: parent });
+  const childRef = { current: child };
+  const removeChild = addOpenDialog(childRef);
+  const lastRef = { current: last };
+  const removeLast = addOpenDialog(lastRef);
+
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([first, parent, child]);
+  // A dialog that contains the given one is not outside it.
+  expect(getEarlierOpenDialogElements(childRef)).toEqual([first]);
+
+  // A disconnected element, such as the one that React replaced, is skipped.
+  parent.remove();
+
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([first]);
+
+  removeLast();
+  removeChild();
+  removeParent();
+  removeFirst();
+});
+
+test("notifyOpenDialogElementChange notifies only the dialogs that opened after", () => {
+  const calls: string[] = [];
+  const firstRef = { current: null };
+  const secondRef = { current: null };
+  const thirdRef = { current: null };
+
+  const removeFirst = addOpenDialog(firstRef, () => calls.push("first"));
+  const removeSecond = addOpenDialog(secondRef, () => calls.push("second"));
+  const removeThird = addOpenDialog(thirdRef, () => calls.push("third"));
+
+  notifyOpenDialogElementChange(secondRef);
+
+  expect(calls).toEqual(["third"]);
+
+  removeThird();
+  removeSecond();
+  removeFirst();
 });
