@@ -348,6 +348,76 @@ function ReminderDialog() {
   );
 }
 
+// The offer renders another element when the field has a value, so its element
+// changes while both popups are open. The listbox opened last, so one Escape
+// must still close only the listbox.
+function OfferDialog() {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  return (
+    <section>
+      <Ariakit.Button onClick={() => setOpen(true)}>Open offer</Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        hideOnInteractOutside={false}
+        render={value ? <section /> : <div />}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Offer</Ariakit.DialogHeading>
+        <p>Spreads are half price today.</p>
+      </Ariakit.Dialog>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Spread</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+// The recipe renders another element when the field has a value, so its element
+// changes while the popover is open. The send button appears with the value,
+// after the popover opened, so clicking it must not count as an interaction
+// outside the popover.
+function RecipeDialog() {
+  const [open, setOpen] = useState(false);
+  const [comment, setComment] = useState("");
+  return (
+    <section>
+      <Ariakit.Button onClick={() => setOpen(true)}>Open recipe</Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        hideOnInteractOutside={false}
+        render={comment ? <section /> : <div />}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Recipe</Ariakit.DialogHeading>
+        <p>Serves four.</p>
+      </Ariakit.Dialog>
+      <Ariakit.PopoverProvider>
+        <Ariakit.PopoverDisclosure>Add comment</Ariakit.PopoverDisclosure>
+        <Ariakit.Popover style={popupStyle}>
+          <Ariakit.PopoverHeading>Comments</Ariakit.PopoverHeading>
+          <input
+            aria-label="Comment text"
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
+          />
+        </Ariakit.Popover>
+      </Ariakit.PopoverProvider>
+      {comment && <Ariakit.Button>Send comment</Ariakit.Button>}
+    </section>
+  );
+}
+
 // The banner moves to another region and gets another id when the field has a
 // value, so its portal node and its id change while both popups are open. The
 // banner must keep its place in the open order, so one Escape must still close
@@ -509,6 +579,8 @@ export default function Example() {
       <GarnishTooltipCombobox />
       <WelcomeDialog />
       <ReminderDialog />
+      <OfferDialog />
+      <RecipeDialog />
       <BannerDialog />
       <MemoDialog />
       <ShadowOrderDialog />

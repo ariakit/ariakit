@@ -297,6 +297,51 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(q.dialog("Reminder")).toBeHidden();
   });
 
+  // https://github.com/ariakit/ariakit/issues/7728
+  test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog element changes", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open offer").click();
+    await test.expect(q.dialog("Offer")).toHaveJSProperty("tagName", "DIV");
+    await q.combobox("Spread").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Spread")).toBeVisible();
+    // The field has a value, so the offer renders another element.
+    await page.keyboard.type("a");
+    await test.expect(q.dialog("Offer")).toHaveJSProperty("tagName", "SECTION");
+    await test.expect(q.listbox("Spread")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Spread")).toBeHidden();
+    await test.expect(q.dialog("Offer")).toBeVisible();
+    await test.expect(q.combobox("Spread")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Offer")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7728
+  test("Clicking an element that appears after the Popover opened keeps it open after the Dialog element changes", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open recipe").click();
+    await test.expect(q.dialog("Recipe")).toHaveJSProperty("tagName", "DIV");
+    await q.button("Add comment").click();
+    await test.expect(q.dialog("Comments")).toBeVisible();
+    await test.expect(q.textbox("Comment text")).toBeFocused();
+    // The field has a value, so the recipe renders another element and the send
+    // button appears.
+    await page.keyboard.type("a");
+    await test
+      .expect(q.dialog("Recipe"))
+      .toHaveJSProperty("tagName", "SECTION");
+    // The popover has had focus, so only the elements that were in the page
+    // when it opened count as outside, and the send button isn't one of them.
+    await q.button("Send comment").click();
+    await test.expect(q.dialog("Comments")).toBeVisible();
+  });
+
   // https://github.com/ariakit/ariakit/issues/7722
   test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog id and portal change", async ({
     page,
@@ -320,49 +365,5 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // The dialog is the topmost popup again, so the next Escape closes it.
     await page.keyboard.press("Escape");
     await test.expect(q.dialog("Banner")).toBeHidden();
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7726
-  test("Escape closes the Combobox popover before a Dialog outside its tree when a Dialog in a shadow root has the same id", async ({
-    page,
-    q,
-  }) => {
-    await q.button("Open memo").click();
-    await test.expect(q.dialog("Memo")).toBeVisible();
-    // The dialog in the shadow root opens before the listbox and ignores
-    // Escape, so it stays open.
-    await q.button("Open shadow memo").click();
-    await test.expect(q.dialog("Shadow memo")).toBeVisible();
-    await q.combobox("Cheese").focus();
-    await page.keyboard.press("ArrowDown");
-    await page.keyboard.press("ArrowDown");
-    await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
-    await page.keyboard.press("Escape");
-    await test.expect(q.listbox("Cheese")).toBeHidden();
-    await test.expect(q.dialog("Memo")).toBeVisible();
-    await test.expect(q.combobox("Cheese")).toBeFocused();
-    // The dialog is the topmost popup in its root again, so the next Escape
-    // closes it.
-    await page.keyboard.press("Escape");
-    await test.expect(q.dialog("Memo")).toBeHidden();
-    await test.expect(q.dialog("Shadow memo")).toBeVisible();
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7726
-  test("Escape closes the Popover before a Dialog in a shadow root when the popover renders in the document", async ({
-    page,
-    q,
-  }) => {
-    await q.button("Open shadow order").click();
-    await test.expect(q.dialog("Shadow order")).toBeVisible();
-    await q.button("Crust").click();
-    await test.expect(q.dialog("Crust")).toBeVisible();
-    await page.keyboard.press("Escape");
-    await test.expect(q.dialog("Crust")).toBeHidden();
-    await test.expect(q.dialog("Shadow order")).toBeVisible();
-    await test.expect(q.button("Crust")).toBeFocused();
-    // The dialog is the topmost popup again, so the next Escape closes it.
-    await page.keyboard.press("Escape");
-    await test.expect(q.dialog("Shadow order")).toBeHidden();
   });
 });

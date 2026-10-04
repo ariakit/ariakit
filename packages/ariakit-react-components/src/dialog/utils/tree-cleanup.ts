@@ -1,4 +1,4 @@
-import { chain, noop } from "@ariakit/utils";
+import { chain } from "@ariakit/utils";
 import { isBackdrop } from "./is-backdrop.ts";
 import { setProperty } from "./orchestrate.ts";
 
@@ -14,18 +14,20 @@ export type Cleanups = Map<Element, ElementCleanups>;
 
 type ElementCleanups = Map<CleanupKind, () => void>;
 
-export interface TreeMarkOptions {
-  /**
-   * The cleanups of the previous walk, which the new walk keeps when they still
-   * apply.
-   */
-  previousCleanups?: Cleanups;
-  /**
-   * The key of the dialog that sets the marks. The marks record it so that they
-   * can be traced back to their dialog even when another dialog has the same
-   * ID.
-   */
-  owner?: string;
+/**
+ * Finds marks in the owning dialog's current walk. IDs cannot identify their
+ * owner because dialogs in different roots can share an ID.
+ * https://github.com/ariakit/ariakit/issues/7726
+ */
+export function isElementMarkedBy(element: Element, cleanups?: Cleanups) {
+  if (!cleanups) return false;
+  if (cleanups.get(element)?.has("ancestorMark")) return true;
+  do {
+    if (cleanups.get(element)?.has("mark")) return true;
+    if (!element.parentElement) return false;
+    element = element.parentElement;
+    // oxlint-disable-next-line no-constant-condition
+  } while (true);
 }
 
 type MarkKind = "outside" | "ancestor";
@@ -39,29 +41,17 @@ function getPropertyName(id = "", kind: MarkKind = "outside") {
   return `__ariakit-dialog-${kind}${id ? `-${id}` : ""}` as keyof Element;
 }
 
-// Marks also record the dialog that set them, which an ID can't do because
-// dialogs in different roots can share one. The owner is a key that's unique to
-// each dialog.
-// https://github.com/ariakit/ariakit/issues/7726
-function getOwnerPropertyName(owner: string, kind: MarkKind = "outside") {
-  return `__ariakit-dialog-owner-${kind}-${owner}` as keyof Element;
-}
-
-export function markElement(element: Element, id = "", owner?: string) {
+export function markElement(element: Element, id = "") {
   return chain(
     setProperty(element, getPropertyName(), true),
     setProperty(element, getPropertyName(id), true),
-    owner ? setProperty(element, getOwnerPropertyName(owner), true) : noop,
   );
 }
 
-export function markAncestor(element: Element, id = "", owner?: string) {
+export function markAncestor(element: Element, id = "") {
   return chain(
     setProperty(element, getPropertyName("", "ancestor"), true),
     setProperty(element, getPropertyName(id, "ancestor"), true),
-    owner
-      ? setProperty(element, getOwnerPropertyName(owner, "ancestor"), true)
-      : noop,
   );
 }
 
@@ -94,44 +84,16 @@ export function isElementInside(element: Element, dialog: Element) {
   } while (true);
 }
 
-interface HasMarkParams {
-  element: Element;
-  outsideProperty: keyof Element;
-  ancestorProperty: keyof Element;
-}
-
-function hasMark({
-  element,
-  outsideProperty,
-  ancestorProperty,
-}: HasMarkParams) {
+export function isElementMarked(element: Element, id?: string) {
+  const ancestorProperty = getPropertyName(id, "ancestor");
   if (element[ancestorProperty]) return true;
+  const elementProperty = getPropertyName(id);
   do {
-    if (element[outsideProperty]) return true;
+    if (element[elementProperty]) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
     // oxlint-disable-next-line no-constant-condition
   } while (true);
-}
-
-export function isElementMarked(element: Element, id?: string) {
-  return hasMark({
-    element,
-    outsideProperty: getPropertyName(id),
-    ancestorProperty: getPropertyName(id, "ancestor"),
-  });
-}
-
-/**
- * Returns whether the dialog with the given owner key marked the element,
- * including when the dialog that marked it has the same ID as another dialog.
- */
-export function isElementMarkedBy(element: Element, owner: string) {
-  return hasMark({
-    element,
-    outsideProperty: getOwnerPropertyName(owner),
-    ancestorProperty: getOwnerPropertyName(owner, "ancestor"),
-  });
 }
 
 // The state of one tree walk. The walk moves the cleanups that it keeps from
@@ -184,7 +146,6 @@ export interface AddElementMarkCleanupParams {
   walk: CleanupWalk;
   element: Element;
   id: string;
-  owner?: string;
   ids: Ids;
 }
 
@@ -192,7 +153,6 @@ export function addElementMarkCleanup({
   walk,
   element,
   id,
-  owner,
   ids,
 }: AddElementMarkCleanupParams) {
   if (isBackdrop(element, ...ids)) return;
@@ -200,7 +160,7 @@ export function addElementMarkCleanup({
     walk,
     element,
     kind: "mark",
-    setup: () => markElement(element, id, owner),
+    setup: () => markElement(element, id),
   });
 }
 
@@ -209,7 +169,6 @@ export interface AddAncestorMarkCleanupParams {
   ancestor: Element;
   element: Element;
   id: string;
-  owner?: string;
 }
 
 export function addAncestorMarkCleanup({
@@ -217,7 +176,6 @@ export function addAncestorMarkCleanup({
   ancestor,
   element,
   id,
-  owner,
 }: AddAncestorMarkCleanupParams) {
   // See https://github.com/ariakit/ariakit/issues/2687
   const isAnotherDialogAncestor =
@@ -227,7 +185,7 @@ export function addAncestorMarkCleanup({
     walk,
     element: ancestor,
     kind: "ancestorMark",
-    setup: () => markAncestor(ancestor, id, owner),
+    setup: () => markAncestor(ancestor, id),
   });
 }
 

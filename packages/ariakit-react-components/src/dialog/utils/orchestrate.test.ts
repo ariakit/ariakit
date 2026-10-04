@@ -1,9 +1,11 @@
 import { afterEach, expect, test } from "vitest";
 import {
   addOpenDialog,
-  getDialogOwner,
+  getEarlierOpenDialogElements,
   hasDialogAbove,
+  notifyOpenDialogElementChange,
 } from "./__open-dialogs.ts";
+import { addToWalkTreeSnapshot } from "./__walk-tree-snapshot.ts";
 import { markAndDisableTreeOutside } from "./disable-tree.ts";
 import {
   isElementInside,
@@ -188,6 +190,56 @@ test("walkTreeOutside skips elements outside the active snapshot", () => {
   restoreSnapshot();
 
   expect(getWalkedElementIds("dialog", [dialog])).toEqual(["before", "after"]);
+});
+
+test("addToWalkTreeSnapshot handles a very large number of elements", () => {
+  // Passing every cleanup to one function call as an argument overflows the
+  // stack in the engines that limit the number of arguments.
+  const elements = Array.from({ length: 200_000 }, () =>
+    document.createElement("section"),
+  );
+
+  let restoreSnapshot: (() => void) | undefined;
+  expect(() => {
+    restoreSnapshot = addToWalkTreeSnapshot("dialog", elements);
+  }).not.toThrow();
+
+  restoreSnapshot?.();
+});
+
+test("walkTreeOutside walks elements added to the snapshot", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="dialog"></div>
+      <section id="earlier"></section>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const earlier = getElement("earlier");
+  const root = getElement("root");
+  const restoreSnapshot = createWalkTreeSnapshot("dialog", [dialog]);
+
+  // React replaces the element that was in the snapshot, and the page adds an
+  // unrelated element.
+  const replacement = document.createElement("section");
+  replacement.id = "replacement";
+  earlier.replaceWith(replacement);
+  const later = document.createElement("section");
+  later.id = "later";
+  root.append(later);
+
+  expect(getWalkedElementIds("dialog", [dialog])).toEqual([]);
+
+  const restoreAdded = addToWalkTreeSnapshot("dialog", [replacement]);
+
+  expect(getWalkedElementIds("dialog", [dialog])).toEqual(["replacement"]);
+
+  restoreAdded();
+
+  expect(getWalkedElementIds("dialog", [dialog])).toEqual([]);
+
+  restoreSnapshot();
 });
 
 test("markTreeOutside skips backdrops and restores marks", () => {
@@ -386,9 +438,11 @@ test("markAndDisableTreeOutside keeps disabled elements between walks", () => {
   observer.observe(outside, { attributes: true, subtree: true });
 
   // The nested dialog makes its container part of the modal context.
-  const nestedTree = markAndDisableTreeOutside("dialog", [dialog, nested], {
-    previousCleanups: tree,
-  });
+  const nestedTree = markAndDisableTreeOutside(
+    "dialog",
+    [dialog, nested],
+    tree,
+  );
 
   expect(observer.takeRecords()).toEqual([]);
   expect(isDisabled(outside)).toBe(true);
@@ -398,9 +452,7 @@ test("markAndDisableTreeOutside keeps disabled elements between walks", () => {
   expect(container.getAttribute("role")).toBe("none");
   expect(isDisabled(nestedSibling)).toBe(true);
 
-  const finalTree = markAndDisableTreeOutside("dialog", [dialog], {
-    previousCleanups: nestedTree,
-  });
+  const finalTree = markAndDisableTreeOutside("dialog", [dialog], nestedTree);
 
   expect(observer.takeRecords()).toEqual([]);
   expect(isDisabled(outside)).toBe(true);
@@ -454,9 +506,11 @@ test("markAndDisableTreeOutside disables tabbable elements again without inert",
     const lateButton = document.createElement("button");
     outside.append(lateButton);
 
-    const nestedTree = markAndDisableTreeOutside("dialog", [dialog, nested], {
-      previousCleanups: tree,
-    });
+    const nestedTree = markAndDisableTreeOutside(
+      "dialog",
+      [dialog, nested],
+      tree,
+    );
 
     expect(outside.getAttribute("aria-hidden")).toBe("true");
     expect(lateButton.getAttribute("tabindex")).toBe("-1");
@@ -464,9 +518,7 @@ test("markAndDisableTreeOutside disables tabbable elements again without inert",
     expect(nestedSibling.getAttribute("aria-hidden")).toBe("true");
     expect(button.getAttribute("tabindex")).toBe("-1");
 
-    const finalTree = markAndDisableTreeOutside("dialog", [dialog], {
-      previousCleanups: nestedTree,
-    });
+    const finalTree = markAndDisableTreeOutside("dialog", [dialog], nestedTree);
 
     expect(container.getAttribute("aria-hidden")).toBe("true");
     expect(nestedSibling.hasAttribute("aria-hidden")).toBe(false);
@@ -493,12 +545,12 @@ test("hasDialogAbove counts a mark that doesn't come from the open dialogs", () 
 
   const dialog = getElement("dialog");
   const layer = getElement("layer");
-  const dialogRef = { current: dialog };
 
-  const removeDialog = addOpenDialog(dialogRef);
-  const dialogMarks = markTreeOutside("dialog", [dialog], {
-    owner: getDialogOwner(dialogRef),
+  const dialogRef = { current: dialog };
+  const removeDialog = addOpenDialog(dialogRef, {
+    getOutsideCleanups: () => dialogMarks,
   });
+  const dialogMarks = markTreeOutside("dialog", [dialog]);
 
   expect(hasDialogAbove(dialogRef)).toBe(false);
 
@@ -513,6 +565,67 @@ test("hasDialogAbove counts a mark that doesn't come from the open dialogs", () 
 
   restoreCleanups(dialogMarks);
   removeDialog();
+});
+
+test("getEarlierOpenDialogElements returns the elements of the dialogs that opened before", () => {
+  document.body.innerHTML = `
+    <div id="first"></div>
+    <div id="parent">
+      <div id="child"></div>
+    </div>
+    <div id="last"></div>
+  `;
+
+  const first = getElement("first");
+  const parent = getElement("parent");
+  const child = getElement("child");
+  const last = getElement("last");
+
+  const removeFirst = addOpenDialog({ current: first });
+  const removeParent = addOpenDialog({ current: parent });
+  const childRef = { current: child };
+  const removeChild = addOpenDialog(childRef);
+  const lastRef = { current: last };
+  const removeLast = addOpenDialog(lastRef);
+
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([first, parent, child]);
+  // A dialog that contains the given one is not outside it.
+  expect(getEarlierOpenDialogElements(childRef)).toEqual([first]);
+
+  // A disconnected element, such as the one that React replaced, is skipped.
+  parent.remove();
+
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([first]);
+
+  removeLast();
+  removeChild();
+  removeParent();
+  removeFirst();
+});
+
+test("notifyOpenDialogElementChange notifies only the dialogs that opened after", () => {
+  const calls: string[] = [];
+  const firstRef = { current: null };
+  const secondRef = { current: null };
+  const thirdRef = { current: null };
+
+  const removeFirst = addOpenDialog(firstRef, {
+    onEarlierDialogElementChange: () => calls.push("first"),
+  });
+  const removeSecond = addOpenDialog(secondRef, {
+    onEarlierDialogElementChange: () => calls.push("second"),
+  });
+  const removeThird = addOpenDialog(thirdRef, {
+    onEarlierDialogElementChange: () => calls.push("third"),
+  });
+
+  notifyOpenDialogElementChange(secondRef);
+
+  expect(calls).toEqual(["third"]);
+
+  removeThird();
+  removeSecond();
+  removeFirst();
 });
 
 // https://github.com/ariakit/ariakit/issues/7726
@@ -546,20 +659,18 @@ test.each(["after", "between", "before"])(
       before: [shadowNoticeRef, noticeRef, listboxRef],
     };
     const openOrder = openOrders[position] ?? [];
-    const removeDialogs = openOrder.map(addOpenDialog);
 
     // The shadow dialog is alone in its root, so it marks nothing.
-    const marks = [
-      markTreeOutside("notice", [notice], {
-        owner: getDialogOwner(noticeRef),
+    const marks = new Map([
+      [noticeRef, markTreeOutside("notice", [notice])],
+      [listboxRef, markTreeOutside("listbox", [listbox])],
+      [shadowNoticeRef, markTreeOutside("notice", [shadowNotice])],
+    ]);
+    const removeDialogs = openOrder.map((dialogRef) =>
+      addOpenDialog(dialogRef, {
+        getOutsideCleanups: () => marks.get(dialogRef),
       }),
-      markTreeOutside("listbox", [listbox], {
-        owner: getDialogOwner(listboxRef),
-      }),
-      markTreeOutside("notice", [shadowNotice], {
-        owner: getDialogOwner(shadowNoticeRef),
-      }),
-    ];
+    );
 
     expect(isElementMarked(listbox, "notice")).toBe(true);
     expect(hasDialogAbove(listboxRef)).toBe(false);
@@ -569,7 +680,7 @@ test.each(["after", "between", "before"])(
     for (const removeDialog of removeDialogs) {
       removeDialog();
     }
-    for (const mark of marks) {
+    for (const mark of marks.values()) {
       restoreCleanups(mark);
     }
   },
@@ -594,13 +705,13 @@ test("hasDialogAbove counts the marks of a popup in another root", () => {
   const dialogRef = { current: dialog };
   const popoverRef = { current: popover };
   const removeDialog = addOpenDialog(dialogRef);
-  const removePopover = addOpenDialog(popoverRef);
+  const removePopover = addOpenDialog(popoverRef, {
+    getOutsideCleanups: () => marks,
+  });
 
   // The popover renders in the document, but its disclosure is in the dialog,
   // so the walk marks the dialog as an ancestor of the disclosure.
-  const marks = markTreeOutside("popover", [disclosure, popover], {
-    owner: getDialogOwner(popoverRef),
-  });
+  const marks = markTreeOutside("popover", [disclosure, popover]);
 
   expect(hasDialogAbove(dialogRef)).toBe(true);
   expect(hasDialogAbove(popoverRef)).toBe(false);
@@ -622,16 +733,16 @@ test("hasDialogAbove counts the marks of a modal dialog", () => {
   const modal = getElement("modal");
   const dialogRef = { current: dialog };
   const modalRef = { current: modal };
-  const removeDialog = addOpenDialog(dialogRef);
-  const removeModal = addOpenDialog(modalRef);
+  const removeDialog = addOpenDialog(dialogRef, {
+    getOutsideCleanups: () => dialogMarks,
+  });
+  const removeModal = addOpenDialog(modalRef, {
+    getOutsideCleanups: () => modalMarks,
+  });
 
   // The dialogs mark each other, so the one that opened last is above.
-  const dialogMarks = markTreeOutside("dialog", [dialog], {
-    owner: getDialogOwner(dialogRef),
-  });
-  const modalMarks = markAndDisableTreeOutside("modal", [modal], {
-    owner: getDialogOwner(modalRef),
-  });
+  const dialogMarks = markTreeOutside("dialog", [dialog]);
+  const modalMarks = markAndDisableTreeOutside("modal", [modal]);
 
   expect(hasDialogAbove(dialogRef)).toBe(true);
   expect(hasDialogAbove(modalRef)).toBe(false);
