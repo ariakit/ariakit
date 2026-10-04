@@ -1,5 +1,9 @@
 import { afterEach, expect, test } from "vitest";
-import { addOpenDialog, hasDialogAbove } from "./__open-dialogs.ts";
+import {
+  addOpenDialog,
+  getDialogOwner,
+  hasDialogAbove,
+} from "./__open-dialogs.ts";
 import { markAndDisableTreeOutside } from "./disable-tree.ts";
 import {
   isElementInside,
@@ -382,11 +386,9 @@ test("markAndDisableTreeOutside keeps disabled elements between walks", () => {
   observer.observe(outside, { attributes: true, subtree: true });
 
   // The nested dialog makes its container part of the modal context.
-  const nestedTree = markAndDisableTreeOutside(
-    "dialog",
-    [dialog, nested],
-    tree,
-  );
+  const nestedTree = markAndDisableTreeOutside("dialog", [dialog, nested], {
+    previousCleanups: tree,
+  });
 
   expect(observer.takeRecords()).toEqual([]);
   expect(isDisabled(outside)).toBe(true);
@@ -396,7 +398,9 @@ test("markAndDisableTreeOutside keeps disabled elements between walks", () => {
   expect(container.getAttribute("role")).toBe("none");
   expect(isDisabled(nestedSibling)).toBe(true);
 
-  const finalTree = markAndDisableTreeOutside("dialog", [dialog], nestedTree);
+  const finalTree = markAndDisableTreeOutside("dialog", [dialog], {
+    previousCleanups: nestedTree,
+  });
 
   expect(observer.takeRecords()).toEqual([]);
   expect(isDisabled(outside)).toBe(true);
@@ -450,11 +454,9 @@ test("markAndDisableTreeOutside disables tabbable elements again without inert",
     const lateButton = document.createElement("button");
     outside.append(lateButton);
 
-    const nestedTree = markAndDisableTreeOutside(
-      "dialog",
-      [dialog, nested],
-      tree,
-    );
+    const nestedTree = markAndDisableTreeOutside("dialog", [dialog, nested], {
+      previousCleanups: tree,
+    });
 
     expect(outside.getAttribute("aria-hidden")).toBe("true");
     expect(lateButton.getAttribute("tabindex")).toBe("-1");
@@ -462,7 +464,9 @@ test("markAndDisableTreeOutside disables tabbable elements again without inert",
     expect(nestedSibling.getAttribute("aria-hidden")).toBe("true");
     expect(button.getAttribute("tabindex")).toBe("-1");
 
-    const finalTree = markAndDisableTreeOutside("dialog", [dialog], nestedTree);
+    const finalTree = markAndDisableTreeOutside("dialog", [dialog], {
+      previousCleanups: nestedTree,
+    });
 
     expect(container.getAttribute("aria-hidden")).toBe("true");
     expect(nestedSibling.hasAttribute("aria-hidden")).toBe(false);
@@ -489,21 +493,151 @@ test("hasDialogAbove counts a mark that doesn't come from the open dialogs", () 
 
   const dialog = getElement("dialog");
   const layer = getElement("layer");
+  const dialogRef = { current: dialog };
 
-  const removeDialog = addOpenDialog({ current: dialog });
-  const dialogMarks = markTreeOutside("dialog", [dialog]);
+  const removeDialog = addOpenDialog(dialogRef);
+  const dialogMarks = markTreeOutside("dialog", [dialog], {
+    owner: getDialogOwner(dialogRef),
+  });
 
-  expect(hasDialogAbove(dialog)).toBe(false);
+  expect(hasDialogAbove(dialogRef)).toBe(false);
 
   // Another copy of this module shares the marks, but not the open dialogs.
   const layerMarks = markTreeOutside("layer", [layer]);
 
-  expect(hasDialogAbove(dialog)).toBe(true);
+  expect(hasDialogAbove(dialogRef)).toBe(true);
 
   restoreCleanups(layerMarks);
 
-  expect(hasDialogAbove(dialog)).toBe(false);
+  expect(hasDialogAbove(dialogRef)).toBe(false);
 
   restoreCleanups(dialogMarks);
+  removeDialog();
+});
+
+// https://github.com/ariakit/ariakit/issues/7726
+test.each(["after", "between", "before"])(
+  "hasDialogAbove ignores a dialog in another root with the same id that opens %s the dialogs that mark each other",
+  (position) => {
+    document.body.innerHTML = `
+      <div id="root">
+        <div id="notice" data-dialog></div>
+        <div id="listbox" data-dialog></div>
+      </div>
+      <div id="host"></div>
+    `;
+
+    const notice = getElement("notice");
+    const listbox = getElement("listbox");
+    const shadowRoot = getElement("host").attachShadow({ mode: "open" });
+    const shadowNotice = document.createElement("div");
+    // Ids are unique only in their root, so this one can reuse the id.
+    shadowNotice.id = "notice";
+    shadowNotice.setAttribute("data-dialog", "");
+    shadowRoot.append(shadowNotice);
+
+    const noticeRef = { current: notice };
+    const listboxRef = { current: listbox };
+    const shadowNoticeRef = { current: shadowNotice };
+
+    const openOrders: Record<string, Array<typeof noticeRef>> = {
+      after: [noticeRef, listboxRef, shadowNoticeRef],
+      between: [noticeRef, shadowNoticeRef, listboxRef],
+      before: [shadowNoticeRef, noticeRef, listboxRef],
+    };
+    const openOrder = openOrders[position] ?? [];
+    const removeDialogs = openOrder.map(addOpenDialog);
+
+    // The shadow dialog is alone in its root, so it marks nothing.
+    const marks = [
+      markTreeOutside("notice", [notice], {
+        owner: getDialogOwner(noticeRef),
+      }),
+      markTreeOutside("listbox", [listbox], {
+        owner: getDialogOwner(listboxRef),
+      }),
+      markTreeOutside("notice", [shadowNotice], {
+        owner: getDialogOwner(shadowNoticeRef),
+      }),
+    ];
+
+    expect(isElementMarked(listbox, "notice")).toBe(true);
+    expect(hasDialogAbove(listboxRef)).toBe(false);
+    expect(hasDialogAbove(noticeRef)).toBe(true);
+    expect(hasDialogAbove(shadowNoticeRef)).toBe(false);
+
+    for (const removeDialog of removeDialogs) {
+      removeDialog();
+    }
+    for (const mark of marks) {
+      restoreCleanups(mark);
+    }
+  },
+);
+
+// https://github.com/ariakit/ariakit/issues/7726
+test("hasDialogAbove counts the marks of a popup in another root", () => {
+  document.body.innerHTML = `
+    <div id="popover" data-dialog></div>
+    <div id="host"></div>
+  `;
+
+  const popover = getElement("popover");
+  const shadowRoot = getElement("host").attachShadow({ mode: "open" });
+  const dialog = document.createElement("div");
+  dialog.id = "dialog";
+  dialog.setAttribute("data-dialog", "");
+  const disclosure = document.createElement("button");
+  dialog.append(disclosure);
+  shadowRoot.append(dialog);
+
+  const dialogRef = { current: dialog };
+  const popoverRef = { current: popover };
+  const removeDialog = addOpenDialog(dialogRef);
+  const removePopover = addOpenDialog(popoverRef);
+
+  // The popover renders in the document, but its disclosure is in the dialog,
+  // so the walk marks the dialog as an ancestor of the disclosure.
+  const marks = markTreeOutside("popover", [disclosure, popover], {
+    owner: getDialogOwner(popoverRef),
+  });
+
+  expect(hasDialogAbove(dialogRef)).toBe(true);
+  expect(hasDialogAbove(popoverRef)).toBe(false);
+
+  restoreCleanups(marks);
+  removePopover();
+  removeDialog();
+});
+
+test("hasDialogAbove counts the marks of a modal dialog", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="dialog" data-dialog></div>
+      <div id="modal" data-dialog></div>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const modal = getElement("modal");
+  const dialogRef = { current: dialog };
+  const modalRef = { current: modal };
+  const removeDialog = addOpenDialog(dialogRef);
+  const removeModal = addOpenDialog(modalRef);
+
+  // The dialogs mark each other, so the one that opened last is above.
+  const dialogMarks = markTreeOutside("dialog", [dialog], {
+    owner: getDialogOwner(dialogRef),
+  });
+  const modalMarks = markAndDisableTreeOutside("modal", [modal], {
+    owner: getDialogOwner(modalRef),
+  });
+
+  expect(hasDialogAbove(dialogRef)).toBe(true);
+  expect(hasDialogAbove(modalRef)).toBe(false);
+
+  restoreCleanups(modalMarks);
+  restoreCleanups(dialogMarks);
+  removeModal();
   removeDialog();
 });

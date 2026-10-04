@@ -18,7 +18,12 @@ import {
   restoreCleanups,
   startCleanupWalk,
 } from "./tree-cleanup.ts";
-import type { CleanupWalk, Cleanups, Elements, Ids } from "./tree-cleanup.ts";
+import type {
+  CleanupWalk,
+  Elements,
+  Ids,
+  TreeMarkOptions,
+} from "./tree-cleanup.ts";
 import { walkTreeOutside } from "./walk-tree-outside.ts";
 
 export function disableTree(
@@ -115,7 +120,7 @@ function addRoleNoneCleanup(
 export function markAndDisableTreeOutside(
   id: string,
   elements: Elements,
-  previousCleanups?: Cleanups,
+  { previousCleanups, owner }: TreeMarkOptions = {},
 ) {
   // TODO: Remove this when all supported browsers have `inert`. Without it,
   // `disableTree` disables only the elements that are tabbable at that time, so
@@ -130,11 +135,11 @@ export function markAndDisableTreeOutside(
     id,
     elements,
     (element) => {
-      addElementMarkCleanup({ walk, element, id, ids });
+      addElementMarkCleanup({ walk, element, id, owner, ids });
       addDisabledElementCleanup({ walk, element, elements, ids });
     },
     (ancestor, element) => {
-      addAncestorMarkCleanup({ walk, ancestor, element, id });
+      addAncestorMarkCleanup({ walk, ancestor, element, id, owner });
       addRoleNoneCleanup(walk, ancestor, elements);
     },
   );

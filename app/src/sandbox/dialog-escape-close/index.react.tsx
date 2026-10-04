@@ -453,10 +453,7 @@ function MemoDialog() {
         <Ariakit.DialogProvider>
           <Ariakit.DialogDisclosure>Open shadow memo</Ariakit.DialogDisclosure>
           <Ariakit.Dialog
-            // Workaround: the same id as the dialog in the document leaves
-            // Escape stuck, so this one uses another id. TODO: Remove this when
-            // https://github.com/ariakit/ariakit/issues/7726 is fixed.
-            id="shadow-memo"
+            id="memo"
             modal={false}
             hideOnEscape={false}
             hideOnInteractOutside={false}

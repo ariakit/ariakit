@@ -4,7 +4,7 @@ import {
   finishCleanupWalk,
   startCleanupWalk,
 } from "./tree-cleanup.ts";
-import type { Cleanups, Elements } from "./tree-cleanup.ts";
+import type { Elements, TreeMarkOptions } from "./tree-cleanup.ts";
 import { walkTreeOutside } from "./walk-tree-outside.ts";
 export {
   isElementInside,
@@ -19,7 +19,7 @@ export {
 export function markTreeOutside(
   id: string,
   elements: Elements,
-  previousCleanups?: Cleanups,
+  { previousCleanups, owner }: TreeMarkOptions = {},
 ) {
   const walk = startCleanupWalk(previousCleanups);
   const ids = elements.map((el) => el?.id);
@@ -28,10 +28,10 @@ export function markTreeOutside(
     id,
     elements,
     (element) => {
-      addElementMarkCleanup({ walk, element, id, ids });
+      addElementMarkCleanup({ walk, element, id, owner, ids });
     },
     (ancestor, element) => {
-      addAncestorMarkCleanup({ walk, ancestor, element, id });
+      addAncestorMarkCleanup({ walk, ancestor, element, id, owner });
     },
   );
 

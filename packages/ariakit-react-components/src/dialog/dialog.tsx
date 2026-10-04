@@ -66,7 +66,11 @@ import {
   isCapturedDisclosure,
 } from "./utils/__captured-disclosures.ts";
 import { isHiddenDismiss } from "./utils/__is-hidden-dismiss.ts";
-import { addOpenDialog, hasDialogAbove } from "./utils/__open-dialogs.ts";
+import {
+  addOpenDialog,
+  getDialogOwner,
+  hasDialogAbove,
+} from "./utils/__open-dialogs.ts";
 import {
   disableTree,
   markAndDisableTreeOutside,
@@ -559,16 +563,16 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // because hovercards and tooltips may replace it while open.
     // https://github.com/ariakit/ariakit/issues/6344
     const restoreInsideMarks = markTreeInside(dialog, allElements);
+    const treeMarkOptions = {
+      previousCleanups: previousTree?.outsideCleanups,
+      owner: getDialogOwner(ref),
+    };
     const outsideCleanups = modal
-      ? markAndDisableTreeOutside(
-          id,
-          allElements,
-          previousTree?.outsideCleanups,
-        )
+      ? markAndDisableTreeOutside(id, allElements, treeMarkOptions)
       : markTreeOutside(
           id,
           [disclosureElement, ...allElements],
-          previousTree?.outsideCleanups,
+          treeMarkOptions,
         );
     treeRef.current = { restoreInsideMarks, outsideCleanups };
   }, [
@@ -818,7 +822,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // dialog.
       // https://github.com/ariakit/ariakit/issues/7632
       const isTopmost =
-        !hasDialogAbove(dialog) && !escapeKeyPressesThatHid.has(source);
+        !hasDialogAbove(ref) && !escapeKeyPressesThatHid.has(source);
       const accepted = isTopmost && hideOnEscapeProp(event);
       keyPress = { accepted, hidden: false };
       escapeKeyPresses.set(source, keyPress);
