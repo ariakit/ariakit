@@ -1,13 +1,19 @@
 import { contains } from "@ariakit/utils";
 import type { RefObject } from "react";
-import { isElementMarked } from "./tree-cleanup.ts";
+import type { Cleanups } from "./tree-cleanup.ts";
+import { isElementMarked, isElementMarkedBy } from "./tree-cleanup.ts";
 
 type DialogRef = RefObject<Element | null>;
 
+interface OpenDialogOptions {
+  // The current walk can change without registering the dialog again.
+  getOutsideCleanups?: () => Cleanups | undefined;
+  onEarlierDialogElementChange?: () => void;
+}
+
 // The open dialogs, in the order that they opened. Each one is a ref, so a
-// dialog keeps its place when its element changes while it's open. The value is
-// the function that runs when the element of an earlier dialog changes.
-const openDialogs = new Map<DialogRef, (() => void) | undefined>();
+// dialog keeps its place when its element changes while it's open.
+const openDialogs = new Map<DialogRef, OpenDialogOptions>();
 
 /**
  * Adds the dialog after the dialogs that are already open. The returned
@@ -16,9 +22,9 @@ const openDialogs = new Map<DialogRef, (() => void) | undefined>();
  */
 export function addOpenDialog(
   dialogRef: DialogRef,
-  onEarlierDialogElementChange?: () => void,
+  options: OpenDialogOptions = {},
 ) {
-  openDialogs.set(dialogRef, onEarlierDialogElementChange);
+  openDialogs.set(dialogRef, options);
   return () => {
     openDialogs.delete(dialogRef);
   };
@@ -46,13 +52,13 @@ export function getEarlierOpenDialogElements(dialogRef: DialogRef) {
  */
 export function notifyOpenDialogElementChange(dialogRef: DialogRef) {
   let foundDialog = false;
-  for (const [openDialogRef, onEarlierDialogElementChange] of openDialogs) {
+  for (const [openDialogRef, options] of openDialogs) {
     if (openDialogRef === dialogRef) {
       foundDialog = true;
       continue;
     }
     if (!foundDialog) continue;
-    onEarlierDialogElementChange?.();
+    options.onEarlierDialogElementChange?.();
   }
 }
 
@@ -65,21 +71,25 @@ export function notifyOpenDialogElementChange(dialogRef: DialogRef) {
  * the dialog that opened last is above the other one.
  * https://github.com/ariakit/ariakit/issues/7647
  */
-export function hasDialogAbove(dialog: Element) {
+export function hasDialogAbove(dialogRef: DialogRef) {
+  const dialog = dialogRef.current;
+  if (!dialog) return false;
   if (!isElementMarked(dialog)) return false;
+  const cleanups = openDialogs.get(dialogRef)?.getOutsideCleanups?.();
   let openedAfterDialog = false;
   let isAboveEarlierDialog = false;
-  for (const { current: openDialog } of openDialogs.keys()) {
-    if (openDialog === dialog) {
+  for (const [openDialogRef, options] of openDialogs) {
+    if (openDialogRef === dialogRef) {
       openedAfterDialog = true;
       continue;
     }
+    const openDialog = openDialogRef.current;
     if (!openDialog) continue;
-    if (!isElementMarked(dialog, openDialog.id)) continue;
+    if (!isElementMarkedBy(dialog, options.getOutsideCleanups?.())) continue;
     if (openedAfterDialog) return true;
     // A dialog that opened before is above too, unless the dialogs mark each
     // other.
-    if (!isElementMarked(openDialog, dialog.id)) return true;
+    if (!isElementMarkedBy(openDialog, cleanups)) return true;
     isAboveEarlierDialog = true;
   }
   // The remaining marks count unless they come from the dialogs below the given

@@ -14,6 +14,22 @@ export type Cleanups = Map<Element, ElementCleanups>;
 
 type ElementCleanups = Map<CleanupKind, () => void>;
 
+/**
+ * Finds marks in the owning dialog's current walk. IDs cannot identify their
+ * owner because dialogs in different roots can share an ID.
+ * https://github.com/ariakit/ariakit/issues/7726
+ */
+export function isElementMarkedBy(element: Element, cleanups?: Cleanups) {
+  if (!cleanups) return false;
+  if (cleanups.get(element)?.has("ancestorMark")) return true;
+  do {
+    if (cleanups.get(element)?.has("mark")) return true;
+    if (!element.parentElement) return false;
+    element = element.parentElement;
+    // oxlint-disable-next-line no-constant-condition
+  } while (true);
+}
+
 type MarkKind = "outside" | "ancestor";
 
 // DOM IDs are only unique within a tree, so keying by the dialog element keeps

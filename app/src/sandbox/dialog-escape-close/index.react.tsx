@@ -1,5 +1,7 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import type { ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 const fruits = ["Apple", "Banana", "Orange"];
 const blocks = ["Paragraph", "Heading", "List"];
@@ -456,6 +458,111 @@ function BannerDialog() {
   );
 }
 
+interface ShadowRootProps {
+  name: string;
+  children: ReactNode;
+}
+
+// Renders its children in a shadow root. The container is created when the host
+// mounts, so the children render after that.
+function ShadowRoot({ name, children }: ShadowRootProps) {
+  const [container, setContainer] = useState<HTMLElement | null>(null);
+  const setHost = useCallback((host: HTMLDivElement | null) => {
+    if (!host) {
+      setContainer(null);
+      return;
+    }
+    const shadowRoot = host.shadowRoot || host.attachShadow({ mode: "open" });
+    const element =
+      shadowRoot.querySelector<HTMLElement>("[data-shadow-container]") ||
+      host.ownerDocument.createElement("div");
+    element.dataset.shadowContainer = "";
+    if (!element.isConnected) {
+      shadowRoot.append(element);
+    }
+    setContainer(element);
+  }, []);
+  return (
+    <>
+      <div ref={setHost} data-shadow-host={name} />
+      {container && createPortal(children, container)}
+    </>
+  );
+}
+
+// The dialog in the shadow root has the same id as the one in the document,
+// which is allowed because ids are unique only in their root. The popups in the
+// document don't mark it, so one Escape must still close only the listbox, and
+// the next one must close only the dialog in the document.
+function MemoDialog() {
+  const [open, setOpen] = useState(false);
+  return (
+    <section>
+      <Ariakit.Button onClick={() => setOpen(true)}>Open memo</Ariakit.Button>
+      <Ariakit.Dialog
+        id="memo"
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        hideOnInteractOutside={false}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Memo</Ariakit.DialogHeading>
+        <p>Cheese is served after 5pm.</p>
+      </Ariakit.Dialog>
+      <Ariakit.ComboboxProvider>
+        <Ariakit.ComboboxLabel>Cheese</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+      <ShadowRoot name="memo">
+        <Ariakit.DialogProvider>
+          <Ariakit.DialogDisclosure>Open shadow memo</Ariakit.DialogDisclosure>
+          <Ariakit.Dialog
+            id="memo"
+            modal={false}
+            hideOnEscape={false}
+            hideOnInteractOutside={false}
+            style={popupStyle}
+          >
+            <Ariakit.DialogHeading>Shadow memo</Ariakit.DialogHeading>
+            <p>Escape is disabled in this dialog.</p>
+          </Ariakit.Dialog>
+        </Ariakit.DialogProvider>
+      </ShadowRoot>
+    </section>
+  );
+}
+
+// The popover renders in the document, but its disclosure is in the shadow
+// root, so the popover marks the dialog around the disclosure from another
+// root. One Escape must close only the popover.
+function ShadowOrderDialog() {
+  return (
+    <section>
+      <ShadowRoot name="order">
+        <Ariakit.DialogProvider>
+          <Ariakit.DialogDisclosure>Open shadow order</Ariakit.DialogDisclosure>
+          <Ariakit.Dialog modal={false} style={dialogStyle}>
+            <Ariakit.DialogHeading>Shadow order</Ariakit.DialogHeading>
+            <Ariakit.PopoverProvider>
+              <Ariakit.PopoverDisclosure>Crust</Ariakit.PopoverDisclosure>
+              <Ariakit.Popover portal style={popupStyle}>
+                <Ariakit.PopoverHeading>Crust</Ariakit.PopoverHeading>
+                <p>Thin or thick.</p>
+              </Ariakit.Popover>
+            </Ariakit.PopoverProvider>
+          </Ariakit.Dialog>
+        </Ariakit.DialogProvider>
+      </ShadowRoot>
+    </section>
+  );
+}
+
 export default function Example() {
   return (
     <div style={{ display: "grid", gap: 24, justifyItems: "start" }}>
@@ -475,6 +582,8 @@ export default function Example() {
       <OfferDialog />
       <RecipeDialog />
       <BannerDialog />
+      <MemoDialog />
+      <ShadowOrderDialog />
     </div>
   );
 }

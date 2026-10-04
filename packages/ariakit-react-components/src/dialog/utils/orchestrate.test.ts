@@ -546,19 +546,22 @@ test("hasDialogAbove counts a mark that doesn't come from the open dialogs", () 
   const dialog = getElement("dialog");
   const layer = getElement("layer");
 
-  const removeDialog = addOpenDialog({ current: dialog });
+  const dialogRef = { current: dialog };
+  const removeDialog = addOpenDialog(dialogRef, {
+    getOutsideCleanups: () => dialogMarks,
+  });
   const dialogMarks = markTreeOutside("dialog", [dialog]);
 
-  expect(hasDialogAbove(dialog)).toBe(false);
+  expect(hasDialogAbove(dialogRef)).toBe(false);
 
   // Another copy of this module shares the marks, but not the open dialogs.
   const layerMarks = markTreeOutside("layer", [layer]);
 
-  expect(hasDialogAbove(dialog)).toBe(true);
+  expect(hasDialogAbove(dialogRef)).toBe(true);
 
   restoreCleanups(layerMarks);
 
-  expect(hasDialogAbove(dialog)).toBe(false);
+  expect(hasDialogAbove(dialogRef)).toBe(false);
 
   restoreCleanups(dialogMarks);
   removeDialog();
@@ -606,9 +609,15 @@ test("notifyOpenDialogElementChange notifies only the dialogs that opened after"
   const secondRef = { current: null };
   const thirdRef = { current: null };
 
-  const removeFirst = addOpenDialog(firstRef, () => calls.push("first"));
-  const removeSecond = addOpenDialog(secondRef, () => calls.push("second"));
-  const removeThird = addOpenDialog(thirdRef, () => calls.push("third"));
+  const removeFirst = addOpenDialog(firstRef, {
+    onEarlierDialogElementChange: () => calls.push("first"),
+  });
+  const removeSecond = addOpenDialog(secondRef, {
+    onEarlierDialogElementChange: () => calls.push("second"),
+  });
+  const removeThird = addOpenDialog(thirdRef, {
+    onEarlierDialogElementChange: () => calls.push("third"),
+  });
 
   notifyOpenDialogElementChange(secondRef);
 
@@ -617,4 +626,129 @@ test("notifyOpenDialogElementChange notifies only the dialogs that opened after"
   removeThird();
   removeSecond();
   removeFirst();
+});
+
+// https://github.com/ariakit/ariakit/issues/7726
+test.each(["after", "between", "before"])(
+  "hasDialogAbove ignores a dialog in another root with the same id that opens %s the dialogs that mark each other",
+  (position) => {
+    document.body.innerHTML = `
+      <div id="root">
+        <div id="notice" data-dialog></div>
+        <div id="listbox" data-dialog></div>
+      </div>
+      <div id="host"></div>
+    `;
+
+    const notice = getElement("notice");
+    const listbox = getElement("listbox");
+    const shadowRoot = getElement("host").attachShadow({ mode: "open" });
+    const shadowNotice = document.createElement("div");
+    // Ids are unique only in their root, so this one can reuse the id.
+    shadowNotice.id = "notice";
+    shadowNotice.setAttribute("data-dialog", "");
+    shadowRoot.append(shadowNotice);
+
+    const noticeRef = { current: notice };
+    const listboxRef = { current: listbox };
+    const shadowNoticeRef = { current: shadowNotice };
+
+    const openOrders: Record<string, Array<typeof noticeRef>> = {
+      after: [noticeRef, listboxRef, shadowNoticeRef],
+      between: [noticeRef, shadowNoticeRef, listboxRef],
+      before: [shadowNoticeRef, noticeRef, listboxRef],
+    };
+    const openOrder = openOrders[position] ?? [];
+
+    // The shadow dialog is alone in its root, so it marks nothing.
+    const marks = new Map([
+      [noticeRef, markTreeOutside("notice", [notice])],
+      [listboxRef, markTreeOutside("listbox", [listbox])],
+      [shadowNoticeRef, markTreeOutside("notice", [shadowNotice])],
+    ]);
+    const removeDialogs = openOrder.map((dialogRef) =>
+      addOpenDialog(dialogRef, {
+        getOutsideCleanups: () => marks.get(dialogRef),
+      }),
+    );
+
+    expect(isElementMarked(listbox, "notice")).toBe(true);
+    expect(hasDialogAbove(listboxRef)).toBe(false);
+    expect(hasDialogAbove(noticeRef)).toBe(true);
+    expect(hasDialogAbove(shadowNoticeRef)).toBe(false);
+
+    for (const removeDialog of removeDialogs) {
+      removeDialog();
+    }
+    for (const mark of marks.values()) {
+      restoreCleanups(mark);
+    }
+  },
+);
+
+// https://github.com/ariakit/ariakit/issues/7726
+test("hasDialogAbove counts the marks of a popup in another root", () => {
+  document.body.innerHTML = `
+    <div id="popover" data-dialog></div>
+    <div id="host"></div>
+  `;
+
+  const popover = getElement("popover");
+  const shadowRoot = getElement("host").attachShadow({ mode: "open" });
+  const dialog = document.createElement("div");
+  dialog.id = "dialog";
+  dialog.setAttribute("data-dialog", "");
+  const disclosure = document.createElement("button");
+  dialog.append(disclosure);
+  shadowRoot.append(dialog);
+
+  const dialogRef = { current: dialog };
+  const popoverRef = { current: popover };
+  const removeDialog = addOpenDialog(dialogRef);
+  const removePopover = addOpenDialog(popoverRef, {
+    getOutsideCleanups: () => marks,
+  });
+
+  // The popover renders in the document, but its disclosure is in the dialog,
+  // so the walk marks the dialog as an ancestor of the disclosure.
+  const marks = markTreeOutside("popover", [disclosure, popover]);
+
+  expect(hasDialogAbove(dialogRef)).toBe(true);
+  expect(hasDialogAbove(popoverRef)).toBe(false);
+
+  restoreCleanups(marks);
+  removePopover();
+  removeDialog();
+});
+
+test("hasDialogAbove counts the marks of a modal dialog", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="dialog" data-dialog></div>
+      <div id="modal" data-dialog></div>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const modal = getElement("modal");
+  const dialogRef = { current: dialog };
+  const modalRef = { current: modal };
+  const removeDialog = addOpenDialog(dialogRef, {
+    getOutsideCleanups: () => dialogMarks,
+  });
+  const removeModal = addOpenDialog(modalRef, {
+    getOutsideCleanups: () => modalMarks,
+  });
+
+  // The dialogs mark each other, so the one that opened last is above.
+  const dialogMarks = markTreeOutside("dialog", [dialog]);
+  const modalMarks = markAndDisableTreeOutside("modal", [modal]);
+
+  expect(hasDialogAbove(dialogRef)).toBe(true);
+  expect(hasDialogAbove(modalRef)).toBe(false);
+
+  restoreCleanups(modalMarks);
+  restoreCleanups(dialogMarks);
+  removeModal();
+  removeDialog();
 });

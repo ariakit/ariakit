@@ -1,6 +1,13 @@
 import { click, focus, hover, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+function queryShadowRoot(name: string) {
+  const host = document.querySelector(`[data-shadow-host="${name}"]`);
+  return q.within(
+    host?.shadowRoot?.querySelector<HTMLElement>("[data-shadow-container]"),
+  );
+}
+
 async function pressEscapeOnce(label: string) {
   const closeRequests = q.text(new RegExp(`^${label} close requests: `));
   expect(closeRequests).toHaveTextContent(`${label} close requests: 0`);
@@ -241,4 +248,28 @@ test("Escape closes the Combobox popover before a Dialog outside its tree after 
   // The dialog is the topmost popup again, so the next Escape closes it.
   await press.Escape();
   expect(q.dialog.maybe("Banner")).not.toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/7726
+test("Escape closes the Combobox popover before a Dialog outside its tree when a Dialog in a shadow root has the same id", async () => {
+  const shadow = queryShadowRoot("memo");
+  await click(q.button("Open memo"));
+  expect(q.dialog("Memo")).toBeVisible();
+  // The dialog in the shadow root opens before the listbox and ignores Escape,
+  // so it stays open.
+  await click(shadow.button("Open shadow memo"));
+  expect(shadow.dialog("Shadow memo")).toBeVisible();
+  await focus(q.combobox("Cheese"));
+  await press.ArrowDown();
+  await press.ArrowDown();
+  expect(q.option("Apple")).toHaveAttribute("data-active-item");
+  await press.Escape();
+  expect(q.listbox.maybe("Cheese")).not.toBeInTheDocument();
+  expect(q.dialog("Memo")).toBeVisible();
+  expect(q.combobox("Cheese")).toHaveFocus();
+  // The dialog is the topmost popup in its root again, so the next Escape
+  // closes it.
+  await press.Escape();
+  expect(q.dialog.maybe("Memo")).not.toBeInTheDocument();
+  expect(shadow.dialog("Shadow memo")).toBeVisible();
 });

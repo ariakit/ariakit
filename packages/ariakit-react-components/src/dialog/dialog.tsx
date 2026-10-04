@@ -503,8 +503,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // https://github.com/ariakit/ariakit/issues/7647
   useSafeLayoutEffect(() => {
     if (!isOpenAndReady) return;
-    return addOpenDialog(ref, () => {
-      setEarlierDialogElementChanges((count) => count + 1);
+    return addOpenDialog(ref, {
+      getOutsideCleanups: () => treeRef.current?.outsideCleanups,
+      onEarlierDialogElementChange: () => {
+        setEarlierDialogElementChanges((count) => count + 1);
+      },
     });
   }, [isOpenAndReady]);
 
@@ -862,7 +865,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // dialog.
       // https://github.com/ariakit/ariakit/issues/7632
       const isTopmost =
-        !hasDialogAbove(dialog) && !escapeKeyPressesThatHid.has(source);
+        !hasDialogAbove(ref) && !escapeKeyPressesThatHid.has(source);
       const accepted = isTopmost && hideOnEscapeProp(event);
       keyPress = { accepted, hidden: false };
       escapeKeyPresses.set(source, keyPress);
