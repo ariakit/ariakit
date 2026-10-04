@@ -186,6 +186,26 @@ test("Escape closes the Combobox popover before a Dialog outside its tree after 
   expect(q.dialog.maybe("Reminder")).not.toBeInTheDocument();
 });
 
+// https://github.com/ariakit/ariakit/issues/7728
+test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog element changes", async () => {
+  await click(q.button("Open offer"));
+  expect(q.dialog("Offer").tagName).toBe("DIV");
+  await focus(q.combobox("Spread"));
+  await press.ArrowDown();
+  expect(q.listbox("Spread")).toBeVisible();
+  // The field has a value, so the offer renders another element.
+  await type("a");
+  expect(q.dialog("Offer").tagName).toBe("SECTION");
+  expect(q.listbox("Spread")).toBeVisible();
+  await press.Escape();
+  expect(q.listbox.maybe("Spread")).not.toBeInTheDocument();
+  expect(q.dialog("Offer")).toBeVisible();
+  expect(q.combobox("Spread")).toHaveFocus();
+  // The dialog is the topmost popup again, so the next Escape closes it.
+  await press.Escape();
+  expect(q.dialog.maybe("Offer")).not.toBeInTheDocument();
+});
+
 // https://github.com/ariakit/ariakit/issues/7722
 test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog id and portal change", async () => {
   await click(q.button("Open banner"));

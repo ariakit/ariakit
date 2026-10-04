@@ -346,6 +346,39 @@ function ReminderDialog() {
   );
 }
 
+// The offer renders another element when the field has a value, so its element
+// changes while both popups are open. The listbox opened last, so one Escape
+// must still close only the listbox.
+function OfferDialog() {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  return (
+    <section>
+      <Ariakit.Button onClick={() => setOpen(true)}>Open offer</Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        hideOnInteractOutside={false}
+        render={value ? <section /> : <div />}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Offer</Ariakit.DialogHeading>
+        <p>Spreads are half price today.</p>
+      </Ariakit.Dialog>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Spread</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
 // The banner moves to another region and gets another id when the field has a
 // value, so its portal node and its id change while both popups are open. The
 // banner must keep its place in the open order, so one Escape must still close
@@ -402,6 +435,7 @@ export default function Example() {
       <GarnishTooltipCombobox />
       <WelcomeDialog />
       <ReminderDialog />
+      <OfferDialog />
       <BannerDialog />
     </div>
   );

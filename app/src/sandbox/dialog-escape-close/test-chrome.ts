@@ -297,6 +297,29 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(q.dialog("Reminder")).toBeHidden();
   });
 
+  // https://github.com/ariakit/ariakit/issues/7728
+  test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog element changes", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open offer").click();
+    await test.expect(q.dialog("Offer")).toHaveJSProperty("tagName", "DIV");
+    await q.combobox("Spread").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Spread")).toBeVisible();
+    // The field has a value, so the offer renders another element.
+    await page.keyboard.type("a");
+    await test.expect(q.dialog("Offer")).toHaveJSProperty("tagName", "SECTION");
+    await test.expect(q.listbox("Spread")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Spread")).toBeHidden();
+    await test.expect(q.dialog("Offer")).toBeVisible();
+    await test.expect(q.combobox("Spread")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Offer")).toBeHidden();
+  });
+
   // https://github.com/ariakit/ariakit/issues/7722
   test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog id and portal change", async ({
     page,
