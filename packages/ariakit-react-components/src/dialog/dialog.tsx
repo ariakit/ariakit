@@ -496,12 +496,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // dialog keeps marking, so the effect that marks the tree runs again.
   const [otherDialogElementChanges, setOtherDialogElementChanges] = useState(0);
 
-  // The cleanups of the elements that this dialog added to its snapshot, by
-  // element. The entry of a replaced element can't go away before the
-  // notification of its replacement, because React removes the replaced element
-  // from the page one commit before that notification arrives.
-  const replacementSnapshotCleanupsRef = useRef(new Map<Element, () => void>());
-
   // The snapshot has the other dialogs that were open or hidden in the page
   // when this dialog opened, but React can replace their elements, and the new
   // elements aren't in the snapshot. This adds the ones that replace an element
@@ -512,12 +506,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const onOtherDialogElementChange = useEvent(
     (replacedElement: ReplacedElement) => {
       if (!id) return;
-      const cleanups = replacementSnapshotCleanupsRef.current;
-      const cleanup = addReplacementToWalkTreeSnapshot(id, replacedElement);
-      if (!cleanup) return;
-      cleanups.get(replacedElement.previousElement)?.();
-      cleanups.delete(replacedElement.previousElement);
-      cleanups.set(replacedElement.replacementElement, cleanup);
+      if (!addReplacementToWalkTreeSnapshot(id, replacedElement)) return;
       setOtherDialogElementChanges((count) => count + 1);
     },
   );
@@ -528,18 +517,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // https://github.com/ariakit/ariakit/issues/7647
   useSafeLayoutEffect(() => {
     if (!isOpenAndReady) return;
-    const cleanups = replacementSnapshotCleanupsRef.current;
-    const removeOpenDialog = addOpenDialog(ref, {
+    return addOpenDialog(ref, {
       getOutsideCleanups: () => treeRef.current?.outsideCleanups,
       onOtherDialogElementChange,
     });
-    return () => {
-      removeOpenDialog();
-      for (const cleanup of cleanups.values()) {
-        cleanup();
-      }
-      cleanups.clear();
-    };
   }, [isOpenAndReady, onOtherDialogElementChange]);
 
   // Tells the other open dialogs when React replaces the element of this dialog

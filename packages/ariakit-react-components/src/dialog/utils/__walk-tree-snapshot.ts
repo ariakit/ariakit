@@ -5,10 +5,16 @@ export function getSnapshotPropertyName(id: string) {
   return `__ariakit-dialog-snapshot-${id}` as keyof Element;
 }
 
+// The snapshots that the elements that replaced another element joined, by
+// element. A weak map keeps these elements from being retained after React
+// removes them from the page, so nothing has to release them.
+const replacementSnapshotIds = new WeakMap<Element, Set<string>>();
+
 /**
  * Returns whether the element is in the snapshot of the dialog. An element is
- * in it when it or one of its ancestors has the snapshot property. Without a
- * snapshot, every element is in it.
+ * in it when it or one of its ancestors has the snapshot property or replaced
+ * an element that was in the snapshot. Without a snapshot, every element is in
+ * it.
  */
 export function isInWalkTreeSnapshot(id: string, element: Element) {
   const doc = getDocument(element);
@@ -17,6 +23,7 @@ export function isInWalkTreeSnapshot(id: string, element: Element) {
   do {
     if (element === doc.body) return false;
     if (element[propertyName]) return true;
+    if (replacementSnapshotIds.get(element)?.has(id)) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
     // oxlint-disable-next-line no-constant-condition
@@ -56,7 +63,7 @@ export interface ReplacedElement {
  * element of a dialog that was already open when the snapshot was taken, and
  * the new element isn't in the snapshot. The elements that other parts of the
  * page add later never were in it, and their replacements stay out too. Returns
- * `undefined` when the element isn't added.
+ * whether the element was added.
  */
 export function addReplacementToWalkTreeSnapshot(
   id: string,
@@ -70,6 +77,9 @@ export function addReplacementToWalkTreeSnapshot(
     isInWalkTreeSnapshot(id, previousElement) ||
     (!!previousParentElement &&
       isInWalkTreeSnapshot(id, previousParentElement));
-  if (!wasInSnapshot) return;
-  return setProperty(replacementElement, getSnapshotPropertyName(id), true);
+  if (!wasInSnapshot) return false;
+  const ids = replacementSnapshotIds.get(replacementElement) ?? new Set();
+  ids.add(id);
+  replacementSnapshotIds.set(replacementElement, ids);
+  return true;
 }

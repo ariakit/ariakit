@@ -633,39 +633,82 @@ test("addReplacementToWalkTreeSnapshot adds only the replacements of elements in
 
   expect(getWalkedElementIds("popup", [popup])).toEqual([]);
 
-  const restoreDialog = addReplacementToWalkTreeSnapshot("popup", {
-    previousElement: dialog,
-    previousParentElement: root,
-    replacementElement: dialogReplacement,
-  });
-  const restoreLater = addReplacementToWalkTreeSnapshot("popup", {
-    previousElement: later,
-    previousParentElement: root,
-    replacementElement: laterReplacement,
-  });
-
-  expect(restoreDialog).toBeTypeOf("function");
-  expect(restoreLater).toBeUndefined();
+  expect(
+    addReplacementToWalkTreeSnapshot("popup", {
+      previousElement: dialog,
+      previousParentElement: root,
+      replacementElement: dialogReplacement,
+    }),
+  ).toBe(true);
+  expect(
+    addReplacementToWalkTreeSnapshot("popup", {
+      previousElement: later,
+      previousParentElement: root,
+      replacementElement: laterReplacement,
+    }),
+  ).toBe(false);
   expect(getWalkedElementIds("popup", [popup])).toEqual(["dialog-replacement"]);
 
   // A replacement of a replacement stays in the snapshot too.
   const nextReplacement = document.createElement("main");
   nextReplacement.id = "next-replacement";
   dialogReplacement.replaceWith(nextReplacement);
-  const restoreNext = addReplacementToWalkTreeSnapshot("popup", {
-    previousElement: dialogReplacement,
-    previousParentElement: root,
-    replacementElement: nextReplacement,
-  });
+  expect(
+    addReplacementToWalkTreeSnapshot("popup", {
+      previousElement: dialogReplacement,
+      previousParentElement: root,
+      replacementElement: nextReplacement,
+    }),
+  ).toBe(true);
 
   expect(getWalkedElementIds("popup", [popup])).toEqual(["next-replacement"]);
 
-  restoreNext?.();
-  restoreDialog?.();
-
-  expect(getWalkedElementIds("popup", [popup])).toEqual([]);
-
   restoreSnapshot();
+});
+
+// https://github.com/ariakit/ariakit/issues/7734
+test("addReplacementToWalkTreeSnapshot adds the replacement only to the snapshot of the given dialog", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="first-popup"></div>
+      <div id="second-popup"></div>
+    </div>
+  `;
+
+  const firstPopup = getElement("first-popup");
+  const secondPopup = getElement("second-popup");
+  const root = getElement("root");
+  const restoreFirstSnapshot = createWalkTreeSnapshot("first", [firstPopup]);
+
+  // The dialog mounts after the first popup opened and before the second one.
+  const dialog = document.createElement("section");
+  dialog.id = "dialog";
+  root.append(dialog);
+  const restoreSecondSnapshot = createWalkTreeSnapshot("second", [secondPopup]);
+
+  const replacement = document.createElement("article");
+  replacement.id = "replacement";
+  dialog.replaceWith(replacement);
+  const replacedElement = {
+    previousElement: dialog,
+    previousParentElement: root,
+    replacementElement: replacement,
+  };
+
+  expect(addReplacementToWalkTreeSnapshot("first", replacedElement)).toBe(
+    false,
+  );
+  expect(addReplacementToWalkTreeSnapshot("second", replacedElement)).toBe(
+    true,
+  );
+  expect(getWalkedElementIds("first", [firstPopup])).toEqual(["second-popup"]);
+  expect(getWalkedElementIds("second", [secondPopup])).toEqual([
+    "first-popup",
+    "replacement",
+  ]);
+
+  restoreSecondSnapshot();
+  restoreFirstSnapshot();
 });
 
 // https://github.com/ariakit/ariakit/issues/7734
@@ -695,18 +738,19 @@ test("addReplacementToWalkTreeSnapshot follows the parent of an element that mov
 
   expect(getWalkedElementIds("popup", [popup])).toEqual(["portal"]);
 
-  const restoreReplacement = addReplacementToWalkTreeSnapshot("popup", {
-    previousElement: dialog,
-    previousParentElement: portal,
-    replacementElement: replacement,
-  });
+  expect(
+    addReplacementToWalkTreeSnapshot("popup", {
+      previousElement: dialog,
+      previousParentElement: portal,
+      replacementElement: replacement,
+    }),
+  ).toBe(true);
 
   expect(getWalkedElementIds("popup", [popup])).toEqual([
     "replacement",
     "portal",
   ]);
 
-  restoreReplacement?.();
   restoreSnapshot();
 });
 
@@ -740,11 +784,13 @@ test("markAndDisableTreeOutside disables the replacement of an element in the sn
 
   expect(isElementMarked(replacement, "popup")).toBe(false);
 
-  const restoreReplacement = addReplacementToWalkTreeSnapshot("popup", {
-    previousElement: dialog,
-    previousParentElement: root,
-    replacementElement: replacement,
-  });
+  expect(
+    addReplacementToWalkTreeSnapshot("popup", {
+      previousElement: dialog,
+      previousParentElement: root,
+      replacementElement: replacement,
+    }),
+  ).toBe(true);
   const nextCleanups = markAndDisableTreeOutside(
     "popup",
     [popup],
@@ -760,7 +806,6 @@ test("markAndDisableTreeOutside disables the replacement of an element in the sn
   }
 
   restoreCleanups(nextCleanups);
-  restoreReplacement?.();
   restoreSnapshot();
 
   expect(isElementMarked(replacement, "popup")).toBe(false);
