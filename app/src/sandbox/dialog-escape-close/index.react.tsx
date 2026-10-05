@@ -418,6 +418,52 @@ function RecipeDialog() {
   );
 }
 
+// The update is in the page, hidden, when the hints popover opens. It renders
+// another element when the compact option is on, so its element changes while
+// both popups are open. The update opened last, so clicking inside it must
+// still count as an interaction outside the hints popover.
+function UpdateDialog() {
+  const [open, setOpen] = useState(false);
+  const [compact, setCompact] = useState(false);
+  return (
+    <section>
+      {/*
+       * The update is above the disclosure, so the popover doesn't cover it.
+       */}
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        // The focus stays in the hints popover, which must have had focus.
+        autoFocusOnShow={false}
+        hideOnInteractOutside={false}
+        render={compact ? <section /> : <div />}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Update</Ariakit.DialogHeading>
+        <p>Update body</p>
+      </Ariakit.Dialog>
+      <Ariakit.PopoverProvider>
+        <Ariakit.PopoverDisclosure>Open hints</Ariakit.PopoverDisclosure>
+        <Ariakit.Popover style={popupStyle}>
+          <Ariakit.PopoverHeading>Hints</Ariakit.PopoverHeading>
+          <Ariakit.Button onClick={() => setOpen(true)}>
+            Open update
+          </Ariakit.Button>
+          <label>
+            <input
+              type="checkbox"
+              checked={compact}
+              onChange={(event) => setCompact(event.target.checked)}
+            />
+            Compact
+          </label>
+        </Ariakit.Popover>
+      </Ariakit.PopoverProvider>
+    </section>
+  );
+}
+
 // The banner moves to another region and gets another id when the field has a
 // value, so its portal node and its id change while both popups are open. The
 // banner must keep its place in the open order, so one Escape must still close
@@ -581,6 +627,7 @@ export default function Example() {
       <ReminderDialog />
       <OfferDialog />
       <RecipeDialog />
+      <UpdateDialog />
       <BannerDialog />
       <MemoDialog />
       <ShadowOrderDialog />

@@ -342,6 +342,26 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(q.dialog("Comments")).toBeVisible();
   });
 
+  // https://github.com/ariakit/ariakit/issues/7734
+  test("Clicking a Dialog that opened after the Popover closes the Popover after the Dialog element changes", async ({
+    q,
+  }) => {
+    await q.button("Open hints").click();
+    await test.expect(q.dialog("Hints")).toBeVisible();
+    await q.button("Open update").click();
+    await test.expect(q.dialog("Update")).toHaveJSProperty("tagName", "DIV");
+    await q.checkbox("Compact").click();
+    await test
+      .expect(q.dialog("Update"))
+      .toHaveJSProperty("tagName", "SECTION");
+    await test.expect(q.dialog("Hints")).toBeVisible();
+    // The popover has had focus, so it ignores the elements it didn't mark, and
+    // it marked the update before the update changed its element.
+    await q.text("Update body").click();
+    await test.expect(q.dialog("Hints")).toBeHidden();
+    await test.expect(q.dialog("Update")).toBeVisible();
+  });
+
   // https://github.com/ariakit/ariakit/issues/7722
   test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog id and portal change", async ({
     page,
