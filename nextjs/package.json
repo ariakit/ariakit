@@ -25,7 +25,7 @@
     "react-dom": "19.3.0"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "1.20.7",
+    "@opennextjs/cloudflare": "1.20.8",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "24.19.1",
     "@types/react": "19.3.0",
