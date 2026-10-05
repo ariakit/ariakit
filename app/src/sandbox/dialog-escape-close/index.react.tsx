@@ -430,19 +430,27 @@ function UpdateDialog() {
       {/*
        * The update is above the disclosure, so the popover doesn't cover it.
        */}
-      <Ariakit.Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        modal={false}
-        // The focus stays in the hints popover, which must have had focus.
-        autoFocusOnShow={false}
-        hideOnInteractOutside={false}
-        render={compact ? <section /> : <div />}
-        style={popupStyle}
-      >
-        <Ariakit.DialogHeading>Update</Ariakit.DialogHeading>
-        <p>Update body</p>
-      </Ariakit.Dialog>
+      {/*
+       * TODO: Remove this wrapper after
+       * https://github.com/ariakit/ariakit/issues/7734 is fixed. The hints
+       * popover marks the wrapper, which stays in the page while the dialog
+       * element changes.
+       */}
+      <div>
+        <Ariakit.Dialog
+          open={open}
+          onClose={() => setOpen(false)}
+          modal={false}
+          // The focus stays in the hints popover, which must have had focus.
+          autoFocusOnShow={false}
+          hideOnInteractOutside={false}
+          render={compact ? <section /> : <div />}
+          style={popupStyle}
+        >
+          <Ariakit.DialogHeading>Update</Ariakit.DialogHeading>
+          <p>Update body</p>
+        </Ariakit.Dialog>
+      </div>
       <Ariakit.PopoverProvider>
         <Ariakit.PopoverDisclosure>Open hints</Ariakit.PopoverDisclosure>
         <Ariakit.Popover style={popupStyle}>
