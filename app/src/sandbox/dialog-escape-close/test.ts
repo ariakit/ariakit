@@ -246,6 +246,62 @@ test("Clicking a Dialog that opened after the Popover closes the Popover after t
   expect(q.dialog("Update")).toBeVisible();
 });
 
+// https://github.com/ariakit/ariakit/issues/7734
+test("Clicking a Dialog that opened after the Popover closes the Popover after two Dialog elements change twice", async () => {
+  await click(q.button("Open greek"));
+  expect(q.dialog("Greek")).toBeVisible();
+  await click(q.button("Show dialogs"));
+  expect(q.dialog("Alpha").tagName).toBe("DIV");
+  expect(q.dialog("Beta").tagName).toBe("DIV");
+  await click(q.button("Swap dialogs"));
+  expect(q.dialog("Alpha").tagName).toBe("SECTION");
+  expect(q.dialog("Beta").tagName).toBe("SECTION");
+  await click(q.button("Swap dialogs"));
+  expect(q.dialog("Alpha").tagName).toBe("DIV");
+  expect(q.dialog("Beta").tagName).toBe("DIV");
+  expect(q.dialog("Greek")).toBeVisible();
+  // The popover has had focus, so it ignores the elements it didn't mark, and
+  // it must have marked the third element of each dialog.
+  await click(q.text("Beta body"));
+  expect(q.dialog.maybe("Greek")).not.toBeInTheDocument();
+  expect(q.dialog("Alpha")).toBeVisible();
+});
+
+// https://github.com/ariakit/ariakit/issues/7734
+test("Clicking a Dialog that mounted after the Popover opened keeps it open after the Dialog element changes", async () => {
+  await click(q.button("Open notes"));
+  expect(q.dialog("Notes")).toBeVisible();
+  await click(q.button("Mount late"));
+  expect(q.dialog("Late").tagName).toBe("DIV");
+  await click(q.button("Swap late"));
+  expect(q.dialog("Late").tagName).toBe("SECTION");
+  await click(q.button("Swap late"));
+  expect(q.dialog("Late").tagName).toBe("DIV");
+  // The popover has had focus, so only the elements that were in the page when
+  // it opened count as outside, and the late dialog isn't one of them.
+  await click(q.text("Late body"));
+  // The popover must still be open to swap the dialog again.
+  await click(q.button("Swap late"));
+  expect(q.dialog("Late").tagName).toBe("SECTION");
+  expect(q.dialog("Notes")).toBeVisible();
+});
+
+// https://github.com/ariakit/ariakit/issues/7734
+test("Clicking a Dialog that opened before the Popover closes the Popover after the Dialog moves out of its portal node", async () => {
+  await click(q.button("Open bulletin"));
+  expect(q.dialog("Bulletin")).toBeVisible();
+  await click(q.button("Open pins"));
+  expect(q.dialog("Pins")).toBeVisible();
+  await click(q.checkbox("Portal"));
+  expect(q.checkbox("Portal")).not.toBeChecked();
+  expect(q.dialog("Pins")).toBeVisible();
+  // The popover has had focus, so it ignores the elements it didn't mark, and
+  // it marked the bulletin through the portal node before the bulletin moved.
+  await click(q.text("Bulletin body"));
+  expect(q.dialog.maybe("Pins")).not.toBeInTheDocument();
+  expect(q.dialog("Bulletin")).toBeVisible();
+});
+
 // https://github.com/ariakit/ariakit/issues/7722
 test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog id and portal change", async () => {
   await click(q.button("Open banner"));

@@ -2,6 +2,7 @@ import { contains, getDocument, chain } from "@ariakit/utils";
 import {
   addToWalkTreeSnapshot,
   getSnapshotPropertyName,
+  isInWalkTreeSnapshot,
 } from "./__walk-tree-snapshot.ts";
 import { setProperty } from "./orchestrate.ts";
 
@@ -10,26 +11,13 @@ type Elements = Array<Element | null>;
 // We don't need to walk through certain tags.
 const ignoreTags = ["SCRIPT", "STYLE"];
 
-function inSnapshot(id: string, element: Element) {
-  const doc = getDocument(element);
-  const propertyName = getSnapshotPropertyName(id);
-  if (!doc.body[propertyName]) return true;
-  do {
-    if (element === doc.body) return false;
-    if (element[propertyName]) return true;
-    if (!element.parentElement) return false;
-    element = element.parentElement;
-    // oxlint-disable-next-line no-constant-condition
-  } while (true);
-}
-
 function shouldWalkElement(
   id: string,
   element: Element,
   ignoredElements: Elements,
 ) {
   if (ignoreTags.includes(element.tagName)) return false;
-  if (!inSnapshot(id, element)) return false;
+  if (!isInWalkTreeSnapshot(id, element)) return false;
   return !ignoredElements.some(
     (enabledElement) => enabledElement && contains(element, enabledElement),
   );

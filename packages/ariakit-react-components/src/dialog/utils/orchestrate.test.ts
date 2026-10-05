@@ -1,11 +1,13 @@
 import { afterEach, expect, test } from "vitest";
 import {
   addOpenDialog,
-  getEarlierOpenDialogElements,
   hasDialogAbove,
   notifyOpenDialogElementChange,
 } from "./__open-dialogs.ts";
-import { addToWalkTreeSnapshot } from "./__walk-tree-snapshot.ts";
+import {
+  addReplacementToWalkTreeSnapshot,
+  addToWalkTreeSnapshot,
+} from "./__walk-tree-snapshot.ts";
 import { markAndDisableTreeOutside } from "./disable-tree.ts";
 import {
   isElementInside,
@@ -567,65 +569,207 @@ test("hasDialogAbove counts a mark that doesn't come from the open dialogs", () 
   removeDialog();
 });
 
-test("getEarlierOpenDialogElements returns the elements of the dialogs that opened before", () => {
-  document.body.innerHTML = `
-    <div id="first"></div>
-    <div id="parent">
-      <div id="child"></div>
-    </div>
-    <div id="last"></div>
-  `;
-
-  const first = getElement("first");
-  const parent = getElement("parent");
-  const child = getElement("child");
-  const last = getElement("last");
-
-  const removeFirst = addOpenDialog({ current: first });
-  const removeParent = addOpenDialog({ current: parent });
-  const childRef = { current: child };
-  const removeChild = addOpenDialog(childRef);
-  const lastRef = { current: last };
-  const removeLast = addOpenDialog(lastRef);
-
-  expect(getEarlierOpenDialogElements(lastRef)).toEqual([first, parent, child]);
-  // A dialog that contains the given one is not outside it.
-  expect(getEarlierOpenDialogElements(childRef)).toEqual([first]);
-
-  // A disconnected element, such as the one that React replaced, is skipped.
-  parent.remove();
-
-  expect(getEarlierOpenDialogElements(lastRef)).toEqual([first]);
-
-  removeLast();
-  removeChild();
-  removeParent();
-  removeFirst();
-});
-
-test("notifyOpenDialogElementChange notifies only the dialogs that opened after", () => {
+test("notifyOpenDialogElementChange notifies the other open dialogs", () => {
   const calls: string[] = [];
+  const replacedElement = {
+    previousElement: document.createElement("div"),
+    previousParentElement: null,
+    replacementElement: document.createElement("section"),
+  };
   const firstRef = { current: null };
   const secondRef = { current: null };
   const thirdRef = { current: null };
 
   const removeFirst = addOpenDialog(firstRef, {
-    onEarlierDialogElementChange: () => calls.push("first"),
+    onOtherDialogElementChange: (replaced) => {
+      expect(replaced).toBe(replacedElement);
+      calls.push("first");
+    },
   });
   const removeSecond = addOpenDialog(secondRef, {
-    onEarlierDialogElementChange: () => calls.push("second"),
+    onOtherDialogElementChange: () => calls.push("second"),
   });
   const removeThird = addOpenDialog(thirdRef, {
-    onEarlierDialogElementChange: () => calls.push("third"),
+    onOtherDialogElementChange: () => calls.push("third"),
   });
 
-  notifyOpenDialogElementChange(secondRef);
+  // The dialogs that opened before and after learn about the change, but the
+  // dialog whose element changed doesn't.
+  notifyOpenDialogElementChange(secondRef, replacedElement);
 
-  expect(calls).toEqual(["third"]);
+  expect(calls).toEqual(["first", "third"]);
 
   removeThird();
   removeSecond();
   removeFirst();
+});
+
+// https://github.com/ariakit/ariakit/issues/7734
+test("addReplacementToWalkTreeSnapshot adds only the replacements of elements in the snapshot", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="popup"></div>
+      <section id="dialog"></section>
+    </div>
+  `;
+
+  const popup = getElement("popup");
+  const dialog = getElement("dialog");
+  const root = getElement("root");
+  const restoreSnapshot = createWalkTreeSnapshot("popup", [popup]);
+
+  // The page adds an element after the snapshot. React replaces it and the
+  // element that was in the snapshot.
+  const later = document.createElement("section");
+  later.id = "later";
+  root.append(later);
+
+  const dialogReplacement = document.createElement("article");
+  dialogReplacement.id = "dialog-replacement";
+  dialog.replaceWith(dialogReplacement);
+  const laterReplacement = document.createElement("article");
+  laterReplacement.id = "later-replacement";
+  later.replaceWith(laterReplacement);
+
+  expect(getWalkedElementIds("popup", [popup])).toEqual([]);
+
+  const restoreDialog = addReplacementToWalkTreeSnapshot("popup", {
+    previousElement: dialog,
+    previousParentElement: root,
+    replacementElement: dialogReplacement,
+  });
+  const restoreLater = addReplacementToWalkTreeSnapshot("popup", {
+    previousElement: later,
+    previousParentElement: root,
+    replacementElement: laterReplacement,
+  });
+
+  expect(restoreDialog).toBeTypeOf("function");
+  expect(restoreLater).toBeUndefined();
+  expect(getWalkedElementIds("popup", [popup])).toEqual(["dialog-replacement"]);
+
+  // A replacement of a replacement stays in the snapshot too.
+  const nextReplacement = document.createElement("main");
+  nextReplacement.id = "next-replacement";
+  dialogReplacement.replaceWith(nextReplacement);
+  const restoreNext = addReplacementToWalkTreeSnapshot("popup", {
+    previousElement: dialogReplacement,
+    previousParentElement: root,
+    replacementElement: nextReplacement,
+  });
+
+  expect(getWalkedElementIds("popup", [popup])).toEqual(["next-replacement"]);
+
+  restoreNext?.();
+  restoreDialog?.();
+
+  expect(getWalkedElementIds("popup", [popup])).toEqual([]);
+
+  restoreSnapshot();
+});
+
+// https://github.com/ariakit/ariakit/issues/7734
+test("addReplacementToWalkTreeSnapshot follows the parent of an element that moved out of a snapshot element", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="popup"></div>
+    </div>
+    <div id="portal">
+      <section id="dialog"></section>
+    </div>
+  `;
+
+  const popup = getElement("popup");
+  const root = getElement("root");
+  const portal = getElement("portal");
+  const dialog = getElement("dialog");
+  const restoreSnapshot = createWalkTreeSnapshot("popup", [popup]);
+
+  // The portal node is in the snapshot, and the dialog is only in it through
+  // the portal node. React removes the dialog from the portal node, and the
+  // replacement of the dialog is next to the popup.
+  const replacement = document.createElement("article");
+  replacement.id = "replacement";
+  dialog.remove();
+  root.append(replacement);
+
+  expect(getWalkedElementIds("popup", [popup])).toEqual(["portal"]);
+
+  const restoreReplacement = addReplacementToWalkTreeSnapshot("popup", {
+    previousElement: dialog,
+    previousParentElement: portal,
+    replacementElement: replacement,
+  });
+
+  expect(getWalkedElementIds("popup", [popup])).toEqual([
+    "replacement",
+    "portal",
+  ]);
+
+  restoreReplacement?.();
+  restoreSnapshot();
+});
+
+// https://github.com/ariakit/ariakit/issues/7734
+test("markAndDisableTreeOutside disables the replacement of an element in the snapshot", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="popup"></div>
+      <section id="dialog">
+        <button>Button</button>
+      </section>
+    </div>
+  `;
+
+  const popup = getElement("popup");
+  const dialog = getElement("dialog");
+  const root = getElement("root");
+  const restoreSnapshot = createWalkTreeSnapshot("popup", [popup]);
+  const cleanups = markAndDisableTreeOutside("popup", [popup]);
+
+  expect(isElementMarked(dialog, "popup")).toBe(true);
+
+  // React replaces the dialog, and the popup walks the tree again.
+  const replacement = document.createElement("article");
+  replacement.id = "replacement";
+  replacement.innerHTML = "<button>Button</button>";
+  dialog.replaceWith(replacement);
+
+  // Without the replacement in the snapshot, the walk skips it.
+  const skippedCleanups = markAndDisableTreeOutside("popup", [popup], cleanups);
+
+  expect(isElementMarked(replacement, "popup")).toBe(false);
+
+  const restoreReplacement = addReplacementToWalkTreeSnapshot("popup", {
+    previousElement: dialog,
+    previousParentElement: root,
+    replacementElement: replacement,
+  });
+  const nextCleanups = markAndDisableTreeOutside(
+    "popup",
+    [popup],
+    skippedCleanups,
+  );
+
+  expect(isElementMarked(replacement, "popup")).toBe(true);
+
+  if (supportsInert()) {
+    expect(replacement.inert).toBe(true);
+  } else {
+    expect(replacement.getAttribute("aria-hidden")).toBe("true");
+  }
+
+  restoreCleanups(nextCleanups);
+  restoreReplacement?.();
+  restoreSnapshot();
+
+  expect(isElementMarked(replacement, "popup")).toBe(false);
+
+  if (supportsInert()) {
+    expect(replacement.inert).toBe(false);
+  } else {
+    expect(replacement.hasAttribute("aria-hidden")).toBe(false);
+  }
 });
 
 // https://github.com/ariakit/ariakit/issues/7726

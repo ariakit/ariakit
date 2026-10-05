@@ -430,27 +430,19 @@ function UpdateDialog() {
       {/*
        * The update is above the disclosure, so the popover doesn't cover it.
        */}
-      {/*
-       * TODO: Remove this wrapper after
-       * https://github.com/ariakit/ariakit/issues/7734 is fixed. The hints
-       * popover marks the wrapper, which stays in the page while the dialog
-       * element changes.
-       */}
-      <div>
-        <Ariakit.Dialog
-          open={open}
-          onClose={() => setOpen(false)}
-          modal={false}
-          // The focus stays in the hints popover, which must have had focus.
-          autoFocusOnShow={false}
-          hideOnInteractOutside={false}
-          render={compact ? <section /> : <div />}
-          style={popupStyle}
-        >
-          <Ariakit.DialogHeading>Update</Ariakit.DialogHeading>
-          <p>Update body</p>
-        </Ariakit.Dialog>
-      </div>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        // The focus stays in the hints popover, which must have had focus.
+        autoFocusOnShow={false}
+        hideOnInteractOutside={false}
+        render={compact ? <section /> : <div />}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Update</Ariakit.DialogHeading>
+        <p>Update body</p>
+      </Ariakit.Dialog>
       <Ariakit.PopoverProvider>
         <Ariakit.PopoverDisclosure>Open hints</Ariakit.PopoverDisclosure>
         <Ariakit.Popover style={popupStyle}>
@@ -465,6 +457,136 @@ function UpdateDialog() {
               onChange={(event) => setCompact(event.target.checked)}
             />
             Compact
+          </label>
+        </Ariakit.Popover>
+      </Ariakit.PopoverProvider>
+    </section>
+  );
+}
+
+// Both dialogs render another element each time the swap button is clicked, so
+// their elements change in the same render, and again in the next one. The
+// greek popover opened before them, so it must keep marking the new element of
+// each dialog after every swap.
+function GreekDialogs() {
+  const [open, setOpen] = useState(false);
+  const [swapped, setSwapped] = useState(false);
+  const render = swapped ? <section /> : <div />;
+  return (
+    <section>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        autoFocusOnShow={false}
+        hideOnInteractOutside={false}
+        render={render}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Alpha</Ariakit.DialogHeading>
+        <p>Alpha body</p>
+      </Ariakit.Dialog>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        autoFocusOnShow={false}
+        hideOnInteractOutside={false}
+        render={render}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Beta</Ariakit.DialogHeading>
+        <p>Beta body</p>
+      </Ariakit.Dialog>
+      <Ariakit.PopoverProvider>
+        <Ariakit.PopoverDisclosure>Open greek</Ariakit.PopoverDisclosure>
+        <Ariakit.Popover style={popupStyle}>
+          <Ariakit.PopoverHeading>Greek</Ariakit.PopoverHeading>
+          <Ariakit.Button onClick={() => setOpen(true)}>
+            Show dialogs
+          </Ariakit.Button>
+          <Ariakit.Button onClick={() => setSwapped((value) => !value)}>
+            Swap dialogs
+          </Ariakit.Button>
+        </Ariakit.Popover>
+      </Ariakit.PopoverProvider>
+    </section>
+  );
+}
+
+// The late dialog mounts after the notes popover opened, so the popover doesn't
+// mark it, and it stays unmarked when its element changes. Clicking inside it
+// must not count as an interaction outside the notes popover.
+function LateDialog() {
+  const [mounted, setMounted] = useState(false);
+  const [swapped, setSwapped] = useState(false);
+  return (
+    <section>
+      {mounted && (
+        <Ariakit.Dialog
+          open
+          modal={false}
+          autoFocusOnShow={false}
+          hideOnInteractOutside={false}
+          render={swapped ? <section /> : <div />}
+          style={popupStyle}
+        >
+          <Ariakit.DialogHeading>Late</Ariakit.DialogHeading>
+          <p>Late body</p>
+        </Ariakit.Dialog>
+      )}
+      <Ariakit.PopoverProvider>
+        <Ariakit.PopoverDisclosure>Open notes</Ariakit.PopoverDisclosure>
+        <Ariakit.Popover style={popupStyle}>
+          <Ariakit.PopoverHeading>Notes</Ariakit.PopoverHeading>
+          <Ariakit.Button onClick={() => setMounted(true)}>
+            Mount late
+          </Ariakit.Button>
+          <Ariakit.Button onClick={() => setSwapped((value) => !value)}>
+            Swap late
+          </Ariakit.Button>
+        </Ariakit.Popover>
+      </Ariakit.PopoverProvider>
+    </section>
+  );
+}
+
+// The bulletin renders in a portal node until the portal option is off, so its
+// element moves out of the portal node while both popups are open. The pins
+// popover opened after the bulletin, so it marked the bulletin through the
+// portal node, and clicking inside the bulletin must still count as an
+// interaction outside the pins popover.
+function PortalDialog() {
+  const [open, setOpen] = useState(false);
+  const [portal, setPortal] = useState(true);
+  return (
+    <section>
+      <Ariakit.Button onClick={() => setOpen(true)}>
+        Open bulletin
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        portal={portal}
+        autoFocusOnShow={false}
+        hideOnInteractOutside={false}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Bulletin</Ariakit.DialogHeading>
+        <p>Bulletin body</p>
+      </Ariakit.Dialog>
+      <Ariakit.PopoverProvider>
+        <Ariakit.PopoverDisclosure>Open pins</Ariakit.PopoverDisclosure>
+        <Ariakit.Popover style={popupStyle}>
+          <Ariakit.PopoverHeading>Pins</Ariakit.PopoverHeading>
+          <label>
+            <input
+              type="checkbox"
+              checked={portal}
+              onChange={(event) => setPortal(event.target.checked)}
+            />
+            Portal
           </label>
         </Ariakit.Popover>
       </Ariakit.PopoverProvider>
@@ -636,6 +758,9 @@ export default function Example() {
       <OfferDialog />
       <RecipeDialog />
       <UpdateDialog />
+      <GreekDialogs />
+      <LateDialog />
+      <PortalDialog />
       <BannerDialog />
       <MemoDialog />
       <ShadowOrderDialog />

@@ -68,11 +68,11 @@ import {
 import { isHiddenDismiss } from "./utils/__is-hidden-dismiss.ts";
 import {
   addOpenDialog,
-  getEarlierOpenDialogElements,
   hasDialogAbove,
   notifyOpenDialogElementChange,
 } from "./utils/__open-dialogs.ts";
-import { addToWalkTreeSnapshot } from "./utils/__walk-tree-snapshot.ts";
+import { addReplacementToWalkTreeSnapshot } from "./utils/__walk-tree-snapshot.ts";
+import type { ReplacedElement } from "./utils/__walk-tree-snapshot.ts";
 import {
   disableTree,
   markAndDisableTreeOutside,
@@ -492,10 +492,35 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // The portal node itself must not be a dependency of the effect below.
   const isOpenAndReady = !!canTakeTreeSnapshot;
 
-  // Counts the changes of the elements of the dialogs that opened before this
-  // one, so the effect that marks the tree runs again.
-  const [earlierDialogElementChanges, setEarlierDialogElementChanges] =
-    useState(0);
+  // Counts the changes of the elements of the other open dialogs that this
+  // dialog keeps marking, so the effect that marks the tree runs again.
+  const [otherDialogElementChanges, setOtherDialogElementChanges] = useState(0);
+
+  // The cleanups of the elements that this dialog added to its snapshot, by
+  // element. The entry of a replaced element can't go away before the
+  // notification of its replacement, because React removes the replaced element
+  // from the page one commit before that notification arrives.
+  const replacementSnapshotCleanupsRef = useRef(new Map<Element, () => void>());
+
+  // The snapshot has the other dialogs that were open or hidden in the page
+  // when this dialog opened, but React can replace their elements, and the new
+  // elements aren't in the snapshot. This adds the ones that replace an element
+  // that was in the snapshot, so this dialog marks them too. The elements that
+  // other parts of the page add later stay out of the snapshot.
+  // https://github.com/ariakit/ariakit/issues/7728
+  // https://github.com/ariakit/ariakit/issues/7734
+  const onOtherDialogElementChange = useEvent(
+    (replacedElement: ReplacedElement) => {
+      if (!id) return;
+      const cleanups = replacementSnapshotCleanupsRef.current;
+      const cleanup = addReplacementToWalkTreeSnapshot(id, replacedElement);
+      if (!cleanup) return;
+      cleanups.get(replacedElement.previousElement)?.();
+      cleanups.delete(replacedElement.previousElement);
+      cleanups.set(replacedElement.replacementElement, cleanup);
+      setOtherDialogElementChanges((count) => count + 1);
+    },
+  );
 
   // Records the order in which the dialogs open. When two dialogs mark each
   // other, Escape closes the one that opened last. A dialog takes its place
@@ -503,30 +528,44 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // https://github.com/ariakit/ariakit/issues/7647
   useSafeLayoutEffect(() => {
     if (!isOpenAndReady) return;
-    return addOpenDialog(ref, {
+    const cleanups = replacementSnapshotCleanupsRef.current;
+    const removeOpenDialog = addOpenDialog(ref, {
       getOutsideCleanups: () => treeRef.current?.outsideCleanups,
-      onEarlierDialogElementChange: () => {
-        setEarlierDialogElementChanges((count) => count + 1);
-      },
+      onOtherDialogElementChange,
     });
-  }, [isOpenAndReady]);
+    return () => {
+      removeOpenDialog();
+      for (const cleanup of cleanups.values()) {
+        cleanup();
+      }
+      cleanups.clear();
+    };
+  }, [isOpenAndReady, onOtherDialogElementChange]);
 
-  // Tells the dialogs that opened after this one when React replaces the
-  // element of this dialog while it's open.
+  // Tells the other open dialogs when React replaces the element of this dialog
+  // while it's open.
   // https://github.com/ariakit/ariakit/issues/7728
   const previousContentElementRef = useRef<HTMLElement | null>(null);
+  const previousParentElementRef = useRef<Element | null>(null);
 
   useSafeLayoutEffect(() => {
     if (!isOpenAndReady) {
       previousContentElementRef.current = null;
+      previousParentElementRef.current = null;
       return;
     }
     if (!contentElement) return;
-    const previousContentElement = previousContentElementRef.current;
+    const previousElement = previousContentElementRef.current;
+    const previousParentElement = previousParentElementRef.current;
     previousContentElementRef.current = contentElement;
-    if (!previousContentElement) return;
-    if (previousContentElement === contentElement) return;
-    notifyOpenDialogElementChange(ref);
+    previousParentElementRef.current = contentElement.parentElement;
+    if (!previousElement) return;
+    if (previousElement === contentElement) return;
+    notifyOpenDialogElementChange(ref, {
+      previousElement,
+      previousParentElement,
+      replacementElement: contentElement,
+    });
   }, [isOpenAndReady, contentElement]);
 
   useSafeLayoutEffect(() => {
@@ -542,18 +581,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // dialogs.
     return createWalkTreeSnapshot(id, [dialog]);
   }, [id, canTakeTreeSnapshot, unstable_treeSnapshotKey]);
-
-  // The snapshot has the dialogs that were already open, but React can replace
-  // their elements, and the new elements aren't in the snapshot. This adds the
-  // current ones, so this dialog marks them too. The elements that other parts
-  // of the page add later stay out of the snapshot.
-  // https://github.com/ariakit/ariakit/issues/7728
-  useSafeLayoutEffect(() => {
-    if (!id) return;
-    if (!canTakeTreeSnapshot) return;
-    const earlierDialogs = getEarlierOpenDialogElements(ref);
-    return addToWalkTreeSnapshot(id, earlierDialogs);
-  }, [id, canTakeTreeSnapshot, earlierDialogElementChanges]);
 
   const getPersistentElementsProp = useEvent(getPersistentElements);
 
@@ -627,7 +654,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     getPersistentElementsProp,
     nestedDialogs,
     unstable_treeSnapshotKey,
-    earlierDialogElementChanges,
+    otherDialogElementChanges,
   ]);
 
   const mayAutoFocusOnShow = !!autoFocusOnShow;

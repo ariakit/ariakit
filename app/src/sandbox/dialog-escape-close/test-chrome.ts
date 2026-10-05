@@ -362,6 +362,68 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(q.dialog("Update")).toBeVisible();
   });
 
+  // https://github.com/ariakit/ariakit/issues/7734
+  test("Clicking a Dialog that opened after the Popover closes the Popover after two Dialog elements change twice", async ({
+    q,
+  }) => {
+    await q.button("Open greek").click();
+    await test.expect(q.dialog("Greek")).toBeVisible();
+    await q.button("Show dialogs").click();
+    await test.expect(q.dialog("Alpha")).toHaveJSProperty("tagName", "DIV");
+    await test.expect(q.dialog("Beta")).toHaveJSProperty("tagName", "DIV");
+    await q.button("Swap dialogs").click();
+    await test.expect(q.dialog("Alpha")).toHaveJSProperty("tagName", "SECTION");
+    await test.expect(q.dialog("Beta")).toHaveJSProperty("tagName", "SECTION");
+    await q.button("Swap dialogs").click();
+    await test.expect(q.dialog("Alpha")).toHaveJSProperty("tagName", "DIV");
+    await test.expect(q.dialog("Beta")).toHaveJSProperty("tagName", "DIV");
+    await test.expect(q.dialog("Greek")).toBeVisible();
+    // The popover has had focus, so it ignores the elements it didn't mark, and
+    // it must have marked the third element of each dialog.
+    await q.text("Beta body").click();
+    await test.expect(q.dialog("Greek")).toBeHidden();
+    await test.expect(q.dialog("Alpha")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7734
+  test("Clicking a Dialog that mounted after the Popover opened keeps it open after the Dialog element changes", async ({
+    q,
+  }) => {
+    await q.button("Open notes").click();
+    await test.expect(q.dialog("Notes")).toBeVisible();
+    await q.button("Mount late").click();
+    await test.expect(q.dialog("Late")).toHaveJSProperty("tagName", "DIV");
+    await q.button("Swap late").click();
+    await test.expect(q.dialog("Late")).toHaveJSProperty("tagName", "SECTION");
+    await q.button("Swap late").click();
+    await test.expect(q.dialog("Late")).toHaveJSProperty("tagName", "DIV");
+    // The popover has had focus, so only the elements that were in the page
+    // when it opened count as outside, and the late dialog isn't one of them.
+    await q.text("Late body").click();
+    // The popover must still be open to swap the dialog again.
+    await q.button("Swap late").click();
+    await test.expect(q.dialog("Late")).toHaveJSProperty("tagName", "SECTION");
+    await test.expect(q.dialog("Notes")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7734
+  test("Clicking a Dialog that opened before the Popover closes the Popover after the Dialog moves out of its portal node", async ({
+    q,
+  }) => {
+    await q.button("Open bulletin").click();
+    await test.expect(q.dialog("Bulletin")).toBeVisible();
+    await q.button("Open pins").click();
+    await test.expect(q.dialog("Pins")).toBeVisible();
+    await q.checkbox("Portal").click();
+    await test.expect(q.checkbox("Portal")).not.toBeChecked();
+    await test.expect(q.dialog("Pins")).toBeVisible();
+    // The popover has had focus, so it ignores the elements it didn't mark, and
+    // it marked the bulletin through the portal node before the bulletin moved.
+    await q.text("Bulletin body").click();
+    await test.expect(q.dialog("Pins")).toBeHidden();
+    await test.expect(q.dialog("Bulletin")).toBeVisible();
+  });
+
   // https://github.com/ariakit/ariakit/issues/7722
   test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog id and portal change", async ({
     page,

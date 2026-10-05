@@ -1,5 +1,5 @@
-import { contains } from "@ariakit/utils";
 import type { RefObject } from "react";
+import type { ReplacedElement } from "./__walk-tree-snapshot.ts";
 import type { Cleanups } from "./tree-cleanup.ts";
 import { isElementMarked, isElementMarkedBy } from "./tree-cleanup.ts";
 
@@ -8,7 +8,7 @@ type DialogRef = RefObject<Element | null>;
 interface OpenDialogOptions {
   // The current walk can change without registering the dialog again.
   getOutsideCleanups?: () => Cleanups | undefined;
-  onEarlierDialogElementChange?: () => void;
+  onOtherDialogElementChange?: (replacedElement: ReplacedElement) => void;
 }
 
 // The open dialogs, in the order that they opened. Each one is a ref, so a
@@ -17,8 +17,8 @@ const openDialogs = new Map<DialogRef, OpenDialogOptions>();
 
 /**
  * Adds the dialog after the dialogs that are already open. The returned
- * function removes it. With `onEarlierDialogElementChange`, the dialog learns
- * when the element of a dialog that opened before it changes.
+ * function removes it. With `onOtherDialogElementChange`, the dialog learns
+ * when the element of another open dialog changes.
  */
 export function addOpenDialog(
   dialogRef: DialogRef,
@@ -31,34 +31,16 @@ export function addOpenDialog(
 }
 
 /**
- * Returns the elements of the dialogs that opened before the given dialog,
- * except the ones that contain it.
+ * Tells the other open dialogs that the element of the given dialog changed,
+ * whether they opened before or after it.
  */
-export function getEarlierOpenDialogElements(dialogRef: DialogRef) {
-  const elements: Element[] = [];
-  for (const openDialogRef of openDialogs.keys()) {
-    if (openDialogRef === dialogRef) break;
-    const { current: element } = openDialogRef;
-    if (!element?.isConnected) continue;
-    if (dialogRef.current && contains(element, dialogRef.current)) continue;
-    elements.push(element);
-  }
-  return elements;
-}
-
-/**
- * Tells the dialogs that opened after the given dialog that its element
- * changed.
- */
-export function notifyOpenDialogElementChange(dialogRef: DialogRef) {
-  let foundDialog = false;
+export function notifyOpenDialogElementChange(
+  dialogRef: DialogRef,
+  replacedElement: ReplacedElement,
+) {
   for (const [openDialogRef, options] of openDialogs) {
-    if (openDialogRef === dialogRef) {
-      foundDialog = true;
-      continue;
-    }
-    if (!foundDialog) continue;
-    options.onEarlierDialogElementChange?.();
+    if (openDialogRef === dialogRef) continue;
+    options.onOtherDialogElementChange?.(replacedElement);
   }
 }
 
