@@ -1,5 +1,55 @@
 # @ariakit/react
 
+## 0.4.41
+
+### `ComboboxSelect` popup focus and selection
+
+[`ComboboxSelect`](https://ariakit.com/reference/combobox-select) now keeps keyboard moves made while its [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) is still positioning. When nothing is selected, opening the popup no longer moves focus to an earlier element such as [`ComboboxDismiss`](https://ariakit.com/reference/combobox-dismiss). A popup with [`portal`](https://ariakit.com/reference/combobox-popover#portal) also opens without activating its first item in this case.
+
+The selected item is now centered when the popup opens again, including when the focused select opens a popup with [`autoFocusOnShow`](https://ariakit.com/reference/combobox-popover#autofocusonshow) set to `false`, or when the same store is passed to [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider) and to only one of [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) or [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover).
+
+[`resetOnEscape`](https://ariakit.com/reference/combobox-popover#resetonescape) now restores the correct selected value when an arrow key opens the popup, or when typing on the closed select changes the value before the popup opens.
+
+### `Combobox` keyboard support in shadow roots
+
+[`Combobox`](https://ariakit.com/reference/combobox) and [`ComboboxInput`](https://ariakit.com/reference/combobox-input) inside a shadow root now activate the first matching item when typing with [`autoSelect`](https://ariakit.com/reference/combobox#autoselect), so <kbd>Enter</kbd> submits that item instead of the typed text. [`ComboboxList`](https://ariakit.com/reference/combobox-list) and [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) now return focus to the combobox so arrow keys can move the active item.
+
+[`ComboboxSelect`](https://ariakit.com/reference/combobox-select) inside a shadow root now handles arrow keys and <kbd>Escape</kbd> while its popup is open. <kbd>Escape</kbd> also closes a popup that has a search input and stays in the shadow root.
+
+The <kbd>Escape</kbd> fix applies to all components built on [`Dialog`](https://ariakit.com/reference/dialog) whose disclosure is in a shadow root, including [`Popover`](https://ariakit.com/reference/popover), [`Hovercard`](https://ariakit.com/reference/hovercard), [`Menu`](https://ariakit.com/reference/menu), [`Tooltip`](https://ariakit.com/reference/tooltip), [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover), and [`SelectPopover`](https://ariakit.com/reference/select-popover).
+
+### Reliable `Escape` handling in popups
+
+Pressing <kbd>Escape</kbd> now closes a nested [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) without also closing its parent [`Dialog`](https://ariakit.com/reference/dialog) or an unrelated dialog. This also works when React renders into `document`, as in the Next.js App Router.
+
+When a [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) and a non-modal [`Dialog`](https://ariakit.com/reference/dialog) or a [`Tooltip`](https://ariakit.com/reference/tooltip) outside its React ancestry are open together, <kbd>Escape</kbd> now closes them in the correct order. This order stays correct when React replaces an open dialog's element or when an open dialog in another root, such as a shadow root, has the same `id`.
+
+The [`hideOnEscape`](https://ariakit.com/reference/dialog#hideonescape) and [`onClose`](https://ariakit.com/reference/dialog#onclose) callbacks no longer run more than once for one <kbd>Escape</kbd>, including when a combobox or select has an active item or when [`onClose`](https://ariakit.com/reference/dialog#onclose) prevents the close.
+
+These fixes apply to all components built on [`Dialog`](https://ariakit.com/reference/dialog), including [`Popover`](https://ariakit.com/reference/popover), [`Hovercard`](https://ariakit.com/reference/hovercard), [`Menu`](https://ariakit.com/reference/menu), [`Tooltip`](https://ariakit.com/reference/tooltip), [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover), and [`SelectPopover`](https://ariakit.com/reference/select-popover).
+
+### `Dialog` keeps its state when a close is prevented
+
+When [`onClose`](https://ariakit.com/reference/dialog#onclose) prevents a close requested through the [`hide`](https://ariakit.com/reference/use-dialog-store#hide), [`setOpen`](https://ariakit.com/reference/use-dialog-store#setopen-1), or [`toggle`](https://ariakit.com/reference/use-dialog-store#toggle) functions of the dialog's store, [`Dialog`](https://ariakit.com/reference/dialog) now preserves its [`open`](https://ariakit.com/reference/use-dialog-store#open) state. This includes closes on <kbd>Escape</kbd>, on interactions outside the dialog, and from a disclosure button or an item that hides the popup on click. Popups keep their active item and position, so later keyboard moves still scroll the active item into view.
+
+Close requests from a combobox store linked to a [`Menu`](https://ariakit.com/reference/menu) or [`Dialog`](https://ariakit.com/reference/dialog), such as clicking a [`ComboboxItem`](https://ariakit.com/reference/combobox-item), also keep the search value and active item when prevented. This includes a menu inside a [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider) and a combobox that receives the dialog store through the [`disclosure`](https://ariakit.com/reference/combobox-provider#disclosure) prop.
+
+This applies to all components built on [`Dialog`](https://ariakit.com/reference/dialog), including [`Popover`](https://ariakit.com/reference/popover), [`Hovercard`](https://ariakit.com/reference/hovercard), [`Menu`](https://ariakit.com/reference/menu), [`Tooltip`](https://ariakit.com/reference/tooltip), [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover), and [`SelectPopover`](https://ariakit.com/reference/select-popover).
+
+For these close requests, [`onClose`](https://ariakit.com/reference/dialog#onclose) now runs before the [`open`](https://ariakit.com/reference/use-dialog-store#open) state changes. Call `event.preventDefault()` to keep the dialog open, since reopening it from [`onClose`](https://ariakit.com/reference/dialog#onclose) no longer has any effect.
+
+```tsx
+<Dialog onClose={(event) => event.preventDefault()} />
+```
+
+### Other updates
+
+- Fixed [`Composite`](https://ariakit.com/reference/composite) replaying an earlier focus move when its provider remounts with an external store. This applies to components built on it, including [`Menu`](https://ariakit.com/reference/menu), which could scroll the page when a submenu reopened. Thanks to [@blowery](https://github.com/blowery).
+- Improved the performance of [`modal`](https://ariakit.com/reference/dialog#modal) dialogs when a nested dialog opens or closes, which made a pointer sweep across the submenus of a modal menu about 4 times faster in a benchmark with 5,000 elements outside the menu. This applies to all components built on [`Dialog`](https://ariakit.com/reference/dialog), such as a [`modal`](https://ariakit.com/reference/menu#modal) [`Menu`](https://ariakit.com/reference/menu) with submenus. Thanks to [@jonastreub](https://github.com/jonastreub).
+- Fixed [`Focusable`](https://ariakit.com/reference/focusable) inside a shadow root not setting the `data-focus-visible` attribute or calling [`onFocusVisible`](https://ariakit.com/reference/focusable#onfocusvisible) on keyboard focus. This applies to all components built on [`Focusable`](https://ariakit.com/reference/focusable), such as [`Button`](https://ariakit.com/reference/button) and [`Combobox`](https://ariakit.com/reference/combobox).
+- Fixed [`MenuButton`](https://ariakit.com/reference/menu-button) not opening its [`Menu`](https://ariakit.com/reference/menu) on click when the React Compiler compiled the Ariakit source.
+- Updated dependencies: `@ariakit/react-components@0.7.0`
+
 ## 0.4.40
 
 ### More HTML helpers for `Role`
