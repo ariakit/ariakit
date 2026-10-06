@@ -366,4 +366,122 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await page.keyboard.press("Escape");
     await test.expect(q.dialog("Banner")).toBeHidden();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7733
+  test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog moves to a portal", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Jam counter"));
+    await q.button("Open coupon").click();
+    await test.expect(counter.dialog("Coupon")).toBeVisible();
+    await q.combobox("Jam").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Jam")).toBeVisible();
+    // The field has a value, so the coupon moves out of the counter to a
+    // portal.
+    await page.keyboard.type("a");
+    await test.expect(counter.dialog("Coupon")).toHaveCount(0);
+    await test.expect(q.dialog("Coupon")).toBeVisible();
+    await test.expect(q.listbox("Jam")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Jam")).toBeHidden();
+    await test.expect(q.dialog("Coupon")).toBeVisible();
+    await test.expect(q.combobox("Jam")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Coupon")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7733
+  test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog moves to a portal and back", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Jam counter"));
+    await q.button("Open coupon").click();
+    await test.expect(counter.dialog("Coupon")).toBeVisible();
+    await q.combobox("Jam").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Jam")).toBeVisible();
+    // The field has a value, so the coupon moves out of the counter to a
+    // portal.
+    await page.keyboard.type("a");
+    await test.expect(counter.dialog("Coupon")).toHaveCount(0);
+    await test.expect(q.dialog("Coupon")).toBeVisible();
+    // The field is empty again, so the coupon moves back to the counter.
+    await page.keyboard.press("Backspace");
+    await test.expect(counter.dialog("Coupon")).toBeVisible();
+    await test.expect(q.listbox("Jam")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Jam")).toBeHidden();
+    await test.expect(q.dialog("Coupon")).toBeVisible();
+    await test.expect(q.combobox("Jam")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Coupon")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7733
+  test("Escape closes the Combobox popover before a Dialog outside its tree after the Dialog moves to a new portal node", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Syrup counter"));
+    await q.button("Open voucher").click();
+    await test.expect(counter.dialog("Voucher")).toBeVisible();
+    await q.combobox("Syrup").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Syrup")).toBeVisible();
+    // The field has a value, so the voucher moves out of the counter to the
+    // default portal.
+    await page.keyboard.type("a");
+    await test.expect(counter.dialog("Voucher")).toHaveCount(0);
+    await test.expect(q.dialog("Voucher")).toBeVisible();
+    await test.expect(q.listbox("Syrup")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Syrup")).toBeHidden();
+    await test.expect(q.dialog("Voucher")).toBeVisible();
+    await test.expect(q.combobox("Syrup")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Voucher")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7733
+  test("Escape closes the modal Dialog before a Dialog outside its tree after that Dialog moves to a portal", async ({
+    page,
+    q,
+  }) => {
+    // The modal dialog disables the page around it, so these queries include
+    // the elements that aren't exposed.
+    const counter = query(q.region("Honey counter", { includeHidden: true }));
+    const ticket = q.dialog("Ticket", { includeHidden: true });
+    await q.button("Open ticket").click();
+    await test.expect(q.dialog("Ticket")).toBeVisible();
+    await q.button("Open settings").click();
+    await test.expect(q.textbox("Honey")).toBeFocused();
+    await test
+      .expect(counter.dialog("Ticket", { includeHidden: true }))
+      .toBeVisible();
+    // The field has a value, so the ticket moves out of the counter to a
+    // portal.
+    await page.keyboard.type("a");
+    await test
+      .expect(counter.dialog("Ticket", { includeHidden: true }))
+      .toHaveCount(0);
+    await test.expect(ticket).toBeVisible();
+    // The settings are modal, so they disable the ticket in its new portal
+    // node.
+    await test
+      .expect(ticket.evaluate((element) => element.closest("[inert]") !== null))
+      .resolves.toBe(true);
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Settings")).toBeHidden();
+    await test.expect(q.dialog("Ticket")).toBeVisible();
+    await test.expect(q.button("Open settings")).toBeFocused();
+    // The ticket is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Ticket")).toBeHidden();
+  });
 });
