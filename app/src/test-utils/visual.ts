@@ -245,7 +245,7 @@ async function waitForStableScreenshotClip(
   });
 }
 
-async function getPlaywrightScreenshotOptions(
+export async function getPlaywrightScreenshotOptions(
   page: Page,
   options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
 ) {
@@ -255,7 +255,10 @@ async function getPlaywrightScreenshotOptions(
   }
   return {
     animations: "disabled" as const,
-    clip,
+    // Integer clips keep WebKit's pixel rounding independent of the popup's
+    // fractional position, as with batch capture regions.
+    // https://github.com/ariakit/ariakit/issues/7752
+    clip: getRectsClip([clip], 0),
     fullPage: !!options.fullPage,
   };
 }
