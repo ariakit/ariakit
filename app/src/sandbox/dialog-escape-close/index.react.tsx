@@ -458,21 +458,34 @@ function BannerDialog() {
   );
 }
 
+// TODO: Remove this workaround after the fix lands.
+// https://github.com/ariakit/ariakit/issues/7733
+interface PortalWorkaroundProps {
+  // The dialogs move to this element and not to a new portal node. It's in the
+  // page before the popups open, so the popups that open later mark it.
+  outside: HTMLElement | null;
+}
+
 // The coupon renders in a portal when the field has a value, so it moves out of
 // the counter to a new portal node while both popups are open. The coupon must
 // keep its place in the open order, and the listbox must mark the new portal
 // node, so one Escape must still close only the listbox.
-function CouponDialog() {
+function CouponDialog({ outside }: PortalWorkaroundProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
+  const [inside, setInside] = useState<HTMLElement | null>(null);
   return (
     <section aria-label="Jam counter">
       <Ariakit.Button onClick={() => setOpen(true)}>Open coupon</Ariakit.Button>
+      <div id="coupon-inside" ref={setInside} />
       <Ariakit.Dialog
         open={open}
         onClose={() => setOpen(false)}
         modal={false}
-        portal={!!value}
+        // TODO: Remove this workaround after the fix lands.
+        // https://github.com/ariakit/ariakit/issues/7733
+        portal
+        portalElement={value ? outside : inside}
         hideOnInteractOutside={false}
         style={popupStyle}
       >
@@ -497,7 +510,7 @@ function CouponDialog() {
 // voucher keeps its place in the open order, but its portal node is new. The
 // listbox must mark the new portal node, so one Escape must still close only
 // the listbox.
-function VoucherDialog() {
+function VoucherDialog({ outside }: PortalWorkaroundProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [slot, setSlot] = useState<HTMLElement | null>(null);
@@ -506,13 +519,15 @@ function VoucherDialog() {
       <Ariakit.Button onClick={() => setOpen(true)}>
         Open voucher
       </Ariakit.Button>
-      <div ref={setSlot} />
+      <div id="voucher-slot" ref={setSlot} />
       <Ariakit.Dialog
         open={open}
         onClose={() => setOpen(false)}
         modal={false}
         portal
-        portalElement={value ? null : slot}
+        // TODO: Remove this workaround after the fix lands.
+        // https://github.com/ariakit/ariakit/issues/7733
+        portalElement={value ? outside : slot}
         hideOnInteractOutside={false}
         style={popupStyle}
       >
@@ -536,18 +551,23 @@ function VoucherDialog() {
 // it moves out of the counter to a new portal node while both dialogs are open.
 // The settings are modal, so they must disable the new portal node too, and one
 // Escape must still close only the settings.
-function TicketDialog() {
+function TicketDialog({ outside }: PortalWorkaroundProps) {
   const [open, setOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [value, setValue] = useState("");
+  const [inside, setInside] = useState<HTMLElement | null>(null);
   return (
     <section aria-label="Honey counter">
       <Ariakit.Button onClick={() => setOpen(true)}>Open ticket</Ariakit.Button>
+      <div id="ticket-inside" ref={setInside} />
       <Ariakit.Dialog
         open={open}
         onClose={() => setOpen(false)}
         modal={false}
-        portal={!!value}
+        // TODO: Remove this workaround after the fix lands.
+        // https://github.com/ariakit/ariakit/issues/7733
+        portal
+        portalElement={value ? outside : inside}
         hideOnInteractOutside={false}
         style={popupStyle}
       >
@@ -681,6 +701,9 @@ function ShadowOrderDialog() {
 }
 
 export default function Example() {
+  // TODO: Remove this workaround after the fix lands.
+  // https://github.com/ariakit/ariakit/issues/7733
+  const [outside, setOutside] = useState<HTMLElement | null>(null);
   return (
     <div style={{ display: "grid", gap: 24, justifyItems: "start" }}>
       <ActionsMenu />
@@ -699,11 +722,12 @@ export default function Example() {
       <OfferDialog />
       <RecipeDialog />
       <BannerDialog />
-      <CouponDialog />
-      <VoucherDialog />
-      <TicketDialog />
+      <CouponDialog outside={outside} />
+      <VoucherDialog outside={outside} />
+      <TicketDialog outside={outside} />
       <MemoDialog />
       <ShadowOrderDialog />
+      <div id="dialog-outside" ref={setOutside} />
     </div>
   );
 }
