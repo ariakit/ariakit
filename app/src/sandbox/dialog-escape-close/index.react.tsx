@@ -458,6 +458,123 @@ function BannerDialog() {
   );
 }
 
+// The coupon renders in a portal when the field has a value, so it moves out of
+// the counter to a new portal node while both popups are open. The coupon must
+// keep its place in the open order, and the listbox must mark the new portal
+// node, so one Escape must still close only the listbox.
+function CouponDialog() {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  return (
+    <section aria-label="Jam counter">
+      <Ariakit.Button onClick={() => setOpen(true)}>Open coupon</Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        portal={!!value}
+        hideOnInteractOutside={false}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Coupon</Ariakit.DialogHeading>
+        <p>Jams are two for one today.</p>
+      </Ariakit.Dialog>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Jam</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+// The voucher renders in a slot of the counter when the field is empty, and in
+// the default portal when the field has a value. Its portal stays on, so the
+// voucher keeps its place in the open order, but its portal node is new. The
+// listbox must mark the new portal node, so one Escape must still close only
+// the listbox.
+function VoucherDialog() {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+  return (
+    <section aria-label="Syrup counter">
+      <Ariakit.Button onClick={() => setOpen(true)}>
+        Open voucher
+      </Ariakit.Button>
+      <div ref={setSlot} />
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        portal
+        portalElement={value ? null : slot}
+        hideOnInteractOutside={false}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Voucher</Ariakit.DialogHeading>
+        <p>Syrups are free with pancakes.</p>
+      </Ariakit.Dialog>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Syrup</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+// The ticket renders in a portal when the field in the settings has a value, so
+// it moves out of the counter to a new portal node while both dialogs are open.
+// The settings are modal, so they must disable the new portal node too, and one
+// Escape must still close only the settings.
+function TicketDialog() {
+  const [open, setOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [value, setValue] = useState("");
+  return (
+    <section aria-label="Honey counter">
+      <Ariakit.Button onClick={() => setOpen(true)}>Open ticket</Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        portal={!!value}
+        hideOnInteractOutside={false}
+        style={popupStyle}
+      >
+        <Ariakit.DialogHeading>Ticket</Ariakit.DialogHeading>
+        <p>Honey is sold by the jar.</p>
+      </Ariakit.Dialog>
+      <Ariakit.Button onClick={() => setSettingsOpen(true)}>
+        Open settings
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        style={dialogStyle}
+      >
+        <Ariakit.DialogHeading>Settings</Ariakit.DialogHeading>
+        <label>
+          Honey
+          <input
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+          />
+        </label>
+      </Ariakit.Dialog>
+    </section>
+  );
+}
+
 interface ShadowRootProps {
   name: string;
   children: ReactNode;
@@ -582,6 +699,9 @@ export default function Example() {
       <OfferDialog />
       <RecipeDialog />
       <BannerDialog />
+      <CouponDialog />
+      <VoucherDialog />
+      <TicketDialog />
       <MemoDialog />
       <ShadowOrderDialog />
     </div>

@@ -4,6 +4,7 @@ import {
   getEarlierOpenDialogElements,
   hasDialogAbove,
   notifyOpenDialogElementChange,
+  removeOpenDialog,
 } from "./__open-dialogs.ts";
 import { addToWalkTreeSnapshot } from "./__walk-tree-snapshot.ts";
 import { markAndDisableTreeOutside } from "./disable-tree.ts";
@@ -547,7 +548,7 @@ test("hasDialogAbove counts a mark that doesn't come from the open dialogs", () 
   const layer = getElement("layer");
 
   const dialogRef = { current: dialog };
-  const removeDialog = addOpenDialog(dialogRef, {
+  addOpenDialog(dialogRef, {
     getOutsideCleanups: () => dialogMarks,
   });
   const dialogMarks = markTreeOutside("dialog", [dialog]);
@@ -564,7 +565,7 @@ test("hasDialogAbove counts a mark that doesn't come from the open dialogs", () 
   expect(hasDialogAbove(dialogRef)).toBe(false);
 
   restoreCleanups(dialogMarks);
-  removeDialog();
+  removeOpenDialog(dialogRef);
 });
 
 test("getEarlierOpenDialogElements returns the elements of the dialogs that opened before", () => {
@@ -581,12 +582,14 @@ test("getEarlierOpenDialogElements returns the elements of the dialogs that open
   const child = getElement("child");
   const last = getElement("last");
 
-  const removeFirst = addOpenDialog({ current: first });
-  const removeParent = addOpenDialog({ current: parent });
+  const firstRef = { current: first };
+  const parentRef = { current: parent };
   const childRef = { current: child };
-  const removeChild = addOpenDialog(childRef);
   const lastRef = { current: last };
-  const removeLast = addOpenDialog(lastRef);
+  addOpenDialog(firstRef);
+  addOpenDialog(parentRef);
+  addOpenDialog(childRef);
+  addOpenDialog(lastRef);
 
   expect(getEarlierOpenDialogElements(lastRef)).toEqual([first, parent, child]);
   // A dialog that contains the given one is not outside it.
@@ -597,10 +600,52 @@ test("getEarlierOpenDialogElements returns the elements of the dialogs that open
 
   expect(getEarlierOpenDialogElements(lastRef)).toEqual([first]);
 
-  removeLast();
-  removeChild();
-  removeParent();
-  removeFirst();
+  removeOpenDialog(lastRef);
+  removeOpenDialog(childRef);
+  removeOpenDialog(parentRef);
+  removeOpenDialog(firstRef);
+});
+
+// https://github.com/ariakit/ariakit/issues/7733
+test("getEarlierOpenDialogElements returns the portal nodes of the dialogs that opened before", () => {
+  document.body.innerHTML = `
+    <div id="portal">
+      <div id="dialog"></div>
+      <div id="nested"></div>
+    </div>
+    <div id="last"></div>
+  `;
+
+  const dialog = getElement("dialog");
+  const nested = getElement("nested");
+  const last = getElement("last");
+
+  let portalNode: Element | null = getElement("portal");
+  const dialogRef = { current: dialog };
+  const nestedRef = { current: nested };
+  const lastRef = { current: last };
+  addOpenDialog(dialogRef, { getPortalNode: () => portalNode });
+  addOpenDialog(nestedRef);
+  addOpenDialog(lastRef);
+
+  // The tree walk reaches a dialog in a portal through its portal node.
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([
+    portalNode,
+    dialog,
+    nested,
+  ]);
+  // A portal node that contains the given dialog is not outside it, but the
+  // dialog in that portal node is.
+  expect(getEarlierOpenDialogElements(nestedRef)).toEqual([dialog]);
+
+  // The portal node can change while the dialog stays open.
+  portalNode = null;
+
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([dialog, nested]);
+
+  removeOpenDialog(lastRef);
+  removeOpenDialog(nestedRef);
+  removeOpenDialog(dialogRef);
 });
 
 test("notifyOpenDialogElementChange notifies only the dialogs that opened after", () => {
@@ -609,13 +654,13 @@ test("notifyOpenDialogElementChange notifies only the dialogs that opened after"
   const secondRef = { current: null };
   const thirdRef = { current: null };
 
-  const removeFirst = addOpenDialog(firstRef, {
+  addOpenDialog(firstRef, {
     onEarlierDialogElementChange: () => calls.push("first"),
   });
-  const removeSecond = addOpenDialog(secondRef, {
+  addOpenDialog(secondRef, {
     onEarlierDialogElementChange: () => calls.push("second"),
   });
-  const removeThird = addOpenDialog(thirdRef, {
+  addOpenDialog(thirdRef, {
     onEarlierDialogElementChange: () => calls.push("third"),
   });
 
@@ -623,9 +668,9 @@ test("notifyOpenDialogElementChange notifies only the dialogs that opened after"
 
   expect(calls).toEqual(["third"]);
 
-  removeThird();
-  removeSecond();
-  removeFirst();
+  removeOpenDialog(thirdRef);
+  removeOpenDialog(secondRef);
+  removeOpenDialog(firstRef);
 });
 
 // https://github.com/ariakit/ariakit/issues/7726
@@ -666,19 +711,19 @@ test.each(["after", "between", "before"])(
       [listboxRef, markTreeOutside("listbox", [listbox])],
       [shadowNoticeRef, markTreeOutside("notice", [shadowNotice])],
     ]);
-    const removeDialogs = openOrder.map((dialogRef) =>
+    for (const dialogRef of openOrder) {
       addOpenDialog(dialogRef, {
         getOutsideCleanups: () => marks.get(dialogRef),
-      }),
-    );
+      });
+    }
 
     expect(isElementMarked(listbox, "notice")).toBe(true);
     expect(hasDialogAbove(listboxRef)).toBe(false);
     expect(hasDialogAbove(noticeRef)).toBe(true);
     expect(hasDialogAbove(shadowNoticeRef)).toBe(false);
 
-    for (const removeDialog of removeDialogs) {
-      removeDialog();
+    for (const dialogRef of openOrder) {
+      removeOpenDialog(dialogRef);
     }
     for (const mark of marks.values()) {
       restoreCleanups(mark);
@@ -704,8 +749,8 @@ test("hasDialogAbove counts the marks of a popup in another root", () => {
 
   const dialogRef = { current: dialog };
   const popoverRef = { current: popover };
-  const removeDialog = addOpenDialog(dialogRef);
-  const removePopover = addOpenDialog(popoverRef, {
+  addOpenDialog(dialogRef);
+  addOpenDialog(popoverRef, {
     getOutsideCleanups: () => marks,
   });
 
@@ -717,8 +762,8 @@ test("hasDialogAbove counts the marks of a popup in another root", () => {
   expect(hasDialogAbove(popoverRef)).toBe(false);
 
   restoreCleanups(marks);
-  removePopover();
-  removeDialog();
+  removeOpenDialog(popoverRef);
+  removeOpenDialog(dialogRef);
 });
 
 test("hasDialogAbove counts the marks of a modal dialog", () => {
@@ -733,10 +778,10 @@ test("hasDialogAbove counts the marks of a modal dialog", () => {
   const modal = getElement("modal");
   const dialogRef = { current: dialog };
   const modalRef = { current: modal };
-  const removeDialog = addOpenDialog(dialogRef, {
+  addOpenDialog(dialogRef, {
     getOutsideCleanups: () => dialogMarks,
   });
-  const removeModal = addOpenDialog(modalRef, {
+  addOpenDialog(modalRef, {
     getOutsideCleanups: () => modalMarks,
   });
 
@@ -749,6 +794,6 @@ test("hasDialogAbove counts the marks of a modal dialog", () => {
 
   restoreCleanups(modalMarks);
   restoreCleanups(dialogMarks);
-  removeModal();
-  removeDialog();
+  removeOpenDialog(modalRef);
+  removeOpenDialog(dialogRef);
 });
