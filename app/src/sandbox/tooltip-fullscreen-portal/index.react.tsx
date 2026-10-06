@@ -29,6 +29,7 @@ function Repro() {
   const [open, setOpen] = useState(false);
   const [pinnedOpen, setPinnedOpen] = useState(false);
   const [showSecond, setShowSecond] = useState(false);
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
   const portalCount = usePortalCount();
   const tooltipOpen = open || pinnedOpen;
 
@@ -127,6 +128,16 @@ function Repro() {
           </Ariakit.Tooltip>
         </Ariakit.TooltipProvider>
       )}
+      {/* The slot is an element of the app outside the fullscreen host. Only a
+          default portal node follows the fullscreen element, so the slot and
+          the portal node nested in it must keep their place. */}
+      <div ref={setSlot} role="group" aria-label="Slot" />
+      <Ariakit.Portal portalElement={slot}>
+        <p>Slot content</p>
+        <Ariakit.Portal>
+          <p>Nested content</p>
+        </Ariakit.Portal>
+      </Ariakit.Portal>
     </section>
   );
 }
