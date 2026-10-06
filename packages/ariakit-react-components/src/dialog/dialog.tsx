@@ -3,6 +3,7 @@ import {
   useBooleanEvent,
   useEvent,
   useId,
+  useLiveRef,
   useMergeRefs,
   usePortalRef,
   useSafeLayoutEffect,
@@ -71,6 +72,7 @@ import {
   getEarlierOpenDialogElements,
   hasDialogAbove,
   notifyOpenDialogElementChange,
+  removeOpenDialog,
 } from "./utils/__open-dialogs.ts";
 import { addToWalkTreeSnapshot } from "./utils/__walk-tree-snapshot.ts";
 import {
@@ -280,6 +282,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     portal,
     props.portalRef,
   );
+  const portalNodeRef = useLiveRef(portalNode);
   // Modal dialogs don't use tab-order sentinels to match native <dialog>. Tab
   // may reach browser UI instead of cycling inside, which is intentional.
   // https://github.com/ariakit/ariakit/issues/7092#issuecomment-5227754640
@@ -489,7 +492,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     };
   }, [id, canTakeTreeSnapshot, hasDefaultModalPortal, portalNode]);
 
-  // The portal node itself must not be a dependency of the effect below.
+  // The effects below depend on this boolean and not on the portal node, so
+  // they don't run again when only the portal node changes.
   const isOpenAndReady = !!canTakeTreeSnapshot;
 
   // Counts the changes of the elements of the dialogs that opened before this
@@ -499,20 +503,32 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   // Records the order in which the dialogs open. When two dialogs mark each
   // other, Escape closes the one that opened last. A dialog takes its place
-  // when it starts to mark the tree, and keeps it while it stays open.
+  // when it starts to mark the tree.
   // https://github.com/ariakit/ariakit/issues/7647
   useSafeLayoutEffect(() => {
     if (!isOpenAndReady) return;
-    return addOpenDialog(ref, {
+    addOpenDialog(ref, {
       getOutsideCleanups: () => treeRef.current?.outsideCleanups,
+      getPortalNode: () => portalNodeRef.current,
       onEarlierDialogElementChange: () => {
         setEarlierDialogElementChanges((count) => count + 1);
       },
     });
-  }, [isOpenAndReady]);
+  }, [isOpenAndReady, portalNodeRef]);
+
+  // The dialog keeps its place while it stays open. It isn't ready while its
+  // new portal node doesn't exist yet, such as when the portal prop changes,
+  // and it must not go after the dialogs that opened later when it's ready
+  // again.
+  // https://github.com/ariakit/ariakit/issues/7733
+  useSafeLayoutEffect(() => {
+    if (!open) return;
+    return () => removeOpenDialog(ref);
+  }, [open]);
 
   // Tells the dialogs that opened after this one when React replaces the
-  // element of this dialog while it's open.
+  // element of this dialog while it's open. React also replaces it when the
+  // dialog moves to another portal node.
   // https://github.com/ariakit/ariakit/issues/7728
   const previousContentElementRef = useRef<HTMLElement | null>(null);
 
@@ -544,10 +560,12 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   }, [id, canTakeTreeSnapshot, unstable_treeSnapshotKey]);
 
   // The snapshot has the dialogs that were already open, but React can replace
-  // their elements, and the new elements aren't in the snapshot. This adds the
-  // current ones, so this dialog marks them too. The elements that other parts
-  // of the page add later stay out of the snapshot.
+  // their elements or move them to new portal nodes, and the new elements
+  // aren't in the snapshot. This adds the current ones, so this dialog marks
+  // them too. The elements that other parts of the page add later stay out of
+  // the snapshot.
   // https://github.com/ariakit/ariakit/issues/7728
+  // https://github.com/ariakit/ariakit/issues/7733
   useSafeLayoutEffect(() => {
     if (!id) return;
     if (!canTakeTreeSnapshot) return;

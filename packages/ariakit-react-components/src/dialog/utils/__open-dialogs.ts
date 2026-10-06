@@ -8,6 +8,8 @@ type DialogRef = RefObject<Element | null>;
 interface OpenDialogOptions {
   // The current walk can change without registering the dialog again.
   getOutsideCleanups?: () => Cleanups | undefined;
+  // The portal node can change without registering the dialog again.
+  getPortalNode?: () => Element | null;
   onEarlierDialogElementChange?: () => void;
 }
 
@@ -16,32 +18,41 @@ interface OpenDialogOptions {
 const openDialogs = new Map<DialogRef, OpenDialogOptions>();
 
 /**
- * Adds the dialog after the dialogs that are already open. The returned
- * function removes it. With `onEarlierDialogElementChange`, the dialog learns
- * when the element of a dialog that opened before it changes.
+ * Adds the dialog after the dialogs that are already open. A dialog that is
+ * already there keeps its place. With `onEarlierDialogElementChange`, the
+ * dialog learns when the element of a dialog that opened before it changes.
  */
 export function addOpenDialog(
   dialogRef: DialogRef,
   options: OpenDialogOptions = {},
 ) {
   openDialogs.set(dialogRef, options);
-  return () => {
-    openDialogs.delete(dialogRef);
-  };
+}
+
+export function removeOpenDialog(dialogRef: DialogRef) {
+  openDialogs.delete(dialogRef);
 }
 
 /**
- * Returns the elements of the dialogs that opened before the given dialog,
- * except the ones that contain it.
+ * Returns the elements of the dialogs that opened before the given dialog and
+ * their portal nodes, except the ones that contain it.
  */
 export function getEarlierOpenDialogElements(dialogRef: DialogRef) {
   const elements: Element[] = [];
-  for (const openDialogRef of openDialogs.keys()) {
+  const dialog = dialogRef.current;
+  for (const [openDialogRef, options] of openDialogs) {
     if (openDialogRef === dialogRef) break;
-    const { current: element } = openDialogRef;
-    if (!element?.isConnected) continue;
-    if (dialogRef.current && contains(element, dialogRef.current)) continue;
-    elements.push(element);
+    // The tree walk reaches a dialog in a portal through its portal node, so
+    // the dialog element alone doesn't make the walk find it.
+    const openDialogElements = [
+      options.getPortalNode?.(),
+      openDialogRef.current,
+    ];
+    for (const element of openDialogElements) {
+      if (!element?.isConnected) continue;
+      if (dialog && contains(element, dialog)) continue;
+      elements.push(element);
+    }
   }
   return elements;
 }
