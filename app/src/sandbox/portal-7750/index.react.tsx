@@ -26,6 +26,7 @@ export default function Example() {
   const [docked, setDocked] = useState(true);
   const [dockRendered, setDockRendered] = useState(true);
   const [dock, setDock] = useState<HTMLElement | null>(null);
+  const portalElement = docked ? dock : null;
   return (
     <section aria-label="Workspace" style={workspaceStyle}>
       <button onClick={() => setDocked((docked) => !docked)}>
@@ -37,7 +38,14 @@ export default function Example() {
           <h2>Dock</h2>
         </div>
       )}
-      <Ariakit.Portal portalElement={docked ? dock : null}>
+      {/* TODO: Remove this workaround after the fix lands. The key mounts the
+          portal again when the portal element changes between an element and
+          null, so a mounted portal never gets that change.
+          https://github.com/ariakit/ariakit/issues/7750 */}
+      <Ariakit.Portal
+        key={portalElement ? "element" : "default"}
+        portalElement={portalElement}
+      >
         <p>Notes</p>
       </Ariakit.Portal>
     </section>
