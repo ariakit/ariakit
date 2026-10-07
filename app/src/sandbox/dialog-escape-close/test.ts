@@ -346,6 +346,77 @@ test("Escape closes the modal Dialog before a Dialog outside its tree after that
   expect(q.dialog.maybe("Ticket")).not.toBeInTheDocument();
 });
 
+// https://github.com/ariakit/ariakit/issues/7751
+test("Escape closes the Combobox popover before a Popover outside its tree after the Popover moves out of a portal", async () => {
+  const counter = q.within(q.region("Tea counter"));
+  await click(q.button("Open tip"));
+  expect(q.dialog("Tip")).toBeVisible();
+  expect(counter.dialog.maybe("Tip")).not.toBeInTheDocument();
+  await focus(q.combobox("Tea"));
+  await press.ArrowDown();
+  expect(q.listbox("Tea")).toBeVisible();
+  // The field has a value, so the tip moves out of its portal to the counter.
+  await type("a");
+  expect(counter.dialog("Tip")).toBeVisible();
+  expect(q.listbox("Tea")).toBeVisible();
+  await press.Escape();
+  expect(q.listbox.maybe("Tea")).not.toBeInTheDocument();
+  expect(q.dialog("Tip")).toBeVisible();
+  expect(q.combobox("Tea")).toHaveFocus();
+  // The popover is the topmost popup again, so the next Escape closes it.
+  await press.Escape();
+  expect(q.dialog.maybe("Tip")).not.toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/7751
+test("Escape closes the Combobox popover before a Menu outside its tree after the Menu moves out of a portal", async () => {
+  const counter = q.within(q.region("Juice counter"));
+  await click(q.button("Extras"));
+  expect(q.menu("Extras")).toBeVisible();
+  expect(counter.menu.maybe("Extras")).not.toBeInTheDocument();
+  await focus(q.combobox("Juice"));
+  await press.ArrowDown();
+  expect(q.listbox("Juice")).toBeVisible();
+  // The field has a value, so the menu moves out of its portal to the counter.
+  await type("a");
+  expect(counter.menu("Extras")).toBeVisible();
+  expect(q.listbox("Juice")).toBeVisible();
+  await press.Escape();
+  expect(q.listbox.maybe("Juice")).not.toBeInTheDocument();
+  expect(q.menu("Extras")).toBeVisible();
+  expect(q.combobox("Juice")).toHaveFocus();
+  // The menu is the topmost popup again, so the next Escape closes it.
+  await press.Escape();
+  expect(q.menu.maybe("Extras")).not.toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/7751
+test("Escape closes the modal Dialog before a Popover outside its tree after that Popover moves out of a portal", async () => {
+  // The modal dialog disables the page around it, so these queries include the
+  // elements that aren't exposed.
+  const counter = q.within(q.region.hidden("Cider counter"));
+  await click(q.button("Open receipt"));
+  expect(q.dialog("Receipt")).toBeVisible();
+  await click(q.button("Open preferences"));
+  expect(q.textbox("Cider")).toHaveFocus();
+  expect(q.dialog.hidden("Receipt")).toBeVisible();
+  expect(counter.dialog.maybe.hidden("Receipt")).not.toBeInTheDocument();
+  // The field has a value, so the receipt moves out of its portal to the
+  // counter.
+  await type("a");
+  const receipt = counter.dialog.hidden("Receipt");
+  expect(receipt).toBeVisible();
+  // The preferences are modal, so they disable the receipt in the counter.
+  expect(receipt.closest("[inert]")).toBeTruthy();
+  await press.Escape();
+  expect(q.dialog.maybe("Preferences")).not.toBeInTheDocument();
+  expect(q.dialog("Receipt")).toBeVisible();
+  expect(q.button("Open preferences")).toHaveFocus();
+  // The receipt is the topmost popup again, so the next Escape closes it.
+  await press.Escape();
+  expect(q.dialog.maybe("Receipt")).not.toBeInTheDocument();
+});
+
 // https://github.com/ariakit/ariakit/issues/7726
 test("Escape closes the Combobox popover before a Dialog outside its tree when a Dialog in a shadow root has the same id", async () => {
   const shadow = queryShadowRoot("memo");

@@ -484,4 +484,93 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await page.keyboard.press("Escape");
     await test.expect(q.dialog("Ticket")).toBeHidden();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7751
+  test("Escape closes the Combobox popover before a Popover outside its tree after the Popover moves out of a portal", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Tea counter"));
+    await q.button("Open tip").click();
+    await test.expect(q.dialog("Tip")).toBeVisible();
+    await test.expect(counter.dialog("Tip")).toHaveCount(0);
+    await q.combobox("Tea").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Tea")).toBeVisible();
+    // The field has a value, so the tip moves out of its portal to the counter.
+    await page.keyboard.type("a");
+    await test.expect(counter.dialog("Tip")).toBeVisible();
+    await test.expect(q.listbox("Tea")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Tea")).toBeHidden();
+    await test.expect(q.dialog("Tip")).toBeVisible();
+    await test.expect(q.combobox("Tea")).toBeFocused();
+    // The popover is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Tip")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7751
+  test("Escape closes the Combobox popover before a Menu outside its tree after the Menu moves out of a portal", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Juice counter"));
+    await q.button("Extras").click();
+    await test.expect(q.menu("Extras")).toBeVisible();
+    await test.expect(counter.menu("Extras")).toHaveCount(0);
+    await q.combobox("Juice").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Juice")).toBeVisible();
+    // The field has a value, so the menu moves out of its portal to the
+    // counter.
+    await page.keyboard.type("a");
+    await test.expect(counter.menu("Extras")).toBeVisible();
+    await test.expect(q.listbox("Juice")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Juice")).toBeHidden();
+    await test.expect(q.menu("Extras")).toBeVisible();
+    await test.expect(q.combobox("Juice")).toBeFocused();
+    // The menu is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.menu("Extras")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7751
+  test("Escape closes the modal Dialog before a Popover outside its tree after that Popover moves out of a portal", async ({
+    page,
+    q,
+  }) => {
+    // The modal dialog disables the page around it, so these queries include
+    // the elements that aren't exposed.
+    const counter = query(q.region("Cider counter", { includeHidden: true }));
+    const receipt = q.dialog("Receipt", { includeHidden: true });
+    await q.button("Open receipt").click();
+    await test.expect(q.dialog("Receipt")).toBeVisible();
+    await q.button("Open preferences").click();
+    await test.expect(q.textbox("Cider")).toBeFocused();
+    await test.expect(receipt).toBeVisible();
+    await test
+      .expect(counter.dialog("Receipt", { includeHidden: true }))
+      .toHaveCount(0);
+    // The field has a value, so the receipt moves out of its portal to the
+    // counter.
+    await page.keyboard.type("a");
+    await test
+      .expect(counter.dialog("Receipt", { includeHidden: true }))
+      .toBeVisible();
+    // The preferences are modal, so they disable the receipt in the counter.
+    await test
+      .expect(
+        receipt.evaluate((element) => element.closest("[inert]") !== null),
+      )
+      .resolves.toBe(true);
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Preferences")).toBeHidden();
+    await test.expect(q.dialog("Receipt")).toBeVisible();
+    await test.expect(q.button("Open preferences")).toBeFocused();
+    // The receipt is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Receipt")).toBeHidden();
+  });
 });

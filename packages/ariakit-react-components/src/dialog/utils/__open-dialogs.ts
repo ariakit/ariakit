@@ -10,6 +10,8 @@ interface OpenDialogOptions {
   getOutsideCleanups?: () => Cleanups | undefined;
   // The portal node can change without registering the dialog again.
   getPortalNode?: () => Element | null;
+  // The wrapper element can change without registering the dialog again.
+  getWrapperElement?: () => Element | null | undefined;
   onEarlierDialogElementChange?: () => void;
 }
 
@@ -34,18 +36,21 @@ export function removeOpenDialog(dialogRef: DialogRef) {
 }
 
 /**
- * Returns the elements of the dialogs that opened before the given dialog and
- * their portal nodes, except the ones that contain it.
+ * Returns the elements of the dialogs that opened before the given dialog,
+ * their portal nodes, and their wrapper elements, except the ones that contain
+ * it.
  */
 export function getEarlierOpenDialogElements(dialogRef: DialogRef) {
   const elements: Element[] = [];
   const dialog = dialogRef.current;
   for (const [openDialogRef, options] of openDialogs) {
     if (openDialogRef === dialogRef) break;
-    // The tree walk reaches a dialog in a portal through its portal node, so
-    // the dialog element alone doesn't make the walk find it.
+    // The tree walk reaches a dialog in a portal through its portal node, and a
+    // dialog in a wrapper element through that wrapper, so the dialog element
+    // alone doesn't make the walk find it.
     const openDialogElements = [
       options.getPortalNode?.(),
+      options.getWrapperElement?.(),
       openDialogRef.current,
     ];
     for (const element of openDialogElements) {
