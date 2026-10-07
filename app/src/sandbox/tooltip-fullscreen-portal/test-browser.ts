@@ -433,4 +433,145 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(q.dialog("Movie")).not.toBeVisible();
     await test.expect(q.dialog("Library")).toBeVisible();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7773
+  test("keeps a popup of a fullscreen player inside a shadow tree reachable", async ({
+    page,
+    q,
+  }) => {
+    const playback = q.status("Shadow playback");
+
+    await q.button("Shadow player fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+
+    await q.button("Speed").click();
+    // The browser shows only the fullscreen player and its descendants.
+    await test.expect(q.dialog("Speed")).toBeVisible();
+    // The click needs the popup to be reachable while the player is in
+    // fullscreen.
+    await q.button("Fast").click();
+    await test.expect(playback).toContainText("Speed: Fast");
+
+    await q.button("Exit shadow player fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+
+    await q.button("Speed").click();
+    await q.button("Slow").click();
+    await test.expect(playback).toContainText("Speed: Slow");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7773
+  test("keeps a popup that mounts in a fullscreen player inside a shadow tree reachable", async ({
+    page,
+    q,
+  }) => {
+    const playback = q.status("Shadow playback");
+
+    await q.button("Shadow player fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+
+    await q.button("Audio").click();
+    // The browser shows only the fullscreen player and its descendants.
+    await test.expect(q.dialog("Audio")).toBeVisible();
+    // The click needs the popup to be reachable while the player is in
+    // fullscreen.
+    await q.button("Mono").click();
+    await test.expect(playback).toContainText("Audio: Mono");
+
+    await q.button("Exit shadow player fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+
+    await q.button("Audio").click();
+    await q.button("Surround").click();
+    await test.expect(playback).toContainText("Audio: Surround");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7773
+  test("keeps a popup of a fullscreen player inside a shadow tree in a dialog reachable", async ({
+    page,
+    q,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+
+    await q.button("Open theater").click();
+    const theater = query(q.dialog("Theater"));
+    const playback = theater.status("Shadow playback");
+
+    await theater.button("Shadow player fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+
+    // The popup follows the player, and the portal of the dialog, which
+    // contains the shadow tree of the player, doesn't.
+    await theater.button("Speed").click();
+    await test.expect(q.dialog("Speed")).toBeVisible();
+    await q.button("Fast").click();
+    await test.expect(playback).toContainText("Speed: Fast");
+
+    await theater.button("Exit shadow player fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+    // The browser dispatches the fullscreenchange event of the entry before the
+    // exit button can be clicked, so the page already reported an error from
+    // that event.
+    test.expect(errors).toEqual([]);
+
+    await theater.button("Speed").click();
+    await q.button("Slow").click();
+    await test.expect(playback).toContainText("Speed: Slow");
+
+    await q.button("Close theater").click();
+    await test.expect(q.dialog("Theater")).not.toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7773
+  test("keeps the scroll position of a popup when a frame enters and exits fullscreen", async ({
+    page,
+    q,
+  }) => {
+    const frame = query(page.frameLocator("iframe[title='Frame player']"));
+
+    await q.button("Playlist").click();
+    const lastTrack = query(q.dialog("Playlist")).text("Track 12");
+    await lastTrack.scrollIntoViewIfNeeded();
+    await test.expect(lastTrack).toBeInViewport();
+
+    await frame.button("Frame fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+    await frame.button("Exit frame fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+    // The playlist must keep its scroll position, so no state shows that the
+    // page handled the fullscreenchange events. The browser dispatches each
+    // event on the rendering update after it changes the fullscreen element, so
+    // the frames cross the event of the exit.
+    await flushFrames(page);
+    await test.expect(lastTrack).toBeInViewport();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7773
+  test("keeps the scroll position of a popup in a dialog when a frame of the dialog enters and exits fullscreen", async ({
+    page,
+    q,
+  }) => {
+    const frame = query(
+      page.frameLocator("iframe[title='Theater frame player']"),
+    );
+
+    await q.button("Open theater").click();
+    await query(q.dialog("Theater")).button("Playlist").click();
+    const lastTrack = query(q.dialog("Playlist")).text("Track 12");
+    await lastTrack.scrollIntoViewIfNeeded();
+    await test.expect(lastTrack).toBeInViewport();
+
+    await frame.button("Frame fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+    await frame.button("Exit frame fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+    // The playlist must keep its scroll position, so no state shows that the
+    // page handled the fullscreenchange event of the exit. The browser
+    // dispatches that event on the rendering update after it clears the
+    // fullscreen element, so the frames cross it. Here, the portal node of the
+    // playlist is a child of the portal node of the dialog.
+    await flushFrames(page);
+    await test.expect(lastTrack).toBeInViewport();
+  });
 });
