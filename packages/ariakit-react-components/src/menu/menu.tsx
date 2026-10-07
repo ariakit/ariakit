@@ -8,7 +8,6 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import {
   fireEvent,
-  getActiveElement,
   hasFocusWithin,
   invariant,
   isFocusable,
@@ -19,6 +18,7 @@ import { createDialogComponent } from "../dialog/dialog.tsx";
 import { isCapturedDisclosure } from "../dialog/utils/__captured-disclosures.ts";
 import { useEscapeClose } from "../dialog/utils/__use-escape-close.ts";
 import { isElementInside } from "../dialog/utils/tree-cleanup.ts";
+import { getTreeActiveElement } from "../focusable/__utils.ts";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
 import { useMenuProviderContext } from "./menu-context.tsx";
@@ -39,7 +39,10 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * initial focus again, as it does without this check.
  */
 function hasFocusOnContent(menuElement: HTMLElement, state: MenuStoreState) {
-  const activeElement = getActiveElement(menuElement);
+  // The document reports the shadow host as its active element when the menu is
+  // inside a shadow root, so read the focused element from the menu's own tree.
+  // https://github.com/ariakit/ariakit/issues/7794
+  const activeElement = getTreeActiveElement(menuElement);
   if (!activeElement) return false;
   // The dialog marks the menu element and its nested menus as inside the menu,
   // including a nested menu that renders in a portal.
