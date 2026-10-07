@@ -1,5 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 async function moveMouseTo(page: Page, locator: Locator) {
   const box = await locator.boundingBox();
@@ -107,12 +107,45 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
-  // https://github.com/ariakit/ariakit/issues/7033
-  test("closes on a newly inserted outside element after replacing the dialog", async ({
+  // https://github.com/ariakit/ariakit/issues/7778
+  test("stays open on a newly inserted outside element after replacing a focused dialog", async ({
+    page,
     q,
   }) => {
     await q.button("Open dialog").click();
-    await q.button("Replace dialog element").click();
+    await q.textbox("Inside field").click();
+    await test.expect(q.textbox("Inside field")).toBeFocused();
+
+    // Replace the dialog element while focus is outside the dialog.
+    await q.textbox("Notification field").click();
+    await test.expect(q.textbox("Notification field")).toBeFocused();
+    await q.button("Replace dialog from notifications").click();
+    await test
+      .expect(q.dialog("Dialog"))
+      .toHaveJSProperty("tagName", "SECTION");
+
+    await q.button("Add late outside field").click();
+    await q.textbox("Late outside field").click();
+    await test.expect(q.textbox("Late outside field")).toBeFocused();
+    // The focus move is observable above, but the outside listener requests a
+    // close that React commits afterward. No state tracks that commit.
+    await flushFrames(page);
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+
+    await q.textbox("Outside field").click();
+    await test.expect(q.dialog("Dialog")).not.toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7778
+  test("closes on a newly inserted outside element after replacing a dialog that was not focused", async ({
+    q,
+  }) => {
+    await q.button("Open dialog").click();
+    await q.button("Replace dialog from notifications").click();
+    await test
+      .expect(q.dialog("Dialog"))
+      .toHaveJSProperty("tagName", "SECTION");
+
     await q.button("Add late outside field").click();
     await q.textbox("Late outside field").click();
     await test.expect(q.dialog("Dialog")).not.toBeVisible();
