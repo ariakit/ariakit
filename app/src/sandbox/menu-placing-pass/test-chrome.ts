@@ -38,6 +38,42 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(item).toHaveAttribute("data-active-item");
   });
 
+  // An `autoFocusOnShow` callback can take the initial focus on its own and
+  // return `false`. That answer is the initial focus of the open, so a later
+  // pass must not ask the callback again, or it moves focus back to its item.
+  // https://github.com/ariakit/ariakit/pull/7762#discussion_r4204210733
+  test("keeps focus on a moved item when the app took the initial focus", async ({
+    page,
+    q,
+  }) => {
+    const menu = q.menu("Recent actions");
+    const finish = q.button("Finish Recent actions positioning");
+    const item = q.menuitem("Paste");
+
+    await q.button("Recent actions").focus();
+    await page.keyboard.press("Enter");
+    await test.expect(menu).toHaveAttribute("data-placing");
+    // The buttons that drive a pass stand in for work the application does on
+    // its own, so they are dispatched to. A native click would move focus out
+    // of the menu.
+    await finish.dispatchEvent("click");
+    await test.expect(q.menuitem("Copy")).toBeFocused();
+
+    await page.keyboard.press("ArrowDown");
+    await test.expect(item).toBeFocused();
+
+    await q.button("Reposition Recent actions").dispatchEvent("click");
+    await test.expect(menu).toHaveAttribute("data-placing");
+    await finish.dispatchEvent("click");
+    await test.expect(menu).not.toHaveAttribute("data-placing");
+    // Focus that stays put has no positive state. The popup would ask the
+    // callback from an effect that follows the commit the attribute above
+    // reports, so wait through it.
+    await flushFrames(page);
+    await test.expect(item).toBeFocused();
+    await test.expect(item).toHaveAttribute("data-active-item");
+  });
+
   // The initial focus that a popup took counts for one open. A popup that opens
   // again waits for its new pass, and then takes its initial focus again.
   // https://github.com/ariakit/ariakit/issues/7625

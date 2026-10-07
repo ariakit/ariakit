@@ -145,10 +145,13 @@ function useHeldPass() {
   const releaseRef = useRef<(() => void) | null>(null);
 
   const updatePosition: UpdatePosition = async ({ updatePosition }) => {
-    await updatePosition();
-    await new Promise<void>((resolve) => {
+    // Armed before the supplied default runs, so a release that arrives while
+    // the default is still working isn't lost.
+    const held = new Promise<void>((resolve) => {
       releaseRef.current = resolve;
     });
+    await updatePosition();
+    await held;
   };
 
   const release = () => {
@@ -225,6 +228,46 @@ function SharedMenu() {
         <Ariakit.MenuItem style={{ display: "block" }}>
           Rename row
         </Ariakit.MenuItem>
+      </Ariakit.Menu>
+    </>
+  );
+}
+
+/**
+ * A menu whose `autoFocusOnShow` callback takes the initial focus on its own:
+ * it focuses the action that was used last and returns `false`, so the dialog
+ * focuses nothing. That answer is the initial focus of the open, and the menu
+ * must not ask for it again when a later pass ends.
+ */
+function RecentMenu() {
+  const menu = Ariakit.useMenuStore();
+  const recentRef = useRef<HTMLDivElement>(null);
+  const { updatePosition, release } = useHeldPass();
+
+  return (
+    <>
+      <button type="button" tabIndex={0} onClick={() => menu.render()}>
+        Reposition Recent actions
+      </button>
+      <button type="button" tabIndex={0} onClick={release}>
+        Finish Recent actions positioning
+      </button>
+      <Ariakit.MenuButton store={menu}>Recent actions</Ariakit.MenuButton>
+      <Ariakit.Menu
+        store={menu}
+        updatePosition={updatePosition}
+        hideOnInteractOutside={false}
+        autoFocusOnShow={() => {
+          recentRef.current?.focus();
+          return false;
+        }}
+        style={{ background: "white", border: "1px solid gray" }}
+      >
+        <Ariakit.MenuItem style={{ display: "block" }}>Cut</Ariakit.MenuItem>
+        <Ariakit.MenuItem ref={recentRef} style={{ display: "block" }}>
+          Copy
+        </Ariakit.MenuItem>
+        <Ariakit.MenuItem style={{ display: "block" }}>Paste</Ariakit.MenuItem>
       </Ariakit.Menu>
     </>
   );
@@ -374,6 +417,8 @@ export default function Example() {
       <PortalMenu />
       <div style={{ height: 300 }} />
       <SharedMenu />
+      <div style={{ height: 300 }} />
+      <RecentMenu />
       <div style={{ height: 300 }} />
     </main>
   );

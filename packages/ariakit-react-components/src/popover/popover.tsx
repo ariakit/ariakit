@@ -293,42 +293,45 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     const rendered = useStoreState(store, "rendered");
 
     const defaultArrowElementRef = useRef<HTMLElement | null>(null);
-    // The popover element that took its initial focus since `open` last
-    // changed.
-    const focusedElementRef = useRef<HTMLElement | null>(null);
+    // The popover element that the dialog already asked the initial focus for
+    // since `open` last changed.
+    const requestedElementRef = useRef<HTMLElement | null>(null);
 
     // Focus can only move into the popover once it has been positioned,
     // otherwise there may be scroll jumps. See the menu-placing-pass sandbox.
     // That's the question `unstable_placing` answers, but only for the initial
-    // focus: a popover that already took it must not wait again for a later
-    // pass, or it would take that focus a second time when the pass ends. The
-    // ref is safe to read here: it's set while `placing` is false, and it's
+    // focus: once the dialog asked for it, the popover must not wait again for
+    // a later pass, or the dialog would ask a second time when the pass ends.
+    // The ref is safe to read here: it's set while `placing` is false, and it's
     // reset when `open` changes, which renders again.
     // https://github.com/ariakit/ariakit/issues/7625
-    const tookInitialFocus =
-      !!popoverElement && focusedElementRef.current === popoverElement;
-    const positioned = !placing || tookInitialFocus;
+    const requestedInitialFocus =
+      !!popoverElement && requestedElementRef.current === popoverElement;
+    const positioned = !placing || requestedInitialFocus;
 
     const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
 
     // The dialog calls this right before it takes its initial focus.
     const shouldAutoFocusOnShow = useEvent((element: HTMLElement | null) => {
-      if (!autoFocusOnShowProp(element)) return false;
-      // Before the popover takes its initial focus, the gate can still be open
-      // in the render that starts a pass. The gate then closes, and the dialog
-      // asks again when that pass ends, so this request doesn't count.
+      const shouldFocus = autoFocusOnShowProp(element);
+      // The gate can still be open in the render that starts a pass, before a
+      // request has counted. The gate then closes, and the dialog asks again
+      // when that pass ends, so this request doesn't count. Outside a pass, it
+      // counts whatever the callback answers, because an app can take the focus
+      // in the callback and return `false`.
+      // https://github.com/ariakit/ariakit/pull/7762#discussion_r4204210733
       if (!store?.getState().unstable_placing) {
-        focusedElementRef.current = popoverElement;
+        requestedElementRef.current = popoverElement;
       }
-      return true;
+      return shouldFocus;
     });
 
     // The initial focus counts for one open. A ref takes effect in the same
     // step as the store update, where React 18 can apply state in a later
-    // render, after the popover already asked for its focus again.
+    // render, after the dialog already asked for the focus again.
     useSafeLayoutEffect(() => {
       return sync(store, ["open"], () => {
-        focusedElementRef.current = null;
+        requestedElementRef.current = null;
       });
     }, [store]);
 

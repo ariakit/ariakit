@@ -113,6 +113,37 @@ test("keeps focus on a moved item after an open popup repositions itself", async
   expect(item).toHaveAttribute("data-active-item");
 });
 
+// An `autoFocusOnShow` callback can take the initial focus on its own and
+// return `false`. That answer is the initial focus of the open, so a later pass
+// must not ask the callback again, or it moves focus back to its item.
+// https://github.com/ariakit/ariakit/pull/7762#discussion_r4204210733
+test("keeps focus on a moved item when the app took the initial focus", async () => {
+  await focus(q.button("Recent actions"));
+  await press.Enter();
+  const menu = q.menu("Recent actions");
+  const finish = q.button("Finish Recent actions positioning");
+  const item = q.menuitem("Paste");
+  expect(menu).toHaveAttribute("data-placing");
+  // The buttons that drive a pass stand in for work the application does on its
+  // own, so they are dispatched to. A click would move focus out of the menu.
+  await dispatch.click(finish);
+  await expect.poll(() => q.menuitem("Copy")).toHaveFocus();
+
+  await press.ArrowDown();
+  expect(item).toHaveFocus();
+
+  await dispatch.click(q.button("Reposition Recent actions"));
+  expect(menu).toHaveAttribute("data-placing");
+  await dispatch.click(finish);
+  await expect.poll(() => menu).not.toHaveAttribute("data-placing");
+  // Focus that stays put has no positive state. The popup would ask the
+  // callback from an effect that follows the commit the attribute above
+  // reports, and `dispatch` flushes only microtasks, so cross a macrotask.
+  await sleep();
+  expect(item).toHaveFocus();
+  expect(item).toHaveAttribute("data-active-item");
+});
+
 // The initial focus that a popup took counts for one open. A popup that opens
 // again waits for its new pass, and then takes its initial focus again.
 // https://github.com/ariakit/ariakit/issues/7625
