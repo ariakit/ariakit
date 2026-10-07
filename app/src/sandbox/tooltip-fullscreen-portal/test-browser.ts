@@ -254,4 +254,60 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await q.button("Close video").click();
     await test.expect(dialog).not.toBeVisible();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7761
+  test("keeps a popup of a fullscreen player inside a dialog reachable", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open movie").click();
+    const player = q.group("Movie player");
+    const playback = q.status("Playback");
+
+    await q.button("Movie fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+
+    await q.button("Quality").click();
+    // The browser shows only the fullscreen player and its descendants.
+    await test.expect(query(player).dialog("Quality")).toBeVisible();
+    // The click needs the popup to be reachable while the player is in
+    // fullscreen.
+    await q.button("High").click();
+    await test.expect(playback).toContainText("Quality: High");
+
+    await q.button("Exit movie fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+
+    await q.button("Quality").click();
+    await q.button("Low").click();
+    await test.expect(playback).toContainText("Quality: Low");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7761
+  test("keeps a popup that mounts in a fullscreen player inside a dialog reachable", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open movie").click();
+    const player = q.group("Movie player");
+    const playback = q.status("Playback");
+
+    await q.button("Movie fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+
+    await q.button("Captions").click();
+    // The browser shows only the fullscreen player and its descendants.
+    await test.expect(query(player).dialog("Captions")).toBeVisible();
+    // The click needs the popup to be reachable while the player is in
+    // fullscreen.
+    await q.button("English").click();
+    await test.expect(playback).toContainText("Captions: English");
+
+    await q.button("Exit movie fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+
+    await q.button("Captions").click();
+    await q.button("Spanish").click();
+    await test.expect(playback).toContainText("Captions: Spanish");
+  });
 });

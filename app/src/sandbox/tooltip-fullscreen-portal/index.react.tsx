@@ -1,8 +1,48 @@
 import * as Ariakit from "@ariakit/react";
+import type { CSSProperties } from "react";
 import { StrictMode, useEffect, useRef, useState } from "react";
 
 const tooltipId = "tooltip-repro";
 const portalSelector = `[id="portal/${tooltipId}"]`;
+
+const dialogStyle = {
+  alignItems: "flex-start",
+  background: "white",
+  border: "1px solid",
+  color: "black",
+  display: "flex",
+  flexDirection: "column",
+  gap: 16,
+  inset: 48,
+  padding: 24,
+  position: "fixed",
+  zIndex: 50,
+} satisfies CSSProperties;
+
+const playerStyle = {
+  background: "white",
+  color: "black",
+  display: "flex",
+  gap: 8,
+  padding: 24,
+} satisfies CSSProperties;
+
+// The popups have the z-index of the dialog, so they render above it when their
+// portal nodes are next to the dialog.
+const popupStyle = {
+  background: "white",
+  border: "1px solid",
+  color: "black",
+  display: "flex",
+  gap: 8,
+  padding: 8,
+  zIndex: 50,
+} satisfies CSSProperties;
+
+function exitFullscreen() {
+  if (!document.fullscreenElement) return;
+  void document.exitFullscreen();
+}
 
 function getPortalCount() {
   return document.querySelectorAll(portalSelector).length;
@@ -34,11 +74,6 @@ function VideoDialog() {
     void playerRef.current?.requestFullscreen();
   };
 
-  const exitFullscreen = () => {
-    if (!document.fullscreenElement) return;
-    void document.exitFullscreen();
-  };
-
   return (
     <>
       <button type="button" onClick={() => setOpen(true)}>
@@ -47,32 +82,14 @@ function VideoDialog() {
       <Ariakit.Dialog
         open={open}
         onClose={() => setOpen(false)}
-        style={{
-          alignItems: "flex-start",
-          background: "white",
-          border: "1px solid",
-          color: "black",
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-          inset: 48,
-          padding: 24,
-          position: "fixed",
-          zIndex: 50,
-        }}
+        style={dialogStyle}
       >
         <Ariakit.DialogHeading>Video</Ariakit.DialogHeading>
         <div
           ref={playerRef}
           role="group"
           aria-label="Player"
-          style={{
-            background: "white",
-            color: "black",
-            display: "flex",
-            gap: 8,
-            padding: 24,
-          }}
+          style={playerStyle}
         >
           <button type="button" onClick={enterFullscreen}>
             Player fullscreen
@@ -82,6 +99,85 @@ function VideoDialog() {
           </button>
         </div>
         <Ariakit.DialogDismiss>Close video</Ariakit.DialogDismiss>
+      </Ariakit.Dialog>
+    </>
+  );
+}
+
+// The popups are inside the player, but their portal nodes are children of the
+// portal node of the modal dialog, outside the player. The browser shows only
+// the fullscreen element and its descendants, so the popups must render inside
+// the player while it is in fullscreen.
+// https://github.com/ariakit/ariakit/issues/7761
+function MovieDialog() {
+  const playerRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [quality, setQuality] = useState("Auto");
+  const [captions, setCaptions] = useState("Off");
+
+  const enterFullscreen = () => {
+    void playerRef.current?.requestFullscreen();
+  };
+
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)}>
+        Open movie
+      </button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        style={dialogStyle}
+      >
+        <Ariakit.DialogHeading>Movie</Ariakit.DialogHeading>
+        <div
+          ref={playerRef}
+          role="group"
+          aria-label="Movie player"
+          style={playerStyle}
+        >
+          <button type="button" onClick={enterFullscreen}>
+            Movie fullscreen
+          </button>
+          <button type="button" onClick={exitFullscreen}>
+            Exit movie fullscreen
+          </button>
+          <Ariakit.PopoverProvider>
+            <Ariakit.PopoverDisclosure>Quality</Ariakit.PopoverDisclosure>
+            {/* This popup stays mounted while it is hidden, so its portal node
+                exists before the player enters fullscreen. */}
+            <Ariakit.Popover portal aria-label="Quality" style={popupStyle}>
+              <button type="button" onClick={() => setQuality("High")}>
+                High
+              </button>
+              <button type="button" onClick={() => setQuality("Low")}>
+                Low
+              </button>
+            </Ariakit.Popover>
+          </Ariakit.PopoverProvider>
+          <Ariakit.PopoverProvider>
+            <Ariakit.PopoverDisclosure>Captions</Ariakit.PopoverDisclosure>
+            {/* This popup mounts when it opens, so its portal node can mount
+                while the player is in fullscreen. */}
+            <Ariakit.Popover
+              portal
+              unmountOnHide
+              aria-label="Captions"
+              style={popupStyle}
+            >
+              <button type="button" onClick={() => setCaptions("English")}>
+                English
+              </button>
+              <button type="button" onClick={() => setCaptions("Spanish")}>
+                Spanish
+              </button>
+            </Ariakit.Popover>
+          </Ariakit.PopoverProvider>
+          <div role="status" aria-label="Playback">
+            Quality: {quality}. Captions: {captions}.
+          </div>
+        </div>
+        <Ariakit.DialogDismiss>Close movie</Ariakit.DialogDismiss>
       </Ariakit.Dialog>
     </>
   );
@@ -100,11 +196,6 @@ function Repro() {
 
   const enterFullscreen = () => {
     void fullscreenHostRef.current?.requestFullscreen();
-  };
-
-  const exitFullscreen = () => {
-    if (!document.fullscreenElement) return;
-    void document.exitFullscreen();
   };
 
   return (
@@ -204,6 +295,7 @@ function Repro() {
         </Ariakit.Portal>
       </Ariakit.Portal>
       <VideoDialog />
+      <MovieDialog />
     </section>
   );
 }
