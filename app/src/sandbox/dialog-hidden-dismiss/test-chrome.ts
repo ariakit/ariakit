@@ -245,4 +245,41 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(q.dialog("Gift note")).toHaveCount(0);
     await test.expect.poll(readDismissExposed).toBe(true);
   });
+
+  // The hidden dismiss button can also mount while the later dialog is open,
+  // when the earlier dialog keeps its element and loses its own dismiss button.
+  // https://github.com/ariakit/ariakit/issues/7775
+  // https://github.com/ariakit/ariakit/issues/7782
+  test("later dialog disables the hidden dismiss that mounts while it is open", async ({
+    page,
+    q,
+  }) => {
+    const readDismissExposed = await createDismissAccessibilityReader(page);
+
+    await q.button("Refund").click();
+    await test.expect(q.dialog("Refund")).toBeVisible();
+    await test.expect(q.button("Keep order")).toBeVisible();
+    await test.expect(q.button("Dismiss popup")).toHaveCount(0);
+
+    // This sandbox has no styles, so the backdrop paints over the dialog and
+    // absorbs a pointer click on anything inside it.
+    await q.button("Add reason").press("Enter");
+    await test.expect(q.textbox("Reason")).toBeFocused();
+
+    // The reason has text, so the refund loses its dismiss button and gets the
+    // hidden one.
+    await page.keyboard.type("a");
+    await test.expect(q.button("Dismiss popup")).toHaveCount(1);
+    await test.expect.poll(readDismissExposed).toBe(false);
+
+    // The reason opened last, so Escape closes it, and the refund must get its
+    // dismiss button back.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Reason")).toBeHidden();
+    await test.expect.poll(readDismissExposed).toBe(true);
+
+    await q.button("Dismiss popup").focus();
+    await q.button("Dismiss popup").dispatchEvent("click");
+    await test.expect(q.dialog("Refund")).toBeHidden();
+  });
 });

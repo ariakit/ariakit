@@ -14,6 +14,8 @@ interface OpenDialogOptions {
   getWrapperElement?: () => Element | null | undefined;
   // The backdrop element can change without registering the dialog again.
   getBackdropElement?: () => Element | null;
+  // The hidden dismiss button can change without registering the dialog again.
+  getHiddenDismissElement?: () => Element | null;
   onEarlierDialogElementChange?: () => void;
 }
 
@@ -24,8 +26,8 @@ const openDialogs = new Map<DialogRef, OpenDialogOptions>();
 /**
  * Adds the dialog after the dialogs that are already open. A dialog that is
  * already there keeps its place. With `onEarlierDialogElementChange`, the
- * dialog learns when the element or the backdrop of a dialog that opened before
- * it changes.
+ * dialog learns when the element, the backdrop, or the hidden dismiss button of
+ * a dialog that opened before it changes.
  */
 export function addOpenDialog(
   dialogRef: DialogRef,
@@ -40,8 +42,8 @@ export function removeOpenDialog(dialogRef: DialogRef) {
 
 /**
  * Returns the elements of the dialogs that opened before the given dialog,
- * their portal nodes, their wrapper elements, and their backdrops, except the
- * ones that contain it.
+ * their portal nodes, their wrapper elements, their backdrops, and their hidden
+ * dismiss buttons, except the ones that contain it.
  */
 export function getEarlierOpenDialogElements(dialogRef: DialogRef) {
   const elements: Element[] = [];
@@ -50,12 +52,14 @@ export function getEarlierOpenDialogElements(dialogRef: DialogRef) {
     if (openDialogRef === dialogRef) break;
     // The tree walk reaches a dialog in a portal through its portal node, and a
     // dialog in a wrapper element through that wrapper, so the dialog element
-    // alone doesn't make the walk find it. The backdrop renders next to the
-    // dialog element or its wrapper, so the walk doesn't find it through them.
+    // alone doesn't make the walk find it. The backdrop and the hidden dismiss
+    // button render next to the dialog element or its wrapper, so the walk
+    // doesn't find them through those elements.
     const openDialogElements = [
       options.getPortalNode?.(),
       options.getWrapperElement?.(),
       options.getBackdropElement?.(),
+      options.getHiddenDismissElement?.(),
       openDialogRef.current,
     ];
     for (const element of openDialogElements) {
@@ -68,8 +72,8 @@ export function getEarlierOpenDialogElements(dialogRef: DialogRef) {
 }
 
 /**
- * Tells the dialogs that opened after the given dialog that its element or its
- * backdrop changed.
+ * Tells the dialogs that opened after the given dialog that its element, its
+ * backdrop, or its hidden dismiss button changed.
  */
 export function notifyOpenDialogElementChange(dialogRef: DialogRef) {
   let foundDialog = false;

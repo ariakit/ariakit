@@ -168,3 +168,31 @@ test("later dialog disables the hidden dismiss of a dialog that moves out of a p
   // https://github.com/ariakit/ariakit/issues/7774
   expect(q.button.maybe("Dismiss popup")).not.toBeInTheDocument();
 });
+
+// The hidden dismiss button can also mount while the later dialog is open, when
+// the earlier dialog keeps its element and loses its own dismiss button.
+// https://github.com/ariakit/ariakit/issues/7775
+// https://github.com/ariakit/ariakit/issues/7782
+test("later dialog disables the hidden dismiss that mounts while it is open", async () => {
+  await click(q.button("Refund"));
+  expect(q.dialog("Refund")).toBeVisible();
+  expect(q.button("Keep order")).toBeInTheDocument();
+  expect(q.button.maybe("Dismiss popup")).not.toBeInTheDocument();
+
+  await click(q.button("Add reason"));
+  expect(q.textbox("Reason")).toHaveFocus();
+  expect(q.button.maybe.hidden("Dismiss popup")).not.toBeInTheDocument();
+
+  // The reason has text, so the refund loses its dismiss button and gets the
+  // hidden one.
+  await type("a");
+  expect(q.button.hidden("Dismiss popup")).toBeInTheDocument();
+  expect(q.button.maybe("Dismiss popup")).not.toBeInTheDocument();
+
+  // The reason opened last, so Escape closes it, and the refund must get its
+  // dismiss button back.
+  await press.Escape();
+  expect(q.dialog.maybe("Reason")).not.toBeInTheDocument();
+  await click(q.button("Dismiss popup"));
+  expect(q.dialog.maybe("Refund")).not.toBeInTheDocument();
+});

@@ -139,6 +139,7 @@ export default function Example() {
         </Ariakit.Dialog>
       </Ariakit.DialogProvider>
       <CheckoutDialog />
+      <RefundDialog />
     </div>
   );
 }
@@ -209,24 +210,16 @@ function CheckoutDialog() {
     <>
       <Ariakit.Button onClick={() => setOpen(true)}>Checkout</Ariakit.Button>
       <BodyPortal>
-        {/*
-          TODO: Remove this element when the fix for
-          https://github.com/ariakit/ariakit/issues/7775 is released. It is in
-          the page before the gift note opens, so the gift note disables it and
-          the hidden dismiss button that renders in it later.
-        */}
-        <div>
-          <Ariakit.Dialog
-            open={open}
-            onClose={() => setOpen(false)}
-            portal={!note}
-          >
-            <Ariakit.DialogHeading>Checkout</Ariakit.DialogHeading>
-            <Ariakit.Button onClick={() => setNoteOpen(true)}>
-              Add gift note
-            </Ariakit.Button>
-          </Ariakit.Dialog>
-        </div>
+        <Ariakit.Dialog
+          open={open}
+          onClose={() => setOpen(false)}
+          portal={!note}
+        >
+          <Ariakit.DialogHeading>Checkout</Ariakit.DialogHeading>
+          <Ariakit.Button onClick={() => setNoteOpen(true)}>
+            Add gift note
+          </Ariakit.Button>
+        </Ariakit.Dialog>
         {/*
           The gift note mounts when it opens. The checkout disables the elements
           that are in the page when it opens, and the gift note must not be one
@@ -248,6 +241,42 @@ function CheckoutDialog() {
           <Ariakit.DialogDismiss>Save</Ariakit.DialogDismiss>
         </Ariakit.Dialog>
       </BodyPortal>
+    </>
+  );
+}
+
+// The refund can't be canceled after the reason has text, so it loses its
+// dismiss button while both dialogs are open. The hidden dismiss button then
+// mounts next to the refund, which keeps its element. The reason is nested in
+// the refund, so its portal is next to that button, and it opened before the
+// button was in the page. It must disable that button too.
+// https://github.com/ariakit/ariakit/issues/7775
+// https://github.com/ariakit/ariakit/issues/7782
+function RefundDialog() {
+  const [open, setOpen] = useState(false);
+  const [reasonOpen, setReasonOpen] = useState(false);
+  const [reason, setReason] = useState("");
+  return (
+    <>
+      <Ariakit.Button onClick={() => setOpen(true)}>Refund</Ariakit.Button>
+      <Ariakit.Dialog open={open} onClose={() => setOpen(false)}>
+        <Ariakit.DialogHeading>Refund</Ariakit.DialogHeading>
+        <Ariakit.Button onClick={() => setReasonOpen(true)}>
+          Add reason
+        </Ariakit.Button>
+        {!reason && <Ariakit.DialogDismiss>Keep order</Ariakit.DialogDismiss>}
+        <Ariakit.Dialog open={reasonOpen} onClose={() => setReasonOpen(false)}>
+          <Ariakit.DialogHeading>Reason</Ariakit.DialogHeading>
+          <label>
+            Reason
+            <input
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+            />
+          </label>
+          <Ariakit.DialogDismiss>Save reason</Ariakit.DialogDismiss>
+        </Ariakit.Dialog>
+      </Ariakit.Dialog>
     </>
   );
 }
