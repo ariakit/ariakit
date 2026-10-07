@@ -216,6 +216,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         count: 1,
         parentIsFullscreen: true,
       });
+    // The fullscreen element is outside the slot, so the portal node nested in
+    // the slot must not follow it.
+    await test.expect(query(slot).text("Slot content")).toBeVisible();
+    await test.expect(query(slot).text("Nested content")).toBeVisible();
 
     await q.button("Exit fullscreen").click();
     await page.waitForFunction(() => document.fullscreenElement == null);
@@ -371,5 +375,62 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await q.button("Captions").click();
     await q.button("Spanish").click();
     await test.expect(playback).toContainText("Captions: Spanish");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7761
+  test("moves the portal of a popup back to the dialog when the player exits fullscreen", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open movie").click();
+    const player = q.group("Movie player");
+
+    await q.button("Movie fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+    await q.button("Quality").click();
+    await test.expect(query(player).dialog("Quality")).toBeVisible();
+
+    // The click outside the popup hides it.
+    await q.button("Exit movie fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+
+    await q.button("Quality").click();
+    await test.expect(q.dialog("Quality")).toBeVisible();
+    await test.expect(query(player).dialog("Quality")).toHaveCount(0);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7761
+  test("keeps the portal of a nested dialog in place when an element inside it enters fullscreen", async ({
+    page,
+    q,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+
+    await q.button("Open library").click();
+    await query(q.dialog("Library")).button("Open movie").click();
+    const player = q.group("Movie player");
+    const playback = q.status("Playback");
+
+    await q.button("Movie fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+
+    // The popup follows the player, and the portal of the movie dialog, which
+    // contains the player, doesn't.
+    await q.button("Quality").click();
+    await test.expect(query(player).dialog("Quality")).toBeVisible();
+    await q.button("High").click();
+    await test.expect(playback).toContainText("Quality: High");
+
+    await q.button("Exit movie fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+    // The browser dispatches the fullscreenchange event of the entry before the
+    // exit button can be clicked, so the page already reported an error from
+    // that event.
+    test.expect(errors).toEqual([]);
+
+    await q.button("Close movie").click();
+    await test.expect(q.dialog("Movie")).not.toBeVisible();
+    await test.expect(q.dialog("Library")).toBeVisible();
   });
 });

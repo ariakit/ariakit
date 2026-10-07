@@ -118,12 +118,6 @@ function VideoDialog() {
 // https://github.com/ariakit/ariakit/issues/7761
 function MovieDialog() {
   const playerRef = useRef<HTMLDivElement>(null);
-  // TODO: Remove the popups element and portalElement when the fix is released.
-  // The popups render in an element inside the player, so they are inside the
-  // fullscreen element. The element is in state, and not in a ref, so the
-  // popups render again with the element after it mounts.
-  // https://github.com/ariakit/ariakit/issues/7761
-  const [popups, setPopups] = useState<HTMLDivElement | null>(null);
   const [open, setOpen] = useState(false);
   const [quality, setQuality] = useState("Auto");
   const [captions, setCaptions] = useState("Off");
@@ -159,12 +153,7 @@ function MovieDialog() {
             <Ariakit.PopoverDisclosure>Quality</Ariakit.PopoverDisclosure>
             {/* This popup stays mounted while it is hidden, so its portal node
                 exists before the player enters fullscreen. */}
-            <Ariakit.Popover
-              portal
-              portalElement={popups}
-              aria-label="Quality"
-              style={popupStyle}
-            >
+            <Ariakit.Popover portal aria-label="Quality" style={popupStyle}>
               <button type="button" onClick={() => setQuality("High")}>
                 High
               </button>
@@ -179,7 +168,6 @@ function MovieDialog() {
                 while the player is in fullscreen. */}
             <Ariakit.Popover
               portal
-              portalElement={popups}
               unmountOnHide
               aria-label="Captions"
               style={popupStyle}
@@ -195,9 +183,33 @@ function MovieDialog() {
           <div role="status" aria-label="Playback">
             Quality: {quality}. Captions: {captions}.
           </div>
-          <div ref={setPopups} />
         </div>
         <Ariakit.DialogDismiss>Close movie</Ariakit.DialogDismiss>
+      </Ariakit.Dialog>
+    </>
+  );
+}
+
+// The movie dialog is nested in the library dialog, so the portal node of the
+// movie dialog is a nested portal node that contains the fullscreen player. A
+// portal node can't move into its own descendant, so it must keep its place.
+// https://github.com/ariakit/ariakit/issues/7761
+function LibraryDialog() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)}>
+        Open library
+      </button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        style={dialogStyle}
+      >
+        <Ariakit.DialogHeading>Library</Ariakit.DialogHeading>
+        <MovieDialog />
+        <Ariakit.DialogDismiss>Close library</Ariakit.DialogDismiss>
       </Ariakit.Dialog>
     </>
   );
@@ -326,6 +338,7 @@ function Repro() {
       </Ariakit.Portal>
       <VideoDialog />
       <MovieDialog />
+      <LibraryDialog />
     </section>
   );
 }
