@@ -1,4 +1,4 @@
-import { click, focus, press, q } from "@ariakit/test";
+import { click, focus, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // Modal dialogs keep the fallback dismiss button so that screen reader users
@@ -140,4 +140,31 @@ test("dismiss unmounted while the dialog is open brings the hidden one back", as
   await click(q.button("Remove"));
   expect(q.within(dialog).button.maybe("Keep photo")).not.toBeInTheDocument();
   expect(q.button("Dismiss popup")).toBeInTheDocument();
+});
+
+// The gift note is modal, so the hidden dismiss button of the checkout must not
+// stay operable next to it, also when React creates a new button while the gift
+// note is open.
+// https://github.com/ariakit/ariakit/issues/7775
+test("later dialog disables the hidden dismiss of a dialog that moves out of a portal", async () => {
+  await click(q.button("Checkout"));
+  expect(q.dialog("Checkout")).toBeVisible();
+  expect(q.button("Dismiss popup")).toBeInTheDocument();
+
+  await click(q.button("Add gift note"));
+  expect(q.textbox("Note")).toHaveFocus();
+  // The gift note disables the portal of the checkout, which has the button.
+  expect(q.button.maybe("Dismiss popup")).not.toBeInTheDocument();
+  const dismissInPortal = q.button.hidden("Dismiss popup");
+
+  // The note has text, so the checkout moves out of its portal to the body, and
+  // React creates a new hidden dismiss button there.
+  await type("a");
+  expect(dismissInPortal).not.toBeInTheDocument();
+  expect(q.button.hidden("Dismiss popup")).toBeInTheDocument();
+  // The browser test also closes the gift note and checks that the button is
+  // back. Here, Escape doesn't close the gift note in the state after the move,
+  // in which the checkout disables the gift note too.
+  // https://github.com/ariakit/ariakit/issues/7774
+  expect(q.button.maybe("Dismiss popup")).not.toBeInTheDocument();
 });

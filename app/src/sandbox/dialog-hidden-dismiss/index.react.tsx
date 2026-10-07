@@ -1,5 +1,7 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 export default function Example() {
   return (
@@ -136,6 +138,7 @@ export default function Example() {
           <RemovePhotoBody />
         </Ariakit.Dialog>
       </Ariakit.DialogProvider>
+      <CheckoutDialog />
     </div>
   );
 }
@@ -173,6 +176,70 @@ function RemovePhotoBody() {
     <>
       <button onClick={() => setRemoving(true)}>Remove</button>
       <Ariakit.DialogDismiss>Keep photo</Ariakit.DialogDismiss>
+    </>
+  );
+}
+
+interface BodyPortalProps {
+  children: ReactNode;
+}
+
+// Renders its children as children of the body, like an application that has
+// the body as its root.
+function BodyPortal({ children }: BodyPortalProps) {
+  const [mounted, setMounted] = useState(false);
+  // The body is available only after client hydration.
+  // oxlint-disable-next-line react/set-state-in-effect
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return createPortal(children, document.body);
+}
+
+// The checkout renders in a portal while the gift note is empty, so it moves
+// out of the portal to the body while both dialogs are open. The hidden dismiss
+// button renders next to the dialog, and the one in the body is new. The gift
+// note is outside the tree of the checkout and opened after it, so it must
+// disable that button too.
+// https://github.com/ariakit/ariakit/issues/7775
+function CheckoutDialog() {
+  const [open, setOpen] = useState(false);
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [note, setNote] = useState("");
+  return (
+    <>
+      <Ariakit.Button onClick={() => setOpen(true)}>Checkout</Ariakit.Button>
+      <BodyPortal>
+        <Ariakit.Dialog
+          open={open}
+          onClose={() => setOpen(false)}
+          portal={!note}
+        >
+          <Ariakit.DialogHeading>Checkout</Ariakit.DialogHeading>
+          <Ariakit.Button onClick={() => setNoteOpen(true)}>
+            Add gift note
+          </Ariakit.Button>
+        </Ariakit.Dialog>
+        {/*
+          The gift note mounts when it opens. The checkout disables the elements
+          that are in the page when it opens, and the gift note must not be one
+          of them.
+        */}
+        <Ariakit.Dialog
+          open={noteOpen}
+          onClose={() => setNoteOpen(false)}
+          unmountOnHide
+        >
+          <Ariakit.DialogHeading>Gift note</Ariakit.DialogHeading>
+          <label>
+            Note
+            <input
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+            />
+          </label>
+          <Ariakit.DialogDismiss>Save</Ariakit.DialogDismiss>
+        </Ariakit.Dialog>
+      </BodyPortal>
     </>
   );
 }
