@@ -14,6 +14,7 @@ import {
   getDocument,
   getWindow,
   isFocusEventOutside,
+  isFrame,
   disableFocusIn,
   getNextTabbable,
   getPreviousTabbable,
@@ -23,11 +24,54 @@ import type { ElementType, MutableRefObject, RefCallback } from "react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FocusTrap } from "../focus-trap/focus-trap.tsx";
+import { isShadowRoot } from "../focusable/__utils.ts";
 import { PortalContext } from "./portal-context.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+// Checks whether the parent contains the child, also when the child is inside a
+// shadow tree that a descendant of the parent hosts. Node.contains doesn't
+// cross shadow roots.
+function containsAcrossShadowRoots(parent: Node, child: Node) {
+  let node: Node | null = child;
+  while (node) {
+    if (contains(parent, node)) return true;
+    const root = node.getRootNode();
+    node = isShadowRoot(root) ? root.host : null;
+  }
+  return false;
+}
+
+// The first slot without a name in a shadow tree displays the children of the
+// shadow host that have no slot attribute, such as a portal node.
+const defaultSlotSelector = "slot:not([name]), slot[name='']";
+
+// Returns the element in fullscreen mode that can display portal nodes as its
+// descendants, if there's one.
+function getFullscreenElement(doc: Document) {
+  let { fullscreenElement } = doc;
+  // When the element in fullscreen mode is inside a shadow tree, the document
+  // gives the shadow host, and the shadow root gives the element itself. The
+  // host displays a portal node only through its default slot. So the host
+  // stays the root when that slot is inside the element in fullscreen mode, and
+  // the element is the root otherwise.
+  while (fullscreenElement) {
+    const { shadowRoot } = fullscreenElement;
+    if (!shadowRoot) break;
+    const innerFullscreenElement = shadowRoot.fullscreenElement;
+    if (!innerFullscreenElement) break;
+    const defaultSlot = shadowRoot.querySelector(defaultSlotSelector);
+    if (defaultSlot && contains(innerFullscreenElement, defaultSlot)) break;
+    fullscreenElement = innerFullscreenElement;
+  }
+  if (!fullscreenElement) return null;
+  // While content of an iframe is in fullscreen mode, the iframe is the
+  // fullscreen element of its document, and it doesn't display its children.
+  if (isFrame(fullscreenElement)) return null;
+  return fullscreenElement;
+}
 
 // Returns the best root element for appending portal nodes. By default, it's
 // the parent portal node, or document.body when there's no parent portal. When
@@ -39,7 +83,7 @@ function getRootElement(
 ) {
   const doc = getDocument(element);
   const rootElement = parentPortalNode || doc.body;
-  const { fullscreenElement } = doc;
+  const fullscreenElement = getFullscreenElement(doc);
   const HTMLElementClass = getWindow(element).HTMLElement;
   if (!HTMLElementClass) {
     return rootElement;
@@ -50,14 +94,17 @@ function getRootElement(
   // When the fullscreen element contains the root, such as when the page itself
   // is in fullscreen, portals in the root are already visible, so they stay
   // there.
-  if (contains(fullscreenElement, rootElement)) {
+  if (containsAcrossShadowRoots(fullscreenElement, rootElement)) {
     return rootElement;
   }
   // A nested portal node stays in its parent portal node, unless the fullscreen
   // element is inside the parent. The parent can't move into its own
   // descendant, so the nested portal node must be inside the fullscreen element
   // to remain visible.
-  if (parentPortalNode && !contains(parentPortalNode, fullscreenElement)) {
+  if (
+    parentPortalNode &&
+    !containsAcrossShadowRoots(parentPortalNode, fullscreenElement)
+  ) {
     return parentPortalNode;
   }
   return fullscreenElement;
@@ -87,8 +134,9 @@ function followFullscreen(
     const rootElement = getRootElement(portalNode, parentPortalNode);
     if (portalNode.parentElement === rootElement) return;
     // The fullscreen element is inside this portal node, so the node is already
-    // visible, and a node can't be appended to its own descendant.
-    if (contains(portalNode, rootElement)) return;
+    // visible. A node can't be appended to its own descendant, and that
+    // includes a descendant inside a shadow tree.
+    if (containsAcrossShadowRoots(portalNode, rootElement)) return;
     rootElement.appendChild(portalNode);
   };
   doc.addEventListener("fullscreenchange", onFullscreenChange);

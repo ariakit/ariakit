@@ -524,6 +524,36 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7773
+  test("keeps the document styles of a popup of a fullscreen player whose shadow host has a slot", async ({
+    page,
+    q,
+  }) => {
+    const playback = q.status("Slotted playback");
+    const popup = q.dialog("Volume");
+
+    await q.button("Slotted player fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+
+    await q.button("Volume").click();
+    // The shadow host displays the popup in its slot, which is inside the
+    // fullscreen player.
+    await test.expect(popup).toBeVisible();
+    // The rule for the popup is in a stylesheet of the document, which doesn't
+    // apply to an element inside the shadow tree.
+    await test.expect(popup).toHaveCSS("outline-style", "dashed");
+    await q.button("Loud").click();
+    await test.expect(playback).toContainText("Volume: Loud");
+
+    await q.button("Exit slotted player fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+
+    await q.button("Volume").click();
+    await test.expect(popup).toHaveCSS("outline-style", "dashed");
+    await q.button("Quiet").click();
+    await test.expect(playback).toContainText("Volume: Quiet");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7773
   test("keeps the scroll position of a popup when a frame enters and exits fullscreen", async ({
     page,
     q,
@@ -570,7 +600,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // page handled the fullscreenchange event of the exit. The browser
     // dispatches that event on the rendering update after it clears the
     // fullscreen element, so the frames cross it. Here, the portal node of the
-    // playlist is a child of the portal node of the dialog.
+    // playlist is a child of the portal node of the dialog, and the frame is
+    // inside a shadow tree.
     await flushFrames(page);
     await test.expect(lastTrack).toBeInViewport();
   });

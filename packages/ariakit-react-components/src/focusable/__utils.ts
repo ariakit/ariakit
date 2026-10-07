@@ -67,7 +67,7 @@ export function isCompositeMoveKey(key: string) {
   );
 }
 
-function isShadowRoot(node: Node): node is ShadowRoot {
+export function isShadowRoot(node: Node): node is ShadowRoot {
   return node.nodeType === node.DOCUMENT_FRAGMENT_NODE && "host" in node;
 }
 
