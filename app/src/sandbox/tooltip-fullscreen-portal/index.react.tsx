@@ -22,15 +22,6 @@ function usePortalCount() {
   return count;
 }
 
-// TODO: Remove this workaround when the fix lands. A portal element that the
-// app provides doesn't follow the fullscreen element, so it isn't appended to
-// the player inside it. The function is outside the component so that its
-// identity is stable and the portal isn't created again on each render.
-// https://github.com/ariakit/ariakit/issues/7758
-function createPortalElement(element: HTMLElement) {
-  return element.ownerDocument.createElement("div");
-}
-
 // The player is inside the default portal node of the modal dialog. When the
 // player enters fullscreen, the fullscreen element is a descendant of that
 // portal node, so the portal node can't move into it.
@@ -56,7 +47,6 @@ function VideoDialog() {
       <Ariakit.Dialog
         open={open}
         onClose={() => setOpen(false)}
-        portalElement={createPortalElement}
         style={{
           alignItems: "flex-start",
           background: "white",
