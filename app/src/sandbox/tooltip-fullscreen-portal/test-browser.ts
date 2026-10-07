@@ -226,4 +226,32 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(query(slot).text("Slot content")).toBeVisible();
     await test.expect(query(slot).text("Nested content")).toBeVisible();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7758
+  test("does not throw when an element inside a dialog enters fullscreen", async ({
+    page,
+    q,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+
+    await q.button("Open video").click();
+    const dialog = q.dialog("Video");
+    await test.expect(dialog).toBeVisible();
+
+    await q.button("Player fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+    await test.expect(dialog).toBeVisible();
+
+    // The click needs the player to be reachable while it is in fullscreen.
+    await q.button("Exit player fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+    // The browser dispatches the fullscreenchange event of the entry before the
+    // exit button can be clicked, so the page already reported an error from
+    // that event.
+    test.expect(errors).toEqual([]);
+
+    await q.button("Close video").click();
+    await test.expect(dialog).not.toBeVisible();
+  });
 });

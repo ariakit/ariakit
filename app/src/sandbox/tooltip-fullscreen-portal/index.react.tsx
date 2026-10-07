@@ -22,6 +22,71 @@ function usePortalCount() {
   return count;
 }
 
+// The player is inside the default portal node of the modal dialog. When the
+// player enters fullscreen, the fullscreen element is a descendant of that
+// portal node, so the portal node can't move into it.
+// https://github.com/ariakit/ariakit/issues/7758
+function VideoDialog() {
+  const playerRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+
+  const enterFullscreen = () => {
+    void playerRef.current?.requestFullscreen();
+  };
+
+  const exitFullscreen = () => {
+    if (!document.fullscreenElement) return;
+    void document.exitFullscreen();
+  };
+
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)}>
+        Open video
+      </button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        style={{
+          alignItems: "flex-start",
+          background: "white",
+          border: "1px solid",
+          color: "black",
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+          inset: 48,
+          padding: 24,
+          position: "fixed",
+          zIndex: 50,
+        }}
+      >
+        <Ariakit.DialogHeading>Video</Ariakit.DialogHeading>
+        <div
+          ref={playerRef}
+          role="group"
+          aria-label="Player"
+          style={{
+            background: "white",
+            color: "black",
+            display: "flex",
+            gap: 8,
+            padding: 24,
+          }}
+        >
+          <button type="button" onClick={enterFullscreen}>
+            Player fullscreen
+          </button>
+          <button type="button" onClick={exitFullscreen}>
+            Exit player fullscreen
+          </button>
+        </div>
+        <Ariakit.DialogDismiss>Close video</Ariakit.DialogDismiss>
+      </Ariakit.Dialog>
+    </>
+  );
+}
+
 function Repro() {
   const fullscreenHostRef = useRef<HTMLDivElement>(null);
   const [fullscreenHostMounted, setFullscreenHostMounted] = useState(true);
@@ -138,6 +203,7 @@ function Repro() {
           <p>Nested content</p>
         </Ariakit.Portal>
       </Ariakit.Portal>
+      <VideoDialog />
     </section>
   );
 }

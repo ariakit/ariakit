@@ -10,6 +10,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
 import {
+  contains,
   getDocument,
   getWindow,
   isFocusEventOutside,
@@ -60,9 +61,11 @@ function followFullscreen(portalNode: HTMLElement) {
   const doc = getDocument(portalNode);
   const onFullscreenChange = () => {
     const rootElement = getRootElement(portalNode);
-    if (portalNode.parentElement !== rootElement) {
-      rootElement.appendChild(portalNode);
-    }
+    if (portalNode.parentElement === rootElement) return;
+    // The fullscreen element is inside this portal node, so the node is already
+    // visible, and a node can't be appended to its own descendant.
+    if (contains(portalNode, rootElement)) return;
+    rootElement.appendChild(portalNode);
   };
   doc.addEventListener("fullscreenchange", onFullscreenChange);
   return () => {
