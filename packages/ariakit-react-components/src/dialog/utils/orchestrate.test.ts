@@ -648,6 +648,48 @@ test("getEarlierOpenDialogElements returns the portal nodes of the dialogs that 
   removeOpenDialog(dialogRef);
 });
 
+// https://github.com/ariakit/ariakit/issues/7751
+test("getEarlierOpenDialogElements returns the wrapper elements of the dialogs that opened before", () => {
+  document.body.innerHTML = `
+    <div id="wrapper">
+      <div id="dialog">
+        <div id="nested"></div>
+      </div>
+    </div>
+    <div id="last"></div>
+  `;
+
+  const dialog = getElement("dialog");
+  const nested = getElement("nested");
+  const last = getElement("last");
+
+  let wrapperElement: Element | null = getElement("wrapper");
+  const dialogRef = { current: dialog };
+  const nestedRef = { current: nested };
+  const lastRef = { current: last };
+  addOpenDialog(dialogRef, { getWrapperElement: () => wrapperElement });
+  addOpenDialog(nestedRef);
+  addOpenDialog(lastRef);
+
+  // The tree walk reaches a dialog in a wrapper element through that wrapper.
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([
+    wrapperElement,
+    dialog,
+    nested,
+  ]);
+  // A wrapper element that contains the given dialog is not outside it.
+  expect(getEarlierOpenDialogElements(nestedRef)).toEqual([]);
+
+  // The wrapper element can change while the dialog stays open.
+  wrapperElement = null;
+
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([dialog, nested]);
+
+  removeOpenDialog(lastRef);
+  removeOpenDialog(nestedRef);
+  removeOpenDialog(dialogRef);
+});
+
 test("notifyOpenDialogElementChange notifies only the dialogs that opened after", () => {
   const calls: string[] = [];
   const firstRef = { current: null };

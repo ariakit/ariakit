@@ -586,19 +586,14 @@ function TipPopover() {
     <section aria-label="Tea counter">
       <Ariakit.PopoverProvider>
         <Ariakit.PopoverDisclosure>Open tip</Ariakit.PopoverDisclosure>
-        {/* TODO: Remove this container when the fix is released. It's in the
-            page before the listbox opens, so the listbox marks it.
-            https://github.com/ariakit/ariakit/issues/7751 */}
-        <div>
-          <Ariakit.Popover
-            portal={!value}
-            hideOnInteractOutside={false}
-            style={popupStyle}
-          >
-            <Ariakit.PopoverHeading>Tip</Ariakit.PopoverHeading>
-            <p>Teas steep for three minutes.</p>
-          </Ariakit.Popover>
-        </div>
+        <Ariakit.Popover
+          portal={!value}
+          hideOnInteractOutside={false}
+          style={popupStyle}
+        >
+          <Ariakit.PopoverHeading>Tip</Ariakit.PopoverHeading>
+          <p>Teas steep for three minutes.</p>
+        </Ariakit.Popover>
       </Ariakit.PopoverProvider>
       <Ariakit.ComboboxProvider value={value} setValue={setValue}>
         <Ariakit.ComboboxLabel>Tea</Ariakit.ComboboxLabel>
@@ -623,19 +618,14 @@ function ExtrasMenu() {
     <section aria-label="Juice counter">
       <Ariakit.MenuProvider>
         <Ariakit.MenuButton>Extras</Ariakit.MenuButton>
-        {/* TODO: Remove this container when the fix is released. It's in the
-            page before the listbox opens, so the listbox marks it.
-            https://github.com/ariakit/ariakit/issues/7751 */}
-        <div>
-          <Ariakit.Menu
-            portal={!value}
-            hideOnInteractOutside={false}
-            style={popupStyle}
-          >
-            <Ariakit.MenuItem>Ice</Ariakit.MenuItem>
-            <Ariakit.MenuItem>Mint</Ariakit.MenuItem>
-          </Ariakit.Menu>
-        </div>
+        <Ariakit.Menu
+          portal={!value}
+          hideOnInteractOutside={false}
+          style={popupStyle}
+        >
+          <Ariakit.MenuItem>Ice</Ariakit.MenuItem>
+          <Ariakit.MenuItem>Mint</Ariakit.MenuItem>
+        </Ariakit.Menu>
       </Ariakit.MenuProvider>
       <Ariakit.ComboboxProvider value={value} setValue={setValue}>
         <Ariakit.ComboboxLabel>Juice</Ariakit.ComboboxLabel>
@@ -662,19 +652,14 @@ function ReceiptPopover() {
     <section aria-label="Cider counter">
       <Ariakit.PopoverProvider>
         <Ariakit.PopoverDisclosure>Open receipt</Ariakit.PopoverDisclosure>
-        {/* TODO: Remove this container when the fix is released. It's in the
-            page before the preferences open, so the preferences disable it.
-            https://github.com/ariakit/ariakit/issues/7751 */}
-        <div>
-          <Ariakit.Popover
-            portal={!value}
-            hideOnInteractOutside={false}
-            style={popupStyle}
-          >
-            <Ariakit.PopoverHeading>Receipt</Ariakit.PopoverHeading>
-            <p>Cider is sold by the bottle.</p>
-          </Ariakit.Popover>
-        </div>
+        <Ariakit.Popover
+          portal={!value}
+          hideOnInteractOutside={false}
+          style={popupStyle}
+        >
+          <Ariakit.PopoverHeading>Receipt</Ariakit.PopoverHeading>
+          <p>Cider is sold by the bottle.</p>
+        </Ariakit.Popover>
       </Ariakit.PopoverProvider>
       <Ariakit.Button onClick={() => setPreferencesOpen(true)}>
         Open preferences
