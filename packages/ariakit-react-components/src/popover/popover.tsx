@@ -642,6 +642,11 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       autoFocusOnShow: positioned && autoFocusOnShow,
       ...props,
       portalRef,
+      // The dialog element renders in the wrapper element, and React creates a
+      // new wrapper when the popover moves out of a portal. The popups that
+      // opened after this one find the popover through that wrapper.
+      // https://github.com/ariakit/ariakit/issues/7751
+      unstable_wrapperElement: popoverElement,
     });
 
     return props;
