@@ -10,6 +10,10 @@ interface OpenDialogOptions {
   getOutsideCleanups?: () => Cleanups | undefined;
   // The portal node can change without registering the dialog again.
   getPortalNode?: () => Element | null;
+  // The wrapper element can change without registering the dialog again.
+  getWrapperElement?: () => Element | null | undefined;
+  // The backdrop element can change without registering the dialog again.
+  getBackdropElement?: () => Element | null;
   onEarlierDialogElementChange?: () => void;
 }
 
@@ -20,7 +24,8 @@ const openDialogs = new Map<DialogRef, OpenDialogOptions>();
 /**
  * Adds the dialog after the dialogs that are already open. A dialog that is
  * already there keeps its place. With `onEarlierDialogElementChange`, the
- * dialog learns when the element of a dialog that opened before it changes.
+ * dialog learns when the element or the backdrop of a dialog that opened before
+ * it changes.
  */
 export function addOpenDialog(
   dialogRef: DialogRef,
@@ -34,18 +39,23 @@ export function removeOpenDialog(dialogRef: DialogRef) {
 }
 
 /**
- * Returns the elements of the dialogs that opened before the given dialog and
- * their portal nodes, except the ones that contain it.
+ * Returns the elements of the dialogs that opened before the given dialog,
+ * their portal nodes, their wrapper elements, and their backdrops, except the
+ * ones that contain it.
  */
 export function getEarlierOpenDialogElements(dialogRef: DialogRef) {
   const elements: Element[] = [];
   const dialog = dialogRef.current;
   for (const [openDialogRef, options] of openDialogs) {
     if (openDialogRef === dialogRef) break;
-    // The tree walk reaches a dialog in a portal through its portal node, so
-    // the dialog element alone doesn't make the walk find it.
+    // The tree walk reaches a dialog in a portal through its portal node, and a
+    // dialog in a wrapper element through that wrapper, so the dialog element
+    // alone doesn't make the walk find it. The backdrop renders next to the
+    // dialog element or its wrapper, so the walk doesn't find it through them.
     const openDialogElements = [
       options.getPortalNode?.(),
+      options.getWrapperElement?.(),
+      options.getBackdropElement?.(),
       openDialogRef.current,
     ];
     for (const element of openDialogElements) {
@@ -58,8 +68,8 @@ export function getEarlierOpenDialogElements(dialogRef: DialogRef) {
 }
 
 /**
- * Tells the dialogs that opened after the given dialog that its element
- * changed.
+ * Tells the dialogs that opened after the given dialog that its element or its
+ * backdrop changed.
  */
 export function notifyOpenDialogElementChange(dialogRef: DialogRef) {
   let foundDialog = false;

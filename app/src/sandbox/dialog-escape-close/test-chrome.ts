@@ -1,6 +1,10 @@
 import type { Page } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
+// A point in the corner of a backdrop. The controls and the popups that stay
+// above a backdrop can cover its center, but not this corner.
+const backdropCorner = { x: 8, y: 8 };
+
 withFramework(import.meta.dirname, async ({ query, test }) => {
   const pressEscapeOnce = async (page: Page, label: string) => {
     const closeRequests = query(page).text(
@@ -483,5 +487,330 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // The ticket is the topmost popup again, so the next Escape closes it.
     await page.keyboard.press("Escape");
     await test.expect(q.dialog("Ticket")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7751
+  test("Escape closes the Combobox popover before a Popover outside its tree after the Popover moves out of a portal", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Tea counter"));
+    await q.button("Open tip").click();
+    await test.expect(q.dialog("Tip")).toBeVisible();
+    await test.expect(counter.dialog("Tip")).toHaveCount(0);
+    await q.combobox("Tea").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Tea")).toBeVisible();
+    // The field has a value, so the tip moves out of its portal to the counter.
+    await page.keyboard.type("a");
+    await test.expect(counter.dialog("Tip")).toBeVisible();
+    await test.expect(q.listbox("Tea")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Tea")).toBeHidden();
+    await test.expect(q.dialog("Tip")).toBeVisible();
+    await test.expect(q.combobox("Tea")).toBeFocused();
+    // The popover is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Tip")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7751
+  test("Escape closes the Combobox popover before a Menu outside its tree after the Menu moves out of a portal", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Juice counter"));
+    await q.button("Extras").click();
+    await test.expect(q.menu("Extras")).toBeVisible();
+    await test.expect(counter.menu("Extras")).toHaveCount(0);
+    await q.combobox("Juice").focus();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.listbox("Juice")).toBeVisible();
+    // The field has a value, so the menu moves out of its portal to the
+    // counter.
+    await page.keyboard.type("a");
+    await test.expect(counter.menu("Extras")).toBeVisible();
+    await test.expect(q.listbox("Juice")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Juice")).toBeHidden();
+    await test.expect(q.menu("Extras")).toBeVisible();
+    await test.expect(q.combobox("Juice")).toBeFocused();
+    // The menu is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.menu("Extras")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7751
+  test("Escape closes the modal Dialog before a Popover outside its tree after that Popover moves out of a portal", async ({
+    page,
+    q,
+  }) => {
+    // The modal dialog disables the page around it, so these queries include
+    // the elements that aren't exposed.
+    const counter = query(q.region("Cider counter", { includeHidden: true }));
+    const receipt = q.dialog("Receipt", { includeHidden: true });
+    await q.button("Open receipt").click();
+    await test.expect(q.dialog("Receipt")).toBeVisible();
+    await q.button("Open preferences").click();
+    await test.expect(q.textbox("Cider")).toBeFocused();
+    await test.expect(receipt).toBeVisible();
+    await test
+      .expect(counter.dialog("Receipt", { includeHidden: true }))
+      .toHaveCount(0);
+    // The field has a value, so the receipt moves out of its portal to the
+    // counter.
+    await page.keyboard.type("a");
+    await test
+      .expect(counter.dialog("Receipt", { includeHidden: true }))
+      .toBeVisible();
+    // The preferences are modal, so they disable the receipt in the counter.
+    await test
+      .expect(
+        receipt.evaluate((element) => element.closest("[inert]") !== null),
+      )
+      .resolves.toBe(true);
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Preferences")).toBeHidden();
+    await test.expect(q.dialog("Receipt")).toBeVisible();
+    await test.expect(q.button("Open preferences")).toBeFocused();
+    // The receipt is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Receipt")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7764
+  test("Clicking the backdrop of a Dialog closes the Combobox popover that opened after it after the Dialog moves out of a portal", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Milk counter"));
+    await q.button("Open flyer").click();
+    await test.expect(q.dialog("Flyer")).toBeVisible();
+    await test.expect(counter.presentation()).toHaveCount(0);
+    await q.combobox("Milk").click();
+    await test.expect(q.listbox("Milk")).toBeVisible();
+    // The field has a value, so the flyer and its backdrop move out of their
+    // portal to the counter.
+    await page.keyboard.type("a");
+    await test.expect(counter.dialog("Flyer")).toBeVisible();
+    await test.expect(q.listbox("Milk")).toBeVisible();
+    // The backdrop in the counter is outside both popups, so a click on it
+    // closes them.
+    await counter.presentation().click({ position: backdropCorner });
+    await test.expect(q.dialog("Flyer")).toBeHidden();
+    await test.expect(q.listbox("Milk")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7764
+  test("Clicking the backdrop of a Popover closes the Combobox popover that opened after it after the Popover moves out of a portal", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Butter counter"));
+    await q.button("Open leaflet").click();
+    await test.expect(q.dialog("Leaflet")).toBeVisible();
+    await test.expect(counter.presentation()).toHaveCount(0);
+    await q.combobox("Butter").click();
+    await test.expect(q.listbox("Butter")).toBeVisible();
+    // The field has a value, so the leaflet and its backdrop move out of their
+    // portal to the counter.
+    await page.keyboard.type("a");
+    await test.expect(counter.dialog("Leaflet")).toBeVisible();
+    await test.expect(q.listbox("Butter")).toBeVisible();
+    // The backdrop in the counter is outside both popups, so a click on it
+    // closes them.
+    await counter.presentation().click({ position: backdropCorner });
+    await test.expect(q.dialog("Leaflet")).toBeHidden();
+    await test.expect(q.listbox("Butter")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7764
+  test("Clicking the backdrop of a Dialog under the modal Dialog keeps it open after that Dialog moves out of a portal", async ({
+    page,
+    q,
+  }) => {
+    // The modal dialog disables the page around it, so these queries include
+    // the elements that aren't exposed.
+    const counter = query(q.region("Cream counter", { includeHidden: true }));
+    const backdrop = counter.presentation(undefined, { includeHidden: true });
+    await q.button("Open poster").click();
+    await test.expect(q.dialog("Poster")).toBeVisible();
+    await q.button("Open options").click();
+    await test.expect(q.textbox("Cream")).toBeFocused();
+    await test.expect(backdrop).toHaveCount(0);
+    // The field has a value, so the poster and its backdrop move out of their
+    // portal to the counter.
+    await page.keyboard.type("a");
+    await test
+      .expect(counter.dialog("Poster", { includeHidden: true }))
+      .toBeVisible();
+    // The options are modal, so they disable the backdrop in the counter.
+    await test
+      .expect(
+        backdrop.evaluate((element) => element.closest("[inert]") !== null),
+      )
+      .resolves.toBe(true);
+    // A disabled element isn't a pointer target, so the locator can't click the
+    // backdrop. The mouse presses the same point of the backdrop instead.
+    const box = await backdrop.boundingBox();
+    if (!box) throw new Error("The backdrop has no bounding box");
+    await page.mouse.click(box.x + backdropCorner.x, box.y + backdropCorner.y);
+    // The press goes through the backdrop to the page, which is outside the
+    // options, so it closes only the options.
+    await test.expect(q.dialog("Options")).toBeHidden();
+    await test.expect(q.dialog("Poster")).toBeVisible();
+    // The poster is the topmost popup again, so a click on its backdrop closes
+    // it.
+    await counter.presentation().click({ position: backdropCorner });
+    await test.expect(q.dialog("Poster")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7772
+  test("Clicking the backdrop of a Dialog closes the Combobox popover that opened after it after the Dialog gets that backdrop", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Yogurt counter"));
+    await q.button("Open sign").click();
+    await test.expect(q.dialog("Sign")).toBeVisible();
+    await q.combobox("Yogurt").click();
+    await test.expect(q.listbox("Yogurt")).toBeVisible();
+    await test.expect(counter.presentation()).toHaveCount(0);
+    // The field has a value, so the sign gets its backdrop.
+    await page.keyboard.type("a");
+    await test.expect(counter.presentation()).toBeVisible();
+    await test.expect(q.listbox("Yogurt")).toBeVisible();
+    // The new backdrop is outside both popups, so a click on it closes them.
+    await counter.presentation().click({ position: backdropCorner });
+    await test.expect(q.dialog("Sign")).toBeHidden();
+    await test.expect(q.listbox("Yogurt")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7772
+  test("Clicking the backdrop of a Popover closes the Combobox popover that opened after it after the Popover gets that backdrop", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Kefir counter"));
+    await q.button("Open badge").click();
+    await test.expect(q.dialog("Badge")).toBeVisible();
+    await q.combobox("Kefir").click();
+    await test.expect(q.listbox("Kefir")).toBeVisible();
+    await test.expect(counter.presentation()).toHaveCount(0);
+    // The field has a value, so the badge gets its backdrop.
+    await page.keyboard.type("a");
+    await test.expect(counter.presentation()).toBeVisible();
+    await test.expect(q.listbox("Kefir")).toBeVisible();
+    // The new backdrop is outside both popups, so a click on it closes them.
+    await counter.presentation().click({ position: backdropCorner });
+    await test.expect(q.dialog("Badge")).toBeHidden();
+    await test.expect(q.listbox("Kefir")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7772
+  test("Clicking the backdrop of a Dialog under the modal Dialog keeps it open after that Dialog gets that backdrop", async ({
+    page,
+    q,
+  }) => {
+    // The modal dialog disables the page around it, so these queries include
+    // the elements that aren't exposed.
+    const counter = query(q.region("Custard counter", { includeHidden: true }));
+    const backdrop = counter.presentation(undefined, { includeHidden: true });
+    await q.button("Open placard").click();
+    await test.expect(q.dialog("Placard")).toBeVisible();
+    await q.button("Open choices").click();
+    await test.expect(q.textbox("Custard")).toBeFocused();
+    await test.expect(backdrop).toHaveCount(0);
+    // The field has a value, so the placard gets its backdrop.
+    await page.keyboard.type("a");
+    await test.expect(backdrop).toBeVisible();
+    // The choices are modal, so they disable the new backdrop.
+    await test
+      .expect(
+        backdrop.evaluate((element) => element.closest("[inert]") !== null),
+      )
+      .resolves.toBe(true);
+    // A disabled element isn't a pointer target, so the locator can't click the
+    // backdrop. The mouse presses the same point of the backdrop instead.
+    const box = await backdrop.boundingBox();
+    if (!box) throw new Error("The backdrop has no bounding box");
+    await page.mouse.click(box.x + backdropCorner.x, box.y + backdropCorner.y);
+    // The press goes through the backdrop to the page, which is outside the
+    // choices, so it closes only the choices.
+    await test.expect(q.dialog("Choices")).toBeHidden();
+    await test.expect(q.dialog("Placard")).toBeVisible();
+    // The placard is the topmost popup again, so a click on its backdrop closes
+    // it.
+    await counter.presentation().click({ position: backdropCorner });
+    await test.expect(q.dialog("Placard")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7772
+  test("The backdrop of a Dialog keeps the z-index of the Dialog after the backdrop element changes", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Ghee counter"));
+    await q.button("Open pennant").click();
+    await test.expect(q.dialog("Pennant")).toHaveCSS("z-index", "1");
+    await test.expect(counter.presentation()).toHaveCSS("z-index", "1");
+    await q.combobox("Ghee").click();
+    // The field has a value, so the dim backdrop replaces the clear one.
+    await page.keyboard.type("a");
+    await test
+      .expect(counter.presentation())
+      .toHaveCSS("background-color", "rgba(0, 0, 0, 0.1)");
+    await test.expect(counter.presentation()).toHaveCSS("z-index", "1");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7772
+  test("Clicking the backdrop of a Dialog closes the Dialog after the backdrop element changes", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Ghee counter"));
+    await q.button("Open pennant").click();
+    await test.expect(q.dialog("Pennant")).toBeVisible();
+    await test
+      .expect(counter.presentation())
+      .toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await q.combobox("Ghee").click();
+    await test.expect(q.listbox("Ghee")).toBeVisible();
+    // The field has a value, so the dim backdrop replaces the clear one.
+    await page.keyboard.type("a");
+    await test
+      .expect(counter.presentation())
+      .toHaveCSS("background-color", "rgba(0, 0, 0, 0.1)");
+    // The listbox closes first, so the pennant is the only open popup.
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Ghee")).toBeHidden();
+    await test.expect(q.dialog("Pennant")).toBeVisible();
+    // The new backdrop is outside the pennant, so a click on it closes the
+    // pennant.
+    await counter.presentation().click({ position: backdropCorner });
+    await test.expect(q.dialog("Pennant")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7772
+  test("Clicking the backdrop of a Dialog closes the Combobox popover that opened after it after the backdrop element changes", async ({
+    page,
+    q,
+  }) => {
+    const counter = query(q.region("Ghee counter"));
+    await q.button("Open pennant").click();
+    await test.expect(q.dialog("Pennant")).toBeVisible();
+    await q.combobox("Ghee").click();
+    await test.expect(q.listbox("Ghee")).toBeVisible();
+    // The field has a value, so the dim backdrop replaces the clear one.
+    await page.keyboard.type("a");
+    await test
+      .expect(counter.presentation())
+      .toHaveCSS("background-color", "rgba(0, 0, 0, 0.1)");
+    await test.expect(q.listbox("Ghee")).toBeVisible();
+    // The new backdrop is outside both popups, so a click on it closes them.
+    // The listbox goes first here, because the test above covers the pennant.
+    await counter.presentation().click({ position: backdropCorner });
+    await test.expect(q.listbox("Ghee")).toBeHidden();
+    await test.expect(q.dialog("Pennant")).toBeHidden();
   });
 });

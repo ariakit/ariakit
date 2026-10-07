@@ -1,4 +1,4 @@
-import { blur, click, dispatch, focus, press, q } from "@ariakit/test";
+import { blur, click, dispatch, focus, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/7042
@@ -59,10 +59,9 @@ test("restores focus when a refocused item is replaced", async () => {
   expect(replacement).toHaveFocus();
 });
 
-// The sandbox's other scenario, re-anchoring an already open popup, is covered
-// only by the browser test: an already open popup has no initial focus left to
-// take, and the focus half of a presentation never waits on placement, so its
-// only user-facing effect is a document scroll that happy-dom cannot model.
+// The scroll half of re-anchoring an already open popup is covered only by the
+// browser test: the focus half of a presentation never waits on placement, so
+// what the pass holds back is a document scroll that happy-dom cannot model.
 // https://github.com/ariakit/ariakit/issues/7019
 test("keeps the popup unplaced while a custom updatePosition is still working", async () => {
   await click(q.button("Actions"));
@@ -77,6 +76,158 @@ test("keeps the popup unplaced while a custom updatePosition is still working", 
   expect(menu).toHaveAttribute("data-placing");
 
   await click(q.button("Finish Actions positioning"));
+  expect(menu).not.toHaveAttribute("data-placing");
+});
+
+// A popup takes its initial focus once each time it opens. A pass that runs
+// later, while the popup is open, has no initial focus left to give, so it must
+// leave focus on the item the user moved to.
+// https://github.com/ariakit/ariakit/issues/7625
+test("keeps focus on a moved item after an open popup repositions itself", async () => {
+  await focus(q.button("Actions"));
+  await press.Enter();
+  const menu = q.menu("Actions");
+  const finish = q.button("Finish Actions positioning");
+  const item = q.menuitem("Action 3");
+  expect(menu).toHaveAttribute("data-placing");
+  // The buttons that drive a pass stand in for work the application does on its
+  // own, so they are dispatched to. A click would move focus out of the menu,
+  // and the popup never takes focus back from outside.
+  await dispatch.click(finish);
+  await expect.poll(() => q.menuitem("Action 1")).toHaveFocus();
+
+  await press.ArrowDown();
+  await press.ArrowDown();
+  expect(item).toHaveFocus();
+
+  await dispatch.click(q.button("Reposition Actions"));
+  expect(menu).toHaveAttribute("data-placing");
+  await dispatch.click(finish);
+  await expect.poll(() => menu).not.toHaveAttribute("data-placing");
+  // Focus that stays put has no positive state. The popup would take its
+  // initial focus from an effect and a microtask that follow the commit the
+  // attribute above reports, and `dispatch` flushes only microtasks, so cross a
+  // macrotask.
+  await sleep();
+  expect(item).toHaveFocus();
+  expect(item).toHaveAttribute("data-active-item");
+});
+
+// An `autoFocusOnShow` callback can take the initial focus on its own and
+// return `false`. That answer is the initial focus of the open, so a later pass
+// must not ask the callback again, or it moves focus back to its item.
+// https://github.com/ariakit/ariakit/pull/7762#discussion_r4204210733
+test("keeps focus on a moved item when the app took the initial focus", async () => {
+  await focus(q.button("Recent actions"));
+  await press.Enter();
+  const menu = q.menu("Recent actions");
+  const finish = q.button("Finish Recent actions positioning");
+  const item = q.menuitem("Paste");
+  expect(menu).toHaveAttribute("data-placing");
+  // The buttons that drive a pass stand in for work the application does on its
+  // own, so they are dispatched to. A click would move focus out of the menu.
+  await dispatch.click(finish);
+  await expect.poll(() => q.menuitem("Copy")).toHaveFocus();
+
+  await press.ArrowDown();
+  expect(item).toHaveFocus();
+
+  await dispatch.click(q.button("Reposition Recent actions"));
+  expect(menu).toHaveAttribute("data-placing");
+  await dispatch.click(finish);
+  await expect.poll(() => menu).not.toHaveAttribute("data-placing");
+  // Focus that stays put has no positive state. The popup would ask the
+  // callback from an effect that follows the commit the attribute above
+  // reports, and `dispatch` flushes only microtasks, so cross a macrotask.
+  await sleep();
+  expect(item).toHaveFocus();
+  expect(item).toHaveAttribute("data-active-item");
+});
+
+// The initial focus that a popup took counts for one open. A popup that opens
+// again waits for its new pass, and then takes its initial focus again.
+// https://github.com/ariakit/ariakit/issues/7625
+test("holds the initial focus of a popup that opens again until it is placed", async () => {
+  const trigger = q.button("Actions");
+  const finish = q.button("Finish Actions positioning");
+  await click(trigger);
+  const menu = q.menu("Actions");
+  await click(finish);
+  expect(menu).toHaveFocus();
+
+  await press.Escape();
+  expect(menu).not.toBeVisible();
+  expect(trigger).toHaveFocus();
+
+  // `click` settles the DOM before it resolves, so an initial focus that did
+  // not wait for the new pass would already have moved.
+  await click(trigger);
+  expect(menu).toHaveAttribute("data-placing");
+  expect(trigger).toHaveFocus();
+
+  await click(finish);
+  expect(menu).not.toHaveAttribute("data-placing");
+  expect(menu).toHaveFocus();
+});
+
+// Moving an open popup into a portal replaces its elements. The new element
+// starts at its origin and has not taken the initial focus, so the popup takes
+// it again, and only once that element has been positioned.
+// https://github.com/ariakit/ariakit/issues/7625
+test("holds the initial focus of a popup whose element is replaced until it is placed", async () => {
+  const finish = q.button("Finish Portal actions positioning");
+  await click(q.button("Portal actions"));
+  await click(finish);
+  expect(q.menu("Portal actions")).toHaveFocus();
+
+  // The move stands in for work the application does on its own, so it is
+  // dispatched to. A click would put focus on the button, where it stays
+  // whether or not the popup waits.
+  await dispatch.click(q.button("Move Portal actions to a portal"));
+  await expect
+    .poll(() => q.menu.maybe("Portal actions"))
+    .toHaveAttribute("data-placing");
+  // A popup that waits has no positive state. Its initial focus would come from
+  // an effect and a microtask, and `dispatch` flushes only microtasks, so cross
+  // a macrotask.
+  await sleep();
+  const menu = q.menu("Portal actions");
+  expect(menu).toHaveAttribute("data-placing");
+  expect(menu).not.toHaveFocus();
+
+  await dispatch.click(finish);
+  await expect.poll(() => menu).toHaveFocus();
+  expect(menu).not.toHaveAttribute("data-placing");
+});
+
+// A popup with a leave transition stays mounted while it leaves. When another
+// button opens it again in that time, it is a new open at a new place, so the
+// popup waits for the pass that moves it there.
+// https://github.com/ariakit/ariakit/issues/7625
+test("holds the initial focus of a popup that opens again while it is leaving until it is placed", async () => {
+  const finish = q.button("Finish Row actions positioning");
+  const secondButton = q.button("Second row actions");
+  await focus(q.button("First row actions"));
+  await press.Enter();
+  const menu = q.menu("Row actions");
+  const item = q.menuitem("Rename row");
+  expect(menu).toHaveAttribute("data-placing");
+  // The button stands in for work the application does on its own, so it is
+  // dispatched to. A click outside the menu would close it.
+  await dispatch.click(finish);
+  await expect.poll(() => item).toHaveFocus();
+
+  // Focus on the other button closes the menu, which starts to leave.
+  await focus(secondButton);
+  await expect.poll(() => menu).toHaveAttribute("data-leave");
+  // `press` settles the DOM before it resolves, so an initial focus that did
+  // not wait for the new pass would already have moved.
+  await press.Enter();
+  expect(menu).toHaveAttribute("data-placing");
+  expect(secondButton).toHaveFocus();
+
+  await dispatch.click(finish);
+  await expect.poll(() => item).toHaveFocus();
   expect(menu).not.toHaveAttribute("data-placing");
 });
 

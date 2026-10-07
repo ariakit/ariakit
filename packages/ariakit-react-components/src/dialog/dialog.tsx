@@ -219,6 +219,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   finalFocus,
   unmountOnHide,
   unstable_treeSnapshotKey,
+  unstable_wrapperElement,
   ...props
 }) {
   const context = useDialogProviderContext();
@@ -283,6 +284,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     props.portalRef,
   );
   const portalNodeRef = useLiveRef(portalNode);
+  const wrapperElementRef = useLiveRef(unstable_wrapperElement);
   // Modal dialogs don't use tab-order sentinels to match native <dialog>. Tab
   // may reach browser UI instead of cycling inside, which is intentional.
   // https://github.com/ariakit/ariakit/issues/7092#issuecomment-5227754640
@@ -510,11 +512,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     addOpenDialog(ref, {
       getOutsideCleanups: () => treeRef.current?.outsideCleanups,
       getPortalNode: () => portalNodeRef.current,
+      getWrapperElement: () => wrapperElementRef.current,
+      getBackdropElement: () => backdropRef.current,
       onEarlierDialogElementChange: () => {
         setEarlierDialogElementChanges((count) => count + 1);
       },
     });
-  }, [isOpenAndReady, portalNodeRef]);
+  }, [isOpenAndReady, portalNodeRef, wrapperElementRef]);
 
   // The dialog keeps its place while it stays open. It isn't ready while its
   // new portal node doesn't exist yet, such as when the portal prop changes,
@@ -545,6 +549,15 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     notifyOpenDialogElementChange(ref);
   }, [isOpenAndReady, contentElement]);
 
+  // Tells them too when this dialog gets a backdrop element, such as when the
+  // backdrop prop changes while the dialog is open. The element of this dialog
+  // stays the same then, so the effect above doesn't run. A dialog that isn't
+  // open has no dialogs after it, so the call does nothing.
+  // https://github.com/ariakit/ariakit/issues/7772
+  const onBackdropElementChange = useCallback(() => {
+    notifyOpenDialogElementChange(ref);
+  }, []);
+
   useSafeLayoutEffect(() => {
     if (!id) return;
     if (!canTakeTreeSnapshot) return;
@@ -560,12 +573,15 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   }, [id, canTakeTreeSnapshot, unstable_treeSnapshotKey]);
 
   // The snapshot has the dialogs that were already open, but React can replace
-  // their elements or move them to new portal nodes, and the new elements
-  // aren't in the snapshot. This adds the current ones, so this dialog marks
-  // them too. The elements that other parts of the page add later stay out of
-  // the snapshot.
+  // their elements, move them to new portal nodes, or render them in new
+  // wrapper elements, and the new elements aren't in the snapshot. The same
+  // applies to their backdrops. This adds the current ones, so this dialog
+  // marks them too. The elements that other parts of the page add later stay
+  // out of the snapshot.
   // https://github.com/ariakit/ariakit/issues/7728
   // https://github.com/ariakit/ariakit/issues/7733
+  // https://github.com/ariakit/ariakit/issues/7751
+  // https://github.com/ariakit/ariakit/issues/7764
   useSafeLayoutEffect(() => {
     if (!id) return;
     if (!canTakeTreeSnapshot) return;
@@ -1072,6 +1088,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
             store={store}
             backdrop={backdrop}
             backdropRef={backdropRef}
+            onElementChange={onBackdropElementChange}
             hidden={hiddenProp}
             alwaysVisible={alwaysVisible}
           />
@@ -1079,7 +1096,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         {element}
       </>
     ),
-    [store, backdrop, hiddenProp, alwaysVisible],
+    [store, backdrop, onBackdropElementChange, hiddenProp, alwaysVisible],
   );
 
   const [headingId, setHeadingId] = useState<string>();
@@ -1434,6 +1451,14 @@ export interface DialogOptions<T extends ElementType = TagName>
    * @private
    */
   unstable_treeSnapshotKey?: unknown;
+  /**
+   * The element that a composed component renders around the dialog element,
+   * such as the element that positions a popover. The dialogs that open after
+   * this one handle it as a part of this dialog.
+   * @deprecated
+   * @private
+   */
+  unstable_wrapperElement?: Element | null;
 }
 
 export type DialogProps<T extends ElementType = TagName> = Props<
