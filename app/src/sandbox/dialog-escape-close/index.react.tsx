@@ -852,6 +852,7 @@ function InvoiceDialog({
   const [value, setValue] = useState("");
   const [jars, setJars] = useState(0);
   const [slot, setSlot] = useState<HTMLElement | null>(null);
+  const [note, setNote] = useState<HTMLElement | null>(null);
   const moved = !!value;
   const portal =
     move === "toPortalNode" || (move === "toPortal" ? moved : !moved);
@@ -866,6 +867,11 @@ function InvoiceDialog({
         onClose={() => setOpen(false)}
         portal={portal}
         portalElement={move === "toPortalNode" && !moved ? slot : null}
+        // TODO: Remove this workaround when the fix is released. The invoice
+        // treats the note as a part of itself, so it doesn't disable the note
+        // when it takes a new snapshot of the page.
+        // https://github.com/ariakit/ariakit/issues/7774
+        getPersistentElements={() => (note ? [note] : [])}
         // The element of the invoice is new after it moves, and focus is in the
         // note, so the invoice would hide on the next focus move in the note.
         // https://github.com/ariakit/ariakit/issues/7778
@@ -879,6 +885,7 @@ function InvoiceDialog({
       </Ariakit.Dialog>
       {noteOpen && (
         <Ariakit.Dialog
+          ref={setNote}
           open
           onClose={() => setNoteOpen(false)}
           portal={notePortal}
