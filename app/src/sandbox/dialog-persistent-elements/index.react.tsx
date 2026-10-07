@@ -205,6 +205,16 @@ export default function Example() {
         >
           Add late outside field
         </button>
+        {/*
+         * Replaces the dialog element while focus stays outside the dialog.
+         */}
+        <button
+          type="button"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => setAsSection(true)}
+        >
+          Replace dialog from notifications
+        </button>
       </div>
 
       {/* happy-dom proxies forms for named access. Their descendants must still

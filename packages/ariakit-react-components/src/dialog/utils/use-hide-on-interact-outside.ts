@@ -193,11 +193,18 @@ export function useHideOnInteractOutside({
   // Tracks whether the content element has been focused at least once since the
   // dialog opened. The event listeners below use this to decide whether the
   // marked-tree check applies. Shared by all event types.
+  //
+  // The flag belongs to an open cycle of this store, so the reset must not
+  // depend on the content element, which React can replace while the dialog is
+  // open. https://github.com/ariakit/ariakit/issues/7778
+  useSafeLayoutEffect(() => {
+    if (!open) return;
+    focusedRef.current = false;
+  }, [open, store]);
   useSafeLayoutEffect(() => {
     if (!open) return;
     if (!domReady) return;
     if (!contentElement) return;
-    focusedRef.current = false;
     const onFocus = () => {
       focusedRef.current = true;
       focusedStoreRef.current = store;
