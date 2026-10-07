@@ -168,6 +168,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
+  // https://github.com/ariakit/ariakit/issues/7799
   test("animates the bar between rows in a vertical group", async ({
     q,
     browserName,
@@ -185,24 +186,30 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     const start = await system.boundingBox();
     const end = await dark.boundingBox();
     if (!start || !end) throw new Error("Missing radio bounds");
-    // Hold the real position transition halfway through so its short default
-    // duration cannot finish before the geometry assertion reaches the browser.
-    await bar.evaluate((node) => {
-      node.addEventListener("transitionrun", (event) => {
-        if (!(event instanceof TransitionEvent)) return;
-        if (event.propertyName !== "top" && event.propertyName !== "bottom")
-          return;
-        for (const animation of node.getAnimations()) {
-          if (!(animation instanceof CSSTransition)) continue;
-          if (animation.transitionProperty !== event.propertyName) continue;
-          animation.pause();
-          animation.currentTime =
-            Number(animation.effect?.getTiming().duration) / 2;
-        }
-      });
-    });
+    // Keep the transition pending for the test's whole budget. Safari can
+    // finish the short transition before a transitionrun handler pauses it.
+    await bar.evaluate((node, timeout) => {
+      node.style.transitionDelay = `${timeout}ms`;
+    }, test.info().timeout);
     await dark.click();
     await test.expect(dark).toBeChecked();
+    await test.expect
+      .poll(() =>
+        bar.evaluate((node) => {
+          const transitions = node.getAnimations().filter((animation) => {
+            if (!(animation instanceof CSSTransition)) return false;
+            return ["top", "bottom"].includes(animation.transitionProperty);
+          });
+          for (const animation of transitions) {
+            animation.pause();
+            const timing = animation.effect!.getTiming();
+            animation.currentTime =
+              Number(timing.delay) + Number(timing.duration) / 2;
+          }
+          return transitions.length;
+        }),
+      )
+      .toBeGreaterThan(0);
     await test.expect
       .poll(async () => (await bar.boundingBox())?.y)
       .toBeGreaterThan(start.y);
