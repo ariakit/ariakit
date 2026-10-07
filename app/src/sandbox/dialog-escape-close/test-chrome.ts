@@ -20,6 +20,14 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(closeRequests).toHaveText(`${label} close requests: 1`);
   };
 
+  const expectFocusKept = async (page: Page, label: string) => {
+    // Chrome removes focus from an element that becomes disabled when it
+    // updates the rendering, after the animation frame callbacks of that frame.
+    // The focus must stay the same, so the assertion waits for the next frame.
+    await flushFrames(page, 2);
+    await test.expect(query(page).textbox(label)).toBeFocused();
+  };
+
   // https://github.com/ariakit/ariakit/issues/7622
   test("Escape requests one close in Menu", async ({ page, q }) => {
     await q.button("Actions").click();
@@ -663,5 +671,166 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // it.
     await counter.presentation().click({ position: backdropCorner });
     await test.expect(q.dialog("Poster")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7774
+  test("The modal Dialog keeps the modal Dialog that opened after it enabled after it moves out of a portal", async ({
+    page,
+    q,
+  }) => {
+    // The modal dialogs disable the page around them, so these queries include
+    // the elements that aren't exposed.
+    const counter = query(q.region("Sugar counter", { includeHidden: true }));
+    const invoice = counter.dialog("Invoice", { includeHidden: true });
+    await q.button("Open invoice").click();
+    await test.expect(q.dialog("Invoice")).toBeVisible();
+    await q.button("Open discount").click();
+    await test.expect(q.textbox("Sugar")).toBeFocused();
+    await test.expect(invoice).toHaveCount(0);
+    // The field has a value, so the invoice moves out of its portal to the
+    // counter.
+    await page.keyboard.type("a");
+    await test.expect(invoice).toBeVisible();
+    // The discount opened after the invoice, so the invoice doesn't disable it.
+    // The field keeps the focus, and the pointer can reach the button.
+    await expectFocusKept(page, "Sugar");
+    await q.button("Add sugar").click();
+    await test.expect(q.text("Sugar jars: 1")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Discount")).toBeHidden();
+    await test.expect(q.dialog("Invoice")).toBeVisible();
+    // The invoice is modal, so it still disables the counter around it.
+    await test
+      .expect(
+        counter
+          .button("Open invoice", { includeHidden: true })
+          .evaluate((element) => element.closest("[inert]") !== null),
+      )
+      .resolves.toBe(true);
+    // The invoice is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Invoice")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7774
+  test("The modal Dialog keeps the modal Dialog that opened after it enabled after it moves to a portal", async ({
+    page,
+    q,
+  }) => {
+    // The modal dialogs disable the page around them, so these queries include
+    // the elements that aren't exposed.
+    const counter = query(q.region("Salt counter", { includeHidden: true }));
+    const bill = counter.dialog("Bill", { includeHidden: true });
+    await q.button("Open bill").click();
+    await test.expect(q.dialog("Bill")).toBeVisible();
+    await q.button("Open refund").click();
+    await test.expect(q.textbox("Salt")).toBeFocused();
+    await test.expect(bill).toBeVisible();
+    // The field has a value, so the bill moves out of the counter to a portal.
+    await page.keyboard.type("a");
+    await test.expect(bill).toHaveCount(0);
+    await test.expect(q.dialog("Bill", { includeHidden: true })).toBeVisible();
+    // The refund opened after the bill, so the bill doesn't disable it. The
+    // field keeps the focus, and the pointer can reach the button.
+    await expectFocusKept(page, "Salt");
+    await q.button("Add salt").click();
+    await test.expect(q.text("Salt jars: 1")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Refund")).toBeHidden();
+    await test.expect(q.dialog("Bill")).toBeVisible();
+    // The bill is modal, so it still disables the counter that it left.
+    await test
+      .expect(
+        counter
+          .button("Open bill", { includeHidden: true })
+          .evaluate((element) => element.closest("[inert]") !== null),
+      )
+      .resolves.toBe(true);
+    // The bill is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Bill")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7774
+  test("The modal Dialog keeps the modal Dialog that opened next to it enabled after it moves to a portal", async ({
+    page,
+    q,
+  }) => {
+    // The modal dialogs disable the page around them, so these queries include
+    // the elements that aren't exposed.
+    const counter = query(q.region("Pepper counter", { includeHidden: true }));
+    const quote = counter.dialog("Quote", { includeHidden: true });
+    await q.button("Open quote").click();
+    await test.expect(q.dialog("Quote")).toBeVisible();
+    await q.button("Open deposit").click();
+    await test.expect(q.textbox("Pepper")).toBeFocused();
+    await test.expect(quote).toBeVisible();
+    // The deposit renders in the counter too, and it stays there when the field
+    // has a value and the quote moves out of the counter to a portal.
+    await page.keyboard.type("a");
+    await test.expect(quote).toHaveCount(0);
+    await test.expect(q.dialog("Quote", { includeHidden: true })).toBeVisible();
+    await test.expect(counter.dialog("Deposit")).toBeVisible();
+    // The deposit opened after the quote, so the quote doesn't disable it. The
+    // field keeps the focus, and the pointer can reach the button.
+    await expectFocusKept(page, "Pepper");
+    await q.button("Add pepper").click();
+    await test.expect(q.text("Pepper jars: 1")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Deposit")).toBeHidden();
+    await test.expect(q.dialog("Quote")).toBeVisible();
+    // The quote is modal, so it still disables the counter that it left.
+    await test
+      .expect(
+        counter
+          .button("Open quote", { includeHidden: true })
+          .evaluate((element) => element.closest("[inert]") !== null),
+      )
+      .resolves.toBe(true);
+    // The quote is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Quote")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7774
+  test("The modal Dialog keeps the modal Dialog that opened after it enabled after it moves to a new portal node", async ({
+    page,
+    q,
+  }) => {
+    // The modal dialogs disable the page around them, so these queries include
+    // the elements that aren't exposed.
+    const counter = query(q.region("Flour counter", { includeHidden: true }));
+    const estimate = counter.dialog("Estimate", { includeHidden: true });
+    await q.button("Open estimate").click();
+    await test.expect(q.dialog("Estimate")).toBeVisible();
+    await q.button("Open rebate").click();
+    await test.expect(q.textbox("Flour")).toBeFocused();
+    await test.expect(estimate).toBeVisible();
+    // The field has a value, so the estimate moves out of the slot in the
+    // counter to the default portal node. Its portal stays on.
+    await page.keyboard.type("a");
+    await test.expect(estimate).toHaveCount(0);
+    await test
+      .expect(q.dialog("Estimate", { includeHidden: true }))
+      .toBeVisible();
+    // The rebate opened after the estimate, so the estimate doesn't disable it.
+    // The field keeps the focus, and the pointer can reach the button.
+    await expectFocusKept(page, "Flour");
+    await q.button("Add flour").click();
+    await test.expect(q.text("Flour jars: 1")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Rebate")).toBeHidden();
+    await test.expect(q.dialog("Estimate")).toBeVisible();
+    // The estimate is modal, so it still disables the counter that it left.
+    await test
+      .expect(
+        counter
+          .button("Open estimate", { includeHidden: true })
+          .evaluate((element) => element.closest("[inert]") !== null),
+      )
+      .resolves.toBe(true);
+    // The estimate is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Estimate")).toBeHidden();
   });
 });

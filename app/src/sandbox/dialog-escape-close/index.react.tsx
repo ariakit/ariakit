@@ -823,6 +823,86 @@ function PosterDialog() {
   );
 }
 
+interface InvoiceDialogProps {
+  name: string;
+  noteName: string;
+  field: string;
+  // Where the invoice goes when the field gets a value: out of its portal to
+  // the counter, out of the counter to a portal, or out of a slot of the
+  // counter to the default portal node, with its portal always on.
+  move: "outOfPortal" | "toPortal" | "toPortalNode";
+  // Without a portal, the note renders in the counter, next to the invoice.
+  notePortal?: boolean;
+}
+
+// The invoice is modal, and its portal changes when the field in the note has a
+// value, so it moves while both dialogs are open. The note is modal too, and it
+// mounts when it opens, outside the tree of the invoice, so the invoice doesn't
+// disable it. The invoice must not disable the note after it moves either, and
+// it must still disable the counter.
+function InvoiceDialog({
+  name,
+  noteName,
+  field,
+  move,
+  notePortal = true,
+}: InvoiceDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const [jars, setJars] = useState(0);
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+  const moved = !!value;
+  const portal =
+    move === "toPortalNode" || (move === "toPortal" ? moved : !moved);
+  return (
+    <section aria-label={`${field} counter`}>
+      <Ariakit.Button onClick={() => setOpen(true)}>
+        {`Open ${name.toLowerCase()}`}
+      </Ariakit.Button>
+      {move === "toPortalNode" && <div ref={setSlot} />}
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        portal={portal}
+        portalElement={move === "toPortalNode" && !moved ? slot : null}
+        // The element of the invoice is new after it moves, and focus is in the
+        // note, so the invoice would hide on the next focus move in the note.
+        // https://github.com/ariakit/ariakit/issues/7778
+        hideOnInteractOutside={false}
+        style={noteStyle}
+      >
+        <Ariakit.DialogHeading>{name}</Ariakit.DialogHeading>
+        <Ariakit.Button onClick={() => setNoteOpen(true)}>
+          {`Open ${noteName.toLowerCase()}`}
+        </Ariakit.Button>
+      </Ariakit.Dialog>
+      {noteOpen && (
+        <Ariakit.Dialog
+          open
+          onClose={() => setNoteOpen(false)}
+          portal={notePortal}
+          backdrop={false}
+          style={dialogStyle}
+        >
+          <Ariakit.DialogHeading>{noteName}</Ariakit.DialogHeading>
+          <label>
+            {field}
+            <input
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+            />
+          </label>
+          <Ariakit.Button onClick={() => setJars((jars) => jars + 1)}>
+            {`Add ${field.toLowerCase()}`}
+          </Ariakit.Button>
+          <p>{`${field} jars: ${jars}`}</p>
+        </Ariakit.Dialog>
+      )}
+    </section>
+  );
+}
+
 interface ShadowRootProps {
   name: string;
   children: ReactNode;
@@ -956,6 +1036,31 @@ export default function Example() {
       <FlyerDialog />
       <LeafletPopover />
       <PosterDialog />
+      <InvoiceDialog
+        name="Invoice"
+        noteName="Discount"
+        field="Sugar"
+        move="outOfPortal"
+      />
+      <InvoiceDialog
+        name="Bill"
+        noteName="Refund"
+        field="Salt"
+        move="toPortal"
+      />
+      <InvoiceDialog
+        name="Quote"
+        noteName="Deposit"
+        field="Pepper"
+        move="toPortal"
+        notePortal={false}
+      />
+      <InvoiceDialog
+        name="Estimate"
+        noteName="Rebate"
+        field="Flour"
+        move="toPortalNode"
+      />
       <MemoDialog />
       <ShadowOrderDialog />
     </div>
