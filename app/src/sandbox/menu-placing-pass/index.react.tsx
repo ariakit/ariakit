@@ -264,6 +264,14 @@ export default function Example() {
         portal={false}
         flip={false}
         slide={false}
+        // TODO: Remove this workaround when
+        // https://github.com/ariakit/ariakit/issues/7625 is fixed. The menu
+        // asks again when a later positioning pass ends. Focus that is already
+        // in the menu stays where the user moved it.
+        autoFocusOnShow={() => {
+          const menuElement = menu.getState().contentElement;
+          return !menuElement?.contains(document.activeElement);
+        }}
         style={{ background: "white", border: "1px solid gray" }}
       >
         {actions.map((action) => (
