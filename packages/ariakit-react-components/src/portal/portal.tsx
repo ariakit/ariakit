@@ -31,13 +31,17 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 // Returns the best root element for appending portal nodes. When an element is
 // in fullscreen mode, portals must be appended inside the fullscreen element
-// instead of document.body so they remain visible.
+// instead of document.body so they remain visible. When the fullscreen element
+// contains document.body, such as when the page itself is in fullscreen,
+// portals in document.body are already visible, so they stay there.
 function getRootElement(element?: Element | null) {
   const doc = getDocument(element);
   const { fullscreenElement } = doc;
   const HTMLElementClass = getWindow(element).HTMLElement;
   if (HTMLElementClass && fullscreenElement instanceof HTMLElementClass) {
-    return fullscreenElement;
+    if (!contains(fullscreenElement, doc.body)) {
+      return fullscreenElement;
+    }
   }
   return doc.body;
 }

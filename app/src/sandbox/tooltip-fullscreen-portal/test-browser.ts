@@ -1,5 +1,5 @@
-import type { Page } from "@playwright/test";
-import { withFramework } from "#app/test-utils/preview.ts";
+import type { Locator, Page } from "@playwright/test";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 const portalId = "portal/tooltip-repro";
 
@@ -16,6 +16,14 @@ async function getPortalState(page: Page) {
         !!fullscreenElement && node?.parentElement === fullscreenElement,
     };
   }, portalId);
+}
+
+function isPortalParentBody(tooltip: Locator) {
+  return tooltip.evaluate((element) => {
+    const portalNode = element.closest("[id^='portal/']");
+    if (!portalNode) return false;
+    return portalNode.parentElement === document.body;
+  });
 }
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
@@ -164,12 +172,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const tooltip = q.tooltip("Fullscreen tooltip");
     await test.expect(tooltip).toBeVisible();
 
-    const portalParentIsBody = await tooltip.evaluate((element) => {
-      const portalNode = element.closest("[id^='portal/']");
-      if (!portalNode) return false;
-      return portalNode.parentElement === document.body;
-    });
-    test.expect(portalParentIsBody).toBe(true);
+    test.expect(await isPortalParentBody(tooltip)).toBe(true);
   });
 
   // See https://github.com/ariakit/ariakit/issues/865
@@ -253,6 +256,65 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await q.button("Close video").click();
     await test.expect(dialog).not.toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7763
+  test("keeps the portal in body while the page is in fullscreen", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Pin tooltip").click();
+    const tooltip = q.tooltip("Tooltip content");
+    await test.expect(tooltip).toBeVisible();
+    await test.expect
+      .poll(() => getPortalState(page))
+      .toMatchObject({
+        count: 1,
+        parentIsBody: true,
+      });
+
+    await q.button("Enter page fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+    // The portal node must keep its place, so no state shows that the page
+    // handled the fullscreenchange event. The browser dispatches that event on
+    // the rendering update after it sets the fullscreen element, so the frames
+    // cross it.
+    await flushFrames(page);
+    test.expect(await getPortalState(page)).toMatchObject({
+      count: 1,
+      parentIsBody: true,
+    });
+    await test.expect(tooltip).toBeVisible();
+
+    await q.button("Exit fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+    // The same applies to the fullscreenchange event of the exit.
+    await flushFrames(page);
+    test.expect(await getPortalState(page)).toMatchObject({
+      count: 1,
+      parentIsBody: true,
+    });
+    await test.expect(tooltip).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7763
+  test("keeps a portal that mounts in page fullscreen in body", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Enter page fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+    await q.button("Show second tooltip").click();
+    await q.button("Second anchor").hover();
+    const tooltip = q.tooltip("Second tooltip");
+    await test.expect(tooltip).toBeVisible();
+    test.expect(await isPortalParentBody(tooltip)).toBe(true);
+
+    await q.button("Exit fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+    await q.button("Second anchor").hover();
+    await test.expect(tooltip).toBeVisible();
+    test.expect(await isPortalParentBody(tooltip)).toBe(true);
   });
 
   // https://github.com/ariakit/ariakit/issues/7761

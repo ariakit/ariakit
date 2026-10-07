@@ -19,6 +19,28 @@ const dialogStyle = {
   left: 24,
 } as const;
 
+// The popups that use this style have a backdrop and stay above it.
+const noteStyle = {
+  ...popupStyle,
+  position: "fixed",
+  right: 24,
+  bottom: 24,
+} as const;
+
+// The controls that use this style stay above the backdrop of a popup, so the
+// pointer can reach them while that popup is open.
+const raisedStyle = {
+  position: "relative",
+  zIndex: 1,
+} as const;
+
+// The popups that use this function close only on a click on their backdrop.
+function isBackdropEvent(event: Event) {
+  const target = event.target;
+  if (!(target instanceof Element)) return false;
+  return target.hasAttribute("data-backdrop");
+}
+
 // The popups that use this hook keep themselves open and count the close
 // requests they get, like a popup that asks the user to confirm before it
 // closes.
@@ -683,6 +705,124 @@ function ReceiptPopover() {
   );
 }
 
+// The flyer has a backdrop and renders in a portal while the field is empty, so
+// it moves out of the portal to the counter while both popups are open. A
+// dialog renders its backdrop next to its element, and the backdrop in the
+// counter is new. The listbox must mark that backdrop too, so a click on it
+// must close both popups.
+function FlyerDialog() {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  return (
+    <section aria-label="Milk counter">
+      <Ariakit.Button onClick={() => setOpen(true)}>Open flyer</Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        portal={!value}
+        backdrop={<div />}
+        hideOnInteractOutside={isBackdropEvent}
+        style={noteStyle}
+      >
+        <Ariakit.DialogHeading>Flyer</Ariakit.DialogHeading>
+        <p>Milk is delivered every morning.</p>
+      </Ariakit.Dialog>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Milk</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox style={raisedStyle} />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+// The leaflet is a popover with a backdrop, and it renders in a portal while
+// the field is empty, so it moves out of the portal to the counter while both
+// popups are open. A popover renders its backdrop next to its wrapper, and the
+// backdrop in the counter is new. The listbox must mark that backdrop too, so a
+// click on it must close both popups.
+function LeafletPopover() {
+  const [value, setValue] = useState("");
+  return (
+    <section aria-label="Butter counter">
+      <Ariakit.PopoverProvider>
+        <Ariakit.PopoverDisclosure>Open leaflet</Ariakit.PopoverDisclosure>
+        <Ariakit.Popover
+          portal={!value}
+          backdrop={<div />}
+          hideOnInteractOutside={isBackdropEvent}
+          style={popupStyle}
+        >
+          <Ariakit.PopoverHeading>Leaflet</Ariakit.PopoverHeading>
+          <p>Butter is churned on site.</p>
+        </Ariakit.Popover>
+      </Ariakit.PopoverProvider>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Butter</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox style={raisedStyle} />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+// The poster has a backdrop and renders in a portal while the field in the
+// options is empty, so it moves out of the portal to the counter while both
+// popups are open. The options are modal and render in the counter too, so the
+// new backdrop of the poster is next to them. They have no backdrop, so the
+// pointer can reach the backdrop of the poster. The options must disable that
+// backdrop too, so a click on it must not close the poster.
+function PosterDialog() {
+  const [open, setOpen] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const [value, setValue] = useState("");
+  return (
+    <section aria-label="Cream counter">
+      <Ariakit.Button onClick={() => setOpen(true)}>Open poster</Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        portal={!value}
+        backdrop={<div />}
+        hideOnInteractOutside={isBackdropEvent}
+        style={noteStyle}
+      >
+        <Ariakit.DialogHeading>Poster</Ariakit.DialogHeading>
+        <p>Cream is whipped to order.</p>
+      </Ariakit.Dialog>
+      <Ariakit.Button onClick={() => setOptionsOpen(true)} style={raisedStyle}>
+        Open options
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        open={optionsOpen}
+        onClose={() => setOptionsOpen(false)}
+        portal={false}
+        backdrop={false}
+        style={dialogStyle}
+      >
+        <Ariakit.DialogHeading>Options</Ariakit.DialogHeading>
+        <label>
+          Cream
+          <input
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+          />
+        </label>
+      </Ariakit.Dialog>
+    </section>
+  );
+}
+
 interface ShadowRootProps {
   name: string;
   children: ReactNode;
@@ -813,6 +953,9 @@ export default function Example() {
       <TipPopover />
       <ExtrasMenu />
       <ReceiptPopover />
+      <FlyerDialog />
+      <LeafletPopover />
+      <PosterDialog />
       <MemoDialog />
       <ShadowOrderDialog />
     </div>

@@ -218,6 +218,13 @@ function Repro() {
     void fullscreenHostRef.current?.requestFullscreen();
   };
 
+  // The page itself is the fullscreen element, so the fullscreen element
+  // contains the body, and the default portal nodes are already visible there.
+  // https://github.com/ariakit/ariakit/issues/7763
+  const enterPageFullscreen = () => {
+    void document.documentElement.requestFullscreen();
+  };
+
   return (
     <section
       aria-label="Portal leak repro"
@@ -248,6 +255,9 @@ function Repro() {
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             <button type="button" onClick={enterFullscreen}>
               Enter fullscreen
+            </button>
+            <button type="button" onClick={enterPageFullscreen}>
+              Enter page fullscreen
             </button>
             <button type="button" onClick={exitFullscreen}>
               Exit fullscreen
