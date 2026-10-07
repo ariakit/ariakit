@@ -846,10 +846,21 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         const maybeParentDialog = element.closest("[data-dialog]");
         if (maybeParentDialog?.id) {
           const doc = getDocument(maybeParentDialog);
+          const currentDialog = doc.getElementById(maybeParentDialog.id);
+          // React can replace the parent dialog and the element in it while
+          // this dialog is open, for example when the render prop of the parent
+          // changes. The parent is still open then, so focus goes to its
+          // current element and not to its disclosure, which is outside it.
+          // https://github.com/ariakit/ariakit/issues/7785
+          const isParentReplaced =
+            currentDialog !== maybeParentDialog &&
+            !!currentDialog?.matches("[data-dialog][data-open]");
           const selector = `[aria-controls~="${maybeParentDialog.id}"]`;
-          const control = doc.querySelector<HTMLElement>(selector);
-          if (control) {
-            element = control;
+          const fallback = isParentReplaced
+            ? currentDialog
+            : doc.querySelector<HTMLElement>(selector);
+          if (fallback) {
+            element = fallback;
           }
         }
       }
