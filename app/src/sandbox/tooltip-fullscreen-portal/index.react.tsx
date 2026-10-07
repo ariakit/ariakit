@@ -27,6 +27,13 @@ const playerStyle = {
   padding: 24,
 } satisfies CSSProperties;
 
+// The buttons keep their height in the fullscreen player, so each popup opens
+// below its button, and not at the bottom edge of the screen.
+const moviePlayerStyle = {
+  ...playerStyle,
+  alignItems: "flex-start",
+} satisfies CSSProperties;
+
 // The popups have the z-index of the dialog, so they render above it when their
 // portal nodes are next to the dialog.
 const popupStyle = {
@@ -134,7 +141,7 @@ function MovieDialog() {
           ref={playerRef}
           role="group"
           aria-label="Movie player"
-          style={playerStyle}
+          style={moviePlayerStyle}
         >
           <button type="button" onClick={enterFullscreen}>
             Movie fullscreen
