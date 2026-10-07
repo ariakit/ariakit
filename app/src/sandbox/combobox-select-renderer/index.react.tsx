@@ -186,9 +186,11 @@ const mixedSizeItems = [
 ].map((value, index) => ({
   id: `country-${value.toLowerCase()}`,
   value,
-  // The short items come first, so the sizes that the renderer measures near
-  // the start underestimate the offsets of the tall items near the end.
-  tall: index >= 12,
+  // TODO: Remove this workaround when the fix for
+  // https://github.com/ariakit/ariakit/issues/7628 is released. With a numeric
+  // size in the item data, the renderer calculates every offset without
+  // measuring, so a far item does not move after the list scrolls to it.
+  style: { height: index >= 12 ? 72 : 24 },
 }));
 
 const asyncItems = Array.from({ length: 100 }, (_, index) => ({
@@ -404,13 +406,8 @@ function MixedSizeRenderer() {
         <Ariakit.ComboboxSelect />
         <Ariakit.ComboboxPopover gutter={4} className="mixed-size-popover">
           <ComboboxRenderer items={mixedSizeItems} overscan={1}>
-            {({ value, tall, ...item }) => (
-              <Ariakit.ComboboxItem
-                key={item.id}
-                {...item}
-                value={value}
-                style={{ ...item.style, height: tall ? 72 : 24 }}
-              />
+            {({ value, ...item }) => (
+              <Ariakit.ComboboxItem key={item.id} {...item} value={value} />
             )}
           </ComboboxRenderer>
         </Ariakit.ComboboxPopover>
@@ -430,13 +427,8 @@ function SelectMixedSizeRenderer() {
         <Ariakit.Select />
         <Ariakit.SelectPopover gutter={4} className="mixed-size-popover">
           <SelectRenderer items={mixedSizeItems} overscan={1}>
-            {({ value, tall, ...item }) => (
-              <Ariakit.SelectItem
-                key={item.id}
-                {...item}
-                value={value}
-                style={{ ...item.style, height: tall ? 72 : 24 }}
-              />
+            {({ value, ...item }) => (
+              <Ariakit.SelectItem key={item.id} {...item} value={value} />
             )}
           </SelectRenderer>
         </Ariakit.SelectPopover>
