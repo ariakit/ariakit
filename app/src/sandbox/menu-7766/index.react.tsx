@@ -19,12 +19,28 @@ interface EditMenuProps {
  * clearing the history takes it away again.
  */
 function EditMenu({ label, keepUndo = false }: EditMenuProps) {
+  const menu = Ariakit.useMenuStore();
   const [canUndo, setCanUndo] = useState(false);
 
   return (
-    <Ariakit.MenuProvider>
+    <Ariakit.MenuProvider store={menu}>
       <Ariakit.MenuButton>{label}</Ariakit.MenuButton>
-      <Ariakit.Menu style={menuStyle}>
+      <Ariakit.Menu
+        style={menuStyle}
+        // TODO: Remove this prop when
+        // https://github.com/ariakit/ariakit/issues/7766 is fixed.
+        autoFocusOnShow={() => {
+          const { contentElement, activeId } = menu.getState();
+          if (!contentElement) return true;
+          const { activeElement } = contentElement.ownerDocument;
+          // The menu element has DOM focus while the pointer makes an item
+          // active, and also before the menu has an item that can take focus.
+          if (activeElement === contentElement) {
+            return activeId == null;
+          }
+          return !contentElement.contains(activeElement);
+        }}
+      >
         {(keepUndo || canUndo) && (
           <Ariakit.MenuItem
             disabled={!canUndo}
