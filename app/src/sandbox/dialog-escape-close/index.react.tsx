@@ -716,22 +716,18 @@ function FlyerDialog() {
   return (
     <section aria-label="Milk counter">
       <Ariakit.Button onClick={() => setOpen(true)}>Open flyer</Ariakit.Button>
-      {/* TODO: Remove this container when the fix for
-      https://github.com/ariakit/ariakit/issues/7764 is released. */}
-      <div>
-        <Ariakit.Dialog
-          open={open}
-          onClose={() => setOpen(false)}
-          modal={false}
-          portal={!value}
-          backdrop={<div />}
-          hideOnInteractOutside={isBackdropEvent}
-          style={noteStyle}
-        >
-          <Ariakit.DialogHeading>Flyer</Ariakit.DialogHeading>
-          <p>Milk is delivered every morning.</p>
-        </Ariakit.Dialog>
-      </div>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        portal={!value}
+        backdrop={<div />}
+        hideOnInteractOutside={isBackdropEvent}
+        style={noteStyle}
+      >
+        <Ariakit.DialogHeading>Flyer</Ariakit.DialogHeading>
+        <p>Milk is delivered every morning.</p>
+      </Ariakit.Dialog>
       <Ariakit.ComboboxProvider value={value} setValue={setValue}>
         <Ariakit.ComboboxLabel>Milk</Ariakit.ComboboxLabel>
         <Ariakit.Combobox style={raisedStyle} />
@@ -756,19 +752,15 @@ function LeafletPopover() {
     <section aria-label="Butter counter">
       <Ariakit.PopoverProvider>
         <Ariakit.PopoverDisclosure>Open leaflet</Ariakit.PopoverDisclosure>
-        {/* TODO: Remove this container when the fix for
-        https://github.com/ariakit/ariakit/issues/7764 is released. */}
-        <div>
-          <Ariakit.Popover
-            portal={!value}
-            backdrop={<div />}
-            hideOnInteractOutside={isBackdropEvent}
-            style={popupStyle}
-          >
-            <Ariakit.PopoverHeading>Leaflet</Ariakit.PopoverHeading>
-            <p>Butter is churned on site.</p>
-          </Ariakit.Popover>
-        </div>
+        <Ariakit.Popover
+          portal={!value}
+          backdrop={<div />}
+          hideOnInteractOutside={isBackdropEvent}
+          style={popupStyle}
+        >
+          <Ariakit.PopoverHeading>Leaflet</Ariakit.PopoverHeading>
+          <p>Butter is churned on site.</p>
+        </Ariakit.Popover>
       </Ariakit.PopoverProvider>
       <Ariakit.ComboboxProvider value={value} setValue={setValue}>
         <Ariakit.ComboboxLabel>Butter</Ariakit.ComboboxLabel>
@@ -796,22 +788,18 @@ function PosterDialog() {
   return (
     <section aria-label="Cream counter">
       <Ariakit.Button onClick={() => setOpen(true)}>Open poster</Ariakit.Button>
-      {/* TODO: Remove this container when the fix for
-      https://github.com/ariakit/ariakit/issues/7764 is released. */}
-      <div>
-        <Ariakit.Dialog
-          open={open}
-          onClose={() => setOpen(false)}
-          modal={false}
-          portal={!value}
-          backdrop={<div />}
-          hideOnInteractOutside={isBackdropEvent}
-          style={noteStyle}
-        >
-          <Ariakit.DialogHeading>Poster</Ariakit.DialogHeading>
-          <p>Cream is whipped to order.</p>
-        </Ariakit.Dialog>
-      </div>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        portal={!value}
+        backdrop={<div />}
+        hideOnInteractOutside={isBackdropEvent}
+        style={noteStyle}
+      >
+        <Ariakit.DialogHeading>Poster</Ariakit.DialogHeading>
+        <p>Cream is whipped to order.</p>
+      </Ariakit.Dialog>
       <Ariakit.Button onClick={() => setOptionsOpen(true)} style={raisedStyle}>
         Open options
       </Ariakit.Button>

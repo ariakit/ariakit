@@ -513,6 +513,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       getOutsideCleanups: () => treeRef.current?.outsideCleanups,
       getPortalNode: () => portalNodeRef.current,
       getWrapperElement: () => wrapperElementRef.current,
+      getBackdropElement: () => backdropRef.current,
       onEarlierDialogElementChange: () => {
         setEarlierDialogElementChanges((count) => count + 1);
       },
@@ -564,12 +565,14 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   // The snapshot has the dialogs that were already open, but React can replace
   // their elements, move them to new portal nodes, or render them in new
-  // wrapper elements, and the new elements aren't in the snapshot. This adds
-  // the current ones, so this dialog marks them too. The elements that other
-  // parts of the page add later stay out of the snapshot.
+  // wrapper elements, and the new elements aren't in the snapshot. The same
+  // applies to their backdrops. This adds the current ones, so this dialog
+  // marks them too. The elements that other parts of the page add later stay
+  // out of the snapshot.
   // https://github.com/ariakit/ariakit/issues/7728
   // https://github.com/ariakit/ariakit/issues/7733
   // https://github.com/ariakit/ariakit/issues/7751
+  // https://github.com/ariakit/ariakit/issues/7764
   useSafeLayoutEffect(() => {
     if (!id) return;
     if (!canTakeTreeSnapshot) return;
