@@ -12,6 +12,8 @@ interface OpenDialogOptions {
   getPortalNode?: () => Element | null;
   // The wrapper element can change without registering the dialog again.
   getWrapperElement?: () => Element | null | undefined;
+  // The backdrop element can change without registering the dialog again.
+  getBackdropElement?: () => Element | null;
   onEarlierDialogElementChange?: () => void;
 }
 
@@ -37,8 +39,8 @@ export function removeOpenDialog(dialogRef: DialogRef) {
 
 /**
  * Returns the elements of the dialogs that opened before the given dialog,
- * their portal nodes, and their wrapper elements, except the ones that contain
- * it.
+ * their portal nodes, their wrapper elements, and their backdrops, except the
+ * ones that contain it.
  */
 export function getEarlierOpenDialogElements(dialogRef: DialogRef) {
   const elements: Element[] = [];
@@ -47,10 +49,12 @@ export function getEarlierOpenDialogElements(dialogRef: DialogRef) {
     if (openDialogRef === dialogRef) break;
     // The tree walk reaches a dialog in a portal through its portal node, and a
     // dialog in a wrapper element through that wrapper, so the dialog element
-    // alone doesn't make the walk find it.
+    // alone doesn't make the walk find it. The backdrop renders next to the
+    // dialog element or its wrapper, so the walk doesn't find it through them.
     const openDialogElements = [
       options.getPortalNode?.(),
       options.getWrapperElement?.(),
+      options.getBackdropElement?.(),
       openDialogRef.current,
     ];
     for (const element of openDialogElements) {
