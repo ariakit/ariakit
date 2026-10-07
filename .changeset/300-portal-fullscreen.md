@@ -13,7 +13,7 @@ This update fixes three fullscreen behaviors in [`Portal`](https://ariakit.com/r
 
 - **Fullscreen inside a portal no longer throws.** An element inside a portal can enter fullscreen without a `HierarchyRequestError`.
 
-For example, this [`Popover`](https://ariakit.com/reference/popover) now stays visible when the player inside the modal [`Dialog`](https://ariakit.com/reference/dialog) enters fullscreen:
+For example, click "Enter fullscreen" below, then click "Quality". The [`Popover`](https://ariakit.com/reference/popover) now opens inside the fullscreen player in the modal [`Dialog`](https://ariakit.com/reference/dialog):
 
 ```tsx
 const playerRef = useRef<HTMLDivElement>(null);
