@@ -1,5 +1,7 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 export default function Example() {
   return (
@@ -136,6 +138,8 @@ export default function Example() {
           <RemovePhotoBody />
         </Ariakit.Dialog>
       </Ariakit.DialogProvider>
+      <CheckoutDialog />
+      <RefundDialog />
     </div>
   );
 }
@@ -173,6 +177,106 @@ function RemovePhotoBody() {
     <>
       <button onClick={() => setRemoving(true)}>Remove</button>
       <Ariakit.DialogDismiss>Keep photo</Ariakit.DialogDismiss>
+    </>
+  );
+}
+
+interface BodyPortalProps {
+  children: ReactNode;
+}
+
+// Renders its children as children of the body, like an application that has
+// the body as its root.
+function BodyPortal({ children }: BodyPortalProps) {
+  const [mounted, setMounted] = useState(false);
+  // The body is available only after client hydration.
+  // oxlint-disable-next-line react/set-state-in-effect
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return createPortal(children, document.body);
+}
+
+// The checkout renders in a portal while the gift note is empty, so it moves
+// out of the portal to the body while both dialogs are open. The hidden dismiss
+// button renders next to the dialog, and the one in the body is new. The gift
+// note is outside the tree of the checkout and opened after it, so it must
+// disable that button too.
+// https://github.com/ariakit/ariakit/issues/7775
+function CheckoutDialog() {
+  const [open, setOpen] = useState(false);
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [note, setNote] = useState("");
+  return (
+    <>
+      <Ariakit.Button onClick={() => setOpen(true)}>Checkout</Ariakit.Button>
+      <BodyPortal>
+        <Ariakit.Dialog
+          open={open}
+          onClose={() => setOpen(false)}
+          portal={!note}
+        >
+          <Ariakit.DialogHeading>Checkout</Ariakit.DialogHeading>
+          <Ariakit.Button onClick={() => setNoteOpen(true)}>
+            Add gift note
+          </Ariakit.Button>
+        </Ariakit.Dialog>
+        {/*
+          The gift note mounts when it opens. The checkout disables the elements
+          that are in the page when it opens, and the gift note must not be one
+          of them.
+        */}
+        <Ariakit.Dialog
+          open={noteOpen}
+          onClose={() => setNoteOpen(false)}
+          unmountOnHide
+        >
+          <Ariakit.DialogHeading>Gift note</Ariakit.DialogHeading>
+          <label>
+            Note
+            <input
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+            />
+          </label>
+          <Ariakit.DialogDismiss>Save</Ariakit.DialogDismiss>
+        </Ariakit.Dialog>
+      </BodyPortal>
+    </>
+  );
+}
+
+// The refund can't be canceled after the reason has text, so it loses its
+// dismiss button while both dialogs are open. The hidden dismiss button then
+// mounts next to the refund, which keeps its element. The reason is nested in
+// the refund, so its portal is next to that button, and it opened before the
+// button was in the page. It must disable that button too.
+// https://github.com/ariakit/ariakit/issues/7775
+// https://github.com/ariakit/ariakit/issues/7782
+function RefundDialog() {
+  const [open, setOpen] = useState(false);
+  const [reasonOpen, setReasonOpen] = useState(false);
+  const [reason, setReason] = useState("");
+  return (
+    <>
+      <Ariakit.Button onClick={() => setOpen(true)}>Refund</Ariakit.Button>
+      <Ariakit.Dialog open={open} onClose={() => setOpen(false)}>
+        <Ariakit.DialogHeading>Refund</Ariakit.DialogHeading>
+        <Ariakit.Button onClick={() => setReasonOpen(true)}>
+          Add reason
+        </Ariakit.Button>
+        {!reason && <Ariakit.DialogDismiss>Keep order</Ariakit.DialogDismiss>}
+        <Ariakit.Dialog open={reasonOpen} onClose={() => setReasonOpen(false)}>
+          <Ariakit.DialogHeading>Reason</Ariakit.DialogHeading>
+          <label>
+            Reason
+            <input
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+            />
+          </label>
+          <Ariakit.DialogDismiss>Save reason</Ariakit.DialogDismiss>
+        </Ariakit.Dialog>
+      </Ariakit.Dialog>
     </>
   );
 }

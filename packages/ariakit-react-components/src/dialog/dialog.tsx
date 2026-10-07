@@ -225,6 +225,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const context = useDialogProviderContext();
   const ref = useRef<HTMLType>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+  const hiddenDismissRef = useRef<HTMLButtonElement>(null);
   const hasDefaultModalPortal = modal && portal && !props.portalElement;
   // Stays true while this dialog handles a hide request, from the close event
   // through the commit of the open state.
@@ -514,6 +515,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       getPortalNode: () => portalNodeRef.current,
       getWrapperElement: () => wrapperElementRef.current,
       getBackdropElement: () => backdropRef.current,
+      getHiddenDismissElement: () => hiddenDismissRef.current,
       onEarlierDialogElementChange: () => {
         setEarlierDialogElementChanges((count) => count + 1);
       },
@@ -558,6 +560,17 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     notifyOpenDialogElementChange(ref);
   }, []);
 
+  // Tells them too when this dialog gets its hidden dismiss button after its
+  // element, such as when the dialog loses its own dismiss button while it's
+  // open. They read the button when this dialog tells them, so this runs when
+  // the button is in the page.
+  // https://github.com/ariakit/ariakit/issues/7775
+  // https://github.com/ariakit/ariakit/issues/7782
+  useSafeLayoutEffect(() => {
+    if (!needsHiddenDismiss) return;
+    notifyOpenDialogElementChange(ref);
+  }, [needsHiddenDismiss]);
+
   useSafeLayoutEffect(() => {
     if (!id) return;
     if (!canTakeTreeSnapshot) return;
@@ -575,13 +588,14 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // The snapshot has the dialogs that were already open, but React can replace
   // their elements, move them to new portal nodes, or render them in new
   // wrapper elements, and the new elements aren't in the snapshot. The same
-  // applies to their backdrops. This adds the current ones, so this dialog
-  // marks them too. The elements that other parts of the page add later stay
-  // out of the snapshot.
+  // applies to their backdrops and their hidden dismiss buttons. This adds the
+  // current ones, so this dialog marks them too. The elements that other parts
+  // of the page add later stay out of the snapshot.
   // https://github.com/ariakit/ariakit/issues/7728
   // https://github.com/ariakit/ariakit/issues/7733
   // https://github.com/ariakit/ariakit/issues/7751
   // https://github.com/ariakit/ariakit/issues/7764
+  // https://github.com/ariakit/ariakit/issues/7775
   useSafeLayoutEffect(() => {
     if (!id) return;
     if (!canTakeTreeSnapshot) return;
@@ -1059,6 +1073,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       <>
         {needsHiddenDismiss && (
           <button
+            ref={hiddenDismissRef}
             type="button"
             tabIndex={-1}
             data-dialog-hidden-dismiss={id || ""}
