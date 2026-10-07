@@ -270,6 +270,73 @@ test("gives the initial focus to the first item when a modal menu opens again af
   await expect.poll(() => q.menuitem("Cut")).toHaveFocus();
 });
 
+// The item that received the initial focus can stay in the menu while another
+// item arrives above it. The next open must give the initial focus to the item
+// that is first then, not to the one that was first before.
+// https://github.com/ariakit/ariakit/issues/7791
+test("gives the initial focus to the first item when a modal menu opens again after an item arrived at its top", async () => {
+  const button = q.button("Modal edit");
+  await focus(button);
+  await press.Enter();
+  await expect.poll(() => q.menuitem("Cut")).toHaveFocus();
+  // Pasting creates the history that puts Undo first in the next open.
+  await press.ArrowDown();
+  await press.ArrowDown();
+  await press.Enter();
+  expect(q.menuitem("Undo")).toBeVisible();
+  await press.Escape();
+  expect(button).toHaveFocus();
+
+  await press.Enter();
+  await expect.poll(() => q.menuitem("Undo")).toHaveFocus();
+});
+
+// The menu button of a modal menu stays available while the menu is open, so
+// the user can move to it and close the menu from there. Focus must stay on the
+// button while the menu is open, and the next open must still give the initial
+// focus to the item that is first then.
+// https://github.com/ariakit/ariakit/issues/7791
+test("gives the initial focus to the first item when a modal menu opens again after it closed from its menu button", async () => {
+  const button = q.button("Modal edit");
+  await focus(button);
+  await press.Enter();
+  await expect.poll(() => q.menuitem("Cut")).toHaveFocus();
+  // Pasting creates the history that puts Undo first in the next open.
+  await press.ArrowDown();
+  await press.ArrowDown();
+  await press.Enter();
+  expect(q.menuitem("Undo")).toBeVisible();
+
+  // `press` settles the DOM before it resolves, so a menu that takes focus
+  // again would already have moved it.
+  await press.ShiftTab();
+  expect(button).toHaveFocus();
+
+  await press.Enter();
+  expect(q.menu.maybe("Modal edit")).not.toBeInTheDocument();
+  await press.Enter();
+  await expect.poll(() => q.menuitem("Undo")).toHaveFocus();
+});
+
+// A modal menu must also keep focus on the item the user is on when the item
+// that received the initial focus leaves the menu.
+// https://github.com/ariakit/ariakit/issues/7791
+test("keeps focus in place when the first item of an open modal menu is removed", async () => {
+  await focus(q.button("Modal edit with history"));
+  await press.Enter();
+  await expect.poll(() => q.menuitem("Undo")).toHaveFocus();
+  await press.End();
+  const item = q.menuitem("Clear history");
+  expect(item).toHaveFocus();
+
+  // `press` settles the DOM before it resolves, so an initial focus that the
+  // menu takes again would already have moved.
+  await press.Enter();
+  expect(q.menuitem.maybe("Undo")).not.toBeInTheDocument();
+  expect(item).toHaveFocus();
+  expect(item).toHaveAttribute("data-active-item");
+});
+
 // A menu that opens before it has an item still owes its initial focus to the
 // first item that arrives. Focus is on the menu element until then, and that
 // must not count as focus to keep in place.

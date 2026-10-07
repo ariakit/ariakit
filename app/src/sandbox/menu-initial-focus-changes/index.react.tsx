@@ -178,6 +178,7 @@ export default function Example() {
         virtualFocus
         keepUndo
       />
+      <EditMenu label="Modal edit" modal />
       <EditMenu label="Modal edit with history" modal history />
       <BookmarksMenu />
     </main>

@@ -305,6 +305,94 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.menuitem("Cut")).toBeFocused();
   });
 
+  // The item that received the initial focus can stay in the menu while another
+  // item arrives above it. The next open must give the initial focus to the
+  // item that is first then, not to the one that was first before.
+  // https://github.com/ariakit/ariakit/issues/7791
+  test("gives the initial focus to the first item when a modal menu opens again after an item arrived at its top", async ({
+    page,
+    q,
+  }) => {
+    const button = q.button("Modal edit");
+
+    await button.focus();
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Cut")).toBeFocused();
+    // Pasting creates the history that puts Undo first in the next open.
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Undo")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(button).toBeFocused();
+    // A menu that Escape closed closes once more if it is open two frames
+    // later, which guards against its button showing it again. No state tracks
+    // that guard, so let those frames pass before the menu opens again.
+    await flushFrames(page);
+
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Undo")).toBeFocused();
+  });
+
+  // The menu button of a modal menu stays available while the menu is open, so
+  // the user can move to it and close the menu from there. Focus must stay on
+  // the button while the menu is open, and the next open must still give the
+  // initial focus to the item that is first then.
+  // https://github.com/ariakit/ariakit/issues/7791
+  test("gives the initial focus to the first item when a modal menu opens again after it closed from its menu button", async ({
+    page,
+    q,
+  }) => {
+    const button = q.button("Modal edit");
+
+    await button.focus();
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Cut")).toBeFocused();
+    // Pasting creates the history that puts Undo first in the next open.
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Undo")).toBeVisible();
+
+    await page.keyboard.press("Shift+Tab");
+    await test.expect(button).toBeFocused();
+    // Focus that stays put has no positive state. The menu would take focus
+    // again asynchronously, after the commit that follows the focus event of
+    // the button, so wait through it.
+    await flushFrames(page);
+    await test.expect(button).toBeFocused();
+
+    await page.keyboard.press("Enter");
+    await test.expect(q.menu("Modal edit")).toBeHidden();
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Undo")).toBeFocused();
+  });
+
+  // A modal menu must also keep focus on the item the user is on when the item
+  // that received the initial focus leaves the menu.
+  // https://github.com/ariakit/ariakit/issues/7791
+  test("keeps focus in place when the first item of an open modal menu is removed", async ({
+    page,
+    q,
+  }) => {
+    const item = q.menuitem("Clear history");
+
+    await q.button("Modal edit with history").focus();
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Undo")).toBeFocused();
+    await page.keyboard.press("End");
+    await test.expect(item).toBeFocused();
+
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Undo")).toHaveCount(0);
+    // Focus that stays put has no positive state. The menu would take its
+    // initial focus again asynchronously, after the commit that removes the
+    // item, so wait through it.
+    await flushFrames(page);
+    await test.expect(item).toBeFocused();
+    await test.expect(item).toHaveAttribute("data-active-item");
+  });
+
   // A menu that opens before it has an item still owes its initial focus to the
   // first item that arrives. Focus is on the menu element until then, and that
   // must not count as focus to keep in place.
