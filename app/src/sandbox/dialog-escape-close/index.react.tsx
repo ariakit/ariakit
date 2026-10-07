@@ -823,6 +823,177 @@ function PosterDialog() {
   );
 }
 
+// The sign gets its backdrop when the field has a value, so the backdrop is new
+// while both popups are open. A dialog renders its backdrop next to its
+// element, and that element stays the same. The listbox must mark the new
+// backdrop too, so a click on it must close both popups.
+function SignDialog() {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  return (
+    <section aria-label="Yogurt counter">
+      <Ariakit.Button onClick={() => setOpen(true)}>Open sign</Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        backdrop={value ? <div /> : false}
+        hideOnInteractOutside={isBackdropEvent}
+        style={noteStyle}
+      >
+        <Ariakit.DialogHeading>Sign</Ariakit.DialogHeading>
+        <p>Yogurt is strained overnight.</p>
+      </Ariakit.Dialog>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Yogurt</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+// The badge is a popover that gets its backdrop when the field has a value, so
+// the backdrop is new while both popups are open. A popover renders its
+// backdrop next to its wrapper, and that wrapper stays the same. The listbox
+// must mark the new backdrop too, so a click on it must close both popups.
+function BadgePopover() {
+  const [value, setValue] = useState("");
+  return (
+    <section aria-label="Kefir counter">
+      <Ariakit.PopoverProvider>
+        <Ariakit.PopoverDisclosure>Open badge</Ariakit.PopoverDisclosure>
+        <Ariakit.Popover
+          backdrop={value ? <div /> : false}
+          hideOnInteractOutside={isBackdropEvent}
+          style={popupStyle}
+        >
+          <Ariakit.PopoverHeading>Badge</Ariakit.PopoverHeading>
+          <p>Kefir is poured cold.</p>
+        </Ariakit.Popover>
+      </Ariakit.PopoverProvider>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Kefir</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+// The placard gets its backdrop when the field in the choices has a value, so
+// the backdrop is new while both popups are open. The choices are modal and
+// render in the counter too, so the new backdrop of the placard is next to
+// them. They have no backdrop, so the pointer can reach the backdrop of the
+// placard. The choices must disable that backdrop too, so a click on it must
+// not close the placard.
+function PlacardDialog() {
+  const [open, setOpen] = useState(false);
+  const [choicesOpen, setChoicesOpen] = useState(false);
+  const [value, setValue] = useState("");
+  return (
+    <section aria-label="Custard counter">
+      <Ariakit.Button onClick={() => setOpen(true)}>
+        Open placard
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        backdrop={value ? <div /> : false}
+        hideOnInteractOutside={isBackdropEvent}
+        style={noteStyle}
+      >
+        <Ariakit.DialogHeading>Placard</Ariakit.DialogHeading>
+        <p>Custard is baked at noon.</p>
+      </Ariakit.Dialog>
+      <Ariakit.Button onClick={() => setChoicesOpen(true)}>
+        Open choices
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        open={choicesOpen}
+        onClose={() => setChoicesOpen(false)}
+        portal={false}
+        backdrop={false}
+        style={dialogStyle}
+      >
+        <Ariakit.DialogHeading>Choices</Ariakit.DialogHeading>
+        <label>
+          Custard
+          <input
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+          />
+        </label>
+      </Ariakit.Dialog>
+    </section>
+  );
+}
+
+// The pennant has a z-index, and a dialog gives the same one to its backdrop.
+const pennantStyle = {
+  ...noteStyle,
+  zIndex: 1,
+} as const;
+
+// The listbox that uses this style stays above the backdrop of the pennant.
+const raisedPopupStyle = {
+  ...popupStyle,
+  zIndex: 1,
+};
+
+// The backdrop that the pennant has while the field has a value. It's the only
+// backdrop in the counter that has a color.
+const dimBackdropStyle = {
+  backgroundColor: "rgba(0, 0, 0, 0.1)",
+};
+
+// The pennant has a clear backdrop while the field is empty and a dim one of
+// another element type while the field has a value, so React replaces the
+// backdrop element while the pennant is open. The new backdrop must get the
+// z-index of the pennant. The pennant must mark its new backdrop, so a click on
+// it must close the pennant. The listbox must mark it too, so the same click
+// must also close the listbox when it's open.
+function PennantDialog() {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  return (
+    <section aria-label="Ghee counter">
+      <Ariakit.Button onClick={() => setOpen(true)}>
+        Open pennant
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        modal={false}
+        backdrop={value ? <section style={dimBackdropStyle} /> : <div />}
+        hideOnInteractOutside={isBackdropEvent}
+        style={pennantStyle}
+      >
+        <Ariakit.DialogHeading>Pennant</Ariakit.DialogHeading>
+        <p>Ghee is clarified on site.</p>
+      </Ariakit.Dialog>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Ghee</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox style={raisedStyle} />
+        <Ariakit.ComboboxPopover style={raisedPopupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
 interface InvoiceDialogProps {
   name: string;
   noteName: string;
@@ -1043,6 +1214,10 @@ export default function Example() {
       <FlyerDialog />
       <LeafletPopover />
       <PosterDialog />
+      <SignDialog />
+      <BadgePopover />
+      <PlacardDialog />
+      <PennantDialog />
       <InvoiceDialog
         name="Invoice"
         noteName="Discount"

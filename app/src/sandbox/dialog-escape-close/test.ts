@@ -8,6 +8,9 @@ function queryShadowRoot(name: string) {
   );
 }
 
+// The style of the backdrop that replaces the clear one.
+const dimBackdropStyle = { backgroundColor: "rgba(0, 0, 0, 0.1)" };
+
 async function pressEscapeOnce(label: string) {
   const closeRequests = q.text(new RegExp(`^${label} close requests: `));
   expect(closeRequests).toHaveTextContent(`${label} close requests: 0`);
@@ -476,6 +479,114 @@ test("The modal Dialog disables the backdrop of a Dialog outside its tree after 
   // browser test covers the click, because the pointer goes through a disabled
   // element only in a real browser.
   expect(counter.presentation.hidden().closest("[inert]")).toBeTruthy();
+});
+
+// https://github.com/ariakit/ariakit/issues/7772
+test("Clicking the backdrop of a Dialog closes the Combobox popover that opened after it after the Dialog gets that backdrop", async () => {
+  const counter = q.within(q.region("Yogurt counter"));
+  await click(q.button("Open sign"));
+  expect(q.dialog("Sign")).toBeVisible();
+  await click(q.combobox("Yogurt"));
+  expect(q.listbox("Yogurt")).toBeVisible();
+  expect(counter.presentation.maybe()).not.toBeInTheDocument();
+  // The field has a value, so the sign gets its backdrop.
+  await type("a");
+  expect(counter.presentation()).toBeVisible();
+  expect(q.listbox("Yogurt")).toBeVisible();
+  // The new backdrop is outside both popups, so a click on it closes them.
+  await click(counter.presentation());
+  expect(q.dialog.maybe("Sign")).not.toBeInTheDocument();
+  expect(q.listbox.maybe("Yogurt")).not.toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/7772
+test("Clicking the backdrop of a Popover closes the Combobox popover that opened after it after the Popover gets that backdrop", async () => {
+  const counter = q.within(q.region("Kefir counter"));
+  await click(q.button("Open badge"));
+  expect(q.dialog("Badge")).toBeVisible();
+  await click(q.combobox("Kefir"));
+  expect(q.listbox("Kefir")).toBeVisible();
+  expect(counter.presentation.maybe()).not.toBeInTheDocument();
+  // The field has a value, so the badge gets its backdrop.
+  await type("a");
+  expect(counter.presentation()).toBeVisible();
+  expect(q.listbox("Kefir")).toBeVisible();
+  // The new backdrop is outside both popups, so a click on it closes them.
+  await click(counter.presentation());
+  expect(q.dialog.maybe("Badge")).not.toBeInTheDocument();
+  expect(q.listbox.maybe("Kefir")).not.toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/7772
+test("The modal Dialog disables the backdrop of a Dialog outside its tree after that Dialog gets that backdrop", async () => {
+  // The modal dialog disables the page around it, so these queries include the
+  // elements that aren't exposed.
+  const counter = q.within(q.region.hidden("Custard counter"));
+  await click(q.button("Open placard"));
+  expect(q.dialog("Placard")).toBeVisible();
+  await click(q.button("Open choices"));
+  expect(q.textbox("Custard")).toHaveFocus();
+  expect(q.dialog.hidden("Placard")).toBeVisible();
+  expect(counter.presentation.maybe.hidden()).not.toBeInTheDocument();
+  // The field has a value, so the placard gets its backdrop.
+  await type("a");
+  expect(counter.presentation.hidden()).toBeVisible();
+  // The choices are modal, so they disable the new backdrop. The browser test
+  // covers the click, because the pointer goes through a disabled element only
+  // in a real browser.
+  expect(counter.presentation.hidden().closest("[inert]")).toBeTruthy();
+});
+
+// https://github.com/ariakit/ariakit/issues/7772
+test("The backdrop of a Dialog keeps the z-index of the Dialog after the backdrop element changes", async () => {
+  const counter = q.within(q.region("Ghee counter"));
+  await click(q.button("Open pennant"));
+  expect(q.dialog("Pennant")).toHaveStyle({ zIndex: "1" });
+  expect(counter.presentation()).toHaveStyle({ zIndex: "1" });
+  await click(q.combobox("Ghee"));
+  // The field has a value, so the dim backdrop replaces the clear one.
+  await type("a");
+  expect(counter.presentation()).toHaveStyle(dimBackdropStyle);
+  expect(counter.presentation()).toHaveStyle({ zIndex: "1" });
+});
+
+// https://github.com/ariakit/ariakit/issues/7772
+test("Clicking the backdrop of a Dialog closes the Dialog after the backdrop element changes", async () => {
+  const counter = q.within(q.region("Ghee counter"));
+  await click(q.button("Open pennant"));
+  expect(q.dialog("Pennant")).toBeVisible();
+  expect(counter.presentation()).not.toHaveStyle(dimBackdropStyle);
+  await click(q.combobox("Ghee"));
+  expect(q.listbox("Ghee")).toBeVisible();
+  // The field has a value, so the dim backdrop replaces the clear one.
+  await type("a");
+  expect(counter.presentation()).toHaveStyle(dimBackdropStyle);
+  // The listbox closes first, so the pennant is the only open popup.
+  await press.Escape();
+  expect(q.listbox.maybe("Ghee")).not.toBeInTheDocument();
+  expect(q.dialog("Pennant")).toBeVisible();
+  // The new backdrop is outside the pennant, so a click on it closes the
+  // pennant.
+  await click(counter.presentation());
+  expect(q.dialog.maybe("Pennant")).not.toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/7772
+test("Clicking the backdrop of a Dialog closes the Combobox popover that opened after it after the backdrop element changes", async () => {
+  const counter = q.within(q.region("Ghee counter"));
+  await click(q.button("Open pennant"));
+  expect(q.dialog("Pennant")).toBeVisible();
+  await click(q.combobox("Ghee"));
+  expect(q.listbox("Ghee")).toBeVisible();
+  // The field has a value, so the dim backdrop replaces the clear one.
+  await type("a");
+  expect(counter.presentation()).toHaveStyle(dimBackdropStyle);
+  expect(q.listbox("Ghee")).toBeVisible();
+  // The new backdrop is outside both popups, so a click on it closes them. The
+  // listbox goes first here, because the test above covers the pennant.
+  await click(counter.presentation());
+  expect(q.listbox.maybe("Ghee")).not.toBeInTheDocument();
+  expect(q.dialog.maybe("Pennant")).not.toBeInTheDocument();
 });
 
 // https://github.com/ariakit/ariakit/issues/7774
