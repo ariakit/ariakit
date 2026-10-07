@@ -24,7 +24,8 @@ const openDialogs = new Map<DialogRef, OpenDialogOptions>();
 /**
  * Adds the dialog after the dialogs that are already open. A dialog that is
  * already there keeps its place. With `onEarlierDialogElementChange`, the
- * dialog learns when the element of a dialog that opened before it changes.
+ * dialog learns when the element or the backdrop of a dialog that opened before
+ * it changes.
  */
 export function addOpenDialog(
   dialogRef: DialogRef,
@@ -67,8 +68,8 @@ export function getEarlierOpenDialogElements(dialogRef: DialogRef) {
 }
 
 /**
- * Tells the dialogs that opened after the given dialog that its element
- * changed.
+ * Tells the dialogs that opened after the given dialog that its element or its
+ * backdrop changed.
  */
 export function notifyOpenDialogElementChange(dialogRef: DialogRef) {
   let foundDialog = false;

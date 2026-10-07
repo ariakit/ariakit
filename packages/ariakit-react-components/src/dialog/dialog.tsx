@@ -549,6 +549,15 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     notifyOpenDialogElementChange(ref);
   }, [isOpenAndReady, contentElement]);
 
+  // Tells them too when this dialog gets a backdrop element, such as when the
+  // backdrop prop changes while the dialog is open. The element of this dialog
+  // stays the same then, so the effect above doesn't run. A dialog that isn't
+  // open has no dialogs after it, so the call does nothing.
+  // https://github.com/ariakit/ariakit/issues/7772
+  const onBackdropElementChange = useCallback(() => {
+    notifyOpenDialogElementChange(ref);
+  }, []);
+
   useSafeLayoutEffect(() => {
     if (!id) return;
     if (!canTakeTreeSnapshot) return;
@@ -1079,6 +1088,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
             store={store}
             backdrop={backdrop}
             backdropRef={backdropRef}
+            onElementChange={onBackdropElementChange}
             hidden={hiddenProp}
             alwaysVisible={alwaysVisible}
           />
@@ -1086,7 +1096,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         {element}
       </>
     ),
-    [store, backdrop, hiddenProp, alwaysVisible],
+    [store, backdrop, onBackdropElementChange, hiddenProp, alwaysVisible],
   );
 
   const [headingId, setHeadingId] = useState<string>();
