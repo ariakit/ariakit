@@ -252,6 +252,10 @@ function ShadowPlayer() {
   const playerRef = useRef<HTMLDivElement>(null);
   const [speed, setSpeed] = useState("Normal");
   const [audio, setAudio] = useState("Stereo");
+  // TODO: Remove the slot and the portalElement props when
+  // https://github.com/ariakit/ariakit/issues/7773 is fixed. The slot is inside
+  // the player, so the popups are always inside the fullscreen element.
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
 
   const enterFullscreen = () => {
     void playerRef.current?.requestFullscreen();
@@ -275,7 +279,12 @@ function ShadowPlayer() {
           <Ariakit.PopoverDisclosure>Speed</Ariakit.PopoverDisclosure>
           {/* This popup stays mounted while it is hidden, so its portal node
               exists before the player enters fullscreen. */}
-          <Ariakit.Popover portal aria-label="Speed" style={popupStyle}>
+          <Ariakit.Popover
+            portal
+            portalElement={slot}
+            aria-label="Speed"
+            style={popupStyle}
+          >
             <button type="button" onClick={() => setSpeed("Fast")}>
               Fast
             </button>
@@ -290,6 +299,7 @@ function ShadowPlayer() {
               while the player is in fullscreen. */}
           <Ariakit.Popover
             portal
+            portalElement={slot}
             unmountOnHide
             aria-label="Audio"
             style={popupStyle}
@@ -305,6 +315,7 @@ function ShadowPlayer() {
         <div role="status" aria-label="Shadow playback">
           Speed: {speed}. Audio: {audio}.
         </div>
+        <div ref={setSlot} />
       </div>
     </ShadowHost>
   );
@@ -350,10 +361,15 @@ function FramePlayer({ title }: FramePlayerProps) {
   const frameRef = useCallback((element: HTMLIFrameElement | null) => {
     setFrameBody(element?.contentDocument?.body ?? null);
   }, []);
+  // TODO: Remove the slot and the portalElement prop when
+  // https://github.com/ariakit/ariakit/issues/7773 is fixed. The slot is an
+  // element of the app, so the playlist doesn't follow the fullscreen element.
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
 
   return (
     <>
       <iframe ref={frameRef} title={title} allowFullScreen />
+      <div ref={setSlot} />
       {frameBody && createPortal(<FramePlayerContent />, frameBody)}
       <Ariakit.PopoverProvider>
         <Ariakit.PopoverDisclosure>Playlist</Ariakit.PopoverDisclosure>
@@ -361,6 +377,7 @@ function FramePlayer({ title }: FramePlayerProps) {
             way a panel next to a player does. */}
         <Ariakit.Popover
           portal
+          portalElement={slot}
           hideOnInteractOutside={false}
           aria-label="Playlist"
           style={playlistStyle}
