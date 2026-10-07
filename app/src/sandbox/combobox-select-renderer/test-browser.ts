@@ -44,6 +44,93 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await test.expect(cherry).toHaveCSS("top", "0px");
       });
 
+      // https://github.com/ariakit/ariakit/issues/7628
+      test("keeps a far typeahead move in view when items have different sizes", async ({
+        page,
+        q,
+      }) => {
+        const uganda = q.option("Uganda");
+
+        await q.combobox("Country").click();
+        await test
+          .expect(q.listbox("Country"))
+          .not.toHaveAttribute("data-placing");
+
+        await page.keyboard.press("u");
+        await test.expect(uganda).toHaveAttribute("data-active-item");
+        // The first scroll goes to an estimated offset that shows the item, so
+        // an immediate check could pass before the item moves. The renderer
+        // handles that scroll on the next animation frame and measures the
+        // items it then renders on the frame after.
+        await flushFrames(page);
+
+        // Items that are not measured yet keep fractional estimated offsets, so
+        // the ratio allows for subpixel clipping at the scroller edge.
+        await test.expect(uganda).toBeInViewport({ ratio: 0.9 });
+      });
+
+      // https://github.com/ariakit/ariakit/issues/7628
+      test("keeps a far upward typeahead move in view when items have different sizes", async ({
+        page,
+        q,
+      }) => {
+        const denmark = q.option("Denmark");
+
+        await q.combobox("Country").click();
+        await test
+          .expect(q.listbox("Country"))
+          .not.toHaveAttribute("data-placing");
+
+        // Measure the tall items at the end first, so the estimate for the
+        // items near the start becomes too large.
+        await page.keyboard.press("End");
+        await test
+          .expect(q.option("Zambia"))
+          .toHaveAttribute("data-active-item");
+        // The renderer drops the first window when it handles the scroll.
+        await test.expect(q.option("Australia")).toHaveCount(0);
+        // It then measures the items of the new window, and the measured sizes
+        // move the window once more. No rendered state shows the end of those
+        // two rounds, and the move below must start from measured tall items.
+        await flushFrames(page);
+
+        await page.keyboard.press("d");
+        await test.expect(denmark).toHaveAttribute("data-active-item");
+        // See the downward test above for these frames.
+        await flushFrames(page);
+
+        // Without the ratio, an item that is almost completely clipped at the
+        // scroller edge would still count as in view.
+        await test.expect(denmark).toBeInViewport({ ratio: 0.9 });
+      });
+
+      // https://github.com/ariakit/ariakit/issues/7628
+      test("keeps a far selected item in view on open when items have different sizes", async ({
+        page,
+        q,
+      }) => {
+        const select = q.combobox("Country");
+        const uganda = q.option("Uganda");
+
+        // Typeahead on the closed select changes the value before the popup
+        // renders its items, so the first open presents an item that the
+        // renderer has not measured yet.
+        await select.focus();
+        await page.keyboard.press("u");
+        await test.expect(select).toHaveText("Uganda");
+
+        await select.click();
+        await test
+          .expect(q.listbox("Country"))
+          .not.toHaveAttribute("data-placing");
+        await test.expect(uganda).toHaveAttribute("data-active-item");
+        // See the downward test above for these frames. Here, the first scroll
+        // is the one that presents the selected item when the popup is placed.
+        await flushFrames(page);
+
+        await test.expect(uganda).toBeInViewport({ ratio: 0.9 });
+      });
+
       // https://github.com/ariakit/ariakit/issues/3913
       test("updates items when an initially empty scroller gains overflow", async ({
         page,

@@ -134,6 +134,63 @@ const duplicateSelectedValues = [
   "Banana",
 ] as const;
 
+const mixedSizeItems = [
+  "Argentina",
+  "Australia",
+  "Austria",
+  "Belgium",
+  "Brazil",
+  "Bulgaria",
+  "Cambodia",
+  "Cameroon",
+  "Canada",
+  "Chile",
+  "China",
+  "Colombia",
+  "Denmark",
+  "Ecuador",
+  "Egypt",
+  "Estonia",
+  "Finland",
+  "France",
+  "Germany",
+  "Ghana",
+  "Greece",
+  "Hungary",
+  "Iceland",
+  "India",
+  "Ireland",
+  "Italy",
+  "Jamaica",
+  "Japan",
+  "Kenya",
+  "Latvia",
+  "Mexico",
+  "Morocco",
+  "Nepal",
+  "Norway",
+  "Peru",
+  "Poland",
+  "Portugal",
+  "Romania",
+  "Spain",
+  "Sweden",
+  "Thailand",
+  "Turkey",
+  "Uganda",
+  "Ukraine",
+  "Uruguay",
+  "Vietnam",
+  "Yemen",
+  "Zambia",
+].map((value, index) => ({
+  id: `country-${value.toLowerCase()}`,
+  value,
+  // The short items come first, so the sizes that the renderer measures near
+  // the start underestimate the offsets of the tall items near the end.
+  tall: index >= 12,
+}));
+
 const asyncItems = Array.from({ length: 100 }, (_, index) => ({
   id: `async-item-${index + 1}`,
   value: `Async item ${index + 1}`,
@@ -328,6 +385,58 @@ function SelectHorizontalRenderer() {
               >
                 {label}
               </Ariakit.SelectItem>
+            )}
+          </SelectRenderer>
+        </Ariakit.SelectPopover>
+      </Ariakit.SelectProvider>
+    </section>
+  );
+}
+
+function MixedSizeRenderer() {
+  return (
+    <section>
+      <Ariakit.ComboboxProvider
+        defaultItems={mixedSizeItems}
+        defaultSelectedValue="Argentina"
+      >
+        <Ariakit.ComboboxSelectLabel>Country</Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect />
+        <Ariakit.ComboboxPopover gutter={4} className="mixed-size-popover">
+          <ComboboxRenderer items={mixedSizeItems} overscan={1}>
+            {({ value, tall, ...item }) => (
+              <Ariakit.ComboboxItem
+                key={item.id}
+                {...item}
+                value={value}
+                style={{ ...item.style, height: tall ? 72 : 24 }}
+              />
+            )}
+          </ComboboxRenderer>
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+function SelectMixedSizeRenderer() {
+  return (
+    <section>
+      <Ariakit.SelectProvider
+        defaultItems={mixedSizeItems}
+        defaultValue="Argentina"
+      >
+        <Ariakit.SelectLabel>Country</Ariakit.SelectLabel>
+        <Ariakit.Select />
+        <Ariakit.SelectPopover gutter={4} className="mixed-size-popover">
+          <SelectRenderer items={mixedSizeItems} overscan={1}>
+            {({ value, tall, ...item }) => (
+              <Ariakit.SelectItem
+                key={item.id}
+                {...item}
+                value={value}
+                style={{ ...item.style, height: tall ? 72 : 24 }}
+              />
             )}
           </SelectRenderer>
         </Ariakit.SelectPopover>
@@ -780,6 +889,7 @@ export default function Example() {
       <RendererModeContext.Provider value={selectRenderer}>
         {selectRenderer ? <SelectGroupedRenderer /> : <GroupedRenderer />}
         {selectRenderer ? <SelectHorizontalRenderer /> : <HorizontalRenderer />}
+        {selectRenderer ? <SelectMixedSizeRenderer /> : <MixedSizeRenderer />}
         <DuplicateValueRenderer />
         <AsyncRenderer />
         <NestedAutoRenderer />

@@ -22,6 +22,24 @@
   background: hsl(210deg 90% 96%);
 }
 
+.mixed-size-popover {
+  width: 200px;
+  max-height: 200px;
+  overflow: auto;
+  background: white;
+}
+
+.mixed-size-popover [role="option"] {
+  box-sizing: border-box;
+  width: 100%;
+  padding-inline: 8px;
+  border-bottom: 1px solid hsl(210deg 8% 85%);
+}
+
+.mixed-size-popover [data-active-item] {
+  background: hsl(210deg 90% 90%);
+}
+
 .async-scroller {
   height: 120px;
   overflow-y: auto;
