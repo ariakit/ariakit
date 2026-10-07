@@ -138,6 +138,99 @@ function LateMountedMenu() {
 }
 
 /**
+ * Holds every positioning pass of a menu, after the supplied default has run,
+ * until `release` is called.
+ */
+function useHeldPass() {
+  const releaseRef = useRef<(() => void) | null>(null);
+
+  const updatePosition: UpdatePosition = async ({ updatePosition }) => {
+    await updatePosition();
+    await new Promise<void>((resolve) => {
+      releaseRef.current = resolve;
+    });
+  };
+
+  const release = () => {
+    const resolve = releaseRef.current;
+    releaseRef.current = null;
+    resolve?.();
+  };
+
+  return { updatePosition, release };
+}
+
+/**
+ * A menu that moves into a portal while it is open, the way a layout that
+ * follows the viewport would move it. The move replaces the popup's elements,
+ * so the new popup element starts at its origin and has to be positioned before
+ * the menu takes its initial focus again.
+ */
+function PortalMenu() {
+  const menu = Ariakit.useMenuStore();
+  const [portal, setPortal] = useState(false);
+  const { updatePosition, release } = useHeldPass();
+
+  return (
+    <>
+      <button type="button" tabIndex={0} onClick={() => setPortal(true)}>
+        Move Portal actions to a portal
+      </button>
+      <button type="button" tabIndex={0} onClick={release}>
+        Finish Portal actions positioning
+      </button>
+      <Ariakit.MenuButton store={menu}>Portal actions</Ariakit.MenuButton>
+      <Ariakit.Menu
+        store={menu}
+        portal={portal}
+        updatePosition={updatePosition}
+        hideOnInteractOutside={false}
+        style={{ background: "white", border: "1px solid gray" }}
+      >
+        <Ariakit.MenuItem style={{ display: "block" }}>Rename</Ariakit.MenuItem>
+      </Ariakit.Menu>
+    </>
+  );
+}
+
+/**
+ * One menu for two buttons, with a leave transition. Focus on the other button
+ * closes the menu, and that button can open it again before the transition
+ * ends. The menu never unmounts between the two opens, but it still has to be
+ * positioned at its new button before it takes its initial focus.
+ */
+function SharedMenu() {
+  const menu = Ariakit.useMenuStore();
+  const { updatePosition, release } = useHeldPass();
+
+  return (
+    <>
+      <button type="button" tabIndex={0} onClick={release}>
+        Finish Row actions positioning
+      </button>
+      <Ariakit.MenuButton store={menu}>First row actions</Ariakit.MenuButton>
+      <Ariakit.MenuButton store={menu}>Second row actions</Ariakit.MenuButton>
+      <Ariakit.Menu
+        store={menu}
+        aria-label="Row actions"
+        updatePosition={updatePosition}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          // Long enough to open the menu again while it is still leaving.
+          transitionProperty: "opacity",
+          transitionDuration: "3000ms",
+        }}
+      >
+        <Ariakit.MenuItem style={{ display: "block" }}>
+          Rename row
+        </Ariakit.MenuItem>
+      </Ariakit.Menu>
+    </>
+  );
+}
+
+/**
  * A menu whose positioning finishes in two steps: it places itself with what it
  * knows, waits for asynchronous work that can change where it belongs, then
  * places itself again. `updatePosition` is the public way to express that, and
@@ -264,14 +357,6 @@ export default function Example() {
         portal={false}
         flip={false}
         slide={false}
-        // TODO: Remove this workaround when
-        // https://github.com/ariakit/ariakit/issues/7625 is fixed. The menu
-        // asks again when a later positioning pass ends. Focus that is already
-        // in the menu stays where the user moved it.
-        autoFocusOnShow={() => {
-          const menuElement = menu.getState().contentElement;
-          return !menuElement?.contains(document.activeElement);
-        }}
         style={{ background: "white", border: "1px solid gray" }}
       >
         {actions.map((action) => (
@@ -284,6 +369,12 @@ export default function Example() {
         ))}
       </Ariakit.Menu>
       <div style={{ height: 1500 }} />
+      {/* After everything else, so they move none of the controls above, and
+      each one with room below for its own menu. */}
+      <PortalMenu />
+      <div style={{ height: 300 }} />
+      <SharedMenu />
+      <div style={{ height: 300 }} />
     </main>
   );
 }

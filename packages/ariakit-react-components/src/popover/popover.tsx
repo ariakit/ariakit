@@ -1,5 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useBooleanEvent,
   useEvent,
   usePortalRef,
   useSafeLayoutEffect,
@@ -292,12 +293,44 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     const rendered = useStoreState(store, "rendered");
 
     const defaultArrowElementRef = useRef<HTMLElement | null>(null);
+    // The popover element that took its initial focus since `open` last
+    // changed.
+    const focusedElementRef = useRef<HTMLElement | null>(null);
 
     // Focus can only move into the popover once it has been positioned,
     // otherwise there may be scroll jumps. See the menu-placing-pass sandbox.
-    // That's the question `unstable_placing` already answers, so it's read from
-    // there rather than tracked a second time.
-    const positioned = !placing;
+    // That's the question `unstable_placing` answers, but only for the initial
+    // focus: a popover that already took it must not wait again for a later
+    // pass, or it would take that focus a second time when the pass ends. The
+    // ref is safe to read here: it's set while `placing` is false, and it's
+    // reset when `open` changes, which renders again.
+    // https://github.com/ariakit/ariakit/issues/7625
+    const tookInitialFocus =
+      !!popoverElement && focusedElementRef.current === popoverElement;
+    const positioned = !placing || tookInitialFocus;
+
+    const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
+
+    // The dialog calls this right before it takes its initial focus.
+    const shouldAutoFocusOnShow = useEvent((element: HTMLElement | null) => {
+      if (!autoFocusOnShowProp(element)) return false;
+      // Before the popover takes its initial focus, the gate can still be open
+      // in the render that starts a pass. The gate then closes, and the dialog
+      // asks again when that pass ends, so this request doesn't count.
+      if (!store?.getState().unstable_placing) {
+        focusedElementRef.current = popoverElement;
+      }
+      return true;
+    });
+
+    // The initial focus counts for one open. A ref takes effect in the same
+    // step as the store update, where React 18 can apply state in a later
+    // render, after the popover already asked for its focus again.
+    useSafeLayoutEffect(() => {
+      return sync(store, ["open"], () => {
+        focusedElementRef.current = null;
+      });
+    }, [store]);
 
     const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
 
@@ -639,7 +672,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       portal,
       preserveTabOrder,
       preserveTabOrderAnchor: disclosureElement || anchorElement,
-      autoFocusOnShow: positioned && autoFocusOnShow,
+      autoFocusOnShow: positioned && !!autoFocusOnShow && shouldAutoFocusOnShow,
       ...props,
       portalRef,
       // The dialog element renders in the wrapper element, and React creates a
