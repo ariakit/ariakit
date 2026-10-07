@@ -575,6 +575,114 @@ function TicketDialog() {
   );
 }
 
+// The tip renders in a portal while the field is empty, so it moves out of the
+// portal to the counter while both popups are open. A popover renders its
+// element in a wrapper, and the wrapper in the counter is new. The listbox must
+// mark the tip in that wrapper, so one Escape must still close only the
+// listbox.
+function TipPopover() {
+  const [value, setValue] = useState("");
+  return (
+    <section aria-label="Tea counter">
+      <Ariakit.PopoverProvider>
+        <Ariakit.PopoverDisclosure>Open tip</Ariakit.PopoverDisclosure>
+        <Ariakit.Popover
+          portal={!value}
+          hideOnInteractOutside={false}
+          style={popupStyle}
+        >
+          <Ariakit.PopoverHeading>Tip</Ariakit.PopoverHeading>
+          <p>Teas steep for three minutes.</p>
+        </Ariakit.Popover>
+      </Ariakit.PopoverProvider>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Tea</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+// The menu renders in a portal while the field is empty, so it moves out of the
+// portal to the counter while both popups are open. A menu renders its element
+// in a wrapper, like a popover. The listbox must mark the menu in the new
+// wrapper, so one Escape must still close only the listbox.
+function ExtrasMenu() {
+  const [value, setValue] = useState("");
+  return (
+    <section aria-label="Juice counter">
+      <Ariakit.MenuProvider>
+        <Ariakit.MenuButton>Extras</Ariakit.MenuButton>
+        <Ariakit.Menu
+          portal={!value}
+          hideOnInteractOutside={false}
+          style={popupStyle}
+        >
+          <Ariakit.MenuItem>Ice</Ariakit.MenuItem>
+          <Ariakit.MenuItem>Mint</Ariakit.MenuItem>
+        </Ariakit.Menu>
+      </Ariakit.MenuProvider>
+      <Ariakit.ComboboxProvider value={value} setValue={setValue}>
+        <Ariakit.ComboboxLabel>Juice</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox />
+        <Ariakit.ComboboxPopover style={popupStyle}>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+// The receipt renders in a portal while the field in the preferences is empty,
+// so it moves out of the portal to the counter while both popups are open. The
+// preferences are modal and render in the counter too, so the new wrapper of
+// the receipt is next to them. They must disable the receipt in that wrapper,
+// and one Escape must still close only the preferences.
+function ReceiptPopover() {
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const [value, setValue] = useState("");
+  return (
+    <section aria-label="Cider counter">
+      <Ariakit.PopoverProvider>
+        <Ariakit.PopoverDisclosure>Open receipt</Ariakit.PopoverDisclosure>
+        <Ariakit.Popover
+          portal={!value}
+          hideOnInteractOutside={false}
+          style={popupStyle}
+        >
+          <Ariakit.PopoverHeading>Receipt</Ariakit.PopoverHeading>
+          <p>Cider is sold by the bottle.</p>
+        </Ariakit.Popover>
+      </Ariakit.PopoverProvider>
+      <Ariakit.Button onClick={() => setPreferencesOpen(true)}>
+        Open preferences
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        open={preferencesOpen}
+        onClose={() => setPreferencesOpen(false)}
+        portal={false}
+        style={dialogStyle}
+      >
+        <Ariakit.DialogHeading>Preferences</Ariakit.DialogHeading>
+        <label>
+          Cider
+          <input
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+          />
+        </label>
+      </Ariakit.Dialog>
+    </section>
+  );
+}
+
 interface ShadowRootProps {
   name: string;
   children: ReactNode;
@@ -702,6 +810,9 @@ export default function Example() {
       <CouponDialog />
       <VoucherDialog />
       <TicketDialog />
+      <TipPopover />
+      <ExtrasMenu />
+      <ReceiptPopover />
       <MemoDialog />
       <ShadowOrderDialog />
     </div>
