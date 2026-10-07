@@ -706,6 +706,58 @@ test("The modal Dialog keeps the modal Dialog that opened after it enabled after
   expect(q.dialog.maybe("Estimate")).not.toBeInTheDocument();
 });
 
+// https://github.com/ariakit/ariakit/issues/7774
+test("The modal Dialog nested in a modal Dialog still disables it after that Dialog moves out of a portal", async () => {
+  // The modal dialogs disable the page around them, so these queries include
+  // the elements that aren't exposed.
+  const counter = q.within(q.region.hidden("Cocoa counter"));
+  await click(q.button("Open ledger"));
+  expect(q.dialog("Ledger")).toBeVisible();
+  await click(q.button("Open entry"));
+  expect(q.textbox("Cocoa")).toHaveFocus();
+  expect(counter.dialog.maybe.hidden("Ledger")).not.toBeInTheDocument();
+  // The field has a value, so the ledger moves out of its portal to the
+  // counter. The entry is inside the ledger, so React mounts it again.
+  await type("a");
+  expect(counter.dialog.hidden("Ledger")).toBeVisible();
+  expect(q.textbox("Cocoa")).toHaveValue("a");
+  await click(q.button("Add cocoa"));
+  expect(q.text("Cocoa jars: 1")).toBeVisible();
+  // The entry is modal, so it still disables the ledger around it.
+  expect(q.button.hidden("Open entry").closest("[inert]")).toBeTruthy();
+  await press.Escape();
+  expect(q.dialog.maybe("Entry")).not.toBeInTheDocument();
+  expect(q.dialog("Ledger")).toBeVisible();
+  // The ledger is modal, so it still disables the counter around it.
+  expect(counter.button.hidden("Open ledger").closest("[inert]")).toBeTruthy();
+  // The ledger is the topmost popup again, so the next Escape closes it.
+  await press.Escape();
+  expect(q.dialog.maybe("Ledger")).not.toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/7774
+test("The modal Dialog still disables the elements around it after it moves between a shadow root and a portal", async () => {
+  const shadow = queryShadowRoot("label");
+  await click(shadow.button("Open label"));
+  expect(shadow.dialog("Label")).toBeVisible();
+  // The label moves out of the shadow root to a portal in the document, so it
+  // disables the page.
+  await click(shadow.button("Move label"));
+  expect(q.dialog("Label")).toBeVisible();
+  expect(q.region.hidden("Rice counter").closest("[inert]")).toBeTruthy();
+  await press.Escape();
+  expect(q.dialog.maybe("Label")).not.toBeInTheDocument();
+  // The label opens in the portal now. Then it moves to the shadow root, so it
+  // disables the elements around it there.
+  await click(shadow.button("Open label"));
+  expect(q.dialog("Label")).toBeVisible();
+  await click(q.button("Move label"));
+  expect(shadow.dialog("Label")).toBeVisible();
+  // The browser test also closes the label here. The key press helper sends the
+  // key to the shadow host, so it doesn't reach a dialog in a shadow root.
+  expect(shadow.button.hidden("Open label").closest("[inert]")).toBeTruthy();
+});
+
 // https://github.com/ariakit/ariakit/issues/7726
 test("Escape closes the Combobox popover before a Dialog outside its tree when a Dialog in a shadow root has the same id", async () => {
   const shadow = queryShadowRoot("memo");

@@ -162,11 +162,15 @@ test("later dialog disables the hidden dismiss of a dialog that moves out of a p
   await type("a");
   expect(dismissInPortal).not.toBeInTheDocument();
   expect(q.button.hidden("Dismiss popup")).toBeInTheDocument();
-  // The browser test also closes the gift note and checks that the button is
-  // back. Here, Escape doesn't close the gift note in the state after the move,
-  // in which the checkout disables the gift note too.
-  // https://github.com/ariakit/ariakit/issues/7774
   expect(q.button.maybe("Dismiss popup")).not.toBeInTheDocument();
+
+  // The gift note opened last, so Escape closes it, and the checkout must get
+  // its dismiss button back. The checkout must not disable the gift note after
+  // the move, or Escape doesn't close it.
+  // https://github.com/ariakit/ariakit/issues/7774
+  await press.Escape();
+  expect(q.dialog.maybe.hidden("Gift note")).not.toBeInTheDocument();
+  expect(q.button("Dismiss popup")).toBeInTheDocument();
 });
 
 // The hidden dismiss button can also mount while the later dialog is open, when

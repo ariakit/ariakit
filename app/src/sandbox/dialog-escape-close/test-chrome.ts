@@ -982,4 +982,94 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await page.keyboard.press("Escape");
     await test.expect(q.dialog("Estimate")).toBeHidden();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7774
+  test("The modal Dialog nested in a modal Dialog still disables it after that Dialog moves out of a portal", async ({
+    page,
+    q,
+  }) => {
+    // The modal dialogs disable the page around them, so these queries include
+    // the elements that aren't exposed.
+    const counter = query(q.region("Cocoa counter", { includeHidden: true }));
+    const ledger = counter.dialog("Ledger", { includeHidden: true });
+    await q.button("Open ledger").click();
+    await test.expect(q.dialog("Ledger")).toBeVisible();
+    await q.button("Open entry").click();
+    await test.expect(q.textbox("Cocoa")).toBeFocused();
+    await test.expect(ledger).toHaveCount(0);
+    // The field has a value, so the ledger moves out of its portal to the
+    // counter. The entry is inside the ledger, so React mounts it again.
+    await page.keyboard.type("a");
+    await test.expect(ledger).toBeVisible();
+    await test.expect(q.textbox("Cocoa")).toHaveValue("a");
+    await q.button("Add cocoa").click();
+    await test.expect(q.text("Cocoa jars: 1")).toBeVisible();
+    // The entry is modal, so it still disables the ledger around it.
+    await test
+      .expect(
+        q
+          .button("Open entry", { includeHidden: true })
+          .evaluate((element) => element.closest("[inert]") !== null),
+      )
+      .resolves.toBe(true);
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Entry")).toBeHidden();
+    await test.expect(q.dialog("Ledger")).toBeVisible();
+    // The ledger is modal, so it still disables the counter around it.
+    await test
+      .expect(
+        counter
+          .button("Open ledger", { includeHidden: true })
+          .evaluate((element) => element.closest("[inert]") !== null),
+      )
+      .resolves.toBe(true);
+    // The ledger is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Ledger")).toBeHidden();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7774
+  test("The modal Dialog still disables the elements around it after it moves between a shadow root and a portal", async ({
+    page,
+    q,
+  }) => {
+    // The modal dialog disables the page around it, so these queries include
+    // the elements that aren't exposed.
+    const counter = q.region("Rice counter", { includeHidden: true });
+    const opener = q.button("Open label", { includeHidden: true });
+    const isInShadowRoot = (element: Element) => {
+      return element.getRootNode() !== element.ownerDocument;
+    };
+    await q.button("Open label").click();
+    await test.expect(q.dialog("Label")).toBeVisible();
+    await test
+      .expect(q.dialog("Label").evaluate(isInShadowRoot))
+      .resolves.toBe(true);
+    // The label moves out of the shadow root to a portal in the document, so it
+    // disables the page.
+    await q.button("Move label").click();
+    await test
+      .expect(q.dialog("Label").evaluate(isInShadowRoot))
+      .resolves.toBe(false);
+    await test
+      .expect(
+        counter.evaluate((element) => element.closest("[inert]") !== null),
+      )
+      .resolves.toBe(true);
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Label")).toBeHidden();
+    // The label opens in the portal now. Then it moves to the shadow root, so
+    // it disables the elements around it there.
+    await q.button("Open label").click();
+    await test.expect(q.dialog("Label")).toBeVisible();
+    await q.button("Move label").click();
+    await test
+      .expect(q.dialog("Label").evaluate(isInShadowRoot))
+      .resolves.toBe(true);
+    await test
+      .expect(opener.evaluate((element) => element.closest("[inert]") !== null))
+      .resolves.toBe(true);
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Label")).toBeHidden();
+  });
 });
