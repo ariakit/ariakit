@@ -1,4 +1,4 @@
-import { blur, click, dispatch, focus, press, q } from "@ariakit/test";
+import { blur, click, dispatch, focus, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/7042
@@ -59,10 +59,9 @@ test("restores focus when a refocused item is replaced", async () => {
   expect(replacement).toHaveFocus();
 });
 
-// The sandbox's other scenario, re-anchoring an already open popup, is covered
-// only by the browser test: an already open popup has no initial focus left to
-// take, and the focus half of a presentation never waits on placement, so its
-// only user-facing effect is a document scroll that happy-dom cannot model.
+// The scroll half of re-anchoring an already open popup is covered only by the
+// browser test: the focus half of a presentation never waits on placement, so
+// what the pass holds back is a document scroll that happy-dom cannot model.
 // https://github.com/ariakit/ariakit/issues/7019
 test("keeps the popup unplaced while a custom updatePosition is still working", async () => {
   await click(q.button("Actions"));
@@ -78,6 +77,40 @@ test("keeps the popup unplaced while a custom updatePosition is still working", 
 
   await click(q.button("Finish Actions positioning"));
   expect(menu).not.toHaveAttribute("data-placing");
+});
+
+// A popup takes its initial focus once each time it opens. A pass that runs
+// later, while the popup is open, has no initial focus left to give, so it must
+// leave focus on the item the user moved to.
+// https://github.com/ariakit/ariakit/issues/7625
+test("keeps focus on a moved item after an open popup repositions itself", async () => {
+  await focus(q.button("Actions"));
+  await press.Enter();
+  const menu = q.menu("Actions");
+  const finish = q.button("Finish Actions positioning");
+  const item = q.menuitem("Action 3");
+  expect(menu).toHaveAttribute("data-placing");
+  // The buttons that drive a pass stand in for work the application does on its
+  // own, so they are dispatched to. A click would move focus out of the menu,
+  // and the popup never takes focus back from outside.
+  await dispatch.click(finish);
+  await expect.poll(() => q.menuitem("Action 1")).toHaveFocus();
+
+  await press.ArrowDown();
+  await press.ArrowDown();
+  expect(item).toHaveFocus();
+
+  await dispatch.click(q.button("Reposition Actions"));
+  expect(menu).toHaveAttribute("data-placing");
+  await dispatch.click(finish);
+  await expect.poll(() => menu).not.toHaveAttribute("data-placing");
+  // Focus that stays put has no positive state. The popup would take its
+  // initial focus from an effect and a microtask that follow the commit the
+  // attribute above reports, and `dispatch` flushes only microtasks, so cross a
+  // macrotask.
+  await sleep();
+  expect(item).toHaveFocus();
+  expect(item).toHaveAttribute("data-active-item");
 });
 
 // The same flow in happy-dom, which is where the React 18 suite runs. What it
