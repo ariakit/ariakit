@@ -571,10 +571,36 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     notifyOpenDialogElementChange(ref);
   }, [needsHiddenDismiss]);
 
+  const treeSnapshotRef = useRef<{
+    rootNode: Node;
+    restore: () => void;
+  } | null>(null);
+
   useSafeLayoutEffect(() => {
     if (!id) return;
     if (!canTakeTreeSnapshot) return;
     const dialog = ref.current;
+    if (!dialog) return;
+    const rootNode = dialog.getRootNode();
+    const treeSnapshot = treeSnapshotRef.current;
+    // The dialog keeps its snapshot while it stays open in the same root. A new
+    // snapshot would have the elements that the page added after the dialog
+    // opened, such as the dialogs that opened after it, and a modal dialog
+    // would disable them. The dialog isn't ready while its new portal node
+    // doesn't exist yet, such as when the portal prop changes, so the next
+    // effect restores the snapshot, and not the cleanup of this one.
+    // https://github.com/ariakit/ariakit/issues/7774
+    if (treeSnapshot?.rootNode === rootNode) return;
+    // The snapshot has only elements of the root that the dialog was in, so the
+    // dialog takes a new one in another root, such as after it moves from a
+    // shadow root to a portal in the document. A portal node that isn't in the
+    // document anymore is a root too, and the snapshot from there is empty. The
+    // dialog element can still be in one when StrictMode runs the effects
+    // again, or when the portal node of the dialog around it goes away. The new
+    // snapshot has the popups that opened after the dialog in the new root, so
+    // a modal dialog that leaves a shadow root still disables them.
+    // https://github.com/ariakit/ariakit/issues/7793
+    treeSnapshot?.restore();
     // When the dialog opens, we capture a snapshot of the document. This
     // snapshot is then used to disable elements outside the dialog in the
     // subsequent effect. However, the issue arises as this next effect also
@@ -582,8 +608,19 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // we capture a new document snapshot, which might disable third-party
     // dialogs. Hence, we take the snapshot here, independent of any nested
     // dialogs.
-    return createWalkTreeSnapshot(id, [dialog]);
+    const restore = createWalkTreeSnapshot(id, [dialog]);
+    treeSnapshotRef.current = { rootNode, restore };
   }, [id, canTakeTreeSnapshot, unstable_treeSnapshotKey]);
+
+  // Restores the snapshot when the dialog closes, and before the effect above
+  // takes a new one for another id or snapshot key.
+  useSafeLayoutEffect(() => {
+    if (!open) return;
+    return () => {
+      treeSnapshotRef.current?.restore();
+      treeSnapshotRef.current = null;
+    };
+  }, [id, open, unstable_treeSnapshotKey]);
 
   // The snapshot has the dialogs that were already open, but React can replace
   // their elements, move them to new portal nodes, or render them in new

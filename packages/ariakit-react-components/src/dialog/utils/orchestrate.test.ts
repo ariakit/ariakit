@@ -6,7 +6,10 @@ import {
   notifyOpenDialogElementChange,
   removeOpenDialog,
 } from "./__open-dialogs.ts";
-import { addToWalkTreeSnapshot } from "./__walk-tree-snapshot.ts";
+import {
+  addToWalkTreeSnapshot,
+  getSnapshotAncestorPropertyName,
+} from "./__walk-tree-snapshot.ts";
 import { markAndDisableTreeOutside } from "./disable-tree.ts";
 import {
   isElementInside,
@@ -241,6 +244,64 @@ test("walkTreeOutside walks elements added to the snapshot", () => {
   expect(getWalkedElementIds("dialog", [dialog])).toEqual([]);
 
   restoreSnapshot();
+});
+
+// https://github.com/ariakit/ariakit/issues/7774
+test("walkTreeOutside walks the snapshot children of the elements that the dialog left", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <section id="before"></section>
+      <div id="parent">
+        <div id="dialog"></div>
+        <section id="sibling"></section>
+      </div>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const root = getElement("root");
+  const parent = getElement("parent");
+  const restoreSnapshot = createWalkTreeSnapshot("dialog", [dialog]);
+
+  // The page adds an element next to the dialog, and then the dialog moves to a
+  // new portal node.
+  const later = document.createElement("section");
+  later.id = "later";
+  parent.append(later);
+  const portal = document.createElement("div");
+  portal.id = "portal";
+  document.body.append(portal);
+  portal.append(dialog);
+
+  const walk = () => {
+    const walked: string[] = [];
+    const ancestors: string[] = [];
+    walkTreeOutside(
+      "dialog",
+      [dialog],
+      (element) => walked.push(element.id),
+      (ancestor) => ancestors.push(ancestor.id || ancestor.tagName),
+    );
+    return { walked, ancestors };
+  };
+
+  const result = walk();
+  // The snapshot is on the body element, which the other tests use too, so it
+  // goes away before an assertion can fail.
+  restoreSnapshot();
+
+  // The root and the parent had the dialog inside them when the snapshot was
+  // taken, so the walk goes through them like through the current ancestors.
+  expect(result).toEqual({
+    walked: ["before", "sibling"],
+    ancestors: ["portal", "BODY", "root", "parent"],
+  });
+  // Without a snapshot, the walk has every element outside the dialog, so it
+  // can't show that the record of the former ancestors is gone.
+  expect(walk()).toEqual({ walked: ["root"], ancestors: ["portal", "BODY"] });
+  const ancestorProperty = getSnapshotAncestorPropertyName("dialog");
+  expect(Object.hasOwn(root, ancestorProperty)).toBe(false);
+  expect(Object.hasOwn(parent, ancestorProperty)).toBe(false);
 });
 
 test("markTreeOutside skips backdrops and restores marks", () => {
