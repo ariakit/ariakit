@@ -3,4 +3,4 @@
 "@ariakit/react": patch
 ---
 
-Fixed [`Portal`](https://ariakit.com/reference/portal) moving the element passed to [`portalElement`](https://ariakit.com/reference/portal#portalelement) to `document.body` when the prop changed to `null` while the portal was mounted. This applies to all components built on [`Portal`](https://ariakit.com/reference/portal), such as [`Dialog`](https://ariakit.com/reference/dialog) and [`Popover`](https://ariakit.com/reference/popover).
+Fixed [`Portal`](https://ariakit.com/reference/portal) moving a custom container when [`portalElement`](https://ariakit.com/reference/portal#portalelement) changes to `null`, if the container was already in the document when assigned. This applies to all components built on [`Portal`](https://ariakit.com/reference/portal), such as [`Dialog`](https://ariakit.com/reference/dialog) and [`Popover`](https://ariakit.com/reference/popover).
