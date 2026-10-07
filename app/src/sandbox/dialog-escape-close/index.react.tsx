@@ -823,6 +823,12 @@ function PosterDialog() {
   );
 }
 
+// TODO: Remove this style with the containers that use it when the fix for
+// https://github.com/ariakit/ariakit/issues/7772 is released.
+const containerStyle = {
+  display: "contents",
+};
+
 // The sign gets its backdrop when the field has a value, so the backdrop is new
 // while both popups are open. A dialog renders its backdrop next to its
 // element, and that element stays the same. The listbox must mark the new
@@ -833,17 +839,24 @@ function SignDialog() {
   return (
     <section aria-label="Yogurt counter">
       <Ariakit.Button onClick={() => setOpen(true)}>Open sign</Ariakit.Button>
-      <Ariakit.Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        modal={false}
-        backdrop={value ? <div /> : false}
-        hideOnInteractOutside={isBackdropEvent}
-        style={noteStyle}
-      >
-        <Ariakit.DialogHeading>Sign</Ariakit.DialogHeading>
-        <p>Yogurt is strained overnight.</p>
-      </Ariakit.Dialog>
+      {/* TODO: Remove this container when the fix for
+      https://github.com/ariakit/ariakit/issues/7772 is released. The listbox
+      marks the container, which is always in the page, so the new backdrop
+      inside it has the mark too. The container has no box, so it doesn't change
+      the layout. */}
+      <div style={containerStyle}>
+        <Ariakit.Dialog
+          open={open}
+          onClose={() => setOpen(false)}
+          modal={false}
+          backdrop={value ? <div /> : false}
+          hideOnInteractOutside={isBackdropEvent}
+          style={noteStyle}
+        >
+          <Ariakit.DialogHeading>Sign</Ariakit.DialogHeading>
+          <p>Yogurt is strained overnight.</p>
+        </Ariakit.Dialog>
+      </div>
       <Ariakit.ComboboxProvider value={value} setValue={setValue}>
         <Ariakit.ComboboxLabel>Yogurt</Ariakit.ComboboxLabel>
         <Ariakit.Combobox />
@@ -867,14 +880,21 @@ function BadgePopover() {
     <section aria-label="Kefir counter">
       <Ariakit.PopoverProvider>
         <Ariakit.PopoverDisclosure>Open badge</Ariakit.PopoverDisclosure>
-        <Ariakit.Popover
-          backdrop={value ? <div /> : false}
-          hideOnInteractOutside={isBackdropEvent}
-          style={popupStyle}
-        >
-          <Ariakit.PopoverHeading>Badge</Ariakit.PopoverHeading>
-          <p>Kefir is poured cold.</p>
-        </Ariakit.Popover>
+        {/* TODO: Remove this container when the fix for
+        https://github.com/ariakit/ariakit/issues/7772 is released. The listbox
+        marks the container, which is always in the page, so the new backdrop
+        inside it has the mark too. The container has no box, so it doesn't
+        change the layout. */}
+        <div style={containerStyle}>
+          <Ariakit.Popover
+            backdrop={value ? <div /> : false}
+            hideOnInteractOutside={isBackdropEvent}
+            style={popupStyle}
+          >
+            <Ariakit.PopoverHeading>Badge</Ariakit.PopoverHeading>
+            <p>Kefir is poured cold.</p>
+          </Ariakit.Popover>
+        </div>
       </Ariakit.PopoverProvider>
       <Ariakit.ComboboxProvider value={value} setValue={setValue}>
         <Ariakit.ComboboxLabel>Kefir</Ariakit.ComboboxLabel>
@@ -904,17 +924,24 @@ function PlacardDialog() {
       <Ariakit.Button onClick={() => setOpen(true)}>
         Open placard
       </Ariakit.Button>
-      <Ariakit.Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        modal={false}
-        backdrop={value ? <div /> : false}
-        hideOnInteractOutside={isBackdropEvent}
-        style={noteStyle}
-      >
-        <Ariakit.DialogHeading>Placard</Ariakit.DialogHeading>
-        <p>Custard is baked at noon.</p>
-      </Ariakit.Dialog>
+      {/* TODO: Remove this container when the fix for
+      https://github.com/ariakit/ariakit/issues/7772 is released. The choices
+      disable the container, which is always in the page, so the new backdrop
+      inside it is disabled too. The container has no box, so it doesn't change
+      the layout. */}
+      <div style={containerStyle}>
+        <Ariakit.Dialog
+          open={open}
+          onClose={() => setOpen(false)}
+          modal={false}
+          backdrop={value ? <div /> : false}
+          hideOnInteractOutside={isBackdropEvent}
+          style={noteStyle}
+        >
+          <Ariakit.DialogHeading>Placard</Ariakit.DialogHeading>
+          <p>Custard is baked at noon.</p>
+        </Ariakit.Dialog>
+      </div>
       <Ariakit.Button onClick={() => setChoicesOpen(true)}>
         Open choices
       </Ariakit.Button>
@@ -974,7 +1001,11 @@ function PennantDialog() {
         open={open}
         onClose={() => setOpen(false)}
         modal={false}
-        backdrop={value ? <section style={dimBackdropStyle} /> : <div />}
+        // TODO: Use another element type for the dim backdrop again when the
+        // fix for https://github.com/ariakit/ariakit/issues/7772 is released.
+        // The backdrop keeps one element type, so React changes its style and
+        // doesn't replace the element.
+        backdrop={<div style={value ? dimBackdropStyle : undefined} />}
         hideOnInteractOutside={isBackdropEvent}
         style={pennantStyle}
       >
