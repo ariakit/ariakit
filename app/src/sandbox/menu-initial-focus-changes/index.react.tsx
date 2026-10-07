@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const menuStyle = { background: "white", border: "1px solid gray" };
 const itemStyle = { display: "block" };
@@ -42,11 +42,35 @@ function EditMenu({
   modal,
 }: EditMenuProps) {
   const [canUndo, setCanUndo] = useState(history);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   return (
     <Ariakit.MenuProvider virtualFocus={virtualFocus}>
       <Ariakit.MenuButton>{label}</Ariakit.MenuButton>
-      <Ariakit.Menu modal={modal} style={menuStyle}>
+      <Ariakit.Menu
+        ref={menuRef}
+        modal={modal}
+        style={menuStyle}
+        // TODO: Remove the next two props when
+        // https://github.com/ariakit/ariakit/issues/7791 is fixed. A modal menu
+        // that unmounts when it closes cannot keep the initial focus target of
+        // an earlier open.
+        unmountOnHide={modal}
+        // While the modal menu is open, it must not take focus again when the
+        // user is already on something inside it. Focus on the menu element
+        // itself does not count, because the menu has that focus before its
+        // items are available.
+        autoFocusOnShow={
+          modal
+            ? () => {
+                const menuElement = menuRef.current;
+                const activeElement = document.activeElement;
+                if (activeElement === menuElement) return true;
+                return !menuElement?.contains(activeElement);
+              }
+            : undefined
+        }
+      >
         {(keepUndo || canUndo) && (
           <Ariakit.MenuItem
             disabled={!canUndo}
