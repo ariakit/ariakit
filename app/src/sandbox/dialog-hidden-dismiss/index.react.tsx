@@ -209,16 +209,24 @@ function CheckoutDialog() {
     <>
       <Ariakit.Button onClick={() => setOpen(true)}>Checkout</Ariakit.Button>
       <BodyPortal>
-        <Ariakit.Dialog
-          open={open}
-          onClose={() => setOpen(false)}
-          portal={!note}
-        >
-          <Ariakit.DialogHeading>Checkout</Ariakit.DialogHeading>
-          <Ariakit.Button onClick={() => setNoteOpen(true)}>
-            Add gift note
-          </Ariakit.Button>
-        </Ariakit.Dialog>
+        {/*
+          TODO: Remove this element when the fix for
+          https://github.com/ariakit/ariakit/issues/7775 is released. It is in
+          the page before the gift note opens, so the gift note disables it and
+          the hidden dismiss button that renders in it later.
+        */}
+        <div>
+          <Ariakit.Dialog
+            open={open}
+            onClose={() => setOpen(false)}
+            portal={!note}
+          >
+            <Ariakit.DialogHeading>Checkout</Ariakit.DialogHeading>
+            <Ariakit.Button onClick={() => setNoteOpen(true)}>
+              Add gift note
+            </Ariakit.Button>
+          </Ariakit.Dialog>
+        </div>
         {/*
           The gift note mounts when it opens. The checkout disables the elements
           that are in the page when it opens, and the gift note must not be one
