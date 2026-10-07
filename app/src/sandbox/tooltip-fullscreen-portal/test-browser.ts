@@ -18,7 +18,7 @@ async function getPortalState(page: Page) {
   }, portalId);
 }
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFramework(import.meta.dirname, async ({ test, query }) => {
   // See https://github.com/ariakit/ariakit/issues/6585 To reproduce the React
   // 18 StrictMode failure in a browser, serve the app with
   // `pnpm react18 -- pnpm dev-app`. CI's React 18 signal comes from test.ts.
@@ -190,5 +190,40 @@ withFramework(import.meta.dirname, async ({ test }) => {
       return fullscreenElement.contains(element);
     });
     test.expect(isInsideFullscreen).toBe(true);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7750
+  test("keeps a portal element of the app and its nested portal in place across fullscreen changes", async ({
+    page,
+    q,
+  }) => {
+    const slot = query(q.region("Portal leak repro")).group("Slot");
+    await test.expect(query(slot).text("Slot content")).toBeVisible();
+    await test.expect(query(slot).text("Nested content")).toBeVisible();
+
+    await q.button("Pin tooltip").click();
+    await q.button("Enter fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+    // The default portal node of the pinned tooltip moves on the same
+    // fullscreenchange event that must not move the slot, so its new place
+    // shows that the page handled the event.
+    await test.expect
+      .poll(() => getPortalState(page))
+      .toMatchObject({
+        count: 1,
+        parentIsFullscreen: true,
+      });
+
+    await q.button("Exit fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+    await test.expect
+      .poll(() => getPortalState(page))
+      .toMatchObject({
+        count: 1,
+        parentIsBody: true,
+      });
+
+    await test.expect(query(slot).text("Slot content")).toBeVisible();
+    await test.expect(query(slot).text("Nested content")).toBeVisible();
   });
 });

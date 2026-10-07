@@ -54,6 +54,22 @@ function getPortalElement(
   return portalElement;
 }
 
+// Moves the portal node to the root element when the fullscreen state changes
+// so it stays visible. Returns a function that stops following it.
+function followFullscreen(portalNode: HTMLElement) {
+  const doc = getDocument(portalNode);
+  const onFullscreenChange = () => {
+    const rootElement = getRootElement(portalNode);
+    if (portalNode.parentElement !== rootElement) {
+      rootElement.appendChild(portalNode);
+    }
+  };
+  doc.addEventListener("fullscreenchange", onFullscreenChange);
+  return () => {
+    doc.removeEventListener("fullscreenchange", onFullscreenChange);
+  };
+}
+
 function getRandomId(prefix = "id") {
   return `${prefix ? `${prefix}-` : ""}${Math.random()
     .toString(36)
@@ -157,7 +173,14 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
       portalRefProp.current,
       portalEl,
     );
+    // Only the default portal node follows the fullscreen element. An element
+    // that the app provides keeps its place, and a nested portal node stays in
+    // its parent portal. This effect creates the node, so it can't get the node
+    // of an earlier render, which can be an element that the app provided.
+    const stopFollowingFullscreen =
+      portalElement || context ? undefined : followFullscreen(portalEl);
     return () => {
+      stopFollowingFullscreen?.();
       const attached = attachedPortalRefRef.current;
       // Detach the portalRef first so ref cleanups still observe a connected
       // portal node.
@@ -182,31 +205,6 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
     detachPortalRef(attached);
     attachedPortalRefRef.current = attachPortalRef(portalRef, attached.node);
   }, [portalRef]);
-
-  // Move the portal node when fullscreen state changes so it stays visible.
-  useEffect(() => {
-    if (!portalNode) return;
-    if (context) return;
-    if (portalElement) return;
-    const doc = getDocument(portalNode);
-    const onFullscreenChange = () => {
-      const rootElement = getRootElement(portalNode);
-      if (portalNode.parentElement !== rootElement) {
-        rootElement.appendChild(portalNode);
-      }
-    };
-    // Sync immediately in case fullscreen was entered before this effect ran,
-    // which can happen if the portal mounts while already in fullscreen mode.
-    // Skip when the captured node is already disconnected, which happens for a
-    // StrictMode cleanup node whose layout cleanup already removed it.
-    if (portalNode.isConnected) {
-      onFullscreenChange();
-    }
-    doc.addEventListener("fullscreenchange", onFullscreenChange);
-    return () => {
-      doc.removeEventListener("fullscreenchange", onFullscreenChange);
-    };
-  }, [portalNode, context, portalElement]);
 
   // Create the anchor portal node and attach it to the DOM.
   useSafeLayoutEffect(() => {
