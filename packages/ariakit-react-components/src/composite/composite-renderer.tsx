@@ -210,6 +210,7 @@ export function useCompositeRenderer<T extends Item = any>({
     store,
     orientation,
     persistentIndices,
+    unstable_anchorId: activeId,
     ...props,
     children: (item) => {
       const nextItem = Object.assign({}, item, {

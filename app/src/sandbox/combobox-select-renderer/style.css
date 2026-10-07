@@ -26,6 +26,8 @@
   width: 200px;
   max-height: 200px;
   overflow: auto;
+  /* The scroll range of the popup starts inside its border. */
+  border: 2px solid hsl(210deg 8% 70%);
   background: white;
 }
 
@@ -38,6 +40,40 @@
 
 .mixed-size-popover [data-active-item] {
   background: hsl(210deg 90% 90%);
+}
+
+.animated-popover {
+  transform: scale(0.8);
+  transform-origin: top left;
+  transition: transform 300ms;
+}
+
+.animated-popover[data-enter] {
+  transform: scale(1);
+}
+
+.mixed-size-group-label {
+  box-sizing: border-box;
+  height: 24px;
+  padding-inline: 8px;
+  font-weight: bold;
+}
+
+.late-scroller {
+  width: 200px;
+  height: 200px;
+  overflow: auto;
+}
+
+.late-scroller p {
+  box-sizing: border-box;
+  height: 160px;
+  margin: 0;
+}
+
+.late-scroller [role="option"] {
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .async-scroller {
