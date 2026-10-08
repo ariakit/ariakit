@@ -938,9 +938,16 @@ export function useCollectionRenderer<T extends Item = any>({
       const distance = getRevealDistance(element, anchorScroller, horizontal);
       // The renderer finds its scroll element one time. A nearer ancestor can
       // start to scroll later, for example a popup that the measured items no
-      // longer fit in. That ancestor then clips the anchor, and a scroll of the
-      // scroll element of this renderer would not show it.
-      if (distance && getScrollingElement(element) === anchorScroller) {
+      // longer fit in. Only scrolling on this renderer's axis blocks its
+      // correction. Stop at the selected container, which can intentionally
+      // hide overflow on this axis while scrolling on the other.
+      const nearestScroller =
+        distance &&
+        getScrollingElement(element.parentElement, {
+          axis: horizontal ? "x" : "y",
+          stopAt: anchorScroller,
+        });
+      if (distance && nearestScroller === anchorScroller) {
         // Scroll only the scroll element of this renderer. A native
         // `scrollIntoView` would also scroll the ancestors, such as a page that
         // the user scrolled away from this list. The target is a position,

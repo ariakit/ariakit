@@ -61,6 +61,21 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await test.expect(cherry).toHaveCSS("top", "0px");
       });
 
+      // https://github.com/ariakit/ariakit/issues/7805
+      test("renders horizontal items when the popup also clips vertical overflow", async ({
+        q,
+      }) => {
+        await q.combobox("Clipped fruit").click();
+        const list = q.listbox("Clipped fruit");
+        await test.expect(list).not.toHaveAttribute("data-placing");
+        // Setting the offset exercises the same scroll event as a scrollbar
+        // drag, without a wheel delta that varies between browser engines.
+        await list.evaluate((element) => {
+          element.scrollLeft = 3000;
+        });
+        await test.expect(q.option("Fruit 33")).toBeInViewport({ ratio: 0.9 });
+      });
+
       // https://github.com/ariakit/ariakit/issues/7628
       test("keeps a far typeahead move in view when items have different sizes", async ({
         page,
@@ -837,6 +852,58 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // See the downward test above for these frames.
     await flushFrames(page);
 
+    await test.expect(last).toBeInViewport({ ratio: 0.9 });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7805
+  test("keeps both axes in view when measured rows scroll their own cells", async ({
+    page,
+    q,
+  }) => {
+    const first = q.gridcell("M 1, 1");
+    const last = q.gridcell("M 48, 48");
+    await first.click();
+    await test.expect(first).toBeFocused();
+    await page.keyboard.press("Control+End");
+    await test.expect(last).toBeFocused();
+    // The estimated offset initially shows the cell. The next scroll frame
+    // renders more items, which resize and move it on the following frame.
+    await flushFrames(page);
+    await test.expect(last).toBeInViewport({ ratio: 0.9 });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7805
+  test("keeps both axes in view when measured columns scroll their own cells", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Use measured columns").click();
+    await q.gridcell("C 1, 1").click();
+    await test.expect(q.gridcell("C 1, 1")).toBeFocused();
+    await page.keyboard.press("Control+End");
+    const last = q.gridcell("C 48, 48");
+    await test.expect(last).toBeFocused();
+    // The scroll frame renders more items and the next measurement frame moves
+    // them, so the first estimated position must not satisfy this check.
+    await flushFrames(page);
+    await test.expect(last).toBeInViewport({ ratio: 0.9 });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7805
+  test("corrects a measured grid on the hidden axis of its scroll container", async ({
+    page,
+    q,
+  }) => {
+    await page.addStyleTag({
+      content: ".measured-grid-scroller { overflow-x: hidden; }",
+    });
+    await q.gridcell("1, 1").click();
+    await page.keyboard.press("Control+End");
+    const last = q.gridcell("48, 48");
+    await test.expect(last).toBeFocused();
+    // The scroll frame renders more items and the next measurement frame moves
+    // them, so the first estimated position must not satisfy this check.
+    await flushFrames(page);
     await test.expect(last).toBeInViewport({ ratio: 0.9 });
   });
 
