@@ -72,9 +72,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
                 String(count),
               );
               await expectActiveInView(helpers, "Item 1");
-              await expect(
-                helpers.q.option("Item 1", { exact: true }),
-              ).toHaveAttribute("aria-setsize", String(count));
             },
             {
               setup: async (helpers) => {

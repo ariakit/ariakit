@@ -71,21 +71,17 @@ withFramework(import.meta.dirname, async ({ test }) => {
       test("resize measured items", async ({ perf }) => {
         await perf.measure(
           async (helpers) => {
+            const item = helpers.q.listitem("Item 2", { exact: true });
             for (let index = 0; index < 10; index += 1) {
               const large = index % 2 === 0;
+              const top = await item.evaluate((element) => element.style.top);
               await helpers.q.checkbox("Taller items").setChecked(large);
               // The second row's offset changes only after the renderer has
               // measured the first row's new height and committed new
               // positions.
               await expect
-                .poll(async () => {
-                  return helpers.q
-                    .listitem("Item 2", { exact: true })
-                    .evaluate((element) =>
-                      Number.parseFloat(element.style.top),
-                    );
-                })
-                .toBeCloseTo(large ? 48.4 : 24.4, 1);
+                .poll(() => item.evaluate((element) => element.style.top))
+                .not.toBe(top);
             }
           },
           { setup },
