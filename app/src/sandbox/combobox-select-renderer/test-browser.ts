@@ -757,6 +757,50 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     test.expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
   });
 
+  // https://github.com/ariakit/ariakit/pull/7765#discussion_r4213071464
+  test("keeps a far keyboard move in view in a grid that measures rows and columns", async ({
+    page,
+    q,
+  }) => {
+    const first = q.gridcell("1, 1");
+    const last = q.gridcell("48, 48");
+
+    await first.click();
+    await test.expect(first).toBeFocused();
+
+    // The rows and the cells of the last row have different renderers. Both
+    // measure items after the move: the rows move the last cell down, and the
+    // cells move it to the right.
+    await page.keyboard.press("Control+End");
+    await test.expect(last).toBeFocused();
+    // See the downward test above for these frames.
+    await flushFrames(page);
+
+    await test.expect(last).toBeInViewport({ ratio: 0.9 });
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7765#discussion_r4213071464
+  test("keeps a far keyboard move in view when each row is the scroll element of its cells", async ({
+    page,
+    q,
+  }) => {
+    const first = q.gridcell("S 1, 1");
+    const last = q.gridcell("S 48, 48");
+
+    await first.click();
+    await test.expect(first).toBeFocused();
+
+    // The rows and the cells of the last row have renderers with different
+    // scroll elements. The rows have the size that their renderer estimates, so
+    // only the cells move the last cell when the renderers measure.
+    await page.keyboard.press("Control+End");
+    await test.expect(last).toBeFocused();
+    // See the downward test above for these frames.
+    await flushFrames(page);
+
+    await test.expect(last).toBeInViewport({ ratio: 0.9 });
+  });
+
   // https://github.com/ariakit/ariakit/pull/6832
   test("renders every selected value when options share a value", async ({
     q,

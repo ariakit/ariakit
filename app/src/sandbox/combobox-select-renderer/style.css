@@ -76,6 +76,47 @@
   width: 100%;
 }
 
+.measured-grid-scroller {
+  width: 300px;
+  height: 200px;
+  overflow: auto;
+  border: 2px solid hsl(210deg 8% 70%);
+}
+
+.shelves-scroller {
+  width: 300px;
+  height: 200px;
+  overflow: hidden auto;
+  border: 2px solid hsl(210deg 8% 70%);
+}
+
+.shelf {
+  width: 100%;
+  overflow: auto hidden;
+  scrollbar-width: none;
+}
+
+.measured-grid-scroller [role="gridcell"],
+.shelves-scroller [role="gridcell"] {
+  box-sizing: border-box;
+  height: 100%;
+  padding: 0;
+  border: 1px solid hsl(210deg 8% 85%);
+  background: white;
+}
+
+.measured-grid-scroller [data-active-item],
+.shelves-scroller [data-active-item] {
+  background: hsl(210deg 90% 90%);
+}
+
+/* A row whose content is taller than the row is not found as the scroll element
+   of its cells: https://github.com/ariakit/ariakit/issues/7804 */
+.shelves-scroller [role="gridcell"] {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 .async-scroller {
   height: 120px;
   overflow-y: auto;

@@ -266,6 +266,37 @@ const lateGroups = mixedSizeGroups.map((group) => ({
   items: group.items.map((item) => ({ ...item, id: `late-${item.id}` })),
 }));
 
+const measuredGridLength = 48;
+
+// The first rows and columns are smaller than the others, so the sizes that the
+// renderers measure near the start underestimate the offsets on both axes.
+const measuredGridRows = Array.from(
+  { length: measuredGridLength },
+  (_, rowIndex) => ({
+    id: `measured-grid-row-${rowIndex + 1}`,
+    height: rowIndex < 12 ? 24 : 72,
+    items: Array.from({ length: measuredGridLength }, (_, columnIndex) => ({
+      id: `measured-grid-cell-${rowIndex + 1}-${columnIndex + 1}`,
+      label: `${rowIndex + 1}, ${columnIndex + 1}`,
+      width: columnIndex < 12 ? 40 : 100,
+    })),
+  }),
+);
+
+// The size that the renderer of these rows estimates for a row.
+const shelfRowHeight = 40;
+
+// The cells of the measured grid in rows of one size, for a list where each row
+// scrolls its own cells.
+const shelfRows = measuredGridRows.map((row, rowIndex) => ({
+  id: `shelf-row-${rowIndex + 1}`,
+  items: row.items.map((cell, columnIndex) => ({
+    ...cell,
+    id: `shelf-cell-${rowIndex + 1}-${columnIndex + 1}`,
+    label: `S ${cell.label}`,
+  })),
+}));
+
 const asyncItems = Array.from({ length: 100 }, (_, index) => ({
   id: `async-item-${index + 1}`,
   value: `Async item ${index + 1}`,
@@ -764,6 +795,105 @@ function LateItemsRenderer() {
           </Ariakit.Composite>
         </Ariakit.CompositeProvider>
         <p>The list ends above this text.</p>
+      </div>
+    </section>
+  );
+}
+
+// A vertical renderer of rows with a horizontal renderer of cells in each row.
+// Both measure their items, and both have the same scroll element.
+function MeasuredGridRenderer() {
+  return (
+    <section>
+      <div className="measured-grid-scroller">
+        <Ariakit.CompositeProvider>
+          <Ariakit.Composite aria-label="Measured grid" role="grid">
+            <CompositeRenderer items={measuredGridRows} overscan={1}>
+              {({ height, ...row }) => (
+                <CompositeRenderer
+                  key={row.id}
+                  {...row}
+                  orientation="horizontal"
+                  overscan={1}
+                  render={(props) => (
+                    <Ariakit.CompositeRow
+                      {...props}
+                      role="row"
+                      style={{ ...props.style, height }}
+                    />
+                  )}
+                >
+                  {({ width, label, ...cell }) => (
+                    <Ariakit.CompositeItem
+                      key={cell.id}
+                      {...cell}
+                      role="gridcell"
+                      style={{ ...cell.style, width }}
+                    >
+                      {label}
+                    </Ariakit.CompositeItem>
+                  )}
+                </CompositeRenderer>
+              )}
+            </CompositeRenderer>
+          </Ariakit.Composite>
+        </Ariakit.CompositeProvider>
+      </div>
+    </section>
+  );
+}
+
+// A vertical renderer of rows in one scroll element. Each row scrolls on the
+// horizontal axis, and it is the scroll element of the renderer of its cells.
+// The rows have the size that their renderer estimates, so only the cells move
+// when the renderers measure them.
+function ShelvesRenderer() {
+  return (
+    <section>
+      <div className="shelves-scroller">
+        <Ariakit.CompositeProvider>
+          <Ariakit.Composite aria-label="Shelves" role="grid">
+            <CompositeRenderer
+              items={shelfRows}
+              estimatedItemSize={shelfRowHeight}
+              overscan={1}
+            >
+              {({ items, index, ...row }) => (
+                <div
+                  key={row.id}
+                  {...row}
+                  className="shelf"
+                  style={{ ...row.style, height: shelfRowHeight }}
+                >
+                  <CompositeRenderer
+                    id={`${row.id}-cells`}
+                    items={items}
+                    orientation="horizontal"
+                    overscan={1}
+                    render={(props) => (
+                      <Ariakit.CompositeRow
+                        {...props}
+                        role="row"
+                        style={{ ...props.style, height: "100%" }}
+                      />
+                    )}
+                  >
+                    {({ width, label, ...cell }) => (
+                      <Ariakit.CompositeItem
+                        key={cell.id}
+                        {...cell}
+                        role="gridcell"
+                        style={{ ...cell.style, width }}
+                      >
+                        {label}
+                      </Ariakit.CompositeItem>
+                    )}
+                  </CompositeRenderer>
+                </div>
+              )}
+            </CompositeRenderer>
+          </Ariakit.Composite>
+        </Ariakit.CompositeProvider>
       </div>
     </section>
   );
@@ -1268,6 +1398,8 @@ export default function Example() {
           />
         )}
         <LateItemsRenderer />
+        <MeasuredGridRenderer />
+        <ShelvesRenderer />
         <DuplicateValueRenderer />
         <AsyncRenderer />
         <NestedAutoRenderer />

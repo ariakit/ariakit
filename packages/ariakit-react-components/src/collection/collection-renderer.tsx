@@ -461,16 +461,15 @@ function getOffsets(
 }
 
 interface AnchorPosition {
-  scroller: Element;
   start: number;
   end: number;
 }
 
-// The last position where each anchor element was seen in its scroller's
-// content. Nested renderers have the same anchor element, so they share its
-// position. A renderer that gives an item its first layout can then remove a
-// position that a nested renderer recorded before that layout.
-const anchorPositions = new WeakMap<HTMLElement, AnchorPosition>();
+// How many times a renderer gave the item around each anchor element its first
+// layout. Nested renderers have the same anchor element, and each one records
+// its own position, because they can have different scroll elements and
+// orientations. A record is valid only while this number does not change.
+const anchorFirstLayouts = new WeakMap<HTMLElement, number>();
 
 function getAnchorPosition(
   anchor: HTMLElement,
@@ -486,7 +485,7 @@ function getAnchorPosition(
   const isDocument = getViewport(scroller) !== scroller;
   const border = horizontal ? scroller.clientLeft : scroller.clientTop;
   const start = isDocument ? offset : offset - border;
-  return { scroller, start, end: start + size };
+  return { start, end: start + size };
 }
 
 function hasOffsetSize(element: Element): element is HTMLElement {
@@ -545,6 +544,8 @@ interface PendingAnchor {
   element: HTMLElement;
   scroller: Element;
   scrollOffset: number;
+  position: AnchorPosition;
+  firstLayouts: number;
 }
 
 function getItemsEnd<T extends Item>(props: {
@@ -810,8 +811,9 @@ export function useCollectionRenderer<T extends Item = any>({
         // An item without data renders at the start of the renderer until its
         // first layout, so that first layout is not a move. A nested renderer
         // can record the anchor in the same pass before this renderer runs, so
-        // the shared position is not valid either.
-        anchorPositions.delete(anchor);
+        // its record is not valid either.
+        const firstLayouts = anchorFirstLayouts.get(anchor) ?? 0;
+        anchorFirstLayouts.set(anchor, firstLayouts + 1);
         return null;
       }
       return anchor;
@@ -854,13 +856,13 @@ export function useCollectionRenderer<T extends Item = any>({
     const anchor = getAnchorElement();
     const anchorScroller = scrollerRef.current;
     if (anchor && anchorScroller) {
-      const position = getAnchorPosition(anchor, anchorScroller, horizontal);
-      anchorPositions.set(anchor, position);
       pendingAnchorRef.current = {
         data: nextData,
         element: anchor,
         scroller: anchorScroller,
         scrollOffset: getScrollOffset(anchorScroller, horizontal),
+        position: getAnchorPosition(anchor, anchorScroller, horizontal),
+        firstLayouts: anchorFirstLayouts.get(anchor) ?? 0,
       };
     }
     // Measurement data changes only after rendered elements are measured.
@@ -890,10 +892,14 @@ export function useCollectionRenderer<T extends Item = any>({
     pendingAnchorRef.current = null;
     const renderer = ref.current;
     if (!renderer) return;
-    const { element, scroller: anchorScroller } = pendingAnchor;
+    const {
+      element,
+      scroller: anchorScroller,
+      position: previous,
+    } = pendingAnchor;
     if (!element.isConnected) return;
-    const previous = anchorPositions.get(element);
-    if (previous?.scroller !== anchorScroller) return;
+    const firstLayouts = anchorFirstLayouts.get(element) ?? 0;
+    if (firstLayouts !== pendingAnchor.firstLayouts) return;
     const scrollStart = getScrollOffset(anchorScroller, horizontal);
     const scrollSize = horizontal
       ? anchorScroller.clientWidth
