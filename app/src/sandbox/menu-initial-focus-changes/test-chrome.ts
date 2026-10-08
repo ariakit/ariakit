@@ -277,9 +277,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.menuitem("Cut")).toBeFocused();
   });
 
-  // A modal menu keeps its initial focus target between two opens, and its menu
-  // button counts as inside the menu. A target that left the menu while the
-  // user was on another item must not stay for the next open.
+  // The menu button of a modal menu counts as inside the menu, and the menu
+  // opens with focus on it. A target that left the menu while the user was on
+  // another item must not stay for the next open.
   // https://github.com/ariakit/ariakit/issues/7766
   test("gives the initial focus to the first item when a modal menu opens again after its first item was removed", async ({
     page,
@@ -392,6 +392,98 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(item).toBeFocused();
     await test.expect(item).toHaveAttribute("data-active-item");
   });
+
+  // The mouse gives the initial focus to the menu element. The item that
+  // received the initial focus of an earlier keyboard open must not take its
+  // place.
+  // https://github.com/ariakit/ariakit/issues/7791
+  test("gives the initial focus to the menu element when a modal menu opens with the mouse after a keyboard open", async ({
+    page,
+    q,
+  }) => {
+    const button = q.button("Modal edit");
+
+    await button.focus();
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Cut")).toBeFocused();
+    await page.keyboard.press("Escape");
+    await test.expect(button).toBeFocused();
+    // A menu that Escape closed closes once more if it is open two frames
+    // later, which guards against its button showing it again. No state tracks
+    // that guard, so let those frames pass before the menu opens again.
+    await flushFrames(page);
+
+    await button.click();
+    await test.expect(q.menu("Modal edit")).toBeFocused();
+  });
+
+  // A trigger that shows the menu through the store does not turn auto focus
+  // on, so a modal menu gives its initial focus to the menu element. The menu
+  // gets no new target then, and the target of an earlier open must not stay
+  // for it.
+  // https://github.com/ariakit/ariakit/issues/7791
+  test("gives the initial focus to the menu element when a modal menu opens without auto focus after a keyboard open", async ({
+    page,
+    q,
+  }) => {
+    const button = q.button("Row actions");
+
+    await button.focus();
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Rename")).toBeFocused();
+    await page.keyboard.press("Escape");
+    await test.expect(button).toBeFocused();
+    // A menu that Escape closed closes once more if it is open two frames
+    // later, which guards against its button showing it again. No state tracks
+    // that guard, so let those frames pass before the menu opens again.
+    await flushFrames(page);
+
+    await q.button("Open row actions").click();
+    await test.expect(q.menu("Row actions")).toBeFocused();
+  });
+
+  // The focused item of a modal menu can be the one that leaves. Focus leaves
+  // the menu with it, so the menu takes its initial focus again on the item
+  // that is now first, as a menu that is not modal does.
+  // https://github.com/ariakit/ariakit/issues/7791
+  test("moves focus to the first item when the focused item of an open modal menu is removed", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Modal edit").focus();
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Cut")).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Undo")).toBeVisible();
+    await page.keyboard.press("Home");
+    await test.expect(q.menuitem("Undo")).toBeFocused();
+
+    // Undo uses up the history, so it leaves the menu.
+    await page.keyboard.press("Enter");
+    await test.expect(q.menuitem("Undo")).toHaveCount(0);
+    await test.expect(q.menuitem("Cut")).toBeFocused();
+  });
+
+  for (const label of ["Modal bookmarks", "Inline modal bookmarks"]) {
+    // A modal menu opens with focus on its menu button, which counts as inside
+    // the menu, and the Close button takes focus while the bookmarks load. The
+    // user chose neither place, so the menu still owes its initial focus to the
+    // first item that arrives. This applies to a menu that stays mounted and to
+    // a menu that mounts next to its button when it opens.
+    // https://github.com/ariakit/ariakit/issues/7791
+    test(`gives the initial focus to the first item that arrives in the "${label}" menu`, async ({
+      page,
+      q,
+    }) => {
+      await q.button(label).focus();
+      await page.keyboard.press("Enter");
+      await test.expect(q.button("Close")).toBeFocused();
+      await test.expect(q.menuitem("Ariakit")).toHaveCount(0);
+      await test.expect(q.menuitem("Ariakit")).toBeFocused();
+    });
+  }
 
   // A menu that opens before it has an item still owes its initial focus to the
   // first item that arrives. Focus is on the menu element until then, and that
