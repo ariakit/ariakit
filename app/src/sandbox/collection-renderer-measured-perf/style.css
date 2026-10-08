@@ -1,0 +1,43 @@
+.measured-benchmark {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  color: #111;
+  background: white;
+}
+
+.measured-benchmark select,
+.measured-benchmark button {
+  border: 1px solid #888;
+  padding: 4px 8px;
+}
+
+.measured-viewport {
+  --extra-height: 0px;
+  width: 360px;
+  height: 360px;
+  overflow: auto;
+  overflow-anchor: none;
+  overscroll-behavior: contain;
+  outline: 1px solid #888;
+}
+
+.measured-viewport[data-large-viewport] {
+  height: 600px;
+}
+
+.measured-viewport[data-large-items] {
+  --extra-height: 24px;
+}
+
+.measured-item {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding-inline: 8px;
+  border-bottom: 1px solid #ddd;
+  background: #f4f4f4;
+}
