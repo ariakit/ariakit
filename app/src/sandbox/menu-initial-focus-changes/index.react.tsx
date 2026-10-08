@@ -94,6 +94,19 @@ function EditMenu({
   );
 }
 
+interface BookmarksMenuProps {
+  label: string;
+  /**
+   * Gives focus to the Close button while the menu has no bookmark to focus.
+   */
+  focusClose?: boolean;
+  /**
+   * Renders the menu next to its button and removes it when it closes.
+   */
+  inline?: boolean;
+  modal?: boolean;
+}
+
 /**
  * A menu that requests its items when it opens and when the user reloads them,
  * so it is open at times without an item that can take the initial focus. It
@@ -101,7 +114,12 @@ function EditMenu({
  * changes the items while it has focus, and a Clear button that disables itself
  * when there is nothing to clear.
  */
-function BookmarksMenu() {
+function BookmarksMenu({
+  label,
+  focusClose,
+  inline,
+  modal,
+}: BookmarksMenuProps) {
   const menu = Ariakit.useMenuStore();
   const open = Ariakit.useStoreState(menu, "open");
   // The bookmarks are `null` while the request is pending.
@@ -122,9 +140,14 @@ function BookmarksMenu() {
 
   return (
     <Ariakit.MenuProvider store={menu}>
-      <Ariakit.MenuButton>Bookmarks</Ariakit.MenuButton>
-      <Ariakit.Menu style={menuStyle}>
-        <Ariakit.MenuDismiss>Close</Ariakit.MenuDismiss>
+      <Ariakit.MenuButton>{label}</Ariakit.MenuButton>
+      <Ariakit.Menu
+        modal={modal}
+        portal={inline ? false : undefined}
+        unmountOnHide={inline}
+        style={menuStyle}
+      >
+        <Ariakit.MenuDismiss autoFocus={focusClose}>Close</Ariakit.MenuDismiss>
         <input
           aria-label="Filter bookmarks"
           value={filter}
@@ -165,6 +188,27 @@ function BookmarksMenu() {
   );
 }
 
+/**
+ * A modal menu with a second trigger that shows it through the store, as a
+ * keyboard shortcut or a context menu would. That trigger does not turn auto
+ * focus on, so the menu element takes focus, not an item.
+ */
+function RowActionsMenu() {
+  const menu = Ariakit.useMenuStore();
+
+  return (
+    <Ariakit.MenuProvider store={menu}>
+      <Ariakit.MenuButton>Row actions</Ariakit.MenuButton>
+      <Ariakit.Button onClick={menu.show}>Open row actions</Ariakit.Button>
+      <Ariakit.Menu modal style={menuStyle}>
+        <Ariakit.MenuItem style={itemStyle}>Rename</Ariakit.MenuItem>
+        <Ariakit.MenuItem style={itemStyle}>Duplicate</Ariakit.MenuItem>
+        <Ariakit.MenuItem style={itemStyle}>Delete</Ariakit.MenuItem>
+      </Ariakit.Menu>
+    </Ariakit.MenuProvider>
+  );
+}
+
 export default function Example() {
   return (
     <main style={{ display: "flex", gap: 8 }}>
@@ -178,8 +222,13 @@ export default function Example() {
         virtualFocus
         keepUndo
       />
+      <EditMenu label="Modal edit" modal />
       <EditMenu label="Modal edit with history" modal history />
-      <BookmarksMenu />
+      <EditMenu label="Modal edit with disabled Undo" modal keepUndo />
+      <BookmarksMenu label="Bookmarks" />
+      <BookmarksMenu label="Modal bookmarks" modal focusClose />
+      <BookmarksMenu label="Inline modal bookmarks" modal inline focusClose />
+      <RowActionsMenu />
     </main>
   );
 }

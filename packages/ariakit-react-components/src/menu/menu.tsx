@@ -45,7 +45,8 @@ function hasFocusOnContent(menuElement: HTMLElement, state: MenuStoreState) {
   const activeElement = getTreeActiveElement(menuElement);
   if (!activeElement) return false;
   // The dialog marks the menu element and its nested menus as inside the menu,
-  // including a nested menu that renders in a portal.
+  // including a nested menu that renders in a portal. It also marks the
+  // persistent elements, which include the menu button of a modal menu.
   if (!isElementInside(activeElement, menuElement)) return false;
   // An element that became disabled or hidden can still have DOM focus here,
   // but it is about to lose it.
@@ -121,7 +122,8 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
 
   const [initialFocusRef, setInitialFocusRef] =
     useState<MutableRefObject<HTMLElement | null>>();
-  const owesInitialFocusRef = useRef(false);
+  const owesInitialFocusRef = useRef(true);
+  const open = useStoreState(store, "open");
 
   // Resolve the initial focus element inside a selector so the component
   // re-renders only when the resolved element changes, not whenever
@@ -155,22 +157,25 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   useEffect(() => {
     let cleaning = false;
     const menuElement = ref.current;
-    // Modal menus have their own guard below, which also keeps the ref between
-    // opens. They don't use this check until that guard changes.
-    // https://github.com/ariakit/ariakit/issues/7791
     const focusOnContent =
-      !modal &&
       !owesInitialFocusRef.current &&
       !!menuElement &&
       hasFocusOnContent(menuElement, store.getState());
-    // The menu owes its initial focus while it has no item to give it to and
-    // the user is not on content. The fallback focus of the dialog can be on a
-    // control inside the menu then, which is not a place the user chose.
+    // The menu owes its initial focus until an open gives it, so a closed menu
+    // and a menu that mounts open owe it. A modal menu opens with focus on its
+    // menu button, which counts as content, but the user did not choose to stay
+    // there. An open menu also owes it while it has no item to give it to and
+    // the user is not on content, because the fallback focus of the dialog can
+    // be on a control inside the menu then.
     owesInitialFocusRef.current =
-      initialFocusElement === null && !focusOnContent;
+      !open || (initialFocusElement === null && !focusOnContent);
     setInitialFocusRef((prevInitialFocusRef) => {
       if (cleaning) return;
-      if (modal && prevInitialFocusRef?.current?.isConnected) {
+      // Focus on the menu button of an open modal menu turns auto focus off.
+      // Without the ref, the dialog would move focus back into the menu. A
+      // closed menu drops the ref, so the next open takes a fresh target.
+      // https://github.com/ariakit/ariakit/issues/7791
+      if (modal && open && initialFocusElement === undefined) {
         return prevInitialFocusRef;
       }
       if (initialFocusElement === undefined) return;
@@ -197,7 +202,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     return () => {
       cleaning = true;
     };
-  }, [store, modal, initialFocusElement]);
+  }, [store, modal, open, initialFocusElement]);
 
   // When the `autoFocusOnShow` prop is set to `true` (default), we'll only move
   // focus to the menu when there's an initialFocusRef set or the menu is modal.
