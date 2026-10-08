@@ -1,14 +1,16 @@
 import { contains, getDocument, chain } from "@ariakit/utils";
+import {
+  addAncestorsToWalkTreeSnapshot,
+  addToWalkTreeSnapshot,
+  getSnapshotAncestorPropertyName,
+  getSnapshotPropertyName,
+} from "./__walk-tree-snapshot.ts";
 import { setProperty } from "./orchestrate.ts";
 
 type Elements = Array<Element | null>;
 
 // We don't need to walk through certain tags.
 const ignoreTags = ["SCRIPT", "STYLE"];
-
-function getSnapshotPropertyName(id: string) {
-  return `__ariakit-dialog-snapshot-${id}` as keyof Element;
-}
 
 function inSnapshot(id: string, element: Element) {
   const doc = getDocument(element);
@@ -23,6 +25,12 @@ function inSnapshot(id: string, element: Element) {
   } while (true);
 }
 
+function containsSomeElement(element: Element, elements: Elements) {
+  return elements.some(
+    (enabledElement) => enabledElement && contains(element, enabledElement),
+  );
+}
+
 function shouldWalkElement(
   id: string,
   element: Element,
@@ -30,9 +38,18 @@ function shouldWalkElement(
 ) {
   if (ignoreTags.includes(element.tagName)) return false;
   if (!inSnapshot(id, element)) return false;
-  return !ignoredElements.some(
-    (enabledElement) => enabledElement && contains(element, enabledElement),
-  );
+  return !containsSomeElement(element, ignoredElements);
+}
+
+// The dialog was inside the element when the snapshot was taken, and it isn't
+// there anymore, such as after it moved to a portal.
+function isFormerAncestor(
+  id: string,
+  element: Element,
+  ignoredElements: Elements,
+) {
+  if (!element[getSnapshotAncestorPropertyName(id)]) return false;
+  return !containsSomeElement(element, ignoredElements);
 }
 
 export function walkTreeOutside(
@@ -51,16 +68,28 @@ export function walkTreeOutside(
     });
     const doc = getDocument(element);
     const originalElement = element;
+    const walkChildren = (parent: Element) => {
+      for (const child of parent.children) {
+        if (shouldWalkElement(id, child, elements)) {
+          callback(child, originalElement);
+          continue;
+        }
+        // The snapshot has the children of a former ancestor that were in the
+        // page when it was taken, and not the ancestor itself. The elements
+        // that the page added to it later must stay out of the walk, so the
+        // walk goes through its children like it did when the dialog was there.
+        // https://github.com/ariakit/ariakit/issues/7774
+        if (!isFormerAncestor(id, child, elements)) continue;
+        ancestorCallback?.(child, originalElement);
+        walkChildren(child);
+      }
+    };
     // Loops through the parent elements and then through each of their
     // children.
     while (element.parentElement && element !== doc.body) {
       ancestorCallback?.(element.parentElement, originalElement);
       if (!hasAncestorAlready) {
-        for (const child of element.parentElement.children) {
-          if (shouldWalkElement(id, child, elements)) {
-            callback(child, originalElement);
-          }
-        }
+        walkChildren(element.parentElement);
       }
       element = element.parentElement;
     }
@@ -69,17 +98,23 @@ export function walkTreeOutside(
 
 export function createWalkTreeSnapshot(id: string, elements: Elements) {
   const { body } = getDocument(elements[0]);
-  const cleanups: Array<() => void> = [];
+  const snapshotElements: Element[] = [];
+  const ancestors: Element[] = [];
 
-  const markElement = (element: Element) => {
-    cleanups.push(setProperty(element, getSnapshotPropertyName(id), true));
-  };
+  walkTreeOutside(
+    id,
+    elements,
+    (element) => {
+      snapshotElements.push(element);
+    },
+    (ancestor) => {
+      ancestors.push(ancestor);
+    },
+  );
 
-  walkTreeOutside(id, elements, markElement);
-
-  return chain(setProperty(body, getSnapshotPropertyName(id), true), () => {
-    for (const cleanup of cleanups) {
-      cleanup();
-    }
-  });
+  return chain(
+    setProperty(body, getSnapshotPropertyName(id), true),
+    addToWalkTreeSnapshot(id, snapshotElements),
+    addAncestorsToWalkTreeSnapshot(id, ancestors),
+  );
 }

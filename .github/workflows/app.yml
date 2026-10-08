@@ -8,7 +8,7 @@ permissions:
 
 env:
   VISONAUT_SERVER: https://visonaut.com
-  VISONAUT_PACKAGE_SHA256: 7e8c77bf386518619fd2a04a8b5a1509fa5a1db1c2a84827b26132672999d3a5
+  VISONAUT_PACKAGE_SHA256: be4439ac7ce5eccea7b0d253687cae53b114884deed179d9dd17fd966b722e22
 
 jobs:
   build:
@@ -249,7 +249,7 @@ jobs:
       - name: Install Visonaut
         run: |
           mkdir -p "$RUNNER_TEMP/visonaut-tools"
-          pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact "visonaut@0.5.3"
+          pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact "visonaut@0.5.4"
           echo "$RUNNER_TEMP/visonaut-tools/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Submit captures

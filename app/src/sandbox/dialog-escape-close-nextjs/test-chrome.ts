@@ -62,4 +62,24 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("Escape");
     await test.expect(q.dialog("Notice")).toBeHidden();
   });
+
+  // https://github.com/ariakit/ariakit/issues/7647
+  test("Escape closes the Combobox popover that was in the DOM before a Dialog outside its tree opened", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Show notice").click();
+    await test.expect(q.dialog("Notice")).toBeVisible();
+    await q.combobox("Drink").focus();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
+    await page.keyboard.press("Escape");
+    await test.expect(q.listbox("Drink")).toBeHidden();
+    await test.expect(q.dialog("Notice")).toBeVisible();
+    await test.expect(q.combobox("Drink")).toBeFocused();
+    // The dialog is the topmost popup again, so the next Escape closes it.
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Notice")).toBeHidden();
+  });
 });

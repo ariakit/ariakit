@@ -1,5 +1,6 @@
 import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
+import type { ComparisonOptions } from "@visonaut/playwright";
 import { measureEnvironment } from "@visonaut/playwright/environment";
 
 if (process.argv.includes("--headed")) {
@@ -49,8 +50,12 @@ const captureEnvironment = captureDirectory
       outputDirectory: captureDirectory,
     })
   : undefined;
+const comparisonDefaults = {
+  threshold: 0.2,
+  maxDiffPixels: 0,
+} satisfies ComparisonOptions;
 const visualMetadata = captureEnvironment
-  ? { visonaut: { profile: captureEnvironment.profile } }
+  ? { visonaut: { profile: captureEnvironment.profile, comparisonDefaults } }
   : undefined;
 
 function inspectorPortArg(port: number) {
@@ -176,6 +181,7 @@ export default defineConfig({
     : [
         {
           name: "chrome",
+          expect: { toHaveScreenshot: comparisonDefaults },
           metadata: visualMetadata,
           testMatch: testMatchersFor("chrome", "browser"),
           use: {
@@ -187,6 +193,7 @@ export default defineConfig({
         },
         {
           name: "firefox",
+          expect: { toHaveScreenshot: comparisonDefaults },
           metadata: visualMetadata,
           testMatch: testMatchersFor("firefox", "browser"),
           retries: CI ? 2 : 1,
@@ -194,6 +201,7 @@ export default defineConfig({
         },
         {
           name: "safari",
+          expect: { toHaveScreenshot: comparisonDefaults },
           metadata: visualMetadata,
           testMatch: testMatchersFor("safari", "browser"),
           use: {

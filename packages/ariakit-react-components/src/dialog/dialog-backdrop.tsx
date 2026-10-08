@@ -1,6 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import { useMergeRefs, useSafeLayoutEffect } from "@ariakit/react-utils";
-import { isValidElement, useRef } from "react";
+import { isValidElement, useState } from "react";
 import type { RefObject } from "react";
 import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
@@ -15,16 +15,28 @@ interface DialogBackdropProps extends Pick<
 > {
   store: DialogStore;
   backdropRef?: RefObject<HTMLDivElement | null>;
+  /**
+   * Runs when the backdrop gets an element. This includes the element that
+   * React creates when it replaces the backdrop.
+   */
+  onElementChange?: () => void;
 }
 
 export function DialogBackdrop({
   store,
   backdrop,
   backdropRef,
+  onElementChange,
   alwaysVisible,
   hidden,
 }: DialogBackdropProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  // The backdrop element is a state and not a ref, so the effects below run
+  // again when React replaces the element, such as when the backdrop prop
+  // changes to another element type.
+  // https://github.com/ariakit/ariakit/issues/7772
+  const [backdropElement, setBackdropElement] = useState<HTMLDivElement | null>(
+    null,
+  );
   const disclosure = useDisclosureStore({ disclosure: store });
   const contentElement = useStoreState(store, "contentElement");
 
@@ -33,12 +45,12 @@ export function DialogBackdrop({
   // passive effect, this read ran after other effects had already written
   // styles, forcing an extra full style recalc on every open.
   useSafeLayoutEffect(() => {
-    const backdrop = ref.current;
     const dialog = contentElement;
-    if (!backdrop) return;
+    if (!backdropElement) return;
     if (!dialog) return;
-    backdrop.style.zIndex = getComputedStyle(dialog).zIndex;
-  }, [contentElement]);
+    const { zIndex } = getComputedStyle(dialog);
+    backdropElement.style.setProperty("z-index", zIndex);
+  }, [contentElement, backdropElement]);
 
   // Mark the backdrop element as an ancestor of the dialog, otherwise clicking
   // on it won't close the dialog when the dialog uses portal, in which case
@@ -46,13 +58,17 @@ export function DialogBackdrop({
   useSafeLayoutEffect(() => {
     const id = contentElement?.id;
     if (!id) return;
-    const backdrop = ref.current;
-    if (!backdrop) return;
-    return markAncestor(backdrop, id);
-  }, [contentElement]);
+    if (!backdropElement) return;
+    return markAncestor(backdropElement, id);
+  }, [contentElement, backdropElement]);
+
+  useSafeLayoutEffect(() => {
+    if (!backdropElement) return;
+    onElementChange?.();
+  }, [backdropElement, onElementChange]);
 
   const props = useDisclosureContent({
-    ref: useMergeRefs(ref, backdropRef),
+    ref: useMergeRefs(setBackdropElement, backdropRef),
     store: disclosure,
     role: "presentation",
     "data-backdrop": contentElement?.id || "",

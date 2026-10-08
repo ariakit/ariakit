@@ -72,10 +72,31 @@ test("keeps persistent elements after replacing an open dialog node", async () =
   expect(q.dialog("Dialog")).toBeVisible();
 });
 
-// https://github.com/ariakit/ariakit/issues/7033
-test("closes on a newly inserted outside element after replacing the dialog", async () => {
+// https://github.com/ariakit/ariakit/issues/7778
+test("stays open on a newly inserted outside element after replacing a focused dialog", async () => {
   await click(q.button("Open dialog"));
-  await click(q.button("Replace dialog element"));
+  await click(q.textbox("Inside field"));
+  expect(q.textbox("Inside field")).toHaveFocus();
+
+  // Replace the dialog element while focus is outside the dialog.
+  await click(q.textbox("Notification field"));
+  expect(q.textbox("Notification field")).toHaveFocus();
+  await click(q.button("Replace dialog from notifications"));
+  expect(q.dialog("Dialog")?.tagName).toBe("SECTION");
+
+  await click(q.button("Add late outside field"));
+  await click(q.textbox("Late outside field"));
+  expect(q.textbox("Late outside field")).toHaveFocus();
+  expect(q.dialog("Dialog")).toBeVisible();
+
+  await click(q.textbox("Outside field"));
+  await expect.poll(q.dialog.maybe.hidden.lazy("Dialog")).not.toBeVisible();
+});
+
+// https://github.com/ariakit/ariakit/issues/7778
+test("closes on a newly inserted outside element after replacing a dialog that was not focused", async () => {
+  await click(q.button("Open dialog"));
+  await click(q.button("Replace dialog from notifications"));
   expect(q.dialog("Dialog")?.tagName).toBe("SECTION");
 
   await click(q.button("Add late outside field"));

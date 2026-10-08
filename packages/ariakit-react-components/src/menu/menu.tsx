@@ -6,21 +6,58 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { fireEvent, hasFocusWithin, invariant } from "@ariakit/utils";
+import {
+  fireEvent,
+  hasFocusWithin,
+  invariant,
+  isFocusable,
+} from "@ariakit/utils";
 import type { ElementType, MutableRefObject } from "react";
 import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import { isCapturedDisclosure } from "../dialog/utils/__captured-disclosures.ts";
 import { useEscapeClose } from "../dialog/utils/__use-escape-close.ts";
+import { isElementInside } from "../dialog/utils/tree-cleanup.ts";
+import { getTreeActiveElement } from "../focusable/__utils.ts";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
 import { useMenuProviderContext } from "./menu-context.tsx";
 import type { MenuListOptions } from "./menu-list.tsx";
 import { useMenuList } from "./menu-list.tsx";
+import type { MenuStoreState } from "./menu-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+/**
+ * Checks if the user is on something inside the menu that they can stay on: an
+ * enabled item, a nested menu, or another control that can keep focus. Focus on
+ * the composite element counts only with an enabled active item. The menu has
+ * that focus before it has an item to focus, and after its active item is
+ * removed. In every other state this returns `false`, so the menu takes its
+ * initial focus again, as it does without this check.
+ */
+function hasFocusOnContent(menuElement: HTMLElement, state: MenuStoreState) {
+  // The document reports the shadow host as its active element when the menu is
+  // inside a shadow root, so read the focused element from the menu's own tree.
+  // https://github.com/ariakit/ariakit/issues/7794
+  const activeElement = getTreeActiveElement(menuElement);
+  if (!activeElement) return false;
+  // The dialog marks the menu element and its nested menus as inside the menu,
+  // including a nested menu that renders in a portal. It also marks the
+  // persistent elements, which include the menu button of a modal menu.
+  if (!isElementInside(activeElement, menuElement)) return false;
+  // An element that became disabled or hidden can still have DOM focus here,
+  // but it is about to lose it.
+  if (!isFocusable(activeElement)) return false;
+  if (activeElement !== state.compositeElement) return true;
+  // The composite element has DOM focus while the pointer or virtual focus
+  // makes an item active, so the user is on the active item then.
+  return state.renderedItems.some(
+    (item) => item.id === state.activeId && !item.disabled,
+  );
+}
 
 /**
  * Returns props to create a `Menu` component.
@@ -85,6 +122,8 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
 
   const [initialFocusRef, setInitialFocusRef] =
     useState<MutableRefObject<HTMLElement | null>>();
+  const owesInitialFocusRef = useRef(true);
+  const open = useStoreState(store, "open");
 
   // Resolve the initial focus element inside a selector so the component
   // re-renders only when the resolved element changes, not whenever
@@ -117,9 +156,26 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   // Sets the initial focus ref.
   useEffect(() => {
     let cleaning = false;
+    const menuElement = ref.current;
+    const focusOnContent =
+      !owesInitialFocusRef.current &&
+      !!menuElement &&
+      hasFocusOnContent(menuElement, store.getState());
+    // The menu owes its initial focus until an open gives it, so a closed menu
+    // and a menu that mounts open owe it. A modal menu opens with focus on its
+    // menu button, which counts as content, but the user did not choose to stay
+    // there. An open menu also owes it while it has no item to give it to and
+    // the user is not on content, because the fallback focus of the dialog can
+    // be on a control inside the menu then.
+    owesInitialFocusRef.current =
+      !open || (initialFocusElement === null && !focusOnContent);
     setInitialFocusRef((prevInitialFocusRef) => {
       if (cleaning) return;
-      if (modal && prevInitialFocusRef?.current?.isConnected) {
+      // Focus on the menu button of an open modal menu turns auto focus off.
+      // Without the ref, the dialog would move focus back into the menu. A
+      // closed menu drops the ref, so the next open takes a fresh target.
+      // https://github.com/ariakit/ariakit/issues/7791
+      if (modal && open && initialFocusElement === undefined) {
         return prevInitialFocusRef;
       }
       if (initialFocusElement === undefined) return;
@@ -129,6 +185,16 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
       ) {
         return prevInitialFocusRef;
       }
+      // A change in the items can make another element the first or the last
+      // one. A new ref would make the dialog take the initial focus again and
+      // move focus away from where the user is. The ref keeps its identity and
+      // gets the new element, so the check above compares with the current one
+      // the next time the items change.
+      // https://github.com/ariakit/ariakit/issues/7766
+      if (focusOnContent && prevInitialFocusRef) {
+        prevInitialFocusRef.current = initialFocusElement;
+        return prevInitialFocusRef;
+      }
       const ref = createRef() as MutableRefObject<HTMLElement | null>;
       ref.current = initialFocusElement;
       return ref;
@@ -136,7 +202,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     return () => {
       cleaning = true;
     };
-  }, [modal, initialFocusElement]);
+  }, [store, modal, open, initialFocusElement]);
 
   // When the `autoFocusOnShow` prop is set to `true` (default), we'll only move
   // focus to the menu when there's an initialFocusRef set or the menu is modal.

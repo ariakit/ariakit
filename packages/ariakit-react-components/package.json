@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-components",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Ariakit React components",
   "keywords": [
     "ariakit",
@@ -37,7 +37,7 @@
     "@ariakit/scripts": "workspace:*",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "vitest": "5.0.2"
+    "vitest": "5.0.3"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0",

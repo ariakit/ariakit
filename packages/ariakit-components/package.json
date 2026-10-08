@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/components",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "Ariakit components",
   "keywords": [
     "ariakit",
@@ -55,6 +55,6 @@
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
-    "vitest": "5.0.2"
+    "vitest": "5.0.3"
   }
 }

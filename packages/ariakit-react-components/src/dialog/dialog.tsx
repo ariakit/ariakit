@@ -3,6 +3,7 @@ import {
   useBooleanEvent,
   useEvent,
   useId,
+  useLiveRef,
   useMergeRefs,
   usePortalRef,
   useSafeLayoutEffect,
@@ -60,11 +61,20 @@ import {
 } from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 import { useDialogStore } from "./dialog-store.ts";
+import { autoFocusSelector } from "./utils/__auto-focus-selector.ts";
 import {
   captureDisclosure,
   isCapturedDisclosure,
 } from "./utils/__captured-disclosures.ts";
 import { isHiddenDismiss } from "./utils/__is-hidden-dismiss.ts";
+import {
+  addOpenDialog,
+  getEarlierOpenDialogElements,
+  hasDialogAbove,
+  notifyOpenDialogElementChange,
+  removeOpenDialog,
+} from "./utils/__open-dialogs.ts";
+import { addToWalkTreeSnapshot } from "./utils/__walk-tree-snapshot.ts";
 import {
   disableTree,
   markAndDisableTreeOutside,
@@ -209,11 +219,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   finalFocus,
   unmountOnHide,
   unstable_treeSnapshotKey,
+  unstable_wrapperElement,
   ...props
 }) {
   const context = useDialogProviderContext();
   const ref = useRef<HTMLType>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+  const hiddenDismissRef = useRef<HTMLButtonElement>(null);
   const hasDefaultModalPortal = modal && portal && !props.portalElement;
   // Stays true while this dialog handles a hide request, from the close event
   // through the commit of the open state.
@@ -272,6 +284,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     portal,
     props.portalRef,
   );
+  const portalNodeRef = useLiveRef(portalNode);
+  const wrapperElementRef = useLiveRef(unstable_wrapperElement);
   // Modal dialogs don't use tab-order sentinels to match native <dialog>. Tab
   // may reach browser UI instead of cycling inside, which is intentional.
   // https://github.com/ariakit/ariakit/issues/7092#issuecomment-5227754640
@@ -481,10 +495,112 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     };
   }, [id, canTakeTreeSnapshot, hasDefaultModalPortal, portalNode]);
 
+  // The effects below depend on this boolean and not on the portal node, so
+  // they don't run again when only the portal node changes.
+  const isOpenAndReady = !!canTakeTreeSnapshot;
+
+  // Counts the changes of the elements of the dialogs that opened before this
+  // one, so the effect that marks the tree runs again.
+  const [earlierDialogElementChanges, setEarlierDialogElementChanges] =
+    useState(0);
+
+  // Records the order in which the dialogs open. When two dialogs mark each
+  // other, Escape closes the one that opened last. A dialog takes its place
+  // when it starts to mark the tree.
+  // https://github.com/ariakit/ariakit/issues/7647
+  useSafeLayoutEffect(() => {
+    if (!isOpenAndReady) return;
+    addOpenDialog(ref, {
+      getOutsideCleanups: () => treeRef.current?.outsideCleanups,
+      getPortalNode: () => portalNodeRef.current,
+      getWrapperElement: () => wrapperElementRef.current,
+      getBackdropElement: () => backdropRef.current,
+      getHiddenDismissElement: () => hiddenDismissRef.current,
+      onEarlierDialogElementChange: () => {
+        setEarlierDialogElementChanges((count) => count + 1);
+      },
+    });
+  }, [isOpenAndReady, portalNodeRef, wrapperElementRef]);
+
+  // The dialog keeps its place while it stays open. It isn't ready while its
+  // new portal node doesn't exist yet, such as when the portal prop changes,
+  // and it must not go after the dialogs that opened later when it's ready
+  // again.
+  // https://github.com/ariakit/ariakit/issues/7733
+  useSafeLayoutEffect(() => {
+    if (!open) return;
+    return () => removeOpenDialog(ref);
+  }, [open]);
+
+  // Tells the dialogs that opened after this one when React replaces the
+  // element of this dialog while it's open. React also replaces it when the
+  // dialog moves to another portal node.
+  // https://github.com/ariakit/ariakit/issues/7728
+  const previousContentElementRef = useRef<HTMLElement | null>(null);
+
+  useSafeLayoutEffect(() => {
+    if (!isOpenAndReady) {
+      previousContentElementRef.current = null;
+      return;
+    }
+    if (!contentElement) return;
+    const previousContentElement = previousContentElementRef.current;
+    previousContentElementRef.current = contentElement;
+    if (!previousContentElement) return;
+    if (previousContentElement === contentElement) return;
+    notifyOpenDialogElementChange(ref);
+  }, [isOpenAndReady, contentElement]);
+
+  // Tells them too when this dialog gets a backdrop element, such as when the
+  // backdrop prop changes while the dialog is open. The element of this dialog
+  // stays the same then, so the effect above doesn't run. A dialog that isn't
+  // open has no dialogs after it, so the call does nothing.
+  // https://github.com/ariakit/ariakit/issues/7772
+  const onBackdropElementChange = useCallback(() => {
+    notifyOpenDialogElementChange(ref);
+  }, []);
+
+  // Tells them too when this dialog gets its hidden dismiss button after its
+  // element, such as when the dialog loses its own dismiss button while it's
+  // open. They read the button when this dialog tells them, so this runs when
+  // the button is in the page.
+  // https://github.com/ariakit/ariakit/issues/7775
+  // https://github.com/ariakit/ariakit/issues/7782
+  useSafeLayoutEffect(() => {
+    if (!needsHiddenDismiss) return;
+    notifyOpenDialogElementChange(ref);
+  }, [needsHiddenDismiss]);
+
+  const treeSnapshotRef = useRef<{
+    rootNode: Node;
+    restore: () => void;
+  } | null>(null);
+
   useSafeLayoutEffect(() => {
     if (!id) return;
     if (!canTakeTreeSnapshot) return;
     const dialog = ref.current;
+    if (!dialog) return;
+    const rootNode = dialog.getRootNode();
+    const treeSnapshot = treeSnapshotRef.current;
+    // The dialog keeps its snapshot while it stays open in the same root. A new
+    // snapshot would have the elements that the page added after the dialog
+    // opened, such as the dialogs that opened after it, and a modal dialog
+    // would disable them. The dialog isn't ready while its new portal node
+    // doesn't exist yet, such as when the portal prop changes, so the next
+    // effect restores the snapshot, and not the cleanup of this one.
+    // https://github.com/ariakit/ariakit/issues/7774
+    if (treeSnapshot?.rootNode === rootNode) return;
+    // The snapshot has only elements of the root that the dialog was in, so the
+    // dialog takes a new one in another root, such as after it moves from a
+    // shadow root to a portal in the document. A portal node that isn't in the
+    // document anymore is a root too, and the snapshot from there is empty. The
+    // dialog element can still be in one when StrictMode runs the effects
+    // again, or when the portal node of the dialog around it goes away. The new
+    // snapshot has the popups that opened after the dialog in the new root, so
+    // a modal dialog that leaves a shadow root still disables them.
+    // https://github.com/ariakit/ariakit/issues/7793
+    treeSnapshot?.restore();
     // When the dialog opens, we capture a snapshot of the document. This
     // snapshot is then used to disable elements outside the dialog in the
     // subsequent effect. However, the issue arises as this next effect also
@@ -492,8 +608,37 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // we capture a new document snapshot, which might disable third-party
     // dialogs. Hence, we take the snapshot here, independent of any nested
     // dialogs.
-    return createWalkTreeSnapshot(id, [dialog]);
+    const restore = createWalkTreeSnapshot(id, [dialog]);
+    treeSnapshotRef.current = { rootNode, restore };
   }, [id, canTakeTreeSnapshot, unstable_treeSnapshotKey]);
+
+  // Restores the snapshot when the dialog closes, and before the effect above
+  // takes a new one for another id or snapshot key.
+  useSafeLayoutEffect(() => {
+    if (!open) return;
+    return () => {
+      treeSnapshotRef.current?.restore();
+      treeSnapshotRef.current = null;
+    };
+  }, [id, open, unstable_treeSnapshotKey]);
+
+  // The snapshot has the dialogs that were already open, but React can replace
+  // their elements, move them to new portal nodes, or render them in new
+  // wrapper elements, and the new elements aren't in the snapshot. The same
+  // applies to their backdrops and their hidden dismiss buttons. This adds the
+  // current ones, so this dialog marks them too. The elements that other parts
+  // of the page add later stay out of the snapshot.
+  // https://github.com/ariakit/ariakit/issues/7728
+  // https://github.com/ariakit/ariakit/issues/7733
+  // https://github.com/ariakit/ariakit/issues/7751
+  // https://github.com/ariakit/ariakit/issues/7764
+  // https://github.com/ariakit/ariakit/issues/7775
+  useSafeLayoutEffect(() => {
+    if (!id) return;
+    if (!canTakeTreeSnapshot) return;
+    const earlierDialogs = getEarlierOpenDialogElements(ref);
+    return addToWalkTreeSnapshot(id, earlierDialogs);
+  }, [id, canTakeTreeSnapshot, earlierDialogElementChanges]);
 
   const getPersistentElementsProp = useEvent(getPersistentElements);
 
@@ -567,6 +712,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     getPersistentElementsProp,
     nestedDialogs,
     unstable_treeSnapshotKey,
+    earlierDialogElementChanges,
   ]);
 
   const mayAutoFocusOnShow = !!autoFocusOnShow;
@@ -596,9 +742,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // with the autofocus attribute. If it's an Ariakit component, the
       // Focusable component will consume the autoFocus prop and add the
       // data-autofocus attribute to the element instead.
-      contentElement.querySelector<HTMLElement>(
-        "[data-autofocus=true],[autofocus]",
-      ) ||
+      contentElement.querySelector<HTMLElement>(autoFocusSelector) ||
       // We have to fallback to the first focusable element otherwise portaled
       // dialogs with preserveTabOrder set to true will not receive focus
       // properly because the elements aren't tabbable until the dialog receives
@@ -798,14 +942,15 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const source = getKeyboardEventSource(event);
     let keyPress = escapeKeyPresses.get(source);
     if (!keyPress) {
-      // Ignore the key press if the current dialog is marked by another dialog.
-      // This guarantees that only the topmost dialog will close on Escape. The
-      // decision covers the whole key press, because a nested popup can close
-      // on the copy that Composite dispatches and remove the marks before the
-      // original event reaches this dialog.
+      // Ignore the key press if another dialog is above the current dialog,
+      // which is the case when that dialog marks it. This guarantees that only
+      // the topmost dialog will close on Escape. The decision covers the whole
+      // key press, because a nested popup can close on the copy that Composite
+      // dispatches and remove the marks before the original event reaches this
+      // dialog.
       // https://github.com/ariakit/ariakit/issues/7632
       const isTopmost =
-        !isElementMarked(dialog) && !escapeKeyPressesThatHid.has(source);
+        !hasDialogAbove(ref) && !escapeKeyPressesThatHid.has(source);
       const accepted = isTopmost && hideOnEscapeProp(event);
       keyPress = { accepted, hidden: false };
       escapeKeyPresses.set(source, keyPress);
@@ -965,6 +1110,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       <>
         {needsHiddenDismiss && (
           <button
+            ref={hiddenDismissRef}
             type="button"
             tabIndex={-1}
             data-dialog-hidden-dismiss={id || ""}
@@ -994,6 +1140,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
             store={store}
             backdrop={backdrop}
             backdropRef={backdropRef}
+            onElementChange={onBackdropElementChange}
             hidden={hiddenProp}
             alwaysVisible={alwaysVisible}
           />
@@ -1001,7 +1148,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         {element}
       </>
     ),
-    [store, backdrop, hiddenProp, alwaysVisible],
+    [store, backdrop, onBackdropElementChange, hiddenProp, alwaysVisible],
   );
 
   const [headingId, setHeadingId] = useState<string>();
@@ -1356,6 +1503,14 @@ export interface DialogOptions<T extends ElementType = TagName>
    * @private
    */
   unstable_treeSnapshotKey?: unknown;
+  /**
+   * The element that a composed component renders around the dialog element,
+   * such as the element that positions a popover. The dialogs that open after
+   * this one handle it as a part of this dialog.
+   * @deprecated
+   * @private
+   */
+  unstable_wrapperElement?: Element | null;
 }
 
 export type DialogProps<T extends ElementType = TagName> = Props<

@@ -73,9 +73,11 @@ function addDisabledElementCleanup({
   // dialog-menu "move back to menu button with Shift+Tab" test.
   if (isFocusTrap(element, ...ids)) return;
   // The hidden dismiss button renders next to the dialog, so it has to stay
-  // operable for the assistive technology users it exists for. A dialog only
-  // reaches its own button here after refreshing its tree snapshot, which the
-  // snapshot taken on open predates.
+  // operable for the assistive technology users it exists for. A dialog reaches
+  // its own button here when the button is in its tree snapshot. The snapshot
+  // taken on open predates the button, but a new snapshot has it, and so does
+  // an element of the snapshot that the dialog moves into, such as when the
+  // dialog moves out of a portal.
   // https://github.com/ariakit/ariakit/issues/7310
   if (isHiddenDismiss(element, ...ids)) return;
   addCleanup({

@@ -1,4 +1,15 @@
 import { afterEach, expect, test } from "vitest";
+import {
+  addOpenDialog,
+  getEarlierOpenDialogElements,
+  hasDialogAbove,
+  notifyOpenDialogElementChange,
+  removeOpenDialog,
+} from "./__open-dialogs.ts";
+import {
+  addToWalkTreeSnapshot,
+  getSnapshotAncestorPropertyName,
+} from "./__walk-tree-snapshot.ts";
 import { markAndDisableTreeOutside } from "./disable-tree.ts";
 import {
   isElementInside,
@@ -183,6 +194,114 @@ test("walkTreeOutside skips elements outside the active snapshot", () => {
   restoreSnapshot();
 
   expect(getWalkedElementIds("dialog", [dialog])).toEqual(["before", "after"]);
+});
+
+test("addToWalkTreeSnapshot handles a very large number of elements", () => {
+  // Passing every cleanup to one function call as an argument overflows the
+  // stack in the engines that limit the number of arguments.
+  const elements = Array.from({ length: 200_000 }, () =>
+    document.createElement("section"),
+  );
+
+  let restoreSnapshot: (() => void) | undefined;
+  expect(() => {
+    restoreSnapshot = addToWalkTreeSnapshot("dialog", elements);
+  }).not.toThrow();
+
+  restoreSnapshot?.();
+});
+
+test("walkTreeOutside walks elements added to the snapshot", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="dialog"></div>
+      <section id="earlier"></section>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const earlier = getElement("earlier");
+  const root = getElement("root");
+  const restoreSnapshot = createWalkTreeSnapshot("dialog", [dialog]);
+
+  // React replaces the element that was in the snapshot, and the page adds an
+  // unrelated element.
+  const replacement = document.createElement("section");
+  replacement.id = "replacement";
+  earlier.replaceWith(replacement);
+  const later = document.createElement("section");
+  later.id = "later";
+  root.append(later);
+
+  expect(getWalkedElementIds("dialog", [dialog])).toEqual([]);
+
+  const restoreAdded = addToWalkTreeSnapshot("dialog", [replacement]);
+
+  expect(getWalkedElementIds("dialog", [dialog])).toEqual(["replacement"]);
+
+  restoreAdded();
+
+  expect(getWalkedElementIds("dialog", [dialog])).toEqual([]);
+
+  restoreSnapshot();
+});
+
+// https://github.com/ariakit/ariakit/issues/7774
+test("walkTreeOutside walks the snapshot children of the elements that the dialog left", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <section id="before"></section>
+      <div id="parent">
+        <div id="dialog"></div>
+        <section id="sibling"></section>
+      </div>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const root = getElement("root");
+  const parent = getElement("parent");
+  const restoreSnapshot = createWalkTreeSnapshot("dialog", [dialog]);
+
+  // The page adds an element next to the dialog, and then the dialog moves to a
+  // new portal node.
+  const later = document.createElement("section");
+  later.id = "later";
+  parent.append(later);
+  const portal = document.createElement("div");
+  portal.id = "portal";
+  document.body.append(portal);
+  portal.append(dialog);
+
+  const walk = () => {
+    const walked: string[] = [];
+    const ancestors: string[] = [];
+    walkTreeOutside(
+      "dialog",
+      [dialog],
+      (element) => walked.push(element.id),
+      (ancestor) => ancestors.push(ancestor.id || ancestor.tagName),
+    );
+    return { walked, ancestors };
+  };
+
+  const result = walk();
+  // The snapshot is on the body element, which the other tests use too, so it
+  // goes away before an assertion can fail.
+  restoreSnapshot();
+
+  // The root and the parent had the dialog inside them when the snapshot was
+  // taken, so the walk goes through them like through the current ancestors.
+  expect(result).toEqual({
+    walked: ["before", "sibling"],
+    ancestors: ["portal", "BODY", "root", "parent"],
+  });
+  // Without a snapshot, the walk has every element outside the dialog, so it
+  // can't show that the record of the former ancestors is gone.
+  expect(walk()).toEqual({ walked: ["root"], ancestors: ["portal", "BODY"] });
+  const ancestorProperty = getSnapshotAncestorPropertyName("dialog");
+  expect(Object.hasOwn(root, ancestorProperty)).toBe(false);
+  expect(Object.hasOwn(parent, ancestorProperty)).toBe(false);
 });
 
 test("markTreeOutside skips backdrops and restores marks", () => {
@@ -476,4 +595,308 @@ test("markAndDisableTreeOutside disables tabbable elements again without inert",
   } finally {
     Object.defineProperty(HTMLElement.prototype, "inert", inert);
   }
+});
+
+test("hasDialogAbove counts a mark that doesn't come from the open dialogs", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="dialog" data-dialog></div>
+      <div id="layer"></div>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const layer = getElement("layer");
+
+  const dialogRef = { current: dialog };
+  addOpenDialog(dialogRef, {
+    getOutsideCleanups: () => dialogMarks,
+  });
+  const dialogMarks = markTreeOutside("dialog", [dialog]);
+
+  expect(hasDialogAbove(dialogRef)).toBe(false);
+
+  // Another copy of this module shares the marks, but not the open dialogs.
+  const layerMarks = markTreeOutside("layer", [layer]);
+
+  expect(hasDialogAbove(dialogRef)).toBe(true);
+
+  restoreCleanups(layerMarks);
+
+  expect(hasDialogAbove(dialogRef)).toBe(false);
+
+  restoreCleanups(dialogMarks);
+  removeOpenDialog(dialogRef);
+});
+
+test("getEarlierOpenDialogElements returns the elements of the dialogs that opened before", () => {
+  document.body.innerHTML = `
+    <div id="first"></div>
+    <div id="parent">
+      <div id="child"></div>
+    </div>
+    <div id="last"></div>
+  `;
+
+  const first = getElement("first");
+  const parent = getElement("parent");
+  const child = getElement("child");
+  const last = getElement("last");
+
+  const firstRef = { current: first };
+  const parentRef = { current: parent };
+  const childRef = { current: child };
+  const lastRef = { current: last };
+  addOpenDialog(firstRef);
+  addOpenDialog(parentRef);
+  addOpenDialog(childRef);
+  addOpenDialog(lastRef);
+
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([first, parent, child]);
+  // A dialog that contains the given one is not outside it.
+  expect(getEarlierOpenDialogElements(childRef)).toEqual([first]);
+
+  // A disconnected element, such as the one that React replaced, is skipped.
+  parent.remove();
+
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([first]);
+
+  removeOpenDialog(lastRef);
+  removeOpenDialog(childRef);
+  removeOpenDialog(parentRef);
+  removeOpenDialog(firstRef);
+});
+
+// https://github.com/ariakit/ariakit/issues/7733
+test("getEarlierOpenDialogElements returns the portal nodes of the dialogs that opened before", () => {
+  document.body.innerHTML = `
+    <div id="portal">
+      <div id="dialog"></div>
+      <div id="nested"></div>
+    </div>
+    <div id="last"></div>
+  `;
+
+  const dialog = getElement("dialog");
+  const nested = getElement("nested");
+  const last = getElement("last");
+
+  let portalNode: Element | null = getElement("portal");
+  const dialogRef = { current: dialog };
+  const nestedRef = { current: nested };
+  const lastRef = { current: last };
+  addOpenDialog(dialogRef, { getPortalNode: () => portalNode });
+  addOpenDialog(nestedRef);
+  addOpenDialog(lastRef);
+
+  // The tree walk reaches a dialog in a portal through its portal node.
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([
+    portalNode,
+    dialog,
+    nested,
+  ]);
+  // A portal node that contains the given dialog is not outside it, but the
+  // dialog in that portal node is.
+  expect(getEarlierOpenDialogElements(nestedRef)).toEqual([dialog]);
+
+  // The portal node can change while the dialog stays open.
+  portalNode = null;
+
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([dialog, nested]);
+
+  removeOpenDialog(lastRef);
+  removeOpenDialog(nestedRef);
+  removeOpenDialog(dialogRef);
+});
+
+// https://github.com/ariakit/ariakit/issues/7751
+test("getEarlierOpenDialogElements returns the wrapper elements of the dialogs that opened before", () => {
+  document.body.innerHTML = `
+    <div id="wrapper">
+      <div id="dialog">
+        <div id="nested"></div>
+      </div>
+    </div>
+    <div id="last"></div>
+  `;
+
+  const dialog = getElement("dialog");
+  const nested = getElement("nested");
+  const last = getElement("last");
+
+  let wrapperElement: Element | null = getElement("wrapper");
+  const dialogRef = { current: dialog };
+  const nestedRef = { current: nested };
+  const lastRef = { current: last };
+  addOpenDialog(dialogRef, { getWrapperElement: () => wrapperElement });
+  addOpenDialog(nestedRef);
+  addOpenDialog(lastRef);
+
+  // The tree walk reaches a dialog in a wrapper element through that wrapper.
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([
+    wrapperElement,
+    dialog,
+    nested,
+  ]);
+  // A wrapper element that contains the given dialog is not outside it.
+  expect(getEarlierOpenDialogElements(nestedRef)).toEqual([]);
+
+  // The wrapper element can change while the dialog stays open.
+  wrapperElement = null;
+
+  expect(getEarlierOpenDialogElements(lastRef)).toEqual([dialog, nested]);
+
+  removeOpenDialog(lastRef);
+  removeOpenDialog(nestedRef);
+  removeOpenDialog(dialogRef);
+});
+
+test("notifyOpenDialogElementChange notifies only the dialogs that opened after", () => {
+  const calls: string[] = [];
+  const firstRef = { current: null };
+  const secondRef = { current: null };
+  const thirdRef = { current: null };
+
+  addOpenDialog(firstRef, {
+    onEarlierDialogElementChange: () => calls.push("first"),
+  });
+  addOpenDialog(secondRef, {
+    onEarlierDialogElementChange: () => calls.push("second"),
+  });
+  addOpenDialog(thirdRef, {
+    onEarlierDialogElementChange: () => calls.push("third"),
+  });
+
+  notifyOpenDialogElementChange(secondRef);
+
+  expect(calls).toEqual(["third"]);
+
+  removeOpenDialog(thirdRef);
+  removeOpenDialog(secondRef);
+  removeOpenDialog(firstRef);
+});
+
+// https://github.com/ariakit/ariakit/issues/7726
+test.each(["after", "between", "before"])(
+  "hasDialogAbove ignores a dialog in another root with the same id that opens %s the dialogs that mark each other",
+  (position) => {
+    document.body.innerHTML = `
+      <div id="root">
+        <div id="notice" data-dialog></div>
+        <div id="listbox" data-dialog></div>
+      </div>
+      <div id="host"></div>
+    `;
+
+    const notice = getElement("notice");
+    const listbox = getElement("listbox");
+    const shadowRoot = getElement("host").attachShadow({ mode: "open" });
+    const shadowNotice = document.createElement("div");
+    // Ids are unique only in their root, so this one can reuse the id.
+    shadowNotice.id = "notice";
+    shadowNotice.setAttribute("data-dialog", "");
+    shadowRoot.append(shadowNotice);
+
+    const noticeRef = { current: notice };
+    const listboxRef = { current: listbox };
+    const shadowNoticeRef = { current: shadowNotice };
+
+    const openOrders: Record<string, Array<typeof noticeRef>> = {
+      after: [noticeRef, listboxRef, shadowNoticeRef],
+      between: [noticeRef, shadowNoticeRef, listboxRef],
+      before: [shadowNoticeRef, noticeRef, listboxRef],
+    };
+    const openOrder = openOrders[position] ?? [];
+
+    // The shadow dialog is alone in its root, so it marks nothing.
+    const marks = new Map([
+      [noticeRef, markTreeOutside("notice", [notice])],
+      [listboxRef, markTreeOutside("listbox", [listbox])],
+      [shadowNoticeRef, markTreeOutside("notice", [shadowNotice])],
+    ]);
+    for (const dialogRef of openOrder) {
+      addOpenDialog(dialogRef, {
+        getOutsideCleanups: () => marks.get(dialogRef),
+      });
+    }
+
+    expect(isElementMarked(listbox, "notice")).toBe(true);
+    expect(hasDialogAbove(listboxRef)).toBe(false);
+    expect(hasDialogAbove(noticeRef)).toBe(true);
+    expect(hasDialogAbove(shadowNoticeRef)).toBe(false);
+
+    for (const dialogRef of openOrder) {
+      removeOpenDialog(dialogRef);
+    }
+    for (const mark of marks.values()) {
+      restoreCleanups(mark);
+    }
+  },
+);
+
+// https://github.com/ariakit/ariakit/issues/7726
+test("hasDialogAbove counts the marks of a popup in another root", () => {
+  document.body.innerHTML = `
+    <div id="popover" data-dialog></div>
+    <div id="host"></div>
+  `;
+
+  const popover = getElement("popover");
+  const shadowRoot = getElement("host").attachShadow({ mode: "open" });
+  const dialog = document.createElement("div");
+  dialog.id = "dialog";
+  dialog.setAttribute("data-dialog", "");
+  const disclosure = document.createElement("button");
+  dialog.append(disclosure);
+  shadowRoot.append(dialog);
+
+  const dialogRef = { current: dialog };
+  const popoverRef = { current: popover };
+  addOpenDialog(dialogRef);
+  addOpenDialog(popoverRef, {
+    getOutsideCleanups: () => marks,
+  });
+
+  // The popover renders in the document, but its disclosure is in the dialog,
+  // so the walk marks the dialog as an ancestor of the disclosure.
+  const marks = markTreeOutside("popover", [disclosure, popover]);
+
+  expect(hasDialogAbove(dialogRef)).toBe(true);
+  expect(hasDialogAbove(popoverRef)).toBe(false);
+
+  restoreCleanups(marks);
+  removeOpenDialog(popoverRef);
+  removeOpenDialog(dialogRef);
+});
+
+test("hasDialogAbove counts the marks of a modal dialog", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="dialog" data-dialog></div>
+      <div id="modal" data-dialog></div>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const modal = getElement("modal");
+  const dialogRef = { current: dialog };
+  const modalRef = { current: modal };
+  addOpenDialog(dialogRef, {
+    getOutsideCleanups: () => dialogMarks,
+  });
+  addOpenDialog(modalRef, {
+    getOutsideCleanups: () => modalMarks,
+  });
+
+  // The dialogs mark each other, so the one that opened last is above.
+  const dialogMarks = markTreeOutside("dialog", [dialog]);
+  const modalMarks = markAndDisableTreeOutside("modal", [modal]);
+
+  expect(hasDialogAbove(dialogRef)).toBe(true);
+  expect(hasDialogAbove(modalRef)).toBe(false);
+
+  restoreCleanups(modalMarks);
+  restoreCleanups(dialogMarks);
+  removeOpenDialog(modalRef);
+  removeOpenDialog(dialogRef);
 });
