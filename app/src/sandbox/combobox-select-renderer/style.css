@@ -22,6 +22,132 @@
   background: hsl(210deg 90% 96%);
 }
 
+.mixed-size-popover {
+  width: 200px;
+  max-height: 200px;
+  overflow: auto;
+  /* The scroll range of the popup starts inside its border. */
+  border: 2px solid hsl(210deg 8% 70%);
+  background: white;
+}
+
+.mixed-size-popover [role="option"] {
+  box-sizing: border-box;
+  width: 100%;
+  padding-inline: 8px;
+  border-bottom: 1px solid hsl(210deg 8% 85%);
+}
+
+.mixed-size-popover [data-active-item] {
+  background: hsl(210deg 90% 90%);
+}
+
+/* The layout size of this popup rounds to 200px, which is more than its real
+   size. */
+.uneven-popover {
+  max-height: 199.6px;
+}
+
+.animated-popover {
+  transform: scale(0.8);
+  transform-origin: top left;
+  transition: transform 300ms;
+}
+
+.animated-popover[data-enter] {
+  transform: scale(1);
+}
+
+.mixed-size-group-label {
+  box-sizing: border-box;
+  height: 24px;
+  padding-inline: 8px;
+  font-weight: bold;
+}
+
+.late-scroller {
+  width: 200px;
+  height: 200px;
+  overflow: auto;
+}
+
+.late-scroller p {
+  box-sizing: border-box;
+  height: 160px;
+  margin: 0;
+}
+
+.late-scroller [role="option"] {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.measured-grid-scroller {
+  width: 300px;
+  height: 200px;
+  overflow: auto;
+  border: 2px solid hsl(210deg 8% 70%);
+}
+
+.shelves-scroller {
+  width: 300px;
+  height: 200px;
+  overflow: hidden auto;
+  border: 2px solid hsl(210deg 8% 70%);
+}
+
+.shelf {
+  width: 100%;
+  overflow: auto hidden;
+  scrollbar-width: none;
+}
+
+.measured-grid-scroller [role="gridcell"],
+.shelves-scroller [role="gridcell"] {
+  box-sizing: border-box;
+  height: 100%;
+  padding: 0;
+  border: 1px solid hsl(210deg 8% 85%);
+  background: white;
+}
+
+.measured-grid-scroller [data-active-item],
+.shelves-scroller [data-active-item] {
+  background: hsl(210deg 90% 90%);
+}
+
+/* A row whose content is taller than the row is not found as the scroll element
+   of its cells: https://github.com/ariakit/ariakit/issues/7804 */
+.shelves-scroller [role="gridcell"] {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.scaled-scroller {
+  width: 300px;
+  height: 200px;
+  overflow: auto;
+  border: 2px solid hsl(210deg 8% 70%);
+  transform: scale(0.8);
+  transform-origin: top left;
+}
+
+/* The rectangle of this list is larger than its layout box, so the margins keep
+   it clear of the sections around it. */
+.enlarged-scroller {
+  margin: 0 75px 50px 0;
+  transform: scale(1.25);
+}
+
+.scaled-scroller [role="option"] {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.scaled-scroller [data-active-item] {
+  background: hsl(210deg 90% 90%);
+}
+
 .async-scroller {
   height: 120px;
   overflow-y: auto;

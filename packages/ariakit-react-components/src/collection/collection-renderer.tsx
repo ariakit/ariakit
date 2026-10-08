@@ -107,7 +107,7 @@ type RawItemProps<T extends Item> = unknown extends T
 
 type Data = Map<
   string,
-  { index: number; rendered: boolean; start: number; end: number }
+  { index: number; rendered: boolean; start: number; end: number; size: number }
 >;
 
 interface CollectionRendererContextValue {
@@ -272,7 +272,7 @@ function getAverageSize<T extends Item>(props: {
     if (size) {
       setAverageSize(size);
     } else if (itemData?.rendered) {
-      setAverageSize(itemData.end - itemData.start);
+      setAverageSize(itemData.size);
     }
   }
 
@@ -424,23 +424,27 @@ function useScroller(
   return [scroller, scrollerRef, controller] as const;
 }
 
-function getRendererOffset(
-  renderer: HTMLElement,
+/**
+ * Returns the offset of the element from the start of the scroller's scrollable
+ * content.
+ */
+function getElementOffset(
+  element: HTMLElement,
   scroller: Element,
   horizontal: boolean,
 ): number {
-  const win = getWindow(renderer);
+  const win = getWindow(element);
   const htmlElement = win?.document.documentElement;
-  const rendererRect = renderer.getBoundingClientRect();
-  const rendererOffset = horizontal ? rendererRect.left : rendererRect.top;
+  const elementRect = element.getBoundingClientRect();
+  const elementOffset = horizontal ? elementRect.left : elementRect.top;
   if (scroller === htmlElement) {
     const scrollOffset = getScrollOffset(win, horizontal);
-    return scrollOffset + rendererOffset;
+    return scrollOffset + elementOffset;
   }
   const scrollerRect = scroller.getBoundingClientRect();
   const scrollerOffset = horizontal ? scrollerRect.left : scrollerRect.top;
   const scrollOffset = getScrollOffset(scroller, horizontal);
-  return rendererOffset - scrollerOffset + scrollOffset;
+  return elementOffset - scrollerOffset + scrollOffset;
 }
 
 function getOffsets(
@@ -449,11 +453,114 @@ function getOffsets(
   horizontal: boolean,
 ) {
   const scrollOffset = getScrollOffset(scroller, horizontal);
-  const rendererOffset = getRendererOffset(renderer, scroller, horizontal);
+  const rendererOffset = getElementOffset(renderer, scroller, horizontal);
   const scrollSize = horizontal ? scroller.clientWidth : scroller.clientHeight;
   const start = scrollOffset - rendererOffset;
   const end = start + scrollSize;
   return { start, end };
+}
+
+interface AnchorPosition {
+  start: number;
+  end: number;
+}
+
+// How many times a renderer gave the item around each anchor element its first
+// layout. Nested renderers have the same anchor element, and each one records
+// its own position, because they can have different scroll elements and
+// orientations. A record is valid only while this number does not change.
+const anchorFirstLayouts = new WeakMap<HTMLElement, number>();
+
+function hasOffsetSize(element: Element): element is HTMLElement {
+  return "offsetHeight" in element;
+}
+
+/**
+ * Returns where the view of the scroller starts, in the units of
+ * `getBoundingClientRect()`, and the scale of those units. A CSS transform on
+ * the scroller or on an ancestor scales its rectangle, as the scale transition
+ * of a popup does. Scroll positions and layout sizes are not scaled.
+ */
+function getScrollerView(scroller: Element, horizontal: boolean) {
+  // The view of the document is the viewport.
+  if (getViewport(scroller) !== scroller) {
+    return { start: 0, scale: 1 };
+  }
+  const rect = scroller.getBoundingClientRect();
+  const rectSize = horizontal ? rect.width : rect.height;
+  let offsetSize = 0;
+  if (hasOffsetSize(scroller)) {
+    offsetSize = horizontal ? scroller.offsetWidth : scroller.offsetHeight;
+  }
+  let scale = 1;
+  // The layout size is a whole number, so a difference of less than one pixel
+  // is its rounding, and not a scale.
+  if (offsetSize && Math.abs(rectSize - offsetSize) >= 1) {
+    scale = rectSize / offsetSize || 1;
+  }
+  // The view of an element starts inside its border.
+  const border = horizontal ? scroller.clientLeft : scroller.clientTop;
+  const rectStart = horizontal ? rect.left : rect.top;
+  return { start: rectStart + border * scale, scale };
+}
+
+/**
+ * Returns the position of the anchor in the content of the scroller, in the
+ * units of the scroll position.
+ */
+function getAnchorPosition(
+  anchor: HTMLElement,
+  scroller: Element,
+  horizontal: boolean,
+): AnchorPosition {
+  const rect = anchor.getBoundingClientRect();
+  const rectStart = horizontal ? rect.left : rect.top;
+  const rectSize = horizontal ? rect.width : rect.height;
+  const view = getScrollerView(scroller, horizontal);
+  const viewport = getViewport(scroller) ?? scroller;
+  const scrollOffset = getScrollOffset(viewport, horizontal);
+  const start = scrollOffset + (rectStart - view.start) / view.scale;
+  return { start, end: start + rectSize / view.scale };
+}
+
+/**
+ * Returns the distance to scroll the scroller so that the anchor is at the
+ * nearest edge of its view. Returns 0 when the anchor is in view.
+ */
+function getRevealDistance(
+  anchor: HTMLElement,
+  scroller: Element,
+  horizontal: boolean,
+) {
+  const rect = anchor.getBoundingClientRect();
+  const start = horizontal ? rect.left : rect.top;
+  const end = horizontal ? rect.right : rect.bottom;
+  const clientSize = horizontal ? scroller.clientWidth : scroller.clientHeight;
+  const view = getScrollerView(scroller, horizontal);
+  const viewEnd = view.start + clientSize * view.scale;
+  const startDistance = start - view.start;
+  const endDistance = end - viewEnd;
+  // Rectangles are fractional, so the edges of the view have a tolerance of one
+  // pixel.
+  if (startDistance >= -1 && endDistance <= 1) return 0;
+  // The rectangles are scaled, and the scroll distance is not. An anchor that
+  // is larger than the view stops where it fills the view.
+  if (startDistance < 0 && endDistance < 0) {
+    return Math.max(startDistance, endDistance) / view.scale;
+  }
+  if (startDistance > 0 && endDistance > 0) {
+    return Math.min(startDistance, endDistance) / view.scale;
+  }
+  return 0;
+}
+
+interface PendingAnchor {
+  data: Data;
+  element: HTMLElement;
+  scroller: Element;
+  scrollOffset: number;
+  position: AnchorPosition;
+  firstLayouts: number;
 }
 
 function getItemsEnd<T extends Item>(props: {
@@ -516,12 +623,12 @@ function getData<T extends Item>(props: {
         start += props.gap;
       }
       const end = start + size;
-      const nextItemData = { index, rendered, start, end };
+      const nextItemData = { index, rendered, start, end, size };
       if (!shallowEqual(itemData, nextItemData)) {
         if (!nextData) {
           nextData = new Map(props.data);
         }
-        nextData.set(itemId, { index, rendered, start, end });
+        nextData.set(itemId, { index, rendered, start, end, size });
       }
       start = end;
     };
@@ -535,7 +642,11 @@ function getData<T extends Item>(props: {
     if (size) {
       setSize(size, true);
     } else if (itemData?.rendered) {
-      setSize(itemData.end - itemData.start, true);
+      // Reuse the measured size of an item that has no element now. The
+      // difference `end - start` can have a rounding error, which would change
+      // the average size and the offsets again on each pass.
+      // https://github.com/ariakit/ariakit/issues/7792
+      setSize(itemData.size, true);
     } else {
       setSize(avgSize);
     }
@@ -560,6 +671,7 @@ export function useCollectionRenderer<T extends Item = any>({
   scrollElement: scrollElementProp,
   renderOnScroll = true,
   renderOnResize = !!renderOnScroll,
+  unstable_anchorId: anchorId,
   children: renderItem,
   ...props
 }: CollectionRendererProps<T>) {
@@ -677,19 +789,6 @@ export function useCollectionRenderer<T extends Item = any>({
     parentData?.set(baseId, data);
   }, [baseId, parentData, data]);
 
-  useEffect(() => {
-    if (itemSize != null) return;
-    if (!baseId) return;
-    if (!items) return;
-    const nextData = computeData(data, baseId, items);
-    if (nextData) {
-      // Measurement data changes only after rendered elements are measured.
-      // oxlint-disable-next-line react/set-state-in-effect
-      setData(nextData);
-    }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- element registration signal
-  }, [elementsUpdated, itemSize, baseId, items, data, computeData]);
-
   const [ownScroller, ownScrollerRef, ownScrollerController] = useScroller(
     items && inheritedScroller === undefined ? ref : null,
     scrollElementProp,
@@ -714,6 +813,151 @@ export function useCollectionRenderer<T extends Item = any>({
         ? undefined
         : ownScrollerController;
   const offsetsRef = useRef({ start: 0, end: 0 });
+  const pendingAnchorRef = useRef<PendingAnchor | null>(null);
+  const anchorReleasedRef = useRef(false);
+
+  const getAnchorElement = useEvent(() => {
+    if (anchorReleasedRef.current) return null;
+    const anchor = store?.item(anchorId)?.element;
+    if (!anchor) return null;
+    for (const [id, element] of elements) {
+      if (!element.contains(anchor)) continue;
+      if (!data.has(id)) {
+        // An item without data renders at the start of the renderer until its
+        // first layout, so that first layout is not a move. A nested renderer
+        // can record the anchor in the same pass before this renderer runs, so
+        // its record is not valid either.
+        const firstLayouts = anchorFirstLayouts.get(anchor) ?? 0;
+        anchorFirstLayouts.set(anchor, firstLayouts + 1);
+        return null;
+      }
+      return anchor;
+    }
+    // A nested renderer that does not contain the anchor cannot move it.
+    return null;
+  });
+
+  // The anchor holds from the moment an item becomes the anchor until the user
+  // scrolls. A scroll adjustment during the user's own scroll gesture would
+  // compete with that gesture.
+  useEffect(() => {
+    // A renderer with a fixed item size does not measure, so it never anchors.
+    if (itemSize != null) return;
+    if (anchorId == null) return;
+    if (!scroller) return;
+    const viewport = getViewport(scroller);
+    if (!viewport) return;
+    anchorReleasedRef.current = false;
+    const release = () => {
+      anchorReleasedRef.current = true;
+    };
+    viewport.addEventListener("wheel", release, { passive: true });
+    viewport.addEventListener("touchmove", release, { passive: true });
+    return () => {
+      viewport.removeEventListener("wheel", release);
+      viewport.removeEventListener("touchmove", release);
+    };
+  }, [itemSize, anchorId, scroller]);
+
+  useEffect(() => {
+    if (itemSize != null) return;
+    if (!baseId) return;
+    if (!items) return;
+    const nextData = computeData(data, baseId, items);
+    if (!nextData) return;
+    // Record where the anchor is before the new sizes move it, so the layout
+    // effect below can tell if it was in view. A nested renderer measures its
+    // items before its scroller reaches state, so this reads the ref.
+    const anchor = getAnchorElement();
+    const anchorScroller = scrollerRef.current;
+    if (anchor && anchorScroller) {
+      pendingAnchorRef.current = {
+        data: nextData,
+        element: anchor,
+        scroller: anchorScroller,
+        scrollOffset: getScrollOffset(anchorScroller, horizontal),
+        position: getAnchorPosition(anchor, anchorScroller, horizontal),
+        firstLayouts: anchorFirstLayouts.get(anchor) ?? 0,
+      };
+    }
+    // Measurement data changes only after rendered elements are measured.
+    // oxlint-disable-next-line react/set-state-in-effect
+    setData(nextData);
+  }, [
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- element registration signal
+    elementsUpdated,
+    itemSize,
+    baseId,
+    items,
+    data,
+    computeData,
+    getAnchorElement,
+    scrollerRef,
+    horizontal,
+  ]);
+
+  // Keep the anchor in view when the measured sizes of other items move it. A
+  // move to a far item scrolls to an estimated offset. The renderer measures
+  // the items around that offset only afterwards, which would otherwise push
+  // the anchor out of view.
+  // https://github.com/ariakit/ariakit/issues/7628
+  useSafeLayoutEffect(() => {
+    const pendingAnchor = pendingAnchorRef.current;
+    if (pendingAnchor?.data !== data) return;
+    pendingAnchorRef.current = null;
+    const renderer = ref.current;
+    if (!renderer) return;
+    const {
+      element,
+      scroller: anchorScroller,
+      position: previous,
+    } = pendingAnchor;
+    if (!element.isConnected) return;
+    const firstLayouts = anchorFirstLayouts.get(element) ?? 0;
+    if (firstLayouts !== pendingAnchor.firstLayouts) return;
+    const scrollStart = getScrollOffset(anchorScroller, horizontal);
+    const scrollSize = horizontal
+      ? anchorScroller.clientWidth
+      : anchorScroller.clientHeight;
+    // Positions and scroll positions are fractional, so the edges of the scroll
+    // element have a tolerance of one pixel.
+    const wasInViewAt = (scrollOffset: number) => {
+      return (
+        previous.start >= scrollOffset - 1 &&
+        previous.end <= scrollOffset + scrollSize + 1
+      );
+    };
+    // Only an anchor that was fully in view stays in view. A scroll to an
+    // anchor that was out of view, or that the user left partly in view, would
+    // move the items that the user is looking at. The scroll position from the
+    // measurement counts too, because the browser moves the scroll position
+    // back when the new sizes make the content end before it.
+    const wasInView =
+      wasInViewAt(pendingAnchor.scrollOffset) || wasInViewAt(scrollStart);
+    if (wasInView) {
+      const distance = getRevealDistance(element, anchorScroller, horizontal);
+      // The renderer finds its scroll element one time. A nearer ancestor can
+      // start to scroll later, for example a popup that the measured items no
+      // longer fit in. That ancestor then clips the anchor, and a scroll of the
+      // scroll element of this renderer would not show it.
+      if (distance && getScrollingElement(element) === anchorScroller) {
+        // Scroll only the scroll element of this renderer. A native
+        // `scrollIntoView` would also scroll the ancestors, such as a page that
+        // the user scrolled away from this list. The target is a position,
+        // because Safari adds up the fractions of relative scroll distances
+        // that it gets before it renders the next frame.
+        anchorScroller.scrollTo({
+          [horizontal ? "left" : "top"]: scrollStart + distance,
+          behavior: "instant",
+        });
+      }
+    }
+    // The scroll event arrives on a later frame. Until then, the visible items
+    // would be calculated from the new sizes and the previous scroll position.
+    const scrollOffset = getScrollOffset(anchorScroller, horizontal);
+    if (scrollOffset === pendingAnchor.scrollOffset) return;
+    offsetsRef.current = getOffsets(renderer, anchorScroller, horizontal);
+  }, [data, horizontal]);
 
   const processVisibleIndices = useCallback(() => {
     const offsets = offsetsRef.current;
@@ -1196,6 +1440,13 @@ export interface CollectionRendererOptions<
    * The item indices that should always be rendered.
    */
   persistentIndices?: number[];
+  /**
+   * The id of the item that stays in view in the scroll element when the
+   * measured sizes of other items move it.
+   * @deprecated
+   * @private
+   */
+  unstable_anchorId?: string | null;
   /**
    * The padding between the items and the container in pixels. This value will
    * be used for both the `paddingStart` and `paddingEnd` props, if they are not
