@@ -1929,13 +1929,7 @@ Undo and redo manager utilities.
 ```ts
 type Callback = void | (() => Callback | Promise<Callback>);
 
-const UndoManager: {
-  canUndo: () => boolean;
-  canRedo: () => boolean;
-  undo: () => Promise<void>;
-  redo: () => Promise<void>;
-  execute: (callback: Callback, group?: string) => Promise<void>;
-};
+const UndoManager: { canUndo: () => boolean; canRedo: () => boolean; undo: () => Promise<void>; redo: () => Promise<void>; execute: (callback: Callback, group?: string) => Promise<void>; };
 ```
 
 Shared undo manager instance.
