@@ -471,25 +471,56 @@ interface AnchorPosition {
 // orientations. A record is valid only while this number does not change.
 const anchorFirstLayouts = new WeakMap<HTMLElement, number>();
 
+function hasOffsetSize(element: Element): element is HTMLElement {
+  return "offsetHeight" in element;
+}
+
+/**
+ * Returns where the view of the scroller starts, in the units of
+ * `getBoundingClientRect()`, and the scale of those units. A CSS transform on
+ * the scroller or on an ancestor scales its rectangle, as the scale transition
+ * of a popup does. Scroll positions and layout sizes are not scaled.
+ */
+function getScrollerView(scroller: Element, horizontal: boolean) {
+  // The view of the document is the viewport.
+  if (getViewport(scroller) !== scroller) {
+    return { start: 0, scale: 1 };
+  }
+  const rect = scroller.getBoundingClientRect();
+  const rectSize = horizontal ? rect.width : rect.height;
+  let offsetSize = 0;
+  if (hasOffsetSize(scroller)) {
+    offsetSize = horizontal ? scroller.offsetWidth : scroller.offsetHeight;
+  }
+  let scale = 1;
+  // The layout size is a whole number, so a difference of less than one pixel
+  // is its rounding, and not a scale.
+  if (offsetSize && Math.abs(rectSize - offsetSize) >= 1) {
+    scale = rectSize / offsetSize || 1;
+  }
+  // The view of an element starts inside its border.
+  const border = horizontal ? scroller.clientLeft : scroller.clientTop;
+  const rectStart = horizontal ? rect.left : rect.top;
+  return { start: rectStart + border * scale, scale };
+}
+
+/**
+ * Returns the position of the anchor in the content of the scroller, in the
+ * units of the scroll position.
+ */
 function getAnchorPosition(
   anchor: HTMLElement,
   scroller: Element,
   horizontal: boolean,
 ): AnchorPosition {
   const rect = anchor.getBoundingClientRect();
-  const size = horizontal ? rect.width : rect.height;
-  const offset = getElementOffset(anchor, scroller, horizontal);
-  // The offset starts at the border edge of the scroller, and the scroll range
-  // of the scroller starts at its padding edge. The offset in the document
-  // starts at the viewport, which has no border.
-  const isDocument = getViewport(scroller) !== scroller;
-  const border = horizontal ? scroller.clientLeft : scroller.clientTop;
-  const start = isDocument ? offset : offset - border;
-  return { start, end: start + size };
-}
-
-function hasOffsetSize(element: Element): element is HTMLElement {
-  return "offsetHeight" in element;
+  const rectStart = horizontal ? rect.left : rect.top;
+  const rectSize = horizontal ? rect.width : rect.height;
+  const view = getScrollerView(scroller, horizontal);
+  const viewport = getViewport(scroller) ?? scroller;
+  const scrollOffset = getScrollOffset(viewport, horizontal);
+  const start = scrollOffset + (rectStart - view.start) / view.scale;
+  return { start, end: start + rectSize / view.scale };
 }
 
 /**
@@ -505,25 +536,9 @@ function getRevealDistance(
   const start = horizontal ? rect.left : rect.top;
   const end = horizontal ? rect.right : rect.bottom;
   const clientSize = horizontal ? scroller.clientWidth : scroller.clientHeight;
-  let viewStart = 0;
-  let scale = 1;
-  // The view of the document is the viewport. The view of an element starts
-  // inside its border, and a CSS transform can scale its rectangle, as the
-  // scale transition of a popup does.
-  if (getViewport(scroller) === scroller) {
-    const scrollerRect = scroller.getBoundingClientRect();
-    const rectSize = horizontal ? scrollerRect.width : scrollerRect.height;
-    let offsetSize = 0;
-    if (hasOffsetSize(scroller)) {
-      offsetSize = horizontal ? scroller.offsetWidth : scroller.offsetHeight;
-    }
-    scale = (offsetSize && rectSize / offsetSize) || 1;
-    const border = horizontal ? scroller.clientLeft : scroller.clientTop;
-    const rectStart = horizontal ? scrollerRect.left : scrollerRect.top;
-    viewStart = rectStart + border * scale;
-  }
-  const viewEnd = viewStart + clientSize * scale;
-  const startDistance = start - viewStart;
+  const view = getScrollerView(scroller, horizontal);
+  const viewEnd = view.start + clientSize * view.scale;
+  const startDistance = start - view.start;
   const endDistance = end - viewEnd;
   // Rectangles are fractional, so the edges of the view have a tolerance of one
   // pixel.
@@ -531,10 +546,10 @@ function getRevealDistance(
   // The rectangles are scaled, and the scroll distance is not. An anchor that
   // is larger than the view stops where it fills the view.
   if (startDistance < 0 && endDistance < 0) {
-    return Math.max(startDistance, endDistance) / scale;
+    return Math.max(startDistance, endDistance) / view.scale;
   }
   if (startDistance > 0 && endDistance > 0) {
-    return Math.min(startDistance, endDistance) / scale;
+    return Math.min(startDistance, endDistance) / view.scale;
   }
   return 0;
 }

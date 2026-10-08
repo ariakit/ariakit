@@ -42,6 +42,12 @@
   background: hsl(210deg 90% 90%);
 }
 
+/* The layout size of this popup rounds to 200px, which is more than its real
+   size. */
+.uneven-popover {
+  max-height: 199.6px;
+}
+
 .animated-popover {
   transform: scale(0.8);
   transform-origin: top left;
@@ -115,6 +121,31 @@
 .shelves-scroller [role="gridcell"] {
   overflow: hidden;
   white-space: nowrap;
+}
+
+.scaled-scroller {
+  width: 300px;
+  height: 200px;
+  overflow: auto;
+  border: 2px solid hsl(210deg 8% 70%);
+  transform: scale(0.8);
+  transform-origin: top left;
+}
+
+/* The rectangle of this list is larger than its layout box, so the margins keep
+   it clear of the sections around it. */
+.enlarged-scroller {
+  margin: 0 75px 50px 0;
+  transform: scale(1.25);
+}
+
+.scaled-scroller [role="option"] {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.scaled-scroller [data-active-item] {
+  background: hsl(210deg 90% 90%);
 }
 
 .async-scroller {

@@ -227,6 +227,12 @@ const fractionalItems = mixedSizeItems.map((item, index) => ({
   height: index < 12 ? 24.4 : 72.3,
 }));
 
+// The popup of this list has a size that is not a whole number of pixels.
+const unevenPopupItems = mixedSizeItems.map((item) => ({
+  ...item,
+  id: `uneven-popup-${item.id}`,
+}));
+
 const groupedMixedSizeItems = mixedSizeItems.map((item) => ({
   ...item,
   id: `grouped-${item.id}`,
@@ -296,6 +302,17 @@ const shelfRows = measuredGridRows.map((row, rowIndex) => ({
     label: `S ${cell.label}`,
   })),
 }));
+
+// The lists of these rows render all of them, and each row has a measured size.
+function getScaledItems(name: string) {
+  return Array.from({ length: 20 }, (_, index) => ({
+    id: `${name.toLowerCase()}-row-${index + 1}`,
+    label: `${name} row ${index + 1}`,
+  }));
+}
+
+const scaledItems = getScaledItems("Scaled");
+const enlargedItems = getScaledItems("Enlarged");
 
 const asyncItems = Array.from({ length: 100 }, (_, index) => ({
   id: `async-item-${index + 1}`,
@@ -513,12 +530,14 @@ function ItemRenderProbe({ onRender }: ItemRenderProbeProps) {
 interface MixedSizeRendererProps {
   label: string;
   items: typeof mixedSizeItems;
+  popoverClassName?: string;
   onItemRender?: () => void;
 }
 
 function MixedSizeRenderer({
   label,
   items,
+  popoverClassName = "mixed-size-popover",
   onItemRender,
 }: MixedSizeRendererProps) {
   return (
@@ -529,7 +548,7 @@ function MixedSizeRenderer({
       >
         <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
         <Ariakit.ComboboxSelect />
-        <Ariakit.ComboboxPopover gutter={4} className="mixed-size-popover">
+        <Ariakit.ComboboxPopover gutter={4} className={popoverClassName}>
           <ComboboxRenderer items={items} overscan={1}>
             {({ value, height, ...item }) => {
               const style = { ...item.style, height };
@@ -565,6 +584,7 @@ function MixedSizeRenderer({
 function SelectMixedSizeRenderer({
   label,
   items,
+  popoverClassName = "mixed-size-popover",
   onItemRender,
 }: MixedSizeRendererProps) {
   return (
@@ -572,7 +592,7 @@ function SelectMixedSizeRenderer({
       <Ariakit.SelectProvider defaultItems={items} defaultValue="Argentina">
         <Ariakit.SelectLabel>{label}</Ariakit.SelectLabel>
         <Ariakit.Select />
-        <Ariakit.SelectPopover gutter={4} className="mixed-size-popover">
+        <Ariakit.SelectPopover gutter={4} className={popoverClassName}>
           <SelectRenderer items={items} overscan={1}>
             {({ value, height, ...item }) => {
               const style = { ...item.style, height };
@@ -891,6 +911,58 @@ function ShelvesRenderer() {
                   </CompositeRenderer>
                 </div>
               )}
+            </CompositeRenderer>
+          </Ariakit.Composite>
+        </Ariakit.CompositeProvider>
+      </div>
+    </section>
+  );
+}
+
+interface ScaledListRendererProps {
+  name: string;
+  items: typeof scaledItems;
+  className?: string;
+}
+
+// The scroll element of this list is scaled, so its rectangle and the
+// rectangles of its rows do not have their layout sizes. The button changes the
+// size of the first row, which makes the renderer measure again.
+function ScaledListRenderer({
+  name,
+  items,
+  className = "scaled-scroller",
+}: ScaledListRendererProps) {
+  const [expanded, setExpanded] = useState(false);
+  const idPrefix = name.toLowerCase();
+
+  return (
+    <section>
+      <button type="button" onClick={() => setExpanded(true)}>
+        Expand the first {idPrefix} row
+      </button>
+      <div
+        aria-label={`${name} rows`}
+        className={className}
+        role="region"
+        tabIndex={0}
+      >
+        <Ariakit.CompositeProvider defaultActiveId={`${idPrefix}-row-11`}>
+          <Ariakit.Composite aria-label={`${name} row`} role="listbox">
+            <CompositeRenderer items={items} overscan={100}>
+              {({ label, ...item }) => {
+                const tall = expanded && item.id === `${idPrefix}-row-1`;
+                return (
+                  <Ariakit.CompositeItem
+                    key={item.id}
+                    {...item}
+                    role="option"
+                    style={{ ...item.style, height: tall ? 80 : 40 }}
+                  >
+                    {label}
+                  </Ariakit.CompositeItem>
+                );
+              }}
             </CompositeRenderer>
           </Ariakit.Composite>
         </Ariakit.CompositeProvider>
@@ -1372,6 +1444,19 @@ export default function Example() {
         ) : (
           <MixedSizeRenderer label="Crowded country" items={crowdedItems} />
         )}
+        {selectRenderer ? (
+          <SelectMixedSizeRenderer
+            label="Uneven popup country"
+            items={unevenPopupItems}
+            popoverClassName="mixed-size-popover uneven-popover"
+          />
+        ) : (
+          <MixedSizeRenderer
+            label="Uneven popup country"
+            items={unevenPopupItems}
+            popoverClassName="mixed-size-popover uneven-popover"
+          />
+        )}
         <FractionalRenderer />
         {selectRenderer ? (
           <SelectGroupedMixedSizeRenderer
@@ -1400,6 +1485,12 @@ export default function Example() {
         <LateItemsRenderer />
         <MeasuredGridRenderer />
         <ShelvesRenderer />
+        <ScaledListRenderer name="Scaled" items={scaledItems} />
+        <ScaledListRenderer
+          name="Enlarged"
+          items={enlargedItems}
+          className="scaled-scroller enlarged-scroller"
+        />
         <DuplicateValueRenderer />
         <AsyncRenderer />
         <NestedAutoRenderer />

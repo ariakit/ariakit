@@ -1,4 +1,21 @@
+import type { Locator } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+
+/**
+ * Sets the scroll position of the list around the row, so that the end of the
+ * row is the given distance below the view. The scroll has no wheel or touch
+ * event, as a scrollbar drag, so it does not release the active item.
+ */
+function scrollRowToEnd(row: Locator, distance: number) {
+  return row.evaluate((element, distance) => {
+    const list = element.closest<HTMLElement>("[role=region]");
+    if (!list) return Number.NaN;
+    if (!("offsetTop" in element)) return Number.NaN;
+    const bottom = element.offsetTop + element.offsetHeight;
+    list.scrollTop = bottom - list.clientHeight - distance;
+    return list.scrollTop;
+  }, distance);
+}
 
 const options = ["Lemon", "Lime", "Orange", "Apple", "Banana"] as const;
 
@@ -336,6 +353,28 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         // this ratio allows for less clipping than the ratio of the other
         // tests.
         await test.expect(latvia).toBeInViewport({ ratio: 0.95 });
+      });
+
+      // https://github.com/ariakit/ariakit/pull/7765#discussion_r4213071470
+      test("keeps a far typeahead move in view when the size of the popup is not a whole number of pixels", async ({
+        page,
+        q,
+      }) => {
+        const uganda = q.option("Uganda");
+
+        await q.combobox("Uneven popup country").click();
+        await test
+          .expect(q.listbox("Uneven popup country"))
+          .not.toHaveAttribute("data-placing");
+
+        // The rounded layout size of the popup is not its real size, but the
+        // popup is not scaled.
+        await page.keyboard.press("u");
+        await test.expect(uganda).toHaveAttribute("data-active-item");
+        // See the downward test above for these frames.
+        await flushFrames(page);
+
+        await test.expect(uganda).toBeInViewport({ ratio: 0.9 });
       });
 
       // https://github.com/ariakit/ariakit/issues/7628
@@ -799,6 +838,57 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await flushFrames(page);
 
     await test.expect(last).toBeInViewport({ ratio: 0.9 });
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7765#discussion_r4213071470
+  test("does not scroll to a partly visible active item in a scaled list when the renderer measures other items", async ({
+    q,
+  }) => {
+    const scroller = q.region("Scaled rows");
+    const row = q.option("Scaled row 11");
+    await test.expect(row).toHaveAttribute("data-active-item");
+
+    // The position leaves 4 px of the active item below the view. The scale
+    // makes the rectangle of the item 8 px smaller than its layout size, so an
+    // item size in the units of the rectangles would put the item in view.
+    const scrollTop = await scrollRowToEnd(row, 4);
+    test.expect(scrollTop).toBeGreaterThan(0);
+    const top = await row.evaluate((element) => getComputedStyle(element).top);
+
+    await q.button("Expand the first scaled row").click();
+    // The measured size of the first row moves the rows after it.
+    await test.expect(row).not.toHaveCSS("top", top);
+
+    // The active item was partly out of view, so the list must not scroll to
+    // it. A scroll would run in the same update as the move.
+    test
+      .expect(await scroller.evaluate((element) => element.scrollTop))
+      .toBe(scrollTop);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7765#discussion_r4213071470
+  test("keeps the active item in view in an enlarged list when the renderer measures other items", async ({
+    q,
+  }) => {
+    const scroller = q.region("Enlarged rows");
+    const row = q.option("Enlarged row 11");
+    await test.expect(row).toHaveAttribute("data-active-item");
+    await scroller.scrollIntoViewIfNeeded();
+
+    // The position puts the active item at the end edge of the view, fully in
+    // view.
+    const scrollTop = await scrollRowToEnd(row, 0);
+    test.expect(scrollTop).toBeGreaterThan(0);
+    await test.expect(row).toBeInViewport({ ratio: 0.9 });
+    const top = await row.evaluate((element) => getComputedStyle(element).top);
+
+    await q.button("Expand the first enlarged row").click();
+    // The measured size of the first row moves the rows after it.
+    await test.expect(row).not.toHaveCSS("top", top);
+
+    // The active item was fully in view, so the list scrolls to it again. The
+    // scroll runs in the same update as the move.
+    await test.expect(row).toBeInViewport({ ratio: 0.9 });
   });
 
   // https://github.com/ariakit/ariakit/pull/6832
