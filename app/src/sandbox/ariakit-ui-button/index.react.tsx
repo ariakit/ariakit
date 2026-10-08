@@ -122,6 +122,30 @@ export default function ButtonExamples() {
   return (
     <ExampleGrid>
       <Example
+        title="Native checkbox glider"
+        description="The selected cover and focus ring follow a native checkbox."
+        code={`
+          <label htmlFor="choice">Pin this item</label>
+          <ButtonGroup>
+            <input {...button.jsx()} id="choice" type="checkbox" />
+            <ButtonGlider />
+            <ButtonGlider $state="focus" />
+          </ButtonGroup>
+        `}
+      >
+        <label htmlFor="native-glider-choice">Pin this item</label>
+        <ButtonGroup>
+          <input
+            {...button.jsx()}
+            id="native-glider-choice"
+            type="checkbox"
+            tabIndex={0}
+          />
+          <ButtonGlider $animated={false} />
+          <ButtonGlider $state="focus" $animated={false} />
+        </ButtonGroup>
+      </Example>
+      <Example
         title="Default"
         description="The button is see-through at rest and shows the surface behind it. It paints only on hover and press."
         code={`

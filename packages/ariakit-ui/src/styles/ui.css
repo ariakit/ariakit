@@ -1341,8 +1341,11 @@ body > * {
   }
 }
 
+/* Separate alternatives keep the peer marker on both branches when composed
+   with peer-* variants, so Chrome can limit sibling invalidation. */
 @custom-variant ui-focus-visible {
-  &:is(:focus-visible, [data-focus-visible]) {
+  &:focus-visible,
+  &[data-focus-visible] {
     @slot;
   }
 }
@@ -1529,9 +1532,24 @@ body > * {
   }
 }
 
-/* A sibling on either side is selected, adjacent or not. A glider reads it
-   to stay out of sight while none of the controls it follows is selected.
-   The selected class is left out: a selected glider carries it itself. */
+/* Put the peer marker inside each alternative. Chrome otherwise invalidates
+   whole subtrees when a portal is removed beside a negated sibling selector.
+   A glider's anchors precede it and carry the peer marker. */
+@custom-variant ui-glider-selected {
+  :is(
+      :where(.peer):checked,
+      :where(.peer)[aria-checked="true"],
+      :where(.peer)[aria-selected="true"],
+      :where(.peer)[aria-current]:not([aria-current=""], [aria-current="false"])
+    )
+    ~ & {
+    @slot;
+  }
+}
+
+/* A sibling on either side is selected, adjacent or not. Unlike glider anchors,
+   these siblings need no peer marker. The selected class is left out so a
+   selected decoration does not make another decoration count as selected. */
 @custom-variant ui-sibling-selected {
   :is(
       :checked,
