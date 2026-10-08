@@ -171,3 +171,21 @@
 .clipped-popover .option {
   height: 41px;
 }
+
+.columns-scroller {
+  overflow: auto hidden;
+}
+
+.column {
+  height: 100%;
+  overflow: hidden auto;
+}
+
+.columns-scroller [role="gridcell"] {
+  width: 100%;
+}
+
+.columns-scroller > [role="grid"],
+.columns-scroller > [role="grid"] > div {
+  height: 100%;
+}

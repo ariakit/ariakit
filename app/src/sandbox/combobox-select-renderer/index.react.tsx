@@ -312,14 +312,21 @@ const shelfRows = measuredGridRows.map((row, rowIndex) => ({
 
 const measuredShelfRows = measuredGridRows.map((row) => ({
   ...row,
-  // TODO: Remove after https://github.com/ariakit/ariakit/issues/7805 is fixed.
-  style: { height: row.height },
   id: `measured-shelf-${row.id}`,
   items: row.items.map((cell) => ({
     ...cell,
-    style: { width: cell.width },
     id: `measured-shelf-${cell.id}`,
     label: `M ${cell.label}`,
+  })),
+}));
+
+const measuredColumnRows = measuredShelfRows.map((row) => ({
+  ...row,
+  id: `column-${row.id}`,
+  items: row.items.map((cell) => ({
+    ...cell,
+    id: `column-${cell.id}`,
+    label: cell.label.replace("M ", "C "),
   })),
 }));
 
@@ -483,13 +490,6 @@ function HorizontalRenderer({ clipped = false }) {
           className={clipped ? "popover clipped-popover" : "popover"}
         >
           <ComboboxRenderer
-            // TODO: Remove after https://github.com/ariakit/ariakit/issues/7805
-            // is fixed.
-            scrollElement={
-              clipped
-                ? (renderer) => renderer.closest<HTMLElement>(".popover")
-                : undefined
-            }
             orientation="horizontal"
             items={clipped ? clippedHorizontalItems : horizontalItems}
             initialItems={clipped ? undefined : horizontalItems.length}
@@ -530,13 +530,6 @@ function SelectHorizontalRenderer({ clipped = false }) {
           className={clipped ? "popover clipped-popover" : "popover"}
         >
           <SelectRenderer
-            // TODO: Remove after https://github.com/ariakit/ariakit/issues/7805
-            // is fixed.
-            scrollElement={
-              clipped
-                ? (renderer) => renderer.closest<HTMLElement>(".popover")
-                : undefined
-            }
             orientation="horizontal"
             items={clipped ? clippedHorizontalItems : horizontalItems}
             initialItems={clipped ? undefined : horizontalItems.length}
@@ -912,16 +905,43 @@ function MeasuredGridRenderer() {
 // The default rows match their estimated size. The measured variant also moves
 // the rows when their renderer measures them.
 function ShelvesRenderer({ measured = false }) {
+  const [horizontal, setHorizontal] = useState(false);
   return (
     <section>
-      <div className="shelves-scroller">
-        <Ariakit.CompositeProvider>
+      {measured && (
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => setHorizontal(!horizontal)}
+        >
+          {horizontal ? "Use measured shelves" : "Use measured columns"}
+        </button>
+      )}
+      <div
+        className={
+          horizontal ? "shelves-scroller columns-scroller" : "shelves-scroller"
+        }
+      >
+        <Ariakit.CompositeProvider key={horizontal ? "columns" : "shelves"}>
           <Ariakit.Composite
-            aria-label={measured ? "Measured shelves" : "Shelves"}
+            aria-label={
+              horizontal
+                ? "Measured columns"
+                : measured
+                  ? "Measured shelves"
+                  : "Shelves"
+            }
             role="grid"
           >
             <CompositeRenderer
-              items={measured ? measuredShelfRows : shelfRows}
+              items={
+                horizontal
+                  ? measuredColumnRows
+                  : measured
+                    ? measuredShelfRows
+                    : shelfRows
+              }
+              orientation={horizontal ? "horizontal" : "vertical"}
               estimatedItemSize={measured ? undefined : shelfRowHeight}
               overscan={1}
             >
@@ -929,19 +949,25 @@ function ShelvesRenderer({ measured = false }) {
                 <div
                   key={row.id}
                   {...row}
-                  className="shelf"
-                  style={{ ...row.style, height }}
+                  className={horizontal ? "shelf column" : "shelf"}
+                  style={{
+                    ...row.style,
+                    [horizontal ? "width" : "height"]: height,
+                  }}
                 >
                   <CompositeRenderer
                     id={`${row.id}-cells`}
                     items={items}
-                    orientation="horizontal"
+                    orientation={horizontal ? "vertical" : "horizontal"}
                     overscan={1}
                     render={(props) => (
                       <Ariakit.CompositeRow
                         {...props}
                         role="row"
-                        style={{ ...props.style, height: "100%" }}
+                        style={{
+                          ...props.style,
+                          [horizontal ? "width" : "height"]: "100%",
+                        }}
                       />
                     )}
                   >
@@ -950,7 +976,10 @@ function ShelvesRenderer({ measured = false }) {
                         key={cell.id}
                         {...cell}
                         role="gridcell"
-                        style={{ ...cell.style, width }}
+                        style={{
+                          ...cell.style,
+                          [horizontal ? "height" : "width"]: width,
+                        }}
                       >
                         {label}
                       </Ariakit.CompositeItem>

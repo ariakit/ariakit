@@ -872,6 +872,41 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(last).toBeInViewport({ ratio: 0.9 });
   });
 
+  // https://github.com/ariakit/ariakit/issues/7805
+  test("keeps both axes in view when measured columns scroll their own cells", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Use measured columns").click();
+    await q.gridcell("C 1, 1").click();
+    await test.expect(q.gridcell("C 1, 1")).toBeFocused();
+    await page.keyboard.press("Control+End");
+    const last = q.gridcell("C 48, 48");
+    await test.expect(last).toBeFocused();
+    // The scroll frame renders more items and the next measurement frame moves
+    // them, so the first estimated position must not satisfy this check.
+    await flushFrames(page);
+    await test.expect(last).toBeInViewport({ ratio: 0.9 });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7805
+  test("corrects a measured grid on the hidden axis of its scroll container", async ({
+    page,
+    q,
+  }) => {
+    await page.addStyleTag({
+      content: ".measured-grid-scroller { overflow-x: hidden; }",
+    });
+    await q.gridcell("1, 1").click();
+    await page.keyboard.press("Control+End");
+    const last = q.gridcell("48, 48");
+    await test.expect(last).toBeFocused();
+    // The scroll frame renders more items and the next measurement frame moves
+    // them, so the first estimated position must not satisfy this check.
+    await flushFrames(page);
+    await test.expect(last).toBeInViewport({ ratio: 0.9 });
+  });
+
   // https://github.com/ariakit/ariakit/pull/7765#discussion_r4213071470
   test("does not scroll to a partly visible active item in a scaled list when the renderer measures other items", async ({
     q,
