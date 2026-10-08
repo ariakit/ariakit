@@ -162,3 +162,12 @@
   overflow: visible;
   position: relative;
 }
+
+/* The hidden vertical overflow must not prevent horizontal scroll detection. */
+.clipped-popover {
+  overflow-y: hidden;
+}
+
+.clipped-popover .option {
+  height: 41px;
+}
