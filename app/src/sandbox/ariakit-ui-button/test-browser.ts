@@ -12,6 +12,26 @@ import {
 import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/issues/7806
+  test("follows a native checkbox's checked state and keyboard focus", async ({
+    q,
+    page,
+  }) => {
+    const example = q.article("Native checkbox glider");
+    const checkbox = query(example).checkbox("Pin this item");
+    const selected = example.locator(".glider.selected");
+    const focus = example.locator(".glider.focus");
+    await test.expect(selected).toBeHidden();
+    await tabTo(page, checkbox);
+    await test.expect(focus).toHaveCSS("outline-style", "solid");
+    await checkbox.press("Space");
+    await test.expect(checkbox).toBeChecked();
+    await test.expect(selected).toBeVisible();
+    await checkbox.press("Space");
+    await test.expect(checkbox).not.toBeChecked();
+    await test.expect(selected).toBeHidden();
+  });
+
   // https://github.com/ariakit/ariakit/pull/7584
   test("keeps an initials avatar as far from the start edge as from the top", async ({
     q,

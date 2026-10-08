@@ -135,7 +135,7 @@ export const glider = cv({
         "[.control:has(~&)]:ui-selected:[--glider-selected:--glider-selected]",
         // With no control selected there is no anchor to land on, and the
         // glider would stay as a blank square at the group's start.
-        "not-ui-sibling-selected:hidden",
+        "not-ui-glider-selected:hidden",
       ],
     },
     /**

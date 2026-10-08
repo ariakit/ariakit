@@ -386,13 +386,16 @@ export const navGlider = cv({
           "[position-anchor:--glider-hover] ease-linear",
           "[--glider-guide:--disclosure-guide-hover]",
           "[&~.control,&~*_li>.control]:ui-hover:[--glider-hover:--glider-hover]",
+          // Keep :has() on the glider. Testing the nav instead makes Chrome
+          // invalidate every row when the pointer moves between two rows.
+          // https://github.com/ariakit/ariakit/issues/7806
           // The pointer is crossing the gap between two rows, so the glider
           // waits on the last one for the next instead of leaving at once.
-          "[.nav:hover:not(:has(:is(li>.control,.nav>.control):hover))>&]:delay-250",
+          "[.nav:hover>&:not(:has(~.control:hover,~*_li>.control:hover))]:delay-250",
           // With no row under the pointer the anchor is gone, and a glider
           // that stayed would fall to a point at the nav's start. It leaves
           // instead, after the delay above.
-          "[.nav:not(:has(:is(li>.control,.nav>.control):hover))>&]:hidden",
+          "[&:not(:has(~.control:hover,~*_li>.control:hover))]:hidden",
           // The glider sits behind the row it covers, so the row has to stop
           // painting its own surface or it hides the glider. A disclosure
           // button paints its hover as a gradient, which the second rule
