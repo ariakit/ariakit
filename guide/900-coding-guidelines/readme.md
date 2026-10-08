@@ -96,10 +96,8 @@ import {
   ComboboxItem,
   ComboboxItemValue,
 } from "@ariakit/react";
-
 // ✅ Good
 import * as Ariakit from "@ariakit/react";
-
 // ✅ Good
 import { Checkbox } from "@ariakit/react";
 ```
