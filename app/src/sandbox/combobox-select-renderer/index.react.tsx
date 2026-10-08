@@ -312,9 +312,12 @@ const shelfRows = measuredGridRows.map((row, rowIndex) => ({
 
 const measuredShelfRows = measuredGridRows.map((row) => ({
   ...row,
+  // TODO: Remove after https://github.com/ariakit/ariakit/issues/7805 is fixed.
+  style: { height: row.height },
   id: `measured-shelf-${row.id}`,
   items: row.items.map((cell) => ({
     ...cell,
+    style: { width: cell.width },
     id: `measured-shelf-${cell.id}`,
     label: `M ${cell.label}`,
   })),
@@ -480,6 +483,13 @@ function HorizontalRenderer({ clipped = false }) {
           className={clipped ? "popover clipped-popover" : "popover"}
         >
           <ComboboxRenderer
+            // TODO: Remove after https://github.com/ariakit/ariakit/issues/7805
+            // is fixed.
+            scrollElement={
+              clipped
+                ? (renderer) => renderer.closest<HTMLElement>(".popover")
+                : undefined
+            }
             orientation="horizontal"
             items={clipped ? clippedHorizontalItems : horizontalItems}
             initialItems={clipped ? undefined : horizontalItems.length}
@@ -520,6 +530,13 @@ function SelectHorizontalRenderer({ clipped = false }) {
           className={clipped ? "popover clipped-popover" : "popover"}
         >
           <SelectRenderer
+            // TODO: Remove after https://github.com/ariakit/ariakit/issues/7805
+            // is fixed.
+            scrollElement={
+              clipped
+                ? (renderer) => renderer.closest<HTMLElement>(".popover")
+                : undefined
+            }
             orientation="horizontal"
             items={clipped ? clippedHorizontalItems : horizontalItems}
             initialItems={clipped ? undefined : horizontalItems.length}
