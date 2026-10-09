@@ -523,6 +523,13 @@ function getAnchorPosition(
   return { start, end: start + rectSize / view.scale };
 }
 
+function getScrollTolerance(scroller: Element) {
+  const pixelRatio = getWindow(scroller).devicePixelRatio || 1;
+  // At reduced zoom, scroll positions round to device pixels larger than one
+  // CSS pixel. Keep that rounding from being treated as an item leaving view.
+  return Math.max(1, 1 / pixelRatio);
+}
+
 /**
  * Returns the distance to scroll the scroller so that the anchor is at the
  * nearest edge of its view. Returns 0 when the anchor is in view.
@@ -538,18 +545,18 @@ function getRevealDistance(
   const clientSize = horizontal ? scroller.clientWidth : scroller.clientHeight;
   const view = getScrollerView(scroller, horizontal);
   const viewEnd = view.start + clientSize * view.scale;
-  const startDistance = start - view.start;
-  const endDistance = end - viewEnd;
-  // Rectangles are fractional, so the edges of the view have a tolerance of one
-  // pixel.
-  if (startDistance >= -1 && endDistance <= 1) return 0;
-  // The rectangles are scaled, and the scroll distance is not. An anchor that
-  // is larger than the view stops where it fills the view.
+  // Compare the edges and their tolerance in scroll-position units, including
+  // when a CSS transform scales the rectangles.
+  const startDistance = (start - view.start) / view.scale;
+  const endDistance = (end - viewEnd) / view.scale;
+  const tolerance = getScrollTolerance(scroller);
+  if (startDistance >= -tolerance && endDistance <= tolerance) return 0;
+  // An anchor that is larger than the view stops where it fills the view.
   if (startDistance < 0 && endDistance < 0) {
-    return Math.max(startDistance, endDistance) / view.scale;
+    return Math.max(startDistance, endDistance);
   }
   if (startDistance > 0 && endDistance > 0) {
-    return Math.min(startDistance, endDistance) / view.scale;
+    return Math.min(startDistance, endDistance);
   }
   return 0;
 }
@@ -919,12 +926,11 @@ export function useCollectionRenderer<T extends Item = any>({
     const scrollSize = horizontal
       ? anchorScroller.clientWidth
       : anchorScroller.clientHeight;
-    // Positions and scroll positions are fractional, so the edges of the scroll
-    // element have a tolerance of one pixel.
+    const tolerance = getScrollTolerance(anchorScroller);
     const wasInViewAt = (scrollOffset: number) => {
       return (
-        previous.start >= scrollOffset - 1 &&
-        previous.end <= scrollOffset + scrollSize + 1
+        previous.start >= scrollOffset - tolerance &&
+        previous.end <= scrollOffset + scrollSize + tolerance
       );
     };
     // Only an anchor that was fully in view stays in view. A scroll to an
