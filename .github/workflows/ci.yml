@@ -31,6 +31,8 @@ jobs:
       plan: ${{ steps.plan.outputs.plan }}
     steps:
       - name: Checkout event history
+        id: event-history
+        background: true
         uses: actions/checkout@v7
         with:
           path: .visonaut-event
@@ -48,6 +50,9 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version-file: .visonaut-planner/package.json
+
+      - name: Wait for event history
+        wait: event-history
 
       - name: Plan CI
         id: plan

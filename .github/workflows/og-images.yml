@@ -33,19 +33,22 @@ jobs:
         with:
           filters: app...
 
+      - name: Run app dev server
+        id: dev-server
+        background: true
+        run: pnpm -F app run dev
+
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
         with:
           engines: chromium
           workspace: app
 
-      - name: Run app dev server
+      - name: Wait for app dev server
         shell: bash
-        # OG image generation renders the local app endpoint, so keep the dev
-        # server alive in the background and block until the API is responsive.
+        # Browser installation can finish before the app is ready.
         run: |
           set -euo pipefail
-          pnpm -F app run dev &
           echo "Waiting for dev server (http://localhost:4321)..."
           ready=0
           for i in {1..90}; do
@@ -64,6 +67,9 @@ jobs:
 
       - name: Generate OG images
         run: pnpm -F app run og-image-generate
+
+      - name: Stop app dev server
+        cancel: dev-server
 
       - name: Detect changes
         id: patch
