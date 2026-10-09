@@ -201,6 +201,8 @@ const mixedSizeItems = [
 const zoomedItems = mixedSizeItems.map((item) => ({
   ...item,
   id: `zoomed-${item.id}`,
+  // TODO: Remove after https://github.com/ariakit/ariakit/issues/7803 is fixed.
+  style: { height: item.height },
 }));
 
 // The tall items come first, so the sizes that the renderer measures near the
