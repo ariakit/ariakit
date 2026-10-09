@@ -45,19 +45,7 @@
     "solid-js": "^1.8"
   },
   "exports": {
-    "./as/as": "./src/as/as.tsx",
-    "./focus-trap/focus-trap": "./src/focus-trap/focus-trap.tsx",
-    "./focus-trap/focus-trap-region": "./src/focus-trap/focus-trap-region.tsx",
-    "./group/group": "./src/group/group.tsx",
-    "./group/group-label": "./src/group/group-label.tsx",
-    "./group/group-label-context": "./src/group/group-label-context.tsx",
-    "./heading/heading": "./src/heading/heading.tsx",
-    "./heading/heading-context": "./src/heading/heading-context.tsx",
-    "./heading/heading-level": "./src/heading/heading-level.tsx",
-    "./heading/utils": "./src/heading/utils.ts",
-    "./role/role": "./src/role/role.tsx",
-    "./separator/separator": "./src/separator/separator.tsx",
-    "./visually-hidden/visually-hidden": "./src/visually-hidden/visually-hidden.tsx",
+    ".": "./src/index.ts",
     "./package.json": "./package.json"
   }
 }
