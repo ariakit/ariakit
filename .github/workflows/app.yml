@@ -119,23 +119,24 @@ jobs:
         with:
           filters: app...
 
-      - name: Install Playwright
-        uses: ./.github/workflows/install-playwright
-        with:
-          engines: ${{ matrix.engine }}
-          workspace: app
+      - parallel:
+          - name: Install Playwright
+            uses: ./.github/workflows/install-playwright
+            with:
+              engines: ${{ matrix.engine }}
+              workspace: app
 
-      - name: Download app artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: app-build
-          path: app
+          - name: Download app artifact
+            uses: actions/download-artifact@v8
+            with:
+              name: app-build
+              path: app
 
-      - name: Download Next.js artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: nextjs-dist
-          path: nextjs/.open-next
+          - name: Download Next.js artifact
+            uses: actions/download-artifact@v8
+            with:
+              name: nextjs-dist
+              path: nextjs/.open-next
 
       - name: Test
         id: test
@@ -183,23 +184,24 @@ jobs:
             app...
             root
 
-      - name: Install Playwright
-        uses: ./.github/workflows/install-playwright
-        with:
-          engines: ${{ matrix.engines }}
-          workspace: app
+      - parallel:
+          - name: Install Playwright
+            uses: ./.github/workflows/install-playwright
+            with:
+              engines: ${{ matrix.engines }}
+              workspace: app
 
-      - name: Download app artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: app-build
-          path: app
+          - name: Download app artifact
+            uses: actions/download-artifact@v8
+            with:
+              name: app-build
+              path: app
 
-      - name: Download Next.js artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: nextjs-dist
-          path: nextjs/.open-next
+          - name: Download Next.js artifact
+            uses: actions/download-artifact@v8
+            with:
+              name: nextjs-dist
+              path: nextjs/.open-next
 
       - name: Test visual
         run: ${{ matrix.test }} --project ${{ matrix.projects }} --grep @visual --output test-results/test-visual
