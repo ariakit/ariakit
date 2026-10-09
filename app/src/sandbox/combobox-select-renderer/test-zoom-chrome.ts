@@ -27,9 +27,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
           await page.addStyleTag({
             content: `.mixed-size-popover { max-height: ${height}px; }`,
           });
-          await q.combobox("Country").click();
+          await q.combobox("Zoomed country").click();
           await test
-            .expect(q.listbox("Country"))
+            .expect(q.listbox("Zoomed country"))
             .not.toHaveAttribute("data-placing");
           // Placement ends before the renderer measures the initial window. Let
           // those measurements establish the estimate for the far move.

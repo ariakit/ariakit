@@ -198,6 +198,11 @@ const mixedSizeItems = [
   height: index >= 12 ? 72 : 24,
 }));
 
+const zoomedItems = mixedSizeItems.map((item) => ({
+  ...item,
+  id: `zoomed-${item.id}`,
+}));
+
 // The tall items come first, so the sizes that the renderer measures near the
 // start overestimate the offsets of the short items near the end. When the
 // renderer measures those short items, the content becomes much shorter.
@@ -1495,6 +1500,11 @@ export default function Example() {
           <SelectMixedSizeRenderer label="Country" items={mixedSizeItems} />
         ) : (
           <MixedSizeRenderer label="Country" items={mixedSizeItems} />
+        )}
+        {selectRenderer ? (
+          <SelectMixedSizeRenderer label="Zoomed country" items={zoomedItems} />
+        ) : (
+          <MixedSizeRenderer label="Zoomed country" items={zoomedItems} />
         )}
         {selectRenderer ? (
           <SelectMixedSizeRenderer
