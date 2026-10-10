@@ -1055,7 +1055,7 @@ export default function NavExamples() {
 
       <Example
         title="Sidebar"
-        description="A documentation sidebar. A cover follows the pointer, the current cover moves between sections on click, and a ring follows the keyboard."
+        description="A documentation sidebar. The current cover moves between sections on click, and a ring follows the keyboard."
         code={`
           <Frame render={<aside />} $p={2} $rounded="2xl" $lightnessOffset={0.5} $border>
             <NavButton render={<a />}>
