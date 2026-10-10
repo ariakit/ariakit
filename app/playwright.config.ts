@@ -90,7 +90,6 @@ export default defineConfig({
               workflowRunId: requiredEnv("GITHUB_RUN_ID"),
               workflowAttempt: Number(requiredEnv("GITHUB_RUN_ATTEMPT")),
               testedSha: requiredEnv("GITHUB_SHA"),
-              planDigest: requiredEnv("VISONAUT_PACKAGE_SHA256"),
             },
             shard: {
               key: visualShard,
@@ -98,7 +97,6 @@ export default defineConfig({
               sourceAttempt: Number(requiredEnv("GITHUB_RUN_ATTEMPT")),
             },
             discovery: {
-              executorDigest: requiredEnv("VISONAUT_PACKAGE_SHA256"),
               repositoryRoot: path.resolve(process.cwd(), ".."),
               expectedProjects: visualProjects,
               expectedInvocation: [
