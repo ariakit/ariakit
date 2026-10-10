@@ -36,6 +36,7 @@ import {
   useState,
 } from "react";
 import { flushSync } from "react-dom";
+import { subscribeScrollIntoView } from "./__scroll-into-view.ts";
 import { useCollectionContext } from "./collection-context.tsx";
 import type {
   CollectionStore,
@@ -868,6 +869,94 @@ export function useCollectionRenderer<T extends Item = any>({
     return null;
   });
 
+  // A smooth scroll targets the item's estimated position. Keep that explicit
+  // request until scrollend, when measurements may have moved the item away.
+  // https://github.com/ariakit/ariakit/issues/7767
+  const getScroller = useEvent(() => scrollerRef.current);
+  const scrollCleanupRef = useRef<(() => void) | undefined>(undefined);
+  const scrollIntoViewRef = useCallback(
+    (renderer: HTMLElement | null) => {
+      scrollCleanupRef.current?.();
+      if (!renderer) return;
+      if (itemSize != null) return;
+      let cancelScroll: (() => void) | undefined;
+      const unsubscribe = subscribeScrollIntoView(
+        renderer,
+        ({ element, isCurrent }) => {
+          cancelScroll?.();
+          const scroller = getScroller();
+          if (!scroller) return;
+          if (!renderer.contains(element)) return;
+          const view = getWindow(scroller);
+          const style = view.getComputedStyle(scroller);
+          if (style.scrollBehavior !== "smooth") return;
+          const distance = getRevealDistance(element, scroller, horizontal);
+          if (!distance) return;
+          const nearest = getScrollingElement(element.parentElement, {
+            axis: horizontal ? "x" : "y",
+            stopAt: scroller,
+          });
+          if (nearest !== scroller) return;
+          const offset = getScrollOffset(scroller, horizontal);
+          const range = horizontal
+            ? scroller.scrollWidth - scroller.clientWidth
+            : scroller.scrollHeight - scroller.clientHeight;
+          const reversed = horizontal && style.direction === "rtl";
+          const minimum = reversed ? -range : 0;
+          const maximum = reversed ? 0 : range;
+          const target = Math.max(
+            minimum,
+            Math.min(maximum, offset + distance),
+          );
+          // Native no-op scrolls have no scrollend event. Do not let such a
+          // request authorize a correction after a later, unrelated scroll.
+          if (target === offset) return;
+          const viewport = getViewport(scroller);
+          if (!viewport) return;
+          const cancel = () => {
+            viewport.removeEventListener("scrollend", onScrollEnd);
+            viewport.removeEventListener("wheel", cancel);
+            viewport.removeEventListener("touchmove", cancel);
+            viewport.removeEventListener("pointerdown", cancel);
+          };
+          const onScrollEnd = (event: Event) => {
+            const target =
+              viewport === scroller ? scroller : scroller.ownerDocument;
+            if (event.target !== target) return;
+            cancel();
+            if (!isCurrent()) return;
+            if (getScroller() !== scroller) return;
+            if (getAnchorElement() !== element) return;
+            const nearest = getScrollingElement(element.parentElement, {
+              axis: horizontal ? "x" : "y",
+              stopAt: scroller,
+            });
+            if (nearest !== scroller) return;
+            const distance = getRevealDistance(element, scroller, horizontal);
+            if (!distance) return;
+            scroller.scrollTo({
+              [horizontal ? "left" : "top"]:
+                getScrollOffset(scroller, horizontal) + distance,
+              behavior: "instant",
+            });
+            offsetsRef.current = getOffsets(renderer, scroller, horizontal);
+          };
+          viewport.addEventListener("scrollend", onScrollEnd);
+          viewport.addEventListener("wheel", cancel, { passive: true });
+          viewport.addEventListener("touchmove", cancel, { passive: true });
+          viewport.addEventListener("pointerdown", cancel, { passive: true });
+          cancelScroll = cancel;
+          return cancel;
+        },
+      );
+      scrollCleanupRef.current = () => {
+        cancelScroll?.();
+        unsubscribe();
+      };
+    },
+    [itemSize, getScroller, horizontal, getAnchorElement],
+  );
+
   // The anchor holds from the moment an item becomes the anchor until the user
   // scrolls. A scroll adjustment during the user's own scroll gesture would
   // compete with that gesture.
@@ -1340,7 +1429,7 @@ export function useCollectionRenderer<T extends Item = any>({
     id: baseId,
     ...props,
     style,
-    ref: useMergeRefs(ref, props.ref),
+    ref: useMergeRefs(ref, scrollIntoViewRef, props.ref),
   };
 
   return { ...props, children };

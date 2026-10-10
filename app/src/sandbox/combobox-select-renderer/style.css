@@ -42,6 +42,10 @@
   background: hsl(210deg 90% 90%);
 }
 
+.smooth-popover {
+  scroll-behavior: smooth;
+}
+
 /* The layout size of this popup rounds to 200px, which is more than its real
    size. */
 .uneven-popover {
