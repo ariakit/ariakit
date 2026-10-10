@@ -106,7 +106,7 @@
     "lucide-react": "1.52.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "solid-js": "1.9.15"
+    "solid-js": "1.9.16"
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*"
