@@ -48,6 +48,12 @@
   max-height: 199.6px;
 }
 
+.scaled-country-popover {
+  max-height: 199.6px;
+  transform: scale(0.9);
+  transform-origin: top left;
+}
+
 .animated-popover {
   transform: scale(0.8);
   transform-origin: top left;
