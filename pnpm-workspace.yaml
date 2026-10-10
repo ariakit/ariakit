@@ -39,6 +39,10 @@ overrides:
 
 patchedDependencies:
   "@changesets/apply-release-plan@8.1.1": patches/@changesets__apply-release-plan@8.1.1.patch
+  # Remove when OpenNext includes the manifest and Cache Components fixes.
+  # https://github.com/opennextjs/opennextjs-cloudflare/pull/1356
+  # https://github.com/opennextjs/opennextjs-cloudflare/pull/1318
+  "@opennextjs/cloudflare@1.20.9": patches/@opennextjs__cloudflare@1.20.9.patch
 
 peerDependencyRules:
   allowedVersions:

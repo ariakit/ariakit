@@ -1,0 +1,395 @@
+diff --git a/dist/cli/build/bundle-server.js b/dist/cli/build/bundle-server.js
+index b1f6f0d775447e070e725b4e5290055f25520355..c1eb116a3b6c503b959d08a3d47420dd643bc266 100644
+--- a/dist/cli/build/bundle-server.js
++++ b/dist/cli/build/bundle-server.js
+@@ -10,6 +10,7 @@ import { getOpenNextConfig } from "../../api/config.js";
+ import { normalizePath } from "../utils/normalize-path.js";
+ import { patchVercelOgLibrary } from "./patches/ast/patch-vercel-og-library.js";
+ import { patchWebpackRuntime } from "./patches/ast/webpack-runtime.js";
++import { cacheComponentsSchedulerModule, patchCacheComponents, usesCacheComponents } from "./patches/plugins/cache-components.js";
+ import { inlineDynamicRequires } from "./patches/plugins/dynamic-requires.js";
+ import { inlineFindDir } from "./patches/plugins/find-dir.js";
+ import { patchInstrumentation } from "./patches/plugins/instrumentation.js";
+@@ -60,7 +61,13 @@ export async function bundleServer(buildOpts, projectOpts) {
+     const openNextServerBundle = path.join(outputPath, packagePath, `handler.mjs`);
+     const updater = new ContentUpdater(buildOpts);
+     const result = await build({
+-        entryPoints: [openNextServer],
++        ...(usesCacheComponents(nextConfig) && !buildHelper.compareSemver(buildOpts.nextVersion, "<", "16.2.11")
++            ? { stdin: {
++                contents: `import "${cacheComponentsSchedulerModule}"; export { handler } from ${JSON.stringify(openNextServer)};`,
++                resolveDir: buildOpts.appPath,
++                sourcefile: "cache-components-server-entry.mjs",
++            } }
++            : { entryPoints: [openNextServer] }),
+         bundle: true,
+         outfile: openNextServerBundle,
+         format: "esm",
+@@ -89,6 +96,7 @@ export async function bundleServer(buildOpts, projectOpts) {
+             fixRequire(updater),
+             handleOptionalDependencies(optionalDependencies),
+             patchInstrumentation(updater, buildOpts),
++            patchCacheComponents(updater, buildOpts, nextConfig),
+             patchPagesRouterContext(buildOpts),
+             inlineFindDir(updater, buildOpts),
+             inlineLoadManifest(updater, buildOpts),
+diff --git a/dist/cli/build/patches/plugins/cache-components.js b/dist/cli/build/patches/plugins/cache-components.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..5f427dba43a289444ef8a4b718a6b4cc67f10f90
+--- /dev/null
++++ b/dist/cli/build/patches/plugins/cache-components.js
+@@ -0,0 +1,114 @@
++// Replace Node-specific timer ordering only in the Cloudflare output.
++// https://github.com/opennextjs/opennextjs-cloudflare/pull/1318
++import path from "node:path";
++import { compareSemver } from "@opennextjs/aws/build/helper.js";
++import { patchCode } from "@opennextjs/aws/build/patch/astCodePatcher.js";
++import { getCrossPlatformPathRegex } from "@opennextjs/aws/utils/regex.js";
++function usesCacheComponents(nextConfig) {
++  return Boolean(nextConfig.cacheComponents ?? nextConfig.experimental?.cacheComponents ?? nextConfig.experimental?.dynamicIO);
++}
++const cacheComponentsSchedulerModule = "__opennext_cache_components_scheduler";
++const atomicTimerGroupErrorPattern = /Cannot schedule more timers into a group that already executed/;
++const cacheComponentsSchedulerFileFilter = getCrossPlatformPathRegex(
++  String.raw`/(?:next/dist/compiled/next-server/app-page(?:-turbo)?(?:-experimental)?\.runtime\.prod|\.next/server/chunks/.+)\.js$`,
++  { escape: false }
++);
++function patchCacheComponents(updater, buildOpts, nextConfig) {
++  if (!usesCacheComponents(nextConfig) || compareSemver(buildOpts.nextVersion, "<", "16.2.11")) {
++    return {
++      name: "patch-cache-components",
++      setup() {
++      }
++    };
++  }
++  const schedulerPath = path.join(buildOpts.outputDir, "cloudflare-templates/cache-components-scheduler.js");
++  // Fail the build if a Next update changes the code that this patch targets.
++  let applied = false;
++  updater.updateContent("cache-components-scheduler", [
++    {
++      filter: cacheComponentsSchedulerFileFilter,
++      contentFilter: atomicTimerGroupErrorPattern,
++      callback: async ({ contents, path: runtimePath }) => {
++        applied = true;
++        return patchCacheComponentsScheduler(contents, runtimePath);
++      }
++    }
++  ]);
++  return {
++    name: "patch-cache-components",
++    setup(build) {
++      build.onResolve({ filter: new RegExp(`^${cacheComponentsSchedulerModule}$`) }, () => ({
++        path: schedulerPath
++      }));
++      build.onEnd((result) => {
++        if (result.errors.length > 0) {
++          return;
++        }
++        if (!applied) {
++          throw new Error("The Cache Components scheduler patch matched nothing");
++        }
++      });
++    }
++  };
++}
++function patchCacheComponentsScheduler(contents, runtimePath) {
++  const patchedScheduler = patchCode(contents, runInSequentialTasksRule);
++  if (patchedScheduler === contents) {
++    throw new Error(`Failed to patch the Cache Components scheduler in ${runtimePath}`);
++  }
++  const patchedContents = patchCode(patchedScheduler, disableAtomicTimerGroupRule);
++  if (atomicTimerGroupErrorPattern.test(patchedContents)) {
++    throw new Error(`Failed to patch the Cache Components scheduler in ${runtimePath}`);
++  }
++  return patchedContents;
++}
++const runInSequentialTasksRule = `
++rule:
++  pattern:
++    selector: function_declaration
++    context: "function $FUNCTION($$$ARGS) { $$$BODY }"
++  all:
++    - has:
++        regex: DANGEROUSLY_runPendingImmediatesAfterCurrentTask
++        stopBy: end
++    - any:
++        - has:
++            regex: '["'']_idleStart["'']\\s*in'
++            stopBy: end
++        - has:
++            regex: createAtomicTimerGroup
++            stopBy: end
++fix: |-
++  function $FUNCTION(first, ...rest) {
++    return require("${cacheComponentsSchedulerModule}").runInSequentialTasks(first, ...rest);
++  }
++`;
++const disableAtomicTimerGroupRule = `
++rule:
++  pattern:
++    selector: function_declaration
++    context: "function $FUNCTION($$$ARGS) { $$$BODY }"
++  all:
++    - has:
++        regex: '["'']_idleStart["'']\\s*in'
++        stopBy: end
++    - has:
++        regex: Cannot schedule more timers into a group that already executed
++        stopBy: end
++    - has:
++        regex: '\\bsetTimeout\\s*\\('
++        stopBy: end
++fix: |-
++  function $FUNCTION() {
++    throw new Error("OpenNext replaced this incompatible Cache Components timer group");
++  }
++`;
++export {
++  cacheComponentsSchedulerFileFilter,
++  cacheComponentsSchedulerModule,
++  disableAtomicTimerGroupRule,
++  patchCacheComponents,
++  patchCacheComponentsScheduler,
++  runInSequentialTasksRule,
++  usesCacheComponents
++};
+diff --git a/dist/cli/build/patches/plugins/load-manifest.js b/dist/cli/build/patches/plugins/load-manifest.js
+index b0616a9a1a2729c3bc1cf03dd88edde8afa09d08..78de2b802e6aa702d4fdf40da219489ac7abe1d8 100644
+--- a/dist/cli/build/patches/plugins/load-manifest.js
++++ b/dist/cli/build/patches/plugins/load-manifest.js
+@@ -31,7 +31,7 @@ async function getLoadManifestRule(buildOpts) {
+     const { outputDir } = buildOpts;
+     const baseDir = join(outputDir, "server-functions/default", getPackagePath(buildOpts));
+     const dotNextDir = join(baseDir, ".next");
+-    const manifests = await glob(join(dotNextDir, "**/{*-manifest,required-server-files,prefetch-hints}.json"), {
++    const manifests = await glob(join(dotNextDir, "**/{*-manifest,required-server-files,prefetch-hints,preview-props}.json"), {
+         windowsPathsNoEscape: true,
+     });
+     const returnManifests = (await Promise.all(manifests.map(async (manifest) => `
+diff --git a/dist/cli/build/patches/plugins/module-loading.js b/dist/cli/build/patches/plugins/module-loading.js
+index d72a3f4c99b6b6dcf087262f9f0433b8c58fa436..b069c6a7f3136f5825a32b76b6231c1023ff5ab4 100644
+--- a/dist/cli/build/patches/plugins/module-loading.js
++++ b/dist/cli/build/patches/plugins/module-loading.js
+@@ -17,15 +17,15 @@ rule:
+       field: name
+       regex: ^getModuleLoadingSignal$
+   has:
+-    pattern: $SIGNAL = new $CACHE_SIGNAL.CacheSignal()
++    pattern: $SIGNAL = new $CACHE_SIGNAL.CacheSignal($$$ARGS)
+     stopBy: end
+ fix: |-
+   {
+     const requestStore = globalThis.__openNextAls?.getStore();
+     if (requestStore) {
+-      return requestStore.moduleLoadingSignal ??= new $CACHE_SIGNAL.CacheSignal();
++      return requestStore.moduleLoadingSignal ??= new $CACHE_SIGNAL.CacheSignal($$$ARGS);
+     }
+-    return $SIGNAL ??= new $CACHE_SIGNAL.CacheSignal();
++    return $SIGNAL ??= new $CACHE_SIGNAL.CacheSignal($$$ARGS);
+   }
+ `;
+ export const patchModuleLoadingSignal = {
+diff --git a/dist/cli/templates/cache-components-scheduler.js b/dist/cli/templates/cache-components-scheduler.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..fbae3ef32d213ebaffc7a884c46e838aab48c659
+--- /dev/null
++++ b/dist/cli/templates/cache-components-scheduler.js
+@@ -0,0 +1,198 @@
++// Workerd maps nextTick to microtasks, so Next can advance before React flushes.
++// Wait for this request's immediates before each render stage.
++// https://github.com/opennextjs/opennextjs-cloudflare/pull/1318
++import { AsyncLocalStorage } from "node:async_hooks";
++import { setImmediate as timersPromisesSetImmediate } from "node:timers/promises";
++import { promisify } from "node:util";
++const runStorage = new AsyncLocalStorage();
++const REQUEST_CONTEXT = /* @__PURE__ */ Symbol.for("__cloudflare-context__");
++function createRequestScope() {
++  return { unattributed: 0, stagedTail: Promise.resolve() };
++}
++// React can resume promises created before a staged run; count those per request.
++const scopes = /* @__PURE__ */ new WeakMap();
++const isolateScope = createRequestScope();
++function currentScope() {
++  const context = globalThis[REQUEST_CONTEXT];
++  if (typeof context !== "object" || context === null) {
++    return isolateScope;
++  }
++  let scope = scopes.get(context);
++  if (!scope) {
++    scope = createRequestScope();
++    scopes.set(context, scope);
++  }
++  return scope;
++}
++// Fail instead of advancing over pending work or waiting without a bound.
++const MAX_SETTLE_HOPS = 1000;
++const COUNTED = /* @__PURE__ */ Symbol.for("__opennext.cache-components.countedSetImmediate");
++let scheduleMacrotask;
++// Preserve the native promise API before Next replaces node:timers/promises.
++const scheduleMacrotaskPromisified = timersPromisesSetImmediate;
++function install() {
++  const current = globalThis.setImmediate;
++  if (scheduleMacrotask && current[COUNTED]) {
++    return scheduleMacrotask;
++  }
++  const previousSetImmediate = globalThis.setImmediate;
++  const previousClearImmediate = globalThis.clearImmediate;
++  const releaseByImmediate = /* @__PURE__ */ new WeakMap();
++  const previousPromisifiedSetImmediate = previousSetImmediate[promisify.custom] ?? scheduleMacrotaskPromisified;
++  const countCurrentWork = () => {
++    const run = runStorage.getStore();
++    const owner = run ?? currentScope();
++    if (owner === isolateScope) return;
++    let released = false;
++    if (run) {
++      run.pending++;
++    } else {
++      owner.unattributed++;
++    }
++    return () => {
++      if (released) return;
++      released = true;
++      if (run) {
++        run.pending--;
++      } else {
++        owner.unattributed--;
++      }
++    };
++  };
++  const countedSetImmediate = (callback, ...args) => {
++    const release = countCurrentWork();
++    try {
++      const immediate = previousSetImmediate(() => {
++        release?.();
++        callback(...args);
++      });
++      if (release && typeof immediate === "object" && immediate !== null) {
++        releaseByImmediate.set(immediate, release);
++      }
++      return immediate;
++    } catch (error) {
++      release?.();
++      throw error;
++    }
++  };
++  Object.defineProperty(countedSetImmediate, COUNTED, { value: true });
++  if (previousPromisifiedSetImmediate) {
++    const countedSetImmediatePromise = (value, options) => {
++      const release = countCurrentWork();
++      try {
++        const pending = previousPromisifiedSetImmediate(value, options);
++        if (!release) {
++          return pending;
++        }
++        return pending.then(
++          (result) => {
++            release();
++            return result;
++          },
++          (error) => {
++            release();
++            throw error;
++          }
++        );
++      } catch (error) {
++        release?.();
++        throw error;
++      }
++    };
++    Object.defineProperty(countedSetImmediate, promisify.custom, {
++      value: countedSetImmediatePromise
++    });
++  }
++  const countedClearImmediate = (immediate) => {
++    previousClearImmediate(immediate);
++    if (typeof immediate === "object" && immediate !== null) {
++      releaseByImmediate.get(immediate)?.();
++    }
++  };
++  globalThis.setImmediate = countedSetImmediate;
++  globalThis.clearImmediate = countedClearImmediate;
++  // The scheduler must not count its own checks as pending work.
++  scheduleMacrotask = previousSetImmediate;
++  return scheduleMacrotask;
++}
++function ignore() {
++}
++// React captures setImmediate during module evaluation. Install before it loads.
++install();
++function runInSequentialTasks(first, ...rest) {
++  const hop = install();
++  const scope = currentScope();
++  const run = { pending: 0, scope };
++  const previousRun = scope.stagedTail;
++  let releaseRun;
++  scope.stagedTail = new Promise((resolve) => releaseRun = resolve);
++  return new Promise((resolve, reject) => {
++    let result;
++    let stage = 0;
++    let hops = 0;
++    let finished = false;
++    const fail = (error) => {
++      if (finished) return;
++      finished = true;
++      releaseRun();
++      reject(error);
++    };
++    const complete = () => {
++      if (finished) return;
++      finished = true;
++      releaseRun();
++      resolve(result);
++    };
++    const schedule = (callback) => {
++      try {
++        hop(callback);
++      } catch (error) {
++        fail(error);
++      }
++    };
++    const settleThen = (next) => {
++      schedule(() => {
++        const pending = run.pending + run.scope.unattributed;
++        if (pending === 0) {
++          next();
++          return;
++        }
++        if (hops++ < MAX_SETTLE_HOPS) {
++          settleThen(next);
++          return;
++        }
++        fail(
++          new Error(
++            `Cache Components render did not settle: ${pending} immediate(s) still pending after ${MAX_SETTLE_HOPS} tasks.`
++          )
++        );
++      });
++    };
++    const enterStage = () => {
++      try {
++        runStorage.run(run, () => {
++          if (stage === 0) {
++            result = first();
++            const thenable = result;
++            if (thenable && typeof thenable.then === "function") {
++              thenable.then(ignore, ignore);
++            }
++          } else {
++            rest[stage - 1]();
++          }
++        });
++      } catch (error) {
++        fail(error);
++        return;
++      }
++      stage++;
++      hops = 0;
++      settleThen(stage > rest.length ? complete : enterStage);
++    };
++    // Serialize render groups within one request; other requests stay independent.
++    void previousRun.then(() => schedule(enterStage));
++  });
++}
++export {
++  runInSequentialTasks
++};

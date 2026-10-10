@@ -10,6 +10,10 @@ const config: NextConfig = {
   // https://github.com/ariakit/ariakit/issues/5147.
   cacheComponents: true,
 
+  // Preserve the existing Cache Components behavior during this upgrade.
+  // https://nextjs.org/docs/app/guides/adopting-partial-prefetching
+  partialPrefetching: false,
+
   // Pin the Turbopack root to the monorepo root (the parent of this workspace).
   // Otherwise Next.js walks up the tree collecting every workspace/lockfile and
   // picks the outermost one as the root. In a git worktree nested under the
