@@ -269,6 +269,19 @@ const mixedSizeGroups = Array.from(
   },
 );
 
+const scaledCountryItems = mixedSizeItems.map((item) => ({
+  ...item,
+  id: `scaled-${item.id}`,
+}));
+const scaledCountryGroups = mixedSizeGroups.map((group) => ({
+  ...group,
+  id: `scaled-${group.id}`,
+  items: group.items.map((item) => ({
+    ...item,
+    id: `scaled-${item.id}`,
+  })),
+}));
+
 // The popup of this list has a scale transition, so it is smaller than its
 // layout size while the renderer measures the first items.
 const animatedGroups = mixedSizeGroups.map((group) => ({
@@ -705,6 +718,7 @@ interface GroupedMixedSizeRendererProps {
   label: string;
   groups: typeof mixedSizeGroups;
   animated?: boolean;
+  popoverClassName?: string;
 }
 
 function getGroupedPopoverClassName(animated = false) {
@@ -716,6 +730,7 @@ function GroupedMixedSizeRenderer({
   label,
   groups,
   animated,
+  popoverClassName = getGroupedPopoverClassName(animated),
 }: GroupedMixedSizeRendererProps) {
   return (
     <section>
@@ -725,10 +740,7 @@ function GroupedMixedSizeRenderer({
       >
         <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
         <Ariakit.ComboboxSelect />
-        <Ariakit.ComboboxPopover
-          gutter={4}
-          className={getGroupedPopoverClassName(animated)}
-        >
+        <Ariakit.ComboboxPopover gutter={4} className={popoverClassName}>
           <ComboboxRenderer items={groups} overscan={1}>
             {({ label, ...group }) => (
               <ComboboxRenderer
@@ -765,6 +777,7 @@ function SelectGroupedMixedSizeRenderer({
   label,
   groups,
   animated,
+  popoverClassName = getGroupedPopoverClassName(animated),
 }: GroupedMixedSizeRendererProps) {
   return (
     <section>
@@ -774,10 +787,7 @@ function SelectGroupedMixedSizeRenderer({
       >
         <Ariakit.SelectLabel>{label}</Ariakit.SelectLabel>
         <Ariakit.Select />
-        <Ariakit.SelectPopover
-          gutter={4}
-          className={getGroupedPopoverClassName(animated)}
-        >
+        <Ariakit.SelectPopover gutter={4} className={popoverClassName}>
           <SelectRenderer items={groups} overscan={1}>
             {({ label, ...group }) => (
               <SelectRenderer
@@ -1486,6 +1496,30 @@ function InheritedTargetRenderer() {
   );
 }
 
+function ScaledCountries() {
+  const selectRenderer = useContext(RendererModeContext);
+  const Renderer = selectRenderer ? SelectMixedSizeRenderer : MixedSizeRenderer;
+  const GroupedCountryRenderer = selectRenderer
+    ? SelectGroupedMixedSizeRenderer
+    : GroupedMixedSizeRenderer;
+  const popoverClassName = "mixed-size-popover scaled-country-popover";
+
+  return (
+    <>
+      <Renderer
+        label="Scaled country"
+        items={scaledCountryItems}
+        popoverClassName={popoverClassName}
+      />
+      <GroupedCountryRenderer
+        label="Scaled grouped country"
+        groups={scaledCountryGroups}
+        popoverClassName={popoverClassName}
+      />
+    </>
+  );
+}
+
 export default function Example() {
   const [selectRenderer, setSelectRenderer] = useState(false);
 
@@ -1569,6 +1603,7 @@ export default function Example() {
             animated
           />
         )}
+        <ScaledCountries />
         <LateItemsRenderer />
         <MeasuredGridRenderer />
         <ShelvesRenderer />
