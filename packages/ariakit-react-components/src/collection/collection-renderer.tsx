@@ -192,6 +192,31 @@ function getItem<T extends Item = any>(
   return { value: item } as unknown as RawItemProps<T>;
 }
 
+/**
+ * Returns the border-box layout size without CSS transforms or integer
+ * rounding.
+ */
+function getElementSize(element: HTMLElement, horizontal: boolean) {
+  if (!element.getClientRects().length) return 0;
+  const style = getWindow(element).getComputedStyle(element);
+  const size = Number.parseFloat(horizontal ? style.width : style.height);
+  if (!Number.isFinite(size)) {
+    return horizontal ? element.offsetWidth : element.offsetHeight;
+  }
+  if (style.boxSizing === "border-box") {
+    return size;
+  }
+  const start = horizontal ? "Left" : "Top";
+  const end = horizontal ? "Right" : "Bottom";
+  return (
+    size +
+    Number.parseFloat(style[`padding${start}`]) +
+    Number.parseFloat(style[`padding${end}`]) +
+    Number.parseFloat(style[`border${start}Width`]) +
+    Number.parseFloat(style[`border${end}Width`])
+  );
+}
+
 function getItemSize(
   item: Item,
   horizontal: boolean,
@@ -231,7 +256,7 @@ function getItemSize(
   const element =
     fallbackElement !== false ? itemObject.element || fallbackElement : null;
   if (element?.isConnected) {
-    return element.getBoundingClientRect()[prop];
+    return getElementSize(element, horizontal);
   }
   // The nested items run along the cross axis, so the item's extent along the
   // measured axis is the largest child extent rather than the sum.
@@ -444,7 +469,8 @@ function getElementOffset(
   const scrollerRect = scroller.getBoundingClientRect();
   const scrollerOffset = horizontal ? scrollerRect.left : scrollerRect.top;
   const scrollOffset = getScrollOffset(scroller, horizontal);
-  return elementOffset - scrollerOffset + scrollOffset;
+  const { scale } = getScrollerView(scroller, horizontal);
+  return (elementOffset - scrollerOffset) / scale + scrollOffset;
 }
 
 function getOffsets(
@@ -488,16 +514,13 @@ function getScrollerView(scroller: Element, horizontal: boolean) {
   }
   const rect = scroller.getBoundingClientRect();
   const rectSize = horizontal ? rect.width : rect.height;
-  let offsetSize = 0;
+  let layoutSize = 0;
   if (hasOffsetSize(scroller)) {
-    offsetSize = horizontal ? scroller.offsetWidth : scroller.offsetHeight;
+    layoutSize = getElementSize(scroller, horizontal);
   }
-  let scale = 1;
-  // The layout size is a whole number, so a difference of less than one pixel
-  // is its rounding, and not a scale.
-  if (offsetSize && Math.abs(rectSize - offsetSize) >= 1) {
-    scale = rectSize / offsetSize || 1;
-  }
+  // offsetHeight and offsetWidth round fractional layout sizes, which makes
+  // their ratio drift from the scale of a transformed scroll element.
+  const scale = layoutSize ? rectSize / layoutSize || 1 : 1;
   // The view of an element starts inside its border.
   const border = horizontal ? scroller.clientLeft : scroller.clientTop;
   const rectStart = horizontal ? rect.left : rect.top;
@@ -527,7 +550,8 @@ function getScrollTolerance(scroller: Element) {
   const pixelRatio = getWindow(scroller).devicePixelRatio || 1;
   // At reduced zoom, scroll positions round to device pixels larger than one
   // CSS pixel. Keep that rounding from being treated as an item leaving view.
-  return Math.max(1, 1 / pixelRatio);
+  // Scale conversions also add floating-point error at the tolerance boundary.
+  return Math.max(1, 1 / pixelRatio) + 0.01;
 }
 
 /**

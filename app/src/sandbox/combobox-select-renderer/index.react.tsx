@@ -269,12 +269,9 @@ const mixedSizeGroups = Array.from(
   },
 );
 
-// TODO: Remove the known-height workaround after the fix is released.
-// https://github.com/ariakit/ariakit/issues/7777
 const scaledCountryItems = mixedSizeItems.map((item) => ({
   ...item,
   id: `scaled-${item.id}`,
-  style: { height: item.height },
 }));
 const scaledCountryGroups = mixedSizeGroups.map((group) => ({
   ...group,
@@ -282,7 +279,6 @@ const scaledCountryGroups = mixedSizeGroups.map((group) => ({
   items: group.items.map((item) => ({
     ...item,
     id: `scaled-${item.id}`,
-    style: { height: item.height },
   })),
 }));
 
