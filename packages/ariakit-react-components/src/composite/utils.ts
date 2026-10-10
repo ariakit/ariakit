@@ -8,6 +8,7 @@ import {
   isVisible,
 } from "@ariakit/utils";
 import { useCallback, useRef } from "react";
+import { prepareScrollIntoView } from "../collection/__scroll-into-view.ts";
 import { getTreeActiveElement } from "../focusable/__utils.ts";
 import type { CompositeStore, CompositeStoreState } from "./composite-store.ts";
 
@@ -221,10 +222,12 @@ function presentItem({
     return item.element;
   };
   let removeFocusListeners: (() => void) | undefined;
+  let cancelScroll: (() => void) | undefined;
   let unsubscribe: (() => void) | undefined;
   const cancel = () => {
     done = true;
     removeFocusListeners?.();
+    cancelScroll?.();
     unsubscribe?.();
   };
   let consumed = false;
@@ -237,6 +240,7 @@ function presentItem({
   // caller already cancelled has handed its request on, so settling it
   // afterwards must not take it back.
   const settle = () => {
+    cancelScroll?.();
     if (done) return;
     consume();
     return cancel();
@@ -330,6 +334,17 @@ function presentItem({
     if (!focusWithheld) {
       settle();
     }
+    const scrollTarget = element;
+    cancelScroll?.();
+    cancelScroll = prepareScrollIntoView({
+      element: scrollTarget,
+      isCurrent: () => {
+        const state = store.getState();
+        if (abandonedByState(state)) return false;
+        if (state.activeId !== resolvedId) return false;
+        return stillOwnsFocus(scrollTarget);
+      },
+    });
     if (scrollIntoView) {
       scrollIntoView(element);
       return;
