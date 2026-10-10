@@ -139,6 +139,10 @@
   transform: scale(1.25);
 }
 
+.zoomed-scroller {
+  transform: none;
+}
+
 .scaled-scroller [role="option"] {
   box-sizing: border-box;
   width: 100%;

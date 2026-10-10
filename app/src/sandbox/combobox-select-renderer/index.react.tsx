@@ -198,6 +198,11 @@ const mixedSizeItems = [
   height: index >= 12 ? 72 : 24,
 }));
 
+const zoomedItems = mixedSizeItems.map((item) => ({
+  ...item,
+  id: `zoomed-${item.id}`,
+}));
+
 // The tall items come first, so the sizes that the renderer measures near the
 // start overestimate the offsets of the short items near the end. When the
 // renderer measures those short items, the content becomes much shorter.
@@ -340,6 +345,7 @@ function getScaledItems(name: string) {
 
 const scaledItems = getScaledItems("Scaled");
 const enlargedItems = getScaledItems("Enlarged");
+const zoomedRows = getScaledItems("Zoomed");
 
 const asyncItems = Array.from({ length: 100 }, (_, index) => ({
   id: `async-item-${index + 1}`,
@@ -1497,6 +1503,11 @@ export default function Example() {
           <MixedSizeRenderer label="Country" items={mixedSizeItems} />
         )}
         {selectRenderer ? (
+          <SelectMixedSizeRenderer label="Zoomed country" items={zoomedItems} />
+        ) : (
+          <MixedSizeRenderer label="Zoomed country" items={zoomedItems} />
+        )}
+        {selectRenderer ? (
           <SelectMixedSizeRenderer
             label="Tall first country"
             items={tallFirstItems}
@@ -1572,6 +1583,11 @@ export default function Example() {
           name="Enlarged"
           items={enlargedItems}
           className="scaled-scroller enlarged-scroller"
+        />
+        <ScaledListRenderer
+          name="Zoomed"
+          items={zoomedRows}
+          className="scaled-scroller zoomed-scroller"
         />
         <DuplicateValueRenderer />
         <AsyncRenderer />
