@@ -1,5 +1,9 @@
 # @ariakit/store
 
+## 0.1.11
+
+- Updated dependencies: `@ariakit/utils@0.2.2`
+
 ## 0.1.10
 
 - Updated dependencies: `@ariakit/utils@0.2.1`
