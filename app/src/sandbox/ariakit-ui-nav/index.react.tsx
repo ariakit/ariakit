@@ -327,7 +327,7 @@ function DocumentationSidebar() {
       </NavButton>
       <Nav
         aria-label="Documentation sections"
-        glider={[{ $state: "hover" }, {}, { $state: "focus" }]}
+        glider={[{}, { $state: "focus" }]}
       >
         {sections.map((section) => (
           <NavDisclosure
@@ -818,7 +818,7 @@ export default function NavExamples() {
         title="Nested disclosures"
         description="A section inside a section, both closed at first. The current link deep inside opens every section around it, and its cover shows there."
         code={`
-          <Nav $slotSize={5} glider={[…]}>
+          <Nav $slotSize={5} glider>
             <NavDisclosure button={<NavDisclosureButton icon={<Blocks />}>Components</NavDisclosureButton>}>
               <NavList>
                 <NavLink>Overview</NavLink>
@@ -837,7 +837,7 @@ export default function NavExamples() {
         <Nav
           $slotSize={5}
           aria-label="Nested disclosures"
-          glider={[{ $state: "hover" }, {}]}
+          glider
           className="w-full"
         >
           <NavDisclosure

@@ -481,12 +481,10 @@ export const disclosureContent = cv({
       // follows; a nested content with a guide of its own comes later in tree
       // order and wins. The names inherit from a content around this one, so
       // they are reset first.
-      "[--disclosure-guide-selected:--x] [--disclosure-guide-hover:--x]",
-      "[--disclosure-guide-focus:--x]",
+      "[--disclosure-guide-selected:--x] [--disclosure-guide-focus:--x]",
       "ui-has-selected-row:[--disclosure-guide-selected:--disclosure-guide-selected]",
-      "has-[li>.control:hover]:[--disclosure-guide-hover:--disclosure-guide-hover]",
       "has-[li>.control:is(:focus-visible,[data-focus-visible])]:[--disclosure-guide-focus:--disclosure-guide-focus]",
-      "before:[anchor-name:var(--disclosure-guide-selected),var(--disclosure-guide-hover),var(--disclosure-guide-focus)]",
+      "before:[anchor-name:var(--disclosure-guide-selected),var(--disclosure-guide-focus)]",
       // The line runs along the body: from the body offset under the button
       // to the content's end.
       "before:absolute before:top-(--disclosure-body-offset) before:bottom-0 before:ak-layer",

@@ -1438,7 +1438,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Current link gliders"
-        description="Gliders follow the current, the hovered and the focused link. The slash next to the current link hides."
+        description="Gliders follow the current and the focused link. The slash next to the current link hides."
         code={`
           <ButtonGroup $border>
             <Button render={<a />}>Overview</Button>
@@ -1447,7 +1447,6 @@ export default function ButtonExamples() {
             <ButtonSeparator $kind="slash" />
             <Button render={<a />}>Settings</Button>
             <ButtonGlider />
-            <ButtonGlider $state="hover" />
             <ButtonGlider $state="focus" />
           </ButtonGroup>
         `}
@@ -1461,7 +1460,6 @@ export default function ButtonExamples() {
           <ButtonSeparator $kind="slash" />
           <Button render={<a href="#settings" />}>Settings</Button>
           <ButtonGlider />
-          <ButtonGlider $state="hover" />
           <ButtonGlider $state="focus" />
         </ButtonGroup>
       </Example>

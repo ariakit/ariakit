@@ -51,7 +51,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7806
-  test("recalculates the changing rows when the hover glider moves", async ({
+  test("recalculates the changing rows when the pointer moves between rows", async ({
     page,
     q,
   }) => {
@@ -59,16 +59,11 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const links = query(nav);
     const first = links.link("Installation").first();
     const second = links.link("Quickstart").first();
-    const hover = nav.locator(".glider:not(.selected):not(.focus)");
     await first.scrollIntoViewIfNeeded();
     await first.hover();
-    await test.expect(hover).toBeVisible();
     // Finish the initial hover frame before measuring the next pointer move.
     await flushFrames(page);
-    const count = await largestStyleRecalculation(page, async () => {
-      await second.hover();
-      await test.expect(hover).toBeVisible();
-    });
+    const count = await largestStyleRecalculation(page, () => second.hover());
     test.expect(count).toBeGreaterThan(0);
     test.expect(count).toBeLessThan((await nav.locator("*").count()) / 2);
   });
