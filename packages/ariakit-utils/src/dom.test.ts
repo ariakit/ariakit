@@ -350,3 +350,51 @@ test("setSelectionRange skips input types that do not support text selection", (
 
   expect(() => setSelectionRange(color, 0, 1)).not.toThrow();
 });
+
+function appendScrollContainers() {
+  const outer = document.createElement("div");
+  const inner = document.createElement("div");
+  const item = document.createElement("button");
+  outer.style.overflowY = "auto";
+  inner.style.overflowX = "auto";
+  inner.style.overflowY = "hidden";
+  outer.append(inner);
+  inner.append(item);
+  document.body.append(outer);
+  // happy-dom has no layout. The browser sandbox covers these real dimensions;
+  // here they isolate axis selection and the traversal boundary.
+  for (const element of [outer, inner]) {
+    Object.defineProperties(element, {
+      clientHeight: { value: 50 },
+      scrollHeight: { value: 100 },
+      clientWidth: { value: 50 },
+      scrollWidth: { value: 100 },
+    });
+  }
+  return { outer, inner, item };
+}
+
+// https://github.com/ariakit/ariakit/issues/7805
+test("getScrollingElement checks horizontal overflow when vertical overflow is hidden", () => {
+  const { inner, item } = appendScrollContainers();
+  expect(getScrollingElement(item)).toBe(inner);
+});
+
+// https://github.com/ariakit/ariakit/issues/7805
+test("getScrollingElement selects the nearest container on the requested axis", () => {
+  const { outer, inner, item } = appendScrollContainers();
+  expect(getScrollingElement(item, { axis: "x" })).toBe(inner);
+  expect(getScrollingElement(item, { axis: "y" })).toBe(outer);
+});
+
+// https://github.com/ariakit/ariakit/issues/7805
+test("getScrollingElement stops at the selected ancestor even when its overflow is hidden", () => {
+  const { inner, item } = appendScrollContainers();
+  expect(getScrollingElement(item, { axis: "y", stopAt: inner })).toBe(inner);
+});
+
+// https://github.com/ariakit/ariakit/issues/7805
+test("getScrollingElement finds a nearer container before its boundary", () => {
+  const { outer, inner, item } = appendScrollContainers();
+  expect(getScrollingElement(item, { axis: "x", stopAt: outer })).toBe(inner);
+});

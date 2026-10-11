@@ -122,6 +122,28 @@ export default function ButtonExamples() {
   return (
     <ExampleGrid>
       <Example
+        title="Native checkbox glider"
+        description="The cover follows the checked state of a native checkbox."
+        code={`
+          <label htmlFor="choice">Pin this item</label>
+          <ButtonGroup>
+            <input {...button.jsx()} id="choice" type="checkbox" />
+            <ButtonGlider />
+          </ButtonGroup>
+        `}
+      >
+        <label htmlFor="native-glider-choice">Pin this item</label>
+        <ButtonGroup>
+          <input
+            {...button.jsx()}
+            id="native-glider-choice"
+            type="checkbox"
+            tabIndex={0}
+          />
+          <ButtonGlider $animated={false} />
+        </ButtonGroup>
+      </Example>
+      <Example
         title="Default"
         description="The button is see-through at rest and shows the surface behind it. It paints only on hover and press."
         code={`
@@ -1350,14 +1372,13 @@ export default function ButtonExamples() {
 
       <Example
         title="Horizontal bar glider"
-        description="A bar marks the checked item while the focus glider keeps its full outline at the group edge."
+        description="A bar marks the checked item while the focused item keeps its full outline at the group edge."
         code={`
         <ak.RadioProvider defaultValue="small">
           <ak.RadioGroup render={<ButtonGroup $border $borderType="ring" $p={0} />}>
             <ak.Radio value="small" render={<Button />}>Small</ak.Radio>
             <ak.Radio value="large" render={<Button />}>Large</ak.Radio>
             <ButtonGlider $kind="bar" $animated={false} />
-            <ButtonGlider $state="focus" $animated={false} />
           </ak.RadioGroup>
         </ak.RadioProvider>
       `}
@@ -1374,7 +1395,6 @@ export default function ButtonExamples() {
               Large
             </ak.Radio>
             <ButtonGlider $kind="bar" $animated={false} />
-            <ButtonGlider $state="focus" $animated={false} />
           </ak.RadioGroup>
         </ak.RadioProvider>
       </Example>
@@ -1413,8 +1433,8 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
-        title="Current link gliders"
-        description="Gliders follow the current, the hovered and the focused link. The slash next to the current link hides."
+        title="Current link glider"
+        description="A glider follows the current link. The slash next to the current link hides."
         code={`
           <ButtonGroup $border>
             <Button render={<a />}>Overview</Button>
@@ -1423,8 +1443,6 @@ export default function ButtonExamples() {
             <ButtonSeparator $kind="slash" />
             <Button render={<a />}>Settings</Button>
             <ButtonGlider />
-            <ButtonGlider $state="hover" />
-            <ButtonGlider $state="focus" />
           </ButtonGroup>
         `}
       >
@@ -1437,8 +1455,6 @@ export default function ButtonExamples() {
           <ButtonSeparator $kind="slash" />
           <Button render={<a href="#settings" />}>Settings</Button>
           <ButtonGlider />
-          <ButtonGlider $state="hover" />
-          <ButtonGlider $state="focus" />
         </ButtonGroup>
       </Example>
 
@@ -1484,7 +1500,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Glider"
-        description="A selected glider sits under Week in a row of joined buttons."
+        description="A glider sits under Week in a row of joined buttons."
         code={`
           <div
             role="group"
@@ -1505,7 +1521,7 @@ export default function ButtonExamples() {
             <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
               Month
             </ak.Button>
-            <div {...buttonGlider.jsx({ $state: "selected", $layer: "blue" })} />
+            <div {...buttonGlider.jsx({ $layer: "blue" })} />
           </div>
         `}
       >
@@ -1532,9 +1548,7 @@ export default function ButtonExamples() {
             <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
               Month
             </ak.Button>
-            <div
-              {...buttonGlider.jsx({ $state: "selected", $layer: "blue" })}
-            />
+            <div {...buttonGlider.jsx({ $layer: "blue" })} />
           </div>
         </div>
       </Example>

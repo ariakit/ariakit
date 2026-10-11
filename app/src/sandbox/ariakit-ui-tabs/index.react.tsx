@@ -751,7 +751,7 @@ export default function TabsExamples() {
 
       <Example
         title="Folder glider"
-        description="A folder glider stands in for the selected tab. Hover and focus gliders follow the pointer and the keyboard, and arrow keys move focus without selecting."
+        description="A folder glider stands in for the selected tab. Arrow keys move focus without selecting."
         stretch
         code={`
           <Tabs selectOnMove={false}>
@@ -765,9 +765,7 @@ export default function TabsExamples() {
               <Tab>
                 <TabLabel>Usage</TabLabel>
               </Tab>
-              <TabGlider $kind="folder" $state="selected" />
-              <TabGlider $kind="folder" $state="hover" />
-              <TabGlider $kind="folder" $state="focus" />
+              <TabGlider $kind="folder" />
             </TabList>
             <TabPanels>
               <TabPanel single>
@@ -788,9 +786,7 @@ export default function TabsExamples() {
             <Tab id="glider-usage">
               <TabLabel>Usage</TabLabel>
             </Tab>
-            <TabGlider $kind="folder" $state="selected" />
-            <TabGlider $kind="folder" $state="hover" />
-            <TabGlider $kind="folder" $state="focus" />
+            <TabGlider $kind="folder" />
           </TabList>
           <TabPanels>
             <TabPanel single>
@@ -802,7 +798,7 @@ export default function TabsExamples() {
 
       <Example
         title="Flat glider"
-        description="A pill glider travels behind flat tabs. The focus glider covers it with the brand pill."
+        description="A pill glider travels behind flat tabs. A focused tab paints its brand box over it."
         stretch
         code={`
           <Tabs selectOnMove={false}>
@@ -816,8 +812,7 @@ export default function TabsExamples() {
               <Tab $kind="flat">
                 <TabLabel>Usage</TabLabel>
               </Tab>
-              <TabGlider $kind="flat" $state="selected" />
-              <TabGlider $kind="flat" $state="focus" />
+              <TabGlider $kind="flat" />
             </TabList>
             <TabPanels>
               <TabPanel single>
@@ -838,8 +833,7 @@ export default function TabsExamples() {
             <Tab $kind="flat" id="flat-glider-usage">
               <TabLabel>Usage</TabLabel>
             </Tab>
-            <TabGlider $kind="flat" $state="selected" />
-            <TabGlider $kind="flat" $state="focus" />
+            <TabGlider $kind="flat" />
           </TabList>
           <TabPanels>
             <TabPanel single>
@@ -912,7 +906,7 @@ export default function TabsExamples() {
               <Tab $kind="flat">
                 <TabLabel>Usage</TabLabel>
               </Tab>
-              <TabGlider $kind="flat" $state="selected" />
+              <TabGlider $kind="flat" />
             </TabList>
             <TabPanels>
               <TabPanel single>
@@ -936,7 +930,7 @@ export default function TabsExamples() {
             <Tab $kind="flat" id="borderless-flat-glider-usage">
               <TabLabel>Usage</TabLabel>
             </Tab>
-            <TabGlider $kind="flat" $state="selected" />
+            <TabGlider $kind="flat" />
           </TabList>
           <TabPanels>
             <TabPanel single>

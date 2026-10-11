@@ -12,6 +12,20 @@ import {
 import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/issues/7806
+  test("follows a native checkbox's checked state", async ({ q }) => {
+    const example = q.article("Native checkbox glider");
+    const checkbox = query(example).checkbox("Pin this item");
+    const glider = example.locator(".glider");
+    await test.expect(glider).toBeHidden();
+    await checkbox.press("Space");
+    await test.expect(checkbox).toBeChecked();
+    await test.expect(glider).toBeVisible();
+    await checkbox.press("Space");
+    await test.expect(checkbox).not.toBeChecked();
+    await test.expect(glider).toBeHidden();
+  });
+
   // https://github.com/ariakit/ariakit/pull/7584
   test("keeps an initials avatar as far from the start edge as from the top", async ({
     q,
@@ -40,12 +54,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   }) => {
     const group = q.radiogroup("Horizontal size");
     const small = query(group).radio("Small");
+    const large = query(group).radio("Large");
     await small.click();
     await page.keyboard.press("ArrowRight");
-    await test.expect(query(group).radio("Large")).toBeFocused();
-    await test
-      .expect(group.locator(".glider.focus"))
-      .toHaveCSS("outline-style", "solid");
+    await test.expect(large).toBeFocused();
+    await test.expect(large).toHaveCSS("outline-style", "solid");
     await test.expect(group).not.toHaveCSS("box-shadow", "none");
     await test.expect(group).toHaveCSS("clip-path", "none");
   });
@@ -143,28 +156,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         colorScheme,
         item: "ariakit-ui-button/segmented-control-click",
       });
-    });
-  });
-
-  test("moves the hover glider over a hovered link @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Current link gliders");
-      const activity = query(box).link("Activity");
-      // A synthesized pointer move that scrolls the group into view does not
-      // apply :hover in WebKit until the pointer enters another element, so the
-      // pointer passes over Settings on its way to Activity.
-      await activity.scrollIntoViewIfNeeded();
-      await query(box).link("Settings").hover();
-      await hoverOver(activity);
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-button/current-link-hover",
-        }),
-      );
     });
   });
 

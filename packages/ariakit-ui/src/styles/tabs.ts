@@ -17,10 +17,9 @@ export const tabs = cv({
     "tabs",
     // The strip runs under the panel's top corners, so the panel paints over
     // the strip, and the tabs and the gliders paint over the panel so that a
-    // selected tab covers the seam. The root keeps that stack to itself: the
-    // panel first, the hover glider second, a flat or bevel selected glider
-    // third, the focus glider fourth, a folder selected glider fifth, the
-    // tabs sixth, and a bar keeps the glider's own place above them all.
+    // selected tab covers the seam. The root keeps that stack to itself, by
+    // z-index: the panel at 1, a glider at 3, the tabs at 6, and a bar keeps
+    // the glider's own place above them all.
     "isolate",
     // A fixed bar follows scrolling tabs without Firefox's RTL inset error.
     // Clip at the root's outside edge, including its ring, without putting the
@@ -143,10 +142,9 @@ const tabBox = cx(
   "not-ui-selected:ui-focus-visible:ak-layer-brand",
   "ui-focus-visible:ak-layer-offset-0",
   "not-ui-selected:ui-focus-visible:bg-(--ak-layer)",
-  // A selected glider wipes the box it covers. The tab paints the brand box
-  // back over the cover for its focus, unless a focus glider follows and
-  // paints it instead.
-  "supports-anchor:not-has-[~.glider.focus]:ui-selected:ui-focus-visible:bg-(--ak-layer)!",
+  // A glider wipes the box it covers. The tab paints the brand box back over
+  // the cover for its focus.
+  "supports-anchor:ui-selected:ui-focus-visible:bg-(--ak-layer)!",
 );
 
 // A folder tab drops its bottom corners and merges into the panel below when
@@ -169,9 +167,9 @@ const tabFolder = cx(
   // through that padding and over the panel's edge, as far as the folder says
   // its own edge needs. Only the bottom padding grows, so the label keeps its
   // place, and the margin gives the room back so the row keeps its height. A
-  // working selected glider reaches instead of the tab.
+  // working glider reaches instead of the tab.
   "[--tab-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
-  "supports-anchor:has-[~.glider.selected]:[--tab-reach:0px]",
+  "supports-anchor:has-[~.glider]:[--tab-reach:0px]",
   "ui-selected:pb-[calc(var(--py)+var(--tab-reach))]",
   "ui-selected:-mb-(--tab-reach)",
   // An unselected tab has no edge of its own, hovered or not.
@@ -221,7 +219,7 @@ const tabFolder = cx(
 export const tab = cv({
   extend: [button, selected],
   class: [
-    // Sixth in the root's stack, over the panel and the gliders.
+    // At 6 in the root's stack, over the panel and the gliders.
     "z-6",
     // Only the selected tab paints at rest. The others keep their layer, which
     // their hover paint reads, and show the surface behind them.
@@ -307,9 +305,14 @@ export const tabSeparator = buttonSeparator;
 
 export const tabGlider = cv({
   extend: [buttonGlider],
-  // The glider's own duration-* has a vertical variant that sorts after this
-  // one and would otherwise win in a vertical strip.
-  class: "[&.glider-animated]:duration-(--duration-tabs)!",
+  class: [
+    // The glider's own duration-* has a vertical variant that sorts after this
+    // one and would otherwise win in a vertical strip.
+    "[&.glider-animated]:duration-(--duration-tabs)!",
+    // At 3 in the root's stack, over the panel and under the tabs. A bar keeps
+    // the glider's own place on top.
+    "z-3",
+  ],
   variants: {
     /**
      * Adds `folder` to the glider's `flat`, `bevel` and `bar`: the glider takes
@@ -324,23 +327,14 @@ export const tabGlider = cv({
         "[--folder-radius:var(--tabs-radius)]",
         tabStartCurve,
         tabSelectedEdge,
-        // Only the selected folder glider reaches over the seam, as far as the
-        // tab would. A hover or focus glider covers the tab.
+        // The folder glider reaches over the seam, as far as the tab would.
         "ui-selected:[--glider-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
-        // A selected folder glider sits above the focus glider, unlike a flat
-        // or bevel cover, so the focus pill slides under it while the edge
-        // below marks the focus. Fifth in the root's stack.
-        "ui-selected:z-5",
-        // The edge turns to the focus colour at once, as the tab's own does
-        // and as the curves do, so the glider's colour transition comes off
-        // its list.
-        "ui-selected:transition-[inset-inline-start,height,width,outline,display]",
-        // A selected folder glider marks keyboard focus on the tab it covers
-        // as the tab marks it on itself: the edge takes the focus colour and
-        // grows inward by the same extra width. The glider is sized from the
-        // tab's box and has no padding to give back, so only its edge moves,
-        // and the tab's own mark paints in the same place over it. The colour
-        // is the one the tab's focus reads, from the same utilities.
+        // A folder glider marks keyboard focus on the tab it covers as the
+        // tab marks it on itself: the edge takes the focus colour and grows
+        // inward by the same extra width. The glider is sized from the tab's
+        // box and has no padding to give back, so only its edge moves, and the
+        // tab's own mark paints in the same place over it. The colour is the
+        // one the tab's focus reads, from the same utilities.
         "ak-outline ak-outline-brand",
         "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:[--tab-focus-extra:max(1px,calc(2px-var(--ak-frame-border)-var(--ak-frame-ring)),round(up,calc((var(--ak-frame-border)+var(--ak-frame-ring))/2),1px))]",
         "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:border-t-[calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
@@ -351,116 +345,44 @@ export const tabGlider = cv({
         "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:[--folder-extra:var(--tab-focus-extra)]",
       ],
     },
-    $state: {
-      selected: [
-        // Third in the root's stack, over the panel and the hover glider and
-        // under the focus glider, which covers a flat or bevel cover as it
-        // covers the tab. A folder cover goes above the focus glider, and a
-        // bar keeps the glider's own place on top. Each state sets its own
-        // place because the glider's classes sort by value, not by state.
-        "z-3",
-      ],
-      focus: [
-        "z-4",
-        // A focus glider is the brand pill of the tab it covers rather than the
-        // ring the glider draws elsewhere: it paints the fill, and the covered
-        // tab, which keeps the brand layer for its label, paints no pill or box
-        // of its own. A folder's pill is a pseudo-element placed on its own; a
-        // flat tab has none, and giving it one would add a flex gap to the
-        // box. With no tab in focus there is no anchor, so the glider leaves
-        // rather than fall to the group's start.
-        "outline-none",
-        // Focus moves between tabs through a moment with no tab focused, and
-        // a glider that left the page then could not travel. So the pill is
-        // anchored to the active tab as well, which passes from one tab to
-        // the next in one step, and it stays in the page, unseen rather than
-        // taken out, while no tab has keyboard focus. Its box stays on the
-        // active tab, so it travels when focus moves, appears in place when
-        // focus enters the strip, and goes at once when focus leaves.
-        "[.control[data-active-item]:has(~&)]:[--glider-focus:--glider-focus]",
-        "not-peer-ui-focus-visible:invisible",
-        // The glider's travel stays on the list and its leaving comes off it:
-        // a hover glider waits to leave so the pointer can cross a gap, but
-        // focus leaves the strip in one move, and the pill goes with it.
-        "supports-anchor:transition-[inset-inline-start,height,width]",
-        "supports-anchor:[.control.ui-folder:has(~&)]:not-ui-selected:ui-focus-visible:after:bg-transparent!",
-        "supports-anchor:[.control:not(.ui-folder):has(~&)]:ui-focus-visible:bg-transparent!",
-        // The label's colour follows the glider on its way, rather than turn
-        // before it arrives. This list replaces the tab's own, so the press
-        // rides on it at its own duration (see $transition in active.ts).
-        "supports-anchor:[.control:has(~&)]:transition-[color,var(--active-transition)]",
-        "supports-anchor:[.control:has(~&)]:duration-[var(--duration-tabs),var(--active-duration)]",
-        "supports-anchor:[.control:has(~&)]:ease-tabs",
-        // A selected folder, or the folder cover standing in for it, sits
-        // above the glider, so the pill slides under it and the edge marks
-        // the focus. A flat or bevel cover sits below, so the pill covers it.
-      ],
-      hover: "z-2",
-    },
   },
   defaultVariants: {
     $kind: "folder",
-    // A selected cover stands in for the tab, so it lifts off the surface the
-    // selected tab reads, the root's. A hover cover lifts off the strip, as a
-    // hovered tab does, a focus cover is the brand pill a focused tab paints,
-    // and a bar carries its colour off the strip, so those keep the glider's
-    // layer.
+    // A cover stands in for the tab, so it lifts off the surface the selected
+    // tab reads, the root's. A bar carries its colour off the strip, so it
+    // keeps the glider's layer.
     $layer(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
-      if (variants.$state === "hover") return defaultValue;
-      if (variants.$state === "focus") return "brand";
       return "var(--tabs-layer)";
     },
     // The glider's own lifts arrive as the default value, and the tab scheme
-    // replaces them for the painted covers: a selected cover lifts as the tab
-    // it stands in for does, a folder with the lighten below and a flat or
-    // bevel pill with an offset of one and a half, a hovered tab lifts one step
-    // off the strip, and a focused tab paints the brand layer with no lift. A
-    // bar carries its colour another way, so it keeps the glider's values.
+    // replaces them for the painted covers: a cover lifts as the tab it stands
+    // in for does, a folder with the lighten below and a flat or bevel pill
+    // with an offset of one and a half. A bar carries its colour another way,
+    // so it keeps the glider's values.
     $lightnessOffset(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
-      if (variants.$state === "hover") return true;
-      if (variants.$state !== "selected") return false;
       if (variants.$kind === "folder") return false;
       return 1.5;
     },
-    // The focused tab's pill keeps its contrast with a brand surface behind the
-    // strip, and so does the cover that stands in for it.
-    $contrast(defaultValue, variants) {
-      if (variants.$state !== "focus") return defaultValue;
-      return defaultValue ?? true;
-    },
-    // A selected cover lifts as the tab it stands in for does: a folder
-    // lightens one step, with the panel, and a flat or bevel pill takes the
-    // offset above instead.
+    // A cover lifts as the tab it stands in for does: a folder lightens one
+    // step, with the panel, and a flat or bevel pill takes the offset above
+    // instead.
     $lighten(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
-      if (variants.$state !== "selected") return defaultValue;
       if (variants.$kind === "folder") return defaultValue ?? true;
       return false;
     },
-    // A selected folder glider takes the root's edge, as the tab does, and
-    // frame leaves the edge variants unset for it. The other kinds keep the
-    // glider's own ring, and a hover or focus glider has no edge to show.
+    // A folder glider takes the root's edge, as the tab does, and frame leaves
+    // the edge variants unset for it. The other kinds keep the glider's own
+    // ring.
     $border(defaultValue, variants) {
       if (variants.$kind !== "folder") return defaultValue;
-      if (variants.$state !== "selected") return defaultValue;
       return defaultValue ?? "inherit";
-    },
-    // A hover or focus glider is the pill a hovered or focused folder tab
-    // paints for itself, inset from the tab's box by the strip's inset. The
-    // frame takes the margin off its nested radius, so the corners stay
-    // concentric on their own. A selected glider covers the whole tab.
-    $m(defaultValue, variants) {
-      if (variants.$kind !== "folder") return defaultValue;
-      if (variants.$state === "selected") return defaultValue;
-      if (variants.$state === "none") return defaultValue;
-      return defaultValue ?? "var(--tab-inset)";
     },
   },
   refine({ variants, addClass }) {
     if (variants.$kind === "bar") return;
-    if (variants.$state !== "selected") return;
     // The cover owns the tab's edge, including an inherited ring.
     addClass("supports-anchor:[.control:has(~&)]:ui-selected:ring-transparent");
   },
@@ -513,8 +435,8 @@ export const tabList = cv({
     // inside the edge instead of over its whole box, cornered like the root's
     // inner corners.
     "ui-tabs-well",
-    // A hovered folder tab, and the glider covering one, paint a pill this far
-    // inside the tab's box: past the merge, then a fifth of the font size.
+    // A hovered or focused folder tab paints a pill this far inside its box:
+    // past the merge, then a fifth of the font size.
     "[--tab-inset:calc(0.2em+var(--tabs-merge))]",
     // A tab's end curve is painted one root radius past its box. This spacer
     // keeps the last one inside the scroll clip, whether the tabs fill the
@@ -564,7 +486,7 @@ export const tabList = cv({
 export const tabPanels = cv({
   extend: [frame],
   class: [
-    // First in the root's stack, over the strip's surface and under the tabs.
+    // At 1 in the root's stack, over the strip's surface and under the tabs.
     "relative z-1 overflow-clip",
     // The panel's top edge, border or ring, tucks under the strip by its width,
     // where the selected tab or the glider covers it, and the panel runs up
@@ -580,11 +502,11 @@ export const tabPanels = cv({
     // Each top corner squares while the strip's content continues past that
     // side, so a tab cut at the strip's edge meets a straight corner.
     "ui-tabs-round",
-    // The start corner animates only beside a selected glider, whose travel it
-    // follows. Without anchor support the glider is not shown.
+    // The start corner animates only beside a glider, whose travel it follows.
+    // Without anchor support the glider is not shown.
     "ease-tabs",
-    "supports-anchor:[.tabs:has(.glider.selected)_&]:transition-[border-radius]",
-    "supports-anchor:[.tabs:has(.glider.selected)_&]:duration-(--duration-tabs)",
+    "supports-anchor:[.tabs:has(.glider)_&]:transition-[border-radius]",
+    "supports-anchor:[.tabs:has(.glider)_&]:duration-(--duration-tabs)",
   ],
   defaultVariants: {
     // The panel lifts as the selected tab does, so the two read as one sheet.

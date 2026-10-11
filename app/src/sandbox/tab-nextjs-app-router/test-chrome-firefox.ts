@@ -66,6 +66,8 @@ withFramework(import.meta.dirname, async ({ id, test }) => {
   }) => {
     await page.goto(getNextjsUrl(page.url(), `/${id}/new`));
     await test.expect(q.tabpanel("New")).toBeVisible();
+    await page.reload();
+    await test.expect(q.tabpanel("New")).toBeVisible();
     await page.goto(getNextjsUrl(page.url(), `/${id}`));
     await test.expect(q.tabpanel("Hot")).toBeVisible();
     await page.goBack();

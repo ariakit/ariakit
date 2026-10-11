@@ -25,7 +25,7 @@
     "react-dom": "19.3.0"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "1.20.8",
+    "@opennextjs/cloudflare": "1.20.9",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "24.19.1",
     "@types/react": "19.3.0",
@@ -34,6 +34,6 @@
     "tailwindcss": "4.3.3",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
-    "wrangler": "4.147.0"
+    "wrangler": "4.148.0"
   }
 }

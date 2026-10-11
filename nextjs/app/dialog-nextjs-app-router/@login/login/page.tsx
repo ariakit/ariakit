@@ -21,7 +21,13 @@ export default function Page() {
           }}
         />
       }
-      autoFocusOnHide={false}
+      autoFocusOnHide={(element) => {
+        if (!element) {
+          const selector = 'a[href="/dialog-nextjs-app-router/login"]';
+          document.querySelector<HTMLElement>(selector)?.focus();
+        }
+        return true;
+      }}
       style={{
         inset: "50% auto auto 50%",
         padding: 24,

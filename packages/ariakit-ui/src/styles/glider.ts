@@ -7,7 +7,7 @@ import { hasLayerBackground } from "./layer.ts";
 // A flat, bevel or folder glider takes the box of the control it follows, so
 // the glider and everything the control paints for itself land on the same
 // rectangle. A cover may reach past the control's bottom edge by
-// --glider-reach; the selected folder glider uses it to meet the panel. A frame
+// --glider-reach; a tab's folder glider uses it to meet the panel. A frame
 // margin insets the cover on every side, and the frame already takes that
 // margin off the nested radius, so an inset cover stays concentric.
 export const gliderCover = cx(
@@ -17,9 +17,17 @@ export const gliderCover = cx(
   "h-[calc(anchor-size()+var(--glider-reach,0px)-var(--ak-frame-margin)*2)]",
 );
 
-export const glider = cv({
+// What every glider shares: how it is drawn, how it travels and the surface it
+// paints. It positions itself against the selected anchor, and each recipe that
+// extends it says which controls publish that anchor.
+export const gliderBase = cv({
   extend: [frame],
-  class: "glider absolute! -z-1 pointer-events-none not-supports-anchor:hidden",
+  class: [
+    "glider absolute! -z-1 pointer-events-none not-supports-anchor:hidden",
+    // The selected class makes ui-selected-* rules match the glider, so it
+    // can share them with the control it stands in for.
+    "[position-anchor:--glider-selected] selected",
+  ],
   variants: {
     /**
      * Sets how the glider is drawn. `flat` and `bevel` cover the control they
@@ -95,61 +103,16 @@ export const glider = cv({
       return { style: { "--glider-bar-offset": getSpacingValue(value) } };
     },
     /**
-     * Sets which control state the glider follows. A control publishes the
-     * matching anchor name only while it is in that state, so the glider lands
-     * on whichever control is hovered, focused, or selected right now.
-     */
-    $state: {
-      none: "",
-      hover: [
-        "[position-anchor:--glider-hover] ease-linear",
-        "[.control:has(~&)]:ui-hover:[--glider-hover:--glider-hover]",
-        // A selected glider covers the same box, and hovering the selected
-        // control must not change it, so the hover glider sits under the
-        // selected one. Both are below zero; this sorts after the base value.
-        "-z-2",
-        // The pointer is crossing the gap between two controls, so the glider
-        // waits on the last one for the next instead of leaving at once.
-        "in-[.glider-group:hover:not(:has(:hover))]:delay-250",
-        // With nothing under the pointer the anchor is gone, and a glider that
-        // stayed would fall to a point at the group's start. It leaves instead,
-        // after the delay above, and comes back in place on the next control.
-        "in-[.glider-group:not(:has(:hover))]:hidden",
-        // The glider sits behind the control it covers, so the control has to
-        // stop painting its own surface or it hides the glider. A control's
-        // own hover paint can carry more variants than this rule and outrank
-        // it (a tab's does), so the surface wipe is marked important.
-        "supports-anchor:[.control:has(~&)]:ui-hover:bg-transparent!",
-        "supports-anchor:[.control:has(~&)]:ui-hover:border-transparent",
-        "supports-anchor:[.control:has(~&)]:ui-hover:befter:hidden",
-      ],
-      focus: [
-        "[position-anchor:--glider-focus] focus",
-        "[.control:has(~&)]:ui-focus-visible:[--glider-focus:--glider-focus]",
-        "not-peer-ui-focus-visible:outline-none",
-        "supports-anchor:[.control:has(~&)]:ui-focus-visible:outline-none",
-        "ak-outline ak-outline-brand outline-2 outline-offset-1",
-      ],
-      selected: [
-        "[position-anchor:--glider-selected] selected",
-        "[.control:has(~&)]:ui-selected:[--glider-selected:--glider-selected]",
-        // With no control selected there is no anchor to land on, and the
-        // glider would stay as a blank square at the group's start.
-        "not-ui-sibling-selected:hidden",
-      ],
-    },
-    /**
      * Animates the glider as it travels between controls.
      */
     $animated: [
       "glider-animated",
-      // display is on the list so a leaving hover glider can wait out its
-      // delay first; the discrete behaviour is what lets display take part.
       // The insets are the longhands: WebKit passes over the inset-block and
-      // inset-inline shorthands in a transition list.
-      "transition-[left,inset-inline-start,border-color,height,width,outline,display]",
-      "[.vertical>&]:transition-[bottom,border-color,height,width,outline,display]",
-      "duration-100 transition-discrete",
+      // inset-inline shorthands in a transition list. display stays off the
+      // list, so the glider leaves at once when no control is selected.
+      "transition-[left,inset-inline-start,height,width]",
+      "[.vertical>&]:transition-[bottom,height,width]",
+      "duration-100",
       "[.vertical>&]:duration-50",
     ],
   },
@@ -161,7 +124,6 @@ export const glider = cv({
       }
       return defaultValue ?? "auto";
     },
-    $state: "selected",
     $animated: true,
     $p: "none",
     // A bar is a rule a couple of pixels thick. It has no room for a radius or
@@ -175,21 +137,16 @@ export const glider = cv({
       return defaultValue;
     },
     // A glider's lift counts from the group's surface, which is where a control
-    // in a glider group rests. A hover glider takes the one step a hovered
-    // control takes, and a selected glider one more. Controls that lift at rest
-    // pass that lift on to their gliders, or the hover glider paints the colour
-    // they already have.
+    // in a glider group rests. A glider takes one step more than a hovered
+    // control takes.
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
-      if (variants.$state === "hover") return true;
-      if (variants.$state !== "selected") return defaultValue;
-      // A selected bar carries its color through $invert and $contrast instead,
-      // so it must not also lift off the surface.
+      // A bar carries its color through $invert and $contrast instead, so it
+      // must not also lift off the surface.
       if (variants.$kind === "bar") return defaultValue;
       return 2;
     },
     $invert(defaultValue, variants) {
-      if (variants.$state !== "selected") return defaultValue;
       if (variants.$kind !== "bar") return defaultValue;
       return defaultValue ?? true;
     },
@@ -197,17 +154,12 @@ export const glider = cv({
       if (variants.$kind !== "bar") return defaultValue;
       return defaultValue ?? true;
     },
-    $borderType(defaultValue, variants) {
-      // Hover and focus feedback have no edge. The ring-* class must not be
-      // emitted for them, or it picks up a bordered group's inherited
-      // --border-width and draws a hairline beside the focus indicator. A
-      // selected glider keeps the ring-* so the adaptive high-contrast edge can
-      // use the group's width.
-      if (variants.$state === "selected") return defaultValue ?? "ring";
-      return defaultValue ?? "unset";
+    // The ring-* class lets the adaptive high-contrast edge use the group's
+    // width.
+    $borderType(defaultValue) {
+      return defaultValue ?? "ring";
     },
     $edgeWeight(defaultValue, variants) {
-      if (variants.$state !== "selected") return defaultValue;
       // $edgeRaw asks for the edge color exactly as given.
       if (variants.$edgeRaw) return defaultValue;
       return defaultValue ?? "adaptive";
@@ -224,34 +176,41 @@ export const glider = cv({
         "forced-colors:ak-frame-border-[length:max(1px,var(--border-width,1px))]",
       );
     }
+  },
+});
+
+// A glider that follows the controls of a glider group. It comes after them as
+// their sibling, which is where the rules below look for it.
+export const glider = cv({
+  extend: [gliderBase],
+  class: [
+    // A control takes the anchor name only while it is selected and a glider
+    // follows it, so the glider lands on whichever control is selected right
+    // now.
+    "[.control:has(~&)]:ui-selected:[anchor-name:--glider-selected]",
+    // With no control selected there is no anchor to land on, and the glider
+    // would stay as a blank square at the group's start.
+    "not-ui-glider-selected:hidden",
+  ],
+  refine({ variants, addClass }) {
     if (variants.$kind === "bar") return;
-    // Forced colors repaint transparent borders. A cover owns the edge, so
-    // remove the covered control's width as well as its border color.
-    if (variants.$state === "selected") {
-      addClass([
-        "supports-anchor:[.control:has(~&)]:ui-selected:bg-transparent",
-        "supports-anchor:[.control:has(~&)]:ui-selected:border-transparent",
-        "supports-anchor:[.control:has(~&)]:ui-selected:befter:hidden",
-        "supports-anchor:[.control:has(~&)]:ui-selected:forced-colors:ak-frame-border-0",
-      ]);
-    }
-    if (variants.$state === "hover") {
-      addClass(
-        "supports-anchor:[.control:has(~&)]:ui-hover:forced-colors:ak-frame-border-0",
-      );
-    }
+    // A cover takes over the control's surface. Forced colors repaint
+    // transparent borders, and the cover owns the edge, so remove the covered
+    // control's width as well as its border color.
+    addClass([
+      "supports-anchor:[.control:has(~&)]:ui-selected:bg-transparent",
+      "supports-anchor:[.control:has(~&)]:ui-selected:border-transparent",
+      "supports-anchor:[.control:has(~&)]:ui-selected:befter:hidden",
+      "supports-anchor:[.control:has(~&)]:ui-selected:forced-colors:ak-frame-border-0",
+    ]);
   },
 });
 
 export const gliderAnchor = cv({
+  // The marker a glider reads to find a selected control before it (see
+  // ui-glider-selected in ui.css). The glider's own rules give the selected
+  // control its anchor name.
   class: "peer",
-  style: {
-    // Every control carries all three names, but each one stays the dummy --x
-    // until the control enters that state and the glider's own rules swap the
-    // real name in. Only then can a glider anchor to it.
-    anchorName:
-      "var(--glider-hover,--x), var(--glider-focus,--x), var(--glider-selected,--x)",
-  },
 });
 
 export const gliderSeparator = controlSeparator;
@@ -263,7 +222,6 @@ export const gliderGroup = cv({
   class: "glider-group relative z-1 [--glider-padding:var(--ak-frame-padding)]",
   style: {
     anchorName: "--glider-frame",
-    anchorScope:
-      "--glider-frame, --glider-hover, --glider-focus, --glider-selected",
+    anchorScope: "--glider-frame, --glider-selected",
   },
 });

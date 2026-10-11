@@ -21,7 +21,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
 
   // The nested section's root sits in a content that stacks over the gliders,
   // so it must not paint a surface of its own over them.
-  test("shows the hover cover on a row of a nested section @visual", async ({
+  test("shows the current cover and a hovered row of a nested section @visual", async ({
     page,
     q,
     visual,
@@ -37,7 +37,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
-  test("moves the sidebar current cover on click and the focus ring with the keyboard @visual", async ({
+  test("moves the sidebar current cover on click and shows keyboard focus on a row @visual", async ({
     page,
     q,
     visual,
@@ -50,6 +50,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const introduction = query(box).link("Introduction").nth(1);
       await tabTo(page, introduction);
       await expectFocusVisible(introduction);
+      await test.expect(introduction).toHaveCSS("outline-style", "solid");
       await captureInView({
         visual,
         box,

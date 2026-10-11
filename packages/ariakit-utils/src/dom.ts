@@ -417,30 +417,61 @@ export function scrollIntoViewIfNeeded(
   }
 }
 
+export interface GetScrollingElementOptions {
+  /**
+   * The axis to check. By default, either axis can establish a scroll
+   * container.
+   */
+  axis?: "x" | "y";
+  /**
+   * Returns this ancestor without testing its overflow or walking beyond it.
+   */
+  stopAt?: Element;
+}
+
 /**
  * Returns the scrolling container element of a given element.
  */
 export function getScrollingElement(
   element?: Element | null,
+  options: GetScrollingElementOptions = {},
 ): HTMLElement | Element | null {
   if (!element) return null;
+  const { axis, stopAt } = options;
+  if (element === stopAt) {
+    return element;
+  }
   const isScrollableOverflow = (overflow: string) => {
     if (overflow === "auto") return true;
     if (overflow === "scroll") return true;
     return false;
   };
-  if (element.clientHeight && element.scrollHeight > element.clientHeight) {
+  if (
+    axis !== "x" &&
+    element.clientHeight &&
+    element.scrollHeight > element.clientHeight
+  ) {
     const { overflowY } = getComputedStyle(element);
-    if (isScrollableOverflow(overflowY)) return element;
-  } else if (element.clientWidth && element.scrollWidth > element.clientWidth) {
+    if (isScrollableOverflow(overflowY)) {
+      return element;
+    }
+  }
+  // Hidden overflow on one axis does not prevent scrolling on the other.
+  if (
+    axis !== "y" &&
+    element.clientWidth &&
+    element.scrollWidth > element.clientWidth
+  ) {
     const { overflowX } = getComputedStyle(element);
-    if (isScrollableOverflow(overflowX)) return element;
+    if (isScrollableOverflow(overflowX)) {
+      return element;
+    }
   }
   // If no ancestor scrolls, use the element's own document scroller; iframe
   // traversal would otherwise fall back to the top-level document.
   const doc = getDocument(element);
   return (
-    getScrollingElement(element.parentElement) ||
+    getScrollingElement(element.parentElement, options) ||
     doc.scrollingElement ||
     doc.body
   );

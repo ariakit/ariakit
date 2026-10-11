@@ -61,9 +61,9 @@ yarn add @ariakit/react
 ## Usage
 
 ```jsx
+import { Button, Dialog, DialogHeading } from "@ariakit/react";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Button, Dialog, DialogHeading } from "@ariakit/react";
 
 function App() {
   const [open, setOpen] = useState(false);

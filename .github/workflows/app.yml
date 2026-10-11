@@ -8,7 +8,6 @@ permissions:
 
 env:
   VISONAUT_SERVER: https://visonaut.com
-  VISONAUT_PACKAGE_SHA256: be4439ac7ce5eccea7b0d253687cae53b114884deed179d9dd17fd966b722e22
 
 jobs:
   build:
@@ -119,23 +118,24 @@ jobs:
         with:
           filters: app...
 
-      - name: Install Playwright
-        uses: ./.github/workflows/install-playwright
-        with:
-          engines: ${{ matrix.engine }}
-          workspace: app
+      - parallel:
+          - name: Install Playwright
+            uses: ./.github/workflows/install-playwright
+            with:
+              engines: ${{ matrix.engine }}
+              workspace: app
 
-      - name: Download app artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: app-build
-          path: app
+          - name: Download app artifact
+            uses: actions/download-artifact@v8
+            with:
+              name: app-build
+              path: app
 
-      - name: Download Next.js artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: nextjs-dist
-          path: nextjs/.open-next
+          - name: Download Next.js artifact
+            uses: actions/download-artifact@v8
+            with:
+              name: nextjs-dist
+              path: nextjs/.open-next
 
       - name: Test
         id: test
@@ -183,23 +183,24 @@ jobs:
             app...
             root
 
-      - name: Install Playwright
-        uses: ./.github/workflows/install-playwright
-        with:
-          engines: ${{ matrix.engines }}
-          workspace: app
+      - parallel:
+          - name: Install Playwright
+            uses: ./.github/workflows/install-playwright
+            with:
+              engines: ${{ matrix.engines }}
+              workspace: app
 
-      - name: Download app artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: app-build
-          path: app
+          - name: Download app artifact
+            uses: actions/download-artifact@v8
+            with:
+              name: app-build
+              path: app
 
-      - name: Download Next.js artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: nextjs-dist
-          path: nextjs/.open-next
+          - name: Download Next.js artifact
+            uses: actions/download-artifact@v8
+            with:
+              name: nextjs-dist
+              path: nextjs/.open-next
 
       - name: Test visual
         run: ${{ matrix.test }} --project ${{ matrix.projects }} --grep @visual --output test-results/test-visual
@@ -231,7 +232,6 @@ jobs:
       contents: read
       id-token: write
     env:
-      VISONAUT_WORKFLOW_SOURCE_SHA: ${{ vars.VISONAUT_WORKFLOW_SOURCE_SHA }}
       VISONAUT_CAPTURE_JOB_NAME: "App / Visual Capture ({shard})"
       VISONAUT_SUBMIT_JOB_NAME: "App / Visual Submit"
     steps:
@@ -249,7 +249,7 @@ jobs:
       - name: Install Visonaut
         run: |
           mkdir -p "$RUNNER_TEMP/visonaut-tools"
-          pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact "visonaut@0.5.4"
+          pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact "visonaut@0.6.0"
           echo "$RUNNER_TEMP/visonaut-tools/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Submit captures

@@ -31,14 +31,15 @@ jobs:
         with:
           filters: website...
 
-      - name: Install playwright
-        uses: ./.github/workflows/install-playwright
-        with:
-          engines: chromium
-          workspace: website
+      - parallel:
+          - name: Install playwright
+            uses: ./.github/workflows/install-playwright
+            with:
+              engines: chromium
+              workspace: website
 
-      - name: Build website
-        run: pnpm run build-website-lite
+          - name: Build website
+            run: pnpm run build-website-lite
 
       - name: Test
         id: test

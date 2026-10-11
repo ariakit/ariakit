@@ -55,6 +55,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`getItemRoleByPopupRole`](#getitemrolebypopuprole)
   - [`getPopupItemRole`](#getpopupitemrole)
   - [`scrollIntoViewIfNeeded`](#scrollintoviewifneeded)
+  - [`GetScrollingElementOptions`](#getscrollingelementoptions)
   - [`getScrollingElement`](#getscrollingelement)
   - [`isPartiallyHidden`](#ispartiallyhidden)
   - [`setSelectionRange`](#setselectionrange)
@@ -557,11 +558,32 @@ Calls `element.scrollIntoView()` if the element is hidden or partly hidden in th
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
+#### `GetScrollingElementOptions`
+
+```ts
+interface GetScrollingElementOptions {
+  /**
+   * The axis to check. By default, either axis can establish a scroll
+   * container.
+   */
+  axis?: "x" | "y";
+  /**
+   * Returns this ancestor without testing its overflow or walking beyond it.
+   */
+  stopAt?: Element;
+}
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getScrollingElement`
 
 ```ts
 function getScrollingElement(
   element?: Element | null,
+  options: GetScrollingElementOptions = {},
 ): HTMLElement | Element | null;
 ```
 
@@ -1907,13 +1929,7 @@ Undo and redo manager utilities.
 ```ts
 type Callback = void | (() => Callback | Promise<Callback>);
 
-const UndoManager: {
-  canUndo: () => boolean;
-  canRedo: () => boolean;
-  undo: () => Promise<void>;
-  redo: () => Promise<void>;
-  execute: (callback: Callback, group?: string) => Promise<void>;
-};
+const UndoManager: { canUndo: () => boolean; canRedo: () => boolean; undo: () => Promise<void>; redo: () => Promise<void>; execute: (callback: Callback, group?: string) => Promise<void>; };
 ```
 
 Shared undo manager instance.
