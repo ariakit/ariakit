@@ -1341,11 +1341,8 @@ body > * {
   }
 }
 
-/* Separate alternatives keep the peer marker on both branches when composed
-   with peer-* variants, so Chrome can limit sibling invalidation. */
 @custom-variant ui-focus-visible {
-  &:focus-visible,
-  &[data-focus-visible] {
+  &:is(:focus-visible, [data-focus-visible]) {
     @slot;
   }
 }

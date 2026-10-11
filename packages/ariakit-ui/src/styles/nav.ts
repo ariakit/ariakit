@@ -15,7 +15,7 @@ import {
   disclosureContentBody,
 } from "./disclosure.ts";
 import { frame, frameBase } from "./frame.ts";
-import { glider } from "./glider.ts";
+import { gliderBase } from "./glider.ts";
 import { selected } from "./selected.ts";
 import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
@@ -46,11 +46,11 @@ export const nav = cv({
   ],
   style: {
     anchorName: "--glider-frame",
-    // A glider follows the rows through the glider names and finds the guide
-    // line beside the row through the others (see navGlider). The scope keeps
-    // them to this nav, so a glider never lands in another one.
+    // A glider follows the rows through the glider name and finds the guide
+    // line beside the row through the guide name (see navGlider). The scope
+    // keeps them to this nav, so a glider never lands in another one.
     anchorScope:
-      "--glider-frame, --glider-focus, --glider-selected, --disclosure-guide-focus, --disclosure-guide-selected",
+      "--glider-frame, --glider-selected, --disclosure-guide-selected",
   },
   variants: {
     /**
@@ -295,15 +295,26 @@ const navGliderCover = cx(
   "w-[anchor-size()] h-[anchor-size()]",
 );
 
-// A glider that follows the rows of a nav, wherever they sit: in the nav's own
-// list, in a group or in a disclosure. It is the nav's first child, so it
-// paints under the rows, which are positioned and come after it, and it can
-// travel from one list to another. The rows sit in list items, so the glider's
-// own rules, which look for the control right beside it, are replaced by ones
-// that look through the nav.
+// A glider that follows the current row of a nav, wherever it sits: in the
+// nav's own list, in a group or in a disclosure. It is the nav's first child,
+// so it paints under the rows, which are positioned and come after it, and it
+// can travel from one list to another. The rows sit in list items, so its rules
+// look through the nav, where the ones in glider.ts look for the control right
+// beside the glider.
 export const navGlider = cv({
-  extend: [glider],
+  extend: [gliderBase],
   class: [
+    // A row is a control after the glider: its sibling, or the control right
+    // inside a list item anywhere in the nav. It takes the anchor name only
+    // while it is current, so the glider lands on whichever row is current
+    // right now.
+    "[&~.control,&~*_li>.control]:ui-selected:[anchor-name:--glider-selected]",
+    // With no current row there is no anchor to land on, and the glider would
+    // stay as a blank square at the nav's start. A current row in a closed
+    // disclosure counts as none, from the moment the content starts to close:
+    // the glider is outside the content, so it would stay in view while the
+    // content folds up.
+    "not-ui-nav-glider-selected:hidden",
     // At zero the glider paints over the surface behind the nav and under the
     // rows. A disclosure content paints no surface of its own in a nav (see
     // NavDisclosureContentBody), so a cover shows through it. Two gliders
@@ -344,10 +355,11 @@ export const navGlider = cv({
         "[.vertical>&]:inset-e-[calc(anchor(start)+var(--glider-bar-offset))]",
         "[.vertical>&]:[&.glider-bar-end]:inset-e-auto",
         "[.vertical>&]:[&.glider-bar-end]:inset-s-[calc(anchor(end)+var(--glider-bar-offset))]",
-        // An automatic start bar keeps the nearest disclosure guide when one
-        // exists. Otherwise the gap comes from this nav's frame padding.
+        // An automatic start bar keeps the guide of the disclosure content
+        // around the current row when one exists (see $guide in disclosure.ts).
+        // Otherwise the gap comes from this nav's frame padding.
         "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-e-auto",
-        "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-s-[calc(anchor(var(--glider-guide)_center,calc(anchor(start)-var(--glider-bar-offset)-var(--glider-bar)/2))-var(--glider-bar)/2)]",
+        "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc(anchor(start)-var(--glider-bar-offset)-var(--glider-bar)/2))-var(--glider-bar)/2)]",
         "[.vertical>&]:[&.glider-bar-frame]:inset-e-auto",
         "[.vertical>&]:[&.glider-bar-frame]:inset-s-0",
         "[.vertical>&]:[&.glider-bar-frame.glider-bar-end]:inset-s-auto",
@@ -369,46 +381,6 @@ export const navGlider = cv({
       ];
     },
     /**
-     * Sets which row state the glider follows. A row publishes the matching
-     * anchor name only while it is in that state, so the glider lands on
-     * whichever row is focused or current right now. A row is the control right
-     * inside a list item anywhere in the nav after the glider: a link, or a
-     * disclosure button, which a focus glider follows too. Only a link is
-     * current.
-     */
-    $state(value?: "none" | "focus" | "selected") {
-      // Each state names the guide used by automatic $barOffset (glider.ts). A
-      // state without one names a guide nothing publishes, which keeps the bar
-      // on the fallback: the dummy the rows carry is a real anchor.
-      if (value === "none") return "[--glider-guide:--glider-no-guide]";
-      if (value === "focus") {
-        return [
-          "[position-anchor:--glider-focus] focus",
-          "[--glider-guide:--disclosure-guide-focus]",
-          "[&~.control,&~*_li>.control]:ui-focus-visible:[--glider-focus:--glider-focus]",
-          // The ring is drawn only while one of the rows has keyboard focus;
-          // the row's own ring goes with it.
-          "[&:has(~.control:is(:focus-visible,[data-focus-visible]),~*_li>.control:is(:focus-visible,[data-focus-visible]))]:outline-2",
-          "supports-anchor:[&~.control,&~*_li>.control]:ui-focus-visible:outline-none",
-          "ak-outline ak-outline-brand outline-offset-1",
-        ];
-      }
-      if (value === "selected") {
-        return [
-          "[position-anchor:--glider-selected] selected",
-          "[--glider-guide:--disclosure-guide-selected]",
-          "[&~.control,&~*_li>.control]:ui-selected:[--glider-selected:--glider-selected]",
-          // With no current row there is no anchor to land on, and the glider
-          // would stay as a blank square at the nav's start. A current row in
-          // a closed disclosure counts as none, from the moment the content
-          // starts to close: the glider is outside the content, so it would
-          // stay in view while the content folds up.
-          "not-ui-nav-glider-selected:hidden",
-        ];
-      }
-      return;
-    },
-    /**
      * Animates the glider as it travels between rows.
      */
     $animated(value?: boolean) {
@@ -428,19 +400,16 @@ export const navGlider = cv({
       if (variants.$kind !== "bar") return defaultValue;
       return defaultValue ?? true;
     },
-    // A selected cover takes the same pushed surface as the current row.
+    // A cover takes the same pushed surface as the current row.
     $lightnessOffset(defaultValue, variants) {
-      if (variants.$state !== "selected") return defaultValue;
       if (variants.$kind === "bar") return defaultValue;
       return false;
     },
     $lightnessPush(defaultValue, variants) {
-      if (variants.$state !== "selected") return defaultValue;
       if (variants.$kind === "bar") return defaultValue;
       return defaultValue ?? true;
     },
     $border(defaultValue, variants) {
-      if (variants.$state !== "selected") return defaultValue;
       if (variants.$kind === "bar") return defaultValue;
       return defaultValue ?? false;
     },
@@ -449,13 +418,11 @@ export const navGlider = cv({
     if (variants.$animated) {
       // The insets are the longhands: WebKit passes over the inset-block and
       // inset-inline shorthands in a transition list. display stays off the
-      // list, so a current row's glider leaves at once with a closing
-      // disclosure.
+      // list, so the glider leaves at once with a closing disclosure.
       addClass(
-        "transition-[top,left,inset-inline-start,inset-inline-end,border-color,height,width,outline]",
+        "transition-[top,left,inset-inline-start,inset-inline-end,border-color,height,width]",
       );
     }
-    if (variants.$state !== "selected") return;
     if (variants.$kind === "bar") return;
     // A cover takes over the row's surface. Beside a bar the row keeps its
     // surface, including any caller-provided edge.
