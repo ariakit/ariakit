@@ -109,7 +109,7 @@
     "@types/textarea-caret": "3.0.4",
     "@visonaut/playwright": "0.6.1",
     "clava": "0.7.1",
-    "concurrently": "10.0.5",
+    "concurrently": "10.0.6",
     "cross-env": "10.1.0",
     "lightningcss": "1.33.0",
     "nextjs": "workspace:*",
