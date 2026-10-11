@@ -14,7 +14,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     if (browserName === "firefox") {
       // Playwright 1.64's Firefox cannot Tab out of even a plain input iframe.
       // Keep testing cross-document focus until native Tab works again.
-      // https://github.com/microsoft/playwright/issues/39268
+      // https://github.com/microsoft/playwright/issues/43280
       await q.textbox("Parent target").focus();
     } else {
       await page.keyboard.press("Tab");

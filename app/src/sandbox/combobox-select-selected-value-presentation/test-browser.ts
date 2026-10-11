@@ -637,6 +637,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
     browserName,
   }) => {
+    // Remove this expected failure after Playwright fixes iframe-to-parent
+    // focus.
+    // https://github.com/microsoft/playwright/issues/43280
     test.fail(
       browserName === "firefox",
       "Playwright 1.64's Firefox cannot focus the parent after an iframe, even with plain HTML.",
