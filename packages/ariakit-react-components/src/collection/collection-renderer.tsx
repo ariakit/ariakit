@@ -941,6 +941,9 @@ export function useCollectionRenderer<T extends Item = any>({
             });
             offsetsRef.current = getOffsets(renderer, scroller, horizontal);
           };
+          // A new move renews the anchor even when its active id is unchanged.
+          // https://github.com/ariakit/ariakit/pull/7837#discussion_r4239950657
+          anchorReleasedRef.current = false;
           viewport.addEventListener("scrollend", onScrollEnd);
           viewport.addEventListener("wheel", cancel, { passive: true });
           viewport.addEventListener("touchmove", cancel, { passive: true });

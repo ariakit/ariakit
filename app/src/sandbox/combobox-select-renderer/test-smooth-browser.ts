@@ -85,6 +85,47 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await test.expect(argentina).toBeInViewport({ ratio: 0.9 });
       });
 
+      for (const gesture of ["wheel", "touchmove"]) {
+        // https://github.com/ariakit/ariakit/pull/7837#discussion_r4239950657
+        test(`keeps a repeated move in view after ${gesture}`, async ({
+          page,
+          q,
+        }) => {
+          await q.combobox("Smooth country").click();
+          const list = q.listbox("Smooth country");
+          await test.expect(list).not.toHaveAttribute("data-placing");
+          await using down = await observeScroll(list);
+          await page.keyboard.press("End");
+          const zambia = q.option("Zambia");
+          await test.expect(zambia).toHaveAttribute("data-active-item");
+          await down.evaluate(async ({ end }) => end);
+          // Scroll completion precedes the final renderer measurements.
+          await flushFrames(page);
+          await test.expect(zambia).toBeInViewport({ ratio: 0.9 });
+
+          await using up = await observeScroll(list);
+          // Desktop projects do not share native touch input. Send the gesture
+          // event and scroll to the top without changing the active item.
+          await list.evaluate((element, gesture) => {
+            element.dispatchEvent(new Event(gesture, { bubbles: true }));
+            element.scrollTo({ top: 0, behavior: "instant" });
+          }, gesture);
+          await up.evaluate(async ({ end }) => end);
+          // The newly visible rows must be measured before the next move.
+          await flushFrames(page);
+          await test.expect(zambia).toHaveAttribute("data-active-item");
+          await test.expect(zambia).not.toBeInViewport();
+
+          await using again = await observeScroll(list);
+          await page.keyboard.press("End");
+          await again.evaluate(async ({ end }) => end);
+          // Scroll completion precedes the final renderer measurements.
+          await flushFrames(page);
+          await test.expect(zambia).toHaveAttribute("data-active-item");
+          await test.expect(zambia).toBeInViewport({ ratio: 0.9 });
+        });
+      }
+
       test("lets a scrollbar drag interrupt smooth scrolling", async ({
         page,
         q,
