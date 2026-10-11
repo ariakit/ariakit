@@ -751,7 +751,7 @@ export default function TabsExamples() {
 
       <Example
         title="Folder glider"
-        description="A folder glider stands in for the selected tab. Hover and focus gliders follow the pointer and the keyboard, and arrow keys move focus without selecting."
+        description="A folder glider stands in for the selected tab. A focus glider follows the keyboard, and arrow keys move focus without selecting."
         stretch
         code={`
           <Tabs selectOnMove={false}>
@@ -766,7 +766,6 @@ export default function TabsExamples() {
                 <TabLabel>Usage</TabLabel>
               </Tab>
               <TabGlider $kind="folder" $state="selected" />
-              <TabGlider $kind="folder" $state="hover" />
               <TabGlider $kind="folder" $state="focus" />
             </TabList>
             <TabPanels>
@@ -789,7 +788,6 @@ export default function TabsExamples() {
               <TabLabel>Usage</TabLabel>
             </Tab>
             <TabGlider $kind="folder" $state="selected" />
-            <TabGlider $kind="folder" $state="hover" />
             <TabGlider $kind="folder" $state="focus" />
           </TabList>
           <TabPanels>

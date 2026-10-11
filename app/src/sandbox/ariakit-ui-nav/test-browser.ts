@@ -21,7 +21,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
 
   // The nested section's root sits in a content that stacks over the gliders,
   // so it must not paint a surface of its own over them.
-  test("shows the hover cover on a row of a nested section @visual", async ({
+  test("shows the current cover and a hovered row of a nested section @visual", async ({
     page,
     q,
     visual,

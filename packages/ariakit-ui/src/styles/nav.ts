@@ -46,11 +46,11 @@ export const nav = cv({
   ],
   style: {
     anchorName: "--glider-frame",
-    // A glider follows the rows through the first three names and finds the
-    // guide line beside the row through the others (see navGlider). The scope
-    // keeps them to this nav, so a glider never lands in another one.
+    // A glider follows the rows through the glider names and finds the guide
+    // line beside the row through the others (see navGlider). The scope keeps
+    // them to this nav, so a glider never lands in another one.
     anchorScope:
-      "--glider-frame, --glider-hover, --glider-focus, --glider-selected, --disclosure-guide-hover, --disclosure-guide-focus, --disclosure-guide-selected",
+      "--glider-frame, --glider-focus, --glider-selected, --disclosure-guide-focus, --disclosure-guide-selected",
   },
   variants: {
     /**
@@ -371,41 +371,16 @@ export const navGlider = cv({
     /**
      * Sets which row state the glider follows. A row publishes the matching
      * anchor name only while it is in that state, so the glider lands on
-     * whichever row is hovered, focused, or current right now. A row is the
-     * control right inside a list item anywhere in the nav after the glider: a
-     * link, or a disclosure button, which a hover or focus glider follows too.
-     * Only a link is current.
+     * whichever row is focused or current right now. A row is the control right
+     * inside a list item anywhere in the nav after the glider: a link, or a
+     * disclosure button, which a focus glider follows too. Only a link is
+     * current.
      */
-    $state(value?: "none" | "hover" | "focus" | "selected") {
+    $state(value?: "none" | "focus" | "selected") {
       // Each state names the guide used by automatic $barOffset (glider.ts). A
       // state without one names a guide nothing publishes, which keeps the bar
       // on the fallback: the dummy the rows carry is a real anchor.
       if (value === "none") return "[--glider-guide:--glider-no-guide]";
-      if (value === "hover") {
-        return [
-          "[position-anchor:--glider-hover] ease-linear",
-          "[--glider-guide:--disclosure-guide-hover]",
-          "[&~.control,&~*_li>.control]:ui-hover:[--glider-hover:--glider-hover]",
-          // Keep :has() on the glider. Testing the nav instead makes Chrome
-          // invalidate every row when the pointer moves between two rows.
-          // https://github.com/ariakit/ariakit/issues/7806
-          // The pointer is crossing the gap between two rows, so the glider
-          // waits on the last one for the next instead of leaving at once.
-          "[.nav:hover>&:not(:has(~.control:hover,~*_li>.control:hover))]:delay-250",
-          // With no row under the pointer the anchor is gone, and a glider
-          // that stayed would fall to a point at the nav's start. It leaves
-          // instead, after the delay above.
-          "[&:not(:has(~.control:hover,~*_li>.control:hover))]:hidden",
-          // The glider sits behind the row it covers, so the row has to stop
-          // painting its own surface or it hides the glider. A disclosure
-          // button paints its hover as a gradient, which the second rule
-          // takes off.
-          "supports-anchor:[&~.control,&~*_li>.control]:ui-hover:bg-transparent!",
-          "supports-anchor:[&~.control,&~*_li>.control]:ui-hover:bg-none!",
-          "supports-anchor:[&~.control,&~*_li>.control]:ui-hover:border-transparent",
-          "supports-anchor:[&~.control,&~*_li>.control]:ui-hover:befter:hidden",
-        ];
-      }
       if (value === "focus") {
         return [
           "[position-anchor:--glider-focus] focus",
@@ -473,13 +448,11 @@ export const navGlider = cv({
   refine({ variants, addClass }) {
     if (variants.$animated) {
       // The insets are the longhands: WebKit passes over the inset-block and
-      // inset-inline shorthands in a transition list. Only a hover glider keeps
-      // display on the list, so it can wait out its delay before it leaves; a
-      // current row's glider leaves at once with a closing disclosure.
+      // inset-inline shorthands in a transition list. display stays off the
+      // list, so a current row's glider leaves at once with a closing
+      // disclosure.
       addClass(
-        variants.$state === "hover"
-          ? "transition-[top,left,inset-inline-start,inset-inline-end,border-color,height,width,outline,display]"
-          : "transition-[top,left,inset-inline-start,inset-inline-end,border-color,height,width,outline]",
+        "transition-[top,left,inset-inline-start,inset-inline-end,border-color,height,width,outline]",
       );
     }
     if (variants.$state !== "selected") return;

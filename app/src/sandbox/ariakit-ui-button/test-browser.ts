@@ -166,28 +166,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
-  test("moves the hover glider over a hovered link @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Current link gliders");
-      const activity = query(box).link("Activity");
-      // A synthesized pointer move that scrolls the group into view does not
-      // apply :hover in WebKit until the pointer enters another element, so the
-      // pointer passes over Settings on its way to Activity.
-      await activity.scrollIntoViewIfNeeded();
-      await query(box).link("Settings").hover();
-      await hoverOver(activity);
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-button/current-link-hover",
-        }),
-      );
-    });
-  });
-
   // https://github.com/ariakit/ariakit/issues/7799
   test("animates the bar between rows in a vertical group", async ({
     q,

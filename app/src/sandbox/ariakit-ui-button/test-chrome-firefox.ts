@@ -3,7 +3,6 @@ import {
   expectFocusVisible,
   expectMedia,
   forEachColorScheme,
-  hoverOver,
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
@@ -39,17 +38,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         box: q.article("Glider"),
         colorScheme,
         item: "ariakit-ui-button/forced-colors/glider",
-      });
-      const links = q.article("Current link gliders");
-      await hoverOver(query(links).link("Activity"));
-      await test
-        .expect(links.locator(".glider:not(.selected):not(.focus)"))
-        .toBeVisible();
-      await captureInView({
-        visual,
-        box: links,
-        colorScheme,
-        item: "ariakit-ui-button/forced-colors/glider-hover",
       });
     });
   });

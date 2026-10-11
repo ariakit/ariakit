@@ -16,7 +16,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     );
   });
 
-  test("moves the hover glider over a hovered tab @visual", async ({
+  test("paints the hover pill on a hovered tab @visual", async ({
     page,
     q,
     visual,

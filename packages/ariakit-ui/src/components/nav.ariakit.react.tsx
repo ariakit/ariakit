@@ -50,7 +50,7 @@ const NavDisclosureContext = React.createContext<readonly ak.DisclosureStore[]>(
 
 /**
  * A glider for a nav, as `NavGlider` props or an element, or several of them in
- * an array, such as a hover cover followed by a cover of the current row: a
+ * an array, such as a cover of the current row followed by a focus ring: a
  * later glider paints over an earlier one. `true` renders the default glider, a
  * flat cover of the current row.
  */
@@ -160,9 +160,9 @@ export interface NavGliderProps
 
 /**
  * Renders the element that glides between the rows of a `Nav` to mark the
- * current, hovered or focused one, as a cover of the row or as a bar beside it.
- * It goes before the rows, as the nav's first child, so it paints under them,
- * and it hides itself in browsers without CSS anchor positioning.
+ * current or focused one, as a cover of the row or as a bar beside it. It goes
+ * before the rows, as the nav's first child, so it paints under them, and it
+ * hides itself in browsers without CSS anchor positioning.
  */
 export function NavGlider(props: NavGliderProps) {
   const [variantProps, rest] = splitProps(props, navGlider);
