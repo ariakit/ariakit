@@ -140,7 +140,7 @@ export default function ButtonExamples() {
             type="checkbox"
             tabIndex={0}
           />
-          <ButtonGlider $animated={false} />
+          <ButtonGlider />
         </ButtonGroup>
       </Example>
       <Example

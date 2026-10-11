@@ -108,10 +108,11 @@ export const gliderBase = cv({
     $animated: [
       "glider-animated",
       // The insets are the longhands: WebKit passes over the inset-block and
-      // inset-inline shorthands in a transition list.
-      "transition-[left,inset-inline-start,border-color,height,width,display]",
-      "[.vertical>&]:transition-[bottom,border-color,height,width,display]",
-      "duration-100 transition-discrete",
+      // inset-inline shorthands in a transition list. display stays off the
+      // list, so the glider leaves at once when no control is selected.
+      "transition-[left,inset-inline-start,height,width]",
+      "[.vertical>&]:transition-[bottom,height,width]",
+      "duration-100",
       "[.vertical>&]:duration-50",
     ],
   },
