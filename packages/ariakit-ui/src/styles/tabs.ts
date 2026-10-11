@@ -329,10 +329,6 @@ export const tabGlider = cv({
         tabSelectedEdge,
         // The folder glider reaches over the seam, as far as the tab would.
         "ui-selected:[--glider-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
-        // The edge turns to the focus colour at once, as the tab's own does
-        // and as the curves do, so the glider's colour transition comes off
-        // its list.
-        "ui-selected:transition-[inset-inline-start,height,width,display]",
         // A folder glider marks keyboard focus on the tab it covers as the
         // tab marks it on itself: the edge takes the focus colour and grows
         // inward by the same extra width. The glider is sized from the tab's

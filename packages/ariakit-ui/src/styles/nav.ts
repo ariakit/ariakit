@@ -385,7 +385,7 @@ export const navGlider = cv({
      */
     $animated(value?: boolean) {
       if (!value) return;
-      return "duration-100 transition-discrete";
+      return "duration-100";
     },
   },
   defaultVariants: {
@@ -420,7 +420,7 @@ export const navGlider = cv({
       // inset-inline shorthands in a transition list. display stays off the
       // list, so the glider leaves at once with a closing disclosure.
       addClass(
-        "transition-[top,left,inset-inline-start,inset-inline-end,border-color,height,width]",
+        "transition-[top,left,inset-inline-start,inset-inline-end,height,width]",
       );
     }
     if (variants.$kind === "bar") return;
