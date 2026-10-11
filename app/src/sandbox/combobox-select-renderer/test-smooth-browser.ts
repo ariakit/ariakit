@@ -80,6 +80,31 @@ withFramework(import.meta.dirname, async ({ test }) => {
           await test.expect(uganda).toBeInViewport({ ratio: 0.9 });
         });
 
+        // https://github.com/ariakit/ariakit/pull/7837#discussion_r4240176403
+        test("keeps a far selected item in view on open with smooth scrolling", async ({
+          page,
+          q,
+        }) => {
+          const select = q.combobox("Smooth country");
+          await select.focus();
+          await page.keyboard.press("u");
+          await test.expect(select).toHaveText("Uganda");
+          // The popup is hidden before opening, so its accessible name is not
+          // available yet. Observe its scroll before the first presentation.
+          await using scroll = await observeScroll(
+            page.locator(".smooth-popover"),
+          );
+          await select.click();
+          const list = q.listbox("Smooth country");
+          await test.expect(list).not.toHaveAttribute("data-placing");
+          const uganda = q.option("Uganda");
+          await test.expect(uganda).toHaveAttribute("data-active-item");
+          await scroll.evaluate(async ({ end }) => end);
+          // Opening scroll completion precedes the final renderer measurements.
+          await flushFrames(page);
+          await test.expect(uganda).toBeInViewport({ ratio: 0.9 });
+        });
+
         test("keeps a far upward move in view after smooth scrolling", async ({
           page,
           q,
