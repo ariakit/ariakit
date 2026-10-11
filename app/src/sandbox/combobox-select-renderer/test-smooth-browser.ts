@@ -203,16 +203,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
             const list = q.listbox("Smooth country");
             await test.expect(list).not.toHaveAttribute("data-placing");
             await using scroll = await observeScroll(list);
-            await page.keyboard.press("u");
-            const uganda = q.option("Uganda");
-            await test.expect(uganda).toHaveAttribute("data-active-item");
-            await scroll.evaluate(async ({ start }) => start);
             // Native touch input and scrollbars differ across desktop projects.
             // Send the gesture and its scroll without changing the active item.
             await list.evaluate((element, gesture) => {
-              element.dispatchEvent(new Event(gesture, { bubbles: true }));
-              element.scrollTo({ top: 0, behavior: "instant" });
+              // A test-process round trip lets Chrome advance the animation.
+              // Interrupt in this frame so its last offset keeps the first rows
+              // in view.
+              // https://github.com/ariakit/ariakit/pull/7837#discussion_r4240461335
+              const interrupt = () => {
+                element.dispatchEvent(new Event(gesture, { bubbles: true }));
+                element.scrollTo({ top: 0, behavior: "instant" });
+              };
+              element.addEventListener("scroll", interrupt, { once: true });
             }, gesture);
+            await page.keyboard.press("u");
+            const uganda = q.option("Uganda");
+            await test.expect(uganda).toHaveAttribute("data-active-item");
             await scroll.evaluate(async ({ end }) => end);
             // A late measurement could reveal the item again, so cross its
             // frames before asserting that the item stays outside the viewport.
