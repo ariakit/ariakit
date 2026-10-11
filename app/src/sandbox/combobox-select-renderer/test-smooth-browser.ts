@@ -56,6 +56,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
           .expect(q.option("Zambia"))
           .toHaveAttribute("data-active-item");
         await down.evaluate(async ({ end }) => end);
+        // The final scroll frame must render and measure before moving upward.
         await flushFrames(page);
 
         await using up = await observeScroll(list);
@@ -63,6 +64,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         const denmark = q.option("Denmark");
         await test.expect(denmark).toHaveAttribute("data-active-item");
         await up.evaluate(async ({ end }) => end);
+        // Scroll completion precedes the final renderer measurements.
         await flushFrames(page);
         await test.expect(denmark).toBeInViewport({ ratio: 0.9 });
       });
@@ -81,6 +83,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         const argentina = q.option("Argentina");
         await test.expect(argentina).toHaveAttribute("data-active-item");
         await scroll.evaluate(async ({ end }) => end);
+        // The superseded move must finish its final render and measurements.
         await flushFrames(page);
         await test.expect(argentina).toBeInViewport({ ratio: 0.9 });
       });
@@ -147,6 +150,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
           element.scrollTo({ top: 0, behavior: "instant" });
         });
         await scroll.evaluate(async ({ end }) => end);
+        // A late measurement could reveal the item again, so cross its frames
+        // before asserting that the item stays outside the viewport.
         await flushFrames(page);
         await test.expect(uganda).toHaveAttribute("data-active-item");
         await test.expect(uganda).not.toBeInViewport();
@@ -169,6 +174,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
         // item. The preceding no-op keyboard scroll must be finished.
         await list.evaluate((element) => element.scrollTo({ top: 1000 }));
         await scroll.evaluate(async ({ end }) => end);
+        // A stale correction could reveal the item during the final render and
+        // measurement frames, after the native scrollend event.
         await flushFrames(page);
         await test.expect(argentina).not.toBeInViewport();
         test
