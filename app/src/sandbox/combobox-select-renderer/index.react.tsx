@@ -203,6 +203,11 @@ const zoomedItems = mixedSizeItems.map((item) => ({
   id: `zoomed-${item.id}`,
 }));
 
+const smoothItems = mixedSizeItems.map((item) => ({
+  ...item,
+  id: `smooth-${item.id}`,
+}));
+
 // The tall items come first, so the sizes that the renderer measures near the
 // start overestimate the offsets of the short items near the end. When the
 // renderer measures those short items, the content becomes much shorter.
@@ -1540,6 +1545,19 @@ export default function Example() {
           <SelectMixedSizeRenderer label="Zoomed country" items={zoomedItems} />
         ) : (
           <MixedSizeRenderer label="Zoomed country" items={zoomedItems} />
+        )}
+        {selectRenderer ? (
+          <SelectMixedSizeRenderer
+            label="Smooth country"
+            items={smoothItems}
+            popoverClassName="mixed-size-popover smooth-popover"
+          />
+        ) : (
+          <MixedSizeRenderer
+            label="Smooth country"
+            items={smoothItems}
+            popoverClassName="mixed-size-popover smooth-popover"
+          />
         )}
         {selectRenderer ? (
           <SelectMixedSizeRenderer

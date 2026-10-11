@@ -36,6 +36,7 @@ import {
   useState,
 } from "react";
 import { flushSync } from "react-dom";
+import { subscribeScrollIntoView } from "./__scroll-into-view.ts";
 import { useCollectionContext } from "./collection-context.tsx";
 import type {
   CollectionStore,
@@ -868,6 +869,89 @@ export function useCollectionRenderer<T extends Item = any>({
     return null;
   });
 
+  // A smooth scroll targets the item's estimated position. Keep that explicit
+  // request until scrollend, when measurements may have moved the item away.
+  // https://github.com/ariakit/ariakit/issues/7767
+  const getScroller = useEvent(() => scrollerRef.current);
+  const scrollCleanupRef = useRef<(() => void) | undefined>(undefined);
+  const scrollIntoViewRef = useCallback(
+    (renderer: HTMLElement | null) => {
+      scrollCleanupRef.current?.();
+      if (!renderer) return;
+      if (itemSize != null) return;
+      let cancelScroll: (() => void) | undefined;
+      const unsubscribe = subscribeScrollIntoView(
+        renderer,
+        ({ element, isCurrent }) => {
+          cancelScroll?.();
+          const scroller = getScroller();
+          if (!scroller) return;
+          const view = getWindow(scroller);
+          const style = view.getComputedStyle(scroller);
+          if (style.scrollBehavior !== "smooth") return;
+          const distance = getRevealDistance(element, scroller, horizontal);
+          if (!distance) return;
+          const nearest = getScrollingElement(element.parentElement, {
+            axis: horizontal ? "x" : "y",
+            stopAt: scroller,
+          });
+          if (nearest !== scroller) return;
+          const viewport = getViewport(scroller);
+          if (!viewport) return;
+          let idleTimeout = 0;
+          const onScroll = () => {
+            view.clearTimeout(idleTimeout);
+            // Older engines have no scrollend event. Allow a 100 ms gap in
+            // scroll events before correcting the measured item position.
+            // https://github.com/ariakit/ariakit/pull/7837#discussion_r4240176150
+            idleTimeout = view.setTimeout(onScrollEnd, 100);
+          };
+          const cancel = () => {
+            view.clearTimeout(idleTimeout);
+            viewport.removeEventListener("scroll", onScroll);
+            viewport.removeEventListener("scrollend", onScrollEnd);
+            viewport.removeEventListener("pointerdown", cancel);
+          };
+          const onScrollEnd = () => {
+            cancel();
+            if (!isCurrent()) return;
+            if (getScroller() !== scroller) return;
+            if (getAnchorElement() !== element) return;
+            const nearest = getScrollingElement(element.parentElement, {
+              axis: horizontal ? "x" : "y",
+              stopAt: scroller,
+            });
+            if (nearest !== scroller) return;
+            const distance = getRevealDistance(element, scroller, horizontal);
+            if (!distance) return;
+            scroller.scrollTo({
+              [horizontal ? "left" : "top"]:
+                getScrollOffset(scroller, horizontal) + distance,
+              behavior: "instant",
+            });
+            offsetsRef.current = getOffsets(renderer, scroller, horizontal);
+          };
+          // A new move renews the anchor even when its active id is unchanged.
+          // https://github.com/ariakit/ariakit/pull/7837#discussion_r4239950657
+          anchorReleasedRef.current = false;
+          if ("onscrollend" in viewport) {
+            viewport.addEventListener("scrollend", onScrollEnd);
+          } else {
+            viewport.addEventListener("scroll", onScroll, { passive: true });
+          }
+          viewport.addEventListener("pointerdown", cancel, { passive: true });
+          cancelScroll = cancel;
+          return cancel;
+        },
+      );
+      scrollCleanupRef.current = () => {
+        cancelScroll?.();
+        unsubscribe();
+      };
+    },
+    [itemSize, getScroller, horizontal, getAnchorElement],
+  );
+
   // The anchor holds from the moment an item becomes the anchor until the user
   // scrolls. A scroll adjustment during the user's own scroll gesture would
   // compete with that gesture.
@@ -1340,7 +1424,7 @@ export function useCollectionRenderer<T extends Item = any>({
     id: baseId,
     ...props,
     style,
-    ref: useMergeRefs(ref, props.ref),
+    ref: useMergeRefs(ref, scrollIntoViewRef, props.ref),
   };
 
   return { ...props, children };
