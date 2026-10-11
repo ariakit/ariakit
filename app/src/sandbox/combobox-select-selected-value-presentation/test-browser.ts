@@ -635,7 +635,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   test("honors initial focus after focus enters a contained iframe", async ({
     page,
     q,
+    browserName,
   }) => {
+    test.fail(
+      browserName === "firefox",
+      "Playwright 1.64's Firefox cannot focus the parent after an iframe, even with plain HTML.",
+    );
     const frame = query(
       page.frameLocator("iframe[title='Initial focus frame']"),
     );
