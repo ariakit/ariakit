@@ -886,7 +886,6 @@ export function useCollectionRenderer<T extends Item = any>({
           cancelScroll?.();
           const scroller = getScroller();
           if (!scroller) return;
-          if (!renderer.contains(element)) return;
           const view = getWindow(scroller);
           const style = view.getComputedStyle(scroller);
           if (style.scrollBehavior !== "smooth") return;
@@ -897,20 +896,6 @@ export function useCollectionRenderer<T extends Item = any>({
             stopAt: scroller,
           });
           if (nearest !== scroller) return;
-          const offset = getScrollOffset(scroller, horizontal);
-          const range = horizontal
-            ? scroller.scrollWidth - scroller.clientWidth
-            : scroller.scrollHeight - scroller.clientHeight;
-          const reversed = horizontal && style.direction === "rtl";
-          const minimum = reversed ? -range : 0;
-          const maximum = reversed ? 0 : range;
-          const target = Math.max(
-            minimum,
-            Math.min(maximum, offset + distance),
-          );
-          // Native no-op scrolls have no scrollend event. Do not let such a
-          // request authorize a correction after a later, unrelated scroll.
-          if (target === offset) return;
           const viewport = getViewport(scroller);
           if (!viewport) return;
           const cancel = () => {
@@ -919,10 +904,7 @@ export function useCollectionRenderer<T extends Item = any>({
             viewport.removeEventListener("touchmove", cancel);
             viewport.removeEventListener("pointerdown", cancel);
           };
-          const onScrollEnd = (event: Event) => {
-            const target =
-              viewport === scroller ? scroller : scroller.ownerDocument;
-            if (event.target !== target) return;
+          const onScrollEnd = () => {
             cancel();
             if (!isCurrent()) return;
             if (getScroller() !== scroller) return;
