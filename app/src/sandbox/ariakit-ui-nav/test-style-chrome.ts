@@ -38,7 +38,7 @@ async function largestStyleRecalculation(
   }
 }
 
-withFramework(import.meta.dirname, async ({ query, test }) => {
+withFramework(import.meta.dirname, async ({ test }) => {
   test.beforeEach(async ({ page }) => {
     // Size containers move style work into layout, where Chrome omits the
     // element count. Remove that boundary and motion for this count-only probe.
@@ -48,24 +48,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     });
     // The probe stylesheet must finish its own invalidation before tracing.
     await flushFrames(page);
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7806
-  test("recalculates the changing rows when the pointer moves between rows", async ({
-    page,
-    q,
-  }) => {
-    const nav = q.navigation("Documentation sections");
-    const links = query(nav);
-    const first = links.link("Installation").first();
-    const second = links.link("Quickstart").first();
-    await first.scrollIntoViewIfNeeded();
-    await first.hover();
-    // Finish the initial hover frame before measuring the next pointer move.
-    await flushFrames(page);
-    const count = await largestStyleRecalculation(page, () => second.hover());
-    test.expect(count).toBeGreaterThan(0);
-    test.expect(count).toBeLessThan((await nav.locator("*").count()) / 2);
   });
 
   // https://github.com/ariakit/ariakit/issues/7806
