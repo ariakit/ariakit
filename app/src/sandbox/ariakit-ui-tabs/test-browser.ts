@@ -34,7 +34,22 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
-  test("moves the focus glider to a tab without selecting it @visual", async ({
+  test("paints the focus box on a selected tab over its glider", async ({
+    page,
+    q,
+  }) => {
+    const preview = query(q.article("Flat glider")).tab("Preview");
+    await test.expect(preview).toHaveAttribute("aria-selected", "true");
+    await tabTo(page, preview);
+    await expectFocusVisible(preview);
+    // The glider wipes the surface of the tab it covers, so the brand box the
+    // tab paints back is its only mark of keyboard focus.
+    await test
+      .expect(preview)
+      .not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  });
+
+  test("paints the focus pill on a tab without selecting it @visual", async ({
     page,
     q,
     visual,

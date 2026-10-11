@@ -13,23 +13,17 @@ import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/issues/7806
-  test("follows a native checkbox's checked state and keyboard focus", async ({
-    q,
-    page,
-  }) => {
+  test("follows a native checkbox's checked state", async ({ q }) => {
     const example = q.article("Native checkbox glider");
     const checkbox = query(example).checkbox("Pin this item");
-    const selected = example.locator(".glider.selected");
-    const focus = example.locator(".glider.focus");
-    await test.expect(selected).toBeHidden();
-    await tabTo(page, checkbox);
-    await test.expect(focus).toHaveCSS("outline-style", "solid");
+    const glider = example.locator(".glider");
+    await test.expect(glider).toBeHidden();
     await checkbox.press("Space");
     await test.expect(checkbox).toBeChecked();
-    await test.expect(selected).toBeVisible();
+    await test.expect(glider).toBeVisible();
     await checkbox.press("Space");
     await test.expect(checkbox).not.toBeChecked();
-    await test.expect(selected).toBeHidden();
+    await test.expect(glider).toBeHidden();
   });
 
   // https://github.com/ariakit/ariakit/pull/7584
@@ -60,12 +54,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   }) => {
     const group = q.radiogroup("Horizontal size");
     const small = query(group).radio("Small");
+    const large = query(group).radio("Large");
     await small.click();
     await page.keyboard.press("ArrowRight");
-    await test.expect(query(group).radio("Large")).toBeFocused();
-    await test
-      .expect(group.locator(".glider.focus"))
-      .toHaveCSS("outline-style", "solid");
+    await test.expect(large).toBeFocused();
+    await test.expect(large).toHaveCSS("outline-style", "solid");
     await test.expect(group).not.toHaveCSS("box-shadow", "none");
     await test.expect(group).toHaveCSS("clip-path", "none");
   });

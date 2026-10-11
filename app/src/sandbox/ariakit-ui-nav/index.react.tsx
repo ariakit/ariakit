@@ -301,9 +301,9 @@ const INITIAL_SIDEBAR_URL = "/docs/styling/introduction";
 
 /**
  * A documentation sidebar that keeps the current URL the way a router does: a
- * click on a link makes it the current page instead of navigating. The focus
- * glider follows the keyboard, and WebKit leaves links out of the Tab order
- * unless full keyboard access is on, so every link takes an explicit tab index.
+ * click on a link makes it the current page instead of navigating. WebKit
+ * leaves links out of the Tab order unless full keyboard access is on, so every
+ * link takes an explicit tab index.
  */
 function DocumentationSidebar() {
   const [currentUrl, setCurrentUrl] = useState(INITIAL_SIDEBAR_URL);
@@ -325,10 +325,7 @@ function DocumentationSidebar() {
           beta
         </NavSlot>
       </NavButton>
-      <Nav
-        aria-label="Documentation sections"
-        glider={[{}, { $state: "focus" }]}
-      >
+      <Nav aria-label="Documentation sections" glider>
         {sections.map((section) => (
           <NavDisclosure
             key={section.slug}
@@ -1055,7 +1052,7 @@ export default function NavExamples() {
 
       <Example
         title="Sidebar"
-        description="A documentation sidebar. The current cover moves between sections on click, and a ring follows the keyboard."
+        description="A documentation sidebar. The current cover moves between sections on click."
         code={`
           <Frame render={<aside />} $p={2} $rounded="2xl" $lightnessOffset={0.5} $border>
             <NavButton render={<a />}>
@@ -1067,7 +1064,7 @@ export default function NavExamples() {
                 beta
               </NavSlot>
             </NavButton>
-            <Nav glider={[…]}>
+            <Nav glider>
               <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />} />}>
                 <NavList>
                   <NavLink>Introduction</NavLink>

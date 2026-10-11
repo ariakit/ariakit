@@ -476,15 +476,10 @@ export const disclosureContent = cv({
     $guide: [
       "[--disclosure-ps:var(--disclosure-lead)]",
       // The line anchors a nav bar with automatic $barOffset (glider.ts).
-      // The content names it for a state only while one of its rows
-      // is in that state, so a glider finds the guide beside the row it
-      // follows; a nested content with a guide of its own comes later in tree
-      // order and wins. The names inherit from a content around this one, so
-      // they are reset first.
-      "[--disclosure-guide-selected:--x] [--disclosure-guide-focus:--x]",
-      "ui-has-selected-row:[--disclosure-guide-selected:--disclosure-guide-selected]",
-      "has-[li>.control:is(:focus-visible,[data-focus-visible])]:[--disclosure-guide-focus:--disclosure-guide-focus]",
-      "before:[anchor-name:var(--disclosure-guide-selected),var(--disclosure-guide-focus)]",
+      // The content names it only while one of its rows is selected, so a
+      // glider finds the guide beside the row it follows; a nested content
+      // with a guide of its own comes later in tree order and wins.
+      "ui-has-selected-row:before:[anchor-name:--disclosure-guide-selected]",
       // The line runs along the body: from the body offset under the button
       // to the content's end.
       "before:absolute before:top-(--disclosure-body-offset) before:bottom-0 before:ak-layer",
