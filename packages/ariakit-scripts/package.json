@@ -20,7 +20,7 @@
     "vite-plugin-solid": "2.11.14"
   },
   "devDependencies": {
-    "@playwright/test": "1.63.0",
+    "@playwright/test": "1.64.0",
     "react": "19.3.0",
     "vitest": "5.0.3"
   }
