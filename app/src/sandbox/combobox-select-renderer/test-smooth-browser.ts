@@ -193,33 +193,39 @@ withFramework(import.meta.dirname, async ({ test }) => {
           });
         }
 
-        test("lets a scrollbar drag interrupt smooth scrolling", async ({
-          page,
-          q,
-        }) => {
-          await q.combobox("Smooth country").click();
-          const list = q.listbox("Smooth country");
-          await test.expect(list).not.toHaveAttribute("data-placing");
-          await using scroll = await observeScroll(list);
-          await page.keyboard.press("u");
-          const uganda = q.option("Uganda");
-          await test.expect(uganda).toHaveAttribute("data-active-item");
-          await scroll.evaluate(async ({ start }) => start);
-          // Scrollbars differ across the test platforms. Dispatch the pointer
-          // event and set the offset to reproduce a scrollbar drag to the top.
-          await list.evaluate((element) => {
-            element.dispatchEvent(
-              new PointerEvent("pointerdown", { bubbles: true }),
-            );
-            element.scrollTo({ top: 0, behavior: "instant" });
+        for (const gesture of ["wheel", "touchmove", "pointerdown"]) {
+          // https://github.com/ariakit/ariakit/pull/7837#discussion_r4240176525
+          test(`lets ${gesture} interrupt smooth scrolling`, async ({
+            page,
+            q,
+          }) => {
+            await q.combobox("Smooth country").click();
+            const list = q.listbox("Smooth country");
+            await test.expect(list).not.toHaveAttribute("data-placing");
+            await using scroll = await observeScroll(list);
+            await page.keyboard.press("u");
+            const uganda = q.option("Uganda");
+            await test.expect(uganda).toHaveAttribute("data-active-item");
+            await scroll.evaluate(async ({ start }) => start);
+            // Native touch input and scrollbars differ across desktop projects.
+            // Send the gesture and its scroll without changing the active item.
+            await list.evaluate((element, gesture) => {
+              element.dispatchEvent(new Event(gesture, { bubbles: true }));
+              element.scrollTo({ top: 0, behavior: "instant" });
+            }, gesture);
+            await scroll.evaluate(async ({ end }) => end);
+            // A late measurement could reveal the item again, so cross its
+            // frames before asserting that the item stays outside the viewport.
+            await flushFrames(page);
+            await test.expect(uganda).toHaveAttribute("data-active-item");
+            await test.expect(uganda).not.toBeInViewport();
+            // A stale correction can move the first rows away without fully
+            // revealing Uganda. Check both ends of the interrupted move.
+            await test
+              .expect(q.option("Brazil"))
+              .toBeInViewport({ ratio: 0.9 });
           });
-          await scroll.evaluate(async ({ end }) => end);
-          // A late measurement could reveal the item again, so cross its frames
-          // before asserting that the item stays outside the viewport.
-          await flushFrames(page);
-          await test.expect(uganda).toHaveAttribute("data-active-item");
-          await test.expect(uganda).not.toBeInViewport();
-        });
+        }
 
         test("does not turn an already visible keyboard target into a later scroll correction", async ({
           page,

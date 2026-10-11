@@ -910,8 +910,6 @@ export function useCollectionRenderer<T extends Item = any>({
             view.clearTimeout(idleTimeout);
             viewport.removeEventListener("scroll", onScroll);
             viewport.removeEventListener("scrollend", onScrollEnd);
-            viewport.removeEventListener("wheel", cancel);
-            viewport.removeEventListener("touchmove", cancel);
             viewport.removeEventListener("pointerdown", cancel);
           };
           const onScrollEnd = () => {
@@ -941,8 +939,6 @@ export function useCollectionRenderer<T extends Item = any>({
           } else {
             viewport.addEventListener("scroll", onScroll, { passive: true });
           }
-          viewport.addEventListener("wheel", cancel, { passive: true });
-          viewport.addEventListener("touchmove", cancel, { passive: true });
           viewport.addEventListener("pointerdown", cancel, { passive: true });
           cancelScroll = cancel;
           return cancel;
