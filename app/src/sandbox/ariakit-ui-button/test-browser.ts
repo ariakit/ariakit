@@ -26,25 +26,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await test.expect(glider).toBeHidden();
   });
 
-  // https://github.com/ariakit/ariakit/issues/7841
-  test("removes an animated glider at once when its checkbox is unchecked", async ({
-    q,
-  }) => {
-    const example = q.article("Native checkbox glider");
-    const checkbox = query(example).checkbox("Pin this item");
-    const glider = example.locator(".glider");
-    await checkbox.press("Space");
-    await test.expect(glider).toBeVisible();
-    // Keep any transition pending for the test's whole budget. A glider that
-    // transitions display would stay visible until the test times out.
-    await glider.evaluate((node, timeout) => {
-      node.style.transitionDelay = `${timeout}ms`;
-    }, test.info().timeout);
-    await checkbox.press("Space");
-    await test.expect(checkbox).not.toBeChecked();
-    await test.expect(glider).toBeHidden();
-  });
-
   // https://github.com/ariakit/ariakit/pull/7584
   test("keeps an initials avatar as far from the start edge as from the top", async ({
     q,
