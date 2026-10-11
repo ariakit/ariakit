@@ -898,7 +898,17 @@ export function useCollectionRenderer<T extends Item = any>({
           if (nearest !== scroller) return;
           const viewport = getViewport(scroller);
           if (!viewport) return;
+          let idleTimeout = 0;
+          const onScroll = () => {
+            view.clearTimeout(idleTimeout);
+            // Older engines have no scrollend event. Allow a 100 ms gap in
+            // scroll events before correcting the measured item position.
+            // https://github.com/ariakit/ariakit/pull/7837#discussion_r4240176150
+            idleTimeout = view.setTimeout(onScrollEnd, 100);
+          };
           const cancel = () => {
+            view.clearTimeout(idleTimeout);
+            viewport.removeEventListener("scroll", onScroll);
             viewport.removeEventListener("scrollend", onScrollEnd);
             viewport.removeEventListener("wheel", cancel);
             viewport.removeEventListener("touchmove", cancel);
@@ -926,7 +936,11 @@ export function useCollectionRenderer<T extends Item = any>({
           // A new move renews the anchor even when its active id is unchanged.
           // https://github.com/ariakit/ariakit/pull/7837#discussion_r4239950657
           anchorReleasedRef.current = false;
-          viewport.addEventListener("scrollend", onScrollEnd);
+          if ("onscrollend" in viewport) {
+            viewport.addEventListener("scrollend", onScrollEnd);
+          } else {
+            viewport.addEventListener("scroll", onScroll, { passive: true });
+          }
           viewport.addEventListener("wheel", cancel, { passive: true });
           viewport.addEventListener("touchmove", cancel, { passive: true });
           viewport.addEventListener("pointerdown", cancel, { passive: true });
