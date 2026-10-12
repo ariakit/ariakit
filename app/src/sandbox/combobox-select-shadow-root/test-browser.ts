@@ -4,6 +4,7 @@ import { expectVerticallyCentered } from "#app/test-utils/scroll.ts";
 withFramework(import.meta.dirname, async ({ test }) => {
   for (const label of ["Fruit", "Fruit without initial focus"]) {
     // https://github.com/ariakit/ariakit/issues/7641
+    // https://github.com/ariakit/ariakit/pull/7855#discussion_r4245566718
     test(`moves the active item with arrow keys in a shadow root (${label})`, async ({
       page,
       q,
@@ -12,14 +13,24 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await select.click();
       await test.expect(select).toHaveAttribute("aria-expanded", "true");
       await test.expect(q.option("Lemon")).toHaveAttribute("data-active-item");
+      await test
+        .expect(q.option("Lemon"))
+        .toHaveAttribute("data-focus", "true");
+      await test.expect(select).toBeFocused();
 
       await page.keyboard.press("ArrowUp");
       await test
         .expect(q.option("Kumquat"))
         .toHaveAttribute("data-active-item");
+      await test
+        .expect(q.option("Kumquat"))
+        .toHaveAttribute("data-focus", "true");
+      await test.expect(q.option("Lemon")).not.toHaveAttribute("data-focus");
       await page.keyboard.press("ArrowDown");
       await page.keyboard.press("ArrowDown");
       await test.expect(q.option("Lime")).toHaveAttribute("data-active-item");
+      await test.expect(q.option("Lime")).toHaveAttribute("data-focus", "true");
+      await test.expect(q.option("Kumquat")).not.toHaveAttribute("data-focus");
       await test.expect(select).toBeFocused();
     });
 
