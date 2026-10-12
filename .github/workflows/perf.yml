@@ -202,8 +202,7 @@ jobs:
 
       - name: Build base Next.js app
         if: steps.baseline-rebuild.outputs.nextjs == 'true'
-        # Older baselines use build for Next.js only, without the Worker bundle.
-        run: pnpm -F nextjs exec opennextjs-cloudflare build
+        run: pnpm -F nextjs run build
 
       - name: Check baseline artifacts
         run: |
