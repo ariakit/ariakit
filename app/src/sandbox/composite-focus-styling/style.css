@@ -1,0 +1,38 @@
+.focus-demo {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 36rem;
+  padding: 1rem;
+}
+
+.focus-demo section {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.focus-toolbar {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.focus-item {
+  padding: 0.5rem 1rem;
+  border: 2px solid transparent;
+  border-radius: 0.25rem;
+}
+
+.focus-item[data-active-item] {
+  border-style: dashed;
+  border-color: currentColor;
+}
+
+.focus-item:is(:focus, [data-focus]) {
+  color: white;
+  background: #245caa;
+}
+
+.focus-popup {
+  padding: 0.5rem;
+  background: Canvas;
+  color: CanvasText;
+}

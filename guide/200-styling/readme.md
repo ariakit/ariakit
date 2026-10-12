@@ -84,15 +84,31 @@ It's important to note that, to avoid doing unnecessary work, the `data-active` 
 
 ### `[data-active-item]`
 
+This attribute tracks the active item stored by the widget. It can be present before focus enters and can remain after focus leaves. Use `:is(:focus, [data-focus])` when the style should apply only during current focus.
+
 The `data-active-item` attribute is applied to composite widget items when they receive focus or are hovered (when the [`focusOnHover`](/reference/composite-hover#focusonhover) prop is set to `true`). Besides the [Composite](/components/composite) component itself, composite widgets include [Combobox](/components/combobox), [Menu](/components/menu), [Radio](/components/radio), [Select](/components/select), [Tab](/components/tab), and [Toolbar](/components/toolbar).
 
-This attribute is also applied to the [`Combobox`](/reference/combobox) component when it's the only active item in the composite widget. In other words, when no [`ComboboxItem`](/reference/combobox-item) is active and the focus is solely on the combobox input. In this case, you can use this selector to provide additional affordance to users who pressed <kbd>↑</kbd> on the first item or <kbd>↓</kbd> on the last item to place both virtual and actual DOM focus on the combobox input.
+This attribute is also applied to the [`Combobox`](/reference/combobox) input when no item is active (`activeId` is `null`). This can occur before the input receives focus or after it loses focus. Use `:focus` to style the input's current DOM focus.
 
 ```css
 .item[data-active-item] {
   background-color: #eee;
 }
 ```
+
+### `[data-focus]`
+
+The `data-focus` attribute supplements native `:focus` for composite widget items. It is applied to the active item while DOM focus stays on the composite element, such as the input of a [Combobox](/components/combobox). This includes [virtual focus](/reference/use-composite-store#virtualfocus) and hover focus.
+
+Items with DOM focus use native `:focus` and do not need this attribute. Combine the selectors to style both focus modes:
+
+```css
+.item:is(:focus, [data-focus]) {
+  background-color: #eee;
+}
+```
+
+The attribute is removed when focus leaves the composite or the item stops being active. The `data-active-item` attribute remains available with its existing behavior.
 
 ### `[data-autofill]`
 
