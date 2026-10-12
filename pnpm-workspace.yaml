@@ -49,9 +49,14 @@ peerDependencyRules:
 saveExact: true
 
 tasks:
-  build-worker:
-    dependsOn: []
+  check:
+    dependsOn:
+      - wrangler-types
   clean:
     dependsOn: []
+  dev:
+    dependsOn: []
   docs:
+    dependsOn: []
+  preview:
     dependsOn: []
