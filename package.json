@@ -10,7 +10,7 @@
     "dev-app": "ariakit dev",
     "dev-app-lite": "cross-env DISABLE_SYNTAX_HIGHLIGHTING=true pnpm run dev-app",
     "build-app": "pnpm -F nextjs run build-worker && pnpm -F app run build",
-    "build-app-lite": "pnpm -F nextjs run build-worker && pnpm -F app run build-lite",
+    "build-app-lite": "pnpm -F app -F nextjs run build-preview",
     "preview-app": "conc -r 'pnpm -F app run preview' 'pnpm -F nextjs run preview'",
     "react18": "ariakit react18",
     "test": "vitest",
