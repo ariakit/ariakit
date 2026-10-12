@@ -541,11 +541,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
 Build the app, then run the Chrome project. Replace `my-component` with the name of your sandbox, or omit it to run all browser tests:
 
 ```bash
-pnpm run build-app-lite
+pnpm run build-app
 pnpm -F app run test-chrome my-component
 ```
 
-Lite mode is selected during the build. After `pnpm run build-app-lite`, use `pnpm run preview-app` to preview the lite build.
+Use `pnpm run preview-app` to preview the build.
 
 You can also run the tests in headed mode:
 

@@ -49,7 +49,7 @@ peerDependencyRules:
 saveExact: true
 
 tasks:
-  build-preview:
+  build-worker:
     dependsOn: []
   clean:
     dependsOn: []
