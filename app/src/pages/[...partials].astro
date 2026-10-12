@@ -18,9 +18,6 @@ import { getCollection } from "astro:content";
 export const partial = true;
 
 export const getStaticPaths = (async () => {
-  if (import.meta.env.DISABLE_REFERENCE_LINKS) {
-    return [];
-  }
   const references = await getCollection("references");
   return references.flatMap((reference) => {
     const framework = reference.data.framework;

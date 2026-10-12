@@ -56,7 +56,7 @@ jobs:
           filters: app...
 
       - name: Build Next.js app
-        run: pnpm -F nextjs run build-worker
+        run: pnpm -F nextjs run build
 
       - name: Upload Next.js artifact
         uses: actions/upload-artifact@v7
@@ -202,7 +202,7 @@ jobs:
 
       - name: Build base Next.js app
         if: steps.baseline-rebuild.outputs.nextjs == 'true'
-        run: pnpm -F nextjs run build-worker
+        run: pnpm -F nextjs run build
 
       - name: Check baseline artifacts
         run: |

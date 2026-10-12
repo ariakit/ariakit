@@ -47,3 +47,16 @@ peerDependencyRules:
     react-dom: "19"
 
 saveExact: true
+
+tasks:
+  check:
+    dependsOn:
+      - wrangler-types
+  clean:
+    dependsOn: []
+  dev:
+    dependsOn: []
+  docs:
+    dependsOn: []
+  preview:
+    dependsOn: []
