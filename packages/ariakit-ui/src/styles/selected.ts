@@ -7,18 +7,15 @@ import {
 /** Shared surface effects for checked, selected, and current items. */
 export const selected = cv({
   class: [
-    // Only offset is read unconditionally below; push supplies its own value.
     "[--selected-offset:initial]",
-    // A selected item keeps its own offset when hovered instead of taking
-    // the button's hover offset. Without an override, preserve its resting fill.
+    // Keep the selected offset during hover, or preserve the resting fill when
+    // unset.
     "ui-selected:ui-hover:ak-state-(--selected-offset,0)",
   ],
   variants: {
     /**
-     * Sets the strength of the element's text while checked, selected, or
-     * current, from `0` to `100`, in place of its resting `$ink`. The amount
-     * inherits, so the slots of a control follow it. Set to `false` to clear a
-     * default set by a component.
+     * Sets text strength from `0` to `100` while checked, selected, or current.
+     * The value inherits into slots. `false` clears a component default.
      */
     $selectedInk(value?: (string & {}) | number | false) {
       return getScaledStyleClass({

@@ -37,7 +37,10 @@ export interface ListProps
   extends
     React.ComponentProps<"ol">,
     Omit<VariantProps<typeof list>, "$ordered"> {
-  /** Renders an ordered list (<ol>) when true; unordered (<ul>) when false. */
+  /**
+   * Renders an ordered `ol` when `true`, or an unordered `ul` when `false`.
+   * Defaults to `false`.
+   */
   ordered?: boolean;
 }
 
@@ -75,11 +78,13 @@ export interface ListItemProps
     Pick<ListItemMarkerProps, "checked" | "progress"> {}
 
 /**
- * List item that must be a child of `List`. It renders its own `ListItemMarker`
- * and `ListItemGuide`, which are absolutely positioned in the gutter the item
- * reserves through its start padding, and wraps its children in a
- * `ListItemContent` so the first of them keeps `:first-child` despite the two
- * elements in front of it.
+ * A row inside `List`. Creates its marker and guide, then wraps its children in
+ * `ListItemContent` to preserve their layout and first-child styles.
+ * @example
+ * <List ordered>
+ *   <ListItem checked>Install</ListItem>
+ *   <ListItem progress={0.5}>Configure</ListItem>
+ * </List>
  */
 export function ListItem({ checked, progress, ...props }: ListItemProps) {
   const [variantProps, rest] = splitProps(props, listItem);
@@ -96,12 +101,8 @@ export interface ListItemContentProps
   extends React.ComponentProps<"span">, VariantProps<typeof listItemContent> {}
 
 /**
- * Wrapper for a row's own children. It generates no box, so the children lay
- * out exactly as they would directly in the row, but it keeps the marker and
- * the guide that precede them from taking `:first-child` away from the first of
- * them. Render it as a `span`: the block-mode variants detect block children
- * with `:has(:where(p, div, ...))`, so a `div` would put every list into blocks
- * mode.
+ * Content wrapper created by `ListItem` and `ListDisclosureButton`. It
+ * preserves child layout and first-child styles after the marker and guide.
  */
 export function ListItemContent(props: ListItemContentProps) {
   const [variantProps, rest] = splitProps(props, listItemContent);
@@ -112,9 +113,15 @@ export interface ListItemMarkerProps
   extends
     React.ComponentProps<"span">,
     Omit<VariantProps<typeof listItemMarker>, "$checked" | "$progress"> {
-  /** Progress between `0` and `1` shown as a circular arc. */
+  /**
+   * Progress from `0` to `1`, shown as a circular arc until checked. Omit it to
+   * use the list's marker or the explicit `checked` state.
+   */
   progress?: number;
-  /** Whether the check is checked. Defaults to `true` if `progress` is `1`. */
+  /**
+   * Shows a checked or unchecked marker. Defaults to `true` when `progress` is
+   * `1`; an explicit value takes precedence over progress completion.
+   */
   checked?: boolean;
 }
 
@@ -138,8 +145,7 @@ export function ListItemMarker({
   const hasCheck = checked != null || progress != null;
   const completed = checked ?? progress === 1;
   const [variantProps, rest] = splitProps(props, listItemMarker);
-  // The arc shows how far along an unfinished row is. The name keeps the check
-  // state, and the description says the value the arc draws.
+  // Keep progress in the description so the name can convey the check state.
   const description =
     !completed && progress != null
       ? `${Math.round(progress * 100)}% complete`
@@ -152,10 +158,8 @@ export function ListItemMarker({
         ...variantProps,
       })}
       {...rest}
-      // Set after the spread, so a prop that is present but undefined, as a
-      // wrapper with an optional label passes it, keeps the fallback. Bullets
-      // and numbers repeat what the list element already conveys, so only the
-      // check slot exposes a state.
+      // Hide redundant list markers. Only checks expose a state. Apply
+      // fallbacks after the spread to handle undefined props.
       aria-hidden={rest["aria-hidden"] ?? (hasCheck ? undefined : true)}
       role={rest.role ?? (hasCheck ? "img" : undefined)}
       aria-label={
@@ -178,9 +182,8 @@ export interface ListItemGuideProps
   extends React.ComponentProps<"span">, VariantProps<typeof listItemGuide> {}
 
 /**
- * Vertical segment of the guide, joining a row's marker to the next row's. It
- * only becomes visible where the list draws guides: by default in ordered lists
- * in blocks mode, or wherever the list's `$guide` asks for it.
+ * Guide segment created by `ListItem` and `ListDisclosure`. Joins adjacent
+ * markers when the list's `$guide` setting enables it.
  */
 export function ListItemGuide(props: ListItemGuideProps) {
   const [variantProps, rest] = splitProps(props, listItemGuide);
@@ -191,7 +194,15 @@ export interface ListDisclosureProps extends Omit<
   DisclosureProps<typeof listDisclosure>,
   "recipe"
 > {
+  /**
+   * Button content, a custom element, or `ListDisclosureButton` props. When
+   * omitted, children must include the button and content components.
+   */
   button?: React.ReactNode | ListDisclosureButtonProps;
+  /**
+   * Custom content element or `ListDisclosureContent` props. Used when `button`
+   * is set; defaults to content containing the children.
+   */
   content?: React.ReactElement | ListDisclosureContentProps;
 }
 
@@ -205,6 +216,15 @@ export interface ListDisclosureProps extends Omit<
  *     <ListDisclosure button="Item">Details</ListDisclosure>
  *   </li>
  * </List>
+ * @example
+ * <List ordered>
+ *   <li>
+ *     <ListDisclosure>
+ *       <ListDisclosureButton>Install</ListDisclosureButton>
+ *       <ListDisclosureContent>Run the installer.</ListDisclosureContent>
+ *     </ListDisclosure>
+ *   </li>
+ * </List>
  */
 export function ListDisclosure({
   button,
@@ -214,13 +234,9 @@ export function ListDisclosure({
 }: ListDisclosureProps) {
   return (
     <Disclosure
-      // The order carries the contract: the recipe first, the caller's props
-      // second, the composed slots last.
       recipe={listDisclosure}
       {...props}
-      // The guide has to span the whole row, open content included, so it goes
-      // on the disclosure root instead of on the button. A caller's own
-      // decoration keeps its place alongside it.
+      // The root lets the guide span both the button and open content.
       decoration={
         <>
           {decoration}
@@ -238,6 +254,20 @@ export interface ListDisclosureButtonProps
     Omit<DisclosureButtonProps<typeof listDisclosureButton>, "recipe">,
     Pick<ListItemMarkerProps, "checked" | "progress"> {}
 
+/**
+ * Toggles a list disclosure and adds its marker, check state, or progress arc.
+ * The indicator defaults to `chevron-down-next`.
+ * @example
+ * <List ordered>
+ *   <li>
+ *     <ListDisclosure
+ *       button={<ListDisclosureButton checked>Install</ListDisclosureButton>}
+ *     >
+ *       Installation is complete.
+ *     </ListDisclosure>
+ *   </li>
+ * </List>
+ */
 export function ListDisclosureButton({
   label,
   checked,
@@ -253,8 +283,6 @@ export function ListDisclosureButton({
   const marker = <ListItemMarker checked={checked} progress={progress} />;
   return (
     <DisclosureButton
-      // The order carries the contract: the recipe first, the caller's props
-      // second, the composed label and children last.
       recipe={listDisclosureButton}
       indicator={indicator}
       {...props}
@@ -278,9 +306,27 @@ export function ListDisclosureButton({
 }
 
 export interface ListDisclosureContentProps extends DisclosureContentProps {
+  /**
+   * Custom body element or `ListDisclosureContentBody` props. Defaults to a
+   * `ListDisclosureContentBody` containing the content children.
+   */
   body?: React.ReactElement | ListDisclosureContentBodyProps;
 }
 
+/**
+ * Collapsible content with spacing matched to adjacent list items.
+ * @example
+ * <List ordered>
+ *   <li>
+ *     <ListDisclosure
+ *       button="Install"
+ *       content={<ListDisclosureContent prose />}
+ *     >
+ *       <p>Run the installer.</p>
+ *     </ListDisclosure>
+ *   </li>
+ * </List>
+ */
 export function ListDisclosureContent(props: ListDisclosureContentProps) {
   const body = createRender(ListDisclosureContentBody, props.body);
   return <DisclosureContent {...props} body={body} />;
@@ -291,11 +337,24 @@ export interface ListDisclosureContentBodyProps extends Omit<
   "recipe"
 > {}
 
+/**
+ * Applies list spacing inside disclosure content. Created by
+ * `ListDisclosureContent` unless its `body` prop supplies a replacement.
+ * @example
+ * <List ordered>
+ *   <li>
+ *     <ListDisclosure
+ *       button="Install"
+ *       content={{ body: <ListDisclosureContentBody /> }}
+ *     >
+ *       Run the installer.
+ *     </ListDisclosure>
+ *   </li>
+ * </List>
+ */
 export function ListDisclosureContentBody(
   props: ListDisclosureContentBodyProps,
 ) {
-  // The order carries the contract: the recipe first, the caller's props
-  // second.
   return (
     <DisclosureContentBody recipe={listDisclosureContentBody} {...props} />
   );

@@ -30,7 +30,29 @@ export interface TabsProps
     VariantProps<typeof tabs> {}
 
 /**
- * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ * Shares tab state and renders a frame for the tab list and panels.
+ * @example
+ * <Tabs>
+ *   <TabList
+ *     aria-label="Project"
+ *     tabs={{ overview: "Overview", activity: "Activity" }}
+ *   />
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
+ * @example
+ * <Tabs>
+ *   <TabList aria-label="Project">
+ *     <Tab id="overview">Overview</Tab>
+ *     <Tab id="activity">Activity</Tab>
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function Tabs({
   rtl,
@@ -57,7 +79,8 @@ export function Tabs({
 export interface TabProviderProps extends ak.TabProviderProps {}
 
 /**
- * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ * Shares tab selection and keyboard navigation state without a wrapper element.
+ * Use `Tabs` to include the styled parent for the tab list and panels.
  */
 export function TabProvider(props: TabProviderProps) {
   return <ak.TabProvider {...props} />;
@@ -66,7 +89,18 @@ export function TabProvider(props: TabProviderProps) {
 export interface TabProps extends ak.TabProps, VariantProps<typeof tab> {}
 
 /**
- * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ * Renders a tab that selects its associated panel.
+ * @example
+ * <Tabs>
+ *   <TabList aria-label="Project">
+ *     <Tab id="overview">Overview</Tab>
+ *     <Tab id="activity">Activity</Tab>
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function Tab(props: TabProps) {
   const [variantProps, rest] = splitProps(props, tab);
@@ -75,12 +109,18 @@ export function Tab(props: TabProps) {
 
 export interface TabListProps
   extends ak.TabListProps, VariantProps<typeof tabList> {
+  /**
+   * Tabs to render before `children`. Accepts content, `Tab` props, or elements
+   * that replace tabs. Record keys supply default tab IDs. Text labels are
+   * wrapped in `TabLabel`.
+   */
   tabs?:
     | Array<React.ReactNode | TabProps>
     | Record<string, React.ReactNode | TabProps>;
 }
 
 interface TextTabProps extends TabProps {
+  /** Text to wrap in a `TabLabel`. */
   children: string | number;
 }
 
@@ -112,7 +152,32 @@ function renderTab(tab: React.ReactNode | TabProps, props?: TabProps) {
 }
 
 /**
- * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ * Renders a named tab list from children, an array, or a record of tabs.
+ * @example
+ * <Tabs>
+ *   <TabList
+ *     aria-label="Project"
+ *     tabs={{ overview: "Overview", activity: "Activity" }}
+ *   />
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
+ * @example
+ * <Tabs>
+ *   <TabList
+ *     aria-label="Project"
+ *     tabs={[
+ *       { id: "overview", children: "Overview" },
+ *       { id: "activity", children: "Activity" },
+ *     ]}
+ *   />
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabList({ tabs, children, ...props }: TabListProps) {
   const [variantProps, rest] = splitProps(props, tabList);
@@ -121,12 +186,8 @@ export function TabList({ tabs, children, ...props }: TabListProps) {
       {Array.isArray(tabs)
         ? tabs.map((tab, index) => {
             const element = renderTab(tab);
-            // A keyed element entry keeps its own key so reordering reconciles
-            // by identity; unkeyed entries fall back to their position. The
-            // prefixes keep the two key sources from colliding (an explicit key
-            // "0" vs index 0). Children.toArray would provide the same
-            // semantics, but react-dom 19 still emits a missing-key warning for
-            // its cloned entries.
+            // Prefixes prevent key/index collisions. Children.toArray clones
+            // still cause missing-key warnings in react-dom 19.
             const key =
               element.key == null ? `index:${index}` : `key:${element.key}`;
             return <Fragment key={key}>{element}</Fragment>;
@@ -143,7 +204,19 @@ export interface TabSeparatorProps
   extends ComponentProps<"div">, VariantProps<typeof tabSeparator> {}
 
 /**
- * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ * Renders a visual divider between tabs.
+ * @example
+ * <Tabs>
+ *   <TabList aria-label="Project">
+ *     <Tab id="overview">Overview</Tab>
+ *     <TabSeparator aria-hidden />
+ *     <Tab id="activity">Activity</Tab>
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabSeparator(props: TabSeparatorProps) {
   const [variantProps, rest] = splitProps(props, tabSeparator);
@@ -154,7 +227,16 @@ export interface TabLabelProps
   extends ComponentProps<"span">, VariantProps<typeof tabLabel> {}
 
 /**
- * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ * Renders tab label text with optional truncation.
+ * @example
+ * <Tabs>
+ *   <TabList aria-label="Project">
+ *     <Tab id="overview"><TabLabel>Overview</TabLabel></Tab>
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabLabel(props: TabLabelProps) {
   const [variantProps, rest] = splitProps(props, tabLabel);
@@ -165,7 +247,19 @@ export interface TabSlotProps
   extends ComponentProps<"span">, VariantProps<typeof tabSlot> {}
 
 /**
- * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ * Renders an icon, badge, or shortcut next to a tab label.
+ * @example
+ * <Tabs>
+ *   <TabList aria-label="Project">
+ *     <Tab id="activity">
+ *       <TabLabel>Activity</TabLabel>
+ *       <TabSlot $kind="badge">3 new</TabSlot>
+ *     </Tab>
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="activity">Three recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabSlot(props: TabSlotProps) {
   const [variantProps, rest] = splitProps(props, tabSlot);
@@ -185,7 +279,18 @@ export interface TabPanelsProps
   extends ComponentProps<"div">, VariantProps<typeof tabPanels> {}
 
 /**
- * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ * Renders the shared surface around tab panels.
+ * @example
+ * <Tabs>
+ *   <TabList
+ *     aria-label="Project"
+ *     tabs={{ overview: "Overview", activity: "Activity" }}
+ *   />
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabPanels(props: TabPanelsProps) {
   const [variantProps, rest] = splitProps(props, tabPanels);
@@ -193,11 +298,27 @@ export function TabPanels(props: TabPanelsProps) {
 }
 
 export interface TabPanelProps extends ak.TabPanelProps {
+  /**
+   * Associates one panel with the selected tab. Update its children to match
+   * the selected tab. An explicit `tabId` takes precedence. Defaults to
+   * `false`.
+   */
   single?: boolean;
 }
 
 /**
- * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ * Shows the content associated with a tab through its `tabId`.
+ * @example
+ * <Tabs>
+ *   <TabList
+ *     aria-label="Project"
+ *     tabs={{ overview: "Overview", activity: "Activity" }}
+ *   />
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabPanel({ single, ...props }: TabPanelProps) {
   const context = ak.useTabContext();
@@ -209,7 +330,20 @@ export interface TabGliderProps
   extends ComponentProps<"div">, VariantProps<typeof tabGlider> {}
 
 /**
- * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ * Renders a decorative selection indicator after the tabs in a tab list.
+ * @example
+ * <Tabs>
+ *   <TabList
+ *     aria-label="Project"
+ *     tabs={{ overview: "Overview", activity: "Activity" }}
+ *   >
+ *     <TabGlider />
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabGlider(props: TabGliderProps) {
   const [variantProps, rest] = splitProps(props, tabGlider);

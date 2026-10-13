@@ -16,7 +16,14 @@ import { ButtonSlot } from "./button.ariakit.react.tsx";
 export interface PopoverProviderProps extends ak.PopoverProviderProps {}
 
 /**
- * @see https://ariakit.com/reference/popover-provider
+ * Shares open state and anchor position with a popover.
+ * @example
+ * <PopoverProvider>
+ *   <PopoverDisclosure>Details</PopoverDisclosure>
+ *   <Popover aria-label="Project details">
+ *     <p>The project is ready.</p>
+ *   </Popover>
+ * </PopoverProvider>
  */
 export function PopoverProvider(props: PopoverProviderProps) {
   return <ak.PopoverProvider {...props} />;
@@ -26,7 +33,14 @@ export interface PopoverDisclosureProps
   extends ak.PopoverDisclosureProps, VariantProps<typeof popoverDisclosure> {}
 
 /**
- * @see https://ariakit.com/reference/popover-disclosure
+ * Renders the button that opens and anchors its popover.
+ * @example
+ * <PopoverProvider>
+ *   <PopoverDisclosure>Details</PopoverDisclosure>
+ *   <Popover aria-label="Project details">
+ *     <p>The project is ready.</p>
+ *   </Popover>
+ * </PopoverProvider>
  */
 export function PopoverDisclosure(props: PopoverDisclosureProps) {
   const [variantProps, rest] = splitProps(props, popoverDisclosure);
@@ -39,9 +53,15 @@ export interface PopoverProps
   extends ak.PopoverProps, VariantProps<typeof popover> {}
 
 /**
- * Floats 8px away from its anchor by default, like `ComboboxPopover` and
- * Ariakit's `Tooltip`. An arrow adds its own offset on top of the gutter.
- * @see https://ariakit.com/reference/popover
+ * Renders a popup anchored to its disclosure, with an 8px gutter by default. An
+ * arrow adds its own offset to the gutter.
+ * @example
+ * <PopoverProvider>
+ *   <PopoverDisclosure>Details</PopoverDisclosure>
+ *   <Popover aria-label="Project details">
+ *     <p>The project is ready.</p>
+ *   </Popover>
+ * </PopoverProvider>
  */
 export function Popover({ gutter = 8, ...props }: PopoverProps) {
   const [variantProps, rest] = splitProps(props, popover);
@@ -53,7 +73,15 @@ export function Popover({ gutter = 8, ...props }: PopoverProps) {
 export interface PopoverArrowProps extends ak.PopoverArrowProps {}
 
 /**
- * @see https://ariakit.com/reference/popover-arrow
+ * Renders an arrow that points from the popover to its anchor.
+ * @example
+ * <PopoverProvider>
+ *   <PopoverDisclosure>Details</PopoverDisclosure>
+ *   <Popover aria-label="Project details">
+ *     <PopoverArrow />
+ *     <p>The project is ready.</p>
+ *   </Popover>
+ * </PopoverProvider>
  */
 export function PopoverArrow(props: PopoverArrowProps) {
   return <ak.PopoverArrow {...props} />;
@@ -63,7 +91,15 @@ export interface PopoverHeadingProps
   extends ak.PopoverHeadingProps, VariantProps<typeof popoverHeading> {}
 
 /**
- * @see https://ariakit.com/reference/popover-heading
+ * Renders a heading that gives its popover an accessible name.
+ * @example
+ * <PopoverProvider>
+ *   <PopoverDisclosure>Details</PopoverDisclosure>
+ *   <Popover>
+ *     <PopoverHeading>Project details</PopoverHeading>
+ *     <p>The project is ready.</p>
+ *   </Popover>
+ * </PopoverProvider>
  */
 export function PopoverHeading(props: PopoverHeadingProps) {
   const [variantProps, rest] = splitProps(props, popoverHeading);
@@ -74,7 +110,15 @@ export interface PopoverDescriptionProps
   extends ak.PopoverDescriptionProps, VariantProps<typeof popoverDescription> {}
 
 /**
- * @see https://ariakit.com/reference/popover-description
+ * Renders text that describes its popover to assistive technology.
+ * @example
+ * <PopoverProvider>
+ *   <PopoverDisclosure>Archive</PopoverDisclosure>
+ *   <Popover aria-label="Archive project">
+ *     <PopoverDescription>You can restore it later.</PopoverDescription>
+ *     <PopoverDismiss>Cancel</PopoverDismiss>
+ *   </Popover>
+ * </PopoverProvider>
  */
 export function PopoverDescription(props: PopoverDescriptionProps) {
   const [variantProps, rest] = splitProps(props, popoverDescription);
@@ -90,22 +134,28 @@ export interface PopoverDismissProps
   extends ak.PopoverDismissProps, VariantProps<typeof popoverDismiss> {}
 
 /**
- * Without children, renders a square icon button named "Dismiss popup".
- * @see https://ariakit.com/reference/popover-dismiss
+ * Renders a button that closes its popover. Without children, it shows an icon
+ * in a square button named "Dismiss popup".
+ * @example
+ * <PopoverProvider>
+ *   <PopoverDisclosure>Details</PopoverDisclosure>
+ *   <Popover aria-label="Project details">
+ *     <PopoverDismiss />
+ *     <p>The project is ready.</p>
+ *   </Popover>
+ * </PopoverProvider>
  */
 export function PopoverDismiss({ children, ...props }: PopoverDismissProps) {
   const [variantProps, rest] = splitProps(props, popoverDismiss);
-  // Ariakit's default children is a bare 1em icon, which the button recipe pads
-  // like a line of text. A slot makes the icon-only button square, and the name
-  // moves to the button because the slot icon is hidden.
+  // A slot keeps the icon-only button square. Its hidden icon needs a button
+  // label.
   const iconOnly = children === undefined;
   const fallbackLabel = iconOnly ? "Dismiss popup" : undefined;
   return (
     <ak.PopoverDismiss
       {...popoverDismiss.jsx(variantProps)}
       {...rest}
-      // Set after the spread, so a label prop that is present but undefined, as
-      // a wrapper with an optional label passes it, keeps the fallback.
+      // Preserve the fallback when the caller passes undefined.
       aria-label={rest["aria-label"] ?? fallbackLabel}
     >
       {iconOnly ? (
@@ -123,10 +173,20 @@ export interface PopoverScrollProps
   extends ComponentProps<"div">, VariantProps<typeof popoverScroll> {}
 
 /**
- * Scrollable viewport that covers the popover’s content box, for popovers whose
- * content can outgrow the available height. Give the popover a height cap and a
- * flex column layout so the viewport can shrink, for example
- * `className="flex flex-col max-h-(--popover-available-height)"`.
+ * Renders a scrollable viewport for long popover content. Give the popover a
+ * maximum height and a flex column layout so the viewport can shrink.
+ * @example
+ * <PopoverProvider>
+ *   <PopoverDisclosure>Details</PopoverDisclosure>
+ *   <Popover
+ *     aria-label="Project details"
+ *     className="flex flex-col max-h-(--popover-available-height)"
+ *   >
+ *     <PopoverScroll>
+ *       <p>The project is ready.</p>
+ *     </PopoverScroll>
+ *   </Popover>
+ * </PopoverProvider>
  */
 export function PopoverScroll(props: PopoverScrollProps) {
   const [variantProps, rest] = splitProps(props, popoverScroll);

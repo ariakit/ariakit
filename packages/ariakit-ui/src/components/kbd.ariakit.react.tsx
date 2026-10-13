@@ -6,6 +6,11 @@ import { kbd } from "../styles/kbd.ts";
 export interface KbdProps
   extends ak.RoleProps<"kbd">, VariantProps<typeof kbd> {}
 
+/**
+ * Renders a key or keyboard shortcut with keycap styling.
+ * @example
+ * <p>Press <Kbd>Esc</Kbd> to close the dialog.</p>
+ */
 export function Kbd(props: KbdProps) {
   const [variantProps, rest] = splitProps(props, kbd);
   return <ak.Role.kbd {...kbd.jsx(variantProps)} {...rest} />;

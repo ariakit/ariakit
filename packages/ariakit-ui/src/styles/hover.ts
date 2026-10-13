@@ -5,13 +5,12 @@ import {
   getScaledStyleClass,
 } from "../utils/styles.ts";
 
+/** Hover adjustments to a layer's text, lightness, and chroma. */
 export const hover = cv({
   variants: {
     /**
-     * Sets the strength of the element's text while it is hovered, from `0` to
-     * `100`, in place of its resting `$ink`. The amount inherits, so the slots
-     * of a control follow it. Set to `false` to clear a default set by a
-     * component.
+     * Sets hovered text strength (0–100), replacing `$ink`. The amount inherits
+     * through slots and nested layers. `false` clears a component default.
      */
     $hoverInk(value?: (string & {}) | number | false) {
       return getScaledStyleClass({
@@ -22,19 +21,9 @@ export const hover = cv({
       });
     },
     /**
-     * Automatically adjusts the layer's lightness when the element is hovered.
-     * The background color becomes lighter or darker depending on its current
-     * lightness. The value represents the **maximum** lightness offset, but
-     * it's not guaranteed. If the user has high-contrast preferences, the
-     * offset will be lower to allow for greater contrast between the layer and
-     * the text.
-     *
-     * When used on a layer with `$invert`, the amount is automatically
-     * increased because the perceived difference in lightness is less
-     * noticeable when there is high contrast between the layer and its parent.
-     *
-     * If you want the opposite effect, where the offset increases as contrast
-     * goes up, use `$hoverPush` instead.
+     * Adjusts lightness on hover by a maximum offset. High contrast reduces the
+     * offset to protect text contrast; `$invert` increases it. Use `$hoverPush`
+     * for a minimum shift.
      */
     $hoverOffset(value?: string | number | boolean) {
       return getLightnessStyleClass({
@@ -44,18 +33,9 @@ export const hover = cv({
       });
     },
     /**
-     * Automatically adjusts the layer's lightness when the element is hovered.
-     * The background color becomes lighter or darker depending on its current
-     * lightness. The value represents the **minimum** guaranteed lightness
-     * shift. If the user has high-contrast preferences, the shift will be
-     * greater to allow for more contrast between the layer and its parent.
-     *
-     * When used on a layer with `$invert`, the amount is automatically
-     * increased because the perceived difference in lightness is less
-     * noticeable when there is high contrast between the layer and its parent.
-     *
-     * If you want the opposite effect, where the offset decreases as contrast
-     * goes up, use `$hoverOffset` instead.
+     * Adjusts lightness on hover by a minimum shift. High contrast increases
+     * the shift from the parent layer; `$invert` also increases it. Use
+     * `$hoverOffset` for a maximum offset.
      */
     $hoverPush(value?: string | number | boolean) {
       return getLightnessStyleClass({

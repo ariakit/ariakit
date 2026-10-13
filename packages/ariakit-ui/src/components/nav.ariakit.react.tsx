@@ -42,17 +42,14 @@ import {
   DisclosureContentBody,
 } from "./disclosure.ariakit.react.tsx";
 
-// The stores of every NavDisclosure around a row, outermost first, so a current
-// link can open all of them and not only the nearest one.
+// Keep ancestors outermost first so current links can open every parent.
 const NavDisclosureContext = React.createContext<readonly ak.DisclosureStore[]>(
   [],
 );
 
 /**
- * A glider for a nav, as `NavGlider` props or an element, or several of them in
- * an array, such as a cover of the current row followed by a bar beside it: a
- * later glider paints over an earlier one. `true` renders the default glider, a
- * flat cover of the current row.
+ * A glider element, props, or array. Later gliders paint over earlier ones.
+ * `true` renders the default flat cover of the current row.
  */
 export type NavGliderValue =
   | boolean
@@ -72,28 +69,25 @@ function renderGliders(value?: NavGliderValue) {
 export interface NavProps
   extends ak.RoleProps<"nav">, VariantProps<typeof nav> {
   /**
-   * The list that holds the rows, as an element or as `NavList` props. Set it
-   * to `false` to render the children as they are, for a nav made of groups
-   * that bring their own lists. Links with default items need a `NavList` or
-   * another `ul`, `ol`, or `menu`; use `item={false}` for standalone links.
+   * The list that holds the rows, as an element or `NavList` props. Defaults to
+   * a `NavList` containing the children. Set `false` for groups that supply
+   * their own lists. Links with default items need a `NavList` or another `ul`,
+   * `ol`, or `menu`; use `item={false}` for standalone links.
    */
   list?: React.ReactElement | NavListProps | false;
   /**
-   * A glider that travels between the rows of the nav, in its own list, in a
-   * group or in a disclosure alike, rendered before them.
+   * Indicator that moves between current rows, including rows in groups and
+   * disclosures. Set `true` for the default `NavGlider`, or supply an element,
+   * props, or an array of these. Omitted by default.
    */
   glider?: NavGliderValue;
 }
 
-// The properties whose transitions move the rows of a nav when disclosure
-// content opens or closes.
+// Disclosure transitions that move nav rows.
 const ROW_MOVING_PROPERTIES = new Set(["height", "max-height"]);
 
 /**
- * Marks the nav with `data-settling` while a transition inside it moves the
- * rows, so a glider stops easing after its row and follows it at once (see
- * navGlider). A glider's own transitions do not count. Native listeners: React
- * dispatches the end of a transition, but not its start.
+ * Disables glider easing while rows move, excluding the glider's transitions.
  */
 function useSettling(element: HTMLElement | null) {
   React.useEffect(() => {
@@ -101,8 +95,7 @@ function useSettling(element: HTMLElement | null) {
     let running = 0;
     const isRowMoving = (event: TransitionEvent) => {
       if (!ROW_MOVING_PROPERTIES.has(event.propertyName)) return false;
-      // A capability check rather than instanceof: the target may come from
-      // another realm.
+      // The target may come from another realm.
       const target = event.target as Partial<Element> | null;
       return !target?.classList?.contains("glider");
     };
@@ -129,6 +122,21 @@ function useSettling(element: HTMLElement | null) {
   }, [element]);
 }
 
+/**
+ * A navigation landmark that wraps its rows in a `NavList` by default.
+ * @example
+ * <Nav aria-label="Main" glider>
+ *   <NavLink href="/" currentUrl="/">Home</NavLink>
+ *   <NavLink href="/docs">Docs</NavLink>
+ * </Nav>
+ * @example
+ * <Nav aria-label="Docs" list={false}>
+ *   <NavGroup>
+ *     <NavGroupLabel>Getting started</NavGroupLabel>
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavGroup>
+ * </Nav>
+ */
 export function Nav({ list, glider, children, ...props }: NavProps) {
   const [variantProps, rest] = splitProps(props, nav);
   const [element, setElement] = React.useState<HTMLElement | null>(null);
@@ -137,8 +145,7 @@ export function Nav({ list, glider, children, ...props }: NavProps) {
     <ak.Role.nav
       {...nav.jsx(variantProps)}
       {...rest}
-      // The inner element takes the state setter as its ref, and Ariakit merges
-      // it with the caller's ref and render element.
+      // Let Ariakit merge the state setter with the caller's ref and element.
       render={<ak.Role.nav ref={setElement} render={rest.render} />}
     >
       {renderGliders(glider)}
@@ -150,6 +157,14 @@ export function Nav({ list, glider, children, ...props }: NavProps) {
 export interface NavListProps
   extends ak.RoleProps<"ul">, VariantProps<typeof navList> {}
 
+/**
+ * A semantic list for navigation rows. `Nav` creates one by default; use
+ * additional lists inside groups and disclosures.
+ * @example
+ * <Nav aria-label="Main" list={<NavList />}>
+ *   <NavLink href="/">Home</NavLink>
+ * </Nav>
+ */
 export function NavList(props: NavListProps) {
   const [variantProps, rest] = splitProps(props, navList);
   return <ak.Role.ul {...navList.jsx(variantProps)} {...rest} />;
@@ -159,10 +174,13 @@ export interface NavGliderProps
   extends ak.RoleProps<"div">, VariantProps<typeof navGlider> {}
 
 /**
- * Renders the element that glides between the rows of a `Nav` to mark the
- * current one, as a cover of the row or as a bar beside it. It goes before the
- * rows, as the nav's first child, so it paints under them, and it hides itself
- * in browsers without CSS anchor positioning.
+ * Marks the current row with a cover or bar. Pass it to `Nav`'s `glider` prop
+ * to paint below the rows. Hidden in browsers without CSS anchor positioning.
+ * @example
+ * <Nav aria-label="Main" glider={<NavGlider />}>
+ *   <NavLink href="/" currentUrl="/">Home</NavLink>
+ *   <NavLink href="/docs">Docs</NavLink>
+ * </Nav>
  */
 export function NavGlider(props: NavGliderProps) {
   const [variantProps, rest] = splitProps(props, navGlider);
@@ -171,16 +189,34 @@ export function NavGlider(props: NavGliderProps) {
 
 export interface NavLinkProps
   extends ak.RoleProps<"a">, VariantProps<typeof navLink> {
+  /**
+   * Current page URL, compared with `href` to set `aria-current="page"` and
+   * open ancestor disclosures. Matches the origin and path, ignoring trailing
+   * slashes. A hash or query in `href` must also match. No match is computed
+   * when omitted.
+   */
   currentUrl?: string | URL;
   /**
-   * The list item around the link. Set to `false` for a standalone link or an
-   * existing item wrapper. All other props, including `ref` and `render`,
-   * belong to the anchor. The default item needs a `NavList` or another `ul`,
-   * `ol`, or `menu` parent, including inside disclosure content.
+   * Custom list item element or props around the link. Defaults to an `li`; set
+   * `false` for a standalone link or an existing item wrapper. All other props,
+   * including `ref` and `render`, belong to the anchor. The default item needs
+   * a `NavList` or another `ul`, `ol`, or `menu` parent.
    */
   item?: React.ReactElement | ak.RoleProps<"li"> | false;
 }
 
+/**
+ * A navigation link with a list item wrapper. Pass `currentUrl` to mark the
+ * current page and open its ancestor disclosures.
+ * @example
+ * <Nav aria-label="Main">
+ *   <NavLink href="/docs" currentUrl="/docs">Docs</NavLink>
+ * </Nav>
+ * @example
+ * <Nav aria-label="Main" list={false}>
+ *   <NavLink href="/docs" item={false}>Docs</NavLink>
+ * </Nav>
+ */
 export function NavLink({ currentUrl, item, ...props }: NavLinkProps) {
   const [variantProps, rest] = splitProps(props, navLink);
   const isCurrent = isCurrentPage(currentUrl, rest.href);
@@ -208,14 +244,16 @@ export interface NavSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof navSlot> {}
 
 /**
- * Renders an icon, badge, avatar, or shortcut in a nav row: a `NavLink`, a
- * `NavButton`, or after the label of a `NavDisclosureButton`. Every kind but a
- * shortcut takes the nav's `$slotSize`, before or after the label, so the
- * labels after an icon, a badge, and an avatar line up. A badge pads round by
- * default, so a one-digit count is a circle the slot size; pass `$p="auto"` for
- * a word. It wraps the children of the `badge` and `shortcut` kinds in a
- * `<span>`, which scales the badge text and keeps the shortcut keys left to
- * right.
+ * Renders an icon, badge, avatar, or shortcut in a nav row. All except
+ * shortcuts inherit the nav's `$slotSize`. Use `$p="auto"` for word badges.
+ * Badge and shortcut content gets a span for text sizing and key direction.
+ * @example
+ * <Nav aria-label="Main">
+ *   <NavLink href="/updates">
+ *     <NavLinkLabel>Updates</NavLinkLabel>
+ *     <NavSlot $kind="badge">3</NavSlot>
+ *   </NavLink>
+ * </Nav>
  */
 export function NavSlot(props: NavSlotProps) {
   const [variantProps, rest] = splitProps(props, navSlot);
@@ -237,6 +275,15 @@ export interface NavLinkContentProps
 /**
  * Wraps the `NavLinkLabel` and `NavLinkDescription` of a `NavLink` and fills
  * the row, so a slot after it sits at the end.
+ * @example
+ * <Nav aria-label="Main">
+ *   <NavLink href="/docs">
+ *     <NavLinkContent>
+ *       <NavLinkLabel>Docs</NavLinkLabel>
+ *       <NavLinkDescription>Guides and examples</NavLinkDescription>
+ *     </NavLinkContent>
+ *   </NavLink>
+ * </Nav>
  */
 export function NavLinkContent(props: NavLinkContentProps) {
   const [variantProps, rest] = splitProps(props, navLinkContent);
@@ -247,11 +294,15 @@ export interface NavLinkLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof navLinkLabel> {}
 
 /**
- * Renders the label of a `NavLink`. Wrap the text in it when a `NavSlot`
- * follows it, or when a `NavSlot` with a named `$size`, such as `xl`, sits
- * beside it: a slot spaces itself through the element next to it, which a bare
- * text node is not. A slot after a bare text label that is wider than the line
- * sits closer to the text.
+ * Wraps a link's label so adjacent slots can set its margins. Required when a
+ * slot follows the text or uses a named `$size`, such as `xl`.
+ * @example
+ * <Nav aria-label="Main">
+ *   <NavLink href="/updates">
+ *     <NavLinkLabel>Updates</NavLinkLabel>
+ *     <NavSlot $kind="badge">3</NavSlot>
+ *   </NavLink>
+ * </Nav>
  */
 export function NavLinkLabel(props: NavLinkLabelProps) {
   const [variantProps, rest] = splitProps(props, navLinkLabel);
@@ -266,6 +317,21 @@ export interface NavLinkDescriptionProps
  * the link's content, so it is part of the link's accessible name too. To keep
  * it out of the name, give the label and the description an `id` and pass them
  * to the link as `aria-labelledby` and `aria-describedby`.
+ * @example
+ * <Nav aria-label="Main">
+ *   <NavLink
+ *     href="/docs"
+ *     aria-labelledby="docs-label"
+ *     aria-describedby="docs-description"
+ *   >
+ *     <NavLinkContent>
+ *       <NavLinkLabel id="docs-label">Docs</NavLinkLabel>
+ *       <NavLinkDescription id="docs-description">
+ *         Guides and examples
+ *       </NavLinkDescription>
+ *     </NavLinkContent>
+ *   </NavLink>
+ * </Nav>
  */
 export function NavLinkDescription(props: NavLinkDescriptionProps) {
   const [variantProps, rest] = splitProps(props, navLinkDescription);
@@ -275,6 +341,17 @@ export function NavLinkDescription(props: NavLinkDescriptionProps) {
 export interface NavGroupProps
   extends ak.GroupProps, VariantProps<typeof navGroup> {}
 
+/**
+ * Groups related navigation rows under an optional `NavGroupLabel`. Put its
+ * links in a `NavList`.
+ * @example
+ * <Nav aria-label="Docs" list={false}>
+ *   <NavGroup>
+ *     <NavGroupLabel>Getting started</NavGroupLabel>
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavGroup>
+ * </Nav>
+ */
 export function NavGroup(props: NavGroupProps) {
   const [variantProps, rest] = splitProps(props, navGroup);
   return <ak.Group {...navGroup.jsx(variantProps)} {...rest} />;
@@ -286,26 +363,38 @@ export interface NavGroupLabelProps
 /**
  * Renders the label of a nav group, padded like a row and with its text
  * starting where the rows' content starts.
+ * @example
+ * <Nav aria-label="Docs" list={false}>
+ *   <NavGroup>
+ *     <NavGroupLabel>Getting started</NavGroupLabel>
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavGroup>
+ * </Nav>
  */
 export function NavGroupLabel(props: NavGroupLabelProps) {
   const [variantProps, rest] = splitProps(props, navGroupLabel);
   return <ak.GroupLabel {...navGroupLabel.jsx(variantProps)} {...rest} />;
 }
 
-// The recipe keeps the disclosure's $iconSize, which sizes only the section's
-// own icon and indent. A section takes $slotSize instead, which sizes the nav
-// slots inside it too.
+// $slotSize sizes both the disclosure icon and its nested nav slots.
 export interface NavDisclosureProps extends Omit<
   DisclosureProps<typeof navDisclosure>,
   "recipe" | "$iconSize"
 > {
+  /**
+   * Button content, a custom element, or `NavDisclosureButton` props. When
+   * omitted, children must include the button and content components.
+   */
   button?: React.ReactNode | NavDisclosureButtonProps;
+  /**
+   * Custom content element or `NavDisclosureContent` props. Used when `button`
+   * is set; defaults to content containing the children.
+   */
   content?: React.ReactElement | NavDisclosureContentProps;
 }
 
 function NavDisclosureRoot(props: ak.RoleProps<"li">) {
-  // Capture this disclosure's store before a nested provider can replace the
-  // generic context, which also carries unrelated dialogs and popovers.
+  // Capture the store before nested providers replace the shared context.
   const disclosure = ak.useDisclosureContext();
   const ancestors = React.useContext(NavDisclosureContext);
   const disclosures = React.useMemo(() => {
@@ -320,9 +409,22 @@ function NavDisclosureRoot(props: ak.RoleProps<"li">) {
 }
 
 /**
- * A row of a `Nav` that discloses rows of its own. Its root paints no surface
- * by default: a nested section sits in a content that stacks over the nav's
- * gliders, so an opaque root would hide the covers of its rows.
+ * Discloses nested nav rows. The transparent root keeps their gliders visible.
+ * @example
+ * <Nav aria-label="Docs">
+ *   <NavDisclosure button="Getting started">
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavDisclosure>
+ * </Nav>
+ * @example
+ * <Nav aria-label="Docs">
+ *   <NavDisclosure>
+ *     <NavDisclosureButton>Getting started</NavDisclosureButton>
+ *     <NavDisclosureContent>
+ *       <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *     </NavDisclosureContent>
+ *   </NavDisclosure>
+ * </Nav>
  */
 export function NavDisclosure({
   button,
@@ -331,8 +433,6 @@ export function NavDisclosure({
 }: NavDisclosureProps) {
   return (
     <Disclosure
-      // The order carries the contract: the recipe first, the caller's props
-      // second, the composed slots last.
       recipe={navDisclosure}
       {...props}
       button={createOptionalRender(NavDisclosureButton, button)}
@@ -351,10 +451,12 @@ export interface NavButtonProps extends Omit<
  * Renders a standalone nav row. Use `NavSlot` for its icon, badge, avatar, or
  * shortcut, `NavButtonContent` for its label, and the `render` prop for a row
  * that should be an anchor.
+ * @example
+ * <NavButton render={<a href="/docs" />}>
+ *   <NavButtonContent>Docs</NavButtonContent>
+ * </NavButton>
  */
 export function NavButton(props: NavButtonProps) {
-  // The order carries the contract: the recipe first, the caller's props
-  // second.
   return <Button recipe={navButton} {...props} />;
 }
 
@@ -362,6 +464,11 @@ export interface NavButtonContentProps extends ak.RoleProps<"span"> {}
 
 /**
  * The label of a nav row.
+ * @example
+ * <NavButton render={<a href="/updates" />}>
+ *   <NavButtonContent>Updates</NavButtonContent>
+ *   <NavSlot $kind="badge">3</NavSlot>
+ * </NavButton>
  */
 export function NavButtonContent(props: NavButtonContentProps) {
   const [variantProps, rest] = splitProps(props, navButtonContent);
@@ -375,8 +482,21 @@ export interface NavDisclosureButtonProps extends Omit<
 
 /**
  * Renders the button of a `NavDisclosure`. Its `icon` leads the label on the
- * nav's icon column. With an explicit `label`, the children follow the label,
- * such as a `NavSlot` with a count.
+ * nav's icon column. With an explicit `label`, children follow it, such as a
+ * `NavSlot` with a count. The indicator defaults to `chevron-right-end` with an
+ * icon and `chevron-right-start` without one.
+ * @example
+ * <Nav aria-label="Docs">
+ *   <NavDisclosure
+ *     button={
+ *       <NavDisclosureButton label="Guides">
+ *         <NavSlot $kind="badge">3</NavSlot>
+ *       </NavDisclosureButton>
+ *     }
+ *   >
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavDisclosure>
+ * </Nav>
  */
 export function NavDisclosureButton({
   label,
@@ -391,8 +511,6 @@ export function NavDisclosureButton({
   const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
   return (
     <DisclosureButton
-      // The order carries the contract: the recipe first, the caller's props
-      // second, the composed label and children last.
       recipe={navDisclosureButton}
       icon={icon}
       indicator={indicator}
@@ -413,9 +531,26 @@ export function NavDisclosureButton({
 }
 
 export interface NavDisclosureContentProps extends DisclosureContentProps {
+  /**
+   * Custom body element or `NavDisclosureContentBody` props. Defaults to a
+   * `NavDisclosureContentBody` containing the content children.
+   */
   body?: React.ReactElement | NavDisclosureContentBodyProps;
 }
 
+/**
+ * Collapsible navigation rows with a vertical guide enabled by default. Wrap
+ * links in a `NavList` inside the content.
+ * @example
+ * <Nav aria-label="Docs">
+ *   <NavDisclosure
+ *     button="Getting started"
+ *     content={<NavDisclosureContent guide={false} />}
+ *   >
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavDisclosure>
+ * </Nav>
+ */
 export function NavDisclosureContent(props: NavDisclosureContentProps) {
   const body = createRender(NavDisclosureContentBody, props.body);
   return <DisclosureContent guide {...props} body={body} />;
@@ -426,8 +561,19 @@ export interface NavDisclosureContentBodyProps extends Omit<
   "recipe"
 > {}
 
+/**
+ * Aligns nested navigation rows and applies their spacing. Created by
+ * `NavDisclosureContent` unless its `body` prop supplies a replacement.
+ * @example
+ * <Nav aria-label="Docs">
+ *   <NavDisclosure
+ *     button="Getting started"
+ *     content={{ body: <NavDisclosureContentBody /> }}
+ *   >
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavDisclosure>
+ * </Nav>
+ */
 export function NavDisclosureContentBody(props: NavDisclosureContentBodyProps) {
-  // The order carries the contract: the recipe first, the caller's props
-  // second.
   return <DisclosureContentBody recipe={navDisclosureContentBody} {...props} />;
 }

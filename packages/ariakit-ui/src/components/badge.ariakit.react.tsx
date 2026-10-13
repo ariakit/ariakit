@@ -8,8 +8,12 @@ export interface BadgeProps
   extends ak.RoleProps<"span">, VariantProps<typeof badge> {}
 
 /**
- * A span, so it can sit in running text such as a paragraph or a heading.
- * @see https://ariakit.com/react/examples/badge
+ * An inline badge for a short label or status. Wrap its text in `BadgeLabel` to
+ * apply the badge's text color and alignment.
+ * @example
+ * <Badge>
+ *   <BadgeLabel>New</BadgeLabel>
+ * </Badge>
  */
 export function Badge(props: BadgeProps) {
   const [variantProps, rest] = splitProps(props, badge);
@@ -20,7 +24,11 @@ export interface BadgeLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof badgeLabel> {}
 
 /**
- * @see https://ariakit.com/react/examples/badge
+ * Text inside a badge, aligned to the capital height.
+ * @example
+ * <Badge>
+ *   <BadgeLabel>New</BadgeLabel>
+ * </Badge>
  */
 export function BadgeLabel(props: BadgeLabelProps) {
   const [variantProps, rest] = splitProps(props, badgeLabel);
@@ -31,7 +39,13 @@ export interface BadgeSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof badgeSlot> {}
 
 /**
- * @see https://ariakit.com/react/examples/badge
+ * An icon or other content beside a badge label. Pass `aria-hidden` when the
+ * entire slot is decorative.
+ * @example
+ * <Badge>
+ *   <BadgeSlot aria-hidden>★</BadgeSlot>
+ *   <BadgeLabel>Featured</BadgeLabel>
+ * </Badge>
  */
 export function BadgeSlot(props: BadgeSlotProps) {
   const [variantProps, rest] = splitProps(props, badgeSlot);

@@ -8,23 +8,18 @@ import {
 } from "../utils/styles.ts";
 import type { ChromaValues, ColorValues, HueValues } from "../utils/styles.ts";
 
+/**
+ * Adaptive text color and color adjustments. On a `$layer` element, these
+ * variants affect nested `$text` or SVG elements, not text directly inside the
+ * layer.
+ */
 export const text = cv({
   class: "text",
   variants: {
     /**
-     * Sets the element's base text color, which can be modified by other text
-     * variants.
-     *
-     * - If set to `true`, the element will use the parent layer's background
-     *   color as its base text color and adjust it automatically to meet WCAG
-     *   AA contrast.
-     * - If set to a color, the element will have that color as its base text
-     *   color.
-     *
-     * Set to `false` to disable the text system.
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
+     * Sets the base text color. `true` adapts the parent layer color to meet
+     * WCAG AA contrast; a color sets the base explicitly. `false` disables the
+     * text system. Other text variants adjust this color.
      */
     $text(value?: ColorValues | (string & {}) | boolean) {
       if (!value) return;
@@ -48,13 +43,8 @@ export const text = cv({
       };
     },
     /**
-     * Pushes text lightness farther from the parent layer beyond the automatic
-     * readability floor. This value represents the **minimum** lightness
-     * offset, from `0` to `100`. It automatically increases as the `--contrast`
-     * value increases, like in high-contrast mode.
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
+     * Sets the minimum lightness shift beyond the readability floor, from `0`
+     * to `100`. The shift increases with `--contrast`.
      */
     $textPush(value?: string | number) {
       return getScaledStyleClass({
@@ -63,12 +53,7 @@ export const text = cv({
         class: "ui-text:ak-text-push-(--text-push)",
       });
     },
-    /**
-     * Lightens the text color by the specified amount (0-100).
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
-     */
+    /** Lightens the text color by the specified amount (0-100). */
     $textLighten(value?: string | number) {
       return getScaledStyleClass({
         value,
@@ -76,12 +61,7 @@ export const text = cv({
         class: "ui-text:ak-text-lighten-(--text-lighten)",
       });
     },
-    /**
-     * Darkens the text color by the specified amount (0-100).
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
-     */
+    /** Darkens the text color by the specified amount (0-100). */
     $textDarken(value?: string | number) {
       return getScaledStyleClass({
         value,
@@ -92,9 +72,6 @@ export const text = cv({
     /**
      * Sets the minimum lightness (0-100) of the text color after all other text
      * variants have been applied.
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
      */
     $textLightnessMin(value?: string | number) {
       return getScaledStyleClass({
@@ -107,9 +84,6 @@ export const text = cv({
     /**
      * Sets the maximum lightness (0-100) of the text color after all other text
      * variants have been applied.
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
      */
     $textLightnessMax(value?: string | number) {
       return getScaledStyleClass({
@@ -123,9 +97,6 @@ export const text = cv({
      * Sets the exact chroma of the text color. Accepts either a named chroma
      * like `"muted"` (`5`), `"balanced"` (`15`), `"vivid"` (`22`), or `"neon"`
      * (`32`), or a numeric value like `40`.
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
      */
     $textChroma(value?: ChromaValues | (string & {}) | number) {
       if (includes(CHROMA_VALUES, value)) {
@@ -144,12 +115,7 @@ export const text = cv({
         class: "ui-text:ak-text-c-(--text-chroma)",
       });
     },
-    /**
-     * Increases the text chroma by the specified amount (0-40).
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
-     */
+    /** Increases the text chroma by the specified amount (0-40). */
     $textSaturate(value?: string | number) {
       return getScaledStyleClass({
         value,
@@ -157,12 +123,7 @@ export const text = cv({
         class: "ui-text:ak-text-saturate-(--text-saturate)",
       });
     },
-    /**
-     * Decreases the text chroma by the specified amount (0-40).
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
-     */
+    /** Decreases the text chroma by the specified amount (0-40). */
     $textDesaturate(value?: string | number) {
       return getScaledStyleClass({
         value,
@@ -172,9 +133,6 @@ export const text = cv({
     },
     /**
      * Shifts the text hue toward the warm hue by the specified amount (0-100).
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
      */
     $textWarm(value?: string | number) {
       return getScaledStyleClass({
@@ -185,9 +143,6 @@ export const text = cv({
     },
     /**
      * Shifts the text hue toward the cool hue by the specified amount (0-100).
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
      */
     $textCool(value?: string | number) {
       return getScaledStyleClass({
@@ -199,9 +154,6 @@ export const text = cv({
     /**
      * Sets the minimum chroma (0-40) of the text color after all other text
      * variants have been applied.
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
      */
     $textChromaMin(value?: ChromaValues | (string & {}) | number) {
       if (includes(CHROMA_VALUES, value)) {
@@ -223,9 +175,6 @@ export const text = cv({
     /**
      * Sets the maximum chroma (0-40) of the text color after all other text
      * variants have been applied.
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
      */
     $textChromaMax(value?: ChromaValues | (string & {}) | number) {
       if (includes(CHROMA_VALUES, value)) {
@@ -248,9 +197,6 @@ export const text = cv({
      * Sets the exact hue of the text color. Accepts a named hue like `"red"` or
      * `"blue"`, a color harmony like `"complementary"`, or a degree value like
      * `240`.
-     *
-     * **Important**: When used on a `$layer` element, this applies to `$text`
-     * or SVG elements inside it, not to text direclty inside the layer element.
      */
     $textHue(value?: HueValues | (string & {}) | number) {
       if (value == null) return;

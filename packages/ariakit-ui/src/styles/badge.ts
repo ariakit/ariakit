@@ -2,27 +2,24 @@ import { cv } from "clava";
 import { control, controlLabel, controlSlot } from "./control.ts";
 import { isLayerColor } from "./layer.ts";
 
+/** A compact badge with a tinted surface and rounded edge. */
 export const badge = cv({
   extend: [control],
   class: [
     "font-medium",
-    // A badge sits in a line of text as often as in a row of items, so it keeps
-    // its content width and the baseline of the text around it. A flex or grid
-    // parent lays it out as any other item.
+    // Keep badges aligned with surrounding text while allowing flex and grid
+    // placement.
     "inline-flex",
-    // A one-line count stays at least square, including its padding and border.
+    // Keep one-line counts at least square, including padding and borders.
     "min-w-[calc(1lh+(var(--ak-frame-padding,0px)+var(--ak-frame-border,0px))*2)]",
   ],
   defaultVariants: {
-    // A badge is a surface of its own, so it paints the layer it opens, in the
-    // surface's color lifted off it or in a color asked for by name.
     $layer: true,
     $rounded: "full",
     $size: "xs",
     $p: 1,
     $px(defaultValue, variants) {
-      // Replace the text frame's fallback for pills; explicit padding still
-      // wins.
+      // Replace only the text frame default; explicit padding still wins.
       if (defaultValue !== "md") return defaultValue;
       if (variants.$rounded === "full") return "lg";
       return defaultValue;
@@ -31,17 +28,12 @@ export const badge = cv({
     $borderType: "inset",
     $edgeWeight(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
-      // $edgeRaw asks for the edge color exactly as given.
       if (variants.$edgeRaw) return defaultValue;
-      // A colored badge carries a tinted ring that always shows. A plain one
-      // keeps the adaptive hairline, which shows up only in high-contrast mode.
+      // Colored badges keep a tinted edge; neutral badges show it only at high
+      // contrast.
       if (isLayerColor(variants.$layer)) return "medium";
       return "adaptive";
     },
-    // A colored badge rings itself in its own color, and the edge push default
-    // for a named color keeps that color's lightness. A plain badge has no
-    // color of its own, so its ring takes the full push away from the surface,
-    // where any weight shows.
     $edge(defaultValue, variants) {
       if (!isLayerColor(variants.$layer)) return defaultValue;
       return defaultValue ?? variants.$layer;
@@ -49,10 +41,8 @@ export const badge = cv({
     $edgeHue(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
       if (!isLayerColor(variants.$layer)) return defaultValue;
-      // The ring copies the layer color, not the layer, so a hue set on the
-      // layer has to reach the ring on its own. An edge color passed by the
-      // caller keeps its own hue. The computed $edge above may still be unset
-      // here, so only a present, different value counts as the caller's.
+      // Copy the layer hue unless the caller chose a different edge color. The
+      // computed $edge may not be resolved yet.
       if (variants.$edge != null && variants.$edge !== variants.$layer) {
         return defaultValue;
       }
@@ -60,17 +50,14 @@ export const badge = cv({
     },
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
-      // A transparent badge has nothing to lift off, and a colored badge paints
-      // its own color, so it must not shift off it. A plain badge has no color
-      // of its own and lifts off the surface it sits on instead.
+      // Only neutral badges shift away from their parent surface.
       if (variants.$layer === "transparent") return false;
       if (isLayerColor(variants.$layer)) return false;
       return true;
     },
     $mix(defaultValue, variants) {
       if (!isLayerColor(variants.$layer)) return defaultValue;
-      // Blend the color back toward the surface behind it, so a colored badge
-      // reads as a tint rather than a solid fill.
+      // Blend colored badges into the parent surface for a lighter tint.
       return defaultValue ?? 15;
     },
     $text: true,
@@ -86,45 +73,38 @@ export const badge = cv({
     if (variants.$edgeRaw) return;
     if (variants.$edgeLightnessMin != null) return;
     if (variants.$edgeLightnessMax != null) return;
-    // The tinted edge keeps the color's own lightness, at a fifth of its alpha
-    // over a pale tint of the same hue. A light hue such as yellow all but
-    // vanishes there, so the edge stays at least 40% of the lightness scale
-    // away from the surface, on whichever side the surface is. One rule for
-    // every hue, and no hue is a special case.
+    // Keep low-contrast hues such as yellow distinct from their tinted surface
+    // with a minimum 40-point lightness difference.
     addClass("ak-light:ak-edge-max-l-60 ak-dark:ak-edge-min-l-60");
   },
 });
 
+/** Badge text with capital-height alignment. */
 export const badgeLabel = cv({
   extend: [controlLabel],
   class: [
-    // Each engine rounds the ascent, descent and leading of a line box in its
-    // own way, which leaves the capitals up to half a pixel off its center, a
-    // visible share of a badge's padding. The trim drops those rounded metrics,
-    // and the padding gives back exactly the room it took, so the label keeps
-    // the height of its line box. A browser without text-box skips both. A
-    // label that a browser with text-box cannot trim, such as a flex container,
-    // grows by the padding.
+    // Trim browser-dependent font metrics to center the capitals. Padding
+    // restores the line height only where text-box is supported; untrimmable
+    // elements still gain padding.
     // https://github.com/ariakit/ariakit/issues/7592
     "[text-box:cap_alphabetic] supports-[text-box:cap_alphabetic]:py-[calc((1lh-1cap)/2)]",
-    // The padding rounds down to the layout unit, which would leave one line of
-    // text a fraction of a pixel short of its line box.
+    // Compensate for padding rounded down to the browser layout unit.
     "min-h-lh",
   ],
   variants: {
     /**
-     * Truncates the label to one line with an ellipsis, clipped with
-     * `overflow-x: clip`. A label with `overflow: hidden`, as `truncate` sets,
-     * is a scroll container, which Firefox does not trim, so the padding would
-     * make the badge taller.
+     * Truncates the label to one line with an ellipsis. Uses `overflow-x: clip`
+     * because Firefox does not trim scroll containers created by `overflow:
+     * hidden`.
      */
     $truncate(value?: boolean) {
       if (!value) return;
-      // Without a scroll container, a flex item keeps its content width unless
-      // its minimum width is reset.
+      // Without a scroll container, the flex item needs an explicit minimum
+      // width.
       return "min-w-0 overflow-x-clip text-ellipsis whitespace-nowrap";
     },
   },
 });
 
+/** A text-aligned slot for badge icons and other content. */
 export const badgeSlot = controlSlot;

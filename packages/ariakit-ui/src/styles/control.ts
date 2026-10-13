@@ -6,14 +6,12 @@ import { hasLayerBackground, isLayerColor, layer } from "./layer.ts";
 import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
-// A control and a control group set their font size the same way, and every
-// other measurement in this file derives from it through 1cap, 1em and 1lh. The
-// padding itself, --px and --py, comes from the text frame recipe.
+// Controls and groups share font-relative sizing; textFrame supplies --px and
+// --py.
 const fontSizeVariants = {
   /**
-   * Sets the element’s font size. This affects the entire element, including
-   * the gap, padding, and icon size. Use `auto` to inherit the parent’s font
-   * size.
+   * Sets the font size used by padding, gaps, and icons. `auto` inherits the
+   * parent font size.
    * @default "auto"
    */
   $size: {
@@ -26,20 +24,16 @@ const fontSizeVariants = {
   },
 };
 
+/** Shared layout, text spacing, and disabled styles for controls. */
 export const control = cv({
   extend: [textFrame, text],
   class: [
     "control ak-frame-join-item group/control relative flex justify-center",
     "ui-hover:ak-frame-join-active ui-selected:ak-frame-join-active ui-focus-visible:ak-frame-join-active",
-    // The blank space a font builds into a glyph's advance width. Gaps and slot
-    // margins subtract it so a slot sits optically, not geometrically, beside
-    // the text.
+    // Subtract glyph side bearings from gaps for optical text alignment.
     "[--sidebearing:0.15em]",
-    // A stacked card sets --control-inline on its parts, and custom properties
-    // inherit. Every control resets it on its own parts, so the slots of a badge
-    // or button inside a tile keep the in-row margins that
-    // var(--control-inline,1) falls back to. The control itself keeps the value
-    // it inherits, so a tile spaces it like any other part.
+    // Reset stacked-card spacing on nested controls' parts while preserving the
+    // control's own inherited alignment.
     "[&>*]:[--control-inline:initial]",
   ],
   variants: {
@@ -63,14 +57,10 @@ export const control = cv({
       none: "",
       auto: "[--gap-y:calc(var(--gap)/4)] gap-y-(--gap-y)",
     },
-    /**
-     * Sets the element’s disabled state.
-     */
+    /** Sets the element’s disabled state. */
     $disabled: [
       "disabled ak-disabled cursor-not-allowed!",
-      // The border wipe reads an overridable channel: card-like extenders set
-      // --disabled-border to keep a faint edge, while buttons fall back to
-      // transparent.
+      // Cards can retain a faint disabled edge through --disabled-border.
       "border-(--disabled-border,transparent)! ring-(--disabled-border,transparent)!",
       "inset-shadow-none! shadow-none!",
       "bg-none! ak-ink-0! *:ak-ink-0!",
@@ -93,8 +83,8 @@ export const control = cv({
   },
 });
 
-// A single-row badge or avatar needs room around its content. Spanning more
-// rows already provides that room, so those slots keep their requested size.
+// Single-row badges and avatars need extra content space; multi-row slots keep
+// their requested size.
 const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
 
 const SLOT_SIZE_CLASSES = {
@@ -110,67 +100,49 @@ const SLOT_SIZE_CLASSES = {
 
 export type SlotSize = keyof typeof SLOT_SIZE_CLASSES;
 
-/**
- * Returns whether a value is one of the named slot sizes, such as `md` or `xl`.
- */
+/** Checks whether a value is a named slot size. */
 export function isSlotSize(value: unknown): value is SlotSize {
   if (typeof value !== "string") return false;
   return Object.hasOwn(SLOT_SIZE_CLASSES, value);
 }
 
 /**
- * Returns the class of a named slot size, or `undefined` for any other value,
- * so an extender that replaces `$size` with a function keeps the named sizes.
+ * Resolves a named slot size so extenders can preserve named values when
+ * replacing `$size`.
  */
 export function getSlotSizeClass(value: unknown) {
   if (!isSlotSize(value)) return;
   return SLOT_SIZE_CLASSES[value];
 }
 
+/** A text-aligned slot for an icon, avatar, badge, or keyboard shortcut. */
 export const controlSlot = cv({
   extend: [frame],
   class: [
     "control-slot flex flex-none items-center justify-center",
-    // The margins seat the slot on the first line of text and pull it toward
-    // the edge. A stacked card sets --control-inline to 0, which drops both,
-    // so a slot on a row of its own lines up with the label under it.
+    // Align slots to the first text row. Stacked cards set --control-inline to
+    // zero to remove these margins.
     "[--my:calc((1lh-var(--size,1lh))/2*var(--row-span)*var(--control-inline,1))]",
     "[--mx:calc(((var(--py)-var(--px))+var(--my))*var(--control-inline,1))]",
     "min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
-    // An extender that draws its own mark sets --slot-icon-size. Otherwise,
-    // the icon fills the slot, scaled down by --slot-icon-scale when the slot
-    // paints a surface of its own (see refine).
+    // Custom marks set --slot-icon-size; painted icon slots use
+    // --slot-icon-scale.
     "[&>svg]:block [&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
     "mx-(--mx) my-(--my)",
   ],
   variants: {
-    /**
-     * Sets the slot size.
-     */
+    /** Sets the slot size. */
     $size: SLOT_SIZE_CLASSES,
     /**
-     * Controls the slot's horizontal margin. By default, it's set based on the
-     * slot size. The larger the slot, the larger the margin. Set to `closeGap`
-     * to move the slot closer to the control's text.
-     *
-     * A named margin goes on the sibling element beside the slot, so the text
-     * must be wrapped in a label element such as `ButtonLabel`. A sibling
-     * selector cannot see a bare text node, and the margin would land on the
-     * next element instead, which may be another slot.
-     *
-     * `auto` is for a slot that leads a label with a size an extender takes
-     * from its container, such as a slot size set on a nav. Its margin sits on
-     * the slot itself. It follows an `auto` size by default.
-     *
-     * A stacked card sets `--control-inline` to 0, which drops these margins
-     * along with the slot's own.
+     * Sets horizontal spacing around the slot. Named values adjust sibling
+     * elements, so wrap adjacent text in a label. `closeGap` reduces the gap;
+     * `auto` places the margin on a container-sized slot. Vertical cards remove
+     * these margins.
      */
     $mx: {
       unset: "",
-      // A size from the container can be wider than the line. The slot then
-      // overflows its box on both sides, and its own end margin grows by the
-      // far-side overflow so the gap to the label holds. Tailwind emits me-*
-      // after the slot's own mx-*, so this margin wins by order.
+      // Add the far-side overflow of oversized icons to the label gap. Tailwind
+      // emits me-* after mx-*, so this margin wins.
       auto: "me-[calc(var(--mx)+max(0px,(var(--size,1lh)-1lh)/2)*var(--control-inline,1))]",
       closeGap:
         "[&+*]:ms-[calc(var(--spacing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--spacing)*-1*var(--control-inline,1))]",
@@ -183,14 +155,11 @@ export const controlSlot = cv({
         "[&+*]:ms-[calc(var(--py)*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--py)*var(--control-inline,1))]",
       full: "[&+*]:ms-[calc(1cap*var(--control-inline,1))] [*:has(+&)]:me-[calc(1cap*var(--control-inline,1))]",
     },
-    /**
-     * Sets the slot padding.
-     */
+    /** Sets the slot padding. */
     $p: {
       unset: "",
-      // Match a badge's optical side padding at the slot's fixed height. The
-      // text is scaled to 0.8125em, and the standalone badge uses a 0.75 share
-      // of the space around its capitals for its optical padding.
+      // Match badge padding after scaling its text to 0.8125em, using 0.75 of
+      // the capital-height spacing.
       auto: "px-[max(0px,calc((var(--size)-1lh*0.8125)/2+(1lh-1cap)*0.8125*0.75))]",
       xs: "px-[calc(var(--size)*0.05)]",
       sm: "px-[calc(var(--size)*0.1)]",
@@ -201,49 +170,36 @@ export const controlSlot = cv({
       full: "px-[calc(var(--size)*0.25)]",
     },
     /**
-     * Sets the element’s border radius. Takes a named step from `none` to
-     * `4xl`, `full`, any length or expression such as `var(--my-radius)`, or
-     * `auto` for a radius concentric with the parent frame. A nested frame
-     * adjusts a named step to stay concentric with its parent unless
-     * `$forceRounded` is used.
+     * Sets the radius from a named step, CSS length, or expression. `auto`
+     * stays concentric with the parent frame; `full` keeps a pill shape.
+     * `$forceRounded` prevents adjustment of named steps.
      */
     $rounded(value?: FrameRoundedValue | "auto" | (string & {})) {
       if (value === "auto") return "ak-frame-m-(--my)";
-      // The frame radius shrinks to stay concentric with the parent, which a
-      // pill must not do. The later-sorted utility restores the full radius.
+      // Restore the pill radius after the frame's concentric adjustment.
       if (value === "full") return "ak-frame-full rounded-full";
       return getFrameRoundedClass(value);
     },
     /**
-     * Sets the element’s kind. The `badge` and `shortcut` kinds style one
-     * element around the content. The slot components render it as a `<span>`,
-     * so wrap the content in one yourself only when you use this recipe
-     * directly. The badge trims that element to the height of its capitals. To
-     * truncate the badge text, put it in an element of your own with
-     * `block overflow-x-clip text-ellipsis whitespace-nowrap` and a maximum
-     * width. These clip only the inline axis, while `truncate` also clips the
-     * descenders.
+     * Sets the slot content type. `badge` and `shortcut` need one child
+     * wrapper; slot components create it automatically. For badge truncation,
+     * use a width-limited child with `block overflow-x-clip text-ellipsis
+     * whitespace-nowrap` to preserve descenders.
      */
     $kind: {
       icon: "",
       shortcut: [
-        // A key chord reads the same way in every locale, so the child element
-        // lays out its keys left to right, with the slot's alignment and gap.
-        // The slot keeps the row's direction, so its own margins follow it.
+        // Keep key chords left-to-right while the slot retains the row
+        // direction for margins.
         "*:flex *:[align-items:inherit] *:[gap:inherit] *:[direction:ltr]",
-        // An icon among the keys takes the size of an icon in the slot itself.
         "*:[&>svg]:block *:[&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
       ],
       avatar: "overflow-clip",
-      // The slot centers the text box. Trimmed to the capitals, that box no
-      // longer carries the half-leading that each engine rounds differently,
-      // which left the text off center in Chromium and Firefox.
+      // Trim browser-dependent line metrics to center the badge's capitals.
       // https://github.com/ariakit/ariakit/issues/7588
       badge: "*:text-[0.8125em] *:[text-box:cap_alphabetic]",
     },
-    /**
-     * Sets the slot to be a square.
-     */
+    /** Sets the slot to be a square. */
     $square: "aspect-square",
     /**
      * Renders the slot as a floating element on the top corner at the end of
@@ -251,17 +207,13 @@ export const controlSlot = cv({
      */
     $floating: [
       "m-0! absolute top-0 inset-e-0 -translate-y-1/2 border",
-      // Half of the slot hangs past the corner. A translate is physical, so
-      // it turns around with the corner.
+      // Reverse the physical translation for the opposite RTL corner.
       "translate-x-[calc(var(--size)/2)] rtl:-translate-x-[calc(var(--size)/2)]",
       "in-[.control]:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
     ],
     /**
-     * Increases the element’s size by a specified number of rows. This is
-     * useful when a control spans multiple rows of content, such as a
-     * description, and you want the slot to expand to match the content. Leave
-     * it as `1` if you want the slot to match the first row’s size and align
-     * with it.
+     * Scales the slot height by the number of text rows. Use `1` to align with
+     * the first row.
      */
     $rowSpan(value?: number) {
       if (value == null) return;
@@ -274,22 +226,15 @@ export const controlSlot = cv({
     $kind: "icon",
     $size: "md",
     $layer(defaultValue, variants) {
-      // Replace only frame's own default, the see-through layer that gives an
-      // icon its color context. A more specific value, from an extender or a
-      // color, was asked for deliberately.
+      // Replace only frame's transparent default; preserve explicit colors.
       if (defaultValue !== "transparent") return defaultValue;
-      // A badge, an avatar and a floating slot are surfaces of their own and
-      // paint the layer they open. Any other slot keeps the see-through layer
-      // and paints it when a layer variant moves the color. Otherwise the
-      // control's own surface shows through: a see-through control, or one
-      // standing aside for a glider.
+      // Badges, avatars, and floating slots paint their own surface.
       if (variants.$kind === "badge") return "brand";
       if (variants.$kind === "avatar") return true;
       if (variants.$floating) return true;
       return defaultValue;
     },
     $ink(defaultValue, variants) {
-      // A shortcut reads softer than the label beside it.
       if (variants.$kind !== "shortcut") return defaultValue;
       return defaultValue ?? 60;
     },
@@ -301,15 +246,13 @@ export const controlSlot = cv({
       if (defaultValue != null) return defaultValue;
       if (variants.$floating) return "full";
       if (variants.$kind === "avatar") return "full";
-      // A badge is a pill, as the standalone badge is. A radius concentric with
-      // the control's corner collapses to zero at the default padding.
+      // Concentric rounding can collapse a badge's radius at default control
+      // padding.
       if (variants.$kind === "badge") return "full";
       return "auto";
     },
     $p(defaultValue, variants) {
-      // Only badges get the default horizontal padding: the $p values pad the x
-      // axis for text content, while avatar children (images) must fill the
-      // whole slot, or the round clip turns them into straight-sided slabs.
+      // Pad badge text only; avatar images must fill the clipped shape.
       if (variants.$kind === "badge") {
         return defaultValue ?? "auto";
       }
@@ -333,10 +276,8 @@ export const controlSlot = cv({
       if (defaultValue != null) return defaultValue;
       if (variants.$kind !== "badge") return defaultValue;
       if (!isLayerColor(variants.$layer)) return defaultValue;
-      // The edge copies the layer color, not the layer, so a hue set on the
-      // layer has to reach the edge on its own. An edge color passed by the
-      // caller keeps its own hue. The computed $edge above may still be unset
-      // here, so only a present, different value counts as the caller's.
+      // Copy the layer hue unless the caller chose a different edge color. The
+      // computed $edge may not be resolved yet.
       if (variants.$edge != null && variants.$edge !== variants.$layer) {
         return defaultValue;
       }
@@ -347,8 +288,7 @@ export const controlSlot = cv({
     const paintsIcon =
       variants.$kind === "icon" && isLayerColor(variants.$layer);
     if (paintsIcon && variants.$rowSpan === 1) {
-      // A painted icon slot is a tile, so its icon sits inside it instead of
-      // filling it. A slot that spans rows is already taller than its icon.
+      // Inset icons on painted tiles; multi-row slots already have extra space.
       addClass("[--slot-icon-scale:0.6]");
     }
     const paintsSurface =
@@ -359,39 +299,33 @@ export const controlSlot = cv({
       addClass("forced-colors:ak-frame-border");
     }
     addClass([
-      // Mix the fill into its parent before ink is calculated, so disabled
-      // text keeps the contrast chosen for the resulting surface.
+      // Mix the disabled surface before calculating readable text contrast.
       "group-[.disabled]/control:ak-layer-mix-20",
-      // Native and ARIA states can change without rerendering the recipe.
+      // DOM disabled state can change without rerendering the recipe.
       "group-ui-disabled/control:ak-layer-mix-20",
-      // A choice card reads disabled state from the input inside its label.
       "group-ui-disabled-within/choice:ak-layer-mix-20",
-      // Slots can sit below a content wrapper, beyond the control's direct
-      // child ink rules.
+      // Reach slots below wrappers beyond the control's direct-child text
+      // rules.
       "group-[.disabled]/control:ak-ink-0",
       "group-ui-disabled/control:ak-ink-0",
       "group-ui-disabled-within/choice:ak-ink-0",
-      // Images cover the layer. Fade only their pixels into it; fading the
-      // whole slot would also reduce its text's adaptive contrast.
+      // Fade image pixels only; fading the whole slot would reduce text
+      // contrast.
       "group-[.disabled]/control:[&_img]:opacity-50",
       "group-ui-disabled/control:[&_img]:opacity-50",
       "group-ui-disabled-within/choice:[&_img]:opacity-50",
     ]);
     if (variants.$rowSpan !== 1) return;
     if (variants.$kind === "avatar") {
-      // Larger slots have room for the label's text size.
       if (variants.$size === "2xl") return;
       if (variants.$size === "full") return;
       addClass([
-        // Keep the parent's line height before adjusting font metrics, which
-        // also affect normal line height. Initials get a cap height of 0.3
-        // times the slot size at any size: 0.45em in a 24px slot at a 16px
-        // font. tan(atan2(a,b)) is a/b as a number; Firefox cannot divide one
-        // length by another in calc() yet.
+        // Preserve line height and set initials' capital height to 0.3 times
+        // the slot size. tan(atan2(a,b)) divides lengths where Firefox calc()
+        // cannot.
         "leading-[1lh] [font-size-adjust:cap-height_calc(0.3*tan(atan2(var(--size,1lh),1em)))]",
-        // The adjustment also changes 1cap here, and the inherited --px would
-        // measure it again for the margins. The frame's inset, a length
-        // measured in the frame's font, keeps the avatar on the icon column.
+        // Use the frame's measured inset so the adjusted font does not change
+        // margins.
         "[--px:calc(var(--py)+var(--text-frame-inset))]",
       ]);
     }
@@ -402,40 +336,38 @@ export const controlSlot = cv({
 });
 
 /**
- * The `$size` default of a slot whose container sizes its icon, such as a
- * disclosure button. Only an icon takes that size, through the extender's
- * `auto` size. A badge, an avatar or a shortcut keeps the size every other
- * control slot gives it: the one-line box for a badge or an avatar (see
- * `PADDED_SLOT_SIZES`), the text size for a shortcut.
+ * Uses the container's `auto` icon size when the slot keeps its default `md`
+ * size. Other slot kinds retain their normal sizes.
  */
 export function getIconSlotSize<Size extends string>(
   defaultValue: Size | undefined,
   variants: { $kind?: string },
 ) {
   if (variants.$kind !== "icon") return defaultValue;
-  // Replace only controlSlot's own `md` default (see its defaultVariants), so
-  // an extender's size still applies.
+  // Preserve any size supplied by an extender.
   if (defaultValue !== "md") return defaultValue;
   return "auto" as const;
 }
 
 /**
- * Whether a control slot of this `$kind` styles its content through one child
- * element, so a component must wrap the slot's children in a `<span>`. A badge
- * scales the text in it, and a shortcut keeps its keys left to right in it.
+ * Whether the slot needs one child wrapper for badge typography or
+ * left-to-right shortcuts.
  */
 export function wrapsSlotChildren(kind?: string) {
   return kind === "badge" || kind === "shortcut";
 }
 
+/** A flexible wrapper for a control's label and description. */
 export const controlContent = cv({
   class: [
-    // A marker the control around it can read: a stacked choice card lays
-    // the content out on a row of its own (see choice.ts).
     "control-content group/control-content",
     "flex-1 min-w-0 content-start text-start gap-x-(--gap) gap-y-(--gap-y)",
   ],
   variants: {
+    /**
+     * Arranges the label and description in a row or column. `unset` omits
+     * layout styles.
+     */
     $orientation: {
       unset: "",
       horizontal: "flex flex-wrap items-baseline",
@@ -447,34 +379,37 @@ export const controlContent = cv({
   },
 });
 
+/** Control label text with optional single-line truncation. */
 export const controlLabel = cv({
   extend: [text],
   class:
     "group-[.flex-col]/control-content:flex-none group-[.disabled]/control:ak-ink-0",
   variants: {
+    /** Truncates the label to one line with an ellipsis. */
     $truncate: "truncate",
   },
 });
 
+/** Secondary control text with optional truncation or line limits. */
 export const controlDescription = cv({
   extend: [text],
   class: [
-    // A marker the control around it can read: a pressed control that holds
-    // one presses less deep (see active.ts).
+    // Let active.ts reduce press depth for controls with descriptions.
     "control-description",
-    // A description placed right after a slot picks up the side-bearing
-    // margin the slot's $mx puts on its next sibling. On a full-width row of
-    // its own that margin reads as a stray indent.
+    // Remove sibling slot margins that would indent a full-width description.
     "ms-0!",
-    // A description on a wrapping row of its own, such as in a choice card,
-    // takes the whole row. Inside horizontal content, it sits beside the label
-    // and wraps to the next line only when the row runs out of room.
+    // Use a full row unless horizontal content has room beside the label.
     "ak-ink-70 basis-full group-[.flex-wrap]/control-content:basis-auto",
     "font-normal text-[0.875em]",
     "group-[.disabled]/control:ak-ink-0",
   ],
   variants: {
+    /** Truncates the description to one line with an ellipsis. */
     $truncate: "truncate",
+    /**
+     * Limits the description to this number of lines. `false` removes a default
+     * limit.
+     */
     $lineClamp(value?: number | false) {
       if (!value) return;
       return {
@@ -485,53 +420,58 @@ export const controlDescription = cv({
   },
 });
 
-// A thicker rule reads as a heavier divider, so its alpha falls as --width
-// grows. A chevron is two strokes meeting at a corner, which reads lighter, so
-// it starts higher and falls faster. Both stay positive only across the widths
-// $width offers.
+// Reduce opacity as stroke width grows. Chevrons need a stronger edge; both
+// formulas stay positive across the supported widths.
 const separatorEdge = cx(
   "ak-edge-alpha-[calc((24-var(--width)*6)/100)]",
   "[.chevron]:ak-edge-alpha-[calc((64-var(--width)*12)/100)]",
 );
 
+/** A line, slash, or chevron between horizontal controls. */
 export const controlSeparator = cv({
   extend: [layer],
   class: [
     "[.vertical>&]:hidden",
-    // The layer only gives the edge color a surface to resolve against. The
-    // rule drawn by the border is the only thing the separator paints.
+    // Resolve the separator edge against a layer without painting a background.
     "bg-transparent flex items-center justify-center pointer-events-none",
     "transition-[border-color] duration-200 ease-out",
     "[--border-width:calc(var(--width)*1px)]",
     "h-(--size) border-e-(length:--border-width) -mx-[calc((var(--ak-frame-padding,0px)+var(--border-width))/2)]",
   ],
   variants: {
+    /** Sets the separator shape: a line, slash, or chevron. */
     $kind: {
       pipe: "rounded-full",
       slash: "rounded-full -skew-15",
       chevron: [
         "chevron rounded-se-xs [--border-width:calc(var(--width)*2px)]! border-t-(length:--border-width)",
-        // The corner the two borders meet at turns around in a right-to-left
-        // row, so the rotation and the optical nudge turn around with it.
+        // Reverse the chevron rotation and optical offset in RTL rows.
         "aspect-square scale-50 rotate-45 rtl:-rotate-45",
         "-translate-x-1/10 rtl:translate-x-1/10",
       ],
     },
+    /**
+     * Sets the separator height. `lg` fills the row; `full` also covers group
+     * padding. Chevrons use `md` for both.
+     */
     $size: {
       xs: ["[--size:1cap] self-center", separatorEdge],
       sm: ["[--size:1em] self-center", separatorEdge],
       md: ["[--size:1lh] self-center", separatorEdge],
-      // A stretched rule runs the whole row, where the plain edge alpha already
-      // reads clearly enough.
       lg: "self-stretch",
       full: "self-stretch -my-(--ak-frame-padding,0px) mx-0",
     },
+    /**
+     * Hides the separator beside hovered, selected, or keyboard-focused
+     * controls.
+     */
     $shy: [
       "in-[.control-group:hover:not(:has(:hover))]:delay-150",
       "ui-adjacent-hover:border-transparent",
       "ui-adjacent-selected:border-transparent",
       "ui-adjacent-focus-visible:border-transparent",
     ],
+    /** Sets the separator's visual stroke width in pixels. */
     $width: {
       1: "[--width:1]",
       2: "[--width:2]",
@@ -539,8 +479,7 @@ export const controlSeparator = cv({
     },
   },
   defaultVariants: {
-    // Pin the layer to the surface around it rather than leaving it unset: the
-    // edge color reads the same surface the separator sits on.
+    // Pin the edge color to the surrounding surface.
     $lightnessOffset: 0,
     $size: "md",
     $width: 1,
@@ -558,6 +497,7 @@ export const controlSeparator = cv({
   },
 });
 
+/** A control group with shared spacing and optional joined edges. */
 export const controlGroup = cv({
   extend: [frame],
   class: ["control-group"],
@@ -569,6 +509,10 @@ export const controlGroup = cv({
      * Inner corners are square only when the group padding resolves to zero.
      */
     $joined: "",
+    /**
+     * Arranges controls in a row, column, wrapping row, or equal-width row.
+     * `none` omits layout styles.
+     */
     $layout: {
       none: "",
       wrap: "flex flex-wrap",
@@ -577,6 +521,7 @@ export const controlGroup = cv({
       horizontal: "flex",
       vertical: "vertical flex flex-col [&>.control]:justify-start",
     },
+    /** Sets the gap between controls. `auto` uses the group padding. */
     $gap: {
       none: "",
       auto: "[--group-gap:var(--ak-frame-padding,0px)] gap-(--group-gap)",
@@ -610,16 +555,16 @@ export const controlGroup = cv({
       return;
     }
     if (variants.$gap !== "none" && variants.$gap !== "auto") return;
-    // Auto gaps follow resolved padding, so all equivalent CSS zero lengths
-    // activate the same geometry. Wrapped rows have no DOM adjacency contract.
+    // Resolve zero padding in any CSS unit. Wrapped rows have no adjacency
+    // contract.
     if (variants.$gap === "none") {
       addClass("ak-frame-join");
     } else {
       addClass("ak-frame-join ak-frame-join-auto");
     }
     addClass(variants.$layout === "vertical" ? "ak-frame-col" : "ak-frame-row");
-    // The recipe knows which siblings are controls, so decorations such as a
-    // glider do not decide the generic frame utility's boundary positions.
+    // Ignore decorations such as gliders when finding the first and last
+    // controls.
     addClass([
       "[&>.control:nth-child(1_of_.control:not([hidden]))]:ak-frame-start",
       "[&>.control:nth-last-child(1_of_.control:not([hidden]))]:ak-frame-end",

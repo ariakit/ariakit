@@ -371,6 +371,42 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Decorative icon"
+        description="Hide a decorative symbol so it does not add text to the button name."
+        code={`
+          <Button>
+            <ButtonSlot aria-hidden>+</ButtonSlot>
+            <ButtonLabel>Add item</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonSlot aria-hidden>+</ButtonSlot>
+          <ButtonLabel>Add item</ButtonLabel>
+        </Button>
+      </Example>
+
+      <Example
+        title="Meaningful icon"
+        description="Label an icon when it adds information to the button name."
+        code={`
+          <Button>
+            <ButtonSlot role="img" aria-label="Starred">
+              ★
+            </ButtonSlot>
+            <ButtonLabel>Project</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonSlot role="img" aria-label="Starred">
+            ★
+          </ButtonSlot>
+          <ButtonLabel>Project</ButtonLabel>
+        </Button>
+      </Example>
+
+      <Example
         title="Icon only"
         description="A single icon slot makes the button square. Its label is for assistive technology."
         code={`

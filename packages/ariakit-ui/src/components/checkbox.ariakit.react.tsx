@@ -24,7 +24,11 @@ export interface CheckboxProps
  * Native checkbox drawn by CSS. The checked, mixed and disabled looks come from
  * the input's own state, so it works on its own, inside a `CheckboxField` or in
  * a table cell. `checked="mixed"` draws a dash.
- * @see https://ariakit.com/reference/checkbox
+ * @example
+ * <label>
+ *   <Checkbox defaultChecked />
+ *   Email updates
+ * </label>
  */
 export function Checkbox(props: CheckboxProps) {
   const [variantProps, rest] = splitProps(props, checkbox);
@@ -38,11 +42,15 @@ export interface CheckboxFieldProps
  * Label row holding a `Checkbox` before its children, which it stacks so a
  * `CheckboxDescription` lands under the `CheckboxLabel`. Variant props style
  * the row; every other prop reaches the input.
+ * @example
+ * <CheckboxField name="updates">
+ *   <CheckboxLabel>Email updates</CheckboxLabel>
+ *   <CheckboxDescription>Receive product news.</CheckboxDescription>
+ * </CheckboxField>
  */
 export function CheckboxField({ children, ...props }: CheckboxFieldProps) {
   const [variantProps, rest] = splitProps(props, checkboxField);
-  // The label is never :disabled itself, so mirror the input's disabled prop as
-  // the $disabled variant for the row's own disabled visuals.
+  // Labels cannot match :disabled, so mirror the input state.
   return (
     <label
       {...checkboxField.jsx({
@@ -61,6 +69,10 @@ export interface CheckboxLabelProps
 
 /**
  * Label text of a `CheckboxField`. Must be nested inside a `CheckboxField`.
+ * @example
+ * <CheckboxField>
+ *   <CheckboxLabel>Email updates</CheckboxLabel>
+ * </CheckboxField>
  */
 export function CheckboxLabel(props: CheckboxLabelProps) {
   const [variantProps, rest] = splitProps(props, checkboxLabel);
@@ -73,6 +85,11 @@ export interface CheckboxDescriptionProps
 /**
  * Secondary text below a `CheckboxField` label. Must be nested inside a
  * `CheckboxField`.
+ * @example
+ * <CheckboxField>
+ *   <CheckboxLabel>Email updates</CheckboxLabel>
+ *   <CheckboxDescription>Receive product news.</CheckboxDescription>
+ * </CheckboxField>
  */
 export function CheckboxDescription(props: CheckboxDescriptionProps) {
   const [variantProps, rest] = splitProps(props, checkboxDescription);
@@ -85,11 +102,15 @@ export interface CheckboxCardProps
 /**
  * Card-like label wrapping an Ariakit Checkbox kept out of sight, styled from
  * the input's checked, mixed and disabled state.
+ * @example
+ * <CheckboxCard name="updates">
+ *   <CheckboxCardCheck />
+ *   <CheckboxCardLabel>Email updates</CheckboxCardLabel>
+ * </CheckboxCard>
  */
 export function CheckboxCard({ children, ...props }: CheckboxCardProps) {
   const [variantProps, rest] = splitProps(props, checkboxCard);
-  // The label is never :disabled itself, so mirror the input's disabled prop as
-  // the $disabled variant for the card's own disabled visuals.
+  // Labels cannot match :disabled, so mirror the input state.
   return (
     <label
       {...checkboxCard.jsx({
@@ -107,8 +128,13 @@ export interface CheckboxCardCheckProps
   extends ak.RoleProps<"span">, VariantProps<typeof checkboxCardCheck> {}
 
 /**
- * The drawn check of a card, reflecting the input's state. Pass a child to
- * replace the drawn mark. Must be nested inside a `CheckboxCard`.
+ * The drawn check of a card, reflecting the input's state. Pass a child element
+ * to replace the drawn mark. Must be nested inside a `CheckboxCard`.
+ * @example
+ * <CheckboxCard defaultChecked>
+ *   <CheckboxCardCheck />
+ *   <CheckboxCardLabel>Email updates</CheckboxCardLabel>
+ * </CheckboxCard>
  */
 export function CheckboxCardCheck(props: CheckboxCardCheckProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardCheck);
@@ -127,6 +153,11 @@ export interface CheckboxCardSlotProps
 
 /**
  * Slot for icons or other adornments. Must be nested inside a `CheckboxCard`.
+ * @example
+ * <CheckboxCard>
+ *   <CheckboxCardSlot aria-hidden>★</CheckboxCardSlot>
+ *   <CheckboxCardLabel>Featured updates</CheckboxCardLabel>
+ * </CheckboxCard>
  */
 export function CheckboxCardSlot(props: CheckboxCardSlotProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardSlot);
@@ -148,6 +179,13 @@ export interface CheckboxCardContentProps
 /**
  * Wrapper that stacks the card's label and description. Must be nested inside a
  * `CheckboxCard`.
+ * @example
+ * <CheckboxCard>
+ *   <CheckboxCardContent>
+ *     <CheckboxCardLabel>Email updates</CheckboxCardLabel>
+ *     <CheckboxCardDescription>Receive product news.</CheckboxCardDescription>
+ *   </CheckboxCardContent>
+ * </CheckboxCard>
  */
 export function CheckboxCardContent(props: CheckboxCardContentProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardContent);
@@ -158,7 +196,12 @@ export interface CheckboxCardLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof checkboxCardLabel> {}
 
 /**
- * Main text of the card. Must be nested inside a `CheckboxCard`.
+ * Main text of the card. Must be nested inside a `CheckboxCard`. Truncates to
+ * one line by default; set `$truncate={false}` to let it wrap.
+ * @example
+ * <CheckboxCard>
+ *   <CheckboxCardLabel>Email updates</CheckboxCardLabel>
+ * </CheckboxCard>
  */
 export function CheckboxCardLabel(props: CheckboxCardLabelProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardLabel);
@@ -170,6 +213,14 @@ export interface CheckboxCardDescriptionProps
 
 /**
  * Secondary text below the label. Must be nested inside a `CheckboxCard`.
+ * Truncates to one line by default; set `$truncate={false}` to let it wrap.
+ * @example
+ * <CheckboxCard>
+ *   <CheckboxCardContent>
+ *     <CheckboxCardLabel>Email updates</CheckboxCardLabel>
+ *     <CheckboxCardDescription>Receive product news.</CheckboxCardDescription>
+ *   </CheckboxCardContent>
+ * </CheckboxCard>
  */
 export function CheckboxCardDescription(props: CheckboxCardDescriptionProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardDescription);
@@ -185,6 +236,11 @@ export interface CheckboxCardGridProps
  * Packs `CheckboxCard`s into equal rows, as many columns as `$minItemSize`
  * allows. It renders a group, like the radio group of `RadioCardGrid`, so name
  * it with `aria-label` or `aria-labelledby`.
+ * @example
+ * <CheckboxCardGrid aria-label="Notifications">
+ *   <CheckboxCard value="email">Email</CheckboxCard>
+ *   <CheckboxCard value="sms">Text message</CheckboxCard>
+ * </CheckboxCardGrid>
  */
 export function CheckboxCardGrid(props: CheckboxCardGridProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardGrid);
@@ -192,8 +248,7 @@ export function CheckboxCardGrid(props: CheckboxCardGridProps) {
     <ak.Role.div
       {...checkboxCardGrid.jsx(variantProps)}
       {...rest}
-      // Set after the spread, so a role prop that is present but undefined, as
-      // a wrapper with an optional role passes it, keeps the group role.
+      // Preserve the group role when the caller passes undefined.
       role={rest.role ?? "group"}
     />
   );

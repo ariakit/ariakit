@@ -16,7 +16,15 @@ import { ButtonSlot } from "./button.ariakit.react.tsx";
 export interface DialogProviderProps extends ak.DialogProviderProps {}
 
 /**
- * @see https://ariakit.com/reference/dialog-provider
+ * Shares open state between a dialog and its disclosure button.
+ * @example
+ * <DialogProvider>
+ *   <DialogDisclosure>View details</DialogDisclosure>
+ *   <Dialog aria-label="Project details">
+ *     <p>The project is ready.</p>
+ *     <DialogDismiss>Close</DialogDismiss>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function DialogProvider(props: DialogProviderProps) {
   return <ak.DialogProvider {...props} />;
@@ -26,7 +34,15 @@ export interface DialogDisclosureProps
   extends ak.DialogDisclosureProps, VariantProps<typeof dialogDisclosure> {}
 
 /**
- * @see https://ariakit.com/reference/dialog-disclosure
+ * Renders a button that opens or closes its dialog.
+ * @example
+ * <DialogProvider>
+ *   <DialogDisclosure>View details</DialogDisclosure>
+ *   <Dialog aria-label="Project details">
+ *     <p>The project is ready.</p>
+ *     <DialogDismiss>Close</DialogDismiss>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function DialogDisclosure(props: DialogDisclosureProps) {
   const [variantProps, rest] = splitProps(props, dialogDisclosure);
@@ -39,7 +55,15 @@ export interface DialogProps
   extends ak.DialogProps, VariantProps<typeof dialog> {}
 
 /**
- * @see https://ariakit.com/reference/dialog
+ * Renders a modal dialog with focus management.
+ * @example
+ * <DialogProvider>
+ *   <DialogDisclosure>View details</DialogDisclosure>
+ *   <Dialog aria-label="Project details">
+ *     <p>The project is ready.</p>
+ *     <DialogDismiss>Close</DialogDismiss>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function Dialog(props: DialogProps) {
   const [variantProps, rest] = splitProps(props, dialog);
@@ -50,7 +74,14 @@ export interface DialogHeadingProps
   extends ak.DialogHeadingProps, VariantProps<typeof dialogHeading> {}
 
 /**
- * @see https://ariakit.com/reference/dialog-heading
+ * Renders a heading that gives its dialog an accessible name.
+ * @example
+ * <DialogProvider defaultOpen>
+ *   <Dialog>
+ *     <DialogHeading>Project details</DialogHeading>
+ *     <p>The project is ready.</p>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function DialogHeading(props: DialogHeadingProps) {
   const [variantProps, rest] = splitProps(props, dialogHeading);
@@ -61,7 +92,14 @@ export interface DialogDescriptionProps
   extends ak.DialogDescriptionProps, VariantProps<typeof dialogDescription> {}
 
 /**
- * @see https://ariakit.com/reference/dialog-description
+ * Renders text that describes its dialog to assistive technology.
+ * @example
+ * <DialogProvider defaultOpen>
+ *   <Dialog aria-label="Archive project">
+ *     <DialogDescription>You can restore it later.</DialogDescription>
+ *     <DialogDismiss>Cancel</DialogDismiss>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function DialogDescription(props: DialogDescriptionProps) {
   const [variantProps, rest] = splitProps(props, dialogDescription);
@@ -74,22 +112,27 @@ export interface DialogDismissProps
   extends ak.DialogDismissProps, VariantProps<typeof dialogDismiss> {}
 
 /**
- * Without children, renders a square icon button named "Dismiss popup".
- * @see https://ariakit.com/reference/dialog-dismiss
+ * Renders a button that closes its dialog. Without children, it shows an icon
+ * in a square button named "Dismiss popup".
+ * @example
+ * <DialogProvider defaultOpen>
+ *   <Dialog aria-label="Project details">
+ *     <DialogDismiss />
+ *     <p>The project is ready.</p>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function DialogDismiss({ children, ...props }: DialogDismissProps) {
   const [variantProps, rest] = splitProps(props, dialogDismiss);
-  // Ariakit's default children is a bare 1em icon, which the button recipe pads
-  // like a line of text. A slot makes the icon-only button square, and the name
-  // moves to the button because the slot icon is hidden.
+  // A slot keeps the icon-only button square. Its hidden icon needs a button
+  // label.
   const iconOnly = children === undefined;
   const fallbackLabel = iconOnly ? "Dismiss popup" : undefined;
   return (
     <ak.DialogDismiss
       {...dialogDismiss.jsx(variantProps)}
       {...rest}
-      // Set after the spread, so a label prop that is present but undefined, as
-      // a wrapper with an optional label passes it, keeps the fallback.
+      // Preserve the fallback when the caller passes undefined.
       aria-label={rest["aria-label"] ?? fallbackLabel}
     >
       {iconOnly ? (
@@ -107,10 +150,17 @@ export interface DialogScrollProps
   extends ComponentProps<"div">, VariantProps<typeof dialogScroll> {}
 
 /**
- * Scrollable viewport that covers the dialog’s content box, for dialogs whose
- * content can outgrow the available height. Give the dialog a flex column
- * layout so the viewport can shrink below the dialog's height cap, for example
- * `className="flex flex-col"`.
+ * Renders a scrollable viewport for long dialog content. Give the dialog a flex
+ * column layout so the viewport can shrink within its maximum height.
+ * @example
+ * <DialogProvider defaultOpen>
+ *   <Dialog aria-label="Terms" className="flex flex-col">
+ *     <DialogScroll>
+ *       <p>Read the terms before you continue.</p>
+ *     </DialogScroll>
+ *     <DialogDismiss>Close</DialogDismiss>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function DialogScroll(props: DialogScrollProps) {
   const [variantProps, rest] = splitProps(props, dialogScroll);

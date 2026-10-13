@@ -15,9 +15,8 @@ const DEFAULT_MIX_AMOUNT = 50;
 const DEFAULT_CONTRAST_AMOUNT = 25;
 
 /**
- * Checks whether a `$layer` value colors the layer. `"transparent"` is the one
- * string the layer accepts that is not a color: it keeps the layer without
- * coloring it.
+ * Checks whether `$layer` supplies a color rather than a boolean or
+ * `"transparent"`.
  */
 export function isLayerColor(
   value: VariantProps<typeof layer>["$layer"],
@@ -39,28 +38,21 @@ export function hasLayerBackground(variants: VariantProps<typeof layer>) {
     if (key === "$layer") {
       return value !== "transparent";
     }
-    // Ink colors the text, not the layer.
     if (key === "$ink") return false;
     return !!layer.class({ $layer: false, [key]: value });
   });
 }
 
+/**
+ * A background color context with adaptive text contrast and color modifiers.
+ */
 export const layer = cv({
   variants: {
     /**
-     * Sets the element's base background color, which can be modified by other
-     * layer variants.
-     *
-     * - If set to `true`, the element will inherit the background color from
-     *   its parent.
-     * - If set to a color, the element will have that color as its base
-     *   background color.
-     * - If set to `"transparent"`, the element keeps the layer as the color
-     *   context for its text, its edges and its descendants, but paints no
-     *   background until another layer variant, or a state such as hover, moves
-     *   the color.
-     *
-     * Set to `false` to disable the layer system.
+     * Sets the base background and color context. `true` inherits the parent
+     * color; a color sets it directly. `"transparent"` keeps the context
+     * without a background until a modifier changes it. `false` disables the
+     * layer.
      */
     $layer(value?: "transparent" | ColorValues | (string & {}) | boolean) {
       if (!value) return;
@@ -86,11 +78,9 @@ export const layer = cv({
       };
     },
     /**
-     * Sets the strength of the layer's own text, from `0` to `100`. `0` is the
-     * faintest text that still passes the contrast check, and `100` is full
-     * strength. The amount inherits: the layers inside this one, such as the
-     * slots of a control, keep it until one of them sets its own. Set to
-     * `false` to clear a default set by a component.
+     * Sets text strength from `0` (minimum readable contrast) to `100` (full
+     * strength). The amount inherits through nested layers. `false` clears a
+     * component default.
      */
     $ink(value?: (string & {}) | number | false) {
       return getScaledStyleClass({
@@ -100,43 +90,25 @@ export const layer = cv({
         class: "ak-ink-(--ink)",
       });
     },
-    /**
-     * Inverts the layer's base background color.
-     */
+    /** Inverts the layer's base background color. */
     $invert: "[--layer-lightness-multiplier:2]",
     /**
-     * Automatically adjusts the background color's lightness (0-20). The
-     * background color becomes lighter or darker depending on its current
-     * lightness. The value represents the **maximum** lightness offset, but
-     * it's not guaranteed. If the user has high-contrast preferences, the
-     * offset will be lower to allow for greater contrast between the layer and
-     * the text.
-     *
-     * If you want the opposite effect, where the offset increases as contrast
-     * goes up, use `$lightnessPush` instead.
-     *
-     * Set it to `0` to pin the layer to its parent's lightness. That still
-     * marks the layer as modified, which `false` does not.
+     * Adjusts lightness by a maximum offset (0–20), reduced at high contrast to
+     * protect text contrast. Use `$lightnessPush` for a minimum shift. `0` pins
+     * parent lightness and marks the layer as modified; `false` does neither.
      */
     $lightnessOffset(value?: string | number | boolean) {
       return getLightnessStyleClass({
         value,
-        // 0 is a real offset here, not an absent one: it is the only way to ask
-        // for the parent's lightness explicitly.
         allowZero: true,
         property: "--layer-lightness-offset",
         class: "ak-layer-offset-(--layer-lightness-offset)",
       });
     },
     /**
-     * Automatically adjusts the background color's lightness (0-20). The
-     * background color becomes lighter or darker depending on its current
-     * lightness. The value represents the **minimum** guaranteed lightness
-     * shift. If the user has high-contrast preferences, the shift will be
-     * greater to allow for more contrast between the layer and its parent.
-     *
-     * If you want the opposite effect, where the offset decreases as contrast
-     * goes up, use `$lightnessOffset` instead.
+     * Adjusts lightness by a minimum shift (0–20), increased at high contrast
+     * to separate the layer from its parent. Use `$lightnessOffset` for a
+     * maximum offset.
      */
     $lightnessPush(value?: string | number | boolean) {
       return getLightnessStyleClass({
@@ -236,11 +208,9 @@ export const layer = cv({
       });
     },
     /**
-     * Sets the maximum chroma (0-40) of the background color after all other
-     * layer variants have been applied. If set to `auto`, the maximum chroma is
-     * set to the highest value possible for the current lightness. This way, a
-     * layer with 100% lightness appears white instead of a very bright,
-     * saturated color.
+     * Caps background chroma (0–40) after other modifiers. `auto` follows
+     * lightness so a fully light layer becomes white instead of a saturated
+     * color.
      */
     $chromaMax(value?: ChromaValues | "auto" | (string & {}) | number) {
       const mapValues = [...CHROMA_VALUES, "auto"] as const;

@@ -24,9 +24,15 @@ import {
 } from "../styles/disclosure.ts";
 
 export interface DisclosureOwnProps {
-  /** Custom button element or props to render a `DisclosureButton`. */
+  /**
+   * Button content, a custom element, or `DisclosureButton` props. When
+   * omitted, children must include the button and content components.
+   */
   button?: React.ReactNode | DisclosureButtonProps;
-  /** Custom content element or props to render a `DisclosureContent`. */
+  /**
+   * Custom content element or `DisclosureContent` props. Used when `button` is
+   * set; defaults to a `DisclosureContent` containing the children.
+   */
   content?: React.ReactElement | DisclosureContentProps;
   /**
    * Element rendered as the root's last child, after the content. Reserved for
@@ -38,13 +44,12 @@ export interface DisclosureOwnProps {
    */
   decoration?: React.ReactNode;
   /**
-   * Applies a split layout that visually separates button and content areas.
+   * Separates the button and content with a border and content padding.
+   * `$split` takes precedence when both props are set.
    */
   split?: boolean;
 }
 
-// The recipe member only documents the prop. VariantPropsWithRecipe still makes
-// it required when the recipe adds variants.
 export type DisclosureProps<
   R extends RecipeLike<typeof disclosure, R> = typeof disclosure,
 > = Omit<ak.RoleProps<"div">, "content"> &
@@ -59,16 +64,15 @@ export type DisclosureProps<
   };
 
 /**
- * High-level disclosure that wires button and content through a provider.
+ * Connects a button and collapsible content through a shared provider. Pass
+ * `button` to wrap children in `DisclosureContent` automatically.
  * @example
  * <Disclosure>
  *   <DisclosureButton>Open</DisclosureButton>
  *   <DisclosureContent>Content</DisclosureContent>
  * </Disclosure>
  * @example
- * <Disclosure button="Open">
- *   Content
- * </Disclosure>
+ * <Disclosure button="Open">Content</Disclosure>
  */
 export function Disclosure<
   R extends RecipeLike<typeof disclosure, R> = typeof disclosure,
@@ -89,8 +93,7 @@ export function Disclosure<
   const isOpen = ak.useStoreState(store, "open");
   const styles = recipe ?? disclosure;
   const [variantProps, rest] = splitProps(props, styles);
-  // Inference from a generic component reads its recipe as the constraint,
-  // which makes recipe required, so the props type is named.
+  // Explicit props avoid making the generic component's recipe required.
   const buttonEl = createOptionalRender<DisclosureButtonProps>(
     DisclosureButton,
     button,
@@ -120,6 +123,14 @@ export function Disclosure<
 export interface DisclosureGroupProps
   extends ak.RoleProps<"div">, VariantProps<typeof disclosureGroup> {}
 
+/**
+ * Groups disclosures in a shared frame with dividers between them.
+ * @example
+ * <DisclosureGroup>
+ *   <Disclosure button="Shipping">Ships in two days.</Disclosure>
+ *   <Disclosure button="Returns">Return within 30 days.</Disclosure>
+ * </DisclosureGroup>
+ */
 export function DisclosureGroup(props: DisclosureGroupProps) {
   const [variantProps, rest] = splitProps(props, disclosureGroup);
   return <ak.Role {...disclosureGroup.jsx(variantProps)} {...rest} />;
@@ -146,11 +157,13 @@ export interface DisclosureButtonOwnProps {
   label?: React.ReactNode | DisclosureButtonLabelProps;
   /** Secondary text shown below the main label. */
   description?: React.ReactNode;
-  /** Custom icon. */
+  /** Icon before the label, inside a `DisclosureButtonSlot`. */
   icon?: React.ReactNode;
   /**
-   * Selects chevron/plus indicator and placement (start, next, end). Set
-   * `false` to hide.
+   * Selects a chevron or plus and its position. `start` precedes the icon and
+   * label; `next` follows the label; `end` sits at the far edge. Defaults to
+   * `chevron-down-end` with an icon and `chevron-right-start` without one. Set
+   * `false` to hide it.
    */
   indicator?: DisclosureIndicator | false;
 }
@@ -183,6 +196,15 @@ function renderIndicator(indicator: DisclosureIndicator) {
   );
 }
 
+/**
+ * Toggles disclosure content. Wraps its label and connects optional secondary
+ * text as an accessible description.
+ * @example
+ * <Disclosure>
+ *   <DisclosureButton description="Delivery times">Shipping</DisclosureButton>
+ *   <DisclosureContent>Ships in two days.</DisclosureContent>
+ * </Disclosure>
+ */
 export function DisclosureButton<
   R extends RecipeLike<typeof disclosureButton, R> = typeof disclosureButton,
 >({
@@ -257,6 +279,13 @@ export interface DisclosureButtonLabelProps
 
 /**
  * A custom label for the disclosure button's `label` prop.
+ * @example
+ * <Disclosure>
+ *   <DisclosureButton
+ *     label={<DisclosureButtonLabel>Shipping</DisclosureButtonLabel>}
+ *   />
+ *   <DisclosureContent>Ships in two days.</DisclosureContent>
+ * </Disclosure>
  */
 export function DisclosureButtonLabel(props: DisclosureButtonLabelProps) {
   const [variantProps, rest] = splitProps(props, disclosureButtonLabel);
@@ -268,7 +297,16 @@ export function DisclosureButtonLabel(props: DisclosureButtonLabelProps) {
 export interface DisclosureButtonSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof disclosureButtonSlot> {}
 
-/** An icon, badge, avatar, or shortcut beside the button's `label`. */
+/**
+ * An icon, badge, avatar, or shortcut beside the button's `label`.
+ * @example
+ * <Disclosure>
+ *   <DisclosureButton label="Updates">
+ *     <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+ *   </DisclosureButton>
+ *   <DisclosureContent>Three updates are available.</DisclosureContent>
+ * </Disclosure>
+ */
 export function DisclosureButtonSlot(props: DisclosureButtonSlotProps) {
   const [variantProps, rest] = splitProps(props, disclosureButtonSlot);
   const variants = disclosureButtonSlot.getVariants(variantProps);
@@ -285,14 +323,32 @@ export function DisclosureButtonSlot(props: DisclosureButtonSlotProps) {
 
 export interface DisclosureContentProps
   extends ak.DisclosureContentProps, VariantProps<typeof disclosureContent> {
-  /** Custom body element or props to render a `DisclosureContentBody`. */
+  /**
+   * Custom body element or `DisclosureContentBody` props. Defaults to a
+   * `DisclosureContentBody` containing the content children.
+   */
   body?: React.ReactElement | DisclosureContentBodyProps;
-  /** Applies a guide to the content. */
+  /**
+   * Draws a vertical guide below the leading icon or indicator. Disabled by
+   * default. `$guide` takes precedence when both props are set.
+   */
   guide?: boolean;
-  /** Applies prose typography and spacing to the content body. */
+  /**
+   * Applies prose typography and spacing to the content body. Disabled by
+   * default. The body's `$prose` prop takes precedence when set.
+   */
   prose?: boolean;
 }
 
+/**
+ * Collapsible content with an inner `DisclosureContentBody` for padding and
+ * optional prose styles. Connects to the surrounding disclosure provider.
+ * @example
+ * <Disclosure>
+ *   <DisclosureButton>Shipping</DisclosureButton>
+ *   <DisclosureContent prose><p>Ships in two days.</p></DisclosureContent>
+ * </Disclosure>
+ */
 export function DisclosureContent({
   body,
   guide,
@@ -300,7 +356,7 @@ export function DisclosureContent({
   ...props
 }: DisclosureContentProps) {
   const [variantProps, rest] = splitProps(props, disclosureContent);
-  // The props type is named for the same reason as in Disclosure.
+  // Explicit props avoid making the generic component's recipe required.
   const bodyEl = createRender<DisclosureContentBodyProps>(
     DisclosureContentBody,
     body,
@@ -331,6 +387,17 @@ export type DisclosureContentBodyProps<
     recipe?: R;
   };
 
+/**
+ * Applies padding and optional prose styles inside `DisclosureContent`, which
+ * renders this body by default.
+ * @example
+ * <Disclosure
+ *   button="Shipping"
+ *   content={<DisclosureContent body={<DisclosureContentBody $prose />} />}
+ * >
+ *   <p>Ships in two days.</p>
+ * </Disclosure>
+ */
 export function DisclosureContentBody<
   R extends RecipeLike<typeof disclosureContentBody, R> =
     typeof disclosureContentBody,

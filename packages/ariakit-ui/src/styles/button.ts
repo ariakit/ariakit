@@ -23,37 +23,30 @@ interface BevelLightenVariants {
   $disabled?: boolean;
 }
 
-/**
- * Whether a bevel lifts its base layer through the explicit lighten instead of
- * the flat lift. Only a bevel in the surface's own color does.
- */
+/** Whether a neutral, enabled bevel needs an explicit lightness increase. */
 function hasBevelLighten(variants: BevelLightenVariants) {
   if (variants.$kind !== "bevel") return false;
-  // A color of its own already separates the bevel from the surface. A fixed
-  // lighten on a mid-lightness color can land in the contrast pipeline's
-  // ambiguous midrange, which moves it far past the step and flips the ink.
+  // Colored bevels already contrast with their surface; lightening can enter
+  // the contrast pipeline's ambiguous range and invert the text.
   if (isLayerColor(variants.$layer)) return false;
-  // The disabled look wipes the gradient, and on a light surface the lighten
-  // alone lands on white, where the box disappears.
+  // Disabled bevels lose their gradient, so lightening alone can erase their
+  // boundary on light surfaces.
   if (variants.$disabled) return false;
   return true;
 }
 
+/** An interactive control with hover, focus, press, and disabled styles. */
 export const button = cv({
   extend: [control, gliderAnchor, hover, focusHighlight, active],
   class: [
     "not-[a]:cursor-default not-[button]:select-none",
-    // A pointer cursor promises navigation or submission, so only a submit
-    // button, a form's lone button, and a button inside a link opt in.
-    // Everything else is a command and keeps the arrow.
+    // Use a pointer for navigation and form submission; commands keep the
+    // arrow.
     "[&:where([type='submit'],form_button:only-of-type,a_&)]:not-ui-disabled:cursor-pointer",
-    // --contrast runs 0-100, so the weight runs 500 to 600 with it.
+    // Map the 0–100 contrast scale to font weights 500–600.
     "font-[calc(500+var(--contrast))]",
-    // A script can flip :disabled after render, so the disabled look also has
-    // to exist as a CSS rule. These mirror control's $disabled classes and
-    // have to stay in step with them. The prop remains the render-time source
-    // of truth: it additionally drops the hover and active variants, which
-    // CSS cannot do.
+    // DOM disabled state can change after render. Keep these rules aligned with
+    // control.$disabled; the prop also removes hover and press variants.
     "ui-disabled:cursor-not-allowed!",
     "ui-disabled:border-(--disabled-border,transparent)!",
     "ui-disabled:ring-(--disabled-border,transparent)!",
@@ -62,9 +55,8 @@ export const button = cv({
   ],
   variants: {
     /**
-     * Sets the button's surface. `bevel` raises it with the gradient and inner
-     * shadow of a classic push button, while `flat` paints the layer on its
-     * own.
+     * Sets the button surface. `bevel` adds a gradient and inner shadow; `flat`
+     * paints only the layer.
      */
     $kind: {
       flat: "",
@@ -73,45 +65,34 @@ export const button = cv({
   },
   defaultVariants: {
     $kind: "flat",
-    // A button opens a layer for its content and its states rather than to
-    // paint a surface of its own, so it shows the surface behind it until
-    // hovered, and a glider can travel behind it. A layer of its own, or a
-    // lift, paints it at rest.
+    // Keep the resting surface transparent for the parent or a glider; color
+    // modifiers can still paint it.
     $layer: "transparent",
     $gapY: "none",
     $hoverOffset: true,
-    // A dimmed button, and the slots that follow its ink, read at full strength
-    // under the pointer.
     $hoverInk: 100,
     $focus: true,
     $active: true,
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
-      // A bevel paints a surface even on the see-through layer. In the
-      // surface's own color, it lifts through its gradient plus the explicit
-      // lighten below. With a color of its own, it takes the flat lift, so both
-      // kinds paint the same color. Disabled, it loses the gradient and takes
-      // the flat lift too, which stays visible in both color schemes. A lighten
-      // passed along with either replaces the flat lift.
+      // Neutral bevels use their gradient and explicit lightening. Colored or
+      // disabled bevels use the ordinary offset unless $lighten overrides it.
       if (variants.$kind === "bevel") {
         if (hasBevelLighten(variants)) return false;
         return variants.$lighten == null;
       }
-      // A see-through button has nothing to lift off. A button with a layer of
-      // its own lifts off the surface around it.
       if (variants.$layer === "transparent") return false;
       return true;
     },
     $lighten(defaultValue, variants) {
       if (!hasBevelLighten(variants)) return defaultValue;
-      // The gradient alone is subtle on dark surfaces, so the base layer lifts
-      // to keep the button distinct from the surface behind it.
+      // Lighten neutral bevels so the gradient remains distinct on dark
+      // surfaces.
       return defaultValue ?? true;
     },
   },
   refine({ variants, setVariants, addClass }) {
-    // A bevel paints even without a layer background, so it still needs an edge
-    // when the control's shared fill fallback does not apply.
+    // A bevel needs a forced-colors edge even without a layer background.
     if (
       variants.$kind === "bevel" &&
       variants.$border == null &&
@@ -120,9 +101,8 @@ export const button = cv({
       addClass("forced-colors:ak-frame-border");
     }
     if (!variants.$disabled) return;
-    // Native buttons suppress these through the :disabled-aware ui-hover and
-    // ui-active variants, but label-based controls such as the choice card are
-    // never :disabled themselves, so drop the state variants here.
+    // Label-based controls never match :disabled, so remove their hover and
+    // press variants explicitly.
     setVariants({
       $hoverOffset: false,
       $hoverPush: false,
@@ -136,6 +116,7 @@ export const button = cv({
   },
 });
 
+/** A button label that truncates to one line by default. */
 export const buttonLabel = cv({
   extend: [controlLabel],
   defaultVariants: {
@@ -143,6 +124,7 @@ export const buttonLabel = cv({
   },
 });
 
+/** A button description that truncates to one line by default. */
 export const buttonDescription = cv({
   extend: [controlDescription],
   defaultVariants: {
@@ -150,12 +132,17 @@ export const buttonDescription = cv({
   },
 });
 
+/** A selection indicator placed after the buttons in a group. */
 export const buttonGlider = glider;
 
+/** A button group with shared spacing and a selection glider. */
 export const buttonGroup = gliderGroup;
 
+/** A line, slash, or chevron between buttons. */
 export const buttonSeparator = gliderSeparator;
 
+/** A text-aligned slot for a button icon, avatar, badge, or shortcut. */
 export const buttonSlot = controlSlot;
 
+/** A flexible wrapper for a button's label and description. */
 export const buttonContent = controlContent;

@@ -7,10 +7,12 @@ export interface FrameProps
   extends ak.RoleProps<"div">, VariantProps<typeof frame> {}
 
 /**
- * Renders a generic framed div exposing the frame system: radius, padding,
- * borders, and concentric radius nesting with parent frames. It paints no
- * surface of its own until a layer prop moves the color; pass `$layer` to make
- * it one.
+ * Renders a frame with padding, borders, and corners that follow parent frames.
+ * Use `$layer` to add a background surface.
+ * @example
+ * <Frame $p={3} $rounded="lg" $border>
+ *   <p>Project details</p>
+ * </Frame>
  */
 export function Frame(props: FrameProps) {
   const [variantProps, rest] = splitProps(props, frame);

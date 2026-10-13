@@ -2,31 +2,22 @@ import { cv } from "clava";
 import { control, controlSlot } from "./control.ts";
 import { focusHighlight } from "./focus.ts";
 
+/** A text field or field wrapper with focus, invalid, and disabled styles. */
 export const input = cv({
   extend: [control, focusHighlight],
   class: [
     "max-w-full cursor-text items-center justify-start",
-    // Keep the danger color's lightness and set its weight after the ordinary
-    // edge utilities, which otherwise push it to black or white.
+    // Preserve the danger hue and override the ordinary edge weight.
     "not-ui-field-disabled:ui-field-invalid:ak-edge-danger not-ui-field-disabled:ui-field-invalid:ak-edge-45",
     "not-ui-field-disabled:ui-field-invalid:ak-edge-push-0",
-    // Only animate into the hover state; snapping back on hover-out keeps
-    // the field from feeling laggy.
+    // Animate hover entry only to avoid a delayed exit.
     "hover:transition-[background-color]",
-    // Plain hover, not ui-hover: fields are not command-like, and ui-hover's
-    // nested-interactive exclusion would suppress feedback on a wrapper
-    // whose form holds the input next to a submit button. The disabled
-    // exclusion it builds in has to be spelled out in exchange, with the
-    // same condition as the disabled look below.
+    // Use ordinary hover because ui-hover excludes nested controls. Apply the
+    // field's disabled condition explicitly.
     "not-ui-field-disabled:hover:ak-state-2.5",
-    // A script can flip the disabled state after render, and a wrapper takes
-    // the state from the entry controls inside it, so the disabled look is a
-    // CSS rule rather than a variant. ui-field-disabled leaves a wrapper enabled
-    // while any control in it still takes entry, and when only a button in it
-    // is disabled, such as a send button that waits for text. The field lies
-    // flat on the surface with a faint edge and the dimmed ink of every other
-    // disabled control. $lightnessOffset lands in the style attribute, which
-    // no class can gate, so the plugin's own zero offset cancels the sink.
+    // Read disabled state from DOM entry controls, including updates after
+    // render. Enabled entries or a disabled action button keep the field
+    // enabled. The plugin's zero-offset utility cancels the inline default.
     "ui-field-disabled:ak-disabled",
     "ui-field-disabled:cursor-not-allowed **:ui-disabled:cursor-not-allowed",
     "ui-field-disabled:ak-ink-0 ui-field-disabled:**:ak-ink-0",
@@ -35,18 +26,21 @@ export const input = cv({
     // A native input uses the control line box; a textarea keeps its rows.
     "[input]:box-content [input]:h-lh",
     "[&_input]:box-content [&_input]:h-lh",
-    // Entry fields share the group outline; actions keep their own focus cue.
-    // :where keeps the type exclusions from raising specificity.
+    // Entry controls share the wrapper's focus ring; action buttons keep
+    // theirs. :where() prevents higher specificity from type exclusions.
     "[&_:is(input:not(:where([type=hidden],[type=button],[type=submit],[type=reset],[type=image],[type=checkbox],[type=radio])),textarea,select)]:outline-none",
     "placeholder:ak-ink-0 [&_:is(input,textarea)]:placeholder:ak-ink-0",
-    // A field inside another input surface uses the outer padding and edge.
-    // The focus override also wins against its own focus-state variant.
+    // Nested fields use the outer geometry; ! also overrides their focus-state
+    // ring.
     "[:is(&_&)]:p-0 [:is(&_&)]:border-0 [:is(&_&)]:ring-0",
     "[:is(&_&)]:shadow-none [:is(&_&)]:outline-none!",
     "[:is(&_&)]:bg-transparent [:is(&_&)]:ak-layer-offset-0 [:is(&_&)]:ak-state-0",
   ],
   variants: {
-    // Disabled appearance follows the field's DOM state.
+    /**
+     * Disables the inherited variant; the field's DOM state controls its
+     * disabled appearance.
+     */
     $disabled: null,
     /**
      * Whether to show a focus ring when the field, or the input inside it,
@@ -54,10 +48,8 @@ export const input = cv({
      */
     $focus(value?: 1 | 2 | 3 | boolean) {
       if (!value) return;
-      // A function replaces the inherited scale instead of emitting beside it.
-      // focus-within, because the class often sits on a wrapper around the real
-      // input, and plain focus rather than focus-visible, so a field built from
-      // a button or a wrapper rings on a pointer too.
+      // Replace inherited focus classes. focus-within covers wrappers and
+      // pointer focus on button-based fields.
       if (value === 1) return "focus-within:outline";
       if (value === 3) return "focus-within:outline-3";
       return "focus-within:outline-2";
@@ -74,26 +66,20 @@ export const input = cv({
     $rounded: "lg",
     $border: true,
     $borderType: "border",
-    // A field's edge is its only boundary on the surface around it, so it is
-    // stronger than the named border weights provide: the lightest that keeps
-    // it at 3:1 against a light or a dark canvas. choice.ts draws its box at
-    // the same weight. A variant default, not a base class, so instance weights
-    // replace it instead of losing by stylesheet order.
+    // Match choice boxes at 3:1 boundary contrast. A variant default lets
+    // callers replace this weight.
     $edgeWeight: 45,
-    // Fields keep a light writing surface on light layers and a dark one on
-    // dark layers. Hover pulls the field toward the surrounding surface.
+    // Keep writing surfaces lighter on light layers and darker on dark layers.
     $lightnessOffset: -1,
     $focus: true,
     $focusOffset: "inset",
   },
 });
 
+/** A text-aligned slot for field icons and other content. */
 export const inputSlot = controlSlot;
 
-/**
- * Placeholder-colored text for fake input fields, like a button styled as an
- * input showing its empty-state label.
- */
+/** Placeholder-colored text for an empty control styled as an input. */
 export const inputPlaceholder = cv({
   class: "ak-ink-0",
 });
