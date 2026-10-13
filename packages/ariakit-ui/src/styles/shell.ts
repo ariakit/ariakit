@@ -140,9 +140,9 @@ const bar = cx(
 );
 
 /**
- * The 80% surface keeps text contrast above 7:1. Use an opaque fallback without
- * backdrop-filter support or with reduced transparency. Backdrop filters create
- * stacking and fixed-position contexts; nested filters do not compose.
+ * The 80% surface keeps text contrast above 7:1. Use an opaque fallback when
+ * backdrop filters are unsupported or transparency is reduced. Backdrop filters
+ * create stacking and fixed-position contexts; nested filters do not compose.
  */
 const blur = cx(
   "backdrop-blur-md bg-[color-mix(in_oklab,var(--ak-layer)_80%,transparent)]",
@@ -173,8 +173,8 @@ export const shellHeader = cv({
       lg: "[.shell:has(>&)]:[--shell-header-height:calc(var(--shell-header-step)*18)] [--shell-header-height:calc(var(--shell-header-step)*18)]",
     },
     /**
-     * Blurs the page behind a translucent surface. Uses an opaque surface
-     * without backdrop-filter support or with reduced transparency.
+     * Blurs the page behind a translucent surface. Uses an opaque surface when
+     * backdrop filters are unsupported or transparency is reduced.
      */
     $blur: blur,
     /**
@@ -269,8 +269,8 @@ export const shellFooter = cv({
       lg: "min-h-[calc(--spacing(18)+var(--shell-facing-border))]",
     },
     /**
-     * Blurs the page behind a translucent surface. Uses an opaque surface
-     * without backdrop-filter support or with reduced transparency.
+     * Blurs the page behind a translucent surface. Uses an opaque surface when
+     * backdrop filters are unsupported or transparency is reduced.
      */
     $blur: blur,
   },
