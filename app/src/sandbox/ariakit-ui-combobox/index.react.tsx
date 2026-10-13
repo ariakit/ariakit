@@ -79,7 +79,7 @@ export default function ComboboxExamples() {
 
       <Example
         title="Open suggestions"
-        description="The list below its input, as wide as the input. The active item is highlighted, and a disabled item is dimmed."
+        description="The list below its input, as wide as the input. The active item is highlighted while the input has focus, and a disabled item is dimmed."
         code={`
           <ComboboxProvider open>
             <ComboboxLabel>Snack</ComboboxLabel>
@@ -111,7 +111,7 @@ export default function ComboboxExamples() {
 
       <Example
         title="Disabled active option"
-        description="A disabled option that stays focusable keeps the highlight while it is the active item."
+        description="A disabled option that stays focusable keeps the highlight while it is the active item and the input has focus."
         code={`
           <ComboboxProvider open>
             <ComboboxLabel>Nut butter</ComboboxLabel>
@@ -954,9 +954,10 @@ export default function ComboboxExamples() {
 
       <Example
         title="combobox-item-highlight"
-        description="The highlighted row of the static combobox-group thumbnail paints like the active item of a real list on the same lifted canvas."
+        description="The highlighted row of the static combobox-group thumbnail paints like the hovered item of a real list on the same lifted canvas."
         code={`
           <ak.ComboboxProvider>
+            <ak.Combobox />
             <ak.ComboboxList>
               <ak.ComboboxItem>Reference highlight</ak.ComboboxItem>
               <ak.ComboboxItem>Reference rest</ak.ComboboxItem>

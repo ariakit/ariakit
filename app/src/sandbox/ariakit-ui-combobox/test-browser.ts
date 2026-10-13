@@ -5,10 +5,12 @@ import {
   expectMedia,
   forEachColorScheme,
   getCapture,
+  hoverOver,
   OVERLAY_CLIP_MARGIN,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 import type { ColorScheme } from "#app/test-utils/ariakit-ui.ts";
+import { flushFrames } from "#app/test-utils/preview.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // The fixture section sits at the end of the sandbox, so it is scrolled to
@@ -22,7 +24,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // The page capture covers the select sizes and static thumbnail highlight.
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972223972
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550839
-  test("page @visual", async ({ page, q, visual }) => {
+  test("page @visual", async ({ page, visual }) => {
     const capture = (colorScheme: ColorScheme) =>
       capturePage({
         page,
@@ -31,27 +33,65 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         item: "ariakit-ui-combobox/page",
       });
     await forEachColorScheme(page, capture);
-    // The forced-colors variant of the same capture. The static list of the
-    // Open suggestions card renders Cashews as the active option.
-    // https://github.com/ariakit/ariakit/issues/7518
+    // The forced-colors variant of the same capture. The lists held open have
+    // no focus, so no option shows the selection colors.
+    // https://github.com/ariakit/ariakit/issues/7871
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
       await expectMedia(page, "(forced-colors: active)");
-      await test
-        .expect(query(q.article("Open suggestions")).option("Cashews"))
-        .toHaveAttribute("data-active-item", "true");
-      // The Disabled active option card keeps the selection colors on an active
-      // option that is also disabled.
-      // https://github.com/ariakit/ariakit/issues/7871
-      const disabledOption = query(q.article("Disabled active option")).option(
-        "Peanut",
-      );
-      await test
-        .expect(disabledOption)
-        .toHaveAttribute("data-active-item", "true");
-      await test
-        .expect(disabledOption)
-        .toHaveAttribute("aria-disabled", "true");
+      await capture(colorScheme);
+    });
+  });
+
+  // The highlight follows current focus, so each card is captured while its
+  // input has focus and the pointer is over an option.
+  // https://github.com/ariakit/ariakit/issues/7875
+  test("highlights the option with current focus @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    const capture = async (colorScheme: ColorScheme) => {
+      for (const [key, title, inputName, optionName] of [
+        ["suggestion", "Open suggestions", "Snack", "Cashews"],
+        ["disabled", "Disabled active option", "Nut butter", "Peanut"],
+        [
+          "reference",
+          "combobox-item-highlight",
+          "Reference search",
+          "Reference highlight",
+        ],
+      ] as const) {
+        const box = q.article(title);
+        await box.evaluate((node) => {
+          node.scrollIntoView({ block: "center" });
+        });
+        // The scroll event arrives on a later frame and resets Ariakit's
+        // mouse-movement tracker, which would make the option ignore the hover
+        // below, so let it fire first.
+        await flushFrames(page);
+        // A click clears the default active option. The hover then gives the
+        // option the pointer highlight instead of the keyboard focus style.
+        await query(box).combobox(inputName).click();
+        const option = query(box).option(optionName);
+        await hoverOver(option);
+        await test.expect(option).toHaveAttribute("data-focus", "true");
+        await test.expect(option).not.toHaveAttribute("data-focus-visible");
+        await visual(
+          getCapture(box, colorScheme, {
+            item: `ariakit-ui-combobox/focused-option/${key}`,
+          }),
+        );
+      }
+    };
+    await forEachColorScheme(page, capture);
+    // The forced-colors variant of the same captures. The option with focus
+    // uses the system selection colors, also when it is disabled.
+    // https://github.com/ariakit/ariakit/issues/7518
+    // https://github.com/ariakit/ariakit/issues/7871
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      await expectMedia(page, "(forced-colors: active)");
       await capture(colorScheme);
     });
   });

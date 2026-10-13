@@ -5,7 +5,7 @@ import {
 } from "#app/test-utils/ariakit-ui.ts";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFramework(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972224343
   test("keeps the hovered suggestion active with optional hover props", async ({
     page,
@@ -44,6 +44,44 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // The combobox-item-highlight list stays open in this sandbox, so the query
     // names the list that closes.
     await test.expect(q.listbox("Assignee")).not.toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7875
+  test("clears the option highlight when focus leaves the combobox", async ({
+    page,
+    q,
+  }) => {
+    const card = q.article("Open suggestions");
+    const input = query(card).combobox("Snack");
+    const option = query(card).option("Cashews");
+    await card.evaluate((node) => {
+      node.scrollIntoView({ block: "center" });
+    });
+    // The scroll event arrives on a later frame and resets Ariakit's
+    // mouse-movement tracker, which would make the option ignore the hover
+    // below, so let it fire first.
+    await flushFrames(page);
+    const restingBackground = await query(card)
+      .option("Almonds")
+      .evaluate((element) => getComputedStyle(element).backgroundColor);
+    // The list is held open, so Cashews is the active option before focus
+    // enters the combobox.
+    await test.expect(option).toHaveAttribute("data-active-item", "true");
+    await test.expect(option).toHaveCSS("background-color", restingBackground);
+    // A click clears the default active option. The hover then gives the option
+    // the pointer highlight instead of the keyboard focus style.
+    await input.click();
+    await option.hover();
+    await test.expect(option).toHaveAttribute("data-focus", "true");
+    await test.expect(option).not.toHaveAttribute("data-focus-visible");
+    await test
+      .expect(option)
+      .not.toHaveCSS("background-color", restingBackground);
+    await input.press("Tab");
+    await test.expect(input).not.toBeFocused();
+    await test.expect(option).not.toHaveAttribute("data-focus");
+    await test.expect(option).toHaveAttribute("data-active-item", "true");
+    await test.expect(option).toHaveCSS("background-color", restingBackground);
   });
 });
 
