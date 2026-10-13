@@ -31,4 +31,24 @@ withCaptures(import.meta.dirname, async ({ test }) => {
       }
     });
   });
+
+  // An adaptive text color targets nested text directly, so the disabled fields
+  // and the disabled card need the system color on the same targets.
+  // https://github.com/ariakit/ariakit/issues/7869
+  test("uses the system disabled color in colored text in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      await expectMedia(page, "(forced-colors: active)");
+      await captureInView({
+        visual,
+        box: q.article("Disabled choices in colored text"),
+        colorScheme,
+        item: "ariakit-ui-checkbox/forced-colors/disabled-colored-text",
+      });
+    });
+  });
 });
