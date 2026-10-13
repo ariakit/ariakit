@@ -52,7 +52,7 @@ export const button = cv({
     "ui-disabled:ring-(--disabled-border,transparent)!",
     "ui-disabled:inset-shadow-none! ui-disabled:shadow-none!",
     "ui-disabled:bg-none! ui-disabled:ak-ink-0! ui-disabled:*:ak-ink-0!",
-    "ui-disabled:ui-text:ak-ink-0!",
+    "ui-disabled:not-forced-colors:ui-text:ak-ink-0!",
   ],
   variants: {
     /**
