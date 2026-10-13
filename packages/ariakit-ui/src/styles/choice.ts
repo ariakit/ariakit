@@ -119,10 +119,16 @@ export const choiceField = cv({
     "ui-disabled-within:ak-disabled",
     "ui-disabled-within:cursor-not-allowed",
     "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
+    // An adaptive text color on the row or an ancestor targets nested text
+    // with higher specificity. The ui-text rules here and in forced colors set
+    // the disabled color on the same targets.
+    // https://github.com/ariakit/ariakit/issues/7869
+    "ui-disabled-within:not-forced-colors:ui-text:ak-ink-0",
     // Forced colors replace the ink with the normal text color. Use the system
     // disabled color instead.
     "ui-disabled-within:forced-colors:text-[GrayText]",
     "ui-disabled-within:forced-colors:**:text-[GrayText]",
+    "ui-disabled-within:forced-colors:ui-text:text-[GrayText]",
   ],
   defaultVariants: {
     // Resolve the input against the surrounding surface without an extra layer.
@@ -170,11 +176,17 @@ export const choiceCard = cv({
     "ui-disabled-within:ak-disabled",
     "ui-disabled-within:cursor-not-allowed",
     "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
+    // An adaptive text color on the card or an ancestor targets nested text
+    // with higher specificity. The ui-text rules here and in forced colors set
+    // the disabled color on the same targets.
+    // https://github.com/ariakit/ariakit/issues/7869
+    "ui-disabled-within:not-forced-colors:ui-text:ak-ink-0",
     "ui-disabled-within:ak-edge-5 ui-disabled-within:ak-layer-mix-20",
     // Forced colors replace the ink with the normal text color. Use the system
     // disabled color instead; the label's edge follows the text color.
     "ui-disabled-within:forced-colors:text-[GrayText]",
     "ui-disabled-within:forced-colors:**:text-[GrayText]",
+    "ui-disabled-within:forced-colors:ui-text:text-[GrayText]",
     "ui-disabled-within:ui-hover:ak-state-0",
     "ui-disabled-within:ui-active:scale-x-100",
     "ui-disabled-within:ui-active:scale-y-100",

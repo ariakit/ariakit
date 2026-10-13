@@ -28,7 +28,7 @@ import {
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import * as icons from "lucide-react";
-import { ChartBar, Sparkles } from "lucide-react";
+import { ChartBar, Sparkles, Trash2 } from "lucide-react";
 import type { AriaRole } from "react";
 import { useId, useState } from "react";
 import {
@@ -924,6 +924,80 @@ export default function CheckboxExamples() {
           <CheckboxLabel>Messages</CheckboxLabel>
           <CheckboxDescription>Receive message updates.</CheckboxDescription>
         </CheckboxField>
+      </Example>
+      {/* https://github.com/ariakit/ariakit/issues/7869 */}
+      <Example
+        title="Disabled choices in colored text"
+        description="A field or card that only its input disables keeps the dimmed text and icon inside an adaptive text color."
+        code={`
+          <Text $text="danger">
+            <CheckboxField value="archive">
+              <CheckboxLabel>Archive project</CheckboxLabel>
+              <CheckboxDescription>…</CheckboxDescription>
+            </CheckboxField>
+            <CheckboxField value="transfer" aria-disabled>
+              <CheckboxLabel>Transfer project</CheckboxLabel>
+              <CheckboxDescription>…</CheckboxDescription>
+            </CheckboxField>
+            <fieldset disabled>
+              <CheckboxField value="delete">
+                <CheckboxLabel>Delete project</CheckboxLabel>
+                <CheckboxDescription>…</CheckboxDescription>
+              </CheckboxField>
+            </fieldset>
+            <CheckboxCard value="backups" aria-disabled>
+              <CheckboxCardSlot><Trash2 /></CheckboxCardSlot>
+              <CheckboxCardContent>
+                <CheckboxCardLabel>Delete backups</CheckboxCardLabel>
+                <CheckboxCardDescription>…</CheckboxCardDescription>
+              </CheckboxCardContent>
+            </CheckboxCard>
+          </Text>
+          <CheckboxField value="members" $text="danger" aria-disabled>
+            <CheckboxLabel>Remove members</CheckboxLabel>
+            <CheckboxDescription>…</CheckboxDescription>
+          </CheckboxField>
+        `}
+      >
+        <div className="grid w-full gap-2">
+          <Text $text="danger" className="grid gap-2">
+            {/* The enabled field shows the color that the others must drop. */}
+            <CheckboxField value="archive">
+              <CheckboxLabel>Archive project</CheckboxLabel>
+              <CheckboxDescription>Hide it from the team</CheckboxDescription>
+            </CheckboxField>
+            <CheckboxField value="transfer" aria-disabled>
+              <CheckboxLabel>Transfer project</CheckboxLabel>
+              <CheckboxDescription>
+                Only owners can transfer
+              </CheckboxDescription>
+            </CheckboxField>
+            <fieldset disabled className="grid">
+              <CheckboxField value="delete">
+                <CheckboxLabel>Delete project</CheckboxLabel>
+                <CheckboxDescription>
+                  Only owners can delete
+                </CheckboxDescription>
+              </CheckboxField>
+            </fieldset>
+            <CheckboxCard value="backups" aria-disabled>
+              <CheckboxCardSlot>
+                <Trash2 />
+              </CheckboxCardSlot>
+              <CheckboxCardContent>
+                <CheckboxCardLabel>Delete backups</CheckboxCardLabel>
+                <CheckboxCardDescription>
+                  Only owners can delete
+                </CheckboxCardDescription>
+              </CheckboxCardContent>
+            </CheckboxCard>
+          </Text>
+          {/* The field sets the color on itself. */}
+          <CheckboxField value="members" $text="danger" aria-disabled>
+            <CheckboxLabel>Remove members</CheckboxLabel>
+            <CheckboxDescription>Only owners can remove</CheckboxDescription>
+          </CheckboxField>
+        </div>
       </Example>
     </ExampleGrid>
   );
