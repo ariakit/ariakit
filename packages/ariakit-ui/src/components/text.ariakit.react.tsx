@@ -8,8 +8,8 @@ export interface TextProps
 
 /**
  * Renders a span with text colors from its own variants or a parent component's
- * text variants. A color modifier enables the adaptive text color, unless
- * `$text` is set.
+ * text variants. A color modifier that emits output enables the adaptive text
+ * color, unless `$text` is set. `$textPush={0}`, for example, emits none.
  * @example
  * <Text $text="success">Changes saved</Text>
  * @example

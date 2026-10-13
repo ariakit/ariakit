@@ -203,7 +203,7 @@ export default function LayerExamples() {
       {/* https://github.com/ariakit/ariakit/issues/7865 */}
       <Example
         title="Text color modifiers"
-        description="A color modifier enables adaptive text unless $text is set."
+        description="A color modifier that emits output enables adaptive text unless $text is set. A zero push emits none."
         wide
         stretch
         code={`

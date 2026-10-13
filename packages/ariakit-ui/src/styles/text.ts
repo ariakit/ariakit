@@ -218,8 +218,8 @@ export const text = cv({
     /**
      * Sets the base text color. `true` adapts the parent layer color to meet
      * WCAG AA contrast; a color sets the base explicitly. `false` disables the
-     * text system. Other text variants adjust this color and enable it by
-     * default.
+     * text system. Other text variants adjust this color. A variant that emits
+     * output also enables it by default.
      */
     $text(value?: ColorValues | (string & {}) | boolean) {
       if (!value) return;
