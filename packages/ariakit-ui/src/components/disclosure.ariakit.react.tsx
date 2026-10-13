@@ -24,9 +24,15 @@ import {
 } from "../styles/disclosure.ts";
 
 export interface DisclosureOwnProps {
-  /** Custom button element or props to render a `DisclosureButton`. */
+  /**
+   * Button content, a custom element, or `DisclosureButton` props. When
+   * omitted, children must include the button and content components.
+   */
   button?: React.ReactNode | DisclosureButtonProps;
-  /** Custom content element or props to render a `DisclosureContent`. */
+  /**
+   * Custom content element or `DisclosureContent` props. Used when `button` is
+   * set; defaults to a `DisclosureContent` containing the children.
+   */
   content?: React.ReactElement | DisclosureContentProps;
   /**
    * Element rendered as the root's last child, after the content. Reserved for
@@ -38,7 +44,8 @@ export interface DisclosureOwnProps {
    */
   decoration?: React.ReactNode;
   /**
-   * Applies a split layout that visually separates button and content areas.
+   * Separates the button and content with a border and content padding.
+   * `$split` takes precedence when both props are set.
    */
   split?: boolean;
 }
@@ -57,7 +64,8 @@ export type DisclosureProps<
   };
 
 /**
- * High-level disclosure that wires button and content through a provider.
+ * Connects a button and collapsible content through a shared provider. Pass
+ * `button` to wrap children in `DisclosureContent` automatically.
  * @example
  * <Disclosure>
  *   <DisclosureButton>Open</DisclosureButton>
@@ -116,6 +124,7 @@ export interface DisclosureGroupProps
   extends ak.RoleProps<"div">, VariantProps<typeof disclosureGroup> {}
 
 /**
+ * Groups disclosures in a shared frame with dividers between them.
  * @example
  * <DisclosureGroup>
  *   <Disclosure button="Shipping">Ships in two days.</Disclosure>
@@ -148,11 +157,13 @@ export interface DisclosureButtonOwnProps {
   label?: React.ReactNode | DisclosureButtonLabelProps;
   /** Secondary text shown below the main label. */
   description?: React.ReactNode;
-  /** Custom icon. */
+  /** Icon before the label, inside a `DisclosureButtonSlot`. */
   icon?: React.ReactNode;
   /**
-   * Selects chevron/plus indicator and placement (start, next, end). Set
-   * `false` to hide.
+   * Selects a chevron or plus and its position. `start` precedes the icon and
+   * label; `next` follows the label; `end` sits at the far edge. Defaults to
+   * `chevron-down-end` with an icon and `chevron-right-start` without one. Set
+   * `false` to hide it.
    */
   indicator?: DisclosureIndicator | false;
 }
@@ -186,6 +197,8 @@ function renderIndicator(indicator: DisclosureIndicator) {
 }
 
 /**
+ * Toggles disclosure content. Wraps its label and connects optional secondary
+ * text as an accessible description.
  * @example
  * <Disclosure>
  *   <DisclosureButton description="Delivery times">Shipping</DisclosureButton>
@@ -310,15 +323,26 @@ export function DisclosureButtonSlot(props: DisclosureButtonSlotProps) {
 
 export interface DisclosureContentProps
   extends ak.DisclosureContentProps, VariantProps<typeof disclosureContent> {
-  /** Custom body element or props to render a `DisclosureContentBody`. */
+  /**
+   * Custom body element or `DisclosureContentBody` props. Defaults to a
+   * `DisclosureContentBody` containing the content children.
+   */
   body?: React.ReactElement | DisclosureContentBodyProps;
-  /** Applies a guide to the content. */
+  /**
+   * Draws a vertical guide below the leading icon or indicator. Disabled by
+   * default. `$guide` takes precedence when both props are set.
+   */
   guide?: boolean;
-  /** Applies prose typography and spacing to the content body. */
+  /**
+   * Applies prose typography and spacing to the content body. Disabled by
+   * default. The body's `$prose` prop takes precedence when set.
+   */
   prose?: boolean;
 }
 
 /**
+ * Collapsible content with an inner `DisclosureContentBody` for padding and
+ * optional prose styles. Connects to the surrounding disclosure provider.
  * @example
  * <Disclosure>
  *   <DisclosureButton>Shipping</DisclosureButton>
@@ -364,6 +388,8 @@ export type DisclosureContentBodyProps<
   };
 
 /**
+ * Applies padding and optional prose styles inside `DisclosureContent`, which
+ * renders this body by default.
  * @example
  * <Disclosure
  *   button="Shipping"

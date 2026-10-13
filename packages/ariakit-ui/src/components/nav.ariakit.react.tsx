@@ -69,15 +69,16 @@ function renderGliders(value?: NavGliderValue) {
 export interface NavProps
   extends ak.RoleProps<"nav">, VariantProps<typeof nav> {
   /**
-   * The list that holds the rows, as an element or as `NavList` props. Set it
-   * to `false` to render the children as they are, for a nav made of groups
-   * that bring their own lists. Links with default items need a `NavList` or
-   * another `ul`, `ol`, or `menu`; use `item={false}` for standalone links.
+   * The list that holds the rows, as an element or `NavList` props. Defaults to
+   * a `NavList` containing the children. Set `false` for groups that supply
+   * their own lists. Links with default items need a `NavList` or another `ul`,
+   * `ol`, or `menu`; use `item={false}` for standalone links.
    */
   list?: React.ReactElement | NavListProps | false;
   /**
-   * A glider that travels between the rows of the nav, in its own list, in a
-   * group or in a disclosure alike, rendered before them.
+   * Indicator that moves between current rows, including rows in groups and
+   * disclosures. Set `true` for the default `NavGlider`, or supply an element,
+   * props, or an array of these. Omitted by default.
    */
   glider?: NavGliderValue;
 }
@@ -123,6 +124,7 @@ function useSettling(element: HTMLElement | null) {
 }
 
 /**
+ * A navigation landmark that wraps its rows in a `NavList` by default.
  * @example
  * <Nav aria-label="Main" glider>
  *   <NavLink href="/" currentUrl="/">Home</NavLink>
@@ -157,6 +159,8 @@ export interface NavListProps
   extends ak.RoleProps<"ul">, VariantProps<typeof navList> {}
 
 /**
+ * A semantic list for navigation rows. `Nav` creates one by default; use
+ * additional lists inside groups and disclosures.
  * @example
  * <Nav aria-label="Main" list={<NavList />}>
  *   <NavLink href="/">Home</NavLink>
@@ -171,8 +175,8 @@ export interface NavGliderProps
   extends ak.RoleProps<"div">, VariantProps<typeof navGlider> {}
 
 /**
- * Marks the current row with a cover or bar. Place it first in `Nav` to paint
- * below the rows. Hidden in browsers without CSS anchor positioning.
+ * Marks the current row with a cover or bar. Pass it to `Nav`'s `glider` prop
+ * to paint below the rows. Hidden in browsers without CSS anchor positioning.
  * @example
  * <Nav aria-label="Main" glider={<NavGlider />}>
  *   <NavLink href="/" currentUrl="/">Home</NavLink>
@@ -186,17 +190,25 @@ export function NavGlider(props: NavGliderProps) {
 
 export interface NavLinkProps
   extends ak.RoleProps<"a">, VariantProps<typeof navLink> {
+  /**
+   * Current page URL, compared with `href` to set `aria-current="page"` and
+   * open ancestor disclosures. Matches the origin and path, ignoring trailing
+   * slashes. A hash or query in `href` must also match. No match is computed
+   * when omitted.
+   */
   currentUrl?: string | URL;
   /**
-   * The list item around the link. Set to `false` for a standalone link or an
-   * existing item wrapper. All other props, including `ref` and `render`,
-   * belong to the anchor. The default item needs a `NavList` or another `ul`,
-   * `ol`, or `menu` parent, including inside disclosure content.
+   * Custom list item element or props around the link. Defaults to an `li`; set
+   * `false` for a standalone link or an existing item wrapper. All other props,
+   * including `ref` and `render`, belong to the anchor. The default item needs
+   * a `NavList` or another `ul`, `ol`, or `menu` parent.
    */
   item?: React.ReactElement | ak.RoleProps<"li"> | false;
 }
 
 /**
+ * A navigation link with a list item wrapper. Pass `currentUrl` to mark the
+ * current page and open its ancestor disclosures.
  * @example
  * <Nav aria-label="Main">
  *   <NavLink href="/docs" currentUrl="/docs">Docs</NavLink>
@@ -331,6 +343,8 @@ export interface NavGroupProps
   extends ak.GroupProps, VariantProps<typeof navGroup> {}
 
 /**
+ * Groups related navigation rows under an optional `NavGroupLabel`. Put its
+ * links in a `NavList`.
  * @example
  * <Nav aria-label="Docs" list={false}>
  *   <NavGroup>
@@ -368,7 +382,15 @@ export interface NavDisclosureProps extends Omit<
   DisclosureProps<typeof navDisclosure>,
   "recipe" | "$iconSize"
 > {
+  /**
+   * Button content, a custom element, or `NavDisclosureButton` props. When
+   * omitted, children must include the button and content components.
+   */
   button?: React.ReactNode | NavDisclosureButtonProps;
+  /**
+   * Custom content element or `NavDisclosureContent` props. Used when `button`
+   * is set; defaults to content containing the children.
+   */
   content?: React.ReactElement | NavDisclosureContentProps;
 }
 
@@ -461,8 +483,9 @@ export interface NavDisclosureButtonProps extends Omit<
 
 /**
  * Renders the button of a `NavDisclosure`. Its `icon` leads the label on the
- * nav's icon column. With an explicit `label`, the children follow the label,
- * such as a `NavSlot` with a count.
+ * nav's icon column. With an explicit `label`, children follow it, such as a
+ * `NavSlot` with a count. The indicator defaults to `chevron-right-end` with an
+ * icon and `chevron-right-start` without one.
  * @example
  * <Nav aria-label="Docs">
  *   <NavDisclosure
@@ -509,10 +532,16 @@ export function NavDisclosureButton({
 }
 
 export interface NavDisclosureContentProps extends DisclosureContentProps {
+  /**
+   * Custom body element or `NavDisclosureContentBody` props. Defaults to a
+   * `NavDisclosureContentBody` containing the content children.
+   */
   body?: React.ReactElement | NavDisclosureContentBodyProps;
 }
 
 /**
+ * Collapsible navigation rows with a vertical guide enabled by default. Wrap
+ * links in a `NavList` inside the content.
  * @example
  * <Nav aria-label="Docs">
  *   <NavDisclosure
@@ -534,6 +563,8 @@ export interface NavDisclosureContentBodyProps extends Omit<
 > {}
 
 /**
+ * Aligns nested navigation rows and applies their spacing. Created by
+ * `NavDisclosureContent` unless its `body` prop supplies a replacement.
  * @example
  * <Nav aria-label="Docs">
  *   <NavDisclosure

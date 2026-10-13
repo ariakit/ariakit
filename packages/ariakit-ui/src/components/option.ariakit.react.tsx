@@ -8,7 +8,8 @@ export interface OptionLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof optionLabel> {}
 
 /**
- * The main text of an option.
+ * The main text of an option. Truncates to one line by default; set
+ * `$truncate={false}` to let it wrap.
  * @example
  * <Combobox label="Fruit">
  *   <ComboboxItem value="Apple">

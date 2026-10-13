@@ -28,7 +28,6 @@ export interface RadioProviderProps extends ak.RadioProviderProps {}
  *     <RadioField value="phone">Phone</RadioField>
  *   </RadioGroup>
  * </RadioProvider>
- * @see https://ariakit.com/reference/radio-provider
  */
 export function RadioProvider(props: RadioProviderProps) {
   return <ak.RadioProvider {...props} />;
@@ -46,7 +45,6 @@ export interface RadioGroupProps extends ak.RadioGroupProps {}
  *     <RadioField value="phone">Phone</RadioField>
  *   </RadioGroup>
  * </RadioProvider>
- * @see https://ariakit.com/reference/radio-group
  */
 export function RadioGroup(props: RadioGroupProps) {
   return <ak.RadioGroup {...props} />;
@@ -55,8 +53,8 @@ export function RadioGroup(props: RadioGroupProps) {
 export interface RadioProps extends ak.RadioProps, VariantProps<typeof radio> {}
 
 /**
- * Native radio drawn by CSS: a disc that fills brand with a dot. Requires a
- * `RadioProvider` ancestor and a `RadioGroup` around it, like `ak.Radio`.
+ * A native radio input with a circular selection mark. Use it inside a
+ * `RadioGroup` to share selection and keyboard navigation.
  * @example
  * <RadioProvider>
  *   <RadioGroup aria-label="Contact method">
@@ -64,7 +62,6 @@ export interface RadioProps extends ak.RadioProps, VariantProps<typeof radio> {}
  *     <label><Radio value="phone" /> Phone</label>
  *   </RadioGroup>
  * </RadioProvider>
- * @see https://ariakit.com/reference/radio
  */
 export function Radio(props: RadioProps) {
   const [variantProps, rest] = splitProps(props, radio);
@@ -147,9 +144,8 @@ export interface RadioCardProps
   extends ak.RadioProps, VariantProps<typeof radioCard> {}
 
 /**
- * Card-like label wrapping an Ariakit Radio kept out of sight, styled from the
- * input's checked and disabled state. Requires a `RadioProvider` ancestor and a
- * `RadioGroup` (or `RadioCardGrid`) around it.
+ * A selectable card with a visually hidden radio input, styled from its checked
+ * and disabled state. Use it inside a `RadioGroup` or `RadioCardGrid`.
  * @example
  * <RadioProvider>
  *   <RadioCardGrid aria-label="Contact method">
@@ -178,8 +174,8 @@ export interface RadioCardCheckProps
   extends ak.RoleProps<"span">, VariantProps<typeof radioCardCheck> {}
 
 /**
- * The drawn check of a card, reflecting the input's state. Pass a child to
- * replace the drawn mark. Must be nested inside a `RadioCard`.
+ * The drawn check of a card, reflecting the input's state. Pass a child element
+ * to replace the drawn mark. Must be nested inside a `RadioCard`.
  * @example
  * <RadioProvider defaultValue="email">
  *   <RadioCardGrid aria-label="Contact method">
@@ -254,7 +250,8 @@ export interface RadioCardLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof radioCardLabel> {}
 
 /**
- * Main text of the card. Must be nested inside a `RadioCard`.
+ * Main text of the card. Must be nested inside a `RadioCard`. Truncates to one
+ * line by default; set `$truncate={false}` to let it wrap.
  * @example
  * <RadioProvider>
  *   <RadioCardGrid aria-label="Contact method">
@@ -274,6 +271,7 @@ export interface RadioCardDescriptionProps
 
 /**
  * Secondary text below the label. Must be nested inside a `RadioCard`.
+ * Truncates to one line by default; set `$truncate={false}` to let it wrap.
  * @example
  * <RadioProvider>
  *   <RadioCardGrid aria-label="Contact method">
@@ -296,7 +294,7 @@ export interface RadioCardGridProps
 
 /**
  * The radio group of a set of `RadioCard`s, laid out as a grid of equal rows.
- * Requires a `RadioProvider` ancestor.
+ * Requires a `store` prop or a `RadioProvider` ancestor.
  * @example
  * <RadioProvider>
  *   <RadioCardGrid aria-label="Contact method">

@@ -37,7 +37,10 @@ export interface ListProps
   extends
     React.ComponentProps<"ol">,
     Omit<VariantProps<typeof list>, "$ordered"> {
-  /** Renders an ordered list (<ol>) when true; unordered (<ul>) when false. */
+  /**
+   * Renders an ordered `ol` when `true`, or an unordered `ul` when `false`.
+   * Defaults to `false`.
+   */
   ordered?: boolean;
 }
 
@@ -75,11 +78,8 @@ export interface ListItemProps
     Pick<ListItemMarkerProps, "checked" | "progress"> {}
 
 /**
- * List item that must be a child of `List`. It renders its own `ListItemMarker`
- * and `ListItemGuide`, which are absolutely positioned in the gutter the item
- * reserves through its start padding, and wraps its children in a
- * `ListItemContent` so the first of them keeps `:first-child` despite the two
- * elements in front of it.
+ * A row inside `List`. Creates its marker and guide, then wraps its children in
+ * `ListItemContent` to preserve their layout and first-child styles.
  * @example
  * <List ordered>
  *   <ListItem checked>Install</ListItem>
@@ -101,21 +101,8 @@ export interface ListItemContentProps
   extends React.ComponentProps<"span">, VariantProps<typeof listItemContent> {}
 
 /**
- * Wrapper for a row's own children. It generates no box, so the children lay
- * out exactly as they would directly in the row, but it keeps the marker and
- * the guide that precede them from taking `:first-child` away from the first of
- * them. Render it as a `span`: the block-mode variants detect block children
- * with `:has(:where(p, div, ...))`, so a `div` would put every list into blocks
- * mode.
- * @example
- * import { listItem } from "@ariakit/ui/styles/list";
- *
- * <List>
- *   <li {...listItem.jsx()}>
- *     <ListItemMarker />
- *     <ListItemContent>Install</ListItemContent>
- *   </li>
- * </List>
+ * Content wrapper created by `ListItem` and `ListDisclosureButton`. It
+ * preserves child layout and first-child styles after the marker and guide.
  */
 export function ListItemContent(props: ListItemContentProps) {
   const [variantProps, rest] = splitProps(props, listItemContent);
@@ -126,9 +113,15 @@ export interface ListItemMarkerProps
   extends
     React.ComponentProps<"span">,
     Omit<VariantProps<typeof listItemMarker>, "$checked" | "$progress"> {
-  /** Progress between `0` and `1` shown as a circular arc. */
+  /**
+   * Progress from `0` to `1`, shown as a circular arc until checked. Omit it to
+   * use the list's marker or the explicit `checked` state.
+   */
   progress?: number;
-  /** Whether the check is checked. Defaults to `true` if `progress` is `1`. */
+  /**
+   * Shows a checked or unchecked marker. Defaults to `true` when `progress` is
+   * `1`; an explicit value takes precedence over progress completion.
+   */
   checked?: boolean;
 }
 
@@ -189,20 +182,8 @@ export interface ListItemGuideProps
   extends React.ComponentProps<"span">, VariantProps<typeof listItemGuide> {}
 
 /**
- * Vertical segment of the guide, joining a row's marker to the next row's. It
- * only becomes visible where the list draws guides: by default in ordered lists
- * in blocks mode, or wherever the list's `$guide` asks for it.
- * @example
- * import { listItem } from "@ariakit/ui/styles/list";
- *
- * <List $guide>
- *   <li {...listItem.jsx()}>
- *     <ListItemMarker />
- *     <ListItemGuide />
- *     <ListItemContent>Install</ListItemContent>
- *   </li>
- *   <ListItem>Configure</ListItem>
- * </List>
+ * Guide segment created by `ListItem` and `ListDisclosure`. Joins adjacent
+ * markers when the list's `$guide` setting enables it.
  */
 export function ListItemGuide(props: ListItemGuideProps) {
   const [variantProps, rest] = splitProps(props, listItemGuide);
@@ -213,7 +194,15 @@ export interface ListDisclosureProps extends Omit<
   DisclosureProps<typeof listDisclosure>,
   "recipe"
 > {
+  /**
+   * Button content, a custom element, or `ListDisclosureButton` props. When
+   * omitted, children must include the button and content components.
+   */
   button?: React.ReactNode | ListDisclosureButtonProps;
+  /**
+   * Custom content element or `ListDisclosureContent` props. Used when `button`
+   * is set; defaults to content containing the children.
+   */
   content?: React.ReactElement | ListDisclosureContentProps;
 }
 
@@ -266,6 +255,8 @@ export interface ListDisclosureButtonProps
     Pick<ListItemMarkerProps, "checked" | "progress"> {}
 
 /**
+ * Toggles a list disclosure and adds its marker, check state, or progress arc.
+ * The indicator defaults to `chevron-down-next`.
  * @example
  * <List ordered>
  *   <li>
@@ -315,10 +306,15 @@ export function ListDisclosureButton({
 }
 
 export interface ListDisclosureContentProps extends DisclosureContentProps {
+  /**
+   * Custom body element or `ListDisclosureContentBody` props. Defaults to a
+   * `ListDisclosureContentBody` containing the content children.
+   */
   body?: React.ReactElement | ListDisclosureContentBodyProps;
 }
 
 /**
+ * Collapsible content with spacing matched to adjacent list items.
  * @example
  * <List ordered>
  *   <li>
@@ -342,6 +338,8 @@ export interface ListDisclosureContentBodyProps extends Omit<
 > {}
 
 /**
+ * Applies list spacing inside disclosure content. Created by
+ * `ListDisclosureContent` unless its `body` prop supplies a replacement.
  * @example
  * <List ordered>
  *   <li>

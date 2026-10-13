@@ -7,9 +7,7 @@ export interface CodeProps
   extends ak.RoleProps<"code">, VariantProps<typeof code> {}
 
 /**
- * Renders an inline code chip. Code blocks are a different component, so this
- * one is always the inline form.
- *
+ * Renders inline code with monospace text and compact spacing.
  * @example
  * <p>Run <Code>pnpm install</Code> to install dependencies.</p>
  */

@@ -7,8 +7,6 @@ export interface TooltipProviderProps extends ak.TooltipProviderProps {}
 
 /**
  * Shares visibility and anchor state between a tooltip and its anchor.
- * @see https://ariakit.com/reference/tooltip-provider
- *
  * @example
  * <TooltipProvider>
  *   <TooltipAnchor render={<button type="button" />}>Save</TooltipAnchor>
@@ -23,8 +21,6 @@ export interface TooltipAnchorProps extends ak.TooltipAnchorProps {}
 
 /**
  * Shows its tooltip when the anchor receives hover or keyboard focus.
- * @see https://ariakit.com/reference/tooltip-anchor
- *
  * @example
  * <TooltipProvider>
  *   <TooltipAnchor render={<button type="button" />}>Save</TooltipAnchor>
@@ -40,8 +36,6 @@ export interface TooltipProps
 
 /**
  * Renders a short label or description for its anchor.
- * @see https://ariakit.com/reference/tooltip
- *
  * @example
  * <TooltipProvider>
  *   <TooltipAnchor render={<button type="button" />}>Save</TooltipAnchor>
@@ -57,8 +51,6 @@ export interface TooltipArrowProps extends ak.TooltipArrowProps {}
 
 /**
  * Renders an arrow that points from the tooltip to its anchor.
- * @see https://ariakit.com/reference/tooltip-arrow
- *
  * @example
  * <TooltipProvider>
  *   <TooltipAnchor render={<button type="button" />}>Save</TooltipAnchor>

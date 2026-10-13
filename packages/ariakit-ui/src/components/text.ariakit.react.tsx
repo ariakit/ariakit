@@ -7,13 +7,10 @@ export interface TextProps
   extends ak.RoleProps<"span">, VariantProps<typeof text> {}
 
 /**
- * A span that serves as a text-color target for the text system. Text variants
- * set on a `$layer` element affect descendant text/SVG targets like this one
- * rather than the layer's direct text.
- *
+ * Renders a span that receives text colors from its own variants or a parent
+ * layer's text variants.
  * @example
  * <Text $text="success">Changes saved</Text>
- *
  * @example
  * <Layer $layer="brand">
  *   <Text>Project details</Text>

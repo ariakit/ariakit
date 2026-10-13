@@ -17,8 +17,6 @@ export interface PopoverProviderProps extends ak.PopoverProviderProps {}
 
 /**
  * Shares open state and anchor position with a popover.
- * @see https://ariakit.com/reference/popover-provider
- *
  * @example
  * <PopoverProvider>
  *   <PopoverDisclosure>Details</PopoverDisclosure>
@@ -36,8 +34,6 @@ export interface PopoverDisclosureProps
 
 /**
  * Renders the button that opens and anchors its popover.
- * @see https://ariakit.com/reference/popover-disclosure
- *
  * @example
  * <PopoverProvider>
  *   <PopoverDisclosure>Details</PopoverDisclosure>
@@ -57,10 +53,8 @@ export interface PopoverProps
   extends ak.PopoverProps, VariantProps<typeof popover> {}
 
 /**
- * Floats 8px away from its anchor by default, like `ComboboxPopover` and
- * Ariakit's `Tooltip`. An arrow adds its own offset on top of the gutter.
- * @see https://ariakit.com/reference/popover
- *
+ * Renders a popup anchored to its disclosure, with an 8px gutter by default. An
+ * arrow adds its own offset to the gutter.
  * @example
  * <PopoverProvider>
  *   <PopoverDisclosure>Details</PopoverDisclosure>
@@ -80,8 +74,6 @@ export interface PopoverArrowProps extends ak.PopoverArrowProps {}
 
 /**
  * Renders an arrow that points from the popover to its anchor.
- * @see https://ariakit.com/reference/popover-arrow
- *
  * @example
  * <PopoverProvider>
  *   <PopoverDisclosure>Details</PopoverDisclosure>
@@ -100,8 +92,6 @@ export interface PopoverHeadingProps
 
 /**
  * Renders a heading that gives its popover an accessible name.
- * @see https://ariakit.com/reference/popover-heading
- *
  * @example
  * <PopoverProvider>
  *   <PopoverDisclosure>Details</PopoverDisclosure>
@@ -121,8 +111,6 @@ export interface PopoverDescriptionProps
 
 /**
  * Renders text that describes its popover to assistive technology.
- * @see https://ariakit.com/reference/popover-description
- *
  * @example
  * <PopoverProvider>
  *   <PopoverDisclosure>Archive</PopoverDisclosure>
@@ -146,9 +134,8 @@ export interface PopoverDismissProps
   extends ak.PopoverDismissProps, VariantProps<typeof popoverDismiss> {}
 
 /**
- * Without children, renders a square icon button named "Dismiss popup".
- * @see https://ariakit.com/reference/popover-dismiss
- *
+ * Renders a button that closes its popover. Without children, it shows an icon
+ * in a square button named "Dismiss popup".
  * @example
  * <PopoverProvider>
  *   <PopoverDisclosure>Details</PopoverDisclosure>
@@ -186,11 +173,8 @@ export interface PopoverScrollProps
   extends ComponentProps<"div">, VariantProps<typeof popoverScroll> {}
 
 /**
- * Scrollable viewport that covers the popover’s content box, for popovers whose
- * content can outgrow the available height. Give the popover a height cap and a
- * flex column layout so the viewport can shrink, for example
- * `className="flex flex-col max-h-(--popover-available-height)"`.
- *
+ * Renders a scrollable viewport for long popover content. Give the popover a
+ * maximum height and a flex column layout so the viewport can shrink.
  * @example
  * <PopoverProvider>
  *   <PopoverDisclosure>Details</PopoverDisclosure>

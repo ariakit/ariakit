@@ -7,10 +7,8 @@ export interface ProseProps
   extends ak.RoleProps<"div">, VariantProps<typeof prose> {}
 
 /**
- * Renders a long-form content container that spaces its children on a shared
- * vertical rhythm and styles the plain markup that has no component of its own
- * (paragraphs and strong emphasis).
- *
+ * Renders a content container with consistent vertical spacing and styles for
+ * paragraphs and strong emphasis.
  * @example
  * <Prose>
  *   <p>Create a project to organize your work.</p>

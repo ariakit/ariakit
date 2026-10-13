@@ -29,7 +29,6 @@ export interface CheckboxProps
  *   <Checkbox defaultChecked />
  *   Email updates
  * </label>
- * @see https://ariakit.com/reference/checkbox
  */
 export function Checkbox(props: CheckboxProps) {
   const [variantProps, rest] = splitProps(props, checkbox);
@@ -129,8 +128,8 @@ export interface CheckboxCardCheckProps
   extends ak.RoleProps<"span">, VariantProps<typeof checkboxCardCheck> {}
 
 /**
- * The drawn check of a card, reflecting the input's state. Pass a child to
- * replace the drawn mark. Must be nested inside a `CheckboxCard`.
+ * The drawn check of a card, reflecting the input's state. Pass a child element
+ * to replace the drawn mark. Must be nested inside a `CheckboxCard`.
  * @example
  * <CheckboxCard defaultChecked>
  *   <CheckboxCardCheck />
@@ -197,7 +196,8 @@ export interface CheckboxCardLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof checkboxCardLabel> {}
 
 /**
- * Main text of the card. Must be nested inside a `CheckboxCard`.
+ * Main text of the card. Must be nested inside a `CheckboxCard`. Truncates to
+ * one line by default; set `$truncate={false}` to let it wrap.
  * @example
  * <CheckboxCard>
  *   <CheckboxCardLabel>Email updates</CheckboxCardLabel>
@@ -213,6 +213,7 @@ export interface CheckboxCardDescriptionProps
 
 /**
  * Secondary text below the label. Must be nested inside a `CheckboxCard`.
+ * Truncates to one line by default; set `$truncate={false}` to let it wrap.
  * @example
  * <CheckboxCard>
  *   <CheckboxCardContent>

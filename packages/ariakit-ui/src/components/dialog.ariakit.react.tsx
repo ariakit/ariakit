@@ -17,8 +17,6 @@ export interface DialogProviderProps extends ak.DialogProviderProps {}
 
 /**
  * Shares open state between a dialog and its disclosure button.
- * @see https://ariakit.com/reference/dialog-provider
- *
  * @example
  * <DialogProvider>
  *   <DialogDisclosure>View details</DialogDisclosure>
@@ -37,8 +35,6 @@ export interface DialogDisclosureProps
 
 /**
  * Renders a button that opens or closes its dialog.
- * @see https://ariakit.com/reference/dialog-disclosure
- *
  * @example
  * <DialogProvider>
  *   <DialogDisclosure>View details</DialogDisclosure>
@@ -60,8 +56,6 @@ export interface DialogProps
 
 /**
  * Renders a modal dialog with focus management.
- * @see https://ariakit.com/reference/dialog
- *
  * @example
  * <DialogProvider>
  *   <DialogDisclosure>View details</DialogDisclosure>
@@ -81,8 +75,6 @@ export interface DialogHeadingProps
 
 /**
  * Renders a heading that gives its dialog an accessible name.
- * @see https://ariakit.com/reference/dialog-heading
- *
  * @example
  * <DialogProvider defaultOpen>
  *   <Dialog>
@@ -101,8 +93,6 @@ export interface DialogDescriptionProps
 
 /**
  * Renders text that describes its dialog to assistive technology.
- * @see https://ariakit.com/reference/dialog-description
- *
  * @example
  * <DialogProvider defaultOpen>
  *   <Dialog aria-label="Archive project">
@@ -122,9 +112,8 @@ export interface DialogDismissProps
   extends ak.DialogDismissProps, VariantProps<typeof dialogDismiss> {}
 
 /**
- * Without children, renders a square icon button named "Dismiss popup".
- * @see https://ariakit.com/reference/dialog-dismiss
- *
+ * Renders a button that closes its dialog. Without children, it shows an icon
+ * in a square button named "Dismiss popup".
  * @example
  * <DialogProvider defaultOpen>
  *   <Dialog aria-label="Project details">
@@ -161,11 +150,8 @@ export interface DialogScrollProps
   extends ComponentProps<"div">, VariantProps<typeof dialogScroll> {}
 
 /**
- * Scrollable viewport that covers the dialog’s content box, for dialogs whose
- * content can outgrow the available height. Give the dialog a flex column
- * layout so the viewport can shrink below the dialog's height cap, for example
- * `className="flex flex-col"`.
- *
+ * Renders a scrollable viewport for long dialog content. Give the dialog a flex
+ * column layout so the viewport can shrink within its maximum height.
  * @example
  * <DialogProvider defaultOpen>
  *   <Dialog aria-label="Terms" className="flex flex-col">

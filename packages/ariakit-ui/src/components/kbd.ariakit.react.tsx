@@ -8,7 +8,6 @@ export interface KbdProps
 
 /**
  * Renders a key or keyboard shortcut with keycap styling.
- *
  * @example
  * <p>Press <Kbd>Esc</Kbd> to close the dialog.</p>
  */

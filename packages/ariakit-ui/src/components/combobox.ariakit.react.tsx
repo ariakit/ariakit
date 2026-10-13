@@ -36,9 +36,15 @@ export interface ComboboxProps
       ComboboxProviderProps,
       "inputValue" | "setInputValue" | "defaultInputValue"
     > {
-  /** Custom label element or props to render a `ComboboxLabel`. */
+  /**
+   * Label content, a custom element, or `ComboboxLabel` props. Omitted by
+   * default; use `aria-label` or `aria-labelledby` to name an unlabeled input.
+   */
   label?: React.ReactNode | ComboboxLabelProps;
-  /** Custom popover element or props to render a `ComboboxPopover`. */
+  /**
+   * Custom popover element or `ComboboxPopover` props. Defaults to a
+   * `ComboboxPopover` containing the combobox children.
+   */
   popover?: React.ReactElement<ComboboxPopoverProps> | ComboboxPopoverProps;
 }
 
@@ -132,7 +138,8 @@ export interface ComboboxPopoverProps
   extends ak.ComboboxPopoverProps, VariantProps<typeof comboboxPopover> {}
 
 /**
- * The popup that contains combobox suggestions.
+ * The popup that contains combobox suggestions. Uses a portal and an 8px gap
+ * from the input by default.
  * @example
  * <Combobox label="Fruit" popover={<ComboboxPopover gutter={4} />}>
  *   <ComboboxItem value="Apple" />
@@ -175,7 +182,10 @@ export function ComboboxList(props: ComboboxListProps) {
 
 export interface ComboboxGroupProps
   extends ak.ComboboxGroupProps, VariantProps<typeof comboboxGroup> {
-  /** Custom label element or props to render a `ComboboxGroupLabel`. */
+  /**
+   * Label content, a custom element, or `ComboboxGroupLabel` props. Omitted by
+   * default.
+   */
   label?: React.ReactNode | ComboboxGroupLabelProps;
 }
 
@@ -224,14 +234,17 @@ export interface ComboboxItemProps
   extends ak.ComboboxItemProps, VariantProps<typeof comboboxItem> {
   /** Icon beside the label, opposite the checkmark when one is shown. */
   icon?: React.ReactNode;
-  /** Shows a selection checkmark before or after the label. */
+  /**
+   * Shows a selection checkmark before or after the label. Defaults to `false`.
+   */
   checkmark?: "before" | "after" | false;
 }
 
 /**
- * Suggestion row. Custom children can use ComboboxItemSlot,
- * ComboboxItemContent, ComboboxItemLabel, and ComboboxItemDescription to lay
- * out an avatar and secondary text.
+ * A suggestion row that displays its `value` when children are omitted. Custom
+ * children can use `ComboboxItemSlot`, `ComboboxItemContent`,
+ * `ComboboxItemLabel`, and `ComboboxItemDescription` for icons and secondary
+ * text. Focus follows pointer hover by default.
  * @example
  * <Combobox label="Fruit">
  *   <ComboboxItem value="Apple" />
@@ -277,7 +290,8 @@ export interface ComboboxItemCheckProps
   extends ak.ComboboxItemCheckProps, VariantProps<typeof comboboxItemCheck> {}
 
 /**
- * Keeps its space when unselected so the item labels stay aligned.
+ * A selection checkmark that keeps its space when unselected so item labels
+ * stay aligned. Render it inside a `ComboboxItem`.
  * @example
  * <Combobox label="Fruit">
  *   <ComboboxItem value="Apple">
@@ -312,22 +326,42 @@ export interface ComboboxEmptyProps
   extends ak.RoleProps<"div">, VariantProps<typeof comboboxEmpty> {}
 
 /**
- * Displays a message when filtering leaves no suggestions. Put it beside
- * `ComboboxList` so the message is outside the options.
+ * Displays an empty-state message. Render it when filtering leaves no
+ * suggestions, beside `ComboboxList` so it is outside the options. Defaults to
+ * "No results found" when children are omitted.
  *
  * For announcements, keep a separate status region mounted outside the popover
  * and update its text when the matches change. A status mounted only with the
  * empty state can be silent. Hide the visual message from screen readers when
  * the separate region supplies its text.
  * @example
- * <Combobox
- *   label="Fruit"
- *   defaultInputValue="Pear"
- *   popover={{ "aria-label": "Fruit suggestions" }}
- * >
- *   <ComboboxList aria-label="Suggestions" />
- *   <ComboboxEmpty />
- * </Combobox>
+ * import { useState } from "react";
+ *
+ * function Example() {
+ *   const [inputValue, setInputValue] = useState("");
+ *   const matches = ["Apple", "Orange"].filter((fruit) =>
+ *     fruit.toLowerCase().includes(inputValue.toLowerCase()),
+ *   );
+ *   const empty = matches.length === 0;
+ *   return (
+ *     <>
+ *       <Combobox
+ *         label="Fruit"
+ *         inputValue={inputValue}
+ *         setInputValue={setInputValue}
+ *         popover={{ "aria-label": "Fruit suggestions" }}
+ *       >
+ *         <ComboboxList aria-label="Suggestions">
+ *           {matches.map((fruit) => <ComboboxItem key={fruit} value={fruit} />)}
+ *         </ComboboxList>
+ *         {empty && <ComboboxEmpty aria-hidden />}
+ *       </Combobox>
+ *       <div role="status" className="sr-only">
+ *         {empty ? "No results found" : `${matches.length} results found`}
+ *       </div>
+ *     </>
+ *   );
+ * }
  */
 export function ComboboxEmpty(props: ComboboxEmptyProps) {
   const [variantProps, rest] = splitProps(props, comboboxEmpty);
@@ -442,7 +476,6 @@ function joinSelectedValue(value: string | readonly string[]) {
  * <ComboboxProvider defaultSelectedValue="Apple">
  *   <p>Selected fruit: <ComboboxSelectedValue /></p>
  * </ComboboxProvider>
- * @see https://ariakit.com/reference/combobox-selected-value
  */
 export function ComboboxSelectedValue({
   children = joinSelectedValue,
@@ -468,7 +501,6 @@ export interface ComboboxSelectLabelProps
  *     <ComboboxItem value="Apple" />
  *   </ComboboxPopover>
  * </ComboboxProvider>
- * @see https://ariakit.com/reference/combobox-select-label
  */
 export function ComboboxSelectLabel(props: ComboboxSelectLabelProps) {
   const [variantProps, rest] = splitProps(props, comboboxSelectLabel);
@@ -483,13 +515,19 @@ export function ComboboxSelectLabel(props: ComboboxSelectLabelProps) {
 export interface ComboboxSelectProps
   extends ak.ComboboxSelectProps, VariantProps<typeof comboboxSelect> {
   /**
-   * Custom icon element that will be rendered before or after the display value
-   * depending on the `chevron` position.
+   * Icon beside the display value, opposite the chevron when one is shown.
+   * Renders before the value when `chevron` is `false`.
    */
   icon?: React.ReactNode;
-  /** Selects chevron/icon placement (before, after). Set `false` to hide. */
+  /**
+   * Places the chevron before or after the display value. Defaults to `after`.
+   * Set `false` to hide it.
+   */
   chevron?: "before" | "after" | false;
-  /** Custom display value element. */
+  /**
+   * Content shown in place of the selected value. Takes precedence over
+   * children and `placeholder`.
+   */
   displayValue?: React.ReactNode;
   /**
    * Prompt to show with placeholder ink when the selection is empty. Set the
@@ -510,7 +548,6 @@ export interface ComboboxSelectProps
  *     <ComboboxItem value="Orange" />
  *   </ComboboxPopover>
  * </ComboboxProvider>
- * @see https://ariakit.com/reference/combobox-select
  */
 export function ComboboxSelect({
   icon,

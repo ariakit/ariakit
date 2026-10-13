@@ -445,7 +445,6 @@ export interface ShellSidebarProps
     VariantProps<typeof shellSidebarPanel> {
   /**
    * Opens the sidebar when its `$show` condition matches. Defaults to `true`.
-   * Sets `data-open` on the panel, which can also be set directly.
    */
   open?: boolean;
 }

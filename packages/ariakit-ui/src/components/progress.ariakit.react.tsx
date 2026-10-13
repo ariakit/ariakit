@@ -24,10 +24,8 @@ export interface ProgressProps
 
 /**
  * Renders a progress bar. Omit `value` when the progress is unknown.
- *
  * @example
  * <Progress value={0.5} aria-label="Upload progress" />
- *
  * @example
  * <Progress aria-label="Loading projects" />
  */
@@ -57,7 +55,6 @@ export interface ProgressFillProps
 
 /**
  * Renders the filled portion of a progress bar.
- *
  * @example
  * <Progress
  *   value={0.5}
@@ -86,14 +83,12 @@ export interface ProgressCircularProps
 
 /**
  * Renders a progress ring. Omit `value` when the progress is unknown.
- *
  * @example
  * <ProgressCircular
  *   value={0.5}
  *   aria-label="Upload progress"
  *   style={{ width: 32, height: 32 }}
  * />
- *
  * @example
  * <ProgressCircular
  *   aria-label="Loading projects"
@@ -131,7 +126,6 @@ export interface ProgressCircularFillProps
 
 /**
  * Renders the filled portion of a progress ring.
- *
  * @example
  * <ProgressCircular
  *   value={0.5}
