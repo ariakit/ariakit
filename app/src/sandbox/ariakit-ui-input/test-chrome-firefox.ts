@@ -47,4 +47,45 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       });
     });
   });
+
+  // An enabled action button in a disabled field can still be used, so it must
+  // not take the system disabled color of the field. The Copy button sets its
+  // own color; the native Clear button inherits its color.
+  // https://github.com/ariakit/ariakit/pull/7874#discussion_r4257613255
+  test("keeps an enabled button in a disabled field in its own color in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      await expectMedia(page, "(forced-colors: active)");
+      for (const { key, title, field, button } of [
+        {
+          key: "disabled-wrapper-enabled-button",
+          title: "Share link with copy button",
+          field: "Share link",
+          button: "Copy",
+        },
+        {
+          key: "disabled-wrapper-enabled-native-button",
+          title: "Field with leading reset button",
+          field: "Draft message",
+          button: "Clear",
+        },
+      ]) {
+        const box = q.article(title);
+        const input = query(box).textbox(field);
+        await input.evaluate((node) => node.setAttribute("disabled", ""));
+        await test.expect(input).toBeDisabled();
+        await test.expect(query(box).button(button)).toBeEnabled();
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: `ariakit-ui-input/forced-colors/${key}`,
+        });
+      }
+    });
+  });
 });
