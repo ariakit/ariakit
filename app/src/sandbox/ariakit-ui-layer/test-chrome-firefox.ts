@@ -9,7 +9,10 @@ withCaptures(import.meta.dirname, async ({ test }) => {
   // An adaptive text color targets nested text and icons directly, so the
   // disabled buttons of this card need the system color on the same targets.
   // https://github.com/ariakit/ariakit/issues/7871
-  test("uses the system disabled color on colored text and icons in forced colors @visual", async ({
+  // The icon of an enabled button with an adaptive text color uses the system
+  // text color of the button, like the label.
+  // https://github.com/ariakit/ariakit/issues/7873
+  test("uses system colors on colored text and icons in forced colors @visual", async ({
     page,
     q,
     visual,
