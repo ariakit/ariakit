@@ -65,8 +65,8 @@ export const control = cv({
       "inset-shadow-none! shadow-none!",
       "bg-none! ak-ink-0! *:ak-ink-0!",
       // An adaptive text color targets nested text and icons directly, so set
-      // the ink on the same targets. Skip forced colors: an icon gets the
-      // system color only while its color inherits.
+      // the ink on the same targets. Skip forced colors: this rule would
+      // override the system disabled color on nested text.
       "not-forced-colors:ui-text:ak-ink-0!",
       // Forced colors replace the ink with the normal text color. Use the
       // system disabled color, also on descendants that set their own color.

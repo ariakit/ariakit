@@ -1549,9 +1549,16 @@ body > * {
   }
 }
 
+/* Skip icons in forced colors: an icon gets the system color only while its
+   color inherits. */
 @custom-variant ui-text {
-  &.text:not(.ak-layer), & .text:not(.ak-layer), & svg {
+  &.text:not(.ak-layer, svg), & .text:not(.ak-layer, svg) {
     @slot;
+  }
+  @media not (forced-colors: active) {
+    &.text:where(svg):not(.ak-layer), & .text:where(svg):not(.ak-layer), & svg {
+      @slot;
+    }
   }
 }
 
