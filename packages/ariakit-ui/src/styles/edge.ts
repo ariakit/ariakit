@@ -82,10 +82,10 @@ export const edge = cv({
       };
     },
     /**
-     * Applies the edge color exactly as specified, without the default alpha
-     * and lightness adjustments. It clears the `$edgeWeight`, `$edgePush`,
-     * `$edgeLighten`, and `$edgeDarken` defaults that a component sets, while
-     * values passed along with it still apply.
+     * Uses full edge opacity without the default lightness push. Clears
+     * component defaults for `$edgeWeight`, `$edgePush`, `$edgeLighten`, and
+     * `$edgeDarken`. Explicit values and global `--contrast` adjustments still
+     * apply.
      */
     $edgeRaw: "ak-edge-raw",
     /**
@@ -119,11 +119,10 @@ export const edge = cv({
     $edgeDark:
       "ak-dark-low:ak-edge-push-[-0.28] ak-dark-low:ak-edge-alpha-[calc((1-l)*(1-l))]",
     /**
-     * Pushes the edge lightness away from the current color to create contrast.
-     * By default, it's `100` (full contrast) for the edge derived from the
-     * layer, and `0` for a named or custom `$edge` color, which keeps its own
-     * lightness and hue. Set it to change either, or use `$edgeRaw` (which sets
-     * both alpha and lightness) to use the exact base edge color.
+     * Pushes edge lightness to increase contrast with the layer. Defaults to
+     * `100` for layer-derived edges and `0` for named or custom `$edge` colors.
+     * Global `--contrast` still adjusts lightness. Use `$edgeRaw` to clear
+     * component alpha and lightness defaults.
      */
     $edgePush(value?: string | number) {
       return getScaledStyleClass({
@@ -313,8 +312,6 @@ export const edge = cv({
       if (defaultValue != null) return defaultValue;
       if (variants.$edge == null) return defaultValue;
       if (variants.$edge === "unset") return defaultValue;
-      // Preserve named colors' lightness and hue instead of pushing them to
-      // black or white.
       return 0;
     },
   },
