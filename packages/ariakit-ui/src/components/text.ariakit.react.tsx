@@ -7,13 +7,13 @@ export interface TextProps
   extends ak.RoleProps<"span">, VariantProps<typeof text> {}
 
 /**
- * Renders a span that receives text colors from its own variants or a parent
- * layer's text variants.
+ * Renders a span with text colors from its own variants or a parent component's
+ * text variants. Set `$text` to enable its color modifiers.
  * @example
  * <Text $text="success">Changes saved</Text>
  * @example
  * <Layer $layer="brand">
- *   <Text>Project details</Text>
+ *   <Text $text $textChroma="muted">Project details</Text>
  * </Layer>
  */
 export function Text(props: TextProps) {

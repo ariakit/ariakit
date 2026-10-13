@@ -11,9 +11,9 @@ export interface LayerProps
  * set its color and `$lighten` or `$darken` to shift it.
  * @example
  * <Layer $layer="brand">
- *   <Text>Project details</Text>
+ *   <Text $text>Project details</Text>
  *   <Layer $layer $lighten>
- *     <Text>Updated today</Text>
+ *     <Text $text>Updated today</Text>
  *   </Layer>
  * </Layer>
  */
