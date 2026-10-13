@@ -88,7 +88,6 @@ const ROW_MOVING_PROPERTIES = new Set(["height", "max-height"]);
 
 /**
  * Disables glider easing while rows move, excluding the glider's transitions.
- * Native listeners are needed because React does not dispatch transitionstart.
  */
 function useSettling(element: HTMLElement | null) {
   React.useEffect(() => {
