@@ -600,17 +600,8 @@ export interface ComboboxSelectArrowProps
     VariantProps<typeof comboboxSelectArrow> {}
 
 /**
- * A decorative arrow for a combobox select button.
- * @example
- * <ComboboxProvider defaultSelectedValue="Apple">
- *   <ComboboxSelect aria-label="Fruit" chevron={false}>
- *     <ComboboxSelectedValue />
- *     <ComboboxSelectArrow />
- *   </ComboboxSelect>
- *   <ComboboxPopover>
- *     <ComboboxItem value="Apple" />
- *   </ComboboxPopover>
- * </ComboboxProvider>
+ * A decorative arrow for a combobox select button. `ComboboxSelect` renders it
+ * automatically; use the `chevron` prop to move or remove it.
  */
 export function ComboboxSelectArrow(props: ComboboxSelectArrowProps) {
   const [variantProps, rest] = splitProps(props, comboboxSelectArrow);
