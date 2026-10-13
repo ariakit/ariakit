@@ -12,6 +12,8 @@ withCaptures(import.meta.dirname, async ({ test }) => {
   // The icon of an enabled button with an adaptive text color uses the system
   // text color of the button, like the label.
   // https://github.com/ariakit/ariakit/issues/7873
+  // An icon that sets its own adaptive text color uses the system text color.
+  // https://github.com/ariakit/ariakit/pull/7876#discussion_r4258247930
   test("uses system colors on colored text and icons in forced colors @visual", async ({
     page,
     q,

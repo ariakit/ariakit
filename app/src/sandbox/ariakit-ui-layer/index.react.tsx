@@ -49,6 +49,14 @@ function TextModifierCases() {
       <Text $text="success" $textChroma="vivid">
         Explicit color
       </Text>
+      {/*
+       * https://github.com/ariakit/ariakit/pull/7876#discussion_r4258247930
+       */}
+      <Text
+        $textChroma="vivid"
+        $textHue="red"
+        render={<Plus aria-label="Icon modifier" />}
+      />
       <div className="flex flex-wrap gap-4">
         <Button $border $textChroma="vivid" $textHue="red">
           <ButtonSlot>
@@ -260,6 +268,7 @@ export default function LayerExamples() {
           <Text $textPush={0}>Zero push</Text>
           <Text $text={false} $textChroma="vivid">Disabled text</Text>
           <Text $text="success" $textChroma="vivid">Explicit color</Text>
+          <Text $textChroma="vivid" $textHue="red" render={<Plus />} />
           <Button $textChroma="vivid" $textHue="red">
             <ButtonLabel>Parent modifier</ButtonLabel>
           </Button>
