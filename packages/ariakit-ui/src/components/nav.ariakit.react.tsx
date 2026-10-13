@@ -122,6 +122,20 @@ function useSettling(element: HTMLElement | null) {
   }, [element]);
 }
 
+/**
+ * @example
+ * <Nav aria-label="Main" glider>
+ *   <NavLink href="/" currentUrl="/">Home</NavLink>
+ *   <NavLink href="/docs">Docs</NavLink>
+ * </Nav>
+ * @example
+ * <Nav aria-label="Docs" list={false}>
+ *   <NavGroup>
+ *     <NavGroupLabel>Getting started</NavGroupLabel>
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavGroup>
+ * </Nav>
+ */
 export function Nav({ list, glider, children, ...props }: NavProps) {
   const [variantProps, rest] = splitProps(props, nav);
   const [element, setElement] = React.useState<HTMLElement | null>(null);
@@ -142,6 +156,12 @@ export function Nav({ list, glider, children, ...props }: NavProps) {
 export interface NavListProps
   extends ak.RoleProps<"ul">, VariantProps<typeof navList> {}
 
+/**
+ * @example
+ * <Nav aria-label="Main" list={<NavList />}>
+ *   <NavLink href="/">Home</NavLink>
+ * </Nav>
+ */
 export function NavList(props: NavListProps) {
   const [variantProps, rest] = splitProps(props, navList);
   return <ak.Role.ul {...navList.jsx(variantProps)} {...rest} />;
@@ -153,6 +173,11 @@ export interface NavGliderProps
 /**
  * Marks the current row with a cover or bar. Place it first in `Nav` to paint
  * below the rows. Hidden in browsers without CSS anchor positioning.
+ * @example
+ * <Nav aria-label="Main" glider={<NavGlider />}>
+ *   <NavLink href="/" currentUrl="/">Home</NavLink>
+ *   <NavLink href="/docs">Docs</NavLink>
+ * </Nav>
  */
 export function NavGlider(props: NavGliderProps) {
   const [variantProps, rest] = splitProps(props, navGlider);
@@ -171,6 +196,16 @@ export interface NavLinkProps
   item?: React.ReactElement | ak.RoleProps<"li"> | false;
 }
 
+/**
+ * @example
+ * <Nav aria-label="Main">
+ *   <NavLink href="/docs" currentUrl="/docs">Docs</NavLink>
+ * </Nav>
+ * @example
+ * <Nav aria-label="Main" list={false}>
+ *   <NavLink href="/docs" item={false}>Docs</NavLink>
+ * </Nav>
+ */
 export function NavLink({ currentUrl, item, ...props }: NavLinkProps) {
   const [variantProps, rest] = splitProps(props, navLink);
   const isCurrent = isCurrentPage(currentUrl, rest.href);
@@ -201,6 +236,13 @@ export interface NavSlotProps
  * Renders an icon, badge, avatar, or shortcut in a nav row. All except
  * shortcuts inherit the nav's `$slotSize`. Use `$p="auto"` for word badges.
  * Badge and shortcut content gets a span for text sizing and key direction.
+ * @example
+ * <Nav aria-label="Main">
+ *   <NavLink href="/updates">
+ *     <NavLinkLabel>Updates</NavLinkLabel>
+ *     <NavSlot $kind="badge">3</NavSlot>
+ *   </NavLink>
+ * </Nav>
  */
 export function NavSlot(props: NavSlotProps) {
   const [variantProps, rest] = splitProps(props, navSlot);
@@ -222,6 +264,15 @@ export interface NavLinkContentProps
 /**
  * Wraps the `NavLinkLabel` and `NavLinkDescription` of a `NavLink` and fills
  * the row, so a slot after it sits at the end.
+ * @example
+ * <Nav aria-label="Main">
+ *   <NavLink href="/docs">
+ *     <NavLinkContent>
+ *       <NavLinkLabel>Docs</NavLinkLabel>
+ *       <NavLinkDescription>Guides and examples</NavLinkDescription>
+ *     </NavLinkContent>
+ *   </NavLink>
+ * </Nav>
  */
 export function NavLinkContent(props: NavLinkContentProps) {
   const [variantProps, rest] = splitProps(props, navLinkContent);
@@ -234,6 +285,13 @@ export interface NavLinkLabelProps
 /**
  * Wraps a link's label so adjacent slots can set its margins. Required when a
  * slot follows the text or uses a named `$size`, such as `xl`.
+ * @example
+ * <Nav aria-label="Main">
+ *   <NavLink href="/updates">
+ *     <NavLinkLabel>Updates</NavLinkLabel>
+ *     <NavSlot $kind="badge">3</NavSlot>
+ *   </NavLink>
+ * </Nav>
  */
 export function NavLinkLabel(props: NavLinkLabelProps) {
   const [variantProps, rest] = splitProps(props, navLinkLabel);
@@ -248,6 +306,21 @@ export interface NavLinkDescriptionProps
  * the link's content, so it is part of the link's accessible name too. To keep
  * it out of the name, give the label and the description an `id` and pass them
  * to the link as `aria-labelledby` and `aria-describedby`.
+ * @example
+ * <Nav aria-label="Main">
+ *   <NavLink
+ *     href="/docs"
+ *     aria-labelledby="docs-label"
+ *     aria-describedby="docs-description"
+ *   >
+ *     <NavLinkContent>
+ *       <NavLinkLabel id="docs-label">Docs</NavLinkLabel>
+ *       <NavLinkDescription id="docs-description">
+ *         Guides and examples
+ *       </NavLinkDescription>
+ *     </NavLinkContent>
+ *   </NavLink>
+ * </Nav>
  */
 export function NavLinkDescription(props: NavLinkDescriptionProps) {
   const [variantProps, rest] = splitProps(props, navLinkDescription);
@@ -257,6 +330,15 @@ export function NavLinkDescription(props: NavLinkDescriptionProps) {
 export interface NavGroupProps
   extends ak.GroupProps, VariantProps<typeof navGroup> {}
 
+/**
+ * @example
+ * <Nav aria-label="Docs" list={false}>
+ *   <NavGroup>
+ *     <NavGroupLabel>Getting started</NavGroupLabel>
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavGroup>
+ * </Nav>
+ */
 export function NavGroup(props: NavGroupProps) {
   const [variantProps, rest] = splitProps(props, navGroup);
   return <ak.Group {...navGroup.jsx(variantProps)} {...rest} />;
@@ -268,6 +350,13 @@ export interface NavGroupLabelProps
 /**
  * Renders the label of a nav group, padded like a row and with its text
  * starting where the rows' content starts.
+ * @example
+ * <Nav aria-label="Docs" list={false}>
+ *   <NavGroup>
+ *     <NavGroupLabel>Getting started</NavGroupLabel>
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavGroup>
+ * </Nav>
  */
 export function NavGroupLabel(props: NavGroupLabelProps) {
   const [variantProps, rest] = splitProps(props, navGroupLabel);
@@ -300,6 +389,21 @@ function NavDisclosureRoot(props: ak.RoleProps<"li">) {
 
 /**
  * Discloses nested nav rows. The transparent root keeps their gliders visible.
+ * @example
+ * <Nav aria-label="Docs">
+ *   <NavDisclosure button="Getting started">
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavDisclosure>
+ * </Nav>
+ * @example
+ * <Nav aria-label="Docs">
+ *   <NavDisclosure>
+ *     <NavDisclosureButton>Getting started</NavDisclosureButton>
+ *     <NavDisclosureContent>
+ *       <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *     </NavDisclosureContent>
+ *   </NavDisclosure>
+ * </Nav>
  */
 export function NavDisclosure({
   button,
@@ -326,6 +430,10 @@ export interface NavButtonProps extends Omit<
  * Renders a standalone nav row. Use `NavSlot` for its icon, badge, avatar, or
  * shortcut, `NavButtonContent` for its label, and the `render` prop for a row
  * that should be an anchor.
+ * @example
+ * <NavButton render={<a href="/docs" />}>
+ *   <NavButtonContent>Docs</NavButtonContent>
+ * </NavButton>
  */
 export function NavButton(props: NavButtonProps) {
   return <Button recipe={navButton} {...props} />;
@@ -333,7 +441,14 @@ export function NavButton(props: NavButtonProps) {
 
 export interface NavButtonContentProps extends ak.RoleProps<"span"> {}
 
-/** The label of a nav row. */
+/**
+ * The label of a nav row.
+ * @example
+ * <NavButton render={<a href="/updates" />}>
+ *   <NavButtonContent>Updates</NavButtonContent>
+ *   <NavSlot $kind="badge">3</NavSlot>
+ * </NavButton>
+ */
 export function NavButtonContent(props: NavButtonContentProps) {
   const [variantProps, rest] = splitProps(props, navButtonContent);
   return <ak.Role.span {...navButtonContent.jsx(variantProps)} {...rest} />;
@@ -348,6 +463,18 @@ export interface NavDisclosureButtonProps extends Omit<
  * Renders the button of a `NavDisclosure`. Its `icon` leads the label on the
  * nav's icon column. With an explicit `label`, the children follow the label,
  * such as a `NavSlot` with a count.
+ * @example
+ * <Nav aria-label="Docs">
+ *   <NavDisclosure
+ *     button={
+ *       <NavDisclosureButton label="Guides">
+ *         <NavSlot $kind="badge">3</NavSlot>
+ *       </NavDisclosureButton>
+ *     }
+ *   >
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavDisclosure>
+ * </Nav>
  */
 export function NavDisclosureButton({
   label,
@@ -385,6 +512,17 @@ export interface NavDisclosureContentProps extends DisclosureContentProps {
   body?: React.ReactElement | NavDisclosureContentBodyProps;
 }
 
+/**
+ * @example
+ * <Nav aria-label="Docs">
+ *   <NavDisclosure
+ *     button="Getting started"
+ *     content={<NavDisclosureContent guide={false} />}
+ *   >
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavDisclosure>
+ * </Nav>
+ */
 export function NavDisclosureContent(props: NavDisclosureContentProps) {
   const body = createRender(NavDisclosureContentBody, props.body);
   return <DisclosureContent guide {...props} body={body} />;
@@ -395,6 +533,17 @@ export interface NavDisclosureContentBodyProps extends Omit<
   "recipe"
 > {}
 
+/**
+ * @example
+ * <Nav aria-label="Docs">
+ *   <NavDisclosure
+ *     button="Getting started"
+ *     content={{ body: <NavDisclosureContentBody /> }}
+ *   >
+ *     <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *   </NavDisclosure>
+ * </Nav>
+ */
 export function NavDisclosureContentBody(props: NavDisclosureContentBodyProps) {
   return <DisclosureContentBody recipe={navDisclosureContentBody} {...props} />;
 }

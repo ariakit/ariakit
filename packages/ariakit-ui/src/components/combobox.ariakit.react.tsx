@@ -79,6 +79,16 @@ export function Combobox({
 
 export interface ComboboxProviderProps extends ak.ComboboxProviderProps {}
 
+/**
+ * Shares input, selection, and popover state with combobox components.
+ * @example
+ * <ComboboxProvider>
+ *   <ComboboxInput aria-label="Fruit" />
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
+ */
 export function ComboboxProvider(props: ComboboxProviderProps) {
   return <ak.ComboboxProvider {...props} />;
 }
@@ -88,6 +98,16 @@ export interface ComboboxInputProps
     ak.ComboboxProps,
     Omit<VariantProps<typeof comboboxInput>, "$disabled"> {}
 
+/**
+ * A text field that opens a combobox suggestion list.
+ * @example
+ * <ComboboxProvider>
+ *   <ComboboxInput aria-label="Fruit" />
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
+ */
 export function ComboboxInput(props: ComboboxInputProps) {
   const [variantProps, rest] = splitProps(props, comboboxInput);
   return <ak.Combobox {...comboboxInput.jsx(variantProps)} {...rest} />;
@@ -96,6 +116,13 @@ export function ComboboxInput(props: ComboboxInputProps) {
 export interface ComboboxLabelProps
   extends ak.ComboboxLabelProps, VariantProps<typeof comboboxLabel> {}
 
+/**
+ * A visible label for a combobox input.
+ * @example
+ * <Combobox label={<ComboboxLabel>Fruit</ComboboxLabel>}>
+ *   <ComboboxItem value="Apple" />
+ * </Combobox>
+ */
 export function ComboboxLabel(props: ComboboxLabelProps) {
   const [variantProps, rest] = splitProps(props, comboboxLabel);
   return <ak.ComboboxLabel {...comboboxLabel.jsx(variantProps)} {...rest} />;
@@ -104,6 +131,13 @@ export function ComboboxLabel(props: ComboboxLabelProps) {
 export interface ComboboxPopoverProps
   extends ak.ComboboxPopoverProps, VariantProps<typeof comboboxPopover> {}
 
+/**
+ * The popup that contains combobox suggestions.
+ * @example
+ * <Combobox label="Fruit" popover={<ComboboxPopover gutter={4} />}>
+ *   <ComboboxItem value="Apple" />
+ * </Combobox>
+ */
 export function ComboboxPopover({
   portal = true,
   gutter = 8,
@@ -126,6 +160,13 @@ export interface ComboboxListProps
 /**
  * Groups options inside a popover that also contains a search field or other
  * content. The list owns the listbox role and the popover becomes a dialog.
+ * @example
+ * <Combobox label="Fruit" popover={{ "aria-label": "Fruit suggestions" }}>
+ *   <ComboboxList aria-label="Suggestions">
+ *     <ComboboxItem value="Apple" />
+ *   </ComboboxList>
+ *   <p>Select a fruit.</p>
+ * </Combobox>
  */
 export function ComboboxList(props: ComboboxListProps) {
   const [variantProps, rest] = splitProps(props, comboboxList);
@@ -138,6 +179,15 @@ export interface ComboboxGroupProps
   label?: React.ReactNode | ComboboxGroupLabelProps;
 }
 
+/**
+ * Groups related suggestions under an optional label.
+ * @example
+ * <Combobox label="Fruit">
+ *   <ComboboxGroup label="Citrus">
+ *     <ComboboxItem value="Orange" />
+ *   </ComboboxGroup>
+ * </Combobox>
+ */
 export function ComboboxGroup({ label, ...props }: ComboboxGroupProps) {
   const [variantProps, rest] = splitProps(props, comboboxGroup);
   return (
@@ -151,6 +201,15 @@ export function ComboboxGroup({ label, ...props }: ComboboxGroupProps) {
 export interface ComboboxGroupLabelProps
   extends ak.ComboboxGroupLabelProps, VariantProps<typeof comboboxGroupLabel> {}
 
+/**
+ * A visible label for a group of suggestions.
+ * @example
+ * <Combobox label="Fruit">
+ *   <ComboboxGroup label={<ComboboxGroupLabel>Citrus</ComboboxGroupLabel>}>
+ *     <ComboboxItem value="Orange" />
+ *   </ComboboxGroup>
+ * </Combobox>
+ */
 export function ComboboxGroupLabel(props: ComboboxGroupLabelProps) {
   const [variantProps, rest] = splitProps(props, comboboxGroupLabel);
   return (
@@ -173,6 +232,10 @@ export interface ComboboxItemProps
  * Suggestion row. Custom children can use ComboboxItemSlot,
  * ComboboxItemContent, ComboboxItemLabel, and ComboboxItemDescription to lay
  * out an avatar and secondary text.
+ * @example
+ * <Combobox label="Fruit">
+ *   <ComboboxItem value="Apple" />
+ * </Combobox>
  */
 export function ComboboxItem({
   icon,
@@ -213,7 +276,16 @@ export function ComboboxItem({
 export interface ComboboxItemCheckProps
   extends ak.ComboboxItemCheckProps, VariantProps<typeof comboboxItemCheck> {}
 
-/** Keeps its space when unselected so the item labels stay aligned. */
+/**
+ * Keeps its space when unselected so the item labels stay aligned.
+ * @example
+ * <Combobox label="Fruit">
+ *   <ComboboxItem value="Apple">
+ *     <ComboboxItemCheck />
+ *     <ComboboxItemLabel>Apple</ComboboxItemLabel>
+ *   </ComboboxItem>
+ * </Combobox>
+ */
 export function ComboboxItemCheck({
   checked,
   store: _store,
@@ -248,15 +320,14 @@ export interface ComboboxEmptyProps
  * empty state can be silent. Hide the visual message from screen readers when
  * the separate region supplies its text.
  * @example
- * <>
- *   <Combobox label="Fruit">
- *     <ComboboxList>{options}</ComboboxList>
- *     {empty && <ComboboxEmpty aria-hidden />}
- *   </Combobox>
- *   <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
- *     {empty ? "No results found" : ""}
- *   </div>
- * </>
+ * <Combobox
+ *   label="Fruit"
+ *   defaultInputValue="Pear"
+ *   popover={{ "aria-label": "Fruit suggestions" }}
+ * >
+ *   <ComboboxList aria-label="Suggestions" />
+ *   <ComboboxEmpty />
+ * </Combobox>
  */
 export function ComboboxEmpty(props: ComboboxEmptyProps) {
   const [variantProps, rest] = splitProps(props, comboboxEmpty);
@@ -270,6 +341,18 @@ export function ComboboxEmpty(props: ComboboxEmptyProps) {
 export interface ComboboxItemContentProps
   extends ak.RoleProps<"span">, VariantProps<typeof comboboxItemContent> {}
 
+/**
+ * Stacks a suggestion's label and description.
+ * @example
+ * <Combobox label="Fruit">
+ *   <ComboboxItem value="Apple">
+ *     <ComboboxItemContent>
+ *       <ComboboxItemLabel>Apple</ComboboxItemLabel>
+ *       <ComboboxItemDescription>Sweet and crisp</ComboboxItemDescription>
+ *     </ComboboxItemContent>
+ *   </ComboboxItem>
+ * </Combobox>
+ */
 export function ComboboxItemContent(props: ComboboxItemContentProps) {
   const [variantProps, rest] = splitProps(props, comboboxItemContent);
   return <ak.Role.span {...comboboxItemContent.jsx(variantProps)} {...rest} />;
@@ -278,6 +361,18 @@ export function ComboboxItemContent(props: ComboboxItemContentProps) {
 export interface ComboboxItemDescriptionProps
   extends ak.RoleProps<"span">, VariantProps<typeof comboboxItemDescription> {}
 
+/**
+ * Secondary text below a suggestion's label.
+ * @example
+ * <Combobox label="Fruit">
+ *   <ComboboxItem value="Apple">
+ *     <ComboboxItemContent>
+ *       <ComboboxItemLabel>Apple</ComboboxItemLabel>
+ *       <ComboboxItemDescription>Sweet and crisp</ComboboxItemDescription>
+ *     </ComboboxItemContent>
+ *   </ComboboxItem>
+ * </Combobox>
+ */
 export function ComboboxItemDescription(props: ComboboxItemDescriptionProps) {
   const [variantProps, rest] = splitProps(props, comboboxItemDescription);
   return (
@@ -288,6 +383,15 @@ export function ComboboxItemDescription(props: ComboboxItemDescriptionProps) {
 export interface ComboboxItemLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof comboboxItemLabel> {}
 
+/**
+ * The main text of a suggestion.
+ * @example
+ * <Combobox label="Fruit">
+ *   <ComboboxItem value="Apple">
+ *     <ComboboxItemLabel>Apple</ComboboxItemLabel>
+ *   </ComboboxItem>
+ * </Combobox>
+ */
 export function ComboboxItemLabel(props: ComboboxItemLabelProps) {
   const [variantProps, rest] = splitProps(props, comboboxItemLabel);
   return <ak.Role.span {...comboboxItemLabel.jsx(variantProps)} {...rest} />;
@@ -296,6 +400,16 @@ export function ComboboxItemLabel(props: ComboboxItemLabelProps) {
 export interface ComboboxItemSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof comboboxItemSlot> {}
 
+/**
+ * An icon or other content beside a suggestion's label.
+ * @example
+ * <Combobox label="Fruit">
+ *   <ComboboxItem value="Apple">
+ *     <ComboboxItemSlot aria-hidden>★</ComboboxItemSlot>
+ *     <ComboboxItemLabel>Apple</ComboboxItemLabel>
+ *   </ComboboxItem>
+ * </Combobox>
+ */
 export function ComboboxItemSlot(props: ComboboxItemSlotProps) {
   const [variantProps, rest] = splitProps(props, comboboxItemSlot);
   const variants = comboboxItemSlot.getVariants(variantProps);
@@ -324,6 +438,10 @@ function joinSelectedValue(value: string | readonly string[]) {
 /**
  * Renders the selected value. When several items are selected, it joins their
  * values with a comma. Pass a function as children to render them differently.
+ * @example
+ * <ComboboxProvider defaultSelectedValue="Apple">
+ *   <p>Selected fruit: <ComboboxSelectedValue /></p>
+ * </ComboboxProvider>
  * @see https://ariakit.com/reference/combobox-selected-value
  */
 export function ComboboxSelectedValue({
@@ -341,6 +459,15 @@ export interface ComboboxSelectLabelProps
     VariantProps<typeof comboboxSelectLabel> {}
 
 /**
+ * A visible label for a combobox select button.
+ * @example
+ * <ComboboxProvider>
+ *   <ComboboxSelectLabel>Fruit</ComboboxSelectLabel>
+ *   <ComboboxSelect />
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
  * @see https://ariakit.com/reference/combobox-select-label
  */
 export function ComboboxSelectLabel(props: ComboboxSelectLabelProps) {
@@ -374,6 +501,15 @@ export interface ComboboxSelectProps
 }
 
 /**
+ * A button that shows the selected value and opens the suggestion list.
+ * @example
+ * <ComboboxProvider defaultSelectedValue="Apple">
+ *   <ComboboxSelect aria-label="Fruit" />
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *     <ComboboxItem value="Orange" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
  * @see https://ariakit.com/reference/combobox-select
  */
 export function ComboboxSelect({
@@ -426,6 +562,19 @@ export interface ComboboxSelectArrowProps
     ak.ComboboxSelectArrowProps,
     VariantProps<typeof comboboxSelectArrow> {}
 
+/**
+ * A decorative arrow for a combobox select button.
+ * @example
+ * <ComboboxProvider defaultSelectedValue="Apple">
+ *   <ComboboxSelect aria-label="Fruit" chevron={false}>
+ *     <ComboboxSelectedValue />
+ *     <ComboboxSelectArrow />
+ *   </ComboboxSelect>
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
+ */
 export function ComboboxSelectArrow(props: ComboboxSelectArrowProps) {
   const [variantProps, rest] = splitProps(props, comboboxSelectArrow);
   const styleProps = comboboxSelectArrow.jsx(variantProps);

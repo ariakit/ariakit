@@ -9,6 +9,9 @@ export interface CodeProps
 /**
  * Renders an inline code chip. Code blocks are a different component, so this
  * one is always the inline form.
+ *
+ * @example
+ * <p>Run <Code>pnpm install</Code> to install dependencies.</p>
  */
 export function Code(props: CodeProps) {
   const [variantProps, rest] = splitProps(props, code);

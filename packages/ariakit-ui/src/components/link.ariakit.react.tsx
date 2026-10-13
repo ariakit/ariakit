@@ -9,6 +9,9 @@ export interface LinkProps
 /**
  * Renders an inline text link as an anchor element. Use the `render` prop to
  * swap in a framework router link.
+ *
+ * @example
+ * <Link href="/projects">View projects</Link>
  */
 export function Link(props: LinkProps) {
   const [variantProps, rest] = splitProps(props, link);

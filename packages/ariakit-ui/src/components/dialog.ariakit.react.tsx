@@ -16,7 +16,17 @@ import { ButtonSlot } from "./button.ariakit.react.tsx";
 export interface DialogProviderProps extends ak.DialogProviderProps {}
 
 /**
+ * Shares open state between a dialog and its disclosure button.
  * @see https://ariakit.com/reference/dialog-provider
+ *
+ * @example
+ * <DialogProvider>
+ *   <DialogDisclosure>View details</DialogDisclosure>
+ *   <Dialog aria-label="Project details">
+ *     <p>The project is ready.</p>
+ *     <DialogDismiss>Close</DialogDismiss>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function DialogProvider(props: DialogProviderProps) {
   return <ak.DialogProvider {...props} />;
@@ -26,7 +36,17 @@ export interface DialogDisclosureProps
   extends ak.DialogDisclosureProps, VariantProps<typeof dialogDisclosure> {}
 
 /**
+ * Renders a button that opens or closes its dialog.
  * @see https://ariakit.com/reference/dialog-disclosure
+ *
+ * @example
+ * <DialogProvider>
+ *   <DialogDisclosure>View details</DialogDisclosure>
+ *   <Dialog aria-label="Project details">
+ *     <p>The project is ready.</p>
+ *     <DialogDismiss>Close</DialogDismiss>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function DialogDisclosure(props: DialogDisclosureProps) {
   const [variantProps, rest] = splitProps(props, dialogDisclosure);
@@ -39,7 +59,17 @@ export interface DialogProps
   extends ak.DialogProps, VariantProps<typeof dialog> {}
 
 /**
+ * Renders a modal dialog with focus management.
  * @see https://ariakit.com/reference/dialog
+ *
+ * @example
+ * <DialogProvider>
+ *   <DialogDisclosure>View details</DialogDisclosure>
+ *   <Dialog aria-label="Project details">
+ *     <p>The project is ready.</p>
+ *     <DialogDismiss>Close</DialogDismiss>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function Dialog(props: DialogProps) {
   const [variantProps, rest] = splitProps(props, dialog);
@@ -50,7 +80,16 @@ export interface DialogHeadingProps
   extends ak.DialogHeadingProps, VariantProps<typeof dialogHeading> {}
 
 /**
+ * Renders a heading that gives its dialog an accessible name.
  * @see https://ariakit.com/reference/dialog-heading
+ *
+ * @example
+ * <DialogProvider defaultOpen>
+ *   <Dialog>
+ *     <DialogHeading>Project details</DialogHeading>
+ *     <p>The project is ready.</p>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function DialogHeading(props: DialogHeadingProps) {
   const [variantProps, rest] = splitProps(props, dialogHeading);
@@ -61,7 +100,16 @@ export interface DialogDescriptionProps
   extends ak.DialogDescriptionProps, VariantProps<typeof dialogDescription> {}
 
 /**
+ * Renders text that describes its dialog to assistive technology.
  * @see https://ariakit.com/reference/dialog-description
+ *
+ * @example
+ * <DialogProvider defaultOpen>
+ *   <Dialog aria-label="Archive project">
+ *     <DialogDescription>You can restore it later.</DialogDescription>
+ *     <DialogDismiss>Cancel</DialogDismiss>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function DialogDescription(props: DialogDescriptionProps) {
   const [variantProps, rest] = splitProps(props, dialogDescription);
@@ -76,6 +124,14 @@ export interface DialogDismissProps
 /**
  * Without children, renders a square icon button named "Dismiss popup".
  * @see https://ariakit.com/reference/dialog-dismiss
+ *
+ * @example
+ * <DialogProvider defaultOpen>
+ *   <Dialog aria-label="Project details">
+ *     <DialogDismiss />
+ *     <p>The project is ready.</p>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function DialogDismiss({ children, ...props }: DialogDismissProps) {
   const [variantProps, rest] = splitProps(props, dialogDismiss);
@@ -109,6 +165,16 @@ export interface DialogScrollProps
  * content can outgrow the available height. Give the dialog a flex column
  * layout so the viewport can shrink below the dialog's height cap, for example
  * `className="flex flex-col"`.
+ *
+ * @example
+ * <DialogProvider defaultOpen>
+ *   <Dialog aria-label="Terms" className="flex flex-col">
+ *     <DialogScroll>
+ *       <p>Read the terms before you continue.</p>
+ *     </DialogScroll>
+ *     <DialogDismiss>Close</DialogDismiss>
+ *   </Dialog>
+ * </DialogProvider>
  */
 export function DialogScroll(props: DialogScrollProps) {
   const [variantProps, rest] = splitProps(props, dialogScroll);

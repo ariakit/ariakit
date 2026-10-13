@@ -10,6 +10,12 @@ export interface ProseProps
  * Renders a long-form content container that spaces its children on a shared
  * vertical rhythm and styles the plain markup that has no component of its own
  * (paragraphs and strong emphasis).
+ *
+ * @example
+ * <Prose>
+ *   <p>Create a project to organize your work.</p>
+ *   <p>Each project can have <strong>multiple members</strong>.</p>
+ * </Prose>
  */
 export function Prose(props: ProseProps) {
   const [variantProps, rest] = splitProps(props, prose);

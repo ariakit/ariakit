@@ -80,6 +80,11 @@ export interface ListItemProps
  * reserves through its start padding, and wraps its children in a
  * `ListItemContent` so the first of them keeps `:first-child` despite the two
  * elements in front of it.
+ * @example
+ * <List ordered>
+ *   <ListItem checked>Install</ListItem>
+ *   <ListItem progress={0.5}>Configure</ListItem>
+ * </List>
  */
 export function ListItem({ checked, progress, ...props }: ListItemProps) {
   const [variantProps, rest] = splitProps(props, listItem);
@@ -102,6 +107,15 @@ export interface ListItemContentProps
  * them. Render it as a `span`: the block-mode variants detect block children
  * with `:has(:where(p, div, ...))`, so a `div` would put every list into blocks
  * mode.
+ * @example
+ * import { listItem } from "@ariakit/ui/styles/list";
+ *
+ * <List>
+ *   <li {...listItem.jsx()}>
+ *     <ListItemMarker />
+ *     <ListItemContent>Install</ListItemContent>
+ *   </li>
+ * </List>
  */
 export function ListItemContent(props: ListItemContentProps) {
   const [variantProps, rest] = splitProps(props, listItemContent);
@@ -178,6 +192,17 @@ export interface ListItemGuideProps
  * Vertical segment of the guide, joining a row's marker to the next row's. It
  * only becomes visible where the list draws guides: by default in ordered lists
  * in blocks mode, or wherever the list's `$guide` asks for it.
+ * @example
+ * import { listItem } from "@ariakit/ui/styles/list";
+ *
+ * <List $guide>
+ *   <li {...listItem.jsx()}>
+ *     <ListItemMarker />
+ *     <ListItemGuide />
+ *     <ListItemContent>Install</ListItemContent>
+ *   </li>
+ *   <ListItem>Configure</ListItem>
+ * </List>
  */
 export function ListItemGuide(props: ListItemGuideProps) {
   const [variantProps, rest] = splitProps(props, listItemGuide);
@@ -200,6 +225,15 @@ export interface ListDisclosureProps extends Omit<
  * <List ordered>
  *   <li>
  *     <ListDisclosure button="Item">Details</ListDisclosure>
+ *   </li>
+ * </List>
+ * @example
+ * <List ordered>
+ *   <li>
+ *     <ListDisclosure>
+ *       <ListDisclosureButton>Install</ListDisclosureButton>
+ *       <ListDisclosureContent>Run the installer.</ListDisclosureContent>
+ *     </ListDisclosure>
  *   </li>
  * </List>
  */
@@ -231,6 +265,18 @@ export interface ListDisclosureButtonProps
     Omit<DisclosureButtonProps<typeof listDisclosureButton>, "recipe">,
     Pick<ListItemMarkerProps, "checked" | "progress"> {}
 
+/**
+ * @example
+ * <List ordered>
+ *   <li>
+ *     <ListDisclosure
+ *       button={<ListDisclosureButton checked>Install</ListDisclosureButton>}
+ *     >
+ *       Installation is complete.
+ *     </ListDisclosure>
+ *   </li>
+ * </List>
+ */
 export function ListDisclosureButton({
   label,
   checked,
@@ -272,6 +318,19 @@ export interface ListDisclosureContentProps extends DisclosureContentProps {
   body?: React.ReactElement | ListDisclosureContentBodyProps;
 }
 
+/**
+ * @example
+ * <List ordered>
+ *   <li>
+ *     <ListDisclosure
+ *       button="Install"
+ *       content={<ListDisclosureContent prose />}
+ *     >
+ *       <p>Run the installer.</p>
+ *     </ListDisclosure>
+ *   </li>
+ * </List>
+ */
 export function ListDisclosureContent(props: ListDisclosureContentProps) {
   const body = createRender(ListDisclosureContentBody, props.body);
   return <DisclosureContent {...props} body={body} />;
@@ -282,6 +341,19 @@ export interface ListDisclosureContentBodyProps extends Omit<
   "recipe"
 > {}
 
+/**
+ * @example
+ * <List ordered>
+ *   <li>
+ *     <ListDisclosure
+ *       button="Install"
+ *       content={{ body: <ListDisclosureContentBody /> }}
+ *     >
+ *       Run the installer.
+ *     </ListDisclosure>
+ *   </li>
+ * </List>
+ */
 export function ListDisclosureContentBody(
   props: ListDisclosureContentBodyProps,
 ) {

@@ -11,6 +11,11 @@ export interface TextFrameProps
  * optical side padding, so its text starts where the label of a control with
  * the same padding starts. Despite the name, it has nothing to do with the
  * `Text` component, which colors text.
+ *
+ * @example
+ * <TextFrame $p={2} $border $rounded="md">
+ *   Project details
+ * </TextFrame>
  */
 export function TextFrame(props: TextFrameProps) {
   const [variantProps, rest] = splitProps(props, textFrame);

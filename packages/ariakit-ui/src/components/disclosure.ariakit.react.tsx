@@ -43,7 +43,6 @@ export interface DisclosureOwnProps {
   split?: boolean;
 }
 
-// VariantPropsWithRecipe still requires recipes that add variants.
 export type DisclosureProps<
   R extends RecipeLike<typeof disclosure, R> = typeof disclosure,
 > = Omit<ak.RoleProps<"div">, "content"> &
@@ -65,9 +64,7 @@ export type DisclosureProps<
  *   <DisclosureContent>Content</DisclosureContent>
  * </Disclosure>
  * @example
- * <Disclosure button="Open">
- *   Content
- * </Disclosure>
+ * <Disclosure button="Open">Content</Disclosure>
  */
 export function Disclosure<
   R extends RecipeLike<typeof disclosure, R> = typeof disclosure,
@@ -118,6 +115,13 @@ export function Disclosure<
 export interface DisclosureGroupProps
   extends ak.RoleProps<"div">, VariantProps<typeof disclosureGroup> {}
 
+/**
+ * @example
+ * <DisclosureGroup>
+ *   <Disclosure button="Shipping">Ships in two days.</Disclosure>
+ *   <Disclosure button="Returns">Return within 30 days.</Disclosure>
+ * </DisclosureGroup>
+ */
 export function DisclosureGroup(props: DisclosureGroupProps) {
   const [variantProps, rest] = splitProps(props, disclosureGroup);
   return <ak.Role {...disclosureGroup.jsx(variantProps)} {...rest} />;
@@ -181,6 +185,13 @@ function renderIndicator(indicator: DisclosureIndicator) {
   );
 }
 
+/**
+ * @example
+ * <Disclosure>
+ *   <DisclosureButton description="Delivery times">Shipping</DisclosureButton>
+ *   <DisclosureContent>Ships in two days.</DisclosureContent>
+ * </Disclosure>
+ */
 export function DisclosureButton<
   R extends RecipeLike<typeof disclosureButton, R> = typeof disclosureButton,
 >({
@@ -253,7 +264,16 @@ export function DisclosureButton<
 export interface DisclosureButtonLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof disclosureButtonLabel> {}
 
-/** A custom label for the disclosure button's `label` prop. */
+/**
+ * A custom label for the disclosure button's `label` prop.
+ * @example
+ * <Disclosure>
+ *   <DisclosureButton
+ *     label={<DisclosureButtonLabel>Shipping</DisclosureButtonLabel>}
+ *   />
+ *   <DisclosureContent>Ships in two days.</DisclosureContent>
+ * </Disclosure>
+ */
 export function DisclosureButtonLabel(props: DisclosureButtonLabelProps) {
   const [variantProps, rest] = splitProps(props, disclosureButtonLabel);
   return (
@@ -264,7 +284,16 @@ export function DisclosureButtonLabel(props: DisclosureButtonLabelProps) {
 export interface DisclosureButtonSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof disclosureButtonSlot> {}
 
-/** An icon, badge, avatar, or shortcut beside the button's `label`. */
+/**
+ * An icon, badge, avatar, or shortcut beside the button's `label`.
+ * @example
+ * <Disclosure>
+ *   <DisclosureButton label="Updates">
+ *     <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+ *   </DisclosureButton>
+ *   <DisclosureContent>Three updates are available.</DisclosureContent>
+ * </Disclosure>
+ */
 export function DisclosureButtonSlot(props: DisclosureButtonSlotProps) {
   const [variantProps, rest] = splitProps(props, disclosureButtonSlot);
   const variants = disclosureButtonSlot.getVariants(variantProps);
@@ -289,6 +318,13 @@ export interface DisclosureContentProps
   prose?: boolean;
 }
 
+/**
+ * @example
+ * <Disclosure>
+ *   <DisclosureButton>Shipping</DisclosureButton>
+ *   <DisclosureContent prose><p>Ships in two days.</p></DisclosureContent>
+ * </Disclosure>
+ */
 export function DisclosureContent({
   body,
   guide,
@@ -327,6 +363,15 @@ export type DisclosureContentBodyProps<
     recipe?: R;
   };
 
+/**
+ * @example
+ * <Disclosure
+ *   button="Shipping"
+ *   content={<DisclosureContent body={<DisclosureContentBody $prose />} />}
+ * >
+ *   <p>Ships in two days.</p>
+ * </Disclosure>
+ */
 export function DisclosureContentBody<
   R extends RecipeLike<typeof disclosureContentBody, R> =
     typeof disclosureContentBody,

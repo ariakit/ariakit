@@ -30,7 +30,32 @@ export interface TabsProps
     VariantProps<typeof tabs> {}
 
 /**
+ * Shares tab state and renders a frame for the tab list and panels.
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ *
+ * @example
+ * <Tabs>
+ *   <TabList
+ *     aria-label="Project"
+ *     tabs={{ overview: "Overview", activity: "Activity" }}
+ *   />
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
+ *
+ * @example
+ * <Tabs>
+ *   <TabList aria-label="Project">
+ *     <Tab id="overview">Overview</Tab>
+ *     <Tab id="activity">Activity</Tab>
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function Tabs({
   rtl,
@@ -57,7 +82,24 @@ export function Tabs({
 export interface TabProviderProps extends ak.TabProviderProps {}
 
 /**
+ * Shares tab selection and keyboard navigation state without a wrapper element.
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ *
+ * @example
+ * import { tabs } from "@ariakit/ui/styles/tabs";
+ *
+ * <TabProvider>
+ *   <section {...tabs.jsx()}>
+ *     <TabList aria-label="Project">
+ *       <Tab id="overview">Overview</Tab>
+ *       <Tab id="activity">Activity</Tab>
+ *     </TabList>
+ *     <TabPanels>
+ *       <TabPanel tabId="overview">Project details</TabPanel>
+ *       <TabPanel tabId="activity">Recent changes</TabPanel>
+ *     </TabPanels>
+ *   </section>
+ * </TabProvider>
  */
 export function TabProvider(props: TabProviderProps) {
   return <ak.TabProvider {...props} />;
@@ -66,7 +108,20 @@ export function TabProvider(props: TabProviderProps) {
 export interface TabProps extends ak.TabProps, VariantProps<typeof tab> {}
 
 /**
+ * Renders a tab that selects its associated panel.
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ *
+ * @example
+ * <Tabs>
+ *   <TabList aria-label="Project">
+ *     <Tab id="overview">Overview</Tab>
+ *     <Tab id="activity">Activity</Tab>
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function Tab(props: TabProps) {
   const [variantProps, rest] = splitProps(props, tab);
@@ -112,7 +167,35 @@ function renderTab(tab: React.ReactNode | TabProps, props?: TabProps) {
 }
 
 /**
+ * Renders a named tab list from children, an array, or a record of tabs.
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ *
+ * @example
+ * <Tabs>
+ *   <TabList
+ *     aria-label="Project"
+ *     tabs={{ overview: "Overview", activity: "Activity" }}
+ *   />
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
+ *
+ * @example
+ * <Tabs>
+ *   <TabList
+ *     aria-label="Project"
+ *     tabs={[
+ *       { id: "overview", children: "Overview" },
+ *       { id: "activity", children: "Activity" },
+ *     ]}
+ *   />
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabList({ tabs, children, ...props }: TabListProps) {
   const [variantProps, rest] = splitProps(props, tabList);
@@ -139,7 +222,21 @@ export interface TabSeparatorProps
   extends ComponentProps<"div">, VariantProps<typeof tabSeparator> {}
 
 /**
+ * Renders a visual divider between tabs.
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ *
+ * @example
+ * <Tabs>
+ *   <TabList aria-label="Project">
+ *     <Tab id="overview">Overview</Tab>
+ *     <TabSeparator aria-hidden />
+ *     <Tab id="activity">Activity</Tab>
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabSeparator(props: TabSeparatorProps) {
   const [variantProps, rest] = splitProps(props, tabSeparator);
@@ -150,7 +247,18 @@ export interface TabLabelProps
   extends ComponentProps<"span">, VariantProps<typeof tabLabel> {}
 
 /**
+ * Renders tab label text with optional truncation.
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ *
+ * @example
+ * <Tabs>
+ *   <TabList aria-label="Project">
+ *     <Tab id="overview"><TabLabel>Overview</TabLabel></Tab>
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabLabel(props: TabLabelProps) {
   const [variantProps, rest] = splitProps(props, tabLabel);
@@ -161,7 +269,21 @@ export interface TabSlotProps
   extends ComponentProps<"span">, VariantProps<typeof tabSlot> {}
 
 /**
+ * Renders an icon, badge, or shortcut next to a tab label.
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ *
+ * @example
+ * <Tabs>
+ *   <TabList aria-label="Project">
+ *     <Tab id="activity">
+ *       <TabLabel>Activity</TabLabel>
+ *       <TabSlot $kind="badge">3 new</TabSlot>
+ *     </Tab>
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="activity">Three recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabSlot(props: TabSlotProps) {
   const [variantProps, rest] = splitProps(props, tabSlot);
@@ -181,7 +303,20 @@ export interface TabPanelsProps
   extends ComponentProps<"div">, VariantProps<typeof tabPanels> {}
 
 /**
+ * Renders the shared surface around tab panels.
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ *
+ * @example
+ * <Tabs>
+ *   <TabList
+ *     aria-label="Project"
+ *     tabs={{ overview: "Overview", activity: "Activity" }}
+ *   />
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabPanels(props: TabPanelsProps) {
   const [variantProps, rest] = splitProps(props, tabPanels);
@@ -193,7 +328,20 @@ export interface TabPanelProps extends ak.TabPanelProps {
 }
 
 /**
+ * Shows the content associated with a tab through its `tabId`.
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ *
+ * @example
+ * <Tabs>
+ *   <TabList
+ *     aria-label="Project"
+ *     tabs={{ overview: "Overview", activity: "Activity" }}
+ *   />
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabPanel({ single, ...props }: TabPanelProps) {
   const context = ak.useTabContext();
@@ -205,7 +353,22 @@ export interface TabGliderProps
   extends ComponentProps<"div">, VariantProps<typeof tabGlider> {}
 
 /**
+ * Renders a moving selection indicator after the tabs in a tab list.
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ *
+ * @example
+ * <Tabs>
+ *   <TabList
+ *     aria-label="Project"
+ *     tabs={{ overview: "Overview", activity: "Activity" }}
+ *   >
+ *     <TabGlider aria-hidden />
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="overview">Project details</TabPanel>
+ *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
 export function TabGlider(props: TabGliderProps) {
   const [variantProps, rest] = splitProps(props, tabGlider);

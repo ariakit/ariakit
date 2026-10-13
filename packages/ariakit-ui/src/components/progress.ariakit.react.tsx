@@ -22,6 +22,15 @@ export interface ProgressProps
   fill?: React.ReactElement | ProgressFillProps;
 }
 
+/**
+ * Renders a progress bar. Omit `value` when the progress is unknown.
+ *
+ * @example
+ * <Progress value={0.5} aria-label="Upload progress" />
+ *
+ * @example
+ * <Progress aria-label="Loading projects" />
+ */
 export function Progress({ value, fill, children, ...props }: ProgressProps) {
   const [variantProps, rest] = splitProps(props, progress);
   return (
@@ -46,6 +55,16 @@ export function Progress({ value, fill, children, ...props }: ProgressProps) {
 export interface ProgressFillProps
   extends ak.RoleProps<"div">, VariantProps<typeof progressFill> {}
 
+/**
+ * Renders the filled portion of a progress bar.
+ *
+ * @example
+ * <Progress
+ *   value={0.5}
+ *   aria-label="Upload progress"
+ *   fill={<ProgressFill className="opacity-80" />}
+ * />
+ */
 export function ProgressFill(props: ProgressFillProps) {
   const [variantProps, rest] = splitProps(props, progressFill);
   return <ak.Role {...progressFill.jsx(variantProps)} {...rest} />;
@@ -65,6 +84,22 @@ export interface ProgressCircularProps
   fill?: React.ReactElement | ProgressCircularFillProps;
 }
 
+/**
+ * Renders a progress ring. Omit `value` when the progress is unknown.
+ *
+ * @example
+ * <ProgressCircular
+ *   value={0.5}
+ *   aria-label="Upload progress"
+ *   style={{ width: 32, height: 32 }}
+ * />
+ *
+ * @example
+ * <ProgressCircular
+ *   aria-label="Loading projects"
+ *   style={{ width: 32, height: 32 }}
+ * />
+ */
 export function ProgressCircular({
   value,
   fill,
@@ -94,6 +129,17 @@ export function ProgressCircular({
 export interface ProgressCircularFillProps
   extends ak.RoleProps<"div">, VariantProps<typeof progressCircularFill> {}
 
+/**
+ * Renders the filled portion of a progress ring.
+ *
+ * @example
+ * <ProgressCircular
+ *   value={0.5}
+ *   aria-label="Upload progress"
+ *   fill={<ProgressCircularFill className="opacity-80" />}
+ *   style={{ width: 32, height: 32 }}
+ * />
+ */
 export function ProgressCircularFill(props: ProgressCircularFillProps) {
   const [variantProps, rest] = splitProps(props, progressCircularFill);
   return <ak.Role {...progressCircularFill.jsx(variantProps)} {...rest} />;

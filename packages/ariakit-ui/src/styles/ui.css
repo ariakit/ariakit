@@ -330,6 +330,7 @@ body > * {
   initial-value: 0px;
 }
 
+/** Sets sidebar state and sticky header offsets on each shell child. */
 @utility shell-slot-state {
   /* Resolve header offsets on children: a query cannot style its container. */
   --shell-main-header-visible: 1;
@@ -1555,6 +1556,7 @@ body > * {
 }
 
 
+/** Adds a beveled surface with a layer-colored gradient, shadow, and highlight. */
 @utility ui-bevel {
   --min-l: 0.25;
   --max-l: 1;
@@ -1576,6 +1578,7 @@ body > * {
   }
 }
 
+/** Adds hover and pressed states to a beveled button surface. */
 @utility ui-bevel-button {
   @apply ui-bevel;
   @variant ui-hover {

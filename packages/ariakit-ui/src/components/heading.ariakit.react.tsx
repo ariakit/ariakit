@@ -11,6 +11,16 @@ export interface HeadingProps
  * the element from the surrounding `HeadingLevel` context. Use the `$level`
  * variant when the visual size should differ from the semantic level.
  * @see https://ariakit.com/reference/heading
+ *
+ * @example
+ * <HeadingLevel level={1}>
+ *   <Heading>Projects</Heading>
+ * </HeadingLevel>
+ *
+ * @example
+ * <HeadingLevel level={2}>
+ *   <Heading $level={4}>Project details</Heading>
+ * </HeadingLevel>
  */
 export function Heading(props: HeadingProps) {
   const [variantProps, rest] = splitProps(props, heading);
@@ -20,7 +30,16 @@ export function Heading(props: HeadingProps) {
 export interface HeadingLevelProps extends ak.HeadingLevelProps {}
 
 /**
+ * Sets the semantic heading level for descendants without adding an element.
  * @see https://ariakit.com/reference/heading-level
+ *
+ * @example
+ * <HeadingLevel>
+ *   <Heading>Projects</Heading>
+ *   <HeadingLevel>
+ *     <Heading>Active projects</Heading>
+ *   </HeadingLevel>
+ * </HeadingLevel>
  */
 export function HeadingLevel(props: HeadingLevelProps) {
   return <ak.HeadingLevel {...props} />;

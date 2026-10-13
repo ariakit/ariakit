@@ -38,45 +38,12 @@ export interface ShellProps
  * themselves by kind and side, so DOM order is free for reading order. A nested
  * shell takes the main cell of the shell around it.
  * @example
- * const [open, setOpen] = useState(true);
- * const sidebarId = useId();
  * <Shell>
- *   <ShellHeader
- *     start={
- *       <Button
- *         className="@max-3xl/shell:hidden"
- *         aria-expanded={open}
- *         aria-controls={sidebarId}
- *         onClick={() => setOpen(!open)}
- *       >
- *         Navigation
- *       </Button>
- *     }
- *     center="Title"
- *   />
- *   <ShellSidebar
- *     id={sidebarId}
- *     open={open}
- *     aria-label="Documentation"
- *     render={<nav />}
- *   >
- *     <ShellSidebarBody>…</ShellSidebarBody>
- *   </ShellSidebar>
+ *   <ShellHeader start="Docs" />
  *   <ShellMain>
- *     <ShellMainHeader>…</ShellMainHeader>
- *     <ShellMainIntro>…</ShellMainIntro>
- *     <ShellMainBody>…</ShellMainBody>
+ *     <ShellMainBody><h1>Getting started</h1></ShellMainBody>
  *   </ShellMain>
- *   <ShellSidebar
- *     $side="end"
- *     $width="sm"
- *     $from="body"
- *     aria-label="On this page"
- *     render={<aside />}
- *   >
- *     <ShellSidebarBody>…</ShellSidebarBody>
- *   </ShellSidebar>
- *   <ShellFooter />
+ *   <ShellFooter center="Ariakit" />
  * </Shell>
  */
 export function Shell(props: ShellProps) {
@@ -99,6 +66,10 @@ function renderPartCell(recipe: BarPartRecipe, props: ShellHeaderPartProps) {
 /**
  * The start part of a bar: a flex cell at the bar's start edge that keeps its
  * content minimum unless it says it can shrink.
+ * @example
+ * <Shell>
+ *   <ShellHeader start={<ShellHeaderStart $shrink>Docs</ShellHeaderStart>} />
+ * </Shell>
  */
 export function ShellHeaderStart(props: ShellHeaderPartProps) {
   return renderPartCell(shellHeaderStart, props);
@@ -107,6 +78,10 @@ export function ShellHeaderStart(props: ShellHeaderPartProps) {
 /**
  * The center part of a bar: a flex cell on the bar's middle while both sides
  * fit, moved over when a side needs more than its half.
+ * @example
+ * <Shell>
+ *   <ShellHeader center={<ShellHeaderCenter $grow>Docs</ShellHeaderCenter>} />
+ * </Shell>
  */
 export function ShellHeaderCenter(props: ShellHeaderPartProps) {
   return renderPartCell(shellHeaderCenter, props);
@@ -115,6 +90,10 @@ export function ShellHeaderCenter(props: ShellHeaderPartProps) {
 /**
  * The end part of a bar: a flex cell at the bar's end edge that keeps its
  * content minimum unless it says it can shrink.
+ * @example
+ * <Shell>
+ *   <ShellHeader end={<ShellHeaderEnd>Account</ShellHeaderEnd>} />
+ * </Shell>
  */
 export function ShellHeaderEnd(props: ShellHeaderPartProps) {
   return renderPartCell(shellHeaderEnd, props);
@@ -163,12 +142,13 @@ export interface ShellHeaderProps
  * Use `portal` for overlays to escape the bar's stacking context. Portalled
  * elements no longer inherit the shell's tokens.
  * @example
- * <ShellHeader
- *   $blur
- *   start={<Logo />}
- *   center={<ShellHeaderCenter $grow><Search /></ShellHeaderCenter>}
- *   end={<ShellHeaderEnd $shrink><UserMenu /></ShellHeaderEnd>}
- * />
+ * <Shell>
+ *   <ShellHeader $blur start="Docs" end={<a href="/help">Help</a>} />
+ * </Shell>
+ * @example
+ * <Shell>
+ *   <ShellHeader center={{ $grow: true, children: "Docs" }} />
+ * </Shell>
  */
 export function ShellHeader({
   start,
@@ -198,6 +178,10 @@ export interface ShellFooterProps
  * The bottom bar of a shell. It is always static and as tall as its content,
  * and a sticky sidebar body ends above it at the end of the page. It has no
  * `$sticky` variant.
+ * @example
+ * <Shell>
+ *   <ShellFooter start="Ariakit" end={<a href="/help">Help</a>} />
+ * </Shell>
  */
 export function ShellFooter({
   start,
@@ -230,6 +214,10 @@ const BAR_PARTS = new Set<React.ElementType>([
 /**
  * The start part of a footer: the same cell as `ShellHeaderStart`, under the
  * footer's name.
+ * @example
+ * <Shell>
+ *   <ShellFooter start={<ShellFooterStart>Ariakit</ShellFooterStart>} />
+ * </Shell>
  */
 export function ShellFooterStart(props: ShellHeaderPartProps) {
   return renderPartCell(shellFooterStart, props);
@@ -238,6 +226,10 @@ export function ShellFooterStart(props: ShellHeaderPartProps) {
 /**
  * The center part of a footer: the same cell as `ShellHeaderCenter`, under the
  * footer's name.
+ * @example
+ * <Shell>
+ *   <ShellFooter center={<ShellFooterCenter>Ariakit</ShellFooterCenter>} />
+ * </Shell>
  */
 export function ShellFooterCenter(props: ShellHeaderPartProps) {
   return renderPartCell(shellFooterCenter, props);
@@ -246,6 +238,10 @@ export function ShellFooterCenter(props: ShellHeaderPartProps) {
 /**
  * The end part of a footer: the same cell as `ShellHeaderEnd`, under the
  * footer's name.
+ * @example
+ * <Shell>
+ *   <ShellFooter end={<ShellFooterEnd>Ariakit</ShellFooterEnd>} />
+ * </Shell>
  */
 export function ShellFooterEnd(props: ShellHeaderPartProps) {
   return renderPartCell(shellFooterEnd, props);
@@ -259,6 +255,13 @@ export interface ShellMainIntroProps
  * aligns with the body, and its surface spans the adjacent end columns whose
  * sidebars start at the body. Direct element children use the centered content
  * column; named main bands can select a wider span.
+ * @example
+ * <Shell>
+ *   <ShellMain>
+ *     <ShellMainIntro><h1>Getting started</h1></ShellMainIntro>
+ *     <ShellMainBody><p>Install Ariakit.</p></ShellMainBody>
+ *   </ShellMain>
+ * </Shell>
  */
 export function ShellMainIntro(props: ShellMainIntroProps) {
   const [variantProps, rest] = splitProps(props, shellMainIntro);
@@ -281,11 +284,13 @@ export interface ShellMainProps
  * to align columns across text sizes. Percentages depend on each part's width
  * and can misalign wider headers or intros. Parts can override `$maxWidth`.
  * @example
- * <ShellMain $p={4}>
- *   <ShellMainHeader><div>Page actions</div></ShellMainHeader>
- *   <ShellMainIntro><h1>Page title</h1></ShellMainIntro>
- *   <ShellMainBody><p>Page content</p></ShellMainBody>
- * </ShellMain>
+ * <Shell>
+ *   <ShellMain $p={4}>
+ *     <ShellMainHeader><div>Docs</div></ShellMainHeader>
+ *     <ShellMainIntro><h1>Getting started</h1></ShellMainIntro>
+ *     <ShellMainBody><p>Install Ariakit.</p></ShellMainBody>
+ *   </ShellMain>
+ * </Shell>
  */
 export function ShellMain(props: ShellMainProps) {
   const [variantProps, rest] = splitProps(props, shellMain);
@@ -305,6 +310,13 @@ export interface ShellMainHeaderProps
  * `$show={false}` hides it at every width. A hidden header takes no space and
  * has no sticky offset. Direct element children occupy the content column; wrap
  * text in an element such as `div`.
+ * @example
+ * <Shell>
+ *   <ShellMain>
+ *     <ShellMainHeader $sticky={false}><div>Docs</div></ShellMainHeader>
+ *     <ShellMainBody><p>Install Ariakit.</p></ShellMainBody>
+ *   </ShellMain>
+ * </Shell>
  */
 export function ShellMainHeader(props: ShellMainHeaderProps) {
   const [variantProps, rest] = splitProps(props, shellMainHeader);
@@ -325,6 +337,12 @@ export interface ShellMainBodyProps
  * set scroll padding on the page's scroll port to their total height, for
  * example `html { scroll-padding-block-start: 128px }` for two default headers.
  * Content must fit the configured header heights.
+ * @example
+ * <Shell>
+ *   <ShellMain>
+ *     <ShellMainBody><p>Install Ariakit.</p></ShellMainBody>
+ *   </ShellMain>
+ * </Shell>
  */
 export function ShellMainBody(props: ShellMainBodyProps) {
   const [variantProps, rest] = splitProps(props, shellMainBody);
@@ -337,6 +355,16 @@ export interface ShellMainContentProps
 /**
  * Selects the centered content column inside a main header, intro, body, or
  * wider main band. Direct element children fill this column.
+ * @example
+ * <Shell>
+ *   <ShellMain>
+ *     <ShellMainBody>
+ *       <ShellMainFull $layer="brand">
+ *         <ShellMainContent><p>Centered content</p></ShellMainContent>
+ *       </ShellMainFull>
+ *     </ShellMainBody>
+ *   </ShellMain>
+ * </Shell>
  */
 export function ShellMainContent(props: ShellMainContentProps) {
   const [variantProps, rest] = splitProps(props, shellMainContent);
@@ -351,6 +379,14 @@ export interface ShellMainPopoutProps
  * children fill its width. Use `ShellMainContent` inside to return to the
  * content column. It must be a direct child of a main header, intro, body, or
  * wider main band.
+ * @example
+ * <Shell>
+ *   <ShellMain>
+ *     <ShellMainBody>
+ *       <ShellMainPopout><p>Wide content</p></ShellMainPopout>
+ *     </ShellMainBody>
+ *   </ShellMain>
+ * </Shell>
  */
 export function ShellMainPopout(props: ShellMainPopoutProps) {
   const [variantProps, rest] = splitProps(props, shellMainPopout);
@@ -365,6 +401,14 @@ export interface ShellMainFeatureProps
  * children fill its width. Use a narrower main band inside to select its
  * columns. It must be a direct child of a main header, intro, body, or full
  * band.
+ * @example
+ * <Shell>
+ *   <ShellMain>
+ *     <ShellMainBody>
+ *       <ShellMainFeature><p>Featured content</p></ShellMainFeature>
+ *     </ShellMainBody>
+ *   </ShellMain>
+ * </Shell>
  */
 export function ShellMainFeature(props: ShellMainFeatureProps) {
   const [variantProps, rest] = splitProps(props, shellMainFeature);
@@ -381,13 +425,13 @@ export interface ShellMainFullProps
  * hang Safari. Inline padding and auto margins shift the shared columns; put
  * padding on a child element instead.
  * @example
- * <ShellMainBody>
- *   <p>Centered content</p>
- *   <ShellMainFull $layer="brand">
- *     <p>Full-width content</p>
- *     <ShellMainContent><p>Centered content in the band</p></ShellMainContent>
- *   </ShellMainFull>
- * </ShellMainBody>
+ * <Shell>
+ *   <ShellMain>
+ *     <ShellMainBody>
+ *       <ShellMainFull $layer="brand"><p>Full-width content</p></ShellMainFull>
+ *     </ShellMainBody>
+ *   </ShellMain>
+ * </Shell>
  */
 export function ShellMainFull(props: ShellMainFullProps) {
   const [variantProps, rest] = splitProps(props, shellMainFull);
@@ -420,25 +464,34 @@ export interface ShellSidebarProps
  * `@3xl/shell:hidden` for `$show="max-3xl"`, or always visible for
  * `$show={true}`.
  * @example
- * const [open, setOpen] = useState(true);
- * const sidebarId = useId();
- * <Button
- *   className="@max-3xl/shell:hidden"
- *   aria-expanded={open}
- *   aria-controls={sidebarId}
- *   onClick={() => setOpen(!open)}
- * >
- *   Navigation
- * </Button>
- * <ShellSidebar
- *   id={sidebarId}
- *   open={open}
- *   $width="md"
- *   aria-label="Main"
- *   render={<nav />}
- * >
- *   <ShellSidebarBody>…</ShellSidebarBody>
- * </ShellSidebar>
+ * import { useState } from "react";
+ *
+ * function Example() {
+ *   const [open, setOpen] = useState(true);
+ *   return (
+ *     <Shell>
+ *       <ShellHeader start={
+ *         <button
+ *           type="button"
+ *           aria-expanded={open}
+ *           aria-controls="docs-nav"
+ *           onClick={() => setOpen(!open)}
+ *         >
+ *           Docs
+ *         </button>
+ *       } />
+ *       <ShellSidebar
+ *         id="docs-nav"
+ *         open={open}
+ *         $show={true}
+ *         render={<nav />}
+ *         aria-label="Docs"
+ *       >
+ *         <ShellSidebarBody><a href="/install">Install</a></ShellSidebarBody>
+ *       </ShellSidebar>
+ *     </Shell>
+ *   );
+ * }
  */
 export function ShellSidebar({ open = true, ...props }: ShellSidebarProps) {
   // The first recipe receives className and style, which belong to the panel.
@@ -464,6 +517,13 @@ export interface ShellSidebarHeaderProps
 /**
  * A fixed header inside the sidebar panel. It shares `ShellHeader`'s outer
  * height by default; a local `$height` includes the local border.
+ * @example
+ * <Shell>
+ *   <ShellSidebar render={<nav />} aria-label="Docs">
+ *     <ShellSidebarHeader>Getting started</ShellSidebarHeader>
+ *     <ShellSidebarBody><a href="/install">Install</a></ShellSidebarBody>
+ *   </ShellSidebar>
+ * </Shell>
  */
 export function ShellSidebarHeader(props: ShellSidebarHeaderProps) {
   const [variantProps, rest] = splitProps(props, shellSidebarHeader);
@@ -473,7 +533,15 @@ export function ShellSidebarHeader(props: ShellSidebarHeaderProps) {
 export interface ShellSidebarBodyProps
   extends ak.RoleProps<"div">, VariantProps<typeof shellSidebarBody> {}
 
-/** The scrollable center between a sidebar's optional header and footer. */
+/**
+ * The scrollable center between a sidebar's optional header and footer.
+ * @example
+ * <Shell>
+ *   <ShellSidebar render={<nav />} aria-label="Docs">
+ *     <ShellSidebarBody><a href="/install">Install</a></ShellSidebarBody>
+ *   </ShellSidebar>
+ * </Shell>
+ */
 export function ShellSidebarBody(props: ShellSidebarBodyProps) {
   const [variantProps, rest] = splitProps(props, shellSidebarBody);
   return <ak.Role.div {...shellSidebarBody.jsx(variantProps)} {...rest} />;
@@ -482,7 +550,16 @@ export function ShellSidebarBody(props: ShellSidebarBodyProps) {
 export interface ShellSidebarFooterProps
   extends ak.RoleProps<"div">, VariantProps<typeof shellSidebarFooter> {}
 
-/** A fixed footer after the sidebar's scrollable body. */
+/**
+ * A fixed footer after the sidebar's scrollable body.
+ * @example
+ * <Shell>
+ *   <ShellSidebar render={<nav />} aria-label="Docs">
+ *     <ShellSidebarBody><a href="/install">Install</a></ShellSidebarBody>
+ *     <ShellSidebarFooter><a href="/help">Help</a></ShellSidebarFooter>
+ *   </ShellSidebar>
+ * </Shell>
+ */
 export function ShellSidebarFooter(props: ShellSidebarFooterProps) {
   const [variantProps, rest] = splitProps(props, shellSidebarFooter);
   return <ak.Role.div {...shellSidebarFooter.jsx(variantProps)} {...rest} />;

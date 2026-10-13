@@ -113,7 +113,7 @@ export interface TableProps<K extends string | number>
  * and a `TableScroller`. Pass `container` or `scroller` to configure them, or
  * compose the parts by hand for a table without them.
  * @example
- * <Table>
+ * <Table caption="People">
  *   <TableRowGroup group="head">
  *     <TableRow>
  *       <TableCell header>Name</TableCell>
@@ -129,6 +129,7 @@ export interface TableProps<K extends string | number>
  * </Table>
  * @example
  * <Table
+ *   caption="People"
  *   rows={[
  *     { group: "head", name: "Name", age: { children: "Age", numeric: true } },
  *     { key: "ada", name: "Ada", age: 37 },
@@ -278,6 +279,18 @@ export function Table<K extends string | number>({
 export interface TableCaptionProps
   extends React.ComponentProps<"caption">, VariantProps<typeof tableCaption> {}
 
+/**
+ * Renders the visible native table name.
+ *
+ * @example
+ * <Table
+ *   caption={<TableCaption>People</TableCaption>}
+ *   rows={[
+ *     { group: "head", name: "Name" },
+ *     { key: "ada", name: "Ada" },
+ *   ]}
+ * />
+ */
 export function TableCaption(props: TableCaptionProps) {
   const [variantProps, rest] = splitProps(props, tableCaption);
   return <caption {...tableCaption.jsx(variantProps)} {...rest} />;
@@ -286,6 +299,19 @@ export function TableCaption(props: TableCaptionProps) {
 export interface TableContainerProps
   extends React.ComponentProps<"div">, VariantProps<typeof tableContainer> {}
 
+/**
+ * Renders the outer frame around a table and its scroller.
+ *
+ * @example
+ * <Table
+ *   caption="People"
+ *   container={<TableContainer $rounded="lg" />}
+ *   rows={[
+ *     { group: "head", name: "Name" },
+ *     { key: "ada", name: "Ada" },
+ *   ]}
+ * />
+ */
 export function TableContainer(props: TableContainerProps) {
   const [variantProps, rest] = splitProps(props, tableContainer);
   return <div {...tableContainer.jsx(variantProps)} {...rest} />;
@@ -294,6 +320,19 @@ export function TableContainer(props: TableContainerProps) {
 export interface TableScrollerProps
   extends React.ComponentProps<"div">, VariantProps<typeof tableScroller> {}
 
+/**
+ * Renders a scrollable viewport around a table.
+ *
+ * @example
+ * <Table
+ *   caption="People"
+ *   scroller={<TableScroller style={{ maxHeight: 320 }} />}
+ *   rows={[
+ *     { group: "head", name: "Name" },
+ *     { key: "ada", name: "Ada" },
+ *   ]}
+ * />
+ */
 export function TableScroller(props: TableScrollerProps) {
   const [variantProps, rest] = splitProps(props, tableScroller);
   return <div {...tableScroller.jsx(variantProps)} {...rest} />;
@@ -307,6 +346,19 @@ export interface TableRowGroupProps
   group?: TableRowGroupKind;
 }
 
+/**
+ * Renders a head, body, or foot group and shares its type with its cells.
+ *
+ * @example
+ * <Table
+ *   caption="People"
+ *   head={<TableRowGroup $sticky="top" />}
+ *   rows={[
+ *     { group: "head", name: "Name" },
+ *     { key: "ada", name: "Ada" },
+ *   ]}
+ * />
+ */
 export function TableRowGroup({
   group = "body",
   ...props
@@ -334,6 +386,19 @@ export interface TableRowProps
   selected?: boolean;
 }
 
+/**
+ * Renders a table row with styles from its row group.
+ *
+ * @example
+ * <Table
+ *   caption="People"
+ *   row={<TableRow $hover={false} />}
+ *   rows={[
+ *     { group: "head", name: "Name" },
+ *     { key: "ada", name: "Ada" },
+ *   ]}
+ * />
+ */
 export function TableRow({ group, selected, ...props }: TableRowProps) {
   const contextGroup = React.useContext(TableRowGroupContext);
   group = group ?? contextGroup;
@@ -373,6 +438,19 @@ export interface TableCellProps
   sortButton?: React.ReactElement | TableSortButtonProps;
 }
 
+/**
+ * Renders a data or header cell with optional numeric and sorting styles.
+ *
+ * @example
+ * <Table caption="People">
+ *   <TableRowGroup>
+ *     <TableRow>
+ *       <TableCell header="row">Ada</TableCell>
+ *       <TableCell numeric>37</TableCell>
+ *     </TableRow>
+ *   </TableRowGroup>
+ * </Table>
+ */
 export function TableCell({
   numeric,
   header,
@@ -437,6 +515,20 @@ export interface TableSortButtonProps
  * The control of a sortable column header, which `TableCell` renders when it
  * takes `sort`. It runs edge to edge over the cell, so the whole header is the
  * target, and keeps the label where a plain header puts it.
+ *
+ * @example
+ * <Table caption="People">
+ *   <TableRowGroup group="head">
+ *     <TableRow>
+ *       <TableCell sort="ascending" sortButton={<TableSortButton disabled />}>
+ *         Name
+ *       </TableCell>
+ *     </TableRow>
+ *   </TableRowGroup>
+ *   <TableRowGroup>
+ *     <TableRow><TableCell>Ada</TableCell></TableRow>
+ *   </TableRowGroup>
+ * </Table>
  */
 export function TableSortButton({
   indicator = <TableSortIndicator />,
@@ -467,6 +559,25 @@ export interface TableSortIndicatorProps
  * The sort indicator of a `TableSortButton`: chevrons while the column is not
  * sorted, an arrow once it is, which the header's `aria-sort` turns around for
  * a descending sort. Children replace the glyph.
+ *
+ * @example
+ * <Table caption="People">
+ *   <TableRowGroup group="head">
+ *     <TableRow>
+ *       <TableCell
+ *         sort="ascending"
+ *         sortButton={
+ *           <TableSortButton disabled indicator={<TableSortIndicator />} />
+ *         }
+ *       >
+ *         Name
+ *       </TableCell>
+ *     </TableRow>
+ *   </TableRowGroup>
+ *   <TableRowGroup>
+ *     <TableRow><TableCell>Ada</TableCell></TableRow>
+ *   </TableRowGroup>
+ * </Table>
  */
 export function TableSortIndicator(props: TableSortIndicatorProps) {
   const { sort } = React.useContext(TableCellContext);

@@ -11,6 +11,11 @@ export interface FrameProps
  * borders, and concentric radius nesting with parent frames. It paints no
  * surface of its own until a layer prop moves the color; pass `$layer` to make
  * it one.
+ *
+ * @example
+ * <Frame $p={3} $rounded="lg" $border>
+ *   <p>Project details</p>
+ * </Frame>
  */
 export function Frame(props: FrameProps) {
   const [variantProps, rest] = splitProps(props, frame);

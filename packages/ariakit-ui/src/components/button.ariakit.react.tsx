@@ -13,7 +13,6 @@ import {
 } from "../styles/button.ts";
 import { wrapsSlotChildren } from "../styles/control.ts";
 
-// VariantPropsWithRecipe still requires recipes that add variants.
 export type ButtonProps<
   R extends RecipeLike<typeof button, R> = typeof button,
 > = ak.ButtonProps &
@@ -26,6 +25,9 @@ export type ButtonProps<
   };
 
 /**
+ * A button with shared control styles.
+ * @example
+ * <Button>Save changes</Button>
  * @see https://ariakit.com/react/examples/button
  */
 export function Button<R extends RecipeLike<typeof button, R> = typeof button>({
@@ -51,6 +53,12 @@ export interface ButtonGroupProps
   extends ak.GroupProps, VariantProps<typeof buttonGroup> {}
 
 /**
+ * Groups related buttons in one surface.
+ * @example
+ * <ButtonGroup aria-label="Edit history">
+ *   <Button>Undo</Button>
+ *   <Button>Redo</Button>
+ * </ButtonGroup>
  * @see https://ariakit.com/react/examples/button
  */
 export function ButtonGroup(props: ButtonGroupProps) {
@@ -62,6 +70,13 @@ export interface ButtonGliderProps
   extends ak.RoleProps<"div">, VariantProps<typeof buttonGlider> {}
 
 /**
+ * A decorative surface that can move between buttons in a group.
+ * @example
+ * <ButtonGroup aria-label="Views">
+ *   <Button render={<a href="/list" />} aria-current="page">List</Button>
+ *   <Button render={<a href="/grid" />}>Grid</Button>
+ *   <ButtonGlider />
+ * </ButtonGroup>
  * @see https://ariakit.com/react/examples/button
  */
 export function ButtonGlider(props: ButtonGliderProps) {
@@ -73,6 +88,13 @@ export interface ButtonSeparatorProps
   extends ak.RoleProps<"div">, VariantProps<typeof buttonSeparator> {}
 
 /**
+ * A visual divider between grouped buttons.
+ * @example
+ * <ButtonGroup aria-label="Edit history">
+ *   <Button>Undo</Button>
+ *   <ButtonSeparator />
+ *   <Button>Redo</Button>
+ * </ButtonGroup>
  * @see https://ariakit.com/react/examples/button
  */
 export function ButtonSeparator(props: ButtonSeparatorProps) {
@@ -84,6 +106,14 @@ export interface ButtonContentProps
   extends ak.RoleProps<"span">, VariantProps<typeof buttonContent> {}
 
 /**
+ * Stacks a button label and description.
+ * @example
+ * <Button>
+ *   <ButtonContent>
+ *     <ButtonLabel>Download</ButtonLabel>
+ *     <ButtonDescription>PDF document</ButtonDescription>
+ *   </ButtonContent>
+ * </Button>
  * @see https://ariakit.com/react/examples/button
  */
 export function ButtonContent(props: ButtonContentProps) {
@@ -95,6 +125,11 @@ export interface ButtonLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof buttonLabel> {}
 
 /**
+ * The main text of a button.
+ * @example
+ * <Button>
+ *   <ButtonLabel>Save changes</ButtonLabel>
+ * </Button>
  * @see https://ariakit.com/react/examples/button
  */
 export function ButtonLabel(props: ButtonLabelProps) {
@@ -106,6 +141,14 @@ export interface ButtonDescriptionProps
   extends ak.RoleProps<"span">, VariantProps<typeof buttonDescription> {}
 
 /**
+ * Secondary text below a button label.
+ * @example
+ * <Button>
+ *   <ButtonContent>
+ *     <ButtonLabel>Download</ButtonLabel>
+ *     <ButtonDescription>PDF document</ButtonDescription>
+ *   </ButtonContent>
+ * </Button>
  * @see https://ariakit.com/react/examples/button
  */
 export function ButtonDescription(props: ButtonDescriptionProps) {
@@ -117,6 +160,12 @@ export interface ButtonSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof buttonSlot> {}
 
 /**
+ * An icon or other content beside a button label.
+ * @example
+ * <Button>
+ *   <ButtonSlot aria-hidden>+</ButtonSlot>
+ *   <ButtonLabel>Add item</ButtonLabel>
+ * </Button>
  * @see https://ariakit.com/react/examples/button
  */
 export function ButtonSlot(props: ButtonSlotProps) {

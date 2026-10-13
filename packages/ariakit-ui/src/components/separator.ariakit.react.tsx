@@ -11,6 +11,13 @@ export interface SeparatorProps
  * with the `$edge*` variants. The layer variants are there for that edge to
  * resolve against: a painted layer fills the rule's box instead of tinting the
  * line.
+ *
+ * @example
+ * <Prose>
+ *   <p>Project details</p>
+ *   <Separator $line="solid" />
+ *   <p>Project activity</p>
+ * </Prose>
  */
 export function Separator(props: SeparatorProps) {
   const [variantProps, rest] = splitProps(props, separator);
