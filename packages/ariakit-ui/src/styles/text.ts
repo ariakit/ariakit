@@ -9,39 +9,11 @@ import {
 import type { ChromaValues, ColorValues, HueValues } from "../utils/styles.ts";
 
 /**
- * Adaptive text color and color adjustments. On a `$layer` element, these
- * variants affect nested `$text` or SVG elements, not text directly inside the
- * layer.
+ * Color adjustments for adaptive text. They only set color inputs; `text`
+ * enables the adaptive color that reads them.
  */
-export const text = cv({
-  class: "text",
+const textModifiers = cv({
   variants: {
-    /**
-     * Sets the base text color. `true` adapts the parent layer color to meet
-     * WCAG AA contrast; a color sets the base explicitly. `false` disables the
-     * text system. Other text variants adjust this color.
-     */
-    $text(value?: ColorValues | (string & {}) | boolean) {
-      if (!value) return;
-      if (value === true) {
-        return "ui-text:ak-text";
-      }
-      if (includes(COLOR_VALUES, value)) {
-        const colorMap = {
-          canvas: "ui-text:ak-text ui-text:ak-text-canvas",
-          brand: "ui-text:ak-text ui-text:ak-text-brand",
-          secondary: "ui-text:ak-text ui-text:ak-text-secondary",
-          success: "ui-text:ak-text ui-text:ak-text-success",
-          warning: "ui-text:ak-text ui-text:ak-text-warning",
-          danger: "ui-text:ak-text ui-text:ak-text-danger",
-        } satisfies Record<ColorValues, string>;
-        return colorMap[value];
-      }
-      return {
-        class: "ui-text:ak-text ui-text:ak-text-color-(--text-color)",
-        style: { "--text-color": value },
-      };
-    },
     /**
      * Sets the minimum lightness shift beyond the readability floor, from `0`
      * to `100`. The shift increases with `--contrast`.
@@ -230,6 +202,55 @@ export const text = cv({
         class: "ui-text:ak-text-h-(--text-hue)",
         style: { "--text-hue": `${value}` },
       };
+    },
+  },
+});
+
+/**
+ * Adaptive text color and color adjustments. On a `$layer` element, these
+ * variants affect nested `$text` or SVG elements, not text directly inside the
+ * layer.
+ */
+export const text = cv({
+  extend: [textModifiers],
+  class: "text",
+  variants: {
+    /**
+     * Sets the base text color. `true` adapts the parent layer color to meet
+     * WCAG AA contrast; a color sets the base explicitly. `false` disables the
+     * text system. Other text variants adjust this color. A variant that emits
+     * output also enables it by default.
+     */
+    $text(value?: ColorValues | (string & {}) | boolean) {
+      if (!value) return;
+      if (value === true) {
+        return "ui-text:ak-text";
+      }
+      if (includes(COLOR_VALUES, value)) {
+        const colorMap = {
+          canvas: "ui-text:ak-text ui-text:ak-text-canvas",
+          brand: "ui-text:ak-text ui-text:ak-text-brand",
+          secondary: "ui-text:ak-text ui-text:ak-text-secondary",
+          success: "ui-text:ak-text ui-text:ak-text-success",
+          warning: "ui-text:ak-text ui-text:ak-text-warning",
+          danger: "ui-text:ak-text ui-text:ak-text-danger",
+        } satisfies Record<ColorValues, string>;
+        return colorMap[value];
+      }
+      return {
+        class: "ui-text:ak-text ui-text:ak-text-color-(--text-color)",
+        style: { "--text-color": value },
+      };
+    },
+  },
+  defaultVariants: {
+    $text(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      // A modifier needs the adaptive color to take effect. Explicit values and
+      // static extender defaults still win. A computed extender default
+      // receives `true` as its `defaultValue`.
+      if (textModifiers.class(variants)) return true;
+      return defaultValue;
     },
   },
 });
