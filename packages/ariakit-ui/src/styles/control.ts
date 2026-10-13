@@ -68,6 +68,10 @@ export const control = cv({
       // the ink on the same targets. Skip forced colors: an icon gets the
       // system color only while its color inherits.
       "not-forced-colors:ui-text:ak-ink-0!",
+      // Forced colors replace the ink with the normal text color. Use the
+      // system disabled color, also on descendants that set their own color.
+      "forced-colors:text-[GrayText]! forced-colors:**:text-[GrayText]!",
+      "forced-colors:border-[GrayText]!",
     ],
   },
   defaultVariants: {

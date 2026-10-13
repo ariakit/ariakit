@@ -195,6 +195,10 @@ export const listItemMarker = cv({
       true: [
         "before:hidden",
         "forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+        // A disabled control sets the system disabled color on its descendants,
+        // which is not readable on the selection fill. Set the stroke of the
+        // check directly so that no text color rule changes it.
+        "forced-colors:[&>svg]:stroke-[HighlightText]",
       ],
       false: [
         "ring ring-inset ui-list-counter:ring-0",

@@ -61,6 +61,34 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
+  // The cards disable their buttons through the native attribute, the recipe
+  // class alone, a fieldset, and aria-disabled.
+  // https://github.com/ariakit/ariakit/issues/7871
+  test("uses the system disabled color in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      await expectMedia(page, "(forced-colors: active)");
+      for (const [key, title] of [
+        ["disabled", "Disabled"],
+        ["disabled-upload-label", "Disabled upload label"],
+        ["disabled-avatars", "Disabled avatars"],
+        ["disabled-fieldset", "Disabled fieldset"],
+        ["focusable-disabled", "Focusable disabled"],
+      ] as const) {
+        await captureInView({
+          visual,
+          box: q.article(title),
+          colorScheme,
+          item: `ariakit-ui-button/forced-colors/${key}`,
+        });
+      }
+    });
+  });
+
   // https://github.com/ariakit/ariakit/issues/7476
   // https://github.com/ariakit/ariakit/issues/7591
   test("keeps filled and bevel button boundaries in forced colors @visual", async ({

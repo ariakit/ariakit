@@ -23,6 +23,11 @@ export const input = cv({
     "ui-field-disabled:ak-ink-0 ui-field-disabled:**:ak-ink-0",
     "ui-field-disabled:ak-edge-10",
     "ui-field-disabled:ak-layer-offset-0",
+    // Forced colors replace the ink and edge with the normal text color. Use
+    // the system disabled color instead.
+    "ui-field-disabled:forced-colors:text-[GrayText]",
+    "ui-field-disabled:forced-colors:**:text-[GrayText]",
+    "ui-field-disabled:forced-colors:border-[GrayText]",
     // A native input uses the control line box; a textarea keeps its rows.
     "[input]:box-content [input]:h-lh",
     "[&_input]:box-content [&_input]:h-lh",

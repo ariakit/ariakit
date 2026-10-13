@@ -110,6 +110,41 @@ export default function ComboboxExamples() {
       </Example>
 
       <Example
+        title="Disabled active option"
+        description="A disabled option that stays focusable keeps the highlight while it is the active item."
+        code={`
+          <ComboboxProvider open>
+            <ComboboxLabel>Nut butter</ComboboxLabel>
+            <ComboboxInput />
+            <ComboboxPopover>
+              <ComboboxItem value="Almond" />
+              <ComboboxItem value="Peanut" disabled accessibleWhenDisabled />
+              <ComboboxItem value="Hazelnut" disabled />
+            </ComboboxPopover>
+          </ComboboxProvider>
+        `}
+      >
+        <ExampleStage anchor="start" height={50}>
+          <ComboboxProvider open defaultActiveId="nut-butter-peanut">
+            <div className="flex w-full flex-col items-start gap-2">
+              <ComboboxLabel>Nut butter</ComboboxLabel>
+              <ComboboxInput placeholder="Search nut butters" />
+            </div>
+            <ComboboxPopover {...openListProps}>
+              <ComboboxItem value="Almond" />
+              <ComboboxItem
+                id="nut-butter-peanut"
+                value="Peanut"
+                disabled
+                accessibleWhenDisabled
+              />
+              <ComboboxItem value="Hazelnut" disabled />
+            </ComboboxPopover>
+          </ComboboxProvider>
+        </ExampleStage>
+      </Example>
+
+      <Example
         title="Groups"
         description="Suggestions in labeled groups. A group label is small, muted text above its items."
         code={`
