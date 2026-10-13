@@ -3,6 +3,26 @@ import { withFramework } from "#app/test-utils/preview.ts";
 import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/pull/7863
+  test("hides decorative button icons and keeps meaningful slots in the name", async ({
+    q,
+  }) => {
+    const button = query(q.article("Decorative icon")).button(/Add item/);
+    await test.expect(button).toHaveAccessibleName("Add item");
+    await test
+      .expect(query(button).text("+"))
+      .toHaveAttribute("aria-hidden", "true");
+    await test
+      .expect(query(q.article("Count badge")).button("Inbox 12"))
+      .toHaveAccessibleName("Inbox 12");
+    await test
+      .expect(query(q.article("Meaningful icon")).button("Starred Project"))
+      .toHaveAccessibleName("Starred Project");
+    await test
+      .expect(query(q.article("Meaningful icon")).img("Starred"))
+      .toHaveAttribute("aria-hidden", "false");
+  });
+
   // The ink inherits through the slot layers, so the icon dims with the label
   // and both come back to full strength under the pointer.
   test("dims the slots with the label and restores them on hover", async ({

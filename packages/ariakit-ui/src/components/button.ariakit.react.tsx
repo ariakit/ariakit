@@ -28,7 +28,6 @@ export type ButtonProps<
  * A button with shared control styles.
  * @example
  * <Button>Save changes</Button>
- * @see https://ariakit.com/react/examples/button
  */
 export function Button<R extends RecipeLike<typeof button, R> = typeof button>({
   recipe,
@@ -59,7 +58,6 @@ export interface ButtonGroupProps
  *   <Button>Undo</Button>
  *   <Button>Redo</Button>
  * </ButtonGroup>
- * @see https://ariakit.com/react/examples/button
  */
 export function ButtonGroup(props: ButtonGroupProps) {
   const [variantProps, rest] = splitProps(props, buttonGroup);
@@ -70,14 +68,14 @@ export interface ButtonGliderProps
   extends ak.RoleProps<"div">, VariantProps<typeof buttonGlider> {}
 
 /**
- * A decorative surface that can move between buttons in a group.
+ * A selection indicator for grouped buttons. Place it after the buttons inside
+ * `ButtonGroup`.
  * @example
  * <ButtonGroup aria-label="Views">
  *   <Button render={<a href="/list" />} aria-current="page">List</Button>
  *   <Button render={<a href="/grid" />}>Grid</Button>
  *   <ButtonGlider />
  * </ButtonGroup>
- * @see https://ariakit.com/react/examples/button
  */
 export function ButtonGlider(props: ButtonGliderProps) {
   const [variantProps, rest] = splitProps(props, buttonGlider);
@@ -95,7 +93,6 @@ export interface ButtonSeparatorProps
  *   <ButtonSeparator />
  *   <Button>Redo</Button>
  * </ButtonGroup>
- * @see https://ariakit.com/react/examples/button
  */
 export function ButtonSeparator(props: ButtonSeparatorProps) {
   const [variantProps, rest] = splitProps(props, buttonSeparator);
@@ -114,7 +111,6 @@ export interface ButtonContentProps
  *     <ButtonDescription>PDF document</ButtonDescription>
  *   </ButtonContent>
  * </Button>
- * @see https://ariakit.com/react/examples/button
  */
 export function ButtonContent(props: ButtonContentProps) {
   const [variantProps, rest] = splitProps(props, buttonContent);
@@ -125,12 +121,12 @@ export interface ButtonLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof buttonLabel> {}
 
 /**
- * The main text of a button.
+ * The main text of a button. Truncates to one line by default; set
+ * `$truncate={false}` to let it wrap.
  * @example
  * <Button>
  *   <ButtonLabel>Save changes</ButtonLabel>
  * </Button>
- * @see https://ariakit.com/react/examples/button
  */
 export function ButtonLabel(props: ButtonLabelProps) {
   const [variantProps, rest] = splitProps(props, buttonLabel);
@@ -141,7 +137,8 @@ export interface ButtonDescriptionProps
   extends ak.RoleProps<"span">, VariantProps<typeof buttonDescription> {}
 
 /**
- * Secondary text below a button label.
+ * Secondary text below a button label. Truncates to one line by default; set
+ * `$truncate={false}` to let it wrap.
  * @example
  * <Button>
  *   <ButtonContent>
@@ -149,7 +146,6 @@ export interface ButtonDescriptionProps
  *     <ButtonDescription>PDF document</ButtonDescription>
  *   </ButtonContent>
  * </Button>
- * @see https://ariakit.com/react/examples/button
  */
 export function ButtonDescription(props: ButtonDescriptionProps) {
   const [variantProps, rest] = splitProps(props, buttonDescription);
@@ -157,22 +153,31 @@ export function ButtonDescription(props: ButtonDescriptionProps) {
 }
 
 export interface ButtonSlotProps
-  extends ak.RoleProps<"span">, VariantProps<typeof buttonSlot> {}
+  extends ak.RoleProps<"span">, VariantProps<typeof buttonSlot> {
+  /**
+   * Hides the slot from assistive technology. Defaults to `true` for icon
+   * slots. Set to `false` for meaningful icons or focusable children.
+   */
+  "aria-hidden"?: ak.RoleProps<"span">["aria-hidden"];
+}
 
 /**
  * An icon or other content beside a button label.
  * @example
  * <Button>
- *   <ButtonSlot aria-hidden>+</ButtonSlot>
+ *   <ButtonSlot>+</ButtonSlot>
  *   <ButtonLabel>Add item</ButtonLabel>
  * </Button>
- * @see https://ariakit.com/react/examples/button
  */
 export function ButtonSlot(props: ButtonSlotProps) {
   const [variantProps, rest] = splitProps(props, buttonSlot);
   const variants = buttonSlot.getVariants(variantProps);
   return (
-    <ak.Role.span {...buttonSlot.jsx(variantProps)} {...rest}>
+    <ak.Role.span
+      aria-hidden={variants.$kind === "icon" || undefined}
+      {...buttonSlot.jsx(variantProps)}
+      {...rest}
+    >
       {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (

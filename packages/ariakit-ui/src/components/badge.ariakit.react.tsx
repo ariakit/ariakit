@@ -8,10 +8,12 @@ export interface BadgeProps
   extends ak.RoleProps<"span">, VariantProps<typeof badge> {}
 
 /**
- * A span, so it can sit in running text such as a paragraph or a heading.
+ * An inline badge for a short label or status. Wrap its text in `BadgeLabel` to
+ * apply the badge's text color and alignment.
  * @example
- * <Badge>New</Badge>
- * @see https://ariakit.com/react/examples/badge
+ * <Badge>
+ *   <BadgeLabel>New</BadgeLabel>
+ * </Badge>
  */
 export function Badge(props: BadgeProps) {
   const [variantProps, rest] = splitProps(props, badge);
@@ -27,7 +29,6 @@ export interface BadgeLabelProps
  * <Badge>
  *   <BadgeLabel>New</BadgeLabel>
  * </Badge>
- * @see https://ariakit.com/react/examples/badge
  */
 export function BadgeLabel(props: BadgeLabelProps) {
   const [variantProps, rest] = splitProps(props, badgeLabel);
@@ -35,22 +36,31 @@ export function BadgeLabel(props: BadgeLabelProps) {
 }
 
 export interface BadgeSlotProps
-  extends ak.RoleProps<"span">, VariantProps<typeof badgeSlot> {}
+  extends ak.RoleProps<"span">, VariantProps<typeof badgeSlot> {
+  /**
+   * Hides the slot from assistive technology. Defaults to `true` for icon
+   * slots. Set to `false` for meaningful icons or focusable children.
+   */
+  "aria-hidden"?: ak.RoleProps<"span">["aria-hidden"];
+}
 
 /**
  * An icon or other content beside a badge label.
  * @example
  * <Badge>
- *   <BadgeSlot aria-hidden>★</BadgeSlot>
+ *   <BadgeSlot>★</BadgeSlot>
  *   <BadgeLabel>Featured</BadgeLabel>
  * </Badge>
- * @see https://ariakit.com/react/examples/badge
  */
 export function BadgeSlot(props: BadgeSlotProps) {
   const [variantProps, rest] = splitProps(props, badgeSlot);
   const variants = badgeSlot.getVariants(variantProps);
   return (
-    <ak.Role.span {...badgeSlot.jsx(variantProps)} {...rest}>
+    <ak.Role.span
+      aria-hidden={variants.$kind === "icon" || undefined}
+      {...badgeSlot.jsx(variantProps)}
+      {...rest}
+    >
       {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (

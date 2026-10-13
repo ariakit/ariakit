@@ -355,6 +355,26 @@ export default function BadgeExamples() {
       </Example>
 
       <Example
+        title="Meaningful icon"
+        description="Expose an icon when it adds information to the badge."
+        code={`
+          <Badge>
+            <BadgeSlot aria-hidden={false} role="img" aria-label="Starred">
+              ★
+            </BadgeSlot>
+            <BadgeLabel>Project</BadgeLabel>
+          </Badge>
+        `}
+      >
+        <Badge>
+          <BadgeSlot aria-hidden={false} role="img" aria-label="Starred">
+            ★
+          </BadgeSlot>
+          <BadgeLabel>Project</BadgeLabel>
+        </Badge>
+      </Example>
+
+      <Example
         title="Avatar"
         description="A round avatar slot that paints its own surface behind two initials."
         code={`
