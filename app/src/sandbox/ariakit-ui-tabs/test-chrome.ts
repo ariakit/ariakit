@@ -1,17 +1,6 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
-  // https://github.com/ariakit/ariakit/pull/7863
-  test("hides the decorative tab glider", async ({ q }) => {
-    const list = query(q.article("Folder glider")).tablist("Folder glider");
-    await test
-      .expect(list.locator(":scope > .glider"))
-      .toHaveAttribute("aria-hidden", "true");
-    await test
-      .expect(query(list).tab("Code"))
-      .toHaveAttribute("aria-selected", "true");
-  });
-
   // https://github.com/ariakit/ariakit/issues/7482
   test("moves and selects tabs in right-to-left order", async ({ page, q }) => {
     const box = query(q.article("Right to left"));

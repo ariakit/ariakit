@@ -1,16 +1,6 @@
 import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// https://github.com/ariakit/ariakit/pull/7863
-test("hides the decorative tab glider", () => {
-  const list = q.within(q.article("Folder glider")).tablist("Folder glider");
-  expect(list.querySelector(":scope > .glider")).toHaveAttribute(
-    "aria-hidden",
-    "true",
-  );
-  expect(q.within(list).tab("Code")).toHaveAttribute("aria-selected", "true");
-});
-
 // https://github.com/ariakit/ariakit/pull/7536#discussion_r4022810357
 test("changes bar placement keyboard navigation to right-to-left order", async () => {
   await click(q.checkbox("Tabs right to left"));

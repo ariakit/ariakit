@@ -330,8 +330,7 @@ export interface TabGliderProps
   extends ComponentProps<"div">, VariantProps<typeof tabGlider> {}
 
 /**
- * Renders a decorative selection indicator after the tabs in a tab list. Hidden
- * from assistive technology by default.
+ * Renders a decorative selection indicator after the tabs in a tab list.
  * @example
  * <Tabs>
  *   <TabList
@@ -348,5 +347,5 @@ export interface TabGliderProps
  */
 export function TabGlider(props: TabGliderProps) {
   const [variantProps, rest] = splitProps(props, tabGlider);
-  return <div aria-hidden {...tabGlider.jsx(variantProps)} {...rest} />;
+  return <div {...tabGlider.jsx(variantProps)} {...rest} />;
 }
