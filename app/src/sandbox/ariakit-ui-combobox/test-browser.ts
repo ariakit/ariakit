@@ -40,6 +40,18 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       await test
         .expect(query(q.article("Open suggestions")).option("Cashews"))
         .toHaveAttribute("data-active-item", "true");
+      // The Disabled active option card keeps the selection colors on an active
+      // option that is also disabled.
+      // https://github.com/ariakit/ariakit/issues/7871
+      const disabledOption = query(q.article("Disabled active option")).option(
+        "Peanut",
+      );
+      await test
+        .expect(disabledOption)
+        .toHaveAttribute("data-active-item", "true");
+      await test
+        .expect(disabledOption)
+        .toHaveAttribute("aria-disabled", "true");
       await capture(colorScheme);
     });
   });

@@ -53,6 +53,9 @@ export const button = cv({
     "ui-disabled:inset-shadow-none! ui-disabled:shadow-none!",
     "ui-disabled:bg-none! ui-disabled:ak-ink-0! ui-disabled:*:ak-ink-0!",
     "ui-disabled:not-forced-colors:ui-text:ak-ink-0!",
+    "ui-disabled:forced-colors:text-[GrayText]!",
+    "ui-disabled:forced-colors:**:text-[GrayText]!",
+    "ui-disabled:forced-colors:border-[GrayText]!",
   ],
   variants: {
     /**

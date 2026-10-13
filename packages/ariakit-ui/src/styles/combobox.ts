@@ -82,6 +82,10 @@ export const comboboxItem = cv({
     "data-active-item:forced-colors:bg-[Highlight]",
     "data-active-item:forced-colors:text-[HighlightText]",
     "data-active-item:forced-colors:**:text-[HighlightText]",
+    // A disabled option can still be the active item. The extra state selector
+    // lets the selection text color override the system disabled color.
+    "data-active-item:ui-disabled:forced-colors:text-[HighlightText]!",
+    "data-active-item:ui-disabled:forced-colors:**:text-[HighlightText]!",
   ],
   variants: {
     /** Paints the highlighted appearance for static content. */

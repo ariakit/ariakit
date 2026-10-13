@@ -47,6 +47,11 @@ export const choice = cv({
     // Keep disabled marks and empty boxes distinct on light surfaces.
     "ui-choice-disabled:ui-choice-on:ak-layer-15",
     "ui-choice-disabled:ak-ink-0 ui-choice-disabled:ak-edge-20",
+    // Forced colors replace the ink and edge with the normal text color. Use
+    // the system disabled color for the mark and the box. A native input needs
+    // the edge rule in Chromium; other hosts follow the text color.
+    "ui-choice-disabled:forced-colors:text-[GrayText]",
+    "ui-choice-disabled:forced-colors:border-[GrayText]",
     "ui-choice-disabled:cursor-not-allowed",
   ],
   variants: {
@@ -114,6 +119,10 @@ export const choiceField = cv({
     "ui-disabled-within:ak-disabled",
     "ui-disabled-within:cursor-not-allowed",
     "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
+    // Forced colors replace the ink with the normal text color. Use the system
+    // disabled color instead.
+    "ui-disabled-within:forced-colors:text-[GrayText]",
+    "ui-disabled-within:forced-colors:**:text-[GrayText]",
   ],
   defaultVariants: {
     // Resolve the input against the surrounding surface without an extra layer.
@@ -162,6 +171,10 @@ export const choiceCard = cv({
     "ui-disabled-within:cursor-not-allowed",
     "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
     "ui-disabled-within:ak-edge-5 ui-disabled-within:ak-layer-mix-20",
+    // Forced colors replace the ink with the normal text color. Use the system
+    // disabled color instead; the label's edge follows the text color.
+    "ui-disabled-within:forced-colors:text-[GrayText]",
+    "ui-disabled-within:forced-colors:**:text-[GrayText]",
     "ui-disabled-within:ui-hover:ak-state-0",
     "ui-disabled-within:ui-active:scale-x-100",
     "ui-disabled-within:ui-active:scale-y-100",
