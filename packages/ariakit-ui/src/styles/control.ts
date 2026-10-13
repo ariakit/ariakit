@@ -64,6 +64,10 @@ export const control = cv({
       "border-(--disabled-border,transparent)! ring-(--disabled-border,transparent)!",
       "inset-shadow-none! shadow-none!",
       "bg-none! ak-ink-0! *:ak-ink-0!",
+      // An adaptive text color targets nested text and icons directly, so it
+      // wins over the inherited ink and the labels' own disabled rules. Set
+      // the ink on the same targets.
+      "ui-text:ak-ink-0!",
     ],
   },
   defaultVariants: {

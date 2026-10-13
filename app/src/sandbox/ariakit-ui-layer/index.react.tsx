@@ -18,6 +18,7 @@ import {
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
+import { button } from "@ariakit/ui/styles/button";
 import { Plus } from "lucide-react";
 import {
   Example,
@@ -88,6 +89,49 @@ function TextModifierCases() {
             <Plus />
           </ButtonSlot>
           <ButtonLabel>Disabled parent</ButtonLabel>
+        </Button>
+        <Text $text="danger">
+          <Button $border disabled>
+            <ButtonSlot>
+              <Plus />
+            </ButtonSlot>
+            <ButtonContent>
+              <ButtonLabel>Disabled child</ButtonLabel>
+              <ButtonDescription>Disabled description</ButtonDescription>
+            </ButtonContent>
+          </Button>
+        </Text>
+        {/* Only the recipe class disables this control. */}
+        <label
+          {...button.jsx({ $border: true, $disabled: true, $text: "danger" })}
+        >
+          <ButtonSlot>
+            <Plus />
+          </ButtonSlot>
+          <ButtonContent>
+            <ButtonLabel>Disabled class</ButtonLabel>
+            <ButtonDescription>Class description</ButtonDescription>
+          </ButtonContent>
+        </label>
+        {/* Only the DOM state disables this control. */}
+        <fieldset disabled>
+          <Button $border $text="danger">
+            <ButtonSlot>
+              <Plus />
+            </ButtonSlot>
+            <ButtonContent>
+              <ButtonLabel>Disabled fieldset</ButtonLabel>
+              <ButtonDescription>Fieldset description</ButtonDescription>
+            </ButtonContent>
+          </Button>
+        </fieldset>
+        <Button $border disabled>
+          <ButtonLabel>Disabled badge</ButtonLabel>
+          <ButtonSlot>
+            <Badge>
+              <BadgeLabel>New</BadgeLabel>
+            </Badge>
+          </ButtonSlot>
         </Button>
       </div>
     </>
