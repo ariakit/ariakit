@@ -504,6 +504,8 @@ const compensation = cx(
   "[--shell-comp-start:max(0px,calc(var(--shell-end-total)-var(--shell-start-total)))]",
 );
 
+// Limit sidebar compensation to free space, but keep the minimum gutter. `auto`
+// tracks grow by equal amounts, preserving the offset; `1fr` loses it.
 const centered = cx(
   "[--shell-free:calc(100%-var(--shell-content-end-space)-var(--shell-main-max-width)-var(--shell-gutter)-2*var(--shell-popout)-2*var(--shell-feature))]",
   "[--shell-track-start:clamp(var(--shell-gutter),var(--shell-free),calc(var(--shell-gutter)+var(--shell-comp-start)))]",
