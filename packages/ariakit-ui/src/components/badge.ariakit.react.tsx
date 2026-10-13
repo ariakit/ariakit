@@ -36,19 +36,14 @@ export function BadgeLabel(props: BadgeLabelProps) {
 }
 
 export interface BadgeSlotProps
-  extends ak.RoleProps<"span">, VariantProps<typeof badgeSlot> {
-  /**
-   * Hides the slot from assistive technology. Defaults to `true` for icon
-   * slots. Set to `false` for meaningful icons or focusable children.
-   */
-  "aria-hidden"?: ak.RoleProps<"span">["aria-hidden"];
-}
+  extends ak.RoleProps<"span">, VariantProps<typeof badgeSlot> {}
 
 /**
- * An icon or other content beside a badge label.
+ * An icon or other content beside a badge label. Pass `aria-hidden` when the
+ * entire slot is decorative.
  * @example
  * <Badge>
- *   <BadgeSlot>★</BadgeSlot>
+ *   <BadgeSlot aria-hidden>★</BadgeSlot>
  *   <BadgeLabel>Featured</BadgeLabel>
  * </Badge>
  */
@@ -56,11 +51,7 @@ export function BadgeSlot(props: BadgeSlotProps) {
   const [variantProps, rest] = splitProps(props, badgeSlot);
   const variants = badgeSlot.getVariants(variantProps);
   return (
-    <ak.Role.span
-      aria-hidden={variants.$kind === "icon" || undefined}
-      {...badgeSlot.jsx(variantProps)}
-      {...rest}
-    >
+    <ak.Role.span {...badgeSlot.jsx(variantProps)} {...rest}>
       {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (

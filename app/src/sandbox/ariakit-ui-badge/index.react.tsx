@@ -355,11 +355,27 @@ export default function BadgeExamples() {
       </Example>
 
       <Example
-        title="Meaningful icon"
-        description="Expose an icon when it adds information to the badge."
+        title="Decorative icon"
+        description="Hide a decorative symbol that repeats the badge label."
         code={`
           <Badge>
-            <BadgeSlot aria-hidden={false} role="img" aria-label="Starred">
+            <BadgeSlot aria-hidden>★</BadgeSlot>
+            <BadgeLabel>Featured</BadgeLabel>
+          </Badge>
+        `}
+      >
+        <Badge>
+          <BadgeSlot aria-hidden>★</BadgeSlot>
+          <BadgeLabel>Featured</BadgeLabel>
+        </Badge>
+      </Example>
+
+      <Example
+        title="Meaningful icon"
+        description="Label an icon when it adds information to the badge."
+        code={`
+          <Badge>
+            <BadgeSlot role="img" aria-label="Starred">
               ★
             </BadgeSlot>
             <BadgeLabel>Project</BadgeLabel>
@@ -367,7 +383,7 @@ export default function BadgeExamples() {
         `}
       >
         <Badge>
-          <BadgeSlot aria-hidden={false} role="img" aria-label="Starred">
+          <BadgeSlot role="img" aria-label="Starred">
             ★
           </BadgeSlot>
           <BadgeLabel>Project</BadgeLabel>

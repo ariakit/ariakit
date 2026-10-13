@@ -3,7 +3,7 @@ import { version } from "react";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/pull/7863
-test("hides decorative button icons and keeps meaningful slots in the name", () => {
+test("keeps button slots accessible unless explicitly hidden", () => {
   const button = q.within(q.article("Decorative icon")).button(/Add item/);
   expect(button).toHaveAccessibleName("Add item");
   expect(q.within(button).text("+")).toHaveAttribute("aria-hidden", "true");
@@ -13,10 +13,7 @@ test("hides decorative button icons and keeps meaningful slots in the name", () 
   expect(
     q.within(q.article("Meaningful icon")).button("Starred Project"),
   ).toHaveAccessibleName("Starred Project");
-  expect(q.within(q.article("Meaningful icon")).img("Starred")).toHaveAttribute(
-    "aria-hidden",
-    "false",
-  );
+  expect(q.within(q.article("Meaningful icon")).img("Starred")).toBeVisible();
 });
 
 // This gallery uses React 19 ref props, as declared by @ariakit/ui.

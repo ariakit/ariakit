@@ -153,19 +153,14 @@ export function ButtonDescription(props: ButtonDescriptionProps) {
 }
 
 export interface ButtonSlotProps
-  extends ak.RoleProps<"span">, VariantProps<typeof buttonSlot> {
-  /**
-   * Hides the slot from assistive technology. Defaults to `true` for icon
-   * slots. Set to `false` for meaningful icons or focusable children.
-   */
-  "aria-hidden"?: ak.RoleProps<"span">["aria-hidden"];
-}
+  extends ak.RoleProps<"span">, VariantProps<typeof buttonSlot> {}
 
 /**
- * An icon or other content beside a button label.
+ * An icon or other content beside a button label. Pass `aria-hidden` when the
+ * entire slot is decorative.
  * @example
  * <Button>
- *   <ButtonSlot>+</ButtonSlot>
+ *   <ButtonSlot aria-hidden>+</ButtonSlot>
  *   <ButtonLabel>Add item</ButtonLabel>
  * </Button>
  */
@@ -173,11 +168,7 @@ export function ButtonSlot(props: ButtonSlotProps) {
   const [variantProps, rest] = splitProps(props, buttonSlot);
   const variants = buttonSlot.getVariants(variantProps);
   return (
-    <ak.Role.span
-      aria-hidden={variants.$kind === "icon" || undefined}
-      {...buttonSlot.jsx(variantProps)}
-      {...rest}
-    >
+    <ak.Role.span {...buttonSlot.jsx(variantProps)} {...rest}>
       {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (

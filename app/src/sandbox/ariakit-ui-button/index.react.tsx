@@ -64,11 +64,7 @@ function AvatarShape() {
   const [round, setRound] = useState(true);
   return (
     <div className="flex items-center gap-3">
-      <ButtonSlot
-        $kind={round ? "avatar" : "icon"}
-        $size="xl"
-        aria-hidden={false}
-      >
+      <ButtonSlot $kind={round ? "avatar" : "icon"} $size="xl">
         <AvatarPicture />
       </ButtonSlot>
       <Button aria-pressed={round} onClick={() => setRound(!round)}>
@@ -376,26 +372,26 @@ export default function ButtonExamples() {
 
       <Example
         title="Decorative icon"
-        description="The icon is visible but does not add text to the button name."
+        description="Hide a decorative symbol so it does not add text to the button name."
         code={`
           <Button>
-            <ButtonSlot>+</ButtonSlot>
+            <ButtonSlot aria-hidden>+</ButtonSlot>
             <ButtonLabel>Add item</ButtonLabel>
           </Button>
         `}
       >
         <Button>
-          <ButtonSlot>+</ButtonSlot>
+          <ButtonSlot aria-hidden>+</ButtonSlot>
           <ButtonLabel>Add item</ButtonLabel>
         </Button>
       </Example>
 
       <Example
         title="Meaningful icon"
-        description="Expose an icon when it adds information to the button name."
+        description="Label an icon when it adds information to the button name."
         code={`
           <Button>
-            <ButtonSlot aria-hidden={false} role="img" aria-label="Starred">
+            <ButtonSlot role="img" aria-label="Starred">
               ★
             </ButtonSlot>
             <ButtonLabel>Project</ButtonLabel>
@@ -403,7 +399,7 @@ export default function ButtonExamples() {
         `}
       >
         <Button>
-          <ButtonSlot aria-hidden={false} role="img" aria-label="Starred">
+          <ButtonSlot role="img" aria-label="Starred">
             ★
           </ButtonSlot>
           <ButtonLabel>Project</ButtonLabel>
@@ -640,7 +636,7 @@ export default function ButtonExamples() {
         title="Avatar shape"
         description="Change the image color, then switch between a round avatar and a square icon. The selected color stays the same."
         code={`
-          <ButtonSlot $kind={round ? "avatar" : "icon"} $size="xl" aria-hidden={false}>
+          <ButtonSlot $kind={round ? "avatar" : "icon"} $size="xl">
             <AvatarPicture />
           </ButtonSlot>
         `}

@@ -4,7 +4,7 @@ import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/7863
-  test("hides decorative button icons and keeps meaningful slots in the name", async ({
+  test("keeps button slots accessible unless explicitly hidden", async ({
     q,
   }) => {
     const button = query(q.article("Decorative icon")).button(/Add item/);
@@ -20,7 +20,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toHaveAccessibleName("Starred Project");
     await test
       .expect(query(q.article("Meaningful icon")).img("Starred"))
-      .toHaveAttribute("aria-hidden", "false");
+      .toBeVisible();
   });
 
   // The ink inherits through the slot layers, so the icon dims with the label

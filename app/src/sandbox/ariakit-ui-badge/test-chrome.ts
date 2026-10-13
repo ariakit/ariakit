@@ -2,13 +2,11 @@ import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/7863
-  test("hides decorative badge icons and keeps meaningful slots exposed", async ({
+  test("keeps badge slots accessible unless explicitly hidden", async ({
     q,
   }) => {
-    const leading = query(q.article("Leading icon"));
-    const badge = leading.text("Purchased").locator("..");
     await test
-      .expect(badge.locator(".control-slot"))
+      .expect(query(q.article("Decorative icon")).text("★"))
       .toHaveAttribute("aria-hidden", "true");
 
     const count = query(q.article("Trailing count")).text("12");
@@ -16,7 +14,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(count.locator("..")).not.toHaveAttribute("aria-hidden");
     await test
       .expect(query(q.article("Meaningful icon")).img("Starred"))
-      .toHaveAttribute("aria-hidden", "false");
+      .toBeVisible();
   });
 
   // A badge is phrasing content, so the parser keeps it inside a paragraph, and
