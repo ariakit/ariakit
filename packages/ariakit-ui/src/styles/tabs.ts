@@ -226,7 +226,7 @@ export const tabSeparator = buttonSeparator;
 export const tabGlider = cv({
   extend: [buttonGlider],
   class: [
-    // The inherited vertical duration has higher specificity and needs this
+    // The inherited vertical duration sorts later and would win without this
     // override.
     "[&.glider-animated]:duration-(--duration-tabs)!",
     "z-3",
