@@ -13,8 +13,7 @@ import {
 } from "../styles/button.ts";
 import { wrapsSlotChildren } from "../styles/control.ts";
 
-// The recipe member only documents the prop. VariantPropsWithRecipe still makes
-// it required when the recipe adds variants.
+// VariantPropsWithRecipe still requires recipes that add variants.
 export type ButtonProps<
   R extends RecipeLike<typeof button, R> = typeof button,
 > = ak.ButtonProps &

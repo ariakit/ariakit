@@ -5,9 +5,8 @@ import { frame, frameBase } from "./frame.ts";
 export type ShellWidth = string | number;
 
 /**
- * A page-scroll grid with a header, an intro, a body and a footer, and up to
- * two sidebar tracks per side. Each part publishes its own geometry; absent or
- * closed sidebars take no space.
+ * A page layout with a header, main content, footer, and up to two sidebars per
+ * side. Closed or absent sidebars take no space.
  */
 export const shell = cv({
   extend: [frame],
@@ -76,7 +75,8 @@ const facingBorder = cx(
 );
 
 /**
- * A single facing edge that does not change the nested frame border channel.
+ * A surface with one facing edge that preserves the nested frame border
+ * channel.
  */
 const seam = cv({
   extend: [frame],
@@ -84,7 +84,7 @@ const seam = cv({
   variants: {
     /**
      * Sets the facing edge width in pixels. `true` means 1px; `false` means
-     * zero.
+     * zero. `inherit` uses the inherited edge color.
      */
     $border(value?: "inherit" | boolean | number) {
       if (value == null) return;
@@ -107,9 +107,8 @@ const seam = cv({
     },
   },
   defaultVariants: {
-    // The bars and the sidebar parts are surfaces that content scrolls under,
-    // so they paint the layer they open instead of keeping the frame's
-    // see-through default.
+    // Paint the layer so scrolling content does not show through bars and
+    // sidebars.
     $layer: true,
     $border: true,
     $borderType(defaultValue) {
@@ -127,31 +126,23 @@ const seam = cv({
 });
 
 /**
- * The shared geometry of the header and the footer: three columns, with the
- * center part on the bar's middle while both sides fit and moved over when a
- * side needs more than its half. A bare `1fr` is `minmax(auto, 1fr)`, so each
- * side keeps its content minimum. The inline padding is the bar padding or the
- * device's safe area, whichever is larger; the insets are physical, so the bars
- * use physical padding here and stay logical everywhere else.
+ * Three columns keep the center aligned until a side needs more room. Content
+ * minimums come from `1fr`; physical safe-area insets set the minimum side
+ * padding.
  */
 const bar = cx(
   "col-[shell] grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-0!",
   "pl-[max(var(--ak-frame-padding),env(safe-area-inset-left))]",
   "pr-[max(var(--ak-frame-padding),env(safe-area-inset-right))]",
-  // A growing center part takes a double share of the leftover, so it grows
-  // while staying centered as long as both sides fit in a quarter of the bar.
-  // The part announces it with the class its $grow variant emits.
+  // A growing center receives twice the free space and stays centered while
+  // each side fits within one quarter.
   "[&:has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
 );
 
 /**
- * Blurs the page behind a bar: a medium backdrop blur with a translucent
- * surface, chosen so that bar text stays above a 7:1 contrast over any backdrop
- * in either theme. Where backdrop filters are unsupported or reduced
- * transparency is requested, the opaque layer color returns; the layer utility
- * paints the opaque color first, and the fallbacks sort after it. A backdrop
- * filter creates a stacking context and a containing block for fixed
- * descendants, and nested backdrop filters do not compose.
+ * The 80% surface keeps text contrast above 7:1. Use an opaque fallback without
+ * backdrop-filter support or with reduced transparency. Backdrop filters create
+ * stacking and fixed-position contexts; nested filters do not compose.
  */
 const blur = cx(
   "backdrop-blur-md bg-[color-mix(in_oklab,var(--ak-layer)_80%,transparent)]",
@@ -159,41 +150,36 @@ const blur = cx(
   "[@media(prefers-reduced-transparency:reduce)]:bg-(--ak-layer)",
 );
 
+/**
+ * A shell header with three aligned sections and optional sticky positioning.
+ */
 export const shellHeader = cv({
   extend: [seam],
   class: [
     bar,
-    // The bar is a query container for its own parts. Its minimum height is
-    // the token that the rest of the shell reads as the header's height.
     "shell-header row-[header] box-border min-h-(--shell-header-height) @container/shell-header",
     "z-4",
   ],
   variants: {
     /**
-     * Keeps the header in view while its row is in view. It keeps its space, so
-     * nothing flows under it. The shell reads the class this emits to publish
-     * the header's height as the offset sticky sidebar bodies and anchors keep.
-     * Defaults to `true`.
+     * Keeps the header in view within its row and reserves its space. Sticky
+     * sidebars and anchors use its height as an offset. Defaults to `true`.
      */
     $sticky: "shell-header-sticky sticky inset-bs-(--shell-top)",
-    /**
-     * Sets the outer height, including the border. Defaults to `md`.
-     */
+    /** Sets the outer height, including the border. Defaults to `md`. */
     $height: {
       sm: "[.shell:has(>&)]:[--shell-header-height:calc(var(--shell-header-step)*14)] [--shell-header-height:calc(var(--shell-header-step)*14)]",
       md: "[.shell:has(>&)]:[--shell-header-height:calc(var(--shell-header-step)*16)] [--shell-header-height:calc(var(--shell-header-step)*16)]",
       lg: "[.shell:has(>&)]:[--shell-header-height:calc(var(--shell-header-step)*18)] [--shell-header-height:calc(var(--shell-header-step)*18)]",
     },
     /**
-     * Blurs the page behind the bar through a translucent surface, which falls
-     * back to the opaque one where backdrop filters are unsupported or reduced
-     * transparency is requested.
+     * Blurs the page behind a translucent surface. Uses an opaque surface
+     * without backdrop-filter support or with reduced transparency.
      */
     $blur: blur,
     /**
-     * Moves the center part to a second row spanning the bar when the bar's
-     * content is narrower than 40rem. A stacked bar is taller than its height
-     * token, so use a matching `$height` class for the stacked state.
+     * Moves the center section to a full-width second row below 40rem. Supply a
+     * matching `$height` class for the taller layout.
      */
     $stackCenter: [
       "@max-[40rem]/shell-header:[&>.shell-bar-center]:col-span-full",
@@ -207,86 +193,70 @@ export const shellHeader = cv({
   },
 });
 
-/**
- * A bar part: a flex cell that keeps its content minimum by default, so the
- * center part sits on the bar's middle while both sides fit and moves over when
- * a side needs more than its half. The three parts extend it with their column
- * and their resting alignment.
- */
+/** A header or footer section that preserves its content width by default. */
 export const shellBarPart = cv({
   class: "flex items-center gap-2",
   variants: {
     /**
-     * Lets the part lose width instead of pushing its neighbors over. The cap
-     * to the track is required, or the part keeps its content width and paints
-     * over its neighbor. Text children truncate with the `truncate` utility; a
-     * form control keeps its intrinsic minimum unless it gets `min-w-0` or a
-     * width. The clip margin keeps focus rings visible; WebKit does not support
-     * it, and there the ring is clipped at the part's edge. This is not a way
-     * to hide controls: a clipped control cannot be scrolled back into view,
-     * and a bar that must drop buttons needs an overflow menu.
+     * Lets the section shrink below its content width. Use `truncate` on text
+     * and `min-w-0` or an explicit width on controls. WebKit clips focus rings
+     * at the section edge. Use an overflow menu for controls that must remain
+     * reachable.
      */
     $shrink: {
       true: "max-w-full box-border min-w-0 overflow-clip [overflow-clip-margin:0.25rem]",
       false: "min-w-auto",
     },
-    /**
-     * Fills the part's track instead of resting at its edge or on its middle.
-     * Each part adds the resting alignment it leaves, and the center part the
-     * class the bar reads.
-     */
+    /** Fills the section's track instead of using its resting alignment. */
     $grow: {
       true: "justify-self-stretch",
     },
   },
 });
 
+/** The start section of a shell header or footer. */
 export const shellHeaderStart = cv({
   extend: [shellBarPart],
   class: "shell-bar-start col-1",
   variants: {
-    /**
-     * Fills the part's track instead of resting at the bar's start edge.
-     */
+    /** Fills the part's track instead of resting at the bar's start edge. */
     $grow: { false: "justify-self-start" },
   },
 });
 
+/** The center section of a shell header or footer. */
 export const shellHeaderCenter = cv({
   extend: [shellBarPart],
   class: "shell-bar-center col-2",
   variants: {
     /**
-     * Takes a double share of the bar's leftover width, growing while staying
-     * centered as long as both sides fit in a quarter of the bar: the bar reads
-     * the class this emits. Beside a very wide side part it sits further off
-     * center than a plain part; `$shrink` on both sides keeps it exactly
-     * centered. Paired with `$shrink` on this part, the bar becomes a fixed
-     * one-two-one split in which the center truncates while the sides still
-     * have room, so avoid that pair.
+     * Gives the center twice the free width. It stays centered while both sides
+     * fit within one quarter. Set `$shrink` on both sides for exact centering.
+     * Avoid `$shrink` on this section: it fixes the columns at a 1:2:1 ratio.
      */
     $grow: { true: "shell-bar-grow", false: "justify-self-center" },
   },
 });
 
+/** The end section of a shell header or footer. */
 export const shellHeaderEnd = cv({
   extend: [shellBarPart],
   class: "shell-bar-end col-3",
   variants: {
-    /**
-     * Fills the part's track instead of resting at the bar's end edge.
-     */
+    /** Fills the part's track instead of resting at the bar's end edge. */
     $grow: { false: "justify-self-end" },
   },
 });
 
+/**
+ * A shell footer with three aligned sections and device-safe bottom spacing.
+ */
 export const shellFooter = cv({
   extend: [seam],
   class: [
     bar,
-    // Always static and as tall as its content: a sticky sidebar body may
-    // never leave its column, which ends where the footer row begins, so a
-    // footer of any height pushes the body up on its own.
+    // The footer ends the sidebar columns, pushing sticky sidebar bodies up
+    // without a fixed footer height.
     "shell-footer row-[footer] @container/shell-footer",
     "z-3",
     "pbs-0! pbe-[env(safe-area-inset-bottom)]!",
@@ -299,9 +269,8 @@ export const shellFooter = cv({
       lg: "min-h-[calc(--spacing(18)+var(--shell-facing-border))]",
     },
     /**
-     * Blurs the page behind the bar through a translucent surface, which falls
-     * back to the opaque one where backdrop filters are unsupported or reduced
-     * transparency is requested.
+     * Blurs the page behind a translucent surface. Uses an opaque surface
+     * without backdrop-filter support or with reduced transparency.
      */
     $blur: blur,
   },
@@ -311,14 +280,18 @@ export const shellFooter = cv({
   },
 });
 
+/** A footer part aligned to the start edge. */
 export const shellFooterStart = shellHeaderStart;
+
+/** A footer part centered while both side parts fit. */
 export const shellFooterCenter = shellHeaderCenter;
+
+/** A footer part aligned to the end edge. */
 export const shellFooterEnd = shellHeaderEnd;
 
 /**
- * A folding column around the public sidebar panel. The column stays rendered
- * at zero width while the panel is removed from layout, so reopening animates
- * without a starting style or an entrance animation on the initial render.
+ * A sidebar column that folds to zero width while its panel keeps its full
+ * width. Reopening animates without an entrance animation on first render.
  */
 export const shellSidebar = cv({
   class: [
@@ -446,9 +419,7 @@ export const shellSidebar = cv({
       intro: "shell-sidebar-from-intro row-[intro-start/body-end]",
       body: "shell-sidebar-from-body row-[body]",
     },
-    /**
-     * Keeps the panel below the sticky headers that span its column.
-     */
+    /** Keeps the panel below the sticky headers that span its column. */
     $sticky: [
       "[&>.shell-sidebar-panel]:sticky",
       "[&>.shell-sidebar-panel]:inset-bs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-sidebar-head))]",
@@ -464,22 +435,22 @@ export const shellSidebar = cv({
   },
 });
 
-/** The public sidebar element keeps its full width while its column folds. */
+/** A sidebar panel that keeps its full width while its column folds. */
 export const shellSidebarPanel = cv({
   extend: [seam],
   class: [
     "shell-sidebar-panel box-border w-(--shell-slot-width) min-h-0 flex-auto flex flex-col",
     // Supporting browsers defer removal until the fold ends. Others hide at once.
     "transition-[display] transition-discrete duration-(--shell-time)",
-    // Unlike auto margins, end alignment also handles an overflowing panel,
-    // keeping its facing border against the column while the column folds.
+    // End alignment keeps an overflowing panel against its facing edge while
+    // the column folds.
     "[.shell-sidebar-start>&]:self-end",
     "[.shell-sidebar-end>&]:self-start",
   ],
   defaultVariants: { $p: "none" },
 });
 
-/** A fixed header above the sidebar's scrollable body. */
+/** A fixed header above the scrollable sidebar body. */
 export const shellSidebarHeader = cv({
   extend: [seam],
   class:
@@ -505,7 +476,7 @@ export const shellSidebarBody = cv({
   defaultVariants: { $p: 3 },
 });
 
-/** A fixed footer below the sidebar's scrollable body. */
+/** A fixed footer below the scrollable sidebar body. */
 export const shellSidebarFooter = cv({
   extend: [seam],
   class: "shell-sidebar-footer flex-none",
@@ -513,24 +484,17 @@ export const shellSidebarFooter = cv({
 });
 
 /**
- * The gutter track of a centered main: at least the gutter, at most the free
- * space beyond the content's maximum width, and in between the gutter plus the
- * compensation for the other side's sidebars. The tracks are `auto`, which the
- * grid stretches by equal amounts, so the offset between them survives; `1fr`
- * gutters would collapse it. Below the width that fits everything, the
- * compensation gives way first and the content column keeps its width.
+ * Sidebars use registered lengths so content centering follows their animation.
+ * Clamp each length to zero before summing: easing can overshoot after the
+ * column reaches zero width.
  */
 const slotSpaces = cx(
-  // The occupied widths animate with each column. Main uses them for
-  // centering; the intro also reserves the end columns that it spans.
   "[--shell-start-1-space:calc(var(--shell-start-1-width)*var(--shell-start-1-open)*var(--shell-start-1-fit))]",
   "[--shell-start-2-space:calc(var(--shell-start-2-width)*var(--shell-start-2-open)*var(--shell-start-2-fit))]",
   "[--shell-end-1-space:calc(var(--shell-end-1-width)*var(--shell-end-1-open)*var(--shell-end-1-fit))]",
   "[--shell-end-2-space:calc(var(--shell-end-2-width)*var(--shell-end-2-open)*var(--shell-end-2-fit))]",
   "transition-[--shell-start-1-space,--shell-start-2-space,--shell-end-1-space,--shell-end-2-space]",
   "duration-(--shell-time) ease-(--shell-ease)",
-  // Each space is clamped at zero when the sides are summed: an overshooting
-  // easing can take a length below zero while the column stops at zero.
   "[--shell-start-total:calc(max(0px,var(--shell-start-1-space))+max(0px,var(--shell-start-2-space)))]",
   "[--shell-end-total:calc(max(0px,var(--shell-end-1-space))+max(0px,var(--shell-end-2-space)))]",
 );
@@ -548,31 +512,20 @@ const centered = cx(
 );
 
 /**
- * The main area: a named-lines grid (`full` spans the gutters, `content` sits
- * between them) and a query container, so its content reacts to the width it
- * has rather than the window's. Every direct child is a grid item in the
- * content column, so margins do not collapse; `Prose` is the text container to
- * use. Anchors inside land below a sticky header.
- *
- * The content column stays on the shell's center whatever the sidebars are
- * doing: each slot's declared width times its open flag is a transitioned
- * length, and the difference between the sides is spent as the emptier gutter,
- * in step with the drawer that is folding. Full centering needs the shell to be
- * at least as wide as the open sidebars plus the content maximum plus two
- * gutters plus the difference between the sides; below that the content column
- * drifts toward the sidebar by up to half its width before it gives up width.
+ * A content grid with named columns. Children occupy `content`; use `Prose` for
+ * text because grid-item margins do not collapse. Unequal gutters keep content
+ * centered in the shell; compensation decreases before the content narrows.
  */
 const content = cx(
   centered,
   compensation,
   "shell-content grid justify-stretch min-w-0 rounded-none!",
-  // The inset is a grid track. Publish it to the frame padding channel
-  // so nested frames still compute a concentric radius from that distance.
+  // Publish gutter spacing as frame padding so nested frame corners remain
+  // concentric.
   "[--shell-popout:1rem] [--shell-feature:3.5rem]",
   "ak-frame-p-(--shell-gutter) px-0!",
   "print:overflow-visible",
   "[&>*]:col-[content] [&>*]:min-w-0",
-  // A fragment link lands below a sticky header.
   "[&_[id]]:[scroll-margin-block-start:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+1rem)]",
 );
 
@@ -602,7 +555,7 @@ const contentVariants = {
 };
 
 /**
- * The main landmark shares the shell's columns and rows without containment.
+ * The main landmark, sharing the shell columns and rows without containment.
  */
 export const shellMain = cv({
   class: [
@@ -626,10 +579,10 @@ export const shellMain = cv({
       return contentVariants.$p(value);
     },
     /**
-     * Sets the shared maximum content width. Numbers scale the main's spacing
-     * token. Parts inherit this value unless they set their own `$maxWidth`.
-     * Use a number or length to keep parts aligned. Percentages resolve against
-     * each part's width; the header and intro can span end columns.
+     * Sets the shared maximum content width. Numbers scale the spacing token.
+     * Parts can override it with `$maxWidth`. Prefer lengths for alignment:
+     * percentages resolve against each part, and header or intro widths can
+     * include sidebars.
      */
     $maxWidth(value?: ShellWidth) {
       return contentVariants.$maxWidth(value);
@@ -638,7 +591,10 @@ export const shellMain = cv({
   defaultVariants: { $p: 3 },
 });
 
-/** The sticky main header spans the contiguous unoccupied end columns. */
+/**
+ * A main header that spans adjacent unoccupied end columns and can stay in
+ * view.
+ */
 export const shellMainHeader = cv({
   extend: [seam],
   class: [
@@ -730,10 +686,9 @@ export const shellMainBody = cv({
 });
 
 /**
- * A band across named main columns. Children fill the band's width, and a
- * narrower band can nest inside it. Keep nesting to two levels: deeply nested
- * subgrids can hang WebKit. Do not add a query container, auto margins, or
- * inline padding: each breaks the inherited column alignment.
+ * A band across named main columns. Children fill its width. Limit nesting to
+ * two levels to avoid WebKit hangs. Query containers, auto margins, and inline
+ * padding break column alignment.
  * https://bugs.webkit.org/show_bug.cgi?id=268595
  */
 const mainBand = cv({
@@ -760,14 +715,14 @@ export const shellMainPopout = cv({
     "shell-main-popout [.shell-content>&]:col-[popout] [.shell-main-band>&]:col-[popout]",
 });
 
-/** Extends beyond the popout column, while leaving the outer gutters. */
+/** Extends beyond the popout column while leaving the outer gutters. */
 export const shellMainFeature = cv({
   extend: [mainBand],
   class:
     "shell-main-feature [.shell-content>&]:col-[feature] [.shell-main-band>&]:col-[feature]",
 });
 
-/** Fills the main part's width, including its outer gutters. */
+/** Fills the main section width, including its outer gutters. */
 export const shellMainFull = cv({
   extend: [mainBand],
   class:

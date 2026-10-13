@@ -7,43 +7,41 @@ import {
   popoverScroll,
 } from "./popover.ts";
 
+/** A centered dialog constrained to the viewport. */
 export const dialog = cv({
   extend: [popover],
   class: [
-    // Channels rather than variants, so a breakpoint can still move them: an
-    // inline style from a variant is out of reach of any media query, and a
-    // caller's own max-w-* wins over the channel utility by sorting later.
+    // Use CSS channels so responsive sizing classes can override these
+    // defaults.
     "[--dialog-inset:--spacing(3)] [--dialog-max-width:--spacing(100)]",
     "fixed inset-(--dialog-inset) m-auto h-fit",
-    // The dialog stretches between the insets up to the cap, so short and
-    // long content read as one width. The UA sizes a native dialog to its
-    // content instead, and w-auto puts it on the same rule.
+    // Override native dialog content sizing so short content uses the same
+    // width.
     "w-auto max-w-(--dialog-max-width)",
-    // Ariakit measures the visual viewport into this property, so a virtual
-    // keyboard shrinks the dialog instead of covering it. A native dialog has
-    // no such measurement and takes the dynamic viewport. A channel like the
-    // width, so a caller's max-h-* also sorts after it and wins.
+    // Use Ariakit's visual viewport height to avoid virtual keyboards; native
+    // dialogs fall back to dynamic viewport height.
     "[--dialog-max-height:calc(var(--dialog-viewport-height,100dvh)-var(--dialog-inset)*2)]",
     "max-h-(--dialog-max-height)",
-    // A translucent wash of the surface behind the dialog, through the same
-    // channel as the fade: the native ::backdrop and Ariakit's element alike.
     "ui-backdrop:bg-(--ak-layer)/10 ak-dark:ui-backdrop:bg-(--ak-layer)/30",
     "ui-backdrop:backdrop-blur-xs",
   ],
 });
 
+/** A button that opens a dialog. */
 export const dialogDisclosure = cv({
   extend: [button],
 });
 
+/** Button styles for a dialog dismiss control. */
 export const dialogDismiss = popoverDismiss;
 
+/** A scrollable dialog region that keeps rounded corners. */
 export const dialogScroll = popoverScroll;
 
-// Dialogs are larger surfaces than popovers, so the heading steps up a size
-// while keeping the same weight treatment.
+/** A medium-weight heading for a dialog. */
 export const dialogHeading = cv({
   class: "text-xl font-medium",
 });
 
+/** Secondary text for a dialog description. */
 export const dialogDescription = popoverDescription;

@@ -1,15 +1,15 @@
 import { cv } from "clava";
 import { popover } from "./popover.ts";
 
+/** A compact popover with wider side padding and wrapping text. */
 export const tooltip = cv({
   extend: [popover],
   class: [
     "text-sm",
-    // The sides take twice the frame padding, so $p scales both axes. The
-    // var() form sorts before a px-* step, so a caller's step still wins.
+    // Scale side padding with frame padding. The var() utility sorts before
+    // caller px-* steps.
     "[--tooltip-px:calc(var(--ak-frame-padding)*2)] px-(--tooltip-px)",
-    // A long label wraps instead of running across the viewport. A channel
-    // like the dialog width, so a caller's max-w-* sorts after it and wins.
+    // Allow caller max-w-* utilities to override the wrapping limit.
     "[--tooltip-max-width:--spacing(80)] max-w-(--tooltip-max-width)",
   ],
   defaultVariants: {

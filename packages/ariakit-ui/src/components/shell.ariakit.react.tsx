@@ -87,14 +87,10 @@ export function Shell(props: ShellProps) {
 export interface ShellHeaderPartProps
   extends ak.RoleProps<"div">, VariantProps<typeof shellHeaderStart> {}
 
-// The three part recipes declare the same variants, so one of them types all of
-// them.
+// All bar parts share these variants.
 type BarPartRecipe = typeof shellHeaderStart;
 
-/**
- * Renders a bar part from its recipe. The header and the footer parts differ
- * only in their names, which the bar props and the reference keep apart.
- */
+/** Renders a header or footer part with its recipe. */
 function renderPartCell(recipe: BarPartRecipe, props: ShellHeaderPartProps) {
   const [variantProps, rest] = splitProps(props, recipe);
   return <ak.Role.div {...recipe.jsx(variantProps)} {...rest} />;
@@ -130,27 +126,17 @@ export function ShellHeaderEnd(props: ShellHeaderPartProps) {
  * the others in a header, `ShellFooterStart` and the others in a footer.
  */
 export interface ShellBarPartsProps {
-  /**
-   * The start part: its content, part props, or a part element.
-   */
+  /** The start part: its content, part props, or a part element. */
   start?: React.ReactNode | ShellHeaderPartProps;
-  /**
-   * The center part: its content, part props, or a part element.
-   */
+  /** The center part: its content, part props, or a part element. */
   center?: React.ReactNode | ShellHeaderPartProps;
-  /**
-   * The end part: its content, part props, or a part element.
-   */
+  /** The end part: its content, part props, or a part element. */
   end?: React.ReactNode | ShellHeaderPartProps;
 }
 
 type BarPart = React.ElementType<ShellHeaderPartProps>;
 
-/**
- * Renders a bar part from its prop. Only an element of a part component is the
- * part itself; any other element, like a fragment or a link, is content that
- * needs the part around it to take its grid cell.
- */
+/** Wraps content in a bar part unless it is already a part element. */
 function renderBarPart(
   Part: BarPart,
   value?: React.ReactNode | ShellHeaderPartProps,
@@ -174,10 +160,8 @@ export interface ShellHeaderProps
  * The top bar of a shell, sticky by default, as tall as its height token. Its
  * three parts sit at the start, on the middle and at the end.
  *
- * A popover, menu or combobox list rendered in place inside the bar lives in
- * the bar's stacking context and can be painted over by a later part, so
- * overlays inside chrome should use `portal`; a portalled element leaves the
- * shell's subtree and no longer inherits the shell's tokens.
+ * Use `portal` for overlays to escape the bar's stacking context. Portalled
+ * elements no longer inherit the shell's tokens.
  * @example
  * <ShellHeader
  *   $blur
@@ -233,8 +217,7 @@ export function ShellFooter({
   );
 }
 
-// The components a bar prop can name as the part itself. Function declarations,
-// so the set can be built before the bars render.
+// Function declarations let this set refer to parts defined below.
 const BAR_PARTS = new Set<React.ElementType>([
   ShellHeaderStart,
   ShellHeaderCenter,
@@ -286,20 +269,17 @@ export interface ShellMainProps
   extends ak.RoleProps<"main">, VariantProps<typeof shellMain> {}
 
 /**
- * The main landmark contains `ShellMainHeader`, `ShellMainIntro`, and
- * `ShellMainBody`. Each part is optional. It shares the shell's grid through
- * subgrid, so do not add size containment. In a nested main landmark, render
- * this part as a `div` to keep one main landmark on the page.
+ * Contains optional `ShellMainHeader`, `ShellMainIntro`, and `ShellMainBody`
+ * parts. Uses subgrid; do not add size containment. Render nested mains as
+ * `div` elements to keep one main landmark.
  *
  * `$p` sets a shared gutter. Use a CSS length for responsive padding, such as
  * `$p="var(--page-gutter)"` with
  * `className="[--page-gutter:1rem] @3xl/shell:[--page-gutter:2rem]"`. The query
  * uses the nearest shell width. A part's own `$p` overrides this value.
- * `$maxWidth` sets the shared maximum content width. Use a number or CSS length
- * here to keep their columns aligned when text sizes differ. Percentages
- * resolve against each part's width, so a header or intro that spans end
- * columns can have a wider content column. A part's own `$maxWidth` overrides
- * the shared value.
+ * `$maxWidth` sets the shared content width limit. Use a number or CSS length
+ * to align columns across text sizes. Percentages depend on each part's width
+ * and can misalign wider headers or intros. Parts can override `$maxWidth`.
  * @example
  * <ShellMain $p={4}>
  *   <ShellMainHeader><div>Page actions</div></ShellMainHeader>
@@ -427,23 +407,18 @@ export interface ShellSidebarProps
 }
 
 /**
- * A side panel that folds with a drawer motion. The panel receives `render`,
- * the id, ARIA attributes, class names, and frame variants. Use `nav` for
- * navigation or `aside` for a complementary panel, and name the landmark with
- * `aria-label`. A closed panel leaves the tab order and the accessibility tree.
- * The panel draws a real border on the side that faces main. Put scrollable
- * content in `ShellSidebarBody`, even when there is no header or footer. The
- * panel itself does not scroll. It starts beside the main header by default;
+ * A drawer panel. Receives `render`, ID, ARIA attributes, classes, and frame
+ * variants. Use a named `nav` or `aside` landmark. Closed panels leave the tab
+ * order and accessibility tree. The border faces main. Use `ShellSidebarBody`
+ * for scrolling; the panel does not scroll. It starts beside the main header;
  * use `$from="intro"` or `$from="body"` to start below it.
  *
- * `open` controls the state, and `$show` selects the shell-container widths
- * where an open panel appears. It defaults to `"3xl"` (48rem and above).
- * `$show="max-3xl"` shows it only below 48rem; `true` allows every width and
- * `false` hides it at every width. A consumer button controls `open` and
- * reports that same state with `aria-expanded`. Show the button at the same
- * widths as the sidebar: use `className="@max-3xl/shell:hidden"` for the
- * default or `className="@3xl/shell:hidden"` for `$show="max-3xl"`. With
- * `$show={true}`, the button can stay visible at every width.
+ * `open` controls state. `$show` selects shell widths: `"3xl"` (default) means
+ * at least 48rem, `"max-3xl"` means below 48rem, `true` means all widths, and
+ * `false` hides it. A control button must report `open` with `aria-expanded`.
+ * Match its visibility to the sidebar: `@max-3xl/shell:hidden` by default,
+ * `@3xl/shell:hidden` for `$show="max-3xl"`, or always visible for
+ * `$show={true}`.
  * @example
  * const [open, setOpen] = useState(true);
  * const sidebarId = useId();

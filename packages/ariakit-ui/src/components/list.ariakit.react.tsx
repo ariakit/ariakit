@@ -138,8 +138,7 @@ export function ListItemMarker({
   const hasCheck = checked != null || progress != null;
   const completed = checked ?? progress === 1;
   const [variantProps, rest] = splitProps(props, listItemMarker);
-  // The arc shows how far along an unfinished row is. The name keeps the check
-  // state, and the description says the value the arc draws.
+  // Keep progress in the description so the name can convey the check state.
   const description =
     !completed && progress != null
       ? `${Math.round(progress * 100)}% complete`
@@ -152,10 +151,8 @@ export function ListItemMarker({
         ...variantProps,
       })}
       {...rest}
-      // Set after the spread, so a prop that is present but undefined, as a
-      // wrapper with an optional label passes it, keeps the fallback. Bullets
-      // and numbers repeat what the list element already conveys, so only the
-      // check slot exposes a state.
+      // Hide redundant list markers. Only checks expose a state. Apply
+      // fallbacks after the spread to handle undefined props.
       aria-hidden={rest["aria-hidden"] ?? (hasCheck ? undefined : true)}
       role={rest.role ?? (hasCheck ? "img" : undefined)}
       aria-label={
@@ -214,13 +211,9 @@ export function ListDisclosure({
 }: ListDisclosureProps) {
   return (
     <Disclosure
-      // The order carries the contract: the recipe first, the caller's props
-      // second, the composed slots last.
       recipe={listDisclosure}
       {...props}
-      // The guide has to span the whole row, open content included, so it goes
-      // on the disclosure root instead of on the button. A caller's own
-      // decoration keeps its place alongside it.
+      // The root lets the guide span both the button and open content.
       decoration={
         <>
           {decoration}
@@ -253,8 +246,6 @@ export function ListDisclosureButton({
   const marker = <ListItemMarker checked={checked} progress={progress} />;
   return (
     <DisclosureButton
-      // The order carries the contract: the recipe first, the caller's props
-      // second, the composed label and children last.
       recipe={listDisclosureButton}
       indicator={indicator}
       {...props}
@@ -294,8 +285,6 @@ export interface ListDisclosureContentBodyProps extends Omit<
 export function ListDisclosureContentBody(
   props: ListDisclosureContentBodyProps,
 ) {
-  // The order carries the contract: the recipe first, the caller's props
-  // second.
   return (
     <DisclosureContentBody recipe={listDisclosureContentBody} {...props} />
   );

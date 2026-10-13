@@ -26,17 +26,12 @@ type TableRowGroupKind = "head" | "body" | "foot";
 
 export type TableSortValue = "ascending" | "descending" | "none";
 
-// The cell props a head cell sets for its whole column in declarative rows (see
-// getColumnProps in Table).
+// Head-cell props shared by the column in declarative rows.
 const COLUMN_PROPS = ["numeric", "$sticky", "$fit", "$grow"] as const;
 
 type ColumnProps = Pick<TableCellProps, (typeof COLUMN_PROPS)[number]>;
 
-/**
- * Collects the union of column keys across all rows, preserving the first
- * appearance order (head rows first) so every row renders the same cells in the
- * same positions regardless of its own key order or missing columns.
- */
+/** Collects columns in first-appearance order so sparse rows stay aligned. */
 function getColumnKeys<K extends string | number>(rows?: TableRows<K>) {
   const keys = new Set<string>();
   for (const row of rows ?? []) {
@@ -49,9 +44,7 @@ function getColumnKeys<K extends string | number>(rows?: TableRows<K>) {
   return [...keys];
 }
 
-// A TableCell element given as a row value is the cell itself. Any other
-// element is the cell's content: cloned with the cell props, it would land in
-// the row beside the cells and receive props it does not know.
+// Only TableCell elements replace cells; other elements render inside them.
 function isTableCellElement(
   value: unknown,
 ): value is React.ReactElement<TableCellProps> {
@@ -66,8 +59,7 @@ export type TableRow<K extends string | number> = {
    * key use their position.
    */
   key?: React.Key;
-  // Partial: a row may omit columns (or set them to null) and still render an
-  // empty cell in the right position.
+  // Missing columns still render empty cells to preserve alignment.
 } & Partial<Record<K, React.ReactNode | TableCellProps>>;
 
 export type TableRows<K extends string | number> = TableRow<K>[];
@@ -79,7 +71,6 @@ interface TableCellContextType {
   sort?: TableSortValue;
 }
 
-// What a cell tells the sort button and the indicator inside it.
 const TableCellContext = React.createContext<TableCellContextType>({
   numeric: false,
 });
@@ -183,16 +174,12 @@ export function Table<K extends string | number>({
     return rowEl;
   };
 
-  // Rows are caller-controlled records: inherited properties are not part of
-  // the declarative contract, so a sparse row must not render a value from its
-  // prototype chain.
+  // Sparse rows must not render inherited values as cells.
   const getCell = (row: TableRow<K>, key: K) => {
     if (!Object.hasOwn(row, key)) return undefined;
     return row[key];
   };
 
-  // The props of a cell given as a TableCell element or as a props object;
-  // content given any other way has none.
   const getCellProps = (row: TableRow<K>, key: K) => {
     const cell = getCell(row, key);
     if (!cell) return;
@@ -203,9 +190,7 @@ export function Table<K extends string | number>({
     return cell as TableCellProps;
   };
 
-  // What createRender takes for a cell. Missing and null columns still emit an
-  // empty cell so every following cell stays under its header, and an element
-  // other than a TableCell is wrapped as the cell's content.
+  // Keep empty cells aligned and wrap elements that cannot replace a cell.
   const getCellValue = (row: TableRow<K>, key: K) => {
     const value = getCell(row, key);
     if (value == null) return { children: null };
@@ -214,9 +199,7 @@ export function Table<K extends string | number>({
     return value;
   };
 
-  // A column takes its number format, its pin and its width from its head cell,
-  // so the declarative rows set each once instead of on every cell. A sort
-  // stays with the head cell: only a column header takes it.
+  // Share column formatting from head cells. Sorting stays on the header.
   const getColumnProps = (key: K) => {
     const columnProps: ColumnProps = {};
     for (const row of headRows ?? []) {
@@ -231,7 +214,6 @@ export function Table<K extends string | number>({
     return columnProps;
   };
 
-  // Head cells set the same column props for every row in this render.
   const columns = columnKeys.map((key) => ({
     key,
     props: getColumnProps(key as K),
@@ -362,8 +344,7 @@ export function TableRow({ group, selected, ...props }: TableRowProps) {
       aria-selected={selected}
       {...tableRow.jsx({
         ...variantProps,
-        // The head and foot bands take neither the hover nor the selection
-        // tint.
+        // Only body rows get hover and selection styles by default.
         $hover: variantProps.$hover ?? isBody,
         $selected: variantProps.$selected ?? isBody,
       })}
@@ -375,8 +356,7 @@ export function TableRow({ group, selected, ...props }: TableRowProps) {
 export interface TableCellProps
   extends
     React.ComponentProps<"td">,
-    // The semantic props below compute these variants along with the
-    // element and its scope, so they stay in sync.
+    // Semantic props keep styles, element, and scope in sync.
     Omit<VariantProps<typeof tableCell>, "$header" | "$numeric"> {
   /** Whether the cell is numeric. */
   numeric?: boolean;
@@ -402,8 +382,7 @@ export function TableCell({
 }: TableCellProps) {
   const group = React.useContext(TableRowGroupContext);
   header = header ?? (group === "head" ? "column" : false);
-  // Only the bare `true` value derives the header kind from the group, so an
-  // explicit "row" stays a row header even inside a head group.
+  // Explicit header kinds override the row group's default.
   const isColumnHeader =
     header === "column" || (header === true && group === "head");
   const isRowHeader = header === "row" || (header === true && group !== "head");

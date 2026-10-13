@@ -60,9 +60,8 @@ export interface RadioFieldProps
  */
 export function RadioField({ children, ...props }: RadioFieldProps) {
   const [variantProps, rest] = splitProps(props, radioField);
-  // The label is never :disabled itself, so mirror the input's disabled prop as
-  // the $disabled variant for the row's own disabled visuals. A radio disabled
-  // through its group reaches the row through CSS instead.
+  // Labels cannot match :disabled, so mirror the input state. CSS handles
+  // radios disabled through their group.
   return (
     <label
       {...radioField.jsx({
@@ -79,9 +78,7 @@ export function RadioField({ children, ...props }: RadioFieldProps) {
 export interface RadioLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof radioLabel> {}
 
-/**
- * Label text of a `RadioField`. Must be nested inside a `RadioField`.
- */
+/** Label text of a `RadioField`. Must be nested inside a `RadioField`. */
 export function RadioLabel(props: RadioLabelProps) {
   const [variantProps, rest] = splitProps(props, radioLabel);
   return <ak.Role.span {...radioLabel.jsx(variantProps)} {...rest} />;
@@ -109,8 +106,7 @@ export interface RadioCardProps
  */
 export function RadioCard({ children, ...props }: RadioCardProps) {
   const [variantProps, rest] = splitProps(props, radioCard);
-  // The label is never :disabled itself, so mirror the input's disabled prop as
-  // the $disabled variant for the card's own disabled visuals.
+  // Labels cannot match :disabled, so mirror the input state.
   return (
     <label
       {...radioCard.jsx({
@@ -142,9 +138,7 @@ export function RadioCardCheck(props: RadioCardCheckProps) {
 export interface RadioCardSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof radioCardSlot> {}
 
-/**
- * Slot for icons or other adornments. Must be nested inside a `RadioCard`.
- */
+/** Slot for icons or other adornments. Must be nested inside a `RadioCard`. */
 export function RadioCardSlot(props: RadioCardSlotProps) {
   const [variantProps, rest] = splitProps(props, radioCardSlot);
   const variants = radioCardSlot.getVariants(variantProps);
@@ -174,9 +168,7 @@ export function RadioCardContent(props: RadioCardContentProps) {
 export interface RadioCardLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof radioCardLabel> {}
 
-/**
- * Main text of the card. Must be nested inside a `RadioCard`.
- */
+/** Main text of the card. Must be nested inside a `RadioCard`. */
 export function RadioCardLabel(props: RadioCardLabelProps) {
   const [variantProps, rest] = splitProps(props, radioCardLabel);
   return <ak.Role.span {...radioCardLabel.jsx(variantProps)} {...rest} />;
@@ -185,9 +177,7 @@ export function RadioCardLabel(props: RadioCardLabelProps) {
 export interface RadioCardDescriptionProps
   extends ak.RoleProps<"span">, VariantProps<typeof radioCardDescription> {}
 
-/**
- * Secondary text below the label. Must be nested inside a `RadioCard`.
- */
+/** Secondary text below the label. Must be nested inside a `RadioCard`. */
 export function RadioCardDescription(props: RadioCardDescriptionProps) {
   const [variantProps, rest] = splitProps(props, radioCardDescription);
   return <ak.Role.span {...radioCardDescription.jsx(variantProps)} {...rest} />;

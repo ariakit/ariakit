@@ -42,17 +42,14 @@ import {
   DisclosureContentBody,
 } from "./disclosure.ariakit.react.tsx";
 
-// The stores of every NavDisclosure around a row, outermost first, so a current
-// link can open all of them and not only the nearest one.
+// Keep ancestors outermost first so current links can open every parent.
 const NavDisclosureContext = React.createContext<readonly ak.DisclosureStore[]>(
   [],
 );
 
 /**
- * A glider for a nav, as `NavGlider` props or an element, or several of them in
- * an array, such as a cover of the current row followed by a bar beside it: a
- * later glider paints over an earlier one. `true` renders the default glider, a
- * flat cover of the current row.
+ * A glider element, props, or array. Later gliders paint over earlier ones.
+ * `true` renders the default flat cover of the current row.
  */
 export type NavGliderValue =
   | boolean
@@ -85,15 +82,12 @@ export interface NavProps
   glider?: NavGliderValue;
 }
 
-// The properties whose transitions move the rows of a nav when disclosure
-// content opens or closes.
+// Disclosure transitions that move nav rows.
 const ROW_MOVING_PROPERTIES = new Set(["height", "max-height"]);
 
 /**
- * Marks the nav with `data-settling` while a transition inside it moves the
- * rows, so a glider stops easing after its row and follows it at once (see
- * navGlider). A glider's own transitions do not count. Native listeners: React
- * dispatches the end of a transition, but not its start.
+ * Disables glider easing while rows move, excluding the glider's transitions.
+ * Native listeners are needed because React does not dispatch transitionstart.
  */
 function useSettling(element: HTMLElement | null) {
   React.useEffect(() => {
@@ -101,8 +95,7 @@ function useSettling(element: HTMLElement | null) {
     let running = 0;
     const isRowMoving = (event: TransitionEvent) => {
       if (!ROW_MOVING_PROPERTIES.has(event.propertyName)) return false;
-      // A capability check rather than instanceof: the target may come from
-      // another realm.
+      // The target may come from another realm.
       const target = event.target as Partial<Element> | null;
       return !target?.classList?.contains("glider");
     };
@@ -137,8 +130,7 @@ export function Nav({ list, glider, children, ...props }: NavProps) {
     <ak.Role.nav
       {...nav.jsx(variantProps)}
       {...rest}
-      // The inner element takes the state setter as its ref, and Ariakit merges
-      // it with the caller's ref and render element.
+      // Let Ariakit merge the state setter with the caller's ref and element.
       render={<ak.Role.nav ref={setElement} render={rest.render} />}
     >
       {renderGliders(glider)}
@@ -159,10 +151,8 @@ export interface NavGliderProps
   extends ak.RoleProps<"div">, VariantProps<typeof navGlider> {}
 
 /**
- * Renders the element that glides between the rows of a `Nav` to mark the
- * current one, as a cover of the row or as a bar beside it. It goes before the
- * rows, as the nav's first child, so it paints under them, and it hides itself
- * in browsers without CSS anchor positioning.
+ * Marks the current row with a cover or bar. Place it first in `Nav` to paint
+ * below the rows. Hidden in browsers without CSS anchor positioning.
  */
 export function NavGlider(props: NavGliderProps) {
   const [variantProps, rest] = splitProps(props, navGlider);
@@ -208,14 +198,9 @@ export interface NavSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof navSlot> {}
 
 /**
- * Renders an icon, badge, avatar, or shortcut in a nav row: a `NavLink`, a
- * `NavButton`, or after the label of a `NavDisclosureButton`. Every kind but a
- * shortcut takes the nav's `$slotSize`, before or after the label, so the
- * labels after an icon, a badge, and an avatar line up. A badge pads round by
- * default, so a one-digit count is a circle the slot size; pass `$p="auto"` for
- * a word. It wraps the children of the `badge` and `shortcut` kinds in a
- * `<span>`, which scales the badge text and keeps the shortcut keys left to
- * right.
+ * Renders an icon, badge, avatar, or shortcut in a nav row. All except
+ * shortcuts inherit the nav's `$slotSize`. Use `$p="auto"` for word badges.
+ * Badge and shortcut content gets a span for text sizing and key direction.
  */
 export function NavSlot(props: NavSlotProps) {
   const [variantProps, rest] = splitProps(props, navSlot);
@@ -247,11 +232,8 @@ export interface NavLinkLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof navLinkLabel> {}
 
 /**
- * Renders the label of a `NavLink`. Wrap the text in it when a `NavSlot`
- * follows it, or when a `NavSlot` with a named `$size`, such as `xl`, sits
- * beside it: a slot spaces itself through the element next to it, which a bare
- * text node is not. A slot after a bare text label that is wider than the line
- * sits closer to the text.
+ * Wraps a link's label so adjacent slots can set its margins. Required when a
+ * slot follows the text or uses a named `$size`, such as `xl`.
  */
 export function NavLinkLabel(props: NavLinkLabelProps) {
   const [variantProps, rest] = splitProps(props, navLinkLabel);
@@ -292,9 +274,7 @@ export function NavGroupLabel(props: NavGroupLabelProps) {
   return <ak.GroupLabel {...navGroupLabel.jsx(variantProps)} {...rest} />;
 }
 
-// The recipe keeps the disclosure's $iconSize, which sizes only the section's
-// own icon and indent. A section takes $slotSize instead, which sizes the nav
-// slots inside it too.
+// $slotSize sizes both the disclosure icon and its nested nav slots.
 export interface NavDisclosureProps extends Omit<
   DisclosureProps<typeof navDisclosure>,
   "recipe" | "$iconSize"
@@ -304,8 +284,7 @@ export interface NavDisclosureProps extends Omit<
 }
 
 function NavDisclosureRoot(props: ak.RoleProps<"li">) {
-  // Capture this disclosure's store before a nested provider can replace the
-  // generic context, which also carries unrelated dialogs and popovers.
+  // Capture the store before nested providers replace the shared context.
   const disclosure = ak.useDisclosureContext();
   const ancestors = React.useContext(NavDisclosureContext);
   const disclosures = React.useMemo(() => {
@@ -320,9 +299,7 @@ function NavDisclosureRoot(props: ak.RoleProps<"li">) {
 }
 
 /**
- * A row of a `Nav` that discloses rows of its own. Its root paints no surface
- * by default: a nested section sits in a content that stacks over the nav's
- * gliders, so an opaque root would hide the covers of its rows.
+ * Discloses nested nav rows. The transparent root keeps their gliders visible.
  */
 export function NavDisclosure({
   button,
@@ -331,8 +308,6 @@ export function NavDisclosure({
 }: NavDisclosureProps) {
   return (
     <Disclosure
-      // The order carries the contract: the recipe first, the caller's props
-      // second, the composed slots last.
       recipe={navDisclosure}
       {...props}
       button={createOptionalRender(NavDisclosureButton, button)}
@@ -353,16 +328,12 @@ export interface NavButtonProps extends Omit<
  * that should be an anchor.
  */
 export function NavButton(props: NavButtonProps) {
-  // The order carries the contract: the recipe first, the caller's props
-  // second.
   return <Button recipe={navButton} {...props} />;
 }
 
 export interface NavButtonContentProps extends ak.RoleProps<"span"> {}
 
-/**
- * The label of a nav row.
- */
+/** The label of a nav row. */
 export function NavButtonContent(props: NavButtonContentProps) {
   const [variantProps, rest] = splitProps(props, navButtonContent);
   return <ak.Role.span {...navButtonContent.jsx(variantProps)} {...rest} />;
@@ -391,8 +362,6 @@ export function NavDisclosureButton({
   const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
   return (
     <DisclosureButton
-      // The order carries the contract: the recipe first, the caller's props
-      // second, the composed label and children last.
       recipe={navDisclosureButton}
       icon={icon}
       indicator={indicator}
@@ -427,7 +396,5 @@ export interface NavDisclosureContentBodyProps extends Omit<
 > {}
 
 export function NavDisclosureContentBody(props: NavDisclosureContentBodyProps) {
-  // The order carries the contract: the recipe first, the caller's props
-  // second.
   return <DisclosureContentBody recipe={navDisclosureContentBody} {...props} />;
 }

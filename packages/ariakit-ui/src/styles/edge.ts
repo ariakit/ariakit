@@ -50,10 +50,10 @@ export function getEdgeWeightValue(
   return weights[value];
 }
 
-// The hairline color these variants tune is derived by the layer utility on the
-// same element, and none of the channels they write inherit, so an element that
-// carries no layer of its own gets nothing from them. That is why this extends
-// `layer` rather than standing beside it.
+/**
+ * Edge colors derived from a layer on the same element. Edge channels do not
+ * inherit.
+ */
 export const edge = cv({
   extend: [layer],
   variants: {
@@ -89,10 +89,8 @@ export const edge = cv({
      */
     $edgeRaw: "ak-edge-raw",
     /**
-     * Sets the edge opacity. Accepts a named weight or a numeric value (0-100).
-     * Setting it to `adaptive` makes the edge appear only in high-contrast
-     * mode. A single overridable channel: instance values always replace the
-     * default instead of fighting it by stylesheet order.
+     * Sets edge opacity from a named weight or a number (0–100). `adaptive`
+     * shows the edge only in high-contrast mode.
      */
     $edgeWeight(value?: EdgeWeightValues | "unset" | (string & {}) | number) {
       if (value == null) return;
@@ -135,9 +133,7 @@ export const edge = cv({
         allowZero: true,
       });
     },
-    /**
-     * Lightens the edge color by the specified amount (0-100).
-     */
+    /** Lightens the edge color by the specified amount (0-100). */
     $edgeLighten(value?: string | number) {
       return getScaledStyleClass({
         value,
@@ -145,9 +141,7 @@ export const edge = cv({
         class: "ak-edge-lighten-(--edge-lighten)",
       });
     },
-    /**
-     * Darkens the edge color by the specified amount (0-100).
-     */
+    /** Darkens the edge color by the specified amount (0-100). */
     $edgeDarken(value?: string | number) {
       return getScaledStyleClass({
         value,
@@ -202,9 +196,7 @@ export const edge = cv({
         class: "ak-edge-c-(--edge-chroma)",
       });
     },
-    /**
-     * Increases the edge chroma by the specified amount (0-40).
-     */
+    /** Increases the edge chroma by the specified amount (0-40). */
     $edgeSaturate(value?: string | number) {
       return getScaledStyleClass({
         value,
@@ -212,9 +204,7 @@ export const edge = cv({
         class: "ak-edge-saturate-(--edge-saturate)",
       });
     },
-    /**
-     * Decreases the edge chroma by the specified amount (0-40).
-     */
+    /** Decreases the edge chroma by the specified amount (0-40). */
     $edgeDesaturate(value?: string | number) {
       return getScaledStyleClass({
         value,
@@ -304,9 +294,8 @@ export const edge = cv({
     },
   },
   defaultVariants: {
-    // The raw utility sets the alpha and the lightness, but a component's
-    // default for either sorts after it in the stylesheet and wins. Clearing
-    // those defaults lets the raw color through. Values passed with it stay.
+    // Clear component defaults that would override the raw color by stylesheet
+    // order. Explicit caller values still apply.
     $edgeWeight(defaultValue, variants) {
       if (variants.$edgeRaw) return undefined;
       return defaultValue;
@@ -324,9 +313,8 @@ export const edge = cv({
       if (defaultValue != null) return defaultValue;
       if (variants.$edge == null) return defaultValue;
       if (variants.$edge === "unset") return defaultValue;
-      // The full push turns the layer's own color into a black or white
-      // hairline. On a color asked for by name, it would clamp the lightness to
-      // either end and take the hue with it.
+      // Preserve named colors' lightness and hue instead of pushing them to
+      // black or white.
       return 0;
     },
   },

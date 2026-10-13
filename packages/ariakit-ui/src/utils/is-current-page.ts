@@ -1,8 +1,6 @@
 /**
- * Whether `href` points to the page at `currentUrl`. Cross-origin destinations
- * never match. Pathnames compare with trailing slashes stripped; the
- * destination's hash and search only need to match when the destination
- * declares them.
+ * Checks the origin and path, ignoring trailing slashes. The destination's hash
+ * and search must match only when specified.
  */
 export function isCurrentPage(
   currentUrl?: string | URL,
@@ -10,10 +8,8 @@ export function isCurrentPage(
 ): boolean {
   if (!href) return false;
   if (!currentUrl) return false;
-  // The fallback base only anchors path-only current URLs. The reserved
-  // .invalid host keeps real-world absolute destinations from matching it by
-  // origin; destinations that literally target the sentinel host are not
-  // supported inputs.
+  // Anchor relative URLs to a reserved host that real destinations cannot
+  // match. Destinations that target this sentinel host are unsupported.
   const base = new URL(currentUrl, "https://_.invalid");
   let dest: URL;
   try {

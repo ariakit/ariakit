@@ -79,17 +79,15 @@ export interface DialogDismissProps
  */
 export function DialogDismiss({ children, ...props }: DialogDismissProps) {
   const [variantProps, rest] = splitProps(props, dialogDismiss);
-  // Ariakit's default children is a bare 1em icon, which the button recipe pads
-  // like a line of text. A slot makes the icon-only button square, and the name
-  // moves to the button because the slot icon is hidden.
+  // A slot keeps the icon-only button square. Its hidden icon needs a button
+  // label.
   const iconOnly = children === undefined;
   const fallbackLabel = iconOnly ? "Dismiss popup" : undefined;
   return (
     <ak.DialogDismiss
       {...dialogDismiss.jsx(variantProps)}
       {...rest}
-      // Set after the spread, so a label prop that is present but undefined, as
-      // a wrapper with an optional label passes it, keeps the fallback.
+      // Preserve the fallback when the caller passes undefined.
       aria-label={rest["aria-label"] ?? fallbackLabel}
     >
       {iconOnly ? (

@@ -18,48 +18,33 @@ import { focusHighlight, focusWithin } from "./focus.ts";
 import { hover } from "./hover.ts";
 
 /**
- * The box every choice control draws: a native checkbox or radio input with its
- * own look removed, and the check inside a choice card. One class list serves
- * both, because the ui-choice-* variants read the checked, mixed and disabled
- * state from the element itself or from the label or aria-checked host around
- * it. It extends the control slot rather than frame, so the box takes the
- * slot's font-relative sizes, its first-line alignment inside a control row and
- * its floating placement. It shares the input's border, edge weight and writing
- * surface. The slot fixes the box's outer dimensions.
+ * A checkbox or radio mark with control-slot geometry. State comes from the
+ * input or a surrounding choice host; a child replaces the drawn mark.
  */
 export const choice = cv({
   extend: [controlSlot, hover],
   class: [
     "appearance-none",
-    // The slot lays out block-level, which throws a bare input out of its
-    // line of text. The later-sorted display utility puts it back on the
-    // line, centered on the x-height; a row or a card blockifies it again.
+    // Restore text-line alignment for bare inputs; flex and grid parents still
+    // control placement.
     "inline-flex align-middle",
-    // The mark is a pseudo-element painted in the current text color, so the
-    // box's own ink colors it: the readable text of the brand fill, or the
-    // dimmed ink of a disabled box. It scales in when the choice turns on.
+    // Use the layer's readable text color for the mark in checked and disabled
+    // states.
     "after:bg-current after:scale-0 ui-choice-on:after:scale-100",
     "after:transition-transform after:duration-100 after:ease-out",
     "motion-reduce:after:transition-none",
-    // Forced colors repaint every background in the system canvas, which
-    // would wipe the mark; the pseudo-element opts out and keeps the forced
-    // text color.
+    // Keep forced colors from replacing the mark background with the system
+    // canvas.
     "after:forced-color-adjust-none",
-    // The drawn mark and a custom child share one size. A child replaces the
-    // drawn mark and, like it, shows only while the choice is on.
+    // A custom child replaces the drawn mark and uses the same size and state.
     "[--slot-icon-size:calc(var(--size)*0.7)] [&>svg]:stroke-[2.5]",
     "has-[>*]:after:hidden not-ui-choice-on:*:hidden!",
-    // An on box paints brand, moved away from the surface behind it so it
-    // still separates from a brand layer, and paints its edge in the fill so
-    // the box keeps one size. $lightnessOffset below lands in the style
-    // attribute, which no class can gate, so the plugin's own zero offset
-    // cancels the sink here.
+    // Separate the selected fill from brand surfaces. The plugin's zero-offset
+    // utility cancels the default offset stored in the style attribute.
     "not-ui-choice-disabled:ui-choice-on:ak-layer-brand",
     "not-ui-choice-disabled:ui-choice-on:ak-layer-contrast",
     "ui-choice-on:ak-layer-offset-0 ui-choice-on:ak-edge-raw",
-    // A disabled box keeps its mark in the dimmed ink, on a neutral fill
-    // when on, and keeps a readable edge, or a small empty box vanishes on
-    // a light layer.
+    // Keep disabled marks and empty boxes distinct on light surfaces.
     "ui-choice-disabled:ui-choice-on:ak-layer-15",
     "ui-choice-disabled:ak-ink-0 ui-choice-disabled:ak-edge-20",
     "ui-choice-disabled:cursor-not-allowed",
@@ -82,20 +67,17 @@ export const choice = cv({
   defaultVariants: {
     $mark: "check",
     $rounded: "sm",
-    // The box is its own shape, not a corner of the card or row around it.
+    // Preserve the box shape independently of the surrounding card or row.
     $forceRounded: true,
-    // The slot fixes the box's dimensions, so its border takes no extra space.
-    // Keep the same edge weight and writing surface as text fields. An empty
-    // box has no other boundary against a light or a dark canvas.
+    // The slot fixes the outer size. Match the input's 3:1 boundary contrast.
     $border: true,
     $borderType: "border",
     $edgeWeight: 45,
     $lightnessOffset: -1,
     $hoverOffset: true,
     $layer(defaultValue) {
-      // The slot opens a see-through layer for an icon. The box is a surface.
-      // Only the slot's own default is replaced: a color asked for by an
-      // extender or a caller stays.
+      // Replace only the slot's transparent default; explicit colors still
+      // apply.
       if (defaultValue === "transparent") return true;
       return defaultValue;
     },
@@ -103,10 +85,8 @@ export const choice = cv({
 });
 
 /**
- * The box on a native input. Adds what only an input needs: hovering the field
- * row around it lights it the way hovering the box does, the keyboard focus
- * ring, and the system's own drawing in forced-colors mode, where the checked
- * and mixed states come in the user's palette.
+ * A native choice input with field-row hover, keyboard focus, and system
+ * rendering in forced-colors mode.
  */
 export const choiceInput = cv({
   extend: [choice, focusHighlight],
@@ -121,58 +101,45 @@ export const choiceInput = cv({
 });
 
 /**
- * A label row around a native choice input: the box, then a label and an
- * optional description. It is a control row, not a button: it paints no surface
- * and draws no ring of its own, because the input inside it does both.
+ * A label row for a native choice input and its description. The input supplies
+ * the surface and focus ring.
  */
 export const choiceField = cv({
   extend: [control],
   class: [
     "group/choice-field",
-    // A text row: the box and the label start at the edge.
     "justify-start select-none",
-    // The input is the only part that is ever :disabled, so the row reads
-    // its state from it as well as from the $disabled prop, which a radio
-    // disabled through its group never receives. The description paints its
-    // own ink, so the dimming has to reach every descendant.
+    // Group-disabled inputs may not pass $disabled to the row. Read their DOM
+    // state and dim descendants, including independently colored descriptions.
     "ui-disabled-within:ak-disabled",
     "ui-disabled-within:cursor-not-allowed",
     "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
   ],
   defaultVariants: {
-    // The row is structure on the surface around it, not a material of its own.
-    // With no layer, the box inside resolves against that surface and the row
-    // costs no color work.
+    // Resolve the input against the surrounding surface without an extra layer.
     $layer: false,
   },
 });
 
+/** A flexible wrapper for a choice field's label and description. */
 export const choiceFieldContent = controlContent;
 
+/** Choice field label text with optional truncation. */
 export const choiceFieldLabel = controlLabel;
 
+/** Secondary choice field text with optional line limits. */
 export const choiceFieldDescription = controlDescription;
 
-/**
- * A card-shaped label around a choice input that stays out of sight. The card
- * tints toward brand while the input is checked or mixed, and the parts inside
- * it read the input's state through the ui-choice-* variants.
- */
+/** A card label whose tint follows a nested input's checked or mixed state. */
 export const choiceCard = cv({
-  // Focus lands on the input inside the label, so the ring comes from the
-  // -within trigger.
   extend: [button, focusWithin],
   class: [
-    // Slots read the input's disabled state through this group. Compositions
-    // can also use it to lay the parts out from the card's own classes.
+    // Let slots read the nested input's disabled state.
     "group/choice",
-    // A wrapping row, so a description placed directly inside the card falls
-    // to its own line instead of sitting beside the label.
+    // Allow a direct description to occupy its own row.
     "flex-wrap justify-start content-start",
     "[&_input]:sr-only",
-    // Only the input itself carries the checked and disabled state, never the
-    // label around it, so the card's own states come from the -within
-    // variants. A mixed card tints like a checked one.
+    // The label reads checked, mixed, and disabled states from its input.
     "not-ui-disabled-within:ui-checked-within:ak-edge-brand",
     "not-ui-disabled-within:ui-checked-within:ak-edge-raw",
     "not-ui-disabled-within:ui-checked-within:ak-layer-brand",
@@ -181,21 +148,16 @@ export const choiceCard = cv({
     "not-ui-disabled-within:ui-mixed-within:ak-edge-raw",
     "not-ui-disabled-within:ui-mixed-within:ak-layer-brand",
     "not-ui-disabled-within:ui-mixed-within:ak-layer-mix-20",
-    // $lighten below writes to the style attribute, which no class can
-    // override, so the tinted layer drops the lift through the plugin's own
-    // class.
+    // Use the plugin's zero-lighten utility to cancel the default inline
+    // channel.
     "not-ui-disabled-within:ui-checked-within:ak-layer-lighten-0",
     "not-ui-disabled-within:ui-mixed-within:ak-layer-lighten-0",
-    // On a surface of the brand's own pigment, the tint matches the surface.
-    // A one-step push barely moves the tint elsewhere, but on a mid-lightness
-    // pigment it lands in the ambiguous midrange, which the push skips, so
-    // the card still separates from the surface.
+    // Keep selected cards distinct on brand surfaces, including colors in the
+    // contrast pipeline's ambiguous range.
     "not-ui-disabled-within:ui-checked-within:ak-layer-push-1",
     "not-ui-disabled-within:ui-mixed-within:ak-layer-push-1",
-    // A card disabled through its group never receives the $disabled prop, so
-    // it reads the state from its input and draws what $disabled below draws.
-    // The label itself is never disabled, so its hover and press, which only
-    // skip a disabled element, are turned off here too.
+    // Group-disabled cards may not receive $disabled. Read the input state and
+    // suppress hover and press on the label too.
     "ui-disabled-within:ak-disabled",
     "ui-disabled-within:cursor-not-allowed",
     "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
@@ -206,30 +168,18 @@ export const choiceCard = cv({
   ],
   variants: {
     /**
-     * Sets the card's flow. `vertical` makes the card a tile: the slot and the
-     * check share the top row, one at each end, and the content fills the row
-     * below, whatever its source order. Each part in the top row keeps its own
-     * height and sits at the top, so a badge there stays a pill beside a taller
-     * slot. The slot drops the margins that seat it on a line of text, so it
-     * lines up with the label under it. The flag is set on the card's parts, so
-     * a slot inside the content drops them too, while a control inside the
-     * tile, such as a badge, resets it for its own slots and keeps their
-     * margins. As on any frame, `vertical` also rounds nested `$cover` frames
-     * for a column.
+     * Sets the card flow. `vertical` puts the slot and check above full-width
+     * content and removes their inline margins. It also rounds nested `$cover`
+     * frames for a column.
      */
     $orientation: {
       vertical: [
-        // The card is itself a control, and every control resets the flag on
-        // its own parts, so the tile's value must be important to reach them.
+        // Override the control's reset of this flag on direct children.
         "[&>*]:[--control-inline:0]!",
-        // The card's justify-start and the control's justify-center are plain
-        // utilities that sort after justify-between, so only the important
-        // flag puts the check at the end of the row.
+        // Override the later-sorted justify-start and justify-center utilities.
         "justify-between!",
-        // By default, a row stretches each part to the height of its tallest
-        // part. The slot and the check set their own height, but a badge would
-        // take the height of the slot. The alignment sits in `:where()`, so it
-        // has no specificity and an items-* class on the card still wins.
+        // Keep shorter badges from stretching to the tallest slot. Zero
+        // specificity lets caller alignment classes override this.
         // https://github.com/ariakit/ariakit/issues/7599
         "[:where(&)]:items-start",
         "[&>.control-content]:basis-full [&>.control-content]:order-1",
@@ -240,16 +190,10 @@ export const choiceCard = cv({
      * @default "card"
      */
     $gapY: {
-      // Wrapped rows sit closer together than siblings on one line. Defining
-      // --gap-y here also reaches the content wrapper, whose gap-y-(--gap-y) is
-      // inert without it.
+      // Share the smaller wrapped-row gap with the content wrapper.
       card: "[--gap-y:calc(var(--py)/2)] gap-y-(--gap-y)",
     },
-    /**
-     * Sets the element's disabled state. A disabled card keeps a faint edge,
-     * because a bordered surface with no border at all reads as a rendering
-     * glitch on light layers.
-     */
+    /** Applies disabled styles while keeping a faint card boundary. */
     $disabled: [
       "[--disabled-border:var(--ak-edge)]",
       "ak-edge-5 ak-layer-mix-20",
@@ -261,13 +205,12 @@ export const choiceCard = cv({
     $gapY: "card",
     $border: true,
     $focusOffset: 2,
-    // Cards are content surfaces: they lift unconditionally instead of taking
-    // the adaptive offset, which darkens a card on a light layer.
+    // Lighten cards unconditionally instead of darkening them on light
+    // surfaces.
     $lightnessOffset: false,
     $lighten: true,
-    // The optical extra on the sides insets a line of text from a rounded edge.
-    // A tile's edges hold a slot and a check instead, so it keeps the frame
-    // padding on every side.
+    // Vertical cards align slots to the frame padding without extra text
+    // insets.
     $px(defaultValue, variants) {
       if (defaultValue == null) return;
       if (variants.$orientation === "vertical") return "sm";
@@ -277,27 +220,22 @@ export const choiceCard = cv({
 });
 
 /**
- * The box drawn inside a card, at slot scale. It is the same box as the native
- * input, read through the card: the span is never checked or disabled itself,
- * so every state comes from the input in the label around it. A child replaces
+ * A card check indicator whose state follows the nested input. A child replaces
  * the drawn mark.
  */
 export const choiceCardCheck = cv({
   extend: [choice],
   variants: {
     /**
-     * Renders the check as a stamp in the card's top-end corner. Adds to the
-     * slot's own floating rules: the stamp shows only while the choice is on,
-     * so an empty corner never reads as a missing part.
+     * Places the check in the card's top-end corner and hides it when
+     * unchecked.
      */
     $floating: "not-ui-choice-on:invisible",
   },
   defaultVariants: {
     $size: "lg",
-    // The card answers hover itself; a second shift on the check would read as
-    // a nested control.
+    // The card already supplies hover feedback.
     $hoverOffset: false,
-    // A stamp is a disc whichever box the card draws in its row.
     $rounded(defaultValue, variants) {
       if (variants.$floating) return "full";
       return defaultValue;
@@ -305,24 +243,28 @@ export const choiceCardCheck = cv({
   },
 });
 
+/** A text-aligned slot for choice card icons and other content. */
 export const choiceCardSlot = buttonSlot;
 
+/** A flexible wrapper for a choice card's label and description. */
 export const choiceCardContent = buttonContent;
 
+/** A card label that fills the space between its slots. */
 export const choiceCardLabel = cv({
   extend: [buttonLabel],
   class: "grow",
 });
 
+/** Secondary choice card text that truncates by default. */
 export const choiceCardDescription = buttonDescription;
 
+/** A responsive grid of choice cards with equal row heights. */
 export const choiceCardGrid = cv({
   class: [
     "grid auto-rows-fr gap-3",
-    // As a grid or flex item, the grid has to get narrower than its cards'
-    // text, or a long description pushes it past its parent's edge.
+    // Let the grid shrink below its cards' text width.
     "min-w-0",
-    // min() keeps a card from forcing a column wider than its container.
+    // Keep the minimum column width within the available space.
     "grid-cols-[repeat(auto-fill,minmax(min(100%,var(--choice-card-min-w)),1fr))]",
   ],
   variants: {

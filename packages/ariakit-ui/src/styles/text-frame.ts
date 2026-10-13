@@ -2,26 +2,16 @@ import { cv } from "clava";
 import { frame } from "./frame.ts";
 
 /**
- * A frame for a line of text. It spends its padding the way a control does: the
- * frame padding above and below the content, and on the sides that padding plus
- * an optical extra, so a line of text sits as far from a rounded edge as it
- * looks to. The two are published as `--py` and `--px`, measured in the
- * element's own font, for the slots and gaps that line up with them. Extend
- * this in place of `frame` wherever a line of text sits in a padded box: a
- * control, a nav group label or a list row. Extending both is redundant: clava
- * applies a base that two extensions reach only once.
- *
- * Despite the name, this has nothing to do with the `text` recipe, which colors
- * text. This one only shapes the box around it.
+ * A frame with vertical padding and extra side padding based on the font
+ * metrics. Publishes `--py` and `--px` for aligned slots and gaps. Extend this
+ * instead of `frame` for padded text.
  */
 export const textFrame = cv({
   extend: [frame],
   variants: {
     /**
-     * Sets the side padding. A named step scales the optical extra added to the
-     * frame padding; rounded elements often look best with more. Any other
-     * value replaces the side padding, such as one measured on an ancestor and
-     * passed down as a length (`var(--nav-px)`).
+     * Sets side padding. Named sizes scale the optical extra added to frame
+     * padding; other CSS values replace the full side padding.
      */
     $px(value?: "sm" | "md" | "lg" | "xl" | (string & {})) {
       if (value == null) return;
@@ -38,8 +28,6 @@ export const textFrame = cv({
     },
   },
   defaultVariants: {
-    // Without frame padding there is nothing for the scale to add to, and
-    // refine emits no padding formula to spend it on.
     $px(defaultValue, variants) {
       if (variants.$p === "none") return;
       return defaultValue ?? "md";
@@ -48,16 +36,12 @@ export const textFrame = cv({
   refine({ variants, addClass }) {
     if (variants.$p === "none") return;
     addClass([
-      // The extra is a share of the room a line of text leaves above and
-      // below its capitals, so it follows the font and the line height. The
-      // value written by a raw $px lands in the style attribute and wins over
-      // this formula.
+      // Derive the optical inset from line height and capital height. A raw
+      // `$px` wins through the style attribute.
       "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
       "[--py:var(--ak-frame-padding,0px)]",
-      // The optical extra alone, registered as a length (see ui.css), so it is
-      // measured once in this element's font. A slot that adjusts its own font
-      // metrics, such as an avatar, rebuilds --px from it and the frame
-      // padding (see controlSlot). A raw $px writes its own inset.
+      // Register the inset as a length so slots with different font metrics
+      // inherit the same spacing.
       "[--text-frame-inset:calc((1lh-1cap)*var(--px-scale))]",
       "px-(--px) py-(--py)",
     ]);

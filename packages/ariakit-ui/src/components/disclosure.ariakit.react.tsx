@@ -43,8 +43,7 @@ export interface DisclosureOwnProps {
   split?: boolean;
 }
 
-// The recipe member only documents the prop. VariantPropsWithRecipe still makes
-// it required when the recipe adds variants.
+// VariantPropsWithRecipe still requires recipes that add variants.
 export type DisclosureProps<
   R extends RecipeLike<typeof disclosure, R> = typeof disclosure,
 > = Omit<ak.RoleProps<"div">, "content"> &
@@ -89,8 +88,7 @@ export function Disclosure<
   const isOpen = ak.useStoreState(store, "open");
   const styles = recipe ?? disclosure;
   const [variantProps, rest] = splitProps(props, styles);
-  // Inference from a generic component reads its recipe as the constraint,
-  // which makes recipe required, so the props type is named.
+  // Explicit props avoid making the generic component's recipe required.
   const buttonEl = createOptionalRender<DisclosureButtonProps>(
     DisclosureButton,
     button,
@@ -255,9 +253,7 @@ export function DisclosureButton<
 export interface DisclosureButtonLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof disclosureButtonLabel> {}
 
-/**
- * A custom label for the disclosure button's `label` prop.
- */
+/** A custom label for the disclosure button's `label` prop. */
 export function DisclosureButtonLabel(props: DisclosureButtonLabelProps) {
   const [variantProps, rest] = splitProps(props, disclosureButtonLabel);
   return (
@@ -300,7 +296,7 @@ export function DisclosureContent({
   ...props
 }: DisclosureContentProps) {
   const [variantProps, rest] = splitProps(props, disclosureContent);
-  // The props type is named for the same reason as in Disclosure.
+  // Explicit props avoid making the generic component's recipe required.
   const bodyEl = createRender<DisclosureContentBodyProps>(
     DisclosureContentBody,
     body,

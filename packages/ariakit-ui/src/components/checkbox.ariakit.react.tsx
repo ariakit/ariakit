@@ -41,8 +41,7 @@ export interface CheckboxFieldProps
  */
 export function CheckboxField({ children, ...props }: CheckboxFieldProps) {
   const [variantProps, rest] = splitProps(props, checkboxField);
-  // The label is never :disabled itself, so mirror the input's disabled prop as
-  // the $disabled variant for the row's own disabled visuals.
+  // Labels cannot match :disabled, so mirror the input state.
   return (
     <label
       {...checkboxField.jsx({
@@ -59,9 +58,7 @@ export function CheckboxField({ children, ...props }: CheckboxFieldProps) {
 export interface CheckboxLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof checkboxLabel> {}
 
-/**
- * Label text of a `CheckboxField`. Must be nested inside a `CheckboxField`.
- */
+/** Label text of a `CheckboxField`. Must be nested inside a `CheckboxField`. */
 export function CheckboxLabel(props: CheckboxLabelProps) {
   const [variantProps, rest] = splitProps(props, checkboxLabel);
   return <ak.Role.span {...checkboxLabel.jsx(variantProps)} {...rest} />;
@@ -88,8 +85,7 @@ export interface CheckboxCardProps
  */
 export function CheckboxCard({ children, ...props }: CheckboxCardProps) {
   const [variantProps, rest] = splitProps(props, checkboxCard);
-  // The label is never :disabled itself, so mirror the input's disabled prop as
-  // the $disabled variant for the card's own disabled visuals.
+  // Labels cannot match :disabled, so mirror the input state.
   return (
     <label
       {...checkboxCard.jsx({
@@ -157,9 +153,7 @@ export function CheckboxCardContent(props: CheckboxCardContentProps) {
 export interface CheckboxCardLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof checkboxCardLabel> {}
 
-/**
- * Main text of the card. Must be nested inside a `CheckboxCard`.
- */
+/** Main text of the card. Must be nested inside a `CheckboxCard`. */
 export function CheckboxCardLabel(props: CheckboxCardLabelProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardLabel);
   return <ak.Role.span {...checkboxCardLabel.jsx(variantProps)} {...rest} />;
@@ -168,9 +162,7 @@ export function CheckboxCardLabel(props: CheckboxCardLabelProps) {
 export interface CheckboxCardDescriptionProps
   extends ak.RoleProps<"span">, VariantProps<typeof checkboxCardDescription> {}
 
-/**
- * Secondary text below the label. Must be nested inside a `CheckboxCard`.
- */
+/** Secondary text below the label. Must be nested inside a `CheckboxCard`. */
 export function CheckboxCardDescription(props: CheckboxCardDescriptionProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardDescription);
   return (
@@ -192,8 +184,7 @@ export function CheckboxCardGrid(props: CheckboxCardGridProps) {
     <ak.Role.div
       {...checkboxCardGrid.jsx(variantProps)}
       {...rest}
-      // Set after the spread, so a role prop that is present but undefined, as
-      // a wrapper with an optional role passes it, keeps the group role.
+      // Preserve the group role when the caller passes undefined.
       role={rest.role ?? "group"}
     />
   );

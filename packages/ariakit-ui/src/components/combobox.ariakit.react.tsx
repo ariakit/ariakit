@@ -313,8 +313,7 @@ export function ComboboxItemSlot(props: ComboboxItemSlotProps) {
 export interface ComboboxSelectedValueProps
   extends ak.ComboboxSelectedValueProps {}
 
-// A multiple select stores an array. Ariakit returns it as is, and React would
-// run the strings together, so the default display joins them.
+// React renders adjacent strings without separators.
 function joinSelectedValue(value: string | readonly string[]) {
   if (typeof value === "string") {
     return value;
