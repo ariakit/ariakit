@@ -8,12 +8,13 @@ export interface TextProps
 
 /**
  * Renders a span with text colors from its own variants or a parent component's
- * text variants. Set `$text` to enable its color modifiers.
+ * text variants. A color modifier enables the adaptive text color, unless
+ * `$text` is set.
  * @example
  * <Text $text="success">Changes saved</Text>
  * @example
  * <Layer $layer="brand">
- *   <Text $text $textChroma="muted">Project details</Text>
+ *   <Text $textChroma="muted">Project details</Text>
  * </Layer>
  */
 export function Text(props: TextProps) {
