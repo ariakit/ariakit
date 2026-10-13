@@ -70,22 +70,25 @@ export const comboboxGroupLabel = cv({
   },
 });
 
-/** A combobox option with active-item and forced-colors highlights. */
+/** A combobox option with focus and forced-colors highlights. */
 export const comboboxItem = cv({
   extend: [option],
   class: [
-    "data-active-item:ak-state-5",
+    // Follow current focus. The active item keeps data-active-item after focus
+    // leaves the combobox, so that attribute would leave a stale highlight.
+    "ui-focus:ak-state-5",
     // Use system selection colors without browser canvas backplates. Every
     // descendant needs HighlightText after automatic color adjustment is
-    // disabled.
-    "data-active-item:forced-colors:forced-color-adjust-none",
-    "data-active-item:forced-colors:bg-[Highlight]",
-    "data-active-item:forced-colors:text-[HighlightText]",
-    "data-active-item:forced-colors:**:text-[HighlightText]",
-    // A disabled option can still be the active item. The extra state selector
-    // lets the selection text color override the system disabled color.
-    "data-active-item:ui-disabled:forced-colors:text-[HighlightText]!",
-    "data-active-item:ui-disabled:forced-colors:**:text-[HighlightText]!",
+    // disabled. The important flag keeps the selection text color of the option
+    // over its hover ink, because the pointer also gives focus to the option.
+    "ui-focus:forced-colors:forced-color-adjust-none",
+    "ui-focus:forced-colors:bg-[Highlight]",
+    "ui-focus:forced-colors:text-[HighlightText]!",
+    "ui-focus:forced-colors:**:text-[HighlightText]",
+    // A disabled option can still have focus. The extra state selector lets the
+    // selection text color override the system disabled color.
+    "ui-focus:ui-disabled:forced-colors:text-[HighlightText]!",
+    "ui-focus:ui-disabled:forced-colors:**:text-[HighlightText]!",
   ],
   variants: {
     /** Paints the highlighted appearance for static content. */

@@ -1281,7 +1281,7 @@ body > * {
 }
 
 @custom-variant ui-focus {
-  &:focus {
+  &:is(:focus, [data-focus]) {
     @slot;
   }
 }
