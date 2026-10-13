@@ -19,20 +19,15 @@ const ROUNDED_VALUES = [
 export type FrameRoundedValue = (typeof ROUNDED_VALUES)[number] | "unset";
 
 /**
- * Resolves a `$rounded` value to its class, or to the radius channel when the
- * value is a length or an expression rather than a named step.
- *
- * A component that declares its own `$rounded` replaces this one rather than
- * merging with it, so call this for every value it does not handle itself, or
- * the named steps stop working on that component.
+ * Resolves named radii and CSS lengths or expressions. Extenders that replace
+ * `$rounded` must call this for values they do not handle.
  */
 export function getFrameRoundedClass(
   value?: FrameRoundedValue | (string & {}),
 ) {
   if (value == null) return;
-  // "unset" rather than false: a false branch would give frame and every
-  // extender an implicit constant default, which deadens downstream computed
-  // fallbacks like the glider's and the control slot's.
+  // Use "unset" to avoid an implicit false default that would prevent
+  // downstream computed fallbacks.
   if (value === "unset") return;
   if (includes(ROUNDED_VALUES, value)) {
     const valueMap = {
@@ -49,9 +44,7 @@ export function getFrameRoundedClass(
     } satisfies Record<Exclude<FrameRoundedValue, "unset">, string>;
     return valueMap[value];
   }
-  // A bare word is a scale key that some component added, and one this
-  // component did not declare has nothing to say here. Only a length, a
-  // percentage or an expression is a radius to spend.
+  // Ignore unknown named steps; accept lengths, percentages, and expressions.
   if (!/[(.\d%]/.test(value)) return;
   return {
     class: "ak-frame-(--frame-radius)",
@@ -60,10 +53,8 @@ export function getFrameRoundedClass(
 }
 
 /**
- * The frame geometry on its own: radius, padding, margin, borders and the
- * concentric-radius layout, with no colour behind it. Extend this when an
- * element takes frame geometry but paints nothing, so it does not open a layer
- * it has no use for. Most components want `frame`.
+ * Frame geometry and concentric corners without a background layer. Use `frame`
+ * when the element also needs layer and edge colors.
  */
 export const frameBase = cv({
   variants: {
@@ -73,12 +64,10 @@ export const frameBase = cv({
      */
     $frame: "ak-frame",
     /**
-     * Stretches the element to fill the parent frame's content box while
-     * collapsing shared borders. The element's corners are rounded to match the
-     * parent frame's corners based on the parent's `$orientation`. If this
-     * isn't inferred automatically, use `$frameStart` and `$frameEnd` to
-     * indicate whether the frame is the first or last child in the current
-     * flow, which affects how the corners are rounded.
+     * Fills the parent frame's content box, collapses shared borders, and
+     * matches its corners. The parent's `$orientation` controls rounding. Use
+     * `$frameStart` and `$frameEnd` when DOM order does not identify the outer
+     * corners.
      */
     $cover: "ak-frame-cover",
     /**
@@ -91,31 +80,19 @@ export const frameBase = cv({
       vertical: "ak-frame-col",
     },
     /**
-     * Marks the frame as the first child in the current flow, where
-     * `$orientation` is determined by the parent frame. This only has an effect
-     * when used together with `$cover` and determines how the current frame's
-     * corners are rounded. Usually, this doesn't need to be set explicitly if
-     * the element is already the first child in the current HTML tree. This is
-     * useful when you render another element as the first child instead, one
-     * that is not shown or is absolutely positioned.
+     * Marks the first `$cover` frame in the parent's flow for corner rounding.
+     * Use when another DOM child precedes the first visible frame.
      */
     $frameStart: "ak-frame-start",
     /**
-     * Marks the frame as the last child in the current flow. This should be
-     * used together with `$cover` and determines how the current frame's
-     * corners are rounded. Usually, this doesn't need to be set explicitly if
-     * the element is already the last child in the current HTML tree. This is
-     * useful when you render another element as the last child instead, one
-     * that is not shown or is absolutely positioned.
+     * Marks the last `$cover` frame in the parent's flow for corner rounding.
+     * Use when another DOM child follows the last visible frame.
      */
     $frameEnd: "ak-frame-end",
     /**
-     * Sets the default border radius for the element. Takes a named step from
-     * `none` to `4xl`, `full`, or any length or expression such as
-     * `var(--my-radius)`. If the frame is nested, this value will be adjusted
-     * to stay concentric with the parent unless `$forceRounded` is used or the
-     * parent padding plus the child margin is at least 1rem, in which case the
-     * concentric effect is not visually meaningful.
+     * Sets the radius from a named step, CSS length, or expression. Nested
+     * frames stay concentric unless `$forceRounded` is set or parent padding
+     * plus child margin reaches `1rem`.
      */
     $rounded(value?: FrameRoundedValue | (string & {})) {
       return getFrameRoundedClass(value);
@@ -126,9 +103,7 @@ export const frameBase = cv({
      */
     $forceRounded: "ak-frame-force",
     /**
-     * Sets the element's frame padding. This affects nested frames' radius
-     * calculations unless it's set to `1rem` or more, in which case the
-     * concentric effect is no longer visually meaningful.
+     * Sets frame padding. Values below `1rem` affect nested corner rounding.
      */
     $p(value?: "unset" | "none" | (string & {}) | number) {
       if (value == null) return;
@@ -140,10 +115,8 @@ export const frameBase = cv({
       };
     },
     /**
-     * Sets the element's frame margin. This affects the frame's radius
-     * calculations if the current frame is nested, unless the sum of the parent
-     * padding and the child margin is at least `1rem`, in which case the
-     * concentric effect is no longer visually meaningful.
+     * Sets frame margin. Nested corner rounding applies while parent padding
+     * plus this margin is below `1rem`.
      */
     $m(value?: "unset" | "none" | (string & {}) | number) {
       if (value == null) return;
@@ -163,24 +136,22 @@ export const frameBase = cv({
       auto: "ak-frame-bordering-(--border-width)",
       border: "ak-frame-border-(--border-width)",
       ring: "ak-frame-ring-(--border-width)",
-      // Tailwind's inset ring uses a shadow, so share the frame's real border
-      // fallback in forced colors, including its geometry and requested width.
+      // Inset shadows disappear in forced colors; use a real border with the
+      // requested width and geometry.
       inset:
         "ring-(length:--border-width) ring-inset forced-colors:ak-frame-border-(--border-width)",
       dashed: "ak-frame-border-(--border-width) border-dashed",
       dotted: "ak-frame-border-(--border-width) border-dotted",
     },
     /**
-     * Sets the border width. When set to `inherit`, the border uses the parent
-     * frame's border or ring width and color. When set to `true`, it defaults
-     * to `1px`. When set to `false`, the element draws no border, even when its
-     * component sets a `$borderType` or it sits inside a bordered frame.
+     * Sets the border width in pixels. `true` uses `1px`; `inherit` uses the
+     * parent frame's width and color. `false` removes the border even with an
+     * inherited width or explicit `$borderType`.
      */
     $border(value?: "inherit" | boolean | number) {
       if (value == null) return;
-      // --border-width inherits. Left unset, a $borderType passed along with
-      // false, or one on a descendant, would draw at the width of a bordered
-      // ancestor.
+      // Reset inherited width so $borderType and descendants cannot restore an
+      // ancestor's border.
       if (value === false) {
         return { style: { "--border-width": "0px" } };
       }
@@ -199,14 +170,11 @@ export const frameBase = cv({
       if (variants.$border === "inherit") {
         return "unset";
       }
-      // No border also drops the type a component keeps. At a zero width, its
-      // ring would still paint a shadow, which Firefox draws as faint arcs at
-      // rounded corners.
+      // Remove zero-width shadows too; Firefox can render them as faint corner
+      // arcs.
       if (variants.$border === false) {
         return "unset";
       }
-      // An explicit or component-level $borderType wins; $border alone only
-      // implies the adaptive type when nothing else asked for a specific one.
       if (defaultValue !== undefined) {
         return defaultValue;
       }
@@ -218,23 +186,15 @@ export const frameBase = cv({
   },
 });
 
-/**
- * The frame geometry plus the edge colours it paints with, and the layer those
- * colours resolve against. This is the frame primitive components normally
- * extend.
- */
+/** Frame geometry with a layer and adaptive edge colors. */
 export const frame = cv({
   extend: [edge, frameBase],
   defaultVariants: {
-    // A frame is geometry, not a surface. It opens a layer only to give its
-    // text and edges a color context, and paints nothing until a layer variant
-    // or a state moves the color, so whatever sits behind it stays visible: a
-    // glider, a gradient, or content scrolling under a sticky bar. A frame that
-    // is a surface of its own sets `$layer` to `true` or to a color.
+    // Provide text and edge colors without painting over gliders or other
+    // content. Use $layer: true or a color for a resting surface.
     $layer: "transparent",
-    // These two clear variants declared by `edge`. They belong here rather than
-    // in `edge` because a computed default only sees the variants its own
-    // component declares or extends, so in `edge` they could not read $border.
+    // These defaults must live here: edge's computed defaults cannot read
+    // frame's $border variant.
     $edge(defaultValue, variants) {
       if (variants.$border === "inherit") {
         return "unset";

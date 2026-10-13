@@ -26,17 +26,12 @@ type TableRowGroupKind = "head" | "body" | "foot";
 
 export type TableSortValue = "ascending" | "descending" | "none";
 
-// The cell props a head cell sets for its whole column in declarative rows (see
-// getColumnProps in Table).
+// Head-cell props shared by the column in declarative rows.
 const COLUMN_PROPS = ["numeric", "$sticky", "$fit", "$grow"] as const;
 
 type ColumnProps = Pick<TableCellProps, (typeof COLUMN_PROPS)[number]>;
 
-/**
- * Collects the union of column keys across all rows, preserving the first
- * appearance order (head rows first) so every row renders the same cells in the
- * same positions regardless of its own key order or missing columns.
- */
+/** Collects columns in first-appearance order so sparse rows stay aligned. */
 function getColumnKeys<K extends string | number>(rows?: TableRows<K>) {
   const keys = new Set<string>();
   for (const row of rows ?? []) {
@@ -49,9 +44,7 @@ function getColumnKeys<K extends string | number>(rows?: TableRows<K>) {
   return [...keys];
 }
 
-// A TableCell element given as a row value is the cell itself. Any other
-// element is the cell's content: cloned with the cell props, it would land in
-// the row beside the cells and receive props it does not know.
+// Only TableCell elements replace cells; other elements render inside them.
 function isTableCellElement(
   value: unknown,
 ): value is React.ReactElement<TableCellProps> {
@@ -59,6 +52,10 @@ function isTableCellElement(
 }
 
 export type TableRow<K extends string | number> = {
+  /**
+   * Row group to render in. Defaults to `"body"`. This reserved field does not
+   * render a column.
+   */
   group?: TableRowGroupKind;
   /**
    * Stable identity within the row group, so edits and component state survive
@@ -66,8 +63,7 @@ export type TableRow<K extends string | number> = {
    * key use their position.
    */
   key?: React.Key;
-  // Partial: a row may omit columns (or set them to null) and still render an
-  // empty cell in the right position.
+  // Missing columns still render empty cells to preserve alignment.
 } & Partial<Record<K, React.ReactNode | TableCellProps>>;
 
 export type TableRows<K extends string | number> = TableRow<K>[];
@@ -79,7 +75,6 @@ interface TableCellContextType {
   sort?: TableSortValue;
 }
 
-// What a cell tells the sort button and the indicator inside it.
 const TableCellContext = React.createContext<TableCellContextType>({
   numeric: false,
 });
@@ -87,9 +82,9 @@ const TableCellContext = React.createContext<TableCellContextType>({
 export interface TableProps<K extends string | number>
   extends React.ComponentProps<"table">, VariantProps<typeof table> {
   /**
-   * Visible native table name, or an element or props for `TableCaption`. An
-   * element replaces the part; use a props object with `children` for rich
-   * text.
+   * Visible table name, or an element or props for `TableCaption`. An element
+   * replaces the caption; use a props object with `children` for rich text.
+   * Omit it or pass `null` or `false` to render no caption.
    */
   caption?: React.ReactNode | TableCaptionProps;
   /** Custom container element or props to render a `TableContainer`. */
@@ -102,27 +97,35 @@ export interface TableProps<K extends string | number>
   body?: React.ReactElement | TableRowGroupProps;
   /** Custom foot row group element or props to render a `TableRowGroup`. */
   foot?: React.ReactElement | TableRowGroupProps;
-  /** Custom row element or props to render a `TableRow` for body rows. */
+  /**
+   * Custom element or props for `TableRow`. Also supplies the default for
+   * `headRow` and `footRow`.
+   */
   row?: React.ReactElement | TableRowProps;
-  /** Custom row element or props to render a `TableRow` for head rows. */
+  /**
+   * Custom row element or props for head rows. Defaults to `row`, with the
+   * `group` set to `"head"` unless the custom row overrides it.
+   */
   headRow?: React.ReactElement | TableRowProps;
-  /** Custom row element or props to render a `TableRow` for foot rows. */
+  /**
+   * Custom row element or props for foot rows. Defaults to `row`, with the
+   * `group` set to `"foot"` unless the custom row overrides it.
+   */
   footRow?: React.ReactElement | TableRowProps;
   /**
-   * Declarative rows data. Except for the reserved `group` and `key` fields,
-   * keys map to columns. A value is the cell's content, a `TableCell` props
-   * object, or a `TableCell` element that replaces the cell. Any other element,
-   * a component that renders a `TableCell` included, is content.
+   * Row data whose keys map to columns, except for the reserved `group` and
+   * `key` fields. Values can be cell content, `TableCell` props, or a
+   * `TableCell` element that replaces the cell. Other elements render inside a
+   * cell. Missing columns render empty cells.
    */
   rows?: TableRows<K>;
 }
 
 /**
- * Composable table with declarative rows, always wrapped in a `TableContainer`
- * and a `TableScroller`. Pass `container` or `scroller` to configure them, or
- * compose the parts by hand for a table without them.
+ * Renders a table from children or row data, with a `TableContainer` and a
+ * `TableScroller`. Use `container` and `scroller` to configure these wrappers.
  * @example
- * <Table>
+ * <Table caption="People">
  *   <TableRowGroup group="head">
  *     <TableRow>
  *       <TableCell header>Name</TableCell>
@@ -138,6 +141,7 @@ export interface TableProps<K extends string | number>
  * </Table>
  * @example
  * <Table
+ *   caption="People"
  *   rows={[
  *     { group: "head", name: "Name", age: { children: "Age", numeric: true } },
  *     { key: "ada", name: "Ada", age: 37 },
@@ -183,16 +187,12 @@ export function Table<K extends string | number>({
     return rowEl;
   };
 
-  // Rows are caller-controlled records: inherited properties are not part of
-  // the declarative contract, so a sparse row must not render a value from its
-  // prototype chain.
+  // Sparse rows must not render inherited values as cells.
   const getCell = (row: TableRow<K>, key: K) => {
     if (!Object.hasOwn(row, key)) return undefined;
     return row[key];
   };
 
-  // The props of a cell given as a TableCell element or as a props object;
-  // content given any other way has none.
   const getCellProps = (row: TableRow<K>, key: K) => {
     const cell = getCell(row, key);
     if (!cell) return;
@@ -203,9 +203,7 @@ export function Table<K extends string | number>({
     return cell as TableCellProps;
   };
 
-  // What createRender takes for a cell. Missing and null columns still emit an
-  // empty cell so every following cell stays under its header, and an element
-  // other than a TableCell is wrapped as the cell's content.
+  // Keep empty cells aligned and wrap elements that cannot replace a cell.
   const getCellValue = (row: TableRow<K>, key: K) => {
     const value = getCell(row, key);
     if (value == null) return { children: null };
@@ -214,9 +212,7 @@ export function Table<K extends string | number>({
     return value;
   };
 
-  // A column takes its number format, its pin and its width from its head cell,
-  // so the declarative rows set each once instead of on every cell. A sort
-  // stays with the head cell: only a column header takes it.
+  // Share column formatting from head cells. Sorting stays on the header.
   const getColumnProps = (key: K) => {
     const columnProps: ColumnProps = {};
     for (const row of headRows ?? []) {
@@ -231,7 +227,6 @@ export function Table<K extends string | number>({
     return columnProps;
   };
 
-  // Head cells set the same column props for every row in this render.
   const columns = columnKeys.map((key) => ({
     key,
     props: getColumnProps(key as K),
@@ -296,6 +291,17 @@ export function Table<K extends string | number>({
 export interface TableCaptionProps
   extends React.ComponentProps<"caption">, VariantProps<typeof tableCaption> {}
 
+/**
+ * Renders the visible native table name.
+ * @example
+ * <Table
+ *   caption={<TableCaption>People</TableCaption>}
+ *   rows={[
+ *     { group: "head", name: "Name" },
+ *     { key: "ada", name: "Ada" },
+ *   ]}
+ * />
+ */
 export function TableCaption(props: TableCaptionProps) {
   const [variantProps, rest] = splitProps(props, tableCaption);
   return <caption {...tableCaption.jsx(variantProps)} {...rest} />;
@@ -304,6 +310,18 @@ export function TableCaption(props: TableCaptionProps) {
 export interface TableContainerProps
   extends React.ComponentProps<"div">, VariantProps<typeof tableContainer> {}
 
+/**
+ * Renders the outer frame around a table and its scroller.
+ * @example
+ * <Table
+ *   caption="People"
+ *   container={<TableContainer $rounded="lg" />}
+ *   rows={[
+ *     { group: "head", name: "Name" },
+ *     { key: "ada", name: "Ada" },
+ *   ]}
+ * />
+ */
 export function TableContainer(props: TableContainerProps) {
   const [variantProps, rest] = splitProps(props, tableContainer);
   return <div {...tableContainer.jsx(variantProps)} {...rest} />;
@@ -312,6 +330,18 @@ export function TableContainer(props: TableContainerProps) {
 export interface TableScrollerProps
   extends React.ComponentProps<"div">, VariantProps<typeof tableScroller> {}
 
+/**
+ * Renders a scrollable viewport around a table.
+ * @example
+ * <Table
+ *   caption="People"
+ *   scroller={<TableScroller style={{ maxHeight: 320 }} />}
+ *   rows={[
+ *     { group: "head", name: "Name" },
+ *     { key: "ada", name: "Ada" },
+ *   ]}
+ * />
+ */
 export function TableScroller(props: TableScrollerProps) {
   const [variantProps, rest] = splitProps(props, tableScroller);
   return <div {...tableScroller.jsx(variantProps)} {...rest} />;
@@ -321,10 +351,25 @@ export interface TableRowGroupProps
   extends
     React.ComponentProps<"tbody" | "thead" | "tfoot">,
     VariantProps<typeof tableRowGroup> {
-  /** The group of rows to render. */
+  /**
+   * Selects the `thead`, `tbody`, or `tfoot` element and its styles. Defaults
+   * to `"body"`.
+   */
   group?: TableRowGroupKind;
 }
 
+/**
+ * Renders a head, body, or foot group and shares it with its rows and cells.
+ * @example
+ * <Table
+ *   caption="People"
+ *   head={<TableRowGroup $sticky="top" />}
+ *   rows={[
+ *     { group: "head", name: "Name" },
+ *     { key: "ada", name: "Ada" },
+ *   ]}
+ * />
+ */
 export function TableRowGroup({
   group = "body",
   ...props
@@ -343,15 +388,30 @@ export function TableRowGroup({
 
 export interface TableRowProps
   extends React.ComponentProps<"tr">, VariantProps<typeof tableRow> {
-  /** The group of rows to render. */
+  /**
+   * Row group used for default hover and selection styles. Inherits from
+   * `TableRowGroup`, or defaults to `"body"` outside a group.
+   */
   group?: TableRowGroupKind;
   /**
-   * Whether the row is selected, which the row says with `aria-selected`. Rows
-   * are selectable in a grid, so a table that selects rows takes `role="grid"`.
+   * Sets the row's `aria-selected` state. Use `role="grid"` on a table with
+   * selectable rows. Omit it for rows that cannot be selected.
    */
   selected?: boolean;
 }
 
+/**
+ * Renders a table row with styles from its row group.
+ * @example
+ * <Table
+ *   caption="People"
+ *   row={<TableRow $hover={false} />}
+ *   rows={[
+ *     { group: "head", name: "Name" },
+ *     { key: "ada", name: "Ada" },
+ *   ]}
+ * />
+ */
 export function TableRow({ group, selected, ...props }: TableRowProps) {
   const contextGroup = React.useContext(TableRowGroupContext);
   group = group ?? contextGroup;
@@ -362,8 +422,7 @@ export function TableRow({ group, selected, ...props }: TableRowProps) {
       aria-selected={selected}
       {...tableRow.jsx({
         ...variantProps,
-        // The head and foot bands take neither the hover nor the selection
-        // tint.
+        // Only body rows get hover and selection styles by default.
         $hover: variantProps.$hover ?? isBody,
         $selected: variantProps.$selected ?? isBody,
       })}
@@ -375,24 +434,44 @@ export function TableRow({ group, selected, ...props }: TableRowProps) {
 export interface TableCellProps
   extends
     React.ComponentProps<"td">,
-    // The semantic props below compute these variants along with the
-    // element and its scope, so they stay in sync.
+    // Semantic props keep styles, element, and scope in sync.
     Omit<VariantProps<typeof tableCell>, "$header" | "$numeric"> {
-  /** Whether the cell is numeric. */
+  /**
+   * Aligns content to the end and uses tabular digits. Defaults to `false`.
+   * Cells in `rows` inherit this setting from their column's head cell.
+   */
   numeric?: boolean;
-  /** Whether the cell is a header. */
+  /**
+   * Renders a `th` with column or row scope. Defaults to `"column"` in a head
+   * group and `false` elsewhere. `true` selects column scope in a head group
+   * and row scope elsewhere.
+   */
   header?: "column" | "row" | boolean;
   /**
-   * Makes a column header sortable and says how its column is sorted: the
-   * header takes `aria-sort`, and a `TableSortButton` wraps its content with
-   * the indicator for the state. `"none"` is a sortable column the table is not
-   * sorted by. Only a column header takes it.
+   * Sets `aria-sort` and wraps a column header's content in `TableSortButton`.
+   * Use `"none"` for an unsorted column. Does not sort the data. Ignored on
+   * cells that are not column headers.
    */
   sort?: TableSortValue;
-  /** Custom sort button element or props to render a `TableSortButton`. */
+  /**
+   * Custom element or props for `TableSortButton`. Used only on a column header
+   * with `sort` set.
+   */
   sortButton?: React.ReactElement | TableSortButtonProps;
 }
 
+/**
+ * Renders a data or header cell with optional numeric and sorting styles.
+ * @example
+ * <Table caption="People">
+ *   <TableRowGroup>
+ *     <TableRow>
+ *       <TableCell header="row">Ada</TableCell>
+ *       <TableCell numeric>37</TableCell>
+ *     </TableRow>
+ *   </TableRowGroup>
+ * </Table>
+ */
 export function TableCell({
   numeric,
   header,
@@ -402,8 +481,7 @@ export function TableCell({
 }: TableCellProps) {
   const group = React.useContext(TableRowGroupContext);
   header = header ?? (group === "head" ? "column" : false);
-  // Only the bare `true` value derives the header kind from the group, so an
-  // explicit "row" stays a row header even inside a head group.
+  // Explicit header kinds override the row group's default.
   const isColumnHeader =
     header === "column" || (header === true && group === "head");
   const isRowHeader = header === "row" || (header === true && group !== "head");
@@ -455,9 +533,21 @@ export interface TableSortButtonProps
 }
 
 /**
- * The control of a sortable column header, which `TableCell` renders when it
- * takes `sort`. It runs edge to edge over the cell, so the whole header is the
- * target, and keeps the label where a plain header puts it.
+ * Renders a button across a sortable column header. Handle its click to sort
+ * the data and update the cell's `sort` prop.
+ * @example
+ * <Table caption="People">
+ *   <TableRowGroup group="head">
+ *     <TableRow>
+ *       <TableCell sort="ascending" sortButton={<TableSortButton disabled />}>
+ *         Name
+ *       </TableCell>
+ *     </TableRow>
+ *   </TableRowGroup>
+ *   <TableRowGroup>
+ *     <TableRow><TableCell>Ada</TableCell></TableRow>
+ *   </TableRowGroup>
+ * </Table>
  */
 export function TableSortButton({
   indicator = <TableSortIndicator />,
@@ -485,9 +575,26 @@ export interface TableSortIndicatorProps
     VariantProps<typeof tableSortIndicator> {}
 
 /**
- * The sort indicator of a `TableSortButton`: chevrons while the column is not
- * sorted, an arrow once it is, which the header's `aria-sort` turns around for
- * a descending sort. Children replace the glyph.
+ * Shows chevrons for an unsorted column or an arrow for its sort direction.
+ * Children replace the icon. The indicator is hidden from assistive technology.
+ * @example
+ * <Table caption="People">
+ *   <TableRowGroup group="head">
+ *     <TableRow>
+ *       <TableCell
+ *         sort="ascending"
+ *         sortButton={
+ *           <TableSortButton disabled indicator={<TableSortIndicator />} />
+ *         }
+ *       >
+ *         Name
+ *       </TableCell>
+ *     </TableRow>
+ *   </TableRowGroup>
+ *   <TableRowGroup>
+ *     <TableRow><TableCell>Ada</TableCell></TableRow>
+ *   </TableRowGroup>
+ * </Table>
  */
 export function TableSortIndicator(props: TableSortIndicatorProps) {
   const { sort } = React.useContext(TableCellContext);

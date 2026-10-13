@@ -7,10 +7,12 @@ export interface TextFrameProps
   extends ak.RoleProps<"div">, VariantProps<typeof textFrame> {}
 
 /**
- * Renders a frame for a line of text. It takes every `Frame` prop and adds
- * optical side padding, so its text starts where the label of a control with
- * the same padding starts. Despite the name, it has nothing to do with the
- * `Text` component, which colors text.
+ * Renders a frame for text with side padding that aligns it with control labels
+ * that use the same padding.
+ * @example
+ * <TextFrame $p={2} $border $rounded="md">
+ *   Project details
+ * </TextFrame>
  */
 export function TextFrame(props: TextFrameProps) {
   const [variantProps, rest] = splitProps(props, textFrame);

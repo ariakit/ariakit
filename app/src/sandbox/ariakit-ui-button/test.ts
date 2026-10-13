@@ -2,6 +2,20 @@ import { click, q } from "@ariakit/test";
 import { version } from "react";
 import { expect, test } from "vitest";
 
+// https://github.com/ariakit/ariakit/pull/7863
+test("keeps button slots accessible unless explicitly hidden", () => {
+  const button = q.within(q.article("Decorative icon")).button(/Add item/);
+  expect(button).toHaveAccessibleName("Add item");
+  expect(q.within(button).text("+")).toHaveAttribute("aria-hidden", "true");
+  expect(
+    q.within(q.article("Count badge")).button("Inbox 12"),
+  ).toHaveAccessibleName("Inbox 12");
+  expect(
+    q.within(q.article("Meaningful icon")).button("Starred Project"),
+  ).toHaveAccessibleName("Starred Project");
+  expect(q.within(q.article("Meaningful icon")).img("Starred")).toBeVisible();
+});
+
 // This gallery uses React 19 ref props, as declared by @ariakit/ui.
 // https://github.com/ariakit/ariakit/pull/7489#discussion_r3995226174
 test.skipIf(version.startsWith("18."))(

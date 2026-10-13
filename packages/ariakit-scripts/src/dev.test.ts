@@ -152,7 +152,7 @@ test.skipIf(process.platform === "win32").each(["SIGINT", "SIGKILL"] as const)(
   async (signal) => {
     const rootPath = await mkdtemp(join(tmpdir(), "ariakit-dev-command-"));
     const appReadyPath = join(rootPath, "app-ready.txt");
-    const concPath = join(rootPath, "conc");
+    const pnpmPath = join(rootPath, "pnpm");
     const nextjsReadyPath = join(rootPath, "nextjs-ready.txt");
     const readyPath = join(rootPath, "ready.txt");
     const serverPath = join(rootPath, "server.cjs");
@@ -182,7 +182,7 @@ server.listen(port, "127.0.0.1", () => {
 `,
     );
     await writeFile(
-      concPath,
+      pnpmPath,
       `#!/usr/bin/env node
 const { spawn } = require("node:child_process");
 const { renameSync, writeFileSync } = require("node:fs");
@@ -199,7 +199,7 @@ spawn(
   process.execPath,
   [
     process.env.SERVER_PATH,
-    process.env.NEXTJS_PORT,
+    process.env.PORT,
     process.env.NEXTJS_READY_PATH,
   ],
   { stdio: "ignore" },
@@ -212,7 +212,7 @@ writeFileSync(
 renameSync(readyTempPath, process.env.READY_PATH);
 `,
     );
-    await chmod(concPath, 0o755);
+    await chmod(pnpmPath, 0o755);
 
     // Isolate the test group so its signals never reach the Vitest process.
     const child = spawn(process.execPath, [scriptPath, "dev", "--no-clean"], {

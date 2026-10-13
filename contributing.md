@@ -541,11 +541,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
 Build the app, then run the Chrome project. Replace `my-component` with the name of your sandbox, or omit it to run all browser tests:
 
 ```bash
-pnpm run build-app-lite
+pnpm run build-app
 pnpm -F app run test-chrome my-component
 ```
 
-Lite mode is selected during the build. After `pnpm run build-app-lite`, use `pnpm run preview-app` to preview the lite build.
+Use `pnpm run preview-app` to preview the build.
+
+Each app has one `build` script that produces its Cloudflare Worker. `build-app` runs both builds concurrently with `pnpm -F app -F nextjs --no-sort run build`. The app builds consume workspace source files, so they do not need to wait for each other. Library builds retain their dependency order.
+
+The `dev` and `preview` tasks have no prerequisites in `pnpm-workspace.yaml`, so pnpm starts both servers together. `dev-app` also selects available ports and watches package files. Stop the command to stop both servers.
 
 You can also run the tests in headed mode:
 
@@ -614,6 +618,8 @@ app/src/lib/reference-tokenizer.ts:34:27: error typescript(no-redundant-type-con
 ```
 
 Your editor reads the same configuration. The recommended [oxc extension](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode) applies the same automatic fixes when you save a file, so generate the types after you install the dependencies. Without them, a save can remove code that the missing types make look unnecessary.
+
+Run `pnpm run tsc` for the full type check, or `pnpm -F app run check` for Astro only. The filtered command uses the workspace task graph to generate Wrangler types before `check`. A direct `pnpm run check` inside `app` does not run task prerequisites.
 
 <div align="right">
     <a href="#advanced-tutorial">&uarr; back to top</a></b>

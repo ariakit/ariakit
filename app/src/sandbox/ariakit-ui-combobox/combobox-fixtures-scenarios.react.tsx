@@ -21,7 +21,11 @@ import {
   ComboboxProvider,
 } from "@ariakit/ui/components/combobox.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
-import { comboboxItem, comboboxSelect } from "@ariakit/ui/styles/combobox";
+import {
+  comboboxInput,
+  comboboxItem,
+  comboboxSelect,
+} from "@ariakit/ui/styles/combobox";
 import { layer } from "@ariakit/ui/styles/layer";
 import { ChevronsUpDownIcon, CircleCheckIcon } from "lucide-react";
 import * as React from "react";
@@ -250,6 +254,14 @@ export function ItemHighlight() {
         defaultOpen
         defaultActiveId="highlighted-member"
       >
+        {/*
+          The highlight follows current focus, so the list needs an input that
+          can hold focus while an option is active.
+        */}
+        <Ariakit.Combobox
+          aria-label="Reference search"
+          {...comboboxInput.jsx({ className: "w-64" })}
+        />
         <Ariakit.ComboboxList
           aria-label="Reference members"
           // Match the lifted canvas used by the thumbnail's popover.
@@ -259,10 +271,14 @@ export function ItemHighlight() {
             className: "w-66",
           })}
         >
-          <Ariakit.ComboboxItem id="highlighted-member" {...comboboxItem.jsx()}>
+          <Ariakit.ComboboxItem
+            id="highlighted-member"
+            focusOnHover
+            {...comboboxItem.jsx()}
+          >
             Reference highlight
           </Ariakit.ComboboxItem>
-          <Ariakit.ComboboxItem {...comboboxItem.jsx()}>
+          <Ariakit.ComboboxItem focusOnHover {...comboboxItem.jsx()}>
             Reference rest
           </Ariakit.ComboboxItem>
         </Ariakit.ComboboxList>

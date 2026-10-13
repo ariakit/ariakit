@@ -13,8 +13,6 @@ import {
 } from "../styles/button.ts";
 import { wrapsSlotChildren } from "../styles/control.ts";
 
-// The recipe member only documents the prop. VariantPropsWithRecipe still makes
-// it required when the recipe adds variants.
 export type ButtonProps<
   R extends RecipeLike<typeof button, R> = typeof button,
 > = ak.ButtonProps &
@@ -27,7 +25,9 @@ export type ButtonProps<
   };
 
 /**
- * @see https://ariakit.com/react/examples/button
+ * A button with shared control styles.
+ * @example
+ * <Button>Save changes</Button>
  */
 export function Button<R extends RecipeLike<typeof button, R> = typeof button>({
   recipe,
@@ -52,7 +52,12 @@ export interface ButtonGroupProps
   extends ak.GroupProps, VariantProps<typeof buttonGroup> {}
 
 /**
- * @see https://ariakit.com/react/examples/button
+ * Groups related buttons in one surface.
+ * @example
+ * <ButtonGroup aria-label="Edit history">
+ *   <Button>Undo</Button>
+ *   <Button>Redo</Button>
+ * </ButtonGroup>
  */
 export function ButtonGroup(props: ButtonGroupProps) {
   const [variantProps, rest] = splitProps(props, buttonGroup);
@@ -63,7 +68,14 @@ export interface ButtonGliderProps
   extends ak.RoleProps<"div">, VariantProps<typeof buttonGlider> {}
 
 /**
- * @see https://ariakit.com/react/examples/button
+ * A selection indicator for grouped buttons. Place it after the buttons inside
+ * `ButtonGroup`.
+ * @example
+ * <ButtonGroup aria-label="Views">
+ *   <Button render={<a href="/list" />} aria-current="page">List</Button>
+ *   <Button render={<a href="/grid" />}>Grid</Button>
+ *   <ButtonGlider />
+ * </ButtonGroup>
  */
 export function ButtonGlider(props: ButtonGliderProps) {
   const [variantProps, rest] = splitProps(props, buttonGlider);
@@ -74,7 +86,13 @@ export interface ButtonSeparatorProps
   extends ak.RoleProps<"div">, VariantProps<typeof buttonSeparator> {}
 
 /**
- * @see https://ariakit.com/react/examples/button
+ * A visual divider between grouped buttons.
+ * @example
+ * <ButtonGroup aria-label="Edit history">
+ *   <Button>Undo</Button>
+ *   <ButtonSeparator />
+ *   <Button>Redo</Button>
+ * </ButtonGroup>
  */
 export function ButtonSeparator(props: ButtonSeparatorProps) {
   const [variantProps, rest] = splitProps(props, buttonSeparator);
@@ -85,7 +103,14 @@ export interface ButtonContentProps
   extends ak.RoleProps<"span">, VariantProps<typeof buttonContent> {}
 
 /**
- * @see https://ariakit.com/react/examples/button
+ * Stacks a button label and description.
+ * @example
+ * <Button>
+ *   <ButtonContent>
+ *     <ButtonLabel>Download</ButtonLabel>
+ *     <ButtonDescription>PDF document</ButtonDescription>
+ *   </ButtonContent>
+ * </Button>
  */
 export function ButtonContent(props: ButtonContentProps) {
   const [variantProps, rest] = splitProps(props, buttonContent);
@@ -96,7 +121,12 @@ export interface ButtonLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof buttonLabel> {}
 
 /**
- * @see https://ariakit.com/react/examples/button
+ * The main text of a button. Truncates to one line by default; set
+ * `$truncate={false}` to let it wrap.
+ * @example
+ * <Button>
+ *   <ButtonLabel>Save changes</ButtonLabel>
+ * </Button>
  */
 export function ButtonLabel(props: ButtonLabelProps) {
   const [variantProps, rest] = splitProps(props, buttonLabel);
@@ -107,7 +137,15 @@ export interface ButtonDescriptionProps
   extends ak.RoleProps<"span">, VariantProps<typeof buttonDescription> {}
 
 /**
- * @see https://ariakit.com/react/examples/button
+ * Secondary text below a button label. Truncates to one line by default; set
+ * `$truncate={false}` to let it wrap.
+ * @example
+ * <Button>
+ *   <ButtonContent>
+ *     <ButtonLabel>Download</ButtonLabel>
+ *     <ButtonDescription>PDF document</ButtonDescription>
+ *   </ButtonContent>
+ * </Button>
  */
 export function ButtonDescription(props: ButtonDescriptionProps) {
   const [variantProps, rest] = splitProps(props, buttonDescription);
@@ -118,7 +156,13 @@ export interface ButtonSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof buttonSlot> {}
 
 /**
- * @see https://ariakit.com/react/examples/button
+ * An icon or other content beside a button label. Pass `aria-hidden` when the
+ * entire slot is decorative.
+ * @example
+ * <Button>
+ *   <ButtonSlot aria-hidden>+</ButtonSlot>
+ *   <ButtonLabel>Add item</ButtonLabel>
+ * </Button>
  */
 export function ButtonSlot(props: ButtonSlotProps) {
   const [variantProps, rest] = splitProps(props, buttonSlot);

@@ -18,6 +18,14 @@ export interface InputProps
     ak.FocusableProps<"input">,
     Omit<VariantProps<typeof input>, "$disabled"> {}
 
+/**
+ * A text field with shared control styles.
+ * @example
+ * <label>
+ *   Email
+ *   <Input type="email" name="email" />
+ * </label>
+ */
 export function Input({ render, ...props }: InputProps) {
   const [variantProps, rest] = splitProps(props, input);
   return (
@@ -35,6 +43,11 @@ export interface InputGroupProps
 /**
  * Groups a field and its slots in one surface. Surface clicks focus the field;
  * nested controls keep their own focus.
+ * @example
+ * <InputGroup>
+ *   <InputSlot aria-hidden>$</InputSlot>
+ *   <Input aria-label="Amount in dollars" type="number" />
+ * </InputGroup>
  */
 export function InputGroup(props: InputGroupProps) {
   const [variantProps, rest] = splitProps(props, input);
@@ -80,6 +93,14 @@ export function InputGroup(props: InputGroupProps) {
 export interface InputSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof inputSlot> {}
 
+/**
+ * An icon or other content beside a field in an `InputGroup`.
+ * @example
+ * <InputGroup>
+ *   <InputSlot aria-hidden>$</InputSlot>
+ *   <Input aria-label="Amount in dollars" type="number" />
+ * </InputGroup>
+ */
 export function InputSlot(props: InputSlotProps) {
   const [variantProps, rest] = splitProps(props, inputSlot);
   const variants = inputSlot.getVariants(variantProps);

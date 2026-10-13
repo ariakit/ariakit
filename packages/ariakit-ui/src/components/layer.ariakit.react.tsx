@@ -7,9 +7,15 @@ export interface LayerProps
   extends ak.RoleProps<"div">, VariantProps<typeof layer> {}
 
 /**
- * Renders a div with a colored background surface at the root of the relative
- * color system. Nested layers shift automatically to stay distinguishable from
- * their parent.
+ * Renders a background surface in the relative color system. Use `$layer` to
+ * set its color and `$lighten` or `$darken` to shift it.
+ * @example
+ * <Layer $layer="brand">
+ *   <Text $text>Project details</Text>
+ *   <Layer $layer $lighten>
+ *     <Text $text>Updated today</Text>
+ *   </Layer>
+ * </Layer>
  */
 export function Layer(props: LayerProps) {
   const [variantProps, rest] = splitProps(props, layer);

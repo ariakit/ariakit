@@ -6,7 +6,12 @@ import { tooltip } from "../styles/tooltip.ts";
 export interface TooltipProviderProps extends ak.TooltipProviderProps {}
 
 /**
- * @see https://ariakit.com/reference/tooltip-provider
+ * Shares visibility and anchor state between a tooltip and its anchor.
+ * @example
+ * <TooltipProvider>
+ *   <TooltipAnchor render={<button type="button" />}>Save</TooltipAnchor>
+ *   <Tooltip>Save changes</Tooltip>
+ * </TooltipProvider>
  */
 export function TooltipProvider(props: TooltipProviderProps) {
   return <ak.TooltipProvider {...props} />;
@@ -15,7 +20,12 @@ export function TooltipProvider(props: TooltipProviderProps) {
 export interface TooltipAnchorProps extends ak.TooltipAnchorProps {}
 
 /**
- * @see https://ariakit.com/reference/tooltip-anchor
+ * Shows its tooltip when the anchor receives hover or keyboard focus.
+ * @example
+ * <TooltipProvider>
+ *   <TooltipAnchor render={<button type="button" />}>Save</TooltipAnchor>
+ *   <Tooltip>Save changes</Tooltip>
+ * </TooltipProvider>
  */
 export function TooltipAnchor(props: TooltipAnchorProps) {
   return <ak.TooltipAnchor {...props} />;
@@ -25,7 +35,12 @@ export interface TooltipProps
   extends ak.TooltipProps, VariantProps<typeof tooltip> {}
 
 /**
- * @see https://ariakit.com/reference/tooltip
+ * Renders a short label or description for its anchor.
+ * @example
+ * <TooltipProvider>
+ *   <TooltipAnchor render={<button type="button" />}>Save</TooltipAnchor>
+ *   <Tooltip>Save changes</Tooltip>
+ * </TooltipProvider>
  */
 export function Tooltip(props: TooltipProps) {
   const [variantProps, rest] = splitProps(props, tooltip);
@@ -35,7 +50,15 @@ export function Tooltip(props: TooltipProps) {
 export interface TooltipArrowProps extends ak.TooltipArrowProps {}
 
 /**
- * @see https://ariakit.com/reference/tooltip-arrow
+ * Renders an arrow that points from the tooltip to its anchor.
+ * @example
+ * <TooltipProvider>
+ *   <TooltipAnchor render={<button type="button" />}>Save</TooltipAnchor>
+ *   <Tooltip>
+ *     <TooltipArrow />
+ *     Save changes
+ *   </Tooltip>
+ * </TooltipProvider>
  */
 export function TooltipArrow(props: TooltipArrowProps) {
   return <ak.TooltipArrow {...props} />;

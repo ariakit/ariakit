@@ -12,6 +12,7 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
+import { subscribe } from "@ariakit/store";
 import {
   flatten2DArray,
   reverseArray,
@@ -32,6 +33,7 @@ import type {
   RefObject,
 } from "react";
 import { useEffect, useMemo, useRef } from "react";
+import { getTreeActiveElement } from "../focusable/__utils.ts";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import { fireProxiedKeyboardEvent } from "./__keyboard-event-proxy.ts";
@@ -289,6 +291,57 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     const previousElementRef = useRef<HTMLElement | null>(null);
     const present = usePresentItem(store);
 
+    const scheduleFocusUpdateRef = useRef<(() => void) | undefined>(undefined);
+
+    useSafeLayoutEffect(() => {
+      if (!composite) return;
+      let focusElement: HTMLElement | null = null;
+      let pending = false;
+      let disposed = false;
+
+      const update = () => {
+        pending = false;
+        if (disposed) return;
+        const { activeId, compositeElement } = store.getState();
+        const ownerHasFocus =
+          !!compositeElement &&
+          compositeElement === ref.current &&
+          getTreeActiveElement(compositeElement) === compositeElement;
+        const itemElement = store.item(activeId)?.element;
+        const nextElement =
+          ownerHasFocus &&
+          itemElement?.isConnected &&
+          itemElement !== compositeElement
+            ? itemElement
+            : null;
+        if (focusElement === nextElement) return;
+        focusElement?.removeAttribute("data-focus");
+        nextElement?.setAttribute("data-focus", "true");
+        focusElement = nextElement;
+      };
+
+      const schedule = () => {
+        if (pending) return;
+        pending = true;
+        // Read focus after the temporary item-to-container handoff settles.
+        queueMicrotask(update);
+      };
+
+      scheduleFocusUpdateRef.current = schedule;
+      const unsubscribe = subscribe(
+        store,
+        ["activeId", "items", "compositeElement"],
+        schedule,
+      );
+      schedule();
+      return () => {
+        disposed = true;
+        scheduleFocusUpdateRef.current = undefined;
+        unsubscribe();
+        focusElement?.removeAttribute("data-focus");
+      };
+    }, [store, composite]);
+
     const [, setCompositeElement] = useTransactionState(
       composite ? store.setCompositeElement : null,
     );
@@ -337,6 +390,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     const onFocusCaptureProp = props.onFocusCapture;
 
     const onFocusCapture = useEvent((event: FocusEvent<HTMLType>) => {
+      scheduleFocusUpdateRef.current?.();
       onFocusCaptureProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
@@ -416,6 +470,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     const onBlurCaptureProp = props.onBlurCapture;
 
     const onBlurCapture = useEvent((event: FocusEvent<HTMLType>) => {
+      scheduleFocusUpdateRef.current?.();
       onBlurCaptureProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;

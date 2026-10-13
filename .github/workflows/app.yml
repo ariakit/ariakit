@@ -57,7 +57,7 @@ jobs:
         run: pnpm -F nextjs run tsc
 
       - name: Build Next.js app
-        run: pnpm -F nextjs run build-worker
+        run: pnpm -F nextjs run build
 
       - name: Upload Next.js artifact
         uses: actions/upload-artifact@v7

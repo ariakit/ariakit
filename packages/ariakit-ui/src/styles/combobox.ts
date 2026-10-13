@@ -14,26 +14,27 @@ import { popover } from "./popover.ts";
 import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
+/** A combobox input that does not shrink in a flex layout. */
 export const comboboxInput = cv({
   extend: [input],
   class: "combobox-input shrink-0",
 });
 
+/** Combobox label text with optional truncation. */
 export const comboboxLabel = controlLabel;
 
+/** A scrollable combobox popup constrained to its available space. */
 export const comboboxPopover = cv({
   extend: [popover],
   class: [
-    // Focus can land here for a tick before Ariakit hands it back to the
-    // combobox control, so the browser's ring stays off. The active item
-    // carries the highlight.
+    // Suppress the temporary popup focus ring; the active item carries the
+    // highlight.
     "outline-none overflow-auto overscroll-contain",
     "has-[>.combobox-list]:flex has-[>.combobox-list]:flex-col",
     "max-h-[min(var(--popover-available-height),20rem)]",
     "max-w-(--popover-available-width)",
     "min-w-[min(var(--popover-anchor-width),var(--popover-available-width))]",
-    // Native popovers use their invoker as an anchor. Ariakit's positioning
-    // uses the style attribute, which takes precedence over these classes.
+    // Use native invoker anchors unless Ariakit supplies inline positioning.
     "top-[calc(anchor(bottom)+--spacing(1))]",
     "inset-s-[calc(anchor(start)---spacing(1))]",
     "[position-try-fallbacks:flip-block,flip-inline]",
@@ -44,6 +45,7 @@ export const comboboxPopover = cv({
   },
 });
 
+/** A scrollable list of combobox options. */
 export const comboboxList = cv({
   class: [
     "combobox-list min-h-0 overflow-auto overscroll-contain outline-none",
@@ -51,6 +53,7 @@ export const comboboxList = cv({
   ],
 });
 
+/** A group of combobox options that covers the parent frame. */
 export const comboboxGroup = cv({
   extend: [frameBase],
   defaultVariants: {
@@ -58,6 +61,7 @@ export const comboboxGroup = cv({
   },
 });
 
+/** A compact, muted label for a group of combobox options. */
 export const comboboxGroupLabel = cv({
   extend: [textFrame, text],
   class: "cursor-default text-sm font-medium ak-ink-50",
@@ -66,20 +70,25 @@ export const comboboxGroupLabel = cv({
   },
 });
 
+/** A combobox option with focus and forced-colors highlights. */
 export const comboboxItem = cv({
   extend: [option],
   class: [
-    "data-active-item:ak-state-5",
-    // Forced colors drop the state background, so the active row takes the
-    // system selection colors. Without opting out of the automatic
-    // adjustment, the browser paints a Canvas backplate behind the text, which
-    // hides HighlightText. With the opt-out, every descendant keeps its own
-    // authored color, so all of them name HighlightText, including nested
-    // ones such as a description inside the item content.
-    "data-active-item:forced-colors:forced-color-adjust-none",
-    "data-active-item:forced-colors:bg-[Highlight]",
-    "data-active-item:forced-colors:text-[HighlightText]",
-    "data-active-item:forced-colors:**:text-[HighlightText]",
+    // Follow current focus. The active item keeps data-active-item after focus
+    // leaves the combobox, so that attribute would leave a stale highlight.
+    "ui-focus:ak-state-5",
+    // Use system selection colors without browser canvas backplates. Every
+    // descendant needs HighlightText after automatic color adjustment is
+    // disabled. The important flag keeps the selection text color of the option
+    // over its hover ink, because the pointer also gives focus to the option.
+    "ui-focus:forced-colors:forced-color-adjust-none",
+    "ui-focus:forced-colors:bg-[Highlight]",
+    "ui-focus:forced-colors:text-[HighlightText]!",
+    "ui-focus:forced-colors:**:text-[HighlightText]",
+    // A disabled option can still have focus. The extra state selector lets the
+    // selection text color override the system disabled color.
+    "ui-focus:ui-disabled:forced-colors:text-[HighlightText]!",
+    "ui-focus:ui-disabled:forced-colors:**:text-[HighlightText]!",
   ],
   variants: {
     /** Paints the highlighted appearance for static content. */
@@ -95,36 +104,37 @@ export const comboboxItem = cv({
   },
 });
 
+/** An empty-state message on the combobox popup's surface. */
 export const comboboxEmpty = cv({
   extend: [control],
   class: "justify-start",
   defaultVariants: {
-    // The message is part of the popup's surface, not a separate control.
     $layer: "transparent",
   },
 });
 
+/** A flexible wrapper for a combobox item's label and description. */
 export const comboboxItemContent = optionContent;
+/** Secondary combobox item text that truncates by default. */
 export const comboboxItemDescription = optionDescription;
+/** Combobox item label text that truncates by default. */
 export const comboboxItemLabel = optionLabel;
+/** A text-aligned slot for combobox item icons and other content. */
 export const comboboxItemSlot = optionSlot;
 
-// A flat select with a layer of its own is a form field, so it takes the finish
-// of the input beside it: a writing surface with a real border.
-// `$layer="transparent"` keeps the see-through button for a toolbar that owns
-// the surface, and the bevel and a colored layer keep their button look.
+// Neutral flat selects use input styling. Transparent, colored, and beveled
+// selects keep button styling.
 function isSelectField(variants: { $kind?: unknown; $layer?: unknown }) {
   if (variants.$kind === "bevel") return false;
   return variants.$layer === true;
 }
 
+/** A select trigger with input styling unless it uses a button surface. */
 export const comboboxSelect = cv({
   extend: [button],
-  // The primitives resolve their computed defaults first, so the field values
-  // below replace only the specific defaults they would otherwise produce.
+  // Replace only the primitives' computed defaults.
   defaultVariants: {
     $layer(defaultValue, variants) {
-      // The bevel paints its own gradient over the see-through button layer.
       if (variants.$kind === "bevel") return defaultValue;
       if (defaultValue !== "transparent") return defaultValue;
       return true;
@@ -132,8 +142,7 @@ export const comboboxSelect = cv({
     $lightnessOffset(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
       if (defaultValue !== true) return defaultValue;
-      // Like the input, a field keeps a light writing surface on light layers
-      // and a dark one on dark layers. A disabled field uses the surrounding
+      // Match input surfaces; disabled fields return to the surrounding
       // surface.
       if (variants.$disabled) return 0;
       return -1;
@@ -145,8 +154,7 @@ export const comboboxSelect = cv({
     $borderType(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
       if (!variants.$border) return defaultValue;
-      // A real border keeps the field geometry the same on light and dark
-      // layers, like the input.
+      // Keep field geometry consistent across light and dark surfaces.
       if (defaultValue != null && defaultValue !== "auto") return defaultValue;
       return "border";
     },
@@ -154,8 +162,8 @@ export const comboboxSelect = cv({
       if (!isSelectField(variants)) return defaultValue;
       if (!variants.$border) return defaultValue;
       if (defaultValue != null) return defaultValue;
-      // The input's weight, which keeps the field boundary at 3:1 against the
-      // surface. A disabled field keeps only a faint edge.
+      // Match the input's 3:1 boundary contrast; disabled fields keep a faint
+      // edge.
       return variants.$disabled ? 10 : 45;
     },
     $rounded(defaultValue, variants) {
@@ -168,25 +176,24 @@ export const comboboxSelect = cv({
     if (!isSelectField(variants)) return;
     if (!variants.$border) return;
     if (variants.$borderType !== "border") return;
-    // The disabled rules wipe a button's border, and a bordered field with no
-    // border at all reads as a rendering glitch on light layers. This channel
-    // keeps its edge color instead.
+    // Preserve the field boundary when button disabled styles clear its border.
     addClass("[--disabled-border:var(--ak-edge)]");
   },
 });
 
-// A slot, so the chevron takes the size and the row alignment every other
-// control icon gets. It ends the row even when nothing before it grows.
+/** A select arrow aligned at the end of the control. */
 export const comboboxSelectArrow = cv({
   extend: [buttonSlot],
   class: "ms-auto",
 });
 
+/** Select label text with optional truncation. */
 export const comboboxSelectLabel = controlLabel;
 
+/** Placeholder-colored text for an empty select trigger. */
 export const comboboxSelectPlaceholder = inputPlaceholder;
 
-// The mark keeps its space when unselected so item labels stay aligned.
+/** A selection mark that keeps its space when empty. */
 export const comboboxItemCheck = cv({
   extend: [optionSlot],
   class: "pointer-events-none [&:empty]:invisible",

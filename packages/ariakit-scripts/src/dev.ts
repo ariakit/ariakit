@@ -183,24 +183,18 @@ export async function dev(options: DevOptions = {}) {
     [appPort],
   );
 
-  const child = spawn(
-    "conc",
-    [
-      "-r",
-      `pnpm -F app run dev --port ${appPort}`,
-      `pnpm -F nextjs run dev --port ${nextjsPort}`,
-    ],
-    {
-      stdio: "inherit",
-      env: {
-        ...process.env,
-        // Prevent Astro from daemonizing when an agent is detected.
-        ASTRO_DEV_BACKGROUND: "0",
-        APP_PORT: String(appPort),
-        NEXTJS_PORT: String(nextjsPort),
-      },
+  const child = spawn("pnpm", ["-F", "app", "-F", "nextjs", "run", "dev"], {
+    stdio: "inherit",
+    env: {
+      ...process.env,
+      // Prevent Astro from daemonizing when an agent is detected.
+      ASTRO_DEV_BACKGROUND: "0",
+      APP_PORT: String(appPort),
+      NEXTJS_PORT: String(nextjsPort),
+      // Next.js reads PORT when no --port argument is supplied.
+      PORT: String(nextjsPort),
     },
-  );
+  });
 
   child.on("exit", (code) => process.exit(code ?? 0));
 }

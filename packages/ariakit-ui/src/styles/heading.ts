@@ -1,66 +1,50 @@
 import { cv } from "clava";
 import { text } from "./text.ts";
 
+/** Heading typography with element-based sizes and flow spacing. */
 export const heading = cv({
   extend: [text],
   class: [
     "ak-ink-100 font-medium",
-    // List rows keep the line height that aligns text with their markers.
-    // Zero specificity lets caller classes win. Set line-height directly so
-    // text-* utilities keep their own leading fallback instead of --tw-leading.
+    // Preserve list-item line height. Zero specificity permits overrides;
+    // direct line-height keeps text-* leading fallbacks.
     "[:where(&:not(li_*))]:[line-height:1.25]",
-    // The one place the size scale is written down, so the element rules
-    // below and the $level variant cannot drift apart.
     "[--heading-size-1:2.25em] [--heading-size-2:1.75em]",
     "[--heading-size-3:1.4em] [--heading-size-4:1.2em] [--heading-size-5:1em]",
-    // Each heading element takes its own step. An element with no step of
-    // its own, an h6 or a div given the heading look, declares no size at
-    // all and so keeps whatever the caller or the surrounding text sets. The
-    // whole selector sits in `:where()`, so the rule has no specificity and a
-    // caller's text-* class wins whatever order Tailwind gives the two.
+    // Size h1–h5 by element; other elements inherit. Zero specificity lets
+    // caller text-* classes override these steps.
     "[:where(&:is(h1))]:text-(length:--heading-size-1)",
     "[:where(&:is(h2))]:text-(length:--heading-size-2)",
     "[:where(&:is(h3))]:text-(length:--heading-size-3)",
     "[:where(&:is(h4))]:text-(length:--heading-size-4)",
     "[:where(&:is(h5))]:text-(length:--heading-size-5)",
-    // The flow margins are spent from channels rather than written into the
-    // utilities directly. A channel utility sorts before every literal one,
-    // so a caller's own mt-* or mb-* wins without an important flag.
+    // Channel utilities sort before literal margins so caller mt-* and mb-*
+    // classes win.
     "mt-(--heading-mt) mb-(--heading-mb)",
     "[--heading-mt:--spacing(4)] [--heading-mb:--spacing(2)]",
-    // A heading with nothing before it has nothing to sit away from, and one
-    // with nothing after it has nothing to push away.
     "first:[--heading-mt:0px] last:[--heading-mb:0px]",
-    // A heading directly under another sits closer to it than to body text.
-    // The upper heading gives up its closing margin and the lower one keeps a
-    // short opening margin, so the distance is that one value in block flow
-    // and in a flex or grid column alike, where margins do not collapse.
+    // Use one smaller margin between adjacent headings, including layouts where
+    // margins do not collapse.
     "[&:has(+:is(h1,h2,h3,h4,h5,h6))]:[--heading-mb:0px]",
     "[:is(h1,h2,h3,h4,h5,h6)+&]:[--heading-mt:0.35em]",
-    // Inside a list item the heading shares the item's own flow, so its
-    // closing margin must not push the rest of the item down.
+    // Let the list item control spacing after its heading.
     "in-[li]:[--heading-mb:0px]",
-    // Permalink anchors take the heading's own look and stay undecorated
-    // until hover. The color and the decoration width need the important
-    // flag to beat the Link component's compound state selectors, whose
-    // specificity outranks any plain descendant rule written here.
+    // Permalink colors and decoration widths need ! to override Link's compound
+    // state selectors.
     "[&_a]:font-[weight:inherit] [&_a]:text-current! [&_a]:no-underline",
     "[&_a]:hover:underline [&_a]:hover:decoration-1!",
     "[&_a]:hover:underline-offset-[0.25em]",
   ],
   variants: {
     /**
-     * Sets the heading’s visual size independently of the rendered element.
-     * Left unset, the heading sizes itself from its own element, `h1` to `h5`,
-     * so a value is only needed when the semantic level and the design size
-     * disagree. For a size outside these steps, leave this unset and pass a
-     * `text-*` class, which replaces the element's step.
+     * Sets visual size independently of the heading element. Otherwise, h1–h5
+     * use their own steps. Use a text-* class for sizes outside this scale.
      */
     $level(value?: "auto" | 1 | 2 | 3 | 4 | 5) {
       if (!value) return;
       if (value === "auto") return;
-      // A font size in the style attribute, so the chosen step wins over the
-      // element rule whatever order the two end up in.
+      // Inline size overrides the element-based rule regardless of stylesheet
+      // order.
       return { style: { fontSize: `var(--heading-size-${value})` } };
     },
   },

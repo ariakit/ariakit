@@ -20,35 +20,26 @@ import { selected } from "./selected.ts";
 import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
+/**
+ * A navigation region with shared row spacing, groups, and moving indicators.
+ */
 export const nav = cv({
   extend: [frame],
   class: [
-    // Rows use the root gap; adjacent groups add their own spacing. Pack them
-    // at the start so a stretched nav does not spread its rows.
+    // Keep rows at the start when the navigation region stretches.
     "nav content-start gap-(--nav-gap) min-w-0",
-    // Gap defaults the variants override through the style attribute.
     "[--nav-gap:--spacing(1)]",
     "[--nav-group-gap:--spacing(4)]",
-    // The gap between a row's icon slot and its label, on a disclosure row
-    // and on a plain row alike.
     "[--nav-row-gap:--spacing(3)]",
-    // A row's padding, and where its content starts past its edge: the
-    // control's default padding and its optical side padding on top (see
-    // --py and --px in text-frame.ts). Both are measured in the nav's own line
-    // box and font and registered as lengths (see ui.css), so a group
-    // label in smaller text pads like a row and insets its text to the same
-    // pixel.
+    // Registered lengths resolve in the navigation font, keeping smaller group
+    // labels aligned with rows.
     "[--nav-py:--spacing(2)]",
     "[--nav-px:calc(var(--nav-py)+(1lh-1cap)*0.5)]",
-    // The box a glider positions against, and a stacking context that keeps
-    // the glider's place in the paint order inside the nav.
     "relative isolate [--glider-padding:var(--ak-frame-padding)]",
   ],
   style: {
     anchorName: "--glider-frame",
-    // A glider follows the rows through the glider name and finds the guide
-    // line beside the row through the guide name (see navGlider). The scope
-    // keeps them to this nav, so a glider never lands in another one.
+    // Keep row and guide anchors within this navigation region.
     anchorScope:
       "--glider-frame, --glider-selected, --disclosure-guide-selected",
   },
@@ -62,18 +53,14 @@ export const nav = cv({
       horizontal:
         "horizontal flex items-start overflow-x-auto overscroll-x-contain [clip-path:inset(-100vmax_0)] [&>.control,&>.nav-list>li>.control]:shrink-0 [&>.control,&>.nav-list>li>.control]:whitespace-nowrap",
     },
-    /**
-     * Sets the space between rows. Numbers scale the spacing token.
-     */
+    /** Sets the space between rows. Numbers scale the spacing token. */
     $gap(value?: string | number) {
       if (value == null) return;
       return {
         style: { "--nav-gap": getSpacingValue(value) },
       };
     },
-    /**
-     * Sets the space between groups. Numbers scale the spacing token.
-     */
+    /** Sets the space between groups. Numbers scale the spacing token. */
     $groupGap(value?: string | number) {
       if (value == null) return;
       return {
@@ -81,10 +68,9 @@ export const nav = cv({
       };
     },
     /**
-     * Sets the size of every nav slot but a shortcut, and of nav disclosure
-     * icons. It must live on the root or an ancestor: the consumers read it as
-     * an inherited property or through container style queries, which read the
-     * nearest ancestor container. Numbers scale the spacing token.
+     * Sets navigation slot and disclosure icon sizes, except shortcuts. Set
+     * this on the root or an ancestor: consumers read inherited values and
+     * ancestor style queries. Numbers scale the spacing token.
      */
     $slotSize(value?: string | number) {
       if (value == null) return;
@@ -100,27 +86,26 @@ export const nav = cv({
   },
 });
 
+/** A list whose rows participate directly in the navigation layout. */
 export const navList = cv({
-  // Disclosures keep a layout box for their indentation and vertical flow.
+  // Disclosures need their own layout box for indentation and vertical spacing.
   class: "nav-list contents [&>li:not(.nav-disclosure)]:contents",
 });
 
+/** A navigation group with extra space between adjacent groups. */
 export const navGroup = cv({
-  // The label sits one row gap over its list, on the rhythm of the rows.
   class:
     "nav-group grid content-start gap-(--nav-gap) shrink-0 [.nav.vertical>&+&]:mt-[calc(var(--nav-group-gap)-var(--nav-gap))] [.nav.horizontal>&+&]:ms-[calc(var(--nav-group-gap)-var(--nav-gap))]",
 });
 
-// The label of a group of rows. It takes the row padding above and below and
-// starts its text where a row's content starts. Both lengths come from the nav
-// (see --nav-py and --nav-px there): the label's own text is smaller, and the
-// em-based spacing step would come out smaller in it.
+/**
+ * A group label aligned with navigation row content despite its smaller text.
+ */
 export const navGroupLabel = cv({
   extend: [textFrame, text],
   class: ["font-medium text-[0.875em] text-start"],
   defaultVariants: {
-    // The label pads like a row, with the lengths the nav measured in its own
-    // font rather than the label's smaller one.
+    // Use lengths resolved by the navigation root, not the smaller label font.
     $p: "var(--nav-py)",
     $px: "var(--nav-px)",
     $rounded: "md",
@@ -128,21 +113,15 @@ export const navGroupLabel = cv({
   },
 });
 
-// The nav's slot size for every slot kind. It is a static default because the
-// control slot's refine runs first and turns a badge or an avatar at a named
-// size into the line box; a computed default would come too late.
+/** Shared slot sizing and margins for navigation icons, badges, and avatars. */
 const navSlotBase = cv({
   extend: [buttonSlot],
   variants: {
     /**
-     * Sets the slot size. `auto`, the default for every kind but a shortcut,
-     * follows the nav's `$slotSize` and otherwise the text size, so a badge or
-     * an avatar lines up with the icons around it. For one slot that differs
-     * from the nav, a number scales the spacing token like `$slotSize`, and a
-     * length is used as is; the label after it stays on the label column. The
-     * named sizes are those of every control slot: `xs` to `lg` turn a badge or
-     * an avatar into the one-line `xl`, and `xl` and larger space the label by
-     * a margin of their own.
+     * Sets the slot size. `auto` follows the navigation `$slotSize`, or the
+     * text size. Numbers scale the spacing token; other lengths apply directly.
+     * Named sizes `xs` to `lg` become `xl` for badges and avatars; `xl` and
+     * larger add label spacing.
      */
     $size(value?: SlotSize | "auto" | number | (string & {})) {
       if (value == null) return;
@@ -151,11 +130,11 @@ const navSlotBase = cv({
       if (named != null) return named;
       return { style: { "--size": getSpacingValue(value) } };
     },
-    // The control slot's auto margin gives the overflow of a slot wider than
-    // the line to its start side, which only suits a slot that leads the label.
-    // A slot after another element, such as a count after the label, keeps the
-    // row's gap before it and the row's padding after it instead. A slot no
-    // wider than the line keeps its margins.
+    /**
+     * Sets horizontal slot margins. `auto` keeps the row gap before trailing
+     * slots and the row padding after them; leading slots use the control
+     * margin.
+     */
     $mx: {
       auto: [
         "[*+&]:[--mx:calc((var(--py)-var(--px)+max(0px,var(--my)))*var(--control-inline,1))]",
@@ -164,36 +143,29 @@ const navSlotBase = cv({
     },
   },
   defaultVariants: {
+    // Resolve before controlSlot refinement converts named badge/avatar sizes.
     $size: "auto",
   },
 });
 
-// A slot in a nav row: the icon that leads the label, or a badge, an avatar or
-// a shortcut anywhere in the row. It is a control slot, so its outer box is one
-// line square whatever its size, and the label after it starts where the label
-// of a disclosure row starts. A standalone nav row, such as a brand link, can
-// use it on its own.
+/** An icon, badge, avatar, or shortcut slot aligned with navigation labels. */
 export const navSlot = cv({
   extend: [navSlotBase],
   defaultVariants: {
     $size(defaultValue, variants) {
-      // A shortcut is text, so it keeps the text size.
       if (variants.$kind !== "shortcut") return defaultValue;
       if (defaultValue !== "auto") return defaultValue;
       return "md";
     },
     $p(defaultValue, variants) {
-      // A badge in a nav row holds a short count. The round padding keeps one
-      // digit inside the slot size, so the badge is a circle on the icon
-      // column; the control slot's auto padding would widen it past the icons.
+      // Keep single-digit badges round and aligned with the icon column.
       if (variants.$kind !== "badge") return defaultValue;
       if (defaultValue !== "auto") return defaultValue;
       return "md";
     },
     $mx(defaultValue, variants) {
-      // A number or a length sizes the slot like auto, so it takes the auto
-      // margin too. The control slot's own default copies the size, which is
-      // not a margin value then.
+      // Custom sizes need the auto margin; the inherited default would copy the
+      // size into the margin.
       if (variants.$size == null) return defaultValue;
       if (variants.$size === "auto") return defaultValue;
       if (isSlotSize(variants.$size)) return defaultValue;
@@ -205,56 +177,46 @@ export const navSlot = cv({
   },
 });
 
+/** A navigation link with wrapping text and a distinct current-page state. */
 export const navLink = cv({
   extend: [button, selected],
   class: [
     "justify-start text-wrap",
-    // Idle links on a dark layer read softer than their surface, and the
-    // icon slot follows, because the ink inherits. The button's hover ink and
-    // the selected ink below bring a row back to full strength.
+    // Idle ink inherits into slots; hover and selection restore full strength.
     "ak-dark:ak-ink-70",
-    // Links read as plain rows until they're current.
     "not-ui-selected:font-normal",
-    // The row gap plus the control's extra side padding, which an icon slot
-    // takes off, so a link with an icon lines up with the disclosure rows
-    // around it. $gap is off below, so this is the only gap utility here.
+    // Include optical padding so icon rows align with disclosures. Disable the
+    // inherited gap variant below.
     "gap-[calc(var(--nav-row-gap,--spacing(3))+var(--px)-var(--py))]",
   ],
   defaultVariants: {
-    // Idle links sit flush with the surface around them; hover and current
-    // still paint their own states.
     $lightnessOffset: false,
     $selectedPush: true,
-    // Current links keep full text contrast on their pushed surface.
     $selectedInk: 100,
     $gap: "none",
   },
 });
 
-// The label and the description stacked under it. A link turns the control's
-// own gaps off to space its row by the nav's row gap (see navLink), so the
-// content brings the two it reads.
+/** A navigation link label and description with shared control spacing. */
 export const navLinkContent = cv({
   extend: [buttonContent],
   class: [
-    // The control's default gap, between a label and a description that share
-    // one line.
+    // Restore the content gaps because navLink disables the control gap
+    // variant.
     "[--gap:calc(var(--px)-var(--sidebearing))]",
-    // The gap a disclosure row puts under its label (see $gapY in
-    // disclosure.ts), so a link and a disclosure button with a description
-    // stack alike.
     "[--gap-y:min(var(--py)/2,--spacing(2))]",
   ],
 });
 
+/** A navigation link label that wraps instead of truncating. */
 export const navLinkLabel = cv({
   extend: [buttonLabel],
   defaultVariants: {
-    // A link's text wraps; a button's own label truncates to hold one line.
     $truncate: false,
   },
 });
 
+/** A navigation link description that wraps instead of truncating. */
 export const navLinkDescription = cv({
   extend: [buttonDescription],
   defaultVariants: {
@@ -262,75 +224,58 @@ export const navLinkDescription = cv({
   },
 });
 
-// A standalone nav row, such as a brand row, that is a button or, through
-// render, an anchor.
+/**
+ * A full-width navigation action that also works outside a navigation region.
+ */
 export const navButton = cv({
   extend: [button],
   class: [
-    // A row fills its list item. A button element would otherwise shrink to
-    // its content, and a trailing slot would stop short of the row's end.
+    // Fill the row so trailing slots reach its end.
     "w-full justify-start overflow-clip whitespace-normal text-start",
-    // The row gap plus the control's extra side padding, which an icon slot
-    // takes off, with the nav's default for a row outside a nav. $gap is off
-    // below, so this is the only gap utility here.
+    // Include optical padding so icon rows align with disclosures. Disable the
+    // inherited gap variant below.
     "gap-[calc(var(--nav-row-gap,--spacing(3))+var(--px)-var(--py))]",
   ],
   defaultVariants: {
     $rounded: "lg",
-    // The row sits flush with the surface around it, like a nav link.
     $lightnessOffset: false,
     $gap: "none",
   },
 });
 
+/** A navigation button content box that clips overflowing content. */
 export const navButtonContent = cv({
   class: "block overflow-hidden",
 });
 
-// A cover takes the box of the row it follows. It is placed from the top: a
-// disclosure opening above the row moves the row, and a bottom inset, measured
-// from the nav's moving end, would turn that into a travel of its own.
+// Position covers from the top; a moving bottom edge would add false motion
+// when disclosures open.
 const navGliderCover = cx(
   "inset-s-[anchor(start)] top-[anchor(top)]",
   "w-[anchor-size()] h-[anchor-size()]",
 );
 
-// A glider that follows the current row of a nav, wherever it sits: in the
-// nav's own list, in a group or in a disclosure. It is the nav's first child,
-// so it paints under the rows, which are positioned and come after it, and it
-// can travel from one list to another. The rows sit in list items, so its rules
-// look through the nav, where the ones in glider.ts look for the control right
-// beside the glider.
+/**
+ * A moving indicator for the current navigation row. Place it before all rows.
+ */
 export const navGlider = cv({
   extend: [gliderBase],
   class: [
-    // A row is a control after the glider: its sibling, or the control right
-    // inside a list item anywhere in the nav. It takes the anchor name only
-    // while it is current, so the glider lands on whichever row is current
-    // right now.
+    // Select current rows directly after the glider or inside descendant list
+    // items.
     "[&~.control,&~*_li>.control]:ui-selected:[anchor-name:--glider-selected]",
-    // With no current row there is no anchor to land on, and the glider would
-    // stay as a blank square at the nav's start. A current row in a closed
-    // disclosure counts as none, from the moment the content starts to close:
-    // the glider is outside the content, so it would stay in view while the
-    // content folds up.
+    // Hide when no current row is visible, including as its disclosure starts
+    // to close.
     "not-ui-nav-glider-selected:hidden",
-    // At zero the glider paints over the surface behind the nav and under the
-    // rows. A disclosure content paints no surface of its own in a nav (see
-    // NavDisclosureContentBody), so a cover shows through it. Two gliders
-    // paint in tree order: a later one over an earlier one.
+    // Paint below rows but above the surrounding surface. Transparent
+    // disclosure bodies let the cover show through.
     "z-0",
-    // Firefox offsets an absolutely positioned anchor twice when its RTL
-    // container scrolls. Fixed positioning follows the anchor's visible box.
-    // The nav clips only its inline axis, so a bar can sit beyond its padding.
+    // Firefox doubles absolute anchor offsets in scrolling RTL containers.
+    // Fixed positioning uses the visible anchor box.
     "[.horizontal>&]:fixed!",
-    // A row a disclosure is still revealing is clipped by the content around
-    // it. The glider goes with the row while
-    // none of it shows.
+    // Hide the glider while its anchor is fully clipped by disclosure content.
     "[position-visibility:anchors-visible]",
-    // While a disclosure moves the rows, the nav says
-    // so (see Nav), and the glider follows its row at once rather than easing
-    // after it.
+    // Follow disclosure layout changes without a second easing animation.
     "[.nav[data-settling]>&]:transition-none",
   ],
   variants: {
@@ -344,20 +289,15 @@ export const navGlider = cv({
       if (value !== "bar") return;
       return [
         "glider-bar",
-        // The bar reads as an edge on top of the rows, not a surface behind
-        // them, so it reverses the stacking the base class sets.
         "z-10",
-        // Raw --contrast spans 0-100, so it must be normalized before
-        // scaling the bar thickness, or high-contrast mode inflates the bar
-        // from 2px to 42px.
+        // Normalize the 0–100 contrast scale before changing bar thickness.
         "[--glider-bar:calc(--spacing(0.5)+(--spacing(0.1))*var(--contrast)/100)]",
         "[.vertical>&]:top-[anchor(top)] [.vertical>&]:h-[anchor-size()] [.vertical>&]:w-(--glider-bar)",
         "[.vertical>&]:inset-e-[calc(anchor(start)+var(--glider-bar-offset))]",
         "[.vertical>&]:[&.glider-bar-end]:inset-e-auto",
         "[.vertical>&]:[&.glider-bar-end]:inset-s-[calc(anchor(end)+var(--glider-bar-offset))]",
-        // An automatic start bar keeps the guide of the disclosure content
-        // around the current row when one exists (see $guide in disclosure.ts).
-        // Otherwise the gap comes from this nav's frame padding.
+        // An automatic start bar follows the disclosure guide, with frame
+        // padding as fallback.
         "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-e-auto",
         "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc(anchor(start)-var(--glider-bar-offset)-var(--glider-bar)/2))-var(--glider-bar)/2)]",
         "[.vertical>&]:[&.glider-bar-frame]:inset-e-auto",
@@ -372,26 +312,22 @@ export const navGlider = cv({
         "[.horizontal>&]:[&.glider-bar-frame]:bottom-[anchor(--glider-frame_bottom)]",
         "[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:bottom-auto",
         "[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:top-[anchor(--glider-frame_top)]",
-        // Other engines can use this positioned nav's own frame edges. This
-        // keeps document scrolling out of a second fixed-position anchor.
+        // Other engines use the navigation frame directly, avoiding a second
+        // fixed anchor during document scrolling.
         "[@supports_not_(-moz-appearance:none)]:[.horizontal>&]:[&.glider-bar-frame]:absolute!",
         "[@supports_not_(-moz-appearance:none)]:[.horizontal>&]:[&.glider-bar-frame]:bottom-0",
         "[@supports_not_(-moz-appearance:none)]:[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:bottom-auto",
         "[@supports_not_(-moz-appearance:none)]:[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:top-0",
       ];
     },
-    /**
-     * Animates the glider as it travels between rows.
-     */
+    /** Animates the glider as it travels between rows. */
     $animated(value?: boolean) {
       if (!value) return;
       return "duration-100";
     },
   },
   defaultVariants: {
-    // A cover takes the row's own radius; a bar has none (see glider.ts), and
-    // keeps none inside a disclosure body, where a nested frame would round its
-    // ends to stay concentric.
+    // Covers follow row rounding. Bars stay square even inside nested frames.
     $rounded(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
       return "md";
@@ -400,7 +336,6 @@ export const navGlider = cv({
       if (variants.$kind !== "bar") return defaultValue;
       return defaultValue ?? true;
     },
-    // A cover takes the same pushed surface as the current row.
     $lightnessOffset(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
       return false;
@@ -416,16 +351,15 @@ export const navGlider = cv({
   },
   refine({ variants, addClass }) {
     if (variants.$animated) {
-      // The insets are the longhands: WebKit passes over the inset-block and
-      // inset-inline shorthands in a transition list. display stays off the
-      // list, so the glider leaves at once with a closing disclosure.
+      // WebKit requires inset longhands in transition lists. Omit display so
+      // closing disclosures hide the glider at once.
       addClass(
         "transition-[top,left,inset-inline-start,inset-inline-end,height,width]",
       );
     }
     if (variants.$kind === "bar") return;
-    // A cover takes over the row's surface. Beside a bar the row keeps its
-    // surface, including any caller-provided edge.
+    // The cover supplies the selected surface; bars leave the row surface
+    // intact.
     addClass([
       "supports-anchor:[&~.control,&~*_li>.control]:ui-selected:bg-transparent",
       "supports-anchor:[&~.control,&~*_li>.control]:ui-selected:ring-0",
@@ -434,20 +368,19 @@ export const navGlider = cv({
   },
 });
 
+/**
+ * A collapsible navigation section with aligned icons, labels, and nested rows.
+ */
 export const navDisclosure = cv({
   extend: [disclosure],
   class: [
     "nav-disclosure",
-    // An ancestor's nav slot size sizes the disclosure icon slot.
     "[@container_style(--nav-slot-size)]:[--disclosure-icon-size:var(--nav-slot-size)]",
   ],
   variants: {
     /**
-     * Sets the nav slot size for this section: its own icon, the indent of its
-     * content, and every nav slot inside it, as the nav's `$slotSize` does for
-     * the whole nav. It writes the disclosure's icon size as well, after the
-     * disclosure's own `$iconSize`, so it wins over that one. Numbers scale the
-     * spacing token.
+     * Sets icon and nested slot sizes for this section, including its content
+     * indent. Overrides `$iconSize`. Numbers scale the spacing token.
      */
     $slotSize(value?: string | number) {
       if (value == null) return;
@@ -458,66 +391,46 @@ export const navDisclosure = cv({
     },
   },
   defaultVariants: {
-    // The row and its content are already spaced apart, so the button needs no
-    // hover ramp between them.
+    // Separate row and content spacing removes the need for a hover ramp.
     $contentPadding: true,
-    // A nav row is a field-sized frame with control-sized padding.
     $rounded: "lg",
     $p: 2,
-    // The root paints no surface, so the gliders under a nested section's rows
-    // show through it (see NavDisclosure).
+    // Keep nested gliders visible through the disclosure root.
     $layer: "transparent",
-    // The body indents by the row gap, the same one the button spends.
     $slotGap: "var(--nav-row-gap, calc(var(--spacing) * 3))",
-    // The body sits one nav gap under the button, the gap between rows, and the
-    // guide starts there with it.
     $bodyOffset: "var(--nav-gap, calc(var(--spacing) * 1))",
   },
 });
 
-// The button of a nav disclosure. Its gap is the disclosure button's auto gap,
-// which spends the row gap navDisclosure sets through $slotGap, so its label
-// lines up with the rows around it. Its vertical gap stays the disclosure
-// button's own, tighter than that: the button is a flex row that does not wrap,
-// so nothing in it moves.
+/** A disclosure button whose label aligns with other navigation rows. */
 export const navDisclosureButton = cv({
   extend: [disclosureButton],
   class: "whitespace-normal",
 });
 
+/**
+ * A transparent disclosure body with aligned, evenly spaced navigation rows.
+ */
 export const navDisclosureContentBody = cv({
-  // frameBase for the radius, and any padding a caller gives it. The disclosure
-  // body already brings the edge and the layer.
+  // Add frame geometry; the disclosure body already supplies edge and layer
+  // colors.
   extend: [disclosureContentBody, frameBase],
   class: [
     "grid content-start gap-(--nav-gap)",
-    // The rows are nested frames, so their radius is this one minus the body's
-    // padding, which puts them on the disclosure's radius, the one its button
-    // has, while a caller's padding stays under the frame system's 1rem cutoff
-    // (see $p in frame.ts).
+    // Compensate for body padding so nested row corners match the disclosure
+    // radius below the frame 1rem cutoff.
     "[--nav-body-radius:calc(var(--disclosure-radius)+var(--ak-frame-padding))]",
-    // Pull a row back by its control inset so its text starts on the body. A
-    // nested disclosure moves as a whole, so its guide stays under its leading
-    // icon or indicator.
+    // Align row text with the body. Move nested disclosures as a whole to keep
+    // their guides aligned.
     "[&_li>.control:not(.disclosure-button)]:-ms-(--px)",
     "[&_li:has(>.disclosure-button)]:-ms-(--disclosure-px)",
-    // A row can sit on an edge where the disclosure content clips: its end and
-    // the last row's bottom while the body has no padding, and its start where
-    // nothing indents the body (no guide, no leading icon), which a caller's
-    // padding never changes. So rows here draw their focus ring inside their
-    // box, like the disclosure button above them. This outranks a row's own
-    // $focusOffset on purpose: an outset ring would be cut.
+    // Inset focus rings to prevent disclosure clipping, even when a row sets
+    // its own `$focusOffset`.
     "[&_li>.control]:-outline-offset-2",
   ],
-  // No $p: the body pads nothing by itself, so its rows end where the button
-  // ends and a bar or a cover on a row lands where it does on a top-level row.
-  // The gap under the button comes from the disclosure (see navDisclosure), and
-  // a caller's $p pads the rows inside it on every side but the start, which
-  // keeps the label indent, with the content padding on, as a nav disclosure
-  // keeps it by default.
+  // Leave default body padding unset so row ends and gliders align with
+  // top-level rows. Caller padding preserves the start indent.
   defaultVariants: {
-    // The body paints no surface of its own: a nav glider that covers a row
-    // inside it paints under the content, and it has to show through.
     $layer: "transparent",
     $forceRounded: true,
     $rounded: "var(--nav-body-radius)",
