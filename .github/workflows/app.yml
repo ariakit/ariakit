@@ -238,7 +238,7 @@ jobs:
       - name: Checkout trusted toolchain
         uses: actions/checkout@v7
         with:
-          ref: c87988effdff42edf4934ded906aa32ee3c04b66
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
           persist-credentials: false
 
       - name: Set up environment
@@ -248,8 +248,9 @@ jobs:
 
       - name: Install Visonaut
         run: |
+          version="$(jq -er '.devDependencies.visonaut' package.json)"
           mkdir -p "$RUNNER_TEMP/visonaut-tools"
-          pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact "visonaut@0.6.0"
+          pnpm --dir "$RUNNER_TEMP/visonaut-tools" add --ignore-scripts --save-exact "visonaut@$version"
           echo "$RUNNER_TEMP/visonaut-tools/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Submit captures

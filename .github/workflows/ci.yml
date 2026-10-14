@@ -42,7 +42,7 @@ jobs:
       - name: Checkout trusted planner
         uses: actions/checkout@v7
         with:
-          ref: c87988effdff42edf4934ded906aa32ee3c04b66
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
           path: .visonaut-planner
           persist-credentials: false
 
@@ -72,7 +72,9 @@ jobs:
         if: steps.plan.outputs.app == 'false'
         env:
           VISONAUT_SERVER: https://visonaut.com
-        run: npm exec --yes --ignore-scripts --package=visonaut@0.6.0 -- visonaut submit --no-visual
+        run: |
+          version="$(jq -er '.devDependencies.visonaut' .visonaut-planner/package.json)"
+          npm exec --yes --ignore-scripts --package="visonaut@$version" -- visonaut submit --no-visual
 
   main:
     name: Main
