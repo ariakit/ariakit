@@ -1,6 +1,6 @@
 import type { StyleClassValue } from "clava";
 
-const LIGHTNESS_MULTIPLIER = 5;
+const LIGHTNESS_MULTIPLIER = 6;
 const DEFAULT_CHROMA_OFFSET = 4;
 
 export const COLOR_VALUES = [
