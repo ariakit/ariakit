@@ -17,8 +17,6 @@
   --spacing: 0.25em;
   --spacing-px: 1px;
 
-  --container-wider: 92rem;
-
   --duration-tabs: 100ms;
   --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
 

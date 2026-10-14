@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Logo } from "#app/icons/logo.react.tsx";
+import { LogoIcon, Logotype } from "#app/icons/logo.react.tsx";
 import { getFramework } from "#app/lib/framework.ts";
 import "#app/styles/global.css";
 import "@fontsource-variable/inter";
@@ -36,7 +36,8 @@ const { title, framework, type } = Astro.props;
       data-og-image
       style="width:600px;height:315px;padding:40px;display:flex;flex-direction:column;justify-content:center;gap:16px"
     >
-      <Logo />
+      <LogoIcon size="2em" />
+      <Logotype size="1.25em" />
       {framework && <p>{getFramework(framework).label} {type}</p>}
       {title && <h1>{title}</h1>}
     </div>

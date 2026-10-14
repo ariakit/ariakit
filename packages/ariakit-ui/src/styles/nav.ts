@@ -83,7 +83,6 @@ export const nav = cv({
     $layout: "vertical",
     $layer: "transparent",
     $rounded: "md",
-    $p: "none",
   },
 });
 
@@ -104,12 +103,13 @@ export const navGroup = cv({
  */
 export const navGroupLabel = cv({
   extend: [textFrame, text],
-  class: ["ak-ink-60 font-medium text-[0.875em] text-start"],
+  class: ["font-medium text-[0.875em] text-start"],
   defaultVariants: {
     // Use lengths resolved by the navigation root, not the smaller label font.
     $p: "var(--nav-py)",
     $px: "var(--nav-px)",
     $rounded: "md",
+    $ink: 60,
   },
 });
 
