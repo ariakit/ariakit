@@ -525,9 +525,9 @@ const content = cx(
   // Publish gutter spacing as frame padding so nested frame corners remain
   // concentric.
   "[--shell-popout:1rem] [--shell-feature:3.5rem]",
-  "ak-frame-p-(--shell-gutter) px-0!",
+  "ak-frame-p-(--shell-gutter) px-0",
   "print:overflow-visible",
-  "[&>*]:col-[content] [&>*]:min-w-0",
+  "*:col-[content] *:min-w-0",
   "[&_[id]]:[scroll-margin-block-start:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+1rem)]",
 );
 
@@ -698,7 +698,7 @@ const mainBand = cv({
   class: [
     "shell-main-band grid grid-cols-subgrid min-w-0 rounded-none! px-0!",
     "[.shell-content>&]:contain-inline-size [.shell-main-band>&]:contain-inline-size",
-    "[&>*]:col-span-full [&>*]:min-w-0",
+    "*:col-span-full *:min-w-0",
   ],
   defaultVariants: { $p: "none" },
 });
