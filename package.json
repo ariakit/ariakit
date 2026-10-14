@@ -71,7 +71,7 @@
     "oxfmt": "0.72.0",
     "oxlint": "1.87.0",
     "oxlint-plugin-comment-reflow": "0.2.1",
-    "oxlint-tsgolint": "7.0.2003",
+    "oxlint-tsgolint": "7.0.2004",
     "pkg-pr-new": "0.0.91",
     "react": "19.3.0",
     "react-dom": "19.3.0",
