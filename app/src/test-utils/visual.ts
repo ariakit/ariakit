@@ -21,6 +21,11 @@ const FONTS_TIMEOUT = 10_000;
 const MAX_BATCH_CAPTURE_DIMENSION = 16_383;
 const MAX_BATCH_CAPTURE_PIXELS = 32_000_000;
 
+// Chromium's forced colors can override Playwright's transparent caret. Keep
+// that caret steady without changing focus or disabling forced colors.
+// https://github.com/microsoft/playwright/issues/15211
+const screenshotStyle = "* { caret-animation: manual !important; }";
+
 interface Rect {
   x: number;
   y: number;
@@ -251,10 +256,15 @@ async function getPlaywrightScreenshotOptions(
 ) {
   const clip = await getScreenshotClip(page, options);
   if (!clip) {
-    return { animations: "disabled" as const, fullPage: true };
+    return {
+      animations: "disabled" as const,
+      style: screenshotStyle,
+      fullPage: true,
+    };
   }
   return {
     animations: "disabled" as const,
+    style: screenshotStyle,
     // Integer clips keep WebKit's pixel rounding independent of the popup's
     // fractional position, as with batch capture regions.
     // https://github.com/ariakit/ariakit/issues/7752
@@ -385,13 +395,18 @@ async function captureRegions({
         item,
         variant,
         timeout,
-        screenshot: { fullPage: true, clip },
+        screenshot: { fullPage: true, clip, style: screenshotStyle },
       });
     }
     return;
   }
   const items = await Promise.all(regions.map(prepareRegion));
-  await captureVisualBatch(page, { variant, items, timeout });
+  await captureVisualBatch(page, {
+    variant,
+    items,
+    timeout,
+    screenshot: { style: screenshotStyle },
+  });
 }
 
 export async function visual(
