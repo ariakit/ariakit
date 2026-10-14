@@ -95,7 +95,7 @@ export const viewports = {
 
 export const defaultStyles = {
   light: { "--color-canvas": "oklch(99.33% 0.0011 197.14)" },
-  dark: { "--color-canvas": "oklch(16.34% 0.0091 264.28)" },
+  dark: { "--color-canvas": "oklch(19.34% 0.0091 264.28)" },
 } satisfies Styles;
 
 function getCombinedClip(a: Rect, b: Rect) {
