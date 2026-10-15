@@ -10,6 +10,7 @@
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 import { invariant } from "@ariakit/utils";
 import type { LoaderContext } from "astro/loaders";
 import type { z } from "astro/zod";
@@ -40,7 +41,6 @@ interface ComponentCache {
 }
 
 interface FrameworkCache {
-  version: number;
   components: Record<string, ComponentCache>;
   sharedFiles?: Record<string, number>;
 }
@@ -68,9 +68,6 @@ const emptyJsDocInfo: JsDocInfo = {
   liveExamples: [],
   tags: [],
 };
-
-// Increment when extraction semantics change so persisted references rebuild.
-const frameworkCacheVersion = 1;
 
 const sourceDeclarationsCache = new WeakMap<SourceFile, Map<string, Node[]>>();
 const exportedDeclarationsCache = new WeakMap<
@@ -257,20 +254,20 @@ function getComponentSourceFilePaths(
 }
 
 /**
- * Collects all source files under `{corePath}/src/` that live in shared
- * (non-component) directories such as `utils/`. These files are imported by
- * virtually every component, so any change should trigger a full framework
- * rebuild.
+ * Collects the parser and shared component sources, such as `utils/`, whose
+ * changes require a full framework rebuild.
  */
 function getSharedSourceFiles(
   corePath: string,
   componentModules: string[],
 ): string[] {
+  const files = [fileURLToPath(import.meta.url)];
   const srcDir = join(corePath, "src");
-  if (!existsSync(srcDir)) return [];
+  if (!existsSync(srcDir)) {
+    return files;
+  }
 
   const componentSet = new Set(componentModules);
-  const files: string[] = [];
 
   const collectFiles = (dir: string) => {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -318,7 +315,6 @@ function parseFrameworkCache(json: string | undefined): FrameworkCache | null {
   try {
     const parsed = JSON.parse(json);
     if (typeof parsed !== "object" || parsed === null) return null;
-    if (parsed.version !== frameworkCacheVersion) return null;
     if (!parsed.components || typeof parsed.components !== "object")
       return null;
     return parsed as FrameworkCache;
@@ -520,9 +516,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           currentFileState[comp] = getFileMtimes(files);
         }
 
-        // Track shared (non-component) source files like utils/ that are
-        // imported by virtually every component. A change in any shared file
-        // forces a full framework rebuild.
+        // Parser and shared source changes invalidate every component's cache.
         const sharedFiles = getSharedSourceFiles(corePath, componentModules);
         const sharedMtimes = getFileMtimes(sharedFiles);
 
@@ -608,10 +602,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
         }
 
         // Seed the next cache with unchanged components.
-        const newCache: FrameworkCache = {
-          version: frameworkCacheVersion,
-          components: {},
-        };
+        const newCache: FrameworkCache = { components: {} };
         for (const comp of componentModules) {
           if (changedComponents.has(comp)) continue;
           const cached = cachedState?.components[comp];
@@ -717,10 +708,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
 
         // Rebuild component mtimes and entry IDs for future cold starts.
         const componentModules = getComponentModules(packagePath);
-        const newCache: FrameworkCache = {
-          version: frameworkCacheVersion,
-          components: {},
-        };
+        const newCache: FrameworkCache = { components: {} };
         const referencesByComponent = new Map<string, Reference[]>();
 
         for (const data of references) {

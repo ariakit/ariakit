@@ -195,34 +195,44 @@ test("prefers the nearest prop description in base hierarchies", async () => {
   expect(farthest.liveExamples).toEqual(["https://example.com/farthest-only"]);
 });
 
-test("rebuilds references cached before the extraction version was recorded", async () => {
-  const { corePath, packagePath } = await createReferenceFixture();
-  const { context, entries } = getLoaderContext();
-  const loader = jsdoc({ corePath, framework: "react", packagePath });
+test.each(["missing", "outdated"])(
+  "rebuilds references when the cached parser timestamp is %s",
+  async (timestamp) => {
+    const { corePath, packagePath } = await createReferenceFixture();
+    const { context, entries } = getLoaderContext();
+    const loader = jsdoc({ corePath, framework: "react", packagePath });
 
-  await loader.load(context);
+    await loader.load(context);
 
-  const serializedCache = context.meta.get("cache:react");
-  if (!serializedCache) throw new Error("Missing reference cache");
-  const oldCache: { version?: number } = JSON.parse(serializedCache);
-  delete oldCache.version;
-  context.meta.set("cache:react", JSON.stringify(oldCache));
+    const serializedCache = context.meta.get("cache:react");
+    if (!serializedCache) throw new Error("Missing reference cache");
+    const oldCache: { sharedFiles: Record<string, number> } =
+      JSON.parse(serializedCache);
+    const parserPath = join(import.meta.dirname, "jsdoc-loader.ts");
+    expect(oldCache.sharedFiles[parserPath]).toEqual(expect.any(Number));
+    if (timestamp === "missing") {
+      delete oldCache.sharedFiles[parserPath];
+    } else {
+      oldCache.sharedFiles[parserPath] = 0;
+    }
+    context.meta.set("cache:react", JSON.stringify(oldCache));
 
-  const id = "react/widget/widget";
-  const reference = getReference(entries, id);
-  context.store.set({
-    id,
-    data: { ...reference, description: "Stale reference" },
-  });
+    const id = "react/widget/widget";
+    const reference = getReference(entries, id);
+    context.store.set({
+      id,
+      data: { ...reference, description: "Stale reference" },
+    });
 
-  await loader.load(context);
+    await loader.load(context);
 
-  expect(getReference(entries, id).description).toBe("Widget description.");
+    expect(getReference(entries, id).description).toBe("Widget description.");
 
-  vi.mocked(context.store.set).mockClear();
-  await loader.load(context);
-  expect(context.store.set).not.toHaveBeenCalled();
-});
+    vi.mocked(context.store.set).mockClear();
+    await loader.load(context);
+    expect(context.store.set).not.toHaveBeenCalled();
+  },
+);
 
 test("loads component aliases as distinct references", async () => {
   const { context, entries } = getLoaderContext();
