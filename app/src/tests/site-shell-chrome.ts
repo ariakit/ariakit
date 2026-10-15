@@ -84,6 +84,25 @@ test("theme panel applies a mode to the site and its previews", async ({
   await expect(preview).not.toHaveAttribute("data-theme");
 });
 
+test("theme button keeps its name when the panel narrows the page", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 800, height: 800 });
+  await gotoAndSettle(page, examplePath);
+  await q.button("Theme", { exact: true }).click();
+  await expect(q.complementary("Theme")).toBeVisible();
+  // The panel opens with a width transition, so the label hides only after it
+  // ends. The reload restores the open panel without the transition.
+  await page.reload();
+  await expect(q.complementary("Theme")).toBeVisible();
+  // The open panel narrows the inner shell, which hides the visible label.
+  await expect(q.button("Theme", { exact: true })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+});
+
 test("phone menu opens a navigation drawer", async ({ page, q }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await gotoAndSettle(page, examplePath);

@@ -163,7 +163,10 @@ const navigation = collections
           <ShellHeaderEnd>
             {/* The phone menu holds the theme options below 48rem. A viewport
                 query matches the outer shell, which spans the viewport. */}
+            {/* The label hides when the open panel narrows the inner shell, so
+                the button names itself. */}
             <Button
+              aria-label="Theme"
               aria-expanded="false"
               aria-controls={THEME_PANEL_ID}
               data-shell-toggle
