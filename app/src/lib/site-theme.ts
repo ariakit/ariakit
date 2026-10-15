@@ -95,6 +95,8 @@ function writeValue(key: string, value: string | null) {
     } else {
       localStorage.setItem(storageKey, value);
     }
+    // Storage keeps the value now, so an earlier fallback must not hide it.
+    delete window.siteThemeFallback?.[storageKey];
   } catch {
     // Storage throws when the user blocks site data. The choice still applies
     // to this page, but it does not persist or reach the previews.

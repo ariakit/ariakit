@@ -116,6 +116,33 @@ test("theme panel applies a mode when storage is blocked", async ({
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 });
 
+test("theme panel applies a mode after storage recovers", async ({
+  page,
+  q,
+}) => {
+  // Storage can reject a write once, for example when it is over its quota.
+  await page.addInitScript(() => {
+    // oxlint-disable-next-line typescript/unbound-method -- called with the storage as the receiver
+    const setItem = Storage.prototype.setItem;
+    let failed = false;
+    Storage.prototype.setItem = function (key, value) {
+      if (!failed && key.startsWith("site-theme:")) {
+        failed = true;
+        throw new DOMException("Storage is full", "QuotaExceededError");
+      }
+      setItem.call(this, key, value);
+    };
+  });
+  await gotoAndSettle(page, examplePath);
+  await q.button("Theme", { exact: true }).click();
+  const mode = query(q.radiogroup("Mode"));
+  await mode.radio("Dark").click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await mode.radio("Light").click();
+  await expect(mode.radio("Light")).toHaveAttribute("aria-checked", "true");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+});
+
 test("theme button keeps its name when the panel narrows the page", async ({
   page,
   q,
