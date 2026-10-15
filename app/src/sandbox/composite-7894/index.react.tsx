@@ -5,11 +5,15 @@ interface ContactsGridProps {
   orientation: Ariakit.CompositeProviderProps["orientation"];
 }
 
-// A shared grid wrapper that forwards orientation, which has no effect on
+// A shared grid wrapper that receives orientation, which has no effect on
 // two-dimensional composites.
-function ContactsGrid({ label, orientation }: ContactsGridProps) {
+function ContactsGrid({ label }: ContactsGridProps) {
   return (
-    <Ariakit.CompositeProvider orientation={orientation}>
+    // TODO: Forward orientation again after the fix for
+    // https://github.com/ariakit/ariakit/issues/7894 is released. Until then,
+    // "both" keeps arrow keys in text fields until the caret reaches a
+    // boundary. Orientation doesn't change grid navigation.
+    <Ariakit.CompositeProvider orientation="both">
       <Ariakit.Composite role="grid" aria-label={label}>
         {["First", "Second"].map((contact) => (
           <Ariakit.CompositeRow key={contact} role="row">
