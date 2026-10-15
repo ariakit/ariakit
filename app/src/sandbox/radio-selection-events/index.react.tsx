@@ -87,18 +87,19 @@ function ControlledRadios() {
         setSavedChannel(typeof savedValue === "string" ? savedValue : "");
       }}
     >
-      {/*
-       * TODO: Remove workaround after
-       * https://github.com/ariakit/ariakit/issues/7898
-       */}
-      <Ariakit.RadioProvider
-        value={channel}
-        setValue={(value) => setChannel(`${value}`)}
-      >
+      <Ariakit.RadioProvider>
         <Ariakit.RadioGroup aria-label="Contact channel">
           {["email", "sms"].map((value) => (
             <label key={value}>
-              <Ariakit.Radio name="channel" value={value} />
+              <Ariakit.Radio
+                name="channel"
+                value={value}
+                checked={channel === value}
+                onChange={(event) => {
+                  if (!event.target.checked) return;
+                  setChannel(event.target.value);
+                }}
+              />
               {value === "email" ? "Email" : "SMS"}
             </label>
           ))}
@@ -115,18 +116,18 @@ function ControlledCustomRadios() {
   const [fruit, setFruit] = useState("apple");
   const [changes, setChanges] = useState(0);
   return (
-    // TODO: Remove workaround after https://github.com/ariakit/ariakit/issues/7898
-    <Ariakit.RadioProvider
-      value={fruit}
-      setValue={(value) => setFruit(`${value}`)}
-    >
+    <Ariakit.RadioProvider>
       <Ariakit.RadioGroup aria-label="Controlled custom radios">
         {["apple", "orange"].map((value) => (
           <Ariakit.Radio
             key={value}
             render={<button />}
             value={value}
-            onChange={() => setChanges((count) => count + 1)}
+            checked={fruit === value}
+            onChange={() => {
+              setChanges((count) => count + 1);
+              setFruit(value);
+            }}
           >
             Controlled {value}
           </Ariakit.Radio>
