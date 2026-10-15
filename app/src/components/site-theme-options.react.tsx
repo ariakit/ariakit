@@ -101,6 +101,10 @@ function SiteThemeOptionGroup({
             <ak.Radio
               key={option.value}
               value={option.value}
+              // The server cannot read the rendered tag, so Radio would assume
+              // a native input and render the button with type="radio" and no
+              // radio role until the island hydrates.
+              type="button"
               aria-label={option.swatch ? option.label : undefined}
               render={<Button className="flex-1 justify-center" />}
             >
