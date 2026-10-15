@@ -76,20 +76,29 @@ const collections = await Promise.all(
   }),
 );
 
-const sections: SiteLink[] = collections.map(({ type, label }) => {
-  const href = `/${navigationFramework}/${type}/`;
-  return { href, label, current: pathname.startsWith(href) };
+// A link is current on its own page and on nested pages, such as the API
+// reference pages of a component.
+const getLink = (href: string, label: string): SiteLink => ({
+  href,
+  label,
+  current: pathname.startsWith(href),
 });
+
+const sections = collections.map(({ type, label }) =>
+  getLink(`/${navigationFramework}/${type}/`, label),
+);
 
 const navigation = collections
   .filter(({ entries }) => entries.length > 0)
   .map(({ type, label, entries }) => ({
     label,
     links: entries
-      .map((entry) => ({
-        href: `/${navigationFramework}/${type}/${entry.id}/`,
-        label: entry.data.title,
-      }))
+      .map((entry) =>
+        getLink(
+          `/${navigationFramework}/${type}/${entry.id}/`,
+          entry.data.title,
+        ),
+      )
       .sort((a, b) => a.label.localeCompare(b.label)),
   }));
 ---

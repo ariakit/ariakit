@@ -39,10 +39,7 @@ const { groups } = Astro.props;
           {group.links.map((link) => (
             <NavLink
               href={link.href}
-              {...(link.current == null
-                ? // Links without an explicit current flag match the page URL.
-                  { currentUrl: Astro.url }
-                : { "aria-current": link.current ? "page" : undefined })}
+              aria-current={link.current ? "page" : undefined}
             >
               {link.label}
             </NavLink>

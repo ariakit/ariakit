@@ -11,7 +11,7 @@
 export interface SiteLink {
   href: string;
   label: string;
-  current?: boolean;
+  current: boolean;
 }
 
 export interface SiteNavigationGroup {

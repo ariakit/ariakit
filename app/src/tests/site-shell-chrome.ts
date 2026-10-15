@@ -37,6 +37,17 @@ test("site navigation collapses and stays collapsed after reload", async ({
   await expect(q.navigation("Site")).not.toBeVisible();
 });
 
+test("site navigation marks the component on its API reference pages", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/components/separator/separator/");
+  await expect(query(q.navigation("Site")).link("Separator")).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+});
+
 test("theme panel applies a mode to the site and its previews", async ({
   page,
   q,
