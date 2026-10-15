@@ -275,13 +275,15 @@ const navigation = collections
         }
         <ShellFooter className="text-sm">
           <span slot="start" class="ak-ink-70">© Ariakit FZ-LLC</span>
-          <Nav slot="end" $layout="horizontal" aria-label="Footer">
-            {
-              sections.map((link) => (
-                <NavLink href={link.href}>{link.label}</NavLink>
-              ))
-            }
-          </Nav>
+          <Fragment slot="end">
+            <Nav $layout="horizontal" aria-label="Footer">
+              {
+                sections.map((link) => (
+                  <NavLink href={link.href}>{link.label}</NavLink>
+                ))
+              }
+            </Nav>
+          </Fragment>
         </ShellFooter>
       </Shell>
       <ShellSidebar
