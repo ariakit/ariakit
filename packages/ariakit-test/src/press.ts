@@ -265,6 +265,44 @@ async function incrementNumberInput(element: HTMLInputElement, by = 1) {
   await dispatch.change(element);
 }
 
+function moveTextFieldSelection(
+  element: Element,
+  offset: -1 | 1,
+  shiftKey = false,
+) {
+  if (!isTextField(element)) return;
+  const { value, selectionStart, selectionEnd, selectionDirection } = element;
+  const start = selectionStart ?? 0;
+  const end = selectionEnd ?? 0;
+  const clamp = (position: number) =>
+    Math.max(0, Math.min(value.length, position));
+
+  if (!shiftKey) {
+    const edge = offset < 0 ? start : end;
+    const position = clamp(start === end ? edge + offset : edge);
+    setSelectionRange(element, position, position);
+    return;
+  }
+
+  // Shift moves one selection edge while its anchor stays fixed. With no
+  // direction, the first arrow that moves an edge chooses the direction.
+  // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-textarea/input-selection-direction
+  const backward =
+    selectionDirection === "backward" ||
+    (selectionDirection === "none" && offset < 0);
+  const anchor = backward ? end : start;
+  const selectionFocus = backward ? start : end;
+  const position = clamp(selectionFocus + offset);
+  if (position === selectionFocus) return;
+  const direction = position < anchor ? "backward" : "forward";
+  setSelectionRange(
+    element,
+    Math.min(anchor, position),
+    Math.max(anchor, position),
+    position === anchor ? "none" : direction,
+  );
+}
+
 const keyDownMap: KeyActionMap = {
   async Tab(_, { shiftKey }) {
     const nextElement = shiftKey ? getPreviousTabbable() : getNextTabbable();
@@ -326,37 +364,11 @@ const keyDownMap: KeyActionMap = {
   },
 
   async ArrowLeft(element, { shiftKey }) {
-    if (isTextField(element)) {
-      const { value, selectionStart, selectionEnd, selectionDirection } =
-        element;
-      const [start, end] = [selectionStart ?? 0, selectionEnd ?? 0];
-      const collapsing = !shiftKey && start !== end;
-      const nextStart = Math.max(0, collapsing ? start : start - 1);
-      const nextEnd = Math.min(value.length, shiftKey ? end : nextStart);
-      setSelectionRange(
-        element,
-        nextStart,
-        nextEnd,
-        selectionDirection || "backward",
-      );
-    }
+    moveTextFieldSelection(element, -1, shiftKey);
   },
 
   async ArrowRight(element, { shiftKey }) {
-    if (isTextField(element)) {
-      const { value, selectionStart, selectionEnd, selectionDirection } =
-        element;
-      const [start, end] = [selectionStart ?? 0, selectionEnd ?? 0];
-      const collapsing = !shiftKey && start !== end;
-      const nextEnd = Math.min(value.length, collapsing ? end : end + 1);
-      const nextStart = Math.max(0, shiftKey ? start : nextEnd);
-      setSelectionRange(
-        element,
-        nextStart,
-        nextEnd,
-        selectionDirection || "forward",
-      );
-    }
+    moveTextFieldSelection(element, 1, shiftKey);
   },
 
   async ArrowUp(element, { shiftKey }) {

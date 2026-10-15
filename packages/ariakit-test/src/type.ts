@@ -25,6 +25,9 @@ function workAroundEmailInput(element: Element) {
   const input = element as HTMLInputElement;
   if (input.tagName !== "INPUT" || input.type !== "email") return () => {};
   input.type = "text";
+  // Email inputs have no selection API. Continue at the end when changing the
+  // type resets the caret to the start, as it does in jsdom.
+  input.setSelectionRange(input.value.length, input.value.length);
   return () => {
     input.type = "email";
   };
@@ -62,7 +65,7 @@ export function type(
 
     await focus(element);
 
-    const restoreEmailInput = workAroundEmailInput(element);
+    let restoreEmailInput = workAroundEmailInput(element);
 
     for (const char of text) {
       const key = getKeyFromChar(char);
@@ -73,7 +76,12 @@ export function type(
       let defaultAllowed = await dispatch.keyDown(element, { key, ...options });
 
       // Keydown may move focus; continue typing at the new active element.
-      element = getActiveElement(element) || element;
+      const activeElement: HTMLElement = getActiveElement(element) || element;
+      if (activeElement !== element) {
+        restoreEmailInput();
+        element = activeElement;
+        restoreEmailInput = workAroundEmailInput(element);
+      }
 
       if (isTextField(element)) {
         const input = element as DirtiableElement & TextField;
@@ -110,7 +118,14 @@ export function type(
         // target.value when creating the event.
         const valueChanged = value !== input.value;
 
-        if (defaultAllowed && !input.readOnly) {
+        // Deleting at a boundary does not fire input. Replacing selected text
+        // with identical text still does, even though the value is unchanged.
+        const noOpDeletion =
+          !valueChanged &&
+          (inputType === "deleteContentForward" ||
+            inputType === "deleteContentBackward");
+
+        if (defaultAllowed && !input.readOnly && !noOpDeletion) {
           if (inputType === "insertText") {
             defaultAllowed = await dispatch.keyPress(input, {
               key,

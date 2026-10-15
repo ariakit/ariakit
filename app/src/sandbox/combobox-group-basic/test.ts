@@ -113,3 +113,30 @@ test("composition text", async () => {
   expect(getSelectionValue(q.combobox())).toBe("pple");
   expect(q.option("Apple")).toHaveFocus();
 });
+
+test("replaces the adjusted selection after reversing Shift+Arrow", async () => {
+  await click(q.combobox());
+  await type("applx");
+  await expect.poll(q.text.lazy("No results found")).toBeVisible();
+  expect(q.combobox()).toHaveValue("applx");
+  await press.ArrowLeft(null, { shiftKey: true });
+  await press.ArrowLeft(null, { shiftKey: true });
+  await press.ArrowRight(null, { shiftKey: true });
+
+  await type("e");
+
+  expect(q.combobox()).toHaveValue("apple");
+});
+
+test("extends the inline completion with Shift+ArrowLeft before replacement", async () => {
+  await click(q.combobox());
+  await type("ap");
+  expect(q.combobox()).toHaveValue("apple");
+  expect(getSelectionValue(q.combobox())).toBe("ple");
+
+  await press.ArrowRight(null, { shiftKey: true });
+  await press.ArrowLeft(null, { shiftKey: true });
+  await type("X");
+
+  expect(q.combobox()).toHaveValue("aX");
+});
