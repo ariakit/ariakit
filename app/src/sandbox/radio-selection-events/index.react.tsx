@@ -73,6 +73,74 @@ function ChangeRadios({ custom = false }: ChangeRadiosProps) {
   );
 }
 
+function ControlledRadios() {
+  const [channel, setChannel] = useState("email");
+  const [savedChannel, setSavedChannel] = useState("");
+  return (
+    <form
+      aria-label="Contact preferences"
+      onReset={() => setChannel("email")}
+      onSubmit={(event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const savedValue = data.get("channel");
+        setSavedChannel(typeof savedValue === "string" ? savedValue : "");
+      }}
+    >
+      <Ariakit.RadioProvider>
+        <Ariakit.RadioGroup aria-label="Contact channel">
+          {["email", "sms"].map((value) => (
+            <label key={value}>
+              <Ariakit.Radio
+                name="channel"
+                value={value}
+                checked={channel === value}
+                onChange={(event) => {
+                  if (!event.target.checked) return;
+                  setChannel(event.target.value);
+                }}
+              />
+              {value === "email" ? "Email" : "SMS"}
+            </label>
+          ))}
+        </Ariakit.RadioGroup>
+      </Ariakit.RadioProvider>
+      <button type="reset">Restore defaults</button>
+      <button type="submit">Save preferences</button>
+      <output aria-label="Saved channel">{savedChannel}</output>
+    </form>
+  );
+}
+
+function ControlledCustomRadios() {
+  const [fruit, setFruit] = useState("apple");
+  const [changes, setChanges] = useState(0);
+  return (
+    <Ariakit.RadioProvider>
+      <Ariakit.RadioGroup aria-label="Controlled custom radios">
+        {["apple", "orange"].map((value) => (
+          <Ariakit.Radio
+            key={value}
+            render={<button />}
+            value={value}
+            checked={fruit === value}
+            onChange={() => {
+              setChanges((count) => count + 1);
+              setFruit(value);
+            }}
+          >
+            Controlled {value}
+          </Ariakit.Radio>
+        ))}
+      </Ariakit.RadioGroup>
+      <button type="button" onClick={() => setFruit("apple")}>
+        Reset controlled radios
+      </button>
+      <output aria-label="Controlled change count">{changes}</output>
+    </Ariakit.RadioProvider>
+  );
+}
+
 export default function Example() {
   return (
     <main>
@@ -81,6 +149,8 @@ export default function Example() {
       <DefaultRadios />
       <ChangeRadios />
       <ChangeRadios custom />
+      <ControlledRadios />
+      <ControlledCustomRadios />
     </main>
   );
 }

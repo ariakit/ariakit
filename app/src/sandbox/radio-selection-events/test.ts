@@ -1,4 +1,4 @@
-import { click, press, q } from "@ariakit/test";
+import { click, focus, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("selects basic radios by click", async () => {
@@ -87,4 +87,53 @@ test("does not change an already checked custom radio", async () => {
   expect(q.status("Custom change count")).toHaveTextContent("1");
   await click(q.radio("Custom apple"));
   expect(q.status("Custom change count")).toHaveTextContent("1");
+});
+
+// https://github.com/ariakit/ariakit/issues/7898
+test("selects a radio by click after the owner resets checked", async () => {
+  await click(q.radio("SMS"));
+  expect(q.radio("SMS")).toBeChecked();
+  await click(q.button("Restore defaults"));
+  expect(q.radio("Email")).toBeChecked();
+  await click(q.radio("SMS"));
+  expect(q.radio("SMS")).toBeChecked();
+  await click(q.button("Save preferences"));
+  expect(q.status("Saved channel")).toHaveTextContent("sms");
+});
+
+// https://github.com/ariakit/ariakit/issues/7898
+test("selects a radio by arrow key after the owner resets checked", async () => {
+  await click(q.radio("SMS"));
+  expect(q.radio("SMS")).toBeChecked();
+  await click(q.button("Restore defaults"));
+  expect(q.radio("Email")).toBeChecked();
+  // Clicking Email would select it and resync the store, which hides the bug,
+  // so move focus to it without selecting it.
+  await focus(q.radio("Email"));
+  expect(q.radio("Email")).toHaveFocus();
+  await press.ArrowDown();
+  expect(q.radio("SMS")).toHaveFocus();
+  expect(q.radio("SMS")).toBeChecked();
+  await click(q.button("Save preferences"));
+  expect(q.status("Saved channel")).toHaveTextContent("sms");
+});
+
+// https://github.com/ariakit/ariakit/issues/7898
+test("selects a custom radio after the owner resets checked", async () => {
+  await click(q.radio("Controlled orange"));
+  expect(q.status("Controlled change count")).toHaveTextContent("1");
+  await click(q.button("Reset controlled radios"));
+  expect(q.radio("Controlled apple")).toBeChecked();
+  await click(q.radio("Controlled orange"));
+  expect(q.radio("Controlled orange")).toBeChecked();
+  expect(q.status("Controlled change count")).toHaveTextContent("2");
+});
+
+// https://github.com/ariakit/ariakit/issues/7898
+test("does not change an already checked controlled custom radio", async () => {
+  await click(q.radio("Controlled orange"));
+  expect(q.status("Controlled change count")).toHaveTextContent("1");
+  await click(q.radio("Controlled orange"));
+  expect(q.radio("Controlled orange")).toBeChecked();
+  expect(q.status("Controlled change count")).toHaveTextContent("1");
 });
