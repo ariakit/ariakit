@@ -1,5 +1,5 @@
 import { afterEach, expect, test, vi } from "vitest";
-import { press } from "./index.ts";
+import { press, type } from "./index.ts";
 
 afterEach(() => {
   document.body.innerHTML = "";
@@ -412,3 +412,68 @@ test("press.Enter keeps modifier state on the default button click", async () =>
     { type: "keyup", detail: 2, capsLock: true },
   ]);
 });
+
+test.each([
+  {
+    name: "backward selection",
+    start: 5,
+    keys: ["ArrowLeft", "ArrowLeft", "ArrowRight"],
+    value: "hellX",
+  },
+  {
+    name: "forward selection",
+    start: 0,
+    keys: ["ArrowRight", "ArrowRight", "ArrowLeft"],
+    value: "Xello",
+  },
+  {
+    name: "backward selection across its anchor",
+    start: 4,
+    keys: ["ArrowLeft", "ArrowRight", "ArrowRight"],
+    value: "hellX",
+  },
+  {
+    name: "forward selection across its anchor",
+    start: 1,
+    keys: ["ArrowRight", "ArrowLeft", "ArrowLeft"],
+    value: "Xello",
+  },
+])(
+  "press adjusts a $name before replacement",
+  async ({ start, keys, value }) => {
+    const input = getTextInput();
+    input.value = "hello";
+    input.setSelectionRange(start, start);
+
+    for (const key of keys) {
+      await press(key, input, { shiftKey: true });
+    }
+    await type("X", input);
+
+    expect(input.value).toBe(value);
+  },
+);
+
+test.each([
+  { name: "ArrowLeft", keys: ["ArrowLeft"], value: "X" },
+  { name: "ArrowRight", keys: ["ArrowRight"], value: "aX" },
+  {
+    name: "ArrowLeft after a no-op ArrowRight",
+    keys: ["ArrowRight", "ArrowLeft"],
+    value: "X",
+  },
+])(
+  "press $name extends a selection without a direction",
+  async ({ keys, value }) => {
+    const input = getTextInput();
+    input.value = "abcde";
+    input.setSelectionRange(1, 5, "none");
+
+    for (const key of keys) {
+      await press(key, input, { shiftKey: true });
+    }
+    await type("X", input);
+
+    expect(input.value).toBe(value);
+  },
+);

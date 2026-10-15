@@ -17,6 +17,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
   }
 
+  test("replaces the adjusted selection after reversing Shift+Arrow", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox().click();
+    await page.keyboard.type("applx");
+    await test.expect(q.text("No results found")).toBeVisible();
+    await test.expect(q.combobox()).toHaveValue("applx");
+    await page.keyboard.press("Shift+ArrowLeft");
+    await page.keyboard.press("Shift+ArrowLeft");
+    await page.keyboard.press("Shift+ArrowRight");
+
+    await page.keyboard.type("e");
+
+    await test.expect(q.combobox()).toHaveValue("apple");
+  });
+
   test("maintain completion string while typing", async ({ page }) => {
     await getCombobox(page).click();
     await page.keyboard.type("av");

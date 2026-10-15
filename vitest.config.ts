@@ -76,6 +76,15 @@ export default defineConfig({
   test: {
     watch: false,
     testTimeout: 10_000,
+    environmentOptions: {
+      happyDOM: {
+        settings: {
+          // Tests use same-origin frames; happy-dom v21 disables their loading.
+          // https://github.com/capricorn86/happy-dom/releases/tag/v21.0.0
+          enableIframePageLoading: true,
+        },
+      },
+    },
     setupFiles: [join(rootDir, "vitest.setup.ts")],
     exclude: testExcludes,
     sequence: {

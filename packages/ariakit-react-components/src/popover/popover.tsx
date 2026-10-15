@@ -742,6 +742,8 @@ export interface PopoverOptions<
    * @default false
    */
   portal?: DialogOptions<T>["portal"];
+  /** @default true */
+  preserveTabOrder?: DialogOptions<T>["preserveTabOrder"];
   /**
    * The distance, in pixels, between the popover and the anchor element.
    *

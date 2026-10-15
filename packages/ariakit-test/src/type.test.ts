@@ -121,3 +121,62 @@ test("type reports each composed character on the composition event", async () =
 
   expect(composed).toEqual(["n", "i"]);
 });
+
+test.each([
+  { name: "Backspace on an empty field", value: "", caret: 0, key: "\b" },
+  { name: "Delete on an empty field", value: "", caret: 0, key: "\x7f" },
+  { name: "Backspace at the start", value: "abc", caret: 0, key: "\b" },
+  { name: "Delete at the end", value: "abc", caret: 3, key: "\x7f" },
+])("type does not dispatch input for $name", async ({ value, caret, key }) => {
+  const input = createInput(value);
+  const onInput = vi.fn();
+  input.addEventListener("input", onInput);
+  input.setSelectionRange(caret, caret);
+
+  await type(key, input);
+
+  expect(input.value).toBe(value);
+  expect(input.selectionStart).toBe(caret);
+  expect(input.selectionEnd).toBe(caret);
+  expect(onInput).not.toHaveBeenCalled();
+});
+
+test("type dispatches input when replacing selected text with the same text", async () => {
+  const input = createInput("ab");
+  const onInput = vi.fn();
+  input.addEventListener("input", onInput);
+  input.setSelectionRange(0, 1);
+
+  await type("a", input);
+
+  expect(input.value).toBe("ab");
+  expect(input.selectionStart).toBe(1);
+  expect(input.selectionEnd).toBe(1);
+  expect(onInput).toHaveBeenCalledOnce();
+});
+
+test("type edits an email input after keydown moves focus to it", async () => {
+  const button = document.createElement("button");
+  const input = createInput();
+  input.type = "email";
+  document.body.append(button);
+  button.addEventListener("keydown", () => input.focus());
+
+  await type("e", input);
+  await type("23", button);
+
+  expect(input.value).toBe("e23");
+  expect(input.type).toBe("email");
+  expect(document.activeElement).toBe(input);
+});
+
+test("type keeps appending to an email input across calls", async () => {
+  const input = createInput();
+  input.type = "email";
+
+  await type("ab", input);
+  await type("cd", input);
+
+  expect(input.value).toBe("abcd");
+  expect(input.type).toBe("email");
+});

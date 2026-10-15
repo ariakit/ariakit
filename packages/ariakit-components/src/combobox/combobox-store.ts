@@ -509,6 +509,7 @@ export interface ComboboxStoreState<
    * Defaults to `true`, or `false` when a
    * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
    * rendered.
+   * @default true
    */
   compositeElementInFocusOrder: CompositeStoreState<ComboboxStoreItem>["compositeElementInFocusOrder"];
   /**
@@ -521,12 +522,14 @@ export interface ComboboxStoreState<
    * Defaults to `true`, or `false` when a
    * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
    * rendered.
+   * @default true
    */
   focusLoop: CompositeStoreState<ComboboxStoreItem>["focusLoop"];
   /**
    * Defaults to `true`, or `false` when a
    * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
    * rendered.
+   * @default true
    */
   focusWrap: CompositeStoreState<ComboboxStoreItem>["focusWrap"];
   /** @default "vertical" */

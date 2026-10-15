@@ -181,7 +181,24 @@ export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
    * @default "bottom-start"
    */
   placement: HovercardStoreState["placement"];
-  /** @default 0 */
+  /**
+   * The amount of time in milliseconds to wait before showing the menu on
+   * hover. It defaults to `0` for a menu in a menubar that has no parent menu.
+   * Use
+   * [`showTimeout`](https://ariakit.com/reference/menu-provider#showtimeout)
+   * and
+   * [`hideTimeout`](https://ariakit.com/reference/menu-provider#hidetimeout) to
+   * set the delays separately.
+   * @default 150
+   */
+  timeout: HovercardStoreState["timeout"];
+  /**
+   * The amount of time in milliseconds to wait before hiding the menu.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
+   * @default 0
+   */
   hideTimeout?: HovercardStoreState["hideTimeout"];
   /**
    * Determines the element that should be focused when the menu is opened.
@@ -248,7 +265,7 @@ export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
   extends
     StoreOptions<
       MenuStoreState<T>,
-      "orientation" | "placement" | "hideTimeout" | "values"
+      "orientation" | "placement" | "timeout" | "hideTimeout" | "values"
     >,
     CompositeStoreOptions,
     HovercardStoreOptions {

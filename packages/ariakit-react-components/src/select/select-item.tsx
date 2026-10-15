@@ -249,6 +249,13 @@ export interface SelectItemOptions<T extends ElementType = TagName>
    */
   store?: SelectStore;
   /**
+   * @deprecated Use CSS
+   *   [`scroll-margin`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-margin)
+   *   instead.
+   * @default true
+   */
+  preventScrollOnKeyDown?: CompositeItemOptions<T>["preventScrollOnKeyDown"];
+  /**
    * The value of the item. This will be rendered as the children by default.
    * - If
    *   [`setValueOnClick`](https://ariakit.com/reference/select-item#setvalueonclick)

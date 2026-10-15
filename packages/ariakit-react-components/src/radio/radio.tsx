@@ -123,7 +123,11 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     }
     // Do not call onChange if the value is the same as the current value. See
     // https://github.com/ariakit/ariakit/issues/3771
-    if (store?.getState().value === value) return;
+    // An explicit checked={false} overrides the store value, which can be stale
+    // after the owner resets its controlled state. See
+    // https://github.com/ariakit/ariakit/issues/7898
+    const isStoreValue = store?.getState().value === value;
+    if (isStoreValue && checked !== false) return;
     if (!nativeRadio) {
       event.currentTarget.checked = true;
       schedulePropertyUpdate();

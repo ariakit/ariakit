@@ -449,6 +449,7 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    * hovering an item never activates it or moves focus, and moving the pointer
    * off an item never clears the active item or moves focus back to the
    * combobox.
+   * @default false
    */
   focusOnHover?: CompositeHoverOptions["focusOnHover"];
 }

@@ -94,6 +94,7 @@ export interface CompositeSeparatorOptions<
    * [`orientation`](https://ariakit.com/reference/composite-provider#orientation)
    * state of the composite widget. Which means it doesn't need to be explicitly
    * set in most cases.
+   * @default orientation === "horizontal" ? "vertical" : "horizontal"
    */
   orientation?: SeparatorOptions<T>["orientation"];
 }

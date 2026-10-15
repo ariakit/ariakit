@@ -505,13 +505,15 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         // If the composite item is a textbox, we'll only move focus to the
         // previous/next composite items when the cursor is at the beginning or
         // end of the text. This is to avoid moving focus when the user is
-        // navigating through the text.
+        // navigating through the text. The key map has already discarded arrows
+        // that don't apply to the orientation, and grid items accept both axes
+        // regardless of it.
         if (isTextbox(currentTarget)) {
           const selection = getTextboxSelection(currentTarget);
-          const isLeft = isHorizontal && event.key === "ArrowLeft";
-          const isRight = isHorizontal && event.key === "ArrowRight";
-          const isUp = isVertical && event.key === "ArrowUp";
-          const isDown = isVertical && event.key === "ArrowDown";
+          const isLeft = event.key === "ArrowLeft";
+          const isRight = event.key === "ArrowRight";
+          const isUp = event.key === "ArrowUp";
+          const isDown = event.key === "ArrowDown";
           if (isRight || isDown) {
             const { length: valueLength } = getTextboxValue(currentTarget);
             if (selection.end !== valueLength) return;
