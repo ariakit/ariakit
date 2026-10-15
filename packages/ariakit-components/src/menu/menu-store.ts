@@ -184,7 +184,11 @@ export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
   /**
    * The amount of time in milliseconds to wait before showing the menu on
    * hover. It defaults to `0` for a menu in a menubar that has no parent menu.
-   * Use `showTimeout` and `hideTimeout` to set the delays separately.
+   * Use
+   * [`showTimeout`](https://ariakit.com/reference/menu-provider#showtimeout)
+   * and
+   * [`hideTimeout`](https://ariakit.com/reference/menu-provider#hidetimeout) to
+   * set the delays separately.
    * @default 150
    */
   timeout: HovercardStoreState["timeout"];
