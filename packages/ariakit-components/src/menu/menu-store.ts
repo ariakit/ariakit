@@ -194,6 +194,9 @@ export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
   timeout: HovercardStoreState["timeout"];
   /**
    * The amount of time in milliseconds to wait before hiding the menu.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    * @default 0
    */
   hideTimeout?: HovercardStoreState["hideTimeout"];

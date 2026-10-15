@@ -55,6 +55,10 @@ export interface TooltipStoreState extends HovercardStoreState {
   placement: HovercardStoreState["placement"];
   /**
    * The amount of time in milliseconds to wait before hiding the tooltip.
+   *
+   * Live examples:
+   * - [Tooltip with
+   *   Motion](https://ariakit.com/examples/tooltip-framer-motion)
    * @default 0
    */
   hideTimeout?: HovercardStoreState["hideTimeout"];

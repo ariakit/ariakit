@@ -172,6 +172,22 @@ test.each([
   );
 });
 
+test.each([
+  ["menu", "Menu", "https://ariakit.com/examples/menubar-navigation"],
+  ["tooltip", "Tooltip", "https://ariakit.com/examples/tooltip-framer-motion"],
+])("preserves %s hideTimeout live examples", (module, component, example) => {
+  const filename = join(
+    process.cwd(),
+    `packages/ariakit-react/src/${module}.ts`,
+  );
+  for (const name of [`${component}Provider`, `use${component}Store`]) {
+    const prop = getProp(getReference(filename, name), "hideTimeout");
+    expect(prop.description).toContain("Live examples:");
+    expect(prop.description).toContain(example);
+    expect(prop.defaultValue).toBe("0");
+  }
+});
+
 test("uses typed destructured props parameters as reference props", () => {
   const comboboxProps = getReference(
     comboboxFilename,

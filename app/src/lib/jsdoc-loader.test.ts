@@ -398,6 +398,38 @@ disclosure.animated;
   }
 });
 
+test("preserves hideTimeout live examples in local descriptions", async () => {
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({
+    corePath: join(process.cwd(), "packages/ariakit-react-components"),
+    framework: "react",
+    packagePath: join(process.cwd(), "packages/ariakit-react"),
+  });
+  await loader.load(context);
+
+  for (const [component, example] of [
+    ["menu", "https://ariakit.com/examples/menubar-navigation"],
+    ["tooltip", "https://ariakit.com/examples/tooltip-framer-motion"],
+  ]) {
+    const provider = getReference(
+      entries,
+      `react/${component}/${component}-provider`,
+    );
+    const store = getReference(
+      entries,
+      `react/${component}/use-${component}-store`,
+    );
+    for (const prop of [
+      getParamProp(provider, "hideTimeout"),
+      getParamProp(store, "hideTimeout"),
+      getStateProp(store, "hideTimeout"),
+    ]) {
+      expect(prop.liveExamples).toEqual([example]);
+      expect(prop.defaultValue).toBe("0");
+    }
+  }
+});
+
 test("loads Combobox Select prop metadata", async () => {
   const { context, entries } = getLoaderContext();
   const loader = jsdoc({
