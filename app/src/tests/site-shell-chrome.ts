@@ -116,6 +116,21 @@ test("phone menu opens a navigation drawer", async ({ page, q }) => {
   await expect(q.navigation("Menu")).not.toBeVisible();
 });
 
+test("phone menu moves focus and closes with Escape", async ({ page, q }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await gotoAndSettle(page, examplePath);
+  const menuButton = q.button("Open menu");
+  await menuButton.click();
+  await expect(q.button("Close menu")).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(q.navigation("Menu")).not.toBeVisible();
+  await expect(menuButton).toHaveAttribute("aria-expanded", "false");
+  await expect(menuButton).toBeFocused();
+  await menuButton.click();
+  await q.button("Close menu").click();
+  await expect(menuButton).toBeFocused();
+});
+
 test("phone menu holds the theme options", async ({ page, q }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await gotoAndSettle(page, examplePath);

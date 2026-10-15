@@ -359,12 +359,30 @@ const navigation = collections
         const setOpen = (panel, open) => {
           panel.toggleAttribute("data-open", open);
           const selector = `[data-shell-toggle][aria-controls="${panel.id}"]`;
-          for (const toggle of queryAll(document, selector)) {
+          const toggles = queryAll(document, selector);
+          for (const toggle of toggles) {
             toggle.setAttribute("aria-expanded", String(open));
           }
-          if (panel.hasAttribute("data-shell-transient")) return;
-          write(`site-panel:${panel.id}`, String(open));
+          if (!panel.hasAttribute("data-shell-transient")) {
+            write(`site-panel:${panel.id}`, String(open));
+            return;
+          }
+          // Transient panels cover the page, so focus moves into them when
+          // they open and back to their visible toggle when they close.
+          if (open) {
+            queryAll(panel, "[data-shell-close]")[0]?.focus();
+          } else if (panel.contains(document.activeElement)) {
+            toggles.find((toggle) => toggle.checkVisibility())?.focus();
+          }
         };
+        document.addEventListener("keydown", (event) => {
+          if (event.key !== "Escape") return;
+          if (event.defaultPrevented) return;
+          const selector = "[data-shell-transient][data-open]";
+          for (const panel of queryAll(document, selector)) {
+            setOpen(panel, false);
+          }
+        });
         for (const toggle of queryAll(document, "[data-shell-toggle]")) {
           const panel = getControlled(toggle);
           if (!panel) continue;
