@@ -18,8 +18,8 @@ type TagName = typeof TagName;
  * const store = useSelectStore();
  * const props = useSelectArrow({ store });
  * <Select store={store}>
- *   {store.value}
- *   <Role {...props} />
+ *   <SelectValue store={store} />
+ *   <Role.span {...props} />
  * </Select>
  * <SelectPopover store={store}>
  *   <SelectItem value="Apple" />
@@ -48,7 +48,7 @@ export const useSelectArrow = createHook<TagName, SelectArrowOptions>(
  * ```jsx {4}
  * <SelectProvider>
  *   <Select>
- *     {select.value}
+ *     <SelectValue />
  *     <SelectArrow />
  *   </Select>
  *   <SelectPopover>

@@ -76,6 +76,46 @@ test("uses props parameters as reference props", () => {
   expect(props).toContain("defaultValues");
 });
 
+test.each([
+  ["toolbar", "Toolbar", "orientation", '"horizontal"'],
+  ["toolbar", "Toolbar", "focusLoop", "true"],
+  ["toolbar", "useToolbarStore", "orientation", '"horizontal"'],
+  ["toolbar", "useToolbarStore", "focusLoop", "true"],
+  ["combobox", "ComboboxPopover", "modal", "false"],
+  ["combobox", "ComboboxPopover", "portal", "false"],
+])("preserves inherited %s/%s %s metadata", (module, name, propName, value) => {
+  const filename = join(
+    process.cwd(),
+    `packages/ariakit-react/src/${module}.ts`,
+  );
+  const prop = getProp(getReference(filename, name), propName);
+  expect(prop.description).not.toBe("");
+  expect(prop.defaultValue).toBe(value);
+  expect(prop.optional).toBe(true);
+});
+
+test("does not inherit fixed defaults over local contextual defaults", () => {
+  for (const name of ["ComboboxProvider", "useComboboxStore"]) {
+    const reference = getReference(comboboxFilename, name);
+    for (const propName of [
+      "focusLoop",
+      "focusWrap",
+      "compositeElementInFocusOrder",
+    ]) {
+      expect(getProp(reference, propName).defaultValue).toBeNull();
+    }
+  }
+
+  const item = getReference(comboboxFilename, "ComboboxItem");
+  expect(getProp(item, "focusOnHover").defaultValue).toBeNull();
+  const menuFilename = join(
+    process.cwd(),
+    "packages/ariakit-react/src/menu.ts",
+  );
+  const button = getReference(menuFilename, "MenuButton");
+  expect(getProp(button, "typeahead").defaultValue).toBeNull();
+});
+
 test("uses typed destructured props parameters as reference props", () => {
   const comboboxProps = getReference(
     comboboxFilename,

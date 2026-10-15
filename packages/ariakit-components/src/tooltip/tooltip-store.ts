@@ -53,7 +53,10 @@ export function createTooltipStore(
 export interface TooltipStoreState extends HovercardStoreState {
   /** @default "top" */
   placement: HovercardStoreState["placement"];
-  /** @default 0 */
+  /**
+   * The amount of time in milliseconds to wait before hiding the tooltip.
+   * @default 0
+   */
   hideTimeout?: HovercardStoreState["hideTimeout"];
   /**
    * Determines whether the tooltip is being used as a label or a description

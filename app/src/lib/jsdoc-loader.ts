@@ -40,6 +40,7 @@ interface ComponentCache {
 }
 
 interface FrameworkCache {
+  version: number;
   components: Record<string, ComponentCache>;
   sharedFiles?: Record<string, number>;
 }
@@ -67,6 +68,9 @@ const emptyJsDocInfo: JsDocInfo = {
   liveExamples: [],
   tags: [],
 };
+
+// Increment when extraction semantics change so persisted references rebuild.
+const frameworkCacheVersion = 1;
 
 const sourceDeclarationsCache = new WeakMap<SourceFile, Map<string, Node[]>>();
 const exportedDeclarationsCache = new WeakMap<
@@ -314,6 +318,7 @@ function parseFrameworkCache(json: string | undefined): FrameworkCache | null {
   try {
     const parsed = JSON.parse(json);
     if (typeof parsed !== "object" || parsed === null) return null;
+    if (parsed.version !== frameworkCacheVersion) return null;
     if (!parsed.components || typeof parsed.components !== "object")
       return null;
     return parsed as FrameworkCache;
@@ -603,7 +608,10 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
         }
 
         // Seed the next cache with unchanged components.
-        const newCache: FrameworkCache = { components: {} };
+        const newCache: FrameworkCache = {
+          version: frameworkCacheVersion,
+          components: {},
+        };
         for (const comp of componentModules) {
           if (changedComponents.has(comp)) continue;
           const cached = cachedState?.components[comp];
@@ -709,7 +717,10 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
 
         // Rebuild component mtimes and entry IDs for future cold starts.
         const componentModules = getComponentModules(packagePath);
-        const newCache: FrameworkCache = { components: {} };
+        const newCache: FrameworkCache = {
+          version: frameworkCacheVersion,
+          components: {},
+        };
         const referencesByComponent = new Map<string, Reference[]>();
 
         for (const data of references) {
@@ -1073,6 +1084,10 @@ function getProps(node: Node) {
     // Search the local declaration before inherited versions.
     const decls = [decl];
     decls.push(...findPropDeclsInBaseHierarchy(node, propName));
+    // Mapped options can hide the interface that owns a property's override.
+    decls.push(
+      ...findPropDeclsInBaseHierarchy(decl.getParentOrThrow(), propName),
+    );
 
     // Use description and live examples from the nearest visible declaration.
     let description = "";
@@ -1090,12 +1105,12 @@ function getProps(node: Node) {
     if (!primaryDecl) continue;
     const type = getTypeText(primaryDecl);
 
-    // Treat tags as a unit: the nearest visible tagged declaration overrides
-    // all base tags.
-    const localHasTags = !!getTags(primaryDecl).length;
-    const tagsDecl = localHasTags
-      ? primaryDecl
-      : decls.slice(1).find((d) => !!getTags(d).length);
+    // A local description can replace a fixed default with a conditional one,
+    // so its empty tag list must also override inherited tags.
+    const tagsDecl = decls.find(
+      (declaration) =>
+        Node.isJSDocable(declaration) && declaration.getJsDocs().length > 0,
+    );
 
     const hasPrivateTag = tagsDecl ? isPrivate(tagsDecl) : false;
     if (hasPrivateTag) continue;

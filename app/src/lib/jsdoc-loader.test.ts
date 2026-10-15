@@ -195,6 +195,35 @@ test("prefers the nearest prop description in base hierarchies", async () => {
   expect(farthest.liveExamples).toEqual(["https://example.com/farthest-only"]);
 });
 
+test("rebuilds references cached before the extraction version was recorded", async () => {
+  const { corePath, packagePath } = await createReferenceFixture();
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({ corePath, framework: "react", packagePath });
+
+  await loader.load(context);
+
+  const serializedCache = context.meta.get("cache:react");
+  if (!serializedCache) throw new Error("Missing reference cache");
+  const oldCache: { version?: number } = JSON.parse(serializedCache);
+  delete oldCache.version;
+  context.meta.set("cache:react", JSON.stringify(oldCache));
+
+  const id = "react/widget/widget";
+  const reference = getReference(entries, id);
+  context.store.set({
+    id,
+    data: { ...reference, description: "Stale reference" },
+  });
+
+  await loader.load(context);
+
+  expect(getReference(entries, id).description).toBe("Widget description.");
+
+  vi.mocked(context.store.set).mockClear();
+  await loader.load(context);
+  expect(context.store.set).not.toHaveBeenCalled();
+});
+
 test("loads component aliases as distinct references", async () => {
   const { context, entries } = getLoaderContext();
   const loader = jsdoc({
@@ -215,6 +244,65 @@ test("loads component aliases as distinct references", async () => {
     "**Alias**: [`Combobox`](https://ariakit.com/reference/combobox)",
   );
   expect(comboboxInput.params[0]?.props).toEqual(combobox.params[0]?.props);
+});
+
+test("preserves inherited prop descriptions through mapped options", async () => {
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({
+    corePath: join(process.cwd(), "packages/ariakit-react-components"),
+    framework: "react",
+    packagePath: join(process.cwd(), "packages/ariakit-react"),
+  });
+
+  await loader.load(context);
+
+  const cases = [
+    ["react/toolbar/toolbar", "orientation", '"horizontal"'],
+    ["react/toolbar/toolbar", "focusLoop", "true"],
+    ["react/toolbar/use-toolbar-store", "orientation", '"horizontal"'],
+    ["react/toolbar/use-toolbar-store", "focusLoop", "true"],
+    ["react/combobox/combobox-popover", "modal", "false"],
+    ["react/combobox/combobox-popover", "portal", "false"],
+  ] as const;
+
+  for (const [id, name, defaultValue] of cases) {
+    const prop = getParamProp(getReference(entries, id), name);
+    expect(prop.description).not.toBe("");
+    expect(prop.defaultValue).toBe(defaultValue);
+    expect(prop.optional).toBe(true);
+  }
+});
+
+test("does not inherit fixed defaults over local contextual defaults", async () => {
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({
+    corePath: join(process.cwd(), "packages/ariakit-react-components"),
+    framework: "react",
+    packagePath: join(process.cwd(), "packages/ariakit-react"),
+  });
+
+  await loader.load(context);
+
+  for (const id of [
+    "react/combobox/combobox-provider",
+    "react/combobox/use-combobox-store",
+  ]) {
+    const reference = getReference(entries, id);
+    for (const name of [
+      "focusLoop",
+      "focusWrap",
+      "compositeElementInFocusOrder",
+    ]) {
+      expect(getParamProp(reference, name).defaultValue).toBeUndefined();
+    }
+  }
+
+  const comboboxItem = getReference(entries, "react/combobox/combobox-item");
+  expect(
+    getParamProp(comboboxItem, "focusOnHover").defaultValue,
+  ).toBeUndefined();
+  const menuButton = getReference(entries, "react/menu/menu-button");
+  expect(getParamProp(menuButton, "typeahead").defaultValue).toBeUndefined();
 });
 
 test("loads Combobox Select prop metadata", async () => {

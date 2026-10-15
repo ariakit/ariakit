@@ -49,7 +49,7 @@ You can also use Ariakit directly in the browser via a CDN. This method is only 
     <!-- Usage -->
     <script type="text/babel" data-type="module">
       import * as React from "https://esm.sh/react";
-      import { createRoot } from "https://esm.sh/react-dom";
+      import { createRoot } from "https://esm.sh/react-dom/client";
       import { Button } from "https://esm.sh/@ariakit/react";
 
       function App() {
