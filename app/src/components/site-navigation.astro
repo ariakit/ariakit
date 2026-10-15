@@ -1,0 +1,54 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import {
+  Nav,
+  NavGroup,
+  NavGroupLabel,
+  NavLink,
+  NavList,
+} from "@ariakit/ui/components/nav.ariakit.react";
+import type { SiteNavigationGroup } from "#app/lib/site.ts";
+import { createElement } from "react";
+
+interface Props {
+  groups: SiteNavigationGroup[];
+}
+
+const { groups } = Astro.props;
+---
+
+<Nav
+  $cover
+  list={false}
+  render={createElement("div")}
+  glider={{ $kind: "bar", $animated: false }}
+>
+  {
+    groups.map((group) => (
+      <NavGroup>
+        <NavGroupLabel>{group.label}</NavGroupLabel>
+        <NavList>
+          {group.links.map((link) => (
+            <NavLink
+              href={link.href}
+              {...(link.current == null
+                ? // Links without an explicit current flag match the page URL.
+                  { currentUrl: Astro.url }
+                : { "aria-current": link.current ? "page" : undefined })}
+            >
+              {link.label}
+            </NavLink>
+          ))}
+        </NavList>
+      </NavGroup>
+    ))
+  }
+</Nav>

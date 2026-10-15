@@ -8,11 +8,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { prose } from "@ariakit/ui/styles/prose";
-
-const proseProps = prose.jsx();
+import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 ---
 
-<div class={proseProps.className} style={proseProps.style}>
-  <slot />
-</div>
+<Prose><slot /></Prose>

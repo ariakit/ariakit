@@ -8,11 +8,21 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { SampleCard } from "#app/components/sample-card.react.tsx";
+import {
+  Button,
+  ButtonGroup,
+  ButtonLabel,
+  ButtonSlot,
+} from "@ariakit/ui/components/button.ariakit.react";
+import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { ShellMainFull } from "@ariakit/ui/components/shell.ariakit.react";
+import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
 import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
 import { invariant } from "@ariakit/utils";
 import { getEntry } from "astro:content";
+import { CodeIcon, ExternalLinkIcon } from "lucide-react";
+import { createElement } from "react";
 
 interface Props {
   source: Source | Partial<Record<Framework, Source>>;
@@ -26,24 +36,96 @@ if (!source) return null;
 const preview = await getEntry("previews", source.name);
 const title = preview?.data.title ?? source.name;
 const href = "/" + framework + "/previews/" + source.name + "/";
-const cardProps = {
-  id: "sample-" + source.name.replaceAll("/", "-"),
-  title,
-  href,
-  fullscreen: preview?.data.fullscreen,
-  files: Object.entries(source.files).map(([name, file]) => ({
-    name,
-    content: file.content,
-  })),
-};
+const id = "sample-" + source.name.replaceAll("/", "-");
+const headingId = `${id}-title`;
+const codeId = `${id}-code`;
+const hasChildren = Astro.slots.has("default");
+const files = Object.entries(source.files);
 ---
 
-{
-  Astro.slots.has("default") ? (
-    <SampleCard {...cardProps}>
-      <slot />
-    </SampleCard>
-  ) : (
-    <SampleCard {...cardProps} />
-  )
-}
+<ShellMainFull render={createElement("section", { "aria-labelledby": headingId })}>
+  {/* Samples inside MDX prose are not main bands, so they drop the band
+      gutter and align with the surrounding text. */}
+  <Frame
+    $p="var(--site-gutter)"
+    className="grid grid-cols-1 gap-2 py-0! [.prose>.shell-main-full>&]:px-0!"
+  >
+    <div class="flex items-center justify-between gap-2 text-sm">
+      <TextFrame
+        id={headingId}
+        render={createElement("h2")}
+        $p={3}
+        $layer="transparent"
+        className="font-medium"
+      >
+        {title}
+      </TextFrame>
+      <ButtonGroup $rounded="xl" $p={0.5} $forceRounded $layer="transparent">
+        {/* The layout script toggles the code region. */}
+        <Button
+          aria-expanded="false"
+          aria-controls={codeId}
+          data-code-toggle
+          className="ak-ink-80 ui-hover:ak-ink-100"
+        >
+          <ButtonSlot><CodeIcon /></ButtonSlot>
+          <ButtonLabel>Get code</ButtonLabel>
+        </Button>
+        <Button
+          render={createElement("a", { href, target: "_blank", rel: "noreferrer" })}
+          aria-label="Open preview in a new tab"
+          className="ak-ink-80 ui-hover:ak-ink-100"
+        >
+          <ButtonSlot><ExternalLinkIcon /></ButtonSlot>
+        </Button>
+      </ButtonGroup>
+    </div>
+    <Frame
+      $rounded="xl"
+      $forceRounded
+      $border
+      $darken={0.5}
+      $p={hasChildren ? 4 : "none"}
+      className="grid grid-cols-1 overflow-clip"
+    >
+      {
+        hasChildren ? (
+          <slot />
+        ) : (
+          <iframe
+            src={href}
+            {title}
+            loading="lazy"
+            class="block w-full border-0 bg-transparent"
+            style={{ height: preview?.data.fullscreen ? "40rem" : "25rem" }}
+          />
+        )
+      }
+    </Frame>
+    <div id={codeId} role="region" aria-label={`${title} code`} hidden>
+      <div class="grid grid-cols-1 gap-2">
+        {
+          files.map(([name, file]) => (
+            <Frame
+              $rounded="xl"
+              $forceRounded
+              $border
+              $darken={0.5}
+              $p="none"
+              className="overflow-clip text-xs"
+            >
+              <TextFrame
+                $p={3}
+                $layer="transparent"
+                className="ak-ink-80 font-medium"
+              >
+                {name}
+              </TextFrame>
+              <pre class="max-h-96 overflow-auto px-4 pb-4 leading-relaxed"><code>{file.content}</code></pre>
+            </Frame>
+          ))
+        }
+      </div>
+    </div>
+  </Frame>
+</ShellMainFull>

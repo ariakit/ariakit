@@ -55,9 +55,10 @@ test("theme panel applies a mode to the site and its previews", async ({
   await expect(mode.radio("Dark")).toHaveAttribute("aria-checked", "true");
   await expect(root).toHaveAttribute("data-theme", "dark");
   await expect(preview).toHaveAttribute("data-theme", "dark");
-  // The options form a radio group, so arrow keys move the checked option.
+  // The options form a radio group, so arrow keys move focus between them.
   await page.keyboard.press("ArrowLeft");
   await expect(mode.radio("Light")).toBeFocused();
+  await page.keyboard.press("Space");
   await expect(mode.radio("Light")).toHaveAttribute("aria-checked", "true");
   await expect(root).toHaveAttribute("data-theme", "light");
   await theme.button("Close theme").click();

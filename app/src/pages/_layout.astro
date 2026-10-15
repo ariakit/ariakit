@@ -10,22 +10,53 @@
  */
 import "#app/styles/global.css";
 import "@fontsource-variable/inter";
+import {
+  Button,
+  ButtonLabel,
+  ButtonSlot,
+} from "@ariakit/ui/components/button.ariakit.react";
+import { Nav, NavLink } from "@ariakit/ui/components/nav.ariakit.react";
+import {
+  Shell,
+  ShellFooter,
+  ShellHeader,
+  ShellHeaderCenter,
+  ShellHeaderEnd,
+  ShellHeaderStart,
+  ShellMain,
+  ShellMainBody,
+  ShellMainIntro,
+  ShellSidebar,
+  ShellSidebarBody,
+  ShellSidebarFooter,
+  ShellSidebarHeader,
+} from "@ariakit/ui/components/shell.ariakit.react";
 import Meta from "#app/components/meta.astro";
-import type {
-  SiteHeading,
-  SiteLink,
-} from "#app/components/site-shell.react.tsx";
-import { SiteShell } from "#app/components/site-shell.react.tsx";
+import SiteNavigation from "#app/components/site-navigation.astro";
+import {
+  SiteThemeOptions,
+  SiteThemeReset,
+} from "#app/components/site-theme-options.react.tsx";
 import ThemeScript from "#app/components/theme-script.astro";
+import { LogoIcon, Logotype } from "#app/icons/logo.react.tsx";
+import type { SiteHeading, SiteLink } from "#app/lib/site.ts";
+import {
+  SITE_DRAWER_ID,
+  SITE_NAVIGATION_ID,
+  THEME_PANEL_ID,
+} from "#app/lib/site.ts";
 import { getCollection } from "astro:content";
+import { Menu, PanelLeft, SwatchBook, X } from "lucide-react";
+import { createElement } from "react";
 
 export interface Props {
   title?: string;
   headings?: SiteHeading[];
 }
 
-const { title, headings } = Astro.props;
+const { title, headings = [] } = Astro.props;
 const pathname = Astro.url.pathname;
+const tocHeadings = headings.filter((heading) => heading.depth <= 3);
 
 // The site navigation lists React pages only. Solid pages still build, but
 // they are not part of the navigation yet.
@@ -70,20 +101,208 @@ const navigation = collections
     <ThemeScript />
   </head>
   <body>
-    <SiteShell currentUrl={Astro.url} {sections} {navigation} {headings}>
-      {
-        Astro.slots.has("intro") && (
-          <Fragment slot="intro">
-            <slot name="intro" />
-          </Fragment>
-        )
-      }
-      <slot />
-    </SiteShell>
+    {/* The outer shell holds the page and a full-height theme panel at the
+        end. The inner shell holds the header, the site navigation, the main
+        content, a table of contents, and the footer. */}
+    <Shell>
+      <Shell>
+        <ShellHeader $height="sm" $blur className="text-sm">
+          <ShellHeaderStart>
+            <Button
+              aria-label="Open menu"
+              aria-expanded="false"
+              aria-controls={SITE_DRAWER_ID}
+              data-shell-toggle
+              className="@3xl/shell:hidden"
+            >
+              <ButtonSlot><Menu /></ButtonSlot>
+            </Button>
+            <Button
+              aria-label="Toggle navigation"
+              aria-expanded="true"
+              aria-controls={SITE_NAVIGATION_ID}
+              data-shell-toggle
+              className="@max-3xl/shell:hidden"
+            >
+              <ButtonSlot><PanelLeft /></ButtonSlot>
+            </Button>
+            <a href="/" aria-label="Ariakit" class="flex items-center gap-2 px-1">
+              <LogoIcon size="1.5em" />
+              <Logotype size="1.25em" className="@max-xl/shell:hidden" />
+            </a>
+          </ShellHeaderStart>
+          <ShellHeaderCenter className="@max-2xl/shell:hidden">
+            <Nav
+              $cover
+              $layout="horizontal"
+              aria-label="Main"
+              glider={{ $kind: "bar", $animated: false }}
+            >
+              {
+                sections.map((link) => (
+                  <NavLink
+                    href={link.href}
+                    aria-current={link.current ? "page" : undefined}
+                    className="font-medium"
+                  >
+                    {link.label}
+                  </NavLink>
+                ))
+              }
+            </Nav>
+          </ShellHeaderCenter>
+          <ShellHeaderEnd>
+            {/* The phone menu holds the theme options below 48rem. A viewport
+                query matches the outer shell, which spans the viewport. */}
+            <Button
+              aria-expanded="false"
+              aria-controls={THEME_PANEL_ID}
+              data-shell-toggle
+              className="max-md:hidden"
+            >
+              <ButtonSlot><SwatchBook /></ButtonSlot>
+              <ButtonLabel className="@max-lg/shell:hidden">Theme</ButtonLabel>
+            </Button>
+          </ShellHeaderEnd>
+        </ShellHeader>
+        <ShellSidebar
+          id={SITE_NAVIGATION_ID}
+          render={createElement("nav")}
+          aria-label="Site"
+          className="text-sm"
+        >
+          <ShellSidebarBody>
+            <SiteNavigation groups={navigation} />
+          </ShellSidebarBody>
+        </ShellSidebar>
+        {/* Below 48rem, a drawer replaces the sidebar and the header links. */}
+        <ShellSidebar
+          id={SITE_DRAWER_ID}
+          open={false}
+          $show="max-3xl"
+          render={createElement("nav")}
+          aria-label="Menu"
+          data-shell-transient
+          className="text-sm"
+        >
+          <ShellSidebarHeader $height="sm" className="justify-between">
+            <span class="font-medium">Menu</span>
+            <Button
+              aria-label="Close menu"
+              aria-controls={SITE_DRAWER_ID}
+              data-shell-close
+            >
+              <ButtonSlot><X /></ButtonSlot>
+            </Button>
+          </ShellSidebarHeader>
+          <ShellSidebarBody>
+            <SiteNavigation
+              groups={[{ label: "Sections", links: sections }, ...navigation]}
+            />
+            <div class="grid gap-6 px-3 pt-6 pb-3">
+              <span class="ak-ink-70 text-xs font-medium">Theme</span>
+              <SiteThemeOptions client:load idPrefix={SITE_DRAWER_ID} />
+            </div>
+          </ShellSidebarBody>
+        </ShellSidebar>
+        <ShellMain
+          $p="var(--site-gutter)"
+          $maxWidth="56rem"
+          className="[--site-gutter:--spacing(4)] @3xl/shell:[--site-gutter:--spacing(8)]"
+        >
+          {/* Page content renders as direct grid items, so samples can use
+              main bands. */}
+          {
+            Astro.slots.has("intro") && (
+              <ShellMainIntro className="gap-y-4 pt-10 pb-6">
+                <slot name="intro" />
+              </ShellMainIntro>
+            )
+          }
+          <ShellMainBody className="gap-y-8 pb-16">
+            <slot />
+          </ShellMainBody>
+        </ShellMain>
+        {
+          tocHeadings.length > 0 && (
+            <ShellSidebar
+              $side="end"
+              $width="sm"
+              $from="body"
+              $show="6xl"
+              $border={false}
+              $layer="transparent"
+              render={createElement("nav")}
+              aria-label="On this page"
+              className="text-sm"
+            >
+              <ShellSidebarBody>
+                <p class="ak-ink-70 px-3 pb-2 text-xs font-medium uppercase">
+                  On this page
+                </p>
+                {/* The layout script marks the link of the section in view. */}
+                <Nav
+                  $cover
+                  $gap={0.5}
+                  render={createElement("div")}
+                  glider={{ $kind: "bar", $animated: false }}
+                  data-site-toc
+                >
+                  {tocHeadings.map((heading) => (
+                    <NavLink
+                      href={`#${heading.slug}`}
+                      className={heading.depth > 2 ? "ps-6" : undefined}
+                    >
+                      {heading.text}
+                    </NavLink>
+                  ))}
+                </Nav>
+              </ShellSidebarBody>
+            </ShellSidebar>
+          )
+        }
+        <ShellFooter className="text-sm">
+          <span slot="start" class="ak-ink-70">© Ariakit FZ-LLC</span>
+          <Nav slot="end" $layout="horizontal" aria-label="Footer">
+            {
+              sections.map((link) => (
+                <NavLink href={link.href}>{link.label}</NavLink>
+              ))
+            }
+          </Nav>
+        </ShellFooter>
+      </Shell>
+      <ShellSidebar
+        id={THEME_PANEL_ID}
+        open={false}
+        $side="end"
+        $width="lg"
+        render={createElement("aside")}
+        aria-label="Theme"
+        className="text-sm"
+      >
+        <ShellSidebarHeader $height="sm" className="justify-between">
+          <span class="font-medium">Theme</span>
+          <Button
+            aria-label="Close theme"
+            aria-controls={THEME_PANEL_ID}
+            data-shell-close
+          >
+            <ButtonSlot><X /></ButtonSlot>
+          </Button>
+        </ShellSidebarHeader>
+        <ShellSidebarBody>
+          <SiteThemeOptions client:load idPrefix={THEME_PANEL_ID} />
+        </ShellSidebarBody>
+        <ShellSidebarFooter>
+          <SiteThemeReset client:load />
+        </ShellSidebarFooter>
+      </ShellSidebar>
+    </Shell>
     <script is:inline>
-      // The site shell renders without hydration. This script restores the
-      // panel and theme choices and wires the panels, the theme radios, the
-      // table of contents, and the sample code toggles.
+      // The shell renders without hydration. This script restores the panel
+      // choices and wires the panels, the table of contents, and the sample
+      // code toggles.
       (() => {
         /** @param {string} key */
         const read = (key) => {
@@ -152,87 +371,6 @@ const navigation = collections
           const panel = getControlled(close);
           if (!panel) continue;
           close.addEventListener("click", () => setOpen(panel, false));
-        }
-
-        // Theme radios. The theme script in the head applies the stored
-        // values, and preview iframes receive them through storage events.
-        /**
-         * Checks the option with this value in every group of the setting,
-         * because the phone menu repeats the theme options.
-         * @param {string} setting
-         * @param {string | undefined} value
-         */
-        const checkValue = (setting, value) => {
-          const selector = `[data-theme-group="${setting}"]`;
-          for (const group of queryAll(document, selector)) {
-            const radios = queryAll(group, "[role=radio]");
-            const match =
-              radios.find((radio) => radio.dataset.themeValue === value) ??
-              radios[0];
-            for (const radio of radios) {
-              const checked = radio === match;
-              radio.setAttribute("aria-checked", String(checked));
-              radio.tabIndex = checked ? 0 : -1;
-            }
-          }
-        };
-        /** @param {HTMLElement} radio */
-        const selectTheme = (radio) => {
-          const { themeSetting, themeValue, themeSwatch } = radio.dataset;
-          if (!themeSetting) return;
-          checkValue(themeSetting, themeValue);
-          const group = radio.closest("[role=radiogroup]");
-          // The first option keeps the stylesheet default.
-          const isDefault = group?.querySelector("[role=radio]") === radio;
-          const value = isDefault ? null : (themeValue ?? null);
-          write(`site-theme:${themeSetting}`, value);
-          if (themeSetting === "accent") {
-            write("site-theme:brand", isDefault ? null : (themeSwatch ?? null));
-          }
-          window.dispatchEvent(new Event("site-theme-change"));
-        };
-        for (const setting of ["mode", "accent", "radius"]) {
-          const saved = read(`site-theme:${setting}`);
-          if (saved) {
-            checkValue(setting, saved);
-          }
-        }
-        for (const radio of queryAll(document, "[data-theme-setting]")) {
-          radio.addEventListener("click", () => selectTheme(radio));
-        }
-        // Radio groups move the checked option with the arrow keys.
-        /** @type {Record<string, number>} */
-        const steps = {
-          ArrowRight: 1,
-          ArrowDown: 1,
-          ArrowLeft: -1,
-          ArrowUp: -1,
-        };
-        for (const group of queryAll(document, "[data-theme-group]")) {
-          group.addEventListener("keydown", (event) => {
-            const step = steps[event.key];
-            if (!step) return;
-            const radios = queryAll(group, "[role=radio]");
-            const active = document.activeElement;
-            if (!(active instanceof HTMLElement)) return;
-            const index = radios.indexOf(active);
-            if (index === -1) return;
-            const next = radios[(index + step + radios.length) % radios.length];
-            if (!next) return;
-            event.preventDefault();
-            selectTheme(next);
-            next.focus();
-          });
-        }
-        for (const reset of queryAll(document, "[data-theme-reset]")) {
-          reset.addEventListener("click", () => {
-            for (const group of queryAll(document, "[data-theme-group]")) {
-              const [first] = queryAll(group, "[role=radio]");
-              if (first) {
-                selectTheme(first);
-              }
-            }
-          });
         }
 
         // Sample code toggles

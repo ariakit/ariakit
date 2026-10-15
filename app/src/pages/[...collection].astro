@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import Meta from "#app/components/meta.astro";
-import { frame } from "@ariakit/ui/styles/frame";
+import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { uniq } from "#app/lib/array.ts";
 import {
   filterGuidesByGroup,
@@ -22,6 +22,7 @@ import PageIntro from "#app/components/page-intro.astro";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
+import { createElement } from "react";
 
 export const getStaticPaths = (async () => {
   const types = ["components", "examples"] as const;
@@ -57,14 +58,6 @@ const groupPath = "/" + framework + "/" + type;
 const guides = (
   await getCollection("guides", filterGuidesByGroup(groupPath))
 ).map(getGuideDetail);
-// Recipes render to class names here because Astro does not hydrate the list.
-const cardProps = frame.jsx({
-  $layer: true,
-  $rounded: "xl",
-  $border: true,
-  $p: 4,
-  className: "flex font-medium hover:ak-state-2.5",
-});
 ---
 
 <Layout {title}>
@@ -87,13 +80,18 @@ const cardProps = frame.jsx({
     {
       entries.map((entry) => (
         <li>
-          <a
-            href={groupPath + "/" + entry.id + "/"}
-            class={cardProps.className}
-            style={cardProps.style}
+          <Frame
+            render={createElement("a", {
+              href: groupPath + "/" + entry.id + "/",
+            })}
+            $layer
+            $rounded="xl"
+            $border
+            $p={4}
+            className="flex font-medium hover:ak-state-2.5"
           >
             {entry.data.title}
-          </a>
+          </Frame>
         </li>
       ))
     }
