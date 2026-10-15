@@ -18,6 +18,7 @@ import {
 } from "#app/lib/content.ts";
 import { getFramework } from "#app/lib/framework.ts";
 import { capitalize } from "#app/lib/string.ts";
+import { renderThumbnail } from "#app/lib/thumbnail.ts";
 import PageIntro from "#app/components/page-intro.astro";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
@@ -58,6 +59,12 @@ const groupPath = "/" + framework + "/" + type;
 const guides = (
   await getCollection("guides", filterGuidesByGroup(groupPath))
 ).map(getGuideDetail);
+const cards = await Promise.all(
+  entries.map(async (entry) => ({
+    entry,
+    thumbnail: await renderThumbnail(entry.id),
+  })),
+);
 ---
 
 <Layout {title}>
@@ -78,7 +85,7 @@ const guides = (
   }
   <ul class="grid grid-cols-1 gap-3 @2xl/shell-main-body:grid-cols-2">
     {
-      entries.map((entry) => (
+      cards.map(({ entry, thumbnail }) => (
         <li>
           <Frame
             render={createElement("a", {
@@ -88,8 +95,19 @@ const guides = (
             $rounded="xl"
             $border
             $p={4}
-            className="flex font-medium hover:ak-state-2.5"
+            className="flex flex-col gap-4 font-medium hover:ak-state-2.5"
           >
+            {thumbnail && (
+              <Frame
+                $layer
+                $darken={0.5}
+                $rounded="lg"
+                $p="none"
+                className="h-48 overflow-clip"
+              >
+                <Fragment set:html={thumbnail} />
+              </Frame>
+            )}
             {entry.data.title}
           </Frame>
         </li>
