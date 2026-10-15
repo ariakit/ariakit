@@ -84,6 +84,26 @@ test("theme panel applies a mode to the site and its previews", async ({
   await expect(preview).not.toHaveAttribute("data-theme");
 });
 
+test("theme panel applies a mode when storage is blocked", async ({
+  page,
+  q,
+}) => {
+  // Browsers throw on storage access when the user blocks site data.
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "localStorage", {
+      get() {
+        throw new DOMException("Storage is blocked", "SecurityError");
+      },
+    });
+  });
+  await gotoAndSettle(page, examplePath);
+  await q.button("Theme", { exact: true }).click();
+  const mode = query(q.radiogroup("Mode"));
+  await mode.radio("Dark").click();
+  await expect(mode.radio("Dark")).toHaveAttribute("aria-checked", "true");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+});
+
 test("theme button keeps its name when the panel narrows the page", async ({
   page,
   q,

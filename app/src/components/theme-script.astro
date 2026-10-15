@@ -18,6 +18,11 @@
     const root = document.documentElement;
     /** @param {string} key */
     const read = (key) => {
+      // The theme options keep values here when storage is blocked.
+      const fallback = window.siteThemeFallback;
+      if (fallback && key in fallback) {
+        return fallback[key] ?? null;
+      }
       try {
         return localStorage.getItem(key);
       } catch {

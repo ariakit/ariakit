@@ -58,6 +58,16 @@ export const SITE_THEME_SETTINGS: SiteThemeSetting[] = [
   },
 ];
 
+declare global {
+  interface Window {
+    /**
+     * Theme values that storage could not keep, by storage key. The theme
+     * script in the head reads them before storage.
+     */
+    siteThemeFallback?: Record<string, string | null>;
+  }
+}
+
 const CHANGE_EVENT = "site-theme-change";
 
 function getStorageKey(key: string) {
@@ -65,21 +75,34 @@ function getStorageKey(key: string) {
 }
 
 function readValue(key: string) {
+  const storageKey = getStorageKey(key);
+  const fallback = window.siteThemeFallback;
+  if (fallback && storageKey in fallback) {
+    return fallback[storageKey] ?? null;
+  }
   try {
-    return localStorage.getItem(getStorageKey(key));
+    return localStorage.getItem(storageKey);
   } catch {
     return null;
   }
 }
 
 function writeValue(key: string, value: string | null) {
+  const storageKey = getStorageKey(key);
   try {
     if (value == null) {
-      localStorage.removeItem(getStorageKey(key));
+      localStorage.removeItem(storageKey);
     } else {
-      localStorage.setItem(getStorageKey(key), value);
+      localStorage.setItem(storageKey, value);
     }
-  } catch {}
+  } catch {
+    // Storage throws when the user blocks site data. The choice still applies
+    // to this page, but it does not persist or reach the previews.
+    window.siteThemeFallback = {
+      ...window.siteThemeFallback,
+      [storageKey]: value,
+    };
+  }
 }
 
 /**
