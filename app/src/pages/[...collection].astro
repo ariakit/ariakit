@@ -9,6 +9,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import Meta from "#app/components/meta.astro";
+import { frame } from "@ariakit/ui/styles/frame";
 import { uniq } from "#app/lib/array.ts";
 import {
   filterGuidesByGroup,
@@ -17,6 +18,7 @@ import {
 } from "#app/lib/content.ts";
 import { getFramework } from "#app/lib/framework.ts";
 import { capitalize } from "#app/lib/string.ts";
+import PageIntro from "#app/components/page-intro.astro";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
@@ -55,12 +57,21 @@ const groupPath = "/" + framework + "/" + type;
 const guides = (
   await getCollection("guides", filterGuidesByGroup(groupPath))
 ).map(getGuideDetail);
+// Recipes render to class names here because Astro does not hydrate the list.
+const cardProps = frame.jsx({
+  $layer: true,
+  $rounded: "xl",
+  $border: true,
+  $p: 4,
+  className: "flex font-medium hover:ak-state-2.5",
+});
 ---
 
 <Layout {title}>
   <Meta slot="meta" {type} {title} {framework} />
-  <h1>{title}</h1>
-  <p>{previewCount} previews</p>
+  <PageIntro slot="intro" {title}>
+    <p>{previewCount} previews</p>
+  </PageIntro>
   {
     guides.length > 0 && (
       <nav aria-label="Guides">
@@ -72,11 +83,17 @@ const guides = (
       </nav>
     )
   }
-  <ul>
+  <ul class="grid grid-cols-1 gap-3 @2xl/shell-main-body:grid-cols-2">
     {
       entries.map((entry) => (
         <li>
-          <a href={groupPath + "/" + entry.id + "/"}>{entry.data.title}</a>
+          <a
+            href={groupPath + "/" + entry.id + "/"}
+            class={cardProps.className}
+            style={cardProps.style}
+          >
+            {entry.data.title}
+          </a>
         </li>
       ))
     }

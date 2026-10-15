@@ -8,6 +8,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { SampleCard } from "#app/components/sample-card.react.tsx";
 import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
 import { invariant } from "@ariakit/utils";
@@ -25,30 +26,24 @@ if (!source) return null;
 const preview = await getEntry("previews", source.name);
 const title = preview?.data.title ?? source.name;
 const href = "/" + framework + "/previews/" + source.name + "/";
+const cardProps = {
+  id: "sample-" + source.name.replaceAll("/", "-"),
+  title,
+  href,
+  fullscreen: preview?.data.fullscreen,
+  files: Object.entries(source.files).map(([name, file]) => ({
+    name,
+    content: file.content,
+  })),
+};
 ---
 
-<section aria-label={title}>
-  <h2><a {href}>{title}</a></h2>
-  {
-    Astro.slots.has("default") ? (
+{
+  Astro.slots.has("default") ? (
+    <SampleCard {...cardProps}>
       <slot />
-    ) : (
-      <iframe
-        src={href}
-        {title}
-        width="640"
-        height="400"
-        style="max-width: 100%"
-        loading="lazy"
-      />
-    )
-  }
-  {
-    Object.entries(source.files).map(([filename, file]) => (
-      <details>
-        <summary>{filename}</summary>
-        <pre><code>{file.content}</code></pre>
-      </details>
-    ))
-  }
-</section>
+    </SampleCard>
+  ) : (
+    <SampleCard {...cardProps} />
+  )
+}

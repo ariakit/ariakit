@@ -1,0 +1,59 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+---
+
+<script is:inline>
+  // Applies the theme saved by the site's Theme panel before first paint.
+  // Previews run in same-origin iframes, so they follow panel changes through
+  // storage events.
+  (() => {
+    const root = document.documentElement;
+    /** @param {string} key */
+    const read = (key) => {
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    };
+    /**
+     * @param {string} property
+     * @param {string | null} value
+     */
+    const setProperty = (property, value) => {
+      if (value) {
+        root.style.setProperty(property, value);
+      } else {
+        root.style.removeProperty(property);
+      }
+    };
+    const apply = () => {
+      const mode = read("site-theme:mode");
+      // A forced mode also sets the color scheme, so browser-drawn parts such
+      // as scrollbars and form controls follow it.
+      if (mode === "light" || mode === "dark") {
+        root.dataset.theme = mode;
+        root.style.colorScheme = mode;
+      } else {
+        delete root.dataset.theme;
+        root.style.removeProperty("color-scheme");
+      }
+      setProperty("--color-brand", read("site-theme:brand"));
+      setProperty("--radius", read("site-theme:radius"));
+    };
+    apply();
+    window.addEventListener("storage", (event) => {
+      if (!event.key?.startsWith("site-theme:")) return;
+      apply();
+    });
+    window.addEventListener("site-theme-change", apply);
+  })();
+</script>

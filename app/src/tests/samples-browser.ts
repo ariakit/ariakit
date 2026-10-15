@@ -36,9 +36,11 @@ test("combobox sample and variant work in their iframes", async ({
     await expect(preview.option()).toHaveCount(0);
   }
 
-  const source = q.text("index.tsx", { exact: true }).first();
-  await source.click();
-  await expect(page.locator("details[open] code").first()).toContainText(
+  const sample = query(q.region("Combobox Group"));
+  const getCode = sample.button("Get code");
+  await getCode.click();
+  await expect(getCode).toHaveAttribute("aria-expanded", "true");
+  await expect(q.region("Combobox Group code")).toContainText(
     "export default function Example",
   );
 });
@@ -50,12 +52,15 @@ for (const framework of ["react", "solid"]) {
   }) => {
     await gotoAndSettle(page, `/${framework}/components/separator/`);
     await expect(q.separator()).toBeVisible();
-    await expect(q.link("Separator", { exact: true }).first()).toHaveAttribute(
+    // The site navigation also links to the Separator page, so the preview link
+    // is queried within the sample region.
+    const sample = query(q.region("Separator"));
+    await expect(sample.link("Open preview in a new tab")).toHaveAttribute(
       "href",
       `/${framework}/previews/separator/_component/`,
     );
-    await q.text("index.tsx", { exact: true }).click();
-    await expect(page.locator("details[open] code")).toContainText(
+    await sample.button("Get code").click();
+    await expect(q.region("Separator code")).toContainText(
       `@ariakit/${framework}`,
     );
   });

@@ -11,30 +11,295 @@
 import "#app/styles/global.css";
 import "@fontsource-variable/inter";
 import Meta from "#app/components/meta.astro";
+import type {
+  SiteHeading,
+  SiteLink,
+} from "#app/components/site-shell.react.tsx";
+import { SiteShell } from "#app/components/site-shell.react.tsx";
+import ThemeScript from "#app/components/theme-script.astro";
+import { getCollection } from "astro:content";
 
 export interface Props {
   title?: string;
+  headings?: SiteHeading[];
 }
 
-const { title } = Astro.props;
+const { title, headings } = Astro.props;
+const pathname = Astro.url.pathname;
+
+// The site navigation lists React pages only. Solid pages still build, but
+// they are not part of the navigation yet.
+const navigationFramework = "react";
+
+const sectionTypes = [
+  { type: "components", label: "Components" },
+  { type: "examples", label: "Examples" },
+] as const;
+
+const collections = await Promise.all(
+  sectionTypes.map(async ({ type, label }) => {
+    const entries = await getCollection(type, (entry) =>
+      entry.data.frameworks.includes(navigationFramework),
+    );
+    return { type, label, entries };
+  }),
+);
+
+const sections: SiteLink[] = collections.map(({ type, label }) => {
+  const href = `/${navigationFramework}/${type}/`;
+  return { href, label, current: pathname.startsWith(href) };
+});
+
+const navigation = collections
+  .filter(({ entries }) => entries.length > 0)
+  .map(({ type, label, entries }) => ({
+    label,
+    links: entries
+      .map((entry) => ({
+        href: `/${navigationFramework}/${type}/${entry.id}/`,
+        label: entry.data.title,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)),
+  }));
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <slot name="meta"><Meta {title} /></slot>
+    <ThemeScript />
   </head>
   <body>
-    <header>
-      <a href="/">Ariakit</a>
-      <nav aria-label="Main">
-        <ul>
-          <li><a href="/react/components/">React components</a></li>
-          <li><a href="/solid/components/">Solid components</a></li>
-          <li><a href="/react/examples/">Examples</a></li>
-        </ul>
-      </nav>
-    </header>
-    <main id="main"><slot /></main>
+    <SiteShell currentUrl={Astro.url} {sections} {navigation} {headings}>
+      {
+        Astro.slots.has("intro") && (
+          <Fragment slot="intro">
+            <slot name="intro" />
+          </Fragment>
+        )
+      }
+      <slot />
+    </SiteShell>
+    <script is:inline>
+      // The site shell renders without hydration. This script restores the
+      // panel and theme choices and wires the panels, the theme radios, the
+      // table of contents, and the sample code toggles.
+      (() => {
+        /** @param {string} key */
+        const read = (key) => {
+          try {
+            return localStorage.getItem(key);
+          } catch {
+            return null;
+          }
+        };
+        /**
+         * @param {string} key
+         * @param {string | null} value
+         */
+        const write = (key, value) => {
+          try {
+            if (value == null) {
+              localStorage.removeItem(key);
+            } else {
+              localStorage.setItem(key, value);
+            }
+          } catch {}
+        };
+        /**
+         * @param {ParentNode} parent
+         * @param {string} selector
+         */
+        const queryAll = (parent, selector) =>
+          [...parent.querySelectorAll(selector)].filter(
+            (element) => element instanceof HTMLElement,
+          );
+        /** @param {Element} element */
+        const getControlled = (element) => {
+          const id = element.getAttribute("aria-controls");
+          return id ? document.getElementById(id) : null;
+        };
+
+        // Shell panels
+        /**
+         * @param {HTMLElement} panel
+         * @param {boolean} open
+         */
+        const setOpen = (panel, open) => {
+          panel.toggleAttribute("data-open", open);
+          const selector = `[data-shell-toggle][aria-controls="${panel.id}"]`;
+          for (const toggle of queryAll(document, selector)) {
+            toggle.setAttribute("aria-expanded", String(open));
+          }
+          if (panel.hasAttribute("data-shell-transient")) return;
+          write(`site-panel:${panel.id}`, String(open));
+        };
+        for (const toggle of queryAll(document, "[data-shell-toggle]")) {
+          const panel = getControlled(toggle);
+          if (!panel) continue;
+          // Transient panels, like the phone menu, always start closed.
+          const saved = panel.hasAttribute("data-shell-transient")
+            ? null
+            : read(`site-panel:${panel.id}`);
+          if (saved != null) {
+            setOpen(panel, saved === "true");
+          }
+          toggle.addEventListener("click", () => {
+            setOpen(panel, !panel.hasAttribute("data-open"));
+          });
+        }
+        for (const close of queryAll(document, "[data-shell-close]")) {
+          const panel = getControlled(close);
+          if (!panel) continue;
+          close.addEventListener("click", () => setOpen(panel, false));
+        }
+
+        // Theme radios. The theme script in the head applies the stored
+        // values, and preview iframes receive them through storage events.
+        /**
+         * Checks the option with this value in every group of the setting,
+         * because the phone menu repeats the theme options.
+         * @param {string} setting
+         * @param {string | undefined} value
+         */
+        const checkValue = (setting, value) => {
+          const selector = `[data-theme-group="${setting}"]`;
+          for (const group of queryAll(document, selector)) {
+            const radios = queryAll(group, "[role=radio]");
+            const match =
+              radios.find((radio) => radio.dataset.themeValue === value) ??
+              radios[0];
+            for (const radio of radios) {
+              const checked = radio === match;
+              radio.setAttribute("aria-checked", String(checked));
+              radio.tabIndex = checked ? 0 : -1;
+            }
+          }
+        };
+        /** @param {HTMLElement} radio */
+        const selectTheme = (radio) => {
+          const { themeSetting, themeValue, themeSwatch } = radio.dataset;
+          if (!themeSetting) return;
+          checkValue(themeSetting, themeValue);
+          const group = radio.closest("[role=radiogroup]");
+          // The first option keeps the stylesheet default.
+          const isDefault = group?.querySelector("[role=radio]") === radio;
+          const value = isDefault ? null : (themeValue ?? null);
+          write(`site-theme:${themeSetting}`, value);
+          if (themeSetting === "accent") {
+            write("site-theme:brand", isDefault ? null : (themeSwatch ?? null));
+          }
+          window.dispatchEvent(new Event("site-theme-change"));
+        };
+        for (const setting of ["mode", "accent", "radius"]) {
+          const saved = read(`site-theme:${setting}`);
+          if (saved) {
+            checkValue(setting, saved);
+          }
+        }
+        for (const radio of queryAll(document, "[data-theme-setting]")) {
+          radio.addEventListener("click", () => selectTheme(radio));
+        }
+        // Radio groups move the checked option with the arrow keys.
+        /** @type {Record<string, number>} */
+        const steps = {
+          ArrowRight: 1,
+          ArrowDown: 1,
+          ArrowLeft: -1,
+          ArrowUp: -1,
+        };
+        for (const group of queryAll(document, "[data-theme-group]")) {
+          group.addEventListener("keydown", (event) => {
+            const step = steps[event.key];
+            if (!step) return;
+            const radios = queryAll(group, "[role=radio]");
+            const active = document.activeElement;
+            if (!(active instanceof HTMLElement)) return;
+            const index = radios.indexOf(active);
+            if (index === -1) return;
+            const next = radios[(index + step + radios.length) % radios.length];
+            if (!next) return;
+            event.preventDefault();
+            selectTheme(next);
+            next.focus();
+          });
+        }
+        for (const reset of queryAll(document, "[data-theme-reset]")) {
+          reset.addEventListener("click", () => {
+            for (const group of queryAll(document, "[data-theme-group]")) {
+              const [first] = queryAll(group, "[role=radio]");
+              if (first) {
+                selectTheme(first);
+              }
+            }
+          });
+        }
+
+        // Sample code toggles
+        for (const toggle of queryAll(document, "[data-code-toggle]")) {
+          const region = getControlled(toggle);
+          if (!region) continue;
+          toggle.addEventListener("click", () => {
+            const expanded = region.hidden;
+            region.hidden = !expanded;
+            toggle.setAttribute("aria-expanded", String(expanded));
+          });
+        }
+
+        // Table of contents. The link of the last heading that scrolled to its
+        // scroll margin below the sticky headers is current. No link is current
+        // before the first heading, and the last link is current at the end of
+        // the page, where short final sections cannot reach the margin.
+        const toc = document.querySelector("[data-site-toc]");
+        if (toc) {
+          const targets = queryAll(toc, "a[href^='#']").flatMap((link) => {
+            if (!(link instanceof HTMLAnchorElement)) return [];
+            const id = decodeURIComponent(link.hash.slice(1));
+            const target = document.getElementById(id);
+            return target ? [{ link, target }] : [];
+          });
+          // At the end of the page, a heading that a link just scrolled into
+          // view stays current instead of the last one.
+          const getEndTarget = () => {
+            const hashed = targets.find(
+              ({ link }) => link.hash === window.location.hash,
+            );
+            if (!hashed) return targets.at(-1);
+            const { top } = hashed.target.getBoundingClientRect();
+            if (top < 0) return targets.at(-1);
+            if (top > window.innerHeight) return targets.at(-1);
+            return hashed;
+          };
+          const update = () => {
+            const root = document.documentElement;
+            const atEnd =
+              window.scrollY > 0 &&
+              window.innerHeight + window.scrollY >= root.scrollHeight - 1;
+            let current = atEnd ? getEndTarget() : undefined;
+            if (!atEnd) {
+              for (const item of targets) {
+                const { top } = item.target.getBoundingClientRect();
+                const margin = parseFloat(
+                  getComputedStyle(item.target).scrollMarginTop,
+                );
+                // One pixel of tolerance absorbs subpixel scroll positions.
+                if (top > margin + 1) break;
+                current = item;
+              }
+            }
+            for (const { link } of targets) {
+              if (link === current?.link) {
+                link.setAttribute("aria-current", "location");
+              } else {
+                link.removeAttribute("aria-current");
+              }
+            }
+          };
+          update();
+          window.addEventListener("scroll", update, { passive: true });
+          window.addEventListener("hashchange", update);
+        }
+      })();
+    </script>
   </body>
 </html>
