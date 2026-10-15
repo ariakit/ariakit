@@ -91,7 +91,7 @@
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "unified": "11.0.5",
     "unist-util-visit": "5.1.0",
-    "zod": "4.6.6"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
