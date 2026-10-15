@@ -11,6 +11,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import { dirname, join } from "node:path";
 import type { LoaderContext } from "astro/loaders";
+import { Project, ts } from "ts-morph";
 import { afterEach, expect, test, vi } from "vitest";
 import { jsdoc } from "./jsdoc-loader.ts";
 import type { Reference } from "./schemas.ts";
@@ -77,6 +78,8 @@ interface AncestorOptions {
    *
    * Live examples:
    * - [Farthest](https://example.com/farthest)
+   * @default "ancestor"
+   * @deprecated Inherited deprecation.
    */
   overridden?: string;
   /**
@@ -108,6 +111,7 @@ interface ParentOptions extends AncestorOptions {
    *
    * Live examples:
    * - [Parent](https://example.com/parent-fallback)
+   * @deprecated Parent deprecation.
    */
   fallback?: string;
   farthest?: string;
@@ -118,6 +122,7 @@ export interface WidgetOptions extends ParentOptions {
    * Local override.
    */
   overridden?: string;
+  /** @default "local" */
   fallback?: string;
   farthest?: string;
 }
@@ -187,6 +192,10 @@ test("prefers the nearest prop description in base hierarchies", async () => {
 
   expect(overridden.description).toBe("Local override.");
   expect(overridden.liveExamples).toEqual([]);
+  expect(overridden.defaultValue).toBe('"ancestor"');
+  expect(overridden.deprecated).toBe("Inherited deprecation.");
+  expect(fallback.defaultValue).toBe('"local"');
+  expect(fallback.deprecated).toBe(false);
   expect(fallback.description).toBe("Parent fallback.");
   expect(fallback.liveExamples).toEqual([
     "https://example.com/parent-fallback",
@@ -283,36 +292,110 @@ test("preserves inherited prop descriptions through mapped options", async () =>
   }
 });
 
-test("does not inherit fixed defaults over local contextual defaults", async () => {
+test("matches IntelliSense for inherited prop documentation", async () => {
   const { context, entries } = getLoaderContext();
   const loader = jsdoc({
     corePath: join(process.cwd(), "packages/ariakit-react-components"),
     framework: "react",
     packagePath: join(process.cwd(), "packages/ariakit-react"),
   });
-
   await loader.load(context);
 
-  for (const id of [
-    "react/combobox/combobox-provider",
-    "react/combobox/use-combobox-store",
-  ]) {
-    const reference = getReference(entries, id);
-    for (const name of [
-      "focusLoop",
-      "focusWrap",
-      "compositeElementInFocusOrder",
-    ]) {
-      expect(getParamProp(reference, name).defaultValue).toBeUndefined();
-    }
-  }
+  const project = new Project({
+    tsConfigFilePath: join(process.cwd(), "app/tsconfig.react.json"),
+    skipAddingFilesFromTsConfig: true,
+  });
+  const source = project.createSourceFile(
+    join(process.cwd(), "app/src/intellisense-probe.ts"),
+    `
+import type {
+  TabProps,
+  ToolbarProps,
+  MenuItemProps,
+  ComboboxProviderProps,
+  ComboboxItemProps,
+  ComboboxPopoverProps,
+  MenuButtonProps,
+  CompositeSeparatorProps,
+  DisclosureProviderProps,
+} from "@ariakit/react";
+declare const tab: TabProps;
+declare const toolbar: ToolbarProps;
+declare const menuItem: MenuItemProps;
+declare const combobox: ComboboxProviderProps;
+declare const comboboxItem: ComboboxItemProps;
+declare const comboboxPopover: ComboboxPopoverProps;
+declare const menuButton: MenuButtonProps;
+declare const separator: CompositeSeparatorProps;
+declare const disclosure: DisclosureProviderProps;
+tab.shouldRegisterItem;
+toolbar.focusLoop;
+menuItem.preventScrollOnKeyDown;
+combobox.focusLoop;
+combobox.focusWrap;
+combobox.compositeElementInFocusOrder;
+comboboxItem.focusOnHover;
+comboboxPopover.autoFocusOnShow;
+menuButton.typeahead;
+separator.orientation;
+disclosure.animated;
+`,
+  );
+  project.resolveSourceFileDependencies();
+  expect(source.getPreEmitDiagnostics()).toEqual([]);
+  const service = project.getLanguageService().compilerObject;
+  const cases = [
+    ["tab.shouldRegisterItem", "react/tab/tab", "true"],
+    ["toolbar.focusLoop", "react/toolbar/toolbar", "true"],
+    ["menuItem.preventScrollOnKeyDown", "react/menu/menu-item", "true"],
+    ["combobox.focusLoop", "react/combobox/combobox-provider", "true"],
+    ["combobox.focusWrap", "react/combobox/combobox-provider", "true"],
+    [
+      "combobox.compositeElementInFocusOrder",
+      "react/combobox/combobox-provider",
+      "true",
+    ],
+    ["comboboxItem.focusOnHover", "react/combobox/combobox-item", "false"],
+    [
+      "comboboxPopover.autoFocusOnShow",
+      "react/combobox/combobox-popover",
+      "false",
+    ],
+    ["menuButton.typeahead", "react/menu/menu-button", "false"],
+    [
+      "separator.orientation",
+      "react/composite/composite-separator",
+      'orientation === "horizontal" ? "vertical" : "horizontal"',
+    ],
+    ["disclosure.animated", "react/disclosure/disclosure-provider", undefined],
+  ] as const;
 
-  const comboboxItem = getReference(entries, "react/combobox/combobox-item");
-  expect(
-    getParamProp(comboboxItem, "focusOnHover").defaultValue,
-  ).toBeUndefined();
-  const menuButton = getReference(entries, "react/menu/menu-button");
-  expect(getParamProp(menuButton, "typeahead").defaultValue).toBeUndefined();
+  for (const [expression, id, defaultValue] of cases) {
+    const name = expression.split(".")[1];
+    if (!name) throw new Error(`Missing prop name: ${expression}`);
+    const position =
+      source.getFullText().indexOf(expression) + expression.indexOf(".") + 1;
+    const info = service.getQuickInfoAtPosition(source.getFilePath(), position);
+    if (!info) throw new Error(`Missing Quick Info: ${expression}`);
+    const prop = getParamProp(getReference(entries, id), name);
+    const defaultTag = info.tags?.find((tag) => tag.name === "default");
+    const deprecatedTag = info.tags?.find((tag) => tag.name === "deprecated");
+    const description = ts.displayPartsToString(info.documentation);
+    // The reference renders live examples in a separate section.
+    expect(prop.description).toBe(description.split("\n\nLive examples:")[0]);
+    for (const example of prop.liveExamples) {
+      expect(description).toContain(example);
+    }
+    expect(prop.defaultValue).toBe(defaultValue);
+    expect(prop.defaultValue).toBe(
+      defaultTag ? ts.displayPartsToString(defaultTag.text) : undefined,
+    );
+    expect(prop.deprecated).toBe(
+      deprecatedTag
+        ? ts.displayPartsToString(deprecatedTag.text) || true
+        : false,
+    );
+  }
 });
 
 test("loads Combobox Select prop metadata", async () => {

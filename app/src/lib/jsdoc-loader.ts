@@ -14,7 +14,7 @@ import { fileURLToPath } from "node:url";
 import { invariant } from "@ariakit/utils";
 import type { LoaderContext } from "astro/loaders";
 import type { z } from "astro/zod";
-import type { FunctionLikeDeclaration, JSDocTag, SourceFile } from "ts-morph";
+import type { FunctionLikeDeclaration, SourceFile } from "ts-morph";
 import { Node, Project, ts } from "ts-morph";
 import { createLogger } from "./logger.ts";
 import type { FrameworkSchema, Reference } from "./schemas.ts";
@@ -60,7 +60,7 @@ type ExportedDeclarations = ReturnType<SourceFile["getExportedDeclarations"]>;
 interface JsDocInfo {
   description: string;
   liveExamples: string[];
-  tags: JSDocTag[];
+  tags: { name: string; text: string }[];
 }
 
 const emptyJsDocInfo: JsDocInfo = {
@@ -76,8 +76,6 @@ const exportedDeclarationsCache = new WeakMap<
 >();
 const jsDocInfoCache = new WeakMap<Node, JsDocInfo>();
 const typeTextCache = new WeakMap<Node, string>();
-const baseInterfacesCache = new WeakMap<Node, Node[]>();
-const basePropDeclsCache = new WeakMap<Node, Map<string, Node[]>>();
 const propsCache = new WeakMap<Node, Reference["params"]>();
 const functionDeclarationCache = new WeakMap<
   Node,
@@ -878,6 +876,23 @@ function extractLiveExamples(text: string) {
 function getJsDocInfo(node: Node): JsDocInfo {
   const cached = jsDocInfoCache.get(node);
   if (cached) return cached;
+  if (Node.isPropertySignature(node)) {
+    // Use the same inheritance rules as TypeScript IntelliSense.
+    const symbol = node.getSymbol()?.compilerSymbol;
+    if (!symbol) return emptyJsDocInfo;
+    const checker = node.getProject().getTypeChecker().compilerObject;
+    const info = {
+      ...extractLiveExamples(
+        ts.displayPartsToString(symbol.getDocumentationComment(checker)),
+      ),
+      tags: symbol.getJsDocTags(checker).map((tag) => ({
+        name: tag.name,
+        text: ts.displayPartsToString(tag.text),
+      })),
+    };
+    jsDocInfoCache.set(node, info);
+    return info;
+  }
   if (!Node.isJSDocable(node)) return emptyJsDocInfo;
 
   const jsDocs = node.getJsDocs();
@@ -886,10 +901,12 @@ function getJsDocInfo(node: Node): JsDocInfo {
   const firstJsDoc = jsDocs[0];
   const rawDescription = firstJsDoc?.getDescription() || "";
   const { description, liveExamples } = extractLiveExamples(rawDescription);
-  const tags: JSDocTag[] = [];
+  const tags: JsDocInfo["tags"] = [];
 
   for (const jsDoc of jsDocs) {
-    tags.push(...jsDoc.getTags());
+    for (const tag of jsDoc.getTags()) {
+      tags.push({ name: tag.getTagName(), text: tag.getCommentText() || "" });
+    }
   }
 
   const info = { description, liveExamples, tags };
@@ -920,7 +937,7 @@ function getTags(node: Node) {
  */
 function isPrivate(node: Node) {
   const tags = getTags(node);
-  return tags.some((tag) => tag.getTagName() === "private");
+  return tags.some((tag) => tag.name === "private");
 }
 
 /**
@@ -928,9 +945,9 @@ function isPrivate(node: Node) {
  */
 function getDeprecated(node: Node) {
   const tags = getTags(node);
-  const tag = tags.find((tag) => tag.getTagName() === "deprecated");
+  const tag = tags.find((tag) => tag.name === "deprecated");
   if (!tag) return false;
-  const comment = tag.getCommentText();
+  const comment = tag.text;
   return comment ? comment : true;
 }
 
@@ -939,8 +956,8 @@ function getDeprecated(node: Node) {
  */
 function getDefaultValue(node: Node) {
   const tags = getTags(node);
-  const tag = tags.find((tag) => tag.getTagName() === "default");
-  const comment = tag?.getCommentText();
+  const tag = tags.find((tag) => tag.name === "default");
+  const comment = tag?.text;
   if (!comment) return;
   return comment.trim();
 }
@@ -953,8 +970,8 @@ function getExamples(node: Node) {
   const examples: Reference["examples"] = [];
 
   for (const tag of tags) {
-    if (tag.getTagName() !== "example") continue;
-    const text = tag.getCommentText();
+    if (tag.name !== "example") continue;
+    const text = tag.text;
     if (!text) continue;
     // Parse an optional description followed by a fenced code block.
     const match = text.match(
@@ -989,67 +1006,6 @@ function getTypeText(node: Node) {
 }
 
 /**
- * Gets all direct base interface declarations for a given interface declaration
- */
-function getBaseInterfaces(iface: Node) {
-  const cached = baseInterfacesCache.get(iface);
-  if (cached) return cached;
-  const bases: Node[] = [];
-  if (!Node.isInterfaceDeclaration(iface)) {
-    return bases;
-  }
-  const extendsList = iface.getExtends();
-  for (const ext of extendsList) {
-    const type = ext.getType();
-    const symbol = type.getSymbol();
-    const decls = symbol?.getDeclarations() || [];
-    for (const d of decls) {
-      if (!Node.isInterfaceDeclaration(d)) continue;
-      bases.push(d);
-    }
-  }
-  baseInterfacesCache.set(iface, bases);
-  return bases;
-}
-
-/**
- * Finds property declarations for a given prop name across base interfaces of
- * the provided owner interface, in nearest-first order.
- */
-function findPropDeclsInBaseHierarchy(owner: Node, propName: string) {
-  const cachedByName = basePropDeclsCache.get(owner);
-  const cached = cachedByName?.get(propName);
-  if (cached) return cached;
-
-  const results: Node[] = [];
-  if (!Node.isInterfaceDeclaration(owner)) {
-    return results;
-  }
-  const visited = new Set<Node>();
-  const queue = [...getBaseInterfaces(owner)];
-  while (queue.length) {
-    const current = queue.shift();
-    if (!current) break;
-    if (visited.has(current)) continue;
-    visited.add(current);
-    const type = current.getType();
-    const sym = type.getProperty(propName);
-    const decl = sym?.getDeclarations()?.[0];
-    if (decl) {
-      results.push(decl);
-    }
-    const bases = getBaseInterfaces(current);
-    for (const base of bases) {
-      queue.push(base);
-    }
-  }
-  const nextCachedByName = cachedByName ?? new Map<string, Node[]>();
-  nextCachedByName.set(propName, results);
-  basePropDeclsCache.set(owner, nextCachedByName);
-  return results;
-}
-
-/**
  * Extracts props from a type or interface
  */
 function getProps(node: Node) {
@@ -1064,50 +1020,15 @@ function getProps(node: Node) {
   for (const prop of nodeProps) {
     const decl = prop.getDeclarations().at(0);
     if (!decl) continue;
-    // Skip only if all candidates are private later; start from local decl
-    const propName = Node.isPropertySignature(decl)
-      ? decl.getName() || prop.getEscapedName()
-      : prop.getEscapedName();
-
-    // Search the local declaration before inherited versions.
-    const decls = [decl];
-    decls.push(...findPropDeclsInBaseHierarchy(node, propName));
-    // Mapped options can hide the interface that owns a property's override.
-    decls.push(
-      ...findPropDeclsInBaseHierarchy(decl.getParentOrThrow(), propName),
-    );
-
-    // Use description and live examples from the nearest visible declaration.
-    let description = "";
-    let liveExamples: string[] = [];
-    for (const decl of decls) {
-      const res = getDescriptionAndLiveExamples(decl);
-      if (!res.description) continue;
-      description = res.description;
-      liveExamples = res.liveExamples;
-      break;
-    }
+    if (isPrivate(decl)) continue;
+    const { description, liveExamples } = getDescriptionAndLiveExamples(decl);
     if (!description) continue;
+    const type = getTypeText(decl);
+    const deprecated = getDeprecated(decl);
+    const defaultValue = getDefaultValue(decl);
+    const examples = getExamples(decl);
 
-    const primaryDecl = decls[0];
-    if (!primaryDecl) continue;
-    const type = getTypeText(primaryDecl);
-
-    // A local description can replace a fixed default with a conditional one,
-    // so its empty tag list must also override inherited tags.
-    const tagsDecl = decls.find(
-      (declaration) =>
-        Node.isJSDocable(declaration) && declaration.getJsDocs().length > 0,
-    );
-
-    const hasPrivateTag = tagsDecl ? isPrivate(tagsDecl) : false;
-    if (hasPrivateTag) continue;
-
-    const deprecated = tagsDecl ? getDeprecated(tagsDecl) : false;
-    const defaultValue = tagsDecl ? getDefaultValue(tagsDecl) : undefined;
-    const examples = tagsDecl ? getExamples(tagsDecl) : [];
-
-    const nestedProps = getProps(primaryDecl);
+    const nestedProps = getProps(decl);
     props.push({
       name: prop.getEscapedName(),
       type,
