@@ -352,6 +352,7 @@ export interface MenuButtonOptions<T extends ElementType = TagName>
    * By default, it's `true` for menu buttons in a
    * [`Menubar`](https://ariakit.com/reference/menubar), but `false` for other
    * menu buttons.
+   * @default false
    */
   typeahead?: boolean;
 }

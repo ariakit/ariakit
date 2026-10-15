@@ -1,6 +1,6 @@
 import { basename, join } from "node:path";
 import invariant from "tiny-invariant";
-import { Node, Project, ts } from "ts-morph";
+import { Node, Project, StructureKind, ts } from "ts-morph";
 import { getPageName } from "./get-page-name.js";
 
 const cwd = process.cwd();
@@ -47,15 +47,6 @@ export function getReferences(filename) {
 }
 
 /**
- * @template T
- * @param {T} value
- * @returns {value is NonNullable<T>}
- */
-function nonNullable(value) {
-  return value !== null && value !== undefined;
-}
-
-/**
  * @param {Node | import("ts-morph").JSDocStructure} value
  * @returns {value is import("ts-morph").JSDocStructure}
  */
@@ -85,25 +76,27 @@ function mergeJsDocs(jsDocs) {
 function getJsDoc(node) {
   if (isJSDocStructure(node)) return node;
   if (Node.isJSDoc(node)) return node.getStructure();
+  if (Node.isPropertySignature(node)) {
+    // Use the same inheritance rules as TypeScript IntelliSense.
+    const symbol = node.getSymbol()?.compilerSymbol;
+    if (!symbol) return null;
+    const checker = node.getProject().getTypeChecker().compilerObject;
+    return {
+      kind: StructureKind.JSDoc,
+      description: ts.displayPartsToString(
+        symbol.getDocumentationComment(checker),
+      ),
+      tags: symbol.getJsDocTags(checker).map((tag) => ({
+        tagName: tag.name,
+        text: ts.displayPartsToString(tag.text),
+      })),
+    };
+  }
   if (!Node.isJSDocable(node)) return null;
 
   const jsDocs = node.getJsDocs();
   if (!jsDocs.length) return null;
   const jsDoc = mergeJsDocs(jsDocs.map((jsDoc) => jsDoc.getStructure()));
-
-  if (Node.isPropertySignature(node)) {
-    const parent = node.getParent();
-    if (!parent) return jsDoc;
-    const baseTypes = parent.getType().getBaseTypes();
-    if (!baseTypes.length) return jsDoc;
-    const jsDocs = baseTypes
-      .map((type) => type.getProperty(node.getName())?.getDeclarations().at(0))
-      .filter(nonNullable)
-      .map(getJsDoc)
-      .filter(nonNullable);
-
-    return mergeJsDocs([...jsDocs, jsDoc]);
-  }
 
   return jsDoc;
 }

@@ -335,7 +335,7 @@ export interface TabStoreFunctions extends CompositeStoreFunctions<TabStoreItem>
    * // Selects the tab with id "tab-1"
    * store.setSelectedId("tab-1");
    * // Toggles between "tab-1" and "tab-2"
-   * store.setSelectedId((id) => id === "tab-1" ? "tab-2" : "tab-1"));
+   * store.setSelectedId((id) => id === "tab-1" ? "tab-2" : "tab-1");
    * // Selects the first tab
    * store.setSelectedId(store.first());
    * // Selects the next tab

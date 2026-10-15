@@ -1,4 +1,4 @@
-import type { Store, StoreProps } from "@ariakit/store";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { defaultValue } from "@ariakit/utils";
 import type {
   CompositeStoreFunctions,
@@ -26,11 +26,19 @@ export function createMenubarStore(
   });
 }
 
-export interface MenubarStoreState extends CompositeStoreState {}
+export interface MenubarStoreState extends CompositeStoreState {
+  /** @default "horizontal" */
+  orientation: CompositeStoreState["orientation"];
+  /** @default true */
+  focusLoop: CompositeStoreState["focusLoop"];
+}
 
 export interface MenubarStoreFunctions extends CompositeStoreFunctions {}
 
-export interface MenubarStoreOptions extends CompositeStoreOptions {}
+export interface MenubarStoreOptions
+  extends
+    StoreOptions<MenubarStoreState, "orientation" | "focusLoop">,
+    CompositeStoreOptions {}
 
 export interface MenubarStoreProps
   extends MenubarStoreOptions, StoreProps<MenubarStoreState> {}

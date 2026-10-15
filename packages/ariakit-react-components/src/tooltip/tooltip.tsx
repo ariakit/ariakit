@@ -141,6 +141,8 @@ export interface TooltipOptions<
    * @default true
    */
   portal?: HovercardOptions<T>["portal"];
+  /** @default false */
+  preserveTabOrder?: HovercardOptions<T>["preserveTabOrder"];
   /**
    * @default 8
    */

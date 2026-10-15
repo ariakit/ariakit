@@ -221,6 +221,13 @@ export interface MenuItemOptions<T extends ElementType = TagName>
    */
   store?: MenubarStore | MenuStore;
   /**
+   * @deprecated Use CSS
+   *   [`scroll-margin`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-margin)
+   *   instead.
+   * @default true
+   */
+  preventScrollOnKeyDown?: CompositeItemOptions<T>["preventScrollOnKeyDown"];
+  /**
    * Determines if the menu should hide when this item is clicked.
    *
    * **Note**: This behavior isn't triggered if this menu item is rendered as a
