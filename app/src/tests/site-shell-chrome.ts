@@ -84,6 +84,26 @@ test("theme panel applies a mode to the site and its previews", async ({
   await expect(preview).not.toHaveAttribute("data-theme");
 });
 
+test("theme panel follows choices from another tab", async ({
+  context,
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, examplePath);
+  await q.button("Theme", { exact: true }).click();
+  const mode = query(q.radiogroup("Mode"));
+  await expect(mode.radio("System")).toHaveAttribute("aria-checked", "true");
+  const otherPage = await context.newPage();
+  await gotoAndSettle(otherPage, examplePath);
+  const other = query(otherPage);
+  // The other tab restores the open panel from storage.
+  await expect(other.complementary("Theme")).toBeVisible();
+  await query(other.radiogroup("Mode")).radio("Dark").click();
+  await expect(mode.radio("Dark")).toHaveAttribute("aria-checked", "true");
+  await query(other.complementary("Theme")).button("Reset").click();
+  await expect(mode.radio("System")).toHaveAttribute("aria-checked", "true");
+});
+
 test("theme panel returns focus to the Theme button when it closes", async ({
   page,
   q,
