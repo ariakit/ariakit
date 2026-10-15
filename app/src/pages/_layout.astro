@@ -363,16 +363,19 @@ const navigation = collections
           for (const toggle of toggles) {
             toggle.setAttribute("aria-expanded", String(open));
           }
+          // A closing panel hides the focused element when it contains it, so
+          // focus moves back to the visible toggle.
+          if (!open && panel.contains(document.activeElement)) {
+            toggles.find((toggle) => toggle.checkVisibility())?.focus();
+          }
           if (!panel.hasAttribute("data-shell-transient")) {
             write(`site-panel:${panel.id}`, String(open));
             return;
           }
           // Transient panels cover the page, so focus moves into them when
-          // they open and back to their visible toggle when they close.
+          // they open.
           if (open) {
             queryAll(panel, "[data-shell-close]")[0]?.focus();
-          } else if (panel.contains(document.activeElement)) {
-            toggles.find((toggle) => toggle.checkVisibility())?.focus();
           }
         };
         document.addEventListener("keydown", (event) => {

@@ -84,6 +84,18 @@ test("theme panel applies a mode to the site and its previews", async ({
   await expect(preview).not.toHaveAttribute("data-theme");
 });
 
+test("theme panel returns focus to the Theme button when it closes", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, examplePath);
+  const themeButton = q.button("Theme", { exact: true });
+  await themeButton.click();
+  await query(q.complementary("Theme")).button("Close theme").press("Enter");
+  await expect(q.complementary("Theme")).not.toBeVisible();
+  await expect(themeButton).toBeFocused();
+});
+
 test("theme panel applies a mode when storage is blocked", async ({
   page,
   q,
