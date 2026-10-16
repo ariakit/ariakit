@@ -105,4 +105,28 @@ export const test = base.extend<{
   q: async ({ page }, use) => {
     await use(query(page));
   },
+
+  // Temporary Linux WebKit experiment. Playwright's Linux WebKit reports
+  // screenX and screenY as 0 for synthesized mouse events, so Ariakit never
+  // detects pointer movement. Derive them from the client coordinates to find
+  // the failures that have other causes.
+  context: async ({ context }, use) => {
+    if (process.env.WEBKIT_SCREEN_COORDS === "true") {
+      await context.addInitScript(() => {
+        const coordinates = [
+          ["screenX", "clientX"],
+          ["screenY", "clientY"],
+        ] as const;
+        for (const [screen, client] of coordinates) {
+          Object.defineProperty(MouseEvent.prototype, screen, {
+            configurable: true,
+            get(this: MouseEvent) {
+              return this[client];
+            },
+          });
+        }
+      });
+    }
+    await use(context);
+  },
 });
