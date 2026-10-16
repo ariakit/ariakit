@@ -78,8 +78,8 @@ export default defineConfig({
   reporter: visualShard
     ? [
         ["github"],
-        ["dot"],
-        ["./src/test-utils/visual-duration-reporter.ts"],
+        // Without a TTY, list prints one line with the duration per test result.
+        ["list"],
         [
           "@visonaut/playwright/reporter",
           {
@@ -112,7 +112,7 @@ export default defineConfig({
         ],
       ]
     : CI
-      ? [["github"], ["dot"]]
+      ? [["github"], ["list"]]
       : [["list"]],
   retries: 1,
   testDir: "src",
