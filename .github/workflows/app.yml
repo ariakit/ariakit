@@ -200,11 +200,11 @@ jobs:
             engine: webkit
             test: pnpm -F app run test-visual
           - os: macos-latest
-            arm: dsf1
+            arm: fast
             shard: safari
             engine: webkit
             test: pnpm -F app run test-visual
-            scaleFactor: 1
+            fast: true
     steps:
       - name: Record runner
         run: |
@@ -258,6 +258,7 @@ jobs:
           VISUAL_TIMING: "true"
           VISUAL_EXPERIMENT_ARM: ${{ matrix.arm }}
           VISUAL_DEVICE_SCALE_FACTOR: ${{ matrix.scaleFactor }}
+          VISUAL_FAST: ${{ matrix.fast }}
           VISUAL_PLAYWRIGHT_SHARD: ${{ matrix.playwrightShard }}
         run: ${{ matrix.test }} --project ${{ matrix.shard }} --grep @visual --output test-results/test-visual ${{ matrix.playwrightShard && format('--shard={0}', matrix.playwrightShard) || '' }}
 

@@ -1,11 +1,12 @@
 import { query } from "@ariakit/test/playwright";
+import { invariant } from "@ariakit/utils";
 import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { slugify } from "#app/lib/string.ts";
 import { withFramework } from "./preview.ts";
 import type { ScreenshotOptions, ScreenshotRegion } from "./visual.ts";
-import { phase, viewports, waitForFonts } from "./visual.ts";
+import { fastHelpers, phase, viewports, waitForFonts } from "./visual.ts";
 
 // Helpers for the tests of the ariakit-ui-* sandboxes, which render the
 // examples of one Ariakit UI component in a grid of boxes built with
@@ -18,6 +19,35 @@ type Visual = (options: ScreenshotOptions) => Promise<void>;
 const colorSchemes = ["light", "dark"] as const;
 
 export type ColorScheme = (typeof colorSchemes)[number];
+
+// Experiment: the viewport of each page that withCaptures loaded, until the
+// first forEachColorScheme call of the test.
+const loadedViewports = new WeakMap<Page, ViewportSize | null>();
+
+interface ViewportSize {
+  width: number;
+  height: number;
+}
+
+// Experiment: whether the page is still as withCaptures loaded it in the light
+// scheme. The fast arm loads every page with reduced motion, as the reloads do.
+// A changed viewport, forced colors, or contrast needs a reload.
+async function canReuseLoad(page: Page) {
+  if (!fastHelpers) return false;
+  if (!loadedViewports.has(page)) return false;
+  const loaded = loadedViewports.get(page);
+  loadedViewports.delete(page);
+  const current = page.viewportSize();
+  if (loaded?.width !== current?.width) return false;
+  if (loaded?.height !== current?.height) return false;
+  return page.evaluate(
+    () =>
+      matchMedia("(prefers-reduced-motion: reduce)").matches &&
+      matchMedia("(prefers-color-scheme: light)").matches &&
+      !matchMedia("(forced-colors: active)").matches &&
+      !matchMedia("(prefers-contrast: more)").matches,
+  );
+}
 
 // Safari on the macOS runners can take several seconds for one capture of a
 // tall sandbox, and a new baseline needs two identical captures in a row, which
@@ -40,6 +70,11 @@ export const OVERLAY_CLIP_MARGIN = 64;
 export function withCaptures(dirname: string, callback: WithFrameworkCallback) {
   withFramework(dirname, async (params) => {
     params.test.use({ viewport: viewports.desktop });
+    if (fastHelpers) {
+      params.test.beforeEach(({ page }) => {
+        loadedViewports.set(page, page.viewportSize());
+      });
+    }
     // Page captures extend this budget for each extra example card.
     params.test.describe.configure({ timeout: 120_000 });
     return callback(params);
@@ -57,6 +92,9 @@ export async function forEachColorScheme(
   capture: (colorScheme: ColorScheme) => Promise<void>,
 ) {
   const url = page.url();
+  // Experiment: the first call of a test can start on the page that
+  // withCaptures loaded, which stands for the light-scheme load.
+  const fresh = await canReuseLoad(page);
   for (const colorScheme of colorSchemes) {
     // A pointer left over an element from the previous scheme does not move
     // when the capture hovers that element again, and a tooltip waits for a
@@ -65,6 +103,7 @@ export async function forEachColorScheme(
     await phase("scheme-load", async () => {
       await page.mouse.move(0, 0);
       await page.emulateMedia({ colorScheme });
+      if (fresh && colorScheme === "light") return;
       // A new navigation rather than a reload, which would restore the scroll
       // position of the previous scheme after the capture started scrolling.
       await page.goto(url, { waitUntil: "load" });
@@ -130,6 +169,33 @@ export async function capturePage({
     // Oversize pages fall back to a separate capture budget for each card.
     const extraCaptures = boxes.length - 1;
     test.setTimeout(test.info().timeout + extraCaptures * CAPTURE_TIMEOUT);
+    if (fastHelpers) {
+      // Experiment: reads the titles and heights of all cards at once.
+      const cards = await main
+        .locator(":scope > article")
+        .evaluateAll((nodes) =>
+          nodes.map((node) => ({
+            title:
+              node
+                .querySelector(
+                  ":scope > header :is(h1, h2, h3, h4, h5, h6, [role='heading'])",
+                )
+                ?.textContent?.trim() ?? "",
+            height: node.getBoundingClientRect().height,
+          })),
+        );
+      expect(cards.length).toBe(boxes.length);
+      for (const [index, box] of boxes.entries()) {
+        const card = cards[index];
+        invariant(card, "Missing card");
+        expect(card.title).toBeTruthy();
+        expect(card.height + clipMargin * 2).toBeLessThanOrEqual(
+          MAX_CAPTURE_HEIGHT,
+        );
+        regions.push({ name: slugify(card.title), element: box });
+      }
+      return;
+    }
     for (const box of boxes) {
       const title =
         (

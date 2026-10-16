@@ -215,6 +215,11 @@ export default defineConfig({
             ...(safariScaleFactor
               ? { deviceScaleFactor: safariScaleFactor }
               : {}),
+            // Experiment: the fast arm loads the first page of each test with
+            // the reduced motion that the visual fixture sets, as the reloads.
+            ...(process.env.VISUAL_FAST === "true"
+              ? { reducedMotion: "reduce" as const }
+              : {}),
             launchOptions: {
               slowMo,
               // Healthy macOS CI launches complete initial page setup within 24

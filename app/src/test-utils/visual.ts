@@ -98,6 +98,9 @@ export const defaultStyles = {
   dark: { "--color-canvas": "oklch(19.34% 0.0091 264.28)" },
 } satisfies Styles;
 
+// Experiment: the arm that cuts page round trips without changing pixels.
+export const fastHelpers = process.env.VISUAL_FAST === "true";
+
 // Experiment: names a phase for app/visual-timing-reporter.ts.
 export function phase<T>(name: string, fn: () => Promise<T>) {
   if (!process.env.VISUAL_TIMING) return fn();
@@ -200,6 +203,9 @@ async function getScreenshotClip(
     return getBodyClip(page, clipMargin);
   }
   const locator = typeof element === "string" ? page.locator(element) : element;
+  if (fastHelpers) {
+    return getLocatorClip(locator, options);
+  }
   let rect: Rect | null = null;
   for (const element of await locator.all()) {
     const bounds = await element.boundingBox();
@@ -216,6 +222,36 @@ async function getScreenshotClip(
   return applyClipMargin(
     { ...rect, x: rect.x + scroll.x, y: rect.y + scroll.y },
     clipMargin,
+  );
+}
+
+// Experiment: reads the element boxes and the scroll position in one trip.
+async function getLocatorClip(
+  locator: Locator,
+  options: Pick<ScreenshotOptions, "clipMargin" | "fullPage">,
+) {
+  const { rects, scroll } = await locator.evaluateAll((elements) => ({
+    rects: elements.map((element) => {
+      // A box with no layout, such as display: none, has no client rects, as
+      // when Playwright's boundingBox returns null.
+      if (!element.getClientRects().length) return null;
+      const { x, y, width, height } = element.getBoundingClientRect();
+      return { x, y, width, height };
+    }),
+    scroll: { x: scrollX, y: scrollY },
+  }));
+  let rect: Rect | null = null;
+  for (const bounds of rects) {
+    invariant(bounds, "Element not visible");
+    rect = rect ? getCombinedClip(rect, bounds) : bounds;
+  }
+  invariant(rect, "Element not visible");
+  if (!options.fullPage) {
+    return applyClipMargin(rect, options.clipMargin);
+  }
+  return applyClipMargin(
+    { ...rect, x: rect.x + scroll.x, y: rect.y + scroll.y },
+    options.clipMargin,
   );
 }
 
@@ -284,7 +320,7 @@ async function withStyles(
   styles?: CSSProperties,
   fn?: () => Promise<void>,
 ) {
-  if (!styles) {
+  if (!styles || (fastHelpers && !Object.keys(styles).length)) {
     await fn?.();
     return;
   }
@@ -320,11 +356,15 @@ async function withViewport(
   viewport?: ViewportSize,
   fn?: () => Promise<void>,
 ) {
-  if (!viewport) {
+  const original = page.viewportSize();
+  const unchanged =
+    fastHelpers &&
+    original?.width === viewport?.width &&
+    original?.height === viewport?.height;
+  if (!viewport || unchanged) {
     await fn?.();
     return;
   }
-  const original = page.viewportSize();
   await phase("viewport", () => page.setViewportSize(viewport));
   await fn?.();
   // Skip the restore when fn fails, as in withStyles.
