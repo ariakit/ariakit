@@ -184,21 +184,36 @@ async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
   return getRectsClip(rects, margin);
 }
 
-async function getScreenshotClip(
-  page: Page,
-  options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
-) {
-  const { element, clipMargin, fullPage } = options;
-  if (!element) {
-    if (fullPage) return null;
-    return getBodyClip(page, clipMargin);
+/**
+ * Reads the element boxes that the captured clip comes from. Firefox reports
+ * these boxes with 32-bit float corners, which can round a clip one pixel
+ * larger than getBoundingClientRect would.
+ */
+async function readBoundingBoxes(locator: Locator, fullPage: boolean) {
+  // Typed as nullable to share the type of readClientBoxes.
+  const rects: Array<Rect | null> = [];
+  for (const element of await locator.all()) {
+    const bounds = await element.boundingBox();
+    invariant(bounds, "Element not visible");
+    rects.push(bounds);
   }
-  const locator = typeof element === "string" ? page.locator(element) : element;
-  // One round trip reads every element box and the scroll position. The clip
-  // stability polling repeats this read many times for each capture. Unlike
-  // boundingBox, the boxes are relative to the element's own frame, as is the
-  // scroll position, so the element must be in the main frame.
-  const { rects, scroll } = await locator.evaluateAll((elements) => ({
+  // A clip that is not full-page does not use the scroll position.
+  if (!fullPage) {
+    return { rects, scroll: { x: 0, y: 0 } };
+  }
+  const scroll = await locator
+    .page()
+    .evaluate(() => ({ x: scrollX, y: scrollY }));
+  return { rects, scroll };
+}
+
+/**
+ * Reads every element box and the scroll position in one round trip. The boxes
+ * can differ from boundingBox below a pixel and are relative to the element's
+ * own frame, so they only serve to detect a clip that is still changing.
+ */
+function readClientBoxes(locator: Locator) {
+  return locator.evaluateAll((elements) => ({
     rects: elements.map((element) => {
       // An element without layout boxes, such as one with display: none, is
       // where Playwright's boundingBox returns null.
@@ -208,6 +223,20 @@ async function getScreenshotClip(
     }),
     scroll: { x: scrollX, y: scrollY },
   }));
+}
+
+async function getScreenshotClip(
+  page: Page,
+  options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
+  readBoxes: typeof readBoundingBoxes = readBoundingBoxes,
+) {
+  const { element, clipMargin, fullPage } = options;
+  if (!element) {
+    if (fullPage) return null;
+    return getBodyClip(page, clipMargin);
+  }
+  const locator = typeof element === "string" ? page.locator(element) : element;
+  const { rects, scroll } = await readBoxes(locator, !!fullPage);
   let rect: Rect | null = null;
   for (const bounds of rects) {
     invariant(bounds, "Element not visible");
@@ -236,14 +265,15 @@ async function waitForStableScreenshotClip(
     return;
   }
   // Some previews update their layout a few frames after they become visible.
-  // Wait until the computed clip stays unchanged for a short window.
-  let previousClip = await getScreenshotClip(page, options);
+  // Wait until the computed clip stays unchanged for a short window. The
+  // polling only compares clips, so it reads them in one round trip each.
+  let previousClip = await getScreenshotClip(page, options, readClientBoxes);
   let lastClip = previousClip;
   let stableSince = Date.now();
   const deadline = Date.now() + CLIP_STABILITY_TIMEOUT;
   while (Date.now() < deadline) {
     await page.waitForTimeout(CLIP_STABILITY_INTERVAL);
-    const clip = await getScreenshotClip(page, options);
+    const clip = await getScreenshotClip(page, options, readClientBoxes);
     lastClip = clip;
     if (previousClip && clip && areRectsEqual(previousClip, clip)) {
       if (Date.now() - stableSince >= CLIP_STABILITY_DURATION) {
