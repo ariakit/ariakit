@@ -104,12 +104,14 @@ jobs:
             project: safari ios
             test: pnpm -F app run test
             shard: [1, 2]
+            shardWeights: "5:7"
           - os: macos-latest
             name: Safari
             engine: webkit
             project: safari ios
             test: pnpm -F app run test
             shard: [2, 2]
+            shardWeights: "5:7"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -142,6 +144,12 @@ jobs:
 
       - name: Test
         id: test
+        env:
+          # Playwright splits shards by test count, so Safari shard 1 took
+          # 13.8m and shard 2 took 9.2m on run 38891283398. The slower files
+          # come first. PWTEST_SHARD_WEIGHTS (not in the Playwright docs, one
+          # integer per shard) gives shard 1 5/12 of the tests instead of 1/2.
+          PWTEST_SHARD_WEIGHTS: ${{ matrix.shardWeights }}
         run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual ${{ matrix.shard && format('--shard={0}', join(matrix.shard, '/')) || '' }}
 
       - name: Upload test results to GitHub
