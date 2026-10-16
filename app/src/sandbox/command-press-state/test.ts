@@ -25,7 +25,8 @@ test("releasing Space clears data-active when the element becomes disabled mid-p
 
   // In a real browser the disabled element has blurred to the body, so the
   // keyup never reaches the command. happy-dom does not blur the disabled
-  // element; `test-browser.ts` covers the real blur-to-body keyup routing.
+  // element; `test-chrome-firefox.ts` covers the real blur-to-body keyup
+  // routing.
   await press.up.Space();
   expect(command).not.toHaveAttribute("data-active");
 });
@@ -70,7 +71,7 @@ test("Space keyup bubbling from a child does not click the command", async () =>
   await press.up.Space();
   // Unlike a real browser, the `press.up` emulation synthesizes a click on any
   // focused native button regardless of where the keydown happened, so the pin
-  // count is asserted only in `test-browser.ts`.
+  // count is asserted only in `test-chrome-firefox.ts`.
   expect(q.status()).toHaveTextContent("card clicks: 0");
   expect(card).not.toHaveAttribute("data-active");
 });
