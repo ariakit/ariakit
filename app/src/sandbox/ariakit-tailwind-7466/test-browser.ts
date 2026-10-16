@@ -2,52 +2,61 @@ import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
+  const groupTitles = [
+    "Applied",
+    "Border 1",
+    "Border 2",
+    "Border 4",
+    "Border 8",
+    "Border 3",
+    "Ring 2",
+    "Fractional ring",
+    "Adaptive 2",
+    "RTL",
+    "Vertical",
+    "Vertical ring",
+    "No edge",
+    "Shadow without edge",
+  ];
+
   for (const colorScheme of ["light", "dark"] as const) {
     for (const contrast of ["no-preference", "more"] as const) {
-      for (const title of [
-        "Applied",
-        "Border 1",
-        "Border 2",
-        "Border 4",
-        "Border 8",
-        "Border 3",
-        "Ring 2",
-        "Fractional ring",
-        "Adaptive 2",
-        "RTL",
-        "Vertical",
-        "Vertical ring",
-        "No edge",
-        "Shadow without edge",
-      ]) {
-        // https://github.com/ariakit/ariakit/issues/7466
-        test(`${title} keeps its geometry through hover (${colorScheme}, ${contrast})`, async ({
-          page,
-          q,
-        }) => {
-          await page.emulateMedia({ colorScheme, contrast });
-          const group = query(q.group(title));
-          await page.mouse.move(0, 0);
-          for (const label of ["Day", "Week", "Month"]) {
-            const item = group.button(label);
-            await item.scrollIntoViewIfNeeded();
-            const geometry = () =>
-              item.evaluate((element) => {
-                const box = element.getBoundingClientRect();
-                return {
-                  x: box.x + window.scrollX,
-                  y: box.y + window.scrollY,
-                  width: box.width,
-                  height: box.height,
-                };
-              });
-            const before = await geometry();
-            await item.hover();
-            await expect(item).toHaveCSS("z-index", "1");
-            expect(await geometry()).toEqual(before);
-          }
-        });
-      }
+      // https://github.com/ariakit/ariakit/issues/7466
+      test(`groups keep their geometry through hover (${colorScheme}, ${contrast})`, async ({
+        page,
+        q,
+      }) => {
+        // One test covers 42 hovers, which takes about 25s in Firefox, so the
+        // default 30s timeout leaves too little headroom on slower runners.
+        test.slow();
+        await page.emulateMedia({ colorScheme, contrast });
+        for (const title of groupTitles) {
+          await test.step(title, async () => {
+            const group = query(q.group(title));
+            // Move the pointer away so the previous group's hover cannot affect
+            // this one.
+            await page.mouse.move(0, 0);
+            for (const label of ["Day", "Week", "Month"]) {
+              const item = group.button(label);
+              await item.scrollIntoViewIfNeeded();
+              const geometry = () =>
+                item.evaluate((element) => {
+                  const box = element.getBoundingClientRect();
+                  return {
+                    x: box.x + window.scrollX,
+                    y: box.y + window.scrollY,
+                    width: box.width,
+                    height: box.height,
+                  };
+                });
+              const before = await geometry();
+              await item.hover();
+              await expect.soft(item).toHaveCSS("z-index", "1");
+              expect.soft(await geometry()).toEqual(before);
+            }
+          });
+        }
+      });
     }
   }
 
