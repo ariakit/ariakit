@@ -296,8 +296,8 @@ importers:
         specifier: npm:typescript@7.0.2
         version: typescript@7.0.2
       visonaut:
-        specifier: 0.6.3
-        version: 0.6.3
+        specifier: 0.6.4
+        version: 0.6.4
       vite:
         specifier: 8.3.4
         version: 8.3.4(@types/node@24.19.2)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
@@ -10130,8 +10130,8 @@ packages:
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
 
-  visonaut@0.6.3:
-    resolution: {integrity: sha512-UmDW3eyfamOQ+2isyl0YafWT14GNDgsvfajieWz9CSEgqKCLvrGCC8B/14BXuG4w1RGRgZiFrfBsQTFb4ShqEw==}
+  visonaut@0.6.4:
+    resolution: {integrity: sha512-o/xtZkgSZe+G29lNqWoNSnQdhUSP5rkX6aCUamw2R8U9t6lhnF+h0wcUSg/wKhApdrm8ZV2+R3VDAd1uKmr8lw==}
     engines: {node: '>=24.18.0'}
     hasBin: true
 
@@ -20293,7 +20293,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  visonaut@0.6.3: {}
+  visonaut@0.6.4: {}
 
   vite-plugin-solid@2.11.14(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.4))(solid-js@1.9.17)(supports-color@10.2.2)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)):
     dependencies:
