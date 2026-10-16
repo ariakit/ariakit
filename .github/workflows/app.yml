@@ -78,35 +78,25 @@ jobs:
           - os: ubuntu-latest
             name: Chrome
             engine: chromium
-            project: chrome
+            project: chrome android
             test: xvfb-run pnpm -F app run test
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
             test: xvfb-run pnpm -F app run test
-          - os: ubuntu-latest
-            name: Android
-            engine: chromium
-            project: android
-            test: xvfb-run pnpm -F app run test
           - os: macos-latest
             name: Safari
             engine: webkit
-            project: safari
+            project: safari ios
             test: pnpm -F app run test
             shard: [1, 2]
           - os: macos-latest
             name: Safari
             engine: webkit
-            project: safari
+            project: safari ios
             test: pnpm -F app run test
             shard: [2, 2]
-          - os: macos-latest
-            name: iOS
-            engine: webkit
-            project: ios
-            test: pnpm -F app run test
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -145,7 +135,7 @@ jobs:
         if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v7
         with:
-          name: app-${{ matrix.project }}${{ matrix.shard && format('-{0}', join(matrix.shard, '-')) || '' }}-test-results
+          name: app-${{ matrix.name }}${{ matrix.shard && format('-{0}', join(matrix.shard, '-')) || '' }}-test-results
           path: app/test-results
           retention-days: 7
 
