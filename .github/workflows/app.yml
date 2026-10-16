@@ -164,14 +164,16 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            shard: linux
-            engines: chromium firefox
-            projects: chrome firefox
+            shard: chrome
+            engine: chromium
+            test: xvfb-run pnpm -F app run test-visual
+          - os: ubuntu-latest
+            shard: firefox
+            engine: firefox
             test: xvfb-run pnpm -F app run test-visual
           - os: macos-latest
             shard: safari
-            engines: webkit
-            projects: safari
+            engine: webkit
             test: pnpm -F app run test-visual
     steps:
       - name: Checkout repository
@@ -190,7 +192,7 @@ jobs:
           - name: Install Playwright
             uses: ./.github/workflows/install-playwright
             with:
-              engines: ${{ matrix.engines }}
+              engines: ${{ matrix.engine }}
               workspace: app
 
           - name: Download app artifact
@@ -206,7 +208,9 @@ jobs:
               path: nextjs/.open-next
 
       - name: Test visual
-        run: ${{ matrix.test }} --project ${{ matrix.projects }} --grep @visual --output test-results/test-visual
+        env:
+          VISUAL_SHARD: ${{ matrix.shard }}
+        run: ${{ matrix.test }} --project ${{ matrix.shard }} --grep @visual --output test-results/test-visual
 
       - name: Upload captures
         uses: actions/upload-artifact@v7
@@ -220,7 +224,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
-          name: app-test-results-${{ matrix.os }}
+          name: app-visual-${{ matrix.shard }}-test-results
           path: app/test-results
           if-no-files-found: ignore
           retention-days: 7
@@ -260,7 +264,7 @@ jobs:
         id: submit
         env:
           GH_TOKEN: ${{ github.token }}
-        run: visonaut submit --shard linux --shard safari
+        run: visonaut submit --shard chrome --shard firefox --shard safari
 
       - name: Upload receipt
         uses: actions/upload-artifact@v7
