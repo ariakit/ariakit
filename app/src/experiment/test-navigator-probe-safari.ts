@@ -40,7 +40,29 @@ test("navigator probe", async ({ page }, testInfo) => {
       isMac: navigator.platform.startsWith("Mac") && !navigator.maxTouchPoints,
     };
   });
-  const result = { ...values, clickFocus };
+  // Ariakit hover components ignore mousemove events without movement. See
+  // hasMouseMovement in packages/ariakit-react-utils/src/hooks.ts.
+  await page.evaluate(() => {
+    const events: object[] = [];
+    Object.assign(window, { mouseEvents: events });
+    document.addEventListener("mousemove", (event) => {
+      events.push({
+        movementX: event.movementX,
+        movementY: event.movementY,
+        screenX: event.screenX,
+        screenY: event.screenY,
+        clientX: event.clientX,
+        clientY: event.clientY,
+      });
+    });
+  });
+  await page.mouse.move(10, 10);
+  await page.mouse.move(40, 30, { steps: 3 });
+  await page.locator("#text").hover();
+  const mouseEvents = await page.evaluate(() =>
+    Reflect.get(window, "mouseEvents"),
+  );
+  const result = { ...values, clickFocus, mouseEvents };
   console.log(`NAVIGATOR_PROBE ${JSON.stringify(result)}`);
   await testInfo.attach("navigator-probe", {
     body: JSON.stringify(result, null, 2),

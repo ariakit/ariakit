@@ -129,7 +129,7 @@ jobs:
         id: test
         env:
           PLAYWRIGHT_JSON_OUTPUT_FILE: ${{ runner.temp }}/webkit-report/report.json
-        run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual --retries=0 --repeat-each=2 --trace=retain-on-failure --reporter=dot,json ${{ matrix.shard && format('--shard={0}', join(matrix.shard, '/')) || '' }}
+        run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual --retries=0 --repeat-each=2 --reporter=dot,json ${{ matrix.shard && format('--shard={0}', join(matrix.shard, '/')) || '' }}
 
       - name: Upload JSON report
         if: ${{ !cancelled() }}
