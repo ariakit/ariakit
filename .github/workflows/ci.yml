@@ -68,18 +68,11 @@ jobs:
             node ../.visonaut-planner/packages/ariakit-scripts/src/ci-run.ts plan
           fi
 
-      - name: Submit without visual tests
-        if: steps.plan.outputs.app == 'false'
-        env:
-          VISONAUT_SERVER: https://visonaut.com
-        run: |
-          version="$(jq -er '.devDependencies.visonaut' .visonaut-planner/package.json)"
-          npm exec --yes --ignore-scripts --package="visonaut@$version" -- visonaut submit --no-visual
-
   main:
     name: Main
     needs: plan
-    if: needs.plan.outputs.main == 'true'
+    # Experiment: run only the Spotlight jobs.
+    if: false
     permissions:
       contents: read
     uses: ./.github/workflows/main.yml
@@ -88,7 +81,8 @@ jobs:
   app:
     name: App
     needs: plan
-    if: needs.plan.result == 'success' && needs.plan.outputs.app == 'true'
+    # Experiment: always run the Spotlight jobs.
+    if: needs.plan.result == 'success'
     permissions:
       actions: read
       contents: read
@@ -101,7 +95,8 @@ jobs:
   perf:
     name: Performance
     needs: plan
-    if: needs.plan.outputs.perf == 'true'
+    # Experiment: run only the Spotlight jobs.
+    if: false
     permissions:
       actions: read
       contents: read
@@ -111,7 +106,8 @@ jobs:
   plus:
     name: Plus
     needs: plan
-    if: needs.plan.outputs.plus == 'true'
+    # Experiment: run only the Spotlight jobs.
+    if: false
     permissions:
       contents: read
     uses: ./.github/workflows/plus.yml
@@ -120,7 +116,8 @@ jobs:
   release_preview:
     name: Release preview
     needs: plan
-    if: needs.plan.outputs.release_preview == 'true'
+    # Experiment: run only the Spotlight jobs.
+    if: false
     permissions:
       contents: read
     uses: ./.github/workflows/release-preview.yml
@@ -129,7 +126,8 @@ jobs:
   docs:
     name: Docs
     needs: plan
-    if: needs.plan.outputs.docs == 'true'
+    # Experiment: run only the Spotlight jobs.
+    if: false
     permissions:
       contents: read
     uses: ./.github/workflows/docs.yml
@@ -138,7 +136,8 @@ jobs:
   og_images:
     name: OG images
     needs: plan
-    if: needs.plan.outputs.og_images == 'true'
+    # Experiment: run only the Spotlight jobs.
+    if: false
     permissions:
       contents: read
     uses: ./.github/workflows/og-images.yml

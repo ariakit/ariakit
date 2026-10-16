@@ -68,56 +68,65 @@ jobs:
           include-hidden-files: true
 
   test:
-    name: Test ${{ matrix.name }}${{ matrix.shard && format(' ({0})', join(matrix.shard, '/')) || '' }}
+    name: Spotlight ${{ matrix.spotlight }} ${{ matrix.pair }}
     needs: [build, build-nextjs]
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
+    timeout-minutes: 120
+    # Experiment: compare Spotlight indexing on and off on macOS for the Safari
+    # test shards and the Safari visual capture, and sample memory per process
+    # group during the Test step. The on and off jobs of each pair are queued
+    # next to each other, and the organization allows only 5 macOS jobs at a
+    # time.
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix:
+        pair: [shard-1, visual-1, shard-2, visual-2]
+        spotlight: ["on", "off"]
         include:
-          - os: ubuntu-latest
-            name: Chrome
-            engine: chromium
-            project: chrome android
-            test: xvfb-run pnpm -F app run test
-            shard: [1, 2]
-            shardWeights: "3:4"
-          - os: ubuntu-latest
-            name: Chrome
-            engine: chromium
-            project: chrome android
-            test: xvfb-run pnpm -F app run test
-            shard: [2, 2]
-            shardWeights: "3:4"
-          - os: ubuntu-latest
-            name: Firefox
-            engine: firefox
-            project: firefox
-            test: xvfb-run pnpm -F app run test
-            shard: [1, 2]
-            shardWeights: "4:5"
-          - os: ubuntu-latest
-            name: Firefox
-            engine: firefox
-            project: firefox
-            test: xvfb-run pnpm -F app run test
-            shard: [2, 2]
-            shardWeights: "4:5"
-          - os: macos-latest
-            name: Safari
-            engine: webkit
-            project: safari ios
-            test: pnpm -F app run test
-            shard: [1, 2]
+          - pair: shard-1
+            filters: app...
+            test: pnpm -F app run test --project safari ios --pass-with-no-tests --grep-invert @visual --shard=1/2
             shardWeights: "5:7"
-          - os: macos-latest
-            name: Safari
-            engine: webkit
-            project: safari ios
-            test: pnpm -F app run test
-            shard: [2, 2]
+          - pair: shard-2
+            filters: app...
+            test: pnpm -F app run test --project safari ios --pass-with-no-tests --grep-invert @visual --shard=2/2
             shardWeights: "5:7"
+          - pair: visual-1
+            filters: |
+              app...
+              root
+            test: pnpm -F app run test-visual --project safari --grep @visual --output test-results/test-visual
+            visualShard: safari
+          - pair: visual-2
+            filters: |
+              app...
+              root
+            test: pnpm -F app run test-visual --project safari --grep @visual --output test-results/test-visual
+            visualShard: safari
     steps:
+      # Spotlight indexes the files that the checkout and the install create,
+      # so the off variant disables it before them.
+      - name: Record runner and set Spotlight
+        env:
+          SPOTLIGHT: ${{ matrix.spotlight }}
+        run: |
+          echo "image: $ImageOS $ImageVersion"
+          echo "runner: $RUNNER_NAME"
+          echo "host: $(hostname)"
+          sw_vers
+          sysctl -n machdep.cpu.brand_string hw.ncpu hw.memsize
+          # The workspace is on /System/Volumes/Data, which can differ from /.
+          echo "Spotlight before:"
+          mdutil -s / || true
+          mdutil -sa || true
+          if [ "$SPOTLIGHT" = "off" ]; then
+            sudo mdutil -a -i off || echo "mdutil exited with $?"
+          fi
+          echo "Spotlight after:"
+          mdutil -s / || true
+          mdutil -sa || true
+
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
@@ -126,13 +135,13 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
-          filters: app...
+          filters: ${{ matrix.filters }}
 
       - parallel:
           - name: Install Playwright
             uses: ./.github/workflows/install-playwright
             with:
-              engines: ${{ matrix.engine }}
+              engines: webkit
               workspace: app
 
           - name: Download app artifact
@@ -150,24 +159,34 @@ jobs:
       - name: Test
         id: test
         env:
-          # Playwright splits shards by test count, and the slower files come
-          # first. For example, Safari shard 1 took 13.8m and shard 2 took
-          # 9.2m on run 38891283398. PWTEST_SHARD_WEIGHTS (not in the
-          # Playwright docs, one integer per shard) gives shard 1 5/12 of the
-          # tests instead of 1/2. Chrome uses 3:4 and Firefox uses 4:5.
           PWTEST_SHARD_WEIGHTS: ${{ matrix.shardWeights }}
-        run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual ${{ matrix.shard && format('--shard={0}', join(matrix.shard, '/')) || '' }}
+          VISUAL_SHARD: ${{ matrix.visualShard }}
+        run: |
+          bash .github/experiment/sample-memory.sh > "$RUNNER_TEMP/memory.log" 2>&1 &
+          sampler=$!
+          trap 'kill "$sampler" 2>/dev/null || true' EXIT
+          ${{ matrix.test }}
+
+      - name: Print memory samples
+        if: always()
+        run: |
+          echo "Spotlight at the end:"
+          mdutil -s / || true
+          mdutil -sa || true
+          cat "$RUNNER_TEMP/memory.log"
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v7
         with:
-          name: app-${{ matrix.name }}${{ matrix.shard && format('-{0}', join(matrix.shard, '-')) || '' }}-test-results
+          name: app-spotlight-${{ matrix.spotlight }}-${{ matrix.pair }}-test-results
           path: app/test-results
           retention-days: 7
 
   visual:
     name: Visual Capture (${{ matrix.shard }})
+    # Experiment: the test job runs the Safari visual capture.
+    if: false
     needs: [build, build-nextjs]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
@@ -245,6 +264,8 @@ jobs:
 
   submit:
     name: Visual Submit
+    # Experiment: no visual submission.
+    if: false
     needs: visual
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -292,7 +313,8 @@ jobs:
     # Keep PR previews and the existing main deployment; merge-queue runs only test.
     name: Preview
     needs: [build, build-nextjs]
-    if: ${{ always() && github.event_name != 'merge_group' }}
+    # Experiment: no preview deployment.
+    if: false
     permissions:
       actions: read
       contents: read
