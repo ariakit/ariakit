@@ -81,42 +81,42 @@ jobs:
             project: chrome android
             test: xvfb-run pnpm -F app run test
             shard: [1, 2]
-            shardWeights: "5:7"
+            shardWeights: "3:4"
           - os: ubuntu-latest
             name: Chrome
             engine: chromium
             project: chrome android
             test: xvfb-run pnpm -F app run test
             shard: [2, 2]
-            shardWeights: "5:7"
+            shardWeights: "3:4"
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
             test: xvfb-run pnpm -F app run test
             shard: [1, 2]
-            shardWeights: "12:13"
+            shardWeights: "4:5"
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
             test: xvfb-run pnpm -F app run test
             shard: [2, 2]
-            shardWeights: "12:13"
+            shardWeights: "4:5"
           - os: macos-latest
             name: Safari
             engine: webkit
             project: safari ios
             test: pnpm -F app run test
             shard: [1, 2]
-            shardWeights: "5:7"
+            shardWeights: "3:5"
           - os: macos-latest
             name: Safari
             engine: webkit
             project: safari ios
             test: pnpm -F app run test
             shard: [2, 2]
-            shardWeights: "5:7"
+            shardWeights: "3:5"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -151,12 +151,13 @@ jobs:
         id: test
         env:
           # Playwright splits shards by test count, so the shards finish at
-          # different times. For example, Safari shard 1 took 13.8m and shard
-          # 2 took 9.2m on run 38891283398. PWTEST_SHARD_WEIGHTS (not in the
-          # Playwright docs, one integer per shard) changes the split, for
-          # example 5:7 gives shard 1 5/12 of the tests instead of 1/2. The
-          # weights come from measured shard times (interpolated for Chrome
-          # and Firefox): Safari 5:7, Chrome 5:7, and Firefox 12:13.
+          # different times. PWTEST_SHARD_WEIGHTS (not in the Playwright docs,
+          # one integer per shard) changes the split, for example 3:5 gives
+          # shard 1 3/8 of the tests instead of 1/2. The weights come from the
+          # per-test durations of 4 runs. Safari 5:7 had a median gap of
+          # 3.6m between its shards (shard 1 slower in 3 of 4), and 3:5
+          # simulates to a gap of 0.3m. Chrome 3:4 and Firefox 4:5 are
+          # already within 0.5m.
           PWTEST_SHARD_WEIGHTS: ${{ matrix.shardWeights }}
         run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual ${{ matrix.shard && format('--shard={0}', join(matrix.shard, '/')) || '' }}
 
