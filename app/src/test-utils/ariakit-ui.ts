@@ -5,7 +5,7 @@ import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { slugify } from "#app/lib/string.ts";
 import { withFramework } from "./preview.ts";
 import type { ScreenshotOptions, ScreenshotRegion } from "./visual.ts";
-import { viewports, waitForFonts } from "./visual.ts";
+import { phase, viewports, waitForFonts } from "./visual.ts";
 
 // Helpers for the tests of the ariakit-ui-* sandboxes, which render the
 // examples of one Ariakit UI component in a grid of boxes built with
@@ -62,12 +62,14 @@ export async function forEachColorScheme(
     // when the capture hovers that element again, and a tooltip waits for a
     // pointer move. The left edge of the viewport is in the padding of the grid
     // at every scroll position.
-    await page.mouse.move(0, 0);
-    await page.emulateMedia({ colorScheme });
-    // A new navigation rather than a reload, which would restore the scroll
-    // position of the previous scheme after the capture started scrolling.
-    await page.goto(url, { waitUntil: "load" });
-    await page.waitForFunction(isPreviewHydrated);
+    await phase("scheme-load", async () => {
+      await page.mouse.move(0, 0);
+      await page.emulateMedia({ colorScheme });
+      // A new navigation rather than a reload, which would restore the scroll
+      // position of the previous scheme after the capture started scrolling.
+      await page.goto(url, { waitUntil: "load" });
+      await page.waitForFunction(isPreviewHydrated);
+    });
     await capture(colorScheme);
   }
 }
@@ -118,27 +120,29 @@ export async function capturePage({
   item,
 }: CapturePageParams) {
   const main = query(page).main();
-  await waitForFonts(page);
-  const boxes = await main.locator(":scope > article").all();
-  expect(boxes.length).toBeGreaterThan(0);
-  // Oversize pages fall back to a separate capture budget for each card.
-  const extraCaptures = boxes.length - 1;
-  test.setTimeout(test.info().timeout + extraCaptures * CAPTURE_TIMEOUT);
   const regions: ScreenshotRegion[] = [];
   // Half the 16px grid gap keeps adjacent cards outside each crop.
   const clipMargin = 8;
-  for (const box of boxes) {
-    const title =
-      (
-        await query(box.locator(":scope > header")).heading().textContent()
-      )?.trim() ?? "";
-    expect(title).toBeTruthy();
-    const height = await box.evaluate(
-      (node) => node.getBoundingClientRect().height,
-    );
-    expect(height + clipMargin * 2).toBeLessThanOrEqual(MAX_CAPTURE_HEIGHT);
-    regions.push({ name: slugify(title), element: box });
-  }
+  await phase("page-prep", async () => {
+    await waitForFonts(page);
+    const boxes = await main.locator(":scope > article").all();
+    expect(boxes.length).toBeGreaterThan(0);
+    // Oversize pages fall back to a separate capture budget for each card.
+    const extraCaptures = boxes.length - 1;
+    test.setTimeout(test.info().timeout + extraCaptures * CAPTURE_TIMEOUT);
+    for (const box of boxes) {
+      const title =
+        (
+          await query(box.locator(":scope > header")).heading().textContent()
+        )?.trim() ?? "";
+      expect(title).toBeTruthy();
+      const height = await box.evaluate(
+        (node) => node.getBoundingClientRect().height,
+      );
+      expect(height + clipMargin * 2).toBeLessThanOrEqual(MAX_CAPTURE_HEIGHT);
+      regions.push({ name: slugify(title), element: box });
+    }
+  });
   await visual(
     getCapture(main, colorScheme, {
       item,

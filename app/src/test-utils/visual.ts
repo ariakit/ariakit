@@ -98,6 +98,12 @@ export const defaultStyles = {
   dark: { "--color-canvas": "oklch(19.34% 0.0091 264.28)" },
 } satisfies Styles;
 
+// Experiment: names a phase for app/visual-timing-reporter.ts.
+export function phase<T>(name: string, fn: () => Promise<T>) {
+  if (!process.env.VISUAL_TIMING) return fn();
+  return test.step(`phase:${name}`, fn);
+}
+
 function getCombinedClip(a: Rect, b: Rect) {
   const x = Math.min(a.x, b.x);
   const y = Math.min(a.y, b.y);
@@ -282,27 +288,31 @@ async function withStyles(
     await fn?.();
     return;
   }
-  const originalStyles = await page.evaluate((styles) => {
-    const el = document.documentElement;
-    const originalStyles = el.getAttribute("style");
-    for (const [k, v] of Object.entries(styles)) {
-      el.style.setProperty(k, String(v));
-    }
-    return originalStyles;
-  }, styles);
+  const originalStyles = await phase("style", () =>
+    page.evaluate((styles) => {
+      const el = document.documentElement;
+      const originalStyles = el.getAttribute("style");
+      for (const [k, v] of Object.entries(styles)) {
+        el.style.setProperty(k, String(v));
+      }
+      return originalStyles;
+    }, styles),
+  );
   await fn?.();
   // Skip the restore when fn fails. After a test timeout, Playwright closes the
   // page, and the failed restore would replace the error that names the step
   // where the test stopped.
   // https://github.com/ariakit/ariakit/issues/7601
-  await page.evaluate((originalStyles) => {
-    const el = document.documentElement;
-    if (originalStyles) {
-      el.setAttribute("style", originalStyles);
-    } else {
-      el.removeAttribute("style");
-    }
-  }, originalStyles);
+  await phase("style", () =>
+    page.evaluate((originalStyles) => {
+      const el = document.documentElement;
+      if (originalStyles) {
+        el.setAttribute("style", originalStyles);
+      } else {
+        el.removeAttribute("style");
+      }
+    }, originalStyles),
+  );
 }
 
 async function withViewport(
@@ -315,11 +325,11 @@ async function withViewport(
     return;
   }
   const original = page.viewportSize();
-  await page.setViewportSize(viewport);
+  await phase("viewport", () => page.setViewportSize(viewport));
   await fn?.();
   // Skip the restore when fn fails, as in withStyles.
   if (original) {
-    await page.setViewportSize(original);
+    await phase("viewport", () => page.setViewportSize(original));
   }
 }
 
@@ -400,13 +410,17 @@ async function captureRegions({
     }
     return;
   }
-  const items = await Promise.all(regions.map(prepareRegion));
-  await captureVisualBatch(page, {
-    variant,
-    items,
-    timeout,
-    screenshot: { style: screenshotStyle },
-  });
+  const items = await phase("regions-prepare", () =>
+    Promise.all(regions.map(prepareRegion)),
+  );
+  await phase("capture", () =>
+    captureVisualBatch(page, {
+      variant,
+      items,
+      timeout,
+      screenshot: { style: screenshotStyle },
+    }),
+  );
 }
 
 export async function visual(
@@ -423,7 +437,7 @@ export async function visual(
     return;
   }
 
-  await page.emulateMedia({ reducedMotion: "reduce" });
+  await phase("ready", () => page.emulateMedia({ reducedMotion: "reduce" }));
 
   const {
     item,
@@ -449,19 +463,23 @@ export async function visual(
     await withViewport(page, viewport, async () => {
       for (const [styleName, style] of stylesEntries) {
         await withStyles(page, { ...style, ...defaultStyle }, async () => {
-          await page.waitForLoadState("domcontentloaded");
-          await waitForFonts(page);
-          if ((fullPage && element) || regions) {
-            // Sticky and fixed parts paint at the current scroll position, so a
-            // document capture taken while scrolled would draw them over the
-            // element.
-            await page.evaluate(() => window.scrollTo(0, 0));
-          }
-          await waitForStableScreenshotClip(page, {
-            element,
-            clipMargin,
-            fullPage,
+          await phase("ready", async () => {
+            await page.waitForLoadState("domcontentloaded");
+            await waitForFonts(page);
+            if ((fullPage && element) || regions) {
+              // Sticky and fixed parts paint at the current scroll position, so
+              // a document capture taken while scrolled would draw them over
+              // the element.
+              await page.evaluate(() => window.scrollTo(0, 0));
+            }
           });
+          await phase("clip-stability", () =>
+            waitForStableScreenshotClip(page, {
+              element,
+              clipMargin,
+              fullPage,
+            }),
+          );
           invariant(
             testInfo.project.metadata.visonaut?.profile,
             "The visual job must measure its Visonaut profile",
@@ -479,17 +497,19 @@ export async function visual(
           const framework =
             selectedFramework ??
             testInfo.tags.map((tag) => tag.slice(1)).find(isFramework);
-          const media = await page.evaluate(() => ({
-            colorScheme: matchMedia("(prefers-color-scheme: dark)").matches
-              ? ("dark" as const)
-              : ("light" as const),
-            contrast: matchMedia("(prefers-contrast: more)").matches
-              ? ("more" as const)
-              : ("no-preference" as const),
-            forcedColors: matchMedia("(forced-colors: active)").matches
-              ? ("active" as const)
-              : ("none" as const),
-          }));
+          const media = await phase("variant", () =>
+            page.evaluate(() => ({
+              colorScheme: matchMedia("(prefers-color-scheme: dark)").matches
+                ? ("dark" as const)
+                : ("light" as const),
+              contrast: matchMedia("(prefers-contrast: more)").matches
+                ? ("more" as const)
+                : ("no-preference" as const),
+              forcedColors: matchMedia("(forced-colors: active)").matches
+                ? ("active" as const)
+                : ("none" as const),
+            })),
+          );
           const captureOptions = {
             variant: {
               key: [
@@ -515,25 +535,31 @@ export async function visual(
             timeout,
           };
           if (regions) {
-            await captureRegions({
-              page,
-              item,
-              regions,
-              clipMargin,
-              ...captureOptions,
-            });
+            await phase("regions", () =>
+              captureRegions({
+                page,
+                item,
+                regions,
+                clipMargin,
+                ...captureOptions,
+              }),
+            );
             return;
           }
-          const screenshotOptions = await getPlaywrightScreenshotOptions(page, {
-            element,
-            clipMargin,
-            fullPage,
-          });
-          await captureVisual(page, {
-            item,
-            ...captureOptions,
-            screenshot: screenshotOptions,
-          });
+          const screenshotOptions = await phase("clip", () =>
+            getPlaywrightScreenshotOptions(page, {
+              element,
+              clipMargin,
+              fullPage,
+            }),
+          );
+          await phase("capture", () =>
+            captureVisual(page, {
+              item,
+              ...captureOptions,
+              screenshot: screenshotOptions,
+            }),
+          );
         });
       }
     });

@@ -39,6 +39,13 @@ const visualShard =
     ? requiredEnv("VISUAL_SHARD")
     : undefined;
 const visualProjects = visualShard ? [visualShard] : [];
+// Experiment: knobs that the experiment workflow sets for each arm.
+const timingReporter = process.env.VISUAL_TIMING
+  ? [["./visual-timing-reporter.ts"] as const]
+  : [];
+const playwrightShard = process.env.VISUAL_PLAYWRIGHT_SHARD;
+const shardInvocation = playwrightShard ? [`--shard=${playwrightShard}`] : [];
+const safariScaleFactor = Number(process.env.VISUAL_DEVICE_SCALE_FACTOR) || 0;
 const captureDirectory = visualShard
   ? path.join(requiredEnv("RUNNER_TEMP"), "visonaut")
   : undefined;
@@ -79,6 +86,7 @@ export default defineConfig({
         ["github"],
         // Without a TTY, list prints one line with the duration per test result.
         ["list"],
+        ...timingReporter,
         [
           "@visonaut/playwright/reporter",
           {
@@ -105,6 +113,7 @@ export default defineConfig({
                 "@visual",
                 "--output",
                 "test-results/test-visual",
+                ...shardInvocation,
               ],
             },
           },
@@ -203,6 +212,9 @@ export default defineConfig({
           testMatch: testMatchersFor("safari", "browser"),
           use: {
             ...devices["Desktop Safari"],
+            ...(safariScaleFactor
+              ? { deviceScaleFactor: safariScaleFactor }
+              : {}),
             launchOptions: {
               slowMo,
               // Healthy macOS CI launches complete initial page setup within 24
