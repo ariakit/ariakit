@@ -184,9 +184,51 @@ async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
   return getRectsClip(rects, margin);
 }
 
+/**
+ * Reads the element boxes that the captured clip comes from. Firefox reports
+ * these boxes with 32-bit float corners, which can round a clip one pixel
+ * larger than getBoundingClientRect would.
+ */
+async function readBoundingBoxes(locator: Locator, fullPage: boolean) {
+  // Typed as nullable to share the type of readClientBoxes.
+  const rects: Array<Rect | null> = [];
+  for (const element of await locator.all()) {
+    const bounds = await element.boundingBox();
+    invariant(bounds, "Element not visible");
+    rects.push(bounds);
+  }
+  // A clip that is not full-page does not use the scroll position.
+  if (!fullPage) {
+    return { rects, scroll: { x: 0, y: 0 } };
+  }
+  const scroll = await locator
+    .page()
+    .evaluate(() => ({ x: scrollX, y: scrollY }));
+  return { rects, scroll };
+}
+
+/**
+ * Reads every element box and the scroll position in one round trip. The boxes
+ * can differ from boundingBox below a pixel and are relative to the element's
+ * own frame, so they only serve to detect a clip that is still changing.
+ */
+function readClientBoxes(locator: Locator) {
+  return locator.evaluateAll((elements) => ({
+    rects: elements.map((element) => {
+      // An element without layout boxes, such as one with display: none, is
+      // where Playwright's boundingBox returns null.
+      if (!element.getClientRects().length) return null;
+      const { x, y, width, height } = element.getBoundingClientRect();
+      return { x, y, width, height };
+    }),
+    scroll: { x: scrollX, y: scrollY },
+  }));
+}
+
 async function getScreenshotClip(
   page: Page,
   options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
+  readBoxes: typeof readBoundingBoxes = readBoundingBoxes,
 ) {
   const { element, clipMargin, fullPage } = options;
   if (!element) {
@@ -194,9 +236,9 @@ async function getScreenshotClip(
     return getBodyClip(page, clipMargin);
   }
   const locator = typeof element === "string" ? page.locator(element) : element;
+  const { rects, scroll } = await readBoxes(locator, !!fullPage);
   let rect: Rect | null = null;
-  for (const element of await locator.all()) {
-    const bounds = await element.boundingBox();
+  for (const bounds of rects) {
     invariant(bounds, "Element not visible");
     rect = rect ? getCombinedClip(rect, bounds) : bounds;
   }
@@ -204,9 +246,9 @@ async function getScreenshotClip(
   if (!fullPage) {
     return applyClipMargin(rect, clipMargin);
   }
-  // boundingBox is viewport-relative. Playwright trims a full-page clip to the
-  // document rather than the viewport, and reads it in document coordinates.
-  const scroll = await page.evaluate(() => ({ x: scrollX, y: scrollY }));
+  // The element boxes are viewport-relative. Playwright trims a full-page clip
+  // to the document rather than the viewport, and reads it in document
+  // coordinates.
   return applyClipMargin(
     { ...rect, x: rect.x + scroll.x, y: rect.y + scroll.y },
     clipMargin,
@@ -223,14 +265,15 @@ async function waitForStableScreenshotClip(
     return;
   }
   // Some previews update their layout a few frames after they become visible.
-  // Wait until the computed clip stays unchanged for a short window.
-  let previousClip = await getScreenshotClip(page, options);
+  // Wait until the computed clip stays unchanged for a short window. The
+  // polling only compares clips, so it reads them in one round trip each.
+  let previousClip = await getScreenshotClip(page, options, readClientBoxes);
   let lastClip = previousClip;
   let stableSince = Date.now();
   const deadline = Date.now() + CLIP_STABILITY_TIMEOUT;
   while (Date.now() < deadline) {
     await page.waitForTimeout(CLIP_STABILITY_INTERVAL);
-    const clip = await getScreenshotClip(page, options);
+    const clip = await getScreenshotClip(page, options, readClientBoxes);
     lastClip = clip;
     if (previousClip && clip && areRectsEqual(previousClip, clip)) {
       if (Date.now() - stableSince >= CLIP_STABILITY_DURATION) {
@@ -278,7 +321,8 @@ async function withStyles(
   styles?: CSSProperties,
   fn?: () => Promise<void>,
 ) {
-  if (!styles) {
+  // An empty style object has nothing to apply or restore.
+  if (!styles || !Object.keys(styles).length) {
     await fn?.();
     return;
   }
@@ -310,11 +354,16 @@ async function withViewport(
   viewport?: ViewportSize,
   fn?: () => Promise<void>,
 ) {
-  if (!viewport) {
+  const original = page.viewportSize();
+  // The page is already at this size, so a resize and restore would only cost
+  // two round trips.
+  const unchanged =
+    original?.width === viewport?.width &&
+    original?.height === viewport?.height;
+  if (!viewport || unchanged) {
     await fn?.();
     return;
   }
-  const original = page.viewportSize();
   await page.setViewportSize(viewport);
   await fn?.();
   // Skip the restore when fn fails, as in withStyles.

@@ -119,25 +119,32 @@ export async function capturePage({
 }: CapturePageParams) {
   const main = query(page).main();
   await waitForFonts(page);
-  const boxes = await main.locator(":scope > article").all();
-  expect(boxes.length).toBeGreaterThan(0);
+  const boxes = main.locator(":scope > article");
+  // One round trip reads the title and height of every card.
+  const cards = await boxes.evaluateAll((nodes) =>
+    nodes.map((node) => ({
+      title:
+        node
+          .querySelector(
+            ":scope > header :is(h1, h2, h3, h4, h5, h6, [role='heading'])",
+          )
+          ?.textContent?.trim() ?? "",
+      height: node.getBoundingClientRect().height,
+    })),
+  );
+  expect(cards.length).toBeGreaterThan(0);
   // Oversize pages fall back to a separate capture budget for each card.
-  const extraCaptures = boxes.length - 1;
+  const extraCaptures = cards.length - 1;
   test.setTimeout(test.info().timeout + extraCaptures * CAPTURE_TIMEOUT);
   const regions: ScreenshotRegion[] = [];
   // Half the 16px grid gap keeps adjacent cards outside each crop.
   const clipMargin = 8;
-  for (const box of boxes) {
-    const title =
-      (
-        await query(box.locator(":scope > header")).heading().textContent()
-      )?.trim() ?? "";
-    expect(title).toBeTruthy();
-    const height = await box.evaluate(
-      (node) => node.getBoundingClientRect().height,
+  for (const [index, card] of cards.entries()) {
+    expect(card.title).toBeTruthy();
+    expect(card.height + clipMargin * 2).toBeLessThanOrEqual(
+      MAX_CAPTURE_HEIGHT,
     );
-    expect(height + clipMargin * 2).toBeLessThanOrEqual(MAX_CAPTURE_HEIGHT);
-    regions.push({ name: slugify(title), element: box });
+    regions.push({ name: slugify(card.title), element: boxes.nth(index) });
   }
   await visual(
     getCapture(main, colorScheme, {
