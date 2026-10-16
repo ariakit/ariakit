@@ -71,7 +71,15 @@ function testMatchersFor(...kinds: string[]): RegExp[] {
 
 export default defineConfig({
   fullyParallel: !HEADED && !PERF,
-  workers: HEADED || PERF ? 1 : CI ? "100%" : "80%",
+  // Experiment: the CI matrix sets the worker count. The Visonaut reporter
+  // requires the exact visual invocation, so --workers cannot be used there.
+  workers: process.env.EXPERIMENT_WORKERS
+    ? Number(process.env.EXPERIMENT_WORKERS)
+    : HEADED || PERF
+      ? 1
+      : CI
+        ? "100%"
+        : "80%",
   forbidOnly: CI,
   reportSlowTests: null,
   reporter: visualShard
