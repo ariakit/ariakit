@@ -23,8 +23,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(q.option("Delta")).toHaveAttribute("data-active-item");
 
     await page.keyboard.press("Enter");
-    await test
-      .expect(q.text("Selected project:"))
-      .toHaveText("Selected project: Delta");
+    await test.expect(q.status()).toHaveText("Delta");
   });
 });

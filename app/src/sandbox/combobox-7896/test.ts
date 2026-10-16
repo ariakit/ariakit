@@ -26,7 +26,5 @@ test("keyboard navigation follows reordered items", async () => {
   expect(q.option("Delta")).toHaveAttribute("data-active-item");
 
   await press.Enter();
-  expect(q.text("Selected project:")).toHaveTextContent(
-    "Selected project: Delta",
-  );
+  expect(q.status()).toHaveTextContent("Delta");
 });
