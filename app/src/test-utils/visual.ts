@@ -194,9 +194,22 @@ async function getScreenshotClip(
     return getBodyClip(page, clipMargin);
   }
   const locator = typeof element === "string" ? page.locator(element) : element;
+  // One round trip reads every element box and the scroll position. The clip
+  // stability polling repeats this read many times for each capture. Unlike
+  // boundingBox, the boxes are relative to the element's own frame, as is the
+  // scroll position, so the element must be in the main frame.
+  const { rects, scroll } = await locator.evaluateAll((elements) => ({
+    rects: elements.map((element) => {
+      // An element without layout boxes, such as one with display: none, is
+      // where Playwright's boundingBox returns null.
+      if (!element.getClientRects().length) return null;
+      const { x, y, width, height } = element.getBoundingClientRect();
+      return { x, y, width, height };
+    }),
+    scroll: { x: scrollX, y: scrollY },
+  }));
   let rect: Rect | null = null;
-  for (const element of await locator.all()) {
-    const bounds = await element.boundingBox();
+  for (const bounds of rects) {
     invariant(bounds, "Element not visible");
     rect = rect ? getCombinedClip(rect, bounds) : bounds;
   }
@@ -204,9 +217,9 @@ async function getScreenshotClip(
   if (!fullPage) {
     return applyClipMargin(rect, clipMargin);
   }
-  // boundingBox is viewport-relative. Playwright trims a full-page clip to the
-  // document rather than the viewport, and reads it in document coordinates.
-  const scroll = await page.evaluate(() => ({ x: scrollX, y: scrollY }));
+  // The element boxes are viewport-relative. Playwright trims a full-page clip
+  // to the document rather than the viewport, and reads it in document
+  // coordinates.
   return applyClipMargin(
     { ...rect, x: rect.x + scroll.x, y: rect.y + scroll.y },
     clipMargin,
@@ -278,7 +291,8 @@ async function withStyles(
   styles?: CSSProperties,
   fn?: () => Promise<void>,
 ) {
-  if (!styles) {
+  // An empty style object has nothing to apply or restore.
+  if (!styles || !Object.keys(styles).length) {
     await fn?.();
     return;
   }
@@ -310,11 +324,16 @@ async function withViewport(
   viewport?: ViewportSize,
   fn?: () => Promise<void>,
 ) {
-  if (!viewport) {
+  const original = page.viewportSize();
+  // The page is already at this size, so a resize and restore would only cost
+  // two round trips.
+  const unchanged =
+    original?.width === viewport?.width &&
+    original?.height === viewport?.height;
+  if (!viewport || unchanged) {
     await fn?.();
     return;
   }
-  const original = page.viewportSize();
   await page.setViewportSize(viewport);
   await fn?.();
   // Skip the restore when fn fails, as in withStyles.
