@@ -81,28 +81,28 @@ jobs:
             project: chrome android
             test: xvfb-run pnpm -F app run test
             shard: [1, 2]
-            shardWeights: "5:8"
+            shardWeights: "5:7"
           - os: ubuntu-latest
             name: Chrome
             engine: chromium
             project: chrome android
             test: xvfb-run pnpm -F app run test
             shard: [2, 2]
-            shardWeights: "5:8"
+            shardWeights: "5:7"
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
             test: xvfb-run pnpm -F app run test
             shard: [1, 2]
-            shardWeights: "7:6"
+            shardWeights: "12:13"
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
             test: xvfb-run pnpm -F app run test
             shard: [2, 2]
-            shardWeights: "7:6"
+            shardWeights: "12:13"
           - os: macos-latest
             name: Safari
             engine: webkit
@@ -155,8 +155,8 @@ jobs:
           # 2 took 9.2m on run 38891283398. PWTEST_SHARD_WEIGHTS (not in the
           # Playwright docs, one integer per shard) changes the split, for
           # example 5:7 gives shard 1 5/12 of the tests instead of 1/2. The
-          # weights come from measured shard times: Safari 5:7, Chrome 5:8,
-          # and Firefox 7:6.
+          # weights come from measured shard times (interpolated for Chrome
+          # and Firefox): Safari 5:7, Chrome 5:7, and Firefox 12:13.
           PWTEST_SHARD_WEIGHTS: ${{ matrix.shardWeights }}
         run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual ${{ matrix.shard && format('--shard={0}', join(matrix.shard, '/')) || '' }}
 
