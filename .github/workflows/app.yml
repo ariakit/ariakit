@@ -184,6 +184,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
     permissions:
+      actions: read
       contents: read
     strategy:
       fail-fast: false
@@ -242,6 +243,54 @@ jobs:
               name: nextjs-dist
               path: nextjs/.open-next
 
+      # The capture of the base commit lets the adapter accept a first
+      # screenshot that has a known image digest. The digests are only hints,
+      # so this step never fails the job. Only main push runs are sources.
+      # See https://github.com/ariakit/visonaut/pull/565
+      - name: Download previous capture
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          SHARD: ${{ matrix.shard }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+        run: |
+          set +e
+          find_run() {
+            gh run list --repo "$REPOSITORY" --workflow ci.yml --branch main \
+              --event push "$@" --limit 1 \
+              --json databaseId --jq '.[0].databaseId // empty'
+          }
+          # The artifact name has the run attempt. Take the newest one that
+          # has not expired.
+          find_artifact() {
+            gh api "repos/$REPOSITORY/actions/runs/$1/artifacts?per_page=100" \
+              --jq "[.artifacts[] | select(.expired | not) | select(.name | test(\"^visonaut-capture-[0-9]+-[0-9]+-$SHARD\$\"))] | sort_by(.created_at) | last | .name // empty"
+          }
+          # A newer push to main often cancels the run of the base commit. Its
+          # capture artifact is still usable, because a shard uploads it only
+          # after its visual tests pass.
+          base_run=""
+          if [ -n "$BASE_SHA" ]; then
+            base_run="$(find_run --commit "$BASE_SHA" --status completed)"
+          fi
+          directory="$RUNNER_TEMP/visonaut-previous"
+          for run in "$base_run" "$(find_run --status success)"; do
+            [ -n "$run" ] || continue
+            artifact="$(find_artifact "$run")"
+            [ -n "$artifact" ] || continue
+            rm -rf "$directory"
+            if gh run download "$run" --repo "$REPOSITORY" --name "$artifact" --dir "$directory" &&
+              [ -f "$directory/manifest.json" ]; then
+              echo "VISONAUT_PREVIOUS_CAPTURE=$directory" >> "$GITHUB_ENV"
+              echo "Previous capture: run $run, artifact $artifact"
+              exit 0
+            fi
+          done
+          echo "Previous capture: none found"
+          exit 0
+
       - name: Test visual
         env:
           VISUAL_SHARD: ${{ matrix.shard }}
@@ -253,7 +302,9 @@ jobs:
           name: visonaut-capture-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}
           path: ${{ runner.temp }}/visonaut
           if-no-files-found: error
-          retention-days: 1
+          # Pull requests download the capture of their base commit, which can
+          # be older than one day.
+          retention-days: ${{ github.event_name == 'push' && 7 || 1 }}
 
       - name: Upload test results to GitHub
         if: ${{ !cancelled() }}
