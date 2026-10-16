@@ -1,24 +1,9 @@
 import * as Ariakit from "@ariakit/react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
+import "./style.css";
 
 const initialProjects = ["Alpha", "Beta", "Charlie", "Delta"];
 const refreshedProjects = ["Alpha", "Beta", "Delta", "Charlie"];
-
-interface ProjectItemProps {
-  project: string;
-  index: number;
-}
-
-function ProjectItem({ project, index }: ProjectItemProps) {
-  // TODO: Remove this workaround once the fix for
-  // https://github.com/ariakit/ariakit/issues/7896 is released. A new getItem
-  // callback after a reorder registers the item again, which re-sorts the
-  // collection by DOM position.
-  const getItem = useCallback<
-    NonNullable<Ariakit.ComboboxItemProps["getItem"]>
-  >((item) => ({ ...item, index }), [index]);
-  return <Ariakit.ComboboxItem value={project} getItem={getItem} />;
-}
 
 export default function Example() {
   const [search, setSearch] = useState("");
@@ -49,9 +34,14 @@ export default function Example() {
           aria-label="Projects"
           hideOnInteractOutside={false}
           gutter={8}
+          className="popover"
         >
-          {results.map((project, index) => (
-            <ProjectItem key={project} project={project} index={index} />
+          {results.map((project) => (
+            <Ariakit.ComboboxItem
+              key={project}
+              value={project}
+              className="combobox-item"
+            />
           ))}
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
