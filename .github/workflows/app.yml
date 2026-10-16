@@ -81,28 +81,28 @@ jobs:
             project: chrome android
             test: xvfb-run pnpm -F app run test
             shard: [1, 2]
-            shardWeights: "3:4"
+            shardWeights: "5:8"
           - os: ubuntu-latest
             name: Chrome
             engine: chromium
             project: chrome android
             test: xvfb-run pnpm -F app run test
             shard: [2, 2]
-            shardWeights: "3:4"
+            shardWeights: "5:8"
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
             test: xvfb-run pnpm -F app run test
             shard: [1, 2]
-            shardWeights: "4:5"
+            shardWeights: "7:6"
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
             test: xvfb-run pnpm -F app run test
             shard: [2, 2]
-            shardWeights: "4:5"
+            shardWeights: "7:6"
           - os: macos-latest
             name: Safari
             engine: webkit
@@ -150,11 +150,13 @@ jobs:
       - name: Test
         id: test
         env:
-          # Playwright splits shards by test count, and the slower files come
-          # first. For example, Safari shard 1 took 13.8m and shard 2 took
-          # 9.2m on run 38891283398. PWTEST_SHARD_WEIGHTS (not in the
-          # Playwright docs, one integer per shard) gives shard 1 5/12 of the
-          # tests instead of 1/2. Chrome uses 3:4 and Firefox uses 4:5.
+          # Playwright splits shards by test count, so the shards finish at
+          # different times. For example, Safari shard 1 took 13.8m and shard
+          # 2 took 9.2m on run 38891283398. PWTEST_SHARD_WEIGHTS (not in the
+          # Playwright docs, one integer per shard) changes the split, for
+          # example 5:7 gives shard 1 5/12 of the tests instead of 1/2. The
+          # weights come from measured shard times: Safari 5:7, Chrome 5:8,
+          # and Firefox 7:6.
           PWTEST_SHARD_WEIGHTS: ${{ matrix.shardWeights }}
         run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual ${{ matrix.shard && format('--shard={0}', join(matrix.shard, '/')) || '' }}
 
