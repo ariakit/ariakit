@@ -62,6 +62,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // Chrome and Firefox can take a while to materialize the modifier+Enter tab
     // under CI load.
     test.slow();
+    // Keep the navigation independent of the external site's response time. The
+    // context route also covers the new tab in Chrome and Firefox. Safari can
+    // press the keys more than once below, so every request is fulfilled.
+    await context.route("https://ariakit.com/", (route) =>
+      route.fulfill({ body: "" }),
+    );
     const combobox = q.combobox("Links");
     await combobox.click();
     await expect(q.listbox()).toBeVisible();
@@ -72,11 +78,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.option("Ariakit.com")).toHaveAttribute("data-active-item");
     if (browserName === "webkit") {
       // Safari doesn't support Cmd+Enter to open a link in a new tab
-      // programmatically.
+      // programmatically. Keep the retry deadline inside the 90-second
+      // slow-test budget so a missing navigation reports the URL assertion
+      // instead of timing out the whole test.
       await expect(async () => {
         await page.keyboard.press(`${modifier}+Enter`);
         await expect(page).toHaveURL(/https:\/\/ariakit\.com/);
-      }).toPass();
+      }).toPass({ timeout: 60_000 });
     } else {
       // Keep the page-event deadline inside the 90-second slow-test budget so a
       // missing tab names the event instead of timing out the whole test.
