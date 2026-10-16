@@ -195,19 +195,16 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            arm: shard-1
+            arm: base
             shard: safari
             engine: webkit
             test: pnpm -F app run test-visual
-            playwrightShard: 1/2
-            shardWeights: "6:5"
           - os: macos-latest
-            arm: shard-2
+            arm: dsf1
             shard: safari
             engine: webkit
             test: pnpm -F app run test-visual
-            playwrightShard: 2/2
-            shardWeights: "6:5"
+            scaleFactor: 1
     steps:
       - name: Record runner
         run: |
