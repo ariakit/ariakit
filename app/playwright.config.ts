@@ -58,6 +58,10 @@ const visualMetadata = captureEnvironment
   ? { visonaut: { profile: captureEnvironment.profile, comparisonDefaults } }
   : undefined;
 
+// Prints one duration line per test result in CI logs so that shards can be
+// balanced by duration. Local runs use the list reporter.
+const durationReporter = ["./src/test-utils/duration-reporter.ts"] as const;
+
 function inspectorPortArg(port: number) {
   if (!port) return "";
   return ` --inspector-port ${port}`;
@@ -79,7 +83,7 @@ export default defineConfig({
     ? [
         ["github"],
         ["dot"],
-        ["./src/test-utils/visual-duration-reporter.ts"],
+        durationReporter,
         [
           "@visonaut/playwright/reporter",
           {
@@ -112,7 +116,7 @@ export default defineConfig({
         ],
       ]
     : CI
-      ? [["github"], ["dot"]]
+      ? [["github"], ["dot"], durationReporter]
       : [["list"]],
   retries: 1,
   testDir: "src",
