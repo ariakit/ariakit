@@ -80,6 +80,19 @@ jobs:
             engine: chromium
             project: chrome android
             test: xvfb-run pnpm -F app run test
+            shard: [1, 3]
+          - os: ubuntu-latest
+            name: Chrome
+            engine: chromium
+            project: chrome android
+            test: xvfb-run pnpm -F app run test
+            shard: [2, 3]
+          - os: ubuntu-latest
+            name: Chrome
+            engine: chromium
+            project: chrome android
+            test: xvfb-run pnpm -F app run test
+            shard: [3, 3]
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
