@@ -10,6 +10,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
     return isMac ? "Meta" : "Control";
   };
 
+  // Keep the Ariakit.com navigations independent of the external site's
+  // response time. The route is on the context so it also covers the new tabs
+  // that Firefox loads, and it fulfills every request because a test can retry
+  // the key press.
+  test.beforeEach(async ({ context }) => {
+    await context.route("https://ariakit.com/", (route) =>
+      route.fulfill({ body: "" }),
+    );
+  });
+
   test("click on link with mouse", async ({ page, q }) => {
     await q.combobox("Links").click();
     await expect(q.listbox()).toBeVisible();
@@ -62,12 +72,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // Chrome and Firefox can take a while to materialize the modifier+Enter tab
     // under CI load.
     test.slow();
-    // Keep the navigation independent of the external site's response time. The
-    // context route also covers the new tab in Chrome and Firefox. Safari can
-    // press the keys more than once below, so every request is fulfilled.
-    await context.route("https://ariakit.com/", (route) =>
-      route.fulfill({ body: "" }),
-    );
     const combobox = q.combobox("Links");
     await combobox.click();
     await expect(q.listbox()).toBeVisible();
