@@ -14,10 +14,6 @@ runs:
   steps:
     - name: Install pnpm
       uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
-      with:
-        # macOS runners download every package on each run. Whichever job
-        # saves the key first decides what the store contains.
-        cache: ${{ runner.os == 'macOS' }}
 
     - name: Set up Node
       uses: actions/setup-node@v7
