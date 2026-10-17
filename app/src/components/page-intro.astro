@@ -1,0 +1,28 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
+import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<Heading className="text-4xl tracking-tight">{title}</Heading>
+{
+  Astro.slots.has("default") && (
+    <Prose className="ak-ink-75 text-lg">
+      <slot />
+    </Prose>
+  )
+}

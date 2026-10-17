@@ -12,6 +12,9 @@ import Meta from "#app/components/meta.astro";
 import ApiReference from "#app/components/api-reference.astro";
 import { getReferencePath } from "#app/lib/url.ts";
 import { descriptionToText } from "#app/lib/content.ts";
+import PageIntro from "#app/components/page-intro.astro";
+import { mdxComponents } from "#app/components/mdx-components.react.tsx";
+import Prose from "#app/components/prose.astro";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
@@ -84,7 +87,7 @@ const title = entry.data.title;
 const descriptionText = await descriptionToText(description?.body, framework);
 ---
 
-<Layout {title}>
+<Layout {title} {headings}>
   <Meta
     slot="meta"
     id={entry.id}
@@ -93,8 +96,9 @@ const descriptionText = await descriptionToText(description?.body, framework);
     {framework}
     description={descriptionText}
   />
-  <h1>{title}</h1>
-  {Description && <Description {framework} />}
+  <PageIntro slot="intro" {title}>
+    {Description && <Description {framework} />}
+  </PageIntro>
   {main && Gallery && <Gallery {framework} />}
   <nav aria-label="API reference">
     <ul>
@@ -129,16 +133,5 @@ const descriptionText = await descriptionToText(description?.body, framework);
       </section>
     )
   }
-  {
-    headings.length > 0 && (
-      <nav aria-label="On this page">
-        <ul>
-          {headings.map((item) => (
-            <li><a href={"#" + item.slug}>{item.text}</a></li>
-          ))}
-        </ul>
-      </nav>
-    )
-  }
-  <Content {framework} />
+  <Prose><Content {framework} components={mdxComponents} /></Prose>
 </Layout>

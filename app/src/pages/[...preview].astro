@@ -10,6 +10,7 @@
  */
 import "#app/styles/global.css";
 import "@fontsource-variable/inter";
+import ThemeScript from "#app/components/theme-script.astro";
 import { isNextjsPreviewId } from "#app/lib/nextjs.ts";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
@@ -42,6 +43,7 @@ const fullscreen = entry.data.fullscreen;
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <title>Preview {title} - Ariakit</title>
+    <ThemeScript />
   </head>
   <body
     class:list={[

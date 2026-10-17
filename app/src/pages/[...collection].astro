@@ -9,6 +9,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import Meta from "#app/components/meta.astro";
+import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { uniq } from "#app/lib/array.ts";
 import {
   filterGuidesByGroup,
@@ -17,9 +18,12 @@ import {
 } from "#app/lib/content.ts";
 import { getFramework } from "#app/lib/framework.ts";
 import { capitalize } from "#app/lib/string.ts";
+import { renderThumbnail } from "#app/lib/thumbnail.ts";
+import PageIntro from "#app/components/page-intro.astro";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
+import { createElement } from "react";
 
 export const getStaticPaths = (async () => {
   const types = ["components", "examples"] as const;
@@ -55,12 +59,19 @@ const groupPath = "/" + framework + "/" + type;
 const guides = (
   await getCollection("guides", filterGuidesByGroup(groupPath))
 ).map(getGuideDetail);
+const cards = await Promise.all(
+  entries.map(async (entry) => ({
+    entry,
+    thumbnail: await renderThumbnail(entry.id),
+  })),
+);
 ---
 
 <Layout {title}>
   <Meta slot="meta" {type} {title} {framework} />
-  <h1>{title}</h1>
-  <p>{previewCount} previews</p>
+  <PageIntro slot="intro" {title}>
+    <p>{previewCount} previews</p>
+  </PageIntro>
   {
     guides.length > 0 && (
       <nav aria-label="Guides">
@@ -72,11 +83,33 @@ const guides = (
       </nav>
     )
   }
-  <ul>
+  <ul class="grid grid-cols-1 gap-3 @2xl/shell-main-body:grid-cols-2">
     {
-      entries.map((entry) => (
+      cards.map(({ entry, thumbnail }) => (
         <li>
-          <a href={groupPath + "/" + entry.id + "/"}>{entry.data.title}</a>
+          <Frame
+            render={createElement("a", {
+              href: groupPath + "/" + entry.id + "/",
+            })}
+            $layer
+            $rounded="xl"
+            $border
+            $p={4}
+            className="flex flex-col gap-4 font-medium hover:ak-state-2.5"
+          >
+            {thumbnail && (
+              <Frame
+                $layer
+                $darken={0.5}
+                $rounded="lg"
+                $p="none"
+                className="h-48 overflow-clip"
+              >
+                <Fragment set:html={thumbnail} />
+              </Frame>
+            )}
+            {entry.data.title}
+          </Frame>
         </li>
       ))
     }

@@ -12,6 +12,19 @@
 @source "../../../packages/ariakit-ui/src/**";
 @source not "../sandbox/ariakit-tailwind*";
 
+/* The site's Theme panel sets data-theme on the root element. Without it, the
+   dark variant follows the system color scheme. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:not([data-theme="light"], [data-theme="light"] *)) {
+      @slot;
+    }
+  }
+}
+
 astro-island,
 astro-slot,
 astro-static-slot {
