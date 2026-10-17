@@ -1,5 +1,9 @@
 # @ariakit/components
 
+## 0.1.16
+
+- Fixed collection stores keeping the previous order of `renderedItems` when item elements move in the DOM without registering again. This applies to all stores built on the collection store, such as the composite, combobox, and select stores.
+
 ## 0.1.15
 
 - Updated dependencies: `@ariakit/utils@0.2.2`, `@ariakit/store@0.1.11`

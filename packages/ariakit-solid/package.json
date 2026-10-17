@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/solid",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "Toolkit for building accessible web apps with Solid",
   "keywords": [
     "a11y",
