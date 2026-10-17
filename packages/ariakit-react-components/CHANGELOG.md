@@ -1,5 +1,12 @@
 # @ariakit/react-components
 
+## 0.7.2
+
+- Fixed arrow keys moving focus out of a text field rendered as [`CompositeItem`](https://ariakit.com/reference/composite-item) before the caret reached the start or end of the text when a two-dimensional composite sets [`orientation`](https://ariakit.com/reference/composite-provider#orientation) to `vertical` or `horizontal`. This also applies to all components built on [`CompositeItem`](https://ariakit.com/reference/composite-item).
+- Fixed [`Radio`](https://ariakit.com/reference/radio) ignoring a selection when its [`checked`](https://ariakit.com/reference/radio#checked) prop is `false` but the radio store still holds its value, such as after the app resets its controlled state.
+- Fixed keyboard navigation following the previous order after mounted [`CollectionItem`](https://ariakit.com/reference/collection-item) elements move in the DOM, such as when React reorders items with stable keys. This also applies to all components built on [`CollectionItem`](https://ariakit.com/reference/collection-item), such as [`CompositeItem`](https://ariakit.com/reference/composite-item) and [`ComboboxItem`](https://ariakit.com/reference/combobox-item).
+- Updated dependencies: `@ariakit/components@0.1.16`
+
 ## 0.7.1
 
 ### Supplemental focus styling
