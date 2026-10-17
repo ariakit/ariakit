@@ -18,8 +18,8 @@
     "@ariakit/store": "latest",
     "@ariakit/tailwind": "latest",
     "@ariakit/utils": "latest",
-    "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
     "@ariakit/test": "latest",

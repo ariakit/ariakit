@@ -20,8 +20,8 @@
     "@ariakit/react": "workspace:*",
     "@ariakit/ui": "workspace:*",
     "next": "16.2.12",
-    "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "1.20.11",
