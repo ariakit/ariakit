@@ -15,11 +15,11 @@ import {
   NavLink,
   NavList,
 } from "@ariakit/ui/components/nav.ariakit.react";
-import type { SiteNavigationGroup } from "#app/lib/site.ts";
+import type { AppNavigationGroup } from "#app/lib/app.ts";
 import { createElement } from "react";
 
 interface Props {
-  groups: SiteNavigationGroup[];
+  groups: AppNavigationGroup[];
 }
 
 const { groups } = Astro.props;

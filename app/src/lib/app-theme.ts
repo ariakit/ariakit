@@ -8,22 +8,22 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
-export interface SiteThemeOption {
+export interface AppThemeOption {
   value: string;
   label: string;
   swatch?: string;
 }
 
-export interface SiteThemeSetting {
+export interface AppThemeSetting {
   key: "mode" | "accent" | "radius";
   label: string;
   description: string;
-  options: SiteThemeOption[];
+  options: AppThemeOption[];
 }
 
 // The first option of each setting is the default, which keeps the stylesheet
 // value. The theme script in the head applies the others to the root element.
-export const SITE_THEME_SETTINGS: SiteThemeSetting[] = [
+export const APP_THEME_SETTINGS: AppThemeSetting[] = [
   {
     key: "mode",
     label: "Mode",
@@ -64,19 +64,19 @@ declare global {
      * Theme values that storage could not keep, by storage key. The theme
      * script in the head reads them before storage.
      */
-    siteThemeFallback?: Record<string, string | null>;
+    appThemeFallback?: Record<string, string | null>;
   }
 }
 
-const CHANGE_EVENT = "site-theme-change";
+const CHANGE_EVENT = "app-theme-change";
 
 function getStorageKey(key: string) {
-  return `site-theme:${key}`;
+  return `app-theme:${key}`;
 }
 
 function readValue(key: string) {
   const storageKey = getStorageKey(key);
-  const fallback = window.siteThemeFallback;
+  const fallback = window.appThemeFallback;
   if (fallback && storageKey in fallback) {
     return fallback[storageKey] ?? null;
   }
@@ -96,12 +96,12 @@ function writeValue(key: string, value: string | null) {
       localStorage.setItem(storageKey, value);
     }
     // Storage keeps the value now, so an earlier fallback must not hide it.
-    delete window.siteThemeFallback?.[storageKey];
+    delete window.appThemeFallback?.[storageKey];
   } catch {
     // Storage throws when the user blocks site data. The choice still applies
     // to this page, but it does not persist or reach the previews.
-    window.siteThemeFallback = {
-      ...window.siteThemeFallback,
+    window.appThemeFallback = {
+      ...window.appThemeFallback,
       [storageKey]: value,
     };
   }
@@ -110,7 +110,7 @@ function writeValue(key: string, value: string | null) {
 /**
  * Returns the selected option value of a theme setting.
  */
-export function getSiteThemeValue(setting: SiteThemeSetting) {
+export function getAppThemeValue(setting: AppThemeSetting) {
   const [defaultOption] = setting.options;
   return readValue(setting.key) ?? defaultOption?.value;
 }
@@ -119,7 +119,7 @@ export function getSiteThemeValue(setting: SiteThemeSetting) {
  * Stores the selected option value of a theme setting and notifies the theme
  * script, which applies it to the root element.
  */
-export function setSiteThemeValue(setting: SiteThemeSetting, value: string) {
+export function setAppThemeValue(setting: AppThemeSetting, value: string) {
   const option = setting.options.find((option) => option.value === value);
   // The first option keeps the stylesheet default.
   const isDefault = !option || option === setting.options[0];
@@ -133,11 +133,11 @@ export function setSiteThemeValue(setting: SiteThemeSetting, value: string) {
 /**
  * Restores the default option of every theme setting.
  */
-export function resetSiteTheme() {
-  for (const setting of SITE_THEME_SETTINGS) {
+export function resetAppTheme() {
+  for (const setting of APP_THEME_SETTINGS) {
     const [defaultOption] = setting.options;
     if (!defaultOption) continue;
-    setSiteThemeValue(setting, defaultOption.value);
+    setAppThemeValue(setting, defaultOption.value);
   }
 }
 
@@ -145,7 +145,7 @@ export function resetSiteTheme() {
  * Calls the callback when a theme setting changes in this document or in
  * another document of the site.
  */
-export function subscribeSiteTheme(callback: () => void) {
+export function subscribeAppTheme(callback: () => void) {
   const onStorage = (event: StorageEvent) => {
     if (!event.key?.startsWith(getStorageKey(""))) return;
     callback();

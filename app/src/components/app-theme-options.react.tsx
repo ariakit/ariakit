@@ -15,16 +15,16 @@ import {
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { useSyncExternalStore } from "react";
-import type { SiteThemeSetting } from "#app/lib/site-theme.ts";
+import type { AppThemeSetting } from "#app/lib/app-theme.ts";
 import {
-  getSiteThemeValue,
-  resetSiteTheme,
-  SITE_THEME_SETTINGS,
-  setSiteThemeValue,
-  subscribeSiteTheme,
-} from "#app/lib/site-theme.ts";
+  getAppThemeValue,
+  resetAppTheme,
+  APP_THEME_SETTINGS,
+  setAppThemeValue,
+  subscribeAppTheme,
+} from "#app/lib/app-theme.ts";
 
-export interface SiteThemeOptionsProps {
+export interface AppThemeOptionsProps {
   /**
    * Prefixes the label ids, because the phone menu repeats the options.
    */
@@ -35,11 +35,11 @@ export interface SiteThemeOptionsProps {
  * The theme settings of the site as radio groups. The groups read the stored
  * values, so every rendered copy stays in sync.
  */
-export function SiteThemeOptions({ idPrefix }: SiteThemeOptionsProps) {
+export function AppThemeOptions({ idPrefix }: AppThemeOptionsProps) {
   return (
     <div className="grid gap-6">
-      {SITE_THEME_SETTINGS.map((setting) => (
-        <SiteThemeOptionGroup
+      {APP_THEME_SETTINGS.map((setting) => (
+        <AppThemeOptionGroup
           key={setting.key}
           idPrefix={idPrefix}
           setting={setting}
@@ -52,27 +52,24 @@ export function SiteThemeOptions({ idPrefix }: SiteThemeOptionsProps) {
 /**
  * Restores the default theme settings.
  */
-export function SiteThemeReset() {
+export function AppThemeReset() {
   return (
-    <Button onClick={resetSiteTheme} className="w-full justify-center">
+    <Button onClick={resetAppTheme} className="w-full justify-center">
       Reset
     </Button>
   );
 }
 
-interface SiteThemeOptionGroupProps {
+interface AppThemeOptionGroupProps {
   idPrefix: string;
-  setting: SiteThemeSetting;
+  setting: AppThemeSetting;
 }
 
-function SiteThemeOptionGroup({
-  idPrefix,
-  setting,
-}: SiteThemeOptionGroupProps) {
+function AppThemeOptionGroup({ idPrefix, setting }: AppThemeOptionGroupProps) {
   const [defaultOption] = setting.options;
   const value = useSyncExternalStore(
-    subscribeSiteTheme,
-    () => getSiteThemeValue(setting),
+    subscribeAppTheme,
+    () => getAppThemeValue(setting),
     // The server cannot read the stored value, so it renders the default.
     () => defaultOption?.value,
   );
@@ -88,7 +85,7 @@ function SiteThemeOptionGroup({
       </span>
       <ak.RadioProvider
         value={value}
-        setValue={(value) => setSiteThemeValue(setting, String(value))}
+        setValue={(value) => setAppThemeValue(setting, String(value))}
       >
         <ak.RadioGroup
           aria-labelledby={labelId}

@@ -8,18 +8,18 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
-export interface SiteLink {
+export interface AppLink {
   href: string;
   label: string;
   current: boolean;
 }
 
-export interface SiteNavigationGroup {
+export interface AppNavigationGroup {
   label: string;
-  links: SiteLink[];
+  links: AppLink[];
 }
 
-export interface SiteHeading {
+export interface AppHeading {
   slug: string;
   text: string;
   depth: number;
@@ -27,6 +27,6 @@ export interface SiteHeading {
 
 // The inline script in the layout toggles panels by these ids, because the
 // shell renders without hydration.
-export const SITE_NAVIGATION_ID = "site-navigation";
-export const SITE_DRAWER_ID = "site-drawer";
-export const THEME_PANEL_ID = "site-theme";
+export const APP_NAVIGATION_ID = "app-navigation";
+export const APP_DRAWER_ID = "app-drawer";
+export const THEME_PANEL_ID = "app-theme";

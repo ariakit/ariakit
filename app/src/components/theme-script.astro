@@ -19,7 +19,7 @@
     /** @param {string} key */
     const read = (key) => {
       // The theme options keep values here when storage is blocked.
-      const fallback = window.siteThemeFallback;
+      const fallback = window.appThemeFallback;
       if (fallback && key in fallback) {
         return fallback[key] ?? null;
       }
@@ -41,7 +41,7 @@
       }
     };
     const apply = () => {
-      const mode = read("site-theme:mode");
+      const mode = read("app-theme:mode");
       // A forced mode also sets the color scheme, so browser-drawn parts such
       // as scrollbars and form controls follow it.
       if (mode === "light" || mode === "dark") {
@@ -51,14 +51,14 @@
         delete root.dataset.theme;
         root.style.removeProperty("color-scheme");
       }
-      setProperty("--color-brand", read("site-theme:brand"));
-      setProperty("--radius", read("site-theme:radius"));
+      setProperty("--color-brand", read("app-theme:brand"));
+      setProperty("--radius", read("app-theme:radius"));
     };
     apply();
     window.addEventListener("storage", (event) => {
-      if (!event.key?.startsWith("site-theme:")) return;
+      if (!event.key?.startsWith("app-theme:")) return;
       apply();
     });
-    window.addEventListener("site-theme-change", apply);
+    window.addEventListener("app-theme-change", apply);
   })();
 </script>

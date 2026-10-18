@@ -146,7 +146,7 @@ test("theme panel applies a mode after storage recovers", async ({
     const setItem = Storage.prototype.setItem;
     let failed = false;
     Storage.prototype.setItem = function (key, value) {
-      if (!failed && key.startsWith("site-theme:")) {
+      if (!failed && key.startsWith("app-theme:")) {
         failed = true;
         throw new DOMException("Storage is full", "QuotaExceededError");
       }

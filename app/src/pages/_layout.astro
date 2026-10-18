@@ -32,26 +32,26 @@ import {
   ShellSidebarHeader,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import Meta from "#app/components/meta.astro";
-import SiteNavigation from "#app/components/site-navigation.astro";
+import AppNavigation from "#app/components/app-navigation.astro";
 import {
-  SiteThemeOptions,
-  SiteThemeReset,
-} from "#app/components/site-theme-options.react.tsx";
+  AppThemeOptions,
+  AppThemeReset,
+} from "#app/components/app-theme-options.react.tsx";
 import ThemeScript from "#app/components/theme-script.astro";
 import { LogoIcon, Logotype } from "#app/icons/logo.react.tsx";
-import type { SiteHeading, SiteLink } from "#app/lib/site.ts";
+import type { AppHeading, AppLink } from "#app/lib/app.ts";
 import {
-  SITE_DRAWER_ID,
-  SITE_NAVIGATION_ID,
+  APP_DRAWER_ID,
+  APP_NAVIGATION_ID,
   THEME_PANEL_ID,
-} from "#app/lib/site.ts";
+} from "#app/lib/app.ts";
 import { getCollection } from "astro:content";
 import { Menu, PanelLeft, SwatchBook, X } from "lucide-react";
 import { createElement } from "react";
 
 export interface Props {
   title?: string;
-  headings?: SiteHeading[];
+  headings?: AppHeading[];
 }
 
 const { title, headings = [] } = Astro.props;
@@ -78,7 +78,7 @@ const collections = await Promise.all(
 
 // A link is current on its own page and on nested pages, such as the API
 // reference pages of a component.
-const getLink = (href: string, label: string): SiteLink => ({
+const getLink = (href: string, label: string): AppLink => ({
   href,
   label,
   current: pathname.startsWith(href),
@@ -120,7 +120,7 @@ const navigation = collections
             <Button
               aria-label="Open menu"
               aria-expanded="false"
-              aria-controls={SITE_DRAWER_ID}
+              aria-controls={APP_DRAWER_ID}
               data-shell-toggle
               className="@3xl/shell:hidden"
             >
@@ -129,7 +129,7 @@ const navigation = collections
             <Button
               aria-label="Toggle navigation"
               aria-expanded="true"
-              aria-controls={SITE_NAVIGATION_ID}
+              aria-controls={APP_NAVIGATION_ID}
               data-shell-toggle
               className="@max-3xl/shell:hidden"
             >
@@ -177,18 +177,18 @@ const navigation = collections
           </ShellHeaderEnd>
         </ShellHeader>
         <ShellSidebar
-          id={SITE_NAVIGATION_ID}
+          id={APP_NAVIGATION_ID}
           render={createElement("nav")}
           aria-label="Site"
           className="text-sm"
         >
           <ShellSidebarBody>
-            <SiteNavigation groups={navigation} />
+            <AppNavigation groups={navigation} />
           </ShellSidebarBody>
         </ShellSidebar>
         {/* Below 48rem, a drawer replaces the sidebar and the header links. */}
         <ShellSidebar
-          id={SITE_DRAWER_ID}
+          id={APP_DRAWER_ID}
           open={false}
           $show="max-3xl"
           render={createElement("nav")}
@@ -200,26 +200,26 @@ const navigation = collections
             <span class="font-medium">Menu</span>
             <Button
               aria-label="Close menu"
-              aria-controls={SITE_DRAWER_ID}
+              aria-controls={APP_DRAWER_ID}
               data-shell-close
             >
               <ButtonSlot><X /></ButtonSlot>
             </Button>
           </ShellSidebarHeader>
           <ShellSidebarBody>
-            <SiteNavigation
+            <AppNavigation
               groups={[{ label: "Sections", links: sections }, ...navigation]}
             />
             <div class="grid gap-6 px-3 pt-6 pb-3">
               <span class="ak-ink-70 text-xs font-medium">Theme</span>
-              <SiteThemeOptions client:load idPrefix={SITE_DRAWER_ID} />
+              <AppThemeOptions client:load idPrefix={APP_DRAWER_ID} />
             </div>
           </ShellSidebarBody>
         </ShellSidebar>
         <ShellMain
-          $p="var(--site-gutter)"
+          $p="var(--app-gutter)"
           $maxWidth="56rem"
-          className="[--site-gutter:--spacing(4)] @3xl/shell:[--site-gutter:--spacing(8)]"
+          className="[--app-gutter:--spacing(4)] @3xl/shell:[--app-gutter:--spacing(8)]"
         >
           {/* Page content renders as direct grid items, so samples can use
               main bands. */}
@@ -256,7 +256,7 @@ const navigation = collections
                   $gap={0.5}
                   render={createElement("div")}
                   glider={{ $kind: "bar", $animated: false }}
-                  data-site-toc
+                  data-app-toc
                 >
                   {tocHeadings.map((heading) => (
                     <NavLink
@@ -304,10 +304,10 @@ const navigation = collections
           </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <SiteThemeOptions client:load idPrefix={THEME_PANEL_ID} />
+          <AppThemeOptions client:load idPrefix={THEME_PANEL_ID} />
         </ShellSidebarBody>
         <ShellSidebarFooter>
-          <SiteThemeReset client:load />
+          <AppThemeReset client:load />
         </ShellSidebarFooter>
       </ShellSidebar>
     </Shell>
@@ -369,7 +369,7 @@ const navigation = collections
             toggles.find((toggle) => toggle.checkVisibility())?.focus();
           }
           if (!panel.hasAttribute("data-shell-transient")) {
-            write(`site-panel:${panel.id}`, String(open));
+            write(`app-panel:${panel.id}`, String(open));
             return;
           }
           // Transient panels cover the page, so focus moves into them when
@@ -392,7 +392,7 @@ const navigation = collections
           // Transient panels, like the phone menu, always start closed.
           const saved = panel.hasAttribute("data-shell-transient")
             ? null
-            : read(`site-panel:${panel.id}`);
+            : read(`app-panel:${panel.id}`);
           if (saved != null) {
             setOpen(panel, saved === "true");
           }
@@ -421,7 +421,7 @@ const navigation = collections
         // scroll margin below the sticky headers is current. No link is current
         // before the first heading, and the last link is current at the end of
         // the page, where short final sections cannot reach the margin.
-        const toc = document.querySelector("[data-site-toc]");
+        const toc = document.querySelector("[data-app-toc]");
         if (toc) {
           const targets = queryAll(toc, "a[href^='#']").flatMap((link) => {
             if (!(link instanceof HTMLAnchorElement)) return [];
