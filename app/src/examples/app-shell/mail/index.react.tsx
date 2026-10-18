@@ -343,7 +343,8 @@ export default function Example() {
               </Button>
             </ButtonGroup>
             <p className="ak-ink-70 text-sm">
-              {folderMessages.length} messages
+              {folderMessages.length}{" "}
+              {folderMessages.length === 1 ? "message" : "messages"}
             </p>
           </div>
         </ShellMainHeader>
