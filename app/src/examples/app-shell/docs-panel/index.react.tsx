@@ -338,7 +338,9 @@ export default function Example() {
         <ShellSidebarHeader>
           <div className="flex w-full items-center justify-between gap-2">
             <HeadingLevel level={2}>
-              <Heading className="text-base">Customize</Heading>
+              <ak.Heading className="text-base font-medium">
+                Customize
+              </ak.Heading>
             </HeadingLevel>
             <Button aria-label="Close" onClick={closeCustomize}>
               <ButtonSlot>

@@ -1,9 +1,9 @@
+import * as ak from "@ariakit/react";
 import {
   Button,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import {
   Nav,
@@ -175,7 +175,7 @@ export default function Example() {
                 </ButtonSlot>
               </Button>
               <Hash className="size-4 shrink-0" />
-              <Heading className="text-base">design</Heading>
+              <ak.Heading className="text-base font-medium">design</ak.Heading>
               <span className="ak-ink-70 truncate text-sm">
                 Design reviews and component feedback
               </span>

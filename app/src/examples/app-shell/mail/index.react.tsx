@@ -1,13 +1,11 @@
+import * as ak from "@ariakit/react";
 import {
   Button,
   ButtonGroup,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import {
-  Heading,
-  HeadingLevel,
-} from "@ariakit/ui/components/heading.ariakit.react";
+import { HeadingLevel } from "@ariakit/ui/components/heading.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import {
   Nav,
@@ -353,9 +351,9 @@ export default function Example() {
           <>
             <ShellMainIntro>
               <HeadingLevel>
-                <Heading className="text-2xl font-semibold tracking-tight">
+                <ak.Heading className="text-2xl font-semibold tracking-tight">
                   {selectedMessage.subject}
-                </Heading>
+                </ak.Heading>
               </HeadingLevel>
               <div className="flex items-center gap-3">
                 <Frame

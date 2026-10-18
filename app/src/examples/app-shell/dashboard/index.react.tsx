@@ -213,9 +213,9 @@ export default function Example() {
             </div>
             <Frame $layer $rounded="xl" $p={4} $border>
               <HeadingLevel level={2}>
-                <Heading className="mb-3 text-base font-semibold">
+                <ak.Heading className="mb-3 text-base font-semibold">
                   Recent orders
-                </Heading>
+                </ak.Heading>
               </HeadingLevel>
               <Table $borderBlock>
                 <TableRowGroup group="head">

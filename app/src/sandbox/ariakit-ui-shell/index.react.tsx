@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import * as ak from "@ariakit/react";
 import {
   Button,
   ButtonSlot,
@@ -457,7 +458,7 @@ function DashboardScenario() {
               </ButtonSlot>
             </Button>
           }
-          center={<Heading className="text-base">Overview</Heading>}
+          center={<ak.Heading className="font-medium">Overview</ak.Heading>}
           end={
             <ShellHeaderEnd>
               <Button
@@ -507,7 +508,7 @@ function DashboardScenario() {
         >
           <ShellSidebarBody>
             <HeadingLevel level={2}>
-              <Heading className="text-base">Details</Heading>
+              <ak.Heading className="font-medium">Details</ak.Heading>
             </HeadingLevel>
             <p className="ak-ink-70 mt-2 text-sm">
               Select a metric to see its history here. The panel takes its space
@@ -555,7 +556,7 @@ function ChatScenario() {
                 <Hash />
               </ButtonSlot>
             </Button>
-            <Heading className="text-base">general</Heading>
+            <ak.Heading className="font-medium">general</ak.Heading>
           </>
         }
         end={
@@ -655,7 +656,7 @@ function ChatScenario() {
       >
         <ShellSidebarBody>
           <HeadingLevel level={2}>
-            <Heading className="text-base">Members</Heading>
+            <ak.Heading className="font-medium">Members</ak.Heading>
           </HeadingLevel>
           <ul className="mt-2 grid gap-2 text-sm">
             {["Ada", "Grace", "Linus", "Margaret", "Tim"].map((member) => (
@@ -819,9 +820,11 @@ function MarketingScenario() {
               <p>{paragraphs[0]}</p>
             </Prose>
             <ShellMainFull $layer="brand" $p={12} className="text-center">
-              <HeadingLevel>
-                <Heading id="features">Features</Heading>
-              </HeadingLevel>
+              <Prose>
+                <HeadingLevel>
+                  <Heading id="features">Features</Heading>
+                </HeadingLevel>
+              </Prose>
             </ShellMainFull>
             <Prose className="py-16">
               <HeadingLevel>

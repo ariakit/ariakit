@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
+import { Heading } from "@ariakit/react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<Heading className="text-4xl tracking-tight">{title}</Heading>
+<Heading className="text-4xl font-medium tracking-tight">{title}</Heading>
 {
   Astro.slots.has("default") && (
     <Prose className="ak-ink-75 text-lg">

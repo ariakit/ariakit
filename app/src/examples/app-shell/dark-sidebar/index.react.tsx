@@ -18,6 +18,7 @@ import {
   NavList,
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
+import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellHeader,
@@ -421,10 +422,10 @@ export default function Example() {
           </ShellMainHeader>
 
           <ShellMainIntro>
-            <Heading>Website redesign</Heading>
-            <p className="ak-ink-70">
-              Ship the new marketing site before the Q4 launch.
-            </p>
+            <Prose>
+              <Heading>Website redesign</Heading>
+              <p>Ship the new marketing site before the Q4 launch.</p>
+            </Prose>
           </ShellMainIntro>
 
           <ShellMainBody>

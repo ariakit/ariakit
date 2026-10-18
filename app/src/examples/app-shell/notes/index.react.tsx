@@ -1,3 +1,4 @@
+import * as ak from "@ariakit/react";
 import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
@@ -328,9 +329,7 @@ export default function Example() {
           </Nav>
           <section className="flex flex-col gap-2">
             <HeadingLevel level={3}>
-              <Heading className="ak-ink-70 mt-0 mb-0 text-sm font-medium">
-                Tags
-              </Heading>
+              <ak.Heading className="ak-ink-70 font-medium">Tags</ak.Heading>
             </HeadingLevel>
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (

@@ -1,3 +1,4 @@
+import * as ak from "@ariakit/react";
 import {
   Button,
   ButtonGroup,
@@ -5,10 +6,7 @@ import {
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import {
-  Heading,
-  HeadingLevel,
-} from "@ariakit/ui/components/heading.ariakit.react";
+import { HeadingLevel } from "@ariakit/ui/components/heading.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import {
   Nav,
@@ -188,9 +186,9 @@ export default function Example() {
                       Album
                     </p>
                     <HeadingLevel>
-                      <Heading className="mt-0 mb-0 text-4xl leading-tight font-bold">
+                      <ak.Heading className="text-4xl leading-tight font-bold">
                         Night Signals
-                      </Heading>
+                      </ak.Heading>
                     </HeadingLevel>
                     <p className="text-lg font-medium">Halo Parade</p>
                     <p className="text-sm opacity-80">

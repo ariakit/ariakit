@@ -144,20 +144,12 @@ const seam = cv({
   },
 });
 
-// Headings in a bar row stay on the row's center line. Their flow margins only
-// suit text columns.
-const barHeadings = cx(
-  "[&_:is(h1,h2,h3,h4,h5,h6)]:[--heading-mt:0px]",
-  "[&_:is(h1,h2,h3,h4,h5,h6)]:[--heading-mb:0px]",
-);
-
 /**
  * Three columns keep the center aligned until a side needs more room. Content
  * minimums come from `1fr`; physical safe-area insets set the minimum side
  * padding.
  */
 const bar = cx(
-  barHeadings,
   // A horizontal navigation region fills the bar's height, so frame-edge
   // gliders meet the bar's edge. Its rows stay centered.
   "[&>.shell-bar-start:has(>.nav.horizontal)]:self-stretch",
@@ -503,7 +495,6 @@ export const shellSidebarPanel = cv({
 export const shellSidebarHeader = cv({
   extend: [seam],
   class: [
-    barHeadings,
     "shell-sidebar-header flex flex-none items-center box-border min-h-(--shell-local-header-height) py-0!",
   ],
   variants: {
@@ -587,10 +578,7 @@ const content = cx(
   compensation,
   "shell-content grid justify-stretch min-w-0 rounded-none!",
   // Grid items do not collapse margins, so the grid spaces its children.
-  // Heading flow margins would add to the gap.
   "gap-y-(--shell-content-gap) [--shell-content-gap:--spacing(6)]",
-  "[&>:is(h1,h2,h3,h4,h5,h6)]:[--heading-mt:0px]",
-  "[&>:is(h1,h2,h3,h4,h5,h6)]:[--heading-mb:0px]",
   // Keep focused content above a sticky footer when it scrolls into view.
   "[:where(&)_*]:[scroll-margin-block-end:var(--shell-foot)]",
   // Keep controls at their content width instead of stretching to the column.
