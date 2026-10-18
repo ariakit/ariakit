@@ -21,6 +21,7 @@ export function noop(..._: any[]): any {}
  * @example
  * shallowEqual({ a: "a" }, {}); // false
  * shallowEqual({ a: "a" }, { b: "b" }); // false
+ * shallowEqual({ a: undefined }, { b: undefined }); // false
  * shallowEqual({ a: "a" }, { a: "a" }); // true
  * shallowEqual({ a: "a" }, { a: "a", b: "b" }); // false
  */
@@ -38,9 +39,9 @@ export function shallowEqual(a?: AnyObject, b?: AnyObject) {
   if (bKeys.length !== length) return false;
 
   for (const key of aKeys) {
-    if (a[key] !== b[key]) {
-      return false;
-    }
+    // A missing key reads as undefined, so check that b also enumerates it.
+    if (!Object.prototype.propertyIsEnumerable.call(b, key)) return false;
+    if (a[key] !== b[key]) return false;
   }
 
   return true;
