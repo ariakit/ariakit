@@ -1000,7 +1000,7 @@ export default function NavExamples() {
           title={`End bar across sections (${dir})`}
           description="A bar on the end edge marks the current row among the top-level links and in the open sections alike. The rows of a section end where their button ends and sit one nav gap under it, where their guide starts too, so the bar keeps one line. A body the caller pads keeps its rows on the label and insets their end edge, and the bar, by that padding."
           code={`
-            <Nav dir="${dir}" glider={{ $kind: "bar", $animated: false, $side: "end" }}>
+            <Nav dir="${dir}" glider={{ $kind: "bar", $animated: false, $side: "end", $barOffset: "auto" }}>
               <NavLink>Overview</NavLink>
               <NavDisclosure
                 defaultOpen
@@ -1039,7 +1039,7 @@ export default function NavExamples() {
         title="Empty, false, and unknown current values"
         description="Idle links carry an empty or false aria-current, which does not count as current, and the current link carries a token ARIA does not list, which does. The rows, the bar, and the guide line follow only the current link. Click a link to move it. With the current link in the section, close the section to leave no current row in view."
         code={`
-          <Nav $slotSize={5} glider={{ $kind: "bar", $animated: false }}>
+          <Nav $slotSize={5} glider={{ $kind: "bar", $animated: false, $barOffset: "auto" }}>
             <NavLink aria-current="active">Overview</NavLink>
             <NavDisclosure
               defaultOpen
