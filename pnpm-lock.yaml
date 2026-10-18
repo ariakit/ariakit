@@ -201,7 +201,7 @@ importers:
         version: 7.0.0
       '@testing-library/jest-dom':
         specifier: 7.0.1
-        version: 7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.4)
+        version: 7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.5)
       '@types/cross-spawn':
         specifier: 6.0.6
         version: 6.0.6
@@ -221,8 +221,8 @@ importers:
         specifier: 6.1.2
         version: 6.1.2(babel-plugin-react-compiler@1.0.0)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
       '@vitest/coverage-v8':
-        specifier: 5.0.4
-        version: 5.0.4(vitest@5.0.4)
+        specifier: 5.0.5
+        version: 5.0.5(vitest@5.0.5)
       chalk:
         specifier: 6.0.1
         version: 6.0.1
@@ -303,13 +303,13 @@ importers:
         version: 8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
       vite-plugin-solid:
         specifier: 2.11.14
-        version: 2.11.14(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.4))(solid-js@1.9.17)(supports-color@10.2.2)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+        version: 2.11.14(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.5))(solid-js@1.9.17)(supports-color@10.2.2)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
       vitest:
-        specifier: 5.0.4
-        version: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+        specifier: 5.0.5
+        version: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
       vitest-fail-on-console:
         specifier: 0.10.1
-        version: 0.10.1(@vitest/utils@4.1.10)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))(vitest@5.0.4)
+        version: 0.10.1(@vitest/utils@4.1.10)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))(vitest@5.0.5)
 
   app:
     dependencies:
@@ -366,7 +366,7 @@ importers:
         version: 7.0.1(@types/node@24.19.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(babel-plugin-react-compiler@1.0.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(terser@5.51.2)(yaml@2.9.1)
       '@astrojs/solid-js':
         specifier: 7.0.2
-        version: 7.0.2(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.4))(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(solid-js@1.9.17)(supports-color@10.2.2)(terser@5.51.2)(yaml@2.9.1)
+        version: 7.0.2(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.5))(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(solid-js@1.9.17)(supports-color@10.2.2)(terser@5.51.2)(yaml@2.9.1)
       '@fontsource-variable/inter':
         specifier: 5.3.0
         version: 5.3.0
@@ -531,8 +531,8 @@ importers:
         specifier: 8.3.4
         version: 8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
       vitest:
-        specifier: 5.0.4
-        version: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+        specifier: 5.0.5
+        version: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
       wrangler:
         specifier: 4.151.0
         version: 4.151.0(@types/node@24.19.2)
@@ -667,8 +667,8 @@ importers:
         specifier: workspace:*
         version: link:../ariakit-scripts
       vitest:
-        specifier: 5.0.4
-        version: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+        specifier: 5.0.5
+        version: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
 
   packages/ariakit-react:
     dependencies:
@@ -714,8 +714,8 @@ importers:
         specifier: 19.3.1
         version: 19.3.1(react@19.3.1)
       vitest:
-        specifier: 5.0.4
-        version: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+        specifier: 5.0.5
+        version: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
 
   packages/ariakit-react-store:
     dependencies:
@@ -758,8 +758,8 @@ importers:
         specifier: 19.3.1
         version: 19.3.1
       vitest:
-        specifier: 5.0.4
-        version: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+        specifier: 5.0.5
+        version: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
 
   packages/ariakit-scripts:
     dependencies:
@@ -786,7 +786,7 @@ importers:
         version: '@typescript/typescript6@6.0.2'
       vite-plugin-solid:
         specifier: 2.11.14
-        version: 2.11.14(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.4))(solid-js@1.9.17)(supports-color@10.2.2)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+        version: 2.11.14(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.5))(solid-js@1.9.17)(supports-color@10.2.2)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
     devDependencies:
       '@playwright/test':
         specifier: 1.63.0
@@ -795,8 +795,8 @@ importers:
         specifier: 19.3.1
         version: 19.3.1
       vitest:
-        specifier: 5.0.4
-        version: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+        specifier: 5.0.5
+        version: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
 
   packages/ariakit-solid:
     dependencies:
@@ -859,8 +859,8 @@ importers:
         specifier: 1.9.17
         version: 1.9.17
       vitest:
-        specifier: 5.0.4
-        version: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+        specifier: 5.0.5
+        version: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
 
   packages/ariakit-store:
     dependencies:
@@ -872,8 +872,8 @@ importers:
         specifier: workspace:*
         version: link:../ariakit-scripts
       vitest:
-        specifier: 5.0.4
-        version: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+        specifier: 5.0.5
+        version: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
 
   packages/ariakit-tailwind:
     devDependencies:
@@ -909,8 +909,8 @@ importers:
         specifier: 19.3.1
         version: 19.3.1(react@19.3.1)
       vitest:
-        specifier: 5.0.4
-        version: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+        specifier: 5.0.5
+        version: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
 
   packages/ariakit-ui:
     dependencies:
@@ -955,8 +955,8 @@ importers:
         specifier: workspace:*
         version: link:../ariakit-scripts
       vitest:
-        specifier: 5.0.4
-        version: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+        specifier: 5.0.5
+        version: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
 
   templates/react:
     dependencies:
@@ -1297,7 +1297,7 @@ importers:
         version: 3.0.4
       vitest:
         specifier: 4.1.10
-        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(terser@5.51.2)(yaml@2.9.1))
+        version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(terser@5.51.2)(yaml@2.9.1))
 
 packages:
 
@@ -5352,11 +5352,11 @@ packages:
       oxc-transform-react:
         optional: true
 
-  '@vitest/coverage-v8@5.0.4':
-    resolution: {integrity: sha512-P5YcQY8Y6RmoE9xRXI38rT8pssbcubEzqtYTM2XQoxOXMDn04nRaTI1SM8qCl9/NfW3ag9GlzdSXu7IwO5Ft8A==}
+  '@vitest/coverage-v8@5.0.5':
+    resolution: {integrity: sha512-4KpkGdIrSqBihx/JyP/e+S+IKB98etg1XDQiLAxksLfcShnwi1VReGeOT9NI43hLHbknosKp/1CCLn9Zgcs8mg==}
     peerDependencies:
-      '@vitest/browser': 5.0.4
-      vitest: 5.0.4
+      '@vitest/browser': 5.0.5
+      vitest: 5.0.5
     peerDependenciesMeta:
       '@vitest/browser':
         optional: true
@@ -5383,8 +5383,8 @@ packages:
       vite:
         optional: true
 
-  '@vitest/mocker@5.0.4':
-    resolution: {integrity: sha512-tqAlrYWce4iUxhr3ncNohejtCTOcHeE8XWrSNZY3OhPoDn01yeGv+gnaBy64ATp7o6pb03eIbBAjzmibpc9vIQ==}
+  '@vitest/mocker@5.0.5':
+    resolution: {integrity: sha512-xLL3lkDegJZw+MGoGaCCsFayDZthGgpAtr3Vziyfc4p7xH89K7KRPcRBBh/kEYm0Aqkt5DtTmkYpBtRV/FrHZg==}
     peerDependencies:
       msw: ^2.4.9 || ^3.0.0
       vite: ^6.0.0 || ^7.0.0 || ^8.0.0
@@ -5406,8 +5406,8 @@ packages:
   '@vitest/spy@4.1.10':
     resolution: {integrity: sha512-PLf/Ugvoq5wO/b4rwYCR1h2PSIdXz7wnkQFMiUpLdtM7l6pqVFcQIBEHyT1+l+cj7mNwAfZHzqXqDyjvOuwbDw==}
 
-  '@vitest/spy@5.0.4':
-    resolution: {integrity: sha512-MZKk/gSkm2q+ICobMxCpH1mA+cCAWm8WV7UhxlqGjq/sJ3AGc1BqFOs5CRVXxH78wQtme9q/NAAgBquj4AcyMw==}
+  '@vitest/spy@5.0.5':
+    resolution: {integrity: sha512-lwJRExuH417257Q5wv9QYugN9IMJkoxcrKrYxGPQkBzl7wlNpTUxD/5yNX4ESKVUIShKPgkGchYPFMWOOk0wzw==}
 
   '@vitest/utils@4.1.10':
     resolution: {integrity: sha512-fy9am/HWxbaGt/Sawrp90vt6Y6jQwf1RX77cz3uwoJwJVMli/e1IEwRPnMNJ7vKfPTwo0diXifkpPvwH9v7nGA==}
@@ -10079,20 +10079,20 @@ packages:
       jsdom:
         optional: true
 
-  vitest@5.0.4:
-    resolution: {integrity: sha512-z0WxZRV2Sg48wF0FSgMq3TFG8JS38/Qr96vZVZdX6+Em9raQTvnXQvdTFJe2m3rfyJnEHeHQ/snceIdi8D1pVg==}
+  vitest@5.0.5:
+    resolution: {integrity: sha512-cPODOMF8YnkiiYtDdHo6n4wWmBrOBBbOIYH2d33M4l3CdNn72h+qMmO6uXffUN6A5AZFXNND/d+krS9mgkXRfg==}
     engines: {node: ^22.12.0 || ^24.0.0 || >=26.0.0}
     hasBin: true
     peerDependencies:
       '@edge-runtime/vm': '*'
       '@opentelemetry/api': ^1.9.0
       '@types/node': ^22.0.0 || >=24.0.0
-      '@vitest/browser-playwright': 5.0.4
-      '@vitest/browser-preview': 5.0.4
+      '@vitest/browser-playwright': 5.0.5
+      '@vitest/browser-preview': 5.0.5
       '@vitest/browser-webdriverio': ^5.0.0-beta.5 || >=5.0.0
-      '@vitest/coverage-istanbul': 5.0.4
-      '@vitest/coverage-v8': 5.0.4
-      '@vitest/ui': 5.0.4
+      '@vitest/coverage-istanbul': 5.0.5
+      '@vitest/coverage-v8': 5.0.5
+      '@vitest/ui': 5.0.5
       happy-dom: '*'
       jsdom: '*'
       vite: ^6.4.0 || ^7.0.0 || ^8.0.0
@@ -10720,11 +10720,11 @@ snapshots:
       - tsx
       - yaml
 
-  '@astrojs/solid-js@7.0.2(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.4))(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(solid-js@1.9.17)(supports-color@10.2.2)(terser@5.51.2)(yaml@2.9.1)':
+  '@astrojs/solid-js@7.0.2(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.5))(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(solid-js@1.9.17)(supports-color@10.2.2)(terser@5.51.2)(yaml@2.9.1)':
     dependencies:
       solid-js: 1.9.17
       vite: 8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
-      vite-plugin-solid: 2.11.14(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.4))(solid-js@1.9.17)(supports-color@10.2.2)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      vite-plugin-solid: 2.11.14(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.5))(solid-js@1.9.17)(supports-color@10.2.2)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
       vitefu: 1.1.3(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
     transitivePeerDependencies:
       - '@testing-library/jest-dom'
@@ -14252,7 +14252,7 @@ snapshots:
       picocolors: 1.1.1
       pretty-format: 27.5.1
 
-  '@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.4)':
+  '@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.5)':
     dependencies:
       '@adobe/css-tools': 4.5.0
       '@testing-library/dom': 10.4.1
@@ -14262,7 +14262,7 @@ snapshots:
       picocolors: 1.1.1
       redent: 3.0.0
     optionalDependencies:
-      vitest: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      vitest: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
 
   '@testing-library/react@16.3.3(@testing-library/dom@10.4.1)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
@@ -14613,7 +14613,7 @@ snapshots:
     optionalDependencies:
       babel-plugin-react-compiler: 1.0.0
 
-  '@vitest/coverage-v8@5.0.4(vitest@5.0.4)':
+  '@vitest/coverage-v8@5.0.5(vitest@5.0.5)':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
       '@vitest/istanbul-lib-coverage': 1.0.2
@@ -14623,7 +14623,7 @@ snapshots:
       obug: 3.0.0
       std-env: 4.3.0
       tinyrainbow: 3.2.0
-      vitest: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      vitest: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
 
   '@vitest/expect@4.1.10':
     dependencies:
@@ -14648,10 +14648,10 @@ snapshots:
     optionalDependencies:
       vite: 8.3.4(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(terser@5.51.2)(yaml@2.9.1)
 
-  '@vitest/mocker@5.0.4(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))':
+  '@vitest/mocker@5.0.5(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
-      '@vitest/spy': 5.0.4
+      '@vitest/spy': 5.0.5
       estree-walker: 3.0.3
       magic-string: 1.4.3
     optionalDependencies:
@@ -14675,7 +14675,7 @@ snapshots:
 
   '@vitest/spy@4.1.10': {}
 
-  '@vitest/spy@5.0.4': {}
+  '@vitest/spy@5.0.5': {}
 
   '@vitest/utils@4.1.10':
     dependencies:
@@ -20003,7 +20003,7 @@ snapshots:
 
   visonaut@0.6.7: {}
 
-  vite-plugin-solid@2.11.14(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.4))(solid-js@1.9.17)(supports-color@10.2.2)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)):
+  vite-plugin-solid@2.11.14(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.5))(solid-js@1.9.17)(supports-color@10.2.2)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)):
     dependencies:
       '@babel/core': 7.29.0(supports-color@10.2.2)
       '@types/babel__core': 7.20.5
@@ -20014,7 +20014,7 @@ snapshots:
       vite: 8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
       vitefu: 1.1.3(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
     optionalDependencies:
-      '@testing-library/jest-dom': 7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.4)
+      '@testing-library/jest-dom': 7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.5)
     transitivePeerDependencies:
       - supports-color
 
@@ -20052,14 +20052,14 @@ snapshots:
     optionalDependencies:
       vite: 8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
 
-  vitest-fail-on-console@0.10.1(@vitest/utils@4.1.10)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))(vitest@5.0.4):
+  vitest-fail-on-console@0.10.1(@vitest/utils@4.1.10)(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))(vitest@5.0.5):
     dependencies:
       '@vitest/utils': 4.1.10
       chalk: 5.6.2
       vite: 8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
-      vitest: 5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      vitest: 5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
 
-  vitest@4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(terser@5.51.2)(yaml@2.9.1)):
+  vitest@4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(terser@5.51.2)(yaml@2.9.1)):
     dependencies:
       '@vitest/expect': 4.1.10
       '@vitest/mocker': 4.1.10(vite@8.3.4(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(terser@5.51.2)(yaml@2.9.1))
@@ -20083,16 +20083,16 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.13.3
-      '@vitest/coverage-v8': 5.0.4(vitest@5.0.4)
+      '@vitest/coverage-v8': 5.0.5(vitest@5.0.5)
       happy-dom: 21.0.1
       jsdom: 30.1.3(@noble/hashes@1.8.0)
     transitivePeerDependencies:
       - msw
 
-  vitest@5.0.4(@types/node@24.19.2)(@vitest/coverage-v8@5.0.4)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)):
+  vitest@5.0.5(@types/node@24.19.2)(@vitest/coverage-v8@5.0.5)(happy-dom@21.0.1)(jsdom@30.1.3(@noble/hashes@1.8.0))(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)):
     dependencies:
       '@types/chai': 5.2.3
-      '@vitest/mocker': 5.0.4(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      '@vitest/mocker': 5.0.5(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
       chai: 6.3.0
       es-module-lexer: 2.3.2
       expect-type: 1.4.0
@@ -20107,7 +20107,7 @@ snapshots:
       why-is-node-running: 3.2.1
     optionalDependencies:
       '@types/node': 24.19.2
-      '@vitest/coverage-v8': 5.0.4(vitest@5.0.4)
+      '@vitest/coverage-v8': 5.0.5(vitest@5.0.5)
       happy-dom: 21.0.1
       jsdom: 30.1.3(@noble/hashes@1.8.0)
     transitivePeerDependencies:
