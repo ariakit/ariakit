@@ -38,9 +38,9 @@ export const gliderBase = cv({
         // otherwise applies the RTL scroll offset twice to anchor() insets.
         "not-[.vertical>&]:fixed! [position-visibility:anchors-visible]",
         "z-10",
-        // Normalize the 0–100 contrast scale so high contrast increases bar
-        // thickness by only 20%.
-        "[--glider-bar:calc(--spacing(0.5)+(--spacing(0.1))*var(--contrast)/100)]",
+        // A fixed width keeps the bar the same at every text size. Normalize
+        // the 0–100 contrast scale so high contrast adds only 20%.
+        "[--glider-bar:calc(var(--glider-bar-width,2px)*(1+0.2*var(--contrast)/100))]",
         "not-[.vertical>&]:left-[anchor(left)]",
         "not-[.vertical>&]:top-[calc(anchor(bottom)+var(--glider-bar-offset))]",
         "not-[.vertical>&]:w-[anchor-size()]",
@@ -73,8 +73,7 @@ export const gliderBase = cv({
      * Sets the gap from the item to the bar's near edge. Numbers scale the
      * spacing token; CSS lengths can be negative for overlap. `auto` uses frame
      * padding minus the bar thickness, clamped at zero. `frame` aligns the bar
-     * to the group's edge even for an indented item. Set `--glider-bar` through
-     * `style` or `className` to change thickness.
+     * to the group's edge even for an indented item.
      */
     $barOffset(value?: "auto" | "frame" | (string & {}) | number) {
       if (value == null) return;
@@ -94,6 +93,15 @@ export const gliderBase = cv({
         ];
       }
       return { style: { "--glider-bar-offset": getSpacingValue(value) } };
+    },
+    /**
+     * Sets the bar thickness. Numbers are pixels; other values are CSS lengths.
+     * High contrast adds 20%. Defaults to 2px.
+     */
+    $barWidth(value?: number | (string & {})) {
+      if (value == null) return;
+      const width = typeof value === "number" ? `${value}px` : value;
+      return { style: { "--glider-bar-width": width } };
     },
     /** Animates the glider as it travels between controls. */
     $animated: [

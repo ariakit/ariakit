@@ -390,11 +390,21 @@ export const controlContent = cv({
 /** Control label text with optional single-line truncation. */
 export const controlLabel = cv({
   extend: [text],
-  class:
-    "group-[.flex-col]/control-content:flex-none group-[.disabled]/control:ak-ink-0",
+  class: [
+    // Content already fills the row, so a description stays beside or below
+    // the label text.
+    "group-[.flex-col]/control-content:flex-none group-[.flex-wrap]/control-content:grow-0",
+    "group-[.disabled]/control:ak-ink-0",
+  ],
   variants: {
     /** Truncates the label to one line with an ellipsis. */
     $truncate: "truncate",
+    /**
+     * Fills the free space in its row, so the slots after it sit together at
+     * the row end. Row labels such as navigation and disclosure labels do this
+     * by default.
+     */
+    $grow: "grow text-start",
   },
 });
 

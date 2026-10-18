@@ -10,31 +10,476 @@
  */
 import "#app/styles/global.css";
 import "@fontsource-variable/inter";
+import {
+  Button,
+  ButtonLabel,
+  ButtonSlot,
+} from "@ariakit/ui/components/button.ariakit.react";
+import { Nav, NavLink } from "@ariakit/ui/components/nav.ariakit.react";
+import {
+  Shell,
+  ShellFooter,
+  ShellHeader,
+  ShellHeaderCenter,
+  ShellHeaderEnd,
+  ShellHeaderStart,
+  ShellMain,
+  ShellMainBody,
+  ShellMainIntro,
+  ShellSidebar,
+  ShellSidebarBody,
+  ShellSidebarFooter,
+  ShellSidebarHeader,
+} from "@ariakit/ui/components/shell.ariakit.react";
 import Meta from "#app/components/meta.astro";
+import { AppNavigation } from "#app/components/app-navigation.react.tsx";
+import {
+  AppThemeOptions,
+  AppThemeReset,
+} from "#app/components/app-theme-options.react.tsx";
+import ThemeScript from "#app/components/theme-script.astro";
+import { LogoIcon, Logotype } from "#app/icons/logo.react.tsx";
+import type { AppHeading, AppLink } from "#app/lib/app.ts";
+import {
+  APP_DRAWER_ID,
+  APP_NAVIGATION_ID,
+  THEME_PANEL_ID,
+} from "#app/lib/app.ts";
+import { getCollection } from "astro:content";
+import { Menu, PanelLeft, SwatchBook, X } from "lucide-react";
+import { createElement } from "react";
 
 export interface Props {
   title?: string;
+  headings?: AppHeading[];
 }
 
-const { title } = Astro.props;
+const { title, headings = [] } = Astro.props;
+// Astro serves routes with and without a trailing slash, and every link ends
+// with one.
+const pathname = Astro.url.pathname.replace(/\/?$/, "/");
+const tocHeadings = headings.filter((heading) => heading.depth <= 3);
+
+// The site navigation lists React pages only. Solid pages still build, but
+// they are not part of the navigation yet.
+const navigationFramework = "react";
+
+const sectionTypes = [
+  { type: "components", label: "Components" },
+  { type: "examples", label: "Examples" },
+] as const;
+
+const collections = await Promise.all(
+  sectionTypes.map(async ({ type, label }) => {
+    const entries = await getCollection(type, (entry) =>
+      entry.data.frameworks.includes(navigationFramework),
+    );
+    return { type, label, entries };
+  }),
+);
+
+// A link is current on its own page and on nested pages, such as the API
+// reference pages of a component.
+const getLink = (href: string, label: string): AppLink => ({
+  href,
+  label,
+  current: pathname.startsWith(href),
+});
+
+const sections = collections.map(({ type, label }) =>
+  getLink(`/${navigationFramework}/${type}/`, label),
+);
+
+// The drawer lists the sections with the entries, so a section is current
+// only on its own page there, and only one link in the menu is the page.
+const drawerSections = sections.map((link) => ({
+  ...link,
+  current: link.href === pathname,
+}));
+
+const navigation = collections
+  .filter(({ entries }) => entries.length > 0)
+  .map(({ type, label, entries }) => ({
+    label,
+    links: entries
+      .map((entry) =>
+        getLink(
+          `/${navigationFramework}/${type}/${entry.id}/`,
+          entry.data.title,
+        ),
+      )
+      .sort((a, b) => a.label.localeCompare(b.label)),
+  }));
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <slot name="meta"><Meta {title} /></slot>
+    <ThemeScript />
   </head>
   <body>
-    <header>
-      <a href="/">Ariakit</a>
-      <nav aria-label="Main">
-        <ul>
-          <li><a href="/react/components/">React components</a></li>
-          <li><a href="/solid/components/">Solid components</a></li>
-          <li><a href="/react/examples/">Examples</a></li>
-        </ul>
-      </nav>
-    </header>
-    <main id="main"><slot /></main>
+    {/* The outer shell holds the page and a full-height theme panel at the
+        end. The inner shell holds the header, the site navigation, the main
+        content, a table of contents, and the footer. */}
+    <Shell>
+      <Shell>
+        <ShellHeader $height="sm" $blur className="text-sm">
+          <ShellHeaderStart>
+            <Button
+              aria-label="Open menu"
+              aria-expanded="false"
+              aria-controls={APP_DRAWER_ID}
+              data-shell-toggle
+              className="@3xl/shell:hidden"
+            >
+              <ButtonSlot><Menu /></ButtonSlot>
+            </Button>
+            <Button
+              aria-label="Toggle navigation"
+              aria-expanded="true"
+              aria-controls={APP_NAVIGATION_ID}
+              data-shell-toggle
+              className="@max-3xl/shell:hidden"
+            >
+              <ButtonSlot><PanelLeft /></ButtonSlot>
+            </Button>
+            <a href="/" aria-label="Ariakit" class="flex items-center gap-2 px-1">
+              <LogoIcon size="1.5em" />
+              <Logotype size="1.25em" className="@max-xl/shell:hidden" />
+            </a>
+          </ShellHeaderStart>
+          <ShellHeaderCenter className="@max-2xl/shell:hidden">
+            <Nav
+              $layout="horizontal"
+              aria-label="Main"
+              glider={{ $kind: "bar", $animated: false }}
+            >
+              {
+                sections.map((link) => (
+                  <NavLink
+                    href={link.href}
+                    aria-current={link.current ? "page" : undefined}
+                    className="font-medium"
+                  >
+                    {link.label}
+                  </NavLink>
+                ))
+              }
+            </Nav>
+          </ShellHeaderCenter>
+          <ShellHeaderEnd>
+            {/* The phone menu holds the theme options below 48rem. A viewport
+                query matches the outer shell, which spans the viewport. */}
+            {/* The label hides when the open panel narrows the inner shell, so
+                the button names itself. */}
+            <Button
+              aria-label="Theme"
+              aria-expanded="false"
+              aria-controls={THEME_PANEL_ID}
+              data-shell-toggle
+              className="max-md:hidden"
+            >
+              <ButtonSlot><SwatchBook /></ButtonSlot>
+              <ButtonLabel className="@max-lg/shell:hidden">Theme</ButtonLabel>
+            </Button>
+          </ShellHeaderEnd>
+        </ShellHeader>
+        <ShellSidebar
+          id={APP_NAVIGATION_ID}
+          render={createElement("nav")}
+          aria-label="Site"
+          className="text-sm"
+        >
+          <ShellSidebarBody>
+            <AppNavigation groups={navigation} />
+          </ShellSidebarBody>
+        </ShellSidebar>
+        {/* Below 48rem, a drawer replaces the sidebar and the header links. */}
+        <ShellSidebar
+          id={APP_DRAWER_ID}
+          open={false}
+          $show="max-3xl"
+          render={createElement("nav")}
+          aria-label="Menu"
+          data-shell-transient
+          className="text-sm"
+        >
+          <ShellSidebarHeader $height="sm" className="justify-between">
+            <span class="font-medium">Menu</span>
+            <Button
+              aria-label="Close menu"
+              aria-controls={APP_DRAWER_ID}
+              data-shell-close
+            >
+              <ButtonSlot><X /></ButtonSlot>
+            </Button>
+          </ShellSidebarHeader>
+          <ShellSidebarBody>
+            <AppNavigation
+              groups={[{ label: "Sections", links: drawerSections }, ...navigation]}
+            />
+            <div class="grid gap-6 px-3 pt-6 pb-3">
+              <span class="ak-ink-70 text-xs font-medium">Theme</span>
+              <AppThemeOptions client:load idPrefix={APP_DRAWER_ID} />
+            </div>
+          </ShellSidebarBody>
+        </ShellSidebar>
+        <ShellMain
+          $p="var(--app-gutter)"
+          $maxWidth="56rem"
+          className="[--app-gutter:--spacing(4)] @3xl/shell:[--app-gutter:--spacing(8)]"
+        >
+          {/* Page content renders as direct grid items, so samples can use
+              main bands. */}
+          {
+            Astro.slots.has("intro") && (
+              <ShellMainIntro className="gap-y-4 pt-10 pb-6">
+                <slot name="intro" />
+              </ShellMainIntro>
+            )
+          }
+          <ShellMainBody className="gap-y-8 pb-16">
+            <slot />
+          </ShellMainBody>
+        </ShellMain>
+        {
+          tocHeadings.length > 0 && (
+            <ShellSidebar
+              $side="end"
+              $width="sm"
+              $from="body"
+              $show="6xl"
+              $border={false}
+              $layer="transparent"
+              render={createElement("nav")}
+              aria-label="On this page"
+              className="text-sm"
+            >
+              <ShellSidebarBody>
+                <p class="ak-ink-70 px-3 pb-2 text-xs font-medium uppercase">
+                  On this page
+                </p>
+                {/* The layout script marks the link of the section in view. */}
+                <Nav
+                  $gap={0.5}
+                  render={createElement("div")}
+                  glider={{ $kind: "bar", $animated: false }}
+                  data-app-toc
+                >
+                  {tocHeadings.map((heading) => (
+                    <NavLink
+                      href={`#${heading.slug}`}
+                      className={heading.depth > 2 ? "ps-6" : undefined}
+                    >
+                      {heading.text}
+                    </NavLink>
+                  ))}
+                </Nav>
+              </ShellSidebarBody>
+            </ShellSidebar>
+          )
+        }
+        <ShellFooter className="text-sm">
+          <span slot="start" class="ak-ink-70">© Ariakit FZ-LLC</span>
+          <Fragment slot="end">
+            <Nav $layout="horizontal" aria-label="Footer">
+              {
+                sections.map((link) => (
+                  <NavLink href={link.href}>{link.label}</NavLink>
+                ))
+              }
+            </Nav>
+          </Fragment>
+        </ShellFooter>
+      </Shell>
+      <ShellSidebar
+        id={THEME_PANEL_ID}
+        open={false}
+        $side="end"
+        $width="lg"
+        render={createElement("aside")}
+        aria-label="Theme"
+        className="text-sm"
+      >
+        <ShellSidebarHeader $height="sm" className="justify-between">
+          <span class="font-medium">Theme</span>
+          <Button
+            aria-label="Close theme"
+            aria-controls={THEME_PANEL_ID}
+            data-shell-close
+          >
+            <ButtonSlot><X /></ButtonSlot>
+          </Button>
+        </ShellSidebarHeader>
+        <ShellSidebarBody>
+          <AppThemeOptions client:load idPrefix={THEME_PANEL_ID} />
+        </ShellSidebarBody>
+        <ShellSidebarFooter>
+          <AppThemeReset client:load />
+        </ShellSidebarFooter>
+      </ShellSidebar>
+    </Shell>
+    <script is:inline>
+      // The shell renders without hydration. This script restores the panel
+      // choices and wires the panels, the table of contents, and the sample
+      // code toggles.
+      (() => {
+        /** @param {string} key */
+        const read = (key) => {
+          try {
+            return localStorage.getItem(key);
+          } catch {
+            return null;
+          }
+        };
+        /**
+         * @param {string} key
+         * @param {string | null} value
+         */
+        const write = (key, value) => {
+          try {
+            if (value == null) {
+              localStorage.removeItem(key);
+            } else {
+              localStorage.setItem(key, value);
+            }
+          } catch {}
+        };
+        /**
+         * @param {ParentNode} parent
+         * @param {string} selector
+         */
+        const queryAll = (parent, selector) =>
+          [...parent.querySelectorAll(selector)].filter(
+            (element) => element instanceof HTMLElement,
+          );
+        /** @param {Element} element */
+        const getControlled = (element) => {
+          const id = element.getAttribute("aria-controls");
+          return id ? document.getElementById(id) : null;
+        };
+
+        // Shell panels
+        /**
+         * @param {HTMLElement} panel
+         * @param {boolean} open
+         */
+        const setOpen = (panel, open) => {
+          panel.toggleAttribute("data-open", open);
+          const selector = `[data-shell-toggle][aria-controls="${panel.id}"]`;
+          const toggles = queryAll(document, selector);
+          for (const toggle of toggles) {
+            toggle.setAttribute("aria-expanded", String(open));
+          }
+          // A closing panel hides the focused element when it contains it, so
+          // focus moves back to the visible toggle.
+          if (!open && panel.contains(document.activeElement)) {
+            toggles.find((toggle) => toggle.checkVisibility())?.focus();
+          }
+          if (!panel.hasAttribute("data-shell-transient")) {
+            write(`app-panel:${panel.id}`, String(open));
+            return;
+          }
+          // Transient panels cover the page, so focus moves into them when
+          // they open.
+          if (open) {
+            queryAll(panel, "[data-shell-close]")[0]?.focus();
+          }
+        };
+        document.addEventListener("keydown", (event) => {
+          if (event.key !== "Escape") return;
+          if (event.defaultPrevented) return;
+          const selector = "[data-shell-transient][data-open]";
+          for (const panel of queryAll(document, selector)) {
+            setOpen(panel, false);
+          }
+        });
+        for (const toggle of queryAll(document, "[data-shell-toggle]")) {
+          const panel = getControlled(toggle);
+          if (!panel) continue;
+          // Transient panels, like the phone menu, always start closed.
+          const saved = panel.hasAttribute("data-shell-transient")
+            ? null
+            : read(`app-panel:${panel.id}`);
+          if (saved != null) {
+            setOpen(panel, saved === "true");
+          }
+          toggle.addEventListener("click", () => {
+            setOpen(panel, !panel.hasAttribute("data-open"));
+          });
+        }
+        for (const close of queryAll(document, "[data-shell-close]")) {
+          const panel = getControlled(close);
+          if (!panel) continue;
+          close.addEventListener("click", () => setOpen(panel, false));
+        }
+
+        // Sample code toggles
+        for (const toggle of queryAll(document, "[data-code-toggle]")) {
+          const region = getControlled(toggle);
+          if (!region) continue;
+          toggle.addEventListener("click", () => {
+            const expanded = region.hidden;
+            region.hidden = !expanded;
+            toggle.setAttribute("aria-expanded", String(expanded));
+          });
+        }
+
+        // Table of contents. The link of the last heading that scrolled to its
+        // scroll margin below the sticky headers is current. No link is current
+        // before the first heading, and the last link is current at the end of
+        // the page, where short final sections cannot reach the margin.
+        const toc = document.querySelector("[data-app-toc]");
+        if (toc) {
+          const targets = queryAll(toc, "a[href^='#']").flatMap((link) => {
+            if (!(link instanceof HTMLAnchorElement)) return [];
+            const id = decodeURIComponent(link.hash.slice(1));
+            const target = document.getElementById(id);
+            return target ? [{ link, target }] : [];
+          });
+          // At the end of the page, a heading that a link just scrolled into
+          // view stays current instead of the last one.
+          const getEndTarget = () => {
+            const hashed = targets.find(
+              ({ link }) => link.hash === window.location.hash,
+            );
+            if (!hashed) return targets.at(-1);
+            const { top } = hashed.target.getBoundingClientRect();
+            if (top < 0) return targets.at(-1);
+            if (top > window.innerHeight) return targets.at(-1);
+            return hashed;
+          };
+          const update = () => {
+            const root = document.documentElement;
+            const atEnd =
+              window.scrollY > 0 &&
+              window.innerHeight + window.scrollY >= root.scrollHeight - 1;
+            let current = atEnd ? getEndTarget() : undefined;
+            if (!atEnd) {
+              for (const item of targets) {
+                const { top } = item.target.getBoundingClientRect();
+                const margin = parseFloat(
+                  getComputedStyle(item.target).scrollMarginTop,
+                );
+                // One pixel of tolerance absorbs subpixel scroll positions.
+                if (top > margin + 1) break;
+                current = item;
+              }
+            }
+            for (const { link } of targets) {
+              if (link === current?.link) {
+                link.setAttribute("aria-current", "location");
+              } else {
+                link.removeAttribute("aria-current");
+              }
+            }
+          };
+          update();
+          window.addEventListener("scroll", update, { passive: true });
+          window.addEventListener("hashchange", update);
+        }
+      })();
+    </script>
   </body>
 </html>

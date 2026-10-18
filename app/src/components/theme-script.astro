@@ -1,0 +1,74 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+---
+
+<script is:inline>
+  // Applies the theme saved by the site's Theme panel before first paint.
+  // Previews run in same-origin iframes, so they follow panel changes through
+  // storage events.
+  (() => {
+    const root = document.documentElement;
+    /** @param {string} key */
+    const read = (key) => {
+      // The theme options keep values here when storage is blocked.
+      const fallback = window.appThemeFallback;
+      if (fallback && key in fallback) {
+        return fallback[key] ?? null;
+      }
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    };
+    /**
+     * @param {string} property
+     * @param {string | null} value
+     */
+    const setProperty = (property, value) => {
+      if (value) {
+        root.style.setProperty(property, value);
+      } else {
+        root.style.removeProperty(property);
+      }
+    };
+    const apply = () => {
+      const mode = read("app-theme:mode");
+      // A forced mode also sets the color scheme, so browser-drawn parts such
+      // as scrollbars and form controls follow it.
+      if (mode === "light" || mode === "dark") {
+        root.dataset.theme = mode;
+        root.style.colorScheme = mode;
+      } else {
+        delete root.dataset.theme;
+        root.style.removeProperty("color-scheme");
+      }
+      setProperty("--color-brand", read("app-theme:brand"));
+      setProperty("--radius", read("app-theme:radius"));
+      // The stylesheet defines each canvas for the light and dark modes.
+      const canvas = read("app-theme:canvas");
+      if (canvas) {
+        root.dataset.canvas = canvas;
+      } else {
+        delete root.dataset.canvas;
+      }
+    };
+    apply();
+    window.addEventListener("storage", (event) => {
+      if (!event.key?.startsWith("app-theme:")) return;
+      // Another document stored this value, so a fallback from a failed write
+      // here must not hide it.
+      delete window.appThemeFallback?.[event.key];
+      apply();
+    });
+    window.addEventListener("app-theme-change", apply);
+  })();
+</script>

@@ -12,11 +12,46 @@
 @source "../../../packages/ariakit-ui/src/**";
 @source not "../sandbox/ariakit-tailwind*";
 
+/* The site's Theme panel sets data-theme on the root element. Without it, the
+   dark variant follows the system color scheme. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:not([data-theme="light"], [data-theme="light"] *)) {
+      @slot;
+    }
+  }
+}
+
 astro-island,
 astro-slot,
 astro-static-slot {
   display: inherit !important;
   :is(a, p, li, span, code) & {
     display: inline !important;
+  }
+}
+
+/* Canvas options from the site's Theme panel, for each color mode. */
+:root[data-canvas="neutral"] {
+  --color-canvas: oklch(99.4% 0 0);
+  @variant dark {
+    --color-canvas: oklch(19.5% 0 0);
+  }
+}
+
+:root[data-canvas="warm"] {
+  --color-canvas: oklch(98.9% 0.008 80);
+  @variant dark {
+    --color-canvas: oklch(20% 0.009 60);
+  }
+}
+
+:root[data-canvas="cool"] {
+  --color-canvas: oklch(98.9% 0.008 250);
+  @variant dark {
+    --color-canvas: oklch(19.5% 0.018 262);
   }
 }

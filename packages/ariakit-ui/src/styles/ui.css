@@ -316,6 +316,14 @@ body > * {
   initial-value: 0px;
 }
 
+/* A nested shell without its own sticky footer keeps the outer footer's
+   height, so its sticky sidebars also stop above that footer. */
+@property --shell-foot {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 @property --shell-below-a {
   syntax: "<length>";
   inherits: true;

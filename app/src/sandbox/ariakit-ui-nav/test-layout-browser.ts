@@ -141,25 +141,66 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       for (const label of labels) {
         expect((await getBox(label)).x).toBeCloseTo(column, 0);
       }
-      // A slot after the label keeps the gap that the icon before it keeps,
-      // also when the slot is wider than the line.
-      for (const [row, name, text] of [
-        [drafts, "Drafts", "3"],
-        [profile, "Profile", "JD"],
+      // The label fills the row, so a trailing badge or avatar sits at the row
+      // end, inset like the leading icon. A slot taller than the line reaches
+      // into the start padding, while a trailing slot keeps the block padding
+      // as its end inset.
+      const [row, rowIcon, rowPadding] = await Promise.all([
+        getBox(drafts),
+        getBox(drafts.locator(".control-slot").first()),
+        drafts.evaluate((node) =>
+          parseFloat(getComputedStyle(node).paddingTop),
+        ),
+      ]);
+      const expectedInset = Math.max(rowIcon.x - row.x, rowPadding);
+      for (const [link, text] of [
+        [drafts, "3"],
+        [profile, "JD"],
       ] as const) {
-        const [icon, label, trailing] = await Promise.all([
-          getBox(row.locator(".control-slot").first()),
-          getBox(query(row).text(name)),
-          getBox(slot(row, text)),
+        const [linkBox, trailing] = await Promise.all([
+          getBox(link),
+          getBox(slot(link, text)),
         ]);
-        const leadingGap = label.x - icon.x - icon.width;
-        const trailingGap = trailing.x - label.x - label.width;
-        expect(trailingGap).toBeCloseTo(leadingGap, 0);
+        expect(
+          linkBox.x + linkBox.width - trailing.x - trailing.width,
+        ).toBeCloseTo(expectedInset, 0);
       }
+      // A section badge joins the chevron at the row end instead of following
+      // the label.
+      const [inboxIcon, inboxLabel, inboxBadge, chevron] = await Promise.all([
+        getBox(inbox.locator(".control-slot").first()),
+        getBox(query(inbox).text("Inbox")),
+        getBox(slot(inbox, "12")),
+        getBox(inbox.locator(".control-slot").last()),
+      ]);
+      const rowGap = inboxLabel.x - inboxIcon.x - inboxIcon.width;
+      const badgeToChevron = chevron.x - inboxBadge.x - inboxBadge.width;
+      expect(badgeToChevron).toBeGreaterThanOrEqual(0);
+      expect(badgeToChevron).toBeLessThanOrEqual(rowGap + 1);
     });
   }
 
   // https://github.com/ariakit/ariakit/issues/7589
+  test("keeps a default bar on the guide of a current row in a section in RTL", async ({
+    q,
+  }) => {
+    const nav = q.navigation("الأقسام");
+    const bar = nav.locator(":scope > .glider");
+    const icon = query(nav).button("البدء").locator(".control-slot").first();
+    await nav.scrollIntoViewIfNeeded();
+    // The guide runs down the center of the section's icon, so the bar centers
+    // on it instead of the navigation edge.
+    await expect
+      .poll(async () => {
+        const [barBox, iconBox] = await Promise.all([
+          getBox(bar),
+          getBox(icon),
+        ]);
+        return barBox.x + barBox.width / 2 - (iconBox.x + iconBox.width / 2);
+      })
+      .toBeCloseTo(0, 0);
+  });
+
   test("keeps a pushed shortcut at the row end with its keys in order in RTL", async ({
     q,
   }) => {
@@ -436,13 +477,21 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .locator(".control-content")
       .evaluate((node) => Number.parseFloat(getComputedStyle(node).columnGap));
     expect(columnGap).toBeGreaterThan(0);
+    // Measures the label text instead of its box, which a growing label would
+    // stretch to the description.
+    const getLabelTextEnd = () =>
+      label.evaluate((node) => {
+        const range = node.ownerDocument.createRange();
+        range.selectNodeContents(node);
+        return range.getBoundingClientRect().right;
+      });
     await expect
       .poll(async () => {
-        const [labelBox, descriptionBox] = await Promise.all([
-          getBox(label),
+        const [labelTextEnd, descriptionBox] = await Promise.all([
+          getLabelTextEnd(),
           getBox(description),
         ]);
-        return descriptionBox.x - labelBox.x - labelBox.width;
+        return descriptionBox.x - labelTextEnd;
       })
       .toBeCloseTo(columnGap, 0);
     // The description stays on the label's line instead of under it.

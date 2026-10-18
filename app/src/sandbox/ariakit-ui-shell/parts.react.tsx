@@ -97,7 +97,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
   const [tallerNestedHeader, setTallerNestedHeader] = useState(false);
   const height = compact ? "sm" : undefined;
   return (
-    <Shell className={narrowShell ? "max-w-[60rem]" : undefined}>
+    <Shell $size="md" className={narrowShell ? "max-w-[60rem]" : undefined}>
       {showGlobalHeader && (
         <ShellHeader
           $border={wideBorder ? 3 : 1}
@@ -359,7 +359,11 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
               Second start sidebar
             </label>
           </section>
-          <Shell aria-label="Nested parts shell" className="mt-4 max-w-3xl">
+          <Shell
+            $size="md"
+            aria-label="Nested parts shell"
+            className="mt-4 max-w-3xl"
+          >
             <ShellHeader start="Nested header" />
             <ShellMain
               render={<div />}
@@ -374,7 +378,7 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
               <ShellMainBody>
                 <p>Nested body</p>
                 {nestedHeaders && (
-                  <Shell aria-label="Inner parts shell">
+                  <Shell $size="md" aria-label="Inner parts shell">
                     <ShellHeader start="Inner header" />
                     <ShellMain render={<div />}>
                       <ShellMainHeader $height="lg">

@@ -8,10 +8,12 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import PageIntro from "#app/components/page-intro.astro";
 import Layout from "./_layout.astro";
 ---
 
 <Layout title="Ariakit">
-  <h1>Ariakit</h1>
-  <p>Component and preview samples.</p>
+  <PageIntro slot="intro" title="Ariakit">
+    <p>Component and preview samples.</p>
+  </PageIntro>
 </Layout>

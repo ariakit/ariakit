@@ -180,16 +180,24 @@ export type DisclosureButtonProps<
     recipe?: R;
   };
 
+function getIndicatorPosition(indicator: DisclosureIndicator) {
+  if (indicator.endsWith("-next")) return "next";
+  if (indicator.endsWith("-end")) return "end";
+  return "start";
+}
+
 function renderIndicator(indicator: DisclosureIndicator) {
-  const $end = indicator.endsWith("-end");
+  const $position = getIndicatorPosition(indicator);
   if (indicator.startsWith("plus")) {
-    return <span data-disclosure-indicator {...disclosurePlus.jsx({ $end })} />;
+    return (
+      <span data-disclosure-indicator {...disclosurePlus.jsx({ $position })} />
+    );
   }
   const $direction = indicator.startsWith("chevron-down") ? "down" : "right";
   return (
     <span
       data-disclosure-indicator
-      {...disclosureChevron.jsx({ $direction, $end })}
+      {...disclosureChevron.jsx({ $direction, $position })}
     >
       <ChevronDownIcon />
     </span>

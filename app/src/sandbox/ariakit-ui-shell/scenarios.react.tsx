@@ -59,6 +59,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
   const borderType = seam === "border" ? undefined : seam;
   return (
     <Shell
+      $size="md"
       $duration={600}
       $border={inheritSeams ? 3 : undefined}
       $edge={inheritSeams ? "brand" : undefined}
@@ -333,7 +334,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
   const [updates, setUpdates] = useState(0);
   return (
     <>
-      <Shell aria-label="Outer shell">
+      <Shell $size="md" aria-label="Outer shell">
         <ShellHeader
           $height="sm"
           start={<span>Outer header</span>}
@@ -354,7 +355,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
         <ShellMain>
           <ShellMainBody $p={0}>
             <div className="h-40">Outer introduction</div>
-            <Shell aria-label="Middle shell">
+            <Shell $size="md" aria-label="Middle shell">
               <ShellHeader
                 $height={largeHeader ? "lg" : "md"}
                 start={<span>Middle header</span>}
@@ -374,7 +375,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
               <ShellMain render={<div />}>
                 <ShellMainBody $p={0}>
                   <div className="h-40">Middle introduction</div>
-                  <Shell aria-label="Inner shell">
+                  <Shell $size="md" aria-label="Inner shell">
                     <ShellHeader
                       $height="lg"
                       start={<span>Inner header</span>}

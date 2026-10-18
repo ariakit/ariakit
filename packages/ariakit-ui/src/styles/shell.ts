@@ -26,12 +26,12 @@ export const shell = cv({
     "[--shell-duration:300ms] [--shell-motion:1] motion-reduce:[--shell-motion:0]",
     "[--shell-time:calc(var(--shell-duration)*var(--shell-motion))]",
     "[--shell-ease:cubic-bezier(0.2,0,0,1)]",
-    "[--shell-header-step:--spacing(1)]",
     "[--shell-local-header-height:calc(var(--shell-header-step)*16)]",
     "[&:has(>.shell-header)]:[--shell-local-header-height:var(--shell-header-height)]",
     "[--shell-main-header-height:var(--shell-local-header-height)] [--shell-main-head:0px]",
     "[--shell-head:0px]",
     "[&:has(>.shell-header-sticky)]:[--shell-head:var(--shell-header-height)]",
+    "[&:has(>.shell-footer-sticky)]:[--shell-foot:var(--shell-footer-height)]",
     // Alternating registered lengths avoid same-element custom-property
     // cycles. These mutually exclusive selectors support three shell levels;
     // each further level needs another rule with the opposite channel.
@@ -48,6 +48,24 @@ export const shell = cv({
   ],
   variants: {
     /**
+     * Sets the base text size. Bar heights, sidebar rows, and spacing follow
+     * it; `Prose` keeps its own reading size. `auto` uses `sm`, or the outer
+     * shell's size in a nested shell. Use another value to change a nested
+     * shell's size. Defaults to `auto`.
+     */
+    // Each size also sets the bar step in rem. Firefox resolves a registered em
+    // length against the parent font when the element changes its own size.
+    $size: {
+      auto: [
+        "text-sm [--shell-header-step:calc(0.875rem/4)]",
+        "[.shell_&]:[font-size:inherit] [.shell_&]:[line-height:inherit]",
+        "[.shell_&]:[--shell-header-step:inherit]",
+      ],
+      sm: "text-sm [--shell-header-step:calc(0.875rem/4)]",
+      md: "text-base [--shell-header-step:calc(1rem/4)]",
+      lg: "text-lg [--shell-header-step:calc(1.125rem/4)]",
+    },
+    /**
      * Sets the duration of sidebar folds and content compensation. Numbers are
      * milliseconds. Zero and reduced motion disable these animations.
      */
@@ -58,6 +76,7 @@ export const shell = cv({
     },
   },
   defaultVariants: {
+    $size: "auto",
     $layer: "transparent",
     $rounded: "var(--shell-radius)",
     $p: "none",
@@ -131,6 +150,15 @@ const seam = cv({
  * padding.
  */
 const bar = cx(
+  // A horizontal navigation region fills the bar's height, so frame-edge
+  // gliders meet the bar's edge. Its rows stay centered.
+  "[&>.shell-bar-start:has(>.nav.horizontal)]:self-stretch",
+  "[&>.shell-bar-center:has(>.nav.horizontal)]:self-stretch",
+  "[&>.shell-bar-end:has(>.nav.horizontal)]:self-stretch",
+  "[&>*>.nav.horizontal]:self-stretch [&>*>.nav.horizontal]:items-center",
+  "[&>*>.nav.horizontal]:my-0 [&>*>.nav.horizontal]:py-0",
+  // The region scrolls, so rounded corners would clip a bar at its edge.
+  "[&>*>.nav.horizontal]:rounded-none",
   "col-[shell] grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-0!",
   "pl-[max(var(--ak-frame-padding),env(safe-area-inset-left))]",
   "pr-[max(var(--ak-frame-padding),env(safe-area-inset-right))]",
@@ -257,16 +285,22 @@ export const shellFooter = cv({
     bar,
     // The footer ends the sidebar columns, pushing sticky sidebar bodies up
     // without a fixed footer height.
-    "shell-footer row-[footer] @container/shell-footer",
+    "shell-footer row-[footer] box-border min-h-(--shell-footer-height) @container/shell-footer",
     "z-3",
     "pbs-0! pbe-[env(safe-area-inset-bottom)]!",
   ],
   variants: {
-    /** Sets the interior height plus its facing border. Defaults to `md`. */
+    /**
+     * Keeps the footer in view at the bottom of the scroll area. Sticky
+     * sidebars stop above it, and main content scrolls focused elements above
+     * it. Defaults to `false`.
+     */
+    $sticky: "shell-footer-sticky sticky inset-be-0",
+    /** Sets the outer height, including the border. Defaults to `md`. */
     $height: {
-      sm: "min-h-[calc(--spacing(14)+var(--shell-facing-border))]",
-      md: "min-h-[calc(--spacing(16)+var(--shell-facing-border))]",
-      lg: "min-h-[calc(--spacing(18)+var(--shell-facing-border))]",
+      sm: "[.shell:has(>&)]:[--shell-footer-height:calc(var(--shell-header-step)*14)] [--shell-footer-height:calc(var(--shell-header-step)*14)]",
+      md: "[.shell:has(>&)]:[--shell-footer-height:calc(var(--shell-header-step)*16)] [--shell-footer-height:calc(var(--shell-header-step)*16)]",
+      lg: "[.shell:has(>&)]:[--shell-footer-height:calc(var(--shell-header-step)*18)] [--shell-footer-height:calc(var(--shell-header-step)*18)]",
     },
     /**
      * Blurs the page behind a translucent surface. Uses an opaque surface when
@@ -316,10 +350,17 @@ export const shellSidebar = cv({
       end: "shell-sidebar-end col-4 [.shell-sidebar-end~&]:col-5",
     },
     /**
-     * Sets this sidebar's width and publishes it to the shell. Defaults to
-     * `md`.
+     * Sets this sidebar's width and publishes it to the shell. `3xs` fits a
+     * rail of icon buttons. Defaults to `md`.
      */
     $width: {
+      "3xs": [
+        "[--shell-slot-width:4.5rem]",
+        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:4.5rem]",
+        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:4.5rem]",
+        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:4.5rem]",
+        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:4.5rem]",
+      ],
       xs: [
         "[--shell-slot-width:10rem]",
         "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:10rem]",
@@ -423,7 +464,7 @@ export const shellSidebar = cv({
     $sticky: [
       "[&>.shell-sidebar-panel]:sticky",
       "[&>.shell-sidebar-panel]:inset-bs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-sidebar-head))]",
-      "[&>.shell-sidebar-panel]:max-h-[calc(100cqb-var(--shell-top)-var(--shell-head)-var(--shell-sidebar-head))]",
+      "[&>.shell-sidebar-panel]:max-h-[calc(100cqb-var(--shell-top)-var(--shell-head)-var(--shell-sidebar-head)-var(--shell-foot))]",
     ],
   },
   defaultVariants: {
@@ -453,8 +494,9 @@ export const shellSidebarPanel = cv({
 /** A fixed header above the scrollable sidebar body. */
 export const shellSidebarHeader = cv({
   extend: [seam],
-  class:
+  class: [
     "shell-sidebar-header flex flex-none items-center box-border min-h-(--shell-local-header-height) py-0!",
+  ],
   variants: {
     /**
      * Sets the outer height, including the border. Defaults to the shell
@@ -469,17 +511,30 @@ export const shellSidebarHeader = cv({
   defaultVariants: { $p: 3 },
 });
 
-/** The scrollable center of a sidebar panel. */
+// A direct navigation region spans the part's padding, so frame-edge bar
+// gliders meet the sidebar edge. Its rows keep their place. A region with its
+// own frame padding, border, or ring keeps its box.
+const sidebarNavCover =
+  "[&>.nav:not([class*=ak-frame-p-],[class*=ak-frame-border],[class*=ak-frame-ring])]:ak-frame-cover";
+
+/**
+ * The scrollable center of a sidebar panel. A direct `Nav` without its own
+ * `$p`, `$border`, or `$borderType` spans the body's padding. Wrap the `Nav` in
+ * another element to keep its box.
+ */
 export const shellSidebarBody = cv({
   extend: [frameBase],
-  class: "shell-sidebar-body min-h-0 flex-auto overflow-y-auto rounded-none!",
+  class: [
+    sidebarNavCover,
+    "shell-sidebar-body min-h-0 flex-auto overflow-y-auto rounded-none!",
+  ],
   defaultVariants: { $p: 3 },
 });
 
 /** A fixed footer below the scrollable sidebar body. */
 export const shellSidebarFooter = cv({
   extend: [seam],
-  class: "shell-sidebar-footer flex-none",
+  class: [sidebarNavCover, "shell-sidebar-footer flex-none"],
   defaultVariants: { $p: 3 },
 });
 
@@ -522,6 +577,15 @@ const content = cx(
   centered,
   compensation,
   "shell-content grid justify-stretch min-w-0 rounded-none!",
+  // Grid items do not collapse margins, so the grid spaces its children.
+  "gap-y-(--shell-content-gap) [--shell-content-gap:--spacing(6)]",
+  // Keep focused content above a sticky footer when it scrolls into view.
+  "[:where(&)_*]:[scroll-margin-block-end:var(--shell-foot)]",
+  // Keep controls at their content width instead of stretching to the column.
+  "[&>.control]:justify-self-start",
+  // A leading or trailing full band touches the bars around the section.
+  "[&:has(>.shell-main-full:first-child)]:pbs-0",
+  "[&:has(>.shell-main-full:last-child)]:pbe-0",
   // Publish gutter spacing as frame padding so nested frame corners remain
   // concentric.
   "[--shell-popout:1rem] [--shell-feature:3.5rem]",
@@ -532,6 +596,14 @@ const content = cx(
 );
 
 const contentVariants = {
+  /**
+   * Sets the vertical space between children. Numbers scale the spacing token.
+   * Defaults to 6.
+   */
+  $gap(value?: string | number) {
+    if (value == null) return;
+    return { style: { "--shell-content-gap": getSpacingValue(value) } };
+  },
   /**
    * Sets the maximum width of a centered content column. Numbers scale the
    * spacing token. Defaults to 48rem.
@@ -670,6 +742,8 @@ export const shellMainIntro = cv({
     content,
     "shell-main-intro content-start col-start-1 col-end-[calc(2+var(--shell-intro-free-1)+var(--shell-intro-free-1)*var(--shell-intro-free-2))] row-[intro] @container/shell-main-intro overflow-x-clip",
     "[--shell-content-end-space:var(--shell-intro-end-space)]",
+    // Separate the title from the bars above.
+    "pbs-[calc(var(--shell-gutter)*3)]",
   ],
   variants: contentVariants,
   defaultVariants: { $p: "unset" },

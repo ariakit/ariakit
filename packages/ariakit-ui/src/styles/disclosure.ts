@@ -256,12 +256,20 @@ export const disclosureButton = cv({
 /** A flexible wrapper for a disclosure button's label and description. */
 export const disclosureButtonContent = buttonContent;
 
-/** A wrapping disclosure label that can shrink with its row. */
+/**
+ * A wrapping disclosure label that can shrink with its row and fills it, so
+ * trailing slots and an end indicator sit at its end.
+ */
 export const disclosureButtonLabel = cv({
   extend: [buttonLabel],
-  class: "min-w-0",
+  class: [
+    "min-w-0",
+    // A next indicator follows the label text instead of the row end.
+    "[&:has(~.disclosure-indicator-next)]:grow-0",
+  ],
   defaultVariants: {
     $truncate: false,
+    $grow: true,
   },
 });
 
@@ -297,10 +305,17 @@ export const disclosureButtonSlot = cv({
   },
 });
 
-// Override the variant-gated sibling margin that a preceding slot adds.
 const disclosureIndicatorVariants = {
-  /** Pushes the indicator to the end of the row. */
-  $end: "ms-auto!",
+  /**
+   * Places the indicator in the row. `next` follows the label text, or the
+   * row's content when a description wraps the label, which fills the row.
+   * `end` sits at the far edge, even when no label fills the row.
+   */
+  $position: {
+    start: "",
+    next: "disclosure-indicator-next",
+    end: "ms-auto!",
+  },
 };
 
 /** A direction-aware chevron that rotates when the disclosure opens. */
@@ -343,9 +358,7 @@ export const disclosurePlus = cv({
     "ui-disclosure-open:rotate-90",
     "ui-disclosure-open:bg-size-[var(--plus-line-thickness)_60%]",
   ],
-  variants: {
-    ...disclosureIndicatorVariants,
-  },
+  variants: disclosureIndicatorVariants,
   defaultVariants: {
     $size: "xl",
     $rounded: "full",

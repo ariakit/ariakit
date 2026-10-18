@@ -175,9 +175,10 @@ export interface ShellFooterProps
     ShellBarPartsProps {}
 
 /**
- * The bottom bar of a shell. It is always static and as tall as its content,
- * and a sticky sidebar body ends above it at the end of the page. It has no
- * `$sticky` variant.
+ * The bottom bar of a shell, as tall as its content. It is static by default,
+ * and a sticky sidebar body ends above it at the end of the page. Set `$sticky`
+ * to keep it at the bottom of the viewport, such as for a message composer;
+ * sticky sidebars and scrolled-to elements then end above it.
  * @example
  * <Shell>
  *   <ShellFooter start="Ariakit" end={<a href="/help">Help</a>} />
