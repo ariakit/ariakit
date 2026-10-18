@@ -64,6 +64,9 @@
     apply();
     window.addEventListener("storage", (event) => {
       if (!event.key?.startsWith("app-theme:")) return;
+      // Another document stored this value, so a fallback from a failed write
+      // here must not hide it.
+      delete window.appThemeFallback?.[event.key];
       apply();
     });
     window.addEventListener("app-theme-change", apply);

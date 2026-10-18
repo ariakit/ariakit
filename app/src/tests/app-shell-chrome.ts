@@ -239,6 +239,36 @@ test("theme panel keeps the accent and its color together after a failed write",
   await expect.poll(getBrand).toBe("");
 });
 
+test("theme panel follows another tab after a failed write", async ({
+  context,
+  page,
+  q,
+}) => {
+  await page.addInitScript(() => {
+    // oxlint-disable-next-line typescript/unbound-method -- called with the storage as the receiver
+    const setItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key, value) {
+      if (key.startsWith("app-theme:")) {
+        throw new DOMException("Storage is full", "QuotaExceededError");
+      }
+      setItem.call(this, key, value);
+    };
+  });
+  await gotoAndSettle(page, examplePath);
+  await q.button("Theme", { exact: true }).click();
+  const mode = query(q.radiogroup("Mode"));
+  await mode.radio("Dark").click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  const otherPage = await context.newPage();
+  await gotoAndSettle(otherPage, examplePath);
+  const other = query(otherPage);
+  await expect(other.complementary("Theme")).toBeVisible();
+  await query(other.radiogroup("Mode")).radio("Light").click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(mode.radio("Light")).toHaveAttribute("aria-checked", "true");
+  await query(other.complementary("Theme")).button("Reset").click();
+});
+
 test("theme button keeps its name when the panel narrows the page", async ({
   page,
   q,
