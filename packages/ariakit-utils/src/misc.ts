@@ -38,9 +38,16 @@ export function shallowEqual(a?: AnyObject, b?: AnyObject) {
 
   if (bKeys.length !== length) return false;
 
+  let index = 0;
   for (const key of aKeys) {
     // A missing key reads as undefined, so check that b also enumerates it.
-    if (!Object.prototype.propertyIsEnumerable.call(b, key)) return false;
+    // Matching key order already proves this and avoids the slower lookup.
+    if (
+      key !== bKeys[index++] &&
+      !Object.prototype.propertyIsEnumerable.call(b, key)
+    ) {
+      return false;
+    }
     if (a[key] !== b[key]) return false;
   }
 
