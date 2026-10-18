@@ -307,8 +307,9 @@ export const disclosureButtonSlot = cv({
 
 const disclosureIndicatorVariants = {
   /**
-   * Places the indicator in the row. `next` follows the label text and `end`
-   * sits at the far edge, even when no label fills the row.
+   * Places the indicator in the row. `next` follows the label text, or the
+   * row's content when a description wraps the label, which fills the row.
+   * `end` sits at the far edge, even when no label fills the row.
    */
   $position: {
     start: "",
