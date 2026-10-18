@@ -60,11 +60,7 @@ export default function Example() {
       <label>
         Document title <input defaultValue="Contract" />
       </label>
-      {/*
-       * TODO: Remove the workaround after
-       * https://github.com/ariakit/ariakit/issues/7974 is fixed.
-       */}
-      <Ariakit.Portal portal={false} preserveTabOrder>
+      <Ariakit.Portal preserveTabOrder>
         <AttachmentPreview />
       </Ariakit.Portal>
       <button>Save document</button>

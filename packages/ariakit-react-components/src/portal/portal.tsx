@@ -109,6 +109,21 @@ function queueFocus(element?: HTMLElement | null) {
   });
 }
 
+// Focus that moves into or out of another document, such as a same-origin
+// iframe in the portal, has a null relatedTarget. In that case, the fallback is
+// the element that had focus in this document when the window lost focus.
+function isFocusEventOutsidePortal(
+  event: Pick<FocusEvent, "currentTarget" | "relatedTarget">,
+  portalNode: HTMLElement,
+  fallbackRelatedTarget: Element | null,
+) {
+  const relatedTarget = event.relatedTarget ?? fallbackRelatedTarget;
+  return isFocusEventOutside(
+    { currentTarget: event.currentTarget, relatedTarget },
+    portalNode,
+  );
+}
+
 interface AttachedPortalRef {
   ref: PortalOptions["portalRef"];
   node: HTMLElement;
@@ -161,6 +176,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
   const innerBeforeRef = useRef<HTMLSpanElement>(null);
   const innerAfterRef = useRef<HTMLSpanElement>(null);
   const outerAfterRef = useRef<HTMLSpanElement>(null);
+  const blurredActiveElementRef = useRef<Element | null>(null);
 
   const portalRefProp = useLiveRef(portalRef);
   // Tracks the currently attached portalRef so the two effects below can detach
@@ -256,9 +272,17 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
   useEffect(() => {
     if (!portalNode) return;
     if (!preserveTabOrder) return;
+    const doc = getDocument(portalNode);
+    const win = getWindow(portalNode);
     let raf = 0;
+    let clearBlurredRaf = 0;
+    const isInPortal = (element: Element | null) =>
+      !!element && contains(portalNode, element);
     const onFocus = (event: FocusEvent) => {
-      if (!isFocusEventOutside(event)) return;
+      const blurredActiveElement = blurredActiveElementRef.current;
+      if (!isFocusEventOutsidePortal(event, portalNode, blurredActiveElement)) {
+        return;
+      }
       const focusing = event.type === "focusin";
       cancelAnimationFrame(raf);
       if (focusing) {
@@ -270,14 +294,46 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
         disableFocusIn(portalNode, true);
       });
     };
+    // Chrome fires no focus events on an iframe element when focus moves into
+    // or out of its document, but the window blurs and focuses.
+    const onWindowBlur = () => {
+      cancelAnimationFrame(clearBlurredRaf);
+      const activeElement = doc.activeElement;
+      blurredActiveElementRef.current = activeElement;
+      // Focus moved into an iframe in the portal, either from a portal element
+      // or with the pointer after the tab stops were disabled.
+      if (!isInPortal(activeElement)) return;
+      cancelAnimationFrame(raf);
+      restoreFocusIn(portalNode);
+    };
+    const onWindowFocus = () => {
+      // The focus events that bring focus back to this document run in the same
+      // task as this one. Forget the element after them so that later focus
+      // events with a null relatedTarget don't use it.
+      clearBlurredRaf = requestAnimationFrame(() => {
+        const blurredActiveElement = blurredActiveElementRef.current;
+        blurredActiveElementRef.current = null;
+        // Focus that leaves an iframe in the portal for an element outside it,
+        // such as with a click, fires no focusout event in the portal.
+        if (!isInPortal(blurredActiveElement)) return;
+        if (isInPortal(doc.activeElement)) return;
+        disableFocusIn(portalNode, true);
+      });
+    };
     // Listen to the event on the capture phase so they run before the focus
     // trap elements onFocus prop is called.
     portalNode.addEventListener("focusin", onFocus, true);
     portalNode.addEventListener("focusout", onFocus, true);
+    win.addEventListener("blur", onWindowBlur);
+    win.addEventListener("focus", onWindowFocus);
     return () => {
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(clearBlurredRaf);
+      blurredActiveElementRef.current = null;
       portalNode.removeEventListener("focusin", onFocus, true);
       portalNode.removeEventListener("focusout", onFocus, true);
+      win.removeEventListener("blur", onWindowBlur);
+      win.removeEventListener("focus", onWindowFocus);
     };
   }, [portalNode, preserveTabOrder]);
 
@@ -312,6 +368,15 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
         );
       }
 
+      const isFocusOutside = (
+        event: Pick<FocusEvent, "currentTarget" | "relatedTarget">,
+      ) =>
+        isFocusEventOutsidePortal(
+          event,
+          portalNode,
+          blurredActiveElementRef.current,
+        );
+
       element = (
         <>
           {preserveTabOrder && (
@@ -320,7 +385,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
               data-focus-trap={props.id}
               className="__focus-trap-inner-before"
               onFocus={(event) => {
-                if (isFocusEventOutside(event, portalNode)) {
+                if (isFocusOutside(event)) {
                   queueFocus(getNextTabbable());
                 } else {
                   queueFocus(outerBeforeRef.current);
@@ -335,7 +400,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
               data-focus-trap={props.id}
               className="__focus-trap-inner-after"
               onFocus={(event) => {
-                if (isFocusEventOutside(event, portalNode)) {
+                if (isFocusOutside(event)) {
                   queueFocus(getPreviousTabbable());
                 } else {
                   queueFocus(outerAfterRef.current);
@@ -361,7 +426,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
                 // case, we don't focus the inner before focus trap, but the
                 // previous tabbable element outside the portal.
                 const fromOuter = event.relatedTarget === outerAfterRef.current;
-                if (!fromOuter && isFocusEventOutside(event, portalNode)) {
+                if (!fromOuter && isFocusOutside(event)) {
                   queueFocus(innerBeforeRef.current);
                 } else {
                   queueFocus(getPreviousTabbable());
@@ -380,7 +445,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
               data-focus-trap={props.id}
               className="__focus-trap-outer-after"
               onFocus={(event) => {
-                if (isFocusEventOutside(event, portalNode)) {
+                if (isFocusOutside(event)) {
                   queueFocus(innerAfterRef.current);
                 } else {
                   const nextTabbable = getNextTabbable();
