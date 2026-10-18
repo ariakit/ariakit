@@ -210,6 +210,13 @@ export const controlSlot = cv({
     /** Sets the slot to be a square. */
     $square: "aspect-square",
     /**
+     * Pushes the slot to the end of a row wider than its content. Overrides the
+     * start margin that a preceding slot can add. Navigation badges after
+     * another element, such as a label, do this by default; `false` keeps them
+     * beside it.
+     */
+    $end: "ms-auto!",
+    /**
      * Renders the slot as a floating element on the top corner at the end of
      * the row.
      */

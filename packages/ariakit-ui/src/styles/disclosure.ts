@@ -297,12 +297,6 @@ export const disclosureButtonSlot = cv({
   },
 });
 
-// Override the variant-gated sibling margin that a preceding slot adds.
-const disclosureIndicatorVariants = {
-  /** Pushes the indicator to the end of the row. */
-  $end: "ms-auto!",
-};
-
 /** A direction-aware chevron that rotates when the disclosure opens. */
 export const disclosureChevron = cv({
   extend: [buttonSlot],
@@ -312,7 +306,6 @@ export const disclosureChevron = cv({
     "[--slot-icon-size:1.1em]",
   ],
   variants: {
-    ...disclosureIndicatorVariants,
     /**
      * Sets the closed direction. `right` follows the row direction and opens
      * downward; `down` opens upward.
@@ -343,9 +336,6 @@ export const disclosurePlus = cv({
     "ui-disclosure-open:rotate-90",
     "ui-disclosure-open:bg-size-[var(--plus-line-thickness)_60%]",
   ],
-  variants: {
-    ...disclosureIndicatorVariants,
-  },
   defaultVariants: {
     $size: "xl",
     $rounded: "full",

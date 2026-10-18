@@ -49,7 +49,9 @@ export const nav = cv({
      * disclosures keep their own vertical layout. Defaults to `vertical`.
      */
     $layout: {
-      vertical: "vertical grid",
+      // A shrinkable track lets long rows truncate or wrap instead of widening
+      // the navigation region.
+      vertical: "vertical grid grid-cols-[minmax(0,1fr)]",
       horizontal:
         "horizontal flex items-start overflow-x-auto overscroll-x-contain [clip-path:inset(-100vmax_0)] [&>.control,&>.nav-list>li>.control]:shrink-0 [&>.control,&>.nav-list>li>.control]:whitespace-nowrap",
     },
@@ -95,7 +97,7 @@ export const navList = cv({
 /** A navigation group with extra space between adjacent groups. */
 export const navGroup = cv({
   class:
-    "nav-group grid content-start gap-(--nav-gap) shrink-0 [.nav.vertical>&+&]:mt-[calc(var(--nav-group-gap)-var(--nav-gap))] [.nav.horizontal>&+&]:ms-[calc(var(--nav-group-gap)-var(--nav-gap))]",
+    "nav-group grid grid-cols-[minmax(0,1fr)] content-start gap-(--nav-gap) shrink-0 [.nav.vertical>&+&]:mt-[calc(var(--nav-group-gap)-var(--nav-gap))] [.nav.horizontal>&+&]:ms-[calc(var(--nav-group-gap)-var(--nav-gap))]",
 });
 
 /**
@@ -174,6 +176,13 @@ export const navSlot = cv({
       }
       return "auto";
     },
+  },
+  refine({ variants, addClass }) {
+    if (variants.$kind !== "badge") return;
+    if (variants.$end != null) return;
+    // A trailing count lines up at the row end instead of following its label.
+    // A leading badge stays in the icon column.
+    addClass("[*+&]:ms-auto!");
   },
 });
 
@@ -290,8 +299,9 @@ export const navGlider = cv({
       return [
         "glider-bar",
         "z-10",
-        // Normalize the 0–100 contrast scale before changing bar thickness.
-        "[--glider-bar:calc(--spacing(0.5)+(--spacing(0.1))*var(--contrast)/100)]",
+        // A fixed width keeps the bar the same at every text size. Normalize
+        // the 0–100 contrast scale so high contrast adds only 20%.
+        "[--glider-bar:calc(var(--glider-bar-width,2px)*(1+0.2*var(--contrast)/100))]",
         "[.vertical>&]:top-[anchor(top)] [.vertical>&]:h-[anchor-size()] [.vertical>&]:w-(--glider-bar)",
         "[.vertical>&]:inset-e-[calc(anchor(start)+var(--glider-bar-offset))]",
         "[.vertical>&]:[&.glider-bar-end]:inset-e-auto",
@@ -327,6 +337,14 @@ export const navGlider = cv({
     },
   },
   defaultVariants: {
+    // Bars meet the navigation region's edge. Use `$cover` on the region to
+    // reach its container's edge; shell sidebars do this by default.
+    $barOffset(defaultValue, variants) {
+      if (variants.$kind !== "bar") return defaultValue;
+      // Replace only the glider base's automatic offset.
+      if (defaultValue != null && defaultValue !== "auto") return defaultValue;
+      return "frame";
+    },
     // Covers follow row rounding. Bars stay square even inside nested frames.
     $rounded(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
@@ -416,7 +434,7 @@ export const navDisclosureContentBody = cv({
   // colors.
   extend: [disclosureContentBody, frameBase],
   class: [
-    "grid content-start gap-(--nav-gap)",
+    "grid grid-cols-[minmax(0,1fr)] content-start gap-(--nav-gap)",
     // Compensate for body padding so nested row corners match the disclosure
     // radius below the frame 1rem cutoff.
     "[--nav-body-radius:calc(var(--disclosure-radius)+var(--ak-frame-padding))]",

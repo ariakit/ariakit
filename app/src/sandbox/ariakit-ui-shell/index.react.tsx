@@ -258,7 +258,7 @@ function DocsScenario() {
   const contentsId = useId();
   const [current, setCurrent] = useState<string>(docsSections[0].id);
   return (
-    <Shell style={{ color: "inherit" }}>
+    <Shell $size="md" style={{ color: "inherit" }}>
       <ShellHeader
         $blur
         start={
@@ -415,7 +415,7 @@ function DashboardScenario() {
   const workspaceId = useId();
   const detailsId = useId();
   return (
-    <Shell>
+    <Shell $size="md">
       <ShellSidebar
         id={workspaceId}
         open={workspaceOpen}
@@ -443,7 +443,7 @@ function DashboardScenario() {
           </Nav>
         </ShellSidebarBody>
       </ShellSidebar>
-      <Shell>
+      <Shell $size="md">
         <ShellHeader
           start={
             <Button
@@ -540,7 +540,7 @@ function ChatScenario() {
   const [membersOpen, setMembersOpen] = useState(false);
   const membersId = useId();
   return (
-    <Shell>
+    <Shell $size="md">
       <ShellHeader
         start={
           <>
@@ -698,7 +698,7 @@ function SettingsScenario() {
   const [open, setOpen] = useState(true);
   const sectionsId = useId();
   return (
-    <Shell $duration={600}>
+    <Shell $size="md" $duration={600}>
       <ShellHeader
         start={
           <>
@@ -779,7 +779,7 @@ function SettingsScenario() {
  */
 function MarketingScenario() {
   return (
-    <Shell>
+    <Shell $size="md">
       <ShellHeader
         $sticky={false}
         $stackCenter
@@ -886,7 +886,7 @@ function BarScenario() {
     ),
   };
   return (
-    <Shell>
+    <Shell $size="md">
       <ShellHeader {...partsProps} />
       <ShellMain>
         <ShellMainBody>
@@ -920,7 +920,7 @@ function BarScenario() {
  */
 function StaticScenario() {
   return (
-    <Shell>
+    <Shell $size="md">
       <ShellHeader start={<Brand />} end={<ScenarioControls />} />
       <ShellSidebar $show aria-label="Sections" render={<aside />}>
         <ShellSidebarBody>

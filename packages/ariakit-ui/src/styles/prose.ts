@@ -34,5 +34,8 @@ export const prose = cv({
     "[:where(&_:is(p,li))]:ak-dark:ak-ink-75",
     "[:where(&_:is(p,li))]:ak-light:ak-ink-90",
     "[:where(&_strong)]:ak-ink-100 [:where(&_strong)]:font-medium",
+    // The column gap already separates a heading from the content after it.
+    // Flex margins do not collapse, so a bottom margin would add to the gap.
+    "[&>:is(h1,h2,h3,h4,h5,h6)]:[--heading-mb:0px]",
   ],
 });

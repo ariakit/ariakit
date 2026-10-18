@@ -141,21 +141,30 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       for (const label of labels) {
         expect((await getBox(label)).x).toBeCloseTo(column, 0);
       }
-      // A slot after the label keeps the gap that the icon before it keeps,
+      // An avatar after the label keeps the gap that the icon before it keeps,
       // also when the slot is wider than the line.
-      for (const [row, name, text] of [
-        [drafts, "Drafts", "3"],
-        [profile, "Profile", "JD"],
-      ] as const) {
-        const [icon, label, trailing] = await Promise.all([
-          getBox(row.locator(".control-slot").first()),
-          getBox(query(row).text(name)),
-          getBox(slot(row, text)),
-        ]);
-        const leadingGap = label.x - icon.x - icon.width;
-        const trailingGap = trailing.x - label.x - label.width;
-        expect(trailingGap).toBeCloseTo(leadingGap, 0);
-      }
+      const [icon, label, avatar] = await Promise.all([
+        getBox(profile.locator(".control-slot").first()),
+        getBox(query(profile).text("Profile")),
+        getBox(slot(profile, "JD")),
+      ]);
+      const leadingGap = label.x - icon.x - icon.width;
+      const trailingGap = avatar.x - label.x - label.width;
+      expect(trailingGap).toBeCloseTo(leadingGap, 0);
+      // A count badge moves to the row end, inset like the leading icon. A slot
+      // taller than the line reaches into the start padding, while a trailing
+      // slot keeps the block padding as its end inset.
+      const [row, rowIcon, badge, rowPadding] = await Promise.all([
+        getBox(drafts),
+        getBox(drafts.locator(".control-slot").first()),
+        getBox(slot(drafts, "3")),
+        drafts.evaluate((node) =>
+          parseFloat(getComputedStyle(node).paddingTop),
+        ),
+      ]);
+      const startInset = rowIcon.x - row.x;
+      const endInset = row.x + row.width - badge.x - badge.width;
+      expect(endInset).toBeCloseTo(Math.max(startInset, rowPadding), 0);
     });
   }
 

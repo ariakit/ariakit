@@ -205,7 +205,13 @@ function EndBarSections({ dir }: EndBarSectionsProps) {
     <Nav
       dir={dir}
       aria-label={`End bar across sections (${dir})`}
-      glider={{ $kind: "bar", $animated: false, $side: "end" }}
+      // Follow the current row's edge instead of the navigation edge.
+      glider={{
+        $kind: "bar",
+        $animated: false,
+        $side: "end",
+        $barOffset: "auto",
+      }}
       className="w-full"
     >
       {endBarPages.map(link)}
@@ -275,7 +281,8 @@ function LooseCurrentSections() {
     <Nav
       $slotSize={5}
       aria-label="Empty, false, and unknown current values"
-      glider={{ $kind: "bar", $animated: false }}
+      // Follow the current row and its section guide instead of the edge.
+      glider={{ $kind: "bar", $animated: false, $barOffset: "auto" }}
       className="w-full"
     >
       {link("Overview", "")}
@@ -913,7 +920,7 @@ export default function NavExamples() {
         title="Bar on the guide line"
         description="A thin bar on the guide line marks the current row, which keeps its own surface. Click a link in the other section to move the bar."
         code={`
-          <Nav $slotSize={5} glider={{ $kind: "bar" }}>
+          <Nav $slotSize={5} glider={{ $kind: "bar", $barOffset: "auto" }}>
             <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />} />}>
               <NavList>
                 <NavLink>Introduction</NavLink>
@@ -924,7 +931,7 @@ export default function NavExamples() {
       >
         <DemoSections
           aria-label="Bar on the guide line"
-          glider={{ $kind: "bar" }}
+          glider={{ $kind: "bar", $barOffset: "auto" }}
           className="w-full"
         />
       </Example>
@@ -944,7 +951,7 @@ export default function NavExamples() {
       >
         <DemoSections
           aria-label="Bar beside a cover"
-          glider={[{ $kind: "bar", $layer: "brand" }, {}]}
+          glider={[{ $kind: "bar", $layer: "brand", $barOffset: "auto" }, {}]}
           className="w-full"
         />
       </Example>
@@ -953,7 +960,7 @@ export default function NavExamples() {
         title="Bar without a guide"
         description="With no guide line around the row, the bar sits on the start edge of the current row."
         code={`
-          <Nav glider={{ $kind: "bar" }}>
+          <Nav glider={{ $kind: "bar", $barOffset: "auto" }}>
             <NavLink>Overview</NavLink>
             <NavLink>Installation</NavLink>
             <NavLink>Usage</NavLink>
@@ -963,7 +970,7 @@ export default function NavExamples() {
       >
         <DemoNav
           aria-label="Bar without a guide"
-          glider={{ $kind: "bar" }}
+          glider={{ $kind: "bar", $barOffset: "auto" }}
           className="w-full"
         />
       </Example>
@@ -972,7 +979,7 @@ export default function NavExamples() {
         title="Bar at the end"
         description="The bar sits on the end edge of the current row."
         code={`
-          <Nav glider={{ $kind: "bar", $side: "end" }}>
+          <Nav glider={{ $kind: "bar", $side: "end", $barOffset: "auto" }}>
             <NavLink>Overview</NavLink>
             <NavLink>Installation</NavLink>
             <NavLink>Usage</NavLink>
@@ -982,7 +989,7 @@ export default function NavExamples() {
       >
         <DemoNav
           aria-label="Bar at the end"
-          glider={{ $kind: "bar", $side: "end" }}
+          glider={{ $kind: "bar", $side: "end", $barOffset: "auto" }}
           className="w-full"
         />
       </Example>
