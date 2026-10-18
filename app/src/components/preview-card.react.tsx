@@ -110,7 +110,7 @@ export function PreviewCard({
           // default theme radius.
           $rounded="3xl"
           $forceRounded
-          $lightnessOffset={0.5}
+          $darken={0.5}
           $orientation="vertical"
           $p={1.5}
           className="grid grid-cols-1"
@@ -296,10 +296,10 @@ function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
       <InputGroup
         $rounded="full"
         $border={false}
-        // Input surfaces offset away from their parent, which would cancel the
-        // darken in light mode and double it in dark mode.
+        // Input surfaces offset away from their parent, which would double the
+        // lighten in light mode and cancel it in dark mode.
         $lightnessOffset={false}
-        $darken
+        $lighten
         className="min-w-0 flex-1"
       >
         <InputSlot aria-hidden $ink={60}>
