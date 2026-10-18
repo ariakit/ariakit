@@ -66,10 +66,10 @@ Creates a store.
 ```ts
 type StoreSetup = (callback: () => void | (() => void)) => () => void;
 
-function setup<T extends Store>(
-  store?: T | null,
+function setup(
+  store?: Store | null,
   ...args: Parameters<StoreSetup>
-): T extends Store ? ReturnType<StoreSetup> : void;
+): ReturnType<StoreSetup>;
 ```
 
 Register a callback function that's called when the store is initialized.
@@ -83,10 +83,10 @@ Register a callback function that's called when the store is initialized.
 ```ts
 type StoreInit = () => () => void;
 
-function init<T extends Store>(
-  store?: T | null,
+function init(
+  store?: Store | null,
   ...args: Parameters<StoreInit>
-): T extends Store ? ReturnType<StoreInit> : void;
+): ReturnType<StoreInit>;
 ```
 
 Function that should be called when the store is initialized.
@@ -110,7 +110,7 @@ type StoreSubscribe<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 function subscribe<T extends Store, K extends keyof StoreState<T>>(
   store?: T | null,
   ...args: Parameters<StoreSubscribe<StoreState<T>, K>>
-): T extends Store ? ReturnType<StoreSubscribe<StoreState<T>, K>> : void;
+): ReturnType<StoreSubscribe<StoreState<T>, K>>;
 ```
 
 Registers a listener function that's called after state changes in the store.
@@ -134,7 +134,7 @@ type StoreSync<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 function sync<T extends Store, K extends keyof StoreState<T>>(
   store?: T | null,
   ...args: Parameters<StoreSync<StoreState<T>, K>>
-): T extends Store ? ReturnType<StoreSync<StoreState<T>, K>> : void;
+): ReturnType<StoreSync<StoreState<T>, K>>;
 ```
 
 Registers a listener function that's called immediately and synchronously whenever the store state changes.
@@ -158,7 +158,7 @@ type StoreBatch<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 function batch<T extends Store, K extends keyof StoreState<T>>(
   store?: T | null,
   ...args: Parameters<StoreBatch<StoreState<T>, K>>
-): T extends Store ? ReturnType<StoreBatch<StoreState<T>, K>> : void;
+): ReturnType<StoreBatch<StoreState<T>, K>>;
 ```
 
 Registers a listener function that's called immediately and after a batch of state changes in the store.
@@ -176,9 +176,13 @@ type StoreOmit<
 > = (keys: K) => Store<Omit<S, K[number]>>;
 
 function omit<T extends Store, K extends ReadonlyArray<keyof StoreState<T>>>(
+  store: T,
+  ...args: Parameters<StoreOmit<StoreState<T>, K>>
+): ReturnType<StoreOmit<StoreState<T>, K>>;
+function omit<T extends Store, K extends ReadonlyArray<keyof StoreState<T>>>(
   store?: T | null,
   ...args: Parameters<StoreOmit<StoreState<T>, K>>
-): T extends Store ? ReturnType<StoreOmit<StoreState<T>, K>> : void;
+): ReturnType<StoreOmit<StoreState<T>, K>> | undefined;
 ```
 
 Creates a new store with a subset of the current store state and keeps them in sync.
@@ -196,9 +200,13 @@ type StorePick<
 > = (keys: K) => Store<Pick<S, K[number]>>;
 
 function pick<T extends Store, K extends ReadonlyArray<keyof StoreState<T>>>(
+  store: T,
+  ...args: Parameters<StorePick<StoreState<T>, K>>
+): ReturnType<StorePick<StoreState<T>, K>>;
+function pick<T extends Store, K extends ReadonlyArray<keyof StoreState<T>>>(
   store?: T | null,
   ...args: Parameters<StorePick<StoreState<T>, K>>
-): T extends Store ? ReturnType<StorePick<StoreState<T>, K>> : void;
+): ReturnType<StorePick<StoreState<T>, K>> | undefined;
 ```
 
 Creates a new store with a subset of the current store state and keeps them in sync.

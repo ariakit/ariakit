@@ -835,70 +835,66 @@ export function createStore<S extends State>(
   return finalStore;
 }
 
-export function setup<T extends Store>(
-  store?: T | null,
-  ...args: Parameters<StoreSetup>
-): T extends Store ? ReturnType<StoreSetup> : void;
-
 /**
  * Register a callback function that's called when the store is initialized.
  */
-export function setup(store?: Store, ...args: Parameters<StoreSetup>) {
-  if (!store) return;
+export function setup(
+  store?: Store | null,
+  ...args: Parameters<StoreSetup>
+): ReturnType<StoreSetup> {
+  if (!store) return noop;
   return getInternal(store, "setup")(...args);
 }
-
-export function init<T extends Store>(
-  store?: T | null,
-  ...args: Parameters<StoreInit>
-): T extends Store ? ReturnType<StoreInit> : void;
 
 /**
  * Function that should be called when the store is initialized.
  */
-export function init(store?: Store, ...args: Parameters<StoreInit>) {
-  if (!store) return;
+export function init(
+  store?: Store | null,
+  ...args: Parameters<StoreInit>
+): ReturnType<StoreInit> {
+  if (!store) return noop;
   return getInternal(store, "init")(...args);
 }
 
 export function subscribe<T extends Store, K extends keyof StoreState<T>>(
   store?: T | null,
   ...args: Parameters<StoreSubscribe<StoreState<T>, K>>
-): T extends Store ? ReturnType<StoreSubscribe<StoreState<T>, K>> : void;
+): ReturnType<StoreSubscribe<StoreState<T>, K>>;
 
 /**
  * Registers a listener function that's called after state changes in the store.
  */
 export function subscribe(store?: Store, ...args: Parameters<StoreSubscribe>) {
-  if (!store) return;
+  if (!store) return noop;
   return getInternal(store, "subscribe")(...args);
 }
 
 export function sync<T extends Store, K extends keyof StoreState<T>>(
   store?: T | null,
   ...args: Parameters<StoreSync<StoreState<T>, K>>
-): T extends Store ? ReturnType<StoreSync<StoreState<T>, K>> : void;
+): ReturnType<StoreSync<StoreState<T>, K>>;
 
 /**
  * Registers a listener function that's called immediately and synchronously
  * whenever the store state changes.
  */
 export function sync(store?: Store, ...args: Parameters<StoreSync>) {
-  if (!store) return;
+  if (!store) return noop;
   return getInternal(store, "sync")(...args);
 }
 
 export function batch<T extends Store, K extends keyof StoreState<T>>(
   store?: T | null,
   ...args: Parameters<StoreBatch<StoreState<T>, K>>
-): T extends Store ? ReturnType<StoreBatch<StoreState<T>, K>> : void;
+): ReturnType<StoreBatch<StoreState<T>, K>>;
 
 /**
  * Registers a listener function that's called immediately and after a batch of
  * state changes in the store.
  */
 export function batch(store?: Store, ...args: Parameters<StoreBatch>) {
-  if (!store) return;
+  if (!store) return noop;
   return getInternal(store, "batch")(...args);
 }
 
@@ -906,9 +902,17 @@ export function omit<
   T extends Store,
   K extends ReadonlyArray<keyof StoreState<T>>,
 >(
+  store: T,
+  ...args: Parameters<StoreOmit<StoreState<T>, K>>
+): ReturnType<StoreOmit<StoreState<T>, K>>;
+
+export function omit<
+  T extends Store,
+  K extends ReadonlyArray<keyof StoreState<T>>,
+>(
   store?: T | null,
   ...args: Parameters<StoreOmit<StoreState<T>, K>>
-): T extends Store ? ReturnType<StoreOmit<StoreState<T>, K>> : void;
+): ReturnType<StoreOmit<StoreState<T>, K>> | undefined;
 
 /**
  * Creates a new store with a subset of the current store state and keeps them
@@ -923,9 +927,17 @@ export function pick<
   T extends Store,
   K extends ReadonlyArray<keyof StoreState<T>>,
 >(
+  store: T,
+  ...args: Parameters<StorePick<StoreState<T>, K>>
+): ReturnType<StorePick<StoreState<T>, K>>;
+
+export function pick<
+  T extends Store,
+  K extends ReadonlyArray<keyof StoreState<T>>,
+>(
   store?: T | null,
   ...args: Parameters<StorePick<StoreState<T>, K>>
-): T extends Store ? ReturnType<StorePick<StoreState<T>, K>> : void;
+): ReturnType<StorePick<StoreState<T>, K>> | undefined;
 
 /**
  * Creates a new store with a subset of the current store state and keeps them
