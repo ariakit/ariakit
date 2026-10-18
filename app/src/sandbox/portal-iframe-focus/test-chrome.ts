@@ -82,6 +82,32 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(frame.button("Download document")).toBeFocused();
   });
 
+  // https://github.com/ariakit/ariakit/issues/7974
+  test("tabs from the iframe button to the element after the portal", async ({
+    page,
+    q,
+  }) => {
+    const frame = query(
+      page.frameLocator("iframe[title='Contract document preview']"),
+    );
+    await test.expect(frame.button("Download document")).toBeVisible();
+
+    await q.textbox("Document title").click();
+    await page.keyboard.press("Tab");
+    await test.expect(q.button("Preview settings")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await test.expect(frame.button("Download document")).toBeFocused();
+    // Portal would make its tab stops temporarily not tabbable on the next
+    // animation frame after focus leaves it. Cross that frame before leaving
+    // the iframe.
+    await flushFrames(page);
+
+    await page.keyboard.press("Tab");
+    await test.expect(q.button("Save document")).toBeFocused();
+    await page.keyboard.press("Shift+Tab");
+    await test.expect(frame.button("Download document")).toBeFocused();
+  });
+
   // Firefox ignores the programmatic focus that moves into the iframe here, so
   // this check also runs only in Chrome.
   // https://github.com/ariakit/ariakit/issues/7963
