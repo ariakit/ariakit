@@ -219,4 +219,45 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(firstValue).toHaveText("5");
     await test.expect(secondValue).toHaveText("3");
   });
+
+  // https://github.com/ariakit/ariakit/issues/7956
+  test("keeps previously returned object results unchanged", async ({ q }) => {
+    const lastSaved = q.status("Last saved name");
+    const saveCalls = q.status("Save calls");
+
+    await test.expect(lastSaved).toHaveText("Ada:Ada");
+    await test.expect(saveCalls).toHaveText("0");
+
+    await q.button("Use name Grace").click();
+    await test.expect(lastSaved).toHaveText("Grace:Grace");
+    await test.expect(saveCalls).toHaveText("1");
+
+    await q.button("Use name Ada").click();
+    await test.expect(lastSaved).toHaveText("Ada:Ada");
+    await test.expect(saveCalls).toHaveText("2");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7958
+  test("returns only fields selected by the current object", async ({ q }) => {
+    const fields = q.status("Order fields");
+
+    await test
+      .expect(fields)
+      .toHaveText(
+        "contactEmail=ada@example.test, shippingAddress=10 Main Street, deliveryNote=none",
+      );
+
+    await q.button("Use pickup").click();
+    await test.expect(fields).toHaveText("contactEmail=ada@example.test");
+
+    await q.button("Use alternate contact").click();
+    await test.expect(fields).toHaveText("contactEmail=grace@example.test");
+
+    await q.button("Use delivery").click();
+    await test
+      .expect(fields)
+      .toHaveText(
+        "contactEmail=grace@example.test, shippingAddress=10 Main Street, deliveryNote=none",
+      );
+  });
 });
