@@ -36,7 +36,8 @@ import {
   SendHorizontal,
   Users,
 } from "lucide-react";
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 interface Person {
   id: string;
@@ -78,6 +79,7 @@ export default function Example() {
   const membersId = useId();
   const [messages, setMessages] = useState(initialMessages);
   const [draft, setDraft] = useState("");
+  const messagesRef = useRef<HTMLOListElement>(null);
   const onlineCount = members.filter((person) => person.online).length;
   return (
     <Shell>
@@ -225,7 +227,11 @@ export default function Example() {
         <ShellMain>
           <ShellMainBody>
             <p className="ak-ink-70 py-4 text-center text-xs">Today</p>
-            <ol aria-label="Messages" className="grid gap-5 pb-6">
+            <ol
+              ref={messagesRef}
+              aria-label="Messages"
+              className="grid gap-5 pb-6"
+            >
               {messages.map((message) => (
                 <li key={message.id} className="flex gap-3">
                   <Avatar person={message.author} />
@@ -256,16 +262,22 @@ export default function Example() {
                   if (!text) {
                     return;
                   }
-                  setMessages((previous) => [
-                    ...previous,
-                    {
-                      id: previous.length + 1,
-                      author: maya,
-                      time: "Now",
-                      text,
-                    },
-                  ]);
+                  flushSync(() => {
+                    setMessages((previous) => [
+                      ...previous,
+                      {
+                        id: previous.length + 1,
+                        author: maya,
+                        time: "Now",
+                        text,
+                      },
+                    ]);
+                  });
                   setDraft("");
+                  // The sent message can start below the sticky composer.
+                  messagesRef.current?.lastElementChild?.scrollIntoView({
+                    block: "nearest",
+                  });
                 }}
               >
                 <Input

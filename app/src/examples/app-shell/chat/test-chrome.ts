@@ -27,4 +27,28 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       })
       .toBeCloseTo(0, 0);
   });
+
+  test("shows a sent message above the sticky composer", async ({
+    page,
+    q,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    const messages = query(q.list("Messages"));
+    await test.expect(messages.listitem().last()).not.toBeInViewport();
+    await q.textbox("Message").fill("Ship it");
+    await q.button("Send message").click();
+    const sent = messages.listitem().last();
+    await test.expect(sent).toContainText("Ship it");
+    await test.expect(sent).toBeInViewport({ ratio: 1 });
+    // The message ends above the composer instead of under it.
+    await test.expect
+      .poll(async () => {
+        const [message, bar] = await Promise.all([
+          sent.boundingBox(),
+          q.contentinfo().boundingBox(),
+        ]);
+        return (bar?.y ?? 0) - (message?.y ?? 0) - (message?.height ?? 0);
+      })
+      .toBeGreaterThanOrEqual(0);
+  });
 });
