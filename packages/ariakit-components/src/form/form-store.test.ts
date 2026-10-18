@@ -1,4 +1,6 @@
+import { init, subscribe } from "@ariakit/store";
 import { expect, test } from "vitest";
+import type { FormStore, FormStoreCallback } from "./form-store.ts";
 import { createFormStore } from "./form-store.ts";
 
 test("gets and sets nested values with array and object paths", () => {
@@ -197,3 +199,118 @@ test("ignores prototype error keys when validating messages", () => {
   expect(store.getState().valid).toBe(true);
   expect(store.getError("constructor.message")).toBeUndefined();
 });
+
+const pendingOperations = [
+  {
+    flag: "validating",
+    run: (store: FormStore) => store.validate(),
+    listen: (store: FormStore, callback: FormStoreCallback) =>
+      store.onValidate(callback),
+  },
+  {
+    flag: "submitting",
+    run: (store: FormStore) => store.submit(),
+    listen: (store: FormStore, callback: FormStoreCallback) =>
+      store.onSubmit(callback),
+  },
+] as const;
+
+function createPendingStore(operation: (typeof pendingOperations)[number]) {
+  const store = createFormStore({ defaultValues: { name: "" } });
+  const resolvers: Array<() => void> = [];
+  operation.listen(store, () => {
+    return new Promise<void>((resolve) => {
+      resolvers.push(resolve);
+    });
+  });
+  // Starts an operation and waits until its callback is pending. submit() only
+  // calls submit callbacks after its validation settles.
+  const start = async (target: FormStore = store) => {
+    const count = resolvers.length;
+    const promise = operation.run(target);
+    await expect.poll(() => resolvers.length).toBe(count + 1);
+    const resolve = resolvers[count];
+    if (!resolve) {
+      throw new Error("Missing pending callback");
+    }
+    return async () => {
+      resolve();
+      await promise;
+    };
+  };
+  const isPending = () => store.getState()[operation.flag];
+  return { store, start, isPending };
+}
+
+// https://github.com/ariakit/ariakit/issues/7893
+test.each(pendingOperations)(
+  "$flag stays true until the last overlapping operation settles on composed stores",
+  async (operation) => {
+    const { store, start, isPending } = createPendingStore(operation);
+    const composed = createFormStore({ store });
+    const cleanup = init(composed);
+    const finishOnStore = await start();
+    const finishOnComposed = await start(composed);
+    await finishOnComposed();
+    expect(isPending()).toBe(true);
+    expect(composed.getState()[operation.flag]).toBe(true);
+    await finishOnStore();
+    expect(isPending()).toBe(false);
+    expect(composed.getState()[operation.flag]).toBe(false);
+    cleanup();
+  },
+);
+
+// https://github.com/ariakit/ariakit/pull/7976#discussion_r4306974754
+test.each(pendingOperations)(
+  "$flag settles when a composed store is torn down during an operation",
+  async (operation) => {
+    const { store, start, isPending } = createPendingStore(operation);
+    const composed = createFormStore({ store });
+    const cleanup = init(composed);
+    const finishOnComposed = await start(composed);
+    const finishOnStore = await start();
+    cleanup();
+    await finishOnStore();
+    expect(isPending()).toBe(true);
+    await finishOnComposed();
+    expect(isPending()).toBe(false);
+  },
+);
+
+// https://github.com/ariakit/ariakit/issues/7893
+test.each(pendingOperations)(
+  "$flag recovers when a state listener throws while it starts",
+  async (operation) => {
+    const store = createFormStore({ defaultValues: { name: "" } });
+    let shouldThrow = true;
+    // validate() resets errors and submit() marks fields as touched before
+    // running any callback.
+    const unsubscribe = subscribe(store, ["errors", "touched"], () => {
+      if (!shouldThrow) return;
+      shouldThrow = false;
+      throw new Error("Listener error");
+    });
+    await expect(operation.run(store)).rejects.toThrow("Listener error");
+    expect(store.getState()[operation.flag]).toBe(false);
+    unsubscribe();
+  },
+);
+
+// https://github.com/ariakit/ariakit/issues/7893
+test.each(pendingOperations)(
+  "$flag stays true across reset until every pending operation settles",
+  async (operation) => {
+    const { store, start, isPending } = createPendingStore(operation);
+    const finishBeforeReset = await start();
+    store.reset();
+    expect(isPending()).toBe(true);
+    const finishAfterReset = await start();
+    await finishBeforeReset();
+    expect(isPending()).toBe(true);
+    await finishAfterReset();
+    expect(isPending()).toBe(false);
+    store.reset();
+    expect(isPending()).toBe(false);
+  },
+);
