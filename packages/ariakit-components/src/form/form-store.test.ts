@@ -261,6 +261,23 @@ test.each(pendingOperations)(
   },
 );
 
+// https://github.com/ariakit/ariakit/pull/7976#discussion_r4306974754
+test.each(pendingOperations)(
+  "$flag settles when a composed store is torn down during an operation",
+  async (operation) => {
+    const { store, start, isPending } = createPendingStore(operation);
+    const composed = createFormStore({ store });
+    const cleanup = init(composed);
+    const finishOnComposed = await start(composed);
+    const finishOnStore = await start();
+    cleanup();
+    await finishOnStore();
+    expect(isPending()).toBe(true);
+    await finishOnComposed();
+    expect(isPending()).toBe(false);
+  },
+);
+
 // https://github.com/ariakit/ariakit/issues/7893
 test.each(pendingOperations)(
   "$flag recovers when a state listener throws while it starts",
