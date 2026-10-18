@@ -37,6 +37,17 @@ test("site navigation collapses and stays collapsed after reload", async ({
   await expect(q.navigation("Site")).not.toBeVisible();
 });
 
+test("site navigation marks the page without a trailing slash", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, examplePath.replace(/\/$/, ""));
+  await expect(query(q.navigation("Site")).link("App Shell")).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+});
+
 test("site navigation marks the component on its API reference pages", async ({
   page,
   q,

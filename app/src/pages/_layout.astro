@@ -55,7 +55,9 @@ export interface Props {
 }
 
 const { title, headings = [] } = Astro.props;
-const pathname = Astro.url.pathname;
+// Astro serves routes with and without a trailing slash, and every link ends
+// with one.
+const pathname = Astro.url.pathname.replace(/\/?$/, "/");
 const tocHeadings = headings.filter((heading) => heading.depth <= 3);
 
 // The site navigation lists React pages only. Solid pages still build, but
