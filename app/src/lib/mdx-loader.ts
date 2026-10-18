@@ -41,6 +41,17 @@ interface WatchFrameworkEntryFilesParams {
   parseData: LoaderContext["parseData"];
 }
 
+const PREVIEW_METADATA_FILE = "preview.json";
+
+/**
+ * Checks whether a file decides the frameworks of an example: its entry files,
+ * or the metadata that lists them.
+ */
+function isFrameworkSourceFile(filename: string) {
+  if (filename === PREVIEW_METADATA_FILE) return true;
+  return isPreviewEntryFile(filename);
+}
+
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
   return String(error);
@@ -58,7 +69,7 @@ function watchFrameworkEntryFiles({
   let pendingReload = Promise.resolve();
   const queueReload = (file: string) => {
     if (!isInDirectory(file, basePath)) return;
-    if (!isPreviewEntryFile(basename(file))) return;
+    if (!isFrameworkSourceFile(basename(file))) return;
     const reload = async () => {
       context.store.clear();
       await loader.load({ ...context, parseData, watcher: undefined });
@@ -73,6 +84,12 @@ function watchFrameworkEntryFiles({
   };
   context.watcher.on("add", queueReload);
   context.watcher.on("unlink", queueReload);
+  // Editing an entry file keeps its framework, but editing preview.json can
+  // change the frameworks of an example without entry files.
+  context.watcher.on("change", (file) => {
+    if (basename(file) !== PREVIEW_METADATA_FILE) return;
+    queueReload(file);
+  });
 }
 
 function withInferredFrameworksSchema<TShape extends z.ZodRawShape>(
