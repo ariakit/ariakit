@@ -55,4 +55,22 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await page.keyboard.press("Tab");
     await test.expect(frame.button("Download document")).toBeFocused();
   });
+
+  // Firefox ignores the programmatic focus that moves into the iframe here, so
+  // this check also runs only in Chrome.
+  // https://github.com/ariakit/ariakit/issues/7963
+  test("moves focus into the iframe when entering a toolbar container", async ({
+    page,
+    q,
+  }) => {
+    const frame = query(page.frameLocator("iframe[title='Signature pad']"));
+    await test.expect(frame.button("Clear signature")).toBeVisible();
+
+    await q.button("Bold").click();
+    await test.expect(q.button("Bold")).toBeFocused();
+    await page.keyboard.press("ArrowRight");
+    await test.expect(q.group("Signature pad")).toBeFocused();
+    await page.keyboard.press("Enter");
+    await test.expect(frame.button("Clear signature")).toBeFocused();
+  });
 });

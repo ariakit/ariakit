@@ -439,6 +439,18 @@ export function restoreFocusIn(container: HTMLElement) {
   for (const element of elements) {
     restoreTabIndex(element);
   }
+  // disableFocusIn also disables elements inside same-origin iframes, so
+  // restore them too. Hidden frames are included because a frame can become
+  // hidden after its elements were disabled.
+  const frames = Array.from(container.querySelectorAll("iframe"));
+  if (isFrame(container)) {
+    frames.unshift(container);
+  }
+  for (const frame of frames) {
+    const frameBody = frame.contentDocument?.body;
+    if (!frameBody) continue;
+    restoreFocusIn(frameBody);
+  }
 }
 
 /**
