@@ -132,6 +132,20 @@ export function getAppThemeValue(setting: AppThemeSetting) {
 }
 
 /**
+ * Returns the stored values that the theme script applies to the root element.
+ * Preview cards send them to previews from other origins, which cannot read the
+ * site storage.
+ */
+export function getAppThemeRootValues() {
+  return {
+    mode: readValue("mode"),
+    brand: readValue("brand"),
+    radius: readValue("radius"),
+    canvas: readValue("canvas"),
+  };
+}
+
+/**
  * Stores the selected option value of a theme setting and notifies the theme
  * script, which applies it to the root element.
  */

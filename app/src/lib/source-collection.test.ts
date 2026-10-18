@@ -9,7 +9,7 @@
  */
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { expect, test } from "vitest";
 import separator from "#app/examples/separator/_component/index.react.tsx?source";
 import type { Source } from "./source.ts";
@@ -25,8 +25,12 @@ async function loadSourceFile(file: string, aliasRoot = APP_SRC_DIR) {
   }
   const context = {
     addWatchFile() {},
-    // Resolve the fixture's #app alias without requiring a Vite server.
-    resolve(id: string) {
+    // Resolve the fixture's relative and #app imports without requiring a
+    // Vite server.
+    resolve(id: string, importer?: string) {
+      if (id.startsWith(".") && importer) {
+        return { id: join(dirname(importer), id) };
+      }
       if (!id.startsWith("#app/")) {
         throw new Error(`Unexpected import in the fixture: ${id}`);
       }
@@ -81,6 +85,42 @@ test("cached flattened files use the current source base directory", async () =>
 
     expect(Object.keys(parent.files)).toEqual(["page.tsx", "nested/page.tsx"]);
     expect(Object.keys(nested.files)).toEqual(["page.tsx"]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("keeps imports of nested route files pointing at the shown files", async () => {
+  const root = await mkdtemp(join(tmpdir(), "ariakit-source-collection-"));
+  const routeDir = join(root, "@tabs/new");
+  const entry = join(root, "page.tsx");
+  const route = join(routeDir, "page.tsx");
+  const list = join(root, "list.tsx");
+  const shared = join(root, "data.ts");
+
+  try {
+    await mkdir(routeDir, { recursive: true });
+    await writeFile(entry, "export default function Page() {}\n");
+    await writeFile(list, "export function List() {}\n");
+    await writeFile(shared, 'export const data = "Shared data";\n');
+    await writeFile(
+      route,
+      [
+        'import { data } from "#app/data.ts";',
+        'import { List } from "../../list.tsx";',
+        "export default function Page() { return <List data={data} />; }",
+        "",
+      ].join("\n"),
+    );
+
+    const source = await loadSourceFile(entry, root);
+
+    expect(Object.keys(source.files)).toEqual(
+      expect.arrayContaining(["@tabs/new/page.tsx", "list.tsx", "data.ts"]),
+    );
+    const content = source.files["@tabs/new/page.tsx"]?.content;
+    expect(content).toContain('import { data } from "../../data.ts";');
+    expect(content).toContain('import { List } from "../../list.tsx";');
   } finally {
     await rm(root, { recursive: true, force: true });
   }

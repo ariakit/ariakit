@@ -14,8 +14,8 @@ import type { Loader, LoaderContext } from "astro/loaders";
 import type { z } from "astro/zod";
 import { isInDirectory, toFilePath } from "./path.ts";
 import {
-  getPreviewFrameworks,
   isPreviewEntryFile,
+  resolvePreviewFrameworks,
 } from "./preview-discovery.ts";
 import { FrameworkSchema } from "./schemas.ts";
 
@@ -98,7 +98,10 @@ function withInferredFrameworks({
         const { filePath } = options;
         invariant(filePath, `Cannot infer frameworks for ${options.id}`);
         const dir = dirname(filePath);
-        const inferredFrameworks = await getPreviewFrameworks(dir);
+        const inferredFrameworks = await resolvePreviewFrameworks(
+          dir,
+          options.id,
+        );
         invariant(
           inferredFrameworks.length > 0,
           `Missing framework entry file for ${options.id}`,

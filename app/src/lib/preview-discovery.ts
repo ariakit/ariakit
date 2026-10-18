@@ -219,6 +219,17 @@ export function getPreviewFrameworksSync(dir: string) {
   return getPreviewFrameworksFromEntries(dir, entries);
 }
 
+/**
+ * Resolves the frameworks of the preview in `dir` like preview discovery does.
+ * Metadata frameworks take precedence over entry files, so metadata-only
+ * previews, such as Next.js examples, also have frameworks.
+ */
+export async function resolvePreviewFrameworks(dir: string, id: string) {
+  const metadata = await readPreviewMetadata(join(dir, "preview.json"), id);
+  if (metadata?.frameworks) return metadata.frameworks;
+  return getPreviewFrameworks(dir);
+}
+
 function getFallbackTitle(dir: string) {
   return basename(dir);
 }

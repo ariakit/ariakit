@@ -230,8 +230,8 @@ const navigation = collections
           $maxWidth="56rem"
           className="[--app-gutter:--spacing(4)] @3xl/shell:[--app-gutter:--spacing(8)]"
         >
-          {/* Page content renders as direct grid items, so samples can use
-              main bands. */}
+          {/* Page content renders as direct grid items, so preview cards can
+              use main bands. */}
           {
             Astro.slots.has("intro") && (
               <ShellMainIntro className="gap-y-4 pt-10 pb-6">
@@ -322,8 +322,7 @@ const navigation = collections
     </Shell>
     <script is:inline>
       // The shell renders without hydration. This script restores the panel
-      // choices and wires the panels, the table of contents, and the sample
-      // code toggles.
+      // choices and wires the panels and the table of contents.
       (() => {
         /** @param {string} key */
         const read = (key) => {
@@ -413,17 +412,6 @@ const navigation = collections
           const panel = getControlled(close);
           if (!panel) continue;
           close.addEventListener("click", () => setOpen(panel, false));
-        }
-
-        // Sample code toggles
-        for (const toggle of queryAll(document, "[data-code-toggle]")) {
-          const region = getControlled(toggle);
-          if (!region) continue;
-          toggle.addEventListener("click", () => {
-            const expanded = region.hidden;
-            region.hidden = !expanded;
-            toggle.setAttribute("aria-expanded", String(expanded));
-          });
         }
 
         // Table of contents. The link of the last heading that scrolled to its
