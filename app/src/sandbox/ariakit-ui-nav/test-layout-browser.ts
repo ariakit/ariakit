@@ -174,9 +174,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         getBox(inbox.locator(".control-slot").last()),
       ]);
       const rowGap = inboxLabel.x - inboxIcon.x - inboxIcon.width;
-      expect(chevron.x - inboxBadge.x - inboxBadge.width).toBeLessThanOrEqual(
-        rowGap + 1,
-      );
+      const badgeToChevron = chevron.x - inboxBadge.x - inboxBadge.width;
+      expect(badgeToChevron).toBeGreaterThanOrEqual(0);
+      expect(badgeToChevron).toBeLessThanOrEqual(rowGap + 1);
     });
   }
 
