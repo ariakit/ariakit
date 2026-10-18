@@ -137,9 +137,7 @@ export function PreviewCard({
               $gap="xs"
               $layer="transparent"
             >
-              <ak.Disclosure
-                render={<Button className="ak-ink-80 ui-hover:ak-ink-100" />}
-              >
+              <ak.Disclosure render={<Button $ink={80} />}>
                 <ButtonSlot>
                   <CodeIcon />
                 </ButtonSlot>
@@ -155,7 +153,7 @@ export function PreviewCard({
                   <a href={frame.location} target="_blank" rel="noreferrer" />
                 }
                 aria-label="Open preview in a new tab"
-                className="ak-ink-80 ui-hover:ak-ink-100"
+                $ink={80}
               >
                 <ButtonSlot>
                   <ExternalLinkIcon />
@@ -272,7 +270,7 @@ function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
           accessibleWhenDisabled
           disabled={!history.canGoBack}
           onClick={() => send("back")}
-          className="ak-ink-80 ui-hover:ak-ink-100"
+          $ink={80}
         >
           <ButtonSlot>
             <ArrowLeftIcon />
@@ -283,17 +281,13 @@ function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
           accessibleWhenDisabled
           disabled={!history.canGoForward}
           onClick={() => send("forward")}
-          className="ak-ink-80 ui-hover:ak-ink-100"
+          $ink={80}
         >
           <ButtonSlot>
             <ArrowRightIcon />
           </ButtonSlot>
         </Button>
-        <Button
-          aria-label="Reload"
-          onClick={() => send("reload")}
-          className="ak-ink-80 ui-hover:ak-ink-100"
-        >
+        <Button aria-label="Reload" onClick={() => send("reload")} $ink={80}>
           <ButtonSlot>
             <RotateCwIcon />
           </ButtonSlot>
@@ -308,7 +302,7 @@ function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
         $darken
         className="min-w-0 flex-1"
       >
-        <InputSlot aria-hidden className="ak-ink-60">
+        <InputSlot aria-hidden $ink={60}>
           <GlobeIcon />
         </InputSlot>
         <Input
