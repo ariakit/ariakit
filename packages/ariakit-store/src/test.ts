@@ -83,6 +83,75 @@ test("preserves the public type surface", () => {
   expectTypeOf(expectInvalidStoreTypes).toEqualTypeOf<() => void>();
 });
 
+test("types helpers that accept absent stores", () => {
+  interface SampleState {
+    count: number;
+    label: string;
+  }
+
+  const store = createStore<SampleState>({ count: 0, label: "label" });
+  const optionalStore = store as typeof store | undefined;
+  const nullableStore = store as typeof store | null;
+  const listener = () => {};
+
+  expectTypeOf(setup(optionalStore, listener)).toEqualTypeOf<() => void>();
+  expectTypeOf(setup(null, listener)).toEqualTypeOf<() => void>();
+  expectTypeOf(init(optionalStore)).toEqualTypeOf<() => void>();
+  expectTypeOf(init(null)).toEqualTypeOf<() => void>();
+  expectTypeOf(init()).toEqualTypeOf<() => void>();
+  expectTypeOf(
+    subscribe(optionalStore, ["count"], (state) => {
+      expectTypeOf(state).toEqualTypeOf<Pick<SampleState, "count">>();
+    }),
+  ).toEqualTypeOf<() => void>();
+  expectTypeOf(
+    sync(nullableStore, ["label"], (state) => {
+      expectTypeOf(state).toEqualTypeOf<Pick<SampleState, "label">>();
+    }),
+  ).toEqualTypeOf<() => void>();
+  expectTypeOf(batch(undefined, null, listener)).toEqualTypeOf<() => void>();
+
+  expectTypeOf(pick(store, ["count"] as const)).toEqualTypeOf<
+    Store<Pick<SampleState, "count">>
+  >();
+  expectTypeOf(pick(optionalStore, ["count"] as const)).toEqualTypeOf<
+    Store<Pick<SampleState, "count">> | undefined
+  >();
+  expectTypeOf(omit(store, ["count"] as const)).toEqualTypeOf<
+    Store<Omit<SampleState, "count">>
+  >();
+  expectTypeOf(omit(nullableStore, ["count"] as const)).toEqualTypeOf<
+    Store<Omit<SampleState, "count">> | undefined
+  >();
+});
+
+test("returns callable cleanups for absent stores", () => {
+  const callback = vi.fn();
+
+  for (const store of [undefined, null]) {
+    const cleanups = [
+      setup(store, callback),
+      init(store),
+      subscribe(store, null, callback),
+      sync(store, null, callback),
+      batch(store, null, callback),
+    ];
+    for (const cleanup of cleanups) {
+      expect(cleanup).toBeTypeOf("function");
+      cleanup();
+      cleanup();
+    }
+    expect(pick(store, [])).toBeUndefined();
+    expect(omit(store, [])).toBeUndefined();
+  }
+
+  const cleanup = init();
+  cleanup();
+  cleanup();
+
+  expect(callback).not.toHaveBeenCalled();
+});
+
 test("sets known state keys and ignores unknown keys", () => {
   interface State {
     [key: string]: unknown;
