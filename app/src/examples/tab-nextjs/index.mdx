@@ -10,4 +10,4 @@ The posts for each route render in a parallel `@tabs` route on the server. The l
 
 ## Components
 
-The sample uses the workspace's `@ariakit/ui` Tab components. `Tabs` reads the selected tab from `usePathname` and calls `router.push` when the selected tab changes. `Tab` renders a Next.js `Link` through the `render` prop. `TabPanel` with the `single` prop shows the content of the selected route in one panel inside `TabPanels`.
+The sample uses the workspace's `@ariakit/ui` Tab components. `TabProvider` reads the selected tab from `usePathname` and calls `router.push` when the selected tab changes. It also takes a stable `id`, because the tab store would otherwise generate a random one, which Cache Components rejects while it prerenders the route. A `div` with the `tabs` style frames the tab list and the panels. `Tab` renders a Next.js `Link` through the `render` prop. `TabPanel` with the `single` prop shows the content of the selected route in one panel inside `TabPanels`.

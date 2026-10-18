@@ -1,7 +1,6 @@
 import { heading } from "@ariakit/ui/styles/heading";
 import { link } from "@ariakit/ui/styles/link";
 import Link from "next/link";
-import { Suspense } from "react";
 import type { ReactNode } from "react";
 import { PostTabs } from "./tabs.tsx";
 
@@ -22,11 +21,7 @@ export default function Layout(props: { tabs: ReactNode }) {
           .
         </p>
       </header>
-      {/* The tab store generates a random id, which Cache Components rejects
-          during prerender outside a Suspense boundary. */}
-      <Suspense fallback={null}>
-        <PostTabs>{props.tabs}</PostTabs>
-      </Suspense>
+      <PostTabs>{props.tabs}</PostTabs>
     </main>
   );
 }
