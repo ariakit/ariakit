@@ -165,11 +165,6 @@ export const navSlot = cv({
       if (defaultValue !== "auto") return defaultValue;
       return "md";
     },
-    // A trailing count lines up at the row end, beside any end indicator.
-    $end(defaultValue, variants) {
-      if (variants.$kind !== "badge") return defaultValue;
-      return defaultValue ?? true;
-    },
     $mx(defaultValue, variants) {
       // Custom sizes need the auto margin; the inherited default would copy the
       // size into the margin.

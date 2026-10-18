@@ -177,6 +177,15 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       expect(chevron.x - inboxBadge.x - inboxBadge.width).toBeLessThanOrEqual(
         rowGap + 1,
       );
+      // An end badge after bare text still reaches the row end.
+      const spam = nav.link(/^Spam/);
+      const [spamRow, spamBadge] = await Promise.all([
+        getBox(spam),
+        getBox(slot(spam, "5")),
+      ]);
+      expect(
+        spamRow.x + spamRow.width - spamBadge.x - spamBadge.width,
+      ).toBeCloseTo(endInset, 0);
     });
   }
 
