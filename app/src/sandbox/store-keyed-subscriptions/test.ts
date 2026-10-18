@@ -284,3 +284,40 @@ test("updates the store props setter subscription", async () => {
   expect(firstValue).toHaveTextContent("5");
   expect(secondValue).toHaveTextContent("3");
 });
+
+// https://github.com/ariakit/ariakit/issues/7956
+test("keeps previously returned object results unchanged", async () => {
+  const lastSaved = q.status("Last saved name");
+  const saveCalls = q.status("Save calls");
+
+  expect(lastSaved.textContent).toBe("Ada:Ada");
+  expect(saveCalls.textContent).toBe("0");
+
+  await click(q.button("Use name Grace"));
+  expect(lastSaved.textContent).toBe("Grace:Grace");
+  expect(saveCalls.textContent).toBe("1");
+
+  await click(q.button("Use name Ada"));
+  expect(lastSaved.textContent).toBe("Ada:Ada");
+  expect(saveCalls.textContent).toBe("2");
+});
+
+// https://github.com/ariakit/ariakit/issues/7958
+test("returns only fields selected by the current object", async () => {
+  const fields = q.status("Order fields");
+
+  expect(fields.textContent).toBe(
+    "contactEmail=ada@example.test, shippingAddress=10 Main Street, deliveryNote=none",
+  );
+
+  await click(q.button("Use pickup"));
+  expect(fields.textContent).toBe("contactEmail=ada@example.test");
+
+  await click(q.button("Use alternate contact"));
+  expect(fields.textContent).toBe("contactEmail=grace@example.test");
+
+  await click(q.button("Use delivery"));
+  expect(fields.textContent).toBe(
+    "contactEmail=grace@example.test, shippingAddress=10 Main Street, deliveryNote=none",
+  );
+});
