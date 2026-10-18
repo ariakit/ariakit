@@ -1,4 +1,4 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 // Firefox makes the iframe document its own tab stop, and Safari skips buttons
 // during sequential focus navigation by default. Tab moves from the panel
@@ -16,13 +16,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await q.button("Preview settings").click();
     await test.expect(q.button("Preview settings")).toBeFocused();
-    // Leaving the portal makes its tabbable elements, including the ones in the
-    // iframe, temporarily not tabbable.
     await q.textbox("Document title").click();
     await test.expect(q.textbox("Document title")).toBeFocused();
-    await test
-      .expect(frame.button("Download document"))
-      .toHaveAttribute("tabindex", "-1");
+    // Portal makes its tab stops temporarily not tabbable on the next animation
+    // frame after focus leaves it. No user-visible state tracks that update.
+    await flushFrames(page);
 
     await q.button("Preview settings").click();
     await test.expect(q.button("Preview settings")).toBeFocused();
@@ -46,9 +44,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await test.expect(q.button("Preview settings")).toBeFocused();
       await page.keyboard.press("Shift+Tab");
       await test.expect(q.textbox("Document title")).toBeFocused();
-      await test
-        .expect(frame.button("Download document"))
-        .toHaveAttribute("tabindex", "-1");
+      // Portal makes its tab stops temporarily not tabbable on the next
+      // animation frame after focus leaves it. No user-visible state tracks
+      // that update.
+      await flushFrames(page);
     }
 
     await page.keyboard.press("Tab");
