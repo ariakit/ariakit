@@ -70,7 +70,7 @@ export default function Example() {
           </div>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav render={<div aria-label="Dashboard pages" />}>
+          <Nav render={<div />} glider={[{ $kind: "flat" }, { $kind: "bar" }]}>
             {navigationLinks.map((link, index) => (
               <NavLink
                 key={link.title}
@@ -180,78 +180,74 @@ export default function Example() {
             </div>
           </ShellMainIntro>
           <ShellMainBody>
-            <div className="flex flex-col gap-6">
-              <div
-                aria-label="Metrics"
-                role="group"
-                className="grid grid-cols-1 gap-4 @2xl/shell-main-body:grid-cols-2 @4xl/shell-main-body:grid-cols-4"
-              >
-                {metrics.map((metric) => (
-                  <Frame
-                    key={metric.label}
-                    $layer
-                    $rounded="xl"
-                    $p={4}
-                    $border
-                    className="flex flex-col gap-1"
-                  >
-                    <p className="ak-ink-70 text-sm">{metric.label}</p>
-                    <p className="text-2xl font-semibold tabular-nums">
-                      {metric.value}
-                    </p>
-                    <p className="ak-ink-70 text-xs">
-                      <Text
-                        $text="success"
-                        render={<span />}
-                        className="font-medium"
-                      >
-                        {metric.change}
-                      </Text>{" "}
-                      vs. previous period
-                    </p>
-                  </Frame>
-                ))}
-              </div>
-              <Frame $layer $rounded="xl" $p={4} $border>
-                <HeadingLevel level={2}>
-                  <Heading className="mb-3 text-base font-semibold">
-                    Recent orders
-                  </Heading>
-                </HeadingLevel>
-                <Table>
-                  <TableRowGroup group="head">
-                    <TableRow>
-                      <TableCell header>Order</TableCell>
-                      <TableCell header>Customer</TableCell>
-                      <TableCell header>Date</TableCell>
-                      <TableCell header>Status</TableCell>
-                      <TableCell header numeric>
-                        Amount
-                      </TableCell>
-                    </TableRow>
-                  </TableRowGroup>
-                  <TableRowGroup>
-                    {orders.map((order) => (
-                      <TableRow key={order.id}>
-                        <TableCell className="font-mono text-xs">
-                          {order.id}
-                        </TableCell>
-                        <TableCell>{order.customer}</TableCell>
-                        <TableCell className="ak-ink-70">
-                          {order.date}
-                        </TableCell>
-                        <TableCell>
-                          <Badge $layer={statusLayers[order.status]}>
-                            <BadgeLabel>{order.status}</BadgeLabel>
-                          </Badge>
-                        </TableCell>
-                        <TableCell numeric>{order.amount}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableRowGroup>
-                </Table>
-              </Frame>
+            <div
+              aria-label="Metrics"
+              role="group"
+              className="grid grid-cols-1 gap-4 @xl/shell-main-body:grid-cols-2 @4xl/shell-main-body:grid-cols-4"
+            >
+              {metrics.map((metric) => (
+                <Frame
+                  key={metric.label}
+                  $layer
+                  $rounded="xl"
+                  $p={4}
+                  $border
+                  className="flex flex-col gap-1"
+                >
+                  <p className="ak-ink-70 text-sm">{metric.label}</p>
+                  <p className="text-2xl font-semibold tabular-nums">
+                    {metric.value}
+                  </p>
+                  <p className="ak-ink-70 text-xs">
+                    <Text
+                      $text="success"
+                      render={<span />}
+                      className="font-medium"
+                    >
+                      {metric.change}
+                    </Text>{" "}
+                    vs. previous period
+                  </p>
+                </Frame>
+              ))}
             </div>
+            <Frame $layer $rounded="xl" $p={4} $border>
+              <HeadingLevel level={2}>
+                <Heading className="mb-3 text-base font-semibold">
+                  Recent orders
+                </Heading>
+              </HeadingLevel>
+              <Table $borderBlock>
+                <TableRowGroup group="head">
+                  <TableRow>
+                    <TableCell header>Order</TableCell>
+                    <TableCell header>Customer</TableCell>
+                    <TableCell header>Date</TableCell>
+                    <TableCell header>Status</TableCell>
+                    <TableCell header numeric>
+                      Amount
+                    </TableCell>
+                  </TableRow>
+                </TableRowGroup>
+                <TableRowGroup>
+                  {orders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-mono text-xs">
+                        {order.id}
+                      </TableCell>
+                      <TableCell>{order.customer}</TableCell>
+                      <TableCell className="ak-ink-70">{order.date}</TableCell>
+                      <TableCell>
+                        <Badge $layer={statusLayers[order.status]}>
+                          <BadgeLabel>{order.status}</BadgeLabel>
+                        </Badge>
+                      </TableCell>
+                      <TableCell numeric>{order.amount}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableRowGroup>
+              </Table>
+            </Frame>
           </ShellMainBody>
         </ShellMain>
       </Shell>

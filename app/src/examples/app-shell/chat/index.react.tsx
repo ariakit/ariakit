@@ -28,7 +28,7 @@ import {
   ShellSidebarHeader,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import {
-  ChevronRight,
+  ChevronDown,
   Hash,
   Hexagon,
   PanelLeft,
@@ -93,11 +93,17 @@ export default function Example() {
               <Hexagon strokeWidth={1.5} />
             </ButtonSlot>
             Acme Inc
-            <ChevronRight className="ms-auto size-4 rotate-90" />
+            <ButtonSlot $end>
+              <ChevronDown />
+            </ButtonSlot>
           </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav list={false} render={<div aria-label="Sidebar sections" />}>
+          <Nav
+            list={false}
+            render={<div />}
+            glider={[{ $kind: "flat" }, { $kind: "bar" }]}
+          >
             <NavGroup>
               <NavGroupLabel>Channels</NavGroupLabel>
               <NavList>
@@ -237,6 +243,7 @@ export default function Example() {
           </ShellMainBody>
         </ShellMain>
         <ShellFooter
+          $sticky
           $blur
           center={
             <ShellFooterCenter $grow>
@@ -352,7 +359,7 @@ const initialMessages = [
     time: "9:15",
     text: "Can the composer stay visible?",
   },
-  { id: 6, author: maya, time: "9:17", text: "Not yet. It ends the thread." },
+  { id: 6, author: maya, time: "9:17", text: "Yes, it sticks to the bottom." },
   {
     id: 7,
     author: margaret,

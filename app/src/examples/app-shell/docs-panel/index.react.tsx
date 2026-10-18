@@ -68,9 +68,7 @@ export default function Example() {
 
   return (
     <Shell>
-      <Shell
-        className={appliedTheme.density === "compact" ? "text-sm" : undefined}
-      >
+      <Shell $size={appliedTheme.density === "compact" ? "sm" : "md"}>
         <ShellHeader
           $blur
           $height="sm"
@@ -105,6 +103,7 @@ export default function Example() {
               <Nav
                 $layout="horizontal"
                 aria-label="Main"
+                glider={[{ $kind: "flat" }, { $kind: "bar" }]}
                 className="@max-4xl/shell:hidden"
               >
                 {topLinks.map((link, index) => (
@@ -151,8 +150,8 @@ export default function Example() {
           <ShellSidebarBody>
             <Nav
               list={false}
-              render={<div aria-label="Documentation pages" />}
-              className="py-4"
+              render={<div />}
+              glider={[{ $kind: "flat" }, { $kind: "bar" }]}
             >
               {navigationGroups.map((group) => (
                 <NavGroup key={group.label}>
@@ -176,11 +175,15 @@ export default function Example() {
 
         <ShellMain>
           <ShellMainHeader $blur $show="max-6xl">
-            <div className="flex items-center gap-1.5 text-sm">
-              <span className="ak-ink-70">Components</span>
-              <ChevronRight className="ak-ink-70 size-3.5" />
-              <span>Combobox</span>
-            </div>
+            <nav aria-label="Breadcrumb">
+              <ol className="flex items-center gap-1.5 text-sm">
+                <li className="ak-ink-70">Components</li>
+                <li aria-hidden className="ak-ink-70">
+                  <ChevronRight className="size-3.5" />
+                </li>
+                <li aria-current="page">Combobox</li>
+              </ol>
+            </nav>
           </ShellMainHeader>
 
           <ShellMainIntro>
@@ -194,7 +197,7 @@ export default function Example() {
                 an option.
               </p>
             </Prose>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
               {badges.map((badge) => (
                 <Badge key={badge}>
                   <BadgeLabel>{badge}</BadgeLabel>
@@ -204,7 +207,7 @@ export default function Example() {
           </ShellMainIntro>
 
           <ShellMainBody>
-            <section id="overview" className="scroll-mt-20">
+            <section id="overview">
               <Prose>
                 <HeadingLevel level={2}>
                   <Heading>Overview</Heading>
@@ -242,7 +245,7 @@ export default function Example() {
               </Frame>
             </ShellMainPopout>
 
-            <section id="usage" className="scroll-mt-20">
+            <section id="usage">
               <Prose>
                 <HeadingLevel level={2}>
                   <Heading>Usage</Heading>
@@ -251,12 +254,19 @@ export default function Example() {
                   Render the input and its options as children. The component
                   handles focus, filtering, and the active option.
                 </p>
-                <pre>
+                <Frame
+                  render={<pre />}
+                  $layer
+                  $rounded="lg"
+                  $p={3}
+                  $border
+                  className="overflow-x-auto text-sm"
+                >
                   <code>{`<Combobox placeholder="Search fruit">
   <ComboboxItem value="Apple" />
   <ComboboxItem value="Banana" />
 </Combobox>`}</code>
-                </pre>
+                </Frame>
                 <p>
                   Give each option a text value. The filter matches that value,
                   so keep labels short and unique.
@@ -264,7 +274,7 @@ export default function Example() {
               </Prose>
             </section>
 
-            <section id="keyboard" className="scroll-mt-20">
+            <section id="keyboard">
               <Prose>
                 <HeadingLevel level={2}>
                   <Heading>Keyboard</Heading>
@@ -291,30 +301,29 @@ export default function Example() {
           $width="sm"
           $from="body"
           $border={false}
+          $show="5xl"
           aria-label="On this page"
           render={<nav />}
         >
           <ShellSidebarBody>
-            <p className="ak-ink-70 px-3 py-4 text-sm font-medium">
-              On this page
-            </p>
-            <Nav render={<div aria-label="Sections" />}>
-              {tocItems.map((item) => (
-                <NavLink key={item.id} href={`#${item.id}`}>
-                  {item.title}
-                </NavLink>
-              ))}
+            <Nav render={<div />} list={false}>
+              <NavGroup>
+                <NavGroupLabel>On this page</NavGroupLabel>
+                <NavList>
+                  {tocItems.map((item) => (
+                    <NavLink key={item.id} href={`#${item.id}`}>
+                      {item.title}
+                    </NavLink>
+                  ))}
+                </NavList>
+              </NavGroup>
             </Nav>
           </ShellSidebarBody>
         </ShellSidebar>
 
         <ShellFooter
-          start={<span className="ak-ink-70 text-sm">© 2026 Forge UI</span>}
-          end={
-            <Link href="#" className="text-sm">
-              Release notes
-            </Link>
-          }
+          start={<span className="ak-ink-70">© 2026 Forge UI</span>}
+          end={<Link href="#">Release notes</Link>}
         />
       </Shell>
 
@@ -326,7 +335,7 @@ export default function Example() {
         aria-label="Customize"
         render={<aside />}
       >
-        <ShellSidebarHeader $height="sm">
+        <ShellSidebarHeader>
           <div className="flex w-full items-center justify-between gap-2">
             <HeadingLevel level={2}>
               <Heading className="text-base">Customize</Heading>
@@ -403,7 +412,7 @@ export default function Example() {
           <Button onClick={() => setDraftTheme(defaultTheme)}>
             <ButtonLabel>Reset</ButtonLabel>
           </Button>
-          <Button onClick={applyTheme}>
+          <Button $layer="brand" $kind="bevel" onClick={applyTheme}>
             <ButtonLabel>Apply</ButtonLabel>
           </Button>
         </ShellSidebarFooter>

@@ -174,7 +174,11 @@ export default function Example() {
           </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav render={<div aria-label="Pages" />} list={false} className="p-2">
+          <Nav
+            render={<div />}
+            list={false}
+            glider={[{ $kind: "flat" }, { $kind: "bar" }]}
+          >
             <NavGroup>
               <NavGroupLabel>Pages</NavGroupLabel>
               <NavList>
@@ -211,7 +215,7 @@ export default function Example() {
           </Nav>
         </ShellSidebarBody>
         <ShellSidebarFooter $borderType="dashed">
-          <Nav render={<div aria-label="Notebook tools" />}>
+          <Nav render={<div />}>
             <NavLink href="#trash">
               <NavSlot>
                 <Trash strokeWidth={1.5} />
@@ -306,27 +310,27 @@ export default function Example() {
         $hue="yellow"
         $chroma="muted"
       >
-        <ShellSidebarBody className="flex flex-col gap-6 p-4">
+        <ShellSidebarBody className="flex flex-col gap-6">
+          <Nav aria-label="Backlinks" list={false}>
+            <NavGroup>
+              <NavGroupLabel>Backlinks</NavGroupLabel>
+              <NavList>
+                {backlinks.map((backlink) => (
+                  <NavLink key={backlink.href} href={backlink.href}>
+                    <NavSlot>
+                      <FileText strokeWidth={1.5} />
+                    </NavSlot>
+                    {backlink.title}
+                  </NavLink>
+                ))}
+              </NavList>
+            </NavGroup>
+          </Nav>
           <section className="flex flex-col gap-2">
             <HeadingLevel level={3}>
-              <Heading className="ak-ink-70 text-sm font-medium">
-                Backlinks
+              <Heading className="ak-ink-70 mt-0 mb-0 text-sm font-medium">
+                Tags
               </Heading>
-            </HeadingLevel>
-            <Nav render={<div aria-label="Backlinks" />}>
-              {backlinks.map((backlink) => (
-                <NavLink key={backlink.href} href={backlink.href}>
-                  <NavSlot>
-                    <FileText strokeWidth={1.5} />
-                  </NavSlot>
-                  {backlink.title}
-                </NavLink>
-              ))}
-            </Nav>
-          </section>
-          <section className="flex flex-col gap-2">
-            <HeadingLevel level={3}>
-              <Heading className="ak-ink-70 text-sm font-medium">Tags</Heading>
             </HeadingLevel>
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
@@ -339,11 +343,12 @@ export default function Example() {
         </ShellSidebarBody>
       </ShellSidebar>
       <ShellFooter
+        $sticky
         $borderType="dashed"
         $hue="yellow"
         $chroma="muted"
-        start={<span className="ak-ink-70 text-sm">Saved 12:04</span>}
-        end={<span className="ak-ink-70 text-sm">642 words</span>}
+        start={<span className="ak-ink-70">Saved 12:04</span>}
+        end={<span className="ak-ink-70">642 words</span>}
       />
     </Shell>
   );

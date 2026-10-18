@@ -92,7 +92,7 @@ export default function Example() {
 
   return (
     <Shell>
-      <ShellHeader $height="sm">
+      <ShellHeader $height="sm" $stackCenter>
         <ShellHeaderStart $shrink>
           <div className="flex min-w-0 items-center gap-2">
             <Button
@@ -164,11 +164,11 @@ export default function Example() {
         aria-label="Layers"
         render={<nav />}
       >
-        <ShellSidebarHeader $height="sm">
+        <ShellSidebarHeader>
           <span className="font-medium">Layers</span>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav render={<div aria-label="Layer list" />}>
+          <Nav render={<div />} glider={[{ $kind: "flat" }, { $kind: "bar" }]}>
             {layers.map((layer) => (
               <NavLink
                 key={layer.id}
@@ -234,7 +234,11 @@ export default function Example() {
                     morning light. Ends Sunday.
                   </p>
                   <div>
-                    <Button className={outlineClass("button")}>
+                    <Button
+                      $layer="brand"
+                      $kind="bevel"
+                      className={outlineClass("button")}
+                    >
                       Shop the sale
                     </Button>
                   </div>
@@ -273,7 +277,7 @@ export default function Example() {
         aria-label="Properties"
         render={<aside />}
       >
-        <ShellSidebarHeader $height="sm">
+        <ShellSidebarHeader>
           <span className="font-medium">Properties</span>
         </ShellSidebarHeader>
         <ShellSidebarBody>
@@ -281,7 +285,7 @@ export default function Example() {
             <div key={selectedLayer.id} className="grid grid-cols-1 gap-4">
               <label className="grid grid-cols-1 gap-1.5 text-sm">
                 <span className="ak-ink-70">Name</span>
-                <Input defaultValue={selectedLayer.name} className="min-w-0" />
+                <Input defaultValue={selectedLayer.name} />
               </label>
               <div className="grid grid-cols-2 gap-3">
                 {[
@@ -295,15 +299,11 @@ export default function Example() {
                     className="grid grid-cols-1 gap-1.5 text-sm"
                   >
                     <span className="ak-ink-70">{field.label}</span>
-                    <Input
-                      type="number"
-                      defaultValue={field.value}
-                      className="min-w-0"
-                    />
+                    <Input type="number" defaultValue={field.value} />
                   </label>
                 ))}
               </div>
-              <div className="grid gap-1.5 text-sm">
+              <div className="grid grid-cols-1 gap-1.5 text-sm">
                 <span className="ak-ink-70">Fill</span>
                 <div className="flex items-center gap-2">
                   <Frame
@@ -316,7 +316,7 @@ export default function Example() {
                   />
                   <Input
                     defaultValue={selectedLayer.fill}
-                    className="min-w-0"
+                    className="min-w-0 flex-1"
                   />
                 </div>
               </div>
@@ -327,7 +327,7 @@ export default function Example() {
 
       <ShellSidebar
         $side="end"
-        $width="xs"
+        $width="3xs"
         aria-label="Tools"
         render={<aside />}
       >
@@ -343,13 +343,7 @@ export default function Example() {
           >
             <ak.RadioGroup
               aria-label="Tools"
-              render={
-                <ButtonGroup
-                  $layout="vertical"
-                  $gap="md"
-                  className="items-center p-3"
-                />
-              }
+              render={<ButtonGroup $layout="vertical" $gap="md" />}
             >
               {tools.map((item) => (
                 <ak.Radio

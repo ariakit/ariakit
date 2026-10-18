@@ -7,11 +7,7 @@ import {
   ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import {
-  Heading,
-  HeadingLevel,
-} from "@ariakit/ui/components/heading.ariakit.react";
+import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
 import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import {
   Nav,
@@ -22,7 +18,6 @@ import {
   NavList,
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
-import { Separator } from "@ariakit/ui/components/separator.ariakit.react";
 import {
   Shell,
   ShellHeader,
@@ -38,6 +33,12 @@ import {
   ShellSidebarHeader,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import {
+  Table,
+  TableCell,
+  TableRow,
+  TableRowGroup,
+} from "@ariakit/ui/components/table.ariakit.react";
+import {
   Bell,
   ChevronRight,
   CircleUser,
@@ -49,7 +50,7 @@ import {
   Plus,
   Star,
 } from "lucide-react";
-import { Fragment, useId, useState } from "react";
+import { useId, useState } from "react";
 
 type Status = "todo" | "in-progress" | "done";
 type Priority = "high" | "medium" | "low";
@@ -69,10 +70,6 @@ interface Project {
   name: string;
   hue: "orange" | "cyan" | "green";
   count: number;
-}
-
-interface IssueRowProps {
-  issue: Issue;
 }
 
 const statuses: { value: Status; label: string }[] = [
@@ -234,23 +231,6 @@ const issues: Issue[] = [
   },
 ];
 
-function IssueRow({ issue }: IssueRowProps) {
-  return (
-    <div className="flex items-center gap-3 px-4 py-3">
-      <span className="ak-ink-70 w-18 shrink-0 text-sm whitespace-nowrap tabular-nums">
-        {issue.id}
-      </span>
-      <span className="min-w-0 flex-1 truncate">{issue.title}</span>
-      <Badge>
-        <BadgeLabel>{issue.label}</BadgeLabel>
-      </Badge>
-      <Badge $layer={priorityLayers[issue.priority]}>
-        <BadgeLabel>{priorityLabels[issue.priority]}</BadgeLabel>
-      </Badge>
-    </div>
-  );
-}
-
 export default function Example() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [filter, setFilter] = useState<Filter>("all");
@@ -280,7 +260,9 @@ export default function Example() {
         id={sidebarId}
         open={sidebarOpen}
         $show={true}
-        $invert
+        // Stays dark in both color schemes, unlike $invert.
+        $darken
+        $lightnessMax={23}
         $border={false}
         aria-label="Workspace"
         render={<nav />}
@@ -292,7 +274,11 @@ export default function Example() {
           </div>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav aria-label="Workspace views" list={false} render={<div />}>
+          <Nav
+            list={false}
+            render={<div />}
+            glider={[{ $kind: "flat" }, { $kind: "bar" }]}
+          >
             <NavGroup>
               <NavList>
                 <NavLink href="#inbox">
@@ -435,48 +421,72 @@ export default function Example() {
           </ShellMainHeader>
 
           <ShellMainIntro>
-            <HeadingLevel>
-              <Heading>Website redesign</Heading>
-            </HeadingLevel>
+            <Heading>Website redesign</Heading>
             <p className="ak-ink-70">
               Ship the new marketing site before the Q4 launch.
             </p>
           </ShellMainIntro>
 
           <ShellMainBody>
-            {statuses.map((status) => {
-              const group = issues.filter(
-                (issue) => issue.status === status.value && isVisible(issue),
-              );
-              return (
-                <section key={status.value} className="flex flex-col gap-3">
-                  <HeadingLevel>
-                    <Heading className="text-base">
-                      {status.label}{" "}
-                      <span className="ak-ink-70 font-normal">
-                        {group.length}
-                      </span>
-                    </Heading>
-                  </HeadingLevel>
-                  {group.length ? (
-                    <Frame $layer $rounded="xl" $border $p="none">
-                      {group.map((issue, index) => (
-                        <Fragment key={issue.id}>
-                          {index > 0 ? (
-                            <Separator $line="solid" $gap={0} />
-                          ) : null}
-                          <IssueRow issue={issue} />
-                        </Fragment>
-                      ))}
-                    </Frame>
-                  ) : (
-                    <p className="ak-ink-70 text-sm">
-                      No issues match this filter.
-                    </p>
-                  )}
-                </section>
-              );
-            })}
+            <Table
+              aria-label="Issues"
+              container={{ $border: true }}
+              $borderInline={false}
+            >
+              <TableRowGroup group="head">
+                <TableRow>
+                  <TableCell $fit>ID</TableCell>
+                  <TableCell $grow>Title</TableCell>
+                  <TableCell $fit>Label</TableCell>
+                  <TableCell $fit>Priority</TableCell>
+                </TableRow>
+              </TableRowGroup>
+              {statuses.map((status) => {
+                const group = issues.filter(
+                  (issue) => issue.status === status.value && isVisible(issue),
+                );
+                return (
+                  <TableRowGroup key={status.value}>
+                    <TableRow $hover={false}>
+                      <TableCell header="row" scope="rowgroup" colSpan={4}>
+                        {status.label}{" "}
+                        <span className="ak-ink-70 font-normal">
+                          {group.length}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                    {group.length ? (
+                      group.map((issue) => (
+                        <TableRow key={issue.id} $hover={false}>
+                          <TableCell $fit className="ak-ink-70 tabular-nums">
+                            {issue.id}
+                          </TableCell>
+                          <TableCell>{issue.title}</TableCell>
+                          <TableCell>
+                            <Badge>
+                              <BadgeLabel>{issue.label}</BadgeLabel>
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge $layer={priorityLayers[issue.priority]}>
+                              <BadgeLabel>
+                                {priorityLabels[issue.priority]}
+                              </BadgeLabel>
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow $hover={false}>
+                        <TableCell colSpan={4} className="ak-ink-70">
+                          No issues match this filter.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableRowGroup>
+                );
+              })}
+            </Table>
           </ShellMainBody>
         </ShellMain>
       </Shell>

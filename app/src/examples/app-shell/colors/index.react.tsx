@@ -75,11 +75,15 @@ export default function Example() {
         aria-label="Library"
         render={<nav />}
       >
-        <ShellSidebarHeader className="flex items-center gap-2 px-4 text-lg font-semibold">
+        <ShellSidebarHeader className="gap-2 px-4 text-lg font-semibold">
           <Music className="size-5" /> Wavelength
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav render={<div aria-label="Library sections" />} list={false}>
+          <Nav
+            render={<div />}
+            list={false}
+            glider={[{ $kind: "flat" }, { $kind: "bar" }]}
+          >
             <NavGroup>
               <NavGroupLabel>Library</NavGroupLabel>
               <NavList>
@@ -166,7 +170,7 @@ export default function Example() {
         />
 
         <ShellMain>
-          <ShellMainIntro className="pt-0">
+          <ShellMainIntro>
             <ShellMainFull $layer $hue="cyan" $chroma="vivid" $contrast $p={8}>
               <ShellMainContent>
                 <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-end">
@@ -184,7 +188,7 @@ export default function Example() {
                       Album
                     </p>
                     <HeadingLevel>
-                      <Heading className="text-4xl leading-tight font-bold">
+                      <Heading className="mt-0 mb-0 text-4xl leading-tight font-bold">
                         Night Signals
                       </Heading>
                     </HeadingLevel>
@@ -223,6 +227,7 @@ export default function Example() {
                   <li key={item.title}>
                     <Button
                       $layer={index === currentIndex ? true : "transparent"}
+                      aria-current={index === currentIndex ? "true" : undefined}
                       data-current={index === currentIndex ? "" : undefined}
                       onClick={() => {
                         setCurrentIndex(index);
@@ -251,7 +256,7 @@ export default function Example() {
               $rounded="xl"
               $p={5}
               $border
-              className="mt-8 flex flex-col gap-2"
+              className="flex flex-col gap-2"
             >
               <h2 className="text-lg font-semibold">About this album</h2>
               <p className="ak-ink-70">
@@ -264,6 +269,7 @@ export default function Example() {
         </ShellMain>
 
         <ShellFooter
+          $sticky
           $layer="secondary"
           $blur
           start={

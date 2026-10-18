@@ -11,7 +11,6 @@ import {
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import {
   Nav,
-  NavGlider,
   NavLink,
   NavLinkLabel,
   NavSlot,
@@ -253,7 +252,7 @@ export default function Example() {
           </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody $p={2}>
-          <Nav glider={<NavGlider />} render={<div aria-label="Folders" />}>
+          <Nav render={<div />} glider={[{ $kind: "flat" }, { $kind: "bar" }]}>
             {folders.map((item) => (
               <NavLink
                 key={item.id}
@@ -285,7 +284,7 @@ export default function Example() {
         render={<aside />}
       >
         <ShellSidebarBody $p={2}>
-          <Nav render={<div aria-label="Message list" />}>
+          <Nav render={<div />} glider={[{ $kind: "flat" }, { $kind: "bar" }]}>
             {folderMessages.map((message) => (
               <NavLink
                 key={message.id}
@@ -358,12 +357,12 @@ export default function Example() {
                   {selectedMessage.subject}
                 </Heading>
               </HeadingLevel>
-              <div className="mt-4 flex items-center gap-3">
+              <div className="flex items-center gap-3">
                 <Frame
                   $layer="brand"
                   $rounded="full"
                   $p="none"
-                  className="grid size-10 shrink-0 place-items-center text-sm font-semibold"
+                  className="grid size-10 shrink-0 place-items-center rounded-full text-sm font-semibold"
                 >
                   {initialsOf(selectedMessage.sender)}
                 </Frame>
@@ -382,7 +381,7 @@ export default function Example() {
                 <p>{selectedMessage.body}</p>
               </Prose>
               {selectedMessage.attachment && (
-                <Button className="text-sm">
+                <Button>
                   <ButtonSlot>
                     <FileText strokeWidth={1.5} />
                   </ButtonSlot>

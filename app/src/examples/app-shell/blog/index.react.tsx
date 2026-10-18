@@ -9,12 +9,19 @@ import {
   HeadingLevel,
 } from "@ariakit/ui/components/heading.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
-import { Nav, NavLink } from "@ariakit/ui/components/nav.ariakit.react";
+import {
+  Nav,
+  NavGroup,
+  NavGroupLabel,
+  NavLink,
+  NavList,
+} from "@ariakit/ui/components/nav.ariakit.react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellHeader,
   ShellFooter,
+  ShellFooterEnd,
   ShellSidebar,
   ShellSidebarBody,
   ShellMain,
@@ -53,41 +60,33 @@ export default function Example() {
         }
       />
       <ShellMain $maxWidth="40rem">
-        <ShellMainIntro>
-          <div className="flex flex-col gap-4 pt-12 pb-8">
-            <Badge className="w-fit">
-              <BadgeLabel>Engineering</BadgeLabel>
-            </Badge>
-            <HeadingLevel>
-              <Heading className="text-4xl font-semibold tracking-tight text-balance">
-                Designing calm interfaces for long reads
-              </Heading>
-            </HeadingLevel>
-            <p className="ak-ink-70 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-              <span className="flex items-center gap-1.5">
-                <CircleUser className="size-4" /> Maya Chen
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Calendar className="size-4" /> October 12, 2026
-              </span>
-              <span>6 min read</span>
-            </p>
-          </div>
+        <ShellMainIntro $gap={4}>
+          <Badge className="w-fit">
+            <BadgeLabel>Engineering</BadgeLabel>
+          </Badge>
+          <Heading className="text-4xl tracking-tight text-balance">
+            Designing calm interfaces for long reads
+          </Heading>
+          <p className="ak-ink-70 flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span className="flex items-center gap-1.5">
+              <CircleUser className="size-4" /> Maya Chen
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Calendar className="size-4" /> October 12, 2026
+            </span>
+            <span>6 min read</span>
+          </p>
         </ShellMainIntro>
         <ShellMainBody>
           <HeadingLevel level={2}>
             <Prose className={readingMode ? "text-lg leading-8" : undefined}>
               <p>{articleParagraphs[0]}</p>
-              <Heading id="why-calm" className="scroll-mt-24">
-                Why calm matters
-              </Heading>
+              <Heading id="why-calm">Why calm matters</Heading>
               <p>{articleParagraphs[1]}</p>
-              <Heading id="measure" className="scroll-mt-24">
-                Set the measure first
-              </Heading>
+              <Heading id="measure">Set the measure first</Heading>
               <p>{articleParagraphs[2]}</p>
             </Prose>
-            <ShellMainFeature>
+            <ShellMainFeature render={<figure />}>
               <Frame
                 $layer="brand"
                 $hue="blue"
@@ -95,18 +94,14 @@ export default function Example() {
                 $rounded="xl"
                 className="aspect-[16/9]"
               />
-              <p className="ak-ink-70 mt-3 text-center text-sm">
+              <figcaption className="ak-ink-70 mt-3 text-center">
                 Light falls across a 40rem reading column.
-              </p>
+              </figcaption>
             </ShellMainFeature>
             <Prose className={readingMode ? "text-lg leading-8" : undefined}>
-              <Heading id="contrast" className="scroll-mt-24">
-                Contrast without noise
-              </Heading>
+              <Heading id="contrast">Contrast without noise</Heading>
               <p>{articleParagraphs[3]}</p>
-              <Heading id="motion" className="scroll-mt-24">
-                Motion that waits for you
-              </Heading>
+              <Heading id="motion">Motion that waits for you</Heading>
               <p>{articleParagraphs[4]}</p>
             </Prose>
             <ShellMainPopout>
@@ -120,11 +115,9 @@ export default function Example() {
               </Text>
             </ShellMainPopout>
             <Prose className={readingMode ? "text-lg leading-8" : undefined}>
-              <Heading id="keep-reading" className="scroll-mt-24">
-                Keep reading
-              </Heading>
+              <Heading id="keep-reading">Keep reading</Heading>
             </Prose>
-            <div className="grid gap-4 pb-16 @2xl/shell-main-body:grid-cols-2">
+            <div className="grid gap-4 @2xl/shell-main-body:grid-cols-2">
               {relatedPosts.map((post) => (
                 <Frame key={post.title} $rounded="xl" $p={4} $border>
                   <p className="ak-ink-70 text-sm">
@@ -150,38 +143,42 @@ export default function Example() {
         render={<nav />}
       >
         <ShellSidebarBody>
-          <p className="ak-ink-70 px-3 pb-2 text-xs font-medium tracking-wide uppercase">
-            On this page
-          </p>
-          <Nav render={<div aria-label="Article sections" />}>
-            {sections.map((section) => (
-              <NavLink key={section.id} href={`#${section.id}`}>
-                {section.label}
-              </NavLink>
-            ))}
+          <Nav render={<div />} list={false}>
+            <NavGroup>
+              <NavGroupLabel>On this page</NavGroupLabel>
+              <NavList>
+                {sections.map((section) => (
+                  <NavLink key={section.id} href={`#${section.id}`}>
+                    {section.label}
+                  </NavLink>
+                ))}
+              </NavList>
+            </NavGroup>
           </Nav>
         </ShellSidebarBody>
       </ShellSidebar>
       <ShellFooter
         $border={false}
-        start={<p className="ak-ink-70 text-sm">© 2026 Field Notes</p>}
+        start={<p className="ak-ink-70">© 2026 Field Notes</p>}
         end={
-          // Demo form: the submit handler only keeps the page in place.
-          <form
-            className="flex w-full max-w-sm gap-2"
-            onSubmit={(event) => event.preventDefault()}
-          >
-            <Input
-              type="email"
-              aria-label="Email address"
-              placeholder="you@example.com"
-              className="min-w-0 flex-1"
-              required
-            />
-            <Button type="submit" $layer="brand" $kind="bevel">
-              Subscribe
-            </Button>
-          </form>
+          <ShellFooterEnd $shrink>
+            {/* Demo form: the submit handler only keeps the page in place. */}
+            <form
+              className="flex w-full max-w-sm gap-2"
+              onSubmit={(event) => event.preventDefault()}
+            >
+              <Input
+                type="email"
+                aria-label="Email address"
+                placeholder="you@example.com"
+                className="min-w-0 flex-1"
+                required
+              />
+              <Button type="submit" $layer="brand" $kind="bevel">
+                Subscribe
+              </Button>
+            </form>
+          </ShellFooterEnd>
         }
       />
     </Shell>
