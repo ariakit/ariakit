@@ -121,3 +121,103 @@ test("type reports each composed character on the composition event", async () =
 
   expect(composed).toEqual(["n", "i"]);
 });
+
+test.each([
+  { name: "Backspace on an empty field", value: "", caret: 0, key: "\b" },
+  { name: "Delete on an empty field", value: "", caret: 0, key: "\x7f" },
+  { name: "Backspace at the start", value: "abc", caret: 0, key: "\b" },
+  { name: "Delete at the end", value: "abc", caret: 3, key: "\x7f" },
+])("type does not dispatch input for $name", async ({ value, caret, key }) => {
+  const input = createInput(value);
+  const onInput = vi.fn();
+  input.addEventListener("input", onInput);
+  input.setSelectionRange(caret, caret);
+
+  await type(key, input);
+
+  expect(input.value).toBe(value);
+  expect(input.selectionStart).toBe(caret);
+  expect(input.selectionEnd).toBe(caret);
+  expect(onInput).not.toHaveBeenCalled();
+});
+
+test("type dispatches input when replacing selected text with the same text", async () => {
+  const input = createInput("ab");
+  const onInput = vi.fn();
+  input.addEventListener("input", onInput);
+  input.setSelectionRange(0, 1);
+
+  await type("a", input);
+
+  expect(input.value).toBe("ab");
+  expect(input.selectionStart).toBe(1);
+  expect(input.selectionEnd).toBe(1);
+  expect(onInput).toHaveBeenCalledOnce();
+});
+
+test("type edits an email input after keydown moves focus to it", async () => {
+  const button = document.createElement("button");
+  const input = createInput();
+  input.type = "email";
+  document.body.append(button);
+  button.addEventListener("keydown", () => input.focus());
+
+  await type("e", input);
+  await type("23", button);
+
+  expect(input.value).toBe("e23");
+  expect(input.type).toBe("email");
+  expect(document.activeElement).toBe(input);
+});
+
+test("type keeps appending to an email input across calls", async () => {
+  const input = createInput();
+  input.type = "email";
+
+  await type("ab", input);
+  await type("cd", input);
+
+  expect(input.value).toBe("abcd");
+  expect(input.type).toBe("email");
+});
+
+// DOM selection offsets count UTF-16 code units, so inserting an astral
+// character such as an emoji must move the caret past both surrogates.
+// https://github.com/ariakit/ariakit/issues/7959
+test.each([
+  { name: "into an empty field", value: "", start: 0, end: 0, expected: "😀a" },
+  { name: "at the start", value: "xy", start: 0, end: 0, expected: "😀axy" },
+  { name: "in the middle", value: "xy", start: 1, end: 1, expected: "x😀ay" },
+  { name: "at the end", value: "xy", start: 2, end: 2, expected: "xy😀a" },
+  {
+    name: "over a selection",
+    value: "xyz",
+    start: 1,
+    end: 2,
+    expected: "x😀az",
+  },
+])(
+  "type inserts an emoji followed by text $name",
+  async ({ value, start, end, expected }) => {
+    const input = createInput(value);
+    input.setSelectionRange(start, end);
+
+    await type("😀a", input);
+
+    const caret = start + "😀a".length;
+    expect(input.value).toBe(expected);
+    expect(input.selectionStart).toBe(caret);
+    expect(input.selectionEnd).toBe(caret);
+  },
+);
+
+test("type keeps emoji intact across calls", async () => {
+  const input = createInput();
+
+  await type("😀", input);
+  await type("a👍", input);
+  await type("b", input);
+
+  expect(input.value).toBe("😀a👍b");
+  expect(input.selectionStart).toBe("😀a👍b".length);
+});

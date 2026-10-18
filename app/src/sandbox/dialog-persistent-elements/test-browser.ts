@@ -18,7 +18,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await q.button("Persistent combobox action").click();
     await test.expect(q.status()).toHaveText("Combobox actions: 1");
-    await page.waitForTimeout(250);
+    // Outside interactions can request a close that React commits afterward. No
+    // state tracks that commit when the popup must stay open.
+    await flushFrames(page);
     await test.expect(q.option("Apple")).toBeVisible();
   });
 
@@ -31,16 +33,19 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
 
     // The dialog hasn't been focused yet (autoFocusOnShow={false}). Clicking
-    // the persistent field must not close it. The bounded timeout guards
-    // against the assertion passing before the dialog processes the hide.
+    // the persistent field must not close it.
     await q.textbox("Notification field").click();
     await test.expect(q.textbox("Notification field")).toBeFocused();
-    await page.waitForTimeout(250);
+    // Outside interactions can request a close that React commits afterward. No
+    // state tracks that commit when the popup must stay open.
+    await flushFrames(page);
     await test.expect(q.dialog("Dialog")).toBeVisible();
 
     // Other interactions with the persistent region must not close it either.
     await q.button("Dismiss notification").click();
-    await page.waitForTimeout(250);
+    // Outside interactions can request a close that React commits afterward. No
+    // state tracks that commit when the popup must stay open.
+    await flushFrames(page);
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
@@ -54,7 +59,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await q.textbox("Persistent form field").click();
     await test.expect(q.textbox("Persistent form field")).toBeFocused();
-    await page.waitForTimeout(250);
+    // Outside interactions can request a close that React commits afterward. No
+    // state tracks that commit when the popup must stay open.
+    await flushFrames(page);
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
@@ -67,7 +74,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
 
     await q.textbox("Notification field").click({ button: "right" });
-    await page.waitForTimeout(250);
+    // Outside interactions can request a close that React commits afterward. No
+    // state tracks that commit when the popup must stay open.
+    await flushFrames(page);
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
@@ -85,7 +94,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await q.textbox("Notification field").click();
     await test.expect(q.textbox("Notification field")).toBeFocused();
-    await page.waitForTimeout(250);
+    // Outside interactions can request a close that React commits afterward. No
+    // state tracks that commit when the popup must stay open.
+    await flushFrames(page);
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
@@ -103,7 +114,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await q.textbox("Notification field").click();
     await test.expect(q.textbox("Notification field")).toBeFocused();
-    await page.waitForTimeout(250);
+    // Outside interactions can request a close that React commits afterward. No
+    // state tracks that commit when the popup must stay open.
+    await flushFrames(page);
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
@@ -164,7 +177,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await persistentInput.focus();
     await page.mouse.up();
     await test.expect(persistentInput).toBeFocused();
-    await page.waitForTimeout(250);
+    // Outside interactions can request a close that React commits afterward. No
+    // state tracks that commit when the popup must stay open.
+    await flushFrames(page);
     await test.expect(q.dialog("Dialog")).toBeVisible();
 
     await q.textbox("Inside field").click();
@@ -173,7 +188,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.mouse.down();
     await page.mouse.up();
     await test.expect(q.textbox("Inside field")).toBeFocused();
-    await page.waitForTimeout(250);
+    // Outside interactions can request a close that React commits afterward. No
+    // state tracks that commit when the popup must stay open.
+    await flushFrames(page);
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
@@ -192,7 +209,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
       input.focus();
     });
     await test.expect(q.textbox("Disconnected shadow field")).toHaveCount(0);
-    await page.waitForTimeout(250);
+    // Outside interactions can request a close that React commits afterward. No
+    // state tracks that commit when the popup must stay open.
+    await flushFrames(page);
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 

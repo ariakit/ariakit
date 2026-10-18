@@ -1287,6 +1287,7 @@ Example:
 ```ts
 shallowEqual({ a: "a" }, {}); // false
 shallowEqual({ a: "a" }, { b: "b" }); // false
+shallowEqual({ a: undefined }, { b: undefined }); // false
 shallowEqual({ a: "a" }, { a: "a" }); // true
 shallowEqual({ a: "a" }, { a: "a", b: "b" }); // false
 ```

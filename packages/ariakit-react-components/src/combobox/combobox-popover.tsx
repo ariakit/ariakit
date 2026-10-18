@@ -379,6 +379,7 @@ export interface ComboboxPopoverOptions<T extends ElementType = TagName>
    * rendered, and `false` otherwise, since a standalone
    * [`ComboboxInput`](https://ariakit.com/reference/combobox-input) keeps focus
    * while its popup is open.
+   * @default false
    */
   autoFocusOnShow?: PopoverOptions<T>["autoFocusOnShow"];
   /**

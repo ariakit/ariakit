@@ -10,6 +10,8 @@ import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import {
   applyState,
   getDocument,
+  getWindow,
+  isElement,
   sortBasedOnDOMPosition,
   chain,
   defaultValue,
@@ -33,6 +35,23 @@ function getCommonParent(items: CollectionStoreItem[]) {
     parentElement = parentElement.parentElement;
   }
   return getDocument(parentElement).body;
+}
+
+// Keyed items can move in the DOM without registering again or changing their
+// visibility, so neither registration nor IntersectionObserver sees the move.
+// https://github.com/ariakit/ariakit/issues/7896
+function observeMovedElements(root: Element, onMove: () => void) {
+  const { MutationObserver } = getWindow(root);
+  if (typeof MutationObserver !== "function") return;
+  const observer = new MutationObserver((records) => {
+    const hasAddedElements = records.some((record) =>
+      Array.from(record.addedNodes).some(isElement),
+    );
+    if (!hasAddedElements) return;
+    onMove();
+  });
+  observer.observe(root, { childList: true, subtree: true });
+  return () => observer.disconnect();
 }
 
 interface CollectionLookup<T extends CollectionStoreItem> {
@@ -222,7 +241,19 @@ export function createCollectionStore<
         sortItems(state.renderedItems);
       }
 
-      if (typeof IntersectionObserver !== "function") return;
+      // Items without elements can't move or intersect.
+      if (!state.renderedItems.some((item) => item.element)) return;
+
+      const root = getCommonParent(state.renderedItems);
+      // Items mounted with the moved elements can register before this listener
+      // runs again, so sort the latest items rather than this snapshot.
+      const stopObservingMoves = observeMovedElements(root, () => {
+        sortItems(privateStore.getState().renderedItems);
+      });
+
+      if (typeof IntersectionObserver !== "function") {
+        return stopObservingMoves;
+      }
 
       // Scrolling fires this observer constantly, so its re-sort keeps the
       // animation frame that the publish above no longer needs.
@@ -241,7 +272,6 @@ export function createCollectionStore<
         raf = requestAnimationFrame(() => sortItems(state.renderedItems));
       };
 
-      const root = getCommonParent(state.renderedItems);
       const observer = new IntersectionObserver(ioCallback, { root });
 
       for (const item of state.renderedItems) {
@@ -252,6 +282,7 @@ export function createCollectionStore<
       return () => {
         cancelAnimationFrame(raf);
         observer.disconnect();
+        stopObservingMoves?.();
       };
     });
   });

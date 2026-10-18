@@ -303,6 +303,111 @@ function DynamicSelectors({ store }: StoreProps) {
   );
 }
 
+interface ProfileState {
+  displayName: string;
+}
+
+function ProfileAutosave() {
+  const [store] = useState(() =>
+    createStore<ProfileState>({ displayName: "Ada" }),
+  );
+  const profile = useStoreStateObject(store, {
+    directName: "displayName",
+    selectedName: (state) => state.displayName,
+  });
+  const previous = useRef(profile);
+  const [lastSaved, setLastSaved] = useState(
+    `${profile.directName}:${profile.selectedName}`,
+  );
+  const [saves, setSaves] = useState(0);
+
+  // Autosave by diffing against the previously returned result.
+  useEffect(() => {
+    const changed =
+      previous.current.directName !== profile.directName ||
+      previous.current.selectedName !== profile.selectedName;
+    previous.current = profile;
+    if (!changed) return;
+    setLastSaved(`${profile.directName}:${profile.selectedName}`);
+    setSaves((saves) => saves + 1);
+  }, [profile]);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => store.setState("displayName", "Grace")}
+      >
+        Use name Grace
+      </button>
+      <button
+        type="button"
+        onClick={() => store.setState("displayName", "Ada")}
+      >
+        Use name Ada
+      </button>
+      <p>
+        Last saved name:{" "}
+        <output aria-label="Last saved name">{lastSaved}</output>
+      </p>
+      <p>
+        Save calls: <output aria-label="Save calls">{saves}</output>
+      </p>
+    </>
+  );
+}
+
+interface OrderState {
+  contactEmail: string;
+  shippingAddress: string;
+  deliveryNote?: string;
+}
+
+function OrderFields() {
+  const [store] = useState(() =>
+    createStore<OrderState>({
+      contactEmail: "ada@example.test",
+      shippingAddress: "10 Main Street",
+      deliveryNote: undefined,
+    }),
+  );
+  const [delivery, setDelivery] = useState(true);
+  const payload = useStoreStateObject(
+    store,
+    delivery
+      ? {
+          contactEmail: "contactEmail",
+          shippingAddress: (state) => state.shippingAddress,
+          deliveryNote: "deliveryNote",
+        }
+      : { contactEmail: "contactEmail" },
+  );
+  const fields = Object.entries(payload).map(
+    ([field, value]) => `${field}=${String(value ?? "none")}`,
+  );
+
+  return (
+    <>
+      <button type="button" onClick={() => setDelivery(false)}>
+        Use pickup
+      </button>
+      <button type="button" onClick={() => setDelivery(true)}>
+        Use delivery
+      </button>
+      <button
+        type="button"
+        onClick={() => store.setState("contactEmail", "grace@example.test")}
+      >
+        Use alternate contact
+      </button>
+      <p>
+        Order fields:{" "}
+        <output aria-label="Order fields">{fields.join(", ")}</output>
+      </p>
+    </>
+  );
+}
+
 function StorePropsSetter({ store }: StoreProps) {
   const [activeSetter, setActiveSetter] = useState<"first" | "second">();
   const [[observedStore, getActiveSubscriptions]] = useState(() =>
@@ -475,6 +580,8 @@ export default function Example() {
       <MixedValues store={store} />
       <DynamicSelectors store={store} />
       <OptionalSelector store={store} />
+      <ProfileAutosave />
+      <OrderFields />
       <StorePropsSetter store={store} />
       <Controls store={store} calls={selectorCalls} />
     </>

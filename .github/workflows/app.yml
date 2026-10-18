@@ -78,36 +78,55 @@ jobs:
           - os: ubuntu-latest
             name: Chrome
             engine: chromium
-            project: chrome
+            project: chrome android
             test: xvfb-run pnpm -F app run test
+            shard: [1, 2]
+            shardWeights: "3:4"
+          - os: ubuntu-latest
+            name: Chrome
+            engine: chromium
+            project: chrome android
+            test: xvfb-run pnpm -F app run test
+            shard: [2, 2]
+            shardWeights: "3:4"
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
             test: xvfb-run pnpm -F app run test
+            shard: [1, 2]
+            shardWeights: "4:5"
           - os: ubuntu-latest
-            name: Android
-            engine: chromium
-            project: android
+            name: Firefox
+            engine: firefox
+            project: firefox
             test: xvfb-run pnpm -F app run test
+            shard: [2, 2]
+            shardWeights: "4:5"
           - os: macos-latest
             name: Safari
             engine: webkit
-            project: safari
+            project: safari ios
             test: pnpm -F app run test
             shard: [1, 2]
+            shardWeights: "3:5"
           - os: macos-latest
             name: Safari
             engine: webkit
-            project: safari
+            project: safari ios
             test: pnpm -F app run test
             shard: [2, 2]
-          - os: macos-latest
-            name: iOS
-            engine: webkit
-            project: ios
-            test: pnpm -F app run test
+            shardWeights: "3:5"
     steps:
+      # Spotlight indexes the checkout and the `pnpm install` files on the macOS
+      # runners and adds CPU load. See https://github.com/ariakit/ariakit/pull/7937
+      - name: Turn off Spotlight indexing
+        if: runner.os == 'macOS'
+        continue-on-error: true
+        run: |
+          sudo mdutil -a -i off
+          mdutil -sa
+
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
@@ -139,13 +158,23 @@ jobs:
 
       - name: Test
         id: test
+        env:
+          # Playwright splits shards by test count, so the shards finish at
+          # different times. PWTEST_SHARD_WEIGHTS (not in the Playwright docs,
+          # one integer per shard) changes the split, for example 3:5 gives
+          # shard 1 3/8 of the tests instead of 1/2. The weights come from the
+          # per-test durations of 4 runs. Safari 5:7 had a median gap of
+          # 3.6m between its shards (shard 1 slower in 3 of 4), and 3:5
+          # simulates to a gap of 0.3m. Chrome 3:4 and Firefox 4:5 are
+          # already within 0.5m.
+          PWTEST_SHARD_WEIGHTS: ${{ matrix.shardWeights }}
         run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual ${{ matrix.shard && format('--shard={0}', join(matrix.shard, '/')) || '' }}
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v7
         with:
-          name: app-${{ matrix.project }}${{ matrix.shard && format('-{0}', join(matrix.shard, '-')) || '' }}-test-results
+          name: app-${{ matrix.name }}${{ matrix.shard && format('-{0}', join(matrix.shard, '-')) || '' }}-test-results
           path: app/test-results
           retention-days: 7
 
@@ -155,22 +184,34 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
     permissions:
+      actions: read
       contents: read
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
-            shard: linux
-            engines: chromium firefox
-            projects: chrome firefox
+            shard: chrome
+            engine: chromium
+            test: xvfb-run pnpm -F app run test-visual
+          - os: ubuntu-latest
+            shard: firefox
+            engine: firefox
             test: xvfb-run pnpm -F app run test-visual
           - os: macos-latest
             shard: safari
-            engines: webkit
-            projects: safari
+            engine: webkit
             test: pnpm -F app run test-visual
     steps:
+      # Spotlight indexes the checkout and the `pnpm install` files on the macOS
+      # runners and adds CPU load. See https://github.com/ariakit/ariakit/pull/7937
+      - name: Turn off Spotlight indexing
+        if: runner.os == 'macOS'
+        continue-on-error: true
+        run: |
+          sudo mdutil -a -i off
+          mdutil -sa
+
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
@@ -187,7 +228,7 @@ jobs:
           - name: Install Playwright
             uses: ./.github/workflows/install-playwright
             with:
-              engines: ${{ matrix.engines }}
+              engines: ${{ matrix.engine }}
               workspace: app
 
           - name: Download app artifact
@@ -202,8 +243,58 @@ jobs:
               name: nextjs-dist
               path: nextjs/.open-next
 
+      # The capture of the base commit lets the adapter accept a first
+      # screenshot that has a known image digest. The digests are only hints,
+      # so this step never fails the job. Only main push runs are sources.
+      # See https://github.com/ariakit/visonaut/pull/565
+      - name: Download previous capture
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          SHARD: ${{ matrix.shard }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+        run: |
+          set +e
+          find_run() {
+            gh run list --repo "$REPOSITORY" --workflow ci.yml --branch main \
+              --event push "$@" --limit 1 \
+              --json databaseId --jq '.[0].databaseId // empty'
+          }
+          # The artifact name has the run attempt. Take the newest one that
+          # has not expired.
+          find_artifact() {
+            gh api "repos/$REPOSITORY/actions/runs/$1/artifacts?per_page=100" \
+              --jq "[.artifacts[] | select(.expired | not) | select(.name | test(\"^visonaut-capture-[0-9]+-[0-9]+-$SHARD\$\"))] | sort_by(.created_at) | last | .name // empty"
+          }
+          # A newer push to main often cancels the run of the base commit. Its
+          # capture artifact is still usable, because a shard uploads it only
+          # after its visual tests pass.
+          base_run=""
+          if [ -n "$BASE_SHA" ]; then
+            base_run="$(find_run --commit "$BASE_SHA" --status completed)"
+          fi
+          directory="$RUNNER_TEMP/visonaut-previous"
+          for run in "$base_run" "$(find_run --status success)"; do
+            [ -n "$run" ] || continue
+            artifact="$(find_artifact "$run")"
+            [ -n "$artifact" ] || continue
+            rm -rf "$directory"
+            if gh run download "$run" --repo "$REPOSITORY" --name "$artifact" --dir "$directory" &&
+              [ -f "$directory/manifest.json" ]; then
+              echo "VISONAUT_PREVIOUS_CAPTURE=$directory" >> "$GITHUB_ENV"
+              echo "Previous capture: run $run, artifact $artifact"
+              exit 0
+            fi
+          done
+          echo "Previous capture: none found"
+          exit 0
+
       - name: Test visual
-        run: ${{ matrix.test }} --project ${{ matrix.projects }} --grep @visual --output test-results/test-visual
+        env:
+          VISUAL_SHARD: ${{ matrix.shard }}
+        run: ${{ matrix.test }} --project ${{ matrix.shard }} --grep @visual --output test-results/test-visual
 
       - name: Upload captures
         uses: actions/upload-artifact@v7
@@ -211,13 +302,15 @@ jobs:
           name: visonaut-capture-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}
           path: ${{ runner.temp }}/visonaut
           if-no-files-found: error
-          retention-days: 1
+          # Pull requests download the capture of their base commit, which can
+          # be older than one day.
+          retention-days: ${{ github.event_name == 'push' && 7 || 1 }}
 
       - name: Upload test results to GitHub
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
-          name: app-test-results-${{ matrix.os }}
+          name: app-visual-${{ matrix.shard }}-test-results
           path: app/test-results
           if-no-files-found: ignore
           retention-days: 7
@@ -257,7 +350,7 @@ jobs:
         id: submit
         env:
           GH_TOKEN: ${{ github.token }}
-        run: visonaut submit --shard linux --shard safari
+        run: visonaut submit --shard chrome --shard firefox --shard safari
 
       - name: Upload receipt
         uses: actions/upload-artifact@v7

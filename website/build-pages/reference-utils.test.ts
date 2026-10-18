@@ -1,3 +1,5 @@
+import { mkdtempDisposableSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 import { getReferences } from "./reference-utils.js";
@@ -47,6 +49,44 @@ function getReturnProp(reference: Reference, name: string) {
   return prop;
 }
 
+test("inherits descriptions and tags independently", () => {
+  using dir = mkdtempDisposableSync(join(tmpdir(), "ariakit-reference-"));
+  const filename = join(dir.path, "widget.ts");
+  writeFileSync(
+    filename,
+    `
+interface BaseOptions {
+  /** Base description.
+   * @default true
+   * @deprecated Base deprecation.
+   */
+  value?: boolean;
+}
+interface DescriptionOptions extends BaseOptions {
+  /** Local description. */
+  value?: boolean;
+}
+interface WidgetOptions extends DescriptionOptions {
+  value?: boolean;
+}
+interface TaggedOptions extends BaseOptions {
+  /** @default false */
+  value?: boolean;
+}
+export function Widget(_props: WidgetOptions) { return null; }
+export function Tagged(_props: TaggedOptions) { return null; }
+`,
+  );
+  const inherited = getProp(getReference(filename, "Widget"), "value");
+  expect(inherited.description).toBe("Local description.");
+  expect(inherited.defaultValue).toBe("true");
+  expect(inherited.deprecated).toBe("Base deprecation.");
+  const tagged = getProp(getReference(filename, "Tagged"), "value");
+  expect(tagged.description).toBe("Base description.");
+  expect(tagged.defaultValue).toBe("false");
+  expect(tagged.deprecated).toBe(false);
+});
+
 test.each([
   ["form", "FormField", "FormControl"],
   ["menu", "MenuBar", "Menubar"],
@@ -74,6 +114,78 @@ test("uses props parameters as reference props", () => {
   });
 
   expect(props).toContain("defaultValues");
+});
+
+test.each([
+  ["toolbar", "Toolbar", "orientation", '"horizontal"'],
+  ["toolbar", "Toolbar", "focusLoop", "true"],
+  ["toolbar", "useToolbarStore", "orientation", '"horizontal"'],
+  ["toolbar", "useToolbarStore", "focusLoop", "true"],
+  ["combobox", "ComboboxPopover", "modal", "false"],
+  ["combobox", "ComboboxPopover", "portal", "false"],
+])("preserves inherited %s/%s %s metadata", (module, name, propName, value) => {
+  const filename = join(
+    process.cwd(),
+    `packages/ariakit-react/src/${module}.ts`,
+  );
+  const prop = getProp(getReference(filename, name), propName);
+  expect(prop.description).not.toBe("");
+  expect(prop.defaultValue).toBe(value);
+  expect(prop.optional).toBe(true);
+});
+
+test.each([
+  ["composite", "CompositeItem"],
+  ["menu", "MenuItem"],
+  ["tab", "Tab"],
+])("inherits the default below the local %s/%s description", (module, name) => {
+  const filename = join(
+    process.cwd(),
+    `packages/ariakit-react/src/${module}.ts`,
+  );
+  const prop = getProp(getReference(filename, name), "shouldRegisterItem");
+  expect(prop.description).toContain("won't be accessible via arrow keys");
+  expect(prop.defaultValue).toBe("true");
+  expect(prop.optional).toBe(true);
+});
+
+test.each([
+  ["combobox", "ComboboxProvider", "focusLoop", "true"],
+  ["combobox", "useComboboxStore", "focusWrap", "true"],
+  ["combobox", "ComboboxProvider", "compositeElementInFocusOrder", "true"],
+  ["combobox", "ComboboxItem", "focusOnHover", "false"],
+  ["combobox", "ComboboxPopover", "autoFocusOnShow", "false"],
+  ["menu", "MenuButton", "typeahead", "false"],
+  [
+    "composite",
+    "CompositeSeparator",
+    "orientation",
+    'orientation === "horizontal" ? "vertical" : "horizontal"',
+  ],
+])("uses the local %s/%s %s default", (module, name, propName, value) => {
+  const filename = join(
+    process.cwd(),
+    `packages/ariakit-react/src/${module}.ts`,
+  );
+  expect(getProp(getReference(filename, name), propName).defaultValue).toBe(
+    value,
+  );
+});
+
+test.each([
+  ["menu", "Menu", "https://ariakit.com/examples/menubar-navigation"],
+  ["tooltip", "Tooltip", "https://ariakit.com/examples/tooltip-framer-motion"],
+])("preserves %s hideTimeout live examples", (module, component, example) => {
+  const filename = join(
+    process.cwd(),
+    `packages/ariakit-react/src/${module}.ts`,
+  );
+  for (const name of [`${component}Provider`, `use${component}Store`]) {
+    const prop = getProp(getReference(filename, name), "hideTimeout");
+    expect(prop.description).toContain("Live examples:");
+    expect(prop.description).toContain(example);
+    expect(prop.defaultValue).toBe("0");
+  }
 });
 
 test("uses typed destructured props parameters as reference props", () => {

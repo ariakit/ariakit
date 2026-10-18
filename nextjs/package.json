@@ -20,11 +20,11 @@
     "@ariakit/react": "workspace:*",
     "@ariakit/ui": "workspace:*",
     "next": "16.2.12",
-    "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "1.20.10",
+    "@opennextjs/cloudflare": "1.20.12",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "24.19.2",
     "@types/react": "19.3.0",
@@ -33,6 +33,6 @@
     "tailwindcss": "4.3.3",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
-    "wrangler": "4.149.0"
+    "wrangler": "4.151.0"
   }
 }

@@ -25,12 +25,6 @@ const nextjsPort = Number(process.env.NEXTJS_PORT) || 3000;
 const inspectorPort = Number(process.env.APP_INSPECTOR_PORT) || (CI ? 9339 : 0);
 const nextjsInspectorPort =
   Number(process.env.NEXTJS_INSPECTOR_PORT) || (CI ? 9340 : 0);
-const visualShard =
-  CI && process.env.VISUAL_TEST === "true"
-    ? process.platform === "darwin"
-      ? "safari"
-      : "linux"
-    : undefined;
 
 function requiredEnv(name: string) {
   const value = process.env[name];
@@ -38,8 +32,13 @@ function requiredEnv(name: string) {
   return value;
 }
 
-const visualProjects =
-  visualShard === "linux" ? ["chrome", "firefox"] : ["safari"];
+// Each Visual Capture job in app.yml captures one project, and its shard key is
+// the project name.
+const visualShard =
+  CI && process.env.VISUAL_TEST === "true"
+    ? requiredEnv("VISUAL_SHARD")
+    : undefined;
+const visualProjects = visualShard ? [visualShard] : [];
 const captureDirectory = visualShard
   ? path.join(requiredEnv("RUNNER_TEMP"), "visonaut")
   : undefined;
@@ -78,8 +77,8 @@ export default defineConfig({
   reporter: visualShard
     ? [
         ["github"],
-        ["dot"],
-        ["./src/test-utils/visual-duration-reporter.ts"],
+        // Without a TTY, list prints one line with the duration per test result.
+        ["list"],
         [
           "@visonaut/playwright/reporter",
           {
@@ -112,7 +111,7 @@ export default defineConfig({
         ],
       ]
     : CI
-      ? [["github"], ["dot"]]
+      ? [["github"], ["list"]]
       : [["list"]],
   retries: 1,
   testDir: "src",

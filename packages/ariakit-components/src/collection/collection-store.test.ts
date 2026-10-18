@@ -818,6 +818,65 @@ test("orders rendered items by DOM position", async () => {
   }
 });
 
+// https://github.com/ariakit/ariakit/issues/7896
+test("reorders rendered items when their elements move", async () => {
+  const store = createCollectionStore();
+  const stop = init(store);
+  const list = document.createElement("div");
+  const first = document.createElement("button");
+  const second = document.createElement("button");
+  const third = document.createElement("button");
+  list.append(first, second, third);
+  document.body.append(list);
+
+  try {
+    store.renderItem({ id: "first", element: first });
+    store.renderItem({ id: "second", element: second });
+    store.renderItem({ id: "third", element: third });
+
+    await expect
+      .poll(() => store.getState().renderedItems.map((item) => item.id))
+      .toEqual(["first", "second", "third"]);
+
+    // Moving the elements doesn't register the items again.
+    list.insertBefore(third, second);
+
+    await expect
+      .poll(() => store.getState().renderedItems.map((item) => item.id))
+      .toEqual(["first", "third", "second"]);
+  } finally {
+    stop();
+  }
+});
+
+test("keeps items that register along with a DOM change", async () => {
+  const store = createCollectionStore();
+  const stop = init(store);
+  const list = document.createElement("div");
+  const first = document.createElement("button");
+  const second = document.createElement("button");
+  list.append(first);
+  document.body.append(list);
+
+  try {
+    store.renderItem({ id: "first", element: first });
+
+    await expect
+      .poll(() => store.getState().renderedItems.map((item) => item.id))
+      .toEqual(["first"]);
+
+    // The DOM change is observed before the store reacts to the new item.
+    list.append(second);
+    store.renderItem({ id: "second", element: second });
+
+    await expect
+      .poll(() => store.getState().renderedItems.map((item) => item.id))
+      .toEqual(["first", "second"]);
+  } finally {
+    stop();
+  }
+});
+
 test("updates rendered items after sorting a large collection", async () => {
   const store = createCollectionStore<{
     id: string;

@@ -11,6 +11,7 @@ import {
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import { test } from "./fixtures.ts";
+import { waitForFonts } from "./visual.ts";
 
 /**
  * Navigates to `url` and waits for it to be ready for a browser test. Waits for
@@ -86,20 +87,30 @@ export function withFramework(
   if (!id) {
     throw new Error(`Cannot parse preview id from ${dirname}`);
   }
-  const frameworkNames: readonly Framework[] = id.includes("nextjs")
+  const isNextjs = id.includes("nextjs");
+  const frameworkNames: readonly Framework[] = isNextjs
     ? ["react"]
     : getPreviewFrameworksSync(dirname);
   for (const framework of frameworkNames) {
     test.describe(framework, { tag: `@${framework}` }, () => {
       test.beforeEach(async ({ page, javaScriptEnabled }) => {
-        await gotoAndSettle(page, `/${framework}/previews/${id}/`);
+        const url = `/${framework}/previews/${id}/`;
+        // Next.js previews contain no Astro island that marks hydration and
+        // prefetch routes after load, and JavaScript-disabled previews never
+        // hydrate, so network idle remains their settle signal.
+        if (isNextjs || !javaScriptEnabled) {
+          await gotoAndSettle(page, url);
+          return;
+        }
         // Generated Astro previews contain one eager client:load island. Its
         // wrapper marks the document from a mount effect after the example
-        // commits. JavaScript-disabled previews skip the check, while Next.js
-        // previews contain no Astro island and pass through it immediately.
-        if (javaScriptEnabled) {
-          await page.waitForFunction(isPreviewHydrated);
-        }
+        // commits. That mark replaces the network-idle wait, which costs a
+        // fixed 500ms quiet window in each test.
+        await page.goto(url, { waitUntil: "load" });
+        await page.waitForFunction(isPreviewHydrated);
+        // Some previews, such as those that render into a shadow root, start
+        // loading the font only when they render text after hydration.
+        await waitForFonts(page);
       });
       return callback({ id, framework, query, test });
     });
