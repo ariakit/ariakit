@@ -124,7 +124,13 @@ export default function Example() {
           >
             <ak.RadioGroup aria-label="Mode" render={<ButtonGroup />}>
               {modes.map((item) => (
-                <ak.Radio key={item.id} value={item.id} render={<Button />}>
+                <ak.Radio
+                  key={item.id}
+                  value={item.id}
+                  // Renders the radio role before hydration.
+                  type="button"
+                  render={<Button />}
+                >
                   <ButtonLabel>{item.label}</ButtonLabel>
                 </ak.Radio>
               ))}
@@ -354,6 +360,8 @@ export default function Example() {
                   key={item.id}
                   value={item.id}
                   aria-label={item.label}
+                  // Renders the radio role before hydration.
+                  type="button"
                   render={<Button />}
                 >
                   <ButtonSlot>

@@ -169,6 +169,8 @@ export default function Example() {
                     <ak.Radio
                       key={option.value}
                       value={option.value}
+                      // Renders the radio role before hydration.
+                      type="button"
                       render={<Button />}
                     >
                       {option.label}

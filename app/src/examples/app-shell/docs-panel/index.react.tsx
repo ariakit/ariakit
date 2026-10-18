@@ -373,6 +373,8 @@ export default function Example() {
                       value={accent.hue}
                       aria-label={accent.name}
                       className="size-8 justify-center rounded-full p-0 aria-[checked=true]:ring-2 aria-[checked=true]:ring-current"
+                      // Renders the radio role before hydration.
+                      type="button"
                       render={<Button />}
                     >
                       <Layer
@@ -397,10 +399,20 @@ export default function Example() {
                 }}
               >
                 <ak.RadioGroup aria-label="Density" render={<ButtonGroup />}>
-                  <ak.Radio value="compact" render={<Button />}>
+                  <ak.Radio
+                    value="compact"
+                    // Renders the radio role before hydration.
+                    type="button"
+                    render={<Button />}
+                  >
                     <ButtonLabel>Compact</ButtonLabel>
                   </ak.Radio>
-                  <ak.Radio value="comfortable" render={<Button />}>
+                  <ak.Radio
+                    value="comfortable"
+                    // Renders the radio role before hydration.
+                    type="button"
+                    render={<Button />}
+                  >
                     <ButtonLabel>Comfortable</ButtonLabel>
                   </ak.Radio>
                   <ButtonGlider />
