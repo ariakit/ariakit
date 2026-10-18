@@ -1,10 +1,13 @@
 import { afterEach, expect, test } from "vitest";
 import {
+  disableFocus,
+  disableFocusIn,
   getAllTabbableIn,
   getClosestFocusable,
   getFirstTabbableIn,
   getLastTabbableIn,
   isTabbable,
+  restoreFocusIn,
 } from "./focus.ts";
 
 function setVisible(element: Element) {
@@ -244,4 +247,150 @@ test("getClosestFocusable returns null when no focusable ancestor exists", () =>
   setNotVisible(wrapper);
 
   expect(getClosestFocusable(inner)).toBe(null);
+});
+
+function appendFrame(parent: Element, html = "") {
+  const frame = document.createElement("iframe");
+  parent.append(frame);
+  const frameBody = frame.contentDocument?.body;
+  if (!frameBody) {
+    throw new Error("Expected frame body");
+  }
+  frameBody.innerHTML = html;
+  setVisible(frame);
+  for (const element of frameBody.querySelectorAll("*")) {
+    setVisible(element);
+  }
+  return { frame, frameBody };
+}
+
+function getElement(root: ParentNode, selector: string) {
+  const element = root.querySelector<HTMLElement>(selector);
+  if (!element) {
+    throw new Error(`Expected ${selector}`);
+  }
+  return element;
+}
+
+// https://github.com/ariakit/ariakit/issues/7963
+test("restoreFocusIn restores saved tabindex values inside iframes", () => {
+  const container = document.createElement("div");
+  document.body.append(container);
+  const first = appendFrame(
+    container,
+    `
+      <button id="absent">Absent</button>
+      <button id="zero" tabindex="0">Zero</button>
+    `,
+  );
+  const second = appendFrame(
+    container,
+    `<button id="positive" tabindex="2">Positive</button>`,
+  );
+  const absent = getElement(first.frameBody, "#absent");
+  const zero = getElement(first.frameBody, "#zero");
+  const positive = getElement(second.frameBody, "#positive");
+
+  for (let i = 0; i < 2; i++) {
+    // disableFocusIn can skip the second iframe, so disable each element
+    // directly to cover restoring several iframes.
+    // https://github.com/ariakit/ariakit/issues/6328
+    disableFocus(absent);
+    disableFocus(zero);
+    disableFocus(positive);
+
+    restoreFocusIn(container);
+    expect(absent.getAttribute("tabindex")).toBeNull();
+    expect(zero.getAttribute("tabindex")).toBe("0");
+    expect(positive.getAttribute("tabindex")).toBe("2");
+    expect(absent.getAttribute("data-tabindex")).toBeNull();
+    expect(zero.getAttribute("data-tabindex")).toBeNull();
+    expect(positive.getAttribute("data-tabindex")).toBeNull();
+  }
+});
+
+// https://github.com/ariakit/ariakit/issues/7963
+test("restoreFocusIn restores nested iframes", () => {
+  const container = document.createElement("div");
+  document.body.append(container);
+  const outer = appendFrame(container);
+  const inner = appendFrame(outer.frameBody, `<button>Nested</button>`);
+  const button = getElement(inner.frameBody, "button");
+
+  disableFocusIn(container);
+  expect(button.getAttribute("tabindex")).toBe("-1");
+
+  restoreFocusIn(container);
+  expect(button.getAttribute("tabindex")).toBeNull();
+});
+
+// https://github.com/ariakit/ariakit/issues/7963
+test("restoreFocusIn restores an iframe passed as the container", () => {
+  const { frame, frameBody } = appendFrame(
+    document.body,
+    `<button>Inside</button>`,
+  );
+  const button = getElement(frameBody, "button");
+
+  disableFocusIn(frame, true);
+  expect(button.getAttribute("tabindex")).toBe("-1");
+
+  restoreFocusIn(frame);
+  expect(button.getAttribute("tabindex")).toBeNull();
+});
+
+// https://github.com/ariakit/ariakit/issues/7963
+test("restoreFocusIn restores iframes hidden after focus was disabled", () => {
+  const container = document.createElement("div");
+  document.body.append(container);
+  const { frame, frameBody } = appendFrame(
+    container,
+    `<button>Hidden</button>`,
+  );
+  const button = getElement(frameBody, "button");
+
+  disableFocusIn(container);
+  setNotVisible(frame);
+  setNotVisible(button);
+
+  restoreFocusIn(container);
+  expect(button.getAttribute("tabindex")).toBeNull();
+});
+
+// https://github.com/ariakit/ariakit/issues/7963
+test("restoreFocusIn skips iframes without an accessible document", () => {
+  const container = document.createElement("div");
+  container.innerHTML = `<button>Outer</button>`;
+  document.body.append(container);
+  const outerButton = getElement(container, "button");
+  setVisible(outerButton);
+  const { frame } = appendFrame(container, `<button>Removed</button>`);
+
+  disableFocusIn(container);
+  const crossOriginFrame = document.createElement("iframe");
+  container.append(crossOriginFrame);
+  // A cross-origin iframe exposes no contentDocument.
+  Object.defineProperty(crossOriginFrame, "contentDocument", { value: null });
+  frame.remove();
+
+  expect(() => restoreFocusIn(container)).not.toThrow();
+  expect(outerButton.getAttribute("tabindex")).toBeNull();
+});
+
+// https://github.com/ariakit/ariakit/issues/7963
+test("restoreFocusIn restores the current document of a navigated iframe", () => {
+  const container = document.createElement("div");
+  document.body.append(container);
+  const { frame } = appendFrame(container, `<button>Old</button>`);
+
+  disableFocusIn(container);
+  // Navigation replaces the frame document. Elements from the old document are
+  // not restored, and the new document keeps its own tabindex values.
+  const nextDocument = document.implementation.createHTMLDocument();
+  nextDocument.body.innerHTML = `<button tabindex="0">New</button>`;
+  Object.defineProperty(frame, "contentDocument", { value: nextDocument });
+  const nextButton = getElement(nextDocument.body, "button");
+
+  expect(() => restoreFocusIn(container)).not.toThrow();
+  expect(nextButton.getAttribute("tabindex")).toBe("0");
 });
