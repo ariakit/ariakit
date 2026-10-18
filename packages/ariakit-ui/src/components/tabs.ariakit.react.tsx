@@ -138,9 +138,14 @@ function hasTextChildren(tab: React.ReactNode | TabProps): tab is TextTabProps {
 /**
  * Renders one entry of the `tabs` prop. Text, alone or as the `children` of a
  * props object, is a label, so it goes in a `TabLabel` and holds one line like
- * the label of a tab written as JSX.
+ * the label of a tab written as JSX. Nullish and boolean entries, such as
+ * `canEdit && "Settings"`, render no tab.
  */
 function renderTab(tab: React.ReactNode | TabProps, props?: TabProps) {
+  // createRender turns null into a default element, so empty entries must
+  // return here. Otherwise they render unnamed tabs.
+  if (tab == null) return null;
+  if (typeof tab === "boolean") return null;
   if (isText(tab)) {
     return createRender(Tab, { children: <TabLabel>{tab}</TabLabel> }, props);
   }
@@ -186,6 +191,7 @@ export function TabList({ tabs, children, ...props }: TabListProps) {
       {Array.isArray(tabs)
         ? tabs.map((tab, index) => {
             const element = renderTab(tab);
+            if (!element) return null;
             // Prefixes prevent key/index collisions. Children.toArray clones
             // still cause missing-key warnings in react-dom 19.
             const key =
