@@ -301,6 +301,24 @@ test("phone menu opens a navigation drawer", async ({ page, q }) => {
   await expect(q.navigation("Menu")).not.toBeVisible();
 });
 
+test("phone menu marks only the page entry on an example page", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await gotoAndSettle(page, examplePath);
+  await q.button("Open menu").click();
+  const menu = q.navigation("Menu");
+  await expect(query(menu).link("App Shell")).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await expect(query(menu).link("Examples")).not.toHaveAttribute(
+    "aria-current",
+  );
+  await expect(menu.locator('[aria-current="page"]')).toHaveCount(1);
+});
+
 test("phone menu moves focus and closes with Escape", async ({ page, q }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await gotoAndSettle(page, examplePath);

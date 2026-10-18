@@ -90,6 +90,13 @@ const sections = collections.map(({ type, label }) =>
   getLink(`/${navigationFramework}/${type}/`, label),
 );
 
+// The drawer lists the sections with the entries, so a section is current
+// only on its own page there, and only one link in the menu is the page.
+const drawerSections = sections.map((link) => ({
+  ...link,
+  current: link.href === pathname,
+}));
+
 const navigation = collections
   .filter(({ entries }) => entries.length > 0)
   .map(({ type, label, entries }) => ({
@@ -210,7 +217,7 @@ const navigation = collections
           </ShellSidebarHeader>
           <ShellSidebarBody>
             <AppNavigation
-              groups={[{ label: "Sections", links: sections }, ...navigation]}
+              groups={[{ label: "Sections", links: drawerSections }, ...navigation]}
             />
             <div class="grid gap-6 px-3 pt-6 pb-3">
               <span class="ak-ink-70 text-xs font-medium">Theme</span>
