@@ -52,7 +52,8 @@ interface GetNextjsUrlFromRequestParams {
 
 /**
  * Derives the Next.js app URL from the current request URL. This allows dynamic
- * URL determination at runtime without needing build-time configuration.
+ * URL determination at runtime without needing build-time configuration. The
+ * request query string is preserved.
  *
  * URL mapping:
  * - localhost:* → http://localhost:{NEXTJS_PORT || 3000}
@@ -71,7 +72,10 @@ export function getNextjsUrlFromRequest({
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   try {
     const url = new URL(requestUrl);
-    const { hostname, protocol } = url;
+    const { hostname, protocol, search } = url;
+    // Copy the raw search string to keep repeated keys and encoded values that
+    // shared example links can carry.
+    const pathWithSearch = `${normalizedPath}${search}`;
     // Development: localhost
     if (
       hostname === "localhost" ||
@@ -79,7 +83,7 @@ export function getNextjsUrlFromRequest({
       hostname === "0.0.0.0"
     ) {
       const port = env?.NEXTJS_PORT || NEXTJS_DEFAULT_PORT;
-      return `http://localhost:${port}${normalizedPath}`;
+      return `http://localhost:${port}${pathWithSearch}`;
     }
     // Preview deployment on workers.dev
     if (hostname.endsWith(".workers.dev")) {
@@ -87,10 +91,10 @@ export function getNextjsUrlFromRequest({
       const match = hostname.match(/^([^.]+)\.ariakit-preview\.workers\.dev$/);
       if (match) {
         const alias = match[1];
-        return `${protocol}//${alias}.${NEXTJS_WORKERS_DOMAIN}${normalizedPath}`;
+        return `${protocol}//${alias}.${NEXTJS_WORKERS_DOMAIN}${pathWithSearch}`;
       }
       // No alias, use main workers domain
-      return `${protocol}//${NEXTJS_WORKERS_DOMAIN}${normalizedPath}`;
+      return `${protocol}//${NEXTJS_WORKERS_DOMAIN}${pathWithSearch}`;
     }
     // Production or custom domain on ariakit.com (or legacy ariakit.org)
     if (
@@ -99,10 +103,10 @@ export function getNextjsUrlFromRequest({
       hostname.endsWith(".ariakit.org") ||
       hostname === "ariakit.org"
     ) {
-      return `${protocol}//${NEXTJS_PRODUCTION_DOMAIN}${normalizedPath}`;
+      return `${protocol}//${NEXTJS_PRODUCTION_DOMAIN}${pathWithSearch}`;
     }
     // Fallback: replace hostname with production Next.js domain
-    return `${protocol}//${NEXTJS_PRODUCTION_DOMAIN}${normalizedPath}`;
+    return `${protocol}//${NEXTJS_PRODUCTION_DOMAIN}${pathWithSearch}`;
   } catch {
     // If URL parsing fails, fallback to production
     return `https://${NEXTJS_PRODUCTION_DOMAIN}${normalizedPath}`;

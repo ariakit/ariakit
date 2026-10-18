@@ -126,6 +126,55 @@ test.each([
     expected:
       "https://ariakit-nextjs.workers.dev/react/previews/counter-nextjs/",
   },
+  {
+    name: "preserves shared filter state for localhost requests",
+    requestUrl:
+      "http://localhost:4321/react/previews/combobox-select-nextjs-app-router/?lang=fr&status=draft&status=published",
+    path: "/combobox-select-nextjs-app-router",
+    env: { NEXTJS_PORT: "9000" },
+    expected:
+      "http://localhost:9000/combobox-select-nextjs-app-router?lang=fr&status=draft&status=published",
+  },
+  {
+    name: "preserves encoded query values",
+    requestUrl:
+      "http://localhost/react/previews/counter-nextjs/?q=a%20b%26c&q=%E2%9C%93",
+    path: "/counter-nextjs",
+    expected: "http://localhost:3000/counter-nextjs?q=a%20b%26c&q=%E2%9C%93",
+  },
+  {
+    name: "omits an empty query",
+    requestUrl: "http://localhost/react/previews/counter-nextjs/?",
+    path: "/counter-nextjs",
+    expected: "http://localhost:3000/counter-nextjs",
+  },
+  {
+    name: "preserves the query for nested preview ids",
+    requestUrl: "https://ariakit.com/react/previews/menu-nextjs/nested/?tab=2",
+    path: "/menu-nextjs/nested",
+    expected: "https://nextjs.ariakit.com/menu-nextjs/nested?tab=2",
+  },
+  {
+    name: "preserves the query for aliased workers.dev requests",
+    requestUrl:
+      "https://pr-123.ariakit-preview.workers.dev/react/previews/counter-nextjs/?lang=fr",
+    path: "/counter-nextjs",
+    expected:
+      "https://pr-123.ariakit-nextjs.workers.dev/counter-nextjs?lang=fr",
+  },
+  {
+    name: "preserves the query for bare workers.dev requests",
+    requestUrl:
+      "https://ariakit-preview.workers.dev/react/previews/counter-nextjs/?lang=fr",
+    path: "/counter-nextjs",
+    expected: "https://ariakit-nextjs.workers.dev/counter-nextjs?lang=fr",
+  },
+  {
+    name: "preserves the query for unknown hosts",
+    requestUrl: "https://example.com/react/previews/counter-nextjs/?lang=fr",
+    path: "/counter-nextjs",
+    expected: "https://nextjs.ariakit.com/counter-nextjs?lang=fr",
+  },
 ])("getNextjsUrlFromRequest $name", ({ requestUrl, path, env, expected }) => {
   expect(getNextjsUrlFromRequest({ requestUrl, path, env })).toBe(expected);
 });
