@@ -110,7 +110,11 @@ export function type(
           const firstPartEnd = options.isComposing ? start - 1 : start;
           const firstPart = input.value.slice(0, firstPartEnd);
           const lastPart = input.value.slice(end, input.value.length);
-          nextCaretPosition = start + 1;
+          // Selection offsets count UTF-16 code units, and `char` holds both
+          // surrogates of an astral character such as an emoji.
+          nextCaretPosition = options.isComposing
+            ? start + 1
+            : start + char.length;
           value = `${firstPart}${char}${lastPart}`;
         }
 

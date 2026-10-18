@@ -180,3 +180,44 @@ test("type keeps appending to an email input across calls", async () => {
   expect(input.value).toBe("abcd");
   expect(input.type).toBe("email");
 });
+
+// DOM selection offsets count UTF-16 code units, so inserting an astral
+// character such as an emoji must move the caret past both surrogates.
+// https://github.com/ariakit/ariakit/issues/7959
+test.each([
+  { name: "into an empty field", value: "", start: 0, end: 0, expected: "😀a" },
+  { name: "at the start", value: "xy", start: 0, end: 0, expected: "😀axy" },
+  { name: "in the middle", value: "xy", start: 1, end: 1, expected: "x😀ay" },
+  { name: "at the end", value: "xy", start: 2, end: 2, expected: "xy😀a" },
+  {
+    name: "over a selection",
+    value: "xyz",
+    start: 1,
+    end: 2,
+    expected: "x😀az",
+  },
+])(
+  "type inserts an emoji followed by text $name",
+  async ({ value, start, end, expected }) => {
+    const input = createInput(value);
+    input.setSelectionRange(start, end);
+
+    await type("😀a", input);
+
+    const caret = start + "😀a".length;
+    expect(input.value).toBe(expected);
+    expect(input.selectionStart).toBe(caret);
+    expect(input.selectionEnd).toBe(caret);
+  },
+);
+
+test("type keeps emoji intact across calls", async () => {
+  const input = createInput();
+
+  await type("😀", input);
+  await type("a👍", input);
+  await type("b", input);
+
+  expect(input.value).toBe("😀a👍b");
+  expect(input.selectionStart).toBe("😀a👍b".length);
+});
