@@ -86,6 +86,7 @@ export default function Example() {
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
   const layersId = useId();
   const propertiesId = useId();
+  const fillLabelId = useId();
   const selectedLayer = layers.find((layer) => layer.id === selectedLayerId);
   const outlineClass = (layerId: string) =>
     selectedLayerId === layerId ? selectedClass : "";
@@ -106,9 +107,9 @@ export default function Example() {
                 <PanelLeft />
               </ButtonSlot>
             </Button>
-            <span className="truncate font-medium">
+            <ak.Heading className="truncate font-medium">
               Spring Sale Landing Page
-            </span>
+            </ak.Heading>
           </div>
         </ShellHeaderStart>
         <ShellHeaderCenter>
@@ -304,7 +305,9 @@ export default function Example() {
                 ))}
               </div>
               <div className="grid grid-cols-1 gap-1.5 text-sm">
-                <span className="ak-ink-70">Fill</span>
+                <span id={fillLabelId} className="ak-ink-70">
+                  Fill
+                </span>
                 <div className="flex items-center gap-2">
                   <Frame
                     aria-hidden
@@ -315,6 +318,7 @@ export default function Example() {
                     style={{ backgroundColor: selectedLayer.fill }}
                   />
                   <Input
+                    aria-labelledby={fillLabelId}
                     defaultValue={selectedLayer.fill}
                     className="min-w-0 flex-1"
                   />
