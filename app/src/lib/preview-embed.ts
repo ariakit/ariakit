@@ -343,8 +343,16 @@ export function setupPreviewEmbed() {
   postLocation();
 }
 
-/** The inline script that runs `setupPreviewEmbed` in a preview page. */
-export const previewEmbedScript = `(${setupPreviewEmbed.toString()})();`;
+/**
+ * The inline script that runs `setupPreviewEmbed` in a preview page. Bundlers
+ * that keep function names, such as esbuild in the Next.js Worker build, wrap
+ * nested functions in a `__name` helper from the module scope, which the
+ * serialized function cannot reach. So the script defines its own.
+ */
+export const previewEmbedScript = `(() => {
+  const __name = (target) => target;
+  (${setupPreviewEmbed.toString()})();
+})();`;
 
 function hasTypes(
   data: object,
