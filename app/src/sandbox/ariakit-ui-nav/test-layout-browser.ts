@@ -165,10 +165,42 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       const startInset = rowIcon.x - row.x;
       const endInset = row.x + row.width - badge.x - badge.width;
       expect(endInset).toBeCloseTo(Math.max(startInset, rowPadding), 0);
+      // A section badge joins the chevron at the row end instead of splitting
+      // the free space with it.
+      const [inboxIcon, inboxLabel, inboxBadge, chevron] = await Promise.all([
+        getBox(inbox.locator(".control-slot").first()),
+        getBox(query(inbox).text("Inbox")),
+        getBox(slot(inbox, "12")),
+        getBox(inbox.locator(".control-slot").last()),
+      ]);
+      const rowGap = inboxLabel.x - inboxIcon.x - inboxIcon.width;
+      expect(chevron.x - inboxBadge.x - inboxBadge.width).toBeLessThanOrEqual(
+        rowGap + 1,
+      );
     });
   }
 
   // https://github.com/ariakit/ariakit/issues/7589
+  test("keeps a default bar on the guide of a current row in a section in RTL", async ({
+    q,
+  }) => {
+    const nav = q.navigation("الأقسام");
+    const bar = nav.locator(":scope > .glider");
+    const icon = query(nav).button("البدء").locator(".control-slot").first();
+    await nav.scrollIntoViewIfNeeded();
+    // The guide runs down the center of the section's icon, so the bar centers
+    // on it instead of the navigation edge.
+    await expect
+      .poll(async () => {
+        const [barBox, iconBox] = await Promise.all([
+          getBox(bar),
+          getBox(icon),
+        ]);
+        return barBox.x + barBox.width / 2 - (iconBox.x + iconBox.width / 2);
+      })
+      .toBeCloseTo(0, 0);
+  });
+
   test("keeps a pushed shortcut at the row end with its keys in order in RTL", async ({
     q,
   }) => {

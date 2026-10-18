@@ -165,6 +165,11 @@ export const navSlot = cv({
       if (defaultValue !== "auto") return defaultValue;
       return "md";
     },
+    // A trailing count lines up at the row end, beside any end indicator.
+    $end(defaultValue, variants) {
+      if (variants.$kind !== "badge") return defaultValue;
+      return defaultValue ?? true;
+    },
     $mx(defaultValue, variants) {
       // Custom sizes need the auto margin; the inherited default would copy the
       // size into the margin.
@@ -176,13 +181,6 @@ export const navSlot = cv({
       }
       return "auto";
     },
-  },
-  refine({ variants, addClass }) {
-    if (variants.$kind !== "badge") return;
-    if (variants.$end != null) return;
-    // A trailing count lines up at the row end instead of following its label.
-    // A leading badge stays in the icon column.
-    addClass("[*+&]:ms-auto!");
   },
 });
 
@@ -311,7 +309,9 @@ export const navGlider = cv({
         "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-e-auto",
         "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc(anchor(start)-var(--glider-bar-offset)-var(--glider-bar)/2))-var(--glider-bar)/2)]",
         "[.vertical>&]:[&.glider-bar-frame]:inset-e-auto",
-        "[.vertical>&]:[&.glider-bar-frame]:inset-s-0",
+        // A frame bar sits on the guide of a current row inside a disclosure,
+        // and on the navigation edge otherwise.
+        "[.vertical>&]:[&.glider-bar-frame]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc(var(--glider-bar)/2))-var(--glider-bar)/2)]",
         "[.vertical>&]:[&.glider-bar-frame.glider-bar-end]:inset-s-auto",
         "[.vertical>&]:[&.glider-bar-frame.glider-bar-end]:inset-e-0",
         "[.horizontal>&]:left-[anchor(left)] [.horizontal>&]:w-[anchor-size()] [.horizontal>&]:h-(--glider-bar)",
