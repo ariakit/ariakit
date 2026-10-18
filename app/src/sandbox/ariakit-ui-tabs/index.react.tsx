@@ -143,6 +143,64 @@ function TabPanelSharedStore() {
   );
 }
 
+// Tabs built from permissions. Each hidden tab leaves a false, true, null, or
+// undefined entry, which must render no tab.
+function ConditionalTabs() {
+  const [canEdit, setCanEdit] = useState(false);
+  return (
+    <div className="grid gap-4">
+      <label>
+        <input
+          type="checkbox"
+          checked={canEdit}
+          onChange={(event) => setCanEdit(event.target.checked)}
+        />{" "}
+        Can edit project settings
+      </label>
+      <Tabs defaultSelectedId="conditional-overview">
+        <TabList
+          aria-label="Project pages"
+          tabs={[
+            { id: "conditional-overview", children: "Overview" },
+            canEdit && { id: "conditional-settings", children: "Settings" },
+            canEdit || {
+              id: "conditional-request",
+              children: "Request access",
+            },
+            { id: "conditional-activity", children: "Activity" },
+          ]}
+        />
+        <TabPanels>
+          <TabPanel tabId="conditional-overview">Project overview</TabPanel>
+          {canEdit && (
+            <TabPanel tabId="conditional-settings">Project settings</TabPanel>
+          )}
+          {!canEdit && (
+            <TabPanel tabId="conditional-request">Ask an owner</TabPanel>
+          )}
+          <TabPanel tabId="conditional-activity">Project activity</TabPanel>
+        </TabPanels>
+      </Tabs>
+      <Tabs defaultSelectedId="conditional-record-overview">
+        <TabList
+          aria-label="Project pages record"
+          tabs={{
+            "conditional-record-overview": "Overview",
+            "conditional-record-settings": canEdit ? "Settings" : undefined,
+            "conditional-record-request": canEdit ? null : "Request access",
+            "conditional-record-activity": "Activity",
+          }}
+        />
+        <TabPanels>
+          <TabPanel single>
+            <p className="text-sm">Project page details.</p>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </div>
+  );
+}
+
 // Every box passes an explicit defaultSelectedId with page-unique ids, so the
 // first render already marks the selected tab and no glider travels while the
 // tabs register.
@@ -1533,6 +1591,26 @@ export default function TabsExamples() {
             </TabPanel>
           </TabPanels>
         </Tabs>
+      </Example>
+      <Example
+        title="Conditional tabs"
+        description="Tabs built from permissions. A hidden Settings or Request access entry is false, true, null, or undefined and renders no tab."
+        stretch
+        code={`
+          <Tabs>
+            <TabList
+              tabs={[
+                { id: "overview", children: "Overview" },
+                canEdit && { id: "settings", children: "Settings" },
+                canEdit || { id: "request", children: "Request access" },
+                { id: "activity", children: "Activity" },
+              ]}
+            />
+            <TabPanels>…</TabPanels>
+          </Tabs>
+        `}
+      >
+        <ConditionalTabs />
       </Example>
       {(["folder", "flat", "bevel"] as const).map((kind) => (
         <Example
