@@ -123,6 +123,11 @@ function writeValue(key: string, value: string | null) {
  */
 export function getAppThemeValue(setting: AppThemeSetting) {
   const [defaultOption] = setting.options;
+  if (setting.key === "accent") {
+    const brand = readValue("brand");
+    const option = setting.options.find((option) => option.swatch === brand);
+    return option?.value ?? defaultOption?.value;
+  }
   return readValue(setting.key) ?? defaultOption?.value;
 }
 
@@ -134,9 +139,12 @@ export function setAppThemeValue(setting: AppThemeSetting, value: string) {
   const option = setting.options.find((option) => option.value === value);
   // The first option keeps the stylesheet default.
   const isDefault = !option || option === setting.options[0];
-  writeValue(setting.key, isDefault ? null : value);
+  // The accent stores only the brand color that the theme script applies, so
+  // one failed write cannot split the selection from the color.
   if (setting.key === "accent") {
     writeValue("brand", isDefault ? null : (option.swatch ?? null));
+  } else {
+    writeValue(setting.key, isDefault ? null : value);
   }
   window.dispatchEvent(new Event(CHANGE_EVENT));
 }

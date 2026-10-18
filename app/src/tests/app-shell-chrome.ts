@@ -206,6 +206,39 @@ test("theme panel applies a mode after storage recovers", async ({
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 });
 
+test("theme panel keeps the accent and its color together after a failed write", async ({
+  page,
+  q,
+}) => {
+  // Storage can reject a write once, for example when it is over its quota.
+  await page.addInitScript(() => {
+    // oxlint-disable-next-line typescript/unbound-method -- called with the storage as the receiver
+    const setItem = Storage.prototype.setItem;
+    let failed = false;
+    Storage.prototype.setItem = function (key, value) {
+      if (!failed && key.startsWith("app-theme:")) {
+        failed = true;
+        throw new DOMException("Storage is full", "QuotaExceededError");
+      }
+      setItem.call(this, key, value);
+    };
+  });
+  await gotoAndSettle(page, examplePath);
+  await q.button("Theme", { exact: true }).click();
+  const accent = query(q.radiogroup("Accent"));
+  await accent.radio("Violet").click();
+  await expect(accent.radio("Violet")).toHaveAttribute("aria-checked", "true");
+  const root = page.locator("html");
+  const getBrand = () =>
+    root.evaluate((node) => node.style.getPropertyValue("--color-brand"));
+  await expect.poll(getBrand).not.toBe("");
+  // The choice did not persist, so a reload shows the default accent with the
+  // default color instead of the default accent with the new color.
+  await page.reload();
+  await expect(accent.radio("Blue")).toHaveAttribute("aria-checked", "true");
+  await expect.poll(getBrand).toBe("");
+});
+
 test("theme button keeps its name when the panel narrows the page", async ({
   page,
   q,
