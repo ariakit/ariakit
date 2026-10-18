@@ -274,6 +274,16 @@ function getStoreStateObjectKeys(
   return keys;
 }
 
+function getStoreStateObjectValue(
+  state: State | undefined,
+  keyOrSelector: StoreKey | AnyFunction,
+) {
+  if (typeof keyOrSelector === "function") return keyOrSelector(state);
+  if (!state) return;
+  if (!hasOwnProperty(state, keyOrSelector)) return;
+  return state[keyOrSelector];
+}
+
 /**
  * Receives an Ariakit store object (which can be `null` or `undefined`) and
  * returns the current state. Unlike `useStoreState`, this hook receives an
@@ -334,9 +344,7 @@ export function useStoreStateObject(
     ? (object ?? {})
     : objectOrKeys;
   const selectorKeys = isStoreKeyArray(objectOrKeys) ? objectOrKeys : undefined;
-  const objRef = React.useRef(
-    {} as StoreStateObjectResult<StateStore, State, any>,
-  );
+  const objRef = React.useRef<Record<string, unknown>>({});
   const subscriptionKeys = useStableStoreKeys(
     getStoreStateObjectKeys(stateObject, selectorKeys),
   );
@@ -352,40 +360,50 @@ export function useStoreStateObject(
 
   const getSnapshot = () => {
     const state = store?.getState();
-    let updated = false;
-    const obj = objRef.current;
+    const previous = objRef.current;
+    let next = previous;
+    let selectedCount = 0;
+
+    // Copy before the first write so that results returned earlier stay
+    // unchanged, and consumers can diff them against the next result.
+    // https://github.com/ariakit/ariakit/issues/7956
+    const getWritableNext = () => {
+      if (next === previous) {
+        next = { ...previous };
+      }
+      return next;
+    };
 
     for (const prop in stateObject) {
       const keyOrSelector = stateObject[prop];
       if (keyOrSelector === undefined) continue;
+      selectedCount += 1;
+      const value = getStoreStateObjectValue(state, keyOrSelector);
+      // Match `useSyncExternalStore` with `Object.is`; otherwise `NaN` can
+      // invalidate every snapshot and trigger an infinite render loop.
+      // https://github.com/ariakit/ariakit/issues/6335
+      if (hasOwnProperty(next, prop) && Object.is(value, next[prop])) continue;
+      getWritableNext()[prop] = value;
+    }
 
-      if (typeof keyOrSelector === "function") {
-        const value = keyOrSelector(state);
-        // Match `useSyncExternalStore` with `Object.is`; otherwise `NaN` can
-        // invalidate every snapshot and trigger an infinite render loop.
-        // https://github.com/ariakit/ariakit/issues/6335
-        if (!Object.is(value, obj[prop])) {
-          obj[prop] = value;
-          updated = true;
-        }
+    // Every selected field is now an own property, so any extra key belongs to
+    // a field that the current object no longer selects.
+    // https://github.com/ariakit/ariakit/issues/7958
+    if (Object.keys(next).length > selectedCount) {
+      const selectedProps = new Set<string>();
+      for (const prop in stateObject) {
+        if (stateObject[prop] === undefined) continue;
+        selectedProps.add(prop);
       }
-
-      if (typeof keyOrSelector === "function") continue;
-      const value =
-        state && hasOwnProperty(state, keyOrSelector)
-          ? state[keyOrSelector]
-          : undefined;
-      if (!Object.is(value, obj[prop])) {
-        obj[prop] = value;
-        updated = true;
+      const writableNext = getWritableNext();
+      for (const prop of Object.keys(writableNext)) {
+        if (selectedProps.has(prop)) continue;
+        delete writableNext[prop];
       }
     }
 
-    if (updated) {
-      objRef.current = { ...obj };
-    }
-
-    return objRef.current;
+    objRef.current = next;
+    return next;
   };
 
   return useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
