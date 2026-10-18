@@ -210,16 +210,6 @@ export const controlSlot = cv({
     /** Sets the slot to be a square. */
     $square: "aspect-square",
     /**
-     * Pushes the slot to the end of a row wider than its content, including
-     * after bare text. Consecutive end slots stay together at the end.
-     */
-    $end: [
-      "control-slot-end",
-      // Only the first end slot takes the free space, so later ones follow it.
-      // Overrides the start margin that a preceding slot can add.
-      "[&:not(.control-slot-end~*)]:ms-auto!",
-    ],
-    /**
      * Renders the slot as a floating element on the top corner at the end of
      * the row.
      */
@@ -400,11 +390,21 @@ export const controlContent = cv({
 /** Control label text with optional single-line truncation. */
 export const controlLabel = cv({
   extend: [text],
-  class:
-    "group-[.flex-col]/control-content:flex-none group-[.disabled]/control:ak-ink-0",
+  class: [
+    // Content already fills the row, so a description stays beside or below
+    // the label text.
+    "group-[.flex-col]/control-content:flex-none group-[.flex-wrap]/control-content:grow-0",
+    "group-[.disabled]/control:ak-ink-0",
+  ],
   variants: {
     /** Truncates the label to one line with an ellipsis. */
     $truncate: "truncate",
+    /**
+     * Fills the free space in its row, so the slots after it sit together at
+     * the row end. Row labels such as navigation and disclosure labels do this
+     * by default.
+     */
+    $grow: "grow text-start",
   },
 });
 

@@ -396,9 +396,7 @@ function BadgesAndAvatars() {
               icon={<Inbox strokeWidth={1.5} />}
               label="Inbox"
             >
-              <NavSlot $kind="badge" $end>
-                12
-              </NavSlot>
+              <NavSlot $kind="badge">12</NavSlot>
             </NavDisclosureButton>
           }
         >
@@ -426,9 +424,7 @@ function BadgesAndAvatars() {
             <FileCode strokeWidth={1.5} />
           </NavSlot>
           <NavLinkLabel>Drafts</NavLinkLabel>
-          <NavSlot $kind="badge" $end>
-            3
-          </NavSlot>
+          <NavSlot $kind="badge">3</NavSlot>
         </NavLink>
         <NavLink href="#profile">
           <NavSlot>
@@ -444,12 +440,6 @@ function BadgesAndAvatars() {
         <NavLink href="#ana-lima">
           <NavSlot $kind="avatar">AL</NavSlot>
           <NavLinkLabel>Ana Lima</NavLinkLabel>
-        </NavLink>
-        <NavLink href="#spam">
-          Spam
-          <NavSlot $kind="badge" $end>
-            5
-          </NavSlot>
         </NavLink>
       </Nav>
     </div>
@@ -1446,7 +1436,7 @@ export default function NavExamples() {
           <Nav $slotSize={5}>
             <NavDisclosure defaultOpen button={
               <NavDisclosureButton icon={<Inbox />} label="Inbox">
-                <NavSlot $kind="badge" $end>12</NavSlot>
+                <NavSlot $kind="badge">12</NavSlot>
               </NavDisclosureButton>
             }>
               <NavList>
@@ -1468,7 +1458,7 @@ export default function NavExamples() {
                 <FileCode />
               </NavSlot>
               <NavLinkLabel>Drafts</NavLinkLabel>
-              <NavSlot $kind="badge" $end>3</NavSlot>
+              <NavSlot $kind="badge">3</NavSlot>
             </NavLink>
             <NavLink>
               <NavSlot>
@@ -1484,10 +1474,6 @@ export default function NavExamples() {
             <NavLink>
               <NavSlot $kind="avatar">AL</NavSlot>
               <NavLinkLabel>Ana Lima</NavLinkLabel>
-            </NavLink>
-            <NavLink>
-              Spam
-              <NavSlot $kind="badge" $end>5</NavSlot>
             </NavLink>
           </Nav>
         `}

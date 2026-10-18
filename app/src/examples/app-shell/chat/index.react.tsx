@@ -1,6 +1,7 @@
 import * as ak from "@ariakit/react";
 import {
   Button,
+  ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
@@ -92,8 +93,8 @@ export default function Example() {
             <ButtonSlot>
               <Hexagon strokeWidth={1.5} />
             </ButtonSlot>
-            Acme Inc
-            <ButtonSlot $end>
+            <ButtonLabel $grow>Acme Inc</ButtonLabel>
+            <ButtonSlot>
               <ChevronDown />
             </ButtonSlot>
           </Button>
@@ -118,9 +119,7 @@ export default function Example() {
                     </NavSlot>
                     <NavLinkLabel>{channel.name}</NavLinkLabel>
                     {channel.unread > 0 && (
-                      <NavSlot $kind="badge" $end>
-                        {channel.unread}
-                      </NavSlot>
+                      <NavSlot $kind="badge">{channel.unread}</NavSlot>
                     )}
                   </NavLink>
                 ))}
@@ -142,11 +141,7 @@ export default function Example() {
                     <NavLinkLabel className="truncate">
                       {person.name}
                     </NavLinkLabel>
-                    {unread > 0 && (
-                      <NavSlot $kind="badge" $end>
-                        {unread}
-                      </NavSlot>
-                    )}
+                    {unread > 0 && <NavSlot $kind="badge">{unread}</NavSlot>}
                   </NavLink>
                 ))}
               </NavList>

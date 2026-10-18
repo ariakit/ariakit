@@ -265,9 +265,7 @@ export default function Example() {
                   <item.icon strokeWidth={1.5} />
                 </NavSlot>
                 <NavLinkLabel>{item.label}</NavLinkLabel>
-                <NavSlot $kind="badge" $end>
-                  {countInFolder(item.id)}
-                </NavSlot>
+                <NavSlot $kind="badge">{countInFolder(item.id)}</NavSlot>
               </NavLink>
             ))}
           </Nav>

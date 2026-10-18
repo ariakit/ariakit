@@ -277,7 +277,9 @@ export const choiceCardContent = buttonContent;
 /** A card label that fills the space between its slots. */
 export const choiceCardLabel = cv({
   extend: [buttonLabel],
-  class: "grow",
+  defaultVariants: {
+    $grow: true,
+  },
 });
 
 /** Secondary choice card text that truncates by default. */

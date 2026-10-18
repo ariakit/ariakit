@@ -141,32 +141,32 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       for (const label of labels) {
         expect((await getBox(label)).x).toBeCloseTo(column, 0);
       }
-      // An avatar after the label keeps the gap that the icon before it keeps,
-      // also when the slot is wider than the line.
-      const [icon, label, avatar] = await Promise.all([
-        getBox(profile.locator(".control-slot").first()),
-        getBox(query(profile).text("Profile")),
-        getBox(slot(profile, "JD")),
-      ]);
-      const leadingGap = label.x - icon.x - icon.width;
-      const trailingGap = avatar.x - label.x - label.width;
-      expect(trailingGap).toBeCloseTo(leadingGap, 0);
-      // A count badge moves to the row end, inset like the leading icon. A slot
-      // taller than the line reaches into the start padding, while a trailing
-      // slot keeps the block padding as its end inset.
-      const [row, rowIcon, badge, rowPadding] = await Promise.all([
+      // The label fills the row, so a trailing badge or avatar sits at the row
+      // end, inset like the leading icon. A slot taller than the line reaches
+      // into the start padding, while a trailing slot keeps the block padding
+      // as its end inset.
+      const [row, rowIcon, rowPadding] = await Promise.all([
         getBox(drafts),
         getBox(drafts.locator(".control-slot").first()),
-        getBox(slot(drafts, "3")),
         drafts.evaluate((node) =>
           parseFloat(getComputedStyle(node).paddingTop),
         ),
       ]);
-      const startInset = rowIcon.x - row.x;
-      const endInset = row.x + row.width - badge.x - badge.width;
-      expect(endInset).toBeCloseTo(Math.max(startInset, rowPadding), 0);
-      // A section badge joins the chevron at the row end instead of splitting
-      // the free space with it.
+      const expectedInset = Math.max(rowIcon.x - row.x, rowPadding);
+      for (const [link, text] of [
+        [drafts, "3"],
+        [profile, "JD"],
+      ] as const) {
+        const [linkBox, trailing] = await Promise.all([
+          getBox(link),
+          getBox(slot(link, text)),
+        ]);
+        expect(
+          linkBox.x + linkBox.width - trailing.x - trailing.width,
+        ).toBeCloseTo(expectedInset, 0);
+      }
+      // A section badge joins the chevron at the row end instead of following
+      // the label.
       const [inboxIcon, inboxLabel, inboxBadge, chevron] = await Promise.all([
         getBox(inbox.locator(".control-slot").first()),
         getBox(query(inbox).text("Inbox")),
@@ -177,15 +177,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       expect(chevron.x - inboxBadge.x - inboxBadge.width).toBeLessThanOrEqual(
         rowGap + 1,
       );
-      // An end badge after bare text still reaches the row end.
-      const spam = nav.link(/^Spam/);
-      const [spamRow, spamBadge] = await Promise.all([
-        getBox(spam),
-        getBox(slot(spam, "5")),
-      ]);
-      expect(
-        spamRow.x + spamRow.width - spamBadge.x - spamBadge.width,
-      ).toBeCloseTo(endInset, 0);
     });
   }
 
@@ -486,13 +477,21 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .locator(".control-content")
       .evaluate((node) => Number.parseFloat(getComputedStyle(node).columnGap));
     expect(columnGap).toBeGreaterThan(0);
+    // Measures the label text instead of its box, which a growing label would
+    // stretch to the description.
+    const getLabelTextEnd = () =>
+      label.evaluate((node) => {
+        const range = node.ownerDocument.createRange();
+        range.selectNodeContents(node);
+        return range.getBoundingClientRect().right;
+      });
     await expect
       .poll(async () => {
-        const [labelBox, descriptionBox] = await Promise.all([
-          getBox(label),
+        const [labelTextEnd, descriptionBox] = await Promise.all([
+          getLabelTextEnd(),
           getBox(description),
         ]);
-        return descriptionBox.x - labelBox.x - labelBox.width;
+        return descriptionBox.x - labelTextEnd;
       })
       .toBeCloseTo(columnGap, 0);
     // The description stays on the label's line instead of under it.

@@ -210,11 +210,15 @@ export const navLinkContent = cv({
   ],
 });
 
-/** A navigation link label that wraps instead of truncating. */
+/**
+ * A navigation link label that wraps instead of truncating and fills the row,
+ * so trailing slots sit at its end.
+ */
 export const navLinkLabel = cv({
   extend: [buttonLabel],
   defaultVariants: {
     $truncate: false,
+    $grow: true,
   },
 });
 
