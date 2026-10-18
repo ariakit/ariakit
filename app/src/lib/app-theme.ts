@@ -15,7 +15,7 @@ export interface AppThemeOption {
 }
 
 export interface AppThemeSetting {
-  key: "mode" | "accent" | "radius";
+  key: "mode" | "accent" | "canvas" | "radius";
   label: string;
   description: string;
   options: AppThemeOption[];
@@ -44,6 +44,17 @@ export const APP_THEME_SETTINGS: AppThemeSetting[] = [
       { value: "green", label: "Green", swatch: "oklch(55% 0.14 155)" },
       { value: "orange", label: "Orange", swatch: "oklch(62% 0.18 45)" },
       { value: "pink", label: "Pink", swatch: "oklch(60% 0.2 355)" },
+    ],
+  },
+  {
+    key: "canvas",
+    label: "Canvas",
+    description: "Tints the page behind every surface.",
+    options: [
+      { value: "default", label: "Default" },
+      { value: "neutral", label: "Neutral" },
+      { value: "warm", label: "Warm" },
+      { value: "cool", label: "Cool" },
     ],
   },
   {

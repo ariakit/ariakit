@@ -33,3 +33,25 @@ astro-static-slot {
     display: inline !important;
   }
 }
+
+/* Canvas options from the site's Theme panel, for each color mode. */
+:root[data-canvas="neutral"] {
+  --color-canvas: oklch(99.4% 0 0);
+  @variant dark {
+    --color-canvas: oklch(19.5% 0 0);
+  }
+}
+
+:root[data-canvas="warm"] {
+  --color-canvas: oklch(98.9% 0.008 80);
+  @variant dark {
+    --color-canvas: oklch(20% 0.009 60);
+  }
+}
+
+:root[data-canvas="cool"] {
+  --color-canvas: oklch(98.9% 0.008 250);
+  @variant dark {
+    --color-canvas: oklch(19.5% 0.018 262);
+  }
+}

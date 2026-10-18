@@ -95,6 +95,38 @@ test("theme panel applies a mode to the site and its previews", async ({
   await expect(preview).not.toHaveAttribute("data-theme");
 });
 
+test("theme panel tints the canvas of the site and its previews", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, examplePath);
+  const root = page.locator("html");
+  const preview = page
+    .frameLocator('iframe[title="App Shell"]')
+    .first()
+    .locator("html");
+  const getCanvas = () =>
+    page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  await q.button("Theme", { exact: true }).click();
+  const canvas = query(q.radiogroup("Canvas"));
+  const mode = query(q.radiogroup("Mode"));
+  await mode.radio("Light").click();
+  const lightDefault = await getCanvas();
+  await canvas.radio("Warm").click();
+  await expect(root).toHaveAttribute("data-canvas", "warm");
+  await expect(preview).toHaveAttribute("data-canvas", "warm");
+  await expect.poll(getCanvas).not.toBe(lightDefault);
+  // Each canvas has a dark variant, so the tint follows the mode.
+  const lightWarm = await getCanvas();
+  await mode.radio("Dark").click();
+  await expect.poll(getCanvas).not.toBe(lightWarm);
+  const darkWarm = await getCanvas();
+  await canvas.radio("Default").click();
+  await expect(root).not.toHaveAttribute("data-canvas");
+  await expect.poll(getCanvas).not.toBe(darkWarm);
+  await query(q.complementary("Theme")).button("Reset").click();
+});
+
 test("theme panel follows choices from another tab", async ({
   context,
   page,

@@ -53,6 +53,13 @@
       }
       setProperty("--color-brand", read("app-theme:brand"));
       setProperty("--radius", read("app-theme:radius"));
+      // The stylesheet defines each canvas for the light and dark modes.
+      const canvas = read("app-theme:canvas");
+      if (canvas) {
+        root.dataset.canvas = canvas;
+      } else {
+        delete root.dataset.canvas;
+      }
     };
     apply();
     window.addEventListener("storage", (event) => {
