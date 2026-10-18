@@ -232,6 +232,8 @@ function getStoreCallbacks(
     __unstableCallbacks?: Store<{
       validate: FormStoreCallback[];
       submit: FormStoreCallback[];
+      pendingValidations?: number;
+      pendingSubmissions?: number;
     }>;
   },
 ) {
@@ -306,6 +308,12 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
   const callbacksInitialState = {
     validate: syncCallbacksState?.validate || [],
     submit: syncCallbacksState?.submit || [],
+    // Count overlapping validate() and submit() calls so each pending flag is
+    // only cleared after the last call settles, including calls that started
+    // before reset() or on a composed store that shares this state. See
+    // https://github.com/ariakit/ariakit/issues/7893
+    pendingValidations: syncCallbacksState?.pendingValidations ?? 0,
+    pendingSubmissions: syncCallbacksState?.pendingSubmissions ?? 0,
   };
 
   const callbacks = createStore(callbacksInitialState, syncCallbacks);
@@ -320,10 +328,11 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
   );
 
   const validate = async () => {
-    form.setState("validating", true);
-    form.setState("errors", {});
-    const validateCallbacks = callbacks.getState().validate;
+    callbacks.setState("pendingValidations", (count) => count + 1);
     try {
+      form.setState("validating", true);
+      form.setState("errors", {});
+      const validateCallbacks = callbacks.getState().validate;
       // Run all the validation callbacks sequentially so they run in a
       // predictable order. See https://github.com/ariakit/ariakit/issues/2282
       for (const callback of validateCallbacks) {
@@ -333,7 +342,10 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
       await nextFrame();
       return !hasMessages(form.getState().errors);
     } finally {
-      form.setState("validating", false);
+      callbacks.setState("pendingValidations", (count) => count - 1);
+      if (!callbacks.getState().pendingValidations) {
+        form.setState("validating", false);
+      }
     }
   };
 
@@ -405,9 +417,10 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
       };
     },
     submit: async () => {
-      form.setState("submitting", true);
-      form.setState("touched", setAll(form.getState().values, true));
+      callbacks.setState("pendingSubmissions", (count) => count + 1);
       try {
+        form.setState("submitting", true);
+        form.setState("touched", setAll(form.getState().values, true));
         if (await validate()) {
           const submitCallbacks = callbacks.getState().submit;
           // Run all the submit callbacks sequentially so they run in a
@@ -429,7 +442,10 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
         form.setState("submitFailed", (count) => count + 1);
         throw error;
       } finally {
-        form.setState("submitting", false);
+        callbacks.setState("pendingSubmissions", (count) => count - 1);
+        if (!callbacks.getState().pendingSubmissions) {
+          form.setState("submitting", false);
+        }
       }
     },
 
@@ -437,8 +453,11 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
       form.setState("values", values);
       form.setState("errors", errors);
       form.setState("touched", touched);
-      form.setState("validating", false);
-      form.setState("submitting", false);
+      // Calls still in progress keep their pending flags. For example, Form
+      // resets after the first successful submission while an autosave runs.
+      const { pendingValidations, pendingSubmissions } = callbacks.getState();
+      form.setState("validating", pendingValidations > 0);
+      form.setState("submitting", pendingSubmissions > 0);
       form.setState("submitSucceed", 0);
       form.setState("submitFailed", 0);
       form.setState("valid", !hasMessages(errors));

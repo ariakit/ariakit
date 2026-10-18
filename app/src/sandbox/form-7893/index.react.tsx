@@ -13,12 +13,10 @@ interface PendingCheck {
 // so the pending state can be inspected before it settles.
 function UsernameForm() {
   const form = Ariakit.useFormStore({ defaultValues: { username: "" } });
+  const validating = Ariakit.useStoreState(form, "validating");
   const valid = Ariakit.useStoreState(form, "valid");
   const pendingCheck = useRef<PendingCheck | null>(null);
   const [checking, setChecking] = useState(false);
-  // TODO: Remove the pending check from this state after
-  // https://github.com/ariakit/ariakit/issues/7893 is fixed.
-  const validating = Ariakit.useStoreState(form, "validating") || checking;
 
   Ariakit.useFormValidate(form, async ({ values }) => {
     pendingCheck.current?.cancel();
@@ -73,12 +71,9 @@ function UsernameForm() {
 // in for the server response to the oldest pending save.
 function DraftForm() {
   const form = Ariakit.useFormStore({ defaultValues: { draft: "" } });
+  const submitting = Ariakit.useStoreState(form, "submitting");
   const pendingSaves = useRef<Array<() => void>>([]);
   const [pendingCount, setPendingCount] = useState(0);
-  // TODO: Remove the pending saves from this state after
-  // https://github.com/ariakit/ariakit/issues/7893 is fixed.
-  const submitting =
-    Ariakit.useStoreState(form, "submitting") || pendingCount > 0;
   const [completedCount, setCompletedCount] = useState(0);
 
   Ariakit.useFormSubmit(form, async () => {
@@ -111,9 +106,7 @@ function DraftForm() {
         } | Completed: ${completedCount}`}
       </p>
       <div className="buttons">
-        <Ariakit.FormSubmit className="button" disabled={submitting}>
-          Save draft
-        </Ariakit.FormSubmit>
+        <Ariakit.FormSubmit className="button">Save draft</Ariakit.FormSubmit>
         <button
           type="button"
           className="button secondary"
