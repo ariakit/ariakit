@@ -27,7 +27,7 @@ function Frame({ title, children }: FrameProps) {
 // A document editor renders an attachment preview in a portal that preserves
 // the tab order. The preview shows the document in a same-origin iframe with a
 // Download button that the user must be able to reach with Tab every time focus
-// returns to the panel.
+// returns to the panel, and leave with Shift+Tab back to the panel controls.
 function AttachmentPreview() {
   return (
     <aside aria-label="Attachment preview">
