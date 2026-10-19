@@ -1,6 +1,7 @@
 "use client";
 
 import * as Ariakit from "@ariakit/react";
+import { useId } from "react";
 
 const menuStyle = {
   display: "grid",
@@ -15,8 +16,11 @@ const menuStyle = {
 // synchronized ID must still receive a hydration-safe one from Ariakit.
 // https://github.com/ariakit/ariakit/issues/7986
 function ProjectTabs() {
+  // TODO: Remove the useId() store IDs in this file after
+  // https://github.com/ariakit/ariakit/issues/7986 is fixed.
+  const id = useId();
   return (
-    <Ariakit.TabProvider defaultSelectedId="overview">
+    <Ariakit.TabProvider id={id} defaultSelectedId="overview">
       <Ariakit.TabList aria-label="Project">
         <Ariakit.Tab id="overview">Overview</Ariakit.Tab>
         <Ariakit.Tab id="activity">Activity</Ariakit.Tab>
@@ -28,7 +32,8 @@ function ProjectTabs() {
 }
 
 function ReportTabs() {
-  const tab = Ariakit.useTabStore({ defaultSelectedId: "summary" });
+  const id = useId();
+  const tab = Ariakit.useTabStore({ id, defaultSelectedId: "summary" });
   return (
     <Ariakit.TabProvider store={tab}>
       <Ariakit.TabList aria-label="Report">
@@ -42,8 +47,9 @@ function ReportTabs() {
 }
 
 function FormattingToolbar() {
+  const id = useId();
   return (
-    <Ariakit.ToolbarProvider>
+    <Ariakit.ToolbarProvider id={id}>
       <Ariakit.Toolbar aria-label="Formatting">
         <Ariakit.ToolbarItem>Bold</Ariakit.ToolbarItem>
         <Ariakit.ToolbarItem>Italic</Ariakit.ToolbarItem>
@@ -53,8 +59,9 @@ function FormattingToolbar() {
 }
 
 function ActionsMenu() {
+  const id = useId();
   return (
-    <Ariakit.MenuProvider>
+    <Ariakit.MenuProvider id={id}>
       <Ariakit.MenuButton>Actions</Ariakit.MenuButton>
       <Ariakit.Menu style={menuStyle}>
         <Ariakit.MenuItem>Rename</Ariakit.MenuItem>
@@ -65,10 +72,12 @@ function ActionsMenu() {
 }
 
 function AppMenubar() {
+  const id = useId();
+  const fileMenuId = useId();
   return (
-    <Ariakit.MenubarProvider>
+    <Ariakit.MenubarProvider id={id}>
       <Ariakit.Menubar aria-label="Application">
-        <Ariakit.MenuProvider>
+        <Ariakit.MenuProvider id={fileMenuId}>
           <Ariakit.MenuItem render={<Ariakit.MenuButton />}>
             File
           </Ariakit.MenuItem>
@@ -88,8 +97,9 @@ interface ViewSwitcherProps {
 // A wrapper that forwards an optional ID passes undefined when the consumer
 // omits it.
 function ViewSwitcher({ id }: ViewSwitcherProps) {
+  const fallbackId = useId();
   return (
-    <Ariakit.CompositeProvider id={id}>
+    <Ariakit.CompositeProvider id={id ?? fallbackId}>
       <Ariakit.Composite aria-label="View">
         <Ariakit.CompositeItem>Board</Ariakit.CompositeItem>
         <Ariakit.CompositeItem>List</Ariakit.CompositeItem>
