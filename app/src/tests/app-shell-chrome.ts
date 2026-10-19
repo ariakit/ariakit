@@ -420,3 +420,67 @@ test("app shells in preview cards keep corners concentric with the card", async 
   const roundRadius = await getViewportRadius();
   await expect.poll(getButtonOuterRadius).toBeCloseTo(roundRadius, 1);
 });
+
+test("site navigation folds without resizing offscreen preview pages", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await gotoAndSettle(page, examplePath);
+  // Chrome loads lazy frames this close to the viewport, but the card stays
+  // offscreen, so only the page load can hydrate it.
+  const iframe = page.locator('iframe[title="Dashboard"]');
+  const frame = iframe.contentFrame();
+  await expect(frame.locator("html")).toHaveAttribute(
+    "data-preview-hydrated",
+    "",
+  );
+  await expect(iframe).not.toBeInViewport();
+  // The hydrated card keeps its offscreen frame at a fixed width.
+  await expect(iframe).toHaveAttribute("style", /(^|;\s*)width:/);
+  // The preview page reports no layout of its own, so it shows how often its
+  // viewport resizes.
+  await frame.locator("html").evaluate(() => {
+    const counter = document.createElement("output");
+    counter.id = "resize-count";
+    counter.value = "0";
+    document.body.append(counter);
+    window.addEventListener("resize", () => {
+      counter.value = String(Number(counter.value) + 1);
+    });
+  });
+  const resizeCount = frame.locator("#resize-count");
+
+  const toggle = q.button("Toggle navigation");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  // The navigation panel hides when the sidebar fold ends.
+  await expect(q.navigation("Site")).not.toBeVisible();
+  // The offscreen preview page keeps its width, so it does not lay out again on
+  // each step of the fold.
+  await expect(resizeCount).toHaveText("0");
+
+  await iframe.scrollIntoViewIfNeeded();
+  // The preview page fills the card again.
+  const getUnfilledWidth = async () => {
+    const frameWidth = await frame
+      .locator("html")
+      .evaluate(() => window.innerWidth);
+    const cardWidth = await iframe.evaluate(
+      (element) => element.parentElement?.clientWidth,
+    );
+    if (cardWidth == null) return null;
+    return cardWidth - frameWidth;
+  };
+  await expect.poll(getUnfilledWidth).toBe(0);
+  await expect(resizeCount).toHaveText("1");
+  // The card measures its wider stage again, so its resize handle allows the
+  // full width that the visible card already reported during the fold.
+  const getHandle = (title: string) =>
+    query(q.region(title, { exact: true })).separator("Resize preview");
+  const fullWidth = await getHandle("App Shell").getAttribute("aria-valuemax");
+  await expect(getHandle("Dashboard")).toHaveAttribute(
+    "aria-valuemax",
+    fullWidth ?? "",
+  );
+});
