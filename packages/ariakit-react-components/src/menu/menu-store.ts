@@ -10,7 +10,10 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.ts";
-import { useCompositeStoreProps } from "../composite/composite-store.ts";
+import {
+  useCompositeStoreOptions,
+  useCompositeStoreProps,
+} from "../composite/composite-store.ts";
 import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
@@ -78,6 +81,7 @@ export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
     menubar: props.menubar !== undefined ? props.menubar : menubar,
     combobox: props.combobox !== undefined ? props.combobox : combobox,
   };
+  props = useCompositeStoreOptions(props, props.combobox);
   const [store, update] = useStore(Core.createMenuStore, props);
   return useMenuStoreProps(store, update, props);
 }

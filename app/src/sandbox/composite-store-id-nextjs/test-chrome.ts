@@ -33,6 +33,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("List").click();
     await test.expect(q.button("List")).toBeFocused();
     await test.expect(q.text("Workspace store: workspace-store")).toBeVisible();
+    await test.expect(q.text("Command store: command-store")).toBeVisible();
     test.expect(errors).toEqual([]);
+  });
+
+  test.describe("without JavaScript", () => {
+    test.use({ javaScriptEnabled: false });
+
+    // https://github.com/ariakit/ariakit/issues/7986
+    test("prerenders the IDs of synchronized stores", async ({ q }) => {
+      await test.expect(q.tabpanel("Overview")).toHaveText("Project details");
+      await test
+        .expect(q.text("Workspace store: workspace-store"))
+        .toBeVisible();
+      await test.expect(q.text("Command store: command-store")).toBeVisible();
+    });
   });
 });

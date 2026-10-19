@@ -1,7 +1,6 @@
 "use client";
 
 import * as Ariakit from "@ariakit/react";
-import { useId } from "react";
 
 const menuStyle = {
   display: "grid",
@@ -16,11 +15,8 @@ const menuStyle = {
 // synchronized ID must still receive a hydration-safe one from Ariakit.
 // https://github.com/ariakit/ariakit/issues/7986
 function ProjectTabs() {
-  // TODO: Remove the useId() store IDs in this file after
-  // https://github.com/ariakit/ariakit/issues/7986 is fixed.
-  const id = useId();
   return (
-    <Ariakit.TabProvider id={id} defaultSelectedId="overview">
+    <Ariakit.TabProvider defaultSelectedId="overview">
       <Ariakit.TabList aria-label="Project">
         <Ariakit.Tab id="overview">Overview</Ariakit.Tab>
         <Ariakit.Tab id="activity">Activity</Ariakit.Tab>
@@ -32,8 +28,7 @@ function ProjectTabs() {
 }
 
 function ReportTabs() {
-  const id = useId();
-  const tab = Ariakit.useTabStore({ id, defaultSelectedId: "summary" });
+  const tab = Ariakit.useTabStore({ defaultSelectedId: "summary" });
   return (
     <Ariakit.TabProvider store={tab}>
       <Ariakit.TabList aria-label="Report">
@@ -47,9 +42,8 @@ function ReportTabs() {
 }
 
 function FormattingToolbar() {
-  const id = useId();
   return (
-    <Ariakit.ToolbarProvider id={id}>
+    <Ariakit.ToolbarProvider>
       <Ariakit.Toolbar aria-label="Formatting">
         <Ariakit.ToolbarItem>Bold</Ariakit.ToolbarItem>
         <Ariakit.ToolbarItem>Italic</Ariakit.ToolbarItem>
@@ -59,9 +53,8 @@ function FormattingToolbar() {
 }
 
 function ActionsMenu() {
-  const id = useId();
   return (
-    <Ariakit.MenuProvider id={id}>
+    <Ariakit.MenuProvider>
       <Ariakit.MenuButton>Actions</Ariakit.MenuButton>
       <Ariakit.Menu style={menuStyle}>
         <Ariakit.MenuItem>Rename</Ariakit.MenuItem>
@@ -72,12 +65,10 @@ function ActionsMenu() {
 }
 
 function AppMenubar() {
-  const id = useId();
-  const fileMenuId = useId();
   return (
-    <Ariakit.MenubarProvider id={id}>
+    <Ariakit.MenubarProvider>
       <Ariakit.Menubar aria-label="Application">
-        <Ariakit.MenuProvider id={fileMenuId}>
+        <Ariakit.MenuProvider>
           <Ariakit.MenuItem render={<Ariakit.MenuButton />}>
             File
           </Ariakit.MenuItem>
@@ -97,9 +88,8 @@ interface ViewSwitcherProps {
 // A wrapper that forwards an optional ID passes undefined when the consumer
 // omits it.
 function ViewSwitcher({ id }: ViewSwitcherProps) {
-  const fallbackId = useId();
   return (
-    <Ariakit.CompositeProvider id={id ?? fallbackId}>
+    <Ariakit.CompositeProvider id={id}>
       <Ariakit.Composite aria-label="View">
         <Ariakit.CompositeItem>Board</Ariakit.CompositeItem>
         <Ariakit.CompositeItem>List</Ariakit.CompositeItem>
@@ -108,10 +98,18 @@ function ViewSwitcher({ id }: ViewSwitcherProps) {
   );
 }
 
-function WorkspaceId() {
+interface TabStoreIdProps {
+  label: string;
+}
+
+function TabStoreId({ label }: TabStoreIdProps) {
   const tab = Ariakit.useTabContext();
   const id = Ariakit.useStoreState(tab, "id");
-  return <p>Workspace store: {id}</p>;
+  return (
+    <p>
+      {label}: {id}
+    </p>
+  );
 }
 
 // The provider synchronizes with a store that has its own ID, so the server and
@@ -120,7 +118,7 @@ function WorkspaceTabs() {
   const workspace = Ariakit.useTabStore({ id: "workspace-store" });
   return (
     <Ariakit.TabProvider store={workspace}>
-      <WorkspaceId />
+      <TabStoreId label="Workspace store" />
       <Ariakit.TabList aria-label="Workspace">
         <Ariakit.Tab>Files</Ariakit.Tab>
         <Ariakit.Tab>Members</Ariakit.Tab>
@@ -128,6 +126,23 @@ function WorkspaceTabs() {
       <Ariakit.TabPanel>Workspace files</Ariakit.TabPanel>
       <Ariakit.TabPanel>Workspace members</Ariakit.TabPanel>
     </Ariakit.TabProvider>
+  );
+}
+
+// Tabs inside a combobox synchronize with the combobox store, so they share its
+// ID on the server and the client.
+function CommandTabs() {
+  return (
+    <Ariakit.ComboboxProvider id="command-store">
+      <Ariakit.Combobox aria-label="Command" />
+      <Ariakit.TabProvider>
+        <TabStoreId label="Command store" />
+        <Ariakit.TabList aria-label="Command">
+          <Ariakit.Tab>Pages</Ariakit.Tab>
+          <Ariakit.Tab>People</Ariakit.Tab>
+        </Ariakit.TabList>
+      </Ariakit.TabProvider>
+    </Ariakit.ComboboxProvider>
   );
 }
 
@@ -157,6 +172,7 @@ export default function Page() {
       <AppMenubar />
       <ViewSwitcher />
       <WorkspaceTabs />
+      <CommandTabs />
       <SettingsTabs />
     </div>
   );

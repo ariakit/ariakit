@@ -6,7 +6,10 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.ts";
-import { useCompositeStoreProps } from "../composite/composite-store.ts";
+import {
+  useCompositeStoreOptions,
+  useCompositeStoreProps,
+} from "../composite/composite-store.ts";
 
 export function useMenubarStoreProps<T extends Core.MenubarStore>(
   store: T,
@@ -28,6 +31,7 @@ export function useMenubarStoreProps<T extends Core.MenubarStore>(
  * ```
  */
 export function useMenubarStore(props: MenubarStoreProps = {}): MenubarStore {
+  props = useCompositeStoreOptions(props);
   const [store, update] = useStore(Core.createMenubarStore, props);
   return useMenubarStoreProps(store, update, props);
 }
