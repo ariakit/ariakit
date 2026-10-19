@@ -1,0 +1,93 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { ShellMainFull } from "@ariakit/ui/components/shell.ariakit.react";
+import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
+import { PreviewCard } from "#app/components/preview-card.react.tsx";
+import { isNextjsPreviewId } from "#app/lib/nextjs.ts";
+import type { Framework } from "#app/lib/schemas.ts";
+import type { Source } from "#app/lib/source.ts";
+import { renderThumbnail } from "#app/lib/thumbnail.ts";
+import { invariant } from "@ariakit/utils";
+import { getEntry } from "astro:content";
+import { createElement } from "react";
+
+interface Props {
+  source: Source | Partial<Record<Framework, Source>>;
+  framework?: Framework;
+  /**
+   * Renders browser chrome above the preview, for previews that navigate
+   * between routes. Defaults to `true` for Next.js previews.
+   */
+  browser?: boolean;
+}
+
+const { source: sources, framework = Astro.locals.framework } = Astro.props;
+invariant(framework, "Framework is required");
+const source = "files" in sources ? sources : sources[framework];
+if (!source) return null;
+const preview = await getEntry("previews", source.name);
+const title = preview?.data.title ?? source.name;
+const href = "/" + framework + "/previews/" + source.name + "/";
+const headingId = "preview-card-" + source.name.replaceAll("/", "-") + "-title";
+const inline = Astro.slots.has("default");
+const browser = !inline && (Astro.props.browser ?? isNextjsPreviewId(source.name));
+const thumbnail = inline ? undefined : await renderThumbnail(source.name);
+const files = Object.entries(source.files);
+---
+
+<ShellMainFull render={createElement("section", { "aria-labelledby": headingId })}>
+  {/* Preview cards inside MDX prose are not main bands, so they drop the band
+      gutter and align with the surrounding text. */}
+  <Frame
+    $p="var(--app-gutter)"
+    className="grid grid-cols-1 py-0! [.prose>.shell-main-full>&]:px-0!"
+  >
+    {/* The thumbnail and code render on the server and reach the island as
+        static slots. */}
+    <PreviewCard
+      client:visible
+      {headingId}
+      {title}
+      {href}
+      {inline}
+      {browser}
+      fullscreen={preview?.data.fullscreen}
+    >
+      {inline && <slot />}
+      {thumbnail && <Fragment slot="thumbnail" set:html={thumbnail} />}
+      <div slot="code" class="grid grid-cols-1 gap-2">
+        {
+          files.map(([name, file]) => (
+            <Frame
+              $rounded="xl"
+              $forceRounded
+              $border
+              $darken={0.5}
+              $p="none"
+              className="overflow-clip text-xs"
+            >
+              <TextFrame
+                $p={3}
+                $layer="transparent"
+                $ink={80}
+                className="font-medium"
+              >
+                {name}
+              </TextFrame>
+              <pre class="max-h-96 overflow-auto px-4 pb-4 leading-relaxed"><code>{file.content}</code></pre>
+            </Frame>
+          ))
+        }
+      </div>
+    </PreviewCard>
+  </Frame>
+</ShellMainFull>

@@ -10,7 +10,7 @@
 
 import { createHash } from "node:crypto";
 import fs from "node:fs";
-import { basename, dirname, relative } from "node:path";
+import { basename, dirname, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { resolve as resolveImportMeta } from "import-meta-resolve";
 import * as prettier from "prettier";
@@ -27,6 +27,7 @@ import {
   findSiblingConventionFiles,
   isNextjsConventionFile,
 } from "./nextjs.ts";
+import { isInDirectory } from "./path.ts";
 
 // ============================================================================
 // Regex Patterns
@@ -384,6 +385,37 @@ function normalizeImportPath(importPath: string) {
   return noFrameworkSuffix;
 }
 
+interface NormalizeNestedImportPathParams {
+  importPath: string;
+  importer: string;
+  baseDir: string;
+}
+
+/**
+ * Points an import in a file nested under the base directory, such as a Next.js
+ * route in a subfolder, to where the flattened output shows the imported file:
+ * at its own path under the base directory, or at the top level when it comes
+ * from an alias or from outside the base directory.
+ */
+function normalizeNestedImportPath({
+  importPath,
+  importer,
+  baseDir,
+}: NormalizeNestedImportPathParams) {
+  const noFrameworkSuffix = removeFrameworkSuffix(importPath);
+  const isLib = isLibPath(noFrameworkSuffix);
+  // Package imports stay as they are.
+  if (!isLib && !noFrameworkSuffix.startsWith(".")) return noFrameworkSuffix;
+  const target = resolve(dirname(importer), noFrameworkSuffix);
+  const shownTarget =
+    !isLib && isInDirectory(target, baseDir)
+      ? relative(baseDir, target)
+      : basename(noFrameworkSuffix);
+  const shownImporterDir = dirname(normalizeFilename(importer, baseDir));
+  const path = relative(shownImporterDir, shownTarget);
+  return path.startsWith(".") ? path : `./${path}`;
+}
+
 /**
  * Choose a Prettier parser based on filename
  */
@@ -599,13 +631,22 @@ function computeTopLevelDependencies(files: Record<string, SourceFile>) {
  * a cache keyed by absolute id.
  */
 async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
-  const cacheKey = cacheKeyForFile(file.id, file.content);
   const filename = normalizeFilename(file.id, baseDir);
+  // A nested file's imports depend on its place under the base directory.
+  const nested = isInDirectory(file.id, baseDir) && dirname(filename) !== ".";
+  const cacheKey = nested
+    ? cacheKeyForFile(`${file.id}?base=${baseDir}`, file.content)
+    : cacheKeyForFile(file.id, file.content);
   const cached = flattenedFileCache.get(cacheKey);
   if (cached) return { key: filename, file: cached };
-  let content = replaceImportPaths(file.content, (path) =>
-    normalizeImportPath(path),
-  );
+  let content = replaceImportPaths(file.content, (path) => {
+    if (!nested) return normalizeImportPath(path);
+    return normalizeNestedImportPath({
+      importPath: path,
+      importer: file.id,
+      baseDir,
+    });
+  });
   if (content !== file.content) {
     content = await formatWithPrettier(content, basename(filename));
   }

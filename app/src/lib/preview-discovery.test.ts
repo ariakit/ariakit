@@ -18,6 +18,7 @@ import {
   getPreviewFrameworksSync,
   PreviewDataSchema,
   previewLoader,
+  resolvePreviewFrameworks,
 } from "./preview-discovery.ts";
 
 const dirs: string[] = [];
@@ -146,6 +147,23 @@ test("returns empty frameworks without preview entry files", async () => {
 
   await expect(getPreviewFrameworks(previewDir)).resolves.toEqual([]);
   expect(getPreviewFrameworksSync(previewDir)).toEqual([]);
+});
+
+test("resolves frameworks from metadata before entry files", async () => {
+  const dir = await createDir();
+  await writeFile(
+    join(dir, "examples/tab-nextjs/preview.json"),
+    JSON.stringify({ title: "Tab", frameworks: ["react"] }),
+  );
+  await writeFile(join(dir, "examples/separator/index.solid.tsx"));
+  await writeFile(join(dir, "examples/separator/index.react.tsx"));
+
+  await expect(
+    resolvePreviewFrameworks(join(dir, "examples/tab-nextjs"), "tab-nextjs"),
+  ).resolves.toEqual(["react"]);
+  await expect(
+    resolvePreviewFrameworks(join(dir, "examples/separator"), "separator"),
+  ).resolves.toEqual(["react", "solid"]);
 });
 
 test("rejects duplicate framework entry files", async () => {

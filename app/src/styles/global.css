@@ -55,3 +55,13 @@ astro-static-slot {
     --color-canvas: oklch(19.5% 0.018 262);
   }
 }
+
+/* A preview page inside a preview card. See app/src/lib/preview-embed.ts. The
+   page scrolls only after the person clicks or tabs into it. Until then, the
+   browser passes wheel scrolling to the docs page. */
+:root[data-preview-embedded] {
+  scrollbar-gutter: stable;
+  &:not([data-preview-active]) {
+    overflow: hidden;
+  }
+}
