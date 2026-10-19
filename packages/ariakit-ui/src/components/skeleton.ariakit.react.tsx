@@ -1,5 +1,4 @@
 import * as ak from "@ariakit/react";
-import { useMergeRefs } from "@ariakit/react-utils";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import * as React from "react";
@@ -169,12 +168,12 @@ export function SkeletonLine({ children, ...props }: SkeletonLineProps) {
   );
 }
 
-// React 18 does not render a boolean inert attribute, and React 19 does not
-// render an empty one, so set the property on the element.
-function setInert(element: HTMLElement | null) {
-  if (!element) return;
-  element.inert = true;
-}
+// React 19 renders a boolean inert attribute and drops an empty one, while
+// React 18 does the opposite. The attribute must be in the server HTML, so the
+// child cannot take focus before hydration. The types follow React 19.
+const inertProps = (
+  Number.parseInt(React.version, 10) >= 19 ? { inert: true } : { inert: "" }
+) as { inert?: boolean };
 
 export interface SkeletonFillProps
   extends ak.RoleProps<"span">, VariantProps<typeof skeletonFill> {}
@@ -188,16 +187,15 @@ export interface SkeletonFillProps
  *   <Button>Follow</Button>
  * </SkeletonFill>
  */
-export function SkeletonFill({ children, ref, ...props }: SkeletonFillProps) {
+export function SkeletonFill({ children, ...props }: SkeletonFillProps) {
   const state = useSkeletonPartState();
   const [variantProps, rest] = splitProps(props, skeletonFill);
-  const mergedRef = useMergeRefs(ref, setInert);
   if (state === "content") {
     return <>{children}</>;
   }
   return (
     <ak.Role.span
-      ref={mergedRef}
+      {...inertProps}
       aria-hidden
       data-pending={state === "pending" || undefined}
       {...skeletonFill.jsx(variantProps)}

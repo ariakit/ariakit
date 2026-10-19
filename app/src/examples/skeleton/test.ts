@@ -1,4 +1,4 @@
-import { click, q } from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // The simulated request takes 1.5 seconds.
@@ -13,6 +13,13 @@ test("hides the follow button until the profile loads", async () => {
     .toBeInTheDocument();
   expect(q.status()).toHaveTextContent("Profile loaded");
   expect(q.button("Follow")).toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/pull/7993#discussion_r4317370417
+test("skips the filled button while the profile loads", async () => {
+  expect(q.status()).toHaveTextContent("Loading profile");
+  await press.Tab();
+  expect(q.button("Reload profile")).toHaveFocus();
 });
 
 test("hides the previous profile while it reloads", async () => {
