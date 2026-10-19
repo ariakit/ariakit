@@ -49,10 +49,15 @@ export function usePerceptibleValue<T>(
     // An unchanged value must not start a timer or a new minimum window.
     if (Object.is(value, perceptibleValue)) return;
     const remaining = Math.max(0, nextThresholdRef.current - Date.now());
-    const timer = setTimeout(() => {
-      nextThresholdRef.current = Date.now() + minDuration;
-      setPerceptibleValue(value);
-    }, delay + remaining);
+    // The delay and the minimum duration of the current value run at the same
+    // time, so the new value waits only for the later of the two.
+    const timer = setTimeout(
+      () => {
+        nextThresholdRef.current = Date.now() + minDuration;
+        setPerceptibleValue(value);
+      },
+      Math.max(delay, remaining),
+    );
     return () => clearTimeout(timer);
   }, [value, perceptibleValue, delay, minDuration]);
 
