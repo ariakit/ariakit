@@ -37,6 +37,7 @@ import {
   ShellSidebarBody,
   ShellSidebarHeader,
 } from "@ariakit/ui/components/shell.ariakit.react";
+import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
 import {
   Check,
   Frame as FrameIcon,
@@ -172,7 +173,9 @@ export default function Example() {
         render={<nav />}
       >
         <ShellSidebarHeader>
-          <span className="font-medium">Layers</span>
+          <TextFrame $p={2} className="font-medium">
+            Layers
+          </TextFrame>
         </ShellSidebarHeader>
         <ShellSidebarBody>
           <Nav render={<div />} glider={[{ $kind: "flat" }, { $kind: "bar" }]}>

@@ -29,8 +29,13 @@ import {
   GlobeIcon,
   RotateCwIcon,
 } from "lucide-react";
-import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import type {
+  KeyboardEvent as ReactKeyboardEvent,
+  PointerEvent as ReactPointerEvent,
+  ReactNode,
+  RefObject,
+} from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   getAppThemeRootValues,
   subscribeAppTheme,
@@ -39,6 +44,7 @@ import type {
   PreviewCommandMessage,
   PreviewScrollMessage,
   PreviewThemeMessage,
+  PreviewViewportMessage,
 } from "#app/lib/preview-embed.ts";
 import {
   isPreviewFrameMessage,
@@ -47,6 +53,13 @@ import {
 
 // Chrome scrolls about 40 pixels for each line of a line-based wheel event.
 const WHEEL_LINE_HEIGHT = 40;
+
+// The narrowest preview viewport fits small phones.
+const MIN_VIEWPORT_WIDTH = 320;
+
+// Arrow keys resize the viewport by this many pixels, or ten times as many with
+// Shift.
+const RESIZE_STEP = 16;
 
 export interface PreviewCardProps {
   /**
@@ -106,9 +119,9 @@ export function PreviewCard({
     <div className="grid grid-cols-1 gap-2">
       <ak.DisclosureProvider>
         <Frame
-          // The 3xl radius matches the macOS browser window corner at the
-          // default theme radius.
-          $rounded="3xl"
+          // Between the 3xl and 4xl steps, so the window corner reads a little
+          // rounder than the macOS browser window while following the theme.
+          $rounded="calc(var(--radius)*7)"
           $forceRounded
           $darken={0.5}
           $orientation="vertical"
@@ -117,6 +130,8 @@ export function PreviewCard({
         >
           <Frame
             $cover
+            // Slightly more than the card padding, to suit the rounder corners.
+            $p={2}
             className="@container/bar flex items-center gap-2 text-sm"
           >
             <TextFrame
@@ -161,24 +176,24 @@ export function PreviewCard({
               </Button>
             </ButtonGroup>
           </Frame>
-          <Frame
-            $border
-            $layer="canvas"
-            $p={inline ? 4 : "none"}
-            className="grid grid-cols-1 overflow-clip"
-          >
-            {inline ? (
-              children
-            ) : (
-              <PreviewCardViewport
-                frame={frame}
-                title={title}
-                href={href}
-                fullscreen={fullscreen}
-                thumbnail={thumbnail}
-              />
-            )}
-          </Frame>
+          {inline ? (
+            <Frame
+              $border
+              $layer="canvas"
+              $p={4}
+              className="grid grid-cols-1 overflow-clip"
+            >
+              {children}
+            </Frame>
+          ) : (
+            <PreviewCardViewport
+              frame={frame}
+              title={title}
+              href={href}
+              fullscreen={fullscreen}
+              thumbnail={thumbnail}
+            />
+          )}
         </Frame>
         <ak.DisclosureContent role="region" aria-label={`${title} code`}>
           {code}
@@ -192,10 +207,11 @@ type PreviewFrame = ReturnType<typeof usePreviewFrame>;
 
 /**
  * Follows the location and history of the preview page in the iframe, and sends
- * it the site theme and navigation commands.
+ * it the site theme, the viewport radius, and navigation commands.
  */
 function usePreviewFrame(href: string) {
   const ref = useRef<HTMLIFrameElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const [location, setLocation] = useState(href);
   const [loaded, setLoaded] = useState(false);
   const [history, setHistory] = useState({
@@ -211,6 +227,15 @@ function usePreviewFrame(href: string) {
         type: PREVIEW_MESSAGE_TYPE,
         action: "theme",
         theme: getAppThemeRootValues(),
+      });
+      // The theme radius scales the viewport corners. The site theme script
+      // subscribed first, so the computed radius is already current.
+      const viewport = viewportRef.current;
+      if (!viewport) return;
+      postToFrame(iframe, {
+        type: PREVIEW_MESSAGE_TYPE,
+        action: "viewport",
+        radius: getInnerRadius(viewport),
       });
     };
     const onMessage = (event: MessageEvent) => {
@@ -249,7 +274,7 @@ function usePreviewFrame(href: string) {
     postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action });
   };
 
-  return { ref, location, loaded, setLoaded, history, send };
+  return { ref, viewportRef, location, loaded, setLoaded, history, send };
 }
 
 function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
@@ -331,47 +356,249 @@ function PreviewCardViewport({
   fullscreen,
   thumbnail,
 }: PreviewCardViewportProps) {
-  const { ref, loaded, setLoaded } = frame;
+  const { ref, viewportRef, loaded, setLoaded } = frame;
+  const viewportId = useId();
+  const stageRef = useRef<HTMLDivElement>(null);
+  const resize = usePreviewResize(stageRef);
   return (
-    <div
-      data-loading={loaded ? undefined : ""}
-      aria-busy={!loaded}
-      className="group/preview grid grid-cols-1 *:[grid-area:1/1]"
-    >
-      <iframe
-        ref={ref}
-        src={href}
-        title={title}
-        loading="lazy"
-        onLoad={() => setLoaded(true)}
-        className={[
-          "block w-full border-0 bg-transparent transition-opacity",
-          "group-data-loading/preview:opacity-0",
-          // Without scripts, nothing reports the load, so the frame shows
-          // right away.
-          "[@media(scripting:none)]:opacity-100!",
-        ].join(" ")}
-        style={{ height: fullscreen ? "40rem" : "25rem" }}
-      />
-      {thumbnail && (
-        <div
-          aria-hidden
-          className={[
-            "pointer-events-none hidden place-items-center animate-pulse",
-            "group-data-loading/preview:grid",
-            "[@media(scripting:none)]:hidden!",
-          ].join(" ")}
+    <div ref={stageRef} className="grid grid-cols-1">
+      <div
+        className="relative grid w-full max-w-full grid-cols-1 justify-self-start"
+        style={resize.width == null ? undefined : { width: resize.width }}
+      >
+        <Frame
+          ref={viewportRef}
+          id={viewportId}
+          $border
+          $layer="canvas"
+          $p="none"
+          className="grid grid-cols-1 overflow-clip"
         >
-          {thumbnail}
-        </div>
-      )}
+          <div
+            data-loading={loaded ? undefined : ""}
+            aria-busy={!loaded}
+            className="group/preview grid grid-cols-1 *:[grid-area:1/1]"
+          >
+            <iframe
+              ref={ref}
+              src={href}
+              title={title}
+              loading="lazy"
+              onLoad={() => setLoaded(true)}
+              className={[
+                "block w-full border-0 bg-transparent transition-opacity",
+                "group-data-loading/preview:opacity-0",
+                // Without scripts, nothing reports the load, so the frame shows
+                // right away.
+                "[@media(scripting:none)]:opacity-100!",
+                // The frame would take pointer events from the handle when a
+                // drag moves over it.
+                resize.resizing ? "pointer-events-none" : "",
+              ].join(" ")}
+              style={{ height: fullscreen ? "40rem" : "25rem" }}
+            />
+            {thumbnail && (
+              <div
+                aria-hidden
+                className={[
+                  "pointer-events-none hidden place-items-center animate-pulse",
+                  "group-data-loading/preview:grid",
+                  "[@media(scripting:none)]:hidden!",
+                ].join(" ")}
+              >
+                {thumbnail}
+              </div>
+            )}
+          </div>
+        </Frame>
+        {resize.enabled && (
+          <PreviewCardResizeHandle resize={resize} viewportId={viewportId} />
+        )}
+      </div>
     </div>
   );
 }
 
+type PreviewResize = ReturnType<typeof usePreviewResize>;
+
+/**
+ * Keeps the width of a preview viewport between the narrowest phone width and
+ * the full width of the stage element. A viewport at the full width follows the
+ * stage when the page resizes.
+ */
+function usePreviewResize(stageRef: RefObject<HTMLElement | null>) {
+  const dragRef = useRef<{ x: number; width: number; sign: number }>(null);
+  const [stageWidth, setStageWidth] = useState<number>();
+  const [width, setWidth] = useState<number | null>(null);
+  const [resizing, setResizing] = useState(false);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const observer = new ResizeObserver(() => {
+      setStageWidth(Math.floor(stage.getBoundingClientRect().width));
+    });
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, [stageRef]);
+
+  const maxWidth = stageWidth ?? 0;
+  const minWidth = Math.min(MIN_VIEWPORT_WIDTH, maxWidth);
+  const currentWidth = width == null ? maxWidth : Math.min(width, maxWidth);
+
+  const resizeTo = (nextWidth: number) => {
+    if (nextWidth >= maxWidth) {
+      setWidth(null);
+      return;
+    }
+    setWidth(Math.max(minWidth, Math.round(nextWidth)));
+  };
+
+  const startDrag = (event: ReactPointerEvent<HTMLElement>) => {
+    if (event.button !== 0) return;
+    // Keeps the drag from selecting text on the page.
+    event.preventDefault();
+    const handle = event.currentTarget;
+    handle.setPointerCapture(event.pointerId);
+    dragRef.current = {
+      x: event.clientX,
+      width: currentWidth,
+      sign: getInlineSign(handle),
+    };
+    setResizing(true);
+  };
+
+  const moveDrag = (event: ReactPointerEvent<HTMLElement>) => {
+    const drag = dragRef.current;
+    if (!drag) return;
+    resizeTo(drag.width + (event.clientX - drag.x) * drag.sign);
+  };
+
+  const endDrag = () => {
+    dragRef.current = null;
+    setResizing(false);
+  };
+
+  return {
+    width,
+    resizing,
+    // The handle needs a measured card, and room to resize.
+    enabled: maxWidth > MIN_VIEWPORT_WIDTH,
+    minWidth,
+    maxWidth,
+    currentWidth,
+    resizeTo,
+    startDrag,
+    moveDrag,
+    endDrag,
+  };
+}
+
+interface PreviewCardResizeHandleProps {
+  resize: PreviewResize;
+  viewportId: string;
+}
+
+/**
+ * A window splitter on the end edge of the preview viewport. Drag it or use the
+ * arrow keys to resize the viewport. Home and End resize it to the narrowest
+ * and the full width. A double click restores the full width.
+ */
+function PreviewCardResizeHandle({
+  resize,
+  viewportId,
+}: PreviewCardResizeHandleProps) {
+  const { minWidth, maxWidth, currentWidth, resizeTo } = resize;
+
+  const onKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
+    const step = event.shiftKey ? RESIZE_STEP * 10 : RESIZE_STEP;
+    const sign = getInlineSign(event.currentTarget);
+    switch (event.key) {
+      case "ArrowLeft":
+        resizeTo(currentWidth - step * sign);
+        break;
+      case "ArrowRight":
+        resizeTo(currentWidth + step * sign);
+        break;
+      case "Home":
+        resizeTo(minWidth);
+        break;
+      case "End":
+        resizeTo(maxWidth);
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+  };
+
+  return (
+    <div
+      role="separator"
+      tabIndex={0}
+      aria-label="Resize preview"
+      aria-orientation="vertical"
+      aria-controls={viewportId}
+      aria-valuemin={minWidth}
+      aria-valuemax={maxWidth}
+      aria-valuenow={currentWidth}
+      aria-valuetext={`${currentWidth} pixels wide`}
+      data-resizing={resize.resizing || undefined}
+      onKeyDown={onKeyDown}
+      onPointerDown={resize.startDrag}
+      onPointerMove={resize.moveDrag}
+      onPointerUp={resize.endDrag}
+      onPointerCancel={resize.endDrag}
+      onLostPointerCapture={resize.endDrag}
+      onDoubleClick={() => resizeTo(maxWidth)}
+      className={[
+        // Centers the grip in the 1.5-step card padding at the full width. The
+        // hit area overlaps the frame by 1.25 steps, less than a classic
+        // scrollbar at the end edge of the frame.
+        "group/resize absolute inset-y-0 -inset-e-2.75 z-1 grid w-4 place-items-center",
+        "cursor-ew-resize touch-none outline-none",
+      ].join(" ")}
+    >
+      <Frame
+        render={<span />}
+        $rounded="full"
+        $forceRounded
+        $p="none"
+        $layer
+        $contrast
+        className={[
+          "h-10 w-1 transition-[height] duration-150",
+          "group-hover/resize:h-14 group-data-resizing/resize:h-14",
+          "group-focus-visible/resize:h-14 group-focus-visible/resize:outline-2",
+          "group-focus-visible/resize:outline-offset-2 ak-outline ak-outline-brand",
+        ].join(" ")}
+      />
+    </div>
+  );
+}
+
+/**
+ * Returns the radius of the corners inside the element's border, which clip its
+ * content.
+ */
+function getInnerRadius(element: Element) {
+  const style = getComputedStyle(element);
+  const radius = Number.parseFloat(style.borderStartStartRadius);
+  const border = Number.parseFloat(style.borderBlockStartWidth);
+  return `${Math.max(0, radius - border)}px`;
+}
+
+/**
+ * Returns 1 when the inline end of the element is on the right, and -1 when it
+ * is on the left.
+ */
+function getInlineSign(element: Element) {
+  return getComputedStyle(element).direction === "rtl" ? -1 : 1;
+}
+
 function postToFrame(
   iframe: HTMLIFrameElement,
-  message: PreviewCommandMessage | PreviewThemeMessage,
+  message: PreviewCommandMessage | PreviewThemeMessage | PreviewViewportMessage,
 ) {
   // Next.js previews load from another origin.
   iframe.contentWindow?.postMessage(message, "*");

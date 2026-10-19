@@ -83,6 +83,54 @@ test("preview card frames do not scroll or take focus until activated", async ({
   await expect.poll(getFrameScroll).toBeGreaterThan(0);
 });
 
+test("preview cards resize their viewport from the end edge", async ({
+  page,
+  q,
+}) => {
+  // The card starts wider than the shell breakpoint that folds the sidebar.
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await gotoAndSettle(page, "/react/examples/app-shell/");
+  const iframe = page.locator('iframe[title="App Shell"]');
+  await iframe.scrollIntoViewIfNeeded();
+  const frame = iframe.contentFrame();
+  await expect(frame.locator("html")).toHaveAttribute(
+    "data-preview-hydrated",
+    "",
+  );
+  const preview = query(frame);
+  const handle = query(q.region("App Shell", { exact: true })).separator(
+    "Resize preview",
+  );
+  await expect(preview.navigation("Guides")).toBeVisible();
+  const fullWidth = (await handle.getAttribute("aria-valuemax")) ?? "";
+  await expect(handle).toHaveAttribute("aria-valuenow", fullWidth);
+
+  const box = await handle.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  const y = box.y + box.height / 2;
+  const startX = box.x + box.width / 2;
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  // The drag moves over the frame, which must not take the pointer.
+  await page.mouse.move(startX - (Number(fullWidth) - 480), y, { steps: 8 });
+  await page.mouse.up();
+  await expect(handle).toHaveAttribute("aria-valuenow", "480");
+  await expect(preview.navigation("Guides")).not.toBeVisible();
+
+  await handle.press("End");
+  await expect(handle).toHaveAttribute("aria-valuenow", fullWidth);
+  await expect(preview.navigation("Guides")).toBeVisible();
+  await handle.press("Home");
+  await expect(handle).toHaveAttribute("aria-valuenow", "320");
+  await handle.press("Shift+ArrowRight");
+  await expect(handle).toHaveAttribute("aria-valuenow", "480");
+  await handle.press("ArrowLeft");
+  await expect(handle).toHaveAttribute("aria-valuenow", "464");
+  await handle.dblclick();
+  await expect(handle).toHaveAttribute("aria-valuenow", fullWidth);
+});
+
 for (const framework of ["react", "solid"]) {
   test(`${framework} separator page uses its framework preview`, async ({
     page,

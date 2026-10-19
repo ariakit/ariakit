@@ -371,3 +371,52 @@ test("table of contents marks the section in view", async ({ page, q }) => {
   );
   await expect(toc.link("Overview")).not.toHaveAttribute("aria-current");
 });
+
+test("app shells in preview cards keep corners concentric with the card", async ({
+  page,
+  q,
+}) => {
+  // The toggle button in the frame corner shows only at wide shell widths.
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await gotoAndSettle(page, examplePath);
+  const iframe = page.locator('iframe[title="App Shell"]');
+  await iframe.scrollIntoViewIfNeeded();
+  const frame = iframe.contentFrame();
+  await expect(frame.locator("html")).toHaveAttribute(
+    "data-preview-hydrated",
+    "",
+  );
+  const handle = query(q.region("App Shell", { exact: true })).separator(
+    "Resize preview",
+  );
+  const viewportId = await handle.getAttribute("aria-controls");
+  const viewport = page.locator(`[id="${viewportId}"]`);
+  // The button sits in the top-left corner of the frame. Its radius plus its
+  // inset is the radius of a concentric outer corner.
+  const button = query(frame).button("Toggle navigation");
+  const getViewportRadius = () =>
+    viewport.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const radius = Number.parseFloat(style.borderTopLeftRadius);
+      return radius - Number.parseFloat(style.borderTopWidth);
+    });
+  const getButtonOuterRadius = () =>
+    button.evaluate((element) => {
+      const radius = getComputedStyle(element).borderTopLeftRadius;
+      return Number.parseFloat(radius) + element.getBoundingClientRect().left;
+    });
+
+  const radius = await getViewportRadius();
+  await expect.poll(getButtonOuterRadius).toBeCloseTo(radius, 1);
+
+  // A larger theme radius rounds both the card and the frame content.
+  await q.button("Theme", { exact: true }).click();
+  const theme = query(q.complementary("Theme"));
+  await query(q.radiogroup("Radius")).radio("Round").click();
+  // The open panel narrows the page, which hides the button in the frame.
+  await theme.button("Close theme").click();
+  await expect(button).toBeVisible();
+  await expect.poll(getViewportRadius).toBeGreaterThan(radius);
+  const roundRadius = await getViewportRadius();
+  await expect.poll(getButtonOuterRadius).toBeCloseTo(roundRadius, 1);
+});
