@@ -22,7 +22,7 @@ import { useRequest } from "../use-request.ts";
 const account = {
   name: "Ana Souza",
   email: "ana@example.com",
-  website: "anasouza.dev",
+  website: "https://anasouza.dev",
   updates: true,
 };
 
