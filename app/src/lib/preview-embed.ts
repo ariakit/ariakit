@@ -196,7 +196,8 @@ export function setupPreviewEmbed() {
   // would: it replaces the current entry and fires popstate, which client-side
   // routers, such as the Next.js App Router, handle. WebKit also keeps
   // history.state empty in frames, so each entry stores the state that the
-  // router passed.
+  // router passed. The entries belong to the current document, so a reload
+  // starts them again from the current entry.
   interface FrameEntry {
     url: string;
     state: unknown;
