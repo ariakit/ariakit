@@ -129,6 +129,28 @@ export const skeletonLine = cv({
     $rounded: "xs",
     // The bar draws its own ring.
     $borderType: "unset",
+    // Lines draw no edge. They push their tint away from the surface instead,
+    // and the push grows with the contrast preference, so a thin bar stays
+    // visible in high contrast without an outline around it.
+    $border: false,
+    $lightnessOffset: false,
+    $lightnessPush(defaultValue, variants) {
+      if (defaultValue != null) {
+        return defaultValue;
+      }
+      // A caller offset replaces the weight-based push, including `0`, which
+      // pins the parent lightness.
+      if (
+        variants.$lightnessOffset != null &&
+        variants.$lightnessOffset !== false
+      ) {
+        return defaultValue;
+      }
+      if (variants.$weight == null) {
+        return WEIGHT_STEPS.normal;
+      }
+      return WEIGHT_STEPS[variants.$weight];
+    },
   },
 });
 

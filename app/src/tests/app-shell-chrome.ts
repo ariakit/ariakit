@@ -59,6 +59,33 @@ test("site navigation marks the component on its API reference pages", async ({
   );
 });
 
+test("site navigation describes each page with its example count", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, examplePath);
+  const navigation = query(q.navigation("Site"));
+  await expect(navigation.link("App Shell")).toHaveAccessibleDescription(
+    /^\d+ examples$/,
+  );
+  await expect(navigation.link("Separator")).toHaveAccessibleDescription(
+    /^\d+ examples?$/,
+  );
+});
+
+test("collection pages list entries without the site navigation", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/examples/");
+  await expect(q.heading("Examples")).toBeVisible();
+  await expect(q.navigation("Site")).toHaveCount(0);
+  await expect(q.button("Toggle navigation")).toHaveCount(0);
+  await expect(q.link("App Shell")).toHaveAccessibleDescription(
+    /^\d+ examples$/,
+  );
+});
+
 test("theme panel applies a mode to the site and its previews", async ({
   page,
   q,

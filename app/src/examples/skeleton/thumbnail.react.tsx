@@ -7,10 +7,7 @@ import {
 
 export default function Thumbnail() {
   return (
-    <div
-      className="flex justify-center pointer-events-none text-xs"
-      aria-hidden
-    >
+    <div className="flex justify-center text-xs">
       <Frame
         $layer
         $lighten
@@ -34,5 +31,26 @@ export default function Thumbnail() {
         <SkeletonBox $rounded="lg" className="h-16 w-full" />
       </Frame>
     </div>
+  );
+}
+
+export function SmallThumbnail() {
+  return (
+    <Frame $layer $lighten $p={5.5} className="flex flex-col gap-4.5">
+      <div className="flex items-center gap-4.5">
+        <SkeletonCircle $weight="medium" className="size-11.5 shrink-0" />
+        <div className="grid flex-1 gap-1">
+          <SkeletonLine
+            $weight="bold"
+            className="w-3/5 text-[1.25em] leading-none"
+          />
+          <SkeletonLine
+            $weight="light"
+            className="w-1/3 text-[1.25em] leading-none"
+          />
+        </div>
+      </div>
+      <SkeletonBox $rounded="sm" $forceRounded className="w-full flex-1" />
+    </Frame>
   );
 }

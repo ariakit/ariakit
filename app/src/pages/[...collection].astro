@@ -9,17 +9,21 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import Meta from "#app/components/meta.astro";
+import { AppThumbnail } from "#app/components/app-thumbnail.react.tsx";
+import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { focus } from "@ariakit/ui/styles/focus";
 import { uniq } from "#app/lib/array.ts";
 import {
+  countEntryExamples,
   filterGuidesByGroup,
   filterPreviews,
+  formatExampleCount,
   getGuideDetail,
 } from "#app/lib/content.ts";
 import { getFramework } from "#app/lib/framework.ts";
 import { capitalize } from "#app/lib/string.ts";
 import { renderThumbnail } from "#app/lib/thumbnail.ts";
-import PageIntro from "#app/components/page-intro.astro";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
@@ -54,61 +58,78 @@ export const getStaticPaths = (async () => {
 
 const { framework, type, entries, previewCount } = Astro.props;
 Astro.locals.framework = framework;
-const title = getFramework(framework).label + " " + capitalize(type);
+const frameworkLabel = getFramework(framework).label;
+const title = frameworkLabel + " " + capitalize(type);
 const groupPath = "/" + framework + "/" + type;
 const guides = (
   await getCollection("guides", filterGuidesByGroup(groupPath))
 ).map(getGuideDetail);
+const examples = await getCollection("examples");
+const previews = await getCollection("previews");
 const cards = await Promise.all(
   entries.map(async (entry) => ({
     entry,
+    count: countEntryExamples({ entry, framework, examples, previews }),
     thumbnail: await renderThumbnail(entry.id),
   })),
 );
+const lead =
+  type === "examples"
+    ? "Patterns built with Ariakit components. Open an example to explore its previews and copy the code into your app."
+    : "Accessible building blocks for your design system. Each component page covers its examples and API reference.";
+const cardFocus = focus.jsx({ $focus: true, $focusOffset: 2 }).className;
 ---
 
-<Layout {title}>
+<Layout {title} sidebar={false} maxWidth="80rem">
   <Meta slot="meta" {type} {title} {framework} />
-  <PageIntro slot="intro" {title}>
-    <p>{previewCount} previews</p>
-  </PageIntro>
-  {
-    guides.length > 0 && (
-      <nav aria-label="Guides">
-        <ul>
-          {guides.map((guide) => (
-            <li><a href={guide.path}>{guide.data.title}</a></li>
-          ))}
-        </ul>
-      </nav>
-    )
-  }
-  <ul class="grid grid-cols-1 gap-3 @2xl/shell-main-body:grid-cols-2">
+  <header class="grid max-w-2xl gap-3 pt-8">
+    <span class="ak-ink-70 text-sm font-medium">{frameworkLabel}</span>
+    <h1 class="text-5xl font-semibold tracking-tight">{capitalize(type)}</h1>
+    <p class="ak-ink-75 text-lg text-pretty">{lead}</p>
+    <p class="ak-ink-70 text-sm">{previewCount} previews</p>
     {
-      cards.map(({ entry, thumbnail }) => (
+      guides.length > 0 && (
+        <nav aria-label="Guides" class="flex flex-wrap gap-2 pt-3">
+          {guides.map((guide) => (
+            <Button
+              render={createElement("a", { href: guide.path })}
+              $layer
+              $border
+              $rounded="full"
+              $size="sm"
+            >
+              {guide.data.title}
+            </Button>
+          ))}
+        </nav>
+      )
+    }
+  </header>
+  <ul
+    class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] gap-x-6 gap-y-10"
+  >
+    {
+      cards.map(({ entry, count, thumbnail }) => (
         <li>
           <Frame
             render={createElement("a", {
               href: groupPath + "/" + entry.id + "/",
+              "aria-labelledby": entry.id + "-label",
+              "aria-describedby": entry.id + "-count",
             })}
-            $layer
-            $rounded="xl"
-            $border
-            $p={4}
-            className="flex flex-col gap-4 font-medium hover:ak-state-2.5"
+            $rounded="lg"
+            $p="none"
+            className={"group/thumbnail grid gap-3 " + cardFocus}
           >
-            {thumbnail && (
-              <Frame
-                $layer
-                $darken={0.5}
-                $rounded="lg"
-                $p="none"
-                className="h-48 overflow-clip"
-              >
-                <Fragment set:html={thumbnail} />
-              </Frame>
-            )}
-            {entry.data.title}
+            {thumbnail && <AppThumbnail html={thumbnail} />}
+            <span class="grid gap-0.5 px-1">
+              <span id={entry.id + "-label"} class="font-medium">
+                {entry.data.title}
+              </span>
+              <span id={entry.id + "-count"} class="ak-ink-70 text-sm">
+                {formatExampleCount(count)}
+              </span>
+            </span>
           </Frame>
         </li>
       ))
