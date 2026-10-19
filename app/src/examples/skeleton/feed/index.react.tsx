@@ -39,6 +39,7 @@ const allPosts: Post[] = [
     initials: "AS",
     time: "1h",
     text: "Our docs search now answers in under 100 ms, so it never flashes a loading state.",
+    image: true,
   },
   {
     id: "4",
@@ -46,7 +47,6 @@ const allPosts: Post[] = [
     initials: "KI",
     time: "3h",
     text: "Weekend project: a tiny synth that runs in the browser with the Web Audio API.",
-    image: true,
   },
   {
     id: "5",
@@ -54,6 +54,7 @@ const allPosts: Post[] = [
     initials: "MC",
     time: "5h",
     text: "Reminder that prefers-reduced-motion is not only for animations you think are large.",
+    image: true,
   },
   {
     id: "6",
@@ -128,7 +129,9 @@ export default function Example() {
   );
 }
 
-// Whether each placeholder post shows an image. A mix looks like a real feed.
+// Whether each placeholder post shows an image. A mix looks like a real feed,
+// and the sample posts follow the same pattern on every page, so the cards keep
+// their height when the posts load.
 const placeholders = [true, false];
 
 interface PostCardProps {

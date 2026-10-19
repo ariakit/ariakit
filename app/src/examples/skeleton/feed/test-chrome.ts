@@ -17,4 +17,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.text("Kenji Ito")).toBeVisible();
     await test.expect(q.text("Priya Raman")).toBeVisible();
   });
+
+  // https://github.com/ariakit/ariakit/pull/7993#discussion_r4317548115
+  test("keeps the layout when each page loads", async ({ q }) => {
+    const loadMore = q.button("Load more");
+    const getFeedBottom = () =>
+      q
+        .region("Feed")
+        .evaluate((element) => element.getBoundingClientRect().bottom);
+    for (const author of ["Ana Souza", "Maya Chen"]) {
+      await test.expect(loadMore).toBeEnabled();
+      await loadMore.click();
+      await test.expect(q.status()).toHaveText("Loading posts");
+      // Pending placeholders already hold their layout before they fade in.
+      const placeholdersBottom = await getFeedBottom();
+      await test.expect(q.text(author)).toBeVisible();
+      test.expect(await getFeedBottom()).toBe(placeholdersBottom);
+    }
+  });
 });
