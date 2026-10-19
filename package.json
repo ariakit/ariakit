@@ -64,7 +64,7 @@
     "cross-spawn": "7.0.6",
     "fs-extra": "11.4.1",
     "glob": "13.0.6",
-    "happy-dom": "21.0.1",
+    "happy-dom": "21.0.3",
     "jsdom": "30.1.3",
     "lefthook": "2.2.2",
     "open-cli": "9.0.0",

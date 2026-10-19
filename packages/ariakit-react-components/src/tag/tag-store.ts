@@ -6,7 +6,10 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.ts";
-import { useCompositeStoreProps } from "../composite/composite-store.ts";
+import {
+  useCompositeStoreOptions,
+  useCompositeStoreProps,
+} from "../composite/composite-store.ts";
 
 export function useTagStoreProps<T extends Core.TagStore>(
   store: T,
@@ -41,6 +44,7 @@ export function useTagStoreProps<T extends Core.TagStore>(
  * ```
  */
 export function useTagStore(props: TagStoreProps = {}): TagStore {
+  props = useCompositeStoreOptions(props);
   const [store, update] = useStore(Core.createTagStore, props);
   return useTagStoreProps(store, update, props);
 }

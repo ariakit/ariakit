@@ -6,7 +6,10 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.ts";
-import { useCompositeStoreProps } from "../composite/composite-store.ts";
+import {
+  useCompositeStoreOptions,
+  useCompositeStoreProps,
+} from "../composite/composite-store.ts";
 
 export function useToolbarStoreProps<T extends Core.ToolbarStore>(
   store: T,
@@ -32,6 +35,7 @@ export function useToolbarStoreProps<T extends Core.ToolbarStore>(
  * ```
  */
 export function useToolbarStore(props: ToolbarStoreProps = {}): ToolbarStore {
+  props = useCompositeStoreOptions(props);
   const [store, update] = useStore(Core.createToolbarStore, props);
   return useToolbarStoreProps(store, update, props);
 }

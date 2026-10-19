@@ -11,11 +11,36 @@ import type {
 import { useCollectionStoreProps } from "../collection/collection-store.ts";
 import { getMoveRequest } from "./__move-request.ts";
 
-export function useCompositeStoreOptions<T extends Core.CompositeStoreOptions>(
+interface IdStore {
+  getState(): { id?: string | null };
+}
+
+interface CompositeStoreIdOptions extends Core.CompositeStoreOptions {
+  store?: IdStore;
+}
+
+/**
+ * Supplies a React-generated store ID when neither the props nor the stores
+ * that the core store synchronizes with provide one. Otherwise, the core store
+ * falls back to a random ID during render, which breaks prerendering and
+ * hydration.
+ * @param syncStores The stores, besides `props.store`, whose state the core
+ *   store merges.
+ */
+export function useCompositeStoreOptions<T extends CompositeStoreIdOptions>(
   props: T,
+  ...syncStores: Array<IdStore | null | undefined>
 ) {
-  const id = useId(props.id);
-  return { id, ...props };
+  const id = useId();
+  if (props.id !== undefined) {
+    return props;
+  }
+  // A synchronized ID takes precedence over a generated one in the core store.
+  const stores = [props.store, ...syncStores];
+  if (stores.some((store) => store?.getState().id != null)) {
+    return props;
+  }
+  return { ...props, id };
 }
 
 export function useCompositeStoreProps<T extends Core.CompositeStore>(
