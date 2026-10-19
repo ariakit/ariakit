@@ -376,7 +376,7 @@ export default function Example() {
             </span>
           </ShellHeaderStart>
           <ShellHeaderEnd>
-            <ButtonGroup aria-label="Project actions">
+            <ButtonGroup aria-label="Project actions" $p={0} $gap="sm">
               <Button aria-label="Favorite">
                 <ButtonSlot>
                   <Star />
@@ -405,7 +405,7 @@ export default function Example() {
             >
               <ak.RadioGroup
                 aria-label="Filter issues"
-                render={<ButtonGroup />}
+                render={<ButtonGroup $p={0} $gap="sm" />}
               >
                 {filters.map((item) => (
                   <ak.Radio

@@ -324,7 +324,7 @@ export default function Example() {
       <ShellMain>
         <ShellMainHeader $blur>
           <div className="flex w-full items-center justify-between gap-4">
-            <ButtonGroup aria-label="Message actions">
+            <ButtonGroup aria-label="Message actions" $p={0} $gap="sm">
               <Button>
                 <ButtonSlot>
                   <MessageSquare />

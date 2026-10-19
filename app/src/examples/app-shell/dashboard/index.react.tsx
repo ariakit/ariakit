@@ -36,6 +36,7 @@ import {
   TableRow,
   TableRowGroup,
 } from "@ariakit/ui/components/table.ariakit.react";
+import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import {
   Bell,
@@ -63,11 +64,11 @@ export default function Example() {
         aria-label="Primary"
         render={<nav />}
       >
-        <ShellSidebarHeader className="font-semibold">
-          <div className="flex items-center gap-2">
+        <ShellSidebarHeader>
+          <TextFrame $p={2} className="flex items-center gap-2 font-semibold">
             <Hexagon strokeWidth={1.5} className="size-5" aria-hidden />
             Acme Analytics
-          </div>
+          </TextFrame>
         </ShellSidebarHeader>
         <ShellSidebarBody>
           <Nav render={<div />} glider={[{ $kind: "flat" }, { $kind: "bar" }]}>

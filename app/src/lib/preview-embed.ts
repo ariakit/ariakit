@@ -38,6 +38,16 @@ export interface PreviewThemeMessage {
   theme: PreviewTheme;
 }
 
+/**
+ * Gives a preview frame the inner corner radius of the card viewport around it,
+ * so app shells in the frame keep nested corners concentric with the card.
+ */
+export interface PreviewViewportMessage {
+  type: typeof PREVIEW_MESSAGE_TYPE;
+  action: "viewport";
+  radius: string;
+}
+
 /** Reports the current location of a preview frame to its card. */
 export interface PreviewLocationMessage {
   type: typeof PREVIEW_MESSAGE_TYPE;
@@ -69,7 +79,8 @@ export type PreviewFrameMessage = PreviewLocationMessage | PreviewScrollMessage;
  *   hover does not trap the docs page.
  * - The page reports its location and history state, and follows navigation
  *   commands from the card.
- * - The page applies the site theme that the card sends.
+ * - The page applies the site theme and the viewport radius that the card
+ *   sends.
  *
  * This function is serialized into an inline script, so it must not reference
  * anything outside its own body.
@@ -270,19 +281,20 @@ export function setupPreviewEmbed() {
   }
   window.addEventListener("load", postLocation);
 
+  const setProperty = (property: string, value: string | null) => {
+    if (value) {
+      root.style.setProperty(property, value);
+    } else {
+      root.style.removeProperty(property);
+    }
+  };
+
   // Matches the theme script of the site, which reads the same values from
   // storage in same-origin previews.
   const applyTheme = (theme: object) => {
     const read = (key: string) => {
       const value: unknown = Reflect.get(theme, key);
       return typeof value === "string" ? value : null;
-    };
-    const setProperty = (property: string, value: string | null) => {
-      if (value) {
-        root.style.setProperty(property, value);
-      } else {
-        root.style.removeProperty(property);
-      }
     };
     const mode = read("mode");
     if (mode === "light" || mode === "dark") {
@@ -334,6 +346,12 @@ export function setupPreviewEmbed() {
       case "theme":
         if ("theme" in data && data.theme && typeof data.theme === "object") {
           applyTheme(data.theme);
+        }
+        break;
+      case "viewport":
+        // The site stylesheet passes this value to app shells.
+        if ("radius" in data && typeof data.radius === "string") {
+          setProperty("--preview-viewport-radius", data.radius);
         }
         break;
     }
