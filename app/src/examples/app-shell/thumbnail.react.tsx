@@ -1,5 +1,5 @@
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
+import { SkeletonLine } from "@ariakit/ui/components/skeleton.ariakit.react";
 
 export default function Thumbnail() {
   return (
@@ -20,24 +20,22 @@ export default function Thumbnail() {
           $p="none"
           className="col-span-full flex items-center justify-between px-2"
         >
-          <PlaceholderText weight="bold">Acme</PlaceholderText>
-          <PlaceholderText>Docs</PlaceholderText>
+          <SkeletonLine $weight="bold" className="w-10" />
+          <SkeletonLine className="w-9" />
         </Frame>
         <Frame $layer $darken={0.25} $p={1.5} className="flex flex-col gap-1.5">
-          <PlaceholderText weight="medium">Start</PlaceholderText>
-          <PlaceholderText weight="light">Guides</PlaceholderText>
-          <PlaceholderText weight="light">API</PlaceholderText>
+          <SkeletonLine $weight="medium" className="w-10" />
+          <SkeletonLine $weight="light" className="w-12" />
+          <SkeletonLine $weight="light" className="w-7" />
         </Frame>
         <div className="flex flex-col gap-1.5 p-2">
-          <PlaceholderText weight="bold" size="lg">
-            Overview
-          </PlaceholderText>
-          <PlaceholderText weight="light">Sticky parts</PlaceholderText>
-          <PlaceholderText weight="light">and panels</PlaceholderText>
+          <SkeletonLine $weight="bold" className="w-24 text-lg" />
+          <SkeletonLine $weight="light" className="w-24" />
+          <SkeletonLine $weight="light" className="w-20" />
         </div>
         <Frame $layer $darken={0.25} $p={1.5} className="flex flex-col gap-1.5">
-          <PlaceholderText weight="light">Intro</PlaceholderText>
-          <PlaceholderText weight="light">Use</PlaceholderText>
+          <SkeletonLine $weight="light" className="w-9" />
+          <SkeletonLine $weight="light" className="w-7" />
         </Frame>
       </Frame>
     </div>

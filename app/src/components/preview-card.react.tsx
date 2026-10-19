@@ -120,7 +120,9 @@ export function PreviewCard({
 }: PreviewCardProps) {
   const frame = usePreviewFrame(href);
   return (
-    <div className="grid grid-cols-1 gap-2">
+    // A card that stretches to its grid row gives the extra height to the
+    // window, not to the code below it.
+    <div className="grid grid-cols-1 grid-rows-[1fr_auto] gap-2">
       <ak.DisclosureProvider>
         <Frame
           // Between the 3xl and 4xl steps, so the window corner reads a little
@@ -130,7 +132,7 @@ export function PreviewCard({
           $darken={0.5}
           $orientation="vertical"
           $p={1.5}
-          className="grid grid-cols-1"
+          className="grid grid-cols-1 grid-rows-[auto_1fr]"
         >
           <Frame
             $cover
@@ -181,14 +183,7 @@ export function PreviewCard({
             </ButtonGroup>
           </Frame>
           {inline ? (
-            <Frame
-              $border
-              $layer="canvas"
-              $p={4}
-              className="grid grid-cols-1 overflow-clip"
-            >
-              {children}
-            </Frame>
+            <PreviewCardInline>{children}</PreviewCardInline>
           ) : (
             <PreviewCardViewport
               frame={frame}
@@ -361,16 +356,10 @@ function PreviewCardViewport({
   thumbnail,
 }: PreviewCardViewportProps) {
   const { ref, viewportRef, loaded, setLoaded } = frame;
-  const viewportId = useId();
-  const stageRef = useRef<HTMLDivElement>(null);
   const offscreenWidth = useOffscreenFrameWidth(ref);
-  const resize = usePreviewResize(stageRef, offscreenWidth == null);
   return (
-    <div ref={stageRef} className="grid grid-cols-1">
-      <div
-        className="relative grid w-full max-w-full grid-cols-1 justify-self-start"
-        style={resize.width == null ? undefined : { width: resize.width }}
-      >
+    <PreviewCardStage measuring={offscreenWidth == null}>
+      {({ viewportId, resizing }) => (
         <Frame
           ref={viewportRef}
           id={viewportId}
@@ -398,7 +387,7 @@ function PreviewCardViewport({
                 "[@media(scripting:none)]:opacity-100!",
                 // The frame would take pointer events from the handle when a
                 // drag moves over it.
-                resize.resizing ? "pointer-events-none" : "",
+                resizing ? "pointer-events-none" : "",
               ].join(" ")}
               style={{
                 height: fullscreen ? "40rem" : "25rem",
@@ -419,6 +408,76 @@ function PreviewCardViewport({
             )}
           </div>
         </Frame>
+      )}
+    </PreviewCardStage>
+  );
+}
+
+interface PreviewCardInlineProps {
+  children?: ReactNode;
+}
+
+/** Renders an example directly in the card, without an iframe. */
+function PreviewCardInline({ children }: PreviewCardInlineProps) {
+  return (
+    <PreviewCardStage>
+      {({ viewportId }) => (
+        <Frame
+          id={viewportId}
+          $border
+          $layer="canvas"
+          $p={4}
+          className={[
+            "grid grid-cols-1 place-items-center content-center overflow-clip",
+            // Match the font size of the preview page. It also makes the
+            // em-based padding reach the 1rem frame cap, so the example keeps
+            // its own corner radius instead of a concentric one.
+            "text-base",
+            // The global island styles inherit the grid display, which would
+            // size the example to its content. Without their boxes, the
+            // example is a grid item that fits the card.
+            "[&_:is(astro-island,astro-slot,astro-static-slot)]:contents!",
+          ].join(" ")}
+        >
+          {children}
+        </Frame>
+      )}
+    </PreviewCardStage>
+  );
+}
+
+interface PreviewCardStageState {
+  viewportId: string;
+  resizing: boolean;
+}
+
+interface PreviewCardStageProps {
+  children: (state: PreviewCardStageState) => ReactNode;
+  /**
+   * Whether the stage follows the card width. See `usePreviewResize`.
+   * @default true
+   */
+  measuring?: boolean;
+}
+
+/**
+ * Holds the preview viewport and the handle that resizes it. The viewport fills
+ * the stage until the handle makes it narrower.
+ */
+function PreviewCardStage({
+  children,
+  measuring = true,
+}: PreviewCardStageProps) {
+  const viewportId = useId();
+  const stageRef = useRef<HTMLDivElement>(null);
+  const resize = usePreviewResize(stageRef, measuring);
+  return (
+    <div ref={stageRef} className="grid grid-cols-1">
+      <div
+        className="relative grid w-full max-w-full grid-cols-1 justify-self-start"
+        style={resize.width == null ? undefined : { width: resize.width }}
+      >
+        {children({ viewportId, resizing: resize.resizing })}
         {resize.enabled && (
           <PreviewCardResizeHandle resize={resize} viewportId={viewportId} />
         )}
@@ -600,6 +659,9 @@ function PreviewCardResizeHandle({
         // scrollbar at the end edge of the frame.
         "group/resize absolute inset-y-0 -inset-e-2.75 z-1 grid w-4 place-items-center",
         "cursor-ew-resize touch-none outline-none",
+        // A card that shares a row in a preview grid keeps its width, even
+        // when a narrow grid stacks the cards.
+        "[.preview-grid>:not(.col-span-full)_&]:hidden!",
       ].join(" ")}
     >
       <Frame

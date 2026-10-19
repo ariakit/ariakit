@@ -1,0 +1,25 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { ShellMainFull } from "@ariakit/ui/components/shell.ariakit.react";
+---
+
+{/* Lays out preview cards in up to two columns, or one when two would be
+    narrower than 24rem. A card with class="col-span-full" takes the whole
+    row. */}
+<ShellMainFull>
+  <Frame
+    $p="var(--app-gutter)"
+    className="preview-grid grid grid-cols-[repeat(auto-fill,minmax(min(100%,max(24rem,(100%-var(--preview-grid-gap))/2)),1fr))] gap-(--preview-grid-gap) py-0! [--preview-grid-gap:--spacing(8)]"
+  >
+    <slot />
+  </Frame>
+</ShellMainFull>

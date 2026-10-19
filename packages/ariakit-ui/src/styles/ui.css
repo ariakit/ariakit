@@ -32,6 +32,19 @@
     }
   }
 
+  --animate-ui-skeleton-shimmer: ui-skeleton-shimmer 2s linear infinite;
+
+  @keyframes ui-skeleton-shimmer {
+    /* With a background twice the part's width, these positions start and end
+       with the highlight past each edge. */
+    from {
+      background-position: 150% 0;
+    }
+    to {
+      background-position: -50% 0;
+    }
+  }
+
   --duration-overshoot: 500ms;
   /* Curve from easingwizard.com, shared through the ease-overshoot utility. */
   --ease-overshoot: linear(

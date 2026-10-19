@@ -131,16 +131,46 @@ test("preview cards resize their viewport from the end edge", async ({
   await expect(handle).toHaveAttribute("aria-valuenow", fullWidth);
 });
 
+for (const width of [1600, 700]) {
+  test(`preview grid cards that share a row hide the resize handle at ${width}px`, async ({
+    page,
+    q,
+  }) => {
+    // At 700px, the grid stacks every card, including the ones that share a row
+    // on wider screens.
+    await page.setViewportSize({ width, height: 900 });
+    await gotoAndSettle(page, "/react/examples/skeleton/");
+    for (const [title, shown] of [
+      ["Animations", true],
+      ["Timing", false],
+    ] as const) {
+      const card = q.region(title, { exact: true });
+      // The card renders the handle only after it hydrates.
+      const handle = query(card).separator("Resize preview", {
+        includeHidden: true,
+      });
+      await expect(handle).toBeAttached();
+      await expect(handle).toBeVisible({ visible: shown });
+    }
+  });
+}
+
 for (const framework of ["react", "solid"]) {
   test(`${framework} separator page uses its framework preview`, async ({
     page,
     q,
   }) => {
     await gotoAndSettle(page, `/${framework}/components/separator/`);
-    await expect(q.separator()).toBeVisible();
     // The site navigation also links to the Separator page, so the preview link
     // is queried within the preview card region.
     const card = query(q.region("Separator"));
+    // The card's resize handle is also a separator, so the example's separator
+    // is queried within the viewport that the handle controls.
+    const handle = card.separator("Resize preview");
+    const viewportId = await handle.getAttribute("aria-controls");
+    await expect(
+      query(page.locator(`[id="${viewportId}"]`)).separator(),
+    ).toBeVisible();
     await expect(card.link("Open preview in a new tab")).toHaveAttribute(
       "href",
       `/${framework}/previews/separator/_component/`,

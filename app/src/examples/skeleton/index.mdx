@@ -1,0 +1,21 @@
+---
+title: Skeleton
+---
+
+## Overview
+
+These samples show loading placeholders built with the Ariakit UI `Skeleton` components. Each placeholder has the shape of the content that replaces it, so the layout does not move when the data arrives. Most previews have a control that loads the data again.
+
+The gallery includes a profile card, a timing demo, a comparison of the animations, a feed that loads more posts, a settings form, a data table, an article, and decorative thumbnails.
+
+## Components
+
+`Skeleton` wraps the area that loads. Set its `loading` prop to `true` while the data loads. The placeholders fade in only when loading takes longer than 150 milliseconds, and then stay for at least 200 milliseconds, so fast loads never flash. The Timing sample shows this behavior.
+
+Put the parts where the content goes. `SkeletonLine` takes the height of one line of text in its own font size. `SkeletonBox` and `SkeletonCircle` hold the space of images and avatars. `SkeletonFill` paints its child, such as a button, a badge, or an input, so the placeholder keeps the child's exact size and corners. Each part renders its children when loading ends.
+
+The `$animate` prop sets the animation: `shimmer` (the default), `pulse`, or `false`. With reduced motion, the shimmer changes to a pulse. Parts outside a `Skeleton` are static, which suits decorative thumbnails. Use `useSkeletonState` for content outside the parts, such as a submit button that waits for the form values.
+
+## Accessibility
+
+The placeholders are hidden from assistive technologies. Add `aria-busy` to the region that loads and a status message that announces when loading starts and ends. In the Feed sample, each page of posts is its own `Skeleton`, so loading more posts does not hide the posts that are already visible.

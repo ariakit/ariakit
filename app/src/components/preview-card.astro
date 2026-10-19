@@ -28,9 +28,15 @@ interface Props {
    * between routes. Defaults to `true` for Next.js previews.
    */
   browser?: boolean;
+  /** Classes for the card band, such as `col-span-full` in a `PreviewGrid`. */
+  class?: string;
 }
 
-const { source: sources, framework = Astro.locals.framework } = Astro.props;
+const {
+  source: sources,
+  framework = Astro.locals.framework,
+  class: className,
+} = Astro.props;
 invariant(framework, "Framework is required");
 const source = "files" in sources ? sources : sources[framework];
 if (!source) return null;
@@ -44,12 +50,15 @@ const thumbnail = inline ? undefined : await renderThumbnail(source.name);
 const files = Object.entries(source.files);
 ---
 
-<ShellMainFull render={createElement("section", { "aria-labelledby": headingId })}>
-  {/* Preview cards inside MDX prose are not main bands, so they drop the band
-      gutter and align with the surrounding text. */}
+<ShellMainFull
+  render={createElement("section", { "aria-labelledby": headingId })}
+  {className}
+>
+  {/* Preview cards inside MDX prose or a preview grid are not main bands, so
+      they drop the band gutter and align with the surrounding content. */}
   <Frame
     $p="var(--app-gutter)"
-    className="grid grid-cols-1 py-0! [.prose>.shell-main-full>&]:px-0!"
+    className="grid grid-cols-1 py-0! [.prose>.shell-main-full>&]:px-0! [.preview-grid>.shell-main-full>&]:px-0!"
   >
     {/* The thumbnail and code render on the server and reach the island as
         static slots. Offscreen cards hydrate too, so their frames keep their

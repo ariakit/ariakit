@@ -55,10 +55,13 @@ const fullscreen = entry.data.fullscreen;
       !fullscreen && "items-center-safe justify-center-safe",
     ]}
   >
+    {/* The framework island wraps the example and sizes to its content, so it
+        needs a width limit for the example's own max-w-full to resolve. */}
     <div
       class:list={[
         "@container size-full",
-        !fullscreen && "p-3 flex items-center-safe justify-center-safe",
+        !fullscreen &&
+          "p-3 flex items-center-safe justify-center-safe *:max-w-full",
       ]}
     >
       <Content {framework} />
