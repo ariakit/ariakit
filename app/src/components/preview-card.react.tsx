@@ -61,6 +61,10 @@ const MIN_VIEWPORT_WIDTH = 320;
 // Shift.
 const RESIZE_STEP = 16;
 
+// A frame follows the card width again a little before it scrolls into view, so
+// its one catch-up layout happens offscreen.
+const OFFSCREEN_MARGIN = "200px";
+
 export interface PreviewCardProps {
   /**
    * The id of the heading that labels the section around the card.
@@ -359,7 +363,8 @@ function PreviewCardViewport({
   const { ref, viewportRef, loaded, setLoaded } = frame;
   const viewportId = useId();
   const stageRef = useRef<HTMLDivElement>(null);
-  const resize = usePreviewResize(stageRef);
+  const offscreenWidth = useOffscreenFrameWidth(ref);
+  const resize = usePreviewResize(stageRef, offscreenWidth == null);
   return (
     <div ref={stageRef} className="grid grid-cols-1">
       <div
@@ -395,7 +400,10 @@ function PreviewCardViewport({
                 // drag moves over it.
                 resize.resizing ? "pointer-events-none" : "",
               ].join(" ")}
-              style={{ height: fullscreen ? "40rem" : "25rem" }}
+              style={{
+                height: fullscreen ? "40rem" : "25rem",
+                width: offscreenWidth ?? undefined,
+              }}
             />
             {thumbnail && (
               <div
@@ -419,28 +427,63 @@ function PreviewCardViewport({
   );
 }
 
+/**
+ * Returns the width that an offscreen preview frame keeps until it comes near
+ * the viewport, or `null` while it follows the card. Each frame lays out a full
+ * page, and the browser keeps laying out offscreen frames. Without this, every
+ * frame on the page would lay out again on each step of a sidebar animation or
+ * a window resize.
+ */
+function useOffscreenFrameWidth(ref: RefObject<HTMLIFrameElement | null>) {
+  const [width, setWidth] = useState<number | null>(null);
+
+  useEffect(() => {
+    const iframe = ref.current;
+    if (!iframe) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries.at(-1);
+        if (!entry) return;
+        setWidth(entry.isIntersecting ? null : entry.boundingClientRect.width);
+      },
+      { rootMargin: OFFSCREEN_MARGIN },
+    );
+    observer.observe(iframe);
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return width;
+}
+
 type PreviewResize = ReturnType<typeof usePreviewResize>;
 
 /**
  * Keeps the width of a preview viewport between the narrowest phone width and
  * the full width of the stage element. A viewport at the full width follows the
- * stage when the page resizes.
+ * stage when the page resizes. The stage is measured only while `measuring` is
+ * true, so offscreen cards do not render on each step of a page resize.
  */
-function usePreviewResize(stageRef: RefObject<HTMLElement | null>) {
+function usePreviewResize(
+  stageRef: RefObject<HTMLElement | null>,
+  measuring: boolean,
+) {
   const dragRef = useRef<{ x: number; width: number; sign: number }>(null);
   const [stageWidth, setStageWidth] = useState<number>();
   const [width, setWidth] = useState<number | null>(null);
   const [resizing, setResizing] = useState(false);
 
   useEffect(() => {
+    if (!measuring) return;
     const stage = stageRef.current;
     if (!stage) return;
+    // A new observer reports the current size, so the stage width catches up
+    // with resizes that happened while the card was offscreen.
     const observer = new ResizeObserver(() => {
       setStageWidth(Math.floor(stage.getBoundingClientRect().width));
     });
     observer.observe(stage);
     return () => observer.disconnect();
-  }, [stageRef]);
+  }, [stageRef, measuring]);
 
   const maxWidth = stageWidth ?? 0;
   const minWidth = Math.min(MIN_VIEWPORT_WIDTH, maxWidth);

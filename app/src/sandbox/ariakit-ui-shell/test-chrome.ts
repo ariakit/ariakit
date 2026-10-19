@@ -96,7 +96,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       expect(
         await sidebar.evaluate((node) => node.getAnimations().length),
       ).toBe(0);
-      expect(await main.evaluate((node) => node.getAnimations().length)).toBe(
+      // The content grids animate the compensation.
+      const body = main.locator(":scope > .shell-main-body");
+      expect(await body.evaluate((node) => node.getAnimations().length)).toBe(
         0,
       );
       await expect(sidebar).toHaveCSS("width", "0px");

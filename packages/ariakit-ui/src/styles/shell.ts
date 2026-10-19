@@ -556,7 +556,11 @@ export const shellSidebarFooter = cv({
 /**
  * Sidebars use registered lengths so content centering follows their animation.
  * Clamp each length to zero before summing: easing can overshoot after the
- * column reaches zero width.
+ * column reaches zero width. Each content grid animates its own lengths, and
+ * the values derived from them do not inherit, so each animation frame restyles
+ * the grids but not the content inside them. A `transition` utility on a main
+ * header, intro, or body replaces this transition, so keep the slot spaces in
+ * its transition properties.
  */
 const slotSpaces = cx(
   "[--shell-start-1-space:calc(var(--shell-start-1-width)*var(--shell-start-1-open)*var(--shell-start-1-fit))]",
@@ -589,6 +593,7 @@ const centered = cx(
  * centered in the shell; compensation decreases before the content narrows.
  */
 const content = cx(
+  slotSpaces,
   centered,
   compensation,
   "shell-content grid justify-stretch min-w-0 rounded-none!",
@@ -650,12 +655,8 @@ export const shellMain = cv({
   class: [
     "shell-main col-[main-start/shell-end] row-[main-start/body-end] grid grid-cols-subgrid grid-rows-subgrid min-w-0",
     "shell-slot-state",
-    slotSpaces,
     // The main header derives its own gutter from this one.
     "[--shell-main-gutter:var(--shell-gutter)]",
-    // Resolve registered slot lengths here; the parts inherit the totals.
-    "[--shell-header-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-header-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-header-free-1)*var(--shell-header-free-2))]",
-    "[--shell-intro-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-intro-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-intro-free-1)*var(--shell-intro-free-2))]",
     // Nested shells inside main also clear its sticky local header. Only the
     // first two levels publish offsets: the supported third level consumes them.
     "[.shell:not(.shell_*)>&]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
@@ -692,7 +693,7 @@ export const shellMainHeader = cv({
     content,
     "shell-main-header col-start-1 col-end-[calc(2+var(--shell-header-free-1)+var(--shell-header-free-1)*var(--shell-header-free-2))] row-[main-header]",
     "box-border min-h-(--shell-main-header-height) content-center py-0! z-3",
-    "[--shell-content-end-space:var(--shell-header-end-space)]",
+    "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-header-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-header-free-1)*var(--shell-header-free-2))]",
     // Like other bars, a shorter or taller header than `md` shrinks or grows
     // its side insets with the space around its controls. A centered column
     // still lines up with the body once both side tracks have room to spare.
@@ -770,7 +771,7 @@ export const shellMainIntro = cv({
   class: [
     content,
     "shell-main-intro content-start col-start-1 col-end-[calc(2+var(--shell-intro-free-1)+var(--shell-intro-free-1)*var(--shell-intro-free-2))] row-[intro] @container/shell-main-intro overflow-x-clip",
-    "[--shell-content-end-space:var(--shell-intro-end-space)]",
+    "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-intro-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-intro-free-1)*var(--shell-intro-free-2))]",
     // Separate the title from the bars above.
     "pbs-[calc(var(--shell-gutter)*3)]",
   ],

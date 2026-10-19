@@ -52,9 +52,10 @@ const files = Object.entries(source.files);
     className="grid grid-cols-1 py-0! [.prose>.shell-main-full>&]:px-0!"
   >
     {/* The thumbnail and code render on the server and reach the island as
-        static slots. */}
+        static slots. Offscreen cards hydrate too, so their frames keep their
+        width while the page resizes. */}
     <PreviewCard
-      client:visible
+      client:idle
       {headingId}
       {title}
       {href}

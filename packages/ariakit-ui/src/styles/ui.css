@@ -302,6 +302,57 @@ body > * {
   initial-value: 0px;
 }
 
+/* Content grids read these values from the animated lengths on the same
+   element. Disable inheritance so an animation frame does not restyle the
+   content inside them. */
+@property --shell-start-total {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-end-total {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-comp-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-comp-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-content-end-space {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-free {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-track-start {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-track-end {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 /* Alternating offset channels carry sticky header heights through three
    nested shells without a same-element custom-property cycle. */
 @property --shell-top {

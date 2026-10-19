@@ -204,9 +204,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // Start recording before the resize. Resolving a locator after it can take
     // longer than the fold on a busy runner.
     await using recording = await sidebar.evaluateHandle((column) => {
-      const main = column.parentElement?.querySelector(".shell-main");
-      if (!main) {
-        throw new Error("Missing main");
+      const body = column.parentElement?.querySelector(
+        ".shell-main > .shell-main-body",
+      );
+      if (!body) {
+        throw new Error("Missing main body");
       }
       const samples: { width: number; space: number }[] = [];
       const finished = new Promise<typeof samples>((resolve) => {
@@ -215,7 +217,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           samples.push({
             width,
             space: Number.parseFloat(
-              getComputedStyle(main).getPropertyValue("--shell-start-1-space"),
+              getComputedStyle(body).getPropertyValue("--shell-start-1-space"),
             ),
           });
           if (width === 0) {
