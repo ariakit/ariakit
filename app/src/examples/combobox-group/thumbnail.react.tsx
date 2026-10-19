@@ -1,3 +1,4 @@
+import { SkeletonLine } from "@ariakit/ui/components/skeleton.ariakit.react";
 import {
   comboboxGroupLabel,
   comboboxInput,
@@ -8,7 +9,6 @@ import {
   comboboxItemSlot,
   comboboxPopover,
 } from "@ariakit/ui/styles/combobox";
-import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 
 export default function Thumbnail() {
   return (
@@ -17,7 +17,7 @@ export default function Thumbnail() {
       aria-hidden
     >
       <div {...comboboxInput.jsx({ className: "w-64 mt-4" })}>
-        <PlaceholderText>e.g., John Doe</PlaceholderText>
+        <SkeletonLine $weight="light" className="w-28" />
       </div>
       <div
         data-open
@@ -50,10 +50,8 @@ export default function Thumbnail() {
             })}
           />
           <div {...comboboxItemContent.jsx()}>
-            <PlaceholderText>Emma Johnson</PlaceholderText>
-            <PlaceholderText weight="light" size="sm">
-              emma@example.com
-            </PlaceholderText>
+            <SkeletonLine className="w-28" />
+            <SkeletonLine $weight="light" className="w-36 text-sm" />
           </div>
         </div>
         <div {...comboboxGroupLabel.jsx()}>Files</div>
@@ -66,10 +64,8 @@ export default function Thumbnail() {
             })}
           />
           <div {...comboboxItemContent.jsx()}>
-            <PlaceholderText>annual_report.pdf</PlaceholderText>
-            <PlaceholderText weight="light" size="sm">
-              Documents
-            </PlaceholderText>
+            <SkeletonLine className="w-36" />
+            <SkeletonLine $weight="light" className="w-20 text-sm" />
           </div>
         </div>
       </div>
