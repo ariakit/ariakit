@@ -5,9 +5,8 @@ import {
   TabList,
   TabPanel,
   TabPanels,
-  TabProvider,
+  Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
-import { tabs as tabsStyle } from "@ariakit/ui/styles/tabs";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -32,10 +31,7 @@ export function PostTabs({ children }: PostTabsProps) {
   // The URL owns the selection, so each tab id is its route.
   const selectedId = usePathname();
   return (
-    <TabProvider
-      // Without an id, the store generates a random one, which Cache Components
-      // rejects while it prerenders the route.
-      id="tab-nextjs-tabs"
+    <Tabs
       selectedId={selectedId}
       setSelectedId={(id) => {
         if (!isTabHref(id)) return;
@@ -43,18 +39,16 @@ export function PostTabs({ children }: PostTabsProps) {
         router.push(id);
       }}
     >
-      <div {...tabsStyle.jsx()}>
-        <TabList aria-label="Posts">
-          {tabs.map((tab) => (
-            <Tab key={tab.href} id={tab.href} render={<Link href={tab.href} />}>
-              {tab.label}
-            </Tab>
-          ))}
-        </TabList>
-        <TabPanels>
-          <TabPanel single>{children}</TabPanel>
-        </TabPanels>
-      </div>
-    </TabProvider>
+      <TabList aria-label="Posts">
+        {tabs.map((tab) => (
+          <Tab key={tab.href} id={tab.href} render={<Link href={tab.href} />}>
+            {tab.label}
+          </Tab>
+        ))}
+      </TabList>
+      <TabPanels>
+        <TabPanel single>{children}</TabPanel>
+      </TabPanels>
+    </Tabs>
   );
 }
