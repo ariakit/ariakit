@@ -229,9 +229,9 @@ function usePreviewFrame(href: string) {
         setLocation(href);
       }
       setHistory({ canGoBack, canGoForward });
-      if (event.data.loaded) {
-        setLoaded(true);
-      }
+      // A reload or a full page navigation in the frame reports a new document
+      // that has not loaded yet.
+      setLoaded(event.data.loaded);
     };
     window.addEventListener("message", onMessage);
     const unsubscribeTheme = subscribeAppTheme(postTheme);

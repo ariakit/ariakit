@@ -73,3 +73,36 @@ test("Next.js preview cards apply the site theme to their frames", async ({
       .evaluate((body) => getComputedStyle(body).backgroundColor);
   await expect.poll(getCanvasColor).toBe(await getPageColor());
 });
+
+test("Next.js preview cards show the loading state while their frame reloads", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/examples/tab-nextjs/");
+  const card = query(q.region("Tab with Next.js App Router"));
+  const iframe = page.locator('iframe[title="Tab with Next.js App Router"]');
+  await iframe.scrollIntoViewIfNeeded();
+  const viewport = iframe.locator("xpath=..");
+  await expect(viewport).toHaveAttribute("aria-busy", "false");
+  const frame = await iframe
+    .elementHandle()
+    .then((element) => element?.contentFrame());
+
+  // Holding the scripts and fonts of the reloaded page delays its load event,
+  // so the page stays in the state that its embed script reports while it
+  // parses. Stylesheets would also hold the embed script itself.
+  const { promise: released, resolve: release } = Promise.withResolvers();
+  await page.route("**/*", async (route) => {
+    const request = route.request();
+    const type = request.resourceType();
+    if (request.frame() === frame && (type === "script" || type === "font")) {
+      await released;
+    }
+    await route.continue();
+  });
+  await card.button("Reload").click();
+  await expect(viewport).toHaveAttribute("aria-busy", "true");
+
+  release(undefined);
+  await expect(viewport).toHaveAttribute("aria-busy", "false");
+});
