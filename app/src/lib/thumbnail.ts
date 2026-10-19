@@ -11,14 +11,28 @@ import type { ComponentType } from "react";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-export async function importThumbnail(name?: string) {
+/**
+ * `large` thumbnails fill page cards and preview placeholders. `small`
+ * thumbnails fill navigation slots, so they draw only coarse shapes.
+ */
+export type ThumbnailSize = "large" | "small";
+
+/**
+ * Imports the thumbnail of an example. The default export of its
+ * `thumbnail.react.tsx` file is the large thumbnail, and `SmallThumbnail` is
+ * the small one. Large scenes do not fit a slot, so a file without a small
+ * thumbnail returns nothing for the small size.
+ */
+export async function importThumbnail(
+  name?: string,
+  size: ThumbnailSize = "large",
+) {
   if (!name) return;
   const example = name.split("/").shift();
   try {
-    const { default: Thumbnail } = await import(
-      `../examples/${example}/thumbnail.react.tsx`
-    );
-    return Thumbnail as ComponentType;
+    const module = await import(`../examples/${example}/thumbnail.react.tsx`);
+    const Thumbnail = size === "small" ? module.SmallThumbnail : module.default;
+    return Thumbnail as ComponentType | undefined;
   } catch (_error) {
     console.log(`Missing thumbnail for ${name}`);
     return;
@@ -31,17 +45,21 @@ export async function importThumbnail(name?: string) {
 // re-rendering after thumbnail edits.
 const thumbnailCache = new Map<string, string | undefined>();
 
-export async function renderThumbnail(name?: string) {
+export async function renderThumbnail(
+  name?: string,
+  size: ThumbnailSize = "large",
+) {
   if (!name) return;
-  if (import.meta.env.PROD && thumbnailCache.has(name)) {
-    return thumbnailCache.get(name);
+  const cacheKey = size + ":" + name;
+  if (import.meta.env.PROD && thumbnailCache.has(cacheKey)) {
+    return thumbnailCache.get(cacheKey);
   }
-  const Thumbnail = await importThumbnail(name);
+  const Thumbnail = await importThumbnail(name, size);
   const html = Thumbnail
     ? renderToStaticMarkup(createElement(Thumbnail))
     : undefined;
   if (import.meta.env.PROD) {
-    thumbnailCache.set(name, html);
+    thumbnailCache.set(cacheKey, html);
   }
   return html;
 }

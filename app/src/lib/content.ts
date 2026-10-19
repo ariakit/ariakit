@@ -126,6 +126,44 @@ export function filterPreviews(
   return hasPreviews ? previewsOrParams.filter(filter) : filter;
 }
 
+export interface CountEntryExamplesParams {
+  entry: CollectionEntry<"examples" | "components">;
+  framework: Framework;
+  examples: CollectionEntry<"examples">[];
+  previews: CollectionEntry<"previews">[];
+}
+
+/**
+ * Counts the previews that demonstrate an entry. A component also counts the
+ * previews of the examples that list it in their `components` frontmatter.
+ */
+export function countEntryExamples({
+  entry,
+  framework,
+  examples,
+  previews,
+}: CountEntryExamplesParams) {
+  if (entry.collection === "examples") {
+    return filterPreviews(previews, {
+      framework,
+      type: "examples",
+      entries: [entry],
+    }).length;
+  }
+  const componentExamples = examples.filter((example) =>
+    example.data.components.some((component) => component.id === entry.id),
+  );
+  return filterPreviews(previews, {
+    framework,
+    entries: [...componentExamples, entry],
+  }).length;
+}
+
+/** Formats an example count, such as `1 example` or `12 examples`. */
+export function formatExampleCount(count: number) {
+  return `${count} ${count === 1 ? "example" : "examples"}`;
+}
+
 let markdownRenderer: MarkdownRenderer | null = null;
 
 async function getMarkdownRenderer() {

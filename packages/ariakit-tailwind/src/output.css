@@ -1063,7 +1063,7 @@
   margin: var(--ak-frame-margin);
   @container (style(--_context-2: even)) or (not style(--_context-2)) {
     --_context-2: odd;
-    --_ak-far: max(min(0.125rem, var(--_ak-frame-radius)), max((var(--_ak-fprc-even, var(--_ak-frame-radius)) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), 0px));
+    --_ak-far: max(min(0.125em, var(--_ak-frame-radius)), max((var(--_ak-fprc-even, var(--_ak-frame-radius)) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), 0px));
     --_ak-fie: calc(max(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - (1rem - 0.5px)), 0px) * 1000000000);
     --ak-frame-radius: calc((var(--_ak-frame-force) * var(--_ak-frame-radius)) + ((1 - var(--_ak-frame-force)) * max((var(--_ak-far) - var(--_ak-fie)), min(var(--_ak-frame-radius), (var(--_ak-far) + var(--_ak-fie))))));
     --_ak-fprc-odd: var(--ak-frame-radius);
@@ -1079,7 +1079,7 @@
   }
   @container style(--_context-2: odd) {
     --_context-2: even;
-    --_ak-far: max(min(0.125rem, var(--_ak-frame-radius)), max((var(--_ak-fprc-odd, var(--_ak-frame-radius)) - (var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--ak-frame-margin))), 0px));
+    --_ak-far: max(min(0.125em, var(--_ak-frame-radius)), max((var(--_ak-fprc-odd, var(--_ak-frame-radius)) - (var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--ak-frame-margin))), 0px));
     --_ak-fie: calc(max(((var(--_ak-fppc-odd, 0px) + var(--ak-frame-margin)) - (1rem - 0.5px)), 0px) * 1000000000);
     --ak-frame-radius: calc((var(--_ak-frame-force) * var(--_ak-frame-radius)) + ((1 - var(--_ak-frame-force)) * max((var(--_ak-far) - var(--_ak-fie)), min(var(--_ak-frame-radius), (var(--_ak-far) + var(--_ak-fie))))));
     --_ak-fprc-even: var(--ak-frame-radius);

@@ -12,6 +12,14 @@ export interface AppLink {
   href: string;
   label: string;
   current: boolean;
+  /**
+   * Secondary text under the label, such as the number of examples.
+   */
+  description?: string;
+  /**
+   * The static markup of the page thumbnail.
+   */
+  thumbnail?: string;
 }
 
 export interface AppNavigationGroup {

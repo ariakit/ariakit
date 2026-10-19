@@ -2409,7 +2409,9 @@ utility(
       parentRadius,
       fn.add(parentPadding, parentBorder, vars.frameMargin),
     );
-    const minimumRadius = fn.min("0.125rem", inputs.frameRadius);
+    // The floor follows the frame's own font size, like em-based radius and
+    // spacing tokens, so frames scaled down by font size stay concentric.
+    const minimumRadius = fn.min("0.125em", inputs.frameRadius);
     const autoRadius = fn.max(minimumRadius, fn.max(nestedRadius, "0px"));
     // When parent padding + margin >= 1rem, the child is far enough from the
     // parent edge that concentric radius is not meaningful — use the child's
