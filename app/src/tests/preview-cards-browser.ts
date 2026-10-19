@@ -1,4 +1,5 @@
 import { query } from "@ariakit/test/playwright";
+import type { Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
@@ -154,6 +155,132 @@ for (const width of [1600, 700]) {
     }
   });
 }
+
+test("preview grid cards keep their heights and stick within their row", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 700 });
+  await gotoAndSettle(page, "/react/examples/skeleton/");
+  // Each card region stretches to its grid row, and the card inside it keeps
+  // its own height. An example can name its own region like its card, and the
+  // card region comes first.
+  const getRow = (title: string) => q.region(title, { exact: true }).first();
+  const getCard = (title: string) => getRow(title).locator(":scope > *");
+  const getRect = (locator: Locator) =>
+    locator.evaluate((element) => {
+      const { top, bottom, width, height } = element.getBoundingClientRect();
+      return { top, bottom, width, height };
+    });
+  const article = q.region("Article", { exact: true });
+  await expect(query(article).status()).toHaveText("Article loaded");
+
+  const articleCard = await getRect(getCard("Article"));
+  const thumbnailsCard = await getRect(getCard("Thumbnails"));
+  expect(thumbnailsCard.height).toBeLessThan(articleCard.height);
+  // The article card fits on the screen, so its example scrolls instead.
+  expect(articleCard.height).toBeLessThanOrEqual(700);
+  // A card that takes the whole row fills its width.
+  const fullRow = await getRect(getRow("Animations"));
+  const fullRowCard = await getRect(getCard("Animations"));
+  expect(fullRowCard.width).toBeCloseTo(fullRow.width, 0);
+
+  // In the middle of the row, the shorter card stays below the sticky headers
+  // while the taller card scrolls past.
+  await article.evaluate((element) => element.scrollIntoView());
+  await page.evaluate(() => window.scrollBy(0, 200));
+  await expect
+    .poll(async () => {
+      const thumbnails = await getRect(getCard("Thumbnails"));
+      const article = await getRect(getCard("Article"));
+      return thumbnails.top - article.top;
+    })
+    .toBeGreaterThan(100);
+
+  // Once the next row comes up, the cards of the previous row leave with their
+  // row instead of sticking over the next one.
+  const nextRow = getRow("Data Table");
+  await nextRow.evaluate((element) => {
+    const { top } = element.getBoundingClientRect();
+    window.scrollBy(0, top - 300);
+  });
+  await expect.poll(async () => (await getRect(nextRow)).top).toBeLessThan(350);
+  const nextRowTop = (await getRect(nextRow)).top;
+  for (const title of ["Feed", "Settings Form"]) {
+    expect((await getRect(getCard(title))).bottom).toBeLessThanOrEqual(
+      nextRowTop,
+    );
+  }
+});
+
+test("inline previews scroll only after focus moves into them", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 700 });
+  await gotoAndSettle(page, "/react/examples/skeleton/");
+  const article = q.region("Article", { exact: true });
+  await expect(query(article).status()).toHaveText("Article loaded");
+  // The handle names the viewport it resizes.
+  const handle = query(article).separator("Resize preview", {
+    includeHidden: true,
+  });
+  const viewportId = await handle.getAttribute("aria-controls");
+  const viewport = page.locator(`[id="${viewportId}"]`);
+  const getViewportScroll = () =>
+    viewport.evaluate((element) => element.scrollTop);
+  const getPageScroll = () => page.evaluate(() => window.scrollY);
+  await expect
+    .poll(() => viewport.evaluate((el) => el.scrollHeight > el.clientHeight))
+    .toBe(true);
+
+  await viewport.evaluate((element) => element.scrollIntoView());
+  const box = await viewport.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  await page.mouse.move(box.x + 24, box.y + 120);
+  const pageScroll = await getPageScroll();
+  await page.mouse.wheel(0, 100);
+  await expect.poll(getPageScroll).toBeGreaterThan(pageScroll);
+  expect(await getViewportScroll()).toBe(0);
+
+  // A click in the example moves focus into it, so the next wheel scrolls it.
+  const activeBox = await viewport.boundingBox();
+  expect(activeBox).not.toBeNull();
+  if (!activeBox) return;
+  await page.mouse.click(activeBox.x + 24, activeBox.y + 120);
+  await expect(viewport).toBeFocused();
+  await page.mouse.wheel(0, 100);
+  await expect.poll(getViewportScroll).toBeGreaterThan(0);
+});
+
+test("inline previews stay active when focus falls back to the page", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 700 });
+  await gotoAndSettle(page, "/react/examples/skeleton/");
+  // The feed example names its own region like its card, and the card region
+  // comes first.
+  const card = query(q.region("Feed", { exact: true }).first());
+  const handle = card.separator("Resize preview", { includeHidden: true });
+  const viewportId = await handle.getAttribute("aria-controls");
+  const viewport = page.locator(`[id="${viewportId}"]`);
+  const getViewportScroll = () =>
+    viewport.evaluate((element) => element.scrollTop);
+  await viewport.evaluate((element) => element.scrollIntoView());
+  const loadMore = card.button("Load more");
+  await expect(loadMore).toBeEnabled();
+  // The button turns disabled while the posts load, so the browser moves focus
+  // from it to the page.
+  await loadMore.click();
+  await expect(loadMore).toBeDisabled();
+  await expect(loadMore).not.toBeFocused();
+  // The click can scroll the button into view within the card.
+  const viewportScroll = await getViewportScroll();
+  await page.mouse.wheel(0, 100);
+  await expect.poll(getViewportScroll).toBeGreaterThan(viewportScroll);
+});
 
 for (const framework of ["react", "solid"]) {
   test(`${framework} separator page uses its framework preview`, async ({

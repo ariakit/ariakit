@@ -18,7 +18,34 @@ import { ShellMainFull } from "@ariakit/ui/components/shell.ariakit.react";
 <ShellMainFull>
   <Frame
     $p="var(--app-gutter)"
-    className="preview-grid grid grid-cols-[repeat(auto-fill,minmax(min(100%,max(24rem,(100%-var(--preview-grid-gap))/2)),1fr))] gap-(--preview-grid-gap) py-0! [--preview-grid-gap:--spacing(8)]"
+    className={[
+      "preview-grid grid grid-cols-[repeat(auto-fill,minmax(min(100%,max(24rem,(100%-var(--preview-grid-gap))/2)),1fr))] gap-(--preview-grid-gap) py-0! [--preview-grid-gap:--spacing(8)]",
+      // Cards keep their own heights. A shorter card sticks below the sticky
+      // headers while a taller card in its row scrolls past. A sticky grid item
+      // would stick through the whole grid, so the item stretches to its row
+      // and the card inside it sticks.
+      "[--preview-grid-top:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head,0px)+1rem)]",
+      "*:*:sticky *:*:self-start *:*:top-(--preview-grid-top)",
+      // A card within 20% of its row height grows to the row, so cards of
+      // similar heights line up. sign() turns the comparison into 0 or 1.
+      // Browsers without calc-size() drop the declaration and keep the card
+      // heights.
+      "*:*:[min-height:calc-size(max-content,_size_+_(100%_-_size)_*_(1_+_sign(20%_-_(100%_-_size)))_/_2)]",
+      // A flexible row fills a card that grows to its minimum height, where an
+      // auto row would keep its content height.
+      "*:*:grid-rows-[1fr]",
+      // The cards drop the band gutters, so the band needs no subgrid. Safari
+      // places the card in only the first column of a subgrid that spans the
+      // auto-filled columns.
+      "*:grid-cols-1!",
+      // A card fits on screen below the sticky headers, so a tall example
+      // scrolls inside its card. The small viewport height does not change
+      // while mobile browser toolbars collapse.
+      // Short examples get the same minimum, so a row of small cards does not
+      // look cramped. Inline previews elsewhere keep their own height.
+      "[--preview-card-min-height:16rem]",
+      "[--preview-card-max-height:calc(100svh-var(--preview-grid-top)-var(--shell-foot)-1rem)]",
+    ].join(" ")}
   >
     <slot />
   </Frame>

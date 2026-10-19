@@ -120,8 +120,8 @@ export function PreviewCard({
 }: PreviewCardProps) {
   const frame = usePreviewFrame(href);
   return (
-    // A card that stretches to its grid row gives the extra height to the
-    // window, not to the code below it.
+    // A card that grows to its grid row gives the extra height to the window,
+    // not to the code below it.
     <div className="grid grid-cols-1 grid-rows-[1fr_auto] gap-2">
       <ak.DisclosureProvider>
         <Frame
@@ -132,7 +132,13 @@ export function PreviewCard({
           $darken={0.5}
           $orientation="vertical"
           $p={1.5}
-          className="grid grid-cols-1 grid-rows-[auto_1fr]"
+          className={[
+            "grid grid-cols-1 grid-rows-[auto_minmax(0,1fr)]",
+            // A preview grid limits the window height, and the viewport row
+            // gives up the difference. A frame has a fixed height that the
+            // limit would cut off, so only inline previews take it.
+            inline ? "max-h-(--preview-card-max-height,none)" : "",
+          ].join(" ")}
         >
           <Frame
             $cover
@@ -419,28 +425,40 @@ interface PreviewCardInlineProps {
 
 /** Renders an example directly in the card, without an iframe. */
 function PreviewCardInline({ children }: PreviewCardInlineProps) {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  useInactiveScroll(viewportRef);
   return (
     <PreviewCardStage>
       {({ viewportId }) => (
-        <Frame
-          id={viewportId}
-          $border
-          $layer="canvas"
-          $p={4}
-          className={[
-            "grid grid-cols-1 place-items-center content-center overflow-clip",
-            // Match the font size of the preview page. It also makes the
-            // em-based padding reach the 1rem frame cap, so the example keeps
-            // its own corner radius instead of a concentric one.
-            "text-base",
-            // The global island styles inherit the grid display, which would
-            // size the example to its content. Without their boxes, the
-            // example is a grid item that fits the card.
-            "[&_:is(astro-island,astro-slot,astro-static-slot)]:contents!",
-          ].join(" ")}
-        >
-          {children}
-        </Frame>
+        // Match the font size of the preview page. It also makes the em-based
+        // padding reach the 1rem frame cap, so the example keeps its own corner
+        // radius instead of a concentric one. Firefox resolves the padding
+        // against the parent font size, so a wrapper sets it.
+        <div className="grid grid-cols-1 grid-rows-[minmax(0,1fr)] text-base">
+          <Frame
+            ref={viewportRef}
+            id={viewportId}
+            // A click anywhere in the example moves focus into it, which lets
+            // it scroll, like a click in a preview frame.
+            tabIndex={-1}
+            $border
+            $layer="canvas"
+            $p={4}
+            className={[
+              "grid grid-cols-1 place-items-center overflow-auto",
+              "min-h-(--preview-card-min-height,auto)",
+              // An example taller than the viewport starts at the top, so all
+              // of it can scroll into view.
+              "content-center-safe",
+              // The global island styles inherit the grid display, which would
+              // size the example to its content. Without their boxes, the
+              // example is a grid item that fits the card.
+              "[&_:is(astro-island,astro-slot,astro-static-slot)]:contents!",
+            ].join(" ")}
+          >
+            {children}
+          </Frame>
+        </div>
       )}
     </PreviewCardStage>
   );
@@ -472,9 +490,13 @@ function PreviewCardStage({
   const stageRef = useRef<HTMLDivElement>(null);
   const resize = usePreviewResize(stageRef, measuring);
   return (
-    <div ref={stageRef} className="grid grid-cols-1">
+    <div
+      ref={stageRef}
+      // The rows pass a limited window height down to the viewport.
+      className="grid grid-cols-1 grid-rows-[minmax(0,1fr)]"
+    >
       <div
-        className="relative grid w-full max-w-full grid-cols-1 justify-self-start"
+        className="relative grid w-full max-w-full grid-cols-1 grid-rows-[minmax(0,1fr)] justify-self-start"
         style={resize.width == null ? undefined : { width: resize.width }}
       >
         {children({ viewportId, resizing: resize.resizing })}
@@ -733,25 +755,94 @@ function getScrollParent(element: Element) {
   return element.ownerDocument.scrollingElement;
 }
 
+type WheelDelta = Pick<PreviewScrollMessage, "deltaX" | "deltaY" | "deltaMode">;
+
 /**
- * Scrolls the page around an inactive preview frame with a wheel event that the
- * frame received over one of its own scroll containers.
+ * Scrolls the page around an inactive preview with a wheel event that the
+ * preview received over one of its own scroll containers.
  */
-function scrollPage(iframe: HTMLIFrameElement, message: PreviewScrollMessage) {
-  const scrollParent = getScrollParent(iframe);
+function scrollPage(element: Element, wheel: WheelDelta) {
+  const scrollParent = getScrollParent(element);
   if (!scrollParent) return;
   const getDelta = (delta: number, pageSize: number) => {
-    if (message.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+    if (wheel.deltaMode === WheelEvent.DOM_DELTA_LINE) {
       return delta * WHEEL_LINE_HEIGHT;
     }
-    if (message.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
+    if (wheel.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
       return delta * pageSize;
     }
     return delta;
   };
   scrollParent.scrollBy({
-    left: getDelta(message.deltaX, scrollParent.clientWidth),
-    top: getDelta(message.deltaY, scrollParent.clientHeight),
+    left: getDelta(wheel.deltaX, scrollParent.clientWidth),
+    top: getDelta(wheel.deltaY, scrollParent.clientHeight),
     behavior: "instant",
   });
+}
+
+function isScrollContainer(element: Element) {
+  const style = getComputedStyle(element);
+  const scrollsY =
+    /auto|scroll/.test(style.overflowY) &&
+    element.scrollHeight > element.clientHeight;
+  const scrollsX =
+    /auto|scroll/.test(style.overflowX) &&
+    element.scrollWidth > element.clientWidth;
+  return scrollsY || scrollsX;
+}
+
+/**
+ * Lets an inline preview scroll only after a click or focus moves into it, as a
+ * preview frame does. Until then, wheel events over its scroll containers
+ * scroll the page, so scrolling the page over the card does not get stuck in
+ * it.
+ */
+function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const viewport = ref.current;
+    if (!viewport) return;
+    const doc = viewport.ownerDocument;
+    // The preview stays active until a click or focus moves elsewhere. Focus
+    // can also fall back to the body, such as when a focused button becomes
+    // disabled, which keeps a preview frame active too.
+    let active = viewport.contains(doc.activeElement);
+    const updateActive = (event: Event) => {
+      active = event.target instanceof Node && viewport.contains(event.target);
+    };
+    const isActive = () => {
+      if (!active) return false;
+      const focused = doc.activeElement;
+      // A click in a preview frame moves focus to it without a pointer or focus
+      // event in this document.
+      if (!focused) return true;
+      if (focused === doc.body) return true;
+      return viewport.contains(focused);
+    };
+    const isInScrollContainer = (target: EventTarget | null) => {
+      // The listener is on the viewport, so the target is in its document.
+      let element = target instanceof Element ? target : null;
+      while (element) {
+        if (isScrollContainer(element)) return true;
+        if (element === viewport) return false;
+        element = element.parentElement;
+      }
+      return false;
+    };
+    const onWheel = (event: WheelEvent) => {
+      if (isActive()) return;
+      // Pinch zoom on trackpads sends wheel events with ctrlKey.
+      if (event.ctrlKey) return;
+      if (!isInScrollContainer(event.target)) return;
+      event.preventDefault();
+      scrollPage(viewport, event);
+    };
+    doc.addEventListener("pointerdown", updateActive, true);
+    doc.addEventListener("focusin", updateActive, true);
+    viewport.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      doc.removeEventListener("pointerdown", updateActive, true);
+      doc.removeEventListener("focusin", updateActive, true);
+      viewport.removeEventListener("wheel", onWheel);
+    };
+  }, [ref]);
 }
