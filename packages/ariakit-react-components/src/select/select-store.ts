@@ -30,7 +30,7 @@ export function useSelectStoreOptions<T extends Core.SelectStoreOptions>(
     ...props,
     combobox: props.combobox !== undefined ? props.combobox : combobox,
   };
-  return useCompositeStoreOptions(props);
+  return useCompositeStoreOptions(props, props.combobox);
 }
 
 /** @deprecated Use `useComboboxStoreProps` instead. */

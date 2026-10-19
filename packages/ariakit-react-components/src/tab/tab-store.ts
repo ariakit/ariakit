@@ -11,7 +11,10 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.ts";
-import { useCompositeStoreProps } from "../composite/composite-store.ts";
+import {
+  useCompositeStoreOptions,
+  useCompositeStoreProps,
+} from "../composite/composite-store.ts";
 import { useSelectContext } from "../select/select-context.tsx";
 
 export function useTabStoreProps<T extends Core.TabStore>(
@@ -53,11 +56,14 @@ export function useTabStoreProps<T extends Core.TabStore>(
 export function useTabStore(props: TabStoreProps = {}): TabStore {
   const combobox = useComboboxContext();
   const composite = useSelectContext() || combobox;
-  const storeProps = {
-    ...props,
-    composite: props.composite !== undefined ? props.composite : composite,
-    combobox: props.combobox !== undefined ? props.combobox : combobox,
-  };
+  const syncComposite =
+    props.composite !== undefined ? props.composite : composite;
+  const syncCombobox = props.combobox !== undefined ? props.combobox : combobox;
+  const storeProps = useCompositeStoreOptions(
+    { ...props, composite: syncComposite, combobox: syncCombobox },
+    syncComposite,
+    syncCombobox,
+  );
   const [store, update] = useStore(Core.createTabStore, storeProps);
   return useTabStoreProps(store, update, storeProps);
 }
