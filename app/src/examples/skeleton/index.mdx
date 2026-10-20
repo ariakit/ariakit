@@ -10,7 +10,7 @@ The gallery includes a profile card, a timing demo, a comparison of the animatio
 
 ## Components
 
-`Skeleton` wraps the area that loads. Set its `loading` prop to `true` while the data loads. The placeholders fade in only when loading takes longer than 150 milliseconds, and then stay for at least 200 milliseconds, so fast loads never flash. The Timing sample shows this behavior.
+`Skeleton` wraps the area that loads. Set its `loading` prop to `true` while the data loads. The placeholders show as soon as loading starts and stay for at least 200 milliseconds, so fast loads never flash. Set `delay` to wait before the placeholders fade in, so loads faster than the delay never show them. The Timing sample uses a 150 millisecond delay.
 
 Put the parts where the content goes. `SkeletonLine` takes the height of one line of text in its own font size. `SkeletonBox` and `SkeletonCircle` hold the space of images and avatars. `SkeletonFill` paints its child, such as a button, a badge, or an input, so the placeholder keeps the child's exact size and corners. Each part renders its children when loading ends.
 

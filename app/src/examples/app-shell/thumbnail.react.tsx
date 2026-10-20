@@ -4,17 +4,22 @@ import {
   SkeletonBox,
   SkeletonLine,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
-import { Hexagon, PanelLeft } from "lucide-react";
+import { clsx } from "clsx";
+import {
+  ChartBar,
+  Hexagon,
+  Inbox,
+  LayoutDashboard,
+  Settings,
+} from "lucide-react";
 
-// Sidebar links with placeholder widths as fractions of the link. A strong line
-// marks the current page.
+// Sidebar links with placeholder label widths as fractions of the label slot. A
+// strong line marks the current page.
 const links = [
-  { id: "installation", width: "w-4/5", current: true },
-  { id: "structure", width: "w-4/5" },
-  { id: "configuration", width: "w-3/4" },
-  { id: "routing", width: "w-1/2" },
-  { id: "data", width: "w-2/3" },
-  { id: "deployment", width: "w-3/5" },
+  { id: "overview", icon: LayoutDashboard, width: "w-4/5", current: true },
+  { id: "inbox", icon: Inbox, width: "w-3/5" },
+  { id: "reports", icon: ChartBar, width: "w-3/4" },
+  { id: "settings", icon: Settings, width: "w-2/3" },
 ];
 
 // A square frame that keeps straight corners inside the rounded window.
@@ -30,38 +35,49 @@ export default function Thumbnail() {
       $rounded="xl"
       $border
       $p="none"
-      className="mt-4 grid w-88 grid-cols-[5rem_1fr] grid-rows-[auto_16rem] overflow-clip text-xs shadow-lg"
+      className="mt-4 grid w-96 grid-cols-[6.5rem_1fr] grid-rows-[auto_16rem] overflow-clip text-xs shadow-lg"
     >
       <Region
         $p={2.5}
         className="col-span-full flex items-center gap-2 border-b"
       >
-        <PanelLeft className="ak-ink-70 size-3.5" />
         <Hexagon className="size-3.5" />
-        <span className="font-semibold">Acme Docs</span>
-        <span className="ms-auto font-medium">Sign in</span>
+        <span className="font-semibold">Acme</span>
+        <Frame
+          $layer="brand"
+          $rounded="full"
+          $forceRounded
+          className="ms-auto size-5"
+        />
       </Region>
-      <Region $p={3} className="grid content-start gap-1 border-e">
+      <Region $p={2} className="grid content-start gap-0.5 border-e">
         {links.map((link) => (
-          <SkeletonLine
+          <Frame
             key={link.id}
-            $weight={link.current ? "bold" : "light"}
-            className={link.width}
-          />
+            $layer={link.current || undefined}
+            $darken={link.current ? 1 : undefined}
+            $rounded="md"
+            $p={1.5}
+            className="flex items-center gap-2"
+          >
+            <link.icon
+              className={clsx("size-3 shrink-0", !link.current && "ak-ink-70")}
+            />
+            <SkeletonLine
+              $weight={link.current ? "bold" : "light"}
+              className={link.width}
+            />
+          </Frame>
         ))}
       </Region>
-      <Frame $p={4} className="grid content-start gap-1">
-        <span className="mb-1 text-lg font-semibold">Getting started</span>
-        <SkeletonLine $weight="light" className="w-full" />
-        <SkeletonLine $weight="light" className="w-3/4" />
-        <SkeletonLine $weight="bold" className="mt-2 w-2/5 text-sm" />
-        <SkeletonLine $weight="light" className="w-full" />
-        <SkeletonLine $weight="light" className="w-11/12" />
-        <SkeletonLine $weight="light" className="w-1/2" />
-        <SkeletonLine $weight="bold" className="mt-2 w-1/2 text-sm" />
-        <SkeletonLine $weight="light" className="w-full" />
-        <SkeletonLine $weight="light" className="w-2/3" />
-      </Frame>
+      <Region $p={4} className="grid content-start gap-3">
+        <span className="text-base font-semibold">Overview</span>
+        <div className="grid grid-cols-2 gap-2">
+          <SkeletonBox $rounded="lg" className="h-16" />
+          <SkeletonBox $rounded="lg" className="h-16" />
+        </div>
+        <SkeletonBox $rounded="lg" className="h-28" />
+      </Region>
     </Frame>
   );
 }

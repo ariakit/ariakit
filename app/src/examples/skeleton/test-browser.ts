@@ -5,8 +5,9 @@ import { withFramework } from "#app/test-utils/preview.ts";
 // Thumbnails has no loading state.
 const previews = ["", "article", "feed", "settings", "table", "timing"];
 
-// A skeleton shows its placeholders 150 ms after loading starts.
-const SKELETON_DELAY = 150;
+// The Timing preview shows its placeholders 150 ms after loading starts. The
+// other previews show them right away.
+const TIMING_DELAY = 150;
 
 withFramework(import.meta.dirname, async ({ framework, id, test }) => {
   for (const name of previews) {
@@ -29,8 +30,12 @@ withFramework(import.meta.dirname, async ({ framework, id, test }) => {
       // The placeholders are hidden from assistive technologies, and only the
       // pending marker tells whether they are painted.
       const pending = page.locator("[data-pending]");
-      await test.expect(pending).not.toHaveCount(0);
-      await page.clock.runFor(SKELETON_DELAY);
+      if (name === "timing") {
+        await test.expect(pending).not.toHaveCount(0);
+        await page.clock.runFor(TIMING_DELAY);
+      }
+      // The paused clock has not run any timer in the other previews, so their
+      // placeholders must already show on the first render.
       await test.expect(pending).toHaveCount(0);
       await test.expect(q.status()).toHaveText(/^Loading /);
       await visual({ item: `${preview}/loading`, framework });

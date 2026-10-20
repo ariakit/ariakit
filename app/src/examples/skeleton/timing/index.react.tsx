@@ -70,7 +70,7 @@ export default function Example() {
         <p role="status" className="sr-only">
           {loading ? "Loading contact" : "Contact loaded"}
         </p>
-        <Skeleton loading={loading} className="grid gap-4">
+        <Skeleton loading={loading} delay={150} className="grid gap-4">
           <div className="flex items-center gap-3">
             <SkeletonCircle className="size-10 shrink-0">
               <Frame

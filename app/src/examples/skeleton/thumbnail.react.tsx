@@ -7,29 +7,21 @@ import {
 
 export default function Thumbnail() {
   return (
-    <div className="flex justify-center text-xs">
-      <Frame
-        $layer
-        $lighten
-        $rounded="xl"
-        $border
-        $p={3}
-        className="mt-5 grid w-72 gap-3 shadow-xs"
-      >
-        <div className="flex items-center gap-2.5">
-          <SkeletonCircle $weight="medium" className="size-8 shrink-0" />
-          <div className="grid flex-1">
-            <SkeletonLine $weight="bold" className="w-1/2" />
-            <SkeletonLine $weight="light" className="w-1/4" />
-          </div>
-          <SkeletonBox $weight="medium" className="h-6 w-14" />
+    <div className="grid w-80 gap-4 text-sm">
+      <div className="flex items-center gap-3">
+        <SkeletonCircle $weight="medium" className="size-10 shrink-0" />
+        <div className="grid flex-1">
+          <SkeletonLine $weight="bold" className="w-1/2" />
+          <SkeletonLine $weight="light" className="w-1/4" />
         </div>
-        <div className="grid">
-          <SkeletonLine className="w-full" />
-          <SkeletonLine className="w-3/5" />
-        </div>
-        <SkeletonBox $rounded="lg" className="h-16 w-full" />
-      </Frame>
+        <SkeletonBox $weight="medium" $rounded="lg" className="h-8 w-16" />
+      </div>
+      <div className="grid">
+        <SkeletonLine className="w-full" />
+        <SkeletonLine className="w-full" />
+        <SkeletonLine className="w-3/5" />
+      </div>
+      <SkeletonBox $rounded="xl" className="h-16 w-full" />
     </div>
   );
 }

@@ -344,14 +344,10 @@ export const navGlider = cv({
       if (defaultValue != null && defaultValue !== "auto") return defaultValue;
       return "frame";
     },
-    // Covers follow row rounding. Bars stay square even inside nested frames.
+    // Covers follow row rounding. Bars keep the glider base radius.
     $rounded(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;
       return "md";
-    },
-    $forceRounded(defaultValue, variants) {
-      if (variants.$kind !== "bar") return defaultValue;
-      return defaultValue ?? true;
     },
     $lightnessOffset(defaultValue, variants) {
       if (variants.$kind === "bar") return defaultValue;

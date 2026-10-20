@@ -23,7 +23,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/pull/7993#discussion_r4317370427
-  test("does not add the content minimum to the next delay", async ({
+  test("shows the placeholders for a reload right after the content", async ({
     page,
     q,
   }) => {
@@ -31,8 +31,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Reload").click();
     await test.expect(q.status()).toHaveText("Loading contact");
     // Reload again in the same task that shows the content, so the reload
-    // starts at the beginning of the content's 200 ms minimum. A locator click
-    // waits for its own checks first, which can take most of that window.
+    // starts right after it. A locator click waits for its own checks first,
+    // which can take longer than the delay.
     await page.evaluate(
       () =>
         new Promise<void>((resolve) => {
@@ -58,8 +58,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.status()).toHaveText("Contact loaded");
     const times = q.definition();
     await test.expect(times.nth(1)).toHaveText(/^\d+ ms$/);
-    // The request ends at 250 ms, after the delay and the content minimum but
-    // before their sum, so the placeholders must show.
+    // Content has no minimum duration, so the delay starts with the reload. The
+    // request ends at 250 ms, after the 150 ms delay, so the placeholders must
+    // show.
     await test.expect(times.nth(0)).toHaveText(/^\d+ ms$/);
   });
 
