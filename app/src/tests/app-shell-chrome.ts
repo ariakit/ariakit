@@ -128,6 +128,28 @@ test("site navigation fills the sidebar with the open group", async ({
   expect(guides.y + guides.height).toBeCloseTo(sidebar.y + sidebar.height, -1);
 });
 
+test("site navigation centers the current page bar before its row", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, examplePath);
+  const sidebar = q.navigation("Site");
+  // The bar is a decorative, hidden glider, so only its box can be queried.
+  const bar = sidebar.locator(".nav > .glider");
+  const getOffsets = async () => {
+    const [sidebarBox, rowBox, barBox] = await Promise.all([
+      sidebar.boundingBox(),
+      query(sidebar).link("App Shell").boundingBox(),
+      bar.boundingBox(),
+    ]);
+    if (!sidebarBox || !rowBox || !barBox) return null;
+    const gapCenter = (rowBox.x - sidebarBox.x) / 2;
+    const barCenter = barBox.x + barBox.width / 2 - sidebarBox.x;
+    return Math.abs(barCenter - gapCenter);
+  };
+  await expect.poll(getOffsets).toBeLessThan(0.5);
+});
+
 test("home page renders without the site navigation", async ({ page, q }) => {
   await gotoAndSettle(page, "/");
   await expect(q.heading("Ariakit")).toBeVisible();

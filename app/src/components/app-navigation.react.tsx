@@ -73,6 +73,13 @@ export function AppNavigation({
       // the navigation itself.
       className={clsx(
         "[--app-navigation-surface:var(--ak-layer)]",
+        // Rows in the groups sit this far from the group edges, with their text
+        // aligned to the disclosure labels.
+        "[--app-navigation-group-padding:--spacing(4)]",
+        "[--app-navigation-inset:calc(var(--app-navigation-group-padding)-var(--nav-py))]",
+        // A centered bar sits in the gap before the current row, which is the
+        // inset when the row is in a group.
+        "[&:has(.nav-disclosure_[aria-current])]:[--glider-padding:var(--app-navigation-inset)]",
         // The last row holds the disclosures and takes the remaining height.
         // Longer content grows the navigation, so the sidebar scrolls it with
         // the glider.
@@ -106,6 +113,7 @@ export function AppNavigation({
           // Without links above, the group starts the navigation, although the
           // glider precedes it in the DOM.
           $frameStart={!hasLinks}
+          $p="var(--app-navigation-group-padding)"
           className={clsx(
             // Covering frames take the shell radius, which the shell paints
             // square at the sidebar edges too.
@@ -118,9 +126,6 @@ export function AppNavigation({
               "border-y-0 *:last:border-(--ak-edge)",
               "[&:not(:has(>*>:not(.disclosure-button,[hidden])))>:last-child]:border-b",
             ],
-            // Rows sit this far from the group edges, with their text aligned
-            // to the disclosure labels.
-            "[--app-navigation-inset:calc(var(--ak-frame-padding)-var(--nav-py))]",
           )}
         >
           {groups.map((group, groupIndex) => (
