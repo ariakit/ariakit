@@ -68,9 +68,93 @@ test("site navigation describes each page with its example count", async ({
   await expect(navigation.link("App Shell")).toHaveAccessibleDescription(
     /^\d+ examples$/,
   );
-  await expect(navigation.link("Separator")).toHaveAccessibleDescription(
+  await expect(navigation.link("Combobox Group")).toHaveAccessibleDescription(
     /^\d+ examples?$/,
   );
+});
+
+test("site navigation lists only the pages of the current section", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, examplePath);
+  const exampleNavigation = query(q.navigation("Site"));
+  await expect(exampleNavigation.link("App Shell")).toBeVisible();
+  await expect(exampleNavigation.link("Separator")).toHaveCount(0);
+  await gotoAndSettle(page, "/react/components/separator/");
+  const componentNavigation = query(q.navigation("Site"));
+  await expect(componentNavigation.link("Separator")).toBeVisible();
+  await expect(componentNavigation.link("App Shell")).toHaveCount(0);
+});
+
+test("site navigation opens one group at a time", async ({ page, q }) => {
+  await gotoAndSettle(page, "/react/components/getting-started/");
+  const navigation = query(q.navigation("Site"));
+  const components = navigation.button("Components");
+  const guides = navigation.button("Guides");
+  // The group of the current page starts open.
+  await expect(guides).toHaveAttribute("aria-expanded", "true");
+  await expect(components).toHaveAttribute("aria-expanded", "false");
+  await expect(navigation.link("Getting Started")).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await expect(navigation.link("Separator")).not.toBeVisible();
+  // Astro removes the ssr attribute once the island hydrates, and the buttons
+  // ignore clicks before that.
+  await expect(q.navigation("Site").locator("astro-island[ssr]")).toHaveCount(
+    0,
+  );
+  await components.click();
+  await expect(components).toHaveAttribute("aria-expanded", "true");
+  await expect(guides).toHaveAttribute("aria-expanded", "false");
+  await expect(navigation.link("Separator")).toBeVisible();
+  await expect(navigation.link("Getting Started")).not.toBeVisible();
+});
+
+test("site navigation fills the sidebar with the open group", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/components/separator/");
+  const sidebar = await q.navigation("Site").boundingBox();
+  const guides = await query(q.navigation("Site"))
+    .button("Guides")
+    .boundingBox();
+  expect(sidebar).not.toBeNull();
+  expect(guides).not.toBeNull();
+  if (!sidebar || !guides) return;
+  // The open Components group pushes the closed Guides group to the bottom.
+  expect(guides.y + guides.height).toBeCloseTo(sidebar.y + sidebar.height, -1);
+});
+
+test("site navigation centers the current page bar before its row", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, examplePath);
+  const sidebar = q.navigation("Site");
+  // The bar is a decorative, hidden glider, so only its box can be queried.
+  const bar = sidebar.locator(".nav > .glider");
+  const getOffsets = async () => {
+    const [sidebarBox, rowBox, barBox] = await Promise.all([
+      sidebar.boundingBox(),
+      query(sidebar).link("App Shell").boundingBox(),
+      bar.boundingBox(),
+    ]);
+    if (!sidebarBox || !rowBox || !barBox) return null;
+    const gapCenter = (rowBox.x - sidebarBox.x) / 2;
+    const barCenter = barBox.x + barBox.width / 2 - sidebarBox.x;
+    return Math.abs(barCenter - gapCenter);
+  };
+  await expect.poll(getOffsets).toBeLessThan(0.5);
+});
+
+test("home page renders without the site navigation", async ({ page, q }) => {
+  await gotoAndSettle(page, "/");
+  await expect(q.heading("Ariakit")).toBeVisible();
+  await expect(q.navigation("Site")).toHaveCount(0);
+  await expect(q.button("Toggle navigation")).toHaveCount(0);
 });
 
 test("collection pages list entries without the site navigation", async ({
@@ -323,7 +407,8 @@ test("phone menu opens a navigation drawer", async ({ page, q }) => {
   await menuButton.click();
   await expect(menuButton).toHaveAttribute("aria-expanded", "true");
   const menu = query(q.navigation("Menu"));
-  await expect(menu.link("Combobox Group")).toBeVisible();
+  // A visible link can still be clipped to nothing by its disclosure content.
+  await expect(menu.link("Combobox Group")).toBeInViewport();
   await menu.button("Close menu").click();
   await expect(q.navigation("Menu")).not.toBeVisible();
 });

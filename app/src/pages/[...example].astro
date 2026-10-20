@@ -40,7 +40,7 @@ const title = entry.data.title;
 const descriptionText = await descriptionToText(description?.body, framework);
 ---
 
-<Layout {title} {headings}>
+<Layout {title} {headings} section="examples">
   <Meta
     slot="meta"
     id={entry.id}

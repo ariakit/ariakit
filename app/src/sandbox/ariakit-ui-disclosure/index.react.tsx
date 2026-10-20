@@ -668,6 +668,31 @@ export default function DisclosureExamples() {
       </Example>
 
       <Example
+        title="Split group"
+        description="Split members of a group separate the button and the open content with a line as wide as the lines between the members."
+        stretch
+        code={`
+          <DisclosureGroup>
+            <Disclosure $split button="Shipping" defaultOpen>
+              …
+            </Disclosure>
+            <Disclosure $split button="Returns">
+              …
+            </Disclosure>
+          </DisclosureGroup>
+        `}
+      >
+        <DisclosureGroup>
+          <Disclosure $split button="Shipping" defaultOpen>
+            <p>Orders ship within two business days.</p>
+          </Disclosure>
+          <Disclosure $split button="Returns">
+            <p>Return any item within 30 days.</p>
+          </Disclosure>
+        </DisclosureGroup>
+      </Example>
+
+      <Example
         title="Nested"
         description="A disclosure inside the content of another starts again: it does not take the icon indent or the icon size of the outer one."
         stretch
