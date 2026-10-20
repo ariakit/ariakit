@@ -24,6 +24,7 @@ export function HorizontalNavigation() {
   const [rtl, setRtl] = useState(false);
   const [gap, setGap] = useState("auto");
   const [side, setSide] = useState<"start" | "end">("end");
+  const [length, setLength] = useState<"full" | "auto">("auto");
   const [padded, setPadded] = useState(true);
   const [ordered, setOrdered] = useState(false);
   const [groupGap, setGroupGap] = useState(8);
@@ -60,8 +61,21 @@ export function HorizontalNavigation() {
         Bar distance{" "}
         <select value={gap} onChange={(event) => setGap(event.target.value)}>
           <option value="auto">Frame padding</option>
+          <option value="center">Padding center</option>
           <option value="6px">6px</option>
           <option value="frame">Frame edge</option>
+        </select>
+      </label>
+      <label>
+        Bar length{" "}
+        <select
+          value={length}
+          onChange={(event) =>
+            setLength(event.target.value === "auto" ? "auto" : "full")
+          }
+        >
+          <option value="auto">Auto</option>
+          <option value="full">Full</option>
         </select>
       </label>
       <label>
@@ -90,6 +104,7 @@ export function HorizontalNavigation() {
           $animated: false,
           $side: side,
           $barOffset: gap,
+          $barLength: length,
         }}
       >
         {["Overview", "Activity", "Members", "Integrations", "Settings"].map(

@@ -57,7 +57,10 @@ export default function Example() {
         aria-label="Guides"
       >
         <ShellSidebarBody>
-          <Nav render={<div />} glider={[{ $kind: "flat" }, { $kind: "bar" }]}>
+          <Nav
+            render={<div />}
+            glider={[{ $kind: "flat" }, { $kind: "bar", $barOffset: "center" }]}
+          >
             {sections.map((section, index) => (
               <NavLink
                 key={section.id}

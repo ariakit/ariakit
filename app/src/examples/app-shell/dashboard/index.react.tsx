@@ -71,7 +71,10 @@ export default function Example() {
           </TextFrame>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav render={<div />} glider={[{ $kind: "flat" }, { $kind: "bar" }]}>
+          <Nav
+            render={<div />}
+            glider={[{ $kind: "flat" }, { $kind: "bar", $barOffset: "center" }]}
+          >
             {navigationLinks.map((link, index) => (
               <NavLink
                 key={link.title}
