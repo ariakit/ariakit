@@ -80,7 +80,7 @@ const lead =
 const cardFocus = focus.jsx({ $focus: true, $focusOffset: 2 }).className;
 ---
 
-<Layout {title} sidebar={false} maxWidth="80rem">
+<Layout {title} section={type} sidebar={false} maxWidth="80rem">
   <Meta slot="meta" {type} {title} {framework} />
   <header class="grid max-w-2xl gap-3 pt-8">
     <span class="ak-ink-70 text-sm font-medium">{frameworkLabel}</span>
