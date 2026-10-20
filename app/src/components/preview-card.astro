@@ -62,9 +62,12 @@ const files = Object.entries(source.files);
   >
     {/* The thumbnail and code render on the server and reach the island as
         static slots. Offscreen cards hydrate too, so their frames keep their
-        width while the page resizes. */}
+        width while the page resizes. Running animations, such as skeleton
+        shimmers, can leave a slow browser no idle time, so the timeout starts
+        hydration anyway. Browsers without idle callbacks, such as Safari,
+        always wait this long. */}
     <PreviewCard
-      client:idle
+      client:idle={{ timeout: 200 }}
       {headingId}
       {title}
       {href}
