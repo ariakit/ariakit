@@ -9,7 +9,11 @@ import {
 } from "./button.ts";
 import { frame } from "./frame.ts";
 import { gliderCover } from "./glider.ts";
-import { selected } from "./selected.ts";
+import {
+  hasSelectedSurface,
+  selected,
+  selectedHoverClass,
+} from "./selected.ts";
 
 /**
  * A tab container that shares its surface, edges, and geometry with the tab
@@ -206,6 +210,11 @@ export const tab = cv({
     },
   },
   refine({ variants, addClass }) {
+    // Every kind paints its selected tab, including folders that lighten it to
+    // match the panel, so hover keeps that surface.
+    if (!hasSelectedSurface(variants)) {
+      addClass(selectedHoverClass);
+    }
     if (variants.$kind === "folder") return;
     if (variants.$border != null) return;
     // Keep the forced-colors fallback edge only on the selected tab.

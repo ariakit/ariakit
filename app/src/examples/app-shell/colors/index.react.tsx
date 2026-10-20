@@ -111,7 +111,9 @@ export default function Example() {
                 {playlists.map((playlist) => (
                   <NavLink key={playlist.name} href="#playlists">
                     <NavLinkLabel>{playlist.name}</NavLinkLabel>
-                    <NavSlot $kind="badge">{playlist.count}</NavSlot>
+                    <NavSlot $kind="badge" $p="md">
+                      {playlist.count}
+                    </NavSlot>
                   </NavLink>
                 ))}
               </NavList>

@@ -15,6 +15,7 @@ import {
   navDisclosure,
   navDisclosureButton,
   navDisclosureContentBody,
+  navDisclosureGroup,
   navGlider,
   navGroup,
   navGroupLabel,
@@ -46,6 +47,15 @@ import {
 const NavDisclosureContext = React.createContext<readonly ak.DisclosureStore[]>(
   [],
 );
+
+interface NavLinkContextValue {
+  descriptionId?: string;
+  defaultDescriptionId: string;
+  registerDescription: (id: string) => () => void;
+}
+
+// Lets a link describe itself by its description, which then leaves its name.
+const NavLinkContext = React.createContext<NavLinkContextValue | null>(null);
 
 /**
  * A glider element, props, or array. Later gliders paint over earlier ones.
@@ -221,6 +231,40 @@ export function NavLink({ currentUrl, item, ...props }: NavLinkProps) {
   const [variantProps, rest] = splitProps(props, navLink);
   const isCurrent = isCurrentPage(currentUrl, rest.href);
   const disclosures = React.useContext(NavDisclosureContext);
+  const defaultDescriptionId = React.useId();
+  // Server markup can't know whether a description follows, so the link first
+  // expects one with the default id. That keeps the description out of the name
+  // before hydration.
+  const [descriptionId, setDescriptionId] = React.useState<string | undefined>(
+    defaultDescriptionId,
+  );
+  const hasDescriptionRef = React.useRef(false);
+  // A caller description replaces the automatic one, so the description text
+  // must stay in the link's name.
+  const describes = rest["aria-describedby"] == null;
+
+  const registerDescription = React.useCallback((id: string) => {
+    hasDescriptionRef.current = true;
+    setDescriptionId(id);
+    return () => {
+      setDescriptionId((current) => (current === id ? undefined : current));
+    };
+  }, []);
+
+  const context = React.useMemo(
+    () =>
+      describes
+        ? { descriptionId, defaultDescriptionId, registerDescription }
+        : null,
+    [describes, descriptionId, defaultDescriptionId, registerDescription],
+  );
+
+  // Child effects run first, so descriptions have registered by now. Drop the
+  // reference to a description that the link doesn't have.
+  React.useEffect(() => {
+    if (hasDescriptionRef.current) return;
+    setDescriptionId(undefined);
+  }, []);
 
   React.useEffect(() => {
     if (!isCurrent) return;
@@ -230,11 +274,15 @@ export function NavLink({ currentUrl, item, ...props }: NavLinkProps) {
   }, [isCurrent, disclosures]);
 
   const link = (
-    <ak.Role.a
-      aria-current={isCurrent ? "page" : undefined}
-      {...navLink.jsx(variantProps)}
-      {...rest}
-    />
+    <NavLinkContext.Provider value={context}>
+      <ak.Role.a
+        aria-current={isCurrent ? "page" : undefined}
+        {...navLink.jsx(variantProps)}
+        {...rest}
+        // An explicit undefined from the caller must not drop the description.
+        aria-describedby={rest["aria-describedby"] ?? descriptionId}
+      />
+    </NavLinkContext.Provider>
   );
   if (item === false) return link;
   return createRender(ak.Role.li, item, { children: link });
@@ -244,14 +292,17 @@ export interface NavSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof navSlot> {}
 
 /**
- * Renders an icon, badge, avatar, or shortcut in a nav row. All except
- * shortcuts inherit the nav's `$slotSize`. Use `$p="auto"` for word badges.
- * Badge and shortcut content gets a span for text sizing and key direction.
+ * Renders an icon, badge, avatar, shortcut, or thumbnail in a nav row. All
+ * except shortcuts and thumbnails inherit the nav's `$slotSize`. A badge after
+ * the label takes the line height and fits its text; use `$p="md"` to keep a
+ * count of one or two digits round. A badge before the label keeps the icon
+ * size. Badge and shortcut content gets a span for text sizing and key
+ * direction.
  * @example
  * <Nav aria-label="Main">
  *   <NavLink href="/updates">
  *     <NavLinkLabel>Updates</NavLinkLabel>
- *     <NavSlot $kind="badge">3</NavSlot>
+ *     <NavSlot $kind="badge" $p="md">3</NavSlot>
  *   </NavLink>
  * </Nav>
  */
@@ -300,7 +351,7 @@ export interface NavLinkLabelProps
  * <Nav aria-label="Main">
  *   <NavLink href="/updates">
  *     <NavLinkLabel>Updates</NavLinkLabel>
- *     <NavSlot $kind="badge">3</NavSlot>
+ *     <NavSlot $kind="badge" $p="md">3</NavSlot>
  *   </NavLink>
  * </Nav>
  */
@@ -313,29 +364,45 @@ export interface NavLinkDescriptionProps
   extends ak.RoleProps<"span">, VariantProps<typeof navLinkDescription> {}
 
 /**
- * Renders secondary text under the `NavLinkLabel` of a `NavLink`. It is part of
- * the link's content, so it is part of the link's accessible name too. To keep
- * it out of the name, give the label and the description an `id` and pass them
- * to the link as `aria-labelledby` and `aria-describedby`.
+ * Renders secondary text under the `NavLinkLabel` of a `NavLink`. The link
+ * takes it as its accessible description, so the rest of the link's content,
+ * such as the label and a badge, forms its name. A link takes one description;
+ * put more secondary text in the same description. A description with its own
+ * `id` describes the link only after hydration. Pass `aria-describedby` to the
+ * link to describe it with other text; the description then stays in the name.
  * @example
  * <Nav aria-label="Main">
- *   <NavLink
- *     href="/docs"
- *     aria-labelledby="docs-label"
- *     aria-describedby="docs-description"
- *   >
+ *   <NavLink href="/docs">
  *     <NavLinkContent>
- *       <NavLinkLabel id="docs-label">Docs</NavLinkLabel>
- *       <NavLinkDescription id="docs-description">
- *         Guides and examples
- *       </NavLinkDescription>
+ *       <NavLinkLabel>Docs</NavLinkLabel>
+ *       <NavLinkDescription>Guides and examples</NavLinkDescription>
  *     </NavLinkContent>
  *   </NavLink>
  * </Nav>
  */
 export function NavLinkDescription(props: NavLinkDescriptionProps) {
   const [variantProps, rest] = splitProps(props, navLinkDescription);
-  return <ak.Role.span {...navLinkDescription.jsx(variantProps)} {...rest} />;
+  const context = React.useContext(NavLinkContext);
+  const defaultId = React.useId();
+  const id = rest.id ?? context?.defaultDescriptionId ?? defaultId;
+  const registerDescription = context?.registerDescription;
+
+  React.useEffect(() => {
+    if (!registerDescription) return;
+    return registerDescription(id);
+  }, [registerDescription, id]);
+
+  // A hidden element still describes the link that references it. Hiding it
+  // keeps the text out of the link's name, which comes from its content.
+  const describes = context?.descriptionId === id;
+  return (
+    <ak.Role.span
+      aria-hidden={describes || undefined}
+      {...navLinkDescription.jsx(variantProps)}
+      {...rest}
+      id={id}
+    />
+  );
 }
 
 export interface NavGroupProps
@@ -374,6 +441,30 @@ export interface NavGroupLabelProps
 export function NavGroupLabel(props: NavGroupLabelProps) {
   const [variantProps, rest] = splitProps(props, navGroupLabel);
   return <ak.GroupLabel {...navGroupLabel.jsx(variantProps)} {...rest} />;
+}
+
+export interface NavDisclosureGroupProps
+  extends ak.RoleProps<"ul">, VariantProps<typeof navDisclosureGroup> {}
+
+/**
+ * A list of `NavDisclosure` sections in a shared frame with dividers between
+ * them. It spans the nav's padding. Set `$fill` on it and on the `Nav` to grow
+ * the open section into the height of a sidebar.
+ * @example
+ * <Nav aria-label="Docs" list={false}>
+ *   <NavDisclosureGroup>
+ *     <NavDisclosure button="Guides">
+ *       <NavList><NavLink href="/install">Install</NavLink></NavList>
+ *     </NavDisclosure>
+ *     <NavDisclosure button="Components">
+ *       <NavList><NavLink href="/button">Button</NavLink></NavList>
+ *     </NavDisclosure>
+ *   </NavDisclosureGroup>
+ * </Nav>
+ */
+export function NavDisclosureGroup(props: NavDisclosureGroupProps) {
+  const [variantProps, rest] = splitProps(props, navDisclosureGroup);
+  return <ak.Role.ul {...navDisclosureGroup.jsx(variantProps)} {...rest} />;
 }
 
 // $slotSize sizes both the disclosure icon and its nested nav slots.
@@ -467,7 +558,7 @@ export interface NavButtonContentProps extends ak.RoleProps<"span"> {}
  * @example
  * <NavButton render={<a href="/updates" />}>
  *   <NavButtonContent>Updates</NavButtonContent>
- *   <NavSlot $kind="badge">3</NavSlot>
+ *   <NavSlot $kind="badge" $p="md">3</NavSlot>
  * </NavButton>
  */
 export function NavButtonContent(props: NavButtonContentProps) {
@@ -490,7 +581,7 @@ export interface NavDisclosureButtonProps extends Omit<
  *   <NavDisclosure
  *     button={
  *       <NavDisclosureButton label="Guides">
- *         <NavSlot $kind="badge">3</NavSlot>
+ *         <NavSlot $kind="badge" $p="md">3</NavSlot>
  *       </NavDisclosureButton>
  *     }
  *   >

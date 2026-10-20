@@ -4,14 +4,42 @@ import {
   getScaledStyleClass,
 } from "../utils/styles.ts";
 
-/** Shared surface effects for checked, selected, and current items. */
+/**
+ * Keeps a selected surface while hovered: the selected offset, or the selected
+ * push alone when the offset is unset.
+ */
+export const selectedHoverClass =
+  "ui-selected:ui-hover:ak-state-(--selected-offset,0)";
+
+interface SelectedSurfaceVariants {
+  $selectedOffset?: string | number | boolean;
+  $selectedPush?: string | number | boolean;
+}
+
+/** Whether a selected lightness variant paints a surface. */
+function paintsSurface(value?: string | number | boolean) {
+  if (value == null) return false;
+  if (value === false) return false;
+  // Expressions such as `var(--offset)` are not numbers and still paint.
+  return Number(value) !== 0;
+}
+
+/**
+ * Whether the selected offset or push paints a surface. Recipes that paint a
+ * selected surface another way add `selectedHoverClass` when this is false.
+ */
+export function hasSelectedSurface(variants: SelectedSurfaceVariants) {
+  if (paintsSurface(variants.$selectedOffset)) return true;
+  return paintsSurface(variants.$selectedPush);
+}
+
+/**
+ * Shared surface effects for checked, selected, and current items. A selected
+ * surface stays the same while hovered. Without one, a selected item shows the
+ * hover state like the others, such as a current tab marked only by a bar.
+ */
 export const selected = cv({
-  class: [
-    "[--selected-offset:initial]",
-    // Keep the selected offset during hover, or preserve the resting fill when
-    // unset.
-    "ui-selected:ui-hover:ak-state-(--selected-offset,0)",
-  ],
+  class: "[--selected-offset:initial]",
   variants: {
     /**
      * Sets text strength from `0` to `100` while checked, selected, or current.
@@ -49,5 +77,9 @@ export const selected = cv({
         class: "ui-selected:ak-state-push-(--selected-push)",
       });
     },
+  },
+  refine({ variants, addClass }) {
+    if (!hasSelectedSurface(variants)) return;
+    addClass(selectedHoverClass);
   },
 });

@@ -92,6 +92,22 @@ test("names a link by its label and describes it by its description", () => {
   expect(link).toHaveAccessibleDescription("Members and billing");
 });
 
+test("describes a link by its description without ids", () => {
+  const nav = q.within(q.navigation("Link descriptions"));
+  const inbox = nav.link("Inbox 4");
+  expect(inbox).toHaveAccessibleDescription(
+    "Messages that wait for a reply from you or your team",
+  );
+  expect(nav.link("Releases")).toHaveAccessibleDescription("2 drafts");
+});
+
+test("describes a link whose wrapper forwards an undefined description id", () => {
+  const nav = q.within(q.navigation("Forwarded link descriptions"));
+  expect(nav.link("Guides")).toHaveAccessibleDescription(
+    "Install and set up the library",
+  );
+});
+
 test("keeps anchor props, events, and refs on a wrapped link", async () => {
   const nav = q.within(q.navigation("Link wrappers"));
   const link = nav.link("Project overview");

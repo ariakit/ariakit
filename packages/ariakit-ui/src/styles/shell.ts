@@ -534,14 +534,17 @@ const sidebarNavCover =
 
 /**
  * The scrollable center of a sidebar panel. A direct `Nav` without its own
- * `$p`, `$border`, or `$borderType` spans the body's padding. Wrap the `Nav` in
- * another element to keep its box.
+ * `$p`, `$border`, or `$borderType` spans the body's padding, and a direct
+ * `Nav` with `$fill` takes the body's height. Wrap the `Nav` in another element
+ * to keep its box.
  */
 export const shellSidebarBody = cv({
   extend: [frameBase],
   class: [
     sidebarNavCover,
     "shell-sidebar-body min-h-0 flex-auto overflow-y-auto rounded-none!",
+    // A flex column fits a filling navigation to the body's height.
+    "[&:has(>.nav-fill)]:flex [&:has(>.nav-fill)]:flex-col",
   ],
   defaultVariants: { $p: 3 },
 });

@@ -54,8 +54,6 @@ export default function Thumbnail() {
         {links.map((link) => (
           <Frame
             key={link.id}
-            $layer={link.current || undefined}
-            $darken={link.current ? 1 : undefined}
             $rounded="md"
             $p={1.5}
             className="flex items-center gap-2"
