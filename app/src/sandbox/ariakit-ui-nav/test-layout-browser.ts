@@ -805,6 +805,67 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     );
   });
 
+  test("centers a bar in the frame padding below or above a link", async ({
+    q,
+  }) => {
+    const nav = q.navigation("Project pages");
+    const link = query(nav).link("Overview");
+    const bar = nav.locator(":scope > .glider");
+    await nav.scrollIntoViewIfNeeded();
+    await q.combobox("Bar distance").selectOption("center");
+    for (const side of ["end", "start"]) {
+      await q.combobox("Bar side").selectOption(side);
+      await expect
+        .poll(async () => {
+          const [box, item, bounds] = await Promise.all([
+            getBox(bar),
+            getBox(link),
+            getBox(nav),
+          ]);
+          const border = await nav.evaluate((node) =>
+            Number.parseFloat(getComputedStyle(node).borderTopWidth),
+          );
+          const toItem =
+            side === "start"
+              ? item.y - box.y - box.height
+              : box.y - item.y - item.height;
+          const toFrame =
+            side === "start"
+              ? box.y - bounds.y - border
+              : bounds.y + bounds.height - border - box.y - box.height;
+          return [Math.round(toItem), Math.round(toItem - toFrame)];
+        })
+        .toEqual([5, 0]);
+    }
+  });
+
+  test("shortens a bar below a link by its corner radius unless the length is full", async ({
+    q,
+  }) => {
+    const nav = q.navigation("Project pages");
+    const link = query(nav).link("Overview");
+    const bar = nav.locator(":scope > .glider");
+    await nav.scrollIntoViewIfNeeded();
+    // Without frame padding, links keep the navigation's rounded corners.
+    await q.checkbox("Add frame padding").uncheck();
+    const radius = await link.evaluate((node) =>
+      Number.parseFloat(getComputedStyle(node).borderTopLeftRadius),
+    );
+    expect(radius).toBeGreaterThan(0);
+    const getInsets = async () => {
+      const [box, item] = await Promise.all([getBox(bar), getBox(link)]);
+      return {
+        start: Math.round(box.x - item.x),
+        length: Math.round(item.width - box.width),
+      };
+    };
+    await expect
+      .poll(getInsets)
+      .toEqual({ start: Math.round(radius / 2), length: Math.round(radius) });
+    await q.combobox("Bar length").selectOption("full");
+    await expect.poll(getInsets).toEqual({ start: 0, length: 0 });
+  });
+
   for (const rtl of [false, true]) {
     test(`keeps links and the bar in one scrolling row${rtl ? " in RTL" : ""}`, async ({
       q,

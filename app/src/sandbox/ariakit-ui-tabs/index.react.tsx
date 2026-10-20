@@ -49,6 +49,7 @@ function BarPlacement() {
           onChange={(event) => setOffset(event.target.value)}
         >
           <option value="auto">Frame padding</option>
+          <option value="center">Padding center</option>
           <option value="6px">6px</option>
           <option value="frame">Frame edge</option>
         </select>

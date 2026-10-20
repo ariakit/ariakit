@@ -43,7 +43,11 @@ export function AppNavigation({ groups, idPrefix }: AppNavigationProps) {
       // Link states recolor the links, so thumbnails take their surface from
       // the navigation itself.
       className="[--app-navigation-surface:var(--ak-layer)]"
-      glider={{ $kind: "bar", $animated: false }}
+      glider={{
+        $kind: "bar",
+        $animated: false,
+        $barOffset: "center",
+      }}
     >
       {groups.map((group, groupIndex) => (
         <NavGroup key={group.label}>

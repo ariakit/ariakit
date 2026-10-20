@@ -250,7 +250,10 @@ export default function Example() {
           </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody $p={2}>
-          <Nav render={<div />} glider={[{ $kind: "flat" }, { $kind: "bar" }]}>
+          <Nav
+            render={<div />}
+            glider={[{ $kind: "flat" }, { $kind: "bar", $barOffset: "center" }]}
+          >
             {folders.map((item) => (
               <NavLink
                 key={item.id}
@@ -282,7 +285,10 @@ export default function Example() {
         render={<aside />}
       >
         <ShellSidebarBody $p={2}>
-          <Nav render={<div />} glider={[{ $kind: "flat" }, { $kind: "bar" }]}>
+          <Nav
+            render={<div />}
+            glider={[{ $kind: "flat" }, { $kind: "bar", $barOffset: "center" }]}
+          >
             {folderMessages.map((message) => (
               <NavLink
                 key={message.id}

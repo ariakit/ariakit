@@ -300,7 +300,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const barEdges = async () => {
       const box = await getBox(bar);
       return {
-        top: box.y,
+        middle: box.y + box.height / 2,
         end: box.x + box.width,
         center: box.x + box.width / 2,
       };
@@ -321,8 +321,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // Overview.
     const overviewBox = await getBox(overview);
     await test.expect
-      .poll(async () => (await barEdges()).top)
-      .toBeCloseTo(overviewBox.y, 0);
+      .poll(async () => (await barEdges()).middle)
+      .toBeCloseTo(overviewBox.y + overviewBox.height / 2, 0);
     await test.expect
       .poll(async () => (await barEdges()).end)
       .toBeCloseTo(overviewBox.x, 0);
@@ -339,8 +339,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       getBox(styling.locator(".control-slot").first()),
     ]);
     await test.expect
-      .poll(async () => (await barEdges()).top)
-      .toBeCloseTo(themesBox.y, 0);
+      .poll(async () => (await barEdges()).middle)
+      .toBeCloseTo(themesBox.y + themesBox.height / 2, 0);
     await test.expect
       .poll(async () => (await barEdges()).center)
       .toBeCloseTo(iconBox.x + iconBox.width / 2, 0);

@@ -13,6 +13,14 @@ export const gliderCover = cx(
   "h-[calc(anchor-size()+var(--glider-reach,0px)-var(--ak-frame-margin)*2)]",
 );
 
+// The concentric radius of items placed in a frame's padding. It skips the
+// frame's 0.125em minimum because the group cannot read the item's own radius.
+// Groups set it as `--glider-radius` through inline styles: a class name
+// containing frame utility names would trip `[class*=…]` frame checks such as
+// shell covers.
+export const gliderRadius =
+  "max(0px, calc(var(--ak-frame-radius) - var(--ak-frame-padding) - var(--ak-frame-border)))";
+
 /**
  * An anchored selection indicator with surface, bar, and motion variants.
  * Extenders identify the selected control.
@@ -41,16 +49,17 @@ export const gliderBase = cv({
         // A fixed width keeps the bar the same at every text size. Normalize
         // the 0–100 contrast scale so high contrast adds only 20%.
         "[--glider-bar:calc(var(--glider-bar-width,2px)*(1+0.2*var(--contrast)/100))]",
-        "not-[.vertical>&]:left-[anchor(left)]",
+        // `$barLength` shortens the bar by an inset at each end.
+        "not-[.vertical>&]:left-[calc(anchor(left)+var(--glider-bar-inset,0px))]",
         "not-[.vertical>&]:top-[calc(anchor(bottom)+var(--glider-bar-offset))]",
-        "not-[.vertical>&]:w-[anchor-size()]",
+        "not-[.vertical>&]:w-[calc(anchor-size()-var(--glider-bar-inset,0px)*2)]",
         "not-[.vertical>&]:h-(--glider-bar)",
         "not-[.vertical>&]:[&.glider-bar-start]:top-auto",
         "not-[.vertical>&]:[&.glider-bar-start]:bottom-[calc(anchor(top)+var(--glider-bar-offset))]",
         "[.vertical>&]:inset-s-[calc(anchor(end)+var(--glider-bar-offset))]",
-        "[.vertical>&]:bottom-[anchor(bottom)]",
+        "[.vertical>&]:bottom-[calc(anchor(bottom)+var(--glider-bar-inset,0px))]",
         "[.vertical>&]:w-(--glider-bar)",
-        "[.vertical>&]:h-[anchor-size()]",
+        "[.vertical>&]:h-[calc(anchor-size()-var(--glider-bar-inset,0px)*2)]",
         "[.vertical>&]:[&.glider-bar-start]:inset-s-auto",
         "[.vertical>&]:[&.glider-bar-start]:inset-e-[calc(anchor(start)+var(--glider-bar-offset))]",
         // Frame mode locates the outside edge even when the item is indented.
@@ -72,13 +81,18 @@ export const gliderBase = cv({
     /**
      * Sets the gap from the item to the bar's near edge. Numbers scale the
      * spacing token; CSS lengths can be negative for overlap. `auto` uses frame
-     * padding minus the bar thickness, clamped at zero. `frame` aligns the bar
-     * to the group's edge even for an indented item.
+     * padding minus the bar thickness, clamped at zero. `center` centers the
+     * bar in the frame padding, so it touches neither the frame edge nor the
+     * item. `frame` aligns the bar to the group's edge even for an indented
+     * item.
      */
-    $barOffset(value?: "auto" | "frame" | (string & {}) | number) {
+    $barOffset(value?: "auto" | "center" | "frame" | (string & {}) | number) {
       if (value == null) return;
       if (value === "auto") {
         return "glider-bar-auto [--glider-bar-offset:max(0px,calc(var(--glider-padding,0px)-var(--glider-bar)))]";
+      }
+      if (value === "center") {
+        return "glider-bar-center [--glider-bar-offset:max(0px,calc((var(--glider-padding,0px)-var(--glider-bar))/2))]";
       }
       if (value === "frame") {
         // Firefox needs the frame anchor inside the items' scroll container.
@@ -103,6 +117,17 @@ export const gliderBase = cv({
       const width = typeof value === "number" ? `${value}px` : value;
       return { style: { "--glider-bar-width": width } };
     },
+    /**
+     * Sets the bar length along the item. `full` spans the item. `auto` is
+     * shorter by the item's corner radius, half at each end, so rounder items
+     * get shorter bars. Defaults to `auto` for bars.
+     */
+    $barLength: {
+      full: "",
+      // Browsers clamp a rendered corner to half the item's shorter side.
+      // Engines that reject anchor-size() in insets keep the full length.
+      auto: "supports-[left:anchor-size(width)]:[--glider-bar-inset:min(var(--glider-radius,0px)/2,anchor-size(width)/4,anchor-size(height)/4)]",
+    },
     /** Animates the glider as it travels between controls. */
     $animated: [
       "glider-animated",
@@ -120,6 +145,10 @@ export const gliderBase = cv({
       if (variants.$kind !== "bar") {
         return defaultValue;
       }
+      return defaultValue ?? "auto";
+    },
+    $barLength(defaultValue, variants) {
+      if (variants.$kind !== "bar") return defaultValue;
       return defaultValue ?? "auto";
     },
     $animated: true,
@@ -214,5 +243,6 @@ export const gliderGroup = cv({
   style: {
     anchorName: "--glider-frame",
     anchorScope: "--glider-frame, --glider-selected",
+    "--glider-radius": gliderRadius,
   },
 });
