@@ -49,6 +49,9 @@ export const disclosure = cv({
     "[--disclosure-padding:var(--ak-frame-padding)]",
     "[--disclosure-radius:var(--ak-frame-radius)]",
     "[--disclosure-border:calc(var(--ak-frame-border)+var(--ak-frame-ring))]",
+    // Group members have no border of their own, so a split line matches the
+    // group dividers.
+    "ui-disclosure-group:[--disclosure-border:1px]",
     // Match the button's default optical text inset. A button-specific $size or
     // $px changes only its label position.
     "[--disclosure-px:calc(var(--disclosure-padding)+(1lh-1cap)*0.5)]",
