@@ -224,7 +224,7 @@ function AppNavigationLink({ link, id }: AppNavigationLinkProps) {
       className="group/thumbnail"
     >
       {link.thumbnail && (
-        <NavSlot $size="2xl" $rowSpan={2} $mx="md" $square={false}>
+        <NavSlot $size="xl" $rowSpan={2} $mx="md" $square={false}>
           <AppThumbnail
             html={link.thumbnail}
             size="slot"
