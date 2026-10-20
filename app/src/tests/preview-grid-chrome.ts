@@ -34,3 +34,31 @@ test("preview grid cards of similar heights line up", async ({ page, q }) => {
     (await getHeight(getCard("Article"))) * 0.8,
   );
 });
+
+test("a preview grid card that would sit alone takes the whole row", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 1400 });
+  await gotoAndSettle(page, "/react/examples/navigation/");
+  const getRegion = (title: string) => q.region(title, { exact: true }).first();
+  const getBox = (title: string) =>
+    getRegion(title).evaluate((element) => {
+      const { left, top, width } = element.getBoundingClientRect();
+      return { left, top, width };
+    });
+  // The gallery pairs every half-width card, so removing the second card of the
+  // first pair leaves Navigation alone before the full-width Top Bar.
+  await getRegion("Brand Navigation").evaluate((element) => element.remove());
+  const [navigation, topBar, course, workspace] = await Promise.all([
+    getBox("Navigation"),
+    getBox("Top Bar"),
+    getBox("Course Lessons"),
+    getBox("Workspace Sidebar"),
+  ]);
+  expect(navigation.left).toBeCloseTo(topBar.left, 0);
+  expect(navigation.width).toBeCloseTo(topBar.width, 0);
+  // The next pair still shares a row.
+  expect(workspace.top).toBeCloseTo(course.top, 0);
+  expect(workspace.left).toBeGreaterThan(course.left + course.width);
+});

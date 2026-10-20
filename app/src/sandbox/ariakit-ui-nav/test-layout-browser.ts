@@ -106,28 +106,36 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       // The text size is 16px at the sandbox's font, and $slotSize={5} and
       // $slotSize={8} are five and eight spacing steps, 20px and 32px. A badge
       // or an avatar takes that size like an icon, before or after the label,
-      // in a section row and a link row alike.
+      // in a section row and a link row alike. Without $slotSize, a badge after
+      // the label takes the line height instead, like a button badge.
+      const lineHeight = await drafts.evaluate((node) =>
+        Number.parseFloat(getComputedStyle(node).lineHeight),
+      );
+      const trailingSize = slotSize === "text" ? lineHeight : size;
       const squares = [
-        inbox.locator(":scope > .disclosure-button-slot").first(),
-        drafts.locator(".control-slot").first(),
-        slot(notifications, "9"),
-        slot(anaLima, "AL"),
-        slot(drafts, "3"),
-        slot(profile, "JD"),
-        slot(design, "MK"),
-      ];
-      for (const square of squares) {
+        [inbox.locator(":scope > .disclosure-button-slot").first(), size],
+        [drafts.locator(".control-slot").first(), size],
+        [slot(notifications, "9"), size],
+        [slot(anaLima, "AL"), size],
+        [slot(drafts, "3"), trailingSize],
+        [slot(profile, "JD"), size],
+        [slot(design, "MK"), size],
+      ] as const;
+      for (const [square, squareSize] of squares) {
         await expect
           .poll(async () => {
             const box = await getBox(square);
             return [box.width, box.height];
           })
-          .toEqual([expect.closeTo(size, 0), expect.closeTo(size, 0)]);
+          .toEqual([
+            expect.closeTo(squareSize, 0),
+            expect.closeTo(squareSize, 0),
+          ]);
       }
       // Two digits can be wider than the slot, so that badge keeps only the
       // slot's height.
       const twoDigits = await getBox(slot(inbox, "12"));
-      expect(twoDigits.height).toBeCloseTo(size, 0);
+      expect(twoDigits.height).toBeCloseTo(trailingSize, 0);
       // Every label starts on the column of an icon row's label, whether an
       // icon, a one-digit badge or an avatar leads it.
       const column = (await getBox(query(drafts).text("Drafts"))).x;
@@ -142,7 +150,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         expect((await getBox(label)).x).toBeCloseTo(column, 0);
       }
       // The label fills the row, so a trailing badge or avatar sits at the row
-      // end, inset like the leading icon. A slot taller than the line reaches
+      // end, inset like a leading slot of its size: the block padding plus half
+      // the line height the slot leaves. A slot taller than the line reaches
       // into the start padding, while a trailing slot keeps the block padding
       // as its end inset.
       const [row, rowIcon, rowPadding] = await Promise.all([
@@ -152,15 +161,20 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           parseFloat(getComputedStyle(node).paddingTop),
         ),
       ]);
-      const expectedInset = Math.max(rowIcon.x - row.x, rowPadding);
-      for (const [link, text] of [
-        [drafts, "3"],
-        [profile, "JD"],
+      expect(rowIcon.x - row.x).toBeCloseTo(
+        rowPadding + (lineHeight - size) / 2,
+        0,
+      );
+      for (const [link, text, trailingSlotSize] of [
+        [drafts, "3", trailingSize],
+        [profile, "JD", size],
       ] as const) {
         const [linkBox, trailing] = await Promise.all([
           getBox(link),
           getBox(slot(link, text)),
         ]);
+        const expectedInset =
+          rowPadding + Math.max(0, (lineHeight - trailingSlotSize) / 2);
         expect(
           linkBox.x + linkBox.width - trailing.x - trailing.width,
         ).toBeCloseTo(expectedInset, 0);

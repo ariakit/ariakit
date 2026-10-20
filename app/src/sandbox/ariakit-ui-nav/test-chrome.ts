@@ -110,6 +110,27 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(link).toHaveAccessibleDescription("Members and billing");
   });
 
+  test("describes a link by its description without ids", async ({ q }) => {
+    const nav = query(q.navigation("Link descriptions"));
+    await test
+      .expect(nav.link("Inbox 4"))
+      .toHaveAccessibleDescription(
+        "Messages that wait for a reply from you or your team",
+      );
+    await test
+      .expect(nav.link("Releases"))
+      .toHaveAccessibleDescription("2 drafts");
+  });
+
+  test("describes a link whose wrapper forwards an undefined description id", async ({
+    q,
+  }) => {
+    const nav = query(q.navigation("Forwarded link descriptions"));
+    await test
+      .expect(nav.link("Guides"))
+      .toHaveAccessibleDescription("Install and set up the library");
+  });
+
   test("marks only the link that matches the current URL", async ({ q }) => {
     const rows = query(q.navigation("Rows"));
     await test

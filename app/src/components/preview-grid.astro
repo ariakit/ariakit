@@ -14,7 +14,7 @@ import { ShellMainFull } from "@ariakit/ui/components/shell.ariakit.react";
 
 {/* Lays out preview cards in up to two columns, or one when two would be
     narrower than 24rem. A card with class="col-span-full" takes the whole
-    row. */}
+    row, and so does a card that would otherwise sit alone in its row. */}
 <ShellMainFull>
   <Frame
     $p="var(--app-gutter)"
@@ -27,13 +27,22 @@ import { ShellMainFull } from "@ariakit/ui/components/shell.ariakit.react";
       "[--preview-grid-top:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head,0px)+1rem)]",
       "*:*:sticky *:*:self-start *:*:top-(--preview-grid-top)",
       // A card within 20% of its row height grows to the row, so cards of
-      // similar heights line up. sign() turns the comparison into 0 or 1.
-      // Browsers without calc-size() drop the declaration and keep the card
-      // heights.
-      "*:*:[min-height:calc-size(max-content,_size_+_(100%_-_size)_*_(1_+_sign(20%_-_(100%_-_size)))_/_2)]",
+      // similar heights line up. Up to 30%, it grows less the shorter it is, so
+      // a card follows its content, such as a closing disclosure, without a
+      // jump. Browsers without calc-size() drop the declaration and keep the
+      // card heights.
+      "*:*:[min-height:calc-size(max-content,_max(size,_100%_-_3_*_max(0px,_100%_-_size_-_20%)))]",
       // A flexible row fills a card that grows to its minimum height, where an
       // auto row would keep its content height.
       "*:*:grid-rows-[1fr]",
+      // A card that would sit alone in two columns takes the whole row: the
+      // last card of a run between full-width cards, at an odd place in that
+      // run. Runs of up to eight cards are counted. Every compound names the
+      // card section: Astro can add a script before the cards, and a compound
+      // without a type makes Chrome restyle the siblings of any element that is
+      // added or removed anywhere on the page.
+      // https://github.com/ariakit/ariakit/issues/7806
+      "[&>section:not(.col-span-full):is(:last-of-type,:has(+section.col-span-full)):is(section:is(:first-of-type,.col-span-full+section),section:is(:first-of-type,.col-span-full+section):not(.col-span-full)+section:not(.col-span-full)+section,section:is(:first-of-type,.col-span-full+section):not(.col-span-full)+section:not(.col-span-full)+section:not(.col-span-full)+section:not(.col-span-full)+section,section:is(:first-of-type,.col-span-full+section):not(.col-span-full)+section:not(.col-span-full)+section:not(.col-span-full)+section:not(.col-span-full)+section:not(.col-span-full)+section:not(.col-span-full)+section)]:col-span-full",
       // The cards drop the band gutters, so the band needs no subgrid. Safari
       // places the card in only the first column of a subgrid that spans the
       // auto-filled columns.

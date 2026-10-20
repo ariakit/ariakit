@@ -11,7 +11,10 @@ import * as Ariakit from "@ariakit/react";
 import { DisclosureButtonLabel } from "@ariakit/ui/components/disclosure.ariakit.react";
 import type { DisclosureButtonLabelProps } from "@ariakit/ui/components/disclosure.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import type { NavProps } from "@ariakit/ui/components/nav.ariakit.react";
+import type {
+  NavLinkProps,
+  NavProps,
+} from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Nav,
   NavButton,
@@ -93,6 +96,27 @@ function NavOptionalHeadings() {
 // click must not leave the page.
 function preventNavigation(event: MouseEvent) {
   event.preventDefault();
+}
+
+interface DocLinkProps extends NavLinkProps {
+  label: string;
+  description: string;
+  describedBy?: string;
+}
+
+/**
+ * A link wrapper that forwards an optional description id, which stays
+ * undefined unless the caller passes one.
+ */
+function DocLink({ label, description, describedBy, ...props }: DocLinkProps) {
+  return (
+    <NavLink aria-describedby={describedBy} {...props}>
+      <NavLinkContent>
+        <NavLinkLabel>{label}</NavLinkLabel>
+        <NavLinkDescription>{description}</NavLinkDescription>
+      </NavLinkContent>
+    </NavLink>
+  );
 }
 
 const pages = ["Overview", "Installation", "Usage", "Changelog"];
@@ -396,7 +420,9 @@ function BadgesAndAvatars() {
               icon={<Inbox strokeWidth={1.5} />}
               label="Inbox"
             >
-              <NavSlot $kind="badge">12</NavSlot>
+              <NavSlot $kind="badge" $p="md">
+                12
+              </NavSlot>
             </NavDisclosureButton>
           }
         >
@@ -424,7 +450,9 @@ function BadgesAndAvatars() {
             <FileCode strokeWidth={1.5} />
           </NavSlot>
           <NavLinkLabel>Drafts</NavLinkLabel>
-          <NavSlot $kind="badge">3</NavSlot>
+          <NavSlot $kind="badge" $p="md">
+            3
+          </NavSlot>
         </NavLink>
         <NavLink href="#profile">
           <NavSlot>
@@ -587,7 +615,7 @@ export default function NavExamples() {
               <NavList>
                 <NavLink>
                   <NavLinkLabel>Components</NavLinkLabel>
-                  <NavSlot $kind="badge">
+                  <NavSlot $kind="badge" $p="md">
                     12
                   </NavSlot>
                 </NavLink>
@@ -612,7 +640,7 @@ export default function NavExamples() {
             <NavList>
               <NavLink href="#components">
                 <NavLinkLabel>Components</NavLinkLabel>
-                <NavSlot $kind="badge" className="ms-auto">
+                <NavSlot $kind="badge" $p="md" className="ms-auto">
                   12
                 </NavSlot>
               </NavLink>
@@ -1171,7 +1199,7 @@ export default function NavExamples() {
                       <FileCode />
                     </NavSlot>
                     <NavLinkLabel>المكونات</NavLinkLabel>
-                    <NavSlot $kind="badge">
+                    <NavSlot $kind="badge" $p="md">
                       12
                     </NavSlot>
                   </NavLink>
@@ -1215,7 +1243,7 @@ export default function NavExamples() {
                     <FileCode strokeWidth={1.5} />
                   </NavSlot>
                   <NavLinkLabel>المكونات</NavLinkLabel>
-                  <NavSlot $kind="badge" className="ms-auto">
+                  <NavSlot $kind="badge" $p="md" className="ms-auto">
                     12
                   </NavSlot>
                 </NavLink>
@@ -1434,14 +1462,16 @@ export default function NavExamples() {
         description="An explicit label keeps its NavSlot badge beside the text, with or without a description."
         code={`
           <NavDisclosureButton label="Team pages" description="All pages in this workspace">
-            <NavSlot $kind="badge">3</NavSlot>
+            <NavSlot $kind="badge" $p="md">3</NavSlot>
           </NavDisclosureButton>
         `}
       >
         <Nav>
           <NavDisclosure defaultOpen>
             <NavDisclosureButton label="Project pages">
-              <NavSlot $kind="badge">3</NavSlot>
+              <NavSlot $kind="badge" $p="md">
+                3
+              </NavSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
               <NavList>
@@ -1456,7 +1486,9 @@ export default function NavExamples() {
               label={<CustomLabel id="nav-pages-label">Team pages</CustomLabel>}
               description="All pages in this workspace"
             >
-              <NavSlot $kind="badge">3</NavSlot>
+              <NavSlot $kind="badge" $p="md">
+                3
+              </NavSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
               <NavList>
@@ -1476,7 +1508,9 @@ export default function NavExamples() {
               }
               description="Manage account pages"
             >
-              <NavSlot $kind="badge">3</NavSlot>
+              <NavSlot $kind="badge" $p="md">
+                3
+              </NavSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
               <p>Update account pages</p>
@@ -1492,7 +1526,7 @@ export default function NavExamples() {
           <Nav $slotSize={5}>
             <NavDisclosure defaultOpen button={
               <NavDisclosureButton icon={<Inbox />} label="Inbox">
-                <NavSlot $kind="badge">12</NavSlot>
+                <NavSlot $kind="badge" $p="md">12</NavSlot>
               </NavDisclosureButton>
             }>
               <NavList>
@@ -1514,7 +1548,7 @@ export default function NavExamples() {
                 <FileCode />
               </NavSlot>
               <NavLinkLabel>Drafts</NavLinkLabel>
-              <NavSlot $kind="badge">3</NavSlot>
+              <NavSlot $kind="badge" $p="md">3</NavSlot>
             </NavLink>
             <NavLink>
               <NavSlot>
@@ -1556,7 +1590,7 @@ export default function NavExamples() {
             </NavLink>
             <NavDisclosure $slotSize={8} defaultOpen button={
               <NavDisclosureButton icon={<Palette />} label="Design">
-                <NavSlot $kind="badge">4</NavSlot>
+                <NavSlot $kind="badge" $p="md">4</NavSlot>
               </NavDisclosureButton>
             }>
               <NavList>
@@ -1608,7 +1642,9 @@ export default function NavExamples() {
                 icon={<Palette strokeWidth={1.5} />}
                 label="Design"
               >
-                <NavSlot $kind="badge">4</NavSlot>
+                <NavSlot $kind="badge" $p="md">
+                  4
+                </NavSlot>
               </NavDisclosureButton>
             }
           >
@@ -1744,6 +1780,22 @@ export default function NavExamples() {
         <LinkItems />
       </Example>
       <Example
+        title="Forwarded link descriptions"
+        description="A wrapper that forwards an undefined aria-describedby keeps the description of its link."
+        code={`<NavLink aria-describedby={describedBy}>...</NavLink>`}
+      >
+        <Nav
+          aria-label="Forwarded link descriptions"
+          className="w-full max-w-64"
+        >
+          <DocLink
+            href="#guides"
+            label="Guides"
+            description="Install and set up the library"
+          />
+        </Nav>
+      </Example>
+      <Example
         title="Link descriptions"
         description="A link with a slot, a label and a description lines up with a disclosure row beside it. The slots take the nav's slot size, the text wraps, and a description can share the label's line."
         code={`
@@ -1756,7 +1808,7 @@ export default function NavExamples() {
                 <NavLinkLabel>Inbox</NavLinkLabel>
                 <NavLinkDescription>Messages that wait for a reply</NavLinkDescription>
               </NavLinkContent>
-              <NavSlot $kind="badge">4</NavSlot>
+              <NavSlot $kind="badge" $p="md">4</NavSlot>
             </NavLink>
             <NavLink>
               <NavSlot>
@@ -1793,11 +1845,14 @@ export default function NavExamples() {
                 Messages that wait for a reply from you or your team
               </NavLinkDescription>
             </NavLinkContent>
-            <NavSlot $kind="badge">4</NavSlot>
+            <NavSlot $kind="badge" $p="md">
+              4
+            </NavSlot>
           </NavLink>
           {/*
-            The ids keep the description out of the link's name. Without them,
-            as on the other rows, a link is named by all of its content.
+            The ids name the link by its label alone. Without them, as on the
+            other rows, the description describes the link, and the rest of the
+            content, such as a badge, names it.
            */}
           <NavLink
             href="#settings"

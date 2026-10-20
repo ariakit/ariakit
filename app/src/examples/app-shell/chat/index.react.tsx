@@ -121,7 +121,9 @@ export default function Example() {
                     </NavSlot>
                     <NavLinkLabel>{channel.name}</NavLinkLabel>
                     {channel.unread > 0 && (
-                      <NavSlot $kind="badge">{channel.unread}</NavSlot>
+                      <NavSlot $kind="badge" $p="md">
+                        {channel.unread}
+                      </NavSlot>
                     )}
                   </NavLink>
                 ))}
@@ -143,7 +145,11 @@ export default function Example() {
                     <NavLinkLabel className="truncate">
                       {person.name}
                     </NavLinkLabel>
-                    {unread > 0 && <NavSlot $kind="badge">{unread}</NavSlot>}
+                    {unread > 0 && (
+                      <NavSlot $kind="badge" $p="md">
+                        {unread}
+                      </NavSlot>
+                    )}
                   </NavLink>
                 ))}
               </NavList>

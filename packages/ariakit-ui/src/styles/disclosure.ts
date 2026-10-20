@@ -16,7 +16,38 @@ import { prose } from "./prose.ts";
 /** A shared frame with dividers between disclosures. */
 export const disclosureGroup = cv({
   extend: [frame],
-  class: ["[--disclosure-group:1]", "divide-y divide-(--ak-edge)"],
+  class: [
+    "disclosure-group [--disclosure-group:1]",
+    "divide-y divide-(--ak-edge)",
+  ],
+  variants: {
+    /**
+     * Grows the open disclosure into the height that closed ones leave, so its
+     * body reaches the group's end, and scrolls the body when its content needs
+     * more height. The group grows in a flex column parent, such as a `Nav`
+     * with `$fill`, which must have a height. The group's end edge moves below
+     * a closed last disclosure.
+     */
+    $fill: [
+      // Grow in a flex column parent without growing it past its height.
+      "grow min-h-0 flex flex-col",
+      // The root disables its own transitions, so the growth transition must
+      // take precedence. Only the open disclosure may shrink below its content.
+      "*:flex *:flex-col *:data-open:grow *:data-open:min-h-0",
+      "*:transition-[flex-grow]!",
+      "[&>*>.disclosure-content]:grow [&>*>.disclosure-content]:basis-0",
+      "[&>*>.disclosure-content]:min-h-0",
+      // Open content grows past its own height to fill the disclosure.
+      "[&>[data-open]>.disclosure-content]:max-h-full!",
+      // The body scrolls, so the content keeps clipping its rounded corners.
+      "[&>*>.disclosure-content>*]:h-full [&>*>.disclosure-content>*]:overflow-y-auto",
+      "[&>*>.disclosure-content>*]:overscroll-y-contain",
+      // An open disclosure reaches the group's end, which needs no edge. While
+      // every disclosure is closed, the last one draws it right below itself.
+      "border-b-0! *:last:border-(--ak-edge)",
+      "[&:not(:has(>[data-open]))>:last-child]:border-b",
+    ],
+  },
   defaultVariants: {
     // Members cover this frame and use its padding.
     $rounded: "none",
@@ -374,7 +405,7 @@ export const disclosurePlus = cv({
 /** An animated disclosure region with an optional guide line. */
 export const disclosureContent = cv({
   class: [
-    "relative z-1 max-h-0 overflow-clip rounded-b-[inherit]",
+    "disclosure-content relative z-1 max-h-0 overflow-clip rounded-b-[inherit]",
     "transition-[content-visibility,height,max-height]",
     // Keep nested disclosures outside the ancestor group.
     "[--disclosure-group:0]",

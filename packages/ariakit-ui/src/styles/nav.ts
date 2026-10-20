@@ -13,6 +13,7 @@ import {
   disclosure,
   disclosureButton,
   disclosureContentBody,
+  disclosureGroup,
 } from "./disclosure.ts";
 import { frame, frameBase } from "./frame.ts";
 import { gliderBase, gliderRadius } from "./glider.ts";
@@ -41,7 +42,7 @@ export const nav = cv({
     anchorName: "--glider-frame",
     // Keep row and guide anchors within this navigation region.
     anchorScope:
-      "--glider-frame, --glider-selected, --disclosure-guide-selected",
+      "--glider-frame, --glider-selected, --disclosure-guide-selected, --nav-body-selected",
     "--glider-radius": gliderRadius,
   },
   variants: {
@@ -53,9 +54,22 @@ export const nav = cv({
       // A shrinkable track lets long rows truncate or wrap instead of widening
       // the navigation region.
       vertical: "vertical grid grid-cols-[minmax(0,1fr)]",
-      horizontal:
+      horizontal: [
         "horizontal flex items-start overflow-x-auto overscroll-x-contain [clip-path:inset(-100vmax_0)] [&>.control,&>.nav-list>li>.control]:shrink-0 [&>.control,&>.nav-list>li>.control]:whitespace-nowrap",
+        // The wider row gap lines up labels in a column, which a row lacks, so
+        // rows use the button gap.
+        "[&>.control,&>.nav-list>li>.control]:gap-[calc(var(--px)-var(--sidebearing))]",
+      ],
     },
+    /**
+     * Fits a vertical navigation to the height of a flex column parent, such as
+     * a `ShellSidebarBody`, and lets a child with its own `$fill`, such as a
+     * `NavDisclosureGroup`, take the height left by the other rows.
+     */
+    $fill: [
+      // A flex column, unlike the grid, gives the free height to one child.
+      "nav-fill grow min-h-0 [&.vertical]:flex! [&.vertical]:flex-col",
+    ],
     /** Sets the space between rows. Numbers scale the spacing token. */
     $gap(value?: string | number) {
       if (value == null) return;
@@ -71,9 +85,9 @@ export const nav = cv({
       };
     },
     /**
-     * Sets navigation slot and disclosure icon sizes, except shortcuts. Set
-     * this on the root or an ancestor: consumers read inherited values and
-     * ancestor style queries. Numbers scale the spacing token.
+     * Sets navigation slot and disclosure icon sizes, except shortcuts and
+     * thumbnails. Set this on the root or an ancestor: consumers read inherited
+     * values and ancestor style queries. Numbers scale the spacing token.
      */
     $slotSize(value?: string | number) {
       if (value == null) return;
@@ -95,10 +109,40 @@ export const navList = cv({
   class: "nav-list contents [&>li:not(.nav-disclosure)]:contents",
 });
 
-/** A navigation group with extra space between adjacent groups. */
+/**
+ * A navigation group with extra space before it, after other groups or rows.
+ */
 export const navGroup = cv({
-  class:
-    "nav-group grid grid-cols-[minmax(0,1fr)] content-start gap-(--nav-gap) shrink-0 [.nav.vertical>&+&]:mt-[calc(var(--nav-group-gap)-var(--nav-gap))] [.nav.horizontal>&+&]:ms-[calc(var(--nav-group-gap)-var(--nav-gap))]",
+  class: [
+    "nav-group grid grid-cols-[minmax(0,1fr)] content-start gap-(--nav-gap) shrink-0",
+    // Gliders precede the rows in the DOM, but take no space.
+    "[.nav.vertical>:not(.glider)+&]:mt-[calc(var(--nav-group-gap)-var(--nav-gap))]",
+    "[.nav.horizontal>:not(.glider)+&]:ms-[calc(var(--nav-group-gap)-var(--nav-gap))]",
+  ],
+  variants: {
+    /**
+     * Draws a line in the middle of the space before the group. A group that
+     * starts the navigation has no line. The line spans the navigation's
+     * padding, so a `Nav` with `$cover` draws it to its container's edges.
+     */
+    $divider: [
+      // The marker class outranks the spacing rules above. The line takes the
+      // edge color of the navigation.
+      "nav-group-divider border-(--ak-edge)",
+      "[.nav.vertical>:not(.glider)+&.nav-group-divider]:border-t",
+      "[.nav.vertical>:not(.glider)+&.nav-group-divider]:mt-[calc(var(--nav-group-gap)/2-var(--nav-gap))]",
+      "[.nav.vertical>:not(.glider)+&.nav-group-divider]:pt-[calc(var(--nav-group-gap)/2)]",
+      // The group reads the navigation's inherited frame padding. Its margins
+      // reach past that padding, and its own padding keeps the rows in place.
+      "[.nav.vertical>:not(.glider)+&.nav-group-divider]:-mx-(--ak-frame-padding)",
+      "[.nav.vertical>:not(.glider)+&.nav-group-divider]:px-(--ak-frame-padding)",
+      "[.nav.horizontal>:not(.glider)+&.nav-group-divider]:border-s",
+      "[.nav.horizontal>:not(.glider)+&.nav-group-divider]:ms-[calc(var(--nav-group-gap)/2-var(--nav-gap))]",
+      "[.nav.horizontal>:not(.glider)+&.nav-group-divider]:ps-[calc(var(--nav-group-gap)/2)]",
+      "[.nav.horizontal>:not(.glider)+&.nav-group-divider]:-my-(--ak-frame-padding)",
+      "[.nav.horizontal>:not(.glider)+&.nav-group-divider]:py-(--ak-frame-padding)",
+    ],
+  },
 });
 
 /**
@@ -106,7 +150,22 @@ export const navGroup = cv({
  */
 export const navGroupLabel = cv({
   extend: [textFrame, text],
-  class: ["font-medium text-[0.875em] text-start"],
+  class: [
+    "font-medium text-start",
+    // A label shorter than a row, close to the rows below it, reads as their
+    // heading instead of another row.
+    "pb-[calc(var(--nav-py)/4)]",
+  ],
+  variants: {
+    /**
+     * Shows the label in small uppercase letters with wider spacing, which sets
+     * it apart from the rows more than its size and color alone.
+     */
+    $uppercase: {
+      true: "uppercase tracking-wider text-[0.75em]",
+      false: "text-[0.8125em]",
+    },
+  },
   defaultVariants: {
     // Use lengths resolved by the navigation root, not the smaller label font.
     $p: "var(--nav-py)",
@@ -122,9 +181,10 @@ const navSlotBase = cv({
   variants: {
     /**
      * Sets the slot size. `auto` follows the navigation `$slotSize`, or the
-     * text size. Numbers scale the spacing token; other lengths apply directly.
-     * Named sizes `xs` to `lg` become `xl` for badges and avatars; `xl` and
-     * larger add label spacing.
+     * text size; without `$slotSize`, a badge after the label takes the line
+     * height instead. Numbers scale the spacing token; other lengths apply
+     * directly. Named sizes `xs` to `lg` become `xl` for badges and avatars;
+     * `xl` and larger add label spacing.
      */
     $size(value?: SlotSize | "auto" | number | (string & {})) {
       if (value == null) return;
@@ -156,15 +216,11 @@ export const navSlot = cv({
   extend: [navSlotBase],
   defaultVariants: {
     $size(defaultValue, variants) {
-      if (variants.$kind !== "shortcut") return defaultValue;
       if (defaultValue !== "auto") return defaultValue;
-      return "md";
-    },
-    $p(defaultValue, variants) {
-      // Keep single-digit badges round and aligned with the icon column.
-      if (variants.$kind !== "badge") return defaultValue;
-      if (defaultValue !== "auto") return defaultValue;
-      return "md";
+      if (variants.$kind === "shortcut") return "md";
+      // A picture keeps a line of height instead of the icon size.
+      if (variants.$kind === "thumbnail") return "xl";
+      return defaultValue;
     },
     $mx(defaultValue, variants) {
       // Custom sizes need the auto margin; the inherited default would copy the
@@ -178,6 +234,19 @@ export const navSlot = cv({
       return "auto";
     },
   },
+  refine({ variants, addClass }) {
+    if (variants.$kind !== "badge") return;
+    // A floating badge sits on another slot, so it keeps the icon size.
+    if (variants.$floating) return;
+    // A badge after the label takes the nav's $slotSize, or the line height
+    // like a button badge. A badge before it sits in the icon column, where it
+    // keeps the icon size and a padding that keeps one digit round. The variant
+    // classes sort after the base size and padding classes.
+    if (variants.$size === "auto") {
+      addClass("[*+&]:[--size:var(--nav-slot-size,1lh)]");
+    }
+    if (variants.$p === "auto") addClass("first:px-[calc(var(--size)*0.15)]");
+  },
 });
 
 /** A navigation link with wrapping text and a distinct current-page state. */
@@ -188,6 +257,9 @@ export const navLink = cv({
     // Idle ink inherits into slots; hover and selection restore full strength.
     "ak-dark:ak-ink-70",
     "not-ui-selected:font-normal",
+    // Rows in a horizontal navigation size to their text, so a heavier current
+    // row would shift the rows after it. The glider marks it instead.
+    "[.nav.horizontal>&,.nav.horizontal>.nav-list>li>&]:font-normal",
     // Include optical padding so icon rows align with disclosures. Disable the
     // inherited gap variant below.
     "gap-[calc(var(--nav-row-gap,--spacing(3))+var(--px)-var(--py))]",
@@ -213,10 +285,15 @@ export const navLinkContent = cv({
 
 /**
  * A navigation link label that wraps instead of truncating and fills the row,
- * so trailing slots sit at its end.
+ * so trailing slots sit at its end. Beside a description, it keeps the ink and
+ * weight of a current link, so it stands out from the description.
  */
 export const navLinkLabel = cv({
   extend: [buttonLabel],
+  class: [
+    "group-has-[>.control-description]/control-content:ak-ink-100",
+    "group-has-[>.control-description]/control-content:font-[calc(500+var(--contrast))]",
+  ],
   defaultVariants: {
     $truncate: false,
     $grow: true,
@@ -310,7 +387,10 @@ export const navGlider = cv({
         // An automatic or centered start bar follows the disclosure guide,
         // with frame padding as fallback.
         "[.vertical>&]:[&:is(.glider-bar-auto,.glider-bar-center):not(.glider-bar-end)]:inset-e-auto",
-        "[.vertical>&]:[&:is(.glider-bar-auto,.glider-bar-center):not(.glider-bar-end)]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc(anchor(start)-var(--glider-bar-offset)-var(--glider-bar)/2))-var(--glider-bar)/2)]",
+        "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc(anchor(start)-var(--glider-bar-offset)-var(--glider-bar)/2))-var(--glider-bar)/2)]",
+        // Without a guide, a centered bar sits midway between the row and the
+        // edge of the split body that holds it, or the frame padding.
+        "[.vertical>&]:[&.glider-bar-center:not(.glider-bar-end)]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc((anchor(--nav-body-selected_start,calc(anchor(start)-var(--glider-padding,0px)))+anchor(start))/2))-var(--glider-bar)/2)]",
         "[.vertical>&]:[&.glider-bar-frame]:inset-e-auto",
         // A frame bar sits on the guide of a current row inside a disclosure,
         // and on the navigation edge otherwise.
@@ -388,6 +468,32 @@ export const navGlider = cv({
 });
 
 /**
+ * Navigation sections in a shared frame with dividers between them. The frame
+ * spans the navigation's padding, so the dividers reach its edges.
+ */
+export const navDisclosureGroup = cv({
+  extend: [disclosureGroup],
+  class: [
+    "nav-disclosure-group",
+    // Gliders precede the rows in the DOM, so a group right after them starts
+    // the navigation. Its start meets the navigation edge, which needs no line.
+    "first:border-t-0 [.glider+&]:border-t-0 [.glider+&]:ak-frame-start",
+  ],
+  defaultVariants: {
+    $cover: true,
+  },
+  refine({ variants, addClass }) {
+    if (!variants.$cover) return;
+    // Covering frames take the container radius, which a shell sidebar paints
+    // square at its edges. The group and its sections paint square corners too,
+    // and keep the frame radius for the corners of their rows.
+    addClass(
+      "rounded-none! *:rounded-none! [&>*>.disclosure-content>*]:rounded-none!",
+    );
+  },
+});
+
+/**
  * A collapsible navigation section with aligned icons, labels, and nested rows.
  */
 export const navDisclosure = cv({
@@ -417,7 +523,27 @@ export const navDisclosure = cv({
     // Keep nested gliders visible through the disclosure root.
     $layer: "transparent",
     $slotGap: "var(--nav-row-gap, calc(var(--spacing) * 3))",
-    $bodyOffset: "var(--nav-gap, calc(var(--spacing) * 1))",
+    $bodyOffset(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      // The split body's own padding already separates its rows.
+      if (variants.$split) return 0;
+      return "var(--nav-gap, calc(var(--spacing) * 1))";
+    },
+  },
+  refine({ variants, addClass }) {
+    // Reset the values for nested sections; a split one sets its own.
+    if (!variants.$split) {
+      addClass("[--nav-body-inset:0px] [--nav-body-row-radius:initial]");
+      return;
+    }
+    addClass([
+      // Inset rows on the body surface so their text lines up with the button
+      // text at both ends.
+      "[--nav-body-inset:max(0px,calc(var(--disclosure-padding)-var(--nav-py,--spacing(2))))]",
+      // The body spans the section, so its rows stay concentric with the
+      // section corners at the inset distance.
+      "[--nav-body-row-radius:calc(var(--disclosure-radius)-var(--nav-body-inset))]",
+    ]);
   },
 });
 
@@ -437,8 +563,14 @@ export const navDisclosureContentBody = cv({
   class: [
     "grid grid-cols-[minmax(0,1fr)] content-start gap-(--nav-gap)",
     // Compensate for body padding so nested row corners match the disclosure
-    // radius below the frame 1rem cutoff.
-    "[--nav-body-radius:calc(var(--disclosure-radius)+var(--ak-frame-padding))]",
+    // radius below the frame 1rem cutoff. A split body sets a smaller row
+    // radius for its inset rows.
+    "[--nav-body-radius:calc(var(--nav-body-row-radius,var(--disclosure-radius))+var(--ak-frame-padding))]",
+    // A split body meets its button with a straight edge.
+    "[@container_style(--disclosure-split:_1)]:rounded-t-none",
+    // Expose a split body with the current row, so a centered bar can sit
+    // between the body edge and the row.
+    "[@container_style(--disclosure-split:_1)]:ui-has-selected-row:[anchor-name:--nav-body-selected]",
     // Align row text with the body. Move nested disclosures as a whole to keep
     // their guides aligned.
     "[&_li>.control:not(.disclosure-button)]:-ms-(--px)",
@@ -447,11 +579,12 @@ export const navDisclosureContentBody = cv({
     // its own `$focusOffset`.
     "[&_li>.control]:-outline-offset-2",
   ],
-  // Leave default body padding unset so row ends and gliders align with
+  // Without a split, leave the body unpadded so row ends and gliders align with
   // top-level rows. Caller padding preserves the start indent.
   defaultVariants: {
     $layer: "transparent",
     $forceRounded: true,
     $rounded: "var(--nav-body-radius)",
+    $p: "var(--nav-body-inset, 0px)",
   },
 });

@@ -192,10 +192,12 @@ export const controlSlot = cv({
      * Sets the slot content type. `badge` and `shortcut` need one child
      * wrapper; slot components create it automatically. For badge truncation,
      * use a width-limited child with `block overflow-x-clip text-ellipsis
-     * whitespace-nowrap` to preserve descenders.
+     * whitespace-nowrap` to preserve descenders. `thumbnail` is a bordered 4:3
+     * box that an image or another picture fills.
      */
     $kind: {
       icon: "",
+      thumbnail: "overflow-clip aspect-4/3 *:size-full *:object-cover",
       shortcut: [
         // Keep key chords left-to-right while the slot retains the row
         // direction for margins.
@@ -232,7 +234,17 @@ export const controlSlot = cv({
   },
   defaultVariants: {
     $kind: "icon",
-    $size: "md",
+    $size(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      // A picture needs at least a line of height to be legible.
+      if (variants.$kind === "thumbnail") return "xl";
+      return "md";
+    },
+    $border(defaultValue, variants) {
+      if (variants.$kind !== "thumbnail") return defaultValue;
+      // The picture can share the row's color, so an edge marks its box.
+      return defaultValue ?? true;
+    },
     $layer(defaultValue, variants) {
       // Replace only frame's transparent default; preserve explicit colors.
       if (defaultValue !== "transparent") return defaultValue;
@@ -268,7 +280,11 @@ export const controlSlot = cv({
     },
     $rowSpan: 1,
     $mx(defaultValue, variants) {
-      return defaultValue ?? variants.$size;
+      if (defaultValue != null) return defaultValue;
+      // A picture already reads as a separate box, so it keeps the default
+      // label gap at any size.
+      if (variants.$kind === "thumbnail") return "md";
+      return variants.$size;
     },
     $square(defaultValue, variants) {
       if (variants.$kind === "icon") return defaultValue ?? true;
