@@ -11,6 +11,9 @@ import { tab, tabList, tabPanels, tabs } from "@ariakit/ui/styles/tabs";
 const posts = [
   { id: "privacy", title: "w-4/5", meta: "w-3/5" },
   { id: "wai", title: "w-3/4", meta: "w-1/2" },
+  { id: "focus", title: "w-2/3", meta: "w-2/5" },
+  { id: "landmarks", title: "w-4/5", meta: "w-1/2" },
+  { id: "contrast", title: "w-3/5", meta: "w-1/3" },
 ];
 
 export default function Thumbnail() {
@@ -98,7 +101,7 @@ export function SmallThumbnail() {
           className: "flex min-h-0 flex-1 flex-col gap-2",
         })}
       >
-        {posts.map((post) => (
+        {posts.slice(0, 2).map((post) => (
           <div key={post.id} className="flex items-center gap-4.5">
             <Frame
               $layer

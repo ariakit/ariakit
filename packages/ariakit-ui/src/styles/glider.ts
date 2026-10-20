@@ -125,9 +125,14 @@ export const gliderBase = cv({
     $animated: true,
     $p: "none",
     // Bars ignore extender radius and border defaults to remain thin rules.
+    // Their subtle radius would otherwise follow a padded parent frame.
     $rounded(defaultValue, variants) {
-      if (variants.$kind === "bar") return "none";
+      if (variants.$kind === "bar") return "xs";
       return defaultValue ?? "full";
+    },
+    $forceRounded(defaultValue, variants) {
+      if (variants.$kind !== "bar") return defaultValue;
+      return defaultValue ?? true;
     },
     $border(defaultValue, variants) {
       if (variants.$kind === "bar") return false;

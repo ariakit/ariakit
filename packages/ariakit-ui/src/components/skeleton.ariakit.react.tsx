@@ -43,12 +43,18 @@ function useSkeletonPartState() {
 export interface SkeletonProps
   extends ak.RoleProps<"div">, VariantProps<typeof skeleton> {
   /**
-   * Whether the content is loading. The placeholders fade in only when loading
-   * takes longer than 150 milliseconds, and then stay for at least 200
+   * Whether the content is loading. The placeholders stay for at least 200
    * milliseconds, so fast loads do not flash.
    * @default true
    */
   loading?: boolean;
+  /**
+   * Milliseconds to wait after loading starts before the placeholders fade in.
+   * Loading that ends within this time never shows them. With `0`, the
+   * placeholders render with the first render, including the server HTML.
+   * @default 0
+   */
+  $delay?: number;
 }
 
 /**
@@ -64,12 +70,20 @@ export interface SkeletonProps
  *   <SkeletonLine className="w-32">{user?.name}</SkeletonLine>
  * </Skeleton>
  */
-export function Skeleton({ loading = true, ...props }: SkeletonProps) {
+export function Skeleton({
+  loading = true,
+  $delay = 0,
+  ...props
+}: SkeletonProps) {
   const [variantProps, rest] = splitProps(props, skeleton);
   const shown = usePerceptibleValue(loading, {
-    delay: loading ? 150 : 0,
-    minDuration: 200,
-    initialValue: false,
+    delay: loading ? $delay : 0,
+    // Only the placeholders stay for a minimum. Content that stays would show
+    // blank pending parts when the next load starts right after it.
+    minDuration: loading ? 200 : 0,
+    // A delay starts from the pending state, so a fast load on mount never
+    // shows the placeholders.
+    initialValue: $delay > 0 ? false : loading,
   });
   const state = shown ? "skeleton" : loading ? "pending" : "content";
   return (

@@ -43,11 +43,17 @@ export function usePerceptibleValue<T>(
     // The key is present, so an undefined value is the caller's own T.
     return options.initialValue as T;
   });
-  const nextThresholdRef = useRef(0);
+  const nextThresholdRef = useRef<number | null>(null);
 
   useEffect(() => {
+    // A first value that is the real value, not a stand-in initialValue, also
+    // stays for the minimum duration.
+    const unchanged = Object.is(value, perceptibleValue);
+    if (nextThresholdRef.current == null) {
+      nextThresholdRef.current = unchanged ? Date.now() + minDuration : 0;
+    }
     // An unchanged value must not start a timer or a new minimum window.
-    if (Object.is(value, perceptibleValue)) return;
+    if (unchanged) return;
     const remaining = Math.max(0, nextThresholdRef.current - Date.now());
     // The delay and the minimum duration of the current value run at the same
     // time, so the new value waits only for the later of the two.
