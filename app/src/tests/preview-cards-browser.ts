@@ -146,11 +146,15 @@ for (const width of [1600, 700]) {
       ["Timing", false],
     ] as const) {
       const card = q.region(title, { exact: true });
-      // The card renders the handle only after it hydrates.
+      // The card renders the handle only after it hydrates. On a slow runner,
+      // the cards on this page can take longer than the assertion timeout to
+      // hydrate, so the wait uses the test budget, like the preview hydration
+      // wait in withFramework.
+      // https://github.com/ariakit/ariakit/issues/8001
       const handle = query(card).separator("Resize preview", {
         includeHidden: true,
       });
-      await expect(handle).toBeAttached();
+      await handle.waitFor({ state: "attached" });
       await expect(handle).toBeVisible({ visible: shown });
     }
   });
