@@ -177,6 +177,13 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     const start = await system.boundingBox();
     const end = await dark.boundingBox();
     if (!start || !end) throw new Error("Missing radio bounds");
+    // Compare centers: the bar is shorter than the row by its corner radius.
+    const startCenter = start.y + start.height / 2;
+    const endCenter = end.y + end.height / 2;
+    const getBarCenter = async () => {
+      const box = await bar.boundingBox();
+      return box && box.y + box.height / 2;
+    };
     // Keep the transition pending for the test's whole budget. Safari can
     // finish the short transition before a transitionrun handler pauses it.
     await bar.evaluate((node, timeout) => {
@@ -201,18 +208,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         }),
       )
       .toBeGreaterThan(0);
-    await test.expect
-      .poll(async () => (await bar.boundingBox())?.y)
-      .toBeGreaterThan(start.y);
-    await test.expect
-      .poll(async () => (await bar.boundingBox())?.y)
-      .toBeLessThan(end.y);
+    await test.expect.poll(getBarCenter).toBeGreaterThan(startCenter);
+    await test.expect.poll(getBarCenter).toBeLessThan(endCenter);
     await bar.evaluate((node) => {
       for (const animation of node.getAnimations()) animation.finish();
     });
-    await test.expect
-      .poll(async () => (await bar.boundingBox())?.y)
-      .toBeCloseTo(end.y, 0);
+    await test.expect.poll(getBarCenter).toBeCloseTo(endCenter, 0);
   });
 
   // A hovered control owns both of its shared edges, so each one takes the

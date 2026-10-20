@@ -83,7 +83,11 @@ export function AppNavigation({
             : "grid-rows-[minmax(0,1fr)]",
         ],
       )}
-      glider={{ $kind: "bar", $animated: false }}
+      glider={{
+        $kind: "bar",
+        $animated: false,
+        $barOffset: "center",
+      }}
     >
       {hasLinks && (
         <NavList>

@@ -994,6 +994,62 @@ export default function NavExamples() {
         />
       </Example>
 
+      <Example
+        title="Short bar in the padding"
+        description="The bar sits in the middle of the frame padding, away from both the navigation edge and the row. It is shorter than the row by the row's corner radius."
+        code={`
+          <Nav
+            $p={3}
+            $rounded="3xl"
+            $border
+            glider={[{}, { $kind: "bar", $barOffset: "center" }]}
+          >
+            <NavLink>Overview</NavLink>
+            <NavLink>Installation</NavLink>
+            <NavLink>Usage</NavLink>
+            <NavLink>Changelog</NavLink>
+          </Nav>
+        `}
+      >
+        <DemoNav
+          aria-label="Short bar in the padding"
+          $p={3}
+          $rounded="3xl"
+          $border
+          glider={[{}, { $kind: "bar", $barOffset: "center" }]}
+          className="w-full"
+        />
+      </Example>
+
+      <Example
+        title="Short bar beside pill rows"
+        description="The rows of a pill-shaped navigation have round ends. The bar is shorter than the current row by the radius of its round ends, which is half the row height."
+        code={`
+          <Nav
+            $layout="horizontal"
+            $p={2}
+            $rounded="full"
+            $border
+            glider={[{}, { $kind: "bar", $barOffset: "center" }]}
+          >
+            <NavLink>Overview</NavLink>
+            <NavLink>Installation</NavLink>
+            <NavLink>Usage</NavLink>
+            <NavLink>Changelog</NavLink>
+          </Nav>
+        `}
+      >
+        <DemoNav
+          aria-label="Short bar beside pill rows"
+          $layout="horizontal"
+          $p={2}
+          $rounded="full"
+          $border
+          glider={[{}, { $kind: "bar", $barOffset: "center" }]}
+          className="max-w-full"
+        />
+      </Example>
+
       {(["ltr", "rtl"] as const).map((dir) => (
         <Example
           key={dir}

@@ -45,6 +45,27 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toBeCloseTo(0, 0);
   });
 
+  test("centers a bar in the frame padding below or above a tab", async ({
+    q,
+  }) => {
+    const list = q.tablist("Bar placement");
+    const bar = list.locator(":scope > .glider");
+    const tab = query(list).tab("Preview");
+    await q.combobox("Tab bar distance").selectOption("center");
+    for (const side of ["end", "start"]) {
+      await q.combobox("Tab bar side").selectOption(side);
+      // Half of the 12px frame padding minus the 2px bar.
+      await expect
+        .poll(async () => {
+          const [box, item] = await Promise.all([getBox(bar), getBox(tab)]);
+          return side === "start"
+            ? item.y - box.y - box.height
+            : box.y - item.y - item.height;
+        })
+        .toBeCloseTo(5, 0);
+    }
+  });
+
   // https://github.com/ariakit/ariakit/pull/7536#discussion_r4022810357
   test("keeps the bar aligned while navigating and scrolling tabs in RTL", async ({
     q,

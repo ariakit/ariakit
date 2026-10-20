@@ -151,7 +151,10 @@ export default function Example() {
             <Nav
               list={false}
               render={<div />}
-              glider={[{ $kind: "flat" }, { $kind: "bar" }]}
+              glider={[
+                { $kind: "flat" },
+                { $kind: "bar", $barOffset: "center" },
+              ]}
             >
               {navigationGroups.map((group) => (
                 <NavGroup key={group.label}>

@@ -178,7 +178,10 @@ export default function Example() {
           </TextFrame>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav render={<div />} glider={[{ $kind: "flat" }, { $kind: "bar" }]}>
+          <Nav
+            render={<div />}
+            glider={[{ $kind: "flat" }, { $kind: "bar", $barOffset: "center" }]}
+          >
             {layers.map((layer) => (
               <NavLink
                 key={layer.id}

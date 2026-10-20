@@ -15,7 +15,7 @@ import {
   disclosureContentBody,
 } from "./disclosure.ts";
 import { frame, frameBase } from "./frame.ts";
-import { gliderBase } from "./glider.ts";
+import { gliderBase, gliderRadius } from "./glider.ts";
 import { selected } from "./selected.ts";
 import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
@@ -42,6 +42,7 @@ export const nav = cv({
     // Keep row and guide anchors within this navigation region.
     anchorScope:
       "--glider-frame, --glider-selected, --disclosure-guide-selected",
+    "--glider-radius": gliderRadius,
   },
   variants: {
     /**
@@ -299,21 +300,26 @@ export const navGlider = cv({
         // A fixed width keeps the bar the same at every text size. Normalize
         // the 0–100 contrast scale so high contrast adds only 20%.
         "[--glider-bar:calc(var(--glider-bar-width,2px)*(1+0.2*var(--contrast)/100))]",
-        "[.vertical>&]:top-[anchor(top)] [.vertical>&]:h-[anchor-size()] [.vertical>&]:w-(--glider-bar)",
+        // `$barLength` shortens the bar by an inset at each end.
+        "[.vertical>&]:top-[calc(anchor(top)+var(--glider-bar-inset,0px))]",
+        "[.vertical>&]:h-[calc(anchor-size()-var(--glider-bar-inset,0px)*2)]",
+        "[.vertical>&]:w-(--glider-bar)",
         "[.vertical>&]:inset-e-[calc(anchor(start)+var(--glider-bar-offset))]",
         "[.vertical>&]:[&.glider-bar-end]:inset-e-auto",
         "[.vertical>&]:[&.glider-bar-end]:inset-s-[calc(anchor(end)+var(--glider-bar-offset))]",
-        // An automatic start bar follows the disclosure guide, with frame
-        // padding as fallback.
-        "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-e-auto",
-        "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc(anchor(start)-var(--glider-bar-offset)-var(--glider-bar)/2))-var(--glider-bar)/2)]",
+        // An automatic or centered start bar follows the disclosure guide,
+        // with frame padding as fallback.
+        "[.vertical>&]:[&:is(.glider-bar-auto,.glider-bar-center):not(.glider-bar-end)]:inset-e-auto",
+        "[.vertical>&]:[&:is(.glider-bar-auto,.glider-bar-center):not(.glider-bar-end)]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc(anchor(start)-var(--glider-bar-offset)-var(--glider-bar)/2))-var(--glider-bar)/2)]",
         "[.vertical>&]:[&.glider-bar-frame]:inset-e-auto",
         // A frame bar sits on the guide of a current row inside a disclosure,
         // and on the navigation edge otherwise.
         "[.vertical>&]:[&.glider-bar-frame]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc(var(--glider-bar)/2))-var(--glider-bar)/2)]",
         "[.vertical>&]:[&.glider-bar-frame.glider-bar-end]:inset-s-auto",
         "[.vertical>&]:[&.glider-bar-frame.glider-bar-end]:inset-e-0",
-        "[.horizontal>&]:left-[anchor(left)] [.horizontal>&]:w-[anchor-size()] [.horizontal>&]:h-(--glider-bar)",
+        "[.horizontal>&]:left-[calc(anchor(left)+var(--glider-bar-inset,0px))]",
+        "[.horizontal>&]:w-[calc(anchor-size()-var(--glider-bar-inset,0px)*2)]",
+        "[.horizontal>&]:h-(--glider-bar)",
         "[.horizontal>&]:top-[calc(anchor(bottom)+var(--glider-bar-offset))]",
         "[.horizontal>&]:[&.glider-bar-start]:top-auto",
         "[.horizontal>&]:[&.glider-bar-start]:bottom-[calc(anchor(top)+var(--glider-bar-offset))]",

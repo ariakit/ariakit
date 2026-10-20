@@ -80,7 +80,7 @@ export default function Example() {
           <Nav
             render={<div />}
             list={false}
-            glider={[{ $kind: "flat" }, { $kind: "bar" }]}
+            glider={[{ $kind: "flat" }, { $kind: "bar", $barOffset: "center" }]}
           >
             <NavGroup>
               <NavGroupLabel>Library</NavGroupLabel>
