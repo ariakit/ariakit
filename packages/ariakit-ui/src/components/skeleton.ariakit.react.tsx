@@ -54,7 +54,7 @@ export interface SkeletonProps
    * placeholders render with the first render, including the server HTML.
    * @default 0
    */
-  $delay?: number;
+  delay?: number;
 }
 
 /**
@@ -72,18 +72,18 @@ export interface SkeletonProps
  */
 export function Skeleton({
   loading = true,
-  $delay = 0,
+  delay = 0,
   ...props
 }: SkeletonProps) {
   const [variantProps, rest] = splitProps(props, skeleton);
   const shown = usePerceptibleValue(loading, {
-    delay: loading ? $delay : 0,
+    delay: loading ? delay : 0,
     // Only the placeholders stay for a minimum. Content that stays would show
     // blank pending parts when the next load starts right after it.
     minDuration: loading ? 200 : 0,
     // A delay starts from the pending state, so a fast load on mount never
     // shows the placeholders.
-    initialValue: $delay > 0 ? false : loading,
+    initialValue: delay > 0 ? false : loading,
   });
   const state = shown ? "skeleton" : loading ? "pending" : "content";
   return (
