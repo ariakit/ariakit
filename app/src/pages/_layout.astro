@@ -182,6 +182,16 @@ const hasSidebar = sidebar && navigation.length > 0;
   <head>
     <slot name="meta"><Meta {title} /></slot>
     <ThemeScript />
+    {/* Navigating between site pages moves the navigation bars in a view
+        transition. */}
+    <style is:global>
+      @media (prefers-reduced-motion: no-preference) {
+        @view-transition {
+          navigation: auto;
+          types: bar;
+        }
+      }
+    </style>
   </head>
   <body>
     {/* The outer shell holds the page and a full-height theme panel at the
@@ -221,7 +231,11 @@ const hasSidebar = sidebar && navigation.length > 0;
           <ShellHeaderCenter className="@max-2xl/shell:hidden">
             {/* Astro renders each link apart from the Nav, so the links take the
                 bar themselves. */}
-            <Nav $layout="horizontal" aria-label="Main">
+            <Nav
+              $layout="horizontal"
+              aria-label="Main"
+              className="[--bar-transition-name:main-nav-bar]"
+            >
               {
                 sections.map((link) => (
                   <NavLink
@@ -259,7 +273,7 @@ const hasSidebar = sidebar && navigation.length > 0;
               id={APP_NAVIGATION_ID}
               render={createElement("nav")}
               aria-label="Site"
-              className="text-sm"
+              className="text-sm [--bar-transition-name:site-nav-bar]"
             >
               {/* The navigation fills the body through its island wrapper,
                   which takes the display of its parent. The wrapper must not
@@ -278,7 +292,7 @@ const hasSidebar = sidebar && navigation.length > 0;
           render={createElement("nav")}
           aria-label="Menu"
           data-shell-transient
-          className="text-sm"
+          className="text-sm [--bar-transition-name:drawer-nav-bar]"
         >
           <ShellSidebarHeader $height="sm" className="justify-between">
             <span class="font-medium">Menu</span>

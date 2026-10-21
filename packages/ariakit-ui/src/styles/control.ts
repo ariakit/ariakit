@@ -589,6 +589,9 @@ export const barBase = cv({
     "m-0!",
     // Show the bar only while its control is checked, selected, or current.
     "hidden group-ui-selected/control:block",
+    // A group that sets --bar-transition-name lets view transitions move its
+    // bar between items. Hidden bars aren't captured, so the name stays unique.
+    "[view-transition-name:var(--bar-transition-name,none)] [view-transition-class:bar]",
     // A fixed width keeps the bar the same at every text size. Normalize the
     // 0–100 contrast scale so high contrast adds only 20%.
     "[--bar:calc(var(--bar-width,2px)*(1+0.2*var(--contrast,0)/100))]",

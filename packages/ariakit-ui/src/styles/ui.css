@@ -20,6 +20,9 @@
   --duration-tabs: 100ms;
   --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
 
+  --duration-bar: 250ms;
+  --ease-bar: cubic-bezier(0.2, 0, 0, 1);
+
   --animate-ui-progress: ui-progress 1.5s ease-in-out infinite;
 
   @keyframes ui-progress {
@@ -162,6 +165,28 @@ body > * {
     animation-range:
       0 var(--ak-frame-radius),
       calc(100% - var(--ak-frame-radius)) 100%;
+  }
+}
+
+/* A view transition moves a named bar from its old item to its new one. */
+::view-transition-group(*.bar) {
+  animation-duration: var(--duration-bar);
+  animation-timing-function: var(--ease-bar);
+}
+
+/* Transitions of the `bar` type move only bars. The rest of the scope shows its
+   new state at once instead of cross-fading. */
+:active-view-transition-type(bar) {
+  /* Lets clicks reach the page during the transition. Only Firefox honors it
+     now; Chromium and WebKit drop them until a document transition ends. */
+  &::view-transition {
+    pointer-events: none;
+  }
+  &::view-transition-old(root) {
+    display: none;
+  }
+  &::view-transition-new(root) {
+    animation: none;
   }
 }
 
