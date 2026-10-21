@@ -75,7 +75,9 @@ export default function Example() {
               <NavSlot>
                 <tab.icon />
               </NavSlot>
-              <NavLinkLabel>{tab.label}</NavLinkLabel>
+              {/* The text reserves the width of the heavier current label, so
+                  the tabs keep their widths when the current tab changes. */}
+              <NavLinkLabel text={tab.label} />
               {tab.count && (
                 <NavSlot $kind="badge" $layer $darken={1}>
                   {tab.count}

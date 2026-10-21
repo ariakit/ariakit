@@ -304,7 +304,15 @@ export function NavLinkContent(props: NavLinkContentProps) {
 }
 
 export interface NavLinkLabelProps
-  extends ak.RoleProps<"span">, VariantProps<typeof navLinkLabel> {}
+  extends ak.RoleProps<"span">, VariantProps<typeof navLinkLabel> {
+  /**
+   * The label text, rendered when `children` is omitted. A horizontal
+   * navigation shows the label of a current link in a heavier weight only when
+   * this is set, because the text reserves the heavier width in advance and
+   * keeps the row size. Keep it equal to the visible text of custom `children`.
+   */
+  text?: string;
+}
 
 /**
  * Wraps a link's label so adjacent slots can set its margins. Required when a
@@ -316,10 +324,28 @@ export interface NavLinkLabelProps
  *     <NavSlot $kind="badge" $p="md">3</NavSlot>
  *   </NavLink>
  * </Nav>
+ * @example
+ * <Nav aria-label="Repository" $layout="horizontal">
+ *   <NavLink href="/issues" aria-current="page">
+ *     <NavLinkLabel text="Issues" />
+ *   </NavLink>
+ * </Nav>
  */
-export function NavLinkLabel(props: NavLinkLabelProps) {
+export function NavLinkLabel({
+  text,
+  children = text,
+  ...props
+}: NavLinkLabelProps) {
   const [variantProps, rest] = splitProps(props, navLinkLabel);
-  return <ak.Role.span {...navLinkLabel.jsx(variantProps)} {...rest} />;
+  return (
+    <ak.Role.span
+      data-text={text}
+      {...navLinkLabel.jsx(variantProps)}
+      {...rest}
+    >
+      {children}
+    </ak.Role.span>
+  );
 }
 
 export interface NavLinkDescriptionProps
