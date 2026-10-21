@@ -14,6 +14,15 @@ import { gotoAndSettle } from "#app/test-utils/preview.ts";
 
 const examplePath = "/react/examples/app-shell/";
 
+// Each load of the examples page loads several App Shell previews and hydrates
+// every preview card, which keeps a slow runner busy for seconds. A test that
+// loads the page twice and changes the mode of the site and its previews can
+// take the whole default budget on CI, so it gets twice the budget.
+// https://github.com/ariakit/ariakit/issues/8009
+function allowTwoPageLoads() {
+  test.setTimeout(test.info().timeout * 2);
+}
+
 test("site navigation collapses and stays collapsed after reload", async ({
   page,
   q,
@@ -174,6 +183,7 @@ test("theme panel applies a mode to the site and its previews", async ({
   page,
   q,
 }) => {
+  allowTwoPageLoads();
   await gotoAndSettle(page, examplePath);
   const root = page.locator("html");
   const preview = page
@@ -243,6 +253,7 @@ test("theme panel follows choices from another tab", async ({
   page,
   q,
 }) => {
+  allowTwoPageLoads();
   await gotoAndSettle(page, examplePath);
   await q.button("Theme", { exact: true }).click();
   const mode = query(q.radiogroup("Mode"));
@@ -355,6 +366,7 @@ test("theme panel follows another tab after a failed write", async ({
   page,
   q,
 }) => {
+  allowTwoPageLoads();
   await page.addInitScript(() => {
     // oxlint-disable-next-line typescript/unbound-method -- called with the storage as the receiver
     const setItem = Storage.prototype.setItem;
