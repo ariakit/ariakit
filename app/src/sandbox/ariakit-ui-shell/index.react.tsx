@@ -22,7 +22,6 @@ import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import {
   Nav,
   NavLink,
-  NavLinkLabel,
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
@@ -894,15 +893,14 @@ function BarScenario() {
       <ShellFooter>
         <ShellFooterCenter>
           <Nav $layout="horizontal" aria-label="Footer pages" bar>
-            <NavLink href="#home" aria-current="page" tabIndex={0}>
-              <NavLinkLabel text="Home" />
-            </NavLink>
-            <NavLink href="#search" tabIndex={0}>
-              <NavLinkLabel text="Search" />
-            </NavLink>
-            <NavLink href="#profile" tabIndex={0}>
-              <NavLinkLabel text="Profile" />
-            </NavLink>
+            <NavLink
+              href="#home"
+              aria-current="page"
+              tabIndex={0}
+              text="Home"
+            />
+            <NavLink href="#search" tabIndex={0} text="Search" />
+            <NavLink href="#profile" tabIndex={0} text="Profile" />
           </Nav>
         </ShellFooterCenter>
       </ShellFooter>

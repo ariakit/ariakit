@@ -15,7 +15,6 @@ import {
   NavGroupLabel,
   NavLink,
   NavLinkBar,
-  NavLinkLabel,
   NavList,
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
@@ -161,9 +160,8 @@ export function HorizontalNavigation() {
                 event.preventDefault();
                 setCurrent(name);
               }}
-            >
-              <NavLinkLabel text={name} />
-            </NavLink>
+              text={name}
+            />
           ),
         )}
       </Nav>

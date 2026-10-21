@@ -142,9 +142,8 @@ function DemoNav(props: NavProps) {
             event.preventDefault();
             setCurrent(page);
           }}
-        >
-          <NavLinkLabel text={page} />
-        </NavLink>
+          text={page}
+        />
       ))}
     </Nav>
   );
@@ -1062,10 +1061,10 @@ export default function NavExamples() {
             $border
             bar={{ $offset: "halfway" }}
           >
-            <NavLink><NavLinkLabel text="Overview" /></NavLink>
-            <NavLink><NavLinkLabel text="Installation" /></NavLink>
-            <NavLink><NavLinkLabel text="Usage" /></NavLink>
-            <NavLink><NavLinkLabel text="Changelog" /></NavLink>
+            <NavLink text="Overview" />
+            <NavLink text="Installation" />
+            <NavLink text="Usage" />
+            <NavLink text="Changelog" />
           </Nav>
         `}
       >
@@ -1770,7 +1769,7 @@ export default function NavExamples() {
       <Example
         title="Horizontal navigation"
         description="One scrolling row with an independently styled bar."
-        code={`<Nav $layout="horizontal" $p={3} bar><NavLink href="#overview"><NavLinkLabel text="Overview" /></NavLink></Nav>`}
+        code={`<Nav $layout="horizontal" $p={3} bar><NavLink href="#overview" text="Overview" /></Nav>`}
       >
         <HorizontalNavigation />
       </Example>

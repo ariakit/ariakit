@@ -15,11 +15,7 @@ import {
   ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
-import {
-  Nav,
-  NavLink,
-  NavLinkLabel,
-} from "@ariakit/ui/components/nav.ariakit.react";
+import { Nav, NavLink } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Shell,
   ShellFooter,
@@ -234,9 +230,8 @@ const hasSidebar = sidebar && navigation.length > 0;
                     href={link.href}
                     aria-current={link.current ? "page" : undefined}
                     bar
-                  >
-                    <NavLinkLabel text={link.label} />
-                  </NavLink>
+                    text={link.label}
+                  />
                 ))
               }
             </Nav>

@@ -21,7 +21,6 @@ import {
   NavGroup,
   NavGroupLabel,
   NavLink,
-  NavLinkLabel,
   NavList,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
@@ -109,9 +108,8 @@ export default function Example() {
                   key={link}
                   href="#"
                   aria-current={index === 0 ? "page" : undefined}
-                >
-                  <NavLinkLabel text={link} />
-                </NavLink>
+                  text={link}
+                />
               ))}
             </Nav>
           </ShellHeaderCenter>

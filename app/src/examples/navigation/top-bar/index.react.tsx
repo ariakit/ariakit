@@ -3,11 +3,7 @@ import {
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
-import {
-  Nav,
-  NavLink,
-  NavLinkLabel,
-} from "@ariakit/ui/components/nav.ariakit.react";
+import { Nav, NavLink } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Shell,
   ShellHeader,
@@ -59,9 +55,8 @@ export default function Example() {
                   event.preventDefault();
                   setCurrent(page);
                 }}
-              >
-                <NavLinkLabel text={page} />
-              </NavLink>
+                text={page}
+              />
             ))}
           </Nav>
         </ShellHeaderCenter>
