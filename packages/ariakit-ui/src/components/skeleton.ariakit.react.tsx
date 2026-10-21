@@ -195,7 +195,9 @@ export interface SkeletonFillProps
 /**
  * Paints its only child as the placeholder, so the child keeps its own size and
  * corners. The child cannot receive focus or input until the content loads. Use
- * it for controls such as buttons, badges, and inputs.
+ * it for controls such as buttons, badges, and inputs. The child must generate
+ * its own box, so use `SkeletonLine` for inline text, such as a link or a key.
+ * Inputs, selects, and textareas show the tint without the shimmer highlight.
  * @example
  * <SkeletonFill>
  *   <Button>Follow</Button>

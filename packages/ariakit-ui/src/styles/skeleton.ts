@@ -27,18 +27,36 @@ export const skeleton = cv({
 });
 
 // Parts read the highlight from a variable so that each shape can paint it on
-// the surface it owns: the element, its bar, or the child it fills. The tint
+// its own layer: over the element, its bar, or the child it fills. The tint
 // resolves here, before a filled child redefines the layer color.
 const shimmerImage = cx(
   "[--skeleton-highlight:oklch(from_var(--ak-layer)_calc(l+0.07)_c_h)]",
   "in-[.skeleton-shimmer]:[--skeleton-image:linear-gradient(100deg,transparent_30%,var(--skeleton-highlight)_50%,transparent_70%)]",
 );
 
-// The highlight starts past the start edge, so a part with reduced motion or
-// without a shimmer root shows only its tint.
-const shimmerSurface = cx(
-  "bg-(image:--skeleton-image,none) bg-size-[200%_100%] bg-no-repeat bg-position-[150%_0]",
-  "in-[.skeleton-shimmer]:motion-safe:animate-ui-skeleton-shimmer rtl:[animation-direction:reverse]",
+// The highlight moves on a layer twice the part's width. Moving a layer runs on
+// the compositor, while moving a background repaints the part on every frame.
+// The layers can move the part's edges by a fraction of a pixel, so they exist
+// only while the highlight moves.
+const shimmerLayer = cx(
+  "before:hidden ui-skeleton-shimmer:before:block",
+  // Paint containment clips the layer to the part's corners and gives it a
+  // containing block without changing how the part is positioned.
+  "ui-skeleton-shimmer:contain-paint",
+  "before:absolute before:inset-y-0 before:left-0 before:w-[200%]",
+  "before:bg-(image:--skeleton-image,none)",
+  // The direction shares the variant, so the animation shorthand cannot reset
+  // it.
+  "ui-skeleton-shimmer:before:animate-ui-skeleton-shimmer ui-skeleton-shimmer:rtl:before:[animation-direction:reverse]",
+);
+
+// The inset edge moves from the part to a layer above the highlight, so the
+// highlight passes under it, as it did as a background. Other edge types paint
+// outside the clipped layer.
+const shimmerInsetEdge = cx(
+  "after:hidden ui-skeleton-shimmer:after:block ui-skeleton-shimmer:ring-0",
+  "after:absolute after:inset-0 after:rounded-[inherit]",
+  "after:ring-(length:--border-width) after:ring-inset after:ring-(--ak-edge)",
 );
 
 /** Shared tint, edge, and highlight for every skeleton part. */
@@ -89,7 +107,10 @@ const skeletonBase = cv({
 /** A rectangular placeholder, such as for an image or a card. */
 export const skeletonBox = cv({
   extend: [skeletonBase],
-  class: ["block forced-colors:outline", shimmerSurface],
+  class: ["block forced-colors:outline", shimmerLayer],
+  variants: {
+    $borderType: { inset: shimmerInsetEdge },
+  },
   defaultVariants: {
     $rounded: "md",
   },
@@ -98,7 +119,10 @@ export const skeletonBox = cv({
 /** A round placeholder, such as for an avatar. */
 export const skeletonCircle = cv({
   extend: [skeletonBase],
-  class: ["block aspect-square forced-colors:outline", shimmerSurface],
+  class: ["block aspect-square forced-colors:outline", shimmerLayer],
+  variants: {
+    $borderType: { inset: shimmerInsetEdge },
+  },
   defaultVariants: {
     $rounded: "full",
     // Stay round inside padded frames, which would otherwise reduce the radius
@@ -122,8 +146,15 @@ export const skeletonLine = cv({
     "before:rounded-[inherit] before:bg-(--ak-layer)",
     "before:ring-(length:--border-width) before:ring-inset before:ring-(--ak-edge)",
     "forced-colors:before:outline",
-    "before:bg-(image:--skeleton-image,none) before:bg-size-[200%_100%] before:bg-no-repeat before:bg-position-[150%_0]",
-    "in-[.skeleton-shimmer]:motion-safe:before:animate-ui-skeleton-shimmer rtl:before:[animation-direction:reverse]",
+    // The highlight moves on a layer above the bar, twice its width. Paint
+    // containment clips it to the bar's ends, and a clip path to the bar's
+    // height and corners. As on the other parts, they exist only while the
+    // highlight moves.
+    "after:hidden ui-skeleton-shimmer:after:block ui-skeleton-shimmer:contain-paint",
+    "ui-skeleton-shimmer:[clip-path:inset(calc((1lh-1cap)/2)_0_round_var(--ak-frame-radius))]",
+    "after:absolute after:inset-y-[calc((1lh-1cap)/2)] after:left-0 after:w-[200%]",
+    "after:bg-(image:--skeleton-image,none)",
+    "ui-skeleton-shimmer:after:animate-ui-skeleton-shimmer ui-skeleton-shimmer:rtl:after:[animation-direction:reverse]",
   ],
   defaultVariants: {
     $rounded: "xs",
@@ -156,7 +187,10 @@ export const skeletonLine = cv({
 
 /**
  * Paints its only child as the placeholder, so the child keeps its own size and
- * corners. Use it for controls such as buttons, badges, and inputs.
+ * corners. Use it for controls such as buttons, badges, and inputs. The child
+ * must generate its own box, because the highlight cannot be clipped to inline
+ * text, such as a link or a key. Use a line placeholder for text. Inputs,
+ * selects, and textareas show the tint without the shimmer highlight.
  */
 export const skeletonFill = cv({
   extend: [skeletonBase],
@@ -168,7 +202,7 @@ export const skeletonFill = cv({
     // variables.
     "[--skeleton-tint:var(--ak-layer)] [--skeleton-edge:var(--ak-edge)]",
     // Important utilities replace the child's own paint.
-    "*:bg-(--skeleton-tint)! *:text-transparent! *:placeholder:text-transparent!",
+    "*:bg-(--skeleton-tint)! *:bg-none! *:text-transparent! *:placeholder:text-transparent!",
     "*:border-transparent! *:[box-shadow:inset_0_0_0_var(--border-width)_var(--skeleton-edge)]!",
     // The before and after variants would add pseudo-elements that take space
     // in a flex child, so these selectors only hide existing ones.
@@ -181,11 +215,9 @@ export const skeletonFill = cv({
     // the background instead. The outline then needs its own color.
     "forced-colors:*:outline forced-colors:*:outline-[CanvasText]",
     "forced-colors:*:text-[Canvas]!",
-    "*:bg-(image:--skeleton-image,none)! *:bg-size-[200%_100%]! *:bg-no-repeat!",
-    // Important declarations override animations, so the animated position
-    // stays normal.
-    "*:bg-position-[150%_0]",
-    "in-[.skeleton-shimmer]:motion-safe:*:animate-ui-skeleton-shimmer! rtl:*:[animation-direction:reverse]!",
+    // While the highlight moves, the child's pseudo-elements carry it and the
+    // edge, as on the other parts.
+    "ui-skeleton-fill-shimmer",
   ],
   defaultVariants: {
     $borderType: "unset",

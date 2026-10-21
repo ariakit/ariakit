@@ -12,7 +12,7 @@ The gallery includes a profile card, a timing demo, a comparison of the animatio
 
 `Skeleton` wraps the area that loads. Set its `loading` prop to `true` while the data loads. The placeholders show as soon as loading starts and stay for at least 200 milliseconds, so fast loads never flash. Set `delay` to wait before the placeholders fade in, so loads faster than the delay never show them. The Timing sample uses a 150 millisecond delay.
 
-Put the parts where the content goes. `SkeletonLine` takes the height of one line of text in its own font size. `SkeletonBox` and `SkeletonCircle` hold the space of images and avatars. `SkeletonFill` paints its child, such as a button, a badge, or an input, so the placeholder keeps the child's exact size and corners. Each part renders its children when loading ends.
+Put the parts where the content goes. `SkeletonLine` takes the height of one line of text in its own font size. `SkeletonBox` and `SkeletonCircle` hold the space of images and avatars. `SkeletonFill` paints its child, such as a button, a badge, or an input, so the placeholder keeps the child's exact size and corners. The child must generate its own box, so use `SkeletonLine` for inline text, such as a link. Inputs, selects, and textareas show the tint without the shimmer highlight. Each part renders its children when loading ends.
 
 The `$animate` prop sets the animation: `shimmer` (the default), `pulse`, or `false`. With reduced motion, the shimmer changes to a pulse. Parts outside a `Skeleton` are static, which suits decorative thumbnails. Use `useSkeletonState` for content outside the parts, such as a submit button that waits for the form values.
 
