@@ -308,6 +308,34 @@ test("supports sandbox title metadata", async () => {
   ]);
 });
 
+test("supports open metadata", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "examples/menu/index.react.tsx"));
+  await writeFile(
+    join(dir, "examples/menu/preview.json"),
+    JSON.stringify({ title: "Menu", open: true }),
+  );
+
+  const previews = await discoverPreviews({
+    roots: [getExamplesRoot(dir)],
+  });
+
+  expect(previews).toMatchObject([{ id: "menu", metadata: { open: true } }]);
+});
+
+test("rejects invalid open metadata", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "examples/menu/index.react.tsx"));
+  await writeFile(
+    join(dir, "examples/menu/preview.json"),
+    JSON.stringify({ title: "Menu", open: "true" }),
+  );
+
+  const promise = discoverPreviews({ roots: [getExamplesRoot(dir)] });
+
+  await expect(promise).rejects.toThrow("Invalid open metadata for menu");
+});
+
 test("supports metadata-only sandbox previews", async () => {
   const dir = await createDir();
   await writeFile(

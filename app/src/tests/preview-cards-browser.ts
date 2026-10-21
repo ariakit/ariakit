@@ -68,6 +68,12 @@ test("preview card frames do not scroll or take focus until activated", async ({
   const getPageScroll = () => page.evaluate(() => window.scrollY);
   const getFrameScroll = () =>
     frame.locator("html").evaluate((html) => html.scrollTop);
+  // The frame scrolls to the popup that it opens before the card shows it.
+  await expect(iframe.locator("xpath=..")).toHaveAttribute(
+    "aria-busy",
+    "false",
+  );
+  const frameScroll = await getFrameScroll();
 
   // Some components move focus on hover. The inactive frame ignores these calls
   // so the docs page keeps focus.
@@ -81,17 +87,86 @@ test("preview card frames do not scroll or take focus until activated", async ({
   const pageScroll = await getPageScroll();
   await page.mouse.wheel(0, 200);
   await expect.poll(getPageScroll).toBeGreaterThan(pageScroll);
-  expect(await getFrameScroll()).toBe(0);
+  expect(await getFrameScroll()).toBe(frameScroll);
 
   // A click inside the frame activates it.
-  await frame.locator("body").click({ position: { x: 8, y: 8 } });
+  const frameBox = await iframe.boundingBox();
+  expect(frameBox).not.toBeNull();
+  if (!frameBox) return;
+  await page.mouse.click(frameBox.x + 8, frameBox.y + 8);
   await combobox.evaluate((element) => element.focus());
   await expect(combobox).toBeFocused();
   // WebKit applies the new root overflow to wheel scrolling on a later
   // rendering update, which no page state reports.
   await flushFrames(page);
   await page.mouse.wheel(0, 200);
-  await expect.poll(getFrameScroll).toBeGreaterThan(0);
+  await expect.poll(getFrameScroll).toBeGreaterThan(frameScroll);
+});
+
+test("preview cards show the popup of their example open", async ({
+  page,
+  q,
+}) => {
+  // The card shows the frame once the popup has opened, so the frame does not
+  // show the closed combobox and then jump. A retrying assertion would also
+  // pass if the popup opened after the card showed the frame, so this samples
+  // the combobox state on each frame from the start of the navigation until the
+  // card shows the frame.
+  await page.goto("/react/examples/combobox-group/", { waitUntil: "commit" });
+  const revealed = await page.waitForFunction(
+    () => {
+      const iframe = document.querySelector<HTMLIFrameElement>(
+        'iframe[title="Combobox Group"]',
+      );
+      const viewport = iframe?.parentElement;
+      if (viewport?.getAttribute("aria-busy") !== "false") return null;
+      const combobox =
+        iframe?.contentDocument?.querySelector("[role=combobox]");
+      return { expanded: combobox?.getAttribute("aria-expanded") };
+    },
+    null,
+    { polling: "raf" },
+  );
+  expect(await revealed.jsonValue()).toEqual({ expanded: "true" });
+
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  await iframe.scrollIntoViewIfNeeded();
+  const preview = query(iframe.contentFrame());
+  const combobox = preview.combobox("Find records");
+  const listbox = preview.listbox();
+  await expect(listbox).toBeVisible();
+  // The frame stays inactive, so the popup does not take focus from the page.
+  await expect(combobox).not.toBeFocused();
+
+  // The frame scrolls so the popup opens below the combobox and its label.
+  const frameBox = await iframe.boundingBox();
+  const labelBox = await preview.text("Find records").boundingBox();
+  const comboboxBox = await combobox.boundingBox();
+  const listboxBox = await listbox.boundingBox();
+  expect(frameBox).not.toBeNull();
+  expect(labelBox).not.toBeNull();
+  expect(comboboxBox).not.toBeNull();
+  expect(listboxBox).not.toBeNull();
+  if (!frameBox || !labelBox || !comboboxBox || !listboxBox) return;
+  expect(labelBox.y).toBeGreaterThanOrEqual(frameBox.y);
+  expect(listboxBox.y).toBeGreaterThanOrEqual(
+    comboboxBox.y + comboboxBox.height,
+  );
+
+  // Interactions on the docs page do not close the popup in the frame.
+  const getCode = query(q.region("Combobox Group")).button("Get code");
+  await getCode.click();
+  await expect(getCode).toHaveAttribute("aria-expanded", "true");
+  // The popup would close in the render that follows the click, which the
+  // expanded button above does not wait for. The popup stays visible while it
+  // animates out, so the combobox state tells whether it closed.
+  await flushFrames(page);
+  expect(await combobox.getAttribute("aria-expanded")).toBe("true");
+
+  // A click in the frame below the example is outside the popup and closes it.
+  await page.mouse.click(frameBox.x + 8, frameBox.y + frameBox.height - 8);
+  await expect(listbox).not.toBeVisible();
+  await expect(combobox).toHaveAttribute("aria-expanded", "false");
 });
 
 test("preview cards resize their viewport from the end edge", async ({

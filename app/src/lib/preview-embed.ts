@@ -54,6 +54,13 @@ export interface PreviewLocationMessage {
   action: "location";
   href: string;
   loaded: boolean;
+  /**
+   * Whether the page is still opening its popup. The card keeps the page hidden
+   * until then, so the page does not show its trigger and then jump. Frames
+   * deployed before this field, such as a Next.js preview from an older deploy,
+   * leave it out.
+   */
+  opening?: boolean;
   canGoBack: boolean;
   canGoForward: boolean;
 }
@@ -77,6 +84,9 @@ export type PreviewFrameMessage = PreviewLocationMessage | PreviewScrollMessage;
  *   inactive page does not scroll and ignores programmatic focus, so scrolling
  *   the docs page over a preview or hovering a component that moves focus on
  *   hover does not trap the docs page.
+ * - Interactions on the docs page do not close popups in the page. A page with
+ *   `data-preview-open` on its root opens its popup once it hydrates, so the
+ *   card presents the popup and not only its trigger.
  * - The page reports its location and history state, and follows navigation
  *   commands from the card.
  * - The page applies the site theme and the viewport radius that the card
@@ -90,6 +100,7 @@ export function setupPreviewEmbed() {
   const type = "ariakit-preview";
   const root = document.documentElement;
   root.dataset.previewEmbedded = "";
+  let opening = root.hasAttribute("data-preview-open");
 
   // A click focuses the window after pointerdown handlers run, and some
   // components move focus from those handlers.
@@ -104,16 +115,19 @@ export function setupPreviewEmbed() {
     pointerDown = false;
     updateActive();
   });
+  // Only a person activates the page, not the click that opens its popup.
   window.addEventListener(
     "pointerdown",
-    () => {
+    (event) => {
+      if (!event.isTrusted) return;
       pointerDown = true;
     },
     true,
   );
   window.addEventListener(
     "pointerup",
-    () => {
+    (event) => {
+      if (!event.isTrusted) return;
       // Click handlers run in the same task as pointerup.
       setTimeout(() => {
         pointerDown = false;
@@ -135,6 +149,144 @@ export function setupPreviewEmbed() {
   };
   patchFocus(HTMLElement.prototype);
   patchFocus(SVGElement.prototype);
+
+  // Ariakit dialogs and popovers listen for outside interactions in the highest
+  // document they can read, which is the docs page for a same-origin preview.
+  // Without its frame element, the page is the highest document, as in a
+  // preview from another origin, so clicks and focus on the docs page keep
+  // popups open.
+  Object.defineProperty(window, "frameElement", {
+    configurable: true,
+    get: () => null,
+  });
+
+  // The gap in pixels between the viewport edge and an opened popup and its
+  // trigger, the same as the page padding around the example.
+  const popupMargin = 12;
+
+  const nextFrame = () => {
+    return new Promise((resolve) => requestAnimationFrame(resolve));
+  };
+
+  const isFixed = (element: Element) => {
+    let current: Element | null = element;
+    while (current) {
+      if (getComputedStyle(current).position === "fixed") return true;
+      current = current.parentElement;
+    }
+    return false;
+  };
+
+  // The trigger and its labels, such as the label above a combobox.
+  const getTriggerElements = (trigger: Element) => {
+    const elements = [trigger];
+    const labels: unknown = Reflect.get(trigger, "labels");
+    if (labels instanceof NodeList) {
+      for (const label of labels) {
+        if (label instanceof Element) {
+          elements.push(label);
+        }
+      }
+    }
+    const ids = trigger.getAttribute("aria-labelledby")?.split(/\s+/) ?? [];
+    for (const id of ids) {
+      const label = document.getElementById(id);
+      if (label) {
+        elements.push(label);
+      }
+    }
+    return elements;
+  };
+
+  const getBounds = (elements: Element[]) => {
+    const rects = elements.map((element) => element.getBoundingClientRect());
+    return {
+      top: Math.min(...rects.map((rect) => rect.top)),
+      bottom: Math.max(...rects.map((rect) => rect.bottom)),
+    };
+  };
+
+  // Places the trigger at the top of the viewport, so a popup that scrolls with
+  // the page opens below it, and then centers both. A fixed popup, such as a
+  // modal dialog, does not move with the page, so the page keeps its scroll.
+  const scrollToPopup = async (trigger: Element, popup: Element) => {
+    if (isFixed(popup)) return;
+    const triggerElements = getTriggerElements(trigger);
+    const triggerTop = getBounds(triggerElements).top;
+    window.scrollBy({ top: triggerTop - popupMargin, behavior: "instant" });
+    // Popups reposition after the scroll event, in the next frame.
+    await nextFrame();
+    await nextFrame();
+    const { top, bottom } = getBounds([...triggerElements, popup]);
+    const offset = (window.innerHeight - (bottom - top)) / 2;
+    // A popup taller than the viewport keeps the trigger in view.
+    if (offset <= popupMargin) return;
+    window.scrollBy({ top: top - offset, behavior: "instant" });
+  };
+
+  const getPopup = (trigger: Element) => {
+    const id = trigger.getAttribute("aria-controls");
+    if (!id) return null;
+    return document.getElementById(id);
+  };
+
+  // A modal dialog usually opens from a button without popup attributes, so the
+  // first button is the trigger when no element exposes a closed popup.
+  const getTrigger = () => {
+    const popupTrigger = document.querySelector(
+      "[aria-haspopup]:not([aria-haspopup=false])[aria-expanded=false]",
+    );
+    return popupTrigger ?? document.querySelector("button");
+  };
+
+  // Opens the popup with a click on its trigger, as a person would. The click
+  // events are not trusted, so the page stays inactive and its popup does not
+  // take focus from the docs page.
+  const openPopup = async () => {
+    const trigger = getTrigger();
+    if (!trigger) return;
+    const pointerInit = {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      view: window,
+      pointerType: "mouse",
+      isPrimary: true,
+    };
+    const downInit = { ...pointerInit, buttons: 1 };
+    // Components open popups on different events, such as Combobox on mousedown
+    // and Disclosure on click.
+    trigger.dispatchEvent(new PointerEvent("pointerdown", downInit));
+    trigger.dispatchEvent(new MouseEvent("mousedown", downInit));
+    trigger.dispatchEvent(new PointerEvent("pointerup", pointerInit));
+    trigger.dispatchEvent(new MouseEvent("mouseup", pointerInit));
+    trigger.dispatchEvent(new MouseEvent("click", pointerInit));
+    // Popups render and position themselves in the next frames.
+    await nextFrame();
+    await nextFrame();
+    if (trigger.getAttribute("aria-expanded") !== "true") return;
+    const popup = getPopup(trigger);
+    if (!popup) return;
+    await scrollToPopup(trigger, popup);
+  };
+
+  // The preview island marks the root once the example has mounted, so the
+  // trigger handles the click.
+  const onHydrated = (callback: () => void) => {
+    if (root.hasAttribute("data-preview-hydrated")) {
+      callback();
+      return;
+    }
+    const observer = new MutationObserver(() => {
+      if (!root.hasAttribute("data-preview-hydrated")) return;
+      observer.disconnect();
+      callback();
+    });
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-preview-hydrated"],
+    });
+  };
 
   // The stylesheet stops the root scroller of an inactive page, so the browser
   // passes its wheel scrolling to the docs page. Inner scroll containers still
@@ -239,6 +391,7 @@ export function setupPreviewEmbed() {
         action: "location",
         href: location.href,
         loaded: document.readyState === "complete",
+        opening,
         canGoBack: canGoBack(),
         canGoForward: canGoForward(),
       },
@@ -357,6 +510,24 @@ export function setupPreviewEmbed() {
     }
   });
 
+  const finishOpening = () => {
+    if (!opening) return;
+    opening = false;
+    postLocation();
+  };
+
+  if (opening) {
+    onHydrated(async () => {
+      await openPopup();
+      finishOpening();
+    });
+    // A page that never hydrates, such as one that throws, still shows its
+    // trigger this long after it loads.
+    window.addEventListener("load", () => {
+      setTimeout(finishOpening, 3000);
+    });
+  }
+
   // Reports while the page still parses, so the card sends the theme before the
   // frame renders and before its load event reveals the frame.
   postLocation();
@@ -393,6 +564,8 @@ export function isPreviewFrameMessage(
   if (!("type" in data) || data.type !== PREVIEW_MESSAGE_TYPE) return false;
   if (!("action" in data)) return false;
   if (data.action === "location") {
+    const opening: unknown = Reflect.get(data, "opening");
+    if (opening !== undefined && typeof opening !== "boolean") return false;
     return hasTypes(data, {
       href: "string",
       loaded: "boolean",

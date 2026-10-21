@@ -213,6 +213,7 @@ function usePreviewFrame(href: string) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const [location, setLocation] = useState(href);
   const [loaded, setLoaded] = useState(false);
+  const [opening, setOpening] = useState(false);
   const [history, setHistory] = useState({
     canGoBack: false,
     canGoForward: false,
@@ -256,6 +257,7 @@ function usePreviewFrame(href: string) {
       // A reload or a full page navigation in the frame reports a new document
       // that has not loaded yet.
       setLoaded(event.data.loaded);
+      setOpening(event.data.opening ?? false);
     };
     window.addEventListener("message", onMessage);
     const unsubscribeTheme = subscribeAppTheme(postTheme);
@@ -273,7 +275,11 @@ function usePreviewFrame(href: string) {
     postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action });
   };
 
-  return { ref, viewportRef, location, loaded, setLoaded, history, send };
+  // A page can open its popup after the frame loads, so the card waits for
+  // both.
+  const ready = loaded && !opening;
+
+  return { ref, viewportRef, location, ready, setLoaded, history, send };
 }
 
 function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
@@ -353,7 +359,7 @@ function PreviewCardViewport({
   href,
   fullscreen,
 }: PreviewCardViewportProps) {
-  const { ref, viewportRef, loaded, setLoaded } = frame;
+  const { ref, viewportRef, ready, setLoaded } = frame;
   const offscreenWidth = useOffscreenFrameWidth(ref);
   return (
     <PreviewCardStage measuring={offscreenWidth == null}>
@@ -367,8 +373,8 @@ function PreviewCardViewport({
           className="grid grid-cols-1 overflow-clip"
         >
           <div
-            data-loading={loaded ? undefined : ""}
-            aria-busy={!loaded}
+            data-loading={ready ? undefined : ""}
+            aria-busy={!ready}
             className="group/preview grid grid-cols-1 *:[grid-area:1/1]"
           >
             <iframe
