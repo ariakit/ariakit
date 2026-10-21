@@ -3,7 +3,6 @@ import {
   NavLinkLabel,
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
-import { useMatchRoute } from "@tanstack/react-router";
 import {
   CalendarDays,
   ChartPie,
@@ -11,6 +10,7 @@ import {
   FolderKanban,
   LayoutDashboard,
 } from "lucide-react";
+import { useLocation } from "react-router";
 import { ExampleRouter, RouterNavLink } from "../router.react.tsx";
 
 const links = [
@@ -22,7 +22,7 @@ const links = [
 ];
 
 function WorkspaceNav() {
-  const matchRoute = useMatchRoute();
+  const { pathname } = useLocation();
   return (
     // The current link blends the brand color into its surface and shows its
     // icon and label in the brand color. The bar also marks the link in high
@@ -36,7 +36,7 @@ function WorkspaceNav() {
       className="w-60 [--bar-transition-name:workspace-bar]"
     >
       {links.map((link) => {
-        const isCurrent = !!matchRoute({ to: link.path });
+        const isCurrent = pathname === link.path;
         return (
           <RouterNavLink
             key={link.label}

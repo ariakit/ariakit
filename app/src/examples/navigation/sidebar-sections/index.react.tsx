@@ -23,9 +23,9 @@ import {
   SkeletonLine,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
-import { useMatchRoute } from "@tanstack/react-router";
 import { Hexagon } from "lucide-react";
 import { useState } from "react";
+import { useLocation } from "react-router";
 import { ExampleRouter, RouterNavLink } from "../router.react.tsx";
 
 type Thumbnail = "list" | "form" | "grid";
@@ -76,8 +76,8 @@ function getPath(page: Page) {
 }
 
 function Site() {
-  const matchRoute = useMatchRoute();
-  const isCurrent = (page: Page) => !!matchRoute({ to: getPath(page) });
+  const { pathname } = useLocation();
+  const isCurrent = (page: Page) => pathname === getPath(page);
   const currentPage = sections
     .flatMap((section) => section.pages)
     .find(isCurrent)?.title;

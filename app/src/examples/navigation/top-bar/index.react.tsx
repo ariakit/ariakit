@@ -16,8 +16,8 @@ import {
   SkeletonLine,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
-import { useMatchRoute } from "@tanstack/react-router";
 import { Bell, Hexagon } from "lucide-react";
+import { useLocation } from "react-router";
 import { ExampleRouter, RouterNavLink } from "../router.react.tsx";
 
 const pages = ["Overview", "Projects", "Deployments", "Analytics", "Settings"];
@@ -27,8 +27,8 @@ function getPath(page: string) {
 }
 
 function Page() {
-  const matchRoute = useMatchRoute();
-  const current = pages.find((page) => matchRoute({ to: getPath(page) }));
+  const { pathname } = useLocation();
+  const current = pages.find((page) => pathname === getPath(page));
   return (
     <Shell>
       <ShellHeader

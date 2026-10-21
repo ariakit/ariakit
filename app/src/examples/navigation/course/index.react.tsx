@@ -14,8 +14,8 @@ import {
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import { Progress } from "@ariakit/ui/components/progress.ariakit.react";
-import { useMatchRoute } from "@tanstack/react-router";
 import { Lock } from "lucide-react";
+import { useLocation } from "react-router";
 import { ExampleRouter, RouterNavLink } from "../router.react.tsx";
 
 interface Lesson {
@@ -87,7 +87,7 @@ function LessonSlot({ lesson }: { lesson: Lesson }) {
 }
 
 function Course() {
-  const matchRoute = useMatchRoute();
+  const { pathname } = useLocation();
   return (
     <Frame
       $layer
@@ -120,7 +120,7 @@ function Course() {
             <li key={chapter.title}>
               <ListDisclosure
                 defaultOpen={chapter.lessons.some(
-                  (lesson) => !!matchRoute({ to: getPath(lesson.title) }),
+                  (lesson) => pathname === getPath(lesson.title),
                 )}
                 button={
                   <ListDisclosureButton

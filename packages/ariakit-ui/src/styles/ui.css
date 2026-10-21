@@ -174,19 +174,14 @@ body > * {
   animation-timing-function: var(--ease-bar);
 }
 
-/* Transitions of the `bar` type move only bars. The rest of the scope shows its
-   new state at once instead of cross-fading. */
-:active-view-transition-type(bar) {
-  /* Lets clicks reach the page during the transition. Only Firefox honors it
-     now; Chromium and WebKit drop them until a document transition ends. */
+/* Transitions of the `bar` type move only bars. The page stays out of them, so
+   it shows its new state at once. A captured page would also stop taking
+   clicks until the transition ends. */
+:root:active-view-transition-type(bar) {
+  view-transition-name: none;
+  /* The overlay that holds the moving bars lets clicks reach the page. */
   &::view-transition {
     pointer-events: none;
-  }
-  &::view-transition-old(root) {
-    display: none;
-  }
-  &::view-transition-new(root) {
-    animation: none;
   }
 }
 
