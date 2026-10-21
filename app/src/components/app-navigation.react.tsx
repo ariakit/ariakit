@@ -34,6 +34,11 @@ export interface AppNavigationProps {
    * its links when they need more space.
    */
   fill?: boolean;
+  /**
+   * The view transition name of the current link's bar. A bar that moves across
+   * page loads needs the same name on both pages.
+   */
+  barTransitionName?: string;
 }
 
 /**
@@ -42,7 +47,12 @@ export interface AppNavigationProps {
  * inside a labelled navigation landmark, such as a `ShellSidebar` rendered as
  * `nav`.
  */
-export function AppNavigation({ groups, links, fill }: AppNavigationProps) {
+export function AppNavigation({
+  groups,
+  links,
+  fill,
+  barTransitionName,
+}: AppNavigationProps) {
   const currentGroup = groups.find((group) =>
     group.links.some((link) => link.current),
   );
@@ -62,6 +72,7 @@ export function AppNavigation({ groups, links, fill }: AppNavigationProps) {
       // the navigation itself.
       className="[--app-navigation-surface:var(--ak-layer)]"
       bar={{ $offset: "halfway" }}
+      $barTransitionName={barTransitionName}
     >
       {!!links?.length && (
         <NavList>

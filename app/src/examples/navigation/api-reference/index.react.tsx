@@ -4,13 +4,11 @@ import {
   NavDisclosure,
   NavGroup,
   NavGroupLabel,
-  NavLink,
   NavLinkLabel,
   NavList,
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
-import type { MouseEvent } from "react";
-import { useState } from "react";
+import { ExampleRouter, RouterNavLink } from "../router.react.tsx";
 
 type Method = "GET" | "POST" | "PATCH" | "DELETE";
 
@@ -51,63 +49,58 @@ const resources: { name: string; endpoints: [Method, string][] }[] = [
   },
 ];
 
+function getPath(title: string) {
+  return `/${title.toLowerCase().replaceAll(/\W+/g, "-")}`;
+}
+
 export default function Example() {
-  const [current, setCurrent] = useState("Retrieve a customer");
-
-  const linkProps = (id: string) => ({
-    href: `#${id.toLowerCase().replaceAll(/\W+/g, "-")}`,
-    "aria-current": current === id ? ("page" as const) : undefined,
-    onClick: (event: MouseEvent) => {
-      event.preventDefault();
-      setCurrent(id);
-    },
-  });
-
   return (
-    <Frame
-      $layer
-      $lighten={0.5}
-      $rounded="2xl"
-      $border
-      $p={2}
-      className="w-80 text-sm"
-    >
-      <Nav aria-label="API reference" list={false} $cover>
-        <NavList>
-          {guides.map((id) => (
-            <NavLink key={id} {...linkProps(id)}>
-              {id}
-            </NavLink>
-          ))}
-        </NavList>
-        <NavGroup $divider>
-          <NavGroupLabel $uppercase>Resources</NavGroupLabel>
+    <ExampleRouter initialPath={getPath("Retrieve a customer")}>
+      <Frame
+        $layer
+        $lighten={0.5}
+        $rounded="2xl"
+        $border
+        $p={2}
+        className="w-80 text-sm"
+      >
+        <Nav aria-label="API reference" list={false} $cover>
           <NavList>
-            {resources.map((resource) => (
-              <NavDisclosure
-                key={resource.name}
-                button={resource.name}
-                defaultOpen={resource.name === "Customers"}
-              >
-                <NavList>
-                  {resource.endpoints.map(([method, title]) => (
-                    <NavLink key={title} {...linkProps(title)}>
-                      <NavLinkLabel>{title}</NavLinkLabel>
-                      <NavSlot
-                        $kind="badge"
-                        $layer={methodLayers[method]}
-                        className="font-mono"
-                      >
-                        {method}
-                      </NavSlot>
-                    </NavLink>
-                  ))}
-                </NavList>
-              </NavDisclosure>
+            {guides.map((id) => (
+              <RouterNavLink key={id} to={getPath(id)}>
+                {id}
+              </RouterNavLink>
             ))}
           </NavList>
-        </NavGroup>
-      </Nav>
-    </Frame>
+          <NavGroup $divider>
+            <NavGroupLabel $uppercase>Resources</NavGroupLabel>
+            <NavList>
+              {resources.map((resource) => (
+                <NavDisclosure
+                  key={resource.name}
+                  button={resource.name}
+                  defaultOpen={resource.name === "Customers"}
+                >
+                  <NavList>
+                    {resource.endpoints.map(([method, title]) => (
+                      <RouterNavLink key={title} to={getPath(title)}>
+                        <NavLinkLabel>{title}</NavLinkLabel>
+                        <NavSlot
+                          $kind="badge"
+                          $layer={methodLayers[method]}
+                          className="font-mono"
+                        >
+                          {method}
+                        </NavSlot>
+                      </RouterNavLink>
+                    ))}
+                  </NavList>
+                </NavDisclosure>
+              ))}
+            </NavList>
+          </NavGroup>
+        </Nav>
+      </Frame>
+    </ExampleRouter>
   );
 }

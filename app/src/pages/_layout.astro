@@ -184,6 +184,20 @@ const hasSidebar = sidebar && navigation.length > 0;
   <head>
     <slot name="meta"><Meta {title} /></slot>
     <ThemeScript />
+    {/* Navigating between site pages moves the navigation bars in a view
+        transition. Examples in the page content name their own bars, which
+        the next page doesn't have, so page loads leave them out. */}
+    <style is:global>
+      @media (prefers-reduced-motion: no-preference) {
+        @view-transition {
+          navigation: auto;
+          types: bar page-load;
+        }
+      }
+      :root:active-view-transition-type(page-load) main .control-bar {
+        view-transition-name: none;
+      }
+    </style>
   </head>
   <body>
     {/* The outer shell holds the page and a full-height theme panel at the
@@ -223,7 +237,11 @@ const hasSidebar = sidebar && navigation.length > 0;
           <ShellHeaderCenter className="@max-2xl/shell:hidden">
             {/* Astro renders each link apart from the Nav, so the links take the
                 bar themselves. */}
-            <Nav $layout="horizontal" aria-label="Main">
+            <Nav
+              $layout="horizontal"
+              aria-label="Main"
+              $barTransitionName="main-nav-bar"
+            >
               {
                 sections.map((link) => (
                   <NavLink
@@ -265,7 +283,12 @@ const hasSidebar = sidebar && navigation.length > 0;
                   which takes the display of its parent. The wrapper must not
                   grow past the body, so the open group scrolls its links. */}
               <ShellSidebarBody className="flex flex-col [&>astro-island]:min-h-0 [&>astro-island]:flex-1">
-                <AppNavigation client:load groups={navigation} fill />
+                <AppNavigation
+                  client:load
+                  groups={navigation}
+                  fill
+                  barTransitionName="site-nav-bar"
+                />
               </ShellSidebarBody>
             </ShellSidebar>
           )
@@ -295,6 +318,7 @@ const hasSidebar = sidebar && navigation.length > 0;
               client:load
               links={drawerSections}
               groups={navigation}
+              barTransitionName="drawer-nav-bar"
             />
             <div class="grid gap-6 px-3 pt-6 pb-3">
               <span class="ak-ink-70 text-xs font-medium">Theme</span>
@@ -338,7 +362,14 @@ const hasSidebar = sidebar && navigation.length > 0;
                   On this page
                 </p>
                 {/* The layout script marks the link of the section in view. */}
-                <Nav $gap={0.5} render={createElement("div")} data-app-toc>
+                {/* The bar follows the scroll position, so it stays out of
+                    page load transitions. */}
+                <Nav
+                  $gap={0.5}
+                  $barTransitionName="none"
+                  render={createElement("div")}
+                  data-app-toc
+                >
                   {tocHeadings.map((heading) => (
                     <NavLink
                       href={`#${heading.slug}`}
