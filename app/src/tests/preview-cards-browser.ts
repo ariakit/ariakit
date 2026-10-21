@@ -4,6 +4,16 @@ import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
 
+// The article example announces that it loaded 1.8 seconds after it hydrates.
+// On a slow runner, the cards on this page can take longer than the assertion
+// timeout to hydrate, so the wait uses the test budget, like the resize handle
+// wait below.
+// https://github.com/ariakit/ariakit/issues/8006
+async function waitForArticle(article: Locator) {
+  const status = query(article).status();
+  await status.filter({ hasText: "Article loaded" }).waitFor();
+}
+
 test("combobox preview cards work in their iframes", async ({ page, q }) => {
   await gotoAndSettle(page, "/react/examples/combobox-group/");
 
@@ -177,7 +187,7 @@ test("preview grid cards keep their heights and stick within their row", async (
       return { top, bottom, width, height };
     });
   const article = q.region("Article", { exact: true });
-  await expect(query(article).status()).toHaveText("Article loaded");
+  await waitForArticle(article);
 
   const articleCard = await getRect(getCard("Article"));
   const thumbnailsCard = await getRect(getCard("Thumbnails"));
@@ -224,7 +234,7 @@ test("inline previews scroll only after focus moves into them", async ({
   await page.setViewportSize({ width: 1440, height: 700 });
   await gotoAndSettle(page, "/react/examples/skeleton/");
   const article = q.region("Article", { exact: true });
-  await expect(query(article).status()).toHaveText("Article loaded");
+  await waitForArticle(article);
   // The handle names the viewport it resizes.
   const handle = query(article).separator("Resize preview", {
     includeHidden: true,
