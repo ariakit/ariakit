@@ -79,7 +79,7 @@
     "prettier": "3.9.10",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "react-router": "8.4.0",
+    "react-router": "8.5.0",
     "read-package-up": "12.0.0",
     "rehype-autolink-headings": "7.1.0",
     "rehype-parse": "9.0.1",
