@@ -93,10 +93,6 @@ export interface PreviewCardProps {
    */
   children?: ReactNode;
   /**
-   * The example thumbnail that pulses while the iframe loads.
-   */
-  thumbnail?: ReactNode;
-  /**
    * The source files that the "Get code" button reveals.
    */
   code?: ReactNode;
@@ -115,7 +111,6 @@ export function PreviewCard({
   fullscreen,
   browser,
   children,
-  thumbnail,
   code,
 }: PreviewCardProps) {
   const frame = usePreviewFrame(href);
@@ -196,7 +191,6 @@ export function PreviewCard({
               title={title}
               href={href}
               fullscreen={fullscreen}
-              thumbnail={thumbnail}
             />
           )}
         </Frame>
@@ -351,7 +345,6 @@ interface PreviewCardViewportProps {
   title: string;
   href: string;
   fullscreen?: boolean;
-  thumbnail?: ReactNode;
 }
 
 function PreviewCardViewport({
@@ -359,7 +352,6 @@ function PreviewCardViewport({
   title,
   href,
   fullscreen,
-  thumbnail,
 }: PreviewCardViewportProps) {
   const { ref, viewportRef, loaded, setLoaded } = frame;
   const offscreenWidth = useOffscreenFrameWidth(ref);
@@ -400,22 +392,43 @@ function PreviewCardViewport({
                 width: offscreenWidth ?? undefined,
               }}
             />
-            {thumbnail && (
-              <div
-                aria-hidden
-                className={[
-                  "pointer-events-none hidden place-items-center animate-pulse",
-                  "group-data-loading/preview:grid",
-                  "[@media(scripting:none)]:hidden!",
-                ].join(" ")}
-              >
-                {thumbnail}
-              </div>
-            )}
+            <div
+              aria-hidden
+              className={[
+                "pointer-events-none hidden place-items-center",
+                "group-data-loading/preview:grid",
+                "[@media(scripting:none)]:hidden!",
+              ].join(" ")}
+            >
+              <PreviewCardLoader />
+            </div>
           </div>
         </Frame>
       )}
     </PreviewCardStage>
+  );
+}
+
+/**
+ * The Ariakit symbol, with its dot rolling around the ring while the preview
+ * loads.
+ */
+function PreviewCardLoader() {
+  return (
+    <svg
+      viewBox="0 0 40 40"
+      className="ak-text ak-text-primary size-10 fill-current motion-reduce:animate-pulse"
+    >
+      <path
+        fillRule="evenodd"
+        d="M8 0C3.58172 0 0 3.58172 0 8V32C0 36.4183 3.58172 40 8 40H32C36.4183 40 40 36.4183 40 32V8C40 3.58172 36.4183 0 32 0H8ZM19.9998 31.9997C26.6272 31.9997 31.9998 26.6271 31.9998 19.9997C31.9998 13.3723 26.6272 7.99967 19.9998 7.99967C13.3723 7.99967 7.99976 13.3723 7.99976 19.9997C7.99976 26.6271 13.3723 31.9997 19.9998 31.9997Z"
+      />
+      {/* The dot rests 4 units off the center of the ring, so turning the
+          group around the center moves it in a circle inside the ring. */}
+      <g className="origin-center transform-view motion-safe:animate-[spin_1.4s_cubic-bezier(0.65,0,0.35,1)_infinite]">
+        <circle cx="24" cy="20" r="6" />
+      </g>
+    </svg>
   );
 }
 

@@ -15,7 +15,6 @@ import { PreviewCard } from "#app/components/preview-card.react.tsx";
 import { isNextjsPreviewId } from "#app/lib/nextjs.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
-import { renderThumbnail } from "#app/lib/thumbnail.ts";
 import { invariant } from "@ariakit/utils";
 import { getEntry } from "astro:content";
 import { createElement } from "react";
@@ -46,7 +45,6 @@ const href = "/" + framework + "/previews/" + source.name + "/";
 const headingId = "preview-card-" + source.name.replaceAll("/", "-") + "-title";
 const inline = Astro.slots.has("default");
 const browser = !inline && (Astro.props.browser ?? isNextjsPreviewId(source.name));
-const thumbnail = inline ? undefined : await renderThumbnail(source.name);
 const files = Object.entries(source.files);
 ---
 
@@ -60,12 +58,11 @@ const files = Object.entries(source.files);
     $p="var(--app-gutter)"
     className="grid grid-cols-1 py-0! [.prose>.shell-main-full>&]:px-0! [.preview-grid>.shell-main-full>&]:px-0!"
   >
-    {/* The thumbnail and code render on the server and reach the island as
-        static slots. Offscreen cards hydrate too, so their frames keep their
-        width while the page resizes. Running animations, such as skeleton
-        shimmers, can leave a slow browser no idle time, so the timeout starts
-        hydration anyway. Browsers without idle callbacks, such as Safari,
-        always wait this long. */}
+    {/* The code renders on the server and reaches the island as a static
+        slot. Offscreen cards hydrate too, so their frames keep their width
+        while the page resizes. Running animations can leave a slow browser no
+        idle time, so the timeout starts hydration anyway. Browsers without idle
+        callbacks, such as Safari, always wait this long. */}
     <PreviewCard
       client:idle={{ timeout: 200 }}
       {headingId}
@@ -76,7 +73,6 @@ const files = Object.entries(source.files);
       fullscreen={preview?.data.fullscreen}
     >
       {inline && <slot />}
-      {thumbnail && <Fragment slot="thumbnail" set:html={thumbnail} />}
       <div slot="code" class="grid grid-cols-1 gap-2">
         {
           files.map(([name, file]) => (

@@ -93,7 +93,7 @@ export function AppThumbnail({
         $edgeWeight={15}
         $p="none"
         className={clsx(
-          "block aspect-4/3 overflow-clip [container-type:size]",
+          "block aspect-4/3 overflow-clip @container-size",
           slotStateEdge,
           className,
         )}
