@@ -26,10 +26,12 @@ import {
   TabPanels,
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
+import { getDocument, getWindow } from "@ariakit/utils";
 import {
   ViewTransition,
   addTransitionType,
   startTransition,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -38,47 +40,39 @@ import {
   Example,
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
-import { startBarTransition } from "./bar-transition.ts";
+import { animateBars } from "./bar-animation.ts";
+
+function useBarAnimation<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const group = ref.current;
+    if (!group) return;
+    return animateBars(group);
+  }, []);
+  return ref;
+}
 
 function TabsExample() {
-  const listRef = useRef<HTMLDivElement>(null);
-  const [selectedId, setSelectedId] = useState<string | null | undefined>(
-    "tabs-code",
-  );
+  const listRef = useBarAnimation<HTMLDivElement>();
   return (
     <Example
       title="Tabs"
-      description="Selecting a tab moves the bar in a view transition."
+      description="Selecting a tab moves the bar. The selection changes at once."
       stretch
       code={`
-        <Tabs
-          selectedId={selectedId}
-          setSelectedId={(id) =>
-            startBarTransition(list, () => flushSync(() => setSelectedId(id)))
-          }
-        >
-          <TabList className="[--bar-transition-name:tabs-bar]">
+        const listRef = useRef(null);
+        useEffect(() => animateBars(listRef.current), []);
+
+        <Tabs>
+          <TabList ref={listRef}>
             <Tab $kind="flat" bar>Code</Tab>
             …
           </TabList>
         </Tabs>
       `}
     >
-      <Tabs
-        selectedId={selectedId}
-        setSelectedId={(id) =>
-          startBarTransition(listRef.current, () =>
-            flushSync(() => setSelectedId(id)),
-          )
-        }
-      >
-        <TabList
-          ref={listRef}
-          aria-label="Repository"
-          // Chromium often aborts scoped transitions with "Prepaint layout
-          // check failed" unless the scope contains its layout.
-          className="[--bar-transition-name:tabs-bar] [contain:layout]"
-        >
+      <Tabs defaultSelectedId="tabs-code">
+        <TabList ref={listRef} aria-label="Repository">
           <Tab $kind="flat" id="tabs-code" bar>
             Code
           </Tab>
@@ -106,47 +100,28 @@ function TabsExample() {
 const periods = ["Day", "Week", "Month", "Quarter"];
 
 function RadioGroupExample() {
-  const groupRef = useRef<HTMLDivElement>(null);
-  const [value, setValue] = useState<string | number | null>("Week");
+  const groupRef = useBarAnimation<HTMLDivElement>();
   return (
     <Example
       title="Radio buttons"
-      description="Checking a button moves the bar in a view transition."
+      description="Checking a button moves the bar. The value changes at once."
       code={`
-        <ak.RadioProvider
-          value={value}
-          setValue={(value) =>
-            startBarTransition(group, () => flushSync(() => setValue(value)))
-          }
-        >
-          <ak.RadioGroup
-            render={
-              <ButtonGroup $border className="[--bar-transition-name:period-bar]" />
-            }
-          >
+        const groupRef = useRef(null);
+        useEffect(() => animateBars(groupRef.current), []);
+
+        <ak.RadioProvider defaultValue="Week">
+          <ak.RadioGroup ref={groupRef} render={<ButtonGroup $border />}>
             <ak.Radio value="Day" render={<Button bar />}>Day</ak.Radio>
             …
           </ak.RadioGroup>
         </ak.RadioProvider>
       `}
     >
-      <ak.RadioProvider
-        value={value}
-        setValue={(value) =>
-          startBarTransition(groupRef.current, () =>
-            flushSync(() => setValue(value)),
-          )
-        }
-      >
+      <ak.RadioProvider defaultValue="Week">
         <ak.RadioGroup
           ref={groupRef}
           aria-label="Period"
-          render={
-            <ButtonGroup
-              $border
-              className="[--bar-transition-name:period-bar] [contain:layout]"
-            />
-          }
+          render={<ButtonGroup $border />}
         >
           {periods.map((period) => (
             <ak.Radio key={period} value={period} render={<Button bar />}>
@@ -176,16 +151,29 @@ const mailLabels: MailFolder[] = [
   { path: "/labels/receipts", label: "Receipts" },
 ];
 
-type Starter = "helper" | "react";
+type Starter = "react" | "document";
 
 function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Routers that don't use React transitions start a document view transition and
+// render the new route synchronously in its update callback.
+function startRouteTransition(element: Element | null, update: () => void) {
+  const doc = getDocument(element);
+  const win = getWindow(element);
+  const reducedMotion = win.matchMedia("(prefers-reduced-motion: reduce)");
+  if (typeof doc.startViewTransition !== "function" || reducedMotion.matches) {
+    update();
+    return;
+  }
+  doc.startViewTransition({ update, types: ["bar"] });
+}
+
 function ClientRoutingExample() {
   const navRef = useRef<HTMLElement>(null);
   const [path, setPath] = useState("/inbox");
-  const [starter, setStarter] = useState<Starter>("helper");
+  const [starter, setStarter] = useState<Starter>("react");
   const [loadTime, setLoadTime] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -206,7 +194,7 @@ function ClientRoutingExample() {
       });
       return;
     }
-    startBarTransition(navRef.current, () =>
+    startRouteTransition(navRef.current, () =>
       flushSync(() => setPath(nextPath)),
     );
   };
@@ -232,7 +220,7 @@ function ClientRoutingExample() {
   return (
     <Example
       title="Client routing"
-      description="A client router moves the bar between links, across groups, in a view transition."
+      description="A route change moves the bar between links, across groups, in a view transition."
       wide
       code={`
         <Nav bar className="[--bar-transition-name:mail-bar]">
@@ -256,11 +244,13 @@ function ClientRoutingExample() {
             <select
               value={starter}
               onChange={(event) =>
-                setStarter(event.target.value === "react" ? "react" : "helper")
+                setStarter(
+                  event.target.value === "document" ? "document" : "react",
+                )
               }
             >
-              <option value="helper">startBarTransition</option>
               <option value="react">React startTransition</option>
+              <option value="document">document.startViewTransition</option>
             </select>
           </label>
           <label>
@@ -279,7 +269,7 @@ function ClientRoutingExample() {
             ref={navRef}
             aria-label="Mail"
             bar
-            className="[--bar-transition-name:mail-bar] [contain:layout]"
+            className="[--bar-transition-name:mail-bar]"
           >
             <NavGroup>
               <NavList>{mailFolders.map(renderLink)}</NavList>
@@ -301,7 +291,7 @@ function ClientRoutingExample() {
   );
 }
 
-export default function BarViewTransitionExamples() {
+export default function BarAnimationExamples() {
   return (
     <ExampleGrid>
       <TabsExample />
