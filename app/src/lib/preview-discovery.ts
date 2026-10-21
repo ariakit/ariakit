@@ -49,10 +49,16 @@ export interface ResolvedPreviewRoot {
 interface PreviewMetadata {
   title?: string;
   fullscreen?: boolean;
+  open?: boolean;
   frameworks?: Framework[];
 }
 
-const PREVIEW_METADATA_KEYS = ["title", "fullscreen", "frameworks"] as const;
+const PREVIEW_METADATA_KEYS = [
+  "title",
+  "fullscreen",
+  "open",
+  "frameworks",
+] as const;
 
 function isPreviewMetadataKey(key: string) {
   return PREVIEW_METADATA_KEYS.some((item) => item === key);
@@ -70,6 +76,7 @@ export interface DiscoveredPreview {
 export const PreviewDataSchema = z.object({
   title: z.string(),
   fullscreen: z.boolean().optional(),
+  open: z.boolean().optional(),
   frameworks: FrameworkSchema.array(),
   source: z.string(),
 });
@@ -129,7 +136,7 @@ function parsePreviewMetadata(value: unknown, id: string) {
     );
   }
   const metadata: PreviewMetadata = {};
-  const { title, fullscreen } = value;
+  const { title, fullscreen, open } = value;
   if (title !== undefined) {
     invariant(typeof title === "string", `Invalid title metadata for ${id}`);
     metadata.title = title;
@@ -140,6 +147,10 @@ function parsePreviewMetadata(value: unknown, id: string) {
       `Invalid fullscreen metadata for ${id}`,
     );
     metadata.fullscreen = fullscreen;
+  }
+  if (open !== undefined) {
+    invariant(typeof open === "boolean", `Invalid open metadata for ${id}`);
+    metadata.open = open;
   }
   const frameworks = parseFrameworks(value.frameworks, id);
   if (frameworks) {
@@ -353,6 +364,7 @@ async function updatePreviewStore(
     const rawData = {
       title: preview.title,
       fullscreen: preview.metadata.fullscreen,
+      open: preview.metadata.open,
       frameworks: preview.frameworks,
       source: preview.source,
     };

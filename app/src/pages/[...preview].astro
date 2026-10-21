@@ -35,10 +35,12 @@ Astro.locals.framework = framework;
 
 const title = entry.data.title;
 const fullscreen = entry.data.fullscreen;
+// The embed script opens the popup of the preview when a card embeds it.
+const open = entry.data.open;
 ---
 
 <!doctype html>
-<html lang="en" class:list={[!fullscreen && "min-h-[200vh]!"]}>
+<html lang="en" data-preview-open={open ? "" : undefined}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -49,19 +51,18 @@ const fullscreen = entry.data.fullscreen;
         respect an inactive preview card. */}
     <script is:inline set:html={previewEmbedScript} />
   </head>
-  <body
-    class:list={[
-      "flex",
-      !fullscreen && "items-center-safe justify-center-safe",
-    ]}
-  >
+  {/* The page leaves room below a short example, so a popup can open below
+      its trigger. The body covers that room, so a click there is outside the
+      popup, not on the root element that contains it. */}
+  <body class:list={["flex", !fullscreen && "min-h-[200vh]! flex-col"]}>
     {/* The framework island wraps the example and sizes to its content, so it
-        needs a width limit for the example's own max-w-full to resolve. */}
+        needs a width limit for the example's own max-w-full to resolve. The
+        example stays centered in the first viewport. */}
     <div
       class:list={[
         "@container size-full",
         !fullscreen &&
-          "p-3 flex items-center-safe justify-center-safe *:max-w-full",
+          "min-h-dvh p-3 flex items-center-safe justify-center-safe *:max-w-full",
       ]}
     >
       <Content {framework} />
