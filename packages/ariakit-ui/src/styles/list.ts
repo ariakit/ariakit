@@ -124,15 +124,23 @@ export const listItem = cv({
     // longhand overrides frame padding by stylesheet order.
     "ps-[calc(var(--px)+1lh)]",
     "ui-list-item-blocks:grid ui-list-item-blocks:gap-(--list-item-gap)",
+    // Put the marker in the padding corner. The content resets this offset.
+    "[--list-marker-offset:var(--ak-frame-padding)]",
   ],
 });
 
 /** A layout-free wrapper for list content. Use a span to avoid block mode. */
 export const listItemContent = cv({
-  // Markers must come first: Firefox and Safari otherwise read nested counters.
-  // This wrapper restores :first-child for content. Use a span; a div would
-  // force block mode.
-  class: "contents",
+  class: [
+    // Markers must come first: Firefox and Safari otherwise read nested
+    // counters. This wrapper restores :first-child for content. Use a span; a
+    // div would force block mode.
+    "contents",
+    // A marker in the content, such as a status icon, must not count or sit
+    // like the row marker. A nested list sets this state again.
+    "[--list-marker:initial] [--list-counter:initial] [--list-glyph:initial]",
+    "[--list-guide-gap:initial] [--list-marker-offset:initial]",
+  ],
 });
 
 /** A list marker that can show a number, bullet, dash, check, or progress. */
@@ -151,10 +159,9 @@ export const listItemMarker = cv({
     // Bullets and dashes override these marker dimensions by stylesheet order.
     "[--list-marker-inset:0.2em]",
     "[--list-marker-size:calc(1lh-var(--list-marker-inset)*2)]",
-    "top-(--ak-frame-padding) inset-s-(--ak-frame-padding) m-(--list-marker-inset)",
-    // Outside a list, ignore inherited frame padding and fill the one-line
-    // host.
-    "not-in-[.list]:top-0 not-in-[.list]:inset-s-0",
+    // Outside a row, such as in row content, fill the one-line host.
+    "top-(--list-marker-offset,0px) inset-s-(--list-marker-offset,0px)",
+    "m-(--list-marker-inset)",
     "w-(--list-marker-size) h-(--list-marker-size) rounded-full",
     "ui-list-counter:[counter-increment:list]",
     "ui-list-counter:before:content-[counter(list)]",
@@ -255,26 +262,21 @@ export const listItemMarker = cv({
 export const listItemGuide = cv({
   extend: [layer],
   class: [
-    // Keep the guide below markers and above disclosure content.
-    "list-guide absolute pointer-events-none z-2",
-    "forced-colors:forced-color-adjust-none forced-colors:[--ak-layer:CanvasText]",
+    // Keep the guide below markers and disclosure content, so rows in the
+    // content and their bars cover it, and above the surfaces of later rows.
+    "list-guide absolute pointer-events-none z-1",
+    "forced-colors:forced-color-adjust-none forced-colors:[--ak-edge:CanvasText]",
     "[--list-guide-width:calc(var(--list-guide,0)*1px)]",
-    "w-(--list-guide-width)",
+    // Draw the line with the layer edge, like a disclosure content guide.
+    "w-0 border-s-(length:--list-guide-width)",
     // Join marker centers across the row, its borders, and the gap. Clamp
     // negative gaps to zero, as grid layout does.
     "top-[calc(var(--ak-frame-padding)+0.5lh)]",
     "inset-s-[calc(var(--ak-frame-padding)+0.5lh-var(--list-guide-width)/2)]",
     "h-[calc(100%+max(0px,var(--list-gap))+var(--list-row-border,0px)*2)]",
-    "ui-list-last-row:bg-transparent ui-list-last-row:bg-linear-to-b",
-    "ui-list-last-row:from-(--ak-layer)",
-    "ui-list-last-row:from-[calc(100%-1rem)]",
-    "ui-list-last-row:to-transparent",
+    "ui-list-last-row:mask-[linear-gradient(to_bottom,#000_calc(100%-1rem),transparent)]",
     "ui-list-last-row:h-[calc(100%-var(--ak-frame-padding)-0.5lh)]",
   ],
-  defaultVariants: {
-    // Match the counter chip surface.
-    $lightnessOffset: COUNTER_LIGHTNESS,
-  },
 });
 
 /** A disclosure row with list spacing, a marker, and an optional guide. */
@@ -282,6 +284,23 @@ export const listDisclosure = cv({
   // Clava applies the shared frame once. The final listRow supplies radius and
   // padding defaults.
   extend: [disclosure, listRow],
+  class: [
+    // Reset the list state in the content, as list item content does, whatever
+    // body the content renders.
+    "[&>.disclosure-content]:[--list-marker:initial]",
+    "[&>.disclosure-content]:[--list-counter:initial]",
+    "[&>.disclosure-content]:[--list-glyph:initial]",
+    "[&>.disclosure-content]:[--list-guide-gap:initial]",
+    // Raise the content over the guide, as the guide of a disclosure content
+    // runs under its rows. The child selector outranks the content's own
+    // stacking.
+    "[&>.disclosure-content]:z-2",
+    // Expose the marker column as the content guide while the list draws its
+    // guide there, so start bars of nav rows in the content sit on it. The
+    // child selector outranks the content's own reset.
+    "ui-list-guide:[&>.disclosure-content]:[--disclosure-guide-center:calc(var(--disclosure-padding)+0.5lh)]",
+    "ui-list-guide:[&>.disclosure-content]:[--disclosure-guide:var(--disclosure-guide-center)]",
+  ],
   defaultVariants: {
     // Restore the transparent layer that listRow disables.
     $layer: "transparent",
@@ -300,6 +319,8 @@ export const listDisclosureButton = cv({
     "[--disclosure-ps:calc(var(--px)+1lh)]",
     // Hover and press surfaces cover the guide; the marker stays above both.
     "z-3",
+    // Put the marker in the padding corner. Label content resets this offset.
+    "[--list-marker-offset:var(--ak-frame-padding)]",
   ],
 });
 
@@ -310,4 +331,8 @@ export const listDisclosureContentBody = cv({
     "grid gap-(--list-item-gap)",
     "in-[.list]:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
   ],
+  defaultVariants: {
+    // Keep the guide under the content visible.
+    $layer: "transparent",
+  },
 });

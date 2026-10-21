@@ -254,12 +254,12 @@ export interface NavSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof navSlot> {}
 
 /**
- * Renders an icon, badge, avatar, shortcut, or thumbnail in a nav row. All
- * except shortcuts and thumbnails inherit the nav's `$slotSize`. A badge after
- * the label takes the line height and fits its text; use `$p="md"` to keep a
- * count of one or two digits round. A badge before the label keeps the icon
- * size. Badge and shortcut content gets a span for text sizing and key
- * direction.
+ * Renders an icon, badge, avatar, shortcut, thumbnail, or short text in a nav
+ * row. All except shortcuts, thumbnails, and text inherit the nav's
+ * `$slotSize`. A badge after the label takes the line height and fits its text;
+ * use `$p="md"` to keep a count of one or two digits round. A badge before the
+ * label keeps the icon size. Badge and shortcut content gets a span for text
+ * sizing and key direction.
  * @example
  * <Nav aria-label="Main">
  *   <NavLink href="/updates">

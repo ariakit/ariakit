@@ -929,6 +929,46 @@ export default function ListExamples() {
       </Example>
 
       <Example
+        title="Status in rows"
+        description="A marker in the content of a row is a status icon in its own box. It takes no number from an ordered list, so the rows keep their numbers."
+        code={`
+          <List ordered>
+            <ListItem>
+              <ListItemMarker checked />
+              Design approved
+            </ListItem>
+            <ListDisclosure defaultOpen button="Review">
+              <ListItemMarker progress={0.5} />
+              Copy in review
+            </ListDisclosure>
+            <ListItem>Publish</ListItem>
+          </List>
+        `}
+      >
+        <List ordered>
+          <ListItem>
+            <span className="flex items-center gap-2">
+              <span className="relative inline-block size-[1lh]">
+                <ListItemMarker checked />
+              </span>
+              Design approved
+            </span>
+          </ListItem>
+          <li>
+            <ListDisclosure defaultOpen button="Review">
+              <span className="flex items-center gap-2">
+                <span className="relative inline-block size-[1lh]">
+                  <ListItemMarker progress={0.5} />
+                </span>
+                Copy in review
+              </span>
+            </ListDisclosure>
+          </li>
+          <ListItem>Publish</ListItem>
+        </List>
+      </Example>
+
+      <Example
         title="Right to left steps"
         description="In a right-to-left context, the marker column, the guide and the text inset move to the other edge."
         stretch

@@ -171,6 +171,13 @@ body > * {
   --choice-mark-dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
 }
 
+/* Compute the list guide flag, so `auto` can match a style query. */
+@property --list-guide {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
 /* Resolve optical padding in the text frame's font before slots inherit it. */
 @property --text-frame-inset {
   syntax: "<length>";
@@ -207,6 +214,13 @@ body > * {
 /* Resolve the body offset once to align its padding with the content guide. */
 @property --disclosure-body-offset {
   syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Resolve the body inset on the body so row fonts cannot move nested bars. */
+@property --disclosure-body-ps {
+  syntax: "<length-percentage>";
   inherits: true;
   initial-value: 0px;
 }
@@ -1268,6 +1282,13 @@ body > * {
    matches both. */
 @custom-variant ui-list-sections {
   &:has(:where(h1, h2, h3, h4, h5, h6)) {
+    @slot;
+  }
+}
+
+/* A registered guide flag computes `auto` to a number this query can match. */
+@custom-variant ui-list-guide {
+  @container style(--list-guide: 1) {
     @slot;
   }
 }
