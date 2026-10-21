@@ -55,9 +55,8 @@ export default function Example() {
                   event.preventDefault();
                   setCurrent(page);
                 }}
-              >
-                {page}
-              </NavLink>
+                text={page}
+              />
             ))}
           </Nav>
         </ShellHeaderCenter>

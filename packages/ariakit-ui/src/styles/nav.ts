@@ -269,7 +269,8 @@ export const navLink = cv({
     "ak-dark:ak-ink-70",
     "not-ui-selected:font-normal",
     // Rows in a horizontal navigation size to their text, so a heavier current
-    // row would shift the rows after it. Its surface or bar marks it instead.
+    // row would shift the rows after it. Its surface or bar marks it instead,
+    // unless navLinkLabel reserves the heavier width from data-text.
     "[.nav.horizontal>&,.nav.horizontal>.nav-list>li>&]:font-normal",
     // Include optical padding so icon rows align with disclosures. Disable the
     // inherited gap variant below.
@@ -298,12 +299,29 @@ export const navLinkContent = cv({
  * A navigation link label that wraps instead of truncating and fills the row,
  * so trailing slots sit at its end. Beside a description, it keeps the ink and
  * weight of a current link, so it stands out from the description.
+ *
+ * Set `data-text` to the label text to keep the heavier weight of a current
+ * link in a horizontal navigation, where rows otherwise use the normal weight.
+ * There, the label keeps the width of that heavier text and centers its text
+ * instead of filling the row.
  */
 export const navLinkLabel = cv({
   extend: [buttonLabel],
   class: [
     "group-has-[>.control-description]/control-content:ak-ink-100",
     "group-has-[>.control-description]/control-content:font-[calc(500+var(--contrast))]",
+    // A zero-height copy of data-text at the current weight sets the label
+    // width, so the row keeps its size when the link becomes current.
+    "data-text:group-ui-selected/control:font-[calc(500+var(--contrast))]",
+    "data-text:before:block data-text:before:h-0 data-text:before:overflow-hidden",
+    "data-text:before:invisible data-text:before:content-[attr(data-text)]",
+    "data-text:before:font-[calc(500+var(--contrast))]",
+    // A horizontal row caps the label at the reserved width and centers the
+    // text in it, so both sides of the text share the extra space. Taking the
+    // free space of a wider row, or the width of a longer description, would
+    // move the text away from the start.
+    "in-[.nav.horizontal>.control,.nav.horizontal>.nav-list>li>.control]:data-text:max-w-fit",
+    "in-[.nav.horizontal>.control,.nav.horizontal>.nav-list>li>.control]:data-text:text-center",
   ],
   defaultVariants: {
     $truncate: false,

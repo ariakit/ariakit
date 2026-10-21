@@ -167,6 +167,13 @@ export interface NavLinkProps
    * replace it, so pass them to the link instead.
    */
   bar?: NavLinkBarValue;
+  /**
+   * The link text, rendered in a `NavLinkLabel` with the same `text` when
+   * `children` is omitted, so a current link in a horizontal navigation turns
+   * heavier without moving the links after it. Ignored when `children` is set;
+   * pass `text` to the `NavLinkLabel` among the children instead.
+   */
+  text?: string;
 }
 
 /**
@@ -180,8 +187,18 @@ export interface NavLinkProps
  * <Nav aria-label="Main" list={false}>
  *   <NavLink href="/docs" item={false}>Docs</NavLink>
  * </Nav>
+ * @example
+ * <Nav aria-label="Main" $layout="horizontal">
+ *   <NavLink href="/docs" aria-current="page" text="Docs" />
+ * </Nav>
  */
-export function NavLink({ currentUrl, item, bar, ...props }: NavLinkProps) {
+export function NavLink({
+  currentUrl,
+  item,
+  bar,
+  text,
+  ...props
+}: NavLinkProps) {
   const [variantProps, rest] = splitProps(props, navLink);
   const defaultBar = React.useContext(NavBarContext);
   const barValue = bar ?? defaultBar;
@@ -189,6 +206,8 @@ export function NavLink({ currentUrl, item, bar, ...props }: NavLinkProps) {
     NavLinkBar,
     barValue === true ? {} : barValue,
   );
+  const children =
+    rest.children ?? (text == null ? undefined : <NavLinkLabel text={text} />);
   const isCurrent = isCurrentPage(currentUrl, rest.href);
   const disclosures = React.useContext(NavDisclosureContext);
   const defaultDescriptionId = React.useId();
@@ -242,7 +261,7 @@ export function NavLink({ currentUrl, item, bar, ...props }: NavLinkProps) {
         // An explicit undefined from the caller must not drop the description.
         aria-describedby={rest["aria-describedby"] ?? descriptionId}
       >
-        {appendOptionalChild(rest.children, barElement)}
+        {appendOptionalChild(children, barElement)}
       </ak.Role.a>
     </NavLinkContext.Provider>
   );
@@ -304,7 +323,15 @@ export function NavLinkContent(props: NavLinkContentProps) {
 }
 
 export interface NavLinkLabelProps
-  extends ak.RoleProps<"span">, VariantProps<typeof navLinkLabel> {}
+  extends ak.RoleProps<"span">, VariantProps<typeof navLinkLabel> {
+  /**
+   * The label text, rendered when `children` is omitted. A horizontal
+   * navigation shows the label of a current link in a heavier weight only when
+   * this is set, because the text reserves the heavier width in advance and
+   * keeps the row size. Keep it equal to the visible text of custom `children`.
+   */
+  text?: string;
+}
 
 /**
  * Wraps a link's label so adjacent slots can set its margins. Required when a
@@ -316,10 +343,28 @@ export interface NavLinkLabelProps
  *     <NavSlot $kind="badge" $p="md">3</NavSlot>
  *   </NavLink>
  * </Nav>
+ * @example
+ * <Nav aria-label="Repository" $layout="horizontal">
+ *   <NavLink href="/issues" aria-current="page">
+ *     <NavLinkLabel text="Issues" />
+ *   </NavLink>
+ * </Nav>
  */
-export function NavLinkLabel(props: NavLinkLabelProps) {
+export function NavLinkLabel({
+  text,
+  children = text,
+  ...props
+}: NavLinkLabelProps) {
   const [variantProps, rest] = splitProps(props, navLinkLabel);
-  return <ak.Role.span {...navLinkLabel.jsx(variantProps)} {...rest} />;
+  return (
+    <ak.Role.span
+      data-text={text}
+      {...navLinkLabel.jsx(variantProps)}
+      {...rest}
+    >
+      {children}
+    </ak.Role.span>
+  );
 }
 
 export interface NavLinkDescriptionProps

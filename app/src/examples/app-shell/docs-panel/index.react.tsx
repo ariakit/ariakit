@@ -108,9 +108,8 @@ export default function Example() {
                   key={link}
                   href="#"
                   aria-current={index === 0 ? "page" : undefined}
-                >
-                  {link}
-                </NavLink>
+                  text={link}
+                />
               ))}
             </Nav>
           </ShellHeaderCenter>

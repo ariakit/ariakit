@@ -160,9 +160,8 @@ export function HorizontalNavigation() {
                 event.preventDefault();
                 setCurrent(name);
               }}
-            >
-              {name}
-            </NavLink>
+              text={name}
+            />
           ),
         )}
       </Nav>

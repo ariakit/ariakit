@@ -893,15 +893,9 @@ function BarScenario() {
       <ShellFooter>
         <ShellFooterCenter>
           <Nav $layout="horizontal" aria-label="Footer pages" bar>
-            <NavLink href="#home" aria-current="page" tabIndex={0}>
-              Home
-            </NavLink>
-            <NavLink href="#search" tabIndex={0}>
-              Search
-            </NavLink>
-            <NavLink href="#profile" tabIndex={0}>
-              Profile
-            </NavLink>
+            <NavLink href="#home" aria-current="page" text="Home" />
+            <NavLink href="#search" text="Search" />
+            <NavLink href="#profile" text="Profile" />
           </Nav>
         </ShellFooterCenter>
       </ShellFooter>

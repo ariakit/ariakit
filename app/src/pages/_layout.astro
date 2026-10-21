@@ -230,10 +230,8 @@ const hasSidebar = sidebar && navigation.length > 0;
                     href={link.href}
                     aria-current={link.current ? "page" : undefined}
                     bar
-                    className="font-medium"
-                  >
-                    {link.label}
-                  </NavLink>
+                    text={link.label}
+                  />
                 ))
               }
             </Nav>
