@@ -12,8 +12,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 /**
- * `large` thumbnails fill page cards and preview placeholders. `small`
- * thumbnails fill navigation slots, so they draw only coarse shapes.
+ * `large` thumbnails fill page cards. `small` thumbnails fill navigation slots,
+ * so they draw only coarse shapes.
  */
 export type ThumbnailSize = "large" | "small";
 
