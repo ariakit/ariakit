@@ -1,6 +1,8 @@
+import type { Page } from "@playwright/test";
+import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFramework(import.meta.dirname, async ({ framework, id, test }) => {
   // https://github.com/ariakit/ariakit/issues/6858
   test("does not lose the opening selection to immediate pointer movement", async ({
     page,
@@ -32,15 +34,38 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(selected).toBeInViewport();
   });
 
+  // The paused clock holds the fixture's 750ms late registration until the test
+  // runs it, no matter how slow the runner is. The clock keeps running after
+  // install, and pauseAt can't move back in time.
+  const gotoWithPausedClock = async (page: Page) => {
+    await page.clock.install();
+    await page.clock.pauseAt(Date.now() + 1000);
+    await page.goto(`/${framework}/previews/${id}/`);
+    await page.waitForFunction(isPreviewHydrated);
+  };
+
+  // Runs the fixture's late registration timer, then lets frames and any scroll
+  // that follows the registration run on the real clock.
+  const registerLateItems = async (page: Page) => {
+    await page.clock.runFor(750);
+    await page.clock.resume();
+  };
+
   // https://github.com/ariakit/ariakit/issues/6858
-  test("presents the selection when its item registers late", async ({ q }) => {
+  // https://github.com/ariakit/ariakit/issues/8005
+  test("presents the selection when its item registers late", async ({
+    page,
+    q,
+  }) => {
+    await gotoWithPausedClock(page);
     const select = q.combobox("Late items");
     await select.click();
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
 
     const selected = q.option("Item 24");
     await test.expect(selected).toHaveCount(0);
-    await test.expect(selected).toBeVisible({ timeout: 2_000 });
+    await registerLateItems(page);
+    await test.expect(selected).toBeVisible();
     await test.expect(selected).toHaveAttribute("data-active-item");
     await test.expect(selected).toBeInViewport();
   });
@@ -48,10 +73,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // The counterpart of the test above: the selection is only allowed to claim
   // the list while the user has not moved yet.
   // https://github.com/ariakit/ariakit/pull/6832
+  // https://github.com/ariakit/ariakit/issues/8005
   test("keeps the keyboard position when the selection registers late", async ({
     page,
     q,
   }) => {
+    await gotoWithPausedClock(page);
     const select = q.combobox("Late items");
     const listbox = q.listbox("Late items options");
     const activeItem = listbox.locator("[data-active-item]");
@@ -59,14 +86,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await select.click();
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
 
-    // Moving before the selection registers hands the list to the user. The
-    // absence is asserted after the move so it also proves the move won the
-    // race against the fixture's late registration.
+    // Moving before the selection registers hands the list to the user.
     await page.keyboard.press("ArrowDown");
-    await test.expect(selected).toHaveCount(0);
     await test.expect(activeItem).toHaveText("Item 1");
+    await test.expect(selected).toHaveCount(0);
 
-    await test.expect(selected).toBeVisible({ timeout: 2_000 });
+    await registerLateItems(page);
+    await test.expect(selected).toBeVisible();
     // A scroll would land on the frame after the next paint, so wait one frame
     // past that checkpoint instead of reading the position while it is still
     // pending.
