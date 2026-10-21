@@ -1,6 +1,9 @@
+import type { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
+
+type Query = ReturnType<typeof query>;
 
 function getShimmerDirections(page: Page) {
   return page.evaluate(() =>
@@ -16,15 +19,20 @@ function getShimmerDirections(page: Page) {
   );
 }
 
-// The tests must finish while the simulated request is pending, so polls use a
-// short interval instead of the default backoff.
-const pollOptions = { intervals: [50] };
+// The simulated request stays pending until the test ends, so the assertions
+// don't race its latency on a slow runner.
+// https://github.com/ariakit/ariakit/issues/8022
+async function reloadAndKeepLoading(q: Query) {
+  await q.checkbox("Keep loading").check();
+  await q.button("Reload").click();
+  await expect(q.region("People")).toHaveAttribute("aria-busy", "true");
+}
 
 // The region turns busy as soon as loading starts, but the parts stay pending
 // until a timer shows the placeholders, so the shimmer starts slightly later.
 async function expectShimmer(page: Page) {
   await expect
-    .poll(async () => (await getShimmerDirections(page)).length, pollOptions)
+    .poll(async () => (await getShimmerDirections(page)).length)
     .toBeGreaterThan(0);
 }
 
@@ -46,20 +54,17 @@ withFramework(import.meta.dirname, async ({ test }) => {
     };
 
     await test.expect(q.text("Person 1")).toBeVisible();
-    await q.button("Reload").click();
-    await test.expect(people).toHaveAttribute("aria-busy", "true");
+    await reloadAndKeepLoading(q);
     await expectShimmer(page);
     // The fade-in transitions update styles on the main thread, so the
     // measurement starts after they end.
     await test.expect
-      .poll(
-        () =>
-          page.evaluate(() =>
-            document
-              .getAnimations()
-              .some((animation) => animation instanceof CSSTransition),
-          ),
-        pollOptions,
+      .poll(() =>
+        page.evaluate(() =>
+          document
+            .getAnimations()
+            .some((animation) => animation instanceof CSSTransition),
+        ),
       )
       .toBe(false);
 
@@ -84,8 +89,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.evaluate(() => {
       document.documentElement.dir = "rtl";
     });
-    await q.button("Reload").click();
-    await test.expect(q.region("People")).toHaveAttribute("aria-busy", "true");
+    await reloadAndKeepLoading(q);
     await expectShimmer(page);
     // Every part moves the highlight from the start edge, so all of them run
     // the animation in reverse.
@@ -108,8 +112,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await people.evaluate((element) => {
       element.setAttribute("dir", "ltr");
     });
-    await q.button("Reload").click();
-    await test.expect(people).toHaveAttribute("aria-busy", "true");
+    await reloadAndKeepLoading(q);
     await expectShimmer(page);
     const directions = await getShimmerDirections(page);
     test.expect(new Set(directions).size).toBe(1);

@@ -8,6 +8,10 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
+import {
+  CheckboxField,
+  CheckboxLabel,
+} from "@ariakit/ui/components/checkbox.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Skeleton,
@@ -32,25 +36,35 @@ type Person = (typeof people)[number];
 export default function Example() {
   const [requestId, setRequestId] = useState(0);
   const [loadedId, setLoadedId] = useState<number>();
+  const [keepLoading, setKeepLoading] = useState(false);
   const loading = loadedId !== requestId;
 
   // Simulates a request that resolves after a fixed latency, so the
-  // placeholders animate for the same time on every reload.
+  // placeholders animate for the same time on every reload. While "Keep
+  // loading" is checked, the request stays pending, like a stalled network.
   useEffect(() => {
+    if (keepLoading) return;
     const timer = setTimeout(() => setLoadedId(requestId), LATENCY);
     return () => clearTimeout(timer);
-  }, [requestId]);
+  }, [requestId, keepLoading]);
 
   return (
     <div className="grid gap-4 p-4">
-      <Button
-        $kind="bevel"
-        disabled={loading}
-        onClick={() => setRequestId((id) => id + 1)}
-        className="justify-self-start"
-      >
-        Reload
-      </Button>
+      <div className="flex flex-wrap items-center gap-4">
+        <Button
+          $kind="bevel"
+          disabled={loading}
+          onClick={() => setRequestId((id) => id + 1)}
+        >
+          Reload
+        </Button>
+        <CheckboxField
+          checked={keepLoading}
+          onChange={(event) => setKeepLoading(event.currentTarget.checked)}
+        >
+          <CheckboxLabel>Keep loading</CheckboxLabel>
+        </CheckboxField>
+      </div>
       <section aria-label="People" aria-busy={loading}>
         <p role="status" className="sr-only">
           {loading ? "Loading people" : ""}
