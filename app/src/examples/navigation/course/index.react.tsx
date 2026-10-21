@@ -1,11 +1,14 @@
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import { ListItemMarker } from "@ariakit/ui/components/list.ariakit.react";
+import {
+  List,
+  ListDisclosure,
+  ListDisclosureButton,
+  ListItemMarker,
+} from "@ariakit/ui/components/list.ariakit.react";
 import {
   Nav,
-  NavDisclosure,
-  NavDisclosureButton,
+  NavDisclosureContentBody,
   NavLink,
-  NavLinkContent,
   NavLinkDescription,
   NavLinkLabel,
   NavList,
@@ -37,7 +40,10 @@ const chapters: { title: string; lessons: Lesson[] }[] = [
     lessons: [
       { title: "Adding state", duration: "10 min", done: true },
       { title: "Derived state", duration: "9 min" },
-      { title: "Effects", duration: "14 min" },
+      {
+        title: "Synchronizing effects with external systems",
+        duration: "14 min",
+      },
       { title: "Chapter quiz", duration: "5 min", locked: true },
     ],
   },
@@ -55,11 +61,11 @@ const lessons = chapters.flatMap((chapter) => chapter.lessons);
 const doneCount = lessons.filter((lesson) => lesson.done).length;
 
 function LessonSlot({ lesson }: { lesson: Lesson }) {
-  // An icon-sized slot takes the same room as a slot one line tall, and the
-  // matching margin keeps the label in line with the other lessons.
+  // An icon-sized slot takes the same room as a slot one line tall. Both close
+  // the label gap, so the labels stay in line with each other.
   if (lesson.locked) {
     return (
-      <NavSlot $mx="xl">
+      <NavSlot $mx="closeGap">
         <Lock aria-label="Locked" />
       </NavSlot>
     );
@@ -67,7 +73,7 @@ function LessonSlot({ lesson }: { lesson: Lesson }) {
   // A marker fills a positioned slot one line tall. Only a done lesson adds its
   // state to the link name.
   return (
-    <NavSlot $size="xl" className="relative">
+    <NavSlot $size="xl" $mx="closeGap" className="relative">
       <ListItemMarker
         checked={!!lesson.done}
         aria-label={lesson.done ? "Done" : undefined}
@@ -95,52 +101,62 @@ export default function Example() {
           aria-label={`${doneCount} of ${lessons.length} lessons done`}
         />
       </div>
-      {/* The halfway bar runs on the guide of the open chapter. */}
-      <Nav aria-label="Lessons" bar={{ $offset: "halfway" }}>
-        {chapters.map((chapter, index) => {
+      {/* The ordered list numbers the chapters and joins their markers with a
+          guide. The halfway bar of the current lesson runs on that guide. */}
+      <Nav
+        aria-label="Lessons"
+        list={<List ordered />}
+        bar={{ $offset: "halfway", $length: "full" }}
+      >
+        {chapters.map((chapter) => {
           const done = chapter.lessons.filter((lesson) => lesson.done);
           return (
-            <NavDisclosure
-              key={chapter.title}
-              defaultOpen={chapter.lessons.some(
-                (lesson) => lesson.title === current,
-              )}
-              button={
-                <NavDisclosureButton
-                  label={`${index + 1}. ${chapter.title}`}
-                  description={`${done.length} of ${chapter.lessons.length} done`}
-                >
-                  {/* A marker fills a positioned slot one line tall. The
-                      description already states the progress. */}
-                  <NavSlot $size="xl" className="relative">
-                    <ListItemMarker
-                      progress={done.length / chapter.lessons.length}
-                      aria-hidden
-                    />
-                  </NavSlot>
-                </NavDisclosureButton>
-              }
-            >
-              <NavList>
-                {chapter.lessons.map((lesson) => (
-                  <NavLink
-                    key={lesson.title}
-                    href={`#${lesson.title.toLowerCase().replaceAll(" ", "-")}`}
-                    aria-current={current === lesson.title ? "page" : undefined}
-                    onClick={(event: MouseEvent) => {
-                      event.preventDefault();
-                      setCurrent(lesson.title);
-                    }}
+            <li key={chapter.title}>
+              <ListDisclosure
+                defaultOpen={chapter.lessons.some(
+                  (lesson) => lesson.title === current,
+                )}
+                button={
+                  <ListDisclosureButton
+                    progress={done.length / chapter.lessons.length}
+                    description={`${done.length} of ${chapter.lessons.length} done`}
+                    indicator="chevron-right-end"
                   >
-                    <LessonSlot lesson={lesson} />
-                    <NavLinkContent $orientation="horizontal">
+                    {chapter.title}
+                  </ListDisclosureButton>
+                }
+                // The nav body spaces and aligns the lessons like the rows of a
+                // nav disclosure.
+                content={{ body: <NavDisclosureContentBody /> }}
+              >
+                <NavList>
+                  {chapter.lessons.map((lesson) => (
+                    <NavLink
+                      key={lesson.title}
+                      $size="sm"
+                      href={`#${lesson.title.toLowerCase().replaceAll(" ", "-")}`}
+                      aria-current={
+                        current === lesson.title ? "page" : undefined
+                      }
+                      onClick={(event: MouseEvent) => {
+                        event.preventDefault();
+                        setCurrent(lesson.title);
+                      }}
+                    >
+                      <LessonSlot lesson={lesson} />
                       <NavLinkLabel>{lesson.title}</NavLinkLabel>
-                      <NavLinkDescription>{lesson.duration}</NavLinkDescription>
-                    </NavLinkContent>
-                  </NavLink>
-                ))}
-              </NavList>
-            </NavDisclosure>
+                      {/* A text slot keeps the duration at the end of the first
+                          line, with the side padding of the label. */}
+                      <NavSlot $kind="text">
+                        <NavLinkDescription>
+                          {lesson.duration}
+                        </NavLinkDescription>
+                      </NavSlot>
+                    </NavLink>
+                  ))}
+                </NavList>
+              </ListDisclosure>
+            </li>
           );
         })}
       </Nav>

@@ -126,15 +126,20 @@ export function getSlotSizeClass(value: unknown) {
   return SLOT_SIZE_CLASSES[value];
 }
 
-/** A text-aligned slot for an icon, avatar, badge, or keyboard shortcut. */
+/**
+ * A text-aligned slot for an icon, avatar, badge, keyboard shortcut, or short
+ * text.
+ */
 export const controlSlot = cv({
   extend: [frame],
   class: [
     "control-slot flex flex-none items-center justify-center",
     // Align slots to the first text row. Stacked cards set --control-inline to
-    // zero to remove these margins.
+    // zero to remove these margins. Slots move into the side padding, so an
+    // icon sits as far from the side as from the top; text slots set
+    // --slot-pull to zero to keep the text inset.
     "[--my:calc((1lh-var(--size,1lh))/2*var(--row-span)*var(--control-inline,1))]",
-    "[--mx:calc(((var(--py)-var(--px))+var(--my))*var(--control-inline,1))]",
+    "[--mx:calc(((var(--py)-var(--px))*var(--slot-pull,1)+var(--my))*var(--control-inline,1))]",
     "min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
     // Custom marks set --slot-icon-size; painted icon slots use
     // --slot-icon-scale.
@@ -196,7 +201,9 @@ export const controlSlot = cv({
      * wrapper; slot components create it automatically. For badge truncation,
      * use a width-limited child with `block overflow-x-clip text-ellipsis
      * whitespace-nowrap` to preserve descenders. `thumbnail` is a bordered 4:3
-     * box that an image or another picture fills.
+     * box that an image or another picture fills. `text`, such as a count or a
+     * duration, is one line tall and keeps the side padding of the row text,
+     * while other slots move into it.
      */
     $kind: {
       icon: "",
@@ -208,6 +215,12 @@ export const controlSlot = cv({
         "*:[&>svg]:block *:[&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
       ],
       avatar: "overflow-clip",
+      // Keep the side padding of the row text, and let nested slots move again.
+      // Fit short text, such as a single digit, instead of a line-wide box.
+      // Tailwind sorts min-width utilities by name, so min-w-0 follows the base
+      // min-w-(--size). Number, keyword, and bracket min-w-* classes still
+      // override it; min-w-(--var) classes sort earlier and do not.
+      text: "[--slot-pull:0] *:[--slot-pull:initial] min-w-0",
       // Trim browser-dependent line metrics to center the badge's capitals.
       // https://github.com/ariakit/ariakit/issues/7588
       badge: "*:text-[0.8125em] *:[text-box:cap_alphabetic]",
@@ -241,6 +254,8 @@ export const controlSlot = cv({
       if (defaultValue != null) return defaultValue;
       // A picture needs at least a line of height to be legible.
       if (variants.$kind === "thumbnail") return "xl";
+      // Text takes a line of height, so it centers on the first label line.
+      if (variants.$kind === "text") return "xl";
       return "md";
     },
     $border(defaultValue, variants) {

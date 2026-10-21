@@ -92,9 +92,10 @@ export const nav = cv({
       };
     },
     /**
-     * Sets navigation slot and disclosure icon sizes, except shortcuts and
-     * thumbnails. Set this on the root or an ancestor: consumers read inherited
-     * values and ancestor style queries. Numbers scale the spacing token.
+     * Sets navigation slot and disclosure icon sizes, except shortcuts,
+     * thumbnails, and text. Set this on the root or an ancestor: consumers read
+     * inherited values and ancestor style queries. Numbers scale the spacing
+     * token.
      */
     $slotSize(value?: string | number) {
       if (value == null) return;
@@ -206,7 +207,7 @@ const navSlotBase = cv({
      */
     $mx: {
       auto: [
-        "[*+&]:[--mx:calc((var(--py)-var(--px)+max(0px,var(--my)))*var(--control-inline,1))]",
+        "[*+&]:[--mx:calc(((var(--py)-var(--px))*var(--slot-pull,1)+max(0px,var(--my)))*var(--control-inline,1))]",
         "[*+&]:me-(--mx)",
       ],
     },
@@ -217,7 +218,10 @@ const navSlotBase = cv({
   },
 });
 
-/** An icon, badge, avatar, or shortcut slot aligned with navigation labels. */
+/**
+ * An icon, badge, avatar, shortcut, or text slot aligned with navigation
+ * labels.
+ */
 export const navSlot = cv({
   extend: [navSlotBase],
   defaultVariants: {
@@ -226,6 +230,7 @@ export const navSlot = cv({
       if (variants.$kind === "shortcut") return "md";
       // A picture keeps a line of height instead of the icon size.
       if (variants.$kind === "thumbnail") return "xl";
+      if (variants.$kind === "text") return "xl";
       return defaultValue;
     },
     $mx(defaultValue, variants) {
@@ -354,7 +359,8 @@ export const navLinkBar = cv({
     // Start bars of nested rows meet the disclosure content's start edge. Body
     // padding minus the row's own shift gives that distance.
     "[.nav.vertical_.disclosure-content_&]:[--bar-gap:calc(var(--disclosure-body-ps,0px)-var(--px,0px))]",
-    // Named start offsets in guided content sit on the guide line.
+    // Named start offsets in guided content sit on the guide line. List
+    // disclosure content exposes the list guide along its markers.
     "[.nav.vertical_.disclosure-content_&]:[&.nav-bar-guide:not(.nav-bar-end)]:[--nav-bar-guide:calc(var(--disclosure-guide)-var(--bar-gap)-var(--bar)/2)]",
     "[.nav.vertical_&]:[&.nav-bar-end]:inset-s-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
     // End bars of nested rows measure from the navigation padding, so the bar
@@ -391,10 +397,11 @@ export const navLinkBar = cv({
      * The start bar of a nested row measures to the edge of its disclosure
      * content, and the end bar measures from the navigation padding, so it
      * follows a row that a padded body insets. In disclosure content with a
-     * guide line, named offsets at the start side put the bar on the guide. A
-     * horizontal navigation scrolls, so it clips a bar outside its padding. Its
-     * rows measure from their own height, so an `edge` bar under a row shorter
-     * than the others stops short of the edge.
+     * guide line, named offsets at the start side put the bar on the guide.
+     * This includes the guide of a list along its markers, in list disclosure
+     * content. A horizontal navigation scrolls, so it clips a bar outside its
+     * padding. Its rows measure from their own height, so an `edge` bar under a
+     * row shorter than the others stops short of the edge.
      */
     $offset(value?: BarOffset) {
       if (!isNamedBarOffset(value)) return getBarOffset(value);
