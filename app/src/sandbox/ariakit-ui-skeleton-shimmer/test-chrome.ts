@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
@@ -13,6 +14,18 @@ function getShimmerDirections(page: Page) {
       return [style.animationDirection];
     }),
   );
+}
+
+// The tests must finish while the simulated request is pending, so polls use a
+// short interval instead of the default backoff.
+const pollOptions = { intervals: [50] };
+
+// The region turns busy as soon as loading starts, but the parts stay pending
+// until a timer shows the placeholders, so the shimmer starts slightly later.
+async function expectShimmer(page: Page) {
+  await expect
+    .poll(async () => (await getShimmerDirections(page)).length, pollOptions)
+    .toBeGreaterThan(0);
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -35,29 +48,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.text("Person 1")).toBeVisible();
     await q.button("Reload").click();
     await test.expect(people).toHaveAttribute("aria-busy", "true");
+    await expectShimmer(page);
     // The fade-in transitions update styles on the main thread, so the
     // measurement starts after they end.
     await test.expect
-      .poll(() =>
-        page.evaluate(() =>
-          document
-            .getAnimations()
-            .some((animation) => animation instanceof CSSTransition),
-        ),
+      .poll(
+        () =>
+          page.evaluate(() =>
+            document
+              .getAnimations()
+              .some((animation) => animation instanceof CSSTransition),
+          ),
+        pollOptions,
       )
       .toBe(false);
-    const shimmerCount = await page.evaluate(
-      () =>
-        document
-          .getAnimations()
-          .filter(
-            (animation) =>
-              animation instanceof CSSAnimation &&
-              animation.animationName === "ui-skeleton-shimmer" &&
-              animation.playState === "running",
-          ).length,
-    );
-    test.expect(shimmerCount).toBeGreaterThan(0);
 
     const countBefore = await getRecalcStyleCount();
     // No page state tracks animation frames. A shimmer that runs on the main
@@ -82,10 +86,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
     await q.button("Reload").click();
     await test.expect(q.region("People")).toHaveAttribute("aria-busy", "true");
+    await expectShimmer(page);
     // Every part moves the highlight from the start edge, so all of them run
     // the animation in reverse.
     const directions = await getShimmerDirections(page);
-    test.expect(directions.length).toBeGreaterThan(0);
     test.expect(new Set(directions)).toEqual(new Set(["reverse"]));
   });
 
@@ -106,8 +110,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
     await q.button("Reload").click();
     await test.expect(people).toHaveAttribute("aria-busy", "true");
+    await expectShimmer(page);
     const directions = await getShimmerDirections(page);
-    test.expect(directions.length).toBeGreaterThan(0);
     test.expect(new Set(directions).size).toBe(1);
   });
 });
