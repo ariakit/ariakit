@@ -2,7 +2,6 @@ import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Nav,
-  NavLink,
   NavLinkLabel,
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
@@ -18,18 +17,22 @@ import {
   Play,
   Settings,
 } from "lucide-react";
-import { useState } from "react";
+import { ExampleRouter, RouterNavLink } from "../router.react.tsx";
 
 const tabs = [
-  { label: "Code", icon: CodeXml },
-  { label: "Issues", icon: CircleDot, count: 128 },
-  { label: "Pull requests", icon: GitPullRequest, count: 14 },
-  { label: "Actions", icon: Play },
-  { label: "Settings", icon: Settings },
+  { label: "Code", path: "/code", icon: CodeXml },
+  { label: "Issues", path: "/issues", icon: CircleDot, count: 128 },
+  {
+    label: "Pull requests",
+    path: "/pull-requests",
+    icon: GitPullRequest,
+    count: 14,
+  },
+  { label: "Actions", path: "/actions", icon: Play },
+  { label: "Settings", path: "/settings", icon: Settings },
 ];
 
-export default function Example() {
-  const [current, setCurrent] = useState("Code");
+function Repository() {
   return (
     <Frame
       $layer
@@ -55,20 +58,18 @@ export default function Example() {
         {/* The bar marks the current tab on the line below the header, so the
             current tab needs no surface of its own. Its gap and 2px width
             fill the tab's bottom margin. */}
+        {/* The bar name lets the router's view transitions move the bar
+            between tabs. */}
         <Nav
           aria-label="Repository"
           $layout="horizontal"
           bar={{ $offset: 0.5 }}
+          className="[--bar-transition-name:repository-bar]"
         >
           {tabs.map((tab) => (
-            <NavLink
+            <RouterNavLink
               key={tab.label}
-              href={`#${tab.label.toLowerCase().replace(" ", "-")}`}
-              aria-current={current === tab.label ? "page" : undefined}
-              onClick={(event) => {
-                event.preventDefault();
-                setCurrent(tab.label);
-              }}
+              to={tab.path}
               $selectedPush={false}
               className="mb-1"
             >
@@ -81,7 +82,7 @@ export default function Example() {
                   {tab.count}
                 </NavSlot>
               )}
-            </NavLink>
+            </RouterNavLink>
           ))}
         </Nav>
       </Frame>
@@ -103,5 +104,13 @@ export default function Example() {
         ))}
       </Frame>
     </Frame>
+  );
+}
+
+export default function Example() {
+  return (
+    <ExampleRouter initialPath="/code">
+      <Repository />
+    </ExampleRouter>
   );
 }

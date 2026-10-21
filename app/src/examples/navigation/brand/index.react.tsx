@@ -1,9 +1,9 @@
 import {
   Nav,
-  NavLink,
   NavLinkLabel,
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
+import { useMatchRoute } from "@tanstack/react-router";
 import {
   CalendarDays,
   ChartPie,
@@ -11,40 +11,36 @@ import {
   FolderKanban,
   LayoutDashboard,
 } from "lucide-react";
-import { useState } from "react";
+import { ExampleRouter, RouterNavLink } from "../router.react.tsx";
 
 const links = [
-  { label: "Dashboard", icon: LayoutDashboard },
-  { label: "Projects", icon: FolderKanban, count: 12 },
-  { label: "Calendar", icon: CalendarDays },
-  { label: "Documents", icon: FileText },
-  { label: "Analytics", icon: ChartPie },
+  { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+  { label: "Projects", path: "/projects", icon: FolderKanban, count: 12 },
+  { label: "Calendar", path: "/calendar", icon: CalendarDays },
+  { label: "Documents", path: "/documents", icon: FileText },
+  { label: "Analytics", path: "/analytics", icon: ChartPie },
 ];
 
-export default function Example() {
-  const [current, setCurrent] = useState("Projects");
+function WorkspaceNav() {
+  const matchRoute = useMatchRoute();
   return (
     // The current link blends the brand color into its surface and shows its
     // icon and label in the brand color. The bar also marks the link in high
-    // contrast, where the surface takes the page color.
+    // contrast, where the surface takes the page color. The bar name lets the
+    // router's view transitions move the bar between links.
     <Nav
       aria-label="Workspace"
       bar={{ $side: "start", $layer: "brand", $invert: false }}
       $rounded="2xl"
       $p={2}
-      className="w-60"
+      className="w-60 [--bar-transition-name:workspace-bar]"
     >
       {links.map((link) => {
-        const isCurrent = current === link.label;
+        const isCurrent = !!matchRoute({ to: link.path });
         return (
-          <NavLink
+          <RouterNavLink
             key={link.label}
-            href={`#${link.label.toLowerCase()}`}
-            aria-current={isCurrent ? "page" : undefined}
-            onClick={(event) => {
-              event.preventDefault();
-              setCurrent(link.label);
-            }}
+            to={link.path}
             $selectedPush={false}
             $layer={isCurrent ? "brand" : undefined}
             $mix={isCurrent ? 10 : undefined}
@@ -64,9 +60,17 @@ export default function Example() {
                 {link.count}
               </NavSlot>
             )}
-          </NavLink>
+          </RouterNavLink>
         );
       })}
     </Nav>
+  );
+}
+
+export default function Example() {
+  return (
+    <ExampleRouter initialPath="/projects">
+      <WorkspaceNav />
+    </ExampleRouter>
   );
 }

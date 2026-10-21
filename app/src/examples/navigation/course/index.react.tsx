@@ -8,16 +8,15 @@ import {
 import {
   Nav,
   NavDisclosureContentBody,
-  NavLink,
   NavLinkDescription,
   NavLinkLabel,
   NavList,
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import { Progress } from "@ariakit/ui/components/progress.ariakit.react";
+import { useMatchRoute } from "@tanstack/react-router";
 import { Lock } from "lucide-react";
-import type { MouseEvent } from "react";
-import { useState } from "react";
+import { ExampleRouter, RouterNavLink } from "../router.react.tsx";
 
 interface Lesson {
   title: string;
@@ -60,6 +59,10 @@ const chapters: { title: string; lessons: Lesson[] }[] = [
 const lessons = chapters.flatMap((chapter) => chapter.lessons);
 const doneCount = lessons.filter((lesson) => lesson.done).length;
 
+function getPath(title: string) {
+  return `/${title.toLowerCase().replaceAll(" ", "-")}`;
+}
+
 function LessonSlot({ lesson }: { lesson: Lesson }) {
   // An icon-sized slot takes the same room as a slot one line tall. Both close
   // the label gap, so the labels stay in line with each other.
@@ -83,8 +86,8 @@ function LessonSlot({ lesson }: { lesson: Lesson }) {
   );
 }
 
-export default function Example() {
-  const [current, setCurrent] = useState("Derived state");
+function Course() {
+  const matchRoute = useMatchRoute();
   return (
     <Frame
       $layer
@@ -102,11 +105,14 @@ export default function Example() {
         />
       </div>
       {/* The ordered list numbers the chapters and joins their markers with a
-          guide. The halfway bar of the current lesson runs on that guide. */}
+          guide. The halfway bar of the current lesson runs on that guide. The
+          bar name lets the router's view transitions move the bar between
+          lessons. */}
       <Nav
         aria-label="Lessons"
         list={<List ordered />}
         bar={{ $offset: "halfway", $length: "full" }}
+        className="[--bar-transition-name:lessons-bar]"
       >
         {chapters.map((chapter) => {
           const done = chapter.lessons.filter((lesson) => lesson.done);
@@ -114,7 +120,7 @@ export default function Example() {
             <li key={chapter.title}>
               <ListDisclosure
                 defaultOpen={chapter.lessons.some(
-                  (lesson) => lesson.title === current,
+                  (lesson) => !!matchRoute({ to: getPath(lesson.title) }),
                 )}
                 button={
                   <ListDisclosureButton
@@ -131,17 +137,10 @@ export default function Example() {
               >
                 <NavList>
                   {chapter.lessons.map((lesson) => (
-                    <NavLink
+                    <RouterNavLink
                       key={lesson.title}
                       $size="sm"
-                      href={`#${lesson.title.toLowerCase().replaceAll(" ", "-")}`}
-                      aria-current={
-                        current === lesson.title ? "page" : undefined
-                      }
-                      onClick={(event: MouseEvent) => {
-                        event.preventDefault();
-                        setCurrent(lesson.title);
-                      }}
+                      to={getPath(lesson.title)}
                     >
                       <LessonSlot lesson={lesson} />
                       <NavLinkLabel>{lesson.title}</NavLinkLabel>
@@ -152,7 +151,7 @@ export default function Example() {
                           {lesson.duration}
                         </NavLinkDescription>
                       </NavSlot>
-                    </NavLink>
+                    </RouterNavLink>
                   ))}
                 </NavList>
               </ListDisclosure>
@@ -161,5 +160,13 @@ export default function Example() {
         })}
       </Nav>
     </Frame>
+  );
+}
+
+export default function Example() {
+  return (
+    <ExampleRouter initialPath={getPath("Derived state")}>
+      <Course />
+    </ExampleRouter>
   );
 }

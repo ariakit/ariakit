@@ -64,6 +64,7 @@
     "@shikijs/langs": "4.5.0",
     "@shikijs/themes": "4.5.0",
     "@tailwindcss/vite": "4.3.3",
+    "@tanstack/react-router": "1.170.41",
     "@wordpress/components": "42.0.0",
     "astro": "7.4.0",
     "clsx": "2.1.1",

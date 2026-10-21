@@ -3,7 +3,7 @@ import {
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
-import { Nav, NavLink } from "@ariakit/ui/components/nav.ariakit.react";
+import { Nav } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Shell,
   ShellHeader,
@@ -16,13 +16,19 @@ import {
   SkeletonLine,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
+import { useMatchRoute } from "@tanstack/react-router";
 import { Bell, Hexagon } from "lucide-react";
-import { useState } from "react";
+import { ExampleRouter, RouterNavLink } from "../router.react.tsx";
 
 const pages = ["Overview", "Projects", "Deployments", "Analytics", "Settings"];
 
-export default function Example() {
-  const [current, setCurrent] = useState("Overview");
+function getPath(page: string) {
+  return `/${page.toLowerCase()}`;
+}
+
+function Page() {
+  const matchRoute = useMatchRoute();
+  const current = pages.find((page) => matchRoute({ to: getPath(page) }));
   return (
     <Shell>
       <ShellHeader
@@ -42,20 +48,18 @@ export default function Example() {
         center={
           // The header stretches the navigation to its height, so the bar sits
           // on the header's bottom edge. The links scroll when they need more
-          // room than the header has.
-          <Nav aria-label="Main" $layout="horizontal" bar>
+          // room than the header has. The bar name lets the router's view
+          // transitions move the bar between links.
+          <Nav
+            aria-label="Main"
+            $layout="horizontal"
+            bar
+            className="[--bar-transition-name:main-bar]"
+          >
             {pages.map((page) => (
-              <NavLink
-                key={page}
-                href={`#${page.toLowerCase()}`}
-                aria-current={current === page ? "page" : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  setCurrent(page);
-                }}
-              >
+              <RouterNavLink key={page} to={getPath(page)}>
                 {page}
-              </NavLink>
+              </RouterNavLink>
             ))}
           </Nav>
         }
@@ -92,5 +96,13 @@ export default function Example() {
         </ShellMainBody>
       </ShellMain>
     </Shell>
+  );
+}
+
+export default function Example() {
+  return (
+    <ExampleRouter initialPath="/overview">
+      <Page />
+    </ExampleRouter>
   );
 }
