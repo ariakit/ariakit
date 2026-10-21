@@ -48,14 +48,8 @@ function Page() {
         center={
           // The header stretches the navigation to its height, so the bar sits
           // on the header's bottom edge. The links scroll when they need more
-          // room than the header has. The bar name lets the router's view
-          // transitions move the bar between links.
-          <Nav
-            aria-label="Main"
-            $layout="horizontal"
-            bar
-            className="[--bar-transition-name:main-bar]"
-          >
+          // room than the header has.
+          <Nav aria-label="Main" $layout="horizontal" bar>
             {pages.map((page) => (
               <RouterNavLink key={page} to={getPath(page)}>
                 {page}

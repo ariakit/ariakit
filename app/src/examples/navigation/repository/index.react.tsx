@@ -58,13 +58,10 @@ function Repository() {
         {/* The bar marks the current tab on the line below the header, so the
             current tab needs no surface of its own. Its gap and 2px width
             fill the tab's bottom margin. */}
-        {/* The bar name lets the router's view transitions move the bar
-            between tabs. */}
         <Nav
           aria-label="Repository"
           $layout="horizontal"
           bar={{ $offset: 0.5 }}
-          className="[--bar-transition-name:repository-bar]"
         >
           {tabs.map((tab) => (
             <RouterNavLink

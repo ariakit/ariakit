@@ -234,7 +234,7 @@ const hasSidebar = sidebar && navigation.length > 0;
             <Nav
               $layout="horizontal"
               aria-label="Main"
-              className="[--bar-transition-name:main-nav-bar]"
+              $barTransitionName="main-nav-bar"
             >
               {
                 sections.map((link) => (
@@ -273,13 +273,18 @@ const hasSidebar = sidebar && navigation.length > 0;
               id={APP_NAVIGATION_ID}
               render={createElement("nav")}
               aria-label="Site"
-              className="text-sm [--bar-transition-name:site-nav-bar]"
+              className="text-sm"
             >
               {/* The navigation fills the body through its island wrapper,
                   which takes the display of its parent. The wrapper must not
                   grow past the body, so the open group scrolls its links. */}
               <ShellSidebarBody className="flex flex-col [&>astro-island]:min-h-0 [&>astro-island]:flex-1">
-                <AppNavigation client:load groups={navigation} fill />
+                <AppNavigation
+                  client:load
+                  groups={navigation}
+                  fill
+                  barTransitionName="site-nav-bar"
+                />
               </ShellSidebarBody>
             </ShellSidebar>
           )
@@ -292,7 +297,7 @@ const hasSidebar = sidebar && navigation.length > 0;
           render={createElement("nav")}
           aria-label="Menu"
           data-shell-transient
-          className="text-sm [--bar-transition-name:drawer-nav-bar]"
+          className="text-sm"
         >
           <ShellSidebarHeader $height="sm" className="justify-between">
             <span class="font-medium">Menu</span>
@@ -309,6 +314,7 @@ const hasSidebar = sidebar && navigation.length > 0;
               client:load
               links={drawerSections}
               groups={navigation}
+              barTransitionName="drawer-nav-bar"
             />
             <div class="grid gap-6 px-3 pt-6 pb-3">
               <span class="ak-ink-70 text-xs font-medium">Theme</span>

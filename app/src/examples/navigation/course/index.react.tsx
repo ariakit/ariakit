@@ -105,14 +105,11 @@ function Course() {
         />
       </div>
       {/* The ordered list numbers the chapters and joins their markers with a
-          guide. The halfway bar of the current lesson runs on that guide. The
-          bar name lets the router's view transitions move the bar between
-          lessons. */}
+          guide. The halfway bar of the current lesson runs on that guide. */}
       <Nav
         aria-label="Lessons"
         list={<List ordered />}
         bar={{ $offset: "halfway", $length: "full" }}
-        className="[--bar-transition-name:lessons-bar]"
       >
         {chapters.map((chapter) => {
           const done = chapter.lessons.filter((lesson) => lesson.done);

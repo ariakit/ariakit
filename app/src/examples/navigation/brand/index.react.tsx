@@ -26,14 +26,13 @@ function WorkspaceNav() {
   return (
     // The current link blends the brand color into its surface and shows its
     // icon and label in the brand color. The bar also marks the link in high
-    // contrast, where the surface takes the page color. The bar name lets the
-    // router's view transitions move the bar between links.
+    // contrast, where the surface takes the page color.
     <Nav
       aria-label="Workspace"
       bar={{ $side: "start", $layer: "brand", $invert: false }}
       $rounded="2xl"
       $p={2}
-      className="w-60 [--bar-transition-name:workspace-bar]"
+      className="w-60"
     >
       {links.map((link) => {
         const isCurrent = pathname === link.path;

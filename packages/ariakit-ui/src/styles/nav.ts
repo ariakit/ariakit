@@ -103,6 +103,18 @@ export const nav = cv({
         style: { "--nav-slot-size": getSpacingValue(value) },
       };
     },
+    /**
+     * Names the bar of the current link for view transitions, so a transition
+     * moves the bar from the old link to the new one. Each navigation on a page
+     * needs its own name, and a bar that moves across page loads needs the same
+     * name on both pages. Set `none` to keep the bar out of view transitions.
+     */
+    $barTransitionName(value?: string) {
+      if (value == null) return;
+      return {
+        style: { "--bar-transition-name": value },
+      };
+    },
   },
   defaultVariants: {
     $layout: "vertical",

@@ -105,14 +105,11 @@ function Site() {
       />
       <ShellSidebar>
         <ShellSidebarBody>
-          {/* The bar name lets the router's view transitions move the bar
-              between links, also across sections. */}
           <Nav
             aria-label="Site"
             list={false}
             $fill
             bar={{ $offset: "halfway" }}
-            className="[--bar-transition-name:site-bar]"
           >
             <NavDisclosureGroup $fill>
               {sections.map((section) => (
