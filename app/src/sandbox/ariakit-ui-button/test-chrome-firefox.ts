@@ -26,7 +26,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000661269
-  test("keeps glider boundaries and inherited widths in forced colors @visual", async ({
+  test("keeps joined selection boundaries and inherited widths in forced colors @visual", async ({
     page,
     q,
     visual,
@@ -35,9 +35,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await forEachColorScheme(page, async (colorScheme) => {
       await captureInView({
         visual,
-        box: q.article("Glider"),
+        box: q.article("Joined selection"),
         colorScheme,
-        item: "ariakit-ui-button/forced-colors/glider",
+        item: "ariakit-ui-button/forced-colors/joined-selection",
       });
     });
   });

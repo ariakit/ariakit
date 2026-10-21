@@ -20,10 +20,8 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         ["edgeless", "Edgeless"],
         ["flat-tabs", "Flat tabs"],
         ["bevel-tabs", "Bevel tabs"],
-        ["flat-glider", "Flat glider"],
-        ["bevel-glider", "Bevel glider"],
-        ["borderless-flat-glider", "Borderless flat glider"],
-        ["borderless-bevel-glider", "Borderless bevel glider"],
+        ["borderless-flat-tabs", "Borderless flat tabs"],
+        ["borderless-bevel-tabs", "Borderless bevel tabs"],
       ] as const) {
         const box = q.article(title);
         const selected = query(box).tab("Usage");

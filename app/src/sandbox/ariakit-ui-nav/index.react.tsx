@@ -49,7 +49,11 @@ import {
   Example,
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
-import { HorizontalNavigation, LinkItems } from "./api-examples.react.tsx";
+import {
+  BarForms,
+  HorizontalNavigation,
+  LinkItems,
+} from "./api-examples.react.tsx";
 
 function CustomLabel(props: DisclosureButtonLabelProps) {
   return <DisclosureButtonLabel {...props} />;
@@ -122,8 +126,8 @@ function DocLink({ label, description, describedBy, ...props }: DocLinkProps) {
 const pages = ["Overview", "Installation", "Usage", "Changelog"];
 
 /**
- * A flat nav whose current row moves on click, so a glider can be watched as it
- * travels. The initial current row is fixed.
+ * A flat nav whose current row moves on click, so its surface can be watched as
+ * it moves. The initial current row is fixed.
  */
 function DemoNav(props: NavProps) {
   const [current, setCurrent] = useState("Installation");
@@ -153,11 +157,16 @@ const sections = [
 
 const sectionPages = ["Introduction", "Installation", "Quickstart"];
 
+interface DemoSectionsProps extends NavProps {
+  /** The size of the page links in the sections. */
+  linkSize?: NavLinkProps["$size"];
+}
+
 /**
  * Two open sections whose current link moves on click, so a bar can be watched
  * as it travels from one section to the other.
  */
-function DemoSections(props: NavProps) {
+function DemoSections({ linkSize, ...props }: DemoSectionsProps) {
   const [current, setCurrent] = useState("styling/introduction");
   return (
     <Nav $slotSize={5} {...props}>
@@ -179,6 +188,7 @@ function DemoSections(props: NavProps) {
                   key={page}
                   href={`#${id}`}
                   aria-current={current === id ? "page" : undefined}
+                  $size={linkSize}
                   onClick={(event) => {
                     event.preventDefault();
                     setCurrent(id);
@@ -230,12 +240,7 @@ function EndBarSections({ dir }: EndBarSectionsProps) {
       dir={dir}
       aria-label={`End bar across sections (${dir})`}
       // Follow the current row's edge instead of the navigation edge.
-      glider={{
-        $kind: "bar",
-        $animated: false,
-        $side: "end",
-        $barOffset: "auto",
-      }}
+      bar={{ $side: "end", $offset: 0 }}
       className="w-full"
     >
       {endBarPages.map(link)}
@@ -305,8 +310,8 @@ function LooseCurrentSections() {
     <Nav
       $slotSize={5}
       aria-label="Empty, false, and unknown current values"
-      // Follow the current row and its section guide instead of the edge.
-      glider={{ $kind: "bar", $animated: false, $barOffset: "auto" }}
+      // A named offset puts the bar of a section row on the section guide.
+      bar={{ $offset: "edge" }}
       className="w-full"
     >
       {link("Overview", "")}
@@ -356,7 +361,7 @@ function DocumentationSidebar() {
           beta
         </NavSlot>
       </NavButton>
-      <Nav aria-label="Documentation sections" glider>
+      <Nav aria-label="Documentation sections">
         {sections.map((section) => (
           <NavDisclosure
             key={section.slug}
@@ -848,9 +853,9 @@ export default function NavExamples() {
 
       <Example
         title="Nested disclosures"
-        description="A section inside a section, both closed at first. The current link deep inside opens every section around it, and its cover shows there."
+        description="A section inside a section, both closed at first. The current link deep inside opens every section around it, and its surface shows there."
         code={`
-          <Nav $slotSize={5} glider>
+          <Nav $slotSize={5}>
             <NavDisclosure button={<NavDisclosureButton icon={<Blocks />}>Components</NavDisclosureButton>}>
               <NavList>
                 <NavLink>Overview</NavLink>
@@ -866,12 +871,7 @@ export default function NavExamples() {
           </Nav>
         `}
       >
-        <Nav
-          $slotSize={5}
-          aria-label="Nested disclosures"
-          glider
-          className="w-full"
-        >
+        <Nav $slotSize={5} aria-label="Nested disclosures" className="w-full">
           <NavDisclosure
             button={
               <NavDisclosureButton icon={<Blocks strokeWidth={1.5} />}>
@@ -926,29 +926,10 @@ export default function NavExamples() {
       </Example>
 
       <Example
-        title="Bevel glider"
-        description="The current row gets a raised bevel cover. Click a row to move the cover there."
-        code={`
-          <Nav glider={{ $kind: "bevel" }}>
-            <NavLink>Overview</NavLink>
-            <NavLink>Installation</NavLink>
-            <NavLink>Usage</NavLink>
-            <NavLink>Changelog</NavLink>
-          </Nav>
-        `}
-      >
-        <DemoNav
-          aria-label="Bevel glider"
-          glider={{ $kind: "bevel" }}
-          className="w-full"
-        />
-      </Example>
-
-      <Example
         title="Bar on the guide line"
         description="A thin bar on the guide line marks the current row, which keeps its own surface. Click a link in the other section to move the bar."
         code={`
-          <Nav $slotSize={5} glider={{ $kind: "bar", $barOffset: "auto" }}>
+          <Nav $slotSize={5} bar>
             <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />} />}>
               <NavList>
                 <NavLink>Introduction</NavLink>
@@ -959,16 +940,37 @@ export default function NavExamples() {
       >
         <DemoSections
           aria-label="Bar on the guide line"
-          glider={{ $kind: "bar", $barOffset: "auto" }}
+          bar
           className="w-full"
         />
       </Example>
 
       <Example
-        title="Bar beside a cover"
-        description="A brand bar and a cover mark the current row together. The cover takes the surface of the row, and the bar stays on the guide line."
+        title="Small rows on the guide line"
+        description="Nested rows with a smaller font keep the bar on the guide, which follows the section's font."
         code={`
-          <Nav $slotSize={5} glider={[…]}>
+          <Nav $slotSize={5} bar>
+            <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />} />}>
+              <NavList>
+                <NavLink $size="sm">Introduction</NavLink>
+              </NavList>
+            </NavDisclosure>
+          </Nav>
+        `}
+      >
+        <DemoSections
+          aria-label="Small rows on the guide line"
+          bar
+          linkSize="sm"
+          className="w-full"
+        />
+      </Example>
+
+      <Example
+        title="Bar beside a surface"
+        description="A brand bar and the row surface mark the current row together. The bar stays on the guide line."
+        code={`
+          <Nav $slotSize={5} bar={…}>
             <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />} />}>
               <NavList>
                 <NavLink>Introduction</NavLink>
@@ -978,8 +980,8 @@ export default function NavExamples() {
         `}
       >
         <DemoSections
-          aria-label="Bar beside a cover"
-          glider={[{ $kind: "bar", $layer: "brand", $barOffset: "auto" }, {}]}
+          aria-label="Bar beside a surface"
+          bar={{ $layer: "brand" }}
           className="w-full"
         />
       </Example>
@@ -988,7 +990,7 @@ export default function NavExamples() {
         title="Bar without a guide"
         description="With no guide line around the row, the bar sits on the start edge of the current row."
         code={`
-          <Nav glider={{ $kind: "bar", $barOffset: "auto" }}>
+          <Nav bar={{ $offset: 0 }}>
             <NavLink>Overview</NavLink>
             <NavLink>Installation</NavLink>
             <NavLink>Usage</NavLink>
@@ -998,7 +1000,7 @@ export default function NavExamples() {
       >
         <DemoNav
           aria-label="Bar without a guide"
-          glider={{ $kind: "bar", $barOffset: "auto" }}
+          bar={{ $offset: 0 }}
           className="w-full"
         />
       </Example>
@@ -1007,7 +1009,7 @@ export default function NavExamples() {
         title="Bar at the end"
         description="The bar sits on the end edge of the current row."
         code={`
-          <Nav glider={{ $kind: "bar", $side: "end", $barOffset: "auto" }}>
+          <Nav bar={{ $side: "end", $offset: 0 }}>
             <NavLink>Overview</NavLink>
             <NavLink>Installation</NavLink>
             <NavLink>Usage</NavLink>
@@ -1017,7 +1019,7 @@ export default function NavExamples() {
       >
         <DemoNav
           aria-label="Bar at the end"
-          glider={{ $kind: "bar", $side: "end", $barOffset: "auto" }}
+          bar={{ $side: "end", $offset: 0 }}
           className="w-full"
         />
       </Example>
@@ -1030,7 +1032,7 @@ export default function NavExamples() {
             $p={3}
             $rounded="3xl"
             $border
-            glider={[{}, { $kind: "bar", $barOffset: "center" }]}
+            bar={{ $offset: "halfway" }}
           >
             <NavLink>Overview</NavLink>
             <NavLink>Installation</NavLink>
@@ -1044,7 +1046,7 @@ export default function NavExamples() {
           $p={3}
           $rounded="3xl"
           $border
-          glider={[{}, { $kind: "bar", $barOffset: "center" }]}
+          bar={{ $offset: "halfway" }}
           className="w-full"
         />
       </Example>
@@ -1058,7 +1060,7 @@ export default function NavExamples() {
             $p={2}
             $rounded="full"
             $border
-            glider={[{}, { $kind: "bar", $barOffset: "center" }]}
+            bar={{ $offset: "halfway" }}
           >
             <NavLink>Overview</NavLink>
             <NavLink>Installation</NavLink>
@@ -1073,7 +1075,7 @@ export default function NavExamples() {
           $p={2}
           $rounded="full"
           $border
-          glider={[{}, { $kind: "bar", $barOffset: "center" }]}
+          bar={{ $offset: "halfway" }}
           className="max-w-full"
         />
       </Example>
@@ -1084,7 +1086,7 @@ export default function NavExamples() {
           title={`End bar across sections (${dir})`}
           description="A bar on the end edge marks the current row among the top-level links and in the open sections alike. The rows of a section end where their button ends and sit one nav gap under it, where their guide starts too, so the bar keeps one line. A body the caller pads keeps its rows on the label and insets their end edge, and the bar, by that padding."
           code={`
-            <Nav dir="${dir}" glider={{ $kind: "bar", $animated: false, $side: "end", $barOffset: "auto" }}>
+            <Nav dir="${dir}" bar={{ $side: "end", $offset: 0 }}>
               <NavLink>Overview</NavLink>
               <NavDisclosure
                 defaultOpen
@@ -1123,7 +1125,7 @@ export default function NavExamples() {
         title="Empty, false, and unknown current values"
         description="Idle links carry an empty or false aria-current, which does not count as current, and the current link carries a token ARIA does not list, which does. The rows, the bar, and the guide line follow only the current link. Click a link to move it. With the current link in the section, close the section to leave no current row in view."
         code={`
-          <Nav $slotSize={5} glider={{ $kind: "bar", $animated: false, $barOffset: "auto" }}>
+          <Nav $slotSize={5} bar={{ $offset: "edge" }}>
             <NavLink aria-current="active">Overview</NavLink>
             <NavDisclosure
               defaultOpen
@@ -1143,7 +1145,7 @@ export default function NavExamples() {
 
       <Example
         title="Sidebar"
-        description="A documentation sidebar. The current cover moves between sections on click."
+        description="A documentation sidebar. The current surface moves between sections on click."
         code={`
           <Frame render={<aside />} $p={2} $rounded="2xl" $lightnessOffset={0.5} $border>
             <NavButton render={<a />}>
@@ -1155,7 +1157,7 @@ export default function NavExamples() {
                 beta
               </NavSlot>
             </NavButton>
-            <Nav glider>
+            <Nav>
               <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />} />}>
                 <NavList>
                   <NavLink>Introduction</NavLink>
@@ -1269,7 +1271,7 @@ export default function NavExamples() {
         description="In a right-to-left direction the guide lines, the indents and the bar are mirrored, and the closed chevron points left."
         code={`
           <div dir="rtl">
-            <Nav $slotSize={5} glider={{ $kind: "bar" }}>
+            <Nav $slotSize={5} bar>
               <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />}>البدء</NavDisclosureButton>}>
                 <NavList>
                   <NavLink>مقدمة</NavLink>
@@ -1286,7 +1288,7 @@ export default function NavExamples() {
         `}
       >
         <div dir="rtl" lang="ar" className="w-full">
-          <Nav $slotSize={5} glider={{ $kind: "bar" }} aria-label="الأقسام">
+          <Nav $slotSize={5} bar aria-label="الأقسام">
             <NavDisclosure
               defaultOpen
               button={
@@ -1768,7 +1770,7 @@ export default function NavExamples() {
       <Example
         title="Horizontal navigation"
         description="One scrolling row with an independently styled bar."
-        code={`<Nav $layout="horizontal" $p={3} glider={{ $kind: "bar", $animated: false }}><NavLink href="#overview">Overview</NavLink></Nav>`}
+        code={`<Nav $layout="horizontal" $p={3} bar><NavLink href="#overview">Overview</NavLink></Nav>`}
       >
         <HorizontalNavigation />
       </Example>
@@ -1778,6 +1780,13 @@ export default function NavExamples() {
         code={`<Nav><NavLink item={{ className: "project-item" }} href="#overview">Overview</NavLink></Nav>`}
       >
         <LinkItems />
+      </Example>
+      <Example
+        title="Bar forms"
+        description="Links take the navigation bar, omit it, or render their own. Recipe links render the bar as their last child."
+        code={`<Nav bar><NavLink href="#none" bar={false}>No bar</NavLink></Nav>`}
+      >
+        <BarForms />
       </Example>
       <Example
         title="Forwarded link descriptions"

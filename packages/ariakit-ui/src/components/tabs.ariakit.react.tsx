@@ -3,11 +3,15 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { Fragment, isValidElement } from "react";
 import type { ComponentProps } from "react";
-import { createRender } from "../react-utils/create-render.react.ts";
+import {
+  appendOptionalChild,
+  createOptionalRender,
+  createRender,
+} from "../react-utils/create-render.react.ts";
 import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   tab,
-  tabGlider,
+  tabBar,
   tabLabel,
   tabList,
   tabPanels,
@@ -86,7 +90,14 @@ export function TabProvider(props: TabProviderProps) {
   return <ak.TabProvider {...props} />;
 }
 
-export interface TabProps extends ak.TabProps, VariantProps<typeof tab> {}
+export interface TabProps extends ak.TabProps, VariantProps<typeof tab> {
+  /**
+   * A bar that marks the tab while selected, as `true`, an element, or `TabBar`
+   * props. Rendered after the children. Use it with `flat` or `bevel` tabs.
+   * Children of a `render` element replace it, so pass them to the tab instead.
+   */
+  bar?: boolean | React.ReactElement | TabBarProps;
+}
 
 /**
  * Renders a tab that selects its associated panel.
@@ -102,9 +113,14 @@ export interface TabProps extends ak.TabProps, VariantProps<typeof tab> {}
  *   </TabPanels>
  * </Tabs>
  */
-export function Tab(props: TabProps) {
+export function Tab({ bar, ...props }: TabProps) {
   const [variantProps, rest] = splitProps(props, tab);
-  return <ak.Tab {...tab.jsx(variantProps)} {...rest} />;
+  const barElement = createOptionalRender(TabBar, bar === true ? {} : bar);
+  return (
+    <ak.Tab {...tab.jsx(variantProps)} {...rest}>
+      {appendOptionalChild(rest.children, barElement)}
+    </ak.Tab>
+  );
 }
 
 export interface TabListProps
@@ -332,18 +348,17 @@ export function TabPanel({ single, ...props }: TabPanelProps) {
   return <ak.TabPanel tabId={single ? tabId : undefined} {...props} />;
 }
 
-export interface TabGliderProps
-  extends ComponentProps<"div">, VariantProps<typeof tabGlider> {}
+export interface TabBarProps
+  extends ComponentProps<"span">, VariantProps<typeof tabBar> {}
 
 /**
- * Renders a decorative selection indicator after the tabs in a tab list.
+ * A thin bar that marks the selected tab. Pass it, or its props, to the `bar`
+ * prop of `Tab` so it renders as the last child.
  * @example
  * <Tabs>
- *   <TabList
- *     aria-label="Project"
- *     tabs={{ overview: "Overview", activity: "Activity" }}
- *   >
- *     <TabGlider />
+ *   <TabList aria-label="Project">
+ *     <Tab id="overview" $kind="flat" bar>Overview</Tab>
+ *     <Tab id="activity" $kind="flat" bar>Activity</Tab>
  *   </TabList>
  *   <TabPanels>
  *     <TabPanel tabId="overview">Project details</TabPanel>
@@ -351,7 +366,7 @@ export interface TabGliderProps
  *   </TabPanels>
  * </Tabs>
  */
-export function TabGlider(props: TabGliderProps) {
-  const [variantProps, rest] = splitProps(props, tabGlider);
-  return <div {...tabGlider.jsx(variantProps)} {...rest} />;
+export function TabBar(props: TabBarProps) {
+  const [variantProps, rest] = splitProps(props, tabBar);
+  return <span aria-hidden {...tabBar.jsx(variantProps)} {...rest} />;
 }

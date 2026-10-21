@@ -43,7 +43,7 @@ export default function Example() {
           // The header stretches the navigation to its height, so the bar sits
           // on the header's bottom edge. The links scroll when they need more
           // room than the header has.
-          <Nav aria-label="Main" $layout="horizontal" glider={{ $kind: "bar" }}>
+          <Nav aria-label="Main" $layout="horizontal" bar>
             {pages.map((page) => (
               <NavLink
                 key={page}

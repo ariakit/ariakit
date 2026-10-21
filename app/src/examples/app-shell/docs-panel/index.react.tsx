@@ -2,7 +2,6 @@ import * as ak from "@ariakit/react";
 import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
-  ButtonGlider,
   ButtonGroup,
   ButtonLabel,
   ButtonSlot,
@@ -103,7 +102,7 @@ export default function Example() {
               <Nav
                 $layout="horizontal"
                 aria-label="Main"
-                glider={[{ $kind: "flat" }, { $kind: "bar" }]}
+                bar
                 className="@max-4xl/shell:hidden"
               >
                 {topLinks.map((link, index) => (
@@ -148,14 +147,7 @@ export default function Example() {
           render={<nav />}
         >
           <ShellSidebarBody>
-            <Nav
-              list={false}
-              render={<div />}
-              glider={[
-                { $kind: "flat" },
-                { $kind: "bar", $barOffset: "center" },
-              ]}
-            >
+            <Nav list={false} render={<div />} bar={{ $offset: "halfway" }}>
               {navigationGroups.map((group) => (
                 <NavGroup key={group.label}>
                   <NavGroupLabel>{group.label}</NavGroupLabel>
@@ -406,7 +398,7 @@ export default function Example() {
                     value="compact"
                     // Renders the radio role before hydration.
                     type="button"
-                    render={<Button />}
+                    render={<Button $selectedOffset={2} />}
                   >
                     <ButtonLabel>Compact</ButtonLabel>
                   </ak.Radio>
@@ -414,11 +406,10 @@ export default function Example() {
                     value="comfortable"
                     // Renders the radio role before hydration.
                     type="button"
-                    render={<Button />}
+                    render={<Button $selectedOffset={2} />}
                   >
                     <ButtonLabel>Comfortable</ButtonLabel>
                   </ak.Radio>
-                  <ButtonGlider />
                 </ak.RadioGroup>
               </ak.RadioProvider>
             </div>

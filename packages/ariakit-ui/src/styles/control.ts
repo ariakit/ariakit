@@ -1,5 +1,6 @@
 import { cv, cx } from "clava";
 import { includes } from "../utils/includes.ts";
+import { getSpacingValue } from "../utils/styles.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
 import { hasLayerBackground, isLayerColor, layer } from "./layer.ts";
@@ -35,6 +36,8 @@ export const control = cv({
     // Reset stacked-card spacing on nested controls' parts while preserving the
     // control's own inherited alignment.
     "[&>*]:[--control-inline:initial]",
+    // Bars measure from the border edge, but frame borders do not inherit.
+    "[--control-border:var(--ak-frame-border)]",
   ],
   variants: {
     ...fontSizeVariants,
@@ -531,10 +534,137 @@ export const controlSeparator = cv({
   },
 });
 
+/**
+ * The offset from a bar's control to the bar's near edge. Bars read the
+ * distance from their control to the group's padding edge from `--bar-gap`.
+ */
+export type BarOffset = "halfway" | "edge" | (string & {}) | number;
+
+const NAMED_BAR_OFFSETS = {
+  halfway: "[--bar-offset:calc((var(--bar-gap)-var(--bar))/2)]",
+  edge: "[--bar-offset:calc(var(--bar-gap)-var(--bar))]",
+};
+
+/** Checks whether a bar offset is `halfway` or `edge`. */
+export function isNamedBarOffset(
+  value: unknown,
+): value is keyof typeof NAMED_BAR_OFFSETS {
+  if (typeof value !== "string") return false;
+  return Object.hasOwn(NAMED_BAR_OFFSETS, value);
+}
+
+/** Resolves a named bar offset into its `--bar-offset` class. */
+export function getNamedBarOffsetClass(value: keyof typeof NAMED_BAR_OFFSETS) {
+  return NAMED_BAR_OFFSETS[value];
+}
+
+/** Resolves a named or spacing bar offset into `--bar-offset`. */
+export function getBarOffset(value?: BarOffset) {
+  if (value == null) return;
+  if (isNamedBarOffset(value)) return getNamedBarOffsetClass(value);
+  return { style: { "--bar-offset": getSpacingValue(value) } };
+}
+
+/** Shared painting and visibility for bars inside selected controls. */
+export const barBase = cv({
+  extend: [layer],
+  class: [
+    "control-bar absolute pointer-events-none rounded-xs",
+    // Slot margin rules reach the next sibling; keep the bar on its insets.
+    "m-0!",
+    // Show the bar only while its control is checked, selected, or current.
+    "hidden group-ui-selected/control:block",
+    // A fixed width keeps the bar the same at every text size. Normalize the
+    // 0–100 contrast scale so high contrast adds only 20%.
+    "[--bar:calc(var(--bar-width,2px)*(1+0.2*var(--contrast,0)/100))]",
+    // Forced colors would repaint the fill with the canvas color.
+    "forced-colors:forced-color-adjust-none forced-colors:bg-[CanvasText]",
+  ],
+  variants: {
+    /**
+     * Sets the bar thickness. Numbers are pixels; other values are CSS lengths.
+     * High contrast adds 20%. Defaults to 2px.
+     */
+    $width(value?: number | (string & {})) {
+      if (value == null) return;
+      const width = typeof value === "number" ? `${value}px` : value;
+      return { style: { "--bar-width": width } };
+    },
+    /**
+     * Sets the bar length along its control. `full` spans the control. `auto`
+     * is shorter by the control's corner radius, half at each end, so rounder
+     * controls get shorter bars.
+     */
+    $length: {
+      full: "[--bar-inset:0px]",
+      // Browsers clamp a rendered corner to half the control's shorter side,
+      // which is about one line plus its padding.
+      auto: "[--bar-inset:min(var(--ak-frame-radius)/2,calc((1lh+var(--py,0px)*2)/4),25%)]",
+    },
+  },
+  defaultVariants: {
+    $length: "auto",
+    // Contrast with the surrounding surface instead of painting a cover.
+    $layer: "transparent",
+    $invert: true,
+    $contrast: true,
+  },
+});
+
+/**
+ * A thin bar that marks a checked, selected, or current control. Render it as
+ * the control's last child. Horizontal groups draw it below or above the
+ * control; vertical groups draw it at the control's inline end or start.
+ */
+export const controlBar = cv({
+  extend: [barBase],
+  class: [
+    "[--bar-gap:var(--control-bar-gap,0px)]",
+    "inset-s-(--bar-inset) inset-e-(--bar-inset) h-(--bar)",
+    "[.vertical>.control>&]:top-(--bar-inset) [.vertical>.control>&]:bottom-(--bar-inset)",
+    "[.vertical>.control>&]:h-auto [.vertical>.control>&]:w-(--bar)",
+  ],
+  variants: {
+    /** Places the bar after or before its control on the group's cross axis. */
+    $side: {
+      end: [
+        "top-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
+        "[.vertical>.control>&]:inset-e-auto",
+        "[.vertical>.control>&]:inset-s-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
+      ],
+      start: [
+        "bottom-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
+        "[.vertical>.control>&]:inset-s-auto",
+        "[.vertical>.control>&]:inset-e-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
+      ],
+    },
+    /**
+     * Sets the gap from the control to the bar. `edge` puts the bar on the
+     * group's padding edge, over the control when the padding is thinner than
+     * the bar. `halfway` centers it between the control and that edge. Numbers
+     * scale the spacing token, so `0` puts the bar against the control; other
+     * strings are CSS lengths and can be negative for overlap. Defaults to
+     * `edge`.
+     */
+    $offset: getBarOffset,
+  },
+  defaultVariants: {
+    $side: "end",
+    $offset: "edge",
+  },
+});
+
 /** A control group with shared spacing and optional joined edges. */
 export const controlGroup = cv({
   extend: [frame],
-  class: ["control-group"],
+  class: [
+    // Bars inside the controls reach the group's padding edge.
+    "control-group [--control-bar-gap:var(--ak-frame-padding)]",
+    // Forced colors remove the selected surface, which may be the only mark of
+    // the checked control, so it keeps an edge. A control with an edge keeps
+    // its own width.
+    "[&>.control]:ui-selected:forced-colors:ak-frame-border-[length:max(1px,var(--border-width,1px))]",
+  ],
   variants: {
     ...fontSizeVariants,
     /**
@@ -597,7 +727,7 @@ export const controlGroup = cv({
       addClass("ak-frame-join ak-frame-join-auto");
     }
     addClass(variants.$layout === "vertical" ? "ak-frame-col" : "ak-frame-row");
-    // Ignore decorations such as gliders when finding the first and last
+    // Ignore separators and hidden controls when finding the first and last
     // controls.
     addClass([
       "[&>.control:nth-child(1_of_.control:not([hidden]))]:ak-frame-start",

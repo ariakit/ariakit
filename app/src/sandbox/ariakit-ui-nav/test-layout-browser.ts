@@ -199,7 +199,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     q,
   }) => {
     const nav = q.navigation("الأقسام");
-    const bar = nav.locator(":scope > .glider");
+    const bar = nav.locator(".control-bar:visible");
     const icon = query(nav).button("البدء").locator(".control-slot").first();
     await nav.scrollIntoViewIfNeeded();
     // The guide runs down the center of the section's icon, so the bar centers
@@ -265,7 +265,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       q,
     }) => {
       const nav = q.navigation(`End bar across sections (${dir})`);
-      const bar = nav.locator(":scope > .glider");
+      const bar = nav.locator(".control-bar:visible");
       const overview = query(nav).link("Overview");
       const styling = query(nav).button("Styling");
       const themes = query(nav).link("Themes");
@@ -305,6 +305,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       for (const row of [themes, buttonLink]) {
         await row.click();
         await expect.poll(() => start(bar)).toBeCloseTo(line, 0);
+        // Boxes ignore clipping, so check that the section doesn't hide the bar
+        // outside its rows.
+        await expect(bar).toBeInViewport({ ratio: 1 });
       }
       // A body the caller pads insets its rows' end edge, and the bar with it,
       // by that padding: $p={3} is three spacing steps, 12px at the sandbox's
@@ -754,7 +757,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   }) => {
     const nav = q.navigation("Project pages");
     const link = query(nav).link("Overview");
-    const bar = nav.locator(":scope > .glider");
+    const bar = nav.locator(".control-bar:visible");
     await nav.scrollIntoViewIfNeeded();
     await expect(bar).toBeVisible();
     const radius = await link.evaluate(
@@ -782,37 +785,29 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         return (await getBox(link)).y - box.y - box.height;
       })
       .toBeCloseTo(6, 0);
-    await q.combobox("Bar distance").selectOption("frame");
+    await q.combobox("Bar distance").selectOption("edge");
     await expect
       .poll(async () => (await getBox(bar)).y - (await getBox(nav)).y)
       .toBeCloseTo(0, 0);
     await expect(link).toHaveCSS("border-radius", radius);
+    // The navigation scrolls, so it clips a bar past its padding. Without
+    // padding, an edge bar overlaps the link's edge and stays in view.
     await q.checkbox("Add frame padding").uncheck();
-    await q.combobox("Bar side").selectOption("end");
-    await q.combobox("Bar distance").selectOption("auto");
     await expect(nav).toHaveCSS("padding", "0px");
-    await expect
-      .poll(async () => {
-        const [box, item] = await Promise.all([getBox(bar), getBox(link)]);
-        return box.y - item.y - item.height;
-      })
-      .toBeCloseTo(0, 0);
-    await expect(bar).toBeInViewport({ ratio: 1 });
-    await q.combobox("Bar distance").selectOption("6px");
     for (const side of ["start", "end"]) {
       await q.combobox("Bar side").selectOption(side);
       await expect
         .poll(async () => {
           const [box, item] = await Promise.all([getBox(bar), getBox(link)]);
           return side === "start"
-            ? item.y - box.y - box.height
-            : box.y - item.y - item.height;
+            ? box.y - item.y
+            : item.y + item.height - box.y - box.height;
         })
-        .toBeCloseTo(6, 0);
+        .toBeCloseTo(0, 0);
       await expect(bar).toBeInViewport({ ratio: 1 });
     }
     const standalone = q.navigation("Single link");
-    await expect(standalone.locator(":scope > .glider")).toBeVisible();
+    await expect(standalone.locator(".control-bar:visible")).toBeVisible();
     await expect(query(standalone).link("Home")).toHaveAttribute(
       "aria-current",
       "location",
@@ -824,9 +819,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   }) => {
     const nav = q.navigation("Project pages");
     const link = query(nav).link("Overview");
-    const bar = nav.locator(":scope > .glider");
+    const bar = nav.locator(".control-bar:visible");
     await nav.scrollIntoViewIfNeeded();
-    await q.combobox("Bar distance").selectOption("center");
+    await q.combobox("Bar distance").selectOption("halfway");
     for (const side of ["end", "start"]) {
       await q.combobox("Bar side").selectOption(side);
       await expect
@@ -858,7 +853,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   }) => {
     const nav = q.navigation("Project pages");
     const link = query(nav).link("Overview");
-    const bar = nav.locator(":scope > .glider");
+    const bar = nav.locator(".control-bar:visible");
     await nav.scrollIntoViewIfNeeded();
     // Without frame padding, links keep the navigation's rounded corners.
     await q.checkbox("Add frame padding").uncheck();
@@ -908,17 +903,18 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       }
       await page.keyboard.press("Enter");
       await expect(links.last()).toHaveAttribute("aria-current", "step");
-      const bar = nav.locator(":scope > .glider");
+      const bar = nav.locator(".control-bar:visible");
       await expect
         .poll(async () => {
           const [marker, item] = await Promise.all([
             getBox(bar),
             getBox(links.last()),
           ]);
-          return marker.x - item.x;
+          // The bar is shorter than the link by its corner radius.
+          return marker.x + marker.width / 2 - item.x - item.width / 2;
         })
         .toBeCloseTo(0, 0);
-      await q.combobox("Bar distance").selectOption("frame");
+      await q.combobox("Bar distance").selectOption("edge");
       await expect
         .poll(async () => {
           const [marker, frame] = await Promise.all([getBox(bar), getBox(nav)]);
@@ -935,7 +931,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
             getBox(bar),
             getBox(links.last()),
           ]);
-          return marker.x - item.x;
+          // The bar is shorter than the link by its corner radius.
+          return marker.x + marker.width / 2 - item.x - item.width / 2;
         })
         .toBeCloseTo(0, 0);
       await expect

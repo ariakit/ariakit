@@ -3,6 +3,7 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import * as React from "react";
 import {
+  appendOptionalChild,
   createOptionalRender,
   createRender,
   isRenderable,
@@ -16,10 +17,10 @@ import {
   navDisclosureButton,
   navDisclosureContentBody,
   navDisclosureGroup,
-  navGlider,
   navGroup,
   navGroupLabel,
   navLink,
+  navLinkBar,
   navLinkContent,
   navLinkDescription,
   navLinkLabel,
@@ -57,24 +58,13 @@ interface NavLinkContextValue {
 // Lets a link describe itself by its description, which then leaves its name.
 const NavLinkContext = React.createContext<NavLinkContextValue | null>(null);
 
-/**
- * A glider element, props, or array. Later gliders paint over earlier ones.
- * `true` renders the default flat cover of the current row.
- */
-export type NavGliderValue =
-  | boolean
-  | React.ReactElement
-  | NavGliderProps
-  | (React.ReactElement | NavGliderProps)[];
+/** A bar element, `NavLinkBar` props, or `true` for the default bar. */
+export type NavLinkBarValue = boolean | React.ReactElement | NavLinkBarProps;
 
-function renderGliders(value?: NavGliderValue) {
-  if (!value) return null;
-  if (value === true) return createRender(NavGlider);
-  if (!Array.isArray(value)) return createRender(NavGlider, value);
-  return value.map((item, index) => (
-    <React.Fragment key={index}>{createRender(NavGlider, item)}</React.Fragment>
-  ));
-}
+// Lets links inherit the navigation's default bar.
+const NavBarContext = React.createContext<NavLinkBarValue | undefined>(
+  undefined,
+);
 
 export interface NavProps
   extends ak.RoleProps<"nav">, VariantProps<typeof nav> {
@@ -86,56 +76,17 @@ export interface NavProps
    */
   list?: React.ReactElement | NavListProps | false;
   /**
-   * Indicator that moves between current rows, including rows in groups and
-   * disclosures. Set `true` for the default `NavGlider`, or supply an element,
-   * props, or an array of these. Omitted by default.
+   * Default bar for the current link, including links in groups and
+   * disclosures. Set `true` for the default `NavLinkBar`, or supply an element
+   * or props. A link's own `bar` prop overrides it. Omitted by default.
    */
-  glider?: NavGliderValue;
-}
-
-// Disclosure transitions that move nav rows.
-const ROW_MOVING_PROPERTIES = new Set(["height", "max-height"]);
-
-/**
- * Disables glider easing while rows move, excluding the glider's transitions.
- */
-function useSettling(element: HTMLElement | null) {
-  React.useEffect(() => {
-    if (!element) return;
-    let running = 0;
-    const isRowMoving = (event: TransitionEvent) => {
-      if (!ROW_MOVING_PROPERTIES.has(event.propertyName)) return false;
-      // The target may come from another realm.
-      const target = event.target as Partial<Element> | null;
-      return !target?.classList?.contains("glider");
-    };
-    const start = (event: TransitionEvent) => {
-      if (!isRowMoving(event)) return;
-      running += 1;
-      element.setAttribute("data-settling", "");
-    };
-    const stop = (event: TransitionEvent) => {
-      if (!isRowMoving(event)) return;
-      running = Math.max(0, running - 1);
-      if (running > 0) return;
-      element.removeAttribute("data-settling");
-    };
-    element.addEventListener("transitionstart", start);
-    element.addEventListener("transitionend", stop);
-    element.addEventListener("transitioncancel", stop);
-    return () => {
-      element.removeEventListener("transitionstart", start);
-      element.removeEventListener("transitionend", stop);
-      element.removeEventListener("transitioncancel", stop);
-      element.removeAttribute("data-settling");
-    };
-  }, [element]);
+  bar?: NavLinkBarValue;
 }
 
 /**
  * A navigation landmark that wraps its rows in a `NavList` by default.
  * @example
- * <Nav aria-label="Main" glider>
+ * <Nav aria-label="Main" bar>
  *   <NavLink href="/" currentUrl="/">Home</NavLink>
  *   <NavLink href="/docs">Docs</NavLink>
  * </Nav>
@@ -147,20 +98,14 @@ function useSettling(element: HTMLElement | null) {
  *   </NavGroup>
  * </Nav>
  */
-export function Nav({ list, glider, children, ...props }: NavProps) {
+export function Nav({ list, bar, children, ...props }: NavProps) {
   const [variantProps, rest] = splitProps(props, nav);
-  const [element, setElement] = React.useState<HTMLElement | null>(null);
-  useSettling(element);
   return (
-    <ak.Role.nav
-      {...nav.jsx(variantProps)}
-      {...rest}
-      // Let Ariakit merge the state setter with the caller's ref and element.
-      render={<ak.Role.nav ref={setElement} render={rest.render} />}
-    >
-      {renderGliders(glider)}
-      {list === false ? children : createRender(NavList, list, { children })}
-    </ak.Role.nav>
+    <NavBarContext.Provider value={bar}>
+      <ak.Role.nav {...nav.jsx(variantProps)} {...rest}>
+        {list === false ? children : createRender(NavList, list, { children })}
+      </ak.Role.nav>
+    </NavBarContext.Provider>
   );
 }
 
@@ -180,21 +125,23 @@ export function NavList(props: NavListProps) {
   return <ak.Role.ul {...navList.jsx(variantProps)} {...rest} />;
 }
 
-export interface NavGliderProps
-  extends ak.RoleProps<"div">, VariantProps<typeof navGlider> {}
+export interface NavLinkBarProps
+  extends ak.RoleProps<"span">, VariantProps<typeof navLinkBar> {}
 
 /**
- * Marks the current row with a cover or bar. Pass it to `Nav`'s `glider` prop
- * to paint below the rows. Hidden in browsers without CSS anchor positioning.
+ * A thin bar that marks the current link. Pass it, or its props, to the `bar`
+ * prop of `Nav` or `NavLink` so it renders as the link's last child.
  * @example
- * <Nav aria-label="Main" glider={<NavGlider />}>
+ * <Nav aria-label="Main" bar={<NavLinkBar $offset="halfway" />}>
  *   <NavLink href="/" currentUrl="/">Home</NavLink>
  *   <NavLink href="/docs">Docs</NavLink>
  * </Nav>
  */
-export function NavGlider(props: NavGliderProps) {
-  const [variantProps, rest] = splitProps(props, navGlider);
-  return <ak.Role.div aria-hidden {...navGlider.jsx(variantProps)} {...rest} />;
+export function NavLinkBar(props: NavLinkBarProps) {
+  const [variantProps, rest] = splitProps(props, navLinkBar);
+  return (
+    <ak.Role.span aria-hidden {...navLinkBar.jsx(variantProps)} {...rest} />
+  );
 }
 
 export interface NavLinkProps
@@ -213,6 +160,13 @@ export interface NavLinkProps
    * a `NavList` or another `ul`, `ol`, or `menu` parent.
    */
   item?: React.ReactElement | ak.RoleProps<"li"> | false;
+  /**
+   * A bar that marks the link while current, as `true`, an element, or
+   * `NavLinkBar` props. Rendered after the children. Defaults to the `bar` prop
+   * of the parent `Nav`; set `false` to omit it. Children of a `render` element
+   * replace it, so pass them to the link instead.
+   */
+  bar?: NavLinkBarValue;
 }
 
 /**
@@ -227,8 +181,14 @@ export interface NavLinkProps
  *   <NavLink href="/docs" item={false}>Docs</NavLink>
  * </Nav>
  */
-export function NavLink({ currentUrl, item, ...props }: NavLinkProps) {
+export function NavLink({ currentUrl, item, bar, ...props }: NavLinkProps) {
   const [variantProps, rest] = splitProps(props, navLink);
+  const defaultBar = React.useContext(NavBarContext);
+  const barValue = bar ?? defaultBar;
+  const barElement = createOptionalRender(
+    NavLinkBar,
+    barValue === true ? {} : barValue,
+  );
   const isCurrent = isCurrentPage(currentUrl, rest.href);
   const disclosures = React.useContext(NavDisclosureContext);
   const defaultDescriptionId = React.useId();
@@ -281,7 +241,9 @@ export function NavLink({ currentUrl, item, ...props }: NavLinkProps) {
         {...rest}
         // An explicit undefined from the caller must not drop the description.
         aria-describedby={rest["aria-describedby"] ?? descriptionId}
-      />
+      >
+        {appendOptionalChild(rest.children, barElement)}
+      </ak.Role.a>
     </NavLinkContext.Provider>
   );
   if (item === false) return link;
@@ -500,7 +462,8 @@ function NavDisclosureRoot(props: ak.RoleProps<"li">) {
 }
 
 /**
- * Discloses nested nav rows. The transparent root keeps their gliders visible.
+ * Discloses nested nav rows. The transparent root keeps the nav surface
+ * visible.
  * @example
  * <Nav aria-label="Docs">
  *   <NavDisclosure button="Getting started">
@@ -533,9 +496,10 @@ export function NavDisclosure({
   );
 }
 
+// The button content box clips, so a bar inside it could never show.
 export interface NavButtonProps extends Omit<
   ButtonProps<typeof navButton>,
-  "recipe"
+  "recipe" | "bar"
 > {}
 
 /**

@@ -10,7 +10,6 @@
 import * as ak from "@ariakit/react";
 import {
   Button,
-  ButtonGlider,
   ButtonGroup,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
@@ -103,7 +102,9 @@ function AppThemeOptionGroup({ idPrefix, setting }: AppThemeOptionGroupProps) {
               // radio role until the island hydrates.
               type="button"
               aria-label={option.swatch ? option.label : undefined}
-              render={<Button className="flex-1 justify-center" />}
+              render={
+                <Button $selectedOffset={2} className="flex-1 justify-center" />
+              }
             >
               {option.swatch ? (
                 <ButtonSlot>
@@ -118,7 +119,6 @@ function AppThemeOptionGroup({ idPrefix, setting }: AppThemeOptionGroupProps) {
               )}
             </ak.Radio>
           ))}
-          <ButtonGlider />
         </ak.RadioGroup>
       </ak.RadioProvider>
     </div>

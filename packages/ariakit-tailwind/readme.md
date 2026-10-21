@@ -931,7 +931,7 @@ The item utility carries its own declarations, so both group and item utilities 
 }
 ```
 
-Items with `[hidden]` do not participate. The first and last visible DOM children get the start and end flags automatically; `[hidden]` siblings and `template` elements are skipped. If the group has decoration siblings or other nonparticipating children, apply `ak-frame-start` and `ak-frame-end` to the first and last joined items. Keep nonparticipating children out of layout flow. The control-group recipe sets these flags for its controls, so a glider does not change the outer corners. For CSS-hidden items, use `[hidden]` or set the boundary flags explicitly. Do not apply joining to wrapped or reordered layouts, unequal edge widths, or items separated by in-flow content. Omit the group utility for independent surfaces or nonzero gaps that do not follow frame padding.
+Items with `[hidden]` do not participate. The first and last visible DOM children get the start and end flags automatically; `[hidden]` siblings and `template` elements are skipped. If the group has decoration siblings or other nonparticipating children, apply `ak-frame-start` and `ak-frame-end` to the first and last joined items. Keep nonparticipating children out of layout flow. The control-group recipe sets these flags for its controls, so a separator does not change the outer corners. For CSS-hidden items, use `[hidden]` or set the boundary flags explicitly. Do not apply joining to wrapped or reordered layouts, unequal edge widths, or items separated by in-flow content. Omit the group utility for independent surfaces or nonzero gaps that do not follow frame padding.
 
 ## Variants
 

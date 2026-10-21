@@ -95,11 +95,8 @@ export default function Example() {
           aria-label={`${doneCount} of ${lessons.length} lessons done`}
         />
       </div>
-      {/* The centered bar runs on the guide of the open chapter. */}
-      <Nav
-        aria-label="Lessons"
-        glider={[{}, { $kind: "bar", $barOffset: "center" }]}
-      >
+      {/* The halfway bar runs on the guide of the open chapter. */}
+      <Nav aria-label="Lessons" bar={{ $offset: "halfway" }}>
         {chapters.map((chapter, index) => {
           const done = chapter.lessons.filter((lesson) => lesson.done);
           return (

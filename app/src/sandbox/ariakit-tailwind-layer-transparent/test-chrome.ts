@@ -135,9 +135,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    // The glider these controls sit over is only visible because they paint
+    // The indicator these controls sit over is only visible because they paint
     // nothing, selected or not.
-    await expect(page.locator("[data-glider]")).not.toHaveCSS(
+    await expect(page.locator("[data-indicator]")).not.toHaveCSS(
       "background-color",
       UNPAINTED,
     );

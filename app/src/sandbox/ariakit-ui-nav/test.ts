@@ -5,6 +5,27 @@ import {
   getDisclosureParts,
 } from "../ariakit-ui-disclosure/disclosure.test-helper.ts";
 
+test("lets links take, omit, or replace the navigation bar", () => {
+  const nav = q.within(q.navigation("Bar overrides"));
+  const getBar = (name: string) =>
+    nav.link(name).querySelector(":scope > .control-bar");
+  expect(getBar("Default bar")).toHaveAttribute("aria-hidden", "true");
+  expect(getBar("Default bar")).not.toHaveClass("nav-bar-end");
+  expect(getBar("No bar")).toBeNull();
+  expect(getBar("Element bar")).toHaveClass("nav-bar-end");
+});
+
+test("keeps link children mounted while the navigation bar toggles", async () => {
+  const link = q.within(q.navigation("Bar overrides")).link("Default bar");
+  const slot = link.querySelector(".control-slot");
+  expect(slot).not.toBeNull();
+  await click(q.checkbox("Show bars"));
+  expect(link.querySelector(".control-bar")).toBeNull();
+  await click(q.checkbox("Show bars"));
+  expect(link.querySelector(".control-bar")).not.toBeNull();
+  expect(slot?.isConnected).toBe(true);
+});
+
 // https://github.com/ariakit/ariakit/issues/7553
 test("renders every nav row without repeated or important gap classes", () => {
   const buttons = q.button

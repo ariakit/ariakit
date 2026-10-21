@@ -409,6 +409,8 @@ export const disclosureContent = cv({
     "transition-[content-visibility,height,max-height]",
     // Keep nested disclosures outside the ancestor group.
     "[--disclosure-group:0]",
+    // Nested content without a guide must not inherit the outer guide.
+    "[--disclosure-guide:initial]",
     "transition-discrete",
     "[interpolate-size:allow-keywords]",
     // Only animate when the browser can interpolate to max-content.
@@ -428,13 +430,14 @@ export const disclosureContent = cv({
      */
     $guide: [
       "[--disclosure-ps:var(--disclosure-lead)]",
-      // Expose the selected row's guide to nav gliders. A deeper selected guide
-      // wins by tree order.
-      "ui-has-selected-row:before:[anchor-name:--disclosure-guide-selected]",
+      "[--disclosure-guide-center:calc(var(--disclosure-padding)+0.5lh)]",
+      // Expose the guide center to navigation bars in the content rows. The
+      // compound selector outranks the reset above.
+      "[&.disclosure-content]:[--disclosure-guide:var(--disclosure-guide-center)]",
       "before:absolute before:top-(--disclosure-body-offset) before:bottom-0 before:ak-layer",
       "before:border-e-(length:--disclosure-guide-width,1px)",
       // Center any guide width on the leading slot's one-line column.
-      "before:inset-s-[calc(var(--disclosure-padding)+0.5lh-var(--disclosure-guide-width,1px)/2)]",
+      "before:inset-s-[calc(var(--disclosure-guide-center)-var(--disclosure-guide-width,1px)/2)]",
     ],
   },
 });

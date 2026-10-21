@@ -219,16 +219,15 @@ const hasSidebar = sidebar && navigation.length > 0;
             </a>
           </ShellHeaderStart>
           <ShellHeaderCenter className="@max-2xl/shell:hidden">
-            <Nav
-              $layout="horizontal"
-              aria-label="Main"
-              glider={{ $kind: "bar", $animated: false }}
-            >
+            {/* Astro renders each link apart from the Nav, so the links take the
+                bar themselves. */}
+            <Nav $layout="horizontal" aria-label="Main">
               {
                 sections.map((link) => (
                   <NavLink
                     href={link.href}
                     aria-current={link.current ? "page" : undefined}
+                    bar
                     className="font-medium"
                   >
                     {link.label}
@@ -339,15 +338,11 @@ const hasSidebar = sidebar && navigation.length > 0;
                   On this page
                 </p>
                 {/* The layout script marks the link of the section in view. */}
-                <Nav
-                  $gap={0.5}
-                  render={createElement("div")}
-                  glider={{ $kind: "bar", $animated: false }}
-                  data-app-toc
-                >
+                <Nav $gap={0.5} render={createElement("div")} data-app-toc>
                   {tocHeadings.map((heading) => (
                     <NavLink
                       href={`#${heading.slug}`}
+                      bar
                       className={heading.depth > 2 ? "ps-6" : undefined}
                     >
                       {heading.text}

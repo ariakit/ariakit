@@ -1,6 +1,5 @@
 import { hoverOver, inkAlpha, tabInto } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
-import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/7863
@@ -21,6 +20,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test
       .expect(query(q.article("Meaningful icon")).img("Starred"))
       .toBeVisible();
+  });
+
+  test("renders a button as a native submit input", async ({ q }) => {
+    await test
+      .expect(query(q.article("Native submit input")).button("Submit form"))
+      .toHaveAttribute("type", "submit");
   });
 
   // The ink inherits through the slot layers, so the icon dims with the label
@@ -98,7 +103,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(segmented.radio("List")).not.toBeChecked();
 
     const vertical = query(
-      query(q.article("Vertical bar glider")).radiogroup("Theme"),
+      query(q.article("Vertical bar")).radiogroup("Theme"),
     );
     await test.expect(vertical.radio("System")).toBeChecked();
     await vertical.radio("Dark").click();
@@ -115,17 +120,19 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const links = query(example);
     const overview = links.link("Overview");
     const activity = links.link("Activity");
-    const glider = example.locator(".glider");
+    const getBackground = (link: typeof overview) =>
+      link.evaluate((node) => getComputedStyle(node).backgroundColor);
     // Each slash sits right after the link before it, so both sit next to
     // Activity, and each also sits next to a link with an empty value.
     const firstSlash = overview.locator("xpath=following-sibling::*[1]");
     const secondSlash = activity.locator("xpath=following-sibling::*[1]");
     const transparent = "rgba(0, 0, 0, 0)";
-    // Every link carries an empty or false value, so none is current: the
-    // glider has nothing to land on, and every slash shows.
+    // Every link carries an empty or false value, so none is current: no link
+    // paints a selected surface, and every slash shows.
     await test.expect(overview).toHaveAttribute("aria-current", "");
     await test.expect(activity).toHaveAttribute("aria-current", "false");
-    await test.expect(glider).toHaveCSS("display", "none");
+    const idle = await getBackground(overview);
+    test.expect(await getBackground(activity)).toBe(idle);
     await test
       .expect(firstSlash)
       .not.toHaveCSS("border-right-color", transparent);
@@ -137,15 +144,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await activity.click();
     await test.expect(activity).toHaveAttribute("aria-current", "active");
     await page.mouse.move(0, 0);
-    await test.expect
-      .poll(async () => {
-        const [box, link] = await Promise.all([
-          getBox(glider),
-          getBox(activity),
-        ]);
-        return box.x - link.x;
-      })
-      .toBeCloseTo(0, 0);
+    await test.expect.poll(() => getBackground(activity)).not.toBe(idle);
+    await test.expect.poll(() => getBackground(overview)).toBe(idle);
     // A slash eases its border color over 200ms. One that only the pointer hid
     // would still read transparent right after the pointer left.
     await page.waitForTimeout(200);

@@ -190,8 +190,8 @@ export const frameBase = cv({
 export const frame = cv({
   extend: [edge, frameBase],
   defaultVariants: {
-    // Provide text and edge colors without painting over gliders or other
-    // content. Use $layer: true or a color for a resting surface.
+    // Provide text and edge colors without painting over the parent surface.
+    // Use $layer: true or a color for a resting surface.
     $layer: "transparent",
     // These defaults must live here: edge's computed defaults cannot read
     // frame's $border variant.

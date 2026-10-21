@@ -158,8 +158,8 @@ const barInsetDefault = "var(--shell-bar-inset)";
  * padding.
  */
 const bar = cx(
-  // A horizontal navigation region fills the bar's height, so frame-edge
-  // gliders meet the bar's edge. Its rows stay centered.
+  // A horizontal navigation region fills the bar's height, so edge bars in
+  // its centered rows meet the bar's edge.
   "[&>.shell-bar-start:has(>.nav.horizontal)]:self-stretch",
   "[&>.shell-bar-center:has(>.nav.horizontal)]:self-stretch",
   "[&>.shell-bar-end:has(>.nav.horizontal)]:self-stretch",
@@ -194,6 +194,8 @@ export const shellHeader = cv({
   class: [
     bar,
     "shell-header row-[header] box-border min-h-(--shell-header-height) @container/shell-header",
+    // Let edge bars in a centered navigation row reach the inner edge.
+    "[&>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-var(--shell-facing-border,0px))]",
     "z-4",
     "[--shell-bar-inset:max(0px,calc(var(--spacing)*3+(var(--shell-header-height)-var(--shell-header-step)*16)/2))]",
   ],
@@ -295,6 +297,9 @@ export const shellFooter = cv({
     // The footer ends the sidebar columns, pushing sticky sidebar bodies up
     // without a fixed footer height.
     "shell-footer row-[footer] box-border min-h-(--shell-footer-height) @container/shell-footer",
+    // Let edge bars in a centered navigation row reach the inner edge.
+    // The bottom safe area pads the footer, so it doesn't hold the row.
+    "[&>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-var(--shell-facing-border,0px)-env(safe-area-inset-bottom))]",
     "z-3",
     "pbs-0! pbe-[env(safe-area-inset-bottom)]!",
     "[--shell-bar-inset:max(0px,calc(var(--spacing)*3+(var(--shell-footer-height)-var(--shell-header-step)*16)/2))]",
@@ -526,9 +531,9 @@ export const shellSidebarHeader = cv({
   defaultVariants: { $p: 3 },
 });
 
-// A direct navigation region spans the part's padding, so frame-edge bar
-// gliders meet the sidebar edge. Its rows keep their place. A region with its
-// own frame padding, border, or ring keeps its box.
+// A direct navigation region spans the part's padding, so edge bars meet the
+// sidebar edge. Its rows keep their place. A region with its own frame padding,
+// border, or ring keeps its box.
 const sidebarNavCover =
   "[&>.nav:not([class*=ak-frame-p-],[class*=ak-frame-border],[class*=ak-frame-ring])]:ak-frame-cover";
 

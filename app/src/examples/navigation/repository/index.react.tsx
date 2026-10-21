@@ -53,11 +53,12 @@ export default function Example() {
           </Badge>
         </span>
         {/* The bar marks the current tab on the line below the header, so the
-            current tab needs no surface of its own. */}
+            current tab needs no surface of its own. Its gap and 2px width
+            fill the tab's bottom margin. */}
         <Nav
           aria-label="Repository"
           $layout="horizontal"
-          glider={{ $kind: "bar" }}
+          bar={{ $offset: 0.5 }}
         >
           {tabs.map((tab) => (
             <NavLink

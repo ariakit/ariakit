@@ -14,16 +14,17 @@ import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/issues/7806
   test("follows a native checkbox's checked state", async ({ q }) => {
-    const example = q.article("Native checkbox glider");
+    const example = q.article("Native checkbox selection");
     const checkbox = query(example).checkbox("Pin this item");
-    const glider = example.locator(".glider");
-    await test.expect(glider).toBeHidden();
+    const getBackground = () =>
+      checkbox.evaluate((node) => getComputedStyle(node).backgroundColor);
+    const idle = await getBackground();
     await checkbox.press("Space");
     await test.expect(checkbox).toBeChecked();
-    await test.expect(glider).toBeVisible();
+    await test.expect.poll(getBackground).not.toBe(idle);
     await checkbox.press("Space");
     await test.expect(checkbox).not.toBeChecked();
-    await test.expect(glider).toBeHidden();
+    await test.expect.poll(getBackground).toBe(idle);
   });
 
   // https://github.com/ariakit/ariakit/pull/7584
@@ -106,7 +107,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
 
   // The page capture also keeps the static states of the button group fixture
   // under visual regression: joined borders, kept corners and the selected
-  // glider.
+  // surface.
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972227948
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550181
   // https://github.com/ariakit/ariakit/issues/7466
@@ -140,7 +141,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
-  test("moves the segmented control glider to the clicked radio @visual", async ({
+  test("moves the segmented control selection to the clicked radio @visual", async ({
     page,
     q,
     visual,
@@ -159,61 +160,22 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
-  // https://github.com/ariakit/ariakit/issues/7799
-  test("animates the bar between rows in a vertical group", async ({
+  test("shows the bar only beside the checked row of a vertical group", async ({
     q,
-    browserName,
   }) => {
-    test.skip(
-      browserName === "firefox",
-      "Firefox does not transition this anchor change, including with the original inset rule.",
-    );
-    const example = q.article("Vertical bar glider");
+    const example = q.article("Vertical bar");
     const system = query(example).radio("System");
     const dark = query(example).radio("Dark");
-    const bar = example.locator(".glider");
+    const systemBar = system.locator(".control-bar");
+    const darkBar = dark.locator(".control-bar");
     await example.scrollIntoViewIfNeeded();
     await test.expect(system).toBeChecked();
-    const start = await system.boundingBox();
-    const end = await dark.boundingBox();
-    if (!start || !end) throw new Error("Missing radio bounds");
-    // Compare centers: the bar is shorter than the row by its corner radius.
-    const startCenter = start.y + start.height / 2;
-    const endCenter = end.y + end.height / 2;
-    const getBarCenter = async () => {
-      const box = await bar.boundingBox();
-      return box && box.y + box.height / 2;
-    };
-    // Keep the transition pending for the test's whole budget. Safari can
-    // finish the short transition before a transitionrun handler pauses it.
-    await bar.evaluate((node, timeout) => {
-      node.style.transitionDelay = `${timeout}ms`;
-    }, test.info().timeout);
+    await test.expect(systemBar).toBeVisible();
+    await test.expect(darkBar).toBeHidden();
     await dark.click();
     await test.expect(dark).toBeChecked();
-    await test.expect
-      .poll(() =>
-        bar.evaluate((node) => {
-          const transitions = node.getAnimations().filter((animation) => {
-            if (!(animation instanceof CSSTransition)) return false;
-            return ["top", "bottom"].includes(animation.transitionProperty);
-          });
-          for (const animation of transitions) {
-            animation.pause();
-            const timing = animation.effect!.getTiming();
-            animation.currentTime =
-              Number(timing.delay) + Number(timing.duration) / 2;
-          }
-          return transitions.length;
-        }),
-      )
-      .toBeGreaterThan(0);
-    await test.expect.poll(getBarCenter).toBeGreaterThan(startCenter);
-    await test.expect.poll(getBarCenter).toBeLessThan(endCenter);
-    await bar.evaluate((node) => {
-      for (const animation of node.getAnimations()) animation.finish();
-    });
-    await test.expect.poll(getBarCenter).toBeCloseTo(endCenter, 0);
+    await test.expect(darkBar).toBeVisible();
+    await test.expect(systemBar).toBeHidden();
   });
 
   // A hovered control owns both of its shared edges, so each one takes the

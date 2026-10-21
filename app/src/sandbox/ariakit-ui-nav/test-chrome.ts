@@ -312,7 +312,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   }) => {
     const nav = q.navigation("Empty, false, and unknown current values");
     const rows = query(nav);
-    const bar = nav.locator(":scope > .glider");
+    // Every link renders a bar, and only the current one shows it.
+    const bar = nav.locator(".control-bar:visible");
     const overview = rows.link("Overview");
     const themes = rows.link("Themes");
     const tokens = rows.link("Tokens");
@@ -322,7 +323,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       const box = await getBox(bar);
       return {
         middle: box.y + box.height / 2,
-        end: box.x + box.width,
+        start: box.x,
         center: box.x + box.width / 2,
       };
     };
@@ -337,15 +338,15 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     for (const link of [themes, tokens, changelog]) {
       await test.expect(link).toHaveCSS("font-weight", "400");
     }
-    // No row of the section is current, so its guide line stays unnamed, and
-    // Changelog is not current either, so the bar sits on the start edge of
-    // Overview.
+    // No row of the section is current, and Changelog is not current either, so
+    // the bar marks Overview. The unpadded navigation edge is the row's start
+    // edge, so the bar starts there.
     const overviewBox = await getBox(overview);
     await test.expect
       .poll(async () => (await barEdges()).middle)
       .toBeCloseTo(overviewBox.y + overviewBox.height / 2, 0);
     await test.expect
-      .poll(async () => (await barEdges()).end)
+      .poll(async () => (await barEdges()).start)
       .toBeCloseTo(overviewBox.x, 0);
     // The token on Themes counts as current, so the bar moves onto the guide
     // line, which runs down the center of the section's icon.
@@ -365,11 +366,11 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect
       .poll(async () => (await barEdges()).center)
       .toBeCloseTo(iconBox.x + iconBox.width / 2, 0);
-    // A current row in a closed section counts as none, and neither the empty
-    // value on Overview nor the false one on Changelog counts, so the bar
-    // leaves.
+    // The closed section hides the current row with its bar, and neither the
+    // empty value on Overview nor the false one on Changelog counts, so no bar
+    // shows.
     await styling.click();
     await test.expect(styling).toHaveAttribute("aria-expanded", "false");
-    await test.expect(bar).toHaveCSS("display", "none");
+    await test.expect(bar).toHaveCount(0);
   });
 });

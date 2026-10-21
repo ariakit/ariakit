@@ -10,7 +10,7 @@ The gallery includes a list of links, a list with a brand selection, a top bar, 
 
 ## Components
 
-`Nav` renders a navigation landmark with a list of `NavLink` rows. Set `$layout="horizontal"` for a row that scrolls when the links need more room. Pass `glider` to mark the current link with a cover that moves between links. Pass `{ $kind: "bar" }` for a thin bar instead, or an array to show a cover and a bar together.
+`Nav` renders a navigation landmark with a list of `NavLink` rows. Set `$layout="horizontal"` for a row that scrolls when the links need more room. The current link keeps its own surface. Pass `bar` to also mark it with a thin bar, or `bar={{ $offset: "halfway" }}` to center it between the link and the navigation edge. Set `bar` on a `NavLink` to override the default for that link.
 
 Set `aria-current="page"` on the current `NavLink`, or pass `currentUrl` to compare it with the `href`. Put an icon, badge, avatar, shortcut, or thumbnail in a `NavSlot`, and the text in a `NavLinkLabel`. Wrap a label and a `NavLinkDescription` in `NavLinkContent` to show secondary text below or beside the label.
 

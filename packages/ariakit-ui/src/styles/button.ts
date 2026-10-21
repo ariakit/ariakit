@@ -2,20 +2,18 @@ import { cv } from "clava";
 import { active } from "./active.ts";
 import {
   control,
+  controlBar,
   controlContent,
   controlDescription,
+  controlGroup,
   controlLabel,
+  controlSeparator,
   controlSlot,
 } from "./control.ts";
 import { focusHighlight } from "./focus.ts";
-import {
-  glider,
-  gliderAnchor,
-  gliderGroup,
-  gliderSeparator,
-} from "./glider.ts";
 import { hover } from "./hover.ts";
 import { hasLayerBackground, isLayerColor } from "./layer.ts";
+import { selected } from "./selected.ts";
 
 interface BevelLightenVariants {
   $kind?: string;
@@ -35,9 +33,12 @@ function hasBevelLighten(variants: BevelLightenVariants) {
   return true;
 }
 
-/** An interactive control with hover, focus, press, and disabled styles. */
+/**
+ * An interactive control with hover, focus, press, selected, and disabled
+ * styles.
+ */
 export const button = cv({
-  extend: [control, gliderAnchor, hover, focusHighlight, active],
+  extend: [control, hover, focusHighlight, active, selected],
   class: [
     "not-[a]:cursor-default not-[button]:select-none",
     // Use a pointer for navigation and form submission; commands keep the
@@ -69,8 +70,8 @@ export const button = cv({
   },
   defaultVariants: {
     $kind: "flat",
-    // Keep the resting surface transparent for the parent or a glider; color
-    // modifiers can still paint it.
+    // Keep the resting surface transparent for the parent; color modifiers can
+    // still paint it.
     $layer: "transparent",
     $gapY: "none",
     $hoverOffset: true,
@@ -136,14 +137,14 @@ export const buttonDescription = cv({
   },
 });
 
-/** A selection indicator placed after the buttons in a group. */
-export const buttonGlider = glider;
+/** A thin bar inside a button that marks it while checked or current. */
+export const buttonBar = controlBar;
 
-/** A button group with shared spacing and a selection glider. */
-export const buttonGroup = gliderGroup;
+/** A button group with shared spacing and optional joined edges. */
+export const buttonGroup = controlGroup;
 
 /** A line, slash, or chevron between buttons. */
-export const buttonSeparator = gliderSeparator;
+export const buttonSeparator = controlSeparator;
 
 /** A text-aligned slot for a button icon, avatar, badge, or shortcut. */
 export const buttonSlot = controlSlot;

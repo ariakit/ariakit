@@ -19,9 +19,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     );
   });
 
-  // The nested section's root sits in a content that stacks over the gliders,
-  // so it must not paint a surface of its own over them.
-  test("shows the current cover and a hovered row of a nested section @visual", async ({
+  // The nested section's root must not paint a surface of its own over the
+  // current and hovered rows.
+  test("shows the current surface and a hovered row of a nested section @visual", async ({
     page,
     q,
     visual,
@@ -37,7 +37,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
-  test("moves the sidebar current cover on click and shows keyboard focus on a row @visual", async ({
+  test("moves the sidebar current surface on click and shows keyboard focus on a row @visual", async ({
     page,
     q,
     visual,

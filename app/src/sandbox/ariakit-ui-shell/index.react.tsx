@@ -913,6 +913,23 @@ function BarScenario() {
           </div>
         </ShellMainBody>
       </ShellMain>
+      {/* A bottom navigation, as on a phone, which can add a bottom safe area
+          to the footer. */}
+      <ShellFooter
+        center={
+          <Nav $layout="horizontal" aria-label="Footer pages" bar>
+            <NavLink href="#home" aria-current="page" tabIndex={0}>
+              Home
+            </NavLink>
+            <NavLink href="#search" tabIndex={0}>
+              Search
+            </NavLink>
+            <NavLink href="#profile" tabIndex={0}>
+              Profile
+            </NavLink>
+          </Nav>
+        }
+      />
     </Shell>
   );
 }
