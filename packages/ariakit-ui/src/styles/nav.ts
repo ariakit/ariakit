@@ -302,6 +302,8 @@ export const navLinkContent = cv({
  *
  * Set `data-text` to the label text to keep the heavier weight of a current
  * link in a horizontal navigation, where rows otherwise use the normal weight.
+ * There, the label keeps the width of that heavier text and centers its text
+ * instead of filling the row.
  */
 export const navLinkLabel = cv({
   extend: [buttonLabel],
@@ -314,6 +316,12 @@ export const navLinkLabel = cv({
     "data-text:before:block data-text:before:h-0 data-text:before:overflow-hidden",
     "data-text:before:invisible data-text:before:content-[attr(data-text)]",
     "data-text:before:font-[calc(500+var(--contrast))]",
+    // A horizontal row caps the label at the reserved width and centers the
+    // text in it, so both sides of the text share the extra space. Taking the
+    // free space of a wider row, or the width of a longer description, would
+    // move the text away from the start.
+    "in-[.nav.horizontal>.control,.nav.horizontal>.nav-list>li>.control]:data-text:max-w-fit",
+    "in-[.nav.horizontal>.control,.nav.horizontal>.nav-list>li>.control]:data-text:text-center",
   ],
   defaultVariants: {
     $truncate: false,
