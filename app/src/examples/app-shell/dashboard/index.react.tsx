@@ -2,7 +2,6 @@ import * as ak from "@ariakit/react";
 import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
-  ButtonGlider,
   ButtonGroup,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
@@ -71,10 +70,7 @@ export default function Example() {
           </TextFrame>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav
-            render={<div />}
-            glider={[{ $kind: "flat" }, { $kind: "bar", $barOffset: "center" }]}
-          >
+          <Nav render={<div />} bar={{ $offset: "halfway" }}>
             {navigationLinks.map((link, index) => (
               <NavLink
                 key={link.title}
@@ -175,12 +171,11 @@ export default function Example() {
                       value={option.value}
                       // Renders the radio role before hydration.
                       type="button"
-                      render={<Button />}
+                      render={<Button $selectedOffset={2} />}
                     >
                       {option.label}
                     </ak.Radio>
                   ))}
-                  <ButtonGlider />
                 </ak.RadioGroup>
               </ak.RadioProvider>
             </div>

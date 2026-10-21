@@ -102,7 +102,7 @@ export default function Example() {
             aria-label="Site"
             list={false}
             $fill
-            glider={{ $kind: "bar", $barOffset: "center" }}
+            bar={{ $offset: "halfway" }}
           >
             <NavDisclosureGroup $fill>
               {sections.map((section) => (

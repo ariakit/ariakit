@@ -72,7 +72,7 @@ export default function Example() {
       $p={2}
       className="w-80 text-sm"
     >
-      <Nav aria-label="API reference" list={false} glider $cover>
+      <Nav aria-label="API reference" list={false} $cover>
         <NavList>
           {guides.map((id) => (
             <NavLink key={id} {...linkProps(id)}>

@@ -43,7 +43,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     page,
     q,
   }) => {
-    const box = query(q.article("Folder glider"));
+    const box = query(q.article("Folder tabs"));
     await box.tab("Code").click();
     await page.keyboard.press("ArrowRight");
     await test.expect(box.tab("Usage")).toBeFocused();

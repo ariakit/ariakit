@@ -123,7 +123,7 @@ body > * {
   initial-value: 1;
 }
 
-/* Registration lets the glider animate the folder's outer corner radius. */
+/* Registration lets folder curves animate their outer corner radius. */
 @property --folder-radius {
   syntax: "<length>";
   inherits: true;
@@ -192,6 +192,13 @@ body > * {
 }
 
 @property --disclosure-lead {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Resolve the guide center on the content so row fonts cannot move it. */
+@property --disclosure-guide-center {
   syntax: "<length>";
   inherits: true;
   initial-value: 0px;
@@ -1468,7 +1475,6 @@ body > * {
 @custom-variant ui-selected {
   &:is(
     :checked,
-    .selected,
     [aria-checked="true"],
     [aria-selected="true"],
     [aria-current]:not([aria-current=""], [aria-current="false"])
@@ -1489,78 +1495,6 @@ body > * {
     [aria-checked="true"],
     [aria-selected="true"],
     [aria-current]:not([aria-current=""], [aria-current="false"])
-  ) {
-    @slot;
-  }
-}
-
-@custom-variant ui-has-selected-row {
-  &:has(
-    li > .control:is(
-      :checked,
-      .selected,
-      [aria-checked="true"],
-      [aria-selected="true"],
-      [aria-current]:not([aria-current=""], [aria-current="false"])
-    )
-  ) {
-    @slot;
-  }
-}
-
-/* A nav glider precedes its rows, including those inside groups and lists.
-   Closing disclosure contents stop supplying a visible selected row. */
-@custom-variant ui-nav-glider-selected {
-  &:has(
-    ~ .control:is(
-      :checked,
-      .selected,
-      [aria-checked="true"],
-      [aria-selected="true"],
-      [aria-current]:not([aria-current=""], [aria-current="false"])
-    ),
-    ~ * li > .control:is(
-      :checked,
-      .selected,
-      [aria-checked="true"],
-      [aria-selected="true"],
-      [aria-current]:not([aria-current=""], [aria-current="false"])
-    ):not(:is([hidden], [data-leave]) *)
-  ) {
-    @slot;
-  }
-}
-
-/* Keep the peer marker in each alternative to prevent Chrome from invalidating
-   whole subtrees when a portal is removed beside a negated sibling selector. */
-@custom-variant ui-glider-selected {
-  :is(
-      :where(.peer):checked,
-      :where(.peer)[aria-checked="true"],
-      :where(.peer)[aria-selected="true"],
-      :where(.peer)[aria-current]:not([aria-current=""], [aria-current="false"])
-    )
-    ~ & {
-    @slot;
-  }
-}
-
-/* Exclude .selected so decorations cannot select other decorations. */
-@custom-variant ui-sibling-selected {
-  :is(
-      :checked,
-      [aria-checked="true"],
-      [aria-selected="true"],
-      [aria-current]:not([aria-current=""], [aria-current="false"])
-    )
-    ~ &,
-  &:has(
-    ~ :is(
-      :checked,
-      [aria-checked="true"],
-      [aria-selected="true"],
-      [aria-current]:not([aria-current=""], [aria-current="false"])
-    )
   ) {
     @slot;
   }
@@ -1596,19 +1530,6 @@ body > * {
 @custom-variant ui-adjacent-focus-visible {
   :focus-visible + &,
   &:has(+ :focus-visible) {
-    @slot;
-  }
-}
-
-@custom-variant befter {
-  &::before,
-  &::after {
-    @slot;
-  }
-}
-
-@custom-variant supports-anchor {
-  @supports (anchor-name: --a) {
     @slot;
   }
 }

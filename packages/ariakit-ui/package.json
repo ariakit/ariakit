@@ -69,7 +69,6 @@
     "./styles/edge": "./src/styles/edge.ts",
     "./styles/focus": "./src/styles/focus.ts",
     "./styles/frame": "./src/styles/frame.ts",
-    "./styles/glider": "./src/styles/glider.ts",
     "./styles/heading": "./src/styles/heading.ts",
     "./styles/hover": "./src/styles/hover.ts",
     "./styles/input": "./src/styles/input.ts",

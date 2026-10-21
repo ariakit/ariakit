@@ -134,12 +134,13 @@ test("site navigation centers the current page bar before its row", async ({
 }) => {
   await gotoAndSettle(page, examplePath);
   const sidebar = q.navigation("Site");
-  // The bar is a decorative, hidden glider, so only its box can be queried.
-  const bar = sidebar.locator(".nav > .glider");
+  const row = query(sidebar).link("App Shell");
+  // The bar is a decorative, hidden element, so only its box can be queried.
+  const bar = row.locator(".control-bar");
   const getOffsets = async () => {
     const [sidebarBox, rowBox, barBox] = await Promise.all([
       sidebar.boundingBox(),
-      query(sidebar).link("App Shell").boundingBox(),
+      row.boundingBox(),
       bar.boundingBox(),
     ]);
     if (!sidebarBox || !rowBox || !barBox) return null;

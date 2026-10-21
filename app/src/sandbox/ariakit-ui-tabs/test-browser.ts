@@ -22,7 +22,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     visual,
   }) => {
     await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Folder glider");
+      const box = q.article("Folder tabs");
       // A synthesized pointer move that scrolls the strip into view does not
       // apply :hover in WebKit until the pointer enters another element, so the
       // pointer passes over Usage on its way to Preview.
@@ -34,28 +34,13 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
-  test("paints the focus box on a selected tab over its glider", async ({
-    page,
-    q,
-  }) => {
-    const preview = query(q.article("Flat glider")).tab("Preview");
-    await test.expect(preview).toHaveAttribute("aria-selected", "true");
-    await tabTo(page, preview);
-    await expectFocusVisible(preview);
-    // The glider wipes the surface of the tab it covers, so the brand box the
-    // tab paints back is its only mark of keyboard focus.
-    await test
-      .expect(preview)
-      .not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-  });
-
   test("paints the focus pill on a tab without selecting it @visual", async ({
     page,
     q,
     visual,
   }) => {
     await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Folder glider");
+      const box = q.article("Folder tabs");
       const usage = query(box).tab("Usage");
       // Firefox leaves the modality of a click in place when an arrow key moves
       // focus, so the strip is reached with the keyboard.

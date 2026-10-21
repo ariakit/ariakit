@@ -68,7 +68,7 @@ export default function Example() {
 
   return (
     <Frame $layer $lighten={0.5} $rounded="2xl" $border $p={2} className="w-72">
-      <Nav aria-label="Music" list={false} glider>
+      <Nav aria-label="Music" list={false}>
         <NavList>
           <NavLink {...linkProps("Home")}>
             <NavSlot>

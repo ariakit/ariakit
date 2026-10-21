@@ -19,7 +19,7 @@ const links = [
 export default function Example() {
   const [current, setCurrent] = useState("Home");
   return (
-    <Nav aria-label="Main" glider className="w-56">
+    <Nav aria-label="Main" className="w-56">
       {links.map((link) => (
         <NavLink
           key={link.label}

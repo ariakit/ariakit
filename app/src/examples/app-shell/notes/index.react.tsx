@@ -175,11 +175,7 @@ export default function Example() {
           </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav
-            render={<div />}
-            list={false}
-            glider={[{ $kind: "flat" }, { $kind: "bar", $barOffset: "center" }]}
-          >
+          <Nav render={<div />} list={false} bar={{ $offset: "halfway" }}>
             <NavGroup>
               <NavGroupLabel>Pages</NavGroupLabel>
               <NavList>

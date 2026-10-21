@@ -1,11 +1,16 @@
 import * as ak from "@ariakit/react";
 import type { RecipeLike, VariantProps, VariantPropsWithRecipe } from "clava";
 import { splitProps } from "clava";
+import type * as React from "react";
+import {
+  appendOptionalChild,
+  createOptionalRender,
+} from "../react-utils/create-render.react.ts";
 import {
   button,
+  buttonBar,
   buttonContent,
   buttonDescription,
-  buttonGlider,
   buttonGroup,
   buttonLabel,
   buttonSeparator,
@@ -22,6 +27,12 @@ export type ButtonProps<
      * variant.
      */
     recipe?: R;
+    /**
+     * A bar that marks the button while checked or current, as `true`, an
+     * element, or `ButtonBar` props. Rendered after the children. Children of a
+     * `render` element replace it, so pass them to the button instead.
+     */
+    bar?: boolean | React.ReactElement | ButtonBarProps;
   };
 
 /**
@@ -32,6 +43,7 @@ export type ButtonProps<
 export function Button<R extends RecipeLike<typeof button, R> = typeof button>({
   recipe,
   $disabled,
+  bar,
   ...props
 }: ButtonProps<R>) {
   const styles = recipe ?? button;
@@ -40,11 +52,14 @@ export function Button<R extends RecipeLike<typeof button, R> = typeof button>({
     props.disabled ||
     props["aria-disabled"] === true ||
     props["aria-disabled"] === "true";
+  const barElement = createOptionalRender(ButtonBar, bar === true ? {} : bar);
   return (
     <ak.Button
       {...styles.jsx({ ...variantProps, $disabled: $disabled ?? disabled })}
       {...rest}
-    />
+    >
+      {appendOptionalChild(props.children, barElement)}
+    </ak.Button>
   );
 }
 
@@ -64,22 +79,27 @@ export function ButtonGroup(props: ButtonGroupProps) {
   return <ak.Group {...buttonGroup.jsx(variantProps)} {...rest} />;
 }
 
-export interface ButtonGliderProps
-  extends ak.RoleProps<"div">, VariantProps<typeof buttonGlider> {}
+export interface ButtonBarProps
+  extends ak.RoleProps<"span">, VariantProps<typeof buttonBar> {}
 
 /**
- * A selection indicator for grouped buttons. Place it after the buttons inside
- * `ButtonGroup`.
+ * A thin bar that marks a checked or current button. Pass it, or its props, to
+ * the `bar` prop of `Button` so it renders as the last child.
  * @example
  * <ButtonGroup aria-label="Views">
- *   <Button render={<a href="/list" />} aria-current="page">List</Button>
- *   <Button render={<a href="/grid" />}>Grid</Button>
- *   <ButtonGlider />
+ *   <Button render={<a href="/list" />} aria-current="page" bar>
+ *     List
+ *   </Button>
+ *   <Button render={<a href="/grid" />} bar={<ButtonBar $offset="halfway" />}>
+ *     Grid
+ *   </Button>
  * </ButtonGroup>
  */
-export function ButtonGlider(props: ButtonGliderProps) {
-  const [variantProps, rest] = splitProps(props, buttonGlider);
-  return <ak.Role.div {...buttonGlider.jsx(variantProps)} {...rest} />;
+export function ButtonBar(props: ButtonBarProps) {
+  const [variantProps, rest] = splitProps(props, buttonBar);
+  return (
+    <ak.Role.span aria-hidden {...buttonBar.jsx(variantProps)} {...rest} />
+  );
 }
 
 export interface ButtonSeparatorProps

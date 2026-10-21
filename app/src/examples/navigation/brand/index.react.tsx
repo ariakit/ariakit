@@ -24,23 +24,12 @@ const links = [
 export default function Example() {
   const [current, setCurrent] = useState("Projects");
   return (
-    // The cover blends the brand color into the surface, and the current link
-    // shows its icon and label in the brand color. The link reads its text
-    // contrast from its own layer, not the cover, so neither is pushed. The bar
-    // also marks the link in high contrast, where the cover takes the page
-    // color.
+    // The current link blends the brand color into its surface and shows its
+    // icon and label in the brand color. The bar also marks the link in high
+    // contrast, where the surface takes the page color.
     <Nav
       aria-label="Workspace"
-      glider={[
-        { $layer: "brand", $mix: 10, $lightnessPush: false },
-        {
-          $kind: "bar",
-          $side: "start",
-          $barOffset: "frame",
-          $layer: "brand",
-          $invert: false,
-        },
-      ]}
+      bar={{ $side: "start", $layer: "brand", $invert: false }}
       $rounded="2xl"
       $p={2}
       className="w-60"
@@ -57,6 +46,8 @@ export default function Example() {
               setCurrent(link.label);
             }}
             $selectedPush={false}
+            $layer={isCurrent ? "brand" : undefined}
+            $mix={isCurrent ? 10 : undefined}
             $text={isCurrent ? "brand" : undefined}
           >
             <NavSlot>

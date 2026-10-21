@@ -12,7 +12,6 @@ import {
   Button,
   ButtonContent,
   ButtonDescription,
-  ButtonGlider,
   ButtonGroup,
   ButtonLabel,
   ButtonSeparator,
@@ -20,7 +19,7 @@ import {
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
-import { button, buttonGlider, buttonGroup } from "@ariakit/ui/styles/button";
+import { button, buttonGroup } from "@ariakit/ui/styles/button";
 import { control } from "@ariakit/ui/styles/control";
 import {
   ArrowRight,
@@ -89,6 +88,7 @@ function LooseCurrentLinks() {
     };
     return (
       <Button
+        $selectedOffset={2}
         render={
           <a
             href={`#${name.toLowerCase()}`}
@@ -111,7 +111,6 @@ function LooseCurrentLinks() {
       {link("Activity", "false")}
       <ButtonSeparator $kind="slash" />
       {link("Settings", "")}
-      <ButtonGlider />
     </ButtonGroup>
   );
 }
@@ -122,26 +121,33 @@ export default function ButtonExamples() {
   return (
     <ExampleGrid>
       <Example
-        title="Native checkbox glider"
-        description="The cover follows the checked state of a native checkbox."
+        title="Native checkbox selection"
+        description="The surface follows the checked state of a native checkbox."
         code={`
           <label htmlFor="choice">Pin this item</label>
           <ButtonGroup>
-            <input {...button.jsx()} id="choice" type="checkbox" />
-            <ButtonGlider />
+            <input {...button.jsx({ $selectedOffset: 2 })} id="choice" type="checkbox" />
           </ButtonGroup>
         `}
       >
-        <label htmlFor="native-glider-choice">Pin this item</label>
+        <label htmlFor="native-selection-choice">Pin this item</label>
         <ButtonGroup>
           <input
-            {...button.jsx()}
-            id="native-glider-choice"
+            {...button.jsx({ $selectedOffset: 2 })}
+            id="native-selection-choice"
             type="checkbox"
             tabIndex={0}
           />
-          <ButtonGlider $animated={false} />
         </ButtonGroup>
+      </Example>
+      <Example
+        title="Native submit input"
+        description="A button can render a void element, which takes no children."
+        code={`
+          <Button render={<input type="submit" value="Submit form" />} />
+        `}
+      >
+        <Button render={<input type="submit" value="Submit form" />} />
       </Example>
       <Example
         title="Default"
@@ -1348,73 +1354,70 @@ export default function ButtonExamples() {
 
       <Example
         title="Segmented control"
-        description="A radio group with a bevel glider under the checked button. Select another button to move the glider."
+        description="A radio group whose checked button lifts into a bevel. Select another button to move the selection."
         code={`
           <ak.RadioProvider>
             <ak.RadioGroup render={<ButtonGroup $border />}>
-              <ak.Radio value="list" render={<Button />}>List</ak.Radio>
-              <ak.Radio value="grid" render={<Button />}>Grid</ak.Radio>
-              <ak.Radio value="board" render={<Button />}>Board</ak.Radio>
-              <ButtonGlider $kind="bevel" />
+              <ak.Radio value="list" render={
+                <Button $selectedOffset={1.5} className="ui-selected:ui-bevel-button" />
+              }>List</ak.Radio>
+              <ak.Radio value="grid" render={
+                <Button $selectedOffset={1.5} className="ui-selected:ui-bevel-button" />
+              }>Grid</ak.Radio>
+              <ak.Radio value="board" render={
+                <Button $selectedOffset={1.5} className="ui-selected:ui-bevel-button" />
+              }>Board</ak.Radio>
             </ak.RadioGroup>
           </ak.RadioProvider>
         `}
       >
         <ak.RadioProvider defaultValue="list">
           <ak.RadioGroup aria-label="View" render={<ButtonGroup $border />}>
-            <ak.Radio value="list" render={<Button />}>
+            <ak.Radio
+              value="list"
+              render={
+                <Button
+                  $selectedOffset={1.5}
+                  className="ui-selected:ui-bevel-button"
+                />
+              }
+            >
               List
             </ak.Radio>
-            <ak.Radio value="grid" render={<Button />}>
+            <ak.Radio
+              value="grid"
+              render={
+                <Button
+                  $selectedOffset={1.5}
+                  className="ui-selected:ui-bevel-button"
+                />
+              }
+            >
               Grid
             </ak.Radio>
-            <ak.Radio value="board" render={<Button />}>
+            <ak.Radio
+              value="board"
+              render={
+                <Button
+                  $selectedOffset={1.5}
+                  className="ui-selected:ui-bevel-button"
+                />
+              }
+            >
               Board
             </ak.Radio>
-            <ButtonGlider $kind="bevel" />
           </ak.RadioGroup>
         </ak.RadioProvider>
       </Example>
 
       <Example
-        title="Glider ring"
-        description="The glider under the checked button draws its ring in the exact brand color."
-        code={`
-          <ak.RadioProvider>
-            <ak.RadioGroup render={<ButtonGroup $border />}>
-              <ak.Radio value="small" render={<Button />}>Small</ak.Radio>
-              <ak.Radio value="medium" render={<Button />}>Medium</ak.Radio>
-              <ak.Radio value="large" render={<Button />}>Large</ak.Radio>
-              <ButtonGlider $edge="brand" $edgeRaw />
-            </ak.RadioGroup>
-          </ak.RadioProvider>
-        `}
-      >
-        <ak.RadioProvider defaultValue="medium">
-          <ak.RadioGroup aria-label="Size" render={<ButtonGroup $border />}>
-            <ak.Radio value="small" render={<Button />}>
-              Small
-            </ak.Radio>
-            <ak.Radio value="medium" render={<Button />}>
-              Medium
-            </ak.Radio>
-            <ak.Radio value="large" render={<Button />}>
-              Large
-            </ak.Radio>
-            <ButtonGlider $edge="brand" $edgeRaw />
-          </ak.RadioGroup>
-        </ak.RadioProvider>
-      </Example>
-
-      <Example
-        title="Horizontal bar glider"
+        title="Horizontal bar"
         description="A bar marks the checked item while the focused item keeps its full outline at the group edge."
         code={`
         <ak.RadioProvider defaultValue="small">
           <ak.RadioGroup render={<ButtonGroup $border $borderType="ring" $p={0} />}>
-            <ak.Radio value="small" render={<Button />}>Small</ak.Radio>
-            <ak.Radio value="large" render={<Button />}>Large</ak.Radio>
-            <ButtonGlider $kind="bar" $animated={false} />
+            <ak.Radio value="small" render={<Button bar />}>Small</ak.Radio>
+            <ak.Radio value="large" render={<Button bar />}>Large</ak.Radio>
           </ak.RadioGroup>
         </ak.RadioProvider>
       `}
@@ -1424,27 +1427,25 @@ export default function ButtonExamples() {
             aria-label="Horizontal size"
             render={<ButtonGroup $border $borderType="ring" $p={0} />}
           >
-            <ak.Radio value="small" render={<Button />}>
+            <ak.Radio value="small" render={<Button bar />}>
               Small
             </ak.Radio>
-            <ak.Radio value="large" render={<Button />}>
+            <ak.Radio value="large" render={<Button bar />}>
               Large
             </ak.Radio>
-            <ButtonGlider $kind="bar" $animated={false} />
           </ak.RadioGroup>
         </ak.RadioProvider>
       </Example>
 
       <Example
-        title="Vertical bar glider"
+        title="Vertical bar"
         description="A vertical radio group. A bar along the end edge marks the checked row."
         code={`
           <ak.RadioProvider>
             <ak.RadioGroup render={<ButtonGroup $border $layout="vertical" />}>
-              <ak.Radio value="system" render={<Button />}>System</ak.Radio>
-              <ak.Radio value="light" render={<Button />}>Light</ak.Radio>
-              <ak.Radio value="dark" render={<Button />}>Dark</ak.Radio>
-              <ButtonGlider $kind="bar" />
+              <ak.Radio value="system" render={<Button bar />}>System</ak.Radio>
+              <ak.Radio value="light" render={<Button bar />}>Light</ak.Radio>
+              <ak.Radio value="dark" render={<Button bar />}>Dark</ak.Radio>
             </ak.RadioGroup>
           </ak.RadioProvider>
         `}
@@ -1454,57 +1455,60 @@ export default function ButtonExamples() {
             aria-label="Theme"
             render={<ButtonGroup $border $layout="vertical" />}
           >
-            <ak.Radio value="system" render={<Button />}>
+            <ak.Radio value="system" render={<Button bar />}>
               System
             </ak.Radio>
-            <ak.Radio value="light" render={<Button />}>
+            <ak.Radio value="light" render={<Button bar />}>
               Light
             </ak.Radio>
-            <ak.Radio value="dark" render={<Button />}>
+            <ak.Radio value="dark" render={<Button bar />}>
               Dark
             </ak.Radio>
-            <ButtonGlider $kind="bar" />
           </ak.RadioGroup>
         </ak.RadioProvider>
       </Example>
 
       <Example
-        title="Current link glider"
-        description="A glider follows the current link. The slash next to the current link hides."
+        title="Current link"
+        description="The current link keeps a selected surface. The slash next to the current link hides."
         code={`
           <ButtonGroup $border>
-            <Button render={<a />}>Overview</Button>
+            <Button $selectedOffset={2} render={<a />}>Overview</Button>
             <ButtonSeparator $kind="slash" />
-            <Button render={<a />}>Activity</Button>
+            <Button $selectedOffset={2} render={<a />}>Activity</Button>
             <ButtonSeparator $kind="slash" />
-            <Button render={<a />}>Settings</Button>
-            <ButtonGlider />
+            <Button $selectedOffset={2} render={<a />}>Settings</Button>
           </ButtonGroup>
         `}
       >
         <ButtonGroup aria-label="Project" $border>
-          <Button render={<a href="#overview" aria-current="page" />}>
+          <Button
+            $selectedOffset={2}
+            render={<a href="#overview" aria-current="page" />}
+          >
             Overview
           </Button>
           <ButtonSeparator $kind="slash" />
-          <Button render={<a href="#activity" />}>Activity</Button>
+          <Button $selectedOffset={2} render={<a href="#activity" />}>
+            Activity
+          </Button>
           <ButtonSeparator $kind="slash" />
-          <Button render={<a href="#settings" />}>Settings</Button>
-          <ButtonGlider />
+          <Button $selectedOffset={2} render={<a href="#settings" />}>
+            Settings
+          </Button>
         </ButtonGroup>
       </Example>
 
       <Example
         title="Empty, false, and unknown current values"
-        description="Idle links carry an empty or false aria-current, which does not count as current, and a clicked link carries a token ARIA does not list, which does. The glider stays away until a link is clicked, and then only the slashes next to that link hide."
+        description="Idle links carry an empty or false aria-current, which does not count as current, and a clicked link carries a token ARIA does not list, which does. No link shows a selected surface until one is clicked, and then only the slashes next to that link hide."
         code={`
           <ButtonGroup $border>
-            <Button render={<a aria-current="" />}>Overview</Button>
+            <Button $selectedOffset={2} render={<a aria-current="" />}>Overview</Button>
             <ButtonSeparator $kind="slash" />
-            <Button render={<a aria-current={false} />}>Activity</Button>
+            <Button $selectedOffset={2} render={<a aria-current={false} />}>Activity</Button>
             <ButtonSeparator $kind="slash" />
-            <Button render={<a aria-current="" />}>Settings</Button>
-            <ButtonGlider />
+            <Button $selectedOffset={2} render={<a aria-current="" />}>Settings</Button>
           </ButtonGroup>
         `}
       >
@@ -1535,12 +1539,12 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
-        title="Glider"
-        description="A glider sits under Week in a row of joined buttons."
+        title="Joined selection"
+        description="The current Week button paints a blue surface and owns its shared edges in a row of joined buttons."
         code={`
           <div
             role="group"
-            aria-label="Glider"
+            aria-label="Joined selection"
             {...buttonGroup.jsx({
               $border: 2,
               $layout: "horizontal",
@@ -1551,20 +1555,19 @@ export default function ButtonExamples() {
             <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
               Day
             </ak.Button>
-            <ak.Button aria-current="true" {...button.jsx({ $border: 2, $borderType: "border" })}>
+            <ak.Button aria-current="true" {...button.jsx({ $border: 2, $borderType: "border", $layer: "blue" })}>
               Week
             </ak.Button>
             <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
               Month
             </ak.Button>
-            <div {...buttonGlider.jsx({ $layer: "blue" })} />
           </div>
         `}
       >
         <div className="w-80 max-w-full">
           <div
             role="group"
-            aria-label="Glider"
+            aria-label="Joined selection"
             {...buttonGroup.jsx({
               $border: 2,
               $layout: "horizontal",
@@ -1577,14 +1580,17 @@ export default function ButtonExamples() {
             </ak.Button>
             <ak.Button
               aria-current="true"
-              {...button.jsx({ $border: 2, $borderType: "border" })}
+              {...button.jsx({
+                $border: 2,
+                $borderType: "border",
+                $layer: "blue",
+              })}
             >
               Week
             </ak.Button>
             <ak.Button {...button.jsx({ $border: 2, $borderType: "border" })}>
               Month
             </ak.Button>
-            <div {...buttonGlider.jsx({ $layer: "blue" })} />
           </div>
         </div>
       </Example>

@@ -10,19 +10,62 @@
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import {
   Nav,
-  NavGlider,
   NavDisclosure,
   NavGroup,
   NavGroupLabel,
   NavLink,
+  NavLinkBar,
   NavList,
+  NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
+import { nav, navLink, navLinkBar } from "@ariakit/ui/styles/nav";
+import { Star } from "lucide-react";
 import { useRef, useState } from "react";
+
+export function BarForms() {
+  const [bars, setBars] = useState(true);
+  return (
+    <section aria-label="Bar forms" className="grid gap-4">
+      <label>
+        <input
+          type="checkbox"
+          checked={bars}
+          onChange={(event) => setBars(event.target.checked)}
+        />{" "}
+        Show bars
+      </label>
+      <Nav aria-label="Bar overrides" $p={3} bar={bars}>
+        <NavLink href="#default" aria-current="true">
+          <NavSlot>
+            <Star />
+          </NavSlot>
+          Default bar
+        </NavLink>
+        <NavLink href="#none" aria-current="true" bar={false}>
+          No bar
+        </NavLink>
+        <NavLink
+          href="#element"
+          aria-current="true"
+          bar={<NavLinkBar $side="end" />}
+        >
+          Element bar
+        </NavLink>
+      </Nav>
+      <nav aria-label="Recipe bar" {...nav.jsx({ $p: 3 })}>
+        <a href="#recipe" aria-current="page" {...navLink.jsx()}>
+          Recipe link
+          <span aria-hidden {...navLinkBar.jsx()} />
+        </a>
+      </nav>
+    </section>
+  );
+}
 
 export function HorizontalNavigation() {
   const [current, setCurrent] = useState("Overview");
   const [rtl, setRtl] = useState(false);
-  const [gap, setGap] = useState("auto");
+  const [gap, setGap] = useState("edge");
   const [side, setSide] = useState<"start" | "end">("end");
   const [length, setLength] = useState<"full" | "auto">("auto");
   const [padded, setPadded] = useState(true);
@@ -60,10 +103,10 @@ export function HorizontalNavigation() {
       <label>
         Bar distance{" "}
         <select value={gap} onChange={(event) => setGap(event.target.value)}>
-          <option value="auto">Frame padding</option>
-          <option value="center">Padding center</option>
+          <option value="edge">Edge</option>
+          <option value="halfway">Halfway</option>
           <option value="6px">6px</option>
-          <option value="frame">Frame edge</option>
+          <option value="0px">Against the item</option>
         </select>
       </label>
       <label>
@@ -99,12 +142,10 @@ export function HorizontalNavigation() {
         aria-label="Project pages"
         list={ordered ? <NavList render={<ol />} /> : undefined}
         className="w-80 max-w-full"
-        glider={{
-          $kind: "bar",
-          $animated: false,
+        bar={{
           $side: side,
-          $barOffset: gap,
-          $barLength: length,
+          $offset: gap,
+          $length: length,
         }}
       >
         {["Overview", "Activity", "Members", "Integrations", "Settings"].map(
@@ -198,8 +239,7 @@ export function LinkItems() {
         </li>
       </Nav>
       <Nav list={false} aria-label="Single link" $p={3}>
-        <NavGlider $kind="bar" $animated={false} />
-        <NavLink item={false} href="#home" aria-current="location">
+        <NavLink item={false} href="#home" aria-current="location" bar>
           Home
         </NavLink>
       </Nav>

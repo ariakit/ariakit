@@ -21,6 +21,22 @@ export function createOptionalRender<P extends object>(
 }
 
 /**
+ * Appends an optional element, such as a bar, after children. The children keep
+ * their position when the element toggles, so they keep their state. Without
+ * children, only the element is returned, so a void element such as an input
+ * can render when the element is omitted.
+ * @example
+ * <a>{appendOptionalChild(props.children, barElement)}</a>
+ */
+export function appendOptionalChild(
+  children: React.ReactNode,
+  element: React.ReactNode,
+) {
+  if (children == null) return element;
+  return React.createElement(React.Fragment, null, children, element);
+}
+
+/**
  * Creates a React element from a component and a flexible prop value, merging
  * default props and supporting an element, a props object, or plain children.
  * @example

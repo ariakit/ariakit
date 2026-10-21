@@ -1,19 +1,14 @@
 import { cv, cx } from "clava";
 import {
   button,
-  buttonGlider,
+  buttonBar,
   buttonGroup,
   buttonLabel,
   buttonSeparator,
   buttonSlot,
 } from "./button.ts";
 import { frame } from "./frame.ts";
-import { gliderCover } from "./glider.ts";
-import {
-  hasSelectedSurface,
-  selected,
-  selectedHoverClass,
-} from "./selected.ts";
+import { hasSelectedSurface, selectedHoverClass } from "./selected.ts";
 
 /**
  * A tab container that shares its surface, edges, and geometry with the tab
@@ -23,13 +18,9 @@ export const tabs = cv({
   extend: [frame],
   class: [
     "tabs",
-    // Keep one stack for the strip, panel (1), glider (3), and tabs (6), so
-    // selected tabs cover the panel seam.
+    // Keep one stack for the strip, panel (1), and tabs (6), so selected tabs
+    // cover the panel seam.
     "isolate",
-    // A fixed bar follows scrolling tabs without Firefox's RTL inset error.
-    // Clip at the root's outside edge, including its ring, without putting the
-    // strip in a stacking context below the panel.
-    "[&:has(>.glider-group>.glider-bar)]:[clip-path:inset(-100vmax_calc(-1*var(--tabs-ring)))]",
     // Let the root shrink in flex and grid layouts so overflowing tabs can
     // scroll.
     "min-w-0",
@@ -103,8 +94,6 @@ const tabBox = cx(
   "not-ui-selected:ui-focus-visible:ak-layer-brand",
   "ui-focus-visible:ak-layer-offset-0",
   "not-ui-selected:ui-focus-visible:bg-(--ak-layer)",
-  // Restore the focus surface above a covering glider.
-  "supports-anchor:ui-selected:ui-focus-visible:bg-(--ak-layer)!",
 );
 
 // Selected folders join the panel; unselected folders use an inset hover
@@ -119,10 +108,8 @@ const tabFolder = cx(
   "mt-[min(var(--tabs-merge),var(--ak-frame-ring))]",
   "first:ms-[min(var(--tabs-merge),var(--ak-frame-ring))]",
   // Extend selected folders over the panel seam. Extra bottom padding and a
-  // negative margin preserve label position and row height; a glider supplies
-  // its own extension.
+  // negative margin preserve label position and row height.
   "[--tab-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
-  "supports-anchor:has-[~.glider]:[--tab-reach:0px]",
   "ui-selected:pb-[calc(var(--py)+var(--tab-reach))]",
   "ui-selected:-mb-(--tab-reach)",
   "not-ui-selected:border-transparent not-ui-selected:ring-0",
@@ -157,7 +144,7 @@ const tabFolder = cx(
 
 /** A tab with flat, bevel, or folder styling and keyboard focus feedback. */
 export const tab = cv({
-  extend: [button, selected],
+  extend: [button],
   class: [
     "z-6",
     // Only selected tabs paint at rest; retain other layers for hover.
@@ -231,73 +218,11 @@ export const tabLabel = buttonLabel;
 /** A divider between tabs. */
 export const tabSeparator = buttonSeparator;
 
-/** A moving selection indicator that matches the tab shape or draws a bar. */
-export const tabGlider = cv({
-  extend: [buttonGlider],
-  class: [
-    // The inherited vertical duration sorts later and would win without this
-    // override.
-    "[&.glider-animated]:duration-(--duration-tabs)!",
-    "z-3",
-  ],
-  variants: {
-    /**
-     * Sets the indicator shape: `folder` joins the panel; inherited `flat`,
-     * `bevel`, and `bar` remain available. A bar preserves the selected tab
-     * hover effect.
-     */
-    $kind: {
-      folder: [
-        "ui-folder",
-        gliderCover,
-        // Match the panel radius instead of the smaller nested-frame radius.
-        "[--folder-radius:var(--tabs-radius)]",
-        tabStartCurve,
-        tabSelectedEdge,
-        "ui-selected:[--glider-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
-        // Match the tab's inward focus edge. The glider has no padding to
-        // reduce, so only its edge grows.
-        "ak-outline ak-outline-brand",
-        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:[--tab-focus-extra:max(1px,calc(2px-var(--ak-frame-border)-var(--ak-frame-ring)),round(up,calc((var(--ak-frame-border)+var(--ak-frame-ring))/2),1px))]",
-        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:border-t-[calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
-        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:border-x-[calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
-        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:border-(--ak-outline)",
-        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:ring-(--ak-outline)",
-        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:[--folder-edge:var(--ak-outline)]",
-        "ui-selected:[.control[aria-selected='true']:is(:focus-visible,[data-focus-visible])~&]:[--folder-extra:var(--tab-focus-extra)]",
-      ],
-    },
-  },
-  defaultVariants: {
-    $kind: "folder",
-    // Covers use the tab root surface; bars retain their own layer.
-    $layer(defaultValue, variants) {
-      if (variants.$kind === "bar") return defaultValue;
-      return "var(--tabs-layer)";
-    },
-    // Match tab lift values for covers while preserving inherited bar values.
-    $lightnessOffset(defaultValue, variants) {
-      if (variants.$kind === "bar") return defaultValue;
-      if (variants.$kind === "folder") return false;
-      return 1.5;
-    },
-    $lighten(defaultValue, variants) {
-      if (variants.$kind === "bar") return defaultValue;
-      if (variants.$kind === "folder") return defaultValue ?? true;
-      return false;
-    },
-    // Folders inherit the root edge; other shapes keep their own edge defaults.
-    $border(defaultValue, variants) {
-      if (variants.$kind !== "folder") return defaultValue;
-      return defaultValue ?? "inherit";
-    },
-  },
-  refine({ variants, addClass }) {
-    if (variants.$kind === "bar") return;
-    // The cover owns the tab's edge, including an inherited ring.
-    addClass("supports-anchor:[.control:has(~&)]:ui-selected:ring-transparent");
-  },
-});
+/**
+ * A thin bar inside a flat or bevel tab that marks it while selected. The tab
+ * keeps its hover surface.
+ */
+export const tabBar = buttonBar;
 
 /** A horizontally scrolling tab strip with content-sized or stretched tabs. */
 export const tabList = cv({
@@ -378,11 +303,6 @@ export const tabPanels = cv({
     "rounded-ss-[calc(min(var(--tabs-notch,0px),var(--tabs-meet,var(--tabs-notch,0px)))*var(--tabs-round-s,1))]",
     "rounded-se-[calc(var(--tabs-notch,0px)*var(--tabs-round-e,1))]",
     "ui-tabs-round",
-    // Animate corners with the glider only when anchor positioning is
-    // supported.
-    "ease-tabs",
-    "supports-anchor:[.tabs:has(.glider)_&]:transition-[border-radius]",
-    "supports-anchor:[.tabs:has(.glider)_&]:duration-(--duration-tabs)",
   ],
   defaultVariants: {
     $lighten: true,

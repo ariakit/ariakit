@@ -6,7 +6,6 @@ import {
 } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
-  ButtonGlider,
   ButtonGroup,
   ButtonLabel,
   ButtonSlot,
@@ -130,12 +129,11 @@ export default function Example() {
                   value={item.id}
                   // Renders the radio role before hydration.
                   type="button"
-                  render={<Button />}
+                  render={<Button $selectedOffset={2} />}
                 >
                   <ButtonLabel>{item.label}</ButtonLabel>
                 </ak.Radio>
               ))}
-              <ButtonGlider />
             </ak.RadioGroup>
           </ak.RadioProvider>
         </ShellHeaderCenter>
@@ -178,10 +176,7 @@ export default function Example() {
           </TextFrame>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav
-            render={<div />}
-            glider={[{ $kind: "flat" }, { $kind: "bar", $barOffset: "center" }]}
-          >
+          <Nav render={<div />} bar={{ $offset: "halfway" }}>
             {layers.map((layer) => (
               <NavLink
                 key={layer.id}
@@ -368,14 +363,13 @@ export default function Example() {
                   aria-label={item.label}
                   // Renders the radio role before hydration.
                   type="button"
-                  render={<Button />}
+                  render={<Button $selectedOffset={2} />}
                 >
                   <ButtonSlot>
                     <item.icon />
                   </ButtonSlot>
                 </ak.Radio>
               ))}
-              <ButtonGlider />
             </ak.RadioGroup>
           </ak.RadioProvider>
         </ShellSidebarBody>

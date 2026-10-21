@@ -116,7 +116,7 @@ export default function Example() {
           </ButtonSlot>
         </Button>
       </div>
-      <Nav aria-label="Workspace" list={false} glider>
+      <Nav aria-label="Workspace" list={false}>
         <NavList>{personal.map((link) => renderLink(link))}</NavList>
         <NavGroup>
           <NavGroupLabel>Workspace</NavGroupLabel>

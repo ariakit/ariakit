@@ -1,4 +1,4 @@
-import { cv, cx } from "clava";
+import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import {
   button,
@@ -7,8 +7,15 @@ import {
   buttonLabel,
   buttonSlot,
 } from "./button.ts";
-import type { SlotSize } from "./control.ts";
-import { getSlotSizeClass, isSlotSize } from "./control.ts";
+import type { BarOffset, SlotSize } from "./control.ts";
+import {
+  barBase,
+  getBarOffset,
+  getNamedBarOffsetClass,
+  getSlotSizeClass,
+  isNamedBarOffset,
+  isSlotSize,
+} from "./control.ts";
 import {
   disclosure,
   disclosureButton,
@@ -16,13 +23,11 @@ import {
   disclosureGroup,
 } from "./disclosure.ts";
 import { frame, frameBase } from "./frame.ts";
-import { gliderBase, gliderRadius } from "./glider.ts";
-import { selected } from "./selected.ts";
 import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
 /**
- * A navigation region with shared row spacing, groups, and moving indicators.
+ * A navigation region with shared row spacing, groups, and current-row bars.
  */
 export const nav = cv({
   extend: [frame],
@@ -36,15 +41,10 @@ export const nav = cv({
     // labels aligned with rows.
     "[--nav-py:--spacing(2)]",
     "[--nav-px:calc(var(--nav-py)+(1lh-1cap)*0.5)]",
-    "relative isolate [--glider-padding:var(--ak-frame-padding)]",
+    "relative isolate",
+    // Bars in top-level rows reach the navigation padding edge.
+    "[--nav-bar-gap:var(--ak-frame-padding)]",
   ],
-  style: {
-    anchorName: "--glider-frame",
-    // Keep row and guide anchors within this navigation region.
-    anchorScope:
-      "--glider-frame, --glider-selected, --disclosure-guide-selected, --nav-body-selected",
-    "--glider-radius": gliderRadius,
-  },
   variants: {
     /**
      * Arranges top-level links in a column or one scrolling row. Groups and
@@ -53,9 +53,16 @@ export const nav = cv({
     $layout: {
       // A shrinkable track lets long rows truncate or wrap instead of widening
       // the navigation region.
-      vertical: "vertical grid grid-cols-[minmax(0,1fr)]",
+      vertical: [
+        "vertical grid grid-cols-[minmax(0,1fr)]",
+        // Disclosure content clips only its height animation, so end bars of
+        // nested rows can reach the navigation padding.
+        "[&_.disclosure-content]:overflow-x-visible",
+      ],
       horizontal: [
         "horizontal flex items-start overflow-x-auto overscroll-x-contain [clip-path:inset(-100vmax_0)] [&>.control,&>.nav-list>li>.control]:shrink-0 [&>.control,&>.nav-list>li>.control]:whitespace-nowrap",
+        // A bar outside the padding must not let the row scroll vertically.
+        "overflow-y-hidden",
         // The wider row gap lines up labels in a column, which a row lacks, so
         // rows use the button gap.
         "[&>.control,&>.nav-list>li>.control]:gap-[calc(var(--px)-var(--sidebearing))]",
@@ -115,9 +122,8 @@ export const navList = cv({
 export const navGroup = cv({
   class: [
     "nav-group grid grid-cols-[minmax(0,1fr)] content-start gap-(--nav-gap) shrink-0",
-    // Gliders precede the rows in the DOM, but take no space.
-    "[.nav.vertical>:not(.glider)+&]:mt-[calc(var(--nav-group-gap)-var(--nav-gap))]",
-    "[.nav.horizontal>:not(.glider)+&]:ms-[calc(var(--nav-group-gap)-var(--nav-gap))]",
+    "[.nav.vertical>*+&]:mt-[calc(var(--nav-group-gap)-var(--nav-gap))]",
+    "[.nav.horizontal>*+&]:ms-[calc(var(--nav-group-gap)-var(--nav-gap))]",
   ],
   variants: {
     /**
@@ -129,18 +135,18 @@ export const navGroup = cv({
       // The marker class outranks the spacing rules above. The line takes the
       // edge color of the navigation.
       "nav-group-divider border-(--ak-edge)",
-      "[.nav.vertical>:not(.glider)+&.nav-group-divider]:border-t",
-      "[.nav.vertical>:not(.glider)+&.nav-group-divider]:mt-[calc(var(--nav-group-gap)/2-var(--nav-gap))]",
-      "[.nav.vertical>:not(.glider)+&.nav-group-divider]:pt-[calc(var(--nav-group-gap)/2)]",
+      "[.nav.vertical>*+&.nav-group-divider]:border-t",
+      "[.nav.vertical>*+&.nav-group-divider]:mt-[calc(var(--nav-group-gap)/2-var(--nav-gap))]",
+      "[.nav.vertical>*+&.nav-group-divider]:pt-[calc(var(--nav-group-gap)/2)]",
       // The group reads the navigation's inherited frame padding. Its margins
       // reach past that padding, and its own padding keeps the rows in place.
-      "[.nav.vertical>:not(.glider)+&.nav-group-divider]:-mx-(--ak-frame-padding)",
-      "[.nav.vertical>:not(.glider)+&.nav-group-divider]:px-(--ak-frame-padding)",
-      "[.nav.horizontal>:not(.glider)+&.nav-group-divider]:border-s",
-      "[.nav.horizontal>:not(.glider)+&.nav-group-divider]:ms-[calc(var(--nav-group-gap)/2-var(--nav-gap))]",
-      "[.nav.horizontal>:not(.glider)+&.nav-group-divider]:ps-[calc(var(--nav-group-gap)/2)]",
-      "[.nav.horizontal>:not(.glider)+&.nav-group-divider]:-my-(--ak-frame-padding)",
-      "[.nav.horizontal>:not(.glider)+&.nav-group-divider]:py-(--ak-frame-padding)",
+      "[.nav.vertical>*+&.nav-group-divider]:-mx-(--ak-frame-padding)",
+      "[.nav.vertical>*+&.nav-group-divider]:px-(--ak-frame-padding)",
+      "[.nav.horizontal>*+&.nav-group-divider]:border-s",
+      "[.nav.horizontal>*+&.nav-group-divider]:ms-[calc(var(--nav-group-gap)/2-var(--nav-gap))]",
+      "[.nav.horizontal>*+&.nav-group-divider]:ps-[calc(var(--nav-group-gap)/2)]",
+      "[.nav.horizontal>*+&.nav-group-divider]:-my-(--ak-frame-padding)",
+      "[.nav.horizontal>*+&.nav-group-divider]:py-(--ak-frame-padding)",
     ],
   },
 });
@@ -251,14 +257,14 @@ export const navSlot = cv({
 
 /** A navigation link with wrapping text and a distinct current-page state. */
 export const navLink = cv({
-  extend: [button, selected],
+  extend: [button],
   class: [
     "justify-start text-wrap",
     // Idle ink inherits into slots; hover and selection restore full strength.
     "ak-dark:ak-ink-70",
     "not-ui-selected:font-normal",
     // Rows in a horizontal navigation size to their text, so a heavier current
-    // row would shift the rows after it. The glider marks it instead.
+    // row would shift the rows after it. Its surface or bar marks it instead.
     "[.nav.horizontal>&,.nav.horizontal>.nav-list>li>&]:font-normal",
     // Include optical padding so icon rows align with disclosures. Disable the
     // inherited gap variant below.
@@ -332,138 +338,71 @@ export const navButtonContent = cv({
   class: "block overflow-hidden",
 });
 
-// Position covers from the top; a moving bottom edge would add false motion
-// when disclosures open.
-const navGliderCover = cx(
-  "inset-s-[anchor(start)] top-[anchor(top)]",
-  "w-[anchor-size()] h-[anchor-size()]",
-);
-
 /**
- * A moving indicator for the current navigation row. Place it before all rows.
+ * A thin bar inside a navigation link that marks it while current. Render it as
+ * the link's last child. Vertical navigations draw it at the row's inline start
+ * by default, and horizontal ones below the row.
  */
-export const navGlider = cv({
-  extend: [gliderBase],
+export const navLinkBar = cv({
+  extend: [barBase],
   class: [
-    // Select current rows directly after the glider or inside descendant list
-    // items.
-    "[&~.control,&~*_li>.control]:ui-selected:[anchor-name:--glider-selected]",
-    // Hide when no current row is visible, including as its disclosure starts
-    // to close.
-    "not-ui-nav-glider-selected:hidden",
-    // Paint below rows but above the surrounding surface. Transparent
-    // disclosure bodies let the cover show through.
-    "z-0",
-    // Firefox doubles absolute anchor offsets in scrolling RTL containers.
-    // Fixed positioning uses the visible anchor box.
-    "[.horizontal>&]:fixed!",
-    // Hide the glider while its anchor is fully clipped by disclosure content.
-    "[position-visibility:anchors-visible]",
-    // Follow disclosure layout changes without a second easing animation.
-    "[.nav[data-settling]>&]:transition-none",
+    // Measure from the row to the edge of the region that holds it.
+    "[--bar-gap:var(--nav-bar-gap,0px)]",
+    "[.nav.vertical_&]:top-(--bar-inset) [.nav.vertical_&]:bottom-(--bar-inset)",
+    "[.nav.vertical_&]:w-(--bar) [.nav.vertical_&]:inset-e-auto",
+    "[.nav.vertical_&]:inset-s-[calc(var(--nav-bar-guide,calc(-1*(var(--bar-offset)+var(--bar))))-var(--control-border,0px))]",
+    // Start bars of nested rows meet the disclosure content's start edge. Body
+    // padding minus the row's own shift gives that distance.
+    "[.nav.vertical_.disclosure-content_&]:[--bar-gap:calc(var(--disclosure-body-ps,0px)-var(--px,0px))]",
+    // Named start offsets in guided content sit on the guide line.
+    "[.nav.vertical_.disclosure-content_&]:[&.nav-bar-guide:not(.nav-bar-end)]:[--nav-bar-guide:calc(var(--disclosure-guide)-var(--bar-gap)-var(--bar)/2)]",
+    "[.nav.vertical_&]:[&.nav-bar-end]:inset-s-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
+    // End bars of nested rows measure from the navigation padding, so the bar
+    // follows a row that a padded body insets.
+    "[.nav.vertical_.disclosure-content_&]:[&.nav-bar-end]:[--bar-gap:var(--nav-bar-gap,0px)]",
+    "[.nav.horizontal_&]:inset-s-(--bar-inset) [.nav.horizontal_&]:inset-e-(--bar-inset)",
+    "[.nav.horizontal_&]:h-(--bar)",
+    // Rows can sit centered in a taller region, such as a shell bar that sets
+    // --nav-block-size. A row taller than that region grows it, so the row and
+    // the nav padding set the minimum. Percentages resolve against the row's
+    // height.
+    "[.nav.horizontal_&]:[--bar-gap:calc(max(var(--nav-block-size,0px),100%+var(--control-border,0px)*2+var(--nav-bar-gap,0px)*2)/2-50%-var(--control-border,0px))]",
+    "[.nav.horizontal_&]:top-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
+    "[.nav.horizontal_&]:[&.nav-bar-start]:top-auto",
+    "[.nav.horizontal_&]:[&.nav-bar-start]:bottom-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
   ],
   variants: {
     /**
-     * Sets how the glider is drawn. `flat` and `bevel` cover the row they
-     * follow, while `bar` is a thin rule beside it, on the side `$side` picks.
+     * Places the bar at the row's start or end. In a horizontal navigation,
+     * `start` draws it above the row and `end` below it. Defaults to the start
+     * side in vertical navigations and the bottom in horizontal ones.
      */
-    $kind(value?: "flat" | "bevel" | "bar") {
-      if (value === "flat") return navGliderCover;
-      if (value === "bevel") return ["ui-bevel", navGliderCover];
-      if (value !== "bar") return;
-      return [
-        "glider-bar",
-        "z-10",
-        // A fixed width keeps the bar the same at every text size. Normalize
-        // the 0–100 contrast scale so high contrast adds only 20%.
-        "[--glider-bar:calc(var(--glider-bar-width,2px)*(1+0.2*var(--contrast)/100))]",
-        // `$barLength` shortens the bar by an inset at each end.
-        "[.vertical>&]:top-[calc(anchor(top)+var(--glider-bar-inset,0px))]",
-        "[.vertical>&]:h-[calc(anchor-size()-var(--glider-bar-inset,0px)*2)]",
-        "[.vertical>&]:w-(--glider-bar)",
-        "[.vertical>&]:inset-e-[calc(anchor(start)+var(--glider-bar-offset))]",
-        "[.vertical>&]:[&.glider-bar-end]:inset-e-auto",
-        "[.vertical>&]:[&.glider-bar-end]:inset-s-[calc(anchor(end)+var(--glider-bar-offset))]",
-        // An automatic or centered start bar follows the disclosure guide,
-        // with frame padding as fallback.
-        "[.vertical>&]:[&:is(.glider-bar-auto,.glider-bar-center):not(.glider-bar-end)]:inset-e-auto",
-        "[.vertical>&]:[&.glider-bar-auto:not(.glider-bar-end)]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc(anchor(start)-var(--glider-bar-offset)-var(--glider-bar)/2))-var(--glider-bar)/2)]",
-        // Without a guide, a centered bar sits midway between the row and the
-        // edge of the split body that holds it, or the frame padding.
-        "[.vertical>&]:[&.glider-bar-center:not(.glider-bar-end)]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc((anchor(--nav-body-selected_start,calc(anchor(start)-var(--glider-padding,0px)))+anchor(start))/2))-var(--glider-bar)/2)]",
-        "[.vertical>&]:[&.glider-bar-frame]:inset-e-auto",
-        // A frame bar sits on the guide of a current row inside a disclosure,
-        // and on the navigation edge otherwise.
-        "[.vertical>&]:[&.glider-bar-frame]:inset-s-[calc(anchor(--disclosure-guide-selected_center,calc(var(--glider-bar)/2))-var(--glider-bar)/2)]",
-        "[.vertical>&]:[&.glider-bar-frame.glider-bar-end]:inset-s-auto",
-        "[.vertical>&]:[&.glider-bar-frame.glider-bar-end]:inset-e-0",
-        "[.horizontal>&]:left-[calc(anchor(left)+var(--glider-bar-inset,0px))]",
-        "[.horizontal>&]:w-[calc(anchor-size()-var(--glider-bar-inset,0px)*2)]",
-        "[.horizontal>&]:h-(--glider-bar)",
-        "[.horizontal>&]:top-[calc(anchor(bottom)+var(--glider-bar-offset))]",
-        "[.horizontal>&]:[&.glider-bar-start]:top-auto",
-        "[.horizontal>&]:[&.glider-bar-start]:bottom-[calc(anchor(top)+var(--glider-bar-offset))]",
-        "[.horizontal>&]:[&.glider-bar-frame]:top-auto",
-        "[.horizontal>&]:[&.glider-bar-frame]:bottom-[anchor(--glider-frame_bottom)]",
-        "[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:bottom-auto",
-        "[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:top-[anchor(--glider-frame_top)]",
-        // Other engines use the navigation frame directly, avoiding a second
-        // fixed anchor during document scrolling.
-        "[@supports_not_(-moz-appearance:none)]:[.horizontal>&]:[&.glider-bar-frame]:absolute!",
-        "[@supports_not_(-moz-appearance:none)]:[.horizontal>&]:[&.glider-bar-frame]:bottom-0",
-        "[@supports_not_(-moz-appearance:none)]:[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:bottom-auto",
-        "[@supports_not_(-moz-appearance:none)]:[.horizontal>&]:[&.glider-bar-frame.glider-bar-start]:top-0",
-      ];
+    $side: {
+      start: "nav-bar-start",
+      end: "nav-bar-end",
     },
-    /** Animates the glider as it travels between rows. */
-    $animated(value?: boolean) {
-      if (!value) return;
-      return "duration-100";
+    /**
+     * Sets the gap from the row to the bar. `edge` puts the bar on the
+     * navigation padding edge, and `halfway` centers it between the row and
+     * that edge. Numbers scale the spacing token, so `0` puts the bar against
+     * the row; other strings are CSS lengths and can be negative for overlap.
+     * Defaults to `edge`.
+     *
+     * The start bar of a nested row measures to the edge of its disclosure
+     * content, and the end bar measures from the navigation padding, so it
+     * follows a row that a padded body insets. In disclosure content with a
+     * guide line, named offsets at the start side put the bar on the guide. A
+     * horizontal navigation scrolls, so it clips a bar outside its padding. Its
+     * rows measure from their own height, so an `edge` bar under a row shorter
+     * than the others stops short of the edge.
+     */
+    $offset(value?: BarOffset) {
+      if (!isNamedBarOffset(value)) return getBarOffset(value);
+      return [getNamedBarOffsetClass(value), "nav-bar-guide"];
     },
   },
   defaultVariants: {
-    // Bars meet the navigation region's edge. Use `$cover` on the region to
-    // reach its container's edge; shell sidebars do this by default.
-    $barOffset(defaultValue, variants) {
-      if (variants.$kind !== "bar") return defaultValue;
-      // Replace only the glider base's automatic offset.
-      if (defaultValue != null && defaultValue !== "auto") return defaultValue;
-      return "frame";
-    },
-    // Covers follow row rounding. Bars keep the glider base radius.
-    $rounded(defaultValue, variants) {
-      if (variants.$kind === "bar") return defaultValue;
-      return "md";
-    },
-    $lightnessOffset(defaultValue, variants) {
-      if (variants.$kind === "bar") return defaultValue;
-      return false;
-    },
-    $lightnessPush(defaultValue, variants) {
-      if (variants.$kind === "bar") return defaultValue;
-      return defaultValue ?? true;
-    },
-    $border(defaultValue, variants) {
-      if (variants.$kind === "bar") return defaultValue;
-      return defaultValue ?? false;
-    },
-  },
-  refine({ variants, addClass }) {
-    if (variants.$animated) {
-      // WebKit requires inset longhands in transition lists. Omit display so
-      // closing disclosures hide the glider at once.
-      addClass(
-        "transition-[top,left,inset-inline-start,inset-inline-end,height,width]",
-      );
-    }
-    if (variants.$kind === "bar") return;
-    // The cover supplies the selected surface; bars leave the row surface
-    // intact.
-    addClass([
-      "supports-anchor:[&~.control,&~*_li>.control]:ui-selected:bg-transparent",
-      "supports-anchor:[&~.control,&~*_li>.control]:ui-selected:ring-0",
-      "supports-anchor:[&~.control,&~*_li>.control]:ui-selected:befter:hidden",
-    ]);
+    $offset: "edge",
   },
 });
 
@@ -475,9 +414,8 @@ export const navDisclosureGroup = cv({
   extend: [disclosureGroup],
   class: [
     "nav-disclosure-group",
-    // Gliders precede the rows in the DOM, so a group right after them starts
-    // the navigation. Its start meets the navigation edge, which needs no line.
-    "first:border-t-0 [.glider+&]:border-t-0 [.glider+&]:ak-frame-start",
+    // A group that starts the navigation meets its edge, which needs no line.
+    "first:border-t-0",
   ],
   defaultVariants: {
     $cover: true,
@@ -520,7 +458,7 @@ export const navDisclosure = cv({
     $contentPadding: true,
     $rounded: "lg",
     $p: 2,
-    // Keep nested gliders visible through the disclosure root.
+    // Keep the navigation surface visible through the disclosure root.
     $layer: "transparent",
     $slotGap: "var(--nav-row-gap, calc(var(--spacing) * 3))",
     $bodyOffset(defaultValue, variants) {
@@ -568,9 +506,6 @@ export const navDisclosureContentBody = cv({
     "[--nav-body-radius:calc(var(--nav-body-row-radius,var(--disclosure-radius))+var(--ak-frame-padding))]",
     // A split body meets its button with a straight edge.
     "[@container_style(--disclosure-split:_1)]:rounded-t-none",
-    // Expose a split body with the current row, so a centered bar can sit
-    // between the body edge and the row.
-    "[@container_style(--disclosure-split:_1)]:ui-has-selected-row:[anchor-name:--nav-body-selected]",
     // Align row text with the body. Move nested disclosures as a whole to keep
     // their guides aligned.
     "[&_li>.control:not(.disclosure-button)]:-ms-(--px)",
@@ -579,7 +514,7 @@ export const navDisclosureContentBody = cv({
     // its own `$focusOffset`.
     "[&_li>.control]:-outline-offset-2",
   ],
-  // Without a split, leave the body unpadded so row ends and gliders align with
+  // Without a split, leave the body unpadded so row ends and bars align with
   // top-level rows. Caller padding preserves the start indent.
   defaultVariants: {
     $layer: "transparent",

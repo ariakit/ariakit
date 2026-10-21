@@ -11,14 +11,14 @@ export default function Example() {
     <div className="ak-layer flex flex-col items-start gap-4 p-4">
       <div
         role="group"
-        aria-label="Views over a glider"
+        aria-label="Views over an indicator"
         className="ak-layer ak-layer-5 relative isolate flex gap-1 rounded-lg p-1"
       >
-        {/* The glider travels behind the controls at a negative z-index, so a
-            resting control must not paint over it. */}
+        {/* The indicator travels behind the controls at a negative z-index, so
+            a resting control must not paint over it. */}
         <div
           aria-hidden
-          data-glider
+          data-indicator
           className="ak-layer ak-layer-15 absolute inset-y-1 -z-1 w-32 rounded-md transition-[left]"
           // One control (w-32) plus one gap (gap-1) per step, from the p-1
           // inset.

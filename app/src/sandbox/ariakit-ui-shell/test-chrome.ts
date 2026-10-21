@@ -3,6 +3,36 @@ import { withFramework } from "#app/test-utils/preview.ts";
 import { getSidebar, selectScenario } from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
+  test("keeps a footer navigation bar on the navigation edge above a bottom safe area", async ({
+    page,
+    q,
+  }) => {
+    await selectScenario(q, "bar");
+    const nav = q.navigation("Footer pages");
+    const bar = query(nav).link("Home").locator(".control-bar");
+    const session = await page.context().newCDPSession(page);
+    // A larger safe area lets the row outgrow the footer's content box.
+    for (const inset of [34, 10, 0]) {
+      await session.send("Emulation.setSafeAreaInsetsOverride", {
+        insets: { bottom: inset, bottomMax: inset },
+      });
+      await expect(page.locator(".shell-footer")).toHaveCSS(
+        "padding-bottom",
+        `${inset}px`,
+      );
+      await expect
+        .poll(async () => {
+          const [box, bounds] = await Promise.all([
+            bar.boundingBox(),
+            nav.boundingBox(),
+          ]);
+          if (!box || !bounds) return null;
+          return box.y + box.height - bounds.y - bounds.height;
+        })
+        .toBeCloseTo(0, 0);
+    }
+  });
+
   // https://github.com/ariakit/ariakit/pull/7533#discussion_r4019535774
   test("publishes the consumer's open state on the sidebar body", async ({
     q,

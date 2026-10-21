@@ -16,6 +16,12 @@ test("keeps button slots accessible unless explicitly hidden", () => {
   expect(q.within(q.article("Meaningful icon")).img("Starred")).toBeVisible();
 });
 
+test("renders a button as a native submit input", () => {
+  expect(
+    q.within(q.article("Native submit input")).button("Submit form"),
+  ).toHaveAttribute("type", "submit");
+});
+
 // This gallery uses React 19 ref props, as declared by @ariakit/ui.
 // https://github.com/ariakit/ariakit/pull/7489#discussion_r3995226174
 test.skipIf(version.startsWith("18."))(
