@@ -1,6 +1,6 @@
 import type { NavLinkProps } from "@ariakit/ui/components/nav.ariakit.react";
 import { NavLink } from "@ariakit/ui/components/nav.ariakit.react";
-import type { MouseEvent, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   ViewTransition,
   addTransitionType,
@@ -13,8 +13,8 @@ import {
   createMemoryRouter,
   NavLink as RouterLink,
   RouterProvider,
+  useLinkClickHandler,
   useLocation,
-  useNavigate,
 } from "react-router";
 
 export interface RouterNavLinkProps extends NavLinkProps {
@@ -22,23 +22,12 @@ export interface RouterNavLinkProps extends NavLinkProps {
   to: string;
 }
 
-// Clicks that open the link elsewhere, such as in a new tab, stay with the
-// browser.
-function isPlainClick(event: MouseEvent) {
-  if (event.button !== 0) return false;
-  if (event.metaKey) return false;
-  if (event.altKey) return false;
-  if (event.ctrlKey) return false;
-  if (event.shiftKey) return false;
-  return true;
-}
-
 /**
  * A `NavLink` that navigates with React Router in a view transition of the
  * `bar` type. React Router marks the link as current.
  */
 export function RouterNavLink({ to, ...props }: RouterNavLinkProps) {
-  const navigate = useNavigate();
+  const handleClick = useLinkClickHandler(to);
   return (
     <NavLink
       {...props}
@@ -46,14 +35,13 @@ export function RouterNavLink({ to, ...props }: RouterNavLinkProps) {
         <RouterLink
           to={to}
           onClick={(event) => {
-            if (event.defaultPrevented) return;
-            if (!isPlainClick(event)) return;
-            event.preventDefault();
-            // A transition type applies only when it's added in the same
-            // transition as the navigation.
+            // React applies a transition type only to updates in the same
+            // transition, so the link runs its click handling inside one. The
+            // handler navigates and prevents the default, so the Link's own
+            // handler skips the click.
             startTransition(() => {
               addTransitionType("bar");
-              void navigate(to);
+              handleClick(event);
             });
           }}
         />
