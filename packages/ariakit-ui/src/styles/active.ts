@@ -19,6 +19,11 @@ export const active = cv({
       // Halve vertical depth for taller controls with descriptions.
       // $activeDepthY still overrides this rule.
       "has-[.control-description]:[--active-depth-y:calc(var(--active-depth)*0.5)]",
+      // A press can't change a settled element, such as the current page, so
+      // it doesn't scale, and neither does a bar inside it. An element that
+      // settles while easing back from a press drops to full size at once, so
+      // a view transition captures it where it rests.
+      "ui-settled:scale-none! ui-settled:[--active-transition:--none]!",
     ],
     /**
      * Animates press scaling. Extenders with their own transition list must

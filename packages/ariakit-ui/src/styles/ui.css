@@ -1524,6 +1524,21 @@ body > * {
   }
 }
 
+/* Selected elements that a press can't change: the current page, a selected
+   tab, and a checked radio, including a label that holds one. Checkboxes,
+   switches, and options change when pressed, so they aren't settled. */
+@custom-variant ui-settled {
+  &:is(
+    [aria-current]:not([aria-current=""], [aria-current="false"]),
+    [role="tab"][aria-selected="true"],
+    [role="radio"][aria-checked="true"],
+    input[type="radio"]:checked,
+    label:has(input[type="radio"]:checked)
+  ) {
+    @slot;
+  }
+}
+
 @custom-variant ui-selected-within {
   &:is(
     :checked,

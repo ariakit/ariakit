@@ -38,11 +38,6 @@ export const control = cv({
     "[&>*]:[--control-inline:initial]",
     // Bars measure from the border edge, but frame borders do not inherit.
     "[--control-border:var(--ak-frame-border)]",
-    // A control shows its bar only while selected, and a pressed control would
-    // scale and shift its bar. A control that becomes selected while easing
-    // back from a press drops to full size at once, so a view transition
-    // captures the bar where it rests.
-    "ui-selected:has-[>.control-bar]:scale-none! ui-selected:has-[>.control-bar]:[--active-transition:--none]!",
   ],
   variants: {
     ...fontSizeVariants,
