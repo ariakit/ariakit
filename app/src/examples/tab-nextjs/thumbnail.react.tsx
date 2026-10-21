@@ -81,7 +81,7 @@ export function SmallThumbnail() {
     <div
       {...tabs.jsx({
         $cover: true,
-        $p: 1.5,
+        $p: 2,
         // The panel clips content that does not fit, so the root keeps the slot
         // height when ring tabs reserve extra room on dark surfaces.
         className: "flex min-h-0 flex-col",
@@ -92,37 +92,20 @@ export function SmallThumbnail() {
           <SkeletonLine $weight="bold" className="w-12.5" />
         </div>
         <div {...tab.jsx()} aria-selected="false">
-          <SkeletonLine $weight="light" className="w-12.5" />
+          <SkeletonLine $weight="medium" className="w-12.5" />
         </div>
       </div>
       <div
-        {...tabPanels.jsx({
-          $p: 3.5,
-          className: "flex min-h-0 flex-1 flex-col gap-2",
-        })}
+        {...tabPanels.jsx({ className: "flex min-h-0 flex-1 flex-col gap-2" })}
       >
-        {posts.slice(0, 2).map((post) => (
-          <div key={post.id} className="flex items-center gap-4.5">
-            <Frame
-              $layer
-              $rounded="sm"
-              $forceRounded
-              $border
-              // A real border keeps the box size in both modes, while the
-              // automatic type draws a ring outside it on light surfaces.
-              $borderType="border"
-              $edgeWeight={15}
-              className="h-10.5 w-13.5 shrink-0"
-            />
-            <div className="grid flex-1 gap-1">
-              <SkeletonLine className="w-full text-[1.25em] leading-none" />
-              <SkeletonLine
-                $weight="light"
-                className="w-1/2 text-[1.25em] leading-none"
-              />
-            </div>
+        <div className="flex flex-1 items-start gap-4.5">
+          <Frame $lightnessOffset className="h-full w-1/2 shrink-0" />
+          <div className="grid flex-1 gap-1">
+            <SkeletonLine className="w-full" />
+            <SkeletonLine $weight="light" className="w-full" />
+            <SkeletonLine $weight="light" className="w-1/2" />
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );
