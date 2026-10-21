@@ -103,7 +103,16 @@ export default function Example() {
           <Skeleton
             key={pageIndex}
             loading={!page.posts}
-            className="grid gap-3"
+            className={[
+              "grid gap-3",
+              // A page that "Load more" adds grows from no height, so elements
+              // that follow the height of the feed, such as a preview card in
+              // the same row, move smoothly. Only browsers that can grow the
+              // page clip it, and the clip margin keeps the card rings.
+              pageIndex > 0
+                ? "[interpolate-size:allow-keywords] max-h-max starting:max-h-0 transition-[max-height] duration-300 motion-reduce:duration-0 supports-[interpolate-size:allow-keywords]:overflow-clip supports-[interpolate-size:allow-keywords]:[overflow-clip-margin:0.25rem]"
+                : "",
+            ].join(" ")}
           >
             {page.posts
               ? page.posts.map((post) => (
