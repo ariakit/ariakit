@@ -21,6 +21,7 @@ import {
   NavGroup,
   NavGroupLabel,
   NavLink,
+  NavLinkLabel,
   NavList,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
@@ -109,7 +110,7 @@ export default function Example() {
                   href="#"
                   aria-current={index === 0 ? "page" : undefined}
                 >
-                  {link}
+                  <NavLinkLabel text={link} />
                 </NavLink>
               ))}
             </Nav>
