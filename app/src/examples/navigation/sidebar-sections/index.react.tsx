@@ -3,7 +3,6 @@ import {
   Nav,
   NavDisclosure,
   NavDisclosureGroup,
-  NavLink,
   NavLinkContent,
   NavLinkDescription,
   NavLinkLabel,
@@ -27,6 +26,8 @@ import {
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
 import { Hexagon } from "lucide-react";
 import { useState } from "react";
+import { useLocation } from "react-router";
+import { ExampleRouter, RouterNavLink } from "../router.react.tsx";
 
 type Thumbnail = "list" | "form" | "grid";
 
@@ -71,15 +72,21 @@ const sections: Section[] = [
   },
 ];
 
-export default function Example() {
-  const [currentPage, setCurrentPage] = useState("Combobox");
+function getPath(page: Page) {
+  return `/${page.title.toLowerCase().replace(" ", "-")}`;
+}
+
+function Site() {
+  const { pathname } = useLocation();
+  const isCurrent = (page: Page) => pathname === getPath(page);
+  const currentPage = sections
+    .flatMap((section) => section.pages)
+    .find(isCurrent)?.title;
   // One section opens at a time, starting with the section of the current page.
   const [openSection, setOpenSection] = useState<string>();
   const activeSection =
     openSection ??
-    sections.find((section) =>
-      section.pages.some((page) => page.title === currentPage),
-    )?.title;
+    sections.find((section) => section.pages.some(isCurrent))?.title;
   return (
     <Shell>
       <ShellHeader $blur>
@@ -122,17 +129,7 @@ export default function Example() {
                 >
                   <NavList>
                     {section.pages.map((page) => (
-                      <NavLink
-                        key={page.title}
-                        href={`#${page.title.toLowerCase().replace(" ", "-")}`}
-                        aria-current={
-                          currentPage === page.title ? "page" : undefined
-                        }
-                        onClick={(event) => {
-                          event.preventDefault();
-                          setCurrentPage(page.title);
-                        }}
-                      >
+                      <RouterNavLink key={page.title} to={getPath(page)}>
                         {page.thumbnail && (
                           <NavSlot $kind="thumbnail" $rowSpan={2}>
                             <PageThumbnail kind={page.thumbnail} />
@@ -146,7 +143,7 @@ export default function Example() {
                             </NavLinkDescription>
                           )}
                         </NavLinkContent>
-                      </NavLink>
+                      </RouterNavLink>
                     ))}
                   </NavList>
                 </NavDisclosure>
@@ -170,6 +167,14 @@ export default function Example() {
         </ShellMainBody>
       </ShellMain>
     </Shell>
+  );
+}
+
+export default function Example() {
+  return (
+    <ExampleRouter initialPath="/combobox">
+      <Site />
+    </ExampleRouter>
   );
 }
 

@@ -20,6 +20,9 @@
   --duration-tabs: 100ms;
   --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
 
+  --duration-bar: 250ms;
+  --ease-bar: cubic-bezier(0.2, 0, 0, 1);
+
   --animate-ui-progress: ui-progress 1.5s ease-in-out infinite;
 
   @keyframes ui-progress {
@@ -162,6 +165,23 @@ body > * {
     animation-range:
       0 var(--ak-frame-radius),
       calc(100% - var(--ak-frame-radius)) 100%;
+  }
+}
+
+/* A view transition moves a named bar from its old item to its new one. */
+::view-transition-group(*.bar) {
+  animation-duration: var(--duration-bar);
+  animation-timing-function: var(--ease-bar);
+}
+
+/* Transitions of the `bar` type move only bars. The page stays out of them, so
+   it shows its new state at once. A captured page would also stop taking
+   clicks until the transition ends. */
+:root:active-view-transition-type(bar) {
+  view-transition-name: none;
+  /* The overlay that holds the moving bars lets clicks reach the page. */
+  &::view-transition {
+    pointer-events: none;
   }
 }
 
@@ -1499,6 +1519,21 @@ body > * {
     [aria-checked="true"],
     [aria-selected="true"],
     [aria-current]:not([aria-current=""], [aria-current="false"])
+  ) {
+    @slot;
+  }
+}
+
+/* Selected elements that a press can't change: the current page, a selected
+   tab, and a checked radio, including a label that holds one. Checkboxes,
+   switches, and options change when pressed, so they aren't settled. */
+@custom-variant ui-settled {
+  &:is(
+    [aria-current]:not([aria-current=""], [aria-current="false"]),
+    [role="tab"][aria-selected="true"],
+    [role="radio"][aria-checked="true"],
+    input[type="radio"]:checked,
+    label:has(input[type="radio"]:checked)
   ) {
     @slot;
   }

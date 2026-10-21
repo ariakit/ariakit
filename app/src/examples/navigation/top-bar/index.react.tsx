@@ -3,7 +3,7 @@ import {
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
-import { Nav, NavLink } from "@ariakit/ui/components/nav.ariakit.react";
+import { Nav } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Shell,
   ShellHeader,
@@ -20,12 +20,18 @@ import {
 } from "@ariakit/ui/components/skeleton.ariakit.react";
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
 import { Bell, Hexagon } from "lucide-react";
-import { useState } from "react";
+import { useLocation } from "react-router";
+import { ExampleRouter, RouterNavLink } from "../router.react.tsx";
 
 const pages = ["Overview", "Projects", "Deployments", "Analytics", "Settings"];
 
-export default function Example() {
-  const [current, setCurrent] = useState("Overview");
+function getPath(page: string) {
+  return `/${page.toLowerCase()}`;
+}
+
+function Page() {
+  const { pathname } = useLocation();
+  const current = pages.find((page) => pathname === getPath(page));
   return (
     <Shell>
       <ShellHeader $blur>
@@ -47,16 +53,7 @@ export default function Example() {
               room than the header has. */}
           <Nav aria-label="Main" $layout="horizontal" bar>
             {pages.map((page) => (
-              <NavLink
-                key={page}
-                href={`#${page.toLowerCase()}`}
-                aria-current={current === page ? "page" : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  setCurrent(page);
-                }}
-                text={page}
-              />
+              <RouterNavLink key={page} to={getPath(page)} text={page} />
             ))}
           </Nav>
         </ShellHeaderCenter>
@@ -91,5 +88,13 @@ export default function Example() {
         </ShellMainBody>
       </ShellMain>
     </Shell>
+  );
+}
+
+export default function Example() {
+  return (
+    <ExampleRouter initialPath="/overview">
+      <Page />
+    </ExampleRouter>
   );
 }

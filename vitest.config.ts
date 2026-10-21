@@ -71,6 +71,18 @@ function getProjectTestPatterns(project: TestProject) {
 
 const testExcludes = [...configDefaults.exclude, ".claude/**"];
 
+const isReact18 = reactVersion.startsWith("18.");
+
+// Tests of examples that require React 19, such as through React Router 8. The
+// React 18 suite skips them.
+const react19Tests = ["app/src/examples/navigation/**"];
+
+function getReactTestPatterns() {
+  const { include, exclude } = getProjectTestPatterns("react");
+  if (!isReact18) return { include, exclude };
+  return { include, exclude: [...exclude, ...react19Tests] };
+}
+
 export default defineConfig({
   root: rootDir,
   test: {
@@ -120,7 +132,7 @@ export default defineConfig({
       {
         extends: true,
         plugins: [
-          reactVersion.startsWith("18.") &&
+          isReact18 &&
             reactForwardRef({
               include: "packages/ariakit-ui/src/components/**/*.react.tsx",
               elementFactories: [
@@ -139,7 +151,7 @@ export default defineConfig({
         test: {
           name: "react",
           environment: "happy-dom",
-          ...getProjectTestPatterns("react"),
+          ...getReactTestPatterns(),
           setupFiles: [join(rootDir, "vitest.setup.react.ts")],
         },
       },

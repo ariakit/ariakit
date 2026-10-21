@@ -100,9 +100,16 @@ export interface NavProps
  */
 export function Nav({ list, bar, children, ...props }: NavProps) {
   const [variantProps, rest] = splitProps(props, nav);
+  // Each navigation names its bar by default, so view transitions can move it
+  // between links. React 18 ids contain colons, which CSS names can't hold.
+  const id = React.useId().replace(/[^\w-]/g, "");
+  const $barTransitionName = variantProps.$barTransitionName ?? `nav-bar-${id}`;
   return (
     <NavBarContext.Provider value={bar}>
-      <ak.Role.nav {...nav.jsx(variantProps)} {...rest}>
+      <ak.Role.nav
+        {...nav.jsx({ ...variantProps, $barTransitionName })}
+        {...rest}
+      >
         {list === false ? children : createRender(NavList, list, { children })}
       </ak.Role.nav>
     </NavBarContext.Provider>

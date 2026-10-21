@@ -103,6 +103,21 @@ export const nav = cv({
         style: { "--nav-slot-size": getSpacingValue(value) },
       };
     },
+    /**
+     * Names the bar of the current link for view transitions, so a transition
+     * moves the bar from the old link to the new one. Each navigation on a page
+     * needs its own name, and a bar that moves across page loads needs the same
+     * name on both pages. Set `none` to keep the bar out of view transitions.
+     * `Nav` defaults it to a unique name from `useId`, which can differ between
+     * pages. Only one link can be current while the bar is named. Browsers skip
+     * a view transition that finds two bars with the same name.
+     */
+    $barTransitionName(value?: string) {
+      if (value == null) return;
+      return {
+        style: { "--bar-transition-name": value },
+      };
+    },
   },
   defaultVariants: {
     $layout: "vertical",
@@ -371,6 +386,10 @@ export const navLinkBar = cv({
   class: [
     // Measure from the row to the edge of the region that holds it.
     "[--bar-gap:var(--nav-bar-gap,0px)]",
+    // The navigation's name lets view transitions move the bar between links.
+    // The name must be unique, so it works only while one link is current.
+    // Reduced motion keeps the bar out of view transitions.
+    "motion-safe:[view-transition-name:var(--bar-transition-name,none)] [view-transition-class:bar]",
     "[.nav.vertical_&]:top-(--bar-inset) [.nav.vertical_&]:bottom-(--bar-inset)",
     "[.nav.vertical_&]:w-(--bar) [.nav.vertical_&]:inset-e-auto",
     "[.nav.vertical_&]:inset-s-[calc(var(--nav-bar-guide,calc(-1*(var(--bar-offset)+var(--bar))))-var(--control-border,0px))]",
