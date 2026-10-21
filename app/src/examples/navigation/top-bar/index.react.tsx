@@ -7,6 +7,9 @@ import { Nav, NavLink } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Shell,
   ShellHeader,
+  ShellHeaderStart,
+  ShellHeaderCenter,
+  ShellHeaderEnd,
   ShellMain,
   ShellMainBody,
   ShellMainIntro,
@@ -25,11 +28,10 @@ export default function Example() {
   const [current, setCurrent] = useState("Overview");
   return (
     <Shell>
-      <ShellHeader
-        $blur
-        start={
-          // An icon starts the logo, so its sides keep the frame padding, like
-          // the leading icon of a button.
+      <ShellHeader $blur>
+        <ShellHeaderStart>
+          {/* An icon starts the logo, so its sides keep the frame padding, like
+              the leading icon of a button. */}
           <TextFrame
             $p={2}
             $px="sm"
@@ -38,11 +40,11 @@ export default function Example() {
             <Hexagon strokeWidth={1.5} className="size-5" aria-hidden />
             Acme
           </TextFrame>
-        }
-        center={
-          // The header stretches the navigation to its height, so the bar sits
-          // on the header's bottom edge. The links scroll when they need more
-          // room than the header has.
+        </ShellHeaderStart>
+        <ShellHeaderCenter>
+          {/* The header stretches the navigation to its height, so the bar sits
+              on the header's bottom edge. The links scroll when they need more
+              room than the header has. */}
           <Nav aria-label="Main" $layout="horizontal" bar>
             {pages.map((page) => (
               <NavLink
@@ -58,22 +60,20 @@ export default function Example() {
               </NavLink>
             ))}
           </Nav>
-        }
-        end={
-          <>
-            <Button aria-label="Notifications">
-              <ButtonSlot>
-                <Bell />
-              </ButtonSlot>
-            </Button>
-            <Button aria-label="Account" className="rounded-full p-0">
-              <ButtonSlot $kind="avatar" $layer="brand" aria-hidden>
-                MR
-              </ButtonSlot>
-            </Button>
-          </>
-        }
-      />
+        </ShellHeaderCenter>
+        <ShellHeaderEnd>
+          <Button aria-label="Notifications">
+            <ButtonSlot>
+              <Bell />
+            </ButtonSlot>
+          </Button>
+          <Button aria-label="Account" className="rounded-full p-0">
+            <ButtonSlot $kind="avatar" $layer="brand" aria-hidden>
+              MR
+            </ButtonSlot>
+          </Button>
+        </ShellHeaderEnd>
+      </ShellHeader>
       <ShellMain $maxWidth="64rem">
         <ShellMainIntro>
           <Heading>{current}</Heading>

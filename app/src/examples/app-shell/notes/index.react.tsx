@@ -30,6 +30,8 @@ import {
   ShellHeaderEnd,
   ShellHeaderStart,
   ShellFooter,
+  ShellFooterStart,
+  ShellFooterEnd,
   ShellSidebar,
   ShellSidebarBody,
   ShellSidebarFooter,
@@ -80,78 +82,75 @@ export default function Example() {
         $borderType="dashed"
         $hue="yellow"
         $chroma="muted"
-        start={
-          <ShellHeaderStart $shrink className="items-center gap-2">
-            <Button
-              className="@max-3xl/shell:hidden"
-              aria-label="Toggle pages"
-              aria-expanded={pagesOpen}
-              aria-controls={pagesId}
-              onClick={() => setPagesOpen((open) => !open)}
-            >
-              <ButtonSlot>
-                <PanelLeft />
-              </ButtonSlot>
-            </Button>
-            <nav
-              aria-label="Breadcrumb"
-              className="flex min-w-0 items-center gap-1 text-sm"
-            >
-              <a href="#" className="ak-ink-70 truncate">
-                Field Notes
-              </a>
-              <ChevronRight className="ak-ink-70 size-4 shrink-0" />
-              <a href="#" className="ak-ink-70 truncate">
-                Projects
-              </a>
-              <ChevronRight className="ak-ink-70 size-4 shrink-0" />
-              <span aria-current="page" className="truncate font-medium">
-                Weekly planning
-              </span>
-            </nav>
-          </ShellHeaderStart>
-        }
-        end={
-          <ShellHeaderEnd className="items-center gap-3">
-            <div
-              role="group"
-              aria-label="Collaborators"
-              className="flex items-center gap-1"
-            >
-              {collaborators.map((person) => (
-                <Frame
-                  key={person.initials}
-                  title={person.name}
-                  $rounded="full"
-                  $p="none"
-                  $borderType="dashed"
-                  $border
-                  className="grid size-7 place-items-center text-xs font-medium"
-                >
-                  {person.initials}
-                </Frame>
-              ))}
-            </div>
-            <Button>
-              <ButtonSlot>
-                <Users />
-              </ButtonSlot>
-              <ButtonLabel>Share</ButtonLabel>
-            </Button>
-            <Button
-              className="@max-3xl/shell:hidden"
-              aria-label="Toggle context"
-              aria-expanded={contextOpen}
-              aria-controls={contextId}
-              onClick={() => setContextOpen((open) => !open)}
-            >
-              <ButtonSlot>
-                <PanelRight />
-              </ButtonSlot>
-            </Button>
-          </ShellHeaderEnd>
-        }
-      />
+      >
+        <ShellHeaderStart $shrink className="items-center gap-2">
+          <Button
+            className="@max-3xl/shell:hidden"
+            aria-label="Toggle pages"
+            aria-expanded={pagesOpen}
+            aria-controls={pagesId}
+            onClick={() => setPagesOpen((open) => !open)}
+          >
+            <ButtonSlot>
+              <PanelLeft />
+            </ButtonSlot>
+          </Button>
+          <nav
+            aria-label="Breadcrumb"
+            className="flex min-w-0 items-center gap-1 text-sm"
+          >
+            <a href="#" className="ak-ink-70 truncate">
+              Field Notes
+            </a>
+            <ChevronRight className="ak-ink-70 size-4 shrink-0" />
+            <a href="#" className="ak-ink-70 truncate">
+              Projects
+            </a>
+            <ChevronRight className="ak-ink-70 size-4 shrink-0" />
+            <span aria-current="page" className="truncate font-medium">
+              Weekly planning
+            </span>
+          </nav>
+        </ShellHeaderStart>
+        <ShellHeaderEnd className="items-center gap-3">
+          <div
+            role="group"
+            aria-label="Collaborators"
+            className="flex items-center gap-1"
+          >
+            {collaborators.map((person) => (
+              <Frame
+                key={person.initials}
+                title={person.name}
+                $rounded="full"
+                $p="none"
+                $borderType="dashed"
+                $border
+                className="grid size-7 place-items-center text-xs font-medium"
+              >
+                {person.initials}
+              </Frame>
+            ))}
+          </div>
+          <Button>
+            <ButtonSlot>
+              <Users />
+            </ButtonSlot>
+            <ButtonLabel>Share</ButtonLabel>
+          </Button>
+          <Button
+            className="@max-3xl/shell:hidden"
+            aria-label="Toggle context"
+            aria-expanded={contextOpen}
+            aria-controls={contextId}
+            onClick={() => setContextOpen((open) => !open)}
+          >
+            <ButtonSlot>
+              <PanelRight />
+            </ButtonSlot>
+          </Button>
+        </ShellHeaderEnd>
+      </ShellHeader>
       <ShellSidebar
         id={pagesId}
         open={pagesOpen}
@@ -337,14 +336,14 @@ export default function Example() {
           </section>
         </ShellSidebarBody>
       </ShellSidebar>
-      <ShellFooter
-        $sticky
-        $borderType="dashed"
-        $hue="yellow"
-        $chroma="muted"
-        start={<span className="ak-ink-70">Saved 12:04</span>}
-        end={<span className="ak-ink-70">642 words</span>}
-      />
+      <ShellFooter $sticky $borderType="dashed" $hue="yellow" $chroma="muted">
+        <ShellFooterStart>
+          <span className="ak-ink-70">Saved 12:04</span>
+        </ShellFooterStart>
+        <ShellFooterEnd>
+          <span className="ak-ink-70">642 words</span>
+        </ShellFooterEnd>
+      </ShellFooter>
     </Shell>
   );
 }

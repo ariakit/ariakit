@@ -10,6 +10,8 @@
 import {
   Shell,
   ShellHeader,
+  ShellHeaderStart,
+  ShellHeaderEnd,
   ShellMain,
   ShellMainBody,
   ShellMainHeader,
@@ -99,11 +101,10 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
   return (
     <Shell $size="md" className={narrowShell ? "max-w-[60rem]" : undefined}>
       {showGlobalHeader && (
-        <ShellHeader
-          $border={wideBorder ? 3 : 1}
-          start="Shell parts"
-          end={controls}
-        />
+        <ShellHeader $border={wideBorder ? 3 : 1}>
+          <ShellHeaderStart>Shell parts</ShellHeaderStart>
+          <ShellHeaderEnd>{controls}</ShellHeaderEnd>
+        </ShellHeader>
       )}
       <ShellSidebar
         $width="xs"
@@ -364,7 +365,9 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
             aria-label="Nested parts shell"
             className="mt-4 max-w-3xl"
           >
-            <ShellHeader start="Nested header" />
+            <ShellHeader>
+              <ShellHeaderStart>Nested header</ShellHeaderStart>
+            </ShellHeader>
             <ShellMain
               render={<div />}
               $p="var(--nested-gutter)"
@@ -379,7 +382,9 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
                 <p>Nested body</p>
                 {nestedHeaders && (
                   <Shell $size="md" aria-label="Inner parts shell">
-                    <ShellHeader start="Inner header" />
+                    <ShellHeader>
+                      <ShellHeaderStart>Inner header</ShellHeaderStart>
+                    </ShellHeader>
                     <ShellMain render={<div />}>
                       <ShellMainHeader $height="lg">
                         <div>Inner actions</div>

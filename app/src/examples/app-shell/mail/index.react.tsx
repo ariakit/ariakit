@@ -19,6 +19,8 @@ import {
   Shell,
   ShellHeader,
   ShellHeaderCenter,
+  ShellHeaderStart,
+  ShellHeaderEnd,
   ShellSidebar,
   ShellSidebarBody,
   ShellSidebarFooter,
@@ -190,48 +192,38 @@ export default function Example() {
 
   return (
     <Shell>
-      <ShellHeader
-        $blur
-        start={
-          <>
-            <Button
-              className="@max-3xl/shell:hidden"
-              aria-label="Toggle folders"
-              aria-expanded={foldersOpen}
-              aria-controls={foldersId}
-              onClick={() => setFoldersOpen((open) => !open)}
-            >
-              <ButtonSlot>
-                <PanelLeft />
-              </ButtonSlot>
-            </Button>
-            <a href="#" className="flex items-center gap-2 font-semibold">
-              <Mail strokeWidth={1.5} className="size-5" /> Mail
-            </a>
-          </>
-        }
-        center={
-          <ShellHeaderCenter
-            $grow
-            className="hidden @[40rem]/shell-header:flex"
+      <ShellHeader $blur>
+        <ShellHeaderStart>
+          <Button
+            className="@max-3xl/shell:hidden"
+            aria-label="Toggle folders"
+            aria-expanded={foldersOpen}
+            aria-controls={foldersId}
+            onClick={() => setFoldersOpen((open) => !open)}
           >
-            <Input
-              aria-label="Search mail"
-              placeholder="Search mail"
-              className="w-full min-w-0"
-            />
-          </ShellHeaderCenter>
-        }
-        end={
-          <>
-            <Button aria-label="Account" $rounded="full">
-              <ButtonSlot>
-                <CircleUser />
-              </ButtonSlot>
-            </Button>
-          </>
-        }
-      />
+            <ButtonSlot>
+              <PanelLeft />
+            </ButtonSlot>
+          </Button>
+          <a href="#" className="flex items-center gap-2 font-semibold">
+            <Mail strokeWidth={1.5} className="size-5" /> Mail
+          </a>
+        </ShellHeaderStart>
+        <ShellHeaderCenter $grow className="hidden @[40rem]/shell-header:flex">
+          <Input
+            aria-label="Search mail"
+            placeholder="Search mail"
+            className="w-full min-w-0"
+          />
+        </ShellHeaderCenter>
+        <ShellHeaderEnd>
+          <Button aria-label="Account" $rounded="full">
+            <ButtonSlot>
+              <CircleUser />
+            </ButtonSlot>
+          </Button>
+        </ShellHeaderEnd>
+      </ShellHeader>
       <ShellSidebar
         id={foldersId}
         open={foldersOpen}

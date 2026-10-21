@@ -1,8 +1,6 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import * as React from "react";
-import { createOptionalRender } from "../react-utils/create-render.react.ts";
 import {
   shell,
   shellMainContent,
@@ -39,11 +37,15 @@ export interface ShellProps
  * shell takes the main cell of the shell around it.
  * @example
  * <Shell>
- *   <ShellHeader start="Docs" />
+ *   <ShellHeader>
+ *     <ShellHeaderStart>Docs</ShellHeaderStart>
+ *   </ShellHeader>
  *   <ShellMain>
  *     <ShellMainBody><h1>Getting started</h1></ShellMainBody>
  *   </ShellMain>
- *   <ShellFooter center="Ariakit" />
+ *   <ShellFooter>
+ *     <ShellFooterCenter>Ariakit</ShellFooterCenter>
+ *   </ShellFooter>
  * </Shell>
  */
 export function Shell(props: ShellProps) {
@@ -68,7 +70,9 @@ function renderPartCell(recipe: BarPartRecipe, props: ShellHeaderPartProps) {
  * content minimum unless it says it can shrink.
  * @example
  * <Shell>
- *   <ShellHeader start={<ShellHeaderStart $shrink>Docs</ShellHeaderStart>} />
+ *   <ShellHeader>
+ *     <ShellHeaderStart $shrink>Docs</ShellHeaderStart>
+ *   </ShellHeader>
  * </Shell>
  */
 export function ShellHeaderStart(props: ShellHeaderPartProps) {
@@ -80,7 +84,9 @@ export function ShellHeaderStart(props: ShellHeaderPartProps) {
  * fit, moved over when a side needs more than its half.
  * @example
  * <Shell>
- *   <ShellHeader center={<ShellHeaderCenter $grow>Docs</ShellHeaderCenter>} />
+ *   <ShellHeader>
+ *     <ShellHeaderCenter $grow>Docs</ShellHeaderCenter>
+ *   </ShellHeader>
  * </Shell>
  */
 export function ShellHeaderCenter(props: ShellHeaderPartProps) {
@@ -92,132 +98,69 @@ export function ShellHeaderCenter(props: ShellHeaderPartProps) {
  * content minimum unless it says it can shrink.
  * @example
  * <Shell>
- *   <ShellHeader end={<ShellHeaderEnd>Account</ShellHeaderEnd>} />
+ *   <ShellHeader>
+ *     <ShellHeaderEnd>Account</ShellHeaderEnd>
+ *   </ShellHeader>
  * </Shell>
  */
 export function ShellHeaderEnd(props: ShellHeaderPartProps) {
   return renderPartCell(shellHeaderEnd, props);
 }
 
-/**
- * The three parts of a bar. Each takes its content, the part's props, or an
- * element of the part component with its own variants: `ShellHeaderStart` and
- * the others in a header, `ShellFooterStart` and the others in a footer.
- */
-export interface ShellBarPartsProps {
-  /** The start part: its content, part props, or a part element. */
-  start?: React.ReactNode | ShellHeaderPartProps;
-  /** The center part: its content, part props, or a part element. */
-  center?: React.ReactNode | ShellHeaderPartProps;
-  /** The end part: its content, part props, or a part element. */
-  end?: React.ReactNode | ShellHeaderPartProps;
-}
-
-type BarPart = React.ElementType<ShellHeaderPartProps>;
-
-/** Wraps content in a bar part unless it is already a part element. */
-function renderBarPart(
-  Part: BarPart,
-  value?: React.ReactNode | ShellHeaderPartProps,
-) {
-  const isElement = React.isValidElement(value);
-  const isPart =
-    isElement && typeof value.type === "function" && BAR_PARTS.has(value.type);
-  return createOptionalRender(
-    Part,
-    isElement && !isPart ? { children: value } : value,
-  );
-}
-
 export interface ShellHeaderProps
-  extends
-    ak.RoleProps<"header">,
-    VariantProps<typeof shellHeader>,
-    ShellBarPartsProps {}
+  extends ak.RoleProps<"header">, VariantProps<typeof shellHeader> {}
 
 /**
  * The top bar of a shell, sticky by default, as tall as its height token. Its
- * three parts sit at the start, on the middle and at the end.
+ * parts, `ShellHeaderStart`, `ShellHeaderCenter` and `ShellHeaderEnd`, sit at
+ * the start, on the middle and at the end. Render them in that order: a part
+ * after a later one wraps to a new row.
  *
  * Use `portal` for overlays to escape the bar's stacking context. Portalled
  * elements no longer inherit the shell's tokens.
  * @example
  * <Shell>
- *   <ShellHeader $blur start="Docs" end={<a href="/help">Help</a>} />
- * </Shell>
- * @example
- * <Shell>
- *   <ShellHeader center={{ $grow: true, children: "Docs" }} />
+ *   <ShellHeader $blur>
+ *     <ShellHeaderStart>Docs</ShellHeaderStart>
+ *     <ShellHeaderEnd><a href="/help">Help</a></ShellHeaderEnd>
+ *   </ShellHeader>
  * </Shell>
  */
-export function ShellHeader({
-  start,
-  center,
-  end,
-  children,
-  ...props
-}: ShellHeaderProps) {
+export function ShellHeader(props: ShellHeaderProps) {
   const [variantProps, rest] = splitProps(props, shellHeader);
-  return (
-    <ak.Role.header {...shellHeader.jsx(variantProps)} {...rest}>
-      {renderBarPart(ShellHeaderStart, start)}
-      {renderBarPart(ShellHeaderCenter, center)}
-      {renderBarPart(ShellHeaderEnd, end)}
-      {children}
-    </ak.Role.header>
-  );
+  return <ak.Role.header {...shellHeader.jsx(variantProps)} {...rest} />;
 }
 
 export interface ShellFooterProps
-  extends
-    ak.RoleProps<"footer">,
-    VariantProps<typeof shellFooter>,
-    ShellBarPartsProps {}
+  extends ak.RoleProps<"footer">, VariantProps<typeof shellFooter> {}
 
 /**
  * The bottom bar of a shell, as tall as its content. It is static by default,
  * and a sticky sidebar body ends above it at the end of the page. Set `$sticky`
  * to keep it at the bottom of the viewport, such as for a message composer;
- * sticky sidebars and scrolled-to elements then end above it.
+ * sticky sidebars and scrolled-to elements then end above it. Its parts are
+ * `ShellFooterStart`, `ShellFooterCenter` and `ShellFooterEnd`, in that order.
  * @example
  * <Shell>
- *   <ShellFooter start="Ariakit" end={<a href="/help">Help</a>} />
+ *   <ShellFooter>
+ *     <ShellFooterStart>Ariakit</ShellFooterStart>
+ *     <ShellFooterEnd><a href="/help">Help</a></ShellFooterEnd>
+ *   </ShellFooter>
  * </Shell>
  */
-export function ShellFooter({
-  start,
-  center,
-  end,
-  children,
-  ...props
-}: ShellFooterProps) {
+export function ShellFooter(props: ShellFooterProps) {
   const [variantProps, rest] = splitProps(props, shellFooter);
-  return (
-    <ak.Role.footer {...shellFooter.jsx(variantProps)} {...rest}>
-      {renderBarPart(ShellFooterStart, start)}
-      {renderBarPart(ShellFooterCenter, center)}
-      {renderBarPart(ShellFooterEnd, end)}
-      {children}
-    </ak.Role.footer>
-  );
+  return <ak.Role.footer {...shellFooter.jsx(variantProps)} {...rest} />;
 }
-
-// Function declarations let this set refer to parts defined below.
-const BAR_PARTS = new Set<React.ElementType>([
-  ShellHeaderStart,
-  ShellHeaderCenter,
-  ShellHeaderEnd,
-  ShellFooterStart,
-  ShellFooterCenter,
-  ShellFooterEnd,
-]);
 
 /**
  * The start part of a footer: the same cell as `ShellHeaderStart`, under the
  * footer's name.
  * @example
  * <Shell>
- *   <ShellFooter start={<ShellFooterStart>Ariakit</ShellFooterStart>} />
+ *   <ShellFooter>
+ *     <ShellFooterStart>Ariakit</ShellFooterStart>
+ *   </ShellFooter>
  * </Shell>
  */
 export function ShellFooterStart(props: ShellHeaderPartProps) {
@@ -229,7 +172,9 @@ export function ShellFooterStart(props: ShellHeaderPartProps) {
  * footer's name.
  * @example
  * <Shell>
- *   <ShellFooter center={<ShellFooterCenter>Ariakit</ShellFooterCenter>} />
+ *   <ShellFooter>
+ *     <ShellFooterCenter>Ariakit</ShellFooterCenter>
+ *   </ShellFooter>
  * </Shell>
  */
 export function ShellFooterCenter(props: ShellHeaderPartProps) {
@@ -241,7 +186,9 @@ export function ShellFooterCenter(props: ShellHeaderPartProps) {
  * footer's name.
  * @example
  * <Shell>
- *   <ShellFooter end={<ShellFooterEnd>Ariakit</ShellFooterEnd>} />
+ *   <ShellFooter>
+ *     <ShellFooterEnd>Ariakit</ShellFooterEnd>
+ *   </ShellFooter>
  * </Shell>
  */
 export function ShellFooterEnd(props: ShellHeaderPartProps) {
@@ -470,16 +417,18 @@ export interface ShellSidebarProps
  *   const [open, setOpen] = useState(true);
  *   return (
  *     <Shell>
- *       <ShellHeader start={
- *         <button
- *           type="button"
- *           aria-expanded={open}
- *           aria-controls="docs-nav"
- *           onClick={() => setOpen(!open)}
- *         >
- *           Docs
- *         </button>
- *       } />
+ *       <ShellHeader>
+ *         <ShellHeaderStart>
+ *           <button
+ *             type="button"
+ *             aria-expanded={open}
+ *             aria-controls="docs-nav"
+ *             onClick={() => setOpen(!open)}
+ *           >
+ *             Docs
+ *           </button>
+ *         </ShellHeaderStart>
+ *       </ShellHeader>
  *       <ShellSidebar
  *         id="docs-nav"
  *         open={open}

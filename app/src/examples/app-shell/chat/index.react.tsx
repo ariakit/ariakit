@@ -21,6 +21,7 @@ import {
   ShellFooterCenter,
   ShellHeader,
   ShellHeaderStart,
+  ShellHeaderEnd,
   ShellMain,
   ShellMainBody,
   ShellSidebar,
@@ -162,31 +163,26 @@ export default function Example() {
       </ShellSidebar>
       {/* The nested shell takes the outer shell's main cell. */}
       <Shell>
-        <ShellHeader
-          start={
-            <ShellHeaderStart
-              $shrink
-              className="flex min-w-0 items-center gap-2"
+        <ShellHeader>
+          <ShellHeaderStart $shrink className="flex min-w-0 items-center gap-2">
+            <Button
+              className="@max-3xl/shell:hidden"
+              aria-label="Toggle channels"
+              aria-expanded={channelsOpen}
+              aria-controls={channelsId}
+              onClick={() => setChannelsOpen((open) => !open)}
             >
-              <Button
-                className="@max-3xl/shell:hidden"
-                aria-label="Toggle channels"
-                aria-expanded={channelsOpen}
-                aria-controls={channelsId}
-                onClick={() => setChannelsOpen((open) => !open)}
-              >
-                <ButtonSlot>
-                  <PanelLeft />
-                </ButtonSlot>
-              </Button>
-              <Hash className="size-4 shrink-0" />
-              <ak.Heading className="text-base font-medium">design</ak.Heading>
-              <span className="ak-ink-70 truncate text-sm">
-                Design reviews and component feedback
-              </span>
-            </ShellHeaderStart>
-          }
-          end={
+              <ButtonSlot>
+                <PanelLeft />
+              </ButtonSlot>
+            </Button>
+            <Hash className="size-4 shrink-0" />
+            <ak.Heading className="text-base font-medium">design</ak.Heading>
+            <span className="ak-ink-70 truncate text-sm">
+              Design reviews and component feedback
+            </span>
+          </ShellHeaderStart>
+          <ShellHeaderEnd>
             <Button
               className="@max-3xl/shell:hidden"
               aria-label="Toggle members"
@@ -198,8 +194,8 @@ export default function Example() {
                 <Users />
               </ButtonSlot>
             </Button>
-          }
-        />
+          </ShellHeaderEnd>
+        </ShellHeader>
         <ShellSidebar
           id={membersId}
           open={membersOpen}
@@ -251,58 +247,54 @@ export default function Example() {
             </ol>
           </ShellMainBody>
         </ShellMain>
-        <ShellFooter
-          $sticky
-          $blur
-          center={
-            <ShellFooterCenter $grow>
-              <form
-                className="flex w-full gap-2"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  const text = draft.trim();
-                  if (!text) {
-                    return;
-                  }
-                  flushSync(() => {
-                    setMessages((previous) => [
-                      ...previous,
-                      {
-                        id: previous.length + 1,
-                        author: maya,
-                        time: "Now",
-                        text,
-                      },
-                    ]);
-                  });
-                  setDraft("");
-                  // The sent message can start below the sticky composer.
-                  messagesRef.current?.lastElementChild?.scrollIntoView({
-                    block: "nearest",
-                  });
-                }}
+        <ShellFooter $sticky $blur>
+          <ShellFooterCenter $grow>
+            <form
+              className="flex w-full gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                const text = draft.trim();
+                if (!text) {
+                  return;
+                }
+                flushSync(() => {
+                  setMessages((previous) => [
+                    ...previous,
+                    {
+                      id: previous.length + 1,
+                      author: maya,
+                      time: "Now",
+                      text,
+                    },
+                  ]);
+                });
+                setDraft("");
+                // The sent message can start below the sticky composer.
+                messagesRef.current?.lastElementChild?.scrollIntoView({
+                  block: "nearest",
+                });
+              }}
+            >
+              <Input
+                aria-label="Message"
+                placeholder="Message #design"
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                className="w-full min-w-0"
+              />
+              <Button
+                type="submit"
+                aria-label="Send message"
+                $layer="brand"
+                $kind="bevel"
               >
-                <Input
-                  aria-label="Message"
-                  placeholder="Message #design"
-                  value={draft}
-                  onChange={(event) => setDraft(event.target.value)}
-                  className="w-full min-w-0"
-                />
-                <Button
-                  type="submit"
-                  aria-label="Send message"
-                  $layer="brand"
-                  $kind="bevel"
-                >
-                  <ButtonSlot>
-                    <SendHorizontal />
-                  </ButtonSlot>
-                </Button>
-              </form>
-            </ShellFooterCenter>
-          }
-        />
+                <ButtonSlot>
+                  <SendHorizontal />
+                </ButtonSlot>
+              </Button>
+            </form>
+          </ShellFooterCenter>
+        </ShellFooter>
       </Shell>
     </Shell>
   );

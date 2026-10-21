@@ -27,9 +27,12 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellFooter,
+  ShellFooterStart,
+  ShellFooterEnd,
   ShellHeader,
   ShellHeaderCenter,
   ShellHeaderEnd,
+  ShellHeaderStart,
   ShellMain,
   ShellMainBody,
   ShellMainHeader,
@@ -68,77 +71,69 @@ export default function Example() {
   return (
     <Shell>
       <Shell $size={appliedTheme.density === "compact" ? "sm" : "md"}>
-        <ShellHeader
-          $blur
-          $height="sm"
-          start={
-            <>
-              <Button
-                className="@max-3xl/shell:hidden"
-                aria-label="Toggle navigation"
-                aria-expanded={navigationOpen}
-                aria-controls={navigationId}
-                onClick={() => setNavigationOpen((open) => !open)}
+        <ShellHeader $blur $height="sm">
+          <ShellHeaderStart>
+            <Button
+              className="@max-3xl/shell:hidden"
+              aria-label="Toggle navigation"
+              aria-expanded={navigationOpen}
+              aria-controls={navigationId}
+              onClick={() => setNavigationOpen((open) => !open)}
+            >
+              <ButtonSlot>
+                <PanelLeft />
+              </ButtonSlot>
+            </Button>
+            <a href="#" className="flex items-center gap-2 font-semibold">
+              <Text
+                $text="brand"
+                $textHue={appliedTheme.accent.hue}
+                render={<span />}
+                className="flex"
               >
-                <ButtonSlot>
-                  <PanelLeft />
-                </ButtonSlot>
-              </Button>
-              <a href="#" className="flex items-center gap-2 font-semibold">
-                <Text
-                  $text="brand"
-                  $textHue={appliedTheme.accent.hue}
-                  render={<span />}
-                  className="flex"
+                <Hexagon strokeWidth={1.5} className="size-5" />
+              </Text>
+              Forge UI
+            </a>
+          </ShellHeaderStart>
+          <ShellHeaderCenter>
+            <Nav
+              $layout="horizontal"
+              aria-label="Main"
+              bar
+              className="@max-4xl/shell:hidden"
+            >
+              {topLinks.map((link, index) => (
+                <NavLink
+                  key={link}
+                  href="#"
+                  aria-current={index === 0 ? "page" : undefined}
                 >
-                  <Hexagon strokeWidth={1.5} className="size-5" />
-                </Text>
-                Forge UI
-              </a>
-            </>
-          }
-          center={
-            <ShellHeaderCenter>
-              <Nav
-                $layout="horizontal"
-                aria-label="Main"
-                bar
-                className="@max-4xl/shell:hidden"
-              >
-                {topLinks.map((link, index) => (
-                  <NavLink
-                    key={link}
-                    href="#"
-                    aria-current={index === 0 ? "page" : undefined}
-                  >
-                    {link}
-                  </NavLink>
-                ))}
-              </Nav>
-            </ShellHeaderCenter>
-          }
-          end={
-            <ShellHeaderEnd>
-              <Button
-                className="@max-3xl/shell:hidden"
-                aria-expanded={customizeOpen}
-                aria-controls={customizeId}
-                onClick={() => {
-                  if (customizeOpen) {
-                    closeCustomize();
-                  } else {
-                    setCustomizeOpen(true);
-                  }
-                }}
-              >
-                <ButtonSlot>
-                  <Palette />
-                </ButtonSlot>
-                <ButtonLabel>Customize</ButtonLabel>
-              </Button>
-            </ShellHeaderEnd>
-          }
-        />
+                  {link}
+                </NavLink>
+              ))}
+            </Nav>
+          </ShellHeaderCenter>
+          <ShellHeaderEnd>
+            <Button
+              className="@max-3xl/shell:hidden"
+              aria-expanded={customizeOpen}
+              aria-controls={customizeId}
+              onClick={() => {
+                if (customizeOpen) {
+                  closeCustomize();
+                } else {
+                  setCustomizeOpen(true);
+                }
+              }}
+            >
+              <ButtonSlot>
+                <Palette />
+              </ButtonSlot>
+              <ButtonLabel>Customize</ButtonLabel>
+            </Button>
+          </ShellHeaderEnd>
+        </ShellHeader>
 
         <ShellSidebar
           id={navigationId}
@@ -316,10 +311,14 @@ export default function Example() {
           </ShellSidebarBody>
         </ShellSidebar>
 
-        <ShellFooter
-          start={<span className="ak-ink-70">© 2026 Forge UI</span>}
-          end={<Link href="#">Release notes</Link>}
-        />
+        <ShellFooter>
+          <ShellFooterStart>
+            <span className="ak-ink-70">© 2026 Forge UI</span>
+          </ShellFooterStart>
+          <ShellFooterEnd>
+            <Link href="#">Release notes</Link>
+          </ShellFooterEnd>
+        </ShellFooter>
       </Shell>
 
       <ShellSidebar

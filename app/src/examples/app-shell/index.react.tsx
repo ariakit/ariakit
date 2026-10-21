@@ -12,7 +12,11 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellFooter,
+  ShellFooterStart,
+  ShellFooterEnd,
   ShellHeader,
+  ShellHeaderStart,
+  ShellHeaderEnd,
   ShellMain,
   ShellMainBody,
   ShellMainIntro,
@@ -27,29 +31,28 @@ export default function Example() {
   const sidebarId = useId();
   return (
     <Shell>
-      <ShellHeader
-        $blur
-        start={
-          <>
-            <Button
-              aria-label="Toggle navigation"
-              aria-expanded={open}
-              aria-controls={sidebarId}
-              onClick={() => setOpen(!open)}
-              className="@max-3xl/shell:hidden"
-            >
-              <ButtonSlot>
-                <PanelLeft />
-              </ButtonSlot>
-            </Button>
-            <a href="#" className="flex items-center gap-2 font-semibold">
-              <Hexagon strokeWidth={1.5} className="size-5" />
-              Acme Docs
-            </a>
-          </>
-        }
-        end={<Button>Sign in</Button>}
-      />
+      <ShellHeader $blur>
+        <ShellHeaderStart>
+          <Button
+            aria-label="Toggle navigation"
+            aria-expanded={open}
+            aria-controls={sidebarId}
+            onClick={() => setOpen(!open)}
+            className="@max-3xl/shell:hidden"
+          >
+            <ButtonSlot>
+              <PanelLeft />
+            </ButtonSlot>
+          </Button>
+          <a href="#" className="flex items-center gap-2 font-semibold">
+            <Hexagon strokeWidth={1.5} className="size-5" />
+            Acme Docs
+          </a>
+        </ShellHeaderStart>
+        <ShellHeaderEnd>
+          <Button>Sign in</Button>
+        </ShellHeaderEnd>
+      </ShellHeader>
       <ShellSidebar
         id={sidebarId}
         open={open}
@@ -93,10 +96,14 @@ export default function Example() {
           </Prose>
         </ShellMainBody>
       </ShellMain>
-      <ShellFooter
-        start={<span className="ak-ink-70 text-sm">© 2026 Acme, Inc.</span>}
-        end={<Link href="#">Back to top</Link>}
-      />
+      <ShellFooter>
+        <ShellFooterStart>
+          <span className="ak-ink-70 text-sm">© 2026 Acme, Inc.</span>
+        </ShellFooterStart>
+        <ShellFooterEnd>
+          <Link href="#">Back to top</Link>
+        </ShellFooterEnd>
+      </ShellFooter>
     </Shell>
   );
 }
