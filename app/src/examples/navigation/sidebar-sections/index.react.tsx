@@ -13,6 +13,7 @@ import {
 import {
   Shell,
   ShellHeader,
+  ShellHeaderStart,
   ShellMain,
   ShellMainBody,
   ShellMainIntro,
@@ -81,11 +82,10 @@ export default function Example() {
     )?.title;
   return (
     <Shell>
-      <ShellHeader
-        $blur
-        start={
-          // An icon starts the logo, so its sides keep the frame padding, like
-          // the leading icon of a button.
+      <ShellHeader $blur>
+        <ShellHeaderStart>
+          {/* An icon starts the logo, so its sides keep the frame padding, like
+              the leading icon of a button. */}
           <TextFrame
             $p={2}
             $px="sm"
@@ -94,8 +94,8 @@ export default function Example() {
             <Hexagon strokeWidth={1.5} className="size-5" aria-hidden />
             Acme UI
           </TextFrame>
-        }
-      />
+        </ShellHeaderStart>
+      </ShellHeader>
       <ShellSidebar>
         <ShellSidebarBody>
           <Nav

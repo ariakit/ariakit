@@ -21,8 +21,11 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellHeader,
+  ShellHeaderStart,
+  ShellHeaderEnd,
   ShellFooter,
   ShellFooterEnd,
+  ShellFooterStart,
   ShellSidebar,
   ShellSidebarBody,
   ShellMain,
@@ -39,15 +42,13 @@ export default function Example() {
   const [readingMode, setReadingMode] = useState(false);
   return (
     <Shell>
-      <ShellHeader
-        $blur
-        $border={false}
-        start={
+      <ShellHeader $blur $border={false}>
+        <ShellHeaderStart>
           <a href="#" className="flex items-center gap-2 font-semibold">
             <Hexagon strokeWidth={1.5} className="size-5" /> Field Notes
           </a>
-        }
-        end={
+        </ShellHeaderStart>
+        <ShellHeaderEnd>
           <Button
             aria-label="Reading mode"
             aria-pressed={readingMode}
@@ -58,8 +59,8 @@ export default function Example() {
               <BookOpen />
             </ButtonSlot>
           </Button>
-        }
-      />
+        </ShellHeaderEnd>
+      </ShellHeader>
       <ShellMain $maxWidth="40rem">
         <ShellMainIntro $gap={4}>
           <Badge className="w-fit">
@@ -158,30 +159,29 @@ export default function Example() {
           </Nav>
         </ShellSidebarBody>
       </ShellSidebar>
-      <ShellFooter
-        $border={false}
-        start={<p className="ak-ink-70">© 2026 Field Notes</p>}
-        end={
-          <ShellFooterEnd $shrink>
-            {/* Demo form: the submit handler only keeps the page in place. */}
-            <form
-              className="flex w-full max-w-sm gap-2"
-              onSubmit={(event) => event.preventDefault()}
-            >
-              <Input
-                type="email"
-                aria-label="Email address"
-                placeholder="you@example.com"
-                className="min-w-0 flex-1"
-                required
-              />
-              <Button type="submit" $layer="brand" $kind="bevel">
-                Subscribe
-              </Button>
-            </form>
-          </ShellFooterEnd>
-        }
-      />
+      <ShellFooter $border={false}>
+        <ShellFooterStart>
+          <p className="ak-ink-70">© 2026 Field Notes</p>
+        </ShellFooterStart>
+        <ShellFooterEnd $shrink>
+          {/* Demo form: the submit handler only keeps the page in place. */}
+          <form
+            className="flex w-full max-w-sm gap-2"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <Input
+              type="email"
+              aria-label="Email address"
+              placeholder="you@example.com"
+              className="min-w-0 flex-1"
+              required
+            />
+            <Button type="submit" $layer="brand" $kind="bevel">
+              Subscribe
+            </Button>
+          </form>
+        </ShellFooterEnd>
+      </ShellFooter>
     </Shell>
   );
 }

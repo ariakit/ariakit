@@ -30,6 +30,9 @@ import {
   ShellMainContent,
   ShellMainFull,
   ShellFooter,
+  ShellFooterStart,
+  ShellFooterCenter,
+  ShellFooterEnd,
   ShellHeader,
   ShellHeaderCenter,
   ShellHeaderEnd,
@@ -40,7 +43,6 @@ import {
   ShellSidebar,
   ShellSidebarBody,
 } from "@ariakit/ui/components/shell.ariakit.react";
-import type { ShellHeaderProps } from "@ariakit/ui/components/shell.ariakit.react";
 import {
   Bell,
   ChartBar,
@@ -260,55 +262,45 @@ function DocsScenario() {
   const [current, setCurrent] = useState<string>(docsSections[0].id);
   return (
     <Shell $size="md" style={{ color: "inherit" }}>
-      <ShellHeader
-        $blur
-        start={
-          <>
-            <Button
-              className="@max-3xl/shell:hidden"
-              aria-label="Toggle sidebar"
-              aria-expanded={navigationOpen}
-              aria-controls={navigationId}
-              onClick={() => setNavigationOpen((open) => !open)}
-            >
-              <ButtonSlot>
-                <PanelLeft />
-              </ButtonSlot>
-            </Button>
-            <Brand />
-          </>
-        }
-        // A consumer container rule on the bar hides the search below 40rem of
-        // bar content, so the bar never stacks.
-        center={
-          <ShellHeaderCenter
-            $grow
-            className="hidden @[40rem]/shell-header:flex"
+      <ShellHeader $blur>
+        <ShellHeaderStart>
+          <Button
+            className="@max-3xl/shell:hidden"
+            aria-label="Toggle sidebar"
+            aria-expanded={navigationOpen}
+            aria-controls={navigationId}
+            onClick={() => setNavigationOpen((open) => !open)}
           >
-            <Input
-              aria-label="Search the docs"
-              placeholder="Search"
-              className="w-full min-w-0"
-            />
-          </ShellHeaderCenter>
-        }
-        end={
-          <ShellHeaderEnd>
-            <Button
-              className="@max-3xl/shell:hidden"
-              aria-label="Toggle table of contents"
-              aria-expanded={contentsOpen}
-              aria-controls={contentsId}
-              onClick={() => setContentsOpen((open) => !open)}
-            >
-              <ButtonSlot>
-                <PanelRight />
-              </ButtonSlot>
-            </Button>
-            <ScenarioControls />
-          </ShellHeaderEnd>
-        }
-      />
+            <ButtonSlot>
+              <PanelLeft />
+            </ButtonSlot>
+          </Button>
+          <Brand />
+        </ShellHeaderStart>
+        {/* A consumer container rule on the bar hides the search below 40rem of
+            bar content, so the bar never stacks. */}
+        <ShellHeaderCenter $grow className="hidden @[40rem]/shell-header:flex">
+          <Input
+            aria-label="Search the docs"
+            placeholder="Search"
+            className="w-full min-w-0"
+          />
+        </ShellHeaderCenter>
+        <ShellHeaderEnd>
+          <Button
+            className="@max-3xl/shell:hidden"
+            aria-label="Toggle table of contents"
+            aria-expanded={contentsOpen}
+            aria-controls={contentsId}
+            onClick={() => setContentsOpen((open) => !open)}
+          >
+            <ButtonSlot>
+              <PanelRight />
+            </ButtonSlot>
+          </Button>
+          <ScenarioControls />
+        </ShellHeaderEnd>
+      </ShellHeader>
       <ShellSidebar
         id={navigationId}
         open={navigationOpen}
@@ -368,21 +360,21 @@ function DocsScenario() {
           <SectionLinks label="Page sections" sections={docsSections} />
         </ShellSidebarBody>
       </ShellSidebar>
-      <ShellFooter
-        start={
+      <ShellFooter>
+        <ShellFooterStart>
           <div className="ak-ink-70 py-4 text-sm">
             <p>Ariakit UI</p>
             <p>Copyright 2026 Ariakit FZ-LLC</p>
             <p>All rights reserved</p>
             <p>Made with the Shell component</p>
           </div>
-        }
-        end={
+        </ShellFooterStart>
+        <ShellFooterEnd>
           <Link href="#introduction" tabIndex={0}>
             Back to top
           </Link>
-        }
-      />
+        </ShellFooterEnd>
+      </ShellFooter>
     </Shell>
   );
 }
@@ -445,8 +437,8 @@ function DashboardScenario() {
         </ShellSidebarBody>
       </ShellSidebar>
       <Shell $size="md">
-        <ShellHeader
-          start={
+        <ShellHeader>
+          <ShellHeaderStart>
             <Button
               aria-label="Toggle sidebar"
               aria-expanded={workspaceOpen}
@@ -457,25 +449,25 @@ function DashboardScenario() {
                 <PanelLeft />
               </ButtonSlot>
             </Button>
-          }
-          center={<ak.Heading className="font-medium">Overview</ak.Heading>}
-          end={
-            <ShellHeaderEnd>
-              <Button
-                className="@max-3xl/shell:hidden"
-                aria-label="Toggle details"
-                aria-expanded={detailsOpen}
-                aria-controls={detailsId}
-                onClick={() => setDetailsOpen((open) => !open)}
-              >
-                <ButtonSlot>
-                  <PanelRight />
-                </ButtonSlot>
-              </Button>
-              <ScenarioControls />
-            </ShellHeaderEnd>
-          }
-        />
+          </ShellHeaderStart>
+          <ShellHeaderCenter>
+            <ak.Heading className="font-medium">Overview</ak.Heading>
+          </ShellHeaderCenter>
+          <ShellHeaderEnd>
+            <Button
+              className="@max-3xl/shell:hidden"
+              aria-label="Toggle details"
+              aria-expanded={detailsOpen}
+              aria-controls={detailsId}
+              onClick={() => setDetailsOpen((open) => !open)}
+            >
+              <ButtonSlot>
+                <PanelRight />
+              </ButtonSlot>
+            </Button>
+            <ScenarioControls />
+          </ShellHeaderEnd>
+        </ShellHeader>
         <ShellMain>
           <ShellMainBody>
             <div
@@ -542,40 +534,36 @@ function ChatScenario() {
   const membersId = useId();
   return (
     <Shell $size="md">
-      <ShellHeader
-        start={
-          <>
-            <Button
-              className="@max-3xl/shell:hidden"
-              aria-label="Toggle channels"
-              aria-expanded={channelsOpen}
-              aria-controls={channelsId}
-              onClick={() => setChannelsOpen((open) => !open)}
-            >
-              <ButtonSlot>
-                <Hash />
-              </ButtonSlot>
-            </Button>
-            <ak.Heading className="font-medium">general</ak.Heading>
-          </>
-        }
-        end={
-          <ShellHeaderEnd $shrink>
-            <Button
-              className="@max-3xl/shell:hidden"
-              aria-label="Toggle members"
-              aria-expanded={membersOpen}
-              aria-controls={membersId}
-              onClick={() => setMembersOpen((open) => !open)}
-            >
-              <ButtonSlot>
-                <Users />
-              </ButtonSlot>
-            </Button>
-            <ScenarioControls />
-          </ShellHeaderEnd>
-        }
-      />
+      <ShellHeader>
+        <ShellHeaderStart>
+          <Button
+            className="@max-3xl/shell:hidden"
+            aria-label="Toggle channels"
+            aria-expanded={channelsOpen}
+            aria-controls={channelsId}
+            onClick={() => setChannelsOpen((open) => !open)}
+          >
+            <ButtonSlot>
+              <Hash />
+            </ButtonSlot>
+          </Button>
+          <ak.Heading className="font-medium">general</ak.Heading>
+        </ShellHeaderStart>
+        <ShellHeaderEnd $shrink>
+          <Button
+            className="@max-3xl/shell:hidden"
+            aria-label="Toggle members"
+            aria-expanded={membersOpen}
+            aria-controls={membersId}
+            onClick={() => setMembersOpen((open) => !open)}
+          >
+            <ButtonSlot>
+              <Users />
+            </ButtonSlot>
+          </Button>
+          <ScenarioControls />
+        </ShellHeaderEnd>
+      </ShellHeader>
       <ShellSidebar $width="xs" $show aria-label="Workspaces" render={<nav />}>
         <ShellSidebarBody $p={2}>
           <ul className="grid gap-2">
@@ -668,16 +656,16 @@ function ChatScenario() {
           </ul>
         </ShellSidebarBody>
       </ShellSidebar>
-      <ShellFooter
-        start={
+      <ShellFooter>
+        <ShellFooterStart>
           <div className="ak-ink-70 py-2 text-xs">
             <p>Connected to Acme</p>
             <p>3 members online</p>
             <p>Last sync a minute ago</p>
             <p>Version 4.2.0</p>
           </div>
-        }
-      />
+        </ShellFooterStart>
+      </ShellFooter>
     </Shell>
   );
 }
@@ -700,38 +688,34 @@ function SettingsScenario() {
   const sectionsId = useId();
   return (
     <Shell $size="md" $duration={600}>
-      <ShellHeader
-        start={
-          <>
-            <Button
-              className="@max-3xl/shell:hidden"
-              aria-label={open ? "Toggle sidebar" : undefined}
-              aria-expanded={open}
-              aria-controls={sectionsId}
-              onClick={() => setOpen((open) => !open)}
-            >
-              {open ? (
-                <ButtonSlot>
-                  <PanelLeft />
-                </ButtonSlot>
-              ) : (
-                "Sections"
-              )}
-            </Button>
-            <Brand>Settings</Brand>
-          </>
-        }
-        end={
-          <ShellHeaderEnd $shrink>
-            <Button aria-label="Notifications">
+      <ShellHeader>
+        <ShellHeaderStart>
+          <Button
+            className="@max-3xl/shell:hidden"
+            aria-label={open ? "Toggle sidebar" : undefined}
+            aria-expanded={open}
+            aria-controls={sectionsId}
+            onClick={() => setOpen((open) => !open)}
+          >
+            {open ? (
               <ButtonSlot>
-                <Bell />
+                <PanelLeft />
               </ButtonSlot>
-            </Button>
-            <ScenarioControls />
-          </ShellHeaderEnd>
-        }
-      />
+            ) : (
+              "Sections"
+            )}
+          </Button>
+          <Brand>Settings</Brand>
+        </ShellHeaderStart>
+        <ShellHeaderEnd $shrink>
+          <Button aria-label="Notifications">
+            <ButtonSlot>
+              <Bell />
+            </ButtonSlot>
+          </Button>
+          <ScenarioControls />
+        </ShellHeaderEnd>
+      </ShellHeader>
       <ShellSidebar
         id={sectionsId}
         open={open}
@@ -781,35 +765,31 @@ function SettingsScenario() {
 function MarketingScenario() {
   return (
     <Shell $size="md">
-      <ShellHeader
-        $sticky={false}
-        $stackCenter
-        start={<Brand />}
-        center={
-          <ShellHeaderCenter
-            render={<nav aria-label="Site" />}
-            className="gap-4 text-sm"
-          >
-            <Link href="#features" tabIndex={0}>
-              Features
-            </Link>
-            <Link href="#pricing" tabIndex={0}>
-              Pricing
-            </Link>
-            <Link href="#docs" tabIndex={0}>
-              Docs
-            </Link>
-          </ShellHeaderCenter>
-        }
-        end={
-          <ShellHeaderEnd $shrink>
-            <Button $layer="brand" $kind="bevel">
-              Get started
-            </Button>
-            <ScenarioControls />
-          </ShellHeaderEnd>
-        }
-      />
+      <ShellHeader $sticky={false} $stackCenter>
+        <ShellHeaderStart>
+          <Brand />
+        </ShellHeaderStart>
+        <ShellHeaderCenter
+          render={<nav aria-label="Site" />}
+          className="gap-4 text-sm"
+        >
+          <Link href="#features" tabIndex={0}>
+            Features
+          </Link>
+          <Link href="#pricing" tabIndex={0}>
+            Pricing
+          </Link>
+          <Link href="#docs" tabIndex={0}>
+            Docs
+          </Link>
+        </ShellHeaderCenter>
+        <ShellHeaderEnd $shrink>
+          <Button $layer="brand" $kind="bevel">
+            Get started
+          </Button>
+          <ScenarioControls />
+        </ShellHeaderEnd>
+      </ShellHeader>
       <ShellMain>
         <ShellMainBody $maxWidth={256}>
           <HeadingLevel>
@@ -837,14 +817,16 @@ function MarketingScenario() {
           </HeadingLevel>
         </ShellMainBody>
       </ShellMain>
-      <ShellFooter
-        start={<p className="ak-ink-70 py-4 text-sm">Copyright 2026 Ariakit</p>}
-        end={
+      <ShellFooter>
+        <ShellFooterStart>
+          <p className="ak-ink-70 py-4 text-sm">Copyright 2026 Ariakit</p>
+        </ShellFooterStart>
+        <ShellFooterEnd>
           <Link href="#" tabIndex={0}>
             Privacy
           </Link>
-        }
-      />
+        </ShellFooterEnd>
+      </ShellFooter>
     </Shell>
   );
 }
@@ -866,31 +848,24 @@ type BarPolicy = keyof typeof barPolicies;
 function BarScenario() {
   const [policy, setPolicy] = useState<BarPolicy>("default");
   const shrinkSides = policy === "shrink";
-  const partsProps: Partial<ShellHeaderProps> = {
-    start: (
-      <ShellHeaderStart $shrink={shrinkSides}>
-        <span className="w-64 truncate">
-          A start part that keeps sixteen rem of text on one line
-        </span>
-      </ShellHeaderStart>
-    ),
-    center: (
-      <ShellHeaderCenter
-        $grow={policy === "grow"}
-        $shrink={policy === "shrink-center"}
-      >
-        <span className="truncate">Bar parts</span>
-      </ShellHeaderCenter>
-    ),
-    end: (
-      <ShellHeaderEnd $shrink={shrinkSides}>
-        <span className="w-40 truncate">An end part of ten rem</span>
-      </ShellHeaderEnd>
-    ),
-  };
   return (
     <Shell $size="md">
-      <ShellHeader {...partsProps} />
+      <ShellHeader>
+        <ShellHeaderStart $shrink={shrinkSides}>
+          <span className="w-64 truncate">
+            A start part that keeps sixteen rem of text on one line
+          </span>
+        </ShellHeaderStart>
+        <ShellHeaderCenter
+          $grow={policy === "grow"}
+          $shrink={policy === "shrink-center"}
+        >
+          <span className="truncate">Bar parts</span>
+        </ShellHeaderCenter>
+        <ShellHeaderEnd $shrink={shrinkSides}>
+          <span className="w-40 truncate">An end part of ten rem</span>
+        </ShellHeaderEnd>
+      </ShellHeader>
       <ShellMain>
         <ShellMainBody>
           <fieldset className="grid gap-2">
@@ -915,8 +890,8 @@ function BarScenario() {
       </ShellMain>
       {/* A bottom navigation, as on a phone, which can add a bottom safe area
           to the footer. */}
-      <ShellFooter
-        center={
+      <ShellFooter>
+        <ShellFooterCenter>
           <Nav $layout="horizontal" aria-label="Footer pages" bar>
             <NavLink href="#home" aria-current="page" tabIndex={0}>
               Home
@@ -928,8 +903,8 @@ function BarScenario() {
               Profile
             </NavLink>
           </Nav>
-        }
-      />
+        </ShellFooterCenter>
+      </ShellFooter>
     </Shell>
   );
 }
@@ -941,7 +916,14 @@ function BarScenario() {
 function StaticScenario() {
   return (
     <Shell $size="md">
-      <ShellHeader start={<Brand />} end={<ScenarioControls />} />
+      <ShellHeader>
+        <ShellHeaderStart>
+          <Brand />
+        </ShellHeaderStart>
+        <ShellHeaderEnd>
+          <ScenarioControls />
+        </ShellHeaderEnd>
+      </ShellHeader>
       <ShellSidebar $show aria-label="Sections" render={<aside />}>
         <ShellSidebarBody>
           <SectionLinks label="Section list" sections={settingsSections} />

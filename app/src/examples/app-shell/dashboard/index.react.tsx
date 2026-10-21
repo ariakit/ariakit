@@ -21,6 +21,8 @@ import {
   Shell,
   ShellHeader,
   ShellHeaderCenter,
+  ShellHeaderStart,
+  ShellHeaderEnd,
   ShellMain,
   ShellMainBody,
   ShellMainIntro,
@@ -104,9 +106,8 @@ export default function Example() {
         </ShellSidebarFooter>
       </ShellSidebar>
       <Shell>
-        <ShellHeader
-          $blur
-          start={
+        <ShellHeader $blur>
+          <ShellHeaderStart>
             <div className="flex items-center gap-2">
               <Button
                 aria-label="Toggle sidebar"
@@ -120,21 +121,19 @@ export default function Example() {
               </Button>
               <span className="font-semibold">Overview</span>
             </div>
-          }
-          center={
-            <ShellHeaderCenter
-              $grow
-              className="hidden @[40rem]/shell-header:flex"
-            >
-              <Input
-                type="search"
-                aria-label="Search orders and customers"
-                placeholder="Search orders, customers"
-                className="w-full min-w-0"
-              />
-            </ShellHeaderCenter>
-          }
-          end={
+          </ShellHeaderStart>
+          <ShellHeaderCenter
+            $grow
+            className="hidden @[40rem]/shell-header:flex"
+          >
+            <Input
+              type="search"
+              aria-label="Search orders and customers"
+              placeholder="Search orders, customers"
+              className="w-full min-w-0"
+            />
+          </ShellHeaderCenter>
+          <ShellHeaderEnd>
             <div className="flex items-center gap-2">
               <Button aria-label="Notifications">
                 <ButtonSlot>
@@ -147,8 +146,8 @@ export default function Example() {
                 </ButtonSlot>
               </Button>
             </div>
-          }
-        />
+          </ShellHeaderEnd>
+        </ShellHeader>
         <ShellMain $maxWidth="72rem">
           <ShellMainIntro>
             <div className="flex flex-wrap items-end justify-between gap-4">

@@ -16,7 +16,10 @@ import {
   ShellMainFeature,
   ShellMainFull,
   ShellFooter,
+  ShellFooterStart,
   ShellHeader,
+  ShellHeaderStart,
+  ShellHeaderEnd,
   ShellMainIntro,
   ShellMain,
   ShellMainBody,
@@ -69,9 +72,12 @@ export function GeometryScenario({ controls }: ScenarioProps) {
         $p={widePadding ? 12 : undefined}
         $border={border}
         $borderType={borderType}
-        start={<span>Layout details</span>}
-        end={controls}
-      />
+      >
+        <ShellHeaderStart>
+          <span>Layout details</span>
+        </ShellHeaderStart>
+        <ShellHeaderEnd>{controls}</ShellHeaderEnd>
+      </ShellHeader>
       <ShellSidebar
         id={startId}
         aria-label="Layout navigation"
@@ -322,8 +328,11 @@ export function GeometryScenario({ controls }: ScenarioProps) {
         $p={widePadding ? 12 : undefined}
         $border={border}
         $borderType={borderType}
-        start={<span>Layout footer</span>}
-      />
+      >
+        <ShellFooterStart>
+          <span>Layout footer</span>
+        </ShellFooterStart>
+      </ShellFooter>
     </Shell>
   );
 }
@@ -335,11 +344,12 @@ export function NestedScenario({ controls }: ScenarioProps) {
   return (
     <>
       <Shell $size="md" aria-label="Outer shell">
-        <ShellHeader
-          $height="sm"
-          start={<span>Outer header</span>}
-          end={controls}
-        />
+        <ShellHeader $height="sm">
+          <ShellHeaderStart>
+            <span>Outer header</span>
+          </ShellHeaderStart>
+          <ShellHeaderEnd>{controls}</ShellHeaderEnd>
+        </ShellHeader>
         <ShellSidebar
           $width="xs"
           $show
@@ -356,10 +366,11 @@ export function NestedScenario({ controls }: ScenarioProps) {
           <ShellMainBody $p={0}>
             <div className="h-40">Outer introduction</div>
             <Shell $size="md" aria-label="Middle shell">
-              <ShellHeader
-                $height={largeHeader ? "lg" : "md"}
-                start={<span>Middle header</span>}
-              />
+              <ShellHeader $height={largeHeader ? "lg" : "md"}>
+                <ShellHeaderStart>
+                  <span>Middle header</span>
+                </ShellHeaderStart>
+              </ShellHeader>
               <ShellSidebar
                 $width="sm"
                 $show
@@ -376,10 +387,11 @@ export function NestedScenario({ controls }: ScenarioProps) {
                 <ShellMainBody $p={0}>
                   <div className="h-40">Middle introduction</div>
                   <Shell $size="md" aria-label="Inner shell">
-                    <ShellHeader
-                      $height="lg"
-                      start={<span>Inner header</span>}
-                    />
+                    <ShellHeader $height="lg">
+                      <ShellHeaderStart>
+                        <span>Inner header</span>
+                      </ShellHeaderStart>
+                    </ShellHeader>
                     <ShellSidebar
                       $width="xs"
                       $show

@@ -19,6 +19,8 @@ import { Nav, NavLink } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Shell,
   ShellFooter,
+  ShellFooterEnd,
+  ShellFooterStart,
   ShellHeader,
   ShellHeaderCenter,
   ShellHeaderEnd,
@@ -354,8 +356,10 @@ const hasSidebar = sidebar && navigation.length > 0;
           )
         }
         <ShellFooter className="text-sm">
-          <span slot="start" class="ak-ink-70">© Ariakit FZ-LLC</span>
-          <Fragment slot="end">
+          <ShellFooterStart>
+            <span class="ak-ink-70">© Ariakit FZ-LLC</span>
+          </ShellFooterStart>
+          <ShellFooterEnd>
             <Nav $layout="horizontal" aria-label="Footer">
               {
                 sections.map((link) => (
@@ -363,7 +367,7 @@ const hasSidebar = sidebar && navigation.length > 0;
                 ))
               }
             </Nav>
-          </Fragment>
+          </ShellFooterEnd>
         </ShellFooter>
       </Shell>
       <ShellSidebar

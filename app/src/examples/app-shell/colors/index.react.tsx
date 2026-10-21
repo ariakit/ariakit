@@ -22,9 +22,12 @@ import {
   Shell,
   ShellHeader,
   ShellHeaderCenter,
+  ShellHeaderStart,
+  ShellHeaderEnd,
   ShellFooter,
   ShellFooterStart,
   ShellFooterCenter,
+  ShellFooterEnd,
   ShellSidebar,
   ShellSidebarHeader,
   ShellSidebarBody,
@@ -127,12 +130,8 @@ export default function Example() {
       </ShellSidebar>
 
       <Shell>
-        <ShellHeader
-          $layer="brand"
-          $hue="magenta"
-          $chroma="vivid"
-          $contrast
-          start={
+        <ShellHeader $layer="brand" $hue="magenta" $chroma="vivid" $contrast>
+          <ShellHeaderStart>
             <Button
               aria-label="Toggle library"
               aria-expanded={sidebarOpen}
@@ -143,27 +142,25 @@ export default function Example() {
                 <PanelLeft />
               </ButtonSlot>
             </Button>
-          }
-          center={
-            <ShellHeaderCenter
-              $grow
-              className="hidden @[40rem]/shell-header:flex"
-            >
-              <Input
-                aria-label="Search music"
-                placeholder="Search songs, artists, albums"
-                className="w-full min-w-0"
-              />
-            </ShellHeaderCenter>
-          }
-          end={
+          </ShellHeaderStart>
+          <ShellHeaderCenter
+            $grow
+            className="hidden @[40rem]/shell-header:flex"
+          >
+            <Input
+              aria-label="Search music"
+              placeholder="Search songs, artists, albums"
+              className="w-full min-w-0"
+            />
+          </ShellHeaderCenter>
+          <ShellHeaderEnd>
             <Button aria-label="Account">
               <ButtonSlot>
                 <CircleUser />
               </ButtonSlot>
             </Button>
-          }
-        />
+          </ShellHeaderEnd>
+        </ShellHeader>
 
         <ShellMain>
           <ShellMainIntro>
@@ -264,73 +261,64 @@ export default function Example() {
           </ShellMainBody>
         </ShellMain>
 
-        <ShellFooter
-          $sticky
-          $layer="secondary"
-          $blur
-          start={
-            <ShellFooterStart $shrink className="min-w-0">
-              <div className="flex min-w-0 items-center gap-3">
-                <Frame
-                  $layer
-                  $hue="magenta"
-                  $rounded="md"
-                  className="grid size-10 shrink-0 place-items-center"
+        <ShellFooter $sticky $layer="secondary" $blur>
+          <ShellFooterStart $shrink className="min-w-0">
+            <div className="flex min-w-0 items-center gap-3">
+              <Frame
+                $layer
+                $hue="magenta"
+                $rounded="md"
+                className="grid size-10 shrink-0 place-items-center"
+              >
+                <Music className="size-5" />
+              </Frame>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">{track?.title}</p>
+                <p className="ak-ink-70 truncate text-xs">{track?.artist}</p>
+              </div>
+            </div>
+          </ShellFooterStart>
+          <ShellFooterCenter $grow>
+            <div className="flex w-full max-w-md flex-col items-center gap-1.5">
+              <ButtonGroup aria-label="Playback">
+                <Button
+                  aria-label="Previous track"
+                  onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
                 >
-                  <Music className="size-5" />
-                </Frame>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{track?.title}</p>
-                  <p className="ak-ink-70 truncate text-xs">{track?.artist}</p>
-                </div>
-              </div>
-            </ShellFooterStart>
-          }
-          center={
-            <ShellFooterCenter $grow>
-              <div className="flex w-full max-w-md flex-col items-center gap-1.5">
-                <ButtonGroup aria-label="Playback">
-                  <Button
-                    aria-label="Previous track"
-                    onClick={() =>
-                      setCurrentIndex(Math.max(0, currentIndex - 1))
-                    }
-                  >
-                    <ButtonSlot>
-                      <SkipBack />
-                    </ButtonSlot>
-                  </Button>
-                  <Button
-                    aria-label={isPlaying ? "Pause" : "Play"}
-                    onClick={() => setIsPlaying(!isPlaying)}
-                  >
-                    <ButtonSlot>{isPlaying ? <Pause /> : <Play />}</ButtonSlot>
-                  </Button>
-                  <Button
-                    aria-label="Next track"
-                    onClick={() =>
-                      setCurrentIndex(
-                        Math.min(tracks.length - 1, currentIndex + 1),
-                      )
-                    }
-                  >
-                    <ButtonSlot>
-                      <SkipForward />
-                    </ButtonSlot>
-                  </Button>
-                </ButtonGroup>
-                <Progress value={0.4} aria-label="Playback position" />
-              </div>
-            </ShellFooterCenter>
-          }
-          end={
+                  <ButtonSlot>
+                    <SkipBack />
+                  </ButtonSlot>
+                </Button>
+                <Button
+                  aria-label={isPlaying ? "Pause" : "Play"}
+                  onClick={() => setIsPlaying(!isPlaying)}
+                >
+                  <ButtonSlot>{isPlaying ? <Pause /> : <Play />}</ButtonSlot>
+                </Button>
+                <Button
+                  aria-label="Next track"
+                  onClick={() =>
+                    setCurrentIndex(
+                      Math.min(tracks.length - 1, currentIndex + 1),
+                    )
+                  }
+                >
+                  <ButtonSlot>
+                    <SkipForward />
+                  </ButtonSlot>
+                </Button>
+              </ButtonGroup>
+              <Progress value={0.4} aria-label="Playback position" />
+            </div>
+          </ShellFooterCenter>
+          <ShellFooterEnd>
             <Button aria-label="Volume">
               <ButtonSlot>
                 <Volume2 />
               </ButtonSlot>
             </Button>
-          }
-        />
+          </ShellFooterEnd>
+        </ShellFooter>
       </Shell>
     </Shell>
   );
