@@ -35,13 +35,13 @@
   --animate-ui-skeleton-shimmer: ui-skeleton-shimmer 2s linear infinite;
 
   @keyframes ui-skeleton-shimmer {
-    /* With a background twice the part's width, these positions start and end
-       with the highlight past each edge. */
+    /* With a layer twice the part's width, these offsets start and end with
+       the highlight past each edge. Translation runs on the compositor. */
     from {
-      background-position: 150% 0;
+      translate: -75%;
     }
     to {
-      background-position: -50% 0;
+      translate: 25%;
     }
   }
 
@@ -1555,6 +1555,16 @@ body > * {
   }
 }
 
+/* A skeleton part while its highlight moves. Forced colors drop the gradient,
+   so the part keeps its static paint there. */
+@custom-variant ui-skeleton-shimmer {
+  @media (prefers-reduced-motion: no-preference) and (not (forced-colors: active)) {
+    :where(.skeleton-shimmer) & {
+      @slot;
+    }
+  }
+}
+
 @custom-variant supports-corner-shape {
   @supports (corner-shape: squircle) {
     @slot;
@@ -1574,6 +1584,69 @@ body > * {
   }
 }
 
+/** Moves the skeleton highlight across the child of a skeleton fill. */
+@utility ui-skeleton-fill-shimmer {
+  /* The child's pseudo-elements carry the highlight and the edge, as on the
+     other skeleton parts. Form controls render no pseudo-elements, or render
+     their own marks with them, so they keep the static tint and edge. */
+  @media (prefers-reduced-motion: no-preference) and (not (forced-colors: active)) {
+    :where(.skeleton-shimmer) & > :not(input, select, textarea) {
+      /* Paint containment clips the layers to the child and gives them a
+         containing block without changing how the child is positioned. */
+      contain: paint !important;
+      box-shadow: none !important;
+
+      /* Important declarations replace the child's own pseudo-element styles.
+         The layers are absolutely positioned, so they take no space in a flex
+         child. */
+      &::before,
+      &::after {
+        content: "" !important;
+        position: absolute !important;
+        display: block !important;
+        visibility: visible !important;
+        z-index: auto !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        border: 0 !important;
+        opacity: 1 !important;
+        transform: none !important;
+        scale: none !important;
+        rotate: none !important;
+        filter: none !important;
+        mask: none !important;
+        clip-path: none !important;
+        mix-blend-mode: normal !important;
+      }
+
+      /* The highlight layer is twice the child's width. */
+      &::before {
+        inset: 0 auto 0 0 !important;
+        width: 200% !important;
+        border-radius: 0 !important;
+        background: var(--skeleton-image, none) !important;
+        animation: var(--animate-ui-skeleton-shimmer) !important;
+      }
+
+      /* Matches the rtl variant on the other skeleton parts, so all of them
+         move in step. */
+      &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *)::before {
+        animation-direction: reverse !important;
+      }
+
+      /* The edge paints above the highlight, as it did over the background. */
+      &::after {
+        inset: 0 !important;
+        border-radius: inherit !important;
+        translate: none !important;
+        animation: none !important;
+        background: none !important;
+        box-shadow: inset 0 0 0 var(--border-width) var(--skeleton-edge) !important;
+      }
+    }
+  }
+}
 
 /** Adds a beveled surface with a layer-colored gradient, shadow, and highlight. */
 @utility ui-bevel {
