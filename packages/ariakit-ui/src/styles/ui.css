@@ -441,30 +441,707 @@ body > * {
   initial-value: 0px;
 }
 
-/** Sets sidebar state and sticky header offsets on each shell child. */
-@utility shell-slot-state {
-  /* Resolve header offsets on children: a query cannot style its container. */
-  --shell-main-header-visible: 1;
-  .shell:has(> .shell-main > .shell-main-header-hidden) > & {
-    --shell-main-header-visible: 0;
-  }
-  .shell:has(> .shell-main > .shell-main-header-sticky) > & {
-    --shell-main-head: calc(
-      var(--shell-main-header-height) * var(--shell-main-header-visible)
-    );
-  }
+/* Typed values compute to numbers, so crossing a container size changes the
+   values that the shell content inherits only when a part's visibility does. */
+@property --shell-breakpoint {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
 
-  /* Reset inherited state so nested shells only read their own sidebars. */
+@property --shell-start-1-fit {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --shell-start-2-fit {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --shell-end-1-fit {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --shell-end-2-fit {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --shell-main-header-visible {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --shell-main-head {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/** Publishes the state of the direct parts of a shell on the shell. */
+@utility shell-state {
+  /* Reset inherited state so nested shells only read their own parts. */
   --shell-start-1-open: 0;
   --shell-start-2-open: 0;
   --shell-end-1-open: 0;
   --shell-end-2-open: 0;
-  --shell-start-1-fit: 1;
-  --shell-start-2-fit: 1;
-  --shell-end-1-fit: 1;
-  --shell-end-2-fit: 1;
+  --shell-main-header-sticky: 0;
   --shell-end-1-from-main: 0;
   --shell-end-1-from-body: 0;
+  --shell-end-2-from-main: 0;
+  --shell-end-2-from-body: 0;
+  /* A part shows while the count of named container sizes that the shell
+     reaches is at least its show-from and below its show-below. */
+  --shell-main-header-show-from: 0;
+  --shell-main-header-show-below: 14;
+  --shell-start-1-show-from: 0;
+  --shell-start-1-show-below: 14;
+  --shell-start-2-show-from: 0;
+  --shell-start-2-show-below: 14;
+  --shell-end-1-show-from: 0;
+  --shell-end-1-show-below: 14;
+  --shell-end-2-show-from: 0;
+  --shell-end-2-show-below: 14;
+
+  /* Each sidebar toggle changes these values. Stop them below the parts and
+     content grids that read them, so a toggle doesn't restyle the content.
+     Explicit inheritance would skip the content too, but WebKit doesn't
+     update values derived from it. */
+  :where(
+      & > :not(.shell-slot-state),
+      & > .shell-slot-state > :not(.shell-content),
+      & > .shell-slot-state > .shell-content > *
+    ) {
+    --shell-start-1-open: initial;
+    --shell-start-2-open: initial;
+    --shell-end-1-open: initial;
+    --shell-end-2-open: initial;
+    --shell-header-free-1: initial;
+    --shell-header-free-2: initial;
+    --shell-intro-free-1: initial;
+    --shell-intro-free-2: initial;
+  }
+
+  /* Every :has() here styles the shell itself. With a :has() before a
+     combinator, Chromium would restyle the whole shell each time a
+     data-open attribute inside it changes. */
+  &:has(
+      > .shell-sidebar-start:not(.shell-sidebar-start ~ *)
+        > .shell-sidebar-panel[data-open]
+    ) {
+    --shell-start-1-open: 1;
+  }
+  &:has(
+      > .shell-sidebar-start
+        ~ .shell-sidebar-start
+        > .shell-sidebar-panel[data-open]
+    ) {
+    --shell-start-2-open: 1;
+  }
+  &:has(
+      > .shell-sidebar-end:not(.shell-sidebar-end ~ *)
+        > .shell-sidebar-panel[data-open]
+    ) {
+    --shell-end-1-open: 1;
+  }
+  &:has(
+      > .shell-sidebar-end
+        ~ .shell-sidebar-end
+        > .shell-sidebar-panel[data-open]
+    ) {
+    --shell-end-2-open: 1;
+  }
+  &:has(> .shell-main > .shell-main-header-sticky) {
+    --shell-main-header-sticky: 1;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-from-main:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-from-main: 1;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-from-body:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-from-body: 1;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-from-main) {
+    --shell-end-2-from-main: 1;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-from-body) {
+    --shell-end-2-from-body: 1;
+  }
+  &:has(> .shell-main > .shell-main-header-hidden) {
+    --shell-main-header-show-from: 14;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-hidden:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 14;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-hidden) {
+    --shell-start-2-show-from: 14;
+  }
+  &:has(> .shell-sidebar-end.shell-sidebar-hidden:not(.shell-sidebar-end ~ *)) {
+    --shell-end-1-show-from: 14;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-hidden) {
+    --shell-end-2-show-from: 14;
+  }
+  &:has(> .shell-main > .shell-main-header-show-3xs) {
+    --shell-main-header-show-from: 1;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-3xs:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 1;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-3xs) {
+    --shell-start-2-show-from: 1;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-3xs:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 1;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-3xs) {
+    --shell-end-2-show-from: 1;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-3xs) {
+    --shell-main-header-show-below: 1;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-3xs:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 1;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-3xs
+    ) {
+    --shell-start-2-show-below: 1;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-3xs:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 1;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-3xs) {
+    --shell-end-2-show-below: 1;
+  }
+  &:has(> .shell-main > .shell-main-header-show-2xs) {
+    --shell-main-header-show-from: 2;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-2xs:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 2;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-2xs) {
+    --shell-start-2-show-from: 2;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-2xs:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 2;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-2xs) {
+    --shell-end-2-show-from: 2;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-2xs) {
+    --shell-main-header-show-below: 2;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-2xs:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 2;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-2xs
+    ) {
+    --shell-start-2-show-below: 2;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-2xs:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 2;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-2xs) {
+    --shell-end-2-show-below: 2;
+  }
+  &:has(> .shell-main > .shell-main-header-show-xs) {
+    --shell-main-header-show-from: 3;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-xs:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 3;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-xs) {
+    --shell-start-2-show-from: 3;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-xs:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 3;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-xs) {
+    --shell-end-2-show-from: 3;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-xs) {
+    --shell-main-header-show-below: 3;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-xs:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 3;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-xs
+    ) {
+    --shell-start-2-show-below: 3;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-xs:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 3;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-xs) {
+    --shell-end-2-show-below: 3;
+  }
+  &:has(> .shell-main > .shell-main-header-show-sm) {
+    --shell-main-header-show-from: 4;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-sm:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 4;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-sm) {
+    --shell-start-2-show-from: 4;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-sm:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 4;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-sm) {
+    --shell-end-2-show-from: 4;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-sm) {
+    --shell-main-header-show-below: 4;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-sm:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 4;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-sm
+    ) {
+    --shell-start-2-show-below: 4;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-sm:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 4;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-sm) {
+    --shell-end-2-show-below: 4;
+  }
+  &:has(> .shell-main > .shell-main-header-show-md) {
+    --shell-main-header-show-from: 5;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-md:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 5;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-md) {
+    --shell-start-2-show-from: 5;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-md:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 5;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-md) {
+    --shell-end-2-show-from: 5;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-md) {
+    --shell-main-header-show-below: 5;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-md:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 5;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-md
+    ) {
+    --shell-start-2-show-below: 5;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-md:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 5;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-md) {
+    --shell-end-2-show-below: 5;
+  }
+  &:has(> .shell-main > .shell-main-header-show-lg) {
+    --shell-main-header-show-from: 6;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-lg:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 6;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-lg) {
+    --shell-start-2-show-from: 6;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-lg:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 6;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-lg) {
+    --shell-end-2-show-from: 6;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-lg) {
+    --shell-main-header-show-below: 6;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-lg:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 6;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-lg
+    ) {
+    --shell-start-2-show-below: 6;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-lg:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 6;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-lg) {
+    --shell-end-2-show-below: 6;
+  }
+  &:has(> .shell-main > .shell-main-header-show-xl) {
+    --shell-main-header-show-from: 7;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 7;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-xl) {
+    --shell-start-2-show-from: 7;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 7;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-xl) {
+    --shell-end-2-show-from: 7;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-xl) {
+    --shell-main-header-show-below: 7;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 7;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-xl
+    ) {
+    --shell-start-2-show-below: 7;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 7;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-xl) {
+    --shell-end-2-show-below: 7;
+  }
+  &:has(> .shell-main > .shell-main-header-show-2xl) {
+    --shell-main-header-show-from: 8;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-2xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 8;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-2xl) {
+    --shell-start-2-show-from: 8;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-2xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 8;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-2xl) {
+    --shell-end-2-show-from: 8;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-2xl) {
+    --shell-main-header-show-below: 8;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-2xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 8;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-2xl
+    ) {
+    --shell-start-2-show-below: 8;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-2xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 8;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-2xl) {
+    --shell-end-2-show-below: 8;
+  }
+  &:has(> .shell-main > .shell-main-header-show-3xl) {
+    --shell-main-header-show-from: 9;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-3xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 9;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-3xl) {
+    --shell-start-2-show-from: 9;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-3xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 9;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-3xl) {
+    --shell-end-2-show-from: 9;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-3xl) {
+    --shell-main-header-show-below: 9;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-3xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 9;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-3xl
+    ) {
+    --shell-start-2-show-below: 9;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-3xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 9;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-3xl) {
+    --shell-end-2-show-below: 9;
+  }
+  &:has(> .shell-main > .shell-main-header-show-4xl) {
+    --shell-main-header-show-from: 10;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-4xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 10;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-4xl) {
+    --shell-start-2-show-from: 10;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-4xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 10;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-4xl) {
+    --shell-end-2-show-from: 10;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-4xl) {
+    --shell-main-header-show-below: 10;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-4xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 10;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-4xl
+    ) {
+    --shell-start-2-show-below: 10;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-4xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 10;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-4xl) {
+    --shell-end-2-show-below: 10;
+  }
+  &:has(> .shell-main > .shell-main-header-show-5xl) {
+    --shell-main-header-show-from: 11;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-5xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 11;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-5xl) {
+    --shell-start-2-show-from: 11;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-5xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 11;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-5xl) {
+    --shell-end-2-show-from: 11;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-5xl) {
+    --shell-main-header-show-below: 11;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-5xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 11;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-5xl
+    ) {
+    --shell-start-2-show-below: 11;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-5xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 11;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-5xl) {
+    --shell-end-2-show-below: 11;
+  }
+  &:has(> .shell-main > .shell-main-header-show-6xl) {
+    --shell-main-header-show-from: 12;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-6xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 12;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-6xl) {
+    --shell-start-2-show-from: 12;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-6xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 12;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-6xl) {
+    --shell-end-2-show-from: 12;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-6xl) {
+    --shell-main-header-show-below: 12;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-6xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 12;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-6xl
+    ) {
+    --shell-start-2-show-below: 12;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-6xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 12;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-6xl) {
+    --shell-end-2-show-below: 12;
+  }
+  &:has(> .shell-main > .shell-main-header-show-7xl) {
+    --shell-main-header-show-from: 13;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-7xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-from: 13;
+  }
+  &:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-7xl) {
+    --shell-start-2-show-from: 13;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-7xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-from: 13;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-7xl) {
+    --shell-end-2-show-from: 13;
+  }
+  &:has(> .shell-main > .shell-main-header-show-max-7xl) {
+    --shell-main-header-show-below: 13;
+  }
+  &:has(
+      > .shell-sidebar-start.shell-sidebar-show-max-7xl:not(.shell-sidebar-start ~ *)
+    ) {
+    --shell-start-1-show-below: 13;
+  }
+  &:has(
+      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-7xl
+    ) {
+    --shell-start-2-show-below: 13;
+  }
+  &:has(
+      > .shell-sidebar-end.shell-sidebar-show-max-7xl:not(.shell-sidebar-end ~ *)
+    ) {
+    --shell-end-1-show-below: 13;
+  }
+  &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-7xl) {
+    --shell-end-2-show-below: 13;
+  }
+}
+
+/** Resolves the published shell state on each direct part of a shell. */
+@utility shell-slot-state {
+  --shell-main-header-visible: calc(
+    clamp(0, var(--shell-breakpoint) - var(--shell-main-header-show-from) + 1, 1) *
+      clamp(0, var(--shell-main-header-show-below) - var(--shell-breakpoint), 1)
+  );
+  --shell-main-head: calc(
+    var(--shell-main-header-height) * var(--shell-main-header-sticky) *
+      var(--shell-main-header-visible)
+  );
+  --shell-start-1-fit: calc(
+    clamp(0, var(--shell-breakpoint) - var(--shell-start-1-show-from) + 1, 1) *
+      clamp(0, var(--shell-start-1-show-below) - var(--shell-breakpoint), 1)
+  );
+  --shell-start-2-fit: calc(
+    clamp(0, var(--shell-breakpoint) - var(--shell-start-2-show-from) + 1, 1) *
+      clamp(0, var(--shell-start-2-show-below) - var(--shell-breakpoint), 1)
+  );
+  --shell-end-1-fit: calc(
+    clamp(0, var(--shell-breakpoint) - var(--shell-end-1-show-from) + 1, 1) *
+      clamp(0, var(--shell-end-1-show-below) - var(--shell-breakpoint), 1)
+  );
+  --shell-end-2-fit: calc(
+    clamp(0, var(--shell-breakpoint) - var(--shell-end-2-show-from) + 1, 1) *
+      clamp(0, var(--shell-end-2-show-below) - var(--shell-breakpoint), 1)
+  );
   --shell-header-free-1: calc(
     1 - var(--shell-end-1-open) * var(--shell-end-1-fit) *
       var(--shell-end-1-from-main)
@@ -473,8 +1150,6 @@ body > * {
     1 - var(--shell-end-1-open) * var(--shell-end-1-fit) *
       (1 - var(--shell-end-1-from-body))
   );
-  --shell-end-2-from-main: 0;
-  --shell-end-2-from-body: 0;
   --shell-header-free-2: calc(
     1 - var(--shell-end-2-open) * var(--shell-end-2-fit) *
       var(--shell-end-2-from-main)
@@ -484,771 +1159,47 @@ body > * {
       (1 - var(--shell-end-2-from-body))
   );
 
-  .shell:has(
-      > .shell-sidebar-start:not(.shell-sidebar-start ~ *)
-        > .shell-sidebar-panel[data-open]
-    )
-    > & {
-    --shell-start-1-open: 1;
-  }
-  .shell:has(
-      > .shell-sidebar-start
-        ~ .shell-sidebar-start
-        > .shell-sidebar-panel[data-open]
-    )
-    > & {
-    --shell-start-2-open: 1;
-  }
-  .shell:has(
-      > .shell-sidebar-end:not(.shell-sidebar-end ~ *)
-        > .shell-sidebar-panel[data-open]
-    )
-    > & {
-    --shell-end-1-open: 1;
-  }
-  .shell:has(
-      > .shell-sidebar-end
-        ~ .shell-sidebar-end
-        > .shell-sidebar-panel[data-open]
-    )
-    > & {
-    --shell-end-2-open: 1;
-  }
-  .shell:has(
-      > .shell-sidebar-end:not(.shell-sidebar-end ~ *).shell-sidebar-from-main
-    )
-    > & {
-    --shell-end-1-from-main: 1;
-  }
-  .shell:has(
-      > .shell-sidebar-end:not(.shell-sidebar-end ~ *).shell-sidebar-from-body
-    )
-    > & {
-    --shell-end-1-from-body: 1;
-  }
-  .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-from-main)
-    > & {
-    --shell-end-2-from-main: 1;
-  }
-  .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-from-body)
-    > & {
-    --shell-end-2-from-body: 1;
-  }
-
-  .shell:has(
-      > .shell-sidebar-start.shell-sidebar-hidden:not(.shell-sidebar-start ~ *)
-    )
-    > & {
-    --shell-start-1-fit: 0;
-  }
-  .shell:has(
-      > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-hidden
-    )
-    > & {
-    --shell-start-2-fit: 0;
-  }
-  .shell:has(
-      > .shell-sidebar-end.shell-sidebar-hidden:not(.shell-sidebar-end ~ *)
-    )
-    > & {
-    --shell-end-1-fit: 0;
-  }
-  .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-hidden) > & {
-    --shell-end-2-fit: 0;
-  }
-
-  /* Keep breakpoint flags separate from open-state flags on each child. */
-  @variant @max-3xs/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-3xs) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-3xs:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-3xs
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-3xs:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-3xs)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
-  @variant @max-2xs/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-2xs) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-2xs:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-2xs
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-2xs:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-2xs)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
-  @variant @max-xs/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-xs) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-xs:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-xs)
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-xs:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-xs)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
-  @variant @max-sm/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-sm) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-sm:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-sm)
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-sm:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-sm)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
-  @variant @max-md/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-md) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-md:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-md)
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-md:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-md)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
-  @variant @max-lg/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-lg) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-lg:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-lg)
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-lg:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-lg)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
-  @variant @max-xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-xl)
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
-  @variant @max-2xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-2xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-2xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-2xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-2xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-2xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
-  @variant @max-3xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-3xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-3xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-3xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-3xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-3xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
-  @variant @max-4xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-4xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-4xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-4xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-4xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-4xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
-  @variant @max-5xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-5xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-5xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-5xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-5xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-5xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
-  @variant @max-6xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-6xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-6xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-6xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-6xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-6xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
-  @variant @max-7xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-7xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-7xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-7xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-7xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-7xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
-  }
+  /* A query cannot style its container, so each part counts the named
+     container sizes that its shell reaches. */
+  --shell-breakpoint: 0;
   @variant @3xs/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-3xs) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-3xs:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-3xs
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-3xs:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-3xs)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 1;
   }
   @variant @2xs/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-2xs) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-2xs:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-2xs
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-2xs:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-2xs)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 2;
   }
   @variant @xs/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-xs) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-xs:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-xs
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-xs:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-xs)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 3;
   }
   @variant @sm/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-sm) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-sm:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-sm
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-sm:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-sm)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 4;
   }
   @variant @md/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-md) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-md:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-md
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-md:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-md)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 5;
   }
   @variant @lg/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-lg) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-lg:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-lg
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-lg:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-lg)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 6;
   }
   @variant @xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 7;
   }
   @variant @2xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-2xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-2xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-2xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-2xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-2xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 8;
   }
   @variant @3xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-3xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-3xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-3xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-3xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-3xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 9;
   }
   @variant @4xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-4xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-4xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-4xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-4xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-4xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 10;
   }
   @variant @5xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-5xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-5xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-5xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-5xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-5xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 11;
   }
   @variant @6xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-6xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-6xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-6xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-6xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-6xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 12;
   }
   @variant @7xl/shell {
-    .shell:has(> .shell-main > .shell-main-header-show-max-7xl) > & {
-      --shell-main-header-visible: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start.shell-sidebar-show-max-7xl:not(.shell-sidebar-start ~ *)
-      )
-      > & {
-      --shell-start-1-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-start ~ .shell-sidebar-start.shell-sidebar-show-max-7xl
-      )
-      > & {
-      --shell-start-2-fit: 0;
-    }
-    .shell:has(
-        > .shell-sidebar-end.shell-sidebar-show-max-7xl:not(.shell-sidebar-end ~ *)
-      )
-      > & {
-      --shell-end-1-fit: 0;
-    }
-    .shell:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-7xl)
-      > & {
-      --shell-end-2-fit: 0;
-    }
+    --shell-breakpoint: 13;
   }
 }
 
