@@ -223,6 +223,10 @@ function usePreviewFrame(href: string) {
     canGoBack: false,
     canGoForward: false,
   });
+  // A resize with the handle lets the page scroll, as a click in it does. The
+  // page cannot see clicks and focus on the docs page, so the card tells it
+  // when the person moves on.
+  const activatedRef = useRef(false);
 
   useEffect(() => {
     const iframe = ref.current;
@@ -242,6 +246,10 @@ function usePreviewFrame(href: string) {
         action: "viewport",
         radius: getInnerRadius(viewport),
       });
+    };
+    const isFocusInStage = () => {
+      const stage = iframe.closest("[data-preview-stage]") ?? iframe;
+      return stage.contains(iframe.ownerDocument.activeElement);
     };
     const onMessage = (event: MessageEvent) => {
       if (event.source !== iframe.contentWindow) return;
@@ -263,6 +271,11 @@ function usePreviewFrame(href: string) {
       // that has not loaded yet.
       setLoaded(event.data.loaded);
       setOpening(event.data.opening ?? false);
+      // A new document starts inactive, and it could not receive an activation
+      // sent while it loaded. Focus in another frame means the person moved on.
+      if (!event.data.loaded && activatedRef.current && isFocusInStage()) {
+        postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action: "activate" });
+      }
     };
     window.addEventListener("message", onMessage);
     const unsubscribeTheme = subscribeAppTheme(postTheme);
@@ -280,11 +293,65 @@ function usePreviewFrame(href: string) {
     postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action });
   };
 
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const doc = viewport.ownerDocument;
+    const stage = viewport.closest("[data-preview-stage]") ?? viewport;
+    const isInStage = (target: EventTarget | null) => {
+      return target instanceof Node && stage.contains(target);
+    };
+    const deactivate = () => {
+      if (!activatedRef.current) return;
+      activatedRef.current = false;
+      const iframe = ref.current;
+      if (!iframe) return;
+      postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action: "deactivate" });
+    };
+    const onInteraction = (event: Event) => {
+      if (isInStage(event.target)) return;
+      deactivate();
+    };
+    // A click in another preview frame moves focus to it without a pointer or
+    // focus event in this document. Switching apps keeps focus on the handle.
+    let blurTimeout = 0;
+    const onBlur = () => {
+      clearTimeout(blurTimeout);
+      blurTimeout = window.setTimeout(() => {
+        if (isInStage(doc.activeElement)) return;
+        deactivate();
+      });
+    };
+    doc.addEventListener("pointerdown", onInteraction, true);
+    doc.addEventListener("focusin", onInteraction, true);
+    window.addEventListener("blur", onBlur);
+    return () => {
+      clearTimeout(blurTimeout);
+      doc.removeEventListener("pointerdown", onInteraction, true);
+      doc.removeEventListener("focusin", onInteraction, true);
+      window.removeEventListener("blur", onBlur);
+    };
+  }, []);
+
+  const activate = () => {
+    activatedRef.current = true;
+    send("activate");
+  };
+
   // A page can open its popup after the frame loads, so the card waits for
   // both.
   const ready = loaded && !opening;
 
-  return { ref, viewportRef, location, ready, setLoaded, history, send };
+  return {
+    ref,
+    viewportRef,
+    location,
+    ready,
+    setLoaded,
+    history,
+    send,
+    activate,
+  };
 }
 
 function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
@@ -364,10 +431,10 @@ function PreviewCardViewport({
   href,
   fullscreen,
 }: PreviewCardViewportProps) {
-  const { ref, viewportRef, ready, setLoaded } = frame;
+  const { ref, viewportRef, ready, setLoaded, activate } = frame;
   const near = useNearViewport(ref);
   return (
-    <PreviewCardStage measuring={near}>
+    <PreviewCardStage measuring={near} onResize={activate}>
       {({ viewportId, resizing }) => (
         <Frame
           ref={viewportRef}
@@ -458,9 +525,9 @@ interface PreviewCardInlineProps {
 /** Renders an example directly in the card, without an iframe. */
 function PreviewCardInline({ children }: PreviewCardInlineProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
-  useInactiveScroll(viewportRef);
+  const activate = useInactiveScroll(viewportRef);
   return (
-    <PreviewCardStage>
+    <PreviewCardStage onResize={activate}>
       {({ viewportId }) => (
         // Match the font size of the preview page. It also makes the em-based
         // padding reach the 1rem frame cap, so the example keeps its own corner
@@ -508,6 +575,10 @@ interface PreviewCardStageProps {
    * @default true
    */
   measuring?: boolean;
+  /**
+   * Called when the person starts a drag or presses a key on the resize handle.
+   */
+  onResize?: () => void;
 }
 
 /**
@@ -517,10 +588,11 @@ interface PreviewCardStageProps {
 function PreviewCardStage({
   children,
   measuring = true,
+  onResize,
 }: PreviewCardStageProps) {
   const viewportId = useId();
   const stageRef = useRef<HTMLDivElement>(null);
-  const resize = usePreviewResize(stageRef, measuring);
+  const resize = usePreviewResize(stageRef, measuring, onResize);
   return (
     <div
       ref={stageRef}
@@ -575,6 +647,7 @@ type PreviewResize = ReturnType<typeof usePreviewResize>;
 function usePreviewResize(
   stageRef: RefObject<HTMLElement | null>,
   measuring: boolean,
+  onResize?: () => void,
 ) {
   const dragRef = useRef<{ x: number; width: number; sign: number }>(null);
   const [stageWidth, setStageWidth] = useState<number>();
@@ -612,6 +685,10 @@ function usePreviewResize(
     event.preventDefault();
     const handle = event.currentTarget;
     handle.setPointerCapture(event.pointerId);
+    // The prevented pointerdown does not move focus, but an active preview
+    // checks that focus is in its stage.
+    handle.focus({ preventScroll: true });
+    onResize?.();
     dragRef.current = {
       x: event.clientX,
       width: currentWidth,
@@ -640,6 +717,7 @@ function usePreviewResize(
     maxWidth,
     currentWidth,
     resizeTo,
+    onResize,
     startDrag,
     moveDrag,
     endDrag,
@@ -682,6 +760,7 @@ function PreviewCardResizeHandle({
         return;
     }
     event.preventDefault();
+    resize.onResize?.();
   };
 
   return (
@@ -813,14 +892,21 @@ function scrollPage(element: Element, wheel: WheelDelta) {
   });
 }
 
+/**
+ * Returns whether the element keeps wheel scrolling from reaching the page. A
+ * container with contained overscroll, such as an app shell sidebar, does so
+ * even when its content fits.
+ */
 function isScrollContainer(element: Element) {
   const style = getComputedStyle(element);
   const scrollsY =
     /auto|scroll/.test(style.overflowY) &&
-    element.scrollHeight > element.clientHeight;
+    (element.scrollHeight > element.clientHeight ||
+      style.overscrollBehaviorY !== "auto");
   const scrollsX =
     /auto|scroll/.test(style.overflowX) &&
-    element.scrollWidth > element.clientWidth;
+    (element.scrollWidth > element.clientWidth ||
+      style.overscrollBehaviorX !== "auto");
   return scrollsY || scrollsX;
 }
 
@@ -828,28 +914,35 @@ function isScrollContainer(element: Element) {
  * Lets an inline preview scroll only after a click or focus moves into it, as a
  * preview frame does. Until then, wheel events over its scroll containers
  * scroll the page, so scrolling the page over the card does not get stuck in
- * it.
+ * it. Returns a function that activates the preview, such as when the person
+ * resizes it with the handle.
  */
 function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
+  const activeRef = useRef(false);
+
   useEffect(() => {
     const viewport = ref.current;
     if (!viewport) return;
     const doc = viewport.ownerDocument;
+    // The resize handle keeps focus while it resizes an active preview.
+    const stage = viewport.closest("[data-preview-stage]") ?? viewport;
     // The preview stays active until a click or focus moves elsewhere. Focus
     // can also fall back to the body, such as when a focused button becomes
     // disabled, which keeps a preview frame active too.
-    let active = viewport.contains(doc.activeElement);
+    activeRef.current = viewport.contains(doc.activeElement);
+    // Runs in the capture phase, before the handle activates the preview.
     const updateActive = (event: Event) => {
-      active = event.target instanceof Node && viewport.contains(event.target);
+      activeRef.current =
+        event.target instanceof Node && viewport.contains(event.target);
     };
     const isActive = () => {
-      if (!active) return false;
+      if (!activeRef.current) return false;
       const focused = doc.activeElement;
       // A click in a preview frame moves focus to it without a pointer or focus
       // event in this document.
       if (!focused) return true;
       if (focused === doc.body) return true;
-      return viewport.contains(focused);
+      return stage.contains(focused);
     };
     const isInScrollContainer = (target: EventTarget | null) => {
       // The listener is on the viewport, so the target is in its document.
@@ -878,4 +971,8 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
       viewport.removeEventListener("wheel", onWheel);
     };
   }, [ref]);
+
+  return () => {
+    activeRef.current = true;
+  };
 }
