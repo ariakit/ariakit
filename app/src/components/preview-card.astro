@@ -13,6 +13,7 @@ import { ShellMainFull } from "@ariakit/ui/components/shell.ariakit.react";
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
 import { PreviewCard } from "#app/components/preview-card.react.tsx";
 import { isNextjsPreviewId } from "#app/lib/nextjs.ts";
+import { PREVIEW_FRAME_MARGIN } from "#app/lib/preview-frames.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
 import { invariant } from "@ariakit/utils";
@@ -48,6 +49,15 @@ const browser = !inline && (Astro.props.browser ?? isNextjsPreviewId(source.name
 const files = Object.entries(source.files);
 ---
 
+{/* Astro renders the script once, at the first card. Before the card markup,
+    it stays out of the run of sibling cards that preview grid selectors
+    match. */}
+<script>
+  import { setupPreviewFrames } from "#app/lib/preview-frames.ts";
+
+  setupPreviewFrames();
+</script>
+
 <ShellMainFull
   render={createElement("section", { "aria-labelledby": headingId })}
   {className}
@@ -59,12 +69,12 @@ const files = Object.entries(source.files);
     className="grid grid-cols-1 py-0! [.prose>.shell-main-full>&]:px-0! [.preview-grid>.shell-main-full>&]:px-0!"
   >
     {/* The code renders on the server and reaches the island as a static
-        slot. Offscreen cards hydrate too, so their frames keep their width
-        while the page resizes. Running animations can leave a slow browser no
-        idle time, so the timeout starts hydration anyway. Browsers without idle
-        callbacks, such as Safari, always wait this long. */}
+        slot. A card hydrates as it comes near the viewport, so an inline
+        example, which hydrates after its card, starts as the person reaches
+        it. Hydrating a little early lets a frame that loaded before its card
+        hydrated show as the card scrolls into view, not after a loader. */}
     <PreviewCard
-      client:idle={{ timeout: 200 }}
+      client:visible={{ rootMargin: PREVIEW_FRAME_MARGIN }}
       {headingId}
       {title}
       {href}

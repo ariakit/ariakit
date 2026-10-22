@@ -4,12 +4,13 @@ import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
 
-// The article example announces that it loaded 1.8 seconds after it hydrates.
-// On a slow runner, the cards on this page can take longer than the assertion
-// timeout to hydrate, so the wait uses the test budget, like the resize handle
-// wait below.
+// The article example announces that it loaded 1.8 seconds after it hydrates,
+// and its card hydrates when it scrolls into view. On a slow runner, the card
+// can take longer than the assertion timeout to hydrate, so the wait uses the
+// test budget, like the resize handle wait below.
 // https://github.com/ariakit/ariakit/issues/8006
 async function waitForArticle(article: Locator) {
+  await article.scrollIntoViewIfNeeded();
   const status = query(article).status();
   await status.filter({ hasText: "Article loaded" }).waitFor();
 }
@@ -231,15 +232,19 @@ for (const width of [1600, 700]) {
       ["Timing", false],
     ] as const) {
       const card = q.region(title, { exact: true });
-      // The card renders the handle only after it hydrates. On a slow runner,
-      // the cards on this page can take longer than the assertion timeout to
-      // hydrate, so the wait uses the test budget, like the preview hydration
-      // wait in withFramework.
+      await card.scrollIntoViewIfNeeded();
+      // The card hydrates when it scrolls into view, and then measures the
+      // width that the handle can resize to. On a slow runner, the cards on
+      // this page can take longer than the assertion timeout to hydrate, so the
+      // wait uses the test budget, like the preview hydration wait in
+      // withFramework.
       // https://github.com/ariakit/ariakit/issues/8001
       const handle = query(card).separator("Resize preview", {
         includeHidden: true,
       });
-      await handle.waitFor({ state: "attached" });
+      await handle
+        .and(page.locator(":not([aria-valuemax='0'])"))
+        .waitFor({ state: "attached" });
       await expect(handle).toBeVisible({ visible: shown });
     }
   });

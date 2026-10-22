@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { query } from "@ariakit/test/playwright";
+import type { FrameLocator, Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { gotoAndSettle } from "#app/test-utils/preview.ts";
@@ -15,12 +16,47 @@ import { gotoAndSettle } from "#app/test-utils/preview.ts";
 const examplePath = "/react/examples/app-shell/";
 
 // Each load of the examples page loads several App Shell previews and hydrates
-// every preview card, which keeps a slow runner busy for seconds. A test that
-// loads the page twice and changes the mode of the site and its previews can
-// take the whole default budget on CI, so it gets twice the budget.
+// the preview cards near the viewport, which keeps a slow runner busy for
+// seconds. A test that loads the page twice and changes the mode of the site
+// and its previews can take the whole default budget on CI, so it gets twice
+// the budget.
 // https://github.com/ariakit/ariakit/issues/8009
 function allowTwoPageLoads() {
   test.setTimeout(test.info().timeout * 2);
+}
+
+/**
+ * Adds an output to the preview page in the frame that counts how often its
+ * viewport resizes. The preview page reports no layout of its own, so this
+ * shows how often it lays out at a new width.
+ */
+async function countFrameResizes(frame: FrameLocator) {
+  await frame.locator("html").evaluate(() => {
+    const counter = document.createElement("output");
+    counter.id = "resize-count";
+    counter.value = "0";
+    document.body.append(counter);
+    window.addEventListener("resize", () => {
+      counter.value = String(Number(counter.value) + 1);
+    });
+  });
+  return frame.locator("#resize-count");
+}
+
+/**
+ * Returns how much narrower the preview page is than the card viewport around
+ * the frame, which is 0 once the frame fills the card.
+ */
+async function getUnfilledFrameWidth(iframe: Locator) {
+  const frameWidth = await iframe
+    .contentFrame()
+    .locator("html")
+    .evaluate(() => window.innerWidth);
+  const cardWidth = await iframe.evaluate(
+    (element) => element.parentElement?.clientWidth,
+  );
+  if (cardWidth == null) return null;
+  return cardWidth - frameWidth;
 }
 
 test("site navigation collapses and stays collapsed after reload", async ({
@@ -553,7 +589,7 @@ test("site navigation folds without resizing offscreen preview pages", async ({
   await page.setViewportSize({ width: 1600, height: 900 });
   await gotoAndSettle(page, examplePath);
   // Chrome loads lazy frames this close to the viewport, but the card stays
-  // offscreen, so only the page load can hydrate it.
+  // offscreen.
   const iframe = page.locator('iframe[title="Dashboard"]');
   const frame = iframe.contentFrame();
   await expect(frame.locator("html")).toHaveAttribute(
@@ -561,20 +597,7 @@ test("site navigation folds without resizing offscreen preview pages", async ({
     "",
   );
   await expect(iframe).not.toBeInViewport();
-  // The hydrated card keeps its offscreen frame at a fixed width.
-  await expect(iframe).toHaveAttribute("style", /(^|;\s*)width:/);
-  // The preview page reports no layout of its own, so it shows how often its
-  // viewport resizes.
-  await frame.locator("html").evaluate(() => {
-    const counter = document.createElement("output");
-    counter.id = "resize-count";
-    counter.value = "0";
-    document.body.append(counter);
-    window.addEventListener("resize", () => {
-      counter.value = String(Number(counter.value) + 1);
-    });
-  });
-  const resizeCount = frame.locator("#resize-count");
+  const resizeCount = await countFrameResizes(frame);
 
   const toggle = q.button("Toggle navigation");
   await toggle.click();
@@ -587,16 +610,7 @@ test("site navigation folds without resizing offscreen preview pages", async ({
 
   await iframe.scrollIntoViewIfNeeded();
   // The preview page fills the card again.
-  const getUnfilledWidth = async () => {
-    const frameWidth = await frame
-      .locator("html")
-      .evaluate(() => window.innerWidth);
-    const cardWidth = await iframe.evaluate(
-      (element) => element.parentElement?.clientWidth,
-    );
-    if (cardWidth == null) return null;
-    return cardWidth - frameWidth;
-  };
+  const getUnfilledWidth = () => getUnfilledFrameWidth(iframe);
   await expect.poll(getUnfilledWidth).toBe(0);
   await expect(resizeCount).toHaveText("1");
   // The card measures its wider stage again, so its resize handle allows the
@@ -608,4 +622,32 @@ test("site navigation folds without resizing offscreen preview pages", async ({
     "aria-valuemax",
     fullWidth ?? "",
   );
+});
+
+test("site navigation folds without resizing visible preview pages on each step", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await gotoAndSettle(page, examplePath);
+  const iframe = page.locator('iframe[title="App Shell"]');
+  await iframe.scrollIntoViewIfNeeded();
+  const frame = iframe.contentFrame();
+  await expect(frame.locator("html")).toHaveAttribute(
+    "data-preview-hydrated",
+    "",
+  );
+  const resizeCount = await countFrameResizes(frame);
+  const getUnfilledWidth = () => getUnfilledFrameWidth(iframe);
+  await expect.poll(getUnfilledWidth).toBe(0);
+
+  const toggle = q.button("Toggle navigation");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  // The navigation panel hides when the sidebar fold ends.
+  await expect(q.navigation("Site")).not.toBeVisible();
+  // The preview page keeps its width during the fold, and then fills the wider
+  // card with one layout.
+  await expect.poll(getUnfilledWidth).toBe(0);
+  await expect(resizeCount).toHaveText("1");
 });
