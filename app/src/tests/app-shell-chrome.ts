@@ -13,9 +13,9 @@ import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { gotoAndSettle } from "#app/test-utils/preview.ts";
 
-const examplePath = "/react/examples/app-shell/";
+const recipePath = "/react/recipes/app-shell/";
 
-// Each load of the examples page loads several App Shell previews and hydrates
+// Each load of the recipe page loads several App Shell previews and hydrates
 // the preview cards near the viewport, which keeps a slow runner busy for
 // seconds. A test that loads the page twice and changes the mode of the site
 // and its previews can take the whole default budget on CI, so it gets twice
@@ -63,7 +63,7 @@ test("site navigation collapses and stays collapsed after reload", async ({
   page,
   q,
 }) => {
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   const toggle = q.button("Toggle navigation");
   const navigation = q.navigation("Site");
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
@@ -86,7 +86,7 @@ test("site navigation marks the page without a trailing slash", async ({
   page,
   q,
 }) => {
-  await gotoAndSettle(page, examplePath.replace(/\/$/, ""));
+  await gotoAndSettle(page, recipePath.replace(/\/$/, ""));
   await expect(query(q.navigation("Site")).link("App Shell")).toHaveAttribute(
     "aria-current",
     "page",
@@ -108,7 +108,7 @@ test("site navigation describes each page with its example count", async ({
   page,
   q,
 }) => {
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   const navigation = query(q.navigation("Site"));
   await expect(navigation.link("App Shell")).toHaveAccessibleDescription(
     /^\d+ examples$/,
@@ -122,10 +122,10 @@ test("site navigation lists only the pages of the current section", async ({
   page,
   q,
 }) => {
-  await gotoAndSettle(page, examplePath);
-  const exampleNavigation = query(q.navigation("Site"));
-  await expect(exampleNavigation.link("App Shell")).toBeVisible();
-  await expect(exampleNavigation.link("Separator")).toHaveCount(0);
+  await gotoAndSettle(page, recipePath);
+  const recipeNavigation = query(q.navigation("Site"));
+  await expect(recipeNavigation.link("App Shell")).toBeVisible();
+  await expect(recipeNavigation.link("Separator")).toHaveCount(0);
   await gotoAndSettle(page, "/react/components/separator/");
   const componentNavigation = query(q.navigation("Site"));
   await expect(componentNavigation.link("Separator")).toBeVisible();
@@ -177,7 +177,7 @@ test("site navigation centers the current page bar before its row", async ({
   page,
   q,
 }) => {
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   const sidebar = q.navigation("Site");
   const row = query(sidebar).link("App Shell");
   // The bar is a decorative, hidden element, so only its box can be queried.
@@ -207,8 +207,8 @@ test("collection pages list entries without the site navigation", async ({
   page,
   q,
 }) => {
-  await gotoAndSettle(page, "/react/examples/");
-  await expect(q.heading("Examples")).toBeVisible();
+  await gotoAndSettle(page, "/react/recipes/");
+  await expect(q.heading("Recipes")).toBeVisible();
   await expect(q.navigation("Site")).toHaveCount(0);
   await expect(q.button("Toggle navigation")).toHaveCount(0);
   await expect(q.link("App Shell")).toHaveAccessibleDescription(
@@ -221,7 +221,7 @@ test("theme panel applies a mode to the site and its previews", async ({
   q,
 }) => {
   allowTwoPageLoads();
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   const root = page.locator("html");
   const preview = page
     .frameLocator('iframe[title="App Shell"]')
@@ -257,7 +257,7 @@ test("theme panel tints the canvas of the site and its previews", async ({
   page,
   q,
 }) => {
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   const root = page.locator("html");
   const preview = page
     .frameLocator('iframe[title="App Shell"]')
@@ -291,12 +291,12 @@ test("theme panel follows choices from another tab", async ({
   q,
 }) => {
   allowTwoPageLoads();
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   await q.button("Theme", { exact: true }).click();
   const mode = query(q.radiogroup("Mode"));
   await expect(mode.radio("System")).toHaveAttribute("aria-checked", "true");
   const otherPage = await context.newPage();
-  await gotoAndSettle(otherPage, examplePath);
+  await gotoAndSettle(otherPage, recipePath);
   const other = query(otherPage);
   // The other tab restores the open panel from storage.
   await expect(other.complementary("Theme")).toBeVisible();
@@ -310,7 +310,7 @@ test("theme panel returns focus to the Theme button when it closes", async ({
   page,
   q,
 }) => {
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   const themeButton = q.button("Theme", { exact: true });
   await themeButton.click();
   await query(q.complementary("Theme")).button("Close theme").press("Enter");
@@ -330,7 +330,7 @@ test("theme panel applies a mode when storage is blocked", async ({
       },
     });
   });
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   await q.button("Theme", { exact: true }).click();
   const mode = query(q.radiogroup("Mode"));
   await mode.radio("Dark").click();
@@ -355,7 +355,7 @@ test("theme panel applies a mode after storage recovers", async ({
       setItem.call(this, key, value);
     };
   });
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   await q.button("Theme", { exact: true }).click();
   const mode = query(q.radiogroup("Mode"));
   await mode.radio("Dark").click();
@@ -382,7 +382,7 @@ test("theme panel keeps the accent and its color together after a failed write",
       setItem.call(this, key, value);
     };
   });
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   await q.button("Theme", { exact: true }).click();
   const accent = query(q.radiogroup("Accent"));
   await accent.radio("Violet").click();
@@ -414,13 +414,13 @@ test("theme panel follows another tab after a failed write", async ({
       setItem.call(this, key, value);
     };
   });
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   await q.button("Theme", { exact: true }).click();
   const mode = query(q.radiogroup("Mode"));
   await mode.radio("Dark").click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   const otherPage = await context.newPage();
-  await gotoAndSettle(otherPage, examplePath);
+  await gotoAndSettle(otherPage, recipePath);
   const other = query(otherPage);
   await expect(other.complementary("Theme")).toBeVisible();
   await query(other.radiogroup("Mode")).radio("Light").click();
@@ -434,7 +434,7 @@ test("theme button keeps its name when the panel narrows the page", async ({
   q,
 }) => {
   await page.setViewportSize({ width: 800, height: 800 });
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   await q.button("Theme", { exact: true }).click();
   await expect(q.complementary("Theme")).toBeVisible();
   // The panel opens with a width transition, so the label hides only after it
@@ -450,7 +450,7 @@ test("theme button keeps its name when the panel narrows the page", async ({
 
 test("phone menu opens a navigation drawer", async ({ page, q }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   await expect(q.navigation("Site")).not.toBeVisible();
   const menuButton = q.button("Open menu");
   await menuButton.click();
@@ -462,27 +462,25 @@ test("phone menu opens a navigation drawer", async ({ page, q }) => {
   await expect(q.navigation("Menu")).not.toBeVisible();
 });
 
-test("phone menu marks only the page entry on an example page", async ({
+test("phone menu marks only the page entry on a recipe page", async ({
   page,
   q,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   await q.button("Open menu").click();
   const menu = q.navigation("Menu");
   await expect(query(menu).link("App Shell")).toHaveAttribute(
     "aria-current",
     "page",
   );
-  await expect(query(menu).link("Examples")).not.toHaveAttribute(
-    "aria-current",
-  );
+  await expect(query(menu).link("Recipes")).not.toHaveAttribute("aria-current");
   await expect(menu.locator('[aria-current="page"]')).toHaveCount(1);
 });
 
 test("phone menu moves focus and closes with Escape", async ({ page, q }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   const menuButton = q.button("Open menu");
   await menuButton.click();
   await expect(q.button("Close menu")).toBeFocused();
@@ -497,7 +495,7 @@ test("phone menu moves focus and closes with Escape", async ({ page, q }) => {
 
 test("phone menu holds the theme options", async ({ page, q }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   // The full-height theme panel would leave no room for the page on phones.
   await expect(q.button("Theme", { exact: true })).not.toBeVisible();
   await q.button("Open menu").click();
@@ -514,7 +512,7 @@ test("phone menu holds the theme options", async ({ page, q }) => {
 });
 
 test("table of contents marks the section in view", async ({ page, q }) => {
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   const toc = query(q.navigation("On this page"));
   // The gallery comes before the first heading, so no section is current yet.
   await expect(toc.link("Overview")).not.toHaveAttribute("aria-current");
@@ -539,7 +537,7 @@ test("app shells in preview cards keep corners concentric with the card", async 
 }) => {
   // The toggle button in the frame corner shows only at wide shell widths.
   await page.setViewportSize({ width: 1600, height: 900 });
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   const iframe = page.locator('iframe[title="App Shell"]');
   await iframe.scrollIntoViewIfNeeded();
   const frame = iframe.contentFrame();
@@ -587,7 +585,7 @@ test("site navigation folds without resizing offscreen preview pages", async ({
   q,
 }) => {
   await page.setViewportSize({ width: 1600, height: 900 });
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   // Chrome loads lazy frames this close to the viewport, but the card stays
   // offscreen.
   const iframe = page.locator('iframe[title="Dashboard"]');
@@ -629,7 +627,7 @@ test("site navigation folds without resizing visible preview pages on each step"
   q,
 }) => {
   await page.setViewportSize({ width: 1600, height: 900 });
-  await gotoAndSettle(page, examplePath);
+  await gotoAndSettle(page, recipePath);
   const iframe = page.locator('iframe[title="App Shell"]');
   await iframe.scrollIntoViewIfNeeded();
   const frame = iframe.contentFrame();

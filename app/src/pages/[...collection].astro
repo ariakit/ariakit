@@ -30,7 +30,7 @@ import { getCollection } from "astro:content";
 import { createElement } from "react";
 
 export const getStaticPaths = (async () => {
-  const types = ["components", "examples"] as const;
+  const types = ["components", "recipes"] as const;
   const entries = (
     await Promise.all(types.map((type) => getCollection(type)))
   ).flat();
@@ -64,19 +64,19 @@ const groupPath = "/" + framework + "/" + type;
 const guides = (
   await getCollection("guides", filterGuidesByGroup(groupPath))
 ).map(getGuideDetail);
-const examples = await getCollection("examples");
+const recipes = await getCollection("recipes");
 const previews = await getCollection("previews");
 const cards = await Promise.all(
   entries.map(async (entry) => ({
     entry,
-    count: countEntryExamples({ entry, framework, examples, previews }),
-    thumbnail: await renderThumbnail(entry.id),
+    count: countEntryExamples({ entry, framework, recipes, previews }),
+    thumbnail: await renderThumbnail(entry),
   })),
 );
 const lead =
-  type === "examples"
-    ? "Patterns built with Ariakit components. Open an example to explore its previews and copy the code into your app."
-    : "Accessible building blocks for your design system. Each component page covers its examples and API reference.";
+  type === "recipes"
+    ? "Common solutions composed from Ariakit components. Open a recipe to explore its examples and copy the code into your app."
+    : "Accessible building blocks for your design system. Each component page covers its examples, recipes, and API reference.";
 const cardFocus = focus.jsx({ $focus: true, $focusOffset: 2 }).className;
 ---
 
@@ -86,7 +86,7 @@ const cardFocus = focus.jsx({ $focus: true, $focusOffset: 2 }).className;
     <span class="ak-ink-70 text-sm font-medium">{frameworkLabel}</span>
     <h1 class="text-5xl font-semibold tracking-tight">{capitalize(type)}</h1>
     <p class="ak-ink-75 text-lg text-pretty">{lead}</p>
-    <p class="ak-ink-70 text-sm">{previewCount} previews</p>
+    <p class="ak-ink-70 text-sm">{formatExampleCount(previewCount)}</p>
     {
       guides.length > 0 && (
         <nav aria-label="Guides" class="flex flex-wrap gap-2 pt-3">

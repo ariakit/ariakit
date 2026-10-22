@@ -9,7 +9,7 @@ test("Next.js preview cards follow routes in their browser chrome", async ({
   page,
   q,
 }) => {
-  await gotoAndSettle(page, "/react/examples/tab-nextjs/");
+  await gotoAndSettle(page, "/react/recipes/tab-nextjs/");
   const card = query(q.region("Tab with Next.js App Router"));
   const address = card.textbox("Address");
   const iframe = page.locator('iframe[title="Tab with Next.js App Router"]');
@@ -37,7 +37,7 @@ test("Next.js preview cards follow routes in their browser chrome", async ({
   await expect(preview.tabpanel("New")).toBeVisible();
   await expect(card.button("Forward")).toBeDisabled();
   // The frame history stays inside the frame.
-  await expect(page).toHaveURL(/\/react\/examples\/tab-nextjs\/$/);
+  await expect(page).toHaveURL(/\/react\/recipes\/tab-nextjs\/$/);
 });
 
 // Firefox already applies the color scheme of the docs page to its frames, so
@@ -55,7 +55,7 @@ test("Next.js preview cards apply the site theme to their frames", async ({
     },
     new URL(baseURL ?? "").origin,
   );
-  await gotoAndSettle(page, "/react/examples/tab-nextjs/");
+  await gotoAndSettle(page, "/react/recipes/tab-nextjs/");
   const iframe = page.locator('iframe[title="Tab with Next.js App Router"]');
   await iframe.scrollIntoViewIfNeeded();
   await expect(iframe.locator("xpath=..")).toHaveAttribute(
@@ -78,7 +78,7 @@ test("Next.js preview cards show the loading state while their frame reloads", a
   page,
   q,
 }) => {
-  await gotoAndSettle(page, "/react/examples/tab-nextjs/");
+  await gotoAndSettle(page, "/react/recipes/tab-nextjs/");
   const card = query(q.region("Tab with Next.js App Router"));
   const iframe = page.locator('iframe[title="Tab with Next.js App Router"]');
   await iframe.scrollIntoViewIfNeeded();
@@ -113,7 +113,7 @@ test("Next.js preview cards hide the code label in narrow browser chrome", async
   page,
   q,
 }) => {
-  await gotoAndSettle(page, "/react/examples/tab-nextjs/");
+  await gotoAndSettle(page, "/react/recipes/tab-nextjs/");
   const card = query(q.region("Tab with Next.js App Router"));
   const label = query(card.button("Get code")).text("Get code");
   const getLabelWidth = async () => (await label.boundingBox())?.width;

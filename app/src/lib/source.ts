@@ -662,10 +662,19 @@ async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
 
 /**
  * Custom plugin to extract source code and dependencies using Vite's module
- * graph
+ * graph. The source name is the entry directory relative to the first of
+ * `roots` that contains it, which matches the preview id.
  */
-export function sourcePlugin(root?: string): Plugin {
+export function sourcePlugin(roots: string[] = []): Plugin {
   const queryString = "?source";
+
+  const getSourceName = (dir: string) => {
+    for (const root of roots) {
+      if (!dir.startsWith(root)) continue;
+      return dir.slice(root.length);
+    }
+    return dir.replace(/^.+\/nextjs\/app\//, "");
+  };
 
   return {
     name: "vite-plugin-source",
@@ -675,9 +684,7 @@ export function sourcePlugin(root?: string): Plugin {
       const realId = id.replace(queryString, "");
 
       const source: Source = {
-        name: dirname(id)
-          .replace(root ?? "", "")
-          .replace(/^.+\/nextjs\/app\//, ""),
+        name: getSourceName(dirname(id)),
         sources: {},
         dependencies: {},
         devDependencies: {},

@@ -18,14 +18,15 @@ import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 
 export const getStaticPaths = (async () => {
-  const entries = await getCollection("examples");
+  const entries = await getCollection("recipes");
   const descriptions = await getCollection("descriptions");
   const galleries = await getCollection("galleries");
   return entries.flatMap((entry) => {
-    const gallery = galleries.find((gallery) => gallery.id === entry.id);
-    const description = descriptions.find((header) => header.id === entry.id);
+    const id = `recipes/${entry.id}`;
+    const gallery = galleries.find((gallery) => gallery.id === id);
+    const description = descriptions.find((header) => header.id === id);
     return entry.data.frameworks.map((framework) => ({
-      params: { example: `${framework}/examples/${entry.id}` },
+      params: { recipe: `${framework}/recipes/${entry.id}` },
       props: { framework, entry, gallery, description } as const,
     }));
   });
@@ -40,11 +41,11 @@ const title = entry.data.title;
 const descriptionText = await descriptionToText(description?.body, framework);
 ---
 
-<Layout {title} {headings} section="examples">
+<Layout {title} {headings} section="recipes">
   <Meta
     slot="meta"
     id={entry.id}
-    type="examples"
+    type="recipes"
     {title}
     {framework}
     description={descriptionText}

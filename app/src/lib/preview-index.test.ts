@@ -9,7 +9,7 @@
  */
 import { expect, test } from "vitest";
 import {
-  EXAMPLES_PREVIEW_KIND,
+  RECIPES_PREVIEW_KIND,
   SANDBOX_PREVIEW_KIND,
 } from "./preview-config.ts";
 import { getPreviewIndexPaths } from "./preview-index.ts";
@@ -20,7 +20,7 @@ test("excludes sandbox previews from the preview index", () => {
       id: "menu",
       data: {
         frameworks: ["react", "solid"],
-        source: EXAMPLES_PREVIEW_KIND,
+        source: RECIPES_PREVIEW_KIND,
       },
     },
     {

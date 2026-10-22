@@ -22,10 +22,10 @@ const nonDomPackages = [
 
 function getFrameworkTestIncludes(framework: Framework) {
   const entryFiles = globSync(
-    `app/src/{examples,sandbox}/**/index.${framework}.tsx`,
+    `app/src/{recipes,component-docs,sandbox}/**/index.${framework}.tsx`,
     { cwd: rootDir },
   );
-  const exampleTests = entryFiles.flatMap((file) => {
+  const previewTests = entryFiles.flatMap((file) => {
     const dir = dirname(file);
     return [`${dir}/test.{ts,tsx}`, `${dir}/${framework}.test.{ts,tsx}`];
   });
@@ -35,7 +35,7 @@ function getFrameworkTestIncludes(framework: Framework) {
   return [
     `packages/ariakit-${framework}*/src/**/{test,!(*.dom).test}.{ts,tsx}`,
     `packages/*/src/**/*${framework}.test.{ts,tsx}`,
-    ...exampleTests,
+    ...previewTests,
   ];
 }
 
@@ -73,9 +73,9 @@ const testExcludes = [...configDefaults.exclude, ".claude/**"];
 
 const isReact18 = reactVersion.startsWith("18.");
 
-// Tests of examples that require React 19, such as through React Router 8. The
+// Tests of recipes that require React 19, such as through React Router 8. The
 // React 18 suite skips them.
-const react19Tests = ["app/src/examples/navigation/**"];
+const react19Tests = ["app/src/recipes/navigation/**"];
 
 function getReactTestPatterns() {
   const { include, exclude } = getProjectTestPatterns("react");
@@ -114,7 +114,12 @@ export default defineConfig({
     projects: [
       {
         extends: true,
-        plugins: [sourcePlugin(join(rootDir, "app/src/examples/"))],
+        plugins: [
+          sourcePlugin([
+            join(rootDir, "app/src/recipes/"),
+            join(rootDir, "app/src/component-docs/"),
+          ]),
+        ],
         test: {
           name: "node",
           environment: "node",

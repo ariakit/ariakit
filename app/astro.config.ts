@@ -76,7 +76,10 @@ export default defineConfig({
     },
     plugins: [
       tailwindcss(),
-      sourcePlugin(join(import.meta.dirname, "src/examples/")),
+      sourcePlugin([
+        join(import.meta.dirname, "src/recipes/"),
+        join(import.meta.dirname, "src/component-docs/"),
+      ]),
     ],
     // TODO: Remove this workaround once withastro/astro#17166 is fixed.
     // Pre-optimize bare SSR imports so the Cloudflare adapter cannot reload

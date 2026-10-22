@@ -29,7 +29,7 @@ import {
 import { layer } from "@ariakit/ui/styles/layer";
 import { ChevronsUpDownIcon, CircleCheckIcon } from "lucide-react";
 import * as React from "react";
-import Thumbnail from "#app/examples/combobox-group/thumbnail.react.tsx";
+import Thumbnail from "#app/recipes/combobox-group/thumbnail.react.tsx";
 
 // These scenarios keep the state and content cases from the former standalone
 // fixtures while using the shared combobox parts.

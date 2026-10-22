@@ -1,11 +1,11 @@
 /updates /changelog 301
 
 /guides /react/components/getting-started 301
-/examples /react/examples 301
+/examples /react/recipes 301
 /reference /react/components 301
 /components /react/components 301
 
 /guides/* /react/components/:splat 301
-/examples/* /react/examples/:splat 301
+/examples/* /react/recipes/:splat 301
 /reference/* /react/components/:splat 301
 /components/* /react/components/:splat 301

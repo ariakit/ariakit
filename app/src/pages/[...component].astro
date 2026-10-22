@@ -23,14 +23,14 @@ export const getStaticPaths = (async () => {
   const entries = await getCollection("components");
   const descriptions = await getCollection("descriptions");
   const galleries = await getCollection("galleries");
-  const examples = await getCollection("examples");
+  const recipes = await getCollection("recipes");
   const references = await getCollection("references");
   return entries.flatMap((entry) => {
-    const id = `${entry.id}/_component`;
+    const id = `component-docs/${entry.id}`;
     const gallery = galleries.find((gallery) => gallery.id === id);
     const description = descriptions.find((header) => header.id === id);
-    const componentExamples = examples.filter((example) =>
-      example.data.components.some((component) => component.id === entry.id),
+    const componentRecipes = recipes.filter((recipe) =>
+      recipe.data.components.some((component) => component.id === entry.id),
     );
     return entry.data.frameworks.flatMap((framework) => {
       const prefix = `${framework}/${entry.id}/`;
@@ -45,7 +45,7 @@ export const getStaticPaths = (async () => {
         entry,
         gallery,
         description,
-        examples: componentExamples,
+        recipes: componentRecipes,
         references: componentReferences,
         reference,
         main: true,
@@ -74,7 +74,7 @@ const {
   entry,
   gallery,
   description,
-  examples,
+  recipes,
   references,
   reference,
   main,
@@ -118,14 +118,14 @@ const descriptionText = await descriptionToText(description?.body, framework);
   </nav>
   {reference && <ApiReference {reference} />}
   {
-    main && examples.length > 0 && (
+    main && recipes.length > 0 && (
       <section>
-        <h2 id="examples">Examples</h2>
+        <h2 id="recipes">Recipes</h2>
         <ul>
-          {examples.map((example) => (
+          {recipes.map((recipe) => (
             <li>
-              <a href={"/" + framework + "/examples/" + example.id + "/"}>
-                {example.data.title}
+              <a href={"/" + framework + "/recipes/" + recipe.id + "/"}>
+                {recipe.data.title}
               </a>
             </li>
           ))}

@@ -57,7 +57,7 @@ test.each([
   [
     {
       id: "",
-      type: "examples" as const,
+      type: "recipes" as const,
       framework: "react" as const,
     },
     "/og-image/default.png",

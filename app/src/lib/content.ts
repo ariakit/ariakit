@@ -15,10 +15,11 @@ import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
 import { getFramework, isFramework } from "./framework.ts";
+import type { PreviewKind } from "./preview-config.ts";
 import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
-  type: "examples" | "components" | "styles";
+  type: "recipes" | "components" | "styles";
   label: string;
   path: string | ((framework: Framework) => string);
 }
@@ -39,10 +40,10 @@ const contentGroups: Record<string, ContentGroup> = {
     label: "Styles",
     path: "styles",
   },
-  examples: {
-    type: "examples",
-    label: "Examples",
-    path: "examples",
+  recipes: {
+    type: "recipes",
+    label: "Recipes",
+    path: "recipes",
   },
 };
 
@@ -84,38 +85,52 @@ export function filterGuidesByGroup(groupPath: string) {
   };
 }
 
+/** A page entry whose examples are previews, such as a recipe. */
+export interface PreviewOwnerEntry {
+  id: string;
+  collection: "recipes" | "components";
+}
+
+/** The preview fields that filters and counts read. */
+export interface FilterablePreview {
+  id: string;
+  data: {
+    frameworks: Framework[];
+    source: PreviewKind;
+  };
+}
+
 export interface FilterPreviewsParams {
-  type?: "examples" | "components";
-  entries?: CollectionEntry<"examples" | "components">[];
+  type?: PreviewOwnerEntry["collection"];
+  entries?: PreviewOwnerEntry[];
   framework?: Framework;
 }
 
 export function filterPreviews(
   params: FilterPreviewsParams,
-): (preview: CollectionEntry<"previews">) => boolean;
+): (preview: FilterablePreview) => boolean;
 
-export function filterPreviews(
-  previews: CollectionEntry<"previews">[],
+export function filterPreviews<T extends FilterablePreview>(
+  previews: T[],
   params: FilterPreviewsParams,
-): CollectionEntry<"previews">[];
+): T[];
 
 export function filterPreviews(
-  previewsOrParams: CollectionEntry<"previews">[] | FilterPreviewsParams,
+  previewsOrParams: FilterablePreview[] | FilterPreviewsParams,
   params: FilterPreviewsParams = {},
 ) {
   const hasPreviews = Array.isArray(previewsOrParams);
   params = !Array.isArray(previewsOrParams) ? previewsOrParams : params;
-  const filter = (preview: CollectionEntry<"previews">) => {
-    if (params.type) {
-      const isComponentPreview = preview.id.endsWith("_component");
-      if (params.type === "examples" && isComponentPreview) return false;
-      if (params.type === "components" && !isComponentPreview) return false;
-    }
+  const filter = (preview: FilterablePreview) => {
+    // Collection names match preview kinds. A recipe and a component page with
+    // the same entry id therefore never count the nested examples of the other.
+    if (params.type && preview.data.source !== params.type) return false;
     if (params.framework) {
       if (!preview.data.frameworks.includes(params.framework)) return false;
     }
     if (params.entries) {
       const isEntryPreview = params.entries.some((entry) => {
+        if (preview.data.source !== entry.collection) return false;
         if (preview.id === entry.id) return true;
         return preview.id.startsWith(`${entry.id}/`);
       });
@@ -126,36 +141,42 @@ export function filterPreviews(
   return hasPreviews ? previewsOrParams.filter(filter) : filter;
 }
 
+/** A recipe with the components that its frontmatter lists. */
+export interface ComponentRecipeEntry extends PreviewOwnerEntry {
+  collection: "recipes";
+  data: { components: { id: string }[] };
+}
+
 export interface CountEntryExamplesParams {
-  entry: CollectionEntry<"examples" | "components">;
+  entry: PreviewOwnerEntry;
   framework: Framework;
-  examples: CollectionEntry<"examples">[];
-  previews: CollectionEntry<"previews">[];
+  recipes: ComponentRecipeEntry[];
+  previews: FilterablePreview[];
 }
 
 /**
- * Counts the previews that demonstrate an entry. A component also counts the
- * previews of the examples that list it in their `components` frontmatter.
+ * Counts the examples that demonstrate an entry. A component also counts the
+ * examples of the recipes that list it in their `components` frontmatter.
  */
 export function countEntryExamples({
   entry,
   framework,
-  examples,
+  recipes,
   previews,
 }: CountEntryExamplesParams) {
-  if (entry.collection === "examples") {
+  if (entry.collection === "recipes") {
     return filterPreviews(previews, {
       framework,
-      type: "examples",
+      type: "recipes",
       entries: [entry],
     }).length;
   }
-  const componentExamples = examples.filter((example) =>
-    example.data.components.some((component) => component.id === entry.id),
+  const componentRecipes = recipes.filter((recipe) =>
+    recipe.data.components.some((component) => component.id === entry.id),
   );
   return filterPreviews(previews, {
     framework,
-    entries: [...componentExamples, entry],
+    entries: [...componentRecipes, entry],
   }).length;
 }
 

@@ -100,10 +100,10 @@ function getPreviewStoreContext(dir: string) {
   return { context, entries, store, watcher };
 }
 
-function getExamplesRoot(dir: string) {
+function getRecipesRoot(dir: string) {
   return {
-    kind: "examples",
-    dir: join(dir, "examples"),
+    kind: "recipes",
+    dir: join(dir, "recipes"),
     metadataRequired: true,
   };
 }
@@ -116,12 +116,12 @@ function getSandboxRoot(dir: string) {
   };
 }
 
-test("requires preview metadata for examples", async () => {
+test("requires preview metadata for recipes", async () => {
   const dir = await createDir();
-  await writeFile(join(dir, "examples/menu/index.react.tsx"));
+  await writeFile(join(dir, "recipes/menu/index.react.tsx"));
 
   const promise = discoverPreviews({
-    roots: [getExamplesRoot(dir)],
+    roots: [getRecipesRoot(dir)],
   });
 
   await expect(promise).rejects.toThrow("Missing preview.json for menu");
@@ -129,9 +129,9 @@ test("requires preview metadata for examples", async () => {
 
 test("infers frameworks from preview entry files", async () => {
   const dir = await createDir();
-  await writeFile(join(dir, "examples/separator/index.solid.tsx"));
-  await writeFile(join(dir, "examples/separator/index.react.tsx"));
-  const previewDir = join(dir, "examples/separator");
+  await writeFile(join(dir, "recipes/separator/index.solid.tsx"));
+  await writeFile(join(dir, "recipes/separator/index.react.tsx"));
+  const previewDir = join(dir, "recipes/separator");
 
   await expect(getPreviewFrameworks(previewDir)).resolves.toEqual([
     "react",
@@ -142,8 +142,8 @@ test("infers frameworks from preview entry files", async () => {
 
 test("returns empty frameworks without preview entry files", async () => {
   const dir = await createDir();
-  await writeFile(join(dir, "examples/menu/index.ts"));
-  const previewDir = join(dir, "examples/menu");
+  await writeFile(join(dir, "recipes/menu/index.ts"));
+  const previewDir = join(dir, "recipes/menu");
 
   await expect(getPreviewFrameworks(previewDir)).resolves.toEqual([]);
   expect(getPreviewFrameworksSync(previewDir)).toEqual([]);
@@ -152,25 +152,25 @@ test("returns empty frameworks without preview entry files", async () => {
 test("resolves frameworks from metadata before entry files", async () => {
   const dir = await createDir();
   await writeFile(
-    join(dir, "examples/tab-nextjs/preview.json"),
+    join(dir, "recipes/tab-nextjs/preview.json"),
     JSON.stringify({ title: "Tab", frameworks: ["react"] }),
   );
-  await writeFile(join(dir, "examples/separator/index.solid.tsx"));
-  await writeFile(join(dir, "examples/separator/index.react.tsx"));
+  await writeFile(join(dir, "recipes/separator/index.solid.tsx"));
+  await writeFile(join(dir, "recipes/separator/index.react.tsx"));
 
   await expect(
-    resolvePreviewFrameworks(join(dir, "examples/tab-nextjs"), "tab-nextjs"),
+    resolvePreviewFrameworks(join(dir, "recipes/tab-nextjs"), "tab-nextjs"),
   ).resolves.toEqual(["react"]);
   await expect(
-    resolvePreviewFrameworks(join(dir, "examples/separator"), "separator"),
+    resolvePreviewFrameworks(join(dir, "recipes/separator"), "separator"),
   ).resolves.toEqual(["react", "solid"]);
 });
 
 test("rejects duplicate framework entry files", async () => {
   const dir = await createDir();
-  await writeFile(join(dir, "examples/menu/index.react.tsx"));
-  await writeFile(join(dir, "examples/menu/index.custom.react.tsx"));
-  const previewDir = join(dir, "examples/menu");
+  await writeFile(join(dir, "recipes/menu/index.react.tsx"));
+  await writeFile(join(dir, "recipes/menu/index.custom.react.tsx"));
+  const previewDir = join(dir, "recipes/menu");
 
   await expect(getPreviewFrameworks(previewDir)).rejects.toThrow(
     `Duplicate react preview in ${previewDir}`,
@@ -182,14 +182,14 @@ test("rejects duplicate framework entry files", async () => {
 
 test("rejects framework metadata without matching entry files", async () => {
   const dir = await createDir();
-  await writeFile(join(dir, "examples/menu/index.react.tsx"));
+  await writeFile(join(dir, "recipes/menu/index.react.tsx"));
   await writeFile(
-    join(dir, "examples/menu/preview.json"),
+    join(dir, "recipes/menu/preview.json"),
     JSON.stringify({ frameworks: ["react", "solid"], title: "Menu" }),
   );
 
   const promise = discoverPreviews({
-    roots: [getExamplesRoot(dir)],
+    roots: [getRecipesRoot(dir)],
   });
 
   await expect(promise).rejects.toThrow(
@@ -208,7 +208,7 @@ test("supports configured preview roots", async () => {
   const previews = await discoverPreviews({
     roots: [
       {
-        kind: "examples",
+        kind: "recipes",
         dir: join(dir, "fixtures"),
         metadataRequired: true,
       },
@@ -219,33 +219,33 @@ test("supports configured preview roots", async () => {
     {
       frameworks: ["react"],
       id: "menu",
-      source: "examples",
+      source: "recipes",
       title: "Menu",
     },
   ]);
 });
 
-test("requires title metadata for examples", async () => {
+test("requires title metadata for recipes", async () => {
   const dir = await createDir();
-  await writeFile(join(dir, "examples/menu/index.react.tsx"));
-  await writeFile(join(dir, "examples/menu/preview.json"), "{}");
+  await writeFile(join(dir, "recipes/menu/index.react.tsx"));
+  await writeFile(join(dir, "recipes/menu/preview.json"), "{}");
 
   const promise = discoverPreviews({
-    roots: [getExamplesRoot(dir)],
+    roots: [getRecipesRoot(dir)],
   });
 
   await expect(promise).rejects.toThrow("Missing title metadata for menu");
 });
 
-test("requires title metadata for metadata-only examples", async () => {
+test("requires title metadata for metadata-only recipes", async () => {
   const dir = await createDir();
   await writeFile(
-    join(dir, "examples/menu/preview.json"),
+    join(dir, "recipes/menu/preview.json"),
     JSON.stringify({ frameworks: ["react"] }),
   );
 
   const promise = discoverPreviews({
-    roots: [getExamplesRoot(dir)],
+    roots: [getRecipesRoot(dir)],
   });
 
   await expect(promise).rejects.toThrow("Missing title metadata for menu");
@@ -253,14 +253,14 @@ test("requires title metadata for metadata-only examples", async () => {
 
 test("rejects unknown preview metadata keys", async () => {
   const dir = await createDir();
-  await writeFile(join(dir, "examples/menu/index.react.tsx"));
+  await writeFile(join(dir, "recipes/menu/index.react.tsx"));
   await writeFile(
-    join(dir, "examples/menu/preview.json"),
+    join(dir, "recipes/menu/preview.json"),
     JSON.stringify({ source: "sandbox", title: "Menu" }),
   );
 
   const promise = discoverPreviews({
-    roots: [getExamplesRoot(dir)],
+    roots: [getRecipesRoot(dir)],
   });
 
   await expect(promise).rejects.toThrow(
@@ -310,14 +310,14 @@ test("supports sandbox title metadata", async () => {
 
 test("supports open metadata", async () => {
   const dir = await createDir();
-  await writeFile(join(dir, "examples/menu/index.react.tsx"));
+  await writeFile(join(dir, "recipes/menu/index.react.tsx"));
   await writeFile(
-    join(dir, "examples/menu/preview.json"),
+    join(dir, "recipes/menu/preview.json"),
     JSON.stringify({ title: "Menu", open: true }),
   );
 
   const previews = await discoverPreviews({
-    roots: [getExamplesRoot(dir)],
+    roots: [getRecipesRoot(dir)],
   });
 
   expect(previews).toMatchObject([{ id: "menu", metadata: { open: true } }]);
@@ -325,13 +325,13 @@ test("supports open metadata", async () => {
 
 test("rejects invalid open metadata", async () => {
   const dir = await createDir();
-  await writeFile(join(dir, "examples/menu/index.react.tsx"));
+  await writeFile(join(dir, "recipes/menu/index.react.tsx"));
   await writeFile(
-    join(dir, "examples/menu/preview.json"),
+    join(dir, "recipes/menu/preview.json"),
     JSON.stringify({ title: "Menu", open: "true" }),
   );
 
-  const promise = discoverPreviews({ roots: [getExamplesRoot(dir)] });
+  const promise = discoverPreviews({ roots: [getRecipesRoot(dir)] });
 
   await expect(promise).rejects.toThrow("Invalid open metadata for menu");
 });
@@ -365,11 +365,11 @@ test("preview loader defines generated data schema", () => {
 test("preview loader reloads watched metadata changes", async () => {
   const dir = await createDir();
   const loader = previewLoader({
-    roots: [getExamplesRoot(dir)],
+    roots: [getRecipesRoot(dir)],
   });
   const { context, entries, watcher } = getPreviewStoreContext(dir);
-  const metadataFile = join(dir, "examples/menu/preview.json");
-  await writeFile(join(dir, "examples/menu/index.react.tsx"));
+  const metadataFile = join(dir, "recipes/menu/preview.json");
+  await writeFile(join(dir, "recipes/menu/index.react.tsx"));
   await writeFile(metadataFile, JSON.stringify({ title: "Menu" }));
 
   await loader.load(context);
@@ -384,12 +384,12 @@ test("preview loader reloads watched metadata changes", async () => {
 test("preview loader reloads watched entry file changes", async () => {
   const dir = await createDir();
   const loader = previewLoader({
-    roots: [getExamplesRoot(dir)],
+    roots: [getRecipesRoot(dir)],
   });
   const { context, entries, watcher } = getPreviewStoreContext(dir);
-  const metadataFile = join(dir, "examples/menu/preview.json");
-  const reactEntryFile = join(dir, "examples/menu/index.react.tsx");
-  const solidEntryFile = join(dir, "examples/menu/index.solid.tsx");
+  const metadataFile = join(dir, "recipes/menu/preview.json");
+  const reactEntryFile = join(dir, "recipes/menu/index.react.tsx");
+  const solidEntryFile = join(dir, "recipes/menu/index.solid.tsx");
   await writeFile(reactEntryFile);
   await writeFile(metadataFile, JSON.stringify({ title: "Menu" }));
 

@@ -14,10 +14,10 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { LoaderContext } from "astro/loaders";
 import { afterEach, expect, test, vi } from "vitest";
-import { exampleLoader } from "./mdx-loader.ts";
+import { recipeLoader } from "./mdx-loader.ts";
 
 // The glob loader needs the Astro content runtime. This one parses the single
-// example that the test writes, which is all the framework inference reads.
+// recipe that the test writes, which is all the framework inference reads.
 const globEntry = vi.hoisted(() => ({ filePath: "" }));
 
 vi.mock("astro/loaders", () => ({
@@ -25,7 +25,7 @@ vi.mock("astro/loaders", () => ({
     name: "glob",
     async load(context: LoaderContext) {
       await context.parseData({
-        id: "example",
+        id: "recipe",
         data: {},
         filePath: globEntry.filePath,
       });
@@ -42,14 +42,14 @@ afterEach(async () => {
 });
 
 async function writeMetadata(dir: string, frameworks: string[]) {
-  const metadata = { title: "Example", frameworks };
+  const metadata = { title: "Recipe", frameworks };
   await fs.writeFile(join(dir, "preview.json"), JSON.stringify(metadata));
 }
 
-test("examples reload when preview.json changes their frameworks", async () => {
+test("recipes reload when preview.json changes their frameworks", async () => {
   const base = await fs.mkdtemp(join(os.tmpdir(), "ariakit-mdx-loader-"));
   dirs.push(base);
-  const dir = join(base, "example");
+  const dir = join(base, "recipe");
   await fs.mkdir(dir);
   await fs.writeFile(join(dir, "index.mdx"), "");
   await writeMetadata(dir, ["react"]);
@@ -66,7 +66,7 @@ test("examples reload when preview.json changes their frameworks", async () => {
     watcher,
   } as unknown as LoaderContext;
 
-  await exampleLoader({ base }).load(context);
+  await recipeLoader({ base }).load(context);
   expect(parseData).toHaveBeenLastCalledWith(
     expect.objectContaining({ data: { frameworks: ["react"] } }),
   );

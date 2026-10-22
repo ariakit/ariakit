@@ -8,7 +8,7 @@ import { gotoAndSettle } from "#app/test-utils/preview.ts";
 // browsers keep the card heights, which preview-cards-browser.ts covers.
 test("preview grid cards of similar heights line up", async ({ page, q }) => {
   await page.setViewportSize({ width: 1440, height: 1400 });
-  await gotoAndSettle(page, "/react/examples/skeleton/");
+  await gotoAndSettle(page, "/react/recipes/skeleton/");
   // An example can name its own region like its card, and the card region comes
   // first.
   const getCard = (title: string) =>
@@ -44,7 +44,7 @@ test("a preview grid card that would sit alone takes the whole row", async ({
   q,
 }) => {
   await page.setViewportSize({ width: 1440, height: 1400 });
-  await gotoAndSettle(page, "/react/examples/navigation/");
+  await gotoAndSettle(page, "/react/recipes/navigation/");
   const getRegion = (title: string) => q.region(title, { exact: true }).first();
   const getBox = (title: string) =>
     getRegion(title).evaluate((element) => {
