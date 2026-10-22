@@ -26,6 +26,6 @@ SOFTWARE.
 
 ## Note on Ariakit Plus Recipes
 
-Please note that while the recipes in this directory are generally available under the MIT License, some folders may contain recipes that are part of [Ariakit Plus](https://ariakit.com/plus) and are subject to the [Ariakit Plus License](https://ariakit.com/plus/license). See the list of [Ariakit Plus Recipes](https://ariakit.com/react/recipes/plus/#tags).
+Please note that while the recipes in this directory are generally available under the MIT License, some folders may contain recipes that are part of [Ariakit Plus](https://ariakit.com/plus) and are subject to the [Ariakit Plus License](https://ariakit.com/plus/license). See the list of [Ariakit Plus content](https://ariakit.com/tags/plus).
 
 Each of these folders will contain its own license file with the full terms. Always refer to the most specific license file that applies to the code you are using.
