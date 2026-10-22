@@ -31,6 +31,11 @@ export interface PreviewRootOptions {
   kind: string;
   dir: PathInput;
   metadataRequired: boolean;
+  /**
+   * A segment that starts the ids of the previews in this root, so they cannot
+   * collide with the previews of a root that uses the same folder names.
+   */
+  idPrefix?: string;
 }
 
 export interface PreviewDiscoveryOptions {
@@ -44,6 +49,7 @@ export interface ResolvedPreviewRoot {
   kind: string;
   dir: string;
   metadataRequired: boolean;
+  idPrefix?: string;
 }
 
 interface PreviewMetadata {
@@ -102,6 +108,7 @@ export function resolvePreviewRoots(options: PreviewDiscoveryOptions) {
     kind: root.kind,
     dir: toFilePath(root.dir, srcDir),
     metadataRequired: root.metadataRequired,
+    idPrefix: root.idPrefix,
   }));
 }
 
@@ -246,7 +253,22 @@ function getFallbackTitle(dir: string) {
 }
 
 function getPreviewId(root: ResolvedPreviewRoot, dir: string) {
-  return toPosixPath(relative(root.dir, dir));
+  const id = toPosixPath(relative(root.dir, dir));
+  // The root directory itself is not a preview, so it keeps the empty id.
+  if (!id || !root.idPrefix) return id;
+  return `${root.idPrefix}/${id}`;
+}
+
+/**
+ * Returns the preview id of a directory in one of the preview roots, or
+ * `undefined` when the directory is outside the roots or is a root itself.
+ */
+export function getPreviewIdFromDir(roots: ResolvedPreviewRoot[], dir: string) {
+  for (const root of roots) {
+    if (!isInDirectory(dir, root.dir)) continue;
+    return getPreviewId(root, dir) || undefined;
+  }
+  return undefined;
 }
 
 interface AddPreviewParams {

@@ -46,6 +46,8 @@ export const previewConfig = {
       kind: COMPONENTS_PREVIEW_KIND,
       dir: "component-docs",
       metadataRequired: true,
+      // Component pages and recipes can share a slug, such as skeleton.
+      idPrefix: "components",
     },
     {
       kind: SANDBOX_PREVIEW_KIND,
@@ -54,3 +56,9 @@ export const previewConfig = {
     },
   ],
 } satisfies PreviewConfig;
+
+/** Returns the segment that starts the preview ids of a kind, if any. */
+export function getPreviewIdPrefix(kind: PreviewKind) {
+  const roots: PreviewConfigRoot[] = previewConfig.roots;
+  return roots.find((root) => root.kind === kind)?.idPrefix;
+}

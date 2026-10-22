@@ -15,6 +15,7 @@ import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
 import { getFramework, isFramework } from "./framework.ts";
+import { getPreviewIdPrefix } from "./preview-config.ts";
 import type { PreviewKind } from "./preview-config.ts";
 import type { Framework } from "./schemas.ts";
 
@@ -106,6 +107,12 @@ export interface FilterPreviewsParams {
   framework?: Framework;
 }
 
+/** Returns the id of the root preview of an entry, such as `components/tab`. */
+function getEntryPreviewId(entry: PreviewOwnerEntry) {
+  const idPrefix = getPreviewIdPrefix(entry.collection);
+  return idPrefix ? `${idPrefix}/${entry.id}` : entry.id;
+}
+
 export function filterPreviews(
   params: FilterPreviewsParams,
 ): (preview: FilterablePreview) => boolean;
@@ -131,8 +138,9 @@ export function filterPreviews(
     if (params.entries) {
       const isEntryPreview = params.entries.some((entry) => {
         if (preview.data.source !== entry.collection) return false;
-        if (preview.id === entry.id) return true;
-        return preview.id.startsWith(`${entry.id}/`);
+        const previewId = getEntryPreviewId(entry);
+        if (preview.id === previewId) return true;
+        return preview.id.startsWith(`${previewId}/`);
       });
       if (!isEntryPreview) return false;
     }

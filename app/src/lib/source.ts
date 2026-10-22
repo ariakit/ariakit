@@ -28,6 +28,8 @@ import {
   isNextjsConventionFile,
 } from "./nextjs.ts";
 import { isInDirectory } from "./path.ts";
+import { getPreviewIdFromDir } from "./preview-discovery.ts";
+import type { ResolvedPreviewRoot } from "./preview-discovery.ts";
 
 // ============================================================================
 // Regex Patterns
@@ -662,17 +664,15 @@ async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
 
 /**
  * Custom plugin to extract source code and dependencies using Vite's module
- * graph. The source name is the entry directory relative to the first of
- * `roots` that contains it, which matches the preview id.
+ * graph. The source name of an entry in one of the preview `roots` is its
+ * preview id.
  */
-export function sourcePlugin(roots: string[] = []): Plugin {
+export function sourcePlugin(roots: ResolvedPreviewRoot[] = []): Plugin {
   const queryString = "?source";
 
   const getSourceName = (dir: string) => {
-    for (const root of roots) {
-      if (!dir.startsWith(root)) continue;
-      return dir.slice(root.length);
-    }
+    const previewId = getPreviewIdFromDir(roots, dir);
+    if (previewId) return previewId;
     return dir.replace(/^.+\/nextjs\/app\//, "");
   };
 

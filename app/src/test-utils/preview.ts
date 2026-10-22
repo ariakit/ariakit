@@ -1,11 +1,11 @@
-import { relative, resolve } from "node:path";
+import { resolve } from "node:path";
 import { query } from "@ariakit/test/playwright";
 import { errors } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { isInDirectory, toPosixPath } from "#app/lib/path.ts";
 import { previewConfig } from "#app/lib/preview-config.ts";
 import {
   getPreviewFrameworksSync,
+  getPreviewIdFromDir,
   resolvePreviewRoots,
 } from "#app/lib/preview-discovery.ts";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
@@ -61,17 +61,6 @@ export function flushFrames(page: Page, frames = 2) {
 const SRC_DIR = resolve(import.meta.dirname, "..");
 const previewRoots = resolvePreviewRoots({ ...previewConfig, srcDir: SRC_DIR });
 
-function getPreviewId(dirname: string) {
-  const dir = resolve(dirname);
-  for (const root of previewRoots) {
-    if (!isInDirectory(dir, root.dir)) continue;
-    const id = toPosixPath(relative(root.dir, dir));
-    if (!id) return null;
-    return id;
-  }
-  return null;
-}
-
 interface WithFrameworkCallbackParams {
   id: string;
   test: typeof test;
@@ -83,7 +72,7 @@ export function withFramework(
   dirname: string,
   callback: (params: WithFrameworkCallbackParams) => Promise<void>,
 ) {
-  const id = getPreviewId(dirname);
+  const id = getPreviewIdFromDir(previewRoots, resolve(dirname));
   if (!id) {
     throw new Error(`Cannot parse preview id from ${dirname}`);
   }

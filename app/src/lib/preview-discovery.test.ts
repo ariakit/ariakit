@@ -16,9 +16,11 @@ import {
   discoverPreviews,
   getPreviewFrameworks,
   getPreviewFrameworksSync,
+  getPreviewIdFromDir,
   PreviewDataSchema,
   previewLoader,
   resolvePreviewFrameworks,
+  resolvePreviewRoots,
 } from "./preview-discovery.ts";
 
 const dirs: string[] = [];
@@ -266,6 +268,38 @@ test("rejects unknown preview metadata keys", async () => {
   await expect(promise).rejects.toThrow(
     'Unknown preview metadata key "source" for menu',
   );
+});
+
+test("prefixes preview ids so roots can share folder names", async () => {
+  const dir = await createDir();
+  for (const root of ["recipes", "component-docs"]) {
+    await writeFile(join(dir, root, "skeleton/index.react.tsx"));
+    await writeFile(
+      join(dir, root, "skeleton/preview.json"),
+      JSON.stringify({ title: "Skeleton" }),
+    );
+  }
+  const componentsRoot = {
+    kind: "components",
+    dir: join(dir, "component-docs"),
+    metadataRequired: true,
+    idPrefix: "components",
+  };
+  const roots = [getRecipesRoot(dir), componentsRoot];
+
+  const previews = await discoverPreviews({ roots });
+
+  expect(previews).toMatchObject([
+    { id: "components/skeleton", source: "components" },
+    { id: "skeleton", source: "recipes" },
+  ]);
+  const resolvedRoots = resolvePreviewRoots({ roots });
+  expect(
+    getPreviewIdFromDir(resolvedRoots, join(dir, "component-docs/skeleton")),
+  ).toBe("components/skeleton");
+  expect(
+    getPreviewIdFromDir(resolvedRoots, join(dir, "component-docs")),
+  ).toBeUndefined();
 });
 
 test("uses sandbox directory name without preview metadata", async () => {

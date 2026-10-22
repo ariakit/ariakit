@@ -394,7 +394,7 @@ for (const framework of ["react", "solid"]) {
     ).toBeVisible();
     await expect(card.link("Open preview in a new tab")).toHaveAttribute(
       "href",
-      `/${framework}/previews/separator/`,
+      `/${framework}/previews/components/separator/`,
     );
     await card.button("Get code").click();
     await expect(q.region("Separator code")).toContainText(

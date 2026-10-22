@@ -5,6 +5,8 @@ import { version as reactVersion } from "react";
 import reactForwardRef from "rolldown-plugin-react-forward-ref";
 import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
+import { previewConfig } from "./app/src/lib/preview-config.ts";
+import { resolvePreviewRoots } from "./app/src/lib/preview-discovery.ts";
 import { sourcePlugin } from "./app/src/lib/source.ts";
 
 const rootDir = process.cwd();
@@ -115,10 +117,12 @@ export default defineConfig({
       {
         extends: true,
         plugins: [
-          sourcePlugin([
-            join(rootDir, "app/src/recipes/"),
-            join(rootDir, "app/src/component-docs/"),
-          ]),
+          sourcePlugin(
+            resolvePreviewRoots({
+              ...previewConfig,
+              srcDir: join(rootDir, "app/src"),
+            }),
+          ),
         ],
         test: {
           name: "node",

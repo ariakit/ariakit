@@ -96,10 +96,11 @@ const toolbarRecipe: ComponentRecipeEntry = {
   data: { components: [{ id: "separator" }] },
 };
 
-// Preview ids are unique across roots, so a recipe that shares its id with a
-// component page has only nested examples.
+// Component page preview ids start with components/, so a recipe and a
+// component page can share an entry id.
 const previews = [
-  preview("separator", "components"),
+  preview("components/separator", "components"),
+  preview("separator", "recipes"),
   preview("separator/vertical", "recipes"),
   preview("separator/solid-only", "recipes", ["solid"]),
   preview("toolbar", "recipes"),
@@ -109,20 +110,21 @@ const previews = [
 
 test("filterPreviews keeps only the previews of the collection type", () => {
   expect(filterPreviews(previews, { type: "recipes" })).toEqual([
+    preview("separator", "recipes"),
     preview("separator/vertical", "recipes"),
     preview("separator/solid-only", "recipes", ["solid"]),
     preview("toolbar", "recipes"),
     preview("toolbar/menu", "recipes"),
   ]);
   expect(filterPreviews(previews, { type: "components" })).toEqual([
-    preview("separator", "components"),
+    preview("components/separator", "components"),
   ]);
 });
 
 test("countEntryExamples counts the examples of a recipe", () => {
   const count = (entry: PreviewOwnerEntry) =>
     countEntryExamples({ entry, framework: "react", recipes: [], previews });
-  expect(count(separatorRecipe)).toBe(1);
+  expect(count(separatorRecipe)).toBe(2);
   expect(count(toolbarRecipe)).toBe(2);
 });
 

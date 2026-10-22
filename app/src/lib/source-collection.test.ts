@@ -48,7 +48,7 @@ async function loadSourceFile(file: string, aliasRoot = APP_SRC_DIR) {
 test("collects separator source and dependencies", async () => {
   const entry = join(COMPONENT_DOCS_DIR, "separator/index.react.tsx");
 
-  expect(separator.name).toBe("separator");
+  expect(separator.name).toBe("components/separator");
   expect(Object.keys(separator.dependencies)).toEqual([
     "react",
     "react-dom",
