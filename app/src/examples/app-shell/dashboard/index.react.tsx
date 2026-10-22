@@ -180,36 +180,38 @@ export default function Example() {
             </div>
           </ShellMainIntro>
           <ShellMainBody>
-            <div
-              aria-label="Metrics"
-              role="group"
-              className="grid grid-cols-1 gap-4 @xl/shell-main-body:grid-cols-2 @4xl/shell-main-body:grid-cols-4"
-            >
-              {metrics.map((metric) => (
-                <Frame
-                  key={metric.label}
-                  $layer
-                  $rounded="xl"
-                  $p={4}
-                  $border
-                  className="flex flex-col gap-1"
-                >
-                  <p className="ak-ink-70 text-sm">{metric.label}</p>
-                  <p className="text-2xl font-semibold tabular-nums">
-                    {metric.value}
-                  </p>
-                  <p className="ak-ink-70 text-xs">
-                    <Text
-                      $text="success"
-                      render={<span />}
-                      className="font-medium"
-                    >
-                      {metric.change}
-                    </Text>{" "}
-                    vs. previous period
-                  </p>
-                </Frame>
-              ))}
+            <div className="@container/metrics">
+              <div
+                aria-label="Metrics"
+                role="group"
+                className="grid grid-cols-1 gap-4 @xl/metrics:grid-cols-2 @4xl/metrics:grid-cols-4"
+              >
+                {metrics.map((metric) => (
+                  <Frame
+                    key={metric.label}
+                    $layer
+                    $rounded="xl"
+                    $p={4}
+                    $border
+                    className="flex flex-col gap-1"
+                  >
+                    <p className="ak-ink-70 text-sm">{metric.label}</p>
+                    <p className="text-2xl font-semibold tabular-nums">
+                      {metric.value}
+                    </p>
+                    <p className="ak-ink-70 text-xs">
+                      <Text
+                        $text="success"
+                        render={<span />}
+                        className="font-medium"
+                      >
+                        {metric.change}
+                      </Text>{" "}
+                      vs. previous period
+                    </p>
+                  </Frame>
+                ))}
+              </div>
             </div>
             <Frame $layer $rounded="xl" $p={4} $border>
               <HeadingLevel level={2}>

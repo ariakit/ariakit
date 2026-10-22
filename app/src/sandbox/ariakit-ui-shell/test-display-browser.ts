@@ -50,18 +50,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
         }
         const samples = await recording.evaluate(({ finished }) => finished);
         const folding = samples.filter(({ width }) => width > 0 && width < 192);
-        // WebKit cancels the exit transition when the surrounding query
-        // container changes size, and can then close the column without a
-        // folding frame. Reopening must fold in every browser.
+        // WebKit cancels the exit transition when a query container around the
+        // panel changes size, as the shell does on a breakpoint resize, and can
+        // then close the column without a folding frame. The button folds only
+        // the column, which is not a query container. Reopening must fold in
+        // every browser.
         // https://github.com/ariakit/ariakit/issues/7972
-        if (open || browserName !== "webkit") {
+        const mayCancelExit =
+          browserName === "webkit" && control === "breakpoint";
+        if (open || !mayCancelExit) {
           const phase = open ? "reopening" : "closing";
           expect(folding.length, `${phase} folds`).toBeGreaterThan(0);
         }
-        // Firefox cannot transition display yet, and WebKit may cancel the exit
-        // transition. Both may hide immediately, but reopening must never grow
-        // empty.
-        if (open || browserName === "chromium") {
+        // Firefox cannot transition display yet, so it may hide immediately,
+        // like WebKit when it cancels the exit transition. Reopening must never
+        // grow empty.
+        if (open || (browserName !== "firefox" && !mayCancelExit)) {
           for (const sample of folding) {
             expect(sample.display).not.toBe("none");
           }

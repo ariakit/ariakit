@@ -470,10 +470,13 @@ function DashboardScenario() {
         </ShellHeader>
         <ShellMain>
           <ShellMainBody>
+            {/*
+             * Up to three metrics fit in a row of the default 48rem column.
+             */}
             <div
               aria-label="Metrics"
               role="group"
-              className="grid grid-cols-1 gap-4 @xl/shell-main-body:grid-cols-2 @4xl/shell-main-body:grid-cols-3"
+              className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,15rem),1fr))] gap-4"
             >
               {metrics.map((metric) => (
                 <Frame
