@@ -104,6 +104,107 @@ test("preview card frames do not scroll or take focus until activated", async ({
   await expect.poll(getFrameScroll).toBeGreaterThan(frameScroll);
 });
 
+test("preview card frames pass the wheel to the page over contained scroll areas", async ({
+  page,
+}) => {
+  // The example sidebar shows at this width.
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await gotoAndSettle(page, "/react/recipes/navigation/");
+  const iframe = page.locator('iframe[title="Sidebar Sections"]');
+  await iframe.scrollIntoViewIfNeeded();
+  const frame = iframe.contentFrame();
+  await expect(frame.locator("html")).toHaveAttribute(
+    "data-preview-hydrated",
+    "",
+  );
+  // The open section contains its overscroll, which would keep the wheel from
+  // the page even though its links fit.
+  const link = query(frame).link(/Combobox/);
+  await expect(link).toBeVisible();
+  const box = await link.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  const getPageScroll = () => page.evaluate(() => window.scrollY);
+  const pageScroll = await getPageScroll();
+  await page.mouse.wheel(0, 200);
+  await expect.poll(getPageScroll).toBeGreaterThan(pageScroll);
+});
+
+test("preview card frames scroll after a resize with the handle", async ({
+  page,
+  q,
+}) => {
+  // The card is wide enough to resize.
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await gotoAndSettle(page, "/react/recipes/combobox-group/");
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  await iframe.scrollIntoViewIfNeeded();
+  const frame = iframe.contentFrame();
+  const root = frame.locator("html");
+  await expect(root).toHaveAttribute("data-preview-hydrated", "");
+  // The frame scrolls to the popup that it opens before the card shows it.
+  await expect(iframe.locator("xpath=..")).toHaveAttribute(
+    "aria-busy",
+    "false",
+  );
+  const getPageScroll = () => page.evaluate(() => window.scrollY);
+  const getFrameScroll = () => root.evaluate((html) => html.scrollTop);
+  const handle = query(q.region("Combobox Group", { exact: true })).separator(
+    "Resize preview",
+  );
+
+  const handleBox = await handle.boundingBox();
+  expect(handleBox).not.toBeNull();
+  if (!handleBox) return;
+  const y = handleBox.y + handleBox.height / 2;
+  const startX = handleBox.x + handleBox.width / 2;
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  await page.mouse.move(startX - 100, y, { steps: 4 });
+  await page.mouse.up();
+  await expect(root).toHaveAttribute("data-preview-active", "");
+
+  const box = await iframe.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  // The corner of the frame is clear of the popup, which scrolls on its own.
+  await page.mouse.move(box.x + 8, box.y + 8);
+  const frameScroll = await getFrameScroll();
+  const pageScroll = await getPageScroll();
+  // WebKit applies the new root overflow to wheel scrolling on a later
+  // rendering update, which no page state reports.
+  await flushFrames(page);
+  // The frame starts scrolled down to its open popup.
+  expect(frameScroll).toBeGreaterThan(0);
+  await page.mouse.wheel(0, -200);
+  await expect.poll(getFrameScroll).toBeLessThan(frameScroll);
+  expect(await getPageScroll()).toBe(pageScroll);
+
+  // A click on the docs page makes the frame inactive again.
+  await q.heading("Combobox Group", { level: 1 }).click();
+  await expect(root).not.toHaveAttribute("data-preview-active", "");
+
+  // A key on the handle also counts as a resize.
+  await handle.press("ArrowRight");
+  await expect(root).toHaveAttribute("data-preview-active", "");
+
+  // A click in another preview frame sends no event to the docs page, but it
+  // also makes the frame inactive, even after a click in the frame itself.
+  const frameBox = await iframe.boundingBox();
+  expect(frameBox).not.toBeNull();
+  if (!frameBox) return;
+  await page.mouse.click(frameBox.x + 8, frameBox.y + 8);
+  await expect(root).toHaveAttribute("data-preview-active", "");
+  const otherFrame = page.locator('iframe[title="Custom Items"]');
+  await otherFrame.scrollIntoViewIfNeeded();
+  const otherBox = await otherFrame.boundingBox();
+  expect(otherBox).not.toBeNull();
+  if (!otherBox) return;
+  await page.mouse.click(otherBox.x + 8, otherBox.y + 8);
+  await expect(root).not.toHaveAttribute("data-preview-active", "");
+});
+
 test("preview cards show the popup of their example open", async ({
   page,
   q,

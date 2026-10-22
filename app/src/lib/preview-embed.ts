@@ -14,7 +14,7 @@ export const PREVIEW_MESSAGE_TYPE = "ariakit-preview";
 /** A command that a preview card sends to its preview frame. */
 export interface PreviewCommandMessage {
   type: typeof PREVIEW_MESSAGE_TYPE;
-  action: "sync" | "back" | "forward" | "reload";
+  action: "sync" | "back" | "forward" | "reload" | "activate" | "deactivate";
 }
 
 /**
@@ -83,7 +83,8 @@ export type PreviewFrameMessage = PreviewLocationMessage | PreviewScrollMessage;
  * - The page stays inactive until the person clicks or tabs into it. An
  *   inactive page does not scroll and ignores programmatic focus, so scrolling
  *   the docs page over a preview or hovering a component that moves focus on
- *   hover does not trap the docs page.
+ *   hover does not trap the docs page. The card also lets the page scroll while
+ *   the person resizes it, until they interact with the docs page.
  * - Interactions on the docs page do not close popups in the page. A page with
  *   `data-preview-open` on its root opens its popup once it hydrates, so the
  *   card presents the popup and not only its trigger.
@@ -106,13 +107,19 @@ export function setupPreviewEmbed() {
   // components move focus from those handlers.
   let pointerDown = false;
   const isActive = () => document.hasFocus() || pointerDown;
+  // A resize from the card lets the page scroll, but focus stays on the resize
+  // handle, so programmatic focus still waits for a person in the page.
+  let resized = false;
   const updateActive = () => {
-    root.toggleAttribute("data-preview-active", document.hasFocus());
+    root.toggleAttribute("data-preview-active", document.hasFocus() || resized);
   };
   updateActive();
   window.addEventListener("focus", updateActive);
+  // Once the page had focus, the person moved on from the resize, so focus
+  // decides again.
   window.addEventListener("blur", () => {
     pointerDown = false;
+    resized = false;
     updateActive();
   });
   // Only a person activates the page, not the click that opens its popup.
@@ -290,15 +297,19 @@ export function setupPreviewEmbed() {
 
   // The stylesheet stops the root scroller of an inactive page, so the browser
   // passes its wheel scrolling to the docs page. Inner scroll containers still
-  // scroll, so their wheel events go to the card instead.
+  // scroll, so their wheel events go to the card instead. A container with
+  // contained overscroll, such as an app shell sidebar, also keeps the wheel
+  // from the docs page when its content fits.
   const isScrollContainer = (element: Element) => {
     const style = getComputedStyle(element);
     const scrollsY =
       /auto|scroll/.test(style.overflowY) &&
-      element.scrollHeight > element.clientHeight;
+      (element.scrollHeight > element.clientHeight ||
+        style.overscrollBehaviorY !== "auto");
     const scrollsX =
       /auto|scroll/.test(style.overflowX) &&
-      element.scrollWidth > element.clientWidth;
+      (element.scrollWidth > element.clientWidth ||
+        style.overscrollBehaviorX !== "auto");
     return scrollsY || scrollsX;
   };
   const isInScrollContainer = (target: EventTarget | null) => {
@@ -495,6 +506,14 @@ export function setupPreviewEmbed() {
         break;
       case "reload":
         location.reload();
+        break;
+      case "activate":
+        resized = true;
+        updateActive();
+        break;
+      case "deactivate":
+        resized = false;
+        updateActive();
         break;
       case "theme":
         if ("theme" in data && data.theme && typeof data.theme === "object") {
