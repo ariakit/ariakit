@@ -14,7 +14,7 @@ export const shell = cv({
     // A single-axis clip around sticky chrome causes compositor jitter in
     // WebKit. The main intro and body own the horizontal clip instead.
     // https://bugs.webkit.org/show_bug.cgi?id=320439
-    "shell isolate grid @container/shell rounded-none!",
+    "shell shell-state isolate grid @container/shell rounded-none!",
     "min-h-[100cqb]",
     "grid-cols-[[shell-start]_auto_auto_[main-start]_minmax(0,1fr)_[main-end]_auto_auto_[shell-end]]",
     "grid-rows-[[shell-start_header-start]_auto_[header-end_main-start_main-header-start]_auto_[main-header-end_intro-start]_auto_[intro-end_body-start]_minmax(0,1fr)_[body-end_footer-start]_auto_[footer-end_shell-end]]",
