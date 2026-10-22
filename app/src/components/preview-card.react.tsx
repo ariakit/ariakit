@@ -50,6 +50,7 @@ import {
   isPreviewFrameMessage,
   PREVIEW_MESSAGE_TYPE,
 } from "#app/lib/preview-embed.ts";
+import { PREVIEW_FRAME_MARGIN } from "#app/lib/preview-frames.ts";
 
 // Chrome scrolls about 40 pixels for each line of a line-based wheel event.
 const WHEEL_LINE_HEIGHT = 40;
@@ -60,10 +61,6 @@ const MIN_VIEWPORT_WIDTH = 320;
 // Arrow keys resize the viewport by this many pixels, or ten times as many with
 // Shift.
 const RESIZE_STEP = 16;
-
-// A frame follows the card width again a little before it scrolls into view, so
-// its one catch-up layout happens offscreen.
-const OFFSCREEN_MARGIN = "200px";
 
 export interface PreviewCardProps {
   /**
@@ -360,9 +357,9 @@ function PreviewCardViewport({
   fullscreen,
 }: PreviewCardViewportProps) {
   const { ref, viewportRef, ready, setLoaded } = frame;
-  const offscreenWidth = useOffscreenFrameWidth(ref);
+  const near = useNearViewport(ref);
   return (
-    <PreviewCardStage measuring={offscreenWidth == null}>
+    <PreviewCardStage measuring={near}>
       {({ viewportId, resizing }) => (
         <Frame
           ref={viewportRef}
@@ -377,14 +374,22 @@ function PreviewCardViewport({
             aria-busy={!ready}
             className="group/preview grid grid-cols-1 *:[grid-area:1/1]"
           >
+            {/* The page script in preview-card.astro sets the width of the frame,
+                often before the card hydrates. React renders no style here, so
+                the style attribute is not a mismatch. */}
             <iframe
               ref={ref}
+              suppressHydrationWarning
+              data-preview-frame
               src={href}
               title={title}
               loading="lazy"
               onLoad={() => setLoaded(true)}
               className={[
                 "block w-full border-0 bg-transparent transition-opacity",
+                // The Ariakit UI spacing scale follows the font size, so the
+                // heights are in rem.
+                fullscreen ? "h-[40rem]" : "h-[25rem]",
                 "group-data-loading/preview:opacity-0",
                 // Without scripts, nothing reports the load, so the frame shows
                 // right away.
@@ -393,10 +398,6 @@ function PreviewCardViewport({
                 // drag moves over it.
                 resizing ? "pointer-events-none" : "",
               ].join(" ")}
-              style={{
-                height: fullscreen ? "40rem" : "25rem",
-                width: offscreenWidth ?? undefined,
-              }}
             />
             <div
               aria-hidden
@@ -421,20 +422,24 @@ function PreviewCardViewport({
  */
 function PreviewCardLoader() {
   return (
-    <svg
-      viewBox="0 0 40 40"
-      className="ak-text ak-text-primary size-10 fill-current motion-reduce:animate-pulse"
-    >
-      <path
-        fillRule="evenodd"
-        d="M8 0C3.58172 0 0 3.58172 0 8V32C0 36.4183 3.58172 40 8 40H32C36.4183 40 40 36.4183 40 32V8C40 3.58172 36.4183 0 32 0H8ZM19.9998 31.9997C26.6272 31.9997 31.9998 26.6271 31.9998 19.9997C31.9998 13.3723 26.6272 7.99967 19.9998 7.99967C13.3723 7.99967 7.99976 13.3723 7.99976 19.9997C7.99976 26.6271 13.3723 31.9997 19.9998 31.9997Z"
-      />
-      {/* The dot rests 4 units off the center of the ring, so turning the
-          group around the center moves it in a circle inside the ring. */}
-      <g className="origin-center transform-view motion-safe:animate-[spin_1.4s_cubic-bezier(0.65,0,0.35,1)_infinite]">
+    <span className="ak-text ak-text-primary relative size-10 motion-reduce:animate-pulse">
+      <svg viewBox="0 0 40 40" className="size-full fill-current">
+        <path
+          fillRule="evenodd"
+          d="M8 0C3.58172 0 0 3.58172 0 8V32C0 36.4183 3.58172 40 8 40H32C36.4183 40 40 36.4183 40 32V8C40 3.58172 36.4183 0 32 0H8ZM19.9998 31.9997C26.6272 31.9997 31.9998 26.6271 31.9998 19.9997C31.9998 13.3723 26.6272 7.99967 19.9998 7.99967C13.3723 7.99967 7.99976 13.3723 7.99976 19.9997C7.99976 26.6271 13.3723 31.9997 19.9998 31.9997Z"
+        />
+      </svg>
+      {/* The dot rests 4 units off the center of the ring, so turning its own
+          svg around the center moves it in a circle inside the ring. Safari
+          runs the animation of a group inside an svg on the main thread, even
+          offscreen, and Chrome lays out the svg again on each frame. */}
+      <svg
+        viewBox="0 0 40 40"
+        className="absolute inset-0 size-full fill-current motion-safe:animate-[spin_1.4s_cubic-bezier(0.65,0,0.35,1)_infinite]"
+      >
         <circle cx="24" cy="20" r="6" />
-      </g>
-    </svg>
+      </svg>
+    </span>
   );
 }
 
@@ -511,6 +516,7 @@ function PreviewCardStage({
   return (
     <div
       ref={stageRef}
+      data-preview-stage
       // The rows pass a limited window height down to the viewport.
       className="grid grid-cols-1 grid-rows-[minmax(0,1fr)]"
     >
@@ -519,40 +525,35 @@ function PreviewCardStage({
         style={resize.width == null ? undefined : { width: resize.width }}
       >
         {children({ viewportId, resizing: resize.resizing })}
-        {resize.enabled && (
-          <PreviewCardResizeHandle resize={resize} viewportId={viewportId} />
-        )}
+        <PreviewCardResizeHandle resize={resize} viewportId={viewportId} />
       </div>
     </div>
   );
 }
 
 /**
- * Returns the width that an offscreen preview frame keeps until it comes near
- * the viewport, or `null` while it follows the card. Each frame lays out a full
- * page, and the browser keeps laying out offscreen frames. Without this, every
- * frame on the page would lay out again on each step of a sidebar animation or
- * a window resize.
+ * Returns whether the element is near the viewport, with the same margin that
+ * the page script uses to fix the width of offscreen preview frames.
  */
-function useOffscreenFrameWidth(ref: RefObject<HTMLIFrameElement | null>) {
-  const [width, setWidth] = useState<number | null>(null);
+function useNearViewport(ref: RefObject<Element | null>) {
+  const [near, setNear] = useState(true);
 
   useEffect(() => {
-    const iframe = ref.current;
-    if (!iframe) return;
+    const element = ref.current;
+    if (!element) return;
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries.at(-1);
         if (!entry) return;
-        setWidth(entry.isIntersecting ? null : entry.boundingClientRect.width);
+        setNear(entry.isIntersecting);
       },
-      { rootMargin: OFFSCREEN_MARGIN },
+      { rootMargin: PREVIEW_FRAME_MARGIN },
     );
-    observer.observe(iframe);
+    observer.observe(element);
     return () => observer.disconnect();
   }, [ref]);
 
-  return width;
+  return near;
 }
 
 type PreviewResize = ReturnType<typeof usePreviewResize>;
@@ -686,6 +687,7 @@ function PreviewCardResizeHandle({
       aria-valuemax={maxWidth}
       aria-valuenow={currentWidth}
       aria-valuetext={`${currentWidth} pixels wide`}
+      data-enabled={resize.enabled || undefined}
       data-resizing={resize.resizing || undefined}
       onKeyDown={onKeyDown}
       onPointerDown={resize.startDrag}
@@ -700,6 +702,10 @@ function PreviewCardResizeHandle({
         // scrollbar at the end edge of the frame.
         "group/resize absolute inset-y-0 -inset-e-2.75 z-1 grid w-4 place-items-center",
         "cursor-ew-resize touch-none outline-none",
+        // The handle renders from the start and shows once the card has room
+        // to resize. Inserting it later would match broad :has() rules of the
+        // page shell, which restyles the whole page as each card hydrates.
+        "not-data-enabled:hidden",
         // A card that shares a row in a preview grid keeps its width, even
         // when a narrow grid stacks the cards.
         "[.preview-grid>:not(.col-span-full)_&]:hidden!",

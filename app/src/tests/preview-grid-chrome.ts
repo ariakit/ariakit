@@ -17,7 +17,11 @@ test("preview grid cards of similar heights line up", async ({ page, q }) => {
     locator.evaluate((element) => element.getBoundingClientRect().height);
   const settings = q.region("Settings Form", { exact: true });
   const article = q.region("Article", { exact: true });
+  // Cards hydrate when they scroll into view. Each of these cards shares its
+  // row with a card that the test measures too.
+  await settings.scrollIntoViewIfNeeded();
   await expect(query(settings).status()).toHaveText("Account loaded");
+  await article.scrollIntoViewIfNeeded();
   await expect(query(article).status()).toHaveText("Article loaded");
 
   // The settings card is a little shorter than the feed card, so it grows to
