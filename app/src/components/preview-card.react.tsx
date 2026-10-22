@@ -193,7 +193,9 @@ export function PreviewCard({
               frame={frame}
               title={title}
               href={href}
-              fullscreen={fullscreen}
+              // Browser chrome frames a page that navigates between routes, so
+              // it gets the same full page height as fullscreen previews.
+              fullscreen={fullscreen || browser}
             />
           )}
         </Frame>
