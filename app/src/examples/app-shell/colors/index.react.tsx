@@ -215,7 +215,7 @@ export default function Example() {
 
           <ShellMainBody>
             <Frame $layer $rounded="xl" $p={2} $border>
-              <ol>
+              <ol className="@container/tracks">
                 {tracks.map((item, index) => (
                   <li key={item.title}>
                     <Button
@@ -226,13 +226,13 @@ export default function Example() {
                         setCurrentIndex(index);
                         setIsPlaying(true);
                       }}
-                      className="grid w-full grid-cols-[2rem_1fr_auto] items-center gap-x-3 rounded-lg px-3 py-2.5 text-left data-[current]:font-semibold @xl/shell-main-body:grid-cols-[2rem_1fr_1fr_auto]"
+                      className="grid w-full grid-cols-[2rem_1fr_auto] items-center gap-x-3 rounded-lg px-3 py-2.5 text-left data-[current]:font-semibold @lg/tracks:grid-cols-[2rem_1fr_1fr_auto]"
                     >
                       <span className="ak-ink-70 tabular-nums">
                         {index + 1}
                       </span>
                       <span className="min-w-0 truncate">{item.title}</span>
-                      <span className="ak-ink-70 hidden truncate @xl/shell-main-body:block">
+                      <span className="ak-ink-70 hidden truncate @lg/tracks:block">
                         {item.artist}
                       </span>
                       <span className="ak-ink-70 tabular-nums">

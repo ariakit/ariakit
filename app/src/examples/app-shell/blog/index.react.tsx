@@ -119,7 +119,9 @@ export default function Example() {
             <Prose className={readingMode ? "text-lg leading-8" : undefined}>
               <Heading id="keep-reading">Keep reading</Heading>
             </Prose>
-            <div className="grid gap-4 @2xl/shell-main-body:grid-cols-2">
+            {/* Two posts fit side by side only when the 40rem column has its
+                full width. */}
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,19.5rem),1fr))] gap-4">
               {relatedPosts.map((post) => (
                 <Frame key={post.title} $rounded="xl" $p={4} $border>
                   <p className="ak-ink-70 text-sm">

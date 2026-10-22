@@ -275,11 +275,12 @@ export interface ShellMainBodyProps
   extends ak.RoleProps<"div">, VariantProps<typeof shellMainBody> {}
 
 /**
- * The main content grid. The `shell-main-body` query container follows the
- * available body width. Direct element children use the centered content
- * column. Use `ShellMainPopout`, `ShellMainFeature`, or `ShellMainFull` as a
- * direct child to select a wider span. Children are grid items; use `Prose` for
- * text with collapsing margins.
+ * The main content grid. Direct element children use the centered content
+ * column. Content that adapts to its width can declare its own query container,
+ * so a sidebar fold restyles only that content in WebKit. Use
+ * `ShellMainPopout`, `ShellMainFeature`, or `ShellMainFull` as a direct child
+ * to select a wider span. Children are grid items; use `Prose` for text with
+ * collapsing margins.
  *
  * Fragment links clear the configured sticky headers. For keyboard focus, also
  * set scroll padding on the page's scroll port to their total height, for

@@ -106,3 +106,19 @@ test("Next.js preview cards show the loading state while their frame reloads", a
   release(undefined);
   await expect(viewport).toHaveAttribute("aria-busy", "false");
 });
+
+// Only browser chrome queries the width of its bar, so the address keeps the
+// room of the code label in a narrow card.
+test("Next.js preview cards hide the code label in narrow browser chrome", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/examples/tab-nextjs/");
+  const card = query(q.region("Tab with Next.js App Router"));
+  const label = query(card.button("Get code")).text("Get code");
+  const getLabelWidth = async () => (await label.boundingBox())?.width;
+  await expect.poll(getLabelWidth).toBeGreaterThan(1);
+  // A phone viewport makes the bar narrower than the 32rem query.
+  await page.setViewportSize({ width: 480, height: 800 });
+  await expect.poll(getLabelWidth).toBeLessThanOrEqual(1);
+});

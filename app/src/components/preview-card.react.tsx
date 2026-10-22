@@ -136,7 +136,13 @@ export function PreviewCard({
             $cover
             // Slightly more than the card padding, to suit the rounder corners.
             $p={2}
-            className="@container/bar flex items-center gap-2 text-sm"
+            className={[
+              "flex items-center gap-2 text-sm",
+              // Only browser chrome queries the bar width, for the label below.
+              // WebKit restyles everything inside query containers that change
+              // size on each step of a sidebar fold, which adds up across cards.
+              browser ? "@container/bar" : "",
+            ].join(" ")}
           >
             <TextFrame
               id={headingId}

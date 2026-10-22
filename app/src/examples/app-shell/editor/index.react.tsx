@@ -254,22 +254,24 @@ export default function Example() {
                 <div
                   className={`aspect-[16/7] rounded-lg bg-[linear-gradient(135deg,#fde68a,#fb923c)] ${outlineClass("image")}`}
                 />
-                <div
-                  className={`grid gap-4 rounded-lg @2xl/shell-main-body:grid-cols-3 ${outlineClass("features")}`}
-                >
-                  {featureCards.map((card) => (
-                    <Frame
-                      key={card.title}
-                      $layer="canvas"
-                      $rounded="lg"
-                      $border
-                      $p={4}
-                      className="grid gap-1"
-                    >
-                      <span className="font-medium">{card.title}</span>
-                      <span className="text-sm ak-ink-70">{card.text}</span>
-                    </Frame>
-                  ))}
+                <div className="@container/features">
+                  <div
+                    className={`grid gap-4 rounded-lg @xl/features:grid-cols-3 ${outlineClass("features")}`}
+                  >
+                    {featureCards.map((card) => (
+                      <Frame
+                        key={card.title}
+                        $layer="canvas"
+                        $rounded="lg"
+                        $border
+                        $p={4}
+                        className="grid gap-1"
+                      >
+                        <span className="font-medium">{card.title}</span>
+                        <span className="text-sm ak-ink-70">{card.text}</span>
+                      </Frame>
+                    ))}
+                  </div>
                 </div>
               </Frame>
             </ShellMainContent>

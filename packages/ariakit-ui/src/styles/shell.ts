@@ -349,7 +349,7 @@ export const shellSidebar = cv({
     // Keep the panel's offset while its own column closes or collapses.
     "[&.shell-sidebar-end]:[--shell-sidebar-head:calc(var(--shell-main-head)*(1-var(--shell-end-1-from-main)))]",
     "[.shell-sidebar-end~&.shell-sidebar-end]:[--shell-sidebar-head:calc(var(--shell-main-head)*var(--shell-header-free-1)*(1-var(--shell-end-2-from-main)))]",
-    "shell-sidebar flex flex-col box-border @container/shell-sidebar rounded-none!",
+    "shell-sidebar flex flex-col box-border rounded-none!",
     "z-2 w-(--shell-slot-width) overflow-clip",
     "[&:not(:has(>.shell-sidebar-panel[data-open]))]:w-0",
     "[&>.shell-sidebar-panel:not([data-open])]:hidden",
@@ -499,6 +499,10 @@ export const shellSidebarPanel = cv({
   extend: [seam],
   class: [
     "shell-sidebar-panel box-border w-(--shell-slot-width) min-h-0 flex-auto flex flex-col",
+    // The panel keeps its width while the column folds, so its queries hold
+    // their results. WebKit restyles everything inside query containers that
+    // change size, and lays out the page again, on each step of the fold.
+    "@container/shell-sidebar",
     // Supporting browsers defer removal until the fold ends. Others hide at once.
     "transition-[display] transition-discrete duration-(--shell-time)",
     // End alignment keeps an overflowing panel against its facing edge while
@@ -778,7 +782,7 @@ export const shellMainIntro = cv({
   extend: [frameBase],
   class: [
     content,
-    "shell-main-intro content-start col-start-1 col-end-[calc(2+var(--shell-intro-free-1)+var(--shell-intro-free-1)*var(--shell-intro-free-2))] row-[intro] @container/shell-main-intro overflow-x-clip",
+    "shell-main-intro content-start col-start-1 col-end-[calc(2+var(--shell-intro-free-1)+var(--shell-intro-free-1)*var(--shell-intro-free-2))] row-[intro] overflow-x-clip",
     "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-intro-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-intro-free-1)*var(--shell-intro-free-2))]",
     // Separate the title from the bars above.
     "pbs-[calc(var(--shell-gutter)*3)]",
@@ -792,7 +796,7 @@ export const shellMainBody = cv({
   extend: [frameBase],
   class: [
     content,
-    "shell-main-body content-start col-[main] row-[body] @container/shell-main-body overflow-x-clip",
+    "shell-main-body content-start col-[main] row-[body] overflow-x-clip",
     "[--shell-content-end-space:0px]",
   ],
   variants: contentVariants,
