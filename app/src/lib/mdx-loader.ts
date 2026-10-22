@@ -44,8 +44,8 @@ interface WatchFrameworkEntryFilesParams {
 const PREVIEW_METADATA_FILE = "preview.json";
 
 /**
- * Checks whether a file decides the frameworks of an example: its entry files,
- * or the metadata that lists them.
+ * Checks whether a file decides the frameworks of a page: its entry files, or
+ * the metadata that lists them.
  */
 function isFrameworkSourceFile(filename: string) {
   if (filename === PREVIEW_METADATA_FILE) return true;
@@ -85,7 +85,7 @@ function watchFrameworkEntryFiles({
   context.watcher.on("add", queueReload);
   context.watcher.on("unlink", queueReload);
   // Editing an entry file keeps its framework, but editing preview.json can
-  // change the frameworks of an example without entry files.
+  // change the frameworks of a page without entry files.
   context.watcher.on("change", (file) => {
     if (basename(file) !== PREVIEW_METADATA_FILE) return;
     queueReload(file);
@@ -135,11 +135,11 @@ function withInferredFrameworks({
   } satisfies Loader;
 }
 
-export const exampleLoader = Object.assign(
-  function exampleLoader(options: MdxLoaderOptions) {
+export const recipeLoader = Object.assign(
+  function recipeLoader(options: MdxLoaderOptions) {
     return withInferredFrameworks({
       ...options,
-      name: "ariakit-example-loader",
+      name: "ariakit-recipe-loader",
       pattern: "*/index.mdx",
     });
   },
@@ -151,12 +151,7 @@ export const componentLoader = Object.assign(
     return withInferredFrameworks({
       ...options,
       name: "ariakit-component-loader",
-      pattern: "*/_component/index.mdx",
-      generateId(options) {
-        const [id] = options.entry.split("/");
-        invariant(id, "Component must have an id");
-        return id;
-      },
+      pattern: "*/index.mdx",
     });
   },
   { schema: withInferredFrameworksSchema },

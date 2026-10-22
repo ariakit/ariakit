@@ -11,12 +11,12 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { expect, test } from "vitest";
-import separator from "#app/examples/separator/_component/index.react.tsx?source";
+import separator from "#app/component-docs/separator/index.react.tsx?source";
 import type { Source } from "./source.ts";
 import { sourcePlugin } from "./source.ts";
 
 const APP_SRC_DIR = join(import.meta.dirname, "../");
-const EXAMPLES_DIR = join(APP_SRC_DIR, "examples/");
+const COMPONENT_DOCS_DIR = join(APP_SRC_DIR, "component-docs/");
 
 async function loadSourceFile(file: string, aliasRoot = APP_SRC_DIR) {
   const plugin = sourcePlugin();
@@ -46,9 +46,9 @@ async function loadSourceFile(file: string, aliasRoot = APP_SRC_DIR) {
 }
 
 test("collects separator source and dependencies", async () => {
-  const entry = join(EXAMPLES_DIR, "separator/_component/index.react.tsx");
+  const entry = join(COMPONENT_DOCS_DIR, "separator/index.react.tsx");
 
-  expect(separator.name).toBe("separator/_component");
+  expect(separator.name).toBe("components/separator");
   expect(Object.keys(separator.dependencies)).toEqual([
     "react",
     "react-dom",

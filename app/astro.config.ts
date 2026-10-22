@@ -18,6 +18,7 @@ import { defineConfig } from "astro/config";
 import { Features } from "lightningcss";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { previewConfig } from "./src/lib/preview-config.ts";
+import { resolvePreviewRoots } from "./src/lib/preview-discovery.ts";
 import { previewIntegration } from "./src/lib/preview-integration.ts";
 import { sourcePlugin } from "./src/lib/source.ts";
 
@@ -76,7 +77,12 @@ export default defineConfig({
     },
     plugins: [
       tailwindcss(),
-      sourcePlugin(join(import.meta.dirname, "src/examples/")),
+      sourcePlugin(
+        resolvePreviewRoots({
+          ...previewConfig,
+          srcDir: join(import.meta.dirname, "src"),
+        }),
+      ),
     ],
     // TODO: Remove this workaround once withastro/astro#17166 is fixed.
     // Pre-optimize bare SSR imports so the Cloudflare adapter cannot reload

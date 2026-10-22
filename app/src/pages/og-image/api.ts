@@ -13,7 +13,7 @@ import { uniq } from "#app/lib/array.ts";
 import { getGuideDetail } from "#app/lib/content.ts";
 import { getOGImageItemKey, getOGImagePath } from "#app/lib/og-image.ts";
 
-const types = ["pages", "examples", "components", "styles"] as const;
+const types = ["pages", "recipes", "components", "styles"] as const;
 
 export interface OGImageItem {
   type: (typeof types)[number];
@@ -57,8 +57,8 @@ export async function getOGImageItem({
 
 async function computeOGImageItems(): Promise<OGImageItem[]> {
   const components = await getCollection("components");
-  const examples = await getCollection("examples");
-  const entries = [...components, ...examples];
+  const recipes = await getCollection("recipes");
+  const entries = [...components, ...recipes];
   const items = entries.flatMap((entry) => {
     const type = entry.collection;
     const frameworks = entry.data.frameworks;
@@ -88,16 +88,16 @@ async function computeOGImageItems(): Promise<OGImageItem[]> {
     } as const;
   });
 
-  const exampleIndexes = uniq(
+  const recipeIndexes = uniq(
     items
-      .filter((item) => item.type === "examples")
+      .filter((item) => item.type === "recipes")
       .flatMap((item) => item.framework),
   ).map((framework) => {
-    const path = "/examples";
+    const path = "/recipes";
     return {
       path: `/${framework}${path}`,
       imagePath: getOGImagePath(`/${framework}${path}`),
-      type: "examples",
+      type: "recipes",
       framework,
     } as const;
   });
@@ -133,7 +133,7 @@ async function computeOGImageItems(): Promise<OGImageItem[]> {
   return [
     ...items,
     ...guidePages,
-    ...exampleIndexes,
+    ...recipeIndexes,
     ...componentIndexes,
     ...genericPages,
   ];

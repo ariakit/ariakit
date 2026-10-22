@@ -7,11 +7,10 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { dirname, isAbsolute, join, relative, resolve } from "node:path";
+import { dirname, isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { AstroConfig, AstroIntegration } from "astro";
 import type { Plugin } from "vite";
-import { isInDirectory, toPosixPath } from "./path.ts";
 import {
   getPreviewFile,
   setPreviewCodegenDir,
@@ -19,6 +18,7 @@ import {
 } from "./preview-codegen.ts";
 import {
   discoverPreviews,
+  getPreviewIdFromDir,
   resolvePreviewRoots,
   shouldRegeneratePreview,
 } from "./preview-discovery.ts";
@@ -58,13 +58,7 @@ function getPreviewImportId(file: string, params: PreviewIntegrationParams) {
     srcDir: params.config.srcDir,
     ...params.options,
   });
-  for (const root of roots) {
-    if (!isInDirectory(file, root.dir)) continue;
-    const id = toPosixPath(relative(root.dir, dirname(file)));
-    if (!id) return;
-    return id;
-  }
-  return;
+  return getPreviewIdFromDir(roots, dirname(file));
 }
 
 export function resolvePreviewImport(

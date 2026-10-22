@@ -192,18 +192,18 @@ test("regenerates previews only for structural files", async () => {
 
   expect(
     shouldRegeneratePreview(
-      join(srcDir, "examples/menu/index.react.tsx"),
+      join(srcDir, "recipes/menu/index.react.tsx"),
       roots,
     ),
   ).toBe(true);
   expect(
-    shouldRegeneratePreview(join(srcDir, "examples/menu/preview.json"), roots),
+    shouldRegeneratePreview(join(srcDir, "recipes/menu/preview.json"), roots),
   ).toBe(true);
   expect(
-    shouldRegeneratePreview(join(srcDir, "examples/menu/style.css"), roots),
+    shouldRegeneratePreview(join(srcDir, "recipes/menu/style.css"), roots),
   ).toBe(false);
   expect(
-    shouldRegeneratePreview(join(srcDir, "examples/menu/index.ts"), roots),
+    shouldRegeneratePreview(join(srcDir, "recipes/menu/index.ts"), roots),
   ).toBe(false);
   expect(
     shouldRegeneratePreview(
@@ -217,7 +217,7 @@ test("resolves preview imports with windows separators", async () => {
   const dir = await createDir();
   const srcDir = join(dir, "src");
   const codegenDir = join(dir, "codegen");
-  const importer = join(srcDir, "examples/menu/index.mdx");
+  const importer = join(srcDir, "recipes/menu/index.mdx");
 
   const file = resolvePreviewImport(".\\preview.astro?source", importer, {
     codegenDir,

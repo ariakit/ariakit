@@ -124,7 +124,7 @@ Sources: `app/src/components/markdown.astro`, `app/src/components/content-compon
 ### Content rendering
 
 - Render Markdown supplied as text for generated descriptions and reference content.
-- Render MDX files for guides, component pages, and example pages.
+- Render MDX files for guides, component pages, and recipe pages.
 - Preserve native semantics for headings, paragraphs, lists, links, separators, inline code, keyboard keys, fenced code, admonitions, and disclosures.
 - Apply a shared content-component mapping where Markdown produces the elements.
 - Keep explicit MDX component imports supported. They do not use the same mapping path as Markdown-generated elements.
@@ -358,7 +358,7 @@ Existing tests cover project compiler settings, framework entry generation, depe
 
 ## Tags
 
-Sources: `app/src/lib/tags.ts` and the collection, example, and component pages.
+Sources: `app/src/lib/tags.ts` and the collection, recipe, and component pages.
 
 - Separate a stable tag ID from its display label.
 - Allow framework restrictions.

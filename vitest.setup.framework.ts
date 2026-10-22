@@ -3,7 +3,7 @@ import { beforeEach } from "vitest";
 type Framework = "react" | "solid";
 
 // Keep the path opaque so Vite's dynamic import vars transform does not rewrite
-// nested example paths into an unsupported one-level glob.
+// nested preview paths into an unsupported one-level glob.
 async function importDefault(path: string) {
   const { default: component } = await import(path);
   return component;
@@ -61,7 +61,7 @@ const LOADERS = {
 function parseTest(filename?: string) {
   if (!filename) return false;
   const match = filename.match(
-    /^(?<dir>(?:.*\/)?(?:examples|sandbox)\/.+?)\/((?<framework>react|solid)\.)?test\.ts$/,
+    /^(?<dir>(?:.*\/)?(?:recipes|component-docs|sandbox)\/.+?)\/((?<framework>react|solid)\.)?test\.ts$/,
   );
   if (!match?.groups) return false;
   const { dir, framework } = match.groups;

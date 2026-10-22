@@ -13,14 +13,14 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { defineCollection, reference } from "astro:content";
 import { jsdoc } from "./lib/jsdoc-loader.ts";
-import { componentLoader, exampleLoader } from "./lib/mdx-loader.ts";
+import { componentLoader, recipeLoader } from "./lib/mdx-loader.ts";
 import { PreviewKindSchema, previewConfig } from "./lib/preview-config.ts";
 import { previewLoader } from "./lib/preview-discovery.ts";
 
-function generateExampleId(options: { entry: string }) {
-  return options.entry
-    .replace(/\/[^/]+\.mdx?$/, "")
-    .replace(/^(?:examples|sandbox)\//, "");
+// Recipes and component docs share these collections, so the id keeps the
+// content directory, as in recipes/navigation or component-docs/separator.
+function generateContentId(options: { entry: string }) {
+  return options.entry.replace(/\/[^/]+\.mdx?$/, "");
 }
 
 const guides = defineCollection({
@@ -43,7 +43,7 @@ const guides = defineCollection({
 
 const components = defineCollection({
   loader: componentLoader({
-    base: join(import.meta.dirname, "examples"),
+    base: join(import.meta.dirname, "component-docs"),
   }),
   schema: componentLoader.schema(
     z.object({
@@ -52,11 +52,11 @@ const components = defineCollection({
   ),
 });
 
-const examples = defineCollection({
-  loader: exampleLoader({
-    base: join(import.meta.dirname, "examples"),
+const recipes = defineCollection({
+  loader: recipeLoader({
+    base: join(import.meta.dirname, "recipes"),
   }),
-  schema: exampleLoader.schema(
+  schema: recipeLoader.schema(
     z.object({
       title: z.string(),
       components: z.array(reference("components")).default([]),
@@ -66,17 +66,17 @@ const examples = defineCollection({
 
 const descriptions = defineCollection({
   loader: glob({
-    pattern: "**/description.mdx",
-    base: join(import.meta.dirname, "examples"),
-    generateId: generateExampleId,
+    pattern: "{recipes,component-docs}/*/description.mdx",
+    base: import.meta.dirname,
+    generateId: generateContentId,
   }),
 });
 
 const galleries = defineCollection({
   loader: glob({
-    pattern: "**/gallery.mdx",
-    base: join(import.meta.dirname, "examples"),
-    generateId: generateExampleId,
+    pattern: "{recipes,component-docs}/*/gallery.mdx",
+    base: import.meta.dirname,
+    generateId: generateContentId,
   }),
 });
 
@@ -111,7 +111,7 @@ const references = defineCollection({
 export const collections = {
   guides,
   components,
-  examples,
+  recipes,
   descriptions,
   galleries,
   previews,

@@ -13,11 +13,13 @@ import type {
   PreviewRootOptions,
 } from "./preview-discovery.ts";
 
-export const EXAMPLES_PREVIEW_KIND = "examples";
+export const RECIPES_PREVIEW_KIND = "recipes";
+export const COMPONENTS_PREVIEW_KIND = "components";
 export const SANDBOX_PREVIEW_KIND = "sandbox";
 
 export const PREVIEW_KINDS = [
-  EXAMPLES_PREVIEW_KIND,
+  RECIPES_PREVIEW_KIND,
+  COMPONENTS_PREVIEW_KIND,
   SANDBOX_PREVIEW_KIND,
 ] as const;
 
@@ -36,9 +38,16 @@ interface PreviewConfig extends PreviewDiscoveryOptions {
 export const previewConfig = {
   roots: [
     {
-      kind: EXAMPLES_PREVIEW_KIND,
-      dir: "examples",
+      kind: RECIPES_PREVIEW_KIND,
+      dir: "recipes",
       metadataRequired: true,
+    },
+    {
+      kind: COMPONENTS_PREVIEW_KIND,
+      dir: "component-docs",
+      metadataRequired: true,
+      // Component pages and recipes can share a slug, such as skeleton.
+      idPrefix: "components",
     },
     {
       kind: SANDBOX_PREVIEW_KIND,
@@ -47,3 +56,9 @@ export const previewConfig = {
     },
   ],
 } satisfies PreviewConfig;
+
+/** Returns the segment that starts the preview ids of a kind, if any. */
+export function getPreviewIdPrefix(kind: PreviewKind) {
+  const roots: PreviewConfigRoot[] = previewConfig.roots;
+  return roots.find((root) => root.kind === kind)?.idPrefix;
+}

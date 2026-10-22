@@ -17,24 +17,33 @@ import { renderToStaticMarkup } from "react-dom/server";
  */
 export type ThumbnailSize = "large" | "small";
 
+/** A page entry with a thumbnail, such as a recipe or a component. */
+export interface ThumbnailEntry {
+  id: string;
+  collection: "recipes" | "components";
+}
+
 /**
- * Imports the thumbnail of an example. The default export of its
- * `thumbnail.react.tsx` file is the large thumbnail, and `SmallThumbnail` is
- * the small one. Large scenes do not fit a slot, so a file without a small
+ * Imports the thumbnail of a recipe or a component page. The default export of
+ * its `thumbnail.react.tsx` file is the large thumbnail, and `SmallThumbnail`
+ * is the small one. Large scenes do not fit a slot, so a file without a small
  * thumbnail returns nothing for the small size.
  */
 export async function importThumbnail(
-  name?: string,
+  entry: ThumbnailEntry,
   size: ThumbnailSize = "large",
 ) {
-  if (!name) return;
-  const example = name.split("/").shift();
   try {
-    const module = await import(`../examples/${example}/thumbnail.react.tsx`);
+    // Vite resolves dynamic imports only from static path templates, so each
+    // content directory needs its own import.
+    const module =
+      entry.collection === "recipes"
+        ? await import(`../recipes/${entry.id}/thumbnail.react.tsx`)
+        : await import(`../component-docs/${entry.id}/thumbnail.react.tsx`);
     const Thumbnail = size === "small" ? module.SmallThumbnail : module.default;
     return Thumbnail as ComponentType | undefined;
   } catch (_error) {
-    console.log(`Missing thumbnail for ${name}`);
+    console.log(`Missing thumbnail for ${entry.collection}/${entry.id}`);
     return;
   }
 }
@@ -46,15 +55,14 @@ export async function importThumbnail(
 const thumbnailCache = new Map<string, string | undefined>();
 
 export async function renderThumbnail(
-  name?: string,
+  entry: ThumbnailEntry,
   size: ThumbnailSize = "large",
 ) {
-  if (!name) return;
-  const cacheKey = size + ":" + name;
+  const cacheKey = `${size}:${entry.collection}/${entry.id}`;
   if (import.meta.env.PROD && thumbnailCache.has(cacheKey)) {
     return thumbnailCache.get(cacheKey);
   }
-  const Thumbnail = await importThumbnail(name, size);
+  const Thumbnail = await importThumbnail(entry, size);
   const html = Thumbnail
     ? renderToStaticMarkup(createElement(Thumbnail))
     : undefined;

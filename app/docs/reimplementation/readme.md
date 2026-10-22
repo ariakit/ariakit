@@ -21,9 +21,9 @@ The local archive reference keeps the fetched history available after Git garbag
 
 ## Retained scaffold
 
-Keep all sandboxes, icons, guides, the Ariakit UI sandbox, preview generation and hydration, API routes, reference partials, and OG image routes. The remaining app samples are Separator for React and Solid, Combobox Group for React, and its Custom Items variant. The legacy `website`, root `examples`, and `nextjs` fixtures remain separate from this app cleanup.
+Keep all sandboxes, icons, guides, the Ariakit UI sandbox, preview generation and hydration, API routes, reference partials, and OG image routes. The remaining app content is the Separator component page for React and Solid, and the Combobox Group recipe for React with its Custom Items example. The legacy `website`, root `examples`, and `nextjs` fixtures remain separate from this app cleanup.
 
-Collection, component, example, and guide pages retain content loading and basic navigation. The layout has no site design. Reference output uses plain text, code, and links. Sample output shows the preview and expandable source files. Code highlighting, reference hovercards, online editing, tag navigation, and the account UI can be implemented later from these handoffs.
+Collection, component, recipe, and guide pages retain content loading and basic navigation. The layout has no site design. Reference output uses plain text, code, and links. Each example shows the preview and expandable source files. Code highlighting, reference hovercards, online editing, tag navigation, and the account UI can be implemented later from these handoffs.
 
 Guides keep their existing links, including links to removed app pages, for the later site rewrite. Do not treat those links as proof that a route remains available.
 

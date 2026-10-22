@@ -12,7 +12,7 @@ import { trim } from "./string.ts";
 
 export interface GetPageOGImagePathParams {
   id?: string;
-  type?: "pages" | "examples" | "components" | "styles";
+  type?: "pages" | "recipes" | "components" | "styles";
   framework?: Framework;
   pagePath?: string;
 }
@@ -34,7 +34,7 @@ export function getPageOGImagePath({
   if (type === "pages") {
     return getOGImagePath("/default");
   }
-  if (type !== "components" && type !== "examples") {
+  if (type !== "components" && type !== "recipes") {
     return getOGImagePath("/default");
   }
   if (!framework) {
@@ -51,7 +51,7 @@ export function getPageOGImagePath({
 
 export interface GetOGImageItemKeyParams {
   id?: string;
-  type?: "pages" | "examples" | "components" | "styles";
+  type?: "pages" | "recipes" | "components" | "styles";
   framework?: Framework;
 }
 

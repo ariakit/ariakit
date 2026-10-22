@@ -1,6 +1,6 @@
-# Ariakit Examples License
+# Ariakit Component Pages License
 
-This directory contains examples for Ariakit. Most are under the [MIT License](#mit-license), with exceptions noted in the [Note on Ariakit Plus Examples](#note-on-ariakit-plus-examples) section.
+This directory contains the Ariakit component pages and their examples. They are under the [MIT License](#mit-license).
 
 ## MIT License
 
@@ -23,9 +23,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-## Note on Ariakit Plus Examples
-
-Please note that while the examples in this directory are generally available under the MIT License, some folders may contain examples that are part of [Ariakit Plus](https://ariakit.com/plus) and are subject to the [Ariakit Plus License](https://ariakit.com/plus/license). See the list of [Ariakit Plus Examples](https://ariakit.com/react/examples/plus/#tags).
-
-Each of these folders will contain its own license file with the full terms. Always refer to the most specific license file that applies to the code you are using.

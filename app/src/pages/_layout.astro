@@ -62,7 +62,7 @@ import { getCollection } from "astro:content";
 import { Menu, PanelLeft, SwatchBook, X } from "lucide-react";
 import { createElement } from "react";
 
-type Section = "components" | "examples";
+type Section = "components" | "recipes";
 
 export interface Props {
   title?: string;
@@ -104,7 +104,7 @@ const navigationFramework = "react";
 
 const sectionTypes = [
   { type: "components", label: "Components" },
-  { type: "examples", label: "Examples" },
+  { type: "recipes", label: "Recipes" },
 ] as const;
 
 // A link is current on its own page and on nested pages, such as the API
@@ -127,7 +127,7 @@ const drawerSections = sections.map((link) => ({
 }));
 
 const getEntryLinks = async (type: Section) => {
-  const examples = await getCachedCollection("examples");
+  const recipes = await getCachedCollection("recipes");
   const previews = await getCachedCollection("previews");
   const entries = await getCollection(type, (entry) =>
     entry.data.frameworks.includes(navigationFramework),
@@ -137,14 +137,14 @@ const getEntryLinks = async (type: Section) => {
       const count = countEntryExamples({
         entry,
         framework: navigationFramework,
-        examples,
+        recipes,
         previews,
       });
       const href = `/${navigationFramework}/${type}/${entry.id}/`;
       return {
         ...getLink(href, entry.data.title),
         description: formatExampleCount(count),
-        thumbnail: await renderThumbnail(entry.id, "small"),
+        thumbnail: await renderThumbnail(entry, "small"),
       };
     }),
   );

@@ -5,6 +5,8 @@ import { version as reactVersion } from "react";
 import reactForwardRef from "rolldown-plugin-react-forward-ref";
 import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
+import { previewConfig } from "./app/src/lib/preview-config.ts";
+import { resolvePreviewRoots } from "./app/src/lib/preview-discovery.ts";
 import { sourcePlugin } from "./app/src/lib/source.ts";
 
 const rootDir = process.cwd();
@@ -22,10 +24,10 @@ const nonDomPackages = [
 
 function getFrameworkTestIncludes(framework: Framework) {
   const entryFiles = globSync(
-    `app/src/{examples,sandbox}/**/index.${framework}.tsx`,
+    `app/src/{recipes,component-docs,sandbox}/**/index.${framework}.tsx`,
     { cwd: rootDir },
   );
-  const exampleTests = entryFiles.flatMap((file) => {
+  const previewTests = entryFiles.flatMap((file) => {
     const dir = dirname(file);
     return [`${dir}/test.{ts,tsx}`, `${dir}/${framework}.test.{ts,tsx}`];
   });
@@ -35,7 +37,7 @@ function getFrameworkTestIncludes(framework: Framework) {
   return [
     `packages/ariakit-${framework}*/src/**/{test,!(*.dom).test}.{ts,tsx}`,
     `packages/*/src/**/*${framework}.test.{ts,tsx}`,
-    ...exampleTests,
+    ...previewTests,
   ];
 }
 
@@ -73,9 +75,9 @@ const testExcludes = [...configDefaults.exclude, ".claude/**"];
 
 const isReact18 = reactVersion.startsWith("18.");
 
-// Tests of examples that require React 19, such as through React Router 8. The
+// Tests of recipes that require React 19, such as through React Router 8. The
 // React 18 suite skips them.
-const react19Tests = ["app/src/examples/navigation/**"];
+const react19Tests = ["app/src/recipes/navigation/**"];
 
 function getReactTestPatterns() {
   const { include, exclude } = getProjectTestPatterns("react");
@@ -114,7 +116,14 @@ export default defineConfig({
     projects: [
       {
         extends: true,
-        plugins: [sourcePlugin(join(rootDir, "app/src/examples/"))],
+        plugins: [
+          sourcePlugin(
+            resolvePreviewRoots({
+              ...previewConfig,
+              srcDir: join(rootDir, "app/src"),
+            }),
+          ),
+        ],
         test: {
           name: "node",
           environment: "node",

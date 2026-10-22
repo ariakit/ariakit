@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function gotoNextjsCard(page: Page) {
-  await gotoAndSettle(page, "/react/examples/tab-nextjs/");
+  await gotoAndSettle(page, "/react/recipes/tab-nextjs/");
   const iframe = page.locator('iframe[title="Tab with Next.js App Router"]');
   await iframe.scrollIntoViewIfNeeded();
   return iframe.contentFrame();
@@ -41,7 +41,7 @@ test("Next.js preview cards stay in sync after the browser moves their frame", a
   await expect(preview.tabpanel("Hot")).toBeVisible();
   await expect(card.button("Back")).toBeDisabled();
   await expect(card.button("Forward")).toBeDisabled();
-  await expect(page).toHaveURL(/\/react\/examples\/tab-nextjs\/$/);
+  await expect(page).toHaveURL(/\/react\/recipes\/tab-nextjs\/$/);
 });
 
 test("Next.js preview cards keep their history after fragment links", async ({
@@ -70,5 +70,5 @@ test("Next.js preview cards keep their history after fragment links", async ({
   await card.button("Back").click();
   await expect(address).toHaveValue("/tab-nextjs");
   await expect(preview.tabpanel("Hot")).toBeVisible();
-  await expect(page).toHaveURL(/\/react\/examples\/tab-nextjs\/$/);
+  await expect(page).toHaveURL(/\/react\/recipes\/tab-nextjs\/$/);
 });

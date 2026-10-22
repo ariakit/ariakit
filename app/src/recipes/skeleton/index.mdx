@@ -4,13 +4,13 @@ title: Skeleton
 
 ## Overview
 
-These samples show loading placeholders built with the Ariakit UI `Skeleton` components. Each placeholder has the shape of the content that replaces it, so the layout does not move when the data arrives. Most previews have a control that loads the data again.
+These examples show loading placeholders built with the Ariakit UI `Skeleton` components. Each placeholder has the shape of the content that replaces it, so the layout does not move when the data arrives. Most examples have a control that loads the data again.
 
 The gallery includes a profile card, a timing demo, a comparison of the animations, a feed that loads more posts, a settings form, a data table, an article, and decorative thumbnails.
 
 ## Components
 
-`Skeleton` wraps the area that loads. Set its `loading` prop to `true` while the data loads. The placeholders show as soon as loading starts and stay for at least 200 milliseconds, so fast loads never flash. Set `delay` to wait before the placeholders fade in, so loads faster than the delay never show them. The Timing sample uses a 150 millisecond delay.
+`Skeleton` wraps the area that loads. Set its `loading` prop to `true` while the data loads. The placeholders show as soon as loading starts and stay for at least 200 milliseconds, so fast loads never flash. Set `delay` to wait before the placeholders fade in, so loads faster than the delay never show them. The Timing example uses a 150 millisecond delay.
 
 Put the parts where the content goes. `SkeletonLine` takes the height of one line of text in its own font size. `SkeletonBox` and `SkeletonCircle` hold the space of images and avatars. `SkeletonFill` paints its child, such as a button, a badge, or an input, so the placeholder keeps the child's exact size and corners. The child must generate its own box, so use `SkeletonLine` for inline text, such as a link. Inputs, selects, and textareas show the tint without the shimmer highlight. Each part renders its children when loading ends.
 
@@ -18,4 +18,4 @@ The `$animate` prop sets the animation: `shimmer` (the default), `pulse`, or `fa
 
 ## Accessibility
 
-The placeholders are hidden from assistive technologies. Add `aria-busy` to the region that loads and a status message that announces when loading starts and ends. In the Feed sample, each page of posts is its own `Skeleton`, so loading more posts does not hide the posts that are already visible.
+The placeholders are hidden from assistive technologies. Add `aria-busy` to the region that loads and a status message that announces when loading starts and ends. In the Feed example, each page of posts is its own `Skeleton`, so loading more posts does not hide the posts that are already visible.

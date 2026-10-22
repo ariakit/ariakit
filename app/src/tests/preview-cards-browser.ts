@@ -16,7 +16,7 @@ async function waitForArticle(article: Locator) {
 }
 
 test("combobox preview cards work in their iframes", async ({ page, q }) => {
-  await gotoAndSettle(page, "/react/examples/combobox-group/");
+  await gotoAndSettle(page, "/react/recipes/combobox-group/");
 
   for (const title of ["Combobox Group", "Custom Items"]) {
     const iframe = page.locator(`iframe[title="${title}"]`);
@@ -57,7 +57,7 @@ test("combobox preview cards work in their iframes", async ({ page, q }) => {
 test("preview card frames do not scroll or take focus until activated", async ({
   page,
 }) => {
-  await gotoAndSettle(page, "/react/examples/combobox-group/");
+  await gotoAndSettle(page, "/react/recipes/combobox-group/");
   const iframe = page.locator('iframe[title="Combobox Group"]');
   await iframe.scrollIntoViewIfNeeded();
   const frame = iframe.contentFrame();
@@ -113,7 +113,7 @@ test("preview cards show the popup of their example open", async ({
   // pass if the popup opened after the card showed the frame, so this samples
   // the combobox state on each frame from the start of the navigation until the
   // card shows the frame.
-  await page.goto("/react/examples/combobox-group/", { waitUntil: "commit" });
+  await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
   const revealed = await page.waitForFunction(
     () => {
       const iframe = document.querySelector<HTMLIFrameElement>(
@@ -176,7 +176,7 @@ test("preview cards resize their viewport from the end edge", async ({
 }) => {
   // The card starts wider than the shell breakpoint that folds the sidebar.
   await page.setViewportSize({ width: 1600, height: 900 });
-  await gotoAndSettle(page, "/react/examples/app-shell/");
+  await gotoAndSettle(page, "/react/recipes/app-shell/");
   const iframe = page.locator('iframe[title="App Shell"]');
   await iframe.scrollIntoViewIfNeeded();
   const frame = iframe.contentFrame();
@@ -226,7 +226,7 @@ for (const width of [1600, 700]) {
     // At 700px, the grid stacks every card, including the ones that share a row
     // on wider screens.
     await page.setViewportSize({ width, height: 900 });
-    await gotoAndSettle(page, "/react/examples/skeleton/");
+    await gotoAndSettle(page, "/react/recipes/skeleton/");
     for (const [title, shown] of [
       ["Animations", true],
       ["Timing", false],
@@ -255,7 +255,7 @@ test("preview grid cards keep their heights and stick within their row", async (
   q,
 }) => {
   await page.setViewportSize({ width: 1440, height: 700 });
-  await gotoAndSettle(page, "/react/examples/skeleton/");
+  await gotoAndSettle(page, "/react/recipes/skeleton/");
   // Each card region stretches to its grid row, and the card inside it keeps
   // its own height. An example can name its own region like its card, and the
   // card region comes first.
@@ -312,7 +312,7 @@ test("inline previews scroll only after focus moves into them", async ({
   q,
 }) => {
   await page.setViewportSize({ width: 1440, height: 700 });
-  await gotoAndSettle(page, "/react/examples/skeleton/");
+  await gotoAndSettle(page, "/react/recipes/skeleton/");
   const article = q.region("Article", { exact: true });
   await waitForArticle(article);
   // The handle names the viewport it resizes.
@@ -353,7 +353,7 @@ test("inline previews stay active when focus falls back to the page", async ({
   q,
 }) => {
   await page.setViewportSize({ width: 1440, height: 700 });
-  await gotoAndSettle(page, "/react/examples/skeleton/");
+  await gotoAndSettle(page, "/react/recipes/skeleton/");
   // The feed example names its own region like its card, and the card region
   // comes first.
   const card = query(q.region("Feed", { exact: true }).first());
@@ -394,7 +394,7 @@ for (const framework of ["react", "solid"]) {
     ).toBeVisible();
     await expect(card.link("Open preview in a new tab")).toHaveAttribute(
       "href",
-      `/${framework}/previews/separator/_component/`,
+      `/${framework}/previews/components/separator/`,
     );
     await card.button("Get code").click();
     await expect(q.region("Separator code")).toContainText(

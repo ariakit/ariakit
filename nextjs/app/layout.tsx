@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Ariakit Next.js examples",
-  description: "Accessible Ariakit component examples for Next.js apps.",
+  title: "Ariakit Next.js previews",
+  description: "Accessible Ariakit component previews for Next.js apps.",
 };
 
 export default function RootLayout({
