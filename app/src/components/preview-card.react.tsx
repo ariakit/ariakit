@@ -221,6 +221,10 @@ function usePreviewFrame(href: string) {
     canGoBack: false,
     canGoForward: false,
   });
+  // A resize with the handle lets the page scroll, as a click in it does. The
+  // page cannot see clicks and focus on the docs page, so the card tells it
+  // when the person moves on.
+  const activatedRef = useRef(false);
 
   useEffect(() => {
     const iframe = ref.current;
@@ -240,6 +244,10 @@ function usePreviewFrame(href: string) {
         action: "viewport",
         radius: getInnerRadius(viewport),
       });
+    };
+    const isFocusInStage = () => {
+      const stage = iframe.closest("[data-preview-stage]") ?? iframe;
+      return stage.contains(iframe.ownerDocument.activeElement);
     };
     const onMessage = (event: MessageEvent) => {
       if (event.source !== iframe.contentWindow) return;
@@ -261,6 +269,11 @@ function usePreviewFrame(href: string) {
       // that has not loaded yet.
       setLoaded(event.data.loaded);
       setOpening(event.data.opening ?? false);
+      // A new document starts inactive, and it could not receive an activation
+      // sent while it loaded. Focus in another frame means the person moved on.
+      if (!event.data.loaded && activatedRef.current && isFocusInStage()) {
+        postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action: "activate" });
+      }
     };
     window.addEventListener("message", onMessage);
     const unsubscribeTheme = subscribeAppTheme(postTheme);
@@ -277,11 +290,6 @@ function usePreviewFrame(href: string) {
     if (!iframe) return;
     postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action });
   };
-
-  // A resize with the handle lets the page scroll, as a click in it does. The
-  // page cannot see clicks and focus on the docs page, so the card tells it
-  // when the person moves on.
-  const activatedRef = useRef(false);
 
   useEffect(() => {
     const viewport = viewportRef.current;

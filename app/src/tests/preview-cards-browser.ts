@@ -189,6 +189,20 @@ test("preview card frames scroll after a resize with the handle", async ({
   await handle.press("ArrowRight");
   await expect(root).toHaveAttribute("data-preview-active", "");
 
+  // A new document in the frame stays active while focus stays on the handle,
+  // such as when the example reloads itself.
+  const childFrame = await (await iframe.elementHandle())?.contentFrame();
+  expect(childFrame).toBeTruthy();
+  if (!childFrame) return;
+  const reloaded = page.waitForEvent("framenavigated", (navigated) => {
+    return navigated === childFrame;
+  });
+  await root.evaluate(() => location.reload());
+  await reloaded;
+  await expect(root).toHaveAttribute("data-preview-hydrated", "");
+  await expect(root).toHaveAttribute("data-preview-active", "");
+  await expect(handle).toBeFocused();
+
   // A click in another preview frame sends no event to the docs page, but it
   // also makes the frame inactive, even after a click in the frame itself.
   const frameBox = await iframe.boundingBox();
@@ -202,6 +216,17 @@ test("preview card frames scroll after a resize with the handle", async ({
   expect(otherBox).not.toBeNull();
   if (!otherBox) return;
   await page.mouse.click(otherBox.x + 8, otherBox.y + 8);
+  await expect(root).not.toHaveAttribute("data-preview-active", "");
+
+  // A new document in the frame stays inactive once focus is in another frame.
+  const reloadedAgain = page.waitForEvent("framenavigated", (navigated) => {
+    return navigated === childFrame;
+  });
+  await root.evaluate(() => location.reload());
+  await reloadedAgain;
+  // The card would replay the activation when the new document reports its
+  // location while it parses, long before it hydrates.
+  await expect(root).toHaveAttribute("data-preview-hydrated", "");
   await expect(root).not.toHaveAttribute("data-preview-active", "");
 });
 
