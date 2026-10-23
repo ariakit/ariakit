@@ -67,8 +67,7 @@ astro-static-slot {
 }
 
 /* App shells round nested corners to the card viewport instead of a browser
-   window. The card sends the radius; the fallback matches the default shell
-   size. */
-:root[data-preview-embedded] .shell {
-  --shell-radius: var(--preview-viewport-radius, calc(var(--radius) * 5 / 0.875));
+   window once the card sends its radius. */
+:root[data-preview-viewport-radius] .shell {
+  --shell-radius: var(--preview-viewport-radius);
 }
