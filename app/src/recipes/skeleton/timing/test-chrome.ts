@@ -68,11 +68,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // The placeholders can stay after the data arrives, so wait for the
     // content.
     await test.expect(q.button("Message")).toBeVisible();
-    await q.radio(/^Fast/).click();
-    await test.expect(q.status()).toHaveText("Loading contact");
-    await test.expect(q.status()).toHaveText("Contact loaded");
+    // The first request (250 ms) shows the placeholders, so "Skipped" below can
+    // only come from the fast request.
     const times = q.definition();
+    await test.expect(times.nth(0)).toHaveText(/^\d+ ms$/);
+    await q.radio(/^Fast/).click();
+    // The fast request (50 ms) ends before the 150 ms delay, so the loading
+    // status can change back before an assertion sees it. The timeline keeps
+    // the result.
     await test.expect(times.nth(0)).toHaveText("Skipped");
     await test.expect(times.nth(1)).toHaveText(/^\d+ ms$/);
+    await test.expect(q.status()).toHaveText("Contact loaded");
   });
 });
