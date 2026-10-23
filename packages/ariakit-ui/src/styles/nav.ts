@@ -440,12 +440,13 @@ export const navLinkBar = cv({
      * the row; other strings are CSS lengths. Defaults to `edge`.
      *
      * A bar outside the row contrasts with the surface around it. A negative
-     * number or a length that starts with `-`, such as `-0.5`, puts the bar
-     * over the row and makes it contrast with the row instead. Named offsets
-     * expect navigation padding at least as thick as the bar. With thinner
-     * padding, such as with `$p="none"`, they put the bar over the row but keep
-     * the outside contrast, which can hide the bar in high contrast mode. Use a
-     * negative offset there.
+     * number or a length that starts with `-`, such as `-0.5` or `-3px`, puts
+     * the bar over the row and makes it contrast with the row instead. Other
+     * offsets keep the outside contrast even when they put the bar over the
+     * row, which can hide the bar in high contrast mode. This includes named
+     * offsets with navigation padding thinner than the bar, such as with
+     * `$p="none"`, and `calc()` or `var()` values that resolve to a negative
+     * length. Use a negative number or a length that starts with `-` there.
      *
      * The start bar of a nested row measures to the edge of its disclosure
      * content, and the end bar measures from the navigation padding, so it

@@ -574,8 +574,9 @@ export function getNamedBarOffsetClass(value: keyof typeof NAMED_BAR_OFFSETS) {
 }
 
 /**
- * Checks whether a spacing or length bar offset is negative, which puts the bar
- * over its control. Named offsets expect padding that keeps the bar outside.
+ * Checks whether a spacing or length bar offset is a negative number or starts
+ * with a minus sign, which puts the bar over its control. The sign of a calc()
+ * or var() value is known only after the browser resolves it.
  */
 function isNegativeBarOffset(value: string | number) {
   if (typeof value === "number") return value < 0;
@@ -583,8 +584,8 @@ function isNegativeBarOffset(value: string | number) {
 }
 
 /**
- * Resolves a named or spacing bar offset into `--bar-offset`. Negative offsets
- * also mark the bar with `bar-over`.
+ * Resolves a named or spacing bar offset into `--bar-offset`. Negative numbers
+ * and lengths that start with `-` also mark the bar with `bar-over`.
  */
 export function getBarOffset(value?: BarOffset) {
   if (value == null) return;
@@ -684,12 +685,13 @@ export const controlBar = cv({
      * the control; other strings are CSS lengths. Defaults to `edge`.
      *
      * A bar outside the control contrasts with the surface around it. A
-     * negative number or a length that starts with `-`, such as `-0.5`, puts
-     * the bar over the control and makes it contrast with the control instead.
-     * Named offsets expect padding at least as thick as the bar. With thinner
-     * padding, they put the bar over the control but keep the outside contrast,
-     * which can hide the bar in high contrast mode. Use a negative offset
-     * there.
+     * negative number or a length that starts with `-`, such as `-0.5` or
+     * `-3px`, puts the bar over the control and makes it contrast with the
+     * control instead. Other offsets keep the outside contrast even when they
+     * put the bar over the control, which can hide the bar in high contrast
+     * mode. This includes named offsets with padding thinner than the bar, and
+     * `calc()` or `var()` values that resolve to a negative length. Use a
+     * negative number or a length that starts with `-` there.
      */
     $offset: getBarOffset,
   },
