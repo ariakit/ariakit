@@ -10,7 +10,6 @@ import {
   radioCardDescription,
   radioCardGrid,
   radioCardLabel,
-  radioCardShortcut,
   radioCardSlot,
   radioContent,
   radioDescription,
@@ -221,31 +220,6 @@ export function RadioCardSlot(props: RadioCardSlotProps) {
         rest.children
       )}
     </ak.Role.span>
-  );
-}
-
-export interface RadioCardShortcutProps
-  extends ak.RoleProps<"kbd">, VariantProps<typeof radioCardShortcut> {}
-
-/**
- * A keyboard shortcut beside a radio card label. Renders a `kbd` element, so
- * pass the shortcut text, or nested `kbd` elements for the keys of a chord.
- * @example
- * <RadioProvider>
- *   <RadioCardGrid aria-label="View">
- *     <RadioCard value="list">
- *       <RadioCardLabel>List</RadioCardLabel>
- *       <RadioCardShortcut>⌘1</RadioCardShortcut>
- *     </RadioCard>
- *   </RadioCardGrid>
- * </RadioProvider>
- */
-export function RadioCardShortcut(props: RadioCardShortcutProps) {
-  const [variantProps, rest] = splitProps(props, radioCardShortcut);
-  return (
-    <ak.Role.kbd {...radioCardShortcut.jsx(variantProps)} {...rest}>
-      <span>{rest.children}</span>
-    </ak.Role.kbd>
   );
 }
 

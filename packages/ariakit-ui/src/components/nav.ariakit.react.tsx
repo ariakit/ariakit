@@ -25,7 +25,6 @@ import {
   navLinkDescription,
   navLinkLabel,
   navList,
-  navShortcut,
   navSlot,
 } from "../styles/nav.ts";
 import { isCurrentPage } from "../utils/is-current-page.ts";
@@ -281,11 +280,12 @@ export interface NavSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof navSlot> {}
 
 /**
- * Renders an icon, badge, avatar, thumbnail, or short text in a nav row. All
- * except thumbnails and text inherit the nav's `$slotSize`. A badge after the
- * label takes the line height and fits its text; use `$p="md"` to keep a count
- * of one or two digits round. A badge before the label keeps the icon size.
- * Badge content gets a span for text sizing.
+ * Renders an icon, badge, avatar, shortcut, thumbnail, or short text in a nav
+ * row. All except shortcuts, thumbnails, and text inherit the nav's
+ * `$slotSize`. A badge after the label takes the line height and fits its text;
+ * use `$p="md"` to keep a count of one or two digits round. A badge before the
+ * label keeps the icon size. Badge and shortcut content gets a span for text
+ * sizing and key direction.
  * @example
  * <Nav aria-label="Main">
  *   <NavLink href="/updates">
@@ -305,29 +305,6 @@ export function NavSlot(props: NavSlotProps) {
         rest.children
       )}
     </ak.Role.span>
-  );
-}
-
-export interface NavShortcutProps
-  extends ak.RoleProps<"kbd">, VariantProps<typeof navShortcut> {}
-
-/**
- * A keyboard shortcut beside a nav row label. Renders a `kbd` element, so pass
- * the shortcut text, or nested `kbd` elements for the keys of a chord.
- * @example
- * <Nav aria-label="Main">
- *   <NavLink href="/issues">
- *     <NavLinkLabel>My issues</NavLinkLabel>
- *     <NavShortcut>M</NavShortcut>
- *   </NavLink>
- * </Nav>
- */
-export function NavShortcut(props: NavShortcutProps) {
-  const [variantProps, rest] = splitProps(props, navShortcut);
-  return (
-    <ak.Role.kbd {...navShortcut.jsx(variantProps)} {...rest}>
-      <span>{rest.children}</span>
-    </ak.Role.kbd>
   );
 }
 
@@ -578,9 +555,9 @@ export interface NavButtonProps extends Omit<
 > {}
 
 /**
- * Renders a standalone nav row. Use `NavSlot` for its icon, badge, or avatar,
- * `NavShortcut` for its shortcut, `NavButtonContent` for its label, and the
- * `render` prop for a row that should be an anchor.
+ * Renders a standalone nav row. Use `NavSlot` for its icon, badge, avatar, or
+ * shortcut, `NavButtonContent` for its label, and the `render` prop for a row
+ * that should be an anchor.
  * @example
  * <NavButton render={<a href="/docs" />}>
  *   <NavButtonContent>Docs</NavButtonContent>

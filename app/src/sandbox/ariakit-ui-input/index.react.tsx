@@ -12,7 +12,6 @@ import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Input,
   InputGroup,
-  InputShortcut,
   InputSlot,
 } from "@ariakit/ui/components/input.ariakit.react";
 import {
@@ -275,7 +274,7 @@ export default function InputExamples() {
           <Input render={<button type="button" />}>
             <InputSlot><Search /></InputSlot>
             <Text>Search docs</Text>
-            <InputShortcut $size="xl" aria-hidden>⌘K</InputShortcut>
+            <InputSlot $kind="shortcut" $size="xl"><kbd aria-hidden>⌘K</kbd></InputSlot>
           </Input>
         `}
       >
@@ -286,9 +285,9 @@ export default function InputExamples() {
           <Text {...inputPlaceholder.jsx({ className: "flex-1 truncate" })}>
             Search docs
           </Text>
-          <InputShortcut $size="xl" aria-hidden>
-            ⌘K
-          </InputShortcut>
+          <InputSlot $kind="shortcut" $size="xl">
+            <kbd aria-hidden>⌘K</kbd>
+          </InputSlot>
         </Input>
       </Example>
 

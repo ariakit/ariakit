@@ -5,7 +5,6 @@ import {
   buttonContent,
   buttonDescription,
   buttonLabel,
-  buttonShortcut,
   buttonSlot,
 } from "./button.ts";
 import {
@@ -271,9 +270,6 @@ export const choiceCardCheck = cv({
 
 /** A text-aligned slot for choice card icons and other content. */
 export const choiceCardSlot = buttonSlot;
-
-/** A keyboard shortcut beside a choice card label. */
-export const choiceCardShortcut = buttonShortcut;
 
 /** A flexible wrapper for a choice card's label and description. */
 export const choiceCardContent = buttonContent;

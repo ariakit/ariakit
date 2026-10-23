@@ -6,7 +6,6 @@ import {
   choiceCardDescription,
   choiceCardGrid,
   choiceCardLabel,
-  choiceCardShortcut,
   choiceCardSlot,
   choiceField,
   choiceFieldContent,
@@ -53,11 +52,8 @@ export const radioCardCheck = cv({
   },
 });
 
-/** A radio card slot for an icon, avatar, badge, or short text. */
+/** A radio card slot for an icon, avatar, badge, or shortcut. */
 export const radioCardSlot = choiceCardSlot;
-
-/** A keyboard shortcut beside a radio card label. */
-export const radioCardShortcut = choiceCardShortcut;
 
 /** Arranges a radio card's label and description. */
 export const radioCardContent = choiceCardContent;

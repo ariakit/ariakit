@@ -95,8 +95,8 @@ export const control = cv({
   },
 });
 
-// Single-row badges and avatars need extra content space; multi-row slots keep
-// their requested size.
+// Single-row badges, avatars, and shortcut boxes need extra content space;
+// multi-row slots keep their requested size.
 const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
 
 const SLOT_SIZE_CLASSES = {
@@ -127,31 +127,19 @@ export function getSlotSizeClass(value: unknown) {
   return SLOT_SIZE_CLASSES[value];
 }
 
-// Slot surfaces fade with their disabled control.
-const SLOT_SURFACE_CLASSES = [
-  // Mix the disabled surface before calculating readable text contrast.
-  "group-[.disabled]/control:ak-layer-mix-20",
-  // DOM disabled state can change without rerendering the recipe.
-  "group-ui-disabled/control:ak-layer-mix-20",
-  "group-ui-disabled-within/choice:ak-layer-mix-20",
-  // Reach slots below wrappers beyond the control's direct-child text rules.
-  "group-[.disabled]/control:ak-ink-0",
-  "group-ui-disabled/control:ak-ink-0",
-  "group-ui-disabled-within/choice:ak-ink-0",
-  // Fade image pixels only; fading the whole slot would reduce text contrast.
-  "group-[.disabled]/control:[&_img]:opacity-50",
-  "group-ui-disabled/control:[&_img]:opacity-50",
-  "group-ui-disabled-within/choice:[&_img]:opacity-50",
-];
+// Painted shortcut keys get the inset of an icon on a painted tile.
+const SHORTCUT_SURFACE_PADDING = "xl";
 
-/** Resolves the forced-colors edge and disabled styles of a slot surface. */
-function getSlotSurfaceClass(variants: VariantProps<typeof frame>) {
-  // Forced colors remove the slot's fill, which may be its only boundary.
-  const needsEdge = variants.$border == null && hasLayerBackground(variants);
-  return [needsEdge && "forced-colors:ak-frame-border", SLOT_SURFACE_CLASSES];
+/** Whether a fill or a border draws a box around the slot content. */
+export function hasSlotSurface(variants: VariantProps<typeof frame>) {
+  if (hasLayerBackground(variants)) return true;
+  return Boolean(variants.$border);
 }
 
-/** A text-aligned slot for an icon, avatar, badge, thumbnail, or short text. */
+/**
+ * A text-aligned slot for an icon, avatar, badge, keyboard shortcut, or short
+ * text.
+ */
 export const controlSlot = cv({
   extend: [frame],
   class: [
@@ -167,6 +155,9 @@ export const controlSlot = cv({
     // --slot-icon-scale.
     "[&>svg]:block [&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
     "mx-(--mx) my-(--my)",
+    // Monospace fonts draw ⌘ much smaller than letters, so keys in any slot
+    // kind use the UI font. Zero specificity lets caller font classes win.
+    "[:where(&_kbd)]:font-sans",
   ],
   variants: {
     /** Sets the slot size. */
@@ -219,17 +210,26 @@ export const controlSlot = cv({
       return getFrameRoundedClass(value);
     },
     /**
-     * Sets the slot content type. `badge` needs one child wrapper; slot
-     * components create it automatically. For badge truncation,
+     * Sets the slot content type. `badge` and `shortcut` need one child
+     * wrapper; slot components create it automatically. For badge truncation,
      * use a width-limited child with `block overflow-x-clip text-ellipsis
      * whitespace-nowrap` to preserve descenders. `thumbnail` is a bordered 4:3
      * box that an image or another picture fills. `text`, such as a count or a
      * duration, is one line tall and keeps the side padding of the row text,
-     * while other slots move into it.
+     * while other slots move into it. `shortcut` keeps that padding too, unless
+     * a fill or a border draws a box around the keys. The box is then at
+     * least a line tall, with smaller keys.
      */
     $kind: {
       icon: "",
       thumbnail: "overflow-clip aspect-4/3 *:size-full *:object-cover",
+      shortcut: [
+        // Keep key chords left-to-right while the slot retains the row
+        // direction for margins.
+        "*:flex *:[align-items:inherit] *:[gap:inherit] *:[direction:ltr]",
+        // Size icon keys like the letters beside them, not like the slot box.
+        "*:[&>svg]:block *:[&>svg]:size-(--slot-icon-size,1em)",
+      ],
       avatar: "overflow-clip",
       // Keep the side padding of the row text, and let nested slots move again.
       // Fit short text, such as a single digit, instead of a line-wide box.
@@ -288,6 +288,12 @@ export const controlSlot = cv({
       if (variants.$floating) return true;
       return defaultValue;
     },
+    $ink(defaultValue, variants) {
+      if (variants.$kind !== "shortcut") return defaultValue;
+      // A painted surface sets its own text contrast.
+      if (hasLayerBackground(variants)) return defaultValue;
+      return defaultValue ?? 60;
+    },
     $lightnessOffset(defaultValue, variants) {
       if (variants.$kind !== "avatar") return defaultValue;
       return defaultValue ?? true;
@@ -305,6 +311,9 @@ export const controlSlot = cv({
       // Pad badge text only; avatar images must fill the clipped shape.
       if (variants.$kind === "badge") {
         return defaultValue ?? "auto";
+      }
+      if (variants.$kind === "shortcut" && hasSlotSurface(variants)) {
+        return defaultValue ?? SHORTCUT_SURFACE_PADDING;
       }
       return defaultValue ?? "unset";
     },
@@ -345,10 +354,47 @@ export const controlSlot = cv({
       // Inset icons on painted tiles; multi-row slots already have extra space.
       addClass("[--slot-icon-scale:0.6]");
     }
+    if (variants.$kind === "shortcut") {
+      if (!hasSlotSurface(variants)) {
+        // Keep the side padding of the row text, and fit a single key instead
+        // of a box as wide as the slot size. min-w-0 sorts after the base
+        // min-w-(--size).
+        addClass("[--slot-pull:0] min-w-0");
+        return;
+      }
+      addClass("*:text-[0.8125em]");
+    }
     const paintsSurface =
-      variants.$kind === "badge" || variants.$kind === "avatar";
+      variants.$kind === "badge" ||
+      variants.$kind === "avatar" ||
+      variants.$kind === "shortcut";
     if (!paintsSurface) return;
-    addClass(getSlotSurfaceClass(variants));
+    // Forced colors remove the slot's fill, which may be its only boundary.
+    if (variants.$border == null && hasLayerBackground(variants)) {
+      addClass("forced-colors:ak-frame-border");
+    }
+    // Disabled mixing would paint a fill behind a border-only shortcut.
+    const fadesSurface =
+      variants.$kind !== "shortcut" || hasLayerBackground(variants);
+    addClass(
+      fadesSurface && [
+        // Mix the disabled surface before calculating readable text contrast.
+        "group-[.disabled]/control:ak-layer-mix-20",
+        // DOM disabled state can change without rerendering the recipe.
+        "group-ui-disabled/control:ak-layer-mix-20",
+        "group-ui-disabled-within/choice:ak-layer-mix-20",
+        // Reach slots below wrappers beyond the control's direct-child text
+        // rules.
+        "group-[.disabled]/control:ak-ink-0",
+        "group-ui-disabled/control:ak-ink-0",
+        "group-ui-disabled-within/choice:ak-ink-0",
+        // Fade image pixels only; fading the whole slot would reduce text
+        // contrast.
+        "group-[.disabled]/control:[&_img]:opacity-50",
+        "group-ui-disabled/control:[&_img]:opacity-50",
+        "group-ui-disabled-within/choice:[&_img]:opacity-50",
+      ],
+    );
     if (variants.$rowSpan !== 1) return;
     if (variants.$kind === "avatar") {
       if (variants.$size === "2xl") return;
@@ -383,74 +429,13 @@ export function getIconSlotSize<Size extends string>(
   return "auto" as const;
 }
 
-/** Whether the slot needs one child wrapper for badge typography. */
-export function wrapsSlotChildren(kind?: string) {
-  return kind === "badge";
-}
-
-/** Whether a fill or a border draws a box around the shortcut keys. */
-function hasShortcutSurface(variants: VariantProps<typeof frame>) {
-  if (hasLayerBackground(variants)) return true;
-  return Boolean(variants.$border);
-}
-
 /**
- * A keyboard shortcut beside a control label. Render it as a `kbd` element with
- * one child wrapper; shortcut components create both automatically. Nest `kbd`
- * elements in the wrapper for the keys of a chord. Plain shortcuts keep the
- * side padding of the row text; a `$layer` fill or a `$border` makes a padded
- * surface like a badge.
+ * Whether the slot needs one child wrapper for badge typography or
+ * left-to-right shortcuts.
  */
-export const controlShortcut = cv({
-  extend: [controlSlot],
-  class: [
-    // Monospace fonts draw ⌘ much smaller than letters. Nested keys would
-    // otherwise get the monospace font that browsers give kbd elements.
-    // Zero specificity lets caller font classes win.
-    "[:where(&)]:font-sans [:where(&>*>*)]:font-[family-name:inherit]",
-    // Keep key chords left-to-right while the slot retains the row direction
-    // for margins.
-    "*:flex *:[align-items:inherit] *:[gap:inherit] *:[direction:ltr]",
-    // Size icon keys like the letters beside them, not like the slot box.
-    "*:[&>svg]:block *:[&>svg]:size-(--slot-icon-size,1em)",
-  ],
-  variants: {
-    // A shortcut is one kind of slot content.
-    $kind: null,
-  },
-  defaultVariants: {
-    $ink(defaultValue, variants) {
-      // A painted surface sets its own text contrast.
-      if (hasLayerBackground(variants)) return defaultValue;
-      return defaultValue ?? 60;
-    },
-    $p(defaultValue, variants) {
-      if (defaultValue !== "unset") return defaultValue;
-      if (!hasShortcutSurface(variants)) return defaultValue;
-      return "auto";
-    },
-  },
-  refine({ variants, setVariants, addClass }) {
-    if (!hasShortcutSurface(variants)) {
-      // Keep the side padding of the row text, and fit a single key instead of
-      // a box as wide as the slot size. min-w-0 sorts after the slot's
-      // min-w-(--size).
-      addClass("[--slot-pull:0] min-w-0");
-      return;
-    }
-    addClass([
-      // Disabled mixing would paint a border-only surface, so fade only fills.
-      hasLayerBackground(variants) && getSlotSurfaceClass(variants),
-      // Use badge text, which the auto padding expects.
-      "*:text-[0.8125em]",
-    ]);
-    if (variants.$rowSpan !== 1) return;
-    // A surface needs a line of height to hold its text.
-    if (includes(PADDED_SLOT_SIZES, variants.$size)) {
-      setVariants({ $size: "xl" });
-    }
-  },
-});
+export function wrapsSlotChildren(kind?: string) {
+  return kind === "badge" || kind === "shortcut";
+}
 
 /** A flexible wrapper for a control's label and description. */
 export const controlContent = cv({

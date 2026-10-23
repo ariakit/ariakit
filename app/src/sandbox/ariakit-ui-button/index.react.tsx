@@ -15,7 +15,6 @@ import {
   ButtonGroup,
   ButtonLabel,
   ButtonSeparator,
-  ButtonShortcut,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
@@ -711,13 +710,17 @@ export default function ButtonExamples() {
         code={`
           <Button>
             <ButtonLabel>Save</ButtonLabel>
-            <ButtonShortcut>⌘S</ButtonShortcut>
+            <ButtonSlot $kind="shortcut">
+              <kbd>⌘S</kbd>
+            </ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Save</ButtonLabel>
-          <ButtonShortcut>⌘S</ButtonShortcut>
+          <ButtonSlot $kind="shortcut">
+            <kbd>⌘S</kbd>
+          </ButtonSlot>
         </Button>
       </Example>
 
@@ -728,10 +731,10 @@ export default function ButtonExamples() {
           <div dir="rtl">
             <Button>
               <ButtonLabel>حفظ</ButtonLabel>
-              <ButtonShortcut>
+              <ButtonSlot $kind="shortcut">
                 <kbd>⌘</kbd>
                 <kbd>S</kbd>
-              </ButtonShortcut>
+              </ButtonSlot>
             </Button>
           </div>
         `}
@@ -739,10 +742,10 @@ export default function ButtonExamples() {
         <div dir="rtl" lang="ar" className="w-full">
           <Button>
             <ButtonLabel>حفظ</ButtonLabel>
-            <ButtonShortcut>
+            <ButtonSlot $kind="shortcut">
               <kbd>⌘</kbd>
               <kbd>S</kbd>
-            </ButtonShortcut>
+            </ButtonSlot>
           </Button>
         </div>
       </Example>
@@ -753,19 +756,19 @@ export default function ButtonExamples() {
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonShortcut className="gap-1">
+            <ButtonSlot $kind="shortcut" className="gap-1">
               <Command />
               <kbd>K</kbd>
-            </ButtonShortcut>
+            </ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Search</ButtonLabel>
-          <ButtonShortcut className="gap-1">
+          <ButtonSlot $kind="shortcut" className="gap-1">
             <Command />
             <kbd>K</kbd>
-          </ButtonShortcut>
+          </ButtonSlot>
         </Button>
       </Example>
 
@@ -775,51 +778,59 @@ export default function ButtonExamples() {
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonShortcut $size="xl" className="gap-1">
+            <ButtonSlot $kind="shortcut" $size="xl" className="gap-1">
               <Command />
               <kbd>K</kbd>
-            </ButtonShortcut>
+            </ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Search</ButtonLabel>
-          <ButtonShortcut $size="xl" className="gap-1">
+          <ButtonSlot $kind="shortcut" $size="xl" className="gap-1">
             <Command />
             <kbd>K</kbd>
-          </ButtonShortcut>
+          </ButtonSlot>
         </Button>
       </Example>
 
       <Example
-        title="Painted shortcut"
-        description="A layer turns the shortcut into a padded surface that sits as far from the side of the button as from its top."
+        title="Filled shortcut"
+        description="A lightness offset fills the shortcut, which then gets smaller keys in a padded box that sits as far from the side of the button as from its top."
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonShortcut $layer="brand">⌘K</ButtonShortcut>
+            <ButtonSlot $kind="shortcut" $lightnessOffset>
+              <kbd>⌘K</kbd>
+            </ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Search</ButtonLabel>
-          <ButtonShortcut $layer="brand">⌘K</ButtonShortcut>
+          <ButtonSlot $kind="shortcut" $lightnessOffset>
+            <kbd>⌘K</kbd>
+          </ButtonSlot>
         </Button>
       </Example>
 
       <Example
         title="Bordered shortcut"
-        description="A border also turns the shortcut into a padded box, with the same gaps as a painted one."
+        description="A border also draws a padded box around the keys, with the same gaps as a filled one."
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonShortcut $border>⌘K</ButtonShortcut>
+            <ButtonSlot $kind="shortcut" $border>
+              <kbd>⌘K</kbd>
+            </ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Search</ButtonLabel>
-          <ButtonShortcut $border>⌘K</ButtonShortcut>
+          <ButtonSlot $kind="shortcut" $border>
+            <kbd>⌘K</kbd>
+          </ButtonSlot>
         </Button>
       </Example>
 
@@ -875,7 +886,7 @@ export default function ButtonExamples() {
               <ButtonLabel>Open Ariakit UI</ButtonLabel>
               <ButtonDescription>…</ButtonDescription>
             </ButtonContent>
-            <ButtonShortcut>↵</ButtonShortcut>
+            <ButtonSlot $kind="shortcut">↵</ButtonSlot>
           </Button>
         `}
       >
@@ -894,7 +905,7 @@ export default function ButtonExamples() {
               A secondary line that truncates when the row runs out of room
             </ButtonDescription>
           </ButtonContent>
-          <ButtonShortcut>↵</ButtonShortcut>
+          <ButtonSlot $kind="shortcut">↵</ButtonSlot>
         </Button>
       </Example>
 

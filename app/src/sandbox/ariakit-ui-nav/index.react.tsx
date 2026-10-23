@@ -29,7 +29,6 @@ import {
   NavLinkDescription,
   NavLinkLabel,
   NavList,
-  NavShortcut,
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import {
@@ -665,7 +664,7 @@ export default function NavExamples() {
                 <Search />
               </NavSlot>
               <NavButtonContent>Search</NavButtonContent>
-              <NavShortcut>⌘K</NavShortcut>
+              <NavSlot $kind="shortcut">⌘K</NavSlot>
             </NavButton>
             <NavLink>
               <NavSlot>
@@ -689,7 +688,9 @@ export default function NavExamples() {
                 <Search strokeWidth={1.5} />
               </NavSlot>
               <NavButtonContent>Search</NavButtonContent>
-              <NavShortcut className="ms-auto">⌘K</NavShortcut>
+              <NavSlot $kind="shortcut" className="ms-auto">
+                ⌘K
+              </NavSlot>
             </NavButton>
           </li>
           <NavLink href="#inbox">
@@ -1208,7 +1209,7 @@ export default function NavExamples() {
                       <Search />
                     </NavSlot>
                     <NavButtonContent>بحث</NavButtonContent>
-                    <NavShortcut>⌘K</NavShortcut>
+                    <NavSlot $kind="shortcut">⌘K</NavSlot>
                   </NavButton>
                 </NavList>
               </NavGroup>
@@ -1253,7 +1254,9 @@ export default function NavExamples() {
                       <Search strokeWidth={1.5} />
                     </NavSlot>
                     <NavButtonContent>بحث</NavButtonContent>
-                    <NavShortcut className="ms-auto">⌘K</NavShortcut>
+                    <NavSlot $kind="shortcut" className="ms-auto">
+                      ⌘K
+                    </NavSlot>
                   </NavButton>
                 </li>
               </NavList>

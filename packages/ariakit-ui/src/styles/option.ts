@@ -4,7 +4,6 @@ import {
   buttonContent,
   buttonDescription,
   buttonLabel,
-  buttonShortcut,
   buttonSlot,
 } from "./button.ts";
 
@@ -29,8 +28,5 @@ export const optionDescription = buttonDescription;
 /** Option label text with optional truncation. */
 export const optionLabel = buttonLabel;
 
-/** An option slot for an icon, avatar, badge, or short text. */
+/** An option slot for an icon, avatar, badge, or shortcut. */
 export const optionSlot = buttonSlot;
-
-/** A keyboard shortcut beside an option label. */
-export const optionShortcut = buttonShortcut;

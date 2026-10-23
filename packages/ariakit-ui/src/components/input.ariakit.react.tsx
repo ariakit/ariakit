@@ -11,7 +11,7 @@ import { splitProps } from "clava";
 import type { MouseEvent } from "react";
 import { useRef } from "react";
 import { wrapsSlotChildren } from "../styles/control.ts";
-import { input, inputShortcut, inputSlot } from "../styles/input.ts";
+import { input, inputSlot } from "../styles/input.ts";
 
 export interface InputProps
   extends
@@ -112,27 +112,5 @@ export function InputSlot(props: InputSlotProps) {
         rest.children
       )}
     </ak.Role.span>
-  );
-}
-
-export interface InputShortcutProps
-  extends ak.RoleProps<"kbd">, VariantProps<typeof inputShortcut> {}
-
-/**
- * A keyboard shortcut beside a field in an `InputGroup`. Renders a `kbd`
- * element, so pass the shortcut text, or nested `kbd` elements for the keys of
- * a chord.
- * @example
- * <InputGroup>
- *   <Input aria-label="Search" aria-keyshortcuts="Meta+K" type="search" />
- *   <InputShortcut aria-hidden>⌘K</InputShortcut>
- * </InputGroup>
- */
-export function InputShortcut(props: InputShortcutProps) {
-  const [variantProps, rest] = splitProps(props, inputShortcut);
-  return (
-    <ak.Role.kbd {...inputShortcut.jsx(variantProps)} {...rest}>
-      <span>{rest.children}</span>
-    </ak.Role.kbd>
   );
 }

@@ -15,7 +15,6 @@ import {
   disclosureButtonContent,
   disclosureButtonDescription,
   disclosureButtonLabel,
-  disclosureButtonShortcut,
   disclosureButtonSlot,
   disclosureChevron,
   disclosureContent,
@@ -307,7 +306,7 @@ export interface DisclosureButtonSlotProps
   extends ak.RoleProps<"span">, VariantProps<typeof disclosureButtonSlot> {}
 
 /**
- * An icon, badge, or avatar beside the button's `label`.
+ * An icon, badge, avatar, or shortcut beside the button's `label`.
  * @example
  * <Disclosure>
  *   <DisclosureButton label="Updates">
@@ -327,30 +326,6 @@ export function DisclosureButtonSlot(props: DisclosureButtonSlotProps) {
         rest.children
       )}
     </ak.Role.span>
-  );
-}
-
-export interface DisclosureButtonShortcutProps
-  extends ak.RoleProps<"kbd">, VariantProps<typeof disclosureButtonShortcut> {}
-
-/**
- * A keyboard shortcut beside a disclosure button label. Renders a `kbd`
- * element, so pass the shortcut text, or nested `kbd` elements for the keys of
- * a chord.
- * @example
- * <Disclosure>
- *   <DisclosureButton label="Details">
- *     <DisclosureButtonShortcut>⌘D</DisclosureButtonShortcut>
- *   </DisclosureButton>
- *   <DisclosureContent>Ships in two days.</DisclosureContent>
- * </Disclosure>
- */
-export function DisclosureButtonShortcut(props: DisclosureButtonShortcutProps) {
-  const [variantProps, rest] = splitProps(props, disclosureButtonShortcut);
-  return (
-    <ak.Role.kbd {...disclosureButtonShortcut.jsx(variantProps)} {...rest}>
-      <span>{rest.children}</span>
-    </ak.Role.kbd>
   );
 }
 

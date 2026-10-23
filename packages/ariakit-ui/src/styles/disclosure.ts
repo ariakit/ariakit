@@ -5,7 +5,6 @@ import {
   buttonContent,
   buttonDescription,
   buttonLabel,
-  buttonShortcut,
   buttonSlot,
 } from "./button.ts";
 import { getIconSlotSize } from "./control.ts";
@@ -339,9 +338,6 @@ export const disclosureButtonSlot = cv({
     $size: getIconSlotSize,
   },
 });
-
-/** A keyboard shortcut beside a disclosure button label. */
-export const disclosureButtonShortcut = buttonShortcut;
 
 const disclosureIndicatorVariants = {
   /**
