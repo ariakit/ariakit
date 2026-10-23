@@ -44,11 +44,13 @@ async function getRevealedComboboxState(page: Page) {
 }
 
 // Routes the modules that the islands in preview frames import to hydrate their
-// examples.
+// examples. Returns the paths of the frames whose modules it routed, so a test
+// can check that it changed the example it asserts on.
 async function routeExampleModules(
   page: Page,
   handler: (route: Route) => Promise<void>,
 ) {
+  const routedFrames: string[] = [];
   await page.route("**/*", async (route, request) => {
     if (request.resourceType() !== "script") return route.fallback();
     const frame = request.frame();
@@ -64,8 +66,10 @@ async function routeExampleModules(
       .catch(() => []);
     const { pathname } = new URL(request.url());
     if (!componentUrls.includes(pathname)) return route.fallback();
+    routedFrames.push(new URL(frame.url()).pathname);
     await handler(route);
   });
+  return routedFrames;
 }
 
 test("combobox preview cards work in their iframes", async ({ page, q }) => {
@@ -345,25 +349,29 @@ test("preview cards wait for a slow example to open its popup", async ({
   // On a slow network, the example module arrives seconds after the frame
   // requests it. Some browsers fire the load event of the frame before then, so
   // the example hydrates and opens its popup long after its frame loads.
-  await routeExampleModules(page, async (route) => {
+  const routedFrames = await routeExampleModules(page, async (route) => {
     await new Promise((resolve) => setTimeout(resolve, 5000));
     await route.fallback();
   });
   await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
   const revealed = await getRevealedComboboxState(page);
+  expect(routedFrames).toContain("/react/previews/combobox-group/");
   expect(revealed.expanded).toBe("true");
 });
 
 test("preview cards show an example that fails to hydrate", async ({
   page,
 }) => {
-  await routeExampleModules(page, (route) => route.abort());
+  const routedFrames = await routeExampleModules(page, (route) =>
+    route.abort(),
+  );
   await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
   const iframe = page.locator('iframe[title="Combobox Group"]');
   await expect(iframe.locator("xpath=..")).toHaveAttribute(
     "aria-busy",
     "false",
   );
+  expect(routedFrames).toContain("/react/previews/combobox-group/");
   // The server-rendered combobox has no name until hydration labels it.
   const combobox = query(iframe.contentFrame()).combobox();
   await expect(combobox).toHaveAttribute("aria-expanded", "false");
@@ -397,7 +405,7 @@ test("preview cards show a static example that opens its popup", async ({
 
 test("preview cards show an example that throws", async ({ page }) => {
   // A broken example throws as it renders, so it never mounts.
-  await routeExampleModules(page, (route) =>
+  const routedFrames = await routeExampleModules(page, (route) =>
     route.fulfill({
       contentType: "text/javascript",
       body: "export default function Example() { throw new Error('Example'); }",
@@ -409,6 +417,7 @@ test("preview cards show an example that throws", async ({ page }) => {
     "aria-busy",
     "false",
   );
+  expect(routedFrames).toContain("/react/previews/combobox-group/");
 });
 
 test("preview cards resize their viewport from the end edge", async ({
