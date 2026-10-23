@@ -8,3 +8,7 @@ test("names and describes a group, a select, and a textarea", () => {
   );
   expect(q.textbox("Bio")).toHaveAccessibleDescription("Up to 160 characters.");
 });
+
+test("stops the bio at the length that its hint states", () => {
+  expect(q.textbox("Bio")).toHaveAttribute("maxlength", "160");
+});

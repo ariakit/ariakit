@@ -13,6 +13,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toHaveAccessibleDescription("Up to 160 characters.");
   });
 
+  test("stops the bio at the length that its hint states", async ({ q }) => {
+    const bio = q.textbox("Bio");
+    await bio.clear();
+    await bio.pressSequentially("a".repeat(170));
+    await test.expect(bio).toHaveValue("a".repeat(160));
+  });
+
   test("focuses the select from a click between its label and the select", async ({
     page,
     q,
