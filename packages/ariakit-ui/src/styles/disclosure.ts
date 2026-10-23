@@ -5,9 +5,10 @@ import {
   buttonContent,
   buttonDescription,
   buttonLabel,
+  buttonShortcut,
   buttonSlot,
 } from "./button.ts";
-import { getIconSlotSize, shortcutBase } from "./control.ts";
+import { getIconSlotSize } from "./control.ts";
 import { edge } from "./edge.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
@@ -340,15 +341,7 @@ export const disclosureButtonSlot = cv({
 });
 
 /** A keyboard shortcut beside a disclosure button label. */
-export const disclosureButtonShortcut = cv({
-  extend: [disclosureButtonSlot, shortcutBase],
-  variants: {
-    $kind: null,
-  },
-  defaultVariants: {
-    $ink: 60,
-  },
-});
+export const disclosureButtonShortcut = buttonShortcut;
 
 const disclosureIndicatorVariants = {
   /**

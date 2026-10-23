@@ -1,3 +1,4 @@
+import type { VariantProps } from "clava";
 import { cv, cx } from "clava";
 import { includes } from "../utils/includes.ts";
 import { getSpacingValue } from "../utils/styles.ts";
@@ -124,6 +125,30 @@ export function isSlotSize(value: unknown): value is SlotSize {
 export function getSlotSizeClass(value: unknown) {
   if (!isSlotSize(value)) return;
   return SLOT_SIZE_CLASSES[value];
+}
+
+// Slot surfaces fade with their disabled control.
+const SLOT_SURFACE_CLASSES = [
+  // Mix the disabled surface before calculating readable text contrast.
+  "group-[.disabled]/control:ak-layer-mix-20",
+  // DOM disabled state can change without rerendering the recipe.
+  "group-ui-disabled/control:ak-layer-mix-20",
+  "group-ui-disabled-within/choice:ak-layer-mix-20",
+  // Reach slots below wrappers beyond the control's direct-child text rules.
+  "group-[.disabled]/control:ak-ink-0",
+  "group-ui-disabled/control:ak-ink-0",
+  "group-ui-disabled-within/choice:ak-ink-0",
+  // Fade image pixels only; fading the whole slot would reduce text contrast.
+  "group-[.disabled]/control:[&_img]:opacity-50",
+  "group-ui-disabled/control:[&_img]:opacity-50",
+  "group-ui-disabled-within/choice:[&_img]:opacity-50",
+];
+
+/** Resolves the forced-colors edge and disabled styles of a slot surface. */
+function getSlotSurfaceClass(variants: VariantProps<typeof frame>) {
+  // Forced colors remove the slot's fill, which may be its only boundary.
+  const needsEdge = variants.$border == null && hasLayerBackground(variants);
+  return [needsEdge && "forced-colors:ak-frame-border", SLOT_SURFACE_CLASSES];
 }
 
 /** A text-aligned slot for an icon, avatar, badge, thumbnail, or short text. */
@@ -323,27 +348,7 @@ export const controlSlot = cv({
     const paintsSurface =
       variants.$kind === "badge" || variants.$kind === "avatar";
     if (!paintsSurface) return;
-    // Forced colors remove the slot's fill, which may be its only boundary.
-    if (variants.$border == null && hasLayerBackground(variants)) {
-      addClass("forced-colors:ak-frame-border");
-    }
-    addClass([
-      // Mix the disabled surface before calculating readable text contrast.
-      "group-[.disabled]/control:ak-layer-mix-20",
-      // DOM disabled state can change without rerendering the recipe.
-      "group-ui-disabled/control:ak-layer-mix-20",
-      "group-ui-disabled-within/choice:ak-layer-mix-20",
-      // Reach slots below wrappers beyond the control's direct-child text
-      // rules.
-      "group-[.disabled]/control:ak-ink-0",
-      "group-ui-disabled/control:ak-ink-0",
-      "group-ui-disabled-within/choice:ak-ink-0",
-      // Fade image pixels only; fading the whole slot would reduce text
-      // contrast.
-      "group-[.disabled]/control:[&_img]:opacity-50",
-      "group-ui-disabled/control:[&_img]:opacity-50",
-      "group-ui-disabled-within/choice:[&_img]:opacity-50",
-    ]);
+    addClass(getSlotSurfaceClass(variants));
     if (variants.$rowSpan !== 1) return;
     if (variants.$kind === "avatar") {
       if (variants.$size === "2xl") return;
@@ -383,16 +388,22 @@ export function wrapsSlotChildren(kind?: string) {
   return kind === "badge";
 }
 
+/** Whether a fill or a border draws a box around the shortcut keys. */
+function hasShortcutSurface(variants: VariantProps<typeof frame>) {
+  if (hasLayerBackground(variants)) return true;
+  return Boolean(variants.$border);
+}
+
 /**
- * Shared text and key direction styles for shortcut style recipes. Extend it
- * with a slot style recipe, disable `$kind`, and set `$ink` to 60.
+ * A keyboard shortcut beside a control label. Render it as a `kbd` element with
+ * one child wrapper; shortcut components create both automatically. Nest `kbd`
+ * elements in the wrapper for the keys of a chord. Plain shortcuts keep the
+ * side padding of the row text; a `$layer` fill or a `$border` makes a padded
+ * surface like a badge.
  */
-export const shortcutBase = cv({
+export const controlShortcut = cv({
+  extend: [controlSlot],
   class: [
-    // Keep the side padding of the row text, and fit a single key instead of a
-    // box as wide as the slot size, as plain text does. min-w-0 sorts after the
-    // slot's min-w-(--size).
-    "[--slot-pull:0] min-w-0",
     // Monospace fonts draw ⌘ much smaller than letters. Nested keys would
     // otherwise get the monospace font that browsers give kbd elements.
     // Zero specificity lets caller font classes win.
@@ -400,23 +411,44 @@ export const shortcutBase = cv({
     // Keep key chords left-to-right while the slot retains the row direction
     // for margins.
     "*:flex *:[align-items:inherit] *:[gap:inherit] *:[direction:ltr]",
-    "*:[&>svg]:block *:[&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
+    // Size icon keys like the letters beside them, not like the slot box.
+    "*:[&>svg]:block *:[&>svg]:size-(--slot-icon-size,1em)",
   ],
-});
-
-/**
- * A keyboard shortcut beside a control label. Render it as a `kbd` element with
- * one child wrapper; shortcut components create both automatically. Nest `kbd`
- * elements in the wrapper for the keys of a chord.
- */
-export const controlShortcut = cv({
-  extend: [controlSlot, shortcutBase],
   variants: {
     // A shortcut is one kind of slot content.
     $kind: null,
   },
   defaultVariants: {
-    $ink: 60,
+    $ink(defaultValue, variants) {
+      // A painted surface sets its own text contrast.
+      if (hasLayerBackground(variants)) return defaultValue;
+      return defaultValue ?? 60;
+    },
+    $p(defaultValue, variants) {
+      if (defaultValue !== "unset") return defaultValue;
+      if (!hasShortcutSurface(variants)) return defaultValue;
+      return "auto";
+    },
+  },
+  refine({ variants, setVariants, addClass }) {
+    if (!hasShortcutSurface(variants)) {
+      // Keep the side padding of the row text, and fit a single key instead of
+      // a box as wide as the slot size. min-w-0 sorts after the slot's
+      // min-w-(--size).
+      addClass("[--slot-pull:0] min-w-0");
+      return;
+    }
+    addClass([
+      // Disabled mixing would paint a border-only surface, so fade only fills.
+      hasLayerBackground(variants) && getSlotSurfaceClass(variants),
+      // Use badge text, which the auto padding expects.
+      "*:text-[0.8125em]",
+    ]);
+    if (variants.$rowSpan !== 1) return;
+    // A surface needs a line of height to hold its text.
+    if (includes(PADDED_SLOT_SIZES, variants.$size)) {
+      setVariants({ $size: "xl" });
+    }
   },
 });
 

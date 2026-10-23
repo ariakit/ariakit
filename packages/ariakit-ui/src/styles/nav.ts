@@ -5,6 +5,7 @@ import {
   buttonContent,
   buttonDescription,
   buttonLabel,
+  buttonShortcut,
   buttonSlot,
 } from "./button.ts";
 import type { BarOffset, SlotSize } from "./control.ts";
@@ -15,7 +16,6 @@ import {
   getSlotSizeClass,
   isNamedBarOffset,
   isSlotSize,
-  shortcutBase,
 } from "./control.ts";
 import {
   disclosure,
@@ -279,16 +279,7 @@ export const navSlot = cv({
  * A keyboard shortcut aligned with navigation labels. It keeps the text size
  * instead of following the navigation `$slotSize`.
  */
-export const navShortcut = cv({
-  extend: [navSlot, shortcutBase],
-  variants: {
-    $kind: null,
-  },
-  defaultVariants: {
-    $ink: 60,
-    $size: "md",
-  },
-});
+export const navShortcut = buttonShortcut;
 
 /** A navigation link with wrapping text and a distinct current-page state. */
 export const navLink = cv({

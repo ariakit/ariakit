@@ -749,7 +749,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Icon shortcut key"
-        description="A key drawn as an icon takes the size of an icon slot, and a gap on the slot spaces the keys."
+        description="A key drawn as an icon takes the size of the letters, and a gap on the slot spaces the keys."
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
@@ -766,6 +766,60 @@ export default function ButtonExamples() {
             <Command />
             <kbd>K</kbd>
           </ButtonShortcut>
+        </Button>
+      </Example>
+
+      <Example
+        title="Large icon shortcut key"
+        description="A larger shortcut slot, as in a search field, keeps the icon key the size of the letters."
+        code={`
+          <Button>
+            <ButtonLabel>Search</ButtonLabel>
+            <ButtonShortcut $size="xl" className="gap-1">
+              <Command />
+              <kbd>K</kbd>
+            </ButtonShortcut>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonLabel>Search</ButtonLabel>
+          <ButtonShortcut $size="xl" className="gap-1">
+            <Command />
+            <kbd>K</kbd>
+          </ButtonShortcut>
+        </Button>
+      </Example>
+
+      <Example
+        title="Painted shortcut"
+        description="A layer turns the shortcut into a padded surface that sits as far from the side of the button as from its top."
+        code={`
+          <Button>
+            <ButtonLabel>Search</ButtonLabel>
+            <ButtonShortcut $layer="brand">⌘K</ButtonShortcut>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonLabel>Search</ButtonLabel>
+          <ButtonShortcut $layer="brand">⌘K</ButtonShortcut>
+        </Button>
+      </Example>
+
+      <Example
+        title="Bordered shortcut"
+        description="A border also turns the shortcut into a padded box, with the same gaps as a painted one."
+        code={`
+          <Button>
+            <ButtonLabel>Search</ButtonLabel>
+            <ButtonShortcut $border>⌘K</ButtonShortcut>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonLabel>Search</ButtonLabel>
+          <ButtonShortcut $border>⌘K</ButtonShortcut>
         </Button>
       </Example>
 
