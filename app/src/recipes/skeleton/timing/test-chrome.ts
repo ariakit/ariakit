@@ -1,6 +1,14 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  test("names each speed by its label and describes it by its latency", async ({
+    q,
+  }) => {
+    await test.expect(q.radio("Fast")).toHaveAccessibleDescription("50 ms");
+    await test.expect(q.radio("Medium")).toHaveAccessibleDescription("250 ms");
+    await test.expect(q.radio("Slow")).toHaveAccessibleDescription("1500 ms");
+  });
+
   test("shows placeholders after 150 ms for at least 200 ms", async ({ q }) => {
     // The placeholders can stay after the data arrives, so wait for the
     // content.
@@ -68,7 +76,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // The placeholders can stay after the data arrives, so wait for the
     // content.
     await test.expect(q.button("Message")).toBeVisible();
-    await q.radio(/^Fast/).click();
+    await q.radio("Fast").click();
     await test.expect(q.status()).toHaveText("Loading contact");
     await test.expect(q.status()).toHaveText("Contact loaded");
     const times = q.definition();
