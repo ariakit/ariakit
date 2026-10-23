@@ -64,7 +64,7 @@
     "@shikijs/langs": "4.5.0",
     "@shikijs/themes": "4.5.0",
     "@tailwindcss/vite": "4.3.3",
-    "@wordpress/components": "42.0.0",
+    "@wordpress/components": "43.0.0",
     "astro": "7.4.1",
     "clsx": "2.1.1",
     "hast-util-to-text": "4.0.2",
