@@ -94,7 +94,7 @@ export default function RadioExamples() {
         `}
       >
         <RadioProvider defaultValue="pro">
-          <RadioGroup aria-label="Plan" className="grid gap-1">
+          <RadioGroup aria-label="Plan" className="grid gap-2">
             {plans.map((plan) => (
               <RadioField key={plan.value} value={plan.value}>
                 <RadioLabel>{plan.label}</RadioLabel>
@@ -127,7 +127,7 @@ export default function RadioExamples() {
         `}
       >
         <RadioProvider defaultValue="pro">
-          <RadioGroup aria-label="Plan" className="grid gap-1">
+          <RadioGroup aria-label="Plan" className="grid gap-2">
             {plans.map((plan) => (
               <RadioField key={plan.value} value={plan.value}>
                 <RadioLabel>{plan.label}</RadioLabel>
@@ -140,7 +140,7 @@ export default function RadioExamples() {
 
       <Example
         title="Small horizontal group"
-        description="A compact row of choices. The smaller size scales the text, the dot and the row padding together."
+        description="A compact row of choices. The smaller size scales the text, the dot and the gap together."
         code={`
           <RadioProvider>
             <RadioGroup>
@@ -158,7 +158,10 @@ export default function RadioExamples() {
         `}
       >
         <RadioProvider defaultValue="pro">
-          <RadioGroup aria-label="Plan" className="flex flex-wrap gap-1">
+          <RadioGroup
+            aria-label="Plan"
+            className="flex flex-wrap gap-x-4 gap-y-2"
+          >
             {plans.map((plan) => (
               <RadioField key={plan.value} value={plan.value} $size="sm">
                 <RadioLabel>{plan.label}</RadioLabel>
@@ -221,7 +224,7 @@ export default function RadioExamples() {
         `}
       >
         <RadioProvider defaultValue="yearly">
-          <RadioGroup aria-label="Billing" className="grid gap-1">
+          <RadioGroup aria-label="Billing" className="grid gap-2">
             <RadioField value="monthly">
               <RadioLabel>Monthly</RadioLabel>
             </RadioField>
@@ -256,7 +259,7 @@ export default function RadioExamples() {
         `}
       >
         <RadioProvider defaultValue="pro">
-          <RadioGroup aria-label="Plan" className="grid gap-1" disabled>
+          <RadioGroup aria-label="Plan" className="grid gap-2" disabled>
             {plans.map((plan) => (
               <RadioField key={plan.value} value={plan.value}>
                 <RadioLabel>{plan.label}</RadioLabel>
@@ -289,7 +292,7 @@ export default function RadioExamples() {
       >
         <Frame $layer="brand" $rounded="xl" $p={4} className="w-full">
           <RadioProvider defaultValue="pro">
-            <RadioGroup aria-label="Plan" className="grid gap-1">
+            <RadioGroup aria-label="Plan" className="grid gap-2">
               {plans.map((plan) => (
                 <RadioField key={plan.value} value={plan.value}>
                   <RadioLabel>{plan.label}</RadioLabel>
@@ -676,7 +679,10 @@ export default function RadioExamples() {
         `}
       >
         <RadioProvider>
-          <RadioGroup aria-label="Unavailable notifications">
+          <RadioGroup
+            aria-label="Unavailable notifications"
+            className="grid gap-2"
+          >
             <RadioField value="email" disabled>
               <RadioLabel>Email</RadioLabel>
               <RadioDescription>Receive email updates.</RadioDescription>

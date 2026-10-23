@@ -48,9 +48,10 @@ export const control = cv({
     $gap: {
       none: "",
       sm: "[--gap:var(--py)] gap-(--gap)",
-      md: "[--gap:calc(var(--px)-var(--sidebearing))] gap-(--gap)",
-      lg: "[--gap:var(--px)] gap-(--gap)",
-      xl: "[--gap:calc(var(--px)+var(--sidebearing))] gap-(--gap)",
+      // Keep content apart in rows with little or no side padding.
+      md: "[--gap:max(var(--spacing),calc(var(--px)-var(--sidebearing)))] gap-(--gap)",
+      lg: "[--gap:max(var(--spacing),var(--px))] gap-(--gap)",
+      xl: "[--gap:max(var(--spacing),calc(var(--px)+var(--sidebearing)))] gap-(--gap)",
     },
     /**
      * Sets the vertical gap between the element's label and description.
@@ -144,7 +145,9 @@ export const controlSlot = cv({
     // Custom marks set --slot-icon-size; painted icon slots use
     // --slot-icon-scale.
     "[&>svg]:block [&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
-    "mx-(--mx) my-(--my)",
+    // Outside a text frame, --px and --py are missing and the slot has no side
+    // margin.
+    "mx-(--mx,0px) my-(--my)",
   ],
   variants: {
     /** Sets the slot size. */

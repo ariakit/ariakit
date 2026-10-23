@@ -100,7 +100,7 @@ function SelectAll() {
   const some = selected.length > 0 && !all;
   const getChildId = (feature: Feature) => `${id}-${feature.value}`;
   return (
-    <div className="grid gap-1">
+    <div className="grid gap-2">
       <CheckboxField
         checked={all ? true : some ? "mixed" : false}
         aria-controls={features.map(getChildId).join(" ")}
@@ -110,7 +110,7 @@ function SelectAll() {
       >
         <CheckboxLabel>All features</CheckboxLabel>
       </CheckboxField>
-      <div role="group" aria-label="Features" className="grid gap-1 ps-6">
+      <div role="group" aria-label="Features" className="grid gap-2 ps-6">
         {features.map((feature) => (
           <CheckboxField
             key={feature.value}
@@ -274,6 +274,20 @@ export default function CheckboxExamples() {
           <CheckboxDescription>
             A summary of the week, every Monday
           </CheckboxDescription>
+        </CheckboxField>
+      </Example>
+
+      <Example
+        title="Bordered field"
+        description="A border or a background makes the row visible, so the field keeps its padding around the box and the label. Without them, the box sits at the field edge."
+        code={`
+          <CheckboxField $layer $border defaultChecked>
+            <CheckboxLabel>Accept the terms</CheckboxLabel>
+          </CheckboxField>
+        `}
+      >
+        <CheckboxField $layer $border defaultChecked>
+          <CheckboxLabel>Accept the terms</CheckboxLabel>
         </CheckboxField>
       </Example>
 
@@ -646,7 +660,7 @@ export default function CheckboxExamples() {
           $layer="brand"
           $rounded="xl"
           $p={4}
-          className="grid w-full gap-1"
+          className="grid w-full gap-2"
         >
           <CheckboxField defaultChecked>
             <CheckboxLabel>Email me</CheckboxLabel>
