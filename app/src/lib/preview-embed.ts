@@ -293,6 +293,12 @@ export function setupPreviewEmbed() {
       attributes: true,
       attributeFilter: ["data-preview-hydrated"],
     });
+    // A page without islands, such as a static preview, has nothing to hydrate.
+    document.addEventListener("DOMContentLoaded", () => {
+      if (document.querySelector("astro-island")) return;
+      observer.disconnect();
+      callback();
+    });
   };
 
   // The stylesheet stops the root scroller of an inactive page, so the browser
@@ -540,10 +546,15 @@ export function setupPreviewEmbed() {
       await openPopup();
       finishOpening();
     });
-    // A page that never hydrates, such as one that throws, still shows its
-    // trigger this long after it loads.
-    window.addEventListener("load", () => {
-      setTimeout(finishOpening, 3000);
+    // A page that fails to hydrate, such as one whose example throws, stops
+    // waiting so the card shows it. A timer would also show a page that
+    // hydrates slowly, which happens long after it loads on a slow network.
+    window.addEventListener("astro:hydration-error", finishOpening);
+    // Errors after hydration, such as a ResizeObserver loop while the popup
+    // opens, do not end the wait before the page scrolls to the popup.
+    window.addEventListener("error", () => {
+      if (root.hasAttribute("data-preview-hydrated")) return;
+      finishOpening();
     });
   }
 
