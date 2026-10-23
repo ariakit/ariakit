@@ -15,6 +15,7 @@ import {
   getSlotSizeClass,
   isNamedBarOffset,
   isSlotSize,
+  shortcutBase,
 } from "./control.ts";
 import {
   disclosure,
@@ -222,7 +223,7 @@ const navSlotBase = cv({
      */
     $mx: {
       auto: [
-        "[*+&]:[--mx:calc(((var(--py)-var(--px))*var(--slot-pull,1)+max(0px,var(--my)))*var(--control-inline,1))]",
+        "[*+&]:[--mx:calc((var(--py)-var(--px)+max(0px,var(--my)))*var(--slot-pull,1)*var(--control-inline,1))]",
         "[*+&]:me-(--mx)",
       ],
     },
@@ -234,7 +235,7 @@ const navSlotBase = cv({
 });
 
 /**
- * An icon, badge, avatar, shortcut, or text slot aligned with navigation
+ * An icon, badge, avatar, thumbnail, or text slot aligned with navigation
  * labels.
  */
 export const navSlot = cv({
@@ -242,7 +243,6 @@ export const navSlot = cv({
   defaultVariants: {
     $size(defaultValue, variants) {
       if (defaultValue !== "auto") return defaultValue;
-      if (variants.$kind === "shortcut") return "md";
       // A picture keeps a line of height instead of the icon size.
       if (variants.$kind === "thumbnail") return "xl";
       if (variants.$kind === "text") return "xl";
@@ -272,6 +272,21 @@ export const navSlot = cv({
       addClass("[*+&]:[--size:var(--nav-slot-size,1lh)]");
     }
     if (variants.$p === "auto") addClass("first:px-[calc(var(--size)*0.15)]");
+  },
+});
+
+/**
+ * A keyboard shortcut aligned with navigation labels. It keeps the text size
+ * instead of following the navigation `$slotSize`.
+ */
+export const navShortcut = cv({
+  extend: [navSlot, shortcutBase],
+  variants: {
+    $kind: null,
+  },
+  defaultVariants: {
+    $ink: 60,
+    $size: "md",
   },
 });
 

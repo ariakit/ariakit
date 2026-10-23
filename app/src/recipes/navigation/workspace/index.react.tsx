@@ -13,6 +13,7 @@ import {
   NavLink,
   NavLinkLabel,
   NavList,
+  NavShortcut,
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import { Separator } from "@ariakit/ui/components/separator.ariakit.react";
@@ -81,7 +82,7 @@ function renderLink(link: Link, path = getPath(link.label)) {
           {link.count}
         </NavSlot>
       )}
-      {link.shortcut && <NavSlot $kind="shortcut">{link.shortcut}</NavSlot>}
+      {link.shortcut && <NavShortcut>{link.shortcut}</NavShortcut>}
     </RouterNavLink>
   );
 }

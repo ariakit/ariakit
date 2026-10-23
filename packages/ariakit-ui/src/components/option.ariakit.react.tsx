@@ -2,7 +2,7 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { wrapsSlotChildren } from "../styles/control.ts";
-import { optionLabel, optionSlot } from "../styles/option.ts";
+import { optionLabel, optionShortcut, optionSlot } from "../styles/option.ts";
 
 export interface OptionLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof optionLabel> {}
@@ -46,5 +46,28 @@ export function OptionSlot(props: OptionSlotProps) {
         rest.children
       )}
     </ak.Role.span>
+  );
+}
+
+export interface OptionShortcutProps
+  extends ak.RoleProps<"kbd">, VariantProps<typeof optionShortcut> {}
+
+/**
+ * A keyboard shortcut beside an option label. Renders a `kbd` element, so pass
+ * the shortcut text, or nested `kbd` elements for the keys of a chord.
+ * @example
+ * <Combobox label="Command">
+ *   <ComboboxItem value="New file">
+ *     <OptionLabel>New file</OptionLabel>
+ *     <OptionShortcut>⌘N</OptionShortcut>
+ *   </ComboboxItem>
+ * </Combobox>
+ */
+export function OptionShortcut(props: OptionShortcutProps) {
+  const [variantProps, rest] = splitProps(props, optionShortcut);
+  return (
+    <ak.Role.kbd {...optionShortcut.jsx(variantProps)} {...rest}>
+      <span>{rest.children}</span>
+    </ak.Role.kbd>
   );
 }

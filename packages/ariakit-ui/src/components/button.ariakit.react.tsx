@@ -14,6 +14,7 @@ import {
   buttonGroup,
   buttonLabel,
   buttonSeparator,
+  buttonShortcut,
   buttonSlot,
 } from "../styles/button.ts";
 import { wrapsSlotChildren } from "../styles/control.ts";
@@ -195,5 +196,26 @@ export function ButtonSlot(props: ButtonSlotProps) {
         rest.children
       )}
     </ak.Role.span>
+  );
+}
+
+export interface ButtonShortcutProps
+  extends ak.RoleProps<"kbd">, VariantProps<typeof buttonShortcut> {}
+
+/**
+ * A keyboard shortcut beside a button label. Renders a `kbd` element, so pass
+ * the shortcut text, or nested `kbd` elements for the keys of a chord.
+ * @example
+ * <Button>
+ *   <ButtonLabel>Save</ButtonLabel>
+ *   <ButtonShortcut>⌘S</ButtonShortcut>
+ * </Button>
+ */
+export function ButtonShortcut(props: ButtonShortcutProps) {
+  const [variantProps, rest] = splitProps(props, buttonShortcut);
+  return (
+    <ak.Role.kbd {...buttonShortcut.jsx(variantProps)} {...rest}>
+      <span>{rest.children}</span>
+    </ak.Role.kbd>
   );
 }

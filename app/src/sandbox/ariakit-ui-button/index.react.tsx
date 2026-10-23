@@ -15,6 +15,7 @@ import {
   ButtonGroup,
   ButtonLabel,
   ButtonSeparator,
+  ButtonShortcut,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
@@ -710,17 +711,13 @@ export default function ButtonExamples() {
         code={`
           <Button>
             <ButtonLabel>Save</ButtonLabel>
-            <ButtonSlot $kind="shortcut">
-              <kbd>⌘S</kbd>
-            </ButtonSlot>
+            <ButtonShortcut>⌘S</ButtonShortcut>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Save</ButtonLabel>
-          <ButtonSlot $kind="shortcut">
-            <kbd>⌘S</kbd>
-          </ButtonSlot>
+          <ButtonShortcut>⌘S</ButtonShortcut>
         </Button>
       </Example>
 
@@ -731,10 +728,10 @@ export default function ButtonExamples() {
           <div dir="rtl">
             <Button>
               <ButtonLabel>حفظ</ButtonLabel>
-              <ButtonSlot $kind="shortcut">
+              <ButtonShortcut>
                 <kbd>⌘</kbd>
                 <kbd>S</kbd>
-              </ButtonSlot>
+              </ButtonShortcut>
             </Button>
           </div>
         `}
@@ -742,10 +739,10 @@ export default function ButtonExamples() {
         <div dir="rtl" lang="ar" className="w-full">
           <Button>
             <ButtonLabel>حفظ</ButtonLabel>
-            <ButtonSlot $kind="shortcut">
+            <ButtonShortcut>
               <kbd>⌘</kbd>
               <kbd>S</kbd>
-            </ButtonSlot>
+            </ButtonShortcut>
           </Button>
         </div>
       </Example>
@@ -756,19 +753,19 @@ export default function ButtonExamples() {
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $kind="shortcut" className="gap-1">
+            <ButtonShortcut className="gap-1">
               <Command />
               <kbd>K</kbd>
-            </ButtonSlot>
+            </ButtonShortcut>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Search</ButtonLabel>
-          <ButtonSlot $kind="shortcut" className="gap-1">
+          <ButtonShortcut className="gap-1">
             <Command />
             <kbd>K</kbd>
-          </ButtonSlot>
+          </ButtonShortcut>
         </Button>
       </Example>
 
@@ -824,7 +821,7 @@ export default function ButtonExamples() {
               <ButtonLabel>Open Ariakit UI</ButtonLabel>
               <ButtonDescription>…</ButtonDescription>
             </ButtonContent>
-            <ButtonSlot $kind="shortcut">↵</ButtonSlot>
+            <ButtonShortcut>↵</ButtonShortcut>
           </Button>
         `}
       >
@@ -843,7 +840,7 @@ export default function ButtonExamples() {
               A secondary line that truncates when the row runs out of room
             </ButtonDescription>
           </ButtonContent>
-          <ButtonSlot $kind="shortcut">↵</ButtonSlot>
+          <ButtonShortcut>↵</ButtonShortcut>
         </Button>
       </Example>
 

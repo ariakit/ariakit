@@ -6,6 +6,7 @@ import {
   choiceCardDescription,
   choiceCardGrid,
   choiceCardLabel,
+  choiceCardShortcut,
   choiceCardSlot,
   choiceField,
   choiceFieldContent,
@@ -48,6 +49,9 @@ export const checkboxCardCheck = cv({
 
 /** A text-aligned slot for checkbox card icons and other content. */
 export const checkboxCardSlot = choiceCardSlot;
+
+/** A keyboard shortcut beside a checkbox card label. */
+export const checkboxCardShortcut = choiceCardShortcut;
 
 /** A flexible wrapper for a checkbox card's label and description. */
 export const checkboxCardContent = choiceCardContent;

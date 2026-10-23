@@ -126,10 +126,7 @@ export function getSlotSizeClass(value: unknown) {
   return SLOT_SIZE_CLASSES[value];
 }
 
-/**
- * A text-aligned slot for an icon, avatar, badge, keyboard shortcut, or short
- * text.
- */
+/** A text-aligned slot for an icon, avatar, badge, thumbnail, or short text. */
 export const controlSlot = cv({
   extend: [frame],
   class: [
@@ -139,7 +136,7 @@ export const controlSlot = cv({
     // icon sits as far from the side as from the top; text slots set
     // --slot-pull to zero to keep the text inset.
     "[--my:calc((1lh-var(--size,1lh))/2*var(--row-span)*var(--control-inline,1))]",
-    "[--mx:calc(((var(--py)-var(--px))*var(--slot-pull,1)+var(--my))*var(--control-inline,1))]",
+    "[--mx:calc((var(--py)-var(--px)+var(--my))*var(--slot-pull,1)*var(--control-inline,1))]",
     "min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
     // Custom marks set --slot-icon-size; painted icon slots use
     // --slot-icon-scale.
@@ -159,7 +156,7 @@ export const controlSlot = cv({
       unset: "",
       // Add the far-side overflow of oversized icons to the label gap. Tailwind
       // emits me-* after mx-*, so this margin wins.
-      auto: "me-[calc(var(--mx)+max(0px,(var(--size,1lh)-1lh)/2)*var(--control-inline,1))]",
+      auto: "me-[calc(var(--mx)+max(0px,(var(--size,1lh)-1lh)/2)*var(--slot-pull,1)*var(--control-inline,1))]",
       closeGap:
         "[&+*]:ms-[calc(var(--spacing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--spacing)*-1*var(--control-inline,1))]",
       xs: "[&+*]:ms-[calc(var(--sidebearing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--sidebearing)*-1*var(--control-inline,1))]",
@@ -197,8 +194,8 @@ export const controlSlot = cv({
       return getFrameRoundedClass(value);
     },
     /**
-     * Sets the slot content type. `badge` and `shortcut` need one child
-     * wrapper; slot components create it automatically. For badge truncation,
+     * Sets the slot content type. `badge` needs one child wrapper; slot
+     * components create it automatically. For badge truncation,
      * use a width-limited child with `block overflow-x-clip text-ellipsis
      * whitespace-nowrap` to preserve descenders. `thumbnail` is a bordered 4:3
      * box that an image or another picture fills. `text`, such as a count or a
@@ -208,12 +205,6 @@ export const controlSlot = cv({
     $kind: {
       icon: "",
       thumbnail: "overflow-clip aspect-4/3 *:size-full *:object-cover",
-      shortcut: [
-        // Keep key chords left-to-right while the slot retains the row
-        // direction for margins.
-        "*:flex *:[align-items:inherit] *:[gap:inherit] *:[direction:ltr]",
-        "*:[&>svg]:block *:[&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
-      ],
       avatar: "overflow-clip",
       // Keep the side padding of the row text, and let nested slots move again.
       // Fit short text, such as a single digit, instead of a line-wide box.
@@ -271,10 +262,6 @@ export const controlSlot = cv({
       if (variants.$kind === "avatar") return true;
       if (variants.$floating) return true;
       return defaultValue;
-    },
-    $ink(defaultValue, variants) {
-      if (variants.$kind !== "shortcut") return defaultValue;
-      return defaultValue ?? 60;
     },
     $lightnessOffset(defaultValue, variants) {
       if (variants.$kind !== "avatar") return defaultValue;
@@ -391,13 +378,47 @@ export function getIconSlotSize<Size extends string>(
   return "auto" as const;
 }
 
-/**
- * Whether the slot needs one child wrapper for badge typography or
- * left-to-right shortcuts.
- */
+/** Whether the slot needs one child wrapper for badge typography. */
 export function wrapsSlotChildren(kind?: string) {
-  return kind === "badge" || kind === "shortcut";
+  return kind === "badge";
 }
+
+/**
+ * Shared text and key direction styles for shortcut style recipes. Extend it
+ * with a slot style recipe, disable `$kind`, and set `$ink` to 60.
+ */
+export const shortcutBase = cv({
+  class: [
+    // Keep the side padding of the row text, and fit a single key instead of a
+    // box as wide as the slot size, as plain text does. min-w-0 sorts after the
+    // slot's min-w-(--size).
+    "[--slot-pull:0] min-w-0",
+    // Monospace fonts draw ⌘ much smaller than letters. Nested keys would
+    // otherwise get the monospace font that browsers give kbd elements.
+    // Zero specificity lets caller font classes win.
+    "[:where(&)]:font-sans [:where(&>*>*)]:font-[family-name:inherit]",
+    // Keep key chords left-to-right while the slot retains the row direction
+    // for margins.
+    "*:flex *:[align-items:inherit] *:[gap:inherit] *:[direction:ltr]",
+    "*:[&>svg]:block *:[&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
+  ],
+});
+
+/**
+ * A keyboard shortcut beside a control label. Render it as a `kbd` element with
+ * one child wrapper; shortcut components create both automatically. Nest `kbd`
+ * elements in the wrapper for the keys of a chord.
+ */
+export const controlShortcut = cv({
+  extend: [controlSlot, shortcutBase],
+  variants: {
+    // A shortcut is one kind of slot content.
+    $kind: null,
+  },
+  defaultVariants: {
+    $ink: 60,
+  },
+});
 
 /** A flexible wrapper for a control's label and description. */
 export const controlContent = cv({

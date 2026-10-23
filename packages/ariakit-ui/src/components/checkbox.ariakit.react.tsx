@@ -9,6 +9,7 @@ import {
   checkboxCardDescription,
   checkboxCardGrid,
   checkboxCardLabel,
+  checkboxCardShortcut,
   checkboxCardSlot,
   checkboxContent,
   checkboxDescription,
@@ -170,6 +171,27 @@ export function CheckboxCardSlot(props: CheckboxCardSlotProps) {
         rest.children
       )}
     </ak.Role.span>
+  );
+}
+
+export interface CheckboxCardShortcutProps
+  extends ak.RoleProps<"kbd">, VariantProps<typeof checkboxCardShortcut> {}
+
+/**
+ * A keyboard shortcut beside a checkbox card label. Renders a `kbd` element, so
+ * pass the shortcut text, or nested `kbd` elements for the keys of a chord.
+ * @example
+ * <CheckboxCard>
+ *   <CheckboxCardLabel>Bold</CheckboxCardLabel>
+ *   <CheckboxCardShortcut>⌘B</CheckboxCardShortcut>
+ * </CheckboxCard>
+ */
+export function CheckboxCardShortcut(props: CheckboxCardShortcutProps) {
+  const [variantProps, rest] = splitProps(props, checkboxCardShortcut);
+  return (
+    <ak.Role.kbd {...checkboxCardShortcut.jsx(variantProps)} {...rest}>
+      <span>{rest.children}</span>
+    </ak.Role.kbd>
   );
 }
 

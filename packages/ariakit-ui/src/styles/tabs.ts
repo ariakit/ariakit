@@ -5,6 +5,7 @@ import {
   buttonGroup,
   buttonLabel,
   buttonSeparator,
+  buttonShortcut,
   buttonSlot,
 } from "./button.ts";
 import { frame } from "./frame.ts";
@@ -209,8 +210,11 @@ export const tab = cv({
   },
 });
 
-/** A tab slot for an icon, avatar, badge, or shortcut. */
+/** A tab slot for an icon, avatar, badge, or short text. */
 export const tabSlot = buttonSlot;
+
+/** A keyboard shortcut beside a tab label. */
+export const tabShortcut = buttonShortcut;
 
 /** Tab label text with optional truncation. */
 export const tabLabel = buttonLabel;

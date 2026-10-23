@@ -17,6 +17,7 @@ import {
   comboboxItemContent,
   comboboxItemDescription,
   comboboxItemLabel,
+  comboboxItemShortcut,
   comboboxItemSlot,
   comboboxList,
   comboboxSelect,
@@ -455,6 +456,29 @@ export function ComboboxItemSlot(props: ComboboxItemSlotProps) {
         rest.children
       )}
     </ak.Role.span>
+  );
+}
+
+export interface ComboboxItemShortcutProps
+  extends ak.RoleProps<"kbd">, VariantProps<typeof comboboxItemShortcut> {}
+
+/**
+ * A keyboard shortcut beside a suggestion's label. Renders a `kbd` element, so
+ * pass the shortcut text, or nested `kbd` elements for the keys of a chord.
+ * @example
+ * <Combobox label="Command">
+ *   <ComboboxItem value="New file">
+ *     <ComboboxItemLabel>New file</ComboboxItemLabel>
+ *     <ComboboxItemShortcut>⌘N</ComboboxItemShortcut>
+ *   </ComboboxItem>
+ * </Combobox>
+ */
+export function ComboboxItemShortcut(props: ComboboxItemShortcutProps) {
+  const [variantProps, rest] = splitProps(props, comboboxItemShortcut);
+  return (
+    <ak.Role.kbd {...comboboxItemShortcut.jsx(variantProps)} {...rest}>
+      <span>{rest.children}</span>
+    </ak.Role.kbd>
   );
 }
 

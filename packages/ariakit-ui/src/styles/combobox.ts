@@ -8,6 +8,7 @@ import {
   optionContent,
   optionDescription,
   optionLabel,
+  optionShortcut,
   optionSlot,
 } from "./option.ts";
 import { popover } from "./popover.ts";
@@ -121,6 +122,9 @@ export const comboboxItemDescription = optionDescription;
 export const comboboxItemLabel = optionLabel;
 /** A text-aligned slot for combobox item icons and other content. */
 export const comboboxItemSlot = optionSlot;
+
+/** A keyboard shortcut beside a combobox item label. */
+export const comboboxItemShortcut = optionShortcut;
 
 // Neutral flat selects use input styling. Transparent, colored, and beveled
 // selects keep button styling.

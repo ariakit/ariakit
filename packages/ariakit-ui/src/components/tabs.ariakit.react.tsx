@@ -16,6 +16,7 @@ import {
   tabList,
   tabPanels,
   tabSeparator,
+  tabShortcut,
   tabSlot,
   tabs,
 } from "../styles/tabs.ts";
@@ -269,7 +270,7 @@ export interface TabSlotProps
   extends ComponentProps<"span">, VariantProps<typeof tabSlot> {}
 
 /**
- * Renders an icon, badge, or shortcut next to a tab label.
+ * Renders an icon or badge next to a tab label.
  * @example
  * <Tabs>
  *   <TabList aria-label="Project">
@@ -294,6 +295,34 @@ export function TabSlot(props: TabSlotProps) {
         rest.children
       )}
     </span>
+  );
+}
+
+export interface TabShortcutProps
+  extends ComponentProps<"kbd">, VariantProps<typeof tabShortcut> {}
+
+/**
+ * A keyboard shortcut beside a tab label. Renders a `kbd` element, so pass the
+ * shortcut text, or nested `kbd` elements for the keys of a chord.
+ * @example
+ * <Tabs>
+ *   <TabList aria-label="Project">
+ *     <Tab id="activity">
+ *       <TabLabel>Activity</TabLabel>
+ *       <TabShortcut>⌘1</TabShortcut>
+ *     </Tab>
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="activity">Three recent changes</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
+ */
+export function TabShortcut(props: TabShortcutProps) {
+  const [variantProps, rest] = splitProps(props, tabShortcut);
+  return (
+    <kbd {...tabShortcut.jsx(variantProps)} {...rest}>
+      <span>{rest.children}</span>
+    </kbd>
   );
 }
 

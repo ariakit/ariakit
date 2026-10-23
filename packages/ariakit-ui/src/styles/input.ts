@@ -1,5 +1,5 @@
 import { cv } from "clava";
-import { control, controlSlot } from "./control.ts";
+import { control, controlShortcut, controlSlot } from "./control.ts";
 import { focusHighlight } from "./focus.ts";
 
 /** A text field or field wrapper with focus, invalid, and disabled styles. */
@@ -89,6 +89,9 @@ export const input = cv({
 
 /** A text-aligned slot for field icons and other content. */
 export const inputSlot = controlSlot;
+
+/** A keyboard shortcut in a field, such as one that focuses a search field. */
+export const inputShortcut = controlShortcut;
 
 /** Placeholder-colored text for an empty control styled as an input. */
 export const inputPlaceholder = cv({

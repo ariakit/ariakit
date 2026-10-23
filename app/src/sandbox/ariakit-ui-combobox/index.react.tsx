@@ -15,6 +15,7 @@ import {
   ComboboxItemContent,
   ComboboxItemDescription,
   ComboboxItemLabel,
+  ComboboxItemShortcut,
   ComboboxItemSlot,
   ComboboxLabel,
   ComboboxList,
@@ -265,10 +266,10 @@ export default function ComboboxExamples() {
                 <ComboboxItemContent>
                   <ComboboxItemLabel>New file</ComboboxItemLabel>
                 </ComboboxItemContent>
-                <ComboboxItemSlot $kind="shortcut">
+                <ComboboxItemShortcut>
                   <kbd>⌘</kbd>
                   <kbd>N</kbd>
-                </ComboboxItemSlot>
+                </ComboboxItemShortcut>
               </ComboboxItem>
               <ComboboxItem value="Share">
                 <ComboboxItemSlot>
@@ -297,10 +298,10 @@ export default function ComboboxExamples() {
                 <ComboboxItemContent>
                   <ComboboxItemLabel>New file</ComboboxItemLabel>
                 </ComboboxItemContent>
-                <ComboboxItemSlot $kind="shortcut" aria-hidden>
+                <ComboboxItemShortcut aria-hidden>
                   <kbd>⌘</kbd>
                   <kbd>N</kbd>
-                </ComboboxItemSlot>
+                </ComboboxItemShortcut>
               </ComboboxItem>
               <ComboboxItem value="Share">
                 <ComboboxItemSlot>

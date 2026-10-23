@@ -8,6 +8,7 @@ import {
   controlGroup,
   controlLabel,
   controlSeparator,
+  controlShortcut,
   controlSlot,
 } from "./control.ts";
 import { focusHighlight } from "./focus.ts";
@@ -146,8 +147,11 @@ export const buttonGroup = controlGroup;
 /** A line, slash, or chevron between buttons. */
 export const buttonSeparator = controlSeparator;
 
-/** A text-aligned slot for a button icon, avatar, badge, or shortcut. */
+/** A text-aligned slot for a button icon, avatar, badge, or short text. */
 export const buttonSlot = controlSlot;
+
+/** A keyboard shortcut beside a button label. */
+export const buttonShortcut = controlShortcut;
 
 /** A flexible wrapper for a button's label and description. */
 export const buttonContent = controlContent;
