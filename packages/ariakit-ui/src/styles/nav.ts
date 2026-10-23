@@ -13,6 +13,7 @@ import {
   getBarOffset,
   getNamedBarOffsetClass,
   getSlotSizeClass,
+  hasSlotSurface,
   isNamedBarOffset,
   isSlotSize,
 } from "./control.ts";
@@ -214,8 +215,8 @@ const navSlotBase = cv({
      * Sets the slot size. `auto` follows the navigation `$slotSize`, or the
      * text size; without `$slotSize`, a badge after the label takes the line
      * height instead. Numbers scale the spacing token; other lengths apply
-     * directly. Named sizes `xs` to `lg` become `xl` for badges and avatars;
-     * `xl` and larger add label spacing.
+     * directly. Named sizes `xs` to `lg` become `xl` for badges, avatars, and
+     * shortcuts with a fill or a border; `xl` and larger add label spacing.
      */
     $size(value?: SlotSize | "auto" | number | (string & {})) {
       if (value == null) return;
@@ -231,13 +232,14 @@ const navSlotBase = cv({
      */
     $mx: {
       auto: [
-        "[*+&]:[--mx:calc(((var(--py)-var(--px))*var(--slot-pull,1)+max(0px,var(--my)))*var(--control-inline,1))]",
+        "[*+&]:[--mx:calc((var(--py)-var(--px)+max(0px,var(--my)))*var(--slot-pull,1)*var(--control-inline,1))]",
         "[*+&]:me-(--mx)",
       ],
     },
   },
   defaultVariants: {
-    // Resolve before controlSlot refinement converts named badge/avatar sizes.
+    // Resolve before controlSlot refinement converts the named sizes of badges,
+    // avatars, and shortcut boxes.
     $size: "auto",
   },
 });
@@ -251,7 +253,11 @@ export const navSlot = cv({
   defaultVariants: {
     $size(defaultValue, variants) {
       if (defaultValue !== "auto") return defaultValue;
-      if (variants.$kind === "shortcut") return "md";
+      if (variants.$kind === "shortcut") {
+        // This variant replaces the slot size that controlSlot would raise to a
+        // line for a shortcut surface.
+        return hasSlotSurface(variants) ? "xl" : "md";
+      }
       // A picture keeps a line of height instead of the icon size.
       if (variants.$kind === "thumbnail") return "xl";
       if (variants.$kind === "text") return "xl";
