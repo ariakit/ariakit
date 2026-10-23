@@ -1422,8 +1422,10 @@ utility(
       vars.layerParent,
       fn.var(vars.outsetLayerParent, inherit(vars.layerParentContext)),
     ),
+    // The body has no layer around it, and portals add and remove its children
+    // often, which would invalidate its :has() state on every popup.
     rule(
-      '&:has(> [class*="ak-outset"])',
+      '&:not(body):has(> [class*="ak-outset"])',
       set(provide(vars.layerParentParentContext), vars.layerParent),
     ),
     set(provide(vars.layerTextLContext), vars.layerTextL),

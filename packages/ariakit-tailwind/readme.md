@@ -807,7 +807,7 @@ The bar sits on the canvas, so `ak-layer-contrast` moves it away from the canvas
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ak-outset` | Reads the layer around the parent layer wherever the utilities on the same element would read the parent layer: `ak-layer` and its modifiers (including `ak-layer-mix` and `ak-layer-contrast`), `ak-text`, and `ak-outline`. |
 
-Put `ak-outset` on a direct child of an `ak-layer` element. The parent layer keeps the outer layer's values only when one of its direct children has `ak-outset` in its `class` attribute. A variant such as `[.ak-layer>&]:ak-outset` works, but an `ak-outset` that only comes from `@apply` in a class with another name does not.
+Put `ak-outset` on a direct child of an `ak-layer` element. The parent layer keeps the outer layer's values only when one of its direct children has `ak-outset` in its `class` attribute. A variant such as `[.ak-layer>&]:ak-outset` works, but an `ak-outset` that only comes from `@apply` in a class with another name does not. The `body` element never keeps them, because no layer surrounds it.
 
 The values do not inherit. Descendants of an `ak-outset` element measure from their own parent layer as usual. Layer appearance variants such as `ak-dark` also keep matching the parent layer. So does the direction in which `ak-layer` moves its edge color away from the layer color, so a border on an `ak-outset` element can have less contrast with the surface behind it.
 

@@ -156,7 +156,7 @@
     --_ak-lprc-odd: 1;
     --_ak-lpc-odd: var(--ak-layer);
     --ak-layer-parent: var(--_ak-osp, var(--_ak-lpc-even));
-    &:has(> [class*="ak-outset"]) {
+    &:not(body):has(> [class*="ak-outset"]) {
       --_ak-lppc-odd: var(--ak-layer-parent, canvas);
     }
     --_ak-ltlc-odd: var(--_ak-ltl);
@@ -168,7 +168,7 @@
     --_ak-lprc-even: 1;
     --_ak-lpc-even: var(--ak-layer);
     --ak-layer-parent: var(--_ak-osp, var(--_ak-lpc-odd));
-    &:has(> [class*="ak-outset"]) {
+    &:not(body):has(> [class*="ak-outset"]) {
       --_ak-lppc-even: var(--ak-layer-parent, canvas);
     }
     --_ak-ltlc-even: var(--_ak-ltl);
