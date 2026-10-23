@@ -1,5 +1,5 @@
 import { query } from "@ariakit/test/playwright";
-import type { Locator } from "@playwright/test";
+import type { Locator, Page, Route } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
@@ -13,6 +13,59 @@ async function waitForArticle(article: Locator) {
   await article.scrollIntoViewIfNeeded();
   const status = query(article).status();
   await status.filter({ hasText: "Article loaded" }).waitFor();
+}
+
+// The card shows the frame once the popup of its example has opened and the
+// frame has scrolled to it, so the frame does not show the closed combobox and
+// then jump. A retrying assertion would also pass if the popup opened after the
+// card showed the frame, so this samples the combobox state and the frame
+// scroll on each frame until the card shows the frame.
+async function getRevealedComboboxState(page: Page) {
+  const revealed = await page.waitForFunction(
+    () => {
+      const iframe = document.querySelector<HTMLIFrameElement>(
+        'iframe[title="Combobox Group"]',
+      );
+      const viewport = iframe?.parentElement;
+      if (viewport?.getAttribute("aria-busy") !== "false") return null;
+      const doc = iframe?.contentDocument;
+      const combobox = doc?.querySelector("[role=combobox]");
+      return {
+        expanded: combobox?.getAttribute("aria-expanded"),
+        scrollTop: doc?.documentElement.scrollTop,
+      };
+    },
+    null,
+    { polling: "raf" },
+  );
+  const state = await revealed.jsonValue();
+  if (!state) throw new Error("The card did not show the frame");
+  return state;
+}
+
+// Routes the modules that the islands in preview frames import to hydrate their
+// examples.
+async function routeExampleModules(
+  page: Page,
+  handler: (route: Route) => Promise<void>,
+) {
+  await page.route("**/*", async (route, request) => {
+    if (request.resourceType() !== "script") return route.fallback();
+    const frame = request.frame();
+    if (frame === page.mainFrame()) return route.fallback();
+    const componentUrls: (string | null)[] = await frame
+      .evaluate(() => {
+        const islands = document.querySelectorAll("astro-island");
+        return Array.from(islands, (island) => {
+          const url = island.getAttribute("component-url");
+          return url ? new URL(url, location.href).pathname : null;
+        });
+      })
+      .catch(() => []);
+    const { pathname } = new URL(request.url());
+    if (!componentUrls.includes(pathname)) return route.fallback();
+    await handler(route);
+  });
 }
 
 test("combobox preview cards work in their iframes", async ({ page, q }) => {
@@ -234,29 +287,19 @@ test("preview cards show the popup of their example open", async ({
   page,
   q,
 }) => {
-  // The card shows the frame once the popup has opened, so the frame does not
-  // show the closed combobox and then jump. A retrying assertion would also
-  // pass if the popup opened after the card showed the frame, so this samples
-  // the combobox state on each frame from the start of the navigation until the
-  // card shows the frame.
   await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
-  const revealed = await page.waitForFunction(
-    () => {
-      const iframe = document.querySelector<HTMLIFrameElement>(
-        'iframe[title="Combobox Group"]',
-      );
-      const viewport = iframe?.parentElement;
-      if (viewport?.getAttribute("aria-busy") !== "false") return null;
-      const combobox =
-        iframe?.contentDocument?.querySelector("[role=combobox]");
-      return { expanded: combobox?.getAttribute("aria-expanded") };
-    },
-    null,
-    { polling: "raf" },
-  );
-  expect(await revealed.jsonValue()).toEqual({ expanded: "true" });
+  const revealed = await getRevealedComboboxState(page);
+  expect(revealed.expanded).toBe("true");
 
   const iframe = page.locator('iframe[title="Combobox Group"]');
+  const html = iframe.contentFrame().locator("html");
+  // The frame centers the popup two frames after its first scroll, and no state
+  // reports a scroll that would follow the reveal.
+  await flushFrames(page);
+  expect(await html.evaluate((element) => element.scrollTop)).toBe(
+    revealed.scrollTop,
+  );
+
   await iframe.scrollIntoViewIfNeeded();
   const preview = query(iframe.contentFrame());
   const combobox = preview.combobox("Find records");
@@ -294,6 +337,78 @@ test("preview cards show the popup of their example open", async ({
   await page.mouse.click(frameBox.x + 8, frameBox.y + frameBox.height - 8);
   await expect(listbox).not.toBeVisible();
   await expect(combobox).toHaveAttribute("aria-expanded", "false");
+});
+
+test("preview cards wait for a slow example to open its popup", async ({
+  page,
+}) => {
+  // On a slow network, the example module arrives seconds after the frame
+  // requests it. Some browsers fire the load event of the frame before then, so
+  // the example hydrates and opens its popup long after its frame loads.
+  await routeExampleModules(page, async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await route.fallback();
+  });
+  await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
+  const revealed = await getRevealedComboboxState(page);
+  expect(revealed.expanded).toBe("true");
+});
+
+test("preview cards show an example that fails to hydrate", async ({
+  page,
+}) => {
+  await routeExampleModules(page, (route) => route.abort());
+  await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  await expect(iframe.locator("xpath=..")).toHaveAttribute(
+    "aria-busy",
+    "false",
+  );
+  // The server-rendered combobox has no name until hydration labels it.
+  const combobox = query(iframe.contentFrame()).combobox();
+  await expect(combobox).toHaveAttribute("aria-expanded", "false");
+});
+
+test("preview cards show a static example that opens its popup", async ({
+  page,
+}) => {
+  // No recipe has a static example that opens its popup, so the card frame
+  // loads a static preview page that asks to open it. The page has no island to
+  // hydrate.
+  await page.route("**/react/previews/combobox-group/", async (route) => {
+    const url = new URL(
+      "/astro/previews/ariakit-ui-shell-static/",
+      route.request().url(),
+    );
+    const response = await route.fetch({ url: url.href });
+    const html = await response.text();
+    const body = html.replace("<html", "<html data-preview-open");
+    await route.fulfill({ response, body });
+  });
+  await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  await expect(iframe.locator("xpath=..")).toHaveAttribute(
+    "aria-busy",
+    "false",
+  );
+  const toggle = query(iframe.contentFrame()).button("Toggle sidebar");
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+});
+
+test("preview cards show an example that throws", async ({ page }) => {
+  // A broken example throws as it renders, so it never mounts.
+  await routeExampleModules(page, (route) =>
+    route.fulfill({
+      contentType: "text/javascript",
+      body: "export default function Example() { throw new Error('Example'); }",
+    }),
+  );
+  await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  await expect(iframe.locator("xpath=..")).toHaveAttribute(
+    "aria-busy",
+    "false",
+  );
 });
 
 test("preview cards resize their viewport from the end edge", async ({
