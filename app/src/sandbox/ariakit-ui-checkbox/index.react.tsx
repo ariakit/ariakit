@@ -281,12 +281,12 @@ export default function CheckboxExamples() {
         title="Bordered field"
         description="A border or a background makes the row visible, so the field keeps its padding around the box and the label. Without them, the box sits at the field edge."
         code={`
-          <CheckboxField $layer $border defaultChecked>
+          <CheckboxField $border defaultChecked>
             <CheckboxLabel>Accept the terms</CheckboxLabel>
           </CheckboxField>
         `}
       >
-        <CheckboxField $layer $border defaultChecked>
+        <CheckboxField $border defaultChecked>
           <CheckboxLabel>Accept the terms</CheckboxLabel>
         </CheckboxField>
       </Example>
@@ -668,6 +668,37 @@ export default function CheckboxExamples() {
             <CheckboxLabel>Email me</CheckboxLabel>
           </CheckboxField>
           <CheckboxField>
+            <CheckboxLabel>Push notifications</CheckboxLabel>
+            <CheckboxDescription>On every device</CheckboxDescription>
+          </CheckboxField>
+        </Frame>
+      </Example>
+
+      <Example
+        title="Bordered fields on a brand layer"
+        description="The edge takes its color from the surface, like the edge of a card, and the row stays transparent."
+        code={`
+          <Frame $layer="brand" $rounded="xl" $p={4} className="grid gap-2">
+            <CheckboxField $border defaultChecked>
+              <CheckboxLabel>Email me</CheckboxLabel>
+            </CheckboxField>
+            <CheckboxField $border>
+              <CheckboxLabel>Push notifications</CheckboxLabel>
+              <CheckboxDescription>On every device</CheckboxDescription>
+            </CheckboxField>
+          </Frame>
+        `}
+      >
+        <Frame
+          $layer="brand"
+          $rounded="xl"
+          $p={4}
+          className="grid w-full gap-2"
+        >
+          <CheckboxField $border defaultChecked>
+            <CheckboxLabel>Email me</CheckboxLabel>
+          </CheckboxField>
+          <CheckboxField $border>
             <CheckboxLabel>Push notifications</CheckboxLabel>
             <CheckboxDescription>On every device</CheckboxDescription>
           </CheckboxField>
