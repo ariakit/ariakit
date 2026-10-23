@@ -23,14 +23,19 @@ function getCharCodeFromChar(char: string) {
 // inputs.
 function workAroundEmailInput(element: Element) {
   const input = element as HTMLInputElement;
-  if (input.tagName !== "INPUT" || input.type !== "email") return () => {};
-  input.type = "text";
-  // Email inputs have no selection API. Continue at the end when changing the
-  // type resets the caret to the start, as it does in jsdom.
-  input.setSelectionRange(input.value.length, input.value.length);
-  return () => {
+  if (input.tagName !== "INPUT" || input.type !== "email") return;
+  const makeTextInput = () => {
+    if (input.type !== "email") return;
+    input.type = "text";
+    // Email inputs have no selection API. Continue at the end when changing the
+    // type resets the caret to the start, as it does in jsdom.
+    input.setSelectionRange(input.value.length, input.value.length);
+  };
+  const restore = () => {
     input.type = "email";
   };
+  makeTextInput();
+  return { makeTextInput, restore };
 }
 
 /**
@@ -65,7 +70,7 @@ export function type(
 
     await focus(element);
 
-    let restoreEmailInput = workAroundEmailInput(element);
+    let emailInput = workAroundEmailInput(element);
 
     for (const char of text) {
       const key = getKeyFromChar(char);
@@ -78,10 +83,14 @@ export function type(
       // Keydown may move focus; continue typing at the new active element.
       const activeElement: HTMLElement = getActiveElement(element) || element;
       if (activeElement !== element) {
-        restoreEmailInput();
+        emailInput?.restore();
         element = activeElement;
-        restoreEmailInput = workAroundEmailInput(element);
+        emailInput = workAroundEmailInput(element);
       }
+
+      // React 19 sets the type back to email whenever it updates the input,
+      // including after every input event, so switch it again before each edit.
+      emailInput?.makeTextInput();
 
       if (isTextField(element)) {
         const input = element as DirtiableElement & TextField;
@@ -148,6 +157,8 @@ export function type(
             if (valueChanged) {
               input.dirty = true;
             }
+            // A re-render during keypress or composition may have reset it.
+            emailInput?.makeTextInput();
             await dispatch.input(input, {
               data: char,
               target: {
@@ -172,7 +183,7 @@ export function type(
       await settle();
     }
 
-    restoreEmailInput();
+    emailInput?.restore();
 
     // One real settle after the whole sequence, in case a component reacts to
     // the completed input on a wall-clock timer.
