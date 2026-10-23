@@ -131,6 +131,28 @@ function SelectAll() {
   );
 }
 
+/**
+ * App ids on the description and on a hint outside the field, such as a note
+ * about a setting, that the checkbox reads after its own description.
+ */
+function FieldWithAppIds() {
+  const descriptionId = useId();
+  const hintId = useId();
+  return (
+    <div className="grid gap-1">
+      <CheckboxField aria-describedby={hintId}>
+        <CheckboxLabel>Usage reports</CheckboxLabel>
+        <CheckboxDescription id={descriptionId}>
+          Anonymous crash and usage data
+        </CheckboxDescription>
+      </CheckboxField>
+      <Text id={hintId} render={<p />} className="ak-ink-70 text-sm">
+        You can change this later in settings
+      </Text>
+    </div>
+  );
+}
+
 function CountedCardGrid() {
   const [selected, setSelected] = useState(["analytics"]);
   return (
@@ -225,6 +247,20 @@ export default function CheckboxExamples() {
             New features and changes to the API
           </CheckboxDescription>
         </CheckboxField>
+      </Example>
+
+      <Example
+        title="Field with app ids"
+        description="The description keeps its own id, and the app points the field at a hint below it. The checkbox reads its description first, then the hint."
+        code={`
+          <CheckboxField aria-describedby={hintId}>
+            <CheckboxLabel>Usage reports</CheckboxLabel>
+            <CheckboxDescription id={descriptionId}>…</CheckboxDescription>
+          </CheckboxField>
+          <Text id={hintId}>…</Text>
+        `}
+      >
+        <FieldWithAppIds />
       </Example>
 
       <Example

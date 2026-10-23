@@ -1,6 +1,11 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import {
+  DescriptionContext,
+  useDescription,
+  useLabelDescription,
+} from "../react-utils/use-description.react.ts";
 import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   radio,
@@ -73,8 +78,10 @@ export interface RadioFieldProps
 
 /**
  * Label row holding a `Radio` before its children, which it stacks so a
- * `RadioDescription` lands under the `RadioLabel`. Variant props style the row;
- * every other prop reaches the input.
+ * `RadioDescription` lands under the `RadioLabel`. The label text names the
+ * radio, and the description describes it before any `aria-describedby` passed
+ * to the field. Variant props style the row; every other prop reaches the
+ * input.
  * @example
  * <RadioProvider>
  *   <RadioGroup aria-label="Contact method">
@@ -85,18 +92,22 @@ export interface RadioFieldProps
  */
 export function RadioField({ children, ...props }: RadioFieldProps) {
   const [variantProps, rest] = splitProps(props, radioField);
+  const { id, describedBy, context } = useLabelDescription(rest);
   // Labels cannot match :disabled, so mirror the input state. CSS handles
   // radios disabled through their group.
   return (
-    <label
-      {...radioField.jsx({
-        ...variantProps,
-        $disabled: variantProps.$disabled ?? rest.disabled,
-      })}
-    >
-      <Radio {...rest} />
-      <span {...radioContent.jsx()}>{children}</span>
-    </label>
+    <DescriptionContext.Provider value={context}>
+      <label
+        htmlFor={id}
+        {...radioField.jsx({
+          ...variantProps,
+          $disabled: variantProps.$disabled ?? rest.disabled,
+        })}
+      >
+        <Radio {...rest} id={id} aria-describedby={describedBy} />
+        <span {...radioContent.jsx()}>{children}</span>
+      </label>
+    </DescriptionContext.Provider>
   );
 }
 
@@ -123,8 +134,13 @@ export interface RadioDescriptionProps
   extends ak.RoleProps<"span">, VariantProps<typeof radioDescription> {}
 
 /**
- * Secondary text below a `RadioField` label. Must be nested inside a
- * `RadioField`.
+ * Secondary text below a `RadioField` label. The radio takes it as its
+ * accessible description, so it stays out of the radio's name. A field takes
+ * one description; put more secondary text in the same description. A
+ * description with its own `id` describes the radio only after hydration. The
+ * description is hidden from assistive technologies while it describes, so keep
+ * links and other interactive content outside the field. Must be nested inside
+ * a `RadioField`.
  * @example
  * <RadioProvider>
  *   <RadioGroup aria-label="Contact method">
@@ -137,7 +153,16 @@ export interface RadioDescriptionProps
  */
 export function RadioDescription(props: RadioDescriptionProps) {
   const [variantProps, rest] = splitProps(props, radioDescription);
-  return <ak.Role.span {...radioDescription.jsx(variantProps)} {...rest} />;
+  const { id, describes } = useDescription(rest.id);
+  // A hidden element still describes the input that references it.
+  return (
+    <ak.Role.span
+      aria-hidden={describes || undefined}
+      {...radioDescription.jsx(variantProps)}
+      {...rest}
+      id={id}
+    />
+  );
 }
 
 export interface RadioCardProps
@@ -145,7 +170,9 @@ export interface RadioCardProps
 
 /**
  * A selectable card with a visually hidden radio input, styled from its checked
- * and disabled state. Use it inside a `RadioGroup` or `RadioCardGrid`.
+ * and disabled state. The card's content names the radio, and a
+ * `RadioCardDescription` describes it before any `aria-describedby` passed to
+ * the card. Use it inside a `RadioGroup` or `RadioCardGrid`.
  * @example
  * <RadioProvider>
  *   <RadioCardGrid aria-label="Contact method">
@@ -156,17 +183,21 @@ export interface RadioCardProps
  */
 export function RadioCard({ children, ...props }: RadioCardProps) {
   const [variantProps, rest] = splitProps(props, radioCard);
+  const { id, describedBy, context } = useLabelDescription(rest);
   // Labels cannot match :disabled, so mirror the input state.
   return (
-    <label
-      {...radioCard.jsx({
-        ...variantProps,
-        $disabled: variantProps.$disabled ?? rest.disabled,
-      })}
-    >
-      <ak.Radio {...rest} />
-      {children}
-    </label>
+    <DescriptionContext.Provider value={context}>
+      <label
+        htmlFor={id}
+        {...radioCard.jsx({
+          ...variantProps,
+          $disabled: variantProps.$disabled ?? rest.disabled,
+        })}
+      >
+        <ak.Radio {...rest} id={id} aria-describedby={describedBy} />
+        {children}
+      </label>
+    </DescriptionContext.Provider>
   );
 }
 
@@ -270,7 +301,11 @@ export interface RadioCardDescriptionProps
   extends ak.RoleProps<"span">, VariantProps<typeof radioCardDescription> {}
 
 /**
- * Secondary text below the label. Must be nested inside a `RadioCard`.
+ * Secondary text below the label. The radio takes it as its accessible
+ * description, so it stays out of the radio's name. A card takes one
+ * description, and a description with its own `id` describes the radio only
+ * after hydration. It is hidden from assistive technologies while it describes,
+ * so keep interactive content out of it. Must be nested inside a `RadioCard`.
  * Truncates to one line by default; set `$truncate={false}` to let it wrap.
  * @example
  * <RadioProvider>
@@ -286,7 +321,16 @@ export interface RadioCardDescriptionProps
  */
 export function RadioCardDescription(props: RadioCardDescriptionProps) {
   const [variantProps, rest] = splitProps(props, radioCardDescription);
-  return <ak.Role.span {...radioCardDescription.jsx(variantProps)} {...rest} />;
+  const { id, describes } = useDescription(rest.id);
+  // A hidden element still describes the input that references it.
+  return (
+    <ak.Role.span
+      aria-hidden={describes || undefined}
+      {...radioCardDescription.jsx(variantProps)}
+      {...rest}
+      id={id}
+    />
+  );
 }
 
 export interface RadioCardGridProps

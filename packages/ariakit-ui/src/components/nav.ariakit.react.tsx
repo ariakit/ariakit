@@ -8,6 +8,11 @@ import {
   createRender,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
+import {
+  DescriptionContext,
+  useDescription,
+  useDescriptionRegistry,
+} from "../react-utils/use-description.react.ts";
 import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   nav,
@@ -48,15 +53,6 @@ import {
 const NavDisclosureContext = React.createContext<readonly ak.DisclosureStore[]>(
   [],
 );
-
-interface NavLinkContextValue {
-  descriptionId?: string;
-  defaultDescriptionId: string;
-  registerDescription: (id: string) => () => void;
-}
-
-// Lets a link describe itself by its description, which then leaves its name.
-const NavLinkContext = React.createContext<NavLinkContextValue | null>(null);
 
 /** A bar element, `NavLinkBar` props, or `true` for the default bar. */
 export type NavLinkBarValue = boolean | React.ReactElement | NavLinkBarProps;
@@ -217,40 +213,10 @@ export function NavLink({
     rest.children ?? (text == null ? undefined : <NavLinkLabel text={text} />);
   const isCurrent = isCurrentPage(currentUrl, rest.href);
   const disclosures = React.useContext(NavDisclosureContext);
-  const defaultDescriptionId = React.useId();
-  // Server markup can't know whether a description follows, so the link first
-  // expects one with the default id. That keeps the description out of the name
-  // before hydration.
-  const [descriptionId, setDescriptionId] = React.useState<string | undefined>(
-    defaultDescriptionId,
-  );
-  const hasDescriptionRef = React.useRef(false);
+  const { descriptionId, context } = useDescriptionRegistry();
   // A caller description replaces the automatic one, so the description text
   // must stay in the link's name.
   const describes = rest["aria-describedby"] == null;
-
-  const registerDescription = React.useCallback((id: string) => {
-    hasDescriptionRef.current = true;
-    setDescriptionId(id);
-    return () => {
-      setDescriptionId((current) => (current === id ? undefined : current));
-    };
-  }, []);
-
-  const context = React.useMemo(
-    () =>
-      describes
-        ? { descriptionId, defaultDescriptionId, registerDescription }
-        : null,
-    [describes, descriptionId, defaultDescriptionId, registerDescription],
-  );
-
-  // Child effects run first, so descriptions have registered by now. Drop the
-  // reference to a description that the link doesn't have.
-  React.useEffect(() => {
-    if (hasDescriptionRef.current) return;
-    setDescriptionId(undefined);
-  }, []);
 
   React.useEffect(() => {
     if (!isCurrent) return;
@@ -260,7 +226,7 @@ export function NavLink({
   }, [isCurrent, disclosures]);
 
   const link = (
-    <NavLinkContext.Provider value={context}>
+    <DescriptionContext.Provider value={describes ? context : null}>
       <ak.Role.a
         aria-current={isCurrent ? "page" : undefined}
         {...navLink.jsx(variantProps)}
@@ -270,7 +236,7 @@ export function NavLink({
       >
         {appendOptionalChild(children, barElement)}
       </ak.Role.a>
-    </NavLinkContext.Provider>
+    </DescriptionContext.Provider>
   );
   if (item === false) return link;
   return createRender(ak.Role.li, item, { children: link });
@@ -396,19 +362,9 @@ export interface NavLinkDescriptionProps
  */
 export function NavLinkDescription(props: NavLinkDescriptionProps) {
   const [variantProps, rest] = splitProps(props, navLinkDescription);
-  const context = React.useContext(NavLinkContext);
-  const defaultId = React.useId();
-  const id = rest.id ?? context?.defaultDescriptionId ?? defaultId;
-  const registerDescription = context?.registerDescription;
-
-  React.useEffect(() => {
-    if (!registerDescription) return;
-    return registerDescription(id);
-  }, [registerDescription, id]);
-
+  const { id, describes } = useDescription(rest.id);
   // A hidden element still describes the link that references it. Hiding it
   // keeps the text out of the link's name, which comes from its content.
-  const describes = context?.descriptionId === id;
   return (
     <ak.Role.span
       aria-hidden={describes || undefined}

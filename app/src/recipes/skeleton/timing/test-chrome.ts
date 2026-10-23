@@ -1,6 +1,14 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  test("names each speed by its label and describes it by its latency", async ({
+    q,
+  }) => {
+    await test.expect(q.radio("Fast")).toHaveAccessibleDescription("50 ms");
+    await test.expect(q.radio("Medium")).toHaveAccessibleDescription("250 ms");
+    await test.expect(q.radio("Slow")).toHaveAccessibleDescription("1500 ms");
+  });
+
   test("shows placeholders after 150 ms for at least 200 ms", async ({ q }) => {
     // The placeholders can stay after the data arrives, so wait for the
     // content.
@@ -72,7 +80,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // only come from the fast request.
     const times = q.definition();
     await test.expect(times.nth(0)).toHaveText(/^\d+ ms$/);
-    await q.radio(/^Fast/).click();
+    await q.radio("Fast").click();
     // The fast request (50 ms) ends before the 150 ms delay, so the loading
     // status can change back before an assertion sees it. The timeline keeps
     // the result.

@@ -2,6 +2,11 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import {
+  DescriptionContext,
+  useDescription,
+  useLabelDescription,
+} from "../react-utils/use-description.react.ts";
+import {
   checkbox,
   checkboxCard,
   checkboxCardCheck,
@@ -40,8 +45,10 @@ export interface CheckboxFieldProps
 
 /**
  * Label row holding a `Checkbox` before its children, which it stacks so a
- * `CheckboxDescription` lands under the `CheckboxLabel`. Variant props style
- * the row; every other prop reaches the input.
+ * `CheckboxDescription` lands under the `CheckboxLabel`. The label text names
+ * the checkbox, and the description describes it before any `aria-describedby`
+ * passed to the field. Variant props style the row; every other prop reaches
+ * the input.
  * @example
  * <CheckboxField name="updates">
  *   <CheckboxLabel>Email updates</CheckboxLabel>
@@ -50,17 +57,21 @@ export interface CheckboxFieldProps
  */
 export function CheckboxField({ children, ...props }: CheckboxFieldProps) {
   const [variantProps, rest] = splitProps(props, checkboxField);
+  const { id, describedBy, context } = useLabelDescription(rest);
   // Labels cannot match :disabled, so mirror the input state.
   return (
-    <label
-      {...checkboxField.jsx({
-        ...variantProps,
-        $disabled: variantProps.$disabled ?? rest.disabled,
-      })}
-    >
-      <Checkbox {...rest} />
-      <span {...checkboxContent.jsx()}>{children}</span>
-    </label>
+    <DescriptionContext.Provider value={context}>
+      <label
+        htmlFor={id}
+        {...checkboxField.jsx({
+          ...variantProps,
+          $disabled: variantProps.$disabled ?? rest.disabled,
+        })}
+      >
+        <Checkbox {...rest} id={id} aria-describedby={describedBy} />
+        <span {...checkboxContent.jsx()}>{children}</span>
+      </label>
+    </DescriptionContext.Provider>
   );
 }
 
@@ -83,8 +94,13 @@ export interface CheckboxDescriptionProps
   extends ak.RoleProps<"span">, VariantProps<typeof checkboxDescription> {}
 
 /**
- * Secondary text below a `CheckboxField` label. Must be nested inside a
- * `CheckboxField`.
+ * Secondary text below a `CheckboxField` label. The checkbox takes it as its
+ * accessible description, so it stays out of the checkbox's name. A field takes
+ * one description; put more secondary text in the same description. A
+ * description with its own `id` describes the checkbox only after hydration.
+ * The description is hidden from assistive technologies while it describes, so
+ * keep links and other interactive content outside the field. Must be nested
+ * inside a `CheckboxField`.
  * @example
  * <CheckboxField>
  *   <CheckboxLabel>Email updates</CheckboxLabel>
@@ -93,7 +109,16 @@ export interface CheckboxDescriptionProps
  */
 export function CheckboxDescription(props: CheckboxDescriptionProps) {
   const [variantProps, rest] = splitProps(props, checkboxDescription);
-  return <ak.Role.span {...checkboxDescription.jsx(variantProps)} {...rest} />;
+  const { id, describes } = useDescription(rest.id);
+  // A hidden element still describes the input that references it.
+  return (
+    <ak.Role.span
+      aria-hidden={describes || undefined}
+      {...checkboxDescription.jsx(variantProps)}
+      {...rest}
+      id={id}
+    />
+  );
 }
 
 export interface CheckboxCardProps
@@ -101,7 +126,9 @@ export interface CheckboxCardProps
 
 /**
  * Card-like label wrapping an Ariakit Checkbox kept out of sight, styled from
- * the input's checked, mixed and disabled state.
+ * the input's checked, mixed and disabled state. The card's content names the
+ * checkbox, and a `CheckboxCardDescription` describes it before any
+ * `aria-describedby` passed to the card.
  * @example
  * <CheckboxCard name="updates">
  *   <CheckboxCardCheck />
@@ -110,17 +137,21 @@ export interface CheckboxCardProps
  */
 export function CheckboxCard({ children, ...props }: CheckboxCardProps) {
   const [variantProps, rest] = splitProps(props, checkboxCard);
+  const { id, describedBy, context } = useLabelDescription(rest);
   // Labels cannot match :disabled, so mirror the input state.
   return (
-    <label
-      {...checkboxCard.jsx({
-        ...variantProps,
-        $disabled: variantProps.$disabled ?? rest.disabled,
-      })}
-    >
-      <ak.Checkbox {...rest} />
-      {children}
-    </label>
+    <DescriptionContext.Provider value={context}>
+      <label
+        htmlFor={id}
+        {...checkboxCard.jsx({
+          ...variantProps,
+          $disabled: variantProps.$disabled ?? rest.disabled,
+        })}
+      >
+        <ak.Checkbox {...rest} id={id} aria-describedby={describedBy} />
+        {children}
+      </label>
+    </DescriptionContext.Provider>
   );
 }
 
@@ -212,8 +243,13 @@ export interface CheckboxCardDescriptionProps
   extends ak.RoleProps<"span">, VariantProps<typeof checkboxCardDescription> {}
 
 /**
- * Secondary text below the label. Must be nested inside a `CheckboxCard`.
- * Truncates to one line by default; set `$truncate={false}` to let it wrap.
+ * Secondary text below the label. The checkbox takes it as its accessible
+ * description, so it stays out of the checkbox's name. A card takes one
+ * description, and a description with its own `id` describes the checkbox only
+ * after hydration. It is hidden from assistive technologies while it describes,
+ * so keep interactive content out of it. Must be nested inside a
+ * `CheckboxCard`. Truncates to one line by default; set `$truncate={false}` to
+ * let it wrap.
  * @example
  * <CheckboxCard>
  *   <CheckboxCardContent>
@@ -224,8 +260,15 @@ export interface CheckboxCardDescriptionProps
  */
 export function CheckboxCardDescription(props: CheckboxCardDescriptionProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardDescription);
+  const { id, describes } = useDescription(rest.id);
+  // A hidden element still describes the input that references it.
   return (
-    <ak.Role.span {...checkboxCardDescription.jsx(variantProps)} {...rest} />
+    <ak.Role.span
+      aria-hidden={describes || undefined}
+      {...checkboxCardDescription.jsx(variantProps)}
+      {...rest}
+      id={id}
+    />
   );
 }
 
