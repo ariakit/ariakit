@@ -119,19 +119,26 @@ function Timeline() {
   const state = useSkeletonState();
   const startRef = useRef(0);
   const [times, setTimes] = useState<Times>({});
+  const [previousState, setPreviousState] = useState(state);
+
+  // Reset while rendering the pending state. A fast response can cancel a reset
+  // scheduled for the next frame and keep the previous times.
+  if (state !== previousState) {
+    setPreviousState(state);
+    if (state === "pending") {
+      setTimes({});
+    }
+  }
 
   useEffect(() => {
     // This effect runs before the effect of the parent Skeleton that starts the
     // delay, so the times never come out shorter than the real delays.
     if (state === "pending") {
       startRef.current = performance.now();
+      return;
     }
     // The next frame is when the state appears on screen.
     const frame = requestAnimationFrame(() => {
-      if (state === "pending") {
-        setTimes({});
-        return;
-      }
       const elapsed = Math.round(performance.now() - startRef.current);
       setTimes((times) => ({ ...times, [state]: elapsed }));
     });

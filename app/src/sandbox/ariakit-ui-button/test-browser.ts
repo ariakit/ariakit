@@ -86,18 +86,22 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7589
-  test("sizes an icon key and spaces the keys of a shortcut as its slot does", async ({
+  test("sizes an icon key like the letters and spaces the keys as its slot does", async ({
     q,
   }) => {
     const box = q.article("Icon shortcut key");
     const slot = box.locator(".control-slot").filter({ hasText: "K" });
-    const [slotBox, iconBox, keyBox] = await Promise.all([
-      getBox(slot),
+    const letter = query(box).text("K");
+    const [iconBox, keyBox] = await Promise.all([
       getBox(slot.locator("svg")),
-      getBox(query(box).text("K")),
+      getBox(letter),
     ]);
-    // A shortcut slot is as tall as its text, and an icon in it fills it.
-    test.expect(iconBox.height).toBeCloseTo(slotBox.height, 0);
+    // An icon key takes the font size of the keys. The page capture covers the
+    // larger slot sizes, where the slot box no longer matches the letters.
+    const fontSize = await letter.evaluate((node) =>
+      Number.parseFloat(getComputedStyle(node).fontSize),
+    );
+    test.expect(iconBox.height).toBeCloseTo(fontSize, 0);
     const gap = await slot.evaluate((node) =>
       Number.parseFloat(getComputedStyle(node).columnGap),
     );
