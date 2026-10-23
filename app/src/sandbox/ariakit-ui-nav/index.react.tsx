@@ -360,7 +360,7 @@ function DocumentationSidebar() {
           beta
         </NavSlot>
       </NavButton>
-      <Nav aria-label="Documentation sections">
+      <Nav aria-label="Documentation sections" $p="none">
         {sections.map((section) => (
           <NavDisclosure
             key={section.slug}
@@ -1156,7 +1156,7 @@ export default function NavExamples() {
                 beta
               </NavSlot>
             </NavButton>
-            <Nav>
+            <Nav $p="none">
               <NavDisclosure defaultOpen button={<NavDisclosureButton icon={<Rocket />} />}>
                 <NavList>
                   <NavLink>Introduction</NavLink>
