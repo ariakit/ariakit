@@ -13,6 +13,7 @@ import {
   getBarOffset,
   getNamedBarOffsetClass,
   getSlotSizeClass,
+  hasSlotSurface,
   isNamedBarOffset,
   isSlotSize,
 } from "./control.ts";
@@ -27,7 +28,9 @@ import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
 /**
- * A navigation region with shared row spacing, groups, and current-row bars.
+ * A navigation region with shared row spacing, groups, and current-row bars. A
+ * small default padding keeps bars at named offsets outside their rows. With
+ * `$cover`, it takes the parent's padding instead, such as in a shell sidebar.
  */
 export const nav = cv({
   extend: [frame],
@@ -122,7 +125,14 @@ export const nav = cv({
   defaultVariants: {
     $layout: "vertical",
     $layer: "transparent",
-    $rounded: "md",
+    $rounded: "xl",
+    $p(defaultValue, variants) {
+      // A covering frame takes its padding from the parent.
+      if (variants.$cover) return defaultValue;
+      // Wider than a bar at every width that the style recipes set, so named
+      // bar offsets keep the bar outside its row.
+      return defaultValue ?? 1;
+    },
   },
 });
 
@@ -205,8 +215,8 @@ const navSlotBase = cv({
      * Sets the slot size. `auto` follows the navigation `$slotSize`, or the
      * text size; without `$slotSize`, a badge after the label takes the line
      * height instead. Numbers scale the spacing token; other lengths apply
-     * directly. Named sizes `xs` to `lg` become `xl` for badges and avatars;
-     * `xl` and larger add label spacing.
+     * directly. Named sizes `xs` to `lg` become `xl` for badges, avatars, and
+     * shortcuts with a fill or a border; `xl` and larger add label spacing.
      */
     $size(value?: SlotSize | "auto" | number | (string & {})) {
       if (value == null) return;
@@ -222,13 +232,14 @@ const navSlotBase = cv({
      */
     $mx: {
       auto: [
-        "[*+&]:[--mx:calc(((var(--py)-var(--px))*var(--slot-pull,1)+max(0px,var(--my)))*var(--control-inline,1))]",
+        "[*+&]:[--mx:calc((var(--py)-var(--px)+max(0px,var(--my)))*var(--slot-pull,1)*var(--control-inline,1))]",
         "[*+&]:me-(--mx)",
       ],
     },
   },
   defaultVariants: {
-    // Resolve before controlSlot refinement converts named badge/avatar sizes.
+    // Resolve before controlSlot refinement converts the named sizes of badges,
+    // avatars, and shortcut boxes.
     $size: "auto",
   },
 });
@@ -242,7 +253,11 @@ export const navSlot = cv({
   defaultVariants: {
     $size(defaultValue, variants) {
       if (defaultValue !== "auto") return defaultValue;
-      if (variants.$kind === "shortcut") return "md";
+      if (variants.$kind === "shortcut") {
+        // This variant replaces the slot size that controlSlot would raise to a
+        // line for a shortcut surface.
+        return hasSlotSurface(variants) ? "xl" : "md";
+      }
       // A picture keeps a line of height instead of the icon size.
       if (variants.$kind === "thumbnail") return "xl";
       if (variants.$kind === "text") return "xl";
@@ -428,8 +443,16 @@ export const navLinkBar = cv({
      * Sets the gap from the row to the bar. `edge` puts the bar on the
      * navigation padding edge, and `halfway` centers it between the row and
      * that edge. Numbers scale the spacing token, so `0` puts the bar against
-     * the row; other strings are CSS lengths and can be negative for overlap.
-     * Defaults to `edge`.
+     * the row; other strings are CSS lengths. Defaults to `edge`.
+     *
+     * A bar outside the row contrasts with the surface around it. A negative
+     * number or a length that starts with `-`, such as `-0.5` or `-3px`, puts
+     * the bar over the row and makes it contrast with the row instead. Other
+     * offsets keep the outside contrast even when they put the bar over the
+     * row, which can hide the bar in high contrast mode. This includes named
+     * offsets with navigation padding thinner than the bar, such as with
+     * `$p="none"`, and `calc()` or `var()` values that resolve to a negative
+     * length. Use a negative number or a length that starts with `-` there.
      *
      * The start bar of a nested row measures to the edge of its disclosure
      * content, and the end bar measures from the navigation padding, so it

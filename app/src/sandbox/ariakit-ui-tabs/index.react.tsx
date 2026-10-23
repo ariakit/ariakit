@@ -52,6 +52,7 @@ function BarPlacement() {
           <option value="halfway">Halfway</option>
           <option value="6px">6px</option>
           <option value="0px">Against the item</option>
+          <option value="-3px">Over the item</option>
         </select>
       </label>
       <label>

@@ -72,7 +72,7 @@ export default function Example() {
           </TextFrame>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav render={<div />} bar={{ $offset: "halfway" }}>
+          <Nav $cover render={<div />} bar={{ $offset: "halfway" }}>
             {navigationLinks.map((link, index) => (
               <NavLink
                 key={link.title}

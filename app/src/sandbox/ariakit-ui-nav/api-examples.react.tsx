@@ -135,7 +135,7 @@ export function HorizontalNavigation() {
       </label>
       <Nav
         $layout="horizontal"
-        $p={padded ? 3 : undefined}
+        $p={padded ? 3 : "none"}
         $border
         $rounded="lg"
         dir={rtl ? "rtl" : "ltr"}

@@ -585,6 +585,94 @@ export default function Example() {
               />
             </div>
           </Layer>
+          {/*
+           * ak-outset reads the layer around its parent layer, like a bar
+           * painted outside its control. Each ak-outset child hangs below its
+           * parent, so it paints on the outer layer. The first group shows the
+           * same utilities painted on their parent. The nested text checks that
+           * text inside an ak-outset layer reads that layer again.
+           */}
+          <Layer
+            label="ak-outset"
+            className="ak-layer ak-layer-[#1e293b] ak-frame ak-frame-p-1 ak-frame-border flex-wrap items-start"
+          >
+            <Layer className="ak-layer ak-layer-[#e2e8f0] ak-frame ak-frame-p-1 ak-frame-border flex-wrap items-start">
+              <Cell label="contrast" className="ak-layer-contrast" />
+              <Cell label="lighten" className="ak-layer-lighten-10" />
+              <Cell label="mix" className="ak-layer-blue-600 ak-layer-mix" />
+              <Layer label="text" className="ak-text ak-text-red-600" />
+              <Cell
+                label="outline"
+                className="ak-outline ak-outline-blue-600 outline-2"
+              />
+            </Layer>
+            <div className="pb-10">
+              <Layer
+                label="contrast"
+                className="ak-layer ak-layer-[#e2e8f0] ak-frame ak-frame-p-1 ak-frame-border relative"
+              >
+                <Cell
+                  label="outset"
+                  className="ak-layer-contrast ak-outset absolute top-full start-0 mt-1"
+                />
+              </Layer>
+            </div>
+            <div className="pb-10">
+              <Layer
+                label="lighten"
+                className="ak-layer ak-layer-[#e2e8f0] ak-frame ak-frame-p-1 ak-frame-border relative"
+              >
+                <Cell
+                  label="outset"
+                  className="ak-layer-lighten-10 ak-outset absolute top-full start-0 mt-1"
+                />
+              </Layer>
+            </div>
+            <div className="pb-10">
+              <Layer
+                label="mix"
+                className="ak-layer ak-layer-[#e2e8f0] ak-frame ak-frame-p-1 ak-frame-border relative"
+              >
+                <Cell
+                  label="outset"
+                  className="ak-layer-blue-600 ak-layer-mix ak-outset absolute top-full start-0 mt-1"
+                />
+              </Layer>
+            </div>
+            <div className="pb-10">
+              <Layer
+                label="text"
+                className="ak-layer ak-layer-[#e2e8f0] ak-frame ak-frame-p-1 ak-frame-border relative"
+              >
+                <Layer
+                  label="outset"
+                  className="ak-text ak-text-red-600 ak-outset absolute top-full start-0 mt-1"
+                />
+              </Layer>
+            </div>
+            <div className="pb-10">
+              <Layer
+                label="outline"
+                className="ak-layer ak-layer-[#e2e8f0] ak-frame ak-frame-p-1 ak-frame-border relative"
+              >
+                <Cell
+                  label="outset"
+                  className="ak-outline ak-outline-blue-600 outline-2 ak-outset absolute top-full start-0 mt-1"
+                />
+              </Layer>
+            </div>
+            <div className="pb-10">
+              <Layer
+                label="nested text"
+                className="ak-layer ak-layer-[#e2e8f0] ak-frame ak-frame-p-1 ak-frame-border relative"
+              >
+                <Cell
+                  label="outset"
+                  className="ak-layer-contrast *:ak-text *:ak-text-red-600 ak-outset absolute top-full start-0 mt-1"
+                />
+              </Layer>
+            </div>
+          </Layer>
           <Cell
             label="raw mix"
             className="ak-layer-mix ak-layer-mix-color-[oklch(0.6_0.15_30)] ak-layer-mix-amount-[35%] *:ak-text"

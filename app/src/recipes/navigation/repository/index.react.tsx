@@ -60,6 +60,7 @@ function Repository() {
             fill the tab's bottom margin. */}
         <Nav
           aria-label="Repository"
+          $p="none"
           $layout="horizontal"
           bar={{ $offset: 0.5 }}
         >

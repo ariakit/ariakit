@@ -67,7 +67,7 @@ export default function Example() {
         $p={2}
         className="w-72"
       >
-        <Nav aria-label="Music" list={false}>
+        <Nav aria-label="Music" list={false} $cover>
           <NavList>
             <RouterNavLink to={getPath("Home")}>
               <NavSlot>

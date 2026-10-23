@@ -108,6 +108,7 @@ function Course() {
           guide. The halfway bar of the current lesson runs on that guide. */}
       <Nav
         aria-label="Lessons"
+        $p="none"
         list={<List ordered />}
         bar={{ $offset: "halfway", $length: "full" }}
       >

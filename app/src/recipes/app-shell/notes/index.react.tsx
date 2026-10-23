@@ -174,7 +174,12 @@ export default function Example() {
           </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav render={<div />} list={false} bar={{ $offset: "halfway" }}>
+          <Nav
+            $cover
+            render={<div />}
+            list={false}
+            bar={{ $offset: "halfway" }}
+          >
             <NavGroup>
               <NavGroupLabel>Pages</NavGroupLabel>
               <NavList>
@@ -211,7 +216,7 @@ export default function Example() {
           </Nav>
         </ShellSidebarBody>
         <ShellSidebarFooter $borderType="dashed">
-          <Nav render={<div />}>
+          <Nav $cover render={<div />}>
             <NavLink href="#trash">
               <NavSlot>
                 <Trash strokeWidth={1.5} />
@@ -307,7 +312,7 @@ export default function Example() {
         $chroma="muted"
       >
         <ShellSidebarBody className="flex flex-col gap-6">
-          <Nav aria-label="Backlinks" list={false}>
+          <Nav $cover aria-label="Backlinks" list={false}>
             <NavGroup>
               <NavGroupLabel>Backlinks</NavGroupLabel>
               <NavList>

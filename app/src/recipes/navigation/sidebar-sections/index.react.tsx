@@ -106,6 +106,7 @@ function Site() {
       <ShellSidebar>
         <ShellSidebarBody>
           <Nav
+            $cover
             aria-label="Site"
             list={false}
             $fill

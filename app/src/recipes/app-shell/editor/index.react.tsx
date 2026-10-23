@@ -176,7 +176,7 @@ export default function Example() {
           </TextFrame>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav render={<div />} bar={{ $offset: "halfway" }}>
+          <Nav $cover render={<div />} bar={{ $offset: "halfway" }}>
             {layers.map((layer) => (
               <NavLink
                 key={layer.id}

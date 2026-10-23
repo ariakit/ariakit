@@ -240,6 +240,7 @@ const hasSidebar = sidebar && navigation.length > 0;
             <Nav
               $layout="horizontal"
               aria-label="Main"
+              $p="none"
               $barTransitionName="main-nav-bar"
             >
               {
@@ -365,6 +366,7 @@ const hasSidebar = sidebar && navigation.length > 0;
                 {/* The bar follows the scroll position, so it stays out of
                     page load transitions. */}
                 <Nav
+                  $cover
                   $gap={0.5}
                   $barTransitionName="none"
                   render={createElement("div")}
@@ -389,7 +391,7 @@ const hasSidebar = sidebar && navigation.length > 0;
             <span class="ak-ink-70">© Ariakit FZ-LLC</span>
           </ShellFooterStart>
           <ShellFooterEnd>
-            <Nav $layout="horizontal" aria-label="Footer">
+            <Nav $layout="horizontal" aria-label="Footer" $p="none">
               {
                 sections.map((link) => (
                   <NavLink href={link.href}>{link.label}</NavLink>

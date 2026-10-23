@@ -752,7 +752,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Icon shortcut key"
-        description="A key drawn as an icon takes the size of an icon slot, and a gap on the slot spaces the keys."
+        description="A key drawn as an icon takes the size of the letters, and a gap on the slot spaces the keys."
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
@@ -768,6 +768,68 @@ export default function ButtonExamples() {
           <ButtonSlot $kind="shortcut" className="gap-1">
             <Command />
             <kbd>K</kbd>
+          </ButtonSlot>
+        </Button>
+      </Example>
+
+      <Example
+        title="Large icon shortcut key"
+        description="A larger shortcut slot, as in a search field, keeps the icon key the size of the letters."
+        code={`
+          <Button>
+            <ButtonLabel>Search</ButtonLabel>
+            <ButtonSlot $kind="shortcut" $size="xl" className="gap-1">
+              <Command />
+              <kbd>K</kbd>
+            </ButtonSlot>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonLabel>Search</ButtonLabel>
+          <ButtonSlot $kind="shortcut" $size="xl" className="gap-1">
+            <Command />
+            <kbd>K</kbd>
+          </ButtonSlot>
+        </Button>
+      </Example>
+
+      <Example
+        title="Filled shortcut"
+        description="A lightness offset fills the shortcut, which then gets smaller keys in a padded box that sits as far from the side of the button as from its top."
+        code={`
+          <Button>
+            <ButtonLabel>Search</ButtonLabel>
+            <ButtonSlot $kind="shortcut" $lightnessOffset>
+              <kbd>⌘K</kbd>
+            </ButtonSlot>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonLabel>Search</ButtonLabel>
+          <ButtonSlot $kind="shortcut" $lightnessOffset>
+            <kbd>⌘K</kbd>
+          </ButtonSlot>
+        </Button>
+      </Example>
+
+      <Example
+        title="Bordered shortcut"
+        description="A border also draws a padded box around the keys, with the same gaps as a filled one."
+        code={`
+          <Button>
+            <ButtonLabel>Search</ButtonLabel>
+            <ButtonSlot $kind="shortcut" $border>
+              <kbd>⌘K</kbd>
+            </ButtonSlot>
+          </Button>
+        `}
+      >
+        <Button>
+          <ButtonLabel>Search</ButtonLabel>
+          <ButtonSlot $kind="shortcut" $border>
+            <kbd>⌘K</kbd>
           </ButtonSlot>
         </Button>
       </Example>

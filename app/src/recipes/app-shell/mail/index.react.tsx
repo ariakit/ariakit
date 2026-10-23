@@ -242,7 +242,7 @@ export default function Example() {
           </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody $p={2}>
-          <Nav render={<div />} bar={{ $offset: "halfway" }}>
+          <Nav $cover render={<div />} bar={{ $offset: "halfway" }}>
             {folders.map((item) => (
               <NavLink
                 key={item.id}
@@ -276,7 +276,7 @@ export default function Example() {
         render={<aside />}
       >
         <ShellSidebarBody $p={2}>
-          <Nav render={<div />} bar={{ $offset: "halfway" }}>
+          <Nav $cover render={<div />} bar={{ $offset: "halfway" }}>
             {folderMessages.map((message) => (
               <NavLink
                 key={message.id}

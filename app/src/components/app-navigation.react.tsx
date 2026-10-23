@@ -64,8 +64,7 @@ export function AppNavigation({
       list={false}
       // The surrounding sidebar is already the navigation landmark.
       render={<div />}
-      // The island wrapper of a hydrated navigation keeps the sidebar body from
-      // covering it, so it covers the body itself.
+      // Span the sidebar body padding, so bars meet the sidebar edge.
       $cover
       $fill={fill}
       // Link states recolor the links, so thumbnails take their surface from

@@ -747,7 +747,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         "bottom-left",
         "bottom-right",
       ]) {
-        await expect(link).toHaveCSS(`border-${corner}-radius`, "6px");
+        // The 12px xl navigation radius minus its 4px default padding.
+        await expect(link).toHaveCSS(`border-${corner}-radius`, "8px");
       }
     }
   });
