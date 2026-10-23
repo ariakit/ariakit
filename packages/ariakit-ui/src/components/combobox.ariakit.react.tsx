@@ -9,7 +9,11 @@ import {
   isRenderable,
 } from "../react-utils/create-render.react.ts";
 import {
+  comboboxDescription,
   comboboxEmpty,
+  comboboxError,
+  comboboxField,
+  comboboxFieldContent,
   comboboxGroup,
   comboboxGroupLabel,
   comboboxInput,
@@ -132,6 +136,87 @@ export interface ComboboxLabelProps
 export function ComboboxLabel(props: ComboboxLabelProps) {
   const [variantProps, rest] = splitProps(props, comboboxLabel);
   return <ak.ComboboxLabel {...comboboxLabel.jsx(variantProps)} {...rest} />;
+}
+
+export interface ComboboxFieldProps
+  extends ak.RoleProps<"div">, VariantProps<typeof comboboxField> {}
+
+/**
+ * Stacks a combobox or select label above its control and the control's error
+ * and hints, or puts the label in a start column with
+ * `$orientation="horizontal"`. The store connects the label; connect the texts
+ * with `aria-describedby`.
+ * @example
+ * <ComboboxProvider>
+ *   <ComboboxField>
+ *     <ComboboxSelectLabel>Fruit</ComboboxSelectLabel>
+ *     <ComboboxSelect aria-describedby="fruit-hint" />
+ *     <ComboboxDescription id="fruit-hint">Pick one.</ComboboxDescription>
+ *   </ComboboxField>
+ *   <ComboboxPopover>
+ *     <ComboboxItem value="Apple" />
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
+ */
+export function ComboboxField(props: ComboboxFieldProps) {
+  const [variantProps, rest] = splitProps(props, comboboxField);
+  return <ak.Role.div {...comboboxField.jsx(variantProps)} {...rest} />;
+}
+
+export interface ComboboxFieldContentProps
+  extends ak.RoleProps<"div">, VariantProps<typeof comboboxFieldContent> {}
+
+/**
+ * Holds a combobox or select and its texts in the second column of a horizontal
+ * `ComboboxField`.
+ * @example
+ * <ComboboxField $orientation="horizontal">
+ *   <ComboboxSelectLabel>Fruit</ComboboxSelectLabel>
+ *   <ComboboxFieldContent>
+ *     <ComboboxSelect />
+ *   </ComboboxFieldContent>
+ * </ComboboxField>
+ */
+export function ComboboxFieldContent(props: ComboboxFieldContentProps) {
+  const [variantProps, rest] = splitProps(props, comboboxFieldContent);
+  return <ak.Role.div {...comboboxFieldContent.jsx(variantProps)} {...rest} />;
+}
+
+export interface ComboboxDescriptionProps
+  extends ak.RoleProps<"div">, VariantProps<typeof comboboxDescription> {}
+
+/**
+ * Hint text for a combobox or select in a `ComboboxField`. List its `id` in the
+ * control's `aria-describedby`.
+ * @example
+ * <ComboboxField>
+ *   <ComboboxLabel>Fruit</ComboboxLabel>
+ *   <ComboboxInput aria-describedby="fruit-hint" />
+ *   <ComboboxDescription id="fruit-hint">Type to filter.</ComboboxDescription>
+ * </ComboboxField>
+ */
+export function ComboboxDescription(props: ComboboxDescriptionProps) {
+  const [variantProps, rest] = splitProps(props, comboboxDescription);
+  return <ak.Role.div {...comboboxDescription.jsx(variantProps)} {...rest} />;
+}
+
+export interface ComboboxErrorProps
+  extends ak.RoleProps<"div">, VariantProps<typeof comboboxError> {}
+
+/**
+ * Error text for a combobox or select in a `ComboboxField`. While it shows,
+ * list its `id` first in the control's `aria-describedby` and set
+ * `aria-invalid` on the control.
+ * @example
+ * <ComboboxField>
+ *   <ComboboxLabel>Fruit</ComboboxLabel>
+ *   <ComboboxInput aria-invalid aria-describedby="fruit-error" />
+ *   <ComboboxError id="fruit-error">Choose a fruit.</ComboboxError>
+ * </ComboboxField>
+ */
+export function ComboboxError(props: ComboboxErrorProps) {
+  const [variantProps, rest] = splitProps(props, comboboxError);
+  return <ak.Role.div {...comboboxError.jsx(variantProps)} {...rest} />;
 }
 
 export interface ComboboxPopoverProps

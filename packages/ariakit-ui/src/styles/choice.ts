@@ -16,6 +16,7 @@ import {
 } from "./control.ts";
 import { focusHighlight, focusWithin } from "./focus.ts";
 import { hover } from "./hover.ts";
+import { inputEdgeAlpha } from "./input.ts";
 import { hasLayerBackground } from "./layer.ts";
 
 /**
@@ -40,11 +41,13 @@ export const choice = cv({
     // A custom child replaces the drawn mark and uses the same size and state.
     "[--slot-icon-size:calc(var(--size)*0.7)] [&>svg]:stroke-[2.5]",
     "has-[>*]:after:hidden not-ui-choice-on:*:hidden!",
-    // Separate the selected fill from brand surfaces. The plugin's zero-offset
-    // utility cancels the default offset stored in the style attribute.
+    // Keep the empty box boundary at the input's 3:1 contrast.
+    inputEdgeAlpha,
+    // Separate the selected fill from brand surfaces. The plugin's zero-lighten
+    // utility cancels the default lightening stored in the style attribute.
     "not-ui-choice-disabled:ui-choice-on:ak-layer-brand",
     "not-ui-choice-disabled:ui-choice-on:ak-layer-contrast",
-    "ui-choice-on:ak-layer-offset-0 ui-choice-on:ak-edge-raw",
+    "ui-choice-on:ak-layer-lighten-0 ui-choice-on:ak-edge-raw",
     // Keep disabled marks and empty boxes distinct on light surfaces.
     "ui-choice-disabled:ui-choice-on:ak-layer-15",
     "ui-choice-disabled:ak-ink-0 ui-choice-disabled:ak-edge-20",
@@ -75,11 +78,12 @@ export const choice = cv({
     $rounded: "sm",
     // Preserve the box shape independently of the surrounding card or row.
     $forceRounded: true,
-    // The slot fixes the outer size. Match the input's 3:1 boundary contrast.
+    // The slot fixes the outer size. Match the input's raised surface and 3:1
+    // boundary contrast.
     $border: true,
     $borderType: "border",
-    $edgeWeight: 45,
-    $lightnessOffset: -1,
+    $edgeWeight: "var(--input-edge-alpha)",
+    $lighten: true,
     $hoverOffset: true,
     $layer(defaultValue) {
       // Replace only the slot's transparent default; explicit colors still

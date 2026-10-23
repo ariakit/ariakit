@@ -8,7 +8,10 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import {
+  ComboboxDescription,
   ComboboxEmpty,
+  ComboboxError,
+  ComboboxField,
   ComboboxGroup,
   ComboboxInput,
   ComboboxItem,
@@ -24,7 +27,11 @@ import {
   ComboboxSelectLabel,
   ComboboxSelectedValue,
 } from "@ariakit/ui/components/combobox.ariakit.react";
-import { Input } from "@ariakit/ui/components/input.ariakit.react";
+import {
+  Input,
+  InputGroup,
+  InputSlot,
+} from "@ariakit/ui/components/input.ariakit.react";
 import * as icons from "lucide-react";
 import {
   Example,
@@ -703,6 +710,151 @@ export default function ComboboxExamples() {
             <ComboboxPopover>
               <ComboboxItem value="Monthly" checkmark="before" />
               <ComboboxItem value="Yearly" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
+        </div>
+      </Example>
+
+      <Example
+        title="Select fields"
+        description="An invalid select in a field shows the danger edge above its error. A select with a colored edge shows the color at full strength. A disabled select dims the label and the hint of its field."
+        code={`
+          <ComboboxField>
+            <ComboboxSelectLabel>Delivery country</ComboboxSelectLabel>
+            <ComboboxSelect aria-invalid aria-describedby="country-error" />
+            <ComboboxError id="country-error">Choose a country.</ComboboxError>
+          </ComboboxField>
+          <ComboboxField>
+            <ComboboxSelectLabel>Account status</ComboboxSelectLabel>
+            <ComboboxSelect $edge="success" aria-describedby="status-hint" />
+            <ComboboxDescription id="status-hint" $text="success">…</ComboboxDescription>
+          </ComboboxField>
+          <ComboboxField>
+            <ComboboxSelectLabel>Renewal period</ComboboxSelectLabel>
+            <ComboboxSelect disabled aria-describedby="cycle-hint" />
+            <ComboboxDescription id="cycle-hint">…</ComboboxDescription>
+          </ComboboxField>
+        `}
+      >
+        <div className="grid w-full gap-4">
+          <ComboboxProvider defaultSelectedValue="">
+            <ComboboxField>
+              <ComboboxSelectLabel>Delivery country</ComboboxSelectLabel>
+              <ComboboxSelect
+                placeholder="Choose a country"
+                aria-invalid
+                aria-describedby="select-field-country-error"
+                className="w-full"
+              />
+              <ComboboxError id="select-field-country-error">
+                Choose a country.
+              </ComboboxError>
+            </ComboboxField>
+            <ComboboxPopover>
+              <ComboboxItem value="Ireland" checkmark="before" />
+              <ComboboxItem value="Portugal" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
+          <ComboboxProvider defaultSelectedValue="Active">
+            <ComboboxField>
+              <ComboboxSelectLabel>Account status</ComboboxSelectLabel>
+              <ComboboxSelect
+                $edge="success"
+                aria-describedby="select-field-status-hint"
+                className="w-full"
+              />
+              <ComboboxDescription
+                id="select-field-status-hint"
+                $text="success"
+              >
+                The account is active.
+              </ComboboxDescription>
+            </ComboboxField>
+            <ComboboxPopover>
+              <ComboboxItem value="Active" checkmark="before" />
+              <ComboboxItem value="Paused" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
+          <ComboboxProvider defaultSelectedValue="Yearly">
+            <ComboboxField>
+              <ComboboxSelectLabel>Renewal period</ComboboxSelectLabel>
+              <ComboboxSelect
+                disabled
+                aria-describedby="select-field-cycle-hint"
+                className="w-full"
+              />
+              <ComboboxDescription id="select-field-cycle-hint">
+                Your plan sets the renewal period.
+              </ComboboxDescription>
+            </ComboboxField>
+            <ComboboxPopover>
+              <ComboboxItem value="Monthly" checkmark="before" />
+              <ComboboxItem value="Yearly" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
+        </div>
+      </Example>
+
+      <Example
+        title="Select in a field group"
+        description="A country code select in a slot before a phone number. While the select is invalid, the group shows the danger edge. A group whose number is disabled while its select stays enabled keeps its enabled look."
+        code={`
+          <InputGroup>
+            <InputSlot $size="2xl" $square={false}>
+              <ComboboxSelect aria-invalid $size="sm" $layer="transparent" />
+            </InputSlot>
+            <Input type="tel" />
+          </InputGroup>
+          <InputGroup>
+            <InputSlot $size="2xl" $square={false}>
+              <ComboboxSelect $size="sm" $layer="transparent" />
+            </InputSlot>
+            <Input type="tel" disabled />
+          </InputGroup>
+        `}
+      >
+        <div className="grid w-full gap-4">
+          <ComboboxProvider defaultSelectedValue="">
+            <InputGroup className="w-full">
+              <InputSlot $size="2xl" $square={false}>
+                <ComboboxSelect
+                  aria-label="Country code"
+                  placeholder="Code"
+                  aria-invalid
+                  $size="sm"
+                  $layer="transparent"
+                />
+              </InputSlot>
+              <Input
+                aria-label="Phone number"
+                type="tel"
+                defaultValue="20 7946 0000"
+              />
+            </InputGroup>
+            <ComboboxPopover>
+              <ComboboxItem value="+44" checkmark="before" />
+              <ComboboxItem value="+351" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
+          <ComboboxProvider defaultSelectedValue="+44">
+            <InputGroup className="w-full">
+              <InputSlot $size="2xl" $square={false}>
+                <ComboboxSelect
+                  aria-label="Fax country code"
+                  $size="sm"
+                  $layer="transparent"
+                />
+              </InputSlot>
+              <Input
+                aria-label="Fax number"
+                type="tel"
+                defaultValue="20 7946 0001"
+                disabled
+              />
+            </InputGroup>
+            <ComboboxPopover>
+              <ComboboxItem value="+44" checkmark="before" />
+              <ComboboxItem value="+351" checkmark="before" />
             </ComboboxPopover>
           </ComboboxProvider>
         </div>

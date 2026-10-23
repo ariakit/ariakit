@@ -155,6 +155,10 @@ export const controlSlot = cv({
     // Custom marks set --slot-icon-size; painted icon slots use
     // --slot-icon-scale.
     "[&>svg]:block [&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
+    // A nested button or select fills the slot like a picture does, so the
+    // slot size sets its height and the gaps around it stay even. Its content
+    // stays centered when its own padding is taller. Badges keep their size.
+    "[&>:is(button,a).control]:size-full [&>:is(button,a).control]:items-center",
     // Outside a text frame, --px and --py are missing and the slot has no side
     // margin.
     "mx-(--mx,0px) my-(--my)",
@@ -510,6 +514,135 @@ export const controlDescription = cv({
         class: "line-clamp-(--line-clamp)",
       };
     },
+  },
+});
+
+/**
+ * A field that stacks a label above a control and the control's error and
+ * hints, or puts the label in a start column. The parts only add styles:
+ * connect the label with `htmlFor`, and the texts with the control's
+ * `aria-describedby`.
+ */
+export const controlField = cv({
+  class: [
+    "control-field group/field min-w-0",
+    // Labels read the gap to cover it. Set --field-gap on the field or an
+    // ancestor to change it.
+    "[--_field-gap:var(--field-gap,--spacing(1.5))] gap-(--_field-gap)",
+    // Fields inside this one start their own columns.
+    "*:[--field-columns:initial]",
+  ],
+  variants: {
+    /**
+     * Stacks the parts, or puts the label in a start column. A horizontal field
+     * holds the control and its texts in a `controlFieldContent`. In a
+     * `controlFieldGrid`, it shares the label column with the other fields, so
+     * the column fits the longest label, and it stacks in a narrow grid. On its
+     * own, the label column fits its own label.
+     * @default "vertical"
+     */
+    $orientation: {
+      vertical: "flex flex-col",
+      horizontal: [
+        "grid items-baseline",
+        "[:where(&)]:grid-cols-[var(--field-columns,max-content_minmax(0,1fr))]",
+        // The label pads its end instead of a column gap, so a click there
+        // also reaches the control. Set --field-column-gap to change it.
+        "gap-x-0 [--_field-column-gap:var(--field-column-gap,--spacing(3))]",
+        "[&>.control-field-label]:pe-(--_field-column-gap)",
+        // In a narrow field grid, the label and the content take full rows.
+        "@max-[20rem]/field-grid:*:col-span-full",
+      ],
+    },
+    /**
+     * Aligns the label text in its column. Horizontal fields default to `end`,
+     * which keeps short labels next to the control. A label above the control,
+     * including one in a stacked field grid, aligns to the start.
+     */
+    $labelAlign: {
+      start: "",
+      end: [
+        "[&>.control-field-label]:text-end",
+        "@max-[20rem]/field-grid:[&>.control-field-label]:text-start",
+      ],
+    },
+  },
+  defaultVariants: {
+    $orientation: "vertical",
+    $labelAlign(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (variants.$orientation === "horizontal") return "end";
+      return "start";
+    },
+  },
+});
+
+/**
+ * Lines up horizontal fields in shared columns, so the label column fits the
+ * longest label. Fields stack in a grid narrower than `20rem`. The grid fills
+ * the width of its container, because its content can't size it. In a container
+ * that fits its content, such as a popover, give the grid a width. Only direct
+ * field children share the columns. Other children, such as a heading, take a
+ * full row, and fields inside them use their own columns.
+ */
+export const controlFieldGrid = cv({
+  class: [
+    // The container query reads the grid's own width, which contains its
+    // inline size. :where() lets caller widths, gaps, and columns win.
+    "control-field-grid @container/field-grid grid min-w-0 [:where(&)]:w-full",
+    "[:where(&)]:gap-y-7 [:where(&)]:grid-cols-[max-content_minmax(0,1fr)]",
+    // Every child takes a full row. Only direct fields use the columns as
+    // their own, so a field in another child, such as a fieldset, uses its
+    // own columns.
+    "[:where(&>*)]:col-span-full [&>.control-field]:[--field-columns:subgrid]",
+  ],
+});
+
+/**
+ * Holds a field's control, error, and hints in the second column of a
+ * horizontal field. Optional in a stacked field.
+ */
+export const controlFieldContent = cv({
+  class: "control-field-content flex min-w-0 flex-col gap-(--_field-gap)",
+});
+
+/** Label text above or beside a field's control. */
+export const controlFieldLabel = cv({
+  extend: [text],
+  class: [
+    // :where() lets caller font classes win.
+    "control-field-label [:where(&)]:text-[0.875em] [:where(&)]:font-medium",
+    // Cover the gap below the label, so a click there also reaches the
+    // control. The negative margin keeps the layout.
+    "pb-(--_field-gap) -mb-(--_field-gap)",
+    // ui-field-disabled reads the field's entry controls, including updates
+    // after render.
+    "group-ui-field-disabled/field:ak-ink-0",
+  ],
+  variants: {
+    /** Truncates the label to one line with an ellipsis. */
+    $truncate: "truncate",
+  },
+});
+
+/** Hint text for a field's control. */
+export const controlFieldDescription = cv({
+  extend: [text],
+  class: [
+    "control-field-description ak-ink-70 [:where(&)]:text-[0.875em]",
+    "group-ui-field-disabled/field:ak-ink-0",
+  ],
+});
+
+/**
+ * Error text for a field's control. While it has text, list its id first in the
+ * control's `aria-describedby` and set `aria-invalid` on the control.
+ */
+export const controlFieldError = cv({
+  extend: [text],
+  class: "control-field-error [:where(&)]:text-[0.875em]",
+  defaultVariants: {
+    $text: "danger",
   },
 });
 
