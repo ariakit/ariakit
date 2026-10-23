@@ -796,6 +796,8 @@ function PreviewCardResizeHandle({
         // A card that shares a row in a preview grid keeps its width, even
         // when a narrow grid stacks the cards.
         "[.preview-grid>:not(.col-span-full)_&]:hidden!",
+        // On touch screens, the handle would take swipes at the card edge.
+        "pointer-coarse:hidden!",
       ].join(" ")}
     >
       <Frame
