@@ -79,7 +79,7 @@ export default function RadioExamples() {
         description="A group of label rows. The checked input fills brand with a dot, and the other inputs sink into the surface."
         code={`
           <RadioProvider>
-            <RadioGroup>
+            <RadioGroup className="grid gap-2">
               <RadioField value="hobby">
                 <RadioLabel>Hobby</RadioLabel>
               </RadioField>
@@ -109,7 +109,7 @@ export default function RadioExamples() {
         description="Each row stacks a description under its label, and the radio lines up with the first line."
         code={`
           <RadioProvider>
-            <RadioGroup>
+            <RadioGroup className="grid gap-2">
               <RadioField value="hobby">
                 <RadioLabel>Hobby</RadioLabel>
                 <RadioDescription>…</RadioDescription>
@@ -208,7 +208,7 @@ export default function RadioExamples() {
         description="One option is unavailable. Its text dims, its empty radio keeps a faint edge, and the other options stay interactive."
         code={`
           <RadioProvider>
-            <RadioGroup>
+            <RadioGroup className="grid gap-2">
               <RadioField value="monthly">
                 <RadioLabel>Monthly</RadioLabel>
               </RadioField>
@@ -244,7 +244,7 @@ export default function RadioExamples() {
         description="A disabled group disables every row. The checked radio keeps its dot on a neutral fill."
         code={`
           <RadioProvider>
-            <RadioGroup disabled>
+            <RadioGroup className="grid gap-2" disabled>
               <RadioField value="hobby">
                 <RadioLabel>Hobby</RadioLabel>
               </RadioField>
@@ -275,7 +275,7 @@ export default function RadioExamples() {
         code={`
           <Frame $layer="brand" $rounded="xl" $p={4}>
             <RadioProvider>
-              <RadioGroup>
+              <RadioGroup className="grid gap-2">
                 <RadioField value="hobby">
                   <RadioLabel>Hobby</RadioLabel>
                 </RadioField>
@@ -665,7 +665,7 @@ export default function RadioExamples() {
         description="Native and ARIA disabled fields use the same label and description contrast."
         code={`
           <RadioProvider>
-            <RadioGroup aria-label="Unavailable notifications">
+            <RadioGroup aria-label="Unavailable notifications" className="grid gap-2">
               <RadioField value="email" disabled>
                 <RadioLabel>Email</RadioLabel>
                 <RadioDescription>Receive email updates.</RadioDescription>
