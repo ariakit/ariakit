@@ -5,7 +5,7 @@ import {
   DescriptionContext,
   useDescription,
   useLabelDescription,
-} from "../react-utils/__description.react.ts";
+} from "../react-utils/use-description.react.ts";
 import {
   checkbox,
   checkboxCard,

@@ -3,16 +3,16 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import * as React from "react";
 import {
-  DescriptionContext,
-  useDescription,
-  useDescriptionRegistry,
-} from "../react-utils/__description.react.ts";
-import {
   appendOptionalChild,
   createOptionalRender,
   createRender,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
+import {
+  DescriptionContext,
+  useDescription,
+  useDescriptionRegistry,
+} from "../react-utils/use-description.react.ts";
 import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   nav,
