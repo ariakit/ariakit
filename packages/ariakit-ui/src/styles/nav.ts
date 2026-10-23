@@ -27,7 +27,9 @@ import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
 /**
- * A navigation region with shared row spacing, groups, and current-row bars.
+ * A navigation region with shared row spacing, groups, and current-row bars. A
+ * small default padding keeps bars at named offsets outside their rows. With
+ * `$cover`, it takes the parent's padding instead, such as in a shell sidebar.
  */
 export const nav = cv({
   extend: [frame],
@@ -122,7 +124,14 @@ export const nav = cv({
   defaultVariants: {
     $layout: "vertical",
     $layer: "transparent",
-    $rounded: "md",
+    $rounded: "xl",
+    $p(defaultValue, variants) {
+      // A covering frame takes its padding from the parent.
+      if (variants.$cover) return defaultValue;
+      // Wider than a bar at every width that the style recipes set, so named
+      // bar offsets keep the bar outside its row.
+      return defaultValue ?? 1;
+    },
   },
 });
 
@@ -428,8 +437,15 @@ export const navLinkBar = cv({
      * Sets the gap from the row to the bar. `edge` puts the bar on the
      * navigation padding edge, and `halfway` centers it between the row and
      * that edge. Numbers scale the spacing token, so `0` puts the bar against
-     * the row; other strings are CSS lengths and can be negative for overlap.
-     * Defaults to `edge`.
+     * the row; other strings are CSS lengths. Defaults to `edge`.
+     *
+     * A bar outside the row contrasts with the surface around it. A negative
+     * number or a length that starts with `-`, such as `-0.5`, puts the bar
+     * over the row and makes it contrast with the row instead. Named offsets
+     * expect navigation padding at least as thick as the bar. With thinner
+     * padding, such as with `$p="none"`, they put the bar over the row but keep
+     * the outside contrast, which can hide the bar in high contrast mode. Use a
+     * negative offset there.
      *
      * The start bar of a nested row measures to the edge of its disclosure
      * content, and the end bar measures from the navigation padding, so it

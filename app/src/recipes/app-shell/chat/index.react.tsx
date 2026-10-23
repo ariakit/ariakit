@@ -103,7 +103,12 @@ export default function Example() {
           </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav list={false} render={<div />} bar={{ $offset: "halfway" }}>
+          <Nav
+            $cover
+            list={false}
+            render={<div />}
+            bar={{ $offset: "halfway" }}
+          >
             <NavGroup>
               <NavGroupLabel>Channels</NavGroupLabel>
               <NavList>

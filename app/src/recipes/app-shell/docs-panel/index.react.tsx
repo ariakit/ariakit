@@ -100,6 +100,7 @@ export default function Example() {
             <Nav
               $layout="horizontal"
               aria-label="Main"
+              $p="none"
               bar
               className="@max-4xl/shell:hidden"
             >
@@ -141,7 +142,12 @@ export default function Example() {
           render={<nav />}
         >
           <ShellSidebarBody>
-            <Nav list={false} render={<div />} bar={{ $offset: "halfway" }}>
+            <Nav
+              $cover
+              list={false}
+              render={<div />}
+              bar={{ $offset: "halfway" }}
+            >
               {navigationGroups.map((group) => (
                 <NavGroup key={group.label}>
                   <NavGroupLabel>{group.label}</NavGroupLabel>
@@ -295,7 +301,7 @@ export default function Example() {
           render={<nav />}
         >
           <ShellSidebarBody>
-            <Nav render={<div />} list={false}>
+            <Nav $cover render={<div />} list={false}>
               <NavGroup>
                 <NavGroupLabel>On this page</NavGroupLabel>
                 <NavList>

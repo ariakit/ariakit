@@ -147,7 +147,7 @@ export default function Example() {
         render={<nav />}
       >
         <ShellSidebarBody>
-          <Nav render={<div />} list={false}>
+          <Nav $cover render={<div />} list={false}>
             <NavGroup>
               <NavGroupLabel>On this page</NavGroupLabel>
               <NavList>

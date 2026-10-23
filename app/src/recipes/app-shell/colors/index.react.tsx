@@ -80,7 +80,12 @@ export default function Example() {
           <Music className="size-5" /> Wavelength
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav render={<div />} list={false} bar={{ $offset: "halfway" }}>
+          <Nav
+            $cover
+            render={<div />}
+            list={false}
+            bar={{ $offset: "halfway" }}
+          >
             <NavGroup>
               <NavGroupLabel>Library</NavGroupLabel>
               <NavList>
