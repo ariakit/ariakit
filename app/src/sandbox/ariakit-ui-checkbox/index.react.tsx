@@ -100,7 +100,7 @@ function SelectAll() {
   const some = selected.length > 0 && !all;
   const getChildId = (feature: Feature) => `${id}-${feature.value}`;
   return (
-    <div className="grid gap-1">
+    <div className="grid gap-2">
       <CheckboxField
         checked={all ? true : some ? "mixed" : false}
         aria-controls={features.map(getChildId).join(" ")}
@@ -110,7 +110,7 @@ function SelectAll() {
       >
         <CheckboxLabel>All features</CheckboxLabel>
       </CheckboxField>
-      <div role="group" aria-label="Features" className="grid gap-1 ps-6">
+      <div role="group" aria-label="Features" className="grid gap-2 ps-6">
         {features.map((feature) => (
           <CheckboxField
             key={feature.value}
@@ -314,18 +314,34 @@ export default function CheckboxExamples() {
       </Example>
 
       <Example
+        title="Bordered field"
+        description="A border or a background makes the row visible, so the field keeps its padding around the box and the label. Without them, the box sits at the field edge."
+        code={`
+          <CheckboxField $border defaultChecked>
+            <CheckboxLabel>Accept the terms</CheckboxLabel>
+          </CheckboxField>
+        `}
+      >
+        <CheckboxField $border defaultChecked>
+          <CheckboxLabel>Accept the terms</CheckboxLabel>
+        </CheckboxField>
+      </Example>
+
+      <Example
         title="Select all"
         description="A parent box shows whether all, some or none of its children are checked, and toggles all of them."
         code={`
-          <CheckboxField checked="mixed">
-            <CheckboxLabel>All features</CheckboxLabel>
-          </CheckboxField>
-          <CheckboxField checked={false}>
-            <CheckboxLabel>Analytics</CheckboxLabel>
-          </CheckboxField>
-          <CheckboxField checked>
-            <CheckboxLabel>Alerts</CheckboxLabel>
-          </CheckboxField>
+          <div className="grid gap-2">
+            <CheckboxField checked="mixed">
+              <CheckboxLabel>All features</CheckboxLabel>
+            </CheckboxField>
+            <CheckboxField checked={false}>
+              <CheckboxLabel>Analytics</CheckboxLabel>
+            </CheckboxField>
+            <CheckboxField checked>
+              <CheckboxLabel>Alerts</CheckboxLabel>
+            </CheckboxField>
+          </div>
         `}
       >
         <SelectAll />
@@ -667,7 +683,7 @@ export default function CheckboxExamples() {
         title="Fields on a brand layer"
         description="A checked box moves its fill away from the brand surface, and an unchecked box sinks into it."
         code={`
-          <Frame $layer="brand" $rounded="xl" $p={4}>
+          <Frame $layer="brand" $rounded="xl" $p={4} className="grid gap-2">
             <CheckboxField defaultChecked>
               <CheckboxLabel>Email me</CheckboxLabel>
             </CheckboxField>
@@ -682,12 +698,43 @@ export default function CheckboxExamples() {
           $layer="brand"
           $rounded="xl"
           $p={4}
-          className="grid w-full gap-1"
+          className="grid w-full gap-2"
         >
           <CheckboxField defaultChecked>
             <CheckboxLabel>Email me</CheckboxLabel>
           </CheckboxField>
           <CheckboxField>
+            <CheckboxLabel>Push notifications</CheckboxLabel>
+            <CheckboxDescription>On every device</CheckboxDescription>
+          </CheckboxField>
+        </Frame>
+      </Example>
+
+      <Example
+        title="Bordered fields on a brand layer"
+        description="The edge takes its color from the surface, like the edge of a card, and the row stays transparent."
+        code={`
+          <Frame $layer="brand" $rounded="xl" $p={4} className="grid gap-2">
+            <CheckboxField $border defaultChecked>
+              <CheckboxLabel>Email me</CheckboxLabel>
+            </CheckboxField>
+            <CheckboxField $border>
+              <CheckboxLabel>Push notifications</CheckboxLabel>
+              <CheckboxDescription>On every device</CheckboxDescription>
+            </CheckboxField>
+          </Frame>
+        `}
+      >
+        <Frame
+          $layer="brand"
+          $rounded="xl"
+          $p={4}
+          className="grid w-full gap-2"
+        >
+          <CheckboxField $border defaultChecked>
+            <CheckboxLabel>Email me</CheckboxLabel>
+          </CheckboxField>
+          <CheckboxField $border>
             <CheckboxLabel>Push notifications</CheckboxLabel>
             <CheckboxDescription>On every device</CheckboxDescription>
           </CheckboxField>
@@ -966,33 +1013,35 @@ export default function CheckboxExamples() {
         title="Disabled choices in colored text"
         description="A field or card that only its input disables keeps the dimmed text and icon inside an adaptive text color."
         code={`
-          <Text $text="danger">
-            <CheckboxField value="archive">
-              <CheckboxLabel>Archive project</CheckboxLabel>
-              <CheckboxDescription>…</CheckboxDescription>
-            </CheckboxField>
-            <CheckboxField value="transfer" aria-disabled>
-              <CheckboxLabel>Transfer project</CheckboxLabel>
-              <CheckboxDescription>…</CheckboxDescription>
-            </CheckboxField>
-            <fieldset disabled>
-              <CheckboxField value="delete">
-                <CheckboxLabel>Delete project</CheckboxLabel>
+          <div className="grid gap-2">
+            <Text $text="danger" className="grid gap-2">
+              <CheckboxField value="archive">
+                <CheckboxLabel>Archive project</CheckboxLabel>
                 <CheckboxDescription>…</CheckboxDescription>
               </CheckboxField>
-            </fieldset>
-            <CheckboxCard value="backups" aria-disabled>
-              <CheckboxCardSlot><Trash2 /></CheckboxCardSlot>
-              <CheckboxCardContent>
-                <CheckboxCardLabel>Delete backups</CheckboxCardLabel>
-                <CheckboxCardDescription>…</CheckboxCardDescription>
-              </CheckboxCardContent>
-            </CheckboxCard>
-          </Text>
-          <CheckboxField value="members" $text="danger" aria-disabled>
-            <CheckboxLabel>Remove members</CheckboxLabel>
-            <CheckboxDescription>…</CheckboxDescription>
-          </CheckboxField>
+              <CheckboxField value="transfer" aria-disabled>
+                <CheckboxLabel>Transfer project</CheckboxLabel>
+                <CheckboxDescription>…</CheckboxDescription>
+              </CheckboxField>
+              <fieldset disabled className="grid">
+                <CheckboxField value="delete">
+                  <CheckboxLabel>Delete project</CheckboxLabel>
+                  <CheckboxDescription>…</CheckboxDescription>
+                </CheckboxField>
+              </fieldset>
+              <CheckboxCard value="backups" aria-disabled>
+                <CheckboxCardSlot><Trash2 /></CheckboxCardSlot>
+                <CheckboxCardContent>
+                  <CheckboxCardLabel>Delete backups</CheckboxCardLabel>
+                  <CheckboxCardDescription>…</CheckboxCardDescription>
+                </CheckboxCardContent>
+              </CheckboxCard>
+            </Text>
+            <CheckboxField value="members" $text="danger" aria-disabled>
+              <CheckboxLabel>Remove members</CheckboxLabel>
+              <CheckboxDescription>…</CheckboxDescription>
+            </CheckboxField>
+          </div>
         `}
       >
         <div className="grid w-full gap-2">

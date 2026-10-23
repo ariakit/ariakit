@@ -19,7 +19,7 @@ const animations = [
 export default function Example() {
   const [loading, setLoading] = useState(true);
   return (
-    <div className="grid w-2xl max-w-full gap-5">
+    <div className="grid w-2xl max-w-full gap-6">
       <CheckboxField
         checked={loading}
         onChange={(event) => setLoading(event.target.checked)}

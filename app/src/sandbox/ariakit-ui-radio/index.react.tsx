@@ -79,7 +79,7 @@ export default function RadioExamples() {
         description="A group of label rows. The checked input fills brand with a dot, and the other inputs sink into the surface."
         code={`
           <RadioProvider>
-            <RadioGroup>
+            <RadioGroup className="grid gap-2">
               <RadioField value="hobby">
                 <RadioLabel>Hobby</RadioLabel>
               </RadioField>
@@ -94,7 +94,7 @@ export default function RadioExamples() {
         `}
       >
         <RadioProvider defaultValue="pro">
-          <RadioGroup aria-label="Plan" className="grid gap-1">
+          <RadioGroup aria-label="Plan" className="grid gap-2">
             {plans.map((plan) => (
               <RadioField key={plan.value} value={plan.value}>
                 <RadioLabel>{plan.label}</RadioLabel>
@@ -109,7 +109,7 @@ export default function RadioExamples() {
         description="Each row stacks a description under its label, and the radio lines up with the first line."
         code={`
           <RadioProvider>
-            <RadioGroup>
+            <RadioGroup className="grid gap-2">
               <RadioField value="hobby">
                 <RadioLabel>Hobby</RadioLabel>
                 <RadioDescription>…</RadioDescription>
@@ -127,7 +127,7 @@ export default function RadioExamples() {
         `}
       >
         <RadioProvider defaultValue="pro">
-          <RadioGroup aria-label="Plan" className="grid gap-1">
+          <RadioGroup aria-label="Plan" className="grid gap-2">
             {plans.map((plan) => (
               <RadioField key={plan.value} value={plan.value}>
                 <RadioLabel>{plan.label}</RadioLabel>
@@ -140,10 +140,10 @@ export default function RadioExamples() {
 
       <Example
         title="Small horizontal group"
-        description="A compact row of choices. The smaller size scales the text, the dot and the row padding together."
+        description="A compact row of choices. The smaller size scales the text, the dot and the gap together."
         code={`
           <RadioProvider>
-            <RadioGroup>
+            <RadioGroup className="flex flex-wrap gap-x-4 gap-y-2">
               <RadioField value="hobby" $size="sm">
                 <RadioLabel>Hobby</RadioLabel>
               </RadioField>
@@ -158,7 +158,10 @@ export default function RadioExamples() {
         `}
       >
         <RadioProvider defaultValue="pro">
-          <RadioGroup aria-label="Plan" className="flex flex-wrap gap-1">
+          <RadioGroup
+            aria-label="Plan"
+            className="flex flex-wrap gap-x-4 gap-y-2"
+          >
             {plans.map((plan) => (
               <RadioField key={plan.value} value={plan.value} $size="sm">
                 <RadioLabel>{plan.label}</RadioLabel>
@@ -205,7 +208,7 @@ export default function RadioExamples() {
         description="One option is unavailable. Its text dims, its empty radio keeps a faint edge, and the other options stay interactive."
         code={`
           <RadioProvider>
-            <RadioGroup>
+            <RadioGroup className="grid gap-2">
               <RadioField value="monthly">
                 <RadioLabel>Monthly</RadioLabel>
               </RadioField>
@@ -221,7 +224,7 @@ export default function RadioExamples() {
         `}
       >
         <RadioProvider defaultValue="yearly">
-          <RadioGroup aria-label="Billing" className="grid gap-1">
+          <RadioGroup aria-label="Billing" className="grid gap-2">
             <RadioField value="monthly">
               <RadioLabel>Monthly</RadioLabel>
             </RadioField>
@@ -241,7 +244,7 @@ export default function RadioExamples() {
         description="A disabled group disables every row. The checked radio keeps its dot on a neutral fill."
         code={`
           <RadioProvider>
-            <RadioGroup disabled>
+            <RadioGroup className="grid gap-2" disabled>
               <RadioField value="hobby">
                 <RadioLabel>Hobby</RadioLabel>
               </RadioField>
@@ -256,7 +259,7 @@ export default function RadioExamples() {
         `}
       >
         <RadioProvider defaultValue="pro">
-          <RadioGroup aria-label="Plan" className="grid gap-1" disabled>
+          <RadioGroup aria-label="Plan" className="grid gap-2" disabled>
             {plans.map((plan) => (
               <RadioField key={plan.value} value={plan.value}>
                 <RadioLabel>{plan.label}</RadioLabel>
@@ -272,7 +275,7 @@ export default function RadioExamples() {
         code={`
           <Frame $layer="brand" $rounded="xl" $p={4}>
             <RadioProvider>
-              <RadioGroup>
+              <RadioGroup className="grid gap-2">
                 <RadioField value="hobby">
                   <RadioLabel>Hobby</RadioLabel>
                 </RadioField>
@@ -289,7 +292,7 @@ export default function RadioExamples() {
       >
         <Frame $layer="brand" $rounded="xl" $p={4} className="w-full">
           <RadioProvider defaultValue="pro">
-            <RadioGroup aria-label="Plan" className="grid gap-1">
+            <RadioGroup aria-label="Plan" className="grid gap-2">
               {plans.map((plan) => (
                 <RadioField key={plan.value} value={plan.value}>
                   <RadioLabel>{plan.label}</RadioLabel>
@@ -662,7 +665,7 @@ export default function RadioExamples() {
         description="Native and ARIA disabled fields use the same label and description contrast."
         code={`
           <RadioProvider>
-            <RadioGroup aria-label="Unavailable notifications">
+            <RadioGroup aria-label="Unavailable notifications" className="grid gap-2">
               <RadioField value="email" disabled>
                 <RadioLabel>Email</RadioLabel>
                 <RadioDescription>Receive email updates.</RadioDescription>
@@ -676,7 +679,10 @@ export default function RadioExamples() {
         `}
       >
         <RadioProvider>
-          <RadioGroup aria-label="Unavailable notifications">
+          <RadioGroup
+            aria-label="Unavailable notifications"
+            className="grid gap-2"
+          >
             <RadioField value="email" disabled>
               <RadioLabel>Email</RadioLabel>
               <RadioDescription>Receive email updates.</RadioDescription>

@@ -48,7 +48,7 @@ export default function Example() {
       >
         <RadioGroup
           aria-label="Network speed"
-          className="flex flex-wrap justify-center gap-x-5 gap-y-2"
+          className="flex flex-wrap justify-center gap-x-8 gap-y-2 pb-2"
         >
           {speeds.map((speed) => (
             <RadioField key={speed.label} value={String(speed.latency)}>

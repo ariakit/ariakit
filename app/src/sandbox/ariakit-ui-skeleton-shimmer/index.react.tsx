@@ -50,7 +50,7 @@ export default function Example() {
 
   return (
     <div className="grid gap-4 p-4">
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
         <Button
           $kind="bevel"
           disabled={loading}
