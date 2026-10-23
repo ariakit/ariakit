@@ -109,7 +109,8 @@ export const choiceInput = cv({
 /**
  * A label row for a native choice input and its description. The input supplies
  * the surface and focus ring. Without a background or a border, the row has no
- * padding unless `$p` is set.
+ * padding unless `$p` is set. A border gives the row a transparent layer, so,
+ * like a card, it sets its own text and edge colors.
  */
 export const choiceField = cv({
   extend: [control],
@@ -134,7 +135,12 @@ export const choiceField = cv({
   ],
   defaultVariants: {
     // Resolve the input against the surrounding surface without an extra layer.
-    $layer: false,
+    // A border derives its edge color from a layer on the same element, so a
+    // bordered row gets one that paints no background.
+    $layer(_defaultValue, variants) {
+      if (variants.$border) return "transparent";
+      return false;
+    },
     // Without a background or border, the row box is invisible. Padding would
     // only move the input away from the field edge. Only control's default of 2
     // is replaced, so an extender's static $p of another value still applies.
