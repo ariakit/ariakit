@@ -173,7 +173,7 @@ function SectionLinks({
   return (
     // The sidebar already renders the landmark around the content, so the nav
     // recipe goes on a plain element.
-    <Nav render={<div aria-label={label} />}>
+    <Nav $cover render={<div aria-label={label} />}>
       {sections.map((section) => (
         <NavLink
           key={section.id}
@@ -419,7 +419,7 @@ function DashboardScenario() {
       >
         <ShellSidebarBody>
           <Brand>Acme</Brand>
-          <Nav render={<div aria-label="Workspace pages" />} className="mt-4">
+          <Nav $cover render={<div aria-label="Workspace pages" />}>
             {workspaceLinks.map((link, index) => (
               <NavLink
                 key={link.title}
@@ -592,7 +592,7 @@ function ChatScenario() {
         render={<nav />}
       >
         <ShellSidebarBody>
-          <Nav render={<div aria-label="Channel list" />}>
+          <Nav $cover render={<div aria-label="Channel list" />}>
             {channels.map((channel, index) => (
               <NavLink
                 key={channel}
@@ -895,7 +895,7 @@ function BarScenario() {
           to the footer. */}
       <ShellFooter>
         <ShellFooterCenter>
-          <Nav $layout="horizontal" aria-label="Footer pages" bar>
+          <Nav $layout="horizontal" aria-label="Footer pages" $p="none" bar>
             <NavLink href="#home" aria-current="page" text="Home" />
             <NavLink href="#search" text="Search" />
             <NavLink href="#profile" text="Profile" />

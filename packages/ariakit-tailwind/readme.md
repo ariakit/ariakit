@@ -18,6 +18,7 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
 - [`ak-text`](#ak-text): colored text with automatic contrast
 - [`ak-edge`](#ak-edge): border and ring colors
 - [`ak-outline`](#ak-outline): outline colors
+- [`ak-outset`](#ak-outset): color context from the layer around the parent layer
 - [`ak-frame`](#ak-frame): radius, padding, margin, borders, and layout
 - [Variants](#variants)
 - [Migrating to v0.2](#migrating-to-v02)
@@ -782,6 +783,35 @@ Normal text should inherit the layer's text color without an extra utility. Use 
 | `ak-outline-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                              |
 | `ak-outline-max-c-<value>`     | Caps chroma specifically. Arbitrary/custom-property values are raw.                                                   |
 | `ak-outline-min-c-<value>`     | Floors chroma specifically. Arbitrary/custom-property values are raw.                                                 |
+
+## `ak-outset`
+
+`ak-outset` makes an element take its color context from the layer around its parent layer. Use it on an element that paints outside its parent's box, such as a bar below a selected tab. Without it, the element adapts to its parent layer, which is not the surface behind it.
+
+```html
+<div class="ak-layer ak-layer-canvas">
+  <button
+    class="ak-layer ak-layer-primary relative ak-frame ak-frame-field/field"
+  >
+    Selected tab
+    <span
+      class="ak-layer ak-layer-contrast ak-outset absolute inset-x-0 -bottom-2 h-0.5"
+    ></span>
+  </button>
+</div>
+```
+
+The bar sits on the canvas, so `ak-layer-contrast` moves it away from the canvas instead of the primary button.
+
+| Utility     | Description                                                                                                                                                                                                                   |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-outset` | Reads the layer around the parent layer wherever the utilities on the same element would read the parent layer: `ak-layer` and its modifiers (including `ak-layer-mix` and `ak-layer-contrast`), `ak-text`, and `ak-outline`. |
+
+Put `ak-outset` on a direct child of an `ak-layer` element. The parent layer keeps the outer layer's values only when one of its direct children has `ak-outset` in its `class` attribute. A variant such as `[.ak-layer>&]:ak-outset` works, but an `ak-outset` that only comes from `@apply` in a class with another name does not. The `body` element never keeps them, because no layer surrounds it.
+
+The values do not inherit. Descendants of an `ak-outset` element measure from their own parent layer as usual. Layer appearance variants such as `ak-dark` also keep matching the parent layer. So does the direction in which `ak-layer` moves its edge color away from the layer color, so a border on an `ak-outset` element can have less contrast with the surface behind it.
+
+When the element paints over its parent instead, such as a bar with a negative offset, leave `ak-outset` out so it keeps reading the parent layer.
 
 ## `ak-frame`
 

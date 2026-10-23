@@ -573,11 +573,26 @@ export function getNamedBarOffsetClass(value: keyof typeof NAMED_BAR_OFFSETS) {
   return NAMED_BAR_OFFSETS[value];
 }
 
-/** Resolves a named or spacing bar offset into `--bar-offset`. */
+/**
+ * Checks whether a spacing or length bar offset is a negative number or starts
+ * with a minus sign, which puts the bar over its control. The sign of a calc()
+ * or var() value is known only after the browser resolves it.
+ */
+function isNegativeBarOffset(value: string | number) {
+  if (typeof value === "number") return value < 0;
+  return value.trimStart().startsWith("-");
+}
+
+/**
+ * Resolves a named or spacing bar offset into `--bar-offset`. Negative numbers
+ * and lengths that start with `-` also mark the bar with `bar-over`.
+ */
 export function getBarOffset(value?: BarOffset) {
   if (value == null) return;
   if (isNamedBarOffset(value)) return getNamedBarOffsetClass(value);
-  return { style: { "--bar-offset": getSpacingValue(value) } };
+  const style = { "--bar-offset": getSpacingValue(value) };
+  if (!isNegativeBarOffset(value)) return { style };
+  return { class: "bar-over", style };
 }
 
 /** Shared painting and visibility for bars inside selected controls. */
@@ -594,6 +609,10 @@ export const barBase = cv({
     "[--bar:calc(var(--bar-width,2px)*(1+0.2*var(--contrast,0)/100))]",
     // Forced colors would repaint the fill with the canvas color.
     "forced-colors:forced-color-adjust-none forced-colors:bg-[CanvasText]",
+    // A bar outside a layered control paints on the surface around the
+    // control, so it takes its color context from that surface. A negative
+    // offset puts the bar over the control, so it keeps the control's context.
+    "[.ak-layer>&:not(.bar-over)]:ak-outset",
   ],
   variants: {
     /**
@@ -621,8 +640,14 @@ export const barBase = cv({
     $length: "auto",
     // Contrast with the surrounding surface instead of painting a cover.
     $layer: "transparent",
-    $invert: true,
     $contrast: true,
+    $invert(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      // A color bar keeps its hue. Inverting would turn it into a pale tint.
+      if (variants.$layer == null) return true;
+      if (variants.$layer === true) return true;
+      return variants.$layer === "transparent";
+    },
   },
 });
 
@@ -655,11 +680,18 @@ export const controlBar = cv({
     },
     /**
      * Sets the gap from the control to the bar. `edge` puts the bar on the
-     * group's padding edge, over the control when the padding is thinner than
-     * the bar. `halfway` centers it between the control and that edge. Numbers
-     * scale the spacing token, so `0` puts the bar against the control; other
-     * strings are CSS lengths and can be negative for overlap. Defaults to
-     * `edge`.
+     * group's padding edge, and `halfway` centers it between the control and
+     * that edge. Numbers scale the spacing token, so `0` puts the bar against
+     * the control; other strings are CSS lengths. Defaults to `edge`.
+     *
+     * A bar outside the control contrasts with the surface around it. A
+     * negative number or a length that starts with `-`, such as `-0.5` or
+     * `-3px`, puts the bar over the control and makes it contrast with the
+     * control instead. Other offsets keep the outside contrast even when they
+     * put the bar over the control, which can hide the bar in high contrast
+     * mode. This includes named offsets with padding thinner than the bar, and
+     * `calc()` or `var()` values that resolve to a negative length. Use a
+     * negative number or a length that starts with `-` there.
      */
     $offset: getBarOffset,
   },

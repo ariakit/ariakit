@@ -249,6 +249,12 @@ export interface WithContextParams {
 interface WithContextReadParams {
   inherit: typeof fn.var;
   parityVar: (property: VarProperty | DashedIdent) => VarProperty;
+  /**
+   * The parity var on the parity that the parent does not provide. In a
+   * container query, it reads the value that the parent inherited from its own
+   * parent, which the parent keeps because it provides on the other one.
+   */
+  opposite: (property: VarProperty) => VarProperty;
 }
 
 type GetContextChildren = (
@@ -324,6 +330,8 @@ export function createContext(reset?: boolean): Context {
         return fn.var(inheritedVar, ...fallbacks);
       },
       parityVar: (property) => getParityVar(property, parity),
+      opposite: (property) =>
+        getParityVar(property, parity === "even" ? "odd" : "even"),
     }).filter((child) => child != null);
   };
 

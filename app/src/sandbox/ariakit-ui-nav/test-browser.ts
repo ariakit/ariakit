@@ -2,6 +2,7 @@ import {
   captureInView,
   capturePage,
   expectFocusVisible,
+  expectMedia,
   forEachColorScheme,
   getCapture,
   hoverOver,
@@ -17,6 +18,21 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await forEachColorScheme(page, (colorScheme) =>
       capturePage({ page, visual, colorScheme, item: "ariakit-ui-nav/page" }),
     );
+  });
+
+  // Current-link bars outside their rows invert from the surface around the
+  // rows, which high contrast paints at the opposite extreme from the rows.
+  test("page in high contrast @visual", async ({ page, visual }) => {
+    await page.emulateMedia({ contrast: "more" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      await expectMedia(page, "(prefers-contrast: more)");
+      await capturePage({
+        page,
+        visual,
+        colorScheme,
+        item: "ariakit-ui-nav/page",
+      });
+    });
   });
 
   // The nested section's root must not paint a surface of its own over the

@@ -165,6 +165,8 @@ const bar = cx(
   "[&>.shell-bar-end:has(>.nav.horizontal)]:self-stretch",
   "[&>*>.nav.horizontal]:self-stretch [&>*>.nav.horizontal]:items-center",
   "[&>*>.nav.horizontal]:my-0 [&>*>.nav.horizontal]:py-0",
+  // Without block padding, edge bars measure from the region's height alone.
+  "[&>*>.nav.horizontal]:[--nav-bar-gap:0px]",
   // The region scrolls, so rounded corners would clip a bar at its edge.
   "[&>*>.nav.horizontal]:rounded-none",
   "col-[shell] grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-0!",
@@ -535,22 +537,14 @@ export const shellSidebarHeader = cv({
   defaultVariants: { $p: 3 },
 });
 
-// A direct navigation region spans the part's padding, so edge bars meet the
-// sidebar edge. Its rows keep their place. A region with its own frame padding,
-// border, or ring keeps its box.
-const sidebarNavCover =
-  "[&>.nav:not([class*=ak-frame-p-],[class*=ak-frame-border],[class*=ak-frame-ring])]:ak-frame-cover";
-
 /**
- * The scrollable center of a sidebar panel. A direct `Nav` without its own
- * `$p`, `$border`, or `$borderType` spans the body's padding, and a direct
- * `Nav` with `$fill` takes the body's height. Wrap the `Nav` in another element
- * to keep its box.
+ * The scrollable center of a sidebar panel. A `Nav` with `$cover` spans the
+ * body's padding, so edge bars meet the sidebar edge, and a direct `Nav` with
+ * `$fill` takes the body's height.
  */
 export const shellSidebarBody = cv({
   extend: [frameBase],
   class: [
-    sidebarNavCover,
     "shell-sidebar-body min-h-0 flex-auto overflow-y-auto rounded-none!",
     // A flex column fits a filling navigation to the body's height.
     "[&:has(>.nav-fill)]:flex [&:has(>.nav-fill)]:flex-col",
@@ -561,7 +555,7 @@ export const shellSidebarBody = cv({
 /** A fixed footer below the scrollable sidebar body. */
 export const shellSidebarFooter = cv({
   extend: [seam],
-  class: [sidebarNavCover, "shell-sidebar-footer flex-none"],
+  class: "shell-sidebar-footer flex-none",
   defaultVariants: { $p: 3 },
 });
 

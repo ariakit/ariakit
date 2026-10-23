@@ -339,15 +339,19 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       await test.expect(link).toHaveCSS("font-weight", "400");
     }
     // No row of the section is current, and Changelog is not current either, so
-    // the bar marks Overview. The unpadded navigation edge is the row's start
-    // edge, so the bar starts there.
-    const overviewBox = await getBox(overview);
+    // the bar marks Overview. The edge bar starts on the navigation edge, in
+    // the default padding before the row.
+    const [overviewBox, navBox] = await Promise.all([
+      getBox(overview),
+      getBox(nav),
+    ]);
     await test.expect
       .poll(async () => (await barEdges()).middle)
       .toBeCloseTo(overviewBox.y + overviewBox.height / 2, 0);
     await test.expect
       .poll(async () => (await barEdges()).start)
-      .toBeCloseTo(overviewBox.x, 0);
+      .toBeCloseTo(navBox.x, 0);
+    test.expect(overviewBox.x - navBox.x).toBeGreaterThan(0);
     // The token on Themes counts as current, so the bar moves onto the guide
     // line, which runs down the center of the section's icon.
     await themes.click();

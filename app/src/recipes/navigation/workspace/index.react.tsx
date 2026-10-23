@@ -119,7 +119,7 @@ export default function Example() {
             </ButtonSlot>
           </Button>
         </div>
-        <Nav aria-label="Workspace" list={false}>
+        <Nav aria-label="Workspace" list={false} $p="none">
           <NavList>{personal.map((link) => renderLink(link))}</NavList>
           <NavGroup>
             <NavGroupLabel>Workspace</NavGroupLabel>
@@ -153,7 +153,7 @@ export default function Example() {
           </NavGroup>
         </Nav>
         <Separator $line="solid" $edgeWeight="normal" $gap={0} />
-        <Nav aria-label="Support">
+        <Nav aria-label="Support" $p="none">
           <NavLink href="#help">
             <NavSlot>
               <CircleHelp />

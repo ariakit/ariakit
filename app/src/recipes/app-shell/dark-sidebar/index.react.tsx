@@ -274,7 +274,12 @@ export default function Example() {
           </div>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav list={false} render={<div />} bar={{ $offset: "halfway" }}>
+          <Nav
+            $cover
+            list={false}
+            render={<div />}
+            bar={{ $offset: "halfway" }}
+          >
             <NavGroup>
               <NavList>
                 <NavLink href="#inbox">

@@ -51,7 +51,7 @@ function Page() {
           {/* The header stretches the navigation to its height, so the bar sits
               on the header's bottom edge. The links scroll when they need more
               room than the header has. */}
-          <Nav aria-label="Main" $layout="horizontal" bar>
+          <Nav aria-label="Main" $layout="horizontal" $p="none" bar>
             {pages.map((page) => (
               <RouterNavLink key={page} to={getPath(page)} text={page} />
             ))}

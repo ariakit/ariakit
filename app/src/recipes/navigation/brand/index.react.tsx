@@ -29,7 +29,7 @@ function WorkspaceNav() {
     // contrast, where the surface takes the page color.
     <Nav
       aria-label="Workspace"
-      bar={{ $side: "start", $layer: "brand", $invert: false }}
+      bar={{ $side: "start", $layer: "brand" }}
       $rounded="2xl"
       $p={2}
       className="w-60"
