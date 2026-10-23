@@ -469,11 +469,15 @@ function PreviewCardViewport({
                 // Without scripts, nothing reports the load, so the frame shows
                 // right away.
                 "[@media(scripting:none)]:opacity-100!",
-                // The frame would take pointer events from the handle when a
-                // drag moves over it.
-                resizing ? "pointer-events-none" : "",
               ].join(" ")}
             />
+            {/* Keeps a drag from the handle out of the frame. Pointer-events on
+                the frame could leave Chrome sending the wheel to the docs page.
+                It is positioned to stay above the frame while it fades in.
+                https://github.com/ariakit/ariakit/issues/8054 */}
+            {resizing && (
+              <div aria-hidden className="relative cursor-ew-resize" />
+            )}
             <div
               aria-hidden
               className={[

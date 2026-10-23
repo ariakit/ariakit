@@ -225,7 +225,9 @@ test("preview card frames scroll after a resize with the handle", async ({
   const box = await iframe.boundingBox();
   expect(box).not.toBeNull();
   if (!box) return;
-  // The corner of the frame is clear of the popup, which scrolls on its own.
+  // The corner of the frame is clear of the popup, which scrolls on its own. A
+  // drag on the handle could leave Chrome sending this wheel to the docs page.
+  // https://github.com/ariakit/ariakit/issues/8054
   await page.mouse.move(box.x + 8, box.y + 8);
   const frameScroll = await getFrameScroll();
   const pageScroll = await getPageScroll();
