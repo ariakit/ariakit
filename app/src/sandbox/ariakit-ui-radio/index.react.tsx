@@ -143,7 +143,7 @@ export default function RadioExamples() {
         description="A compact row of choices. The smaller size scales the text, the dot and the gap together."
         code={`
           <RadioProvider>
-            <RadioGroup>
+            <RadioGroup className="flex flex-wrap gap-x-4 gap-y-2">
               <RadioField value="hobby" $size="sm">
                 <RadioLabel>Hobby</RadioLabel>
               </RadioField>
