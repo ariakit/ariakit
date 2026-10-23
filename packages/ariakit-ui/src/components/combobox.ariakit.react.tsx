@@ -33,7 +33,7 @@ export interface ComboboxProps
   extends
     Omit<ComboboxInputProps, "value" | "defaultValue" | "popover">,
     Pick<
-      ComboboxProviderProps,
+      ak.ComboboxProviderProps,
       "inputValue" | "setInputValue" | "defaultInputValue"
     > {
   /**
@@ -83,7 +83,7 @@ export function Combobox({
   );
 }
 
-export interface ComboboxProviderProps extends ak.ComboboxProviderProps {}
+export type { ComboboxProviderProps } from "@ariakit/react";
 
 /**
  * Shares input, selection, and popover state with combobox components.
@@ -95,9 +95,7 @@ export interface ComboboxProviderProps extends ak.ComboboxProviderProps {}
  *   </ComboboxPopover>
  * </ComboboxProvider>
  */
-export function ComboboxProvider(props: ComboboxProviderProps) {
-  return <ak.ComboboxProvider {...props} />;
-}
+export const ComboboxProvider = ak.ComboboxProvider;
 
 export interface ComboboxInputProps
   extends
