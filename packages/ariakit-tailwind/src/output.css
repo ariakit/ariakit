@@ -155,16 +155,24 @@
     --_ak-lcbm: max(var(--_ak-lm), (1 - var(--_ak-lprc-even, 0)));
     --_ak-lprc-odd: 1;
     --_ak-lpc-odd: var(--ak-layer);
-    --ak-layer-parent: var(--_ak-lpc-even);
+    --ak-layer-parent: var(--_ak-osp, var(--_ak-lpc-even));
+    &:has(> [class*="ak-outset"]) {
+      --_ak-lppc-odd: var(--ak-layer-parent, canvas);
+    }
     --_ak-ltlc-odd: var(--_ak-ltl);
+    --_ak-llc-odd: var(--_ak-ll);
   }
   @container style(--_context-0: odd) {
     --_context-0: even;
     --_ak-lcbm: max(var(--_ak-lm), (1 - var(--_ak-lprc-odd, 0)));
     --_ak-lprc-even: 1;
     --_ak-lpc-even: var(--ak-layer);
-    --ak-layer-parent: var(--_ak-lpc-odd);
+    --ak-layer-parent: var(--_ak-osp, var(--_ak-lpc-odd));
+    &:has(> [class*="ak-outset"]) {
+      --_ak-lppc-even: var(--ak-layer-parent, canvas);
+    }
     --_ak-ltlc-even: var(--_ak-ltl);
+    --_ak-llc-even: var(--_ak-ll);
   }
 }
 
@@ -281,40 +289,40 @@
 @utility ak-layer-contrast {
   --_ak-layer-idle-contrast-lightness: 0.25;
   @container style(--_ak-ll: oklch(0 0 0)) {
-    --_ak-lcd: 1;
-    --_ak-lcpl: 0;
+    --_ak-lcd: var(--_ak-osd, 1);
+    --_ak-lcpl: var(--_ak-ospl, 0);
   }
   @container style(--_ak-ll: oklch(0.125 0 0)) {
-    --_ak-lcd: 1;
-    --_ak-lcpl: 0.125;
+    --_ak-lcd: var(--_ak-osd, 1);
+    --_ak-lcpl: var(--_ak-ospl, 0.125);
   }
   @container style(--_ak-ll: oklch(0.25 0 0)) {
-    --_ak-lcd: 1;
-    --_ak-lcpl: 0.25;
+    --_ak-lcd: var(--_ak-osd, 1);
+    --_ak-lcpl: var(--_ak-ospl, 0.25);
   }
   @container style(--_ak-ll: oklch(0.375 0 0)) {
-    --_ak-lcd: 1;
-    --_ak-lcpl: 0.375;
+    --_ak-lcd: var(--_ak-osd, 1);
+    --_ak-lcpl: var(--_ak-ospl, 0.375);
   }
   @container style(--_ak-ll: oklch(0.5 0 0)) {
-    --_ak-lcd: 1;
-    --_ak-lcpl: 0.5;
+    --_ak-lcd: var(--_ak-osd, 1);
+    --_ak-lcpl: var(--_ak-ospl, 0.5);
   }
   @container style(--_ak-ll: oklch(0.625 0 0)) {
-    --_ak-lcd: 1;
-    --_ak-lcpl: 0.625;
+    --_ak-lcd: var(--_ak-osd, 1);
+    --_ak-lcpl: var(--_ak-ospl, 0.625);
   }
   @container style(--_ak-ll: oklch(0.75 0 0)) {
-    --_ak-lcd: -1;
-    --_ak-lcpl: 0.75;
+    --_ak-lcd: var(--_ak-osd, -1);
+    --_ak-lcpl: var(--_ak-ospl, 0.75);
   }
   @container style(--_ak-ll: oklch(0.875 0 0)) {
-    --_ak-lcd: -1;
-    --_ak-lcpl: 0.875;
+    --_ak-lcd: var(--_ak-osd, -1);
+    --_ak-lcpl: var(--_ak-ospl, 0.875);
   }
   @container style(--_ak-ll: oklch(1 0 0)) {
-    --_ak-lcd: -1;
-    --_ak-lcpl: 1;
+    --_ak-lcd: var(--_ak-osd, -1);
+    --_ak-lcpl: var(--_ak-ospl, 1);
   }
   --_ak-lm: 1;
 }
@@ -582,7 +590,7 @@
   background-color: transparent !important;
   color: var(--ak-text);
   @container style(--_ak-ltl) {
-    color: lch(from oklch(from var(--_ak-text-color, var(--ak-layer)) clamp(var(--_ak-text-lightness-min), (var(--_ak-text-lightness, (l + var(--_ak-text-relative-lightness))) + (var(--_ak-text-push-lightness) * var(--_ak-tcd))), var(--_ak-text-lightness-max)) clamp(var(--_ak-text-chroma-min), var(--_ak-text-chroma, (c + var(--_ak-text-relative-chroma))), var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc(l + (var(--_ak-tcd) * max(0, ((clamp(0, ((var(--_ak-tpl) + ((var(--_ak-tal) - var(--_ak-tpl)) * var(--_ak-text-contrast-scale))) + (var(--_ak-ct) * 0.6668 * 100 * var(--_ak-tcd))), 100) - l) * var(--_ak-tcd))))) min(c, var(--_ak-tcc)) h);
+    color: lch(from oklch(from var(--_ak-text-color, var(--ak-layer)) clamp(var(--_ak-text-lightness-min), (var(--_ak-text-lightness, (l + var(--_ak-text-relative-lightness))) + (var(--_ak-text-push-lightness) * var(--_ak-ostd, var(--_ak-tcd)))), var(--_ak-text-lightness-max)) clamp(var(--_ak-text-chroma-min), var(--_ak-text-chroma, (c + var(--_ak-text-relative-chroma))), var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc(l + (var(--_ak-ostd, var(--_ak-tcd)) * max(0, ((clamp(0, ((var(--_ak-ostpl, var(--_ak-tpl)) + ((var(--_ak-ostal, var(--_ak-tal)) - var(--_ak-ostpl, var(--_ak-tpl))) * var(--_ak-text-contrast-scale))) + (var(--_ak-ct) * 0.6668 * 100 * var(--_ak-ostd, var(--_ak-tcd)))), 100) - l) * var(--_ak-ostd, var(--_ak-tcd)))))) min(c, var(--_ak-ostcc, var(--_ak-tcc))) h);
   }
   @supports (color: if(else: red)) {
     @container (style(--_context-0: even)) or (not style(--_context-0)) {
@@ -800,6 +808,483 @@
   }
 }
 
+@utility ak-outset {
+  @container (style(--_context-0: even)) or (not style(--_context-0)) {
+    --_ak-osp: var(--_ak-lppc-even);
+    @container style(--_ak-llc-odd: oklch(0 0 0)) {
+      --_ak-osd: 1;
+      --_ak-ospl: 0;
+    }
+    @container style(--_ak-llc-odd: oklch(0.125 0 0)) {
+      --_ak-osd: 1;
+      --_ak-ospl: 0.125;
+    }
+    @container style(--_ak-llc-odd: oklch(0.25 0 0)) {
+      --_ak-osd: 1;
+      --_ak-ospl: 0.25;
+    }
+    @container style(--_ak-llc-odd: oklch(0.375 0 0)) {
+      --_ak-osd: 1;
+      --_ak-ospl: 0.375;
+    }
+    @container style(--_ak-llc-odd: oklch(0.5 0 0)) {
+      --_ak-osd: 1;
+      --_ak-ospl: 0.5;
+    }
+    @container style(--_ak-llc-odd: oklch(0.625 0 0)) {
+      --_ak-osd: 1;
+      --_ak-ospl: 0.625;
+    }
+    @container style(--_ak-llc-odd: oklch(0.75 0 0)) {
+      --_ak-osd: -1;
+      --_ak-ospl: 0.75;
+    }
+    @container style(--_ak-llc-odd: oklch(0.875 0 0)) {
+      --_ak-osd: -1;
+      --_ak-ospl: 0.875;
+    }
+    @container style(--_ak-llc-odd: oklch(1 0 0)) {
+      --_ak-osd: -1;
+      --_ak-ospl: 1;
+    }
+    @container style(--_ak-ltlc-odd: lch(0 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 3.125;
+      --_ak-ostal: 55.2119;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(3.125 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 6.25;
+      --_ak-ostal: 57.033;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(6.25 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 9.375;
+      --_ak-ostal: 58.8111;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(9.375 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 12.5;
+      --_ak-ostal: 60.8877;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(12.5 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 15.625;
+      --_ak-ostal: 63.3262;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(15.625 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 18.75;
+      --_ak-ostal: 66.1083;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(18.75 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 21.875;
+      --_ak-ostal: 69.2085;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(21.875 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 25;
+      --_ak-ostal: 72.597;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(25 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 28.125;
+      --_ak-ostal: 76.2424;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-odd: lch(28.125 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 31.25;
+      --_ak-ostal: 80.114;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-odd: lch(31.25 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 34.375;
+      --_ak-ostal: 84.1828;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-odd: lch(34.375 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 37.5;
+      --_ak-ostal: 88.4225;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-odd: lch(37.5 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 40.625;
+      --_ak-ostal: 92.8099;
+      --_ak-ostcc: 20;
+    }
+    @container style(--_ak-ltlc-odd: lch(40.625 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 43.75;
+      --_ak-ostal: 97.3245;
+      --_ak-ostcc: 20;
+    }
+    @container style(--_ak-ltlc-odd: lch(43.75 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 46.875;
+      --_ak-ostal: 100;
+      --_ak-ostcc: 0;
+    }
+    @container style(--_ak-ltlc-odd: lch(46.875 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 50;
+      --_ak-ostal: 100;
+      --_ak-ostcc: 0;
+    }
+    @container style(--_ak-ltlc-odd: lch(50 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 53.125;
+      --_ak-ostal: 100;
+      --_ak-ostcc: 0;
+    }
+    @container style(--_ak-ltlc-odd: lch(53.125 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 56.25;
+      --_ak-ostal: 100;
+      --_ak-ostcc: 0;
+    }
+    @container style(--_ak-ltlc-odd: lch(56.25 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 56.27;
+      --_ak-ostal: 100;
+      --_ak-ostcc: 0;
+    }
+    @container style(--_ak-ltlc-odd: lch(59.375 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 59.375;
+      --_ak-ostal: 10.2806;
+      --_ak-ostcc: 20;
+    }
+    @container style(--_ak-ltlc-odd: lch(62.5 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 62.5;
+      --_ak-ostal: 14.6157;
+      --_ak-ostcc: 20;
+    }
+    @container style(--_ak-ltlc-odd: lch(65.625 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 65.625;
+      --_ak-ostal: 18.2327;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-odd: lch(68.75 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 68.75;
+      --_ak-ostal: 21.4312;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-odd: lch(71.875 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 71.875;
+      --_ak-ostal: 24.3545;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-odd: lch(75 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 75;
+      --_ak-ostal: 27.0828;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-odd: lch(78.125 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 78.125;
+      --_ak-ostal: 29.6659;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(81.25 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 81.25;
+      --_ak-ostal: 32.137;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(84.375 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 84.375;
+      --_ak-ostal: 34.5193;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(87.5 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 87.5;
+      --_ak-ostal: 36.8297;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(90.625 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 90.625;
+      --_ak-ostal: 39.0809;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(93.75 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 93.75;
+      --_ak-ostal: 41.2826;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(96.875 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 96.875;
+      --_ak-ostal: 43.4424;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-odd: lch(100 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 100;
+      --_ak-ostal: 45.5665;
+      --_ak-ostcc: 80;
+    }
+  }
+  @container style(--_context-0: odd) {
+    --_ak-osp: var(--_ak-lppc-odd);
+    @container style(--_ak-llc-even: oklch(0 0 0)) {
+      --_ak-osd: 1;
+      --_ak-ospl: 0;
+    }
+    @container style(--_ak-llc-even: oklch(0.125 0 0)) {
+      --_ak-osd: 1;
+      --_ak-ospl: 0.125;
+    }
+    @container style(--_ak-llc-even: oklch(0.25 0 0)) {
+      --_ak-osd: 1;
+      --_ak-ospl: 0.25;
+    }
+    @container style(--_ak-llc-even: oklch(0.375 0 0)) {
+      --_ak-osd: 1;
+      --_ak-ospl: 0.375;
+    }
+    @container style(--_ak-llc-even: oklch(0.5 0 0)) {
+      --_ak-osd: 1;
+      --_ak-ospl: 0.5;
+    }
+    @container style(--_ak-llc-even: oklch(0.625 0 0)) {
+      --_ak-osd: 1;
+      --_ak-ospl: 0.625;
+    }
+    @container style(--_ak-llc-even: oklch(0.75 0 0)) {
+      --_ak-osd: -1;
+      --_ak-ospl: 0.75;
+    }
+    @container style(--_ak-llc-even: oklch(0.875 0 0)) {
+      --_ak-osd: -1;
+      --_ak-ospl: 0.875;
+    }
+    @container style(--_ak-llc-even: oklch(1 0 0)) {
+      --_ak-osd: -1;
+      --_ak-ospl: 1;
+    }
+    @container style(--_ak-ltlc-even: lch(0 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 3.125;
+      --_ak-ostal: 55.2119;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(3.125 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 6.25;
+      --_ak-ostal: 57.033;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(6.25 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 9.375;
+      --_ak-ostal: 58.8111;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(9.375 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 12.5;
+      --_ak-ostal: 60.8877;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(12.5 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 15.625;
+      --_ak-ostal: 63.3262;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(15.625 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 18.75;
+      --_ak-ostal: 66.1083;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(18.75 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 21.875;
+      --_ak-ostal: 69.2085;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(21.875 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 25;
+      --_ak-ostal: 72.597;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(25 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 28.125;
+      --_ak-ostal: 76.2424;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-even: lch(28.125 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 31.25;
+      --_ak-ostal: 80.114;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-even: lch(31.25 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 34.375;
+      --_ak-ostal: 84.1828;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-even: lch(34.375 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 37.5;
+      --_ak-ostal: 88.4225;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-even: lch(37.5 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 40.625;
+      --_ak-ostal: 92.8099;
+      --_ak-ostcc: 20;
+    }
+    @container style(--_ak-ltlc-even: lch(40.625 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 43.75;
+      --_ak-ostal: 97.3245;
+      --_ak-ostcc: 20;
+    }
+    @container style(--_ak-ltlc-even: lch(43.75 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 46.875;
+      --_ak-ostal: 100;
+      --_ak-ostcc: 0;
+    }
+    @container style(--_ak-ltlc-even: lch(46.875 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 50;
+      --_ak-ostal: 100;
+      --_ak-ostcc: 0;
+    }
+    @container style(--_ak-ltlc-even: lch(50 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 53.125;
+      --_ak-ostal: 100;
+      --_ak-ostcc: 0;
+    }
+    @container style(--_ak-ltlc-even: lch(53.125 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 56.25;
+      --_ak-ostal: 100;
+      --_ak-ostcc: 0;
+    }
+    @container style(--_ak-ltlc-even: lch(56.25 0 0)) {
+      --_ak-ostd: 1;
+      --_ak-ostpl: 56.27;
+      --_ak-ostal: 100;
+      --_ak-ostcc: 0;
+    }
+    @container style(--_ak-ltlc-even: lch(59.375 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 59.375;
+      --_ak-ostal: 10.2806;
+      --_ak-ostcc: 20;
+    }
+    @container style(--_ak-ltlc-even: lch(62.5 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 62.5;
+      --_ak-ostal: 14.6157;
+      --_ak-ostcc: 20;
+    }
+    @container style(--_ak-ltlc-even: lch(65.625 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 65.625;
+      --_ak-ostal: 18.2327;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-even: lch(68.75 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 68.75;
+      --_ak-ostal: 21.4312;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-even: lch(71.875 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 71.875;
+      --_ak-ostal: 24.3545;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-even: lch(75 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 75;
+      --_ak-ostal: 27.0828;
+      --_ak-ostcc: 40;
+    }
+    @container style(--_ak-ltlc-even: lch(78.125 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 78.125;
+      --_ak-ostal: 29.6659;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(81.25 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 81.25;
+      --_ak-ostal: 32.137;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(84.375 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 84.375;
+      --_ak-ostal: 34.5193;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(87.5 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 87.5;
+      --_ak-ostal: 36.8297;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(90.625 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 90.625;
+      --_ak-ostal: 39.0809;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(93.75 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 93.75;
+      --_ak-ostal: 41.2826;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(96.875 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 96.875;
+      --_ak-ostal: 43.4424;
+      --_ak-ostcc: 80;
+    }
+    @container style(--_ak-ltlc-even: lch(100 0 0)) {
+      --_ak-ostd: -1;
+      --_ak-ostpl: 100;
+      --_ak-ostal: 45.5665;
+      --_ak-ostcc: 80;
+    }
+  }
+}
+
 @utility ak-text-* {
   --_ak-text-chroma: --value(--chroma-*);
   --_ak-text-hue: --value(--hue-*);
@@ -915,40 +1400,40 @@
     --ak-outline: oklch(from oklch(from var(--_ak-outline-color, var(--ak-layer)) var(--_ak-outline-lightness, calc(l + var(--_ak-outline-relative-lightness))) var(--_ak-outline-chroma, calc(c + var(--_ak-outline-relative-chroma))) var(--_ak-outline-hue, calc(h + var(--_ak-outline-relative-hue)))) clamp(var(--_ak-outline-lightness-min), (l + (var(--_ak-opd) * max(0, (((var(--_ak-opl) + ((max(0.5, var(--_ak-outline-push-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-opd))) - l) * var(--_ak-opd))))), var(--_ak-outline-lightness-max)) clamp(var(--_ak-outline-chroma-min), c, var(--_ak-outline-chroma-max, var(--chroma-p3-max, 0.368))) h);
   }
   @container style(--_ak-ll: oklch(0 0 0)) {
-    --_ak-opd: 1;
-    --_ak-opl: 0;
+    --_ak-opd: var(--_ak-osd, 1);
+    --_ak-opl: var(--_ak-ospl, 0);
   }
   @container style(--_ak-ll: oklch(0.125 0 0)) {
-    --_ak-opd: 1;
-    --_ak-opl: 0.125;
+    --_ak-opd: var(--_ak-osd, 1);
+    --_ak-opl: var(--_ak-ospl, 0.125);
   }
   @container style(--_ak-ll: oklch(0.25 0 0)) {
-    --_ak-opd: 1;
-    --_ak-opl: 0.25;
+    --_ak-opd: var(--_ak-osd, 1);
+    --_ak-opl: var(--_ak-ospl, 0.25);
   }
   @container style(--_ak-ll: oklch(0.375 0 0)) {
-    --_ak-opd: 1;
-    --_ak-opl: 0.375;
+    --_ak-opd: var(--_ak-osd, 1);
+    --_ak-opl: var(--_ak-ospl, 0.375);
   }
   @container style(--_ak-ll: oklch(0.5 0 0)) {
-    --_ak-opd: 1;
-    --_ak-opl: 0.5;
+    --_ak-opd: var(--_ak-osd, 1);
+    --_ak-opl: var(--_ak-ospl, 0.5);
   }
   @container style(--_ak-ll: oklch(0.625 0 0)) {
-    --_ak-opd: 1;
-    --_ak-opl: 0.625;
+    --_ak-opd: var(--_ak-osd, 1);
+    --_ak-opl: var(--_ak-ospl, 0.625);
   }
   @container style(--_ak-ll: oklch(0.75 0 0)) {
-    --_ak-opd: -1;
-    --_ak-opl: 0.75;
+    --_ak-opd: var(--_ak-osd, -1);
+    --_ak-opl: var(--_ak-ospl, 0.75);
   }
   @container style(--_ak-ll: oklch(0.875 0 0)) {
-    --_ak-opd: -1;
-    --_ak-opl: 0.875;
+    --_ak-opd: var(--_ak-osd, -1);
+    --_ak-opl: var(--_ak-ospl, 0.875);
   }
   @container style(--_ak-ll: oklch(1 0 0)) {
-    --_ak-opd: -1;
-    --_ak-opl: 1;
+    --_ak-opd: var(--_ak-osd, -1);
+    --_ak-opl: var(--_ak-ospl, 1);
   }
 }
 
@@ -1694,6 +2179,53 @@
   syntax: "<color>";
   inherits: true;
   initial-value: canvas;
+}
+
+@property --_ak-llc-even {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: canvas;
+}
+
+@property --_ak-llc-odd {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: canvas;
+}
+
+@property --_ak-osp {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-osd {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-ospl {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-ostd {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-ostpl {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-ostal {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-ostcc {
+  syntax: "*";
+  inherits: false;
 }
 
 @property --_ak-ls {

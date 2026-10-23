@@ -618,6 +618,24 @@ const layerColorVars = {
   layerTextLContext: _ak.var("ltlc"),
   layerTextLContextEven: _ak.prop.canvas("ltlc-even", { inherits: true }),
   layerTextLContextOdd: _ak.prop.canvas("ltlc-odd", { inherits: true }),
+  // Parity copies of layerL routed through layerContext. A layer keeps its
+  // parent layer's copy on the parity it does not provide, so ak-outset can
+  // query the layer two levels up through it.
+  layerLContext: _ak.var("llc"),
+  layerLContextEven: _ak.prop.canvas("llc-even", { inherits: true }),
+  layerLContextOdd: _ak.prop.canvas("llc-odd", { inherits: true }),
+  // A layer with a direct ak-outset child also provides its own parent color,
+  // so that child can read the color two levels up from its own computed style.
+  layerParentParentContext: _ak.var("lppc"),
+  // Written only by ak-outset and read before the values of the parent layer.
+  // They do not inherit, so descendants keep measuring from their own parent.
+  outsetLayerParent: _ak.prop("osp"),
+  outsetDirection: _ak.prop("osd"),
+  outsetParentL: _ak.prop("ospl"),
+  outsetTextDirection: _ak.prop("ostd"),
+  outsetTextParentL: _ak.prop("ostpl"),
+  outsetTextAccessibleL: _ak.prop("ostal"),
+  outsetTextChromaCap: _ak.prop("ostcc"),
   // This must not match the light/dark style queries until an ancestor layer
   // provides an actual scheme color.
   layerScheme: _ak.prop.color("ls", { inherits: true, initial: "transparent" }),
@@ -1400,8 +1418,16 @@ utility(
     ),
     set(provide(vars.layerPresentContext), 1),
     set(provide(vars.layerParentContext), vars.layer),
-    set(vars.layerParent, inherit(vars.layerParentContext)),
+    set(
+      vars.layerParent,
+      fn.var(vars.outsetLayerParent, inherit(vars.layerParentContext)),
+    ),
+    rule(
+      '&:has(> [class*="ak-outset"])',
+      set(provide(vars.layerParentParentContext), vars.layerParent),
+    ),
     set(provide(vars.layerTextLContext), vars.layerTextL),
+    set(provide(vars.layerLContext), vars.layerL),
   ]),
 );
 
@@ -1569,8 +1595,11 @@ utility(
   "layer-contrast",
   set(inputs.layerIdleContrastL, 0.25),
   mapLayerLightnessSteps((parentL, isDark) => [
-    set(vars.layerContrastDirection, isDark ? 1 : -1),
-    set(vars.layerContrastParentL, parentL),
+    set(
+      vars.layerContrastDirection,
+      fn.var(vars.outsetDirection, isDark ? 1 : -1),
+    ),
+    set(vars.layerContrastParentL, fn.var(vars.outsetParentL, parentL)),
   ]),
 );
 
@@ -1841,9 +1870,22 @@ const textAdjustedChroma = fn.var(
   fn.add(c, inputs.textRelativeC),
 );
 const textAdjustedHue = fn.var(inputs.textH, fn.add(h, inputs.textRelativeH));
+// ak-outset replaces the parent layer's text step values with the outer
+// layer's. Reading them here keeps the step tables free of the override.
+const textDirection = fn.var(
+  vars.outsetTextDirection,
+  vars.textContrastDirection,
+);
+const textParentL = fn.var(vars.outsetTextParentL, vars.textParentL);
+const textAccessibleL = fn.var(
+  vars.outsetTextAccessibleL,
+  vars.textAccessibleL,
+);
+const textChromaCap = fn.var(vars.outsetTextChromaCap, vars.textChromaCap);
+
 const textPushedLightness = fn.add(
   textAdjustedLightness,
-  fn.mul(inputs.textPushL, vars.textContrastDirection),
+  fn.mul(inputs.textPushL, textDirection),
 );
 
 const textColorAdjusted = fn.oklch(textBaseColor, {
@@ -1854,17 +1896,14 @@ const textColorAdjusted = fn.oklch(textBaseColor, {
 
 function getTextAccessibleLightness() {
   const scaledAccessibleLightness = fn.add(
-    vars.textParentL,
-    fn.mul(
-      fn.sub(vars.textAccessibleL, vars.textParentL),
-      vars.textContrastScale,
-    ),
+    textParentL,
+    fn.mul(fn.sub(textAccessibleL, textParentL), vars.textContrastScale),
   );
   const contrastShift = fn.mul(
     vars.contrastT,
     TEXT_CONTRAST_SCALE,
     LCH_LIGHTNESS_MAX,
-    vars.textContrastDirection,
+    textDirection,
   );
   return fn.clamp(
     0,
@@ -1878,11 +1917,11 @@ function getTextDirectional() {
   const textDirectedLightness = getDirectionalLightness(
     l,
     textAccessibleLightness,
-    vars.textContrastDirection,
+    textDirection,
   );
   return fn.lch(textColorAdjusted, {
     l: textDirectedLightness,
-    c: fn.min(c, vars.textChromaCap),
+    c: fn.min(c, textChromaCap),
   });
 }
 
@@ -1963,6 +2002,41 @@ utility(
       ),
     ),
   ),
+);
+
+// Reads the layer that holds the parent layer wherever ak-layer, ak-text,
+// ak-outline, and ak-layer-contrast would read the parent layer. It suits an
+// element painted on that outer surface, such as a bar drawn outside its
+// control. The parent keeps the outer layer's values on the parity it does not
+// provide, and it provides its own parent color for the base color.
+utility(
+  "outset",
+  layerContext.read(({ inherit, opposite }) => [
+    set(vars.outsetLayerParent, inherit(vars.layerParentParentContext)),
+    ...mapLightnessSteps(
+      (parentLightness) =>
+        fn.style(
+          opposite(vars.layerLContext),
+          fn.oklch({ l: parentLightness }),
+        ),
+      (parentL, isDark) => [
+        set(vars.outsetDirection, isDark ? 1 : -1),
+        set(vars.outsetParentL, parentL),
+      ],
+    ),
+    ...textLightnessSteps.map((step) =>
+      at.container(
+        fn.style(
+          opposite(vars.layerTextLContext),
+          fn.lch({ l: step.parentLightness }),
+        ),
+        set(vars.outsetTextDirection, step.contrastDirection),
+        set(vars.outsetTextParentL, step.parentL),
+        set(vars.outsetTextAccessibleL, step.accessibleL),
+        set(vars.outsetTextChromaCap, step.chromaCap),
+      ),
+    ),
+  ]),
 );
 
 utility(
@@ -2101,8 +2175,11 @@ utility(
   set.outlineColor(vars.outline),
   at.container(fn.style(vars.layerL), set(vars.outline, outlineDirectional)),
   mapLayerLightnessSteps((parentL, isDark) => [
-    set(vars.outlinePushDirection, isDark ? 1 : -1),
-    set(vars.outlineParentL, parentL),
+    set(
+      vars.outlinePushDirection,
+      fn.var(vars.outsetDirection, isDark ? 1 : -1),
+    ),
+    set(vars.outlineParentL, fn.var(vars.outsetParentL, parentL)),
   ]),
 );
 
