@@ -11,7 +11,8 @@ export const textFrame = cv({
   variants: {
     /**
      * Sets side padding. Named sizes scale the optical extra added to frame
-     * padding; other CSS values replace the full side padding.
+     * padding; other CSS values replace the full side padding. Ignored when
+     * `$p` is `"none"`.
      */
     $px(value?: "sm" | "md" | "lg" | "xl" | "2xl" | (string & {})) {
       if (value == null) return;
@@ -34,8 +35,18 @@ export const textFrame = cv({
       return defaultValue ?? "md";
     },
   },
-  refine({ variants, addClass }) {
-    if (variants.$p === "none") return;
+  refine({ variants, addClass, addStyle }) {
+    if (variants.$p === "none") {
+      // Publish zero spacing so slots and gaps inside do not read an ancestor
+      // text frame. Unlike `$p={0}`, this also drops the optical side inset.
+      addClass("[--px:0px] [--py:0px] [--text-frame-inset:0px]");
+      // A raw `$px` sets inline values for a side padding that the frame never
+      // applies. The refine style replaces them.
+      if (variants.$px != null) {
+        addStyle({ "--px": "0px", "--text-frame-inset": "0px" });
+      }
+      return;
+    }
     addClass([
       // Derive the optical inset from line height and capital height. A raw
       // `$px` wins through the style attribute.
