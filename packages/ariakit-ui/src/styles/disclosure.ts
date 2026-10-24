@@ -40,8 +40,8 @@ export const disclosureGroup = cv({
       // Open content grows past its own height to fill the disclosure.
       "[&>[data-open]>.disclosure-content]:max-h-full!",
       // The body scrolls, so the content keeps clipping its rounded corners.
+      // Overscroll chains to the page, so the body does not trap the wheel.
       "[&>*>.disclosure-content>*]:h-full [&>*>.disclosure-content>*]:overflow-y-auto",
-      "[&>*>.disclosure-content>*]:overscroll-y-contain",
       // An open disclosure reaches the group's end, which needs no edge. While
       // every disclosure is closed, the last one draws it right below itself.
       "border-b-0! *:last:border-(--ak-edge)",

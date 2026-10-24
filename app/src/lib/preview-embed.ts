@@ -317,8 +317,8 @@ export function setupPreviewEmbed() {
   // The stylesheet stops the root scroller of an inactive page, so the browser
   // passes its wheel scrolling to the docs page. Inner scroll containers still
   // scroll, so their wheel events go to the card instead. A container with
-  // contained overscroll, such as an app shell sidebar, also keeps the wheel
-  // from the docs page when its content fits.
+  // contained overscroll, such as a popover, also keeps the wheel from the docs
+  // page when its content fits.
   const isScrollContainer = (element: Element) => {
     const style = getComputedStyle(element);
     const scrollsY =

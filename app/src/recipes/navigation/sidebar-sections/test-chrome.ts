@@ -51,4 +51,26 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(guides).toBeInViewport();
     await test.expect(nav.button("Components")).toBeInViewport();
   });
+
+  test("scrolls the page once the open section reaches its end", async ({
+    page,
+    q,
+  }) => {
+    await page.setViewportSize({ width: 1024, height: 420 });
+    const nav = query(q.navigation("Site"));
+    const link = nav.link("Combobox");
+    const box = await link.boundingBox();
+    test.expect(box).not.toBeNull();
+    if (!box) return;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    const getPageScroll = () => page.evaluate(() => window.scrollY);
+    // The first wheel scrolls the section to its end, so later ones overscroll
+    // it and chain to the page.
+    await test.expect
+      .poll(async () => {
+        await page.mouse.wheel(0, 200);
+        return getPageScroll();
+      })
+      .toBeGreaterThan(0);
+  });
 });

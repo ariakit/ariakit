@@ -891,8 +891,8 @@ function scrollPage(element: Element, wheel: WheelDelta) {
 
 /**
  * Returns whether the element keeps wheel scrolling from reaching the page. A
- * container with contained overscroll, such as an app shell sidebar, does so
- * even when its content fits.
+ * container with contained overscroll, such as a popover, does so even when its
+ * content fits.
  */
 function isScrollContainer(element: Element) {
   const style = getComputedStyle(element);
