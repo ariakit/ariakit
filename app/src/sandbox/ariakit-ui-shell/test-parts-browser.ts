@@ -493,6 +493,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
       0,
     );
     await expect(q.main()).toHaveCSS("top", "auto");
+    // Playwright can scroll the page when it retries a click on a checkbox that
+    // moves after the shell rows change, and main scrolls with the page.
+    // https://github.com/ariakit/ariakit/issues/8059
+    await page.evaluate(() => window.scrollTo(0, 0));
     expect((await getBox(q.main())).y).toBeCloseTo(64, 0);
   });
 
