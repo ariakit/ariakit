@@ -301,15 +301,29 @@ function usePreviewFrame(href: string) {
     const isInStage = (target: EventTarget | null) => {
       return target instanceof Node && stage.contains(target);
     };
-    const deactivate = () => {
-      if (!activatedRef.current) return;
-      activatedRef.current = false;
+    const postDeactivate = () => {
       const iframe = ref.current;
       if (!iframe) return;
       postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action: "deactivate" });
     };
+    const deactivate = () => {
+      if (!activatedRef.current) return;
+      activatedRef.current = false;
+      postDeactivate();
+    };
     const onInteraction = (event: Event) => {
       if (isInStage(event.target)) return;
+      deactivate();
+    };
+    // A touch on the docs page can scroll it without taking focus from the
+    // frame, which would keep the frame active.
+    const onPointerDown = (event: PointerEvent) => {
+      if (isInStage(event.target)) return;
+      if (event.pointerType !== "mouse" && doc.activeElement === ref.current) {
+        activatedRef.current = false;
+        postDeactivate();
+        return;
+      }
       deactivate();
     };
     // A click in another preview frame moves focus to it without a pointer or
@@ -322,12 +336,12 @@ function usePreviewFrame(href: string) {
         deactivate();
       });
     };
-    doc.addEventListener("pointerdown", onInteraction, true);
+    doc.addEventListener("pointerdown", onPointerDown, true);
     doc.addEventListener("focusin", onInteraction, true);
     window.addEventListener("blur", onBlur);
     return () => {
       clearTimeout(blurTimeout);
-      doc.removeEventListener("pointerdown", onInteraction, true);
+      doc.removeEventListener("pointerdown", onPointerDown, true);
       doc.removeEventListener("focusin", onInteraction, true);
       window.removeEventListener("blur", onBlur);
     };

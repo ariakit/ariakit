@@ -83,8 +83,9 @@ export type PreviewFrameMessage = PreviewLocationMessage | PreviewScrollMessage;
  * - The page stays inactive until the person clicks or tabs into it. An
  *   inactive page does not scroll and ignores programmatic focus, so scrolling
  *   the docs page over a preview or hovering a component that moves focus on
- *   hover does not trap the docs page. The card also lets the page scroll while
- *   the person resizes it, until they interact with the docs page.
+ *   hover does not trap the docs page. A touch on the docs page makes the page
+ *   inactive again, even when focus stays in it. The card also lets the page
+ *   scroll while the person resizes it, until they interact with the docs page.
  * - Interactions on the docs page do not close popups in the page. A page with
  *   `data-preview-open` on its root opens its popup once it hydrates, so the
  *   card presents the popup and not only its trigger.
@@ -103,18 +104,33 @@ export function setupPreviewEmbed() {
   root.dataset.previewEmbedded = "";
   let opening = root.hasAttribute("data-preview-open");
 
+  // A touch on the docs page can scroll it without taking focus from the page.
+  // The card reports it, and the page waits until the person comes back.
+  let movedOn = false;
+  const hasFocus = () => document.hasFocus() && !movedOn;
   // A click focuses the window after pointerdown handlers run, and some
   // components move focus from those handlers.
   let pointerDown = false;
-  const isActive = () => document.hasFocus() || pointerDown;
+  const isActive = () => hasFocus() || pointerDown;
   // A resize from the card lets the page scroll, but focus stays on the resize
   // handle, so programmatic focus still waits for a person in the page.
   let resized = false;
   const updateActive = () => {
-    root.toggleAttribute("data-preview-active", document.hasFocus() || resized);
+    root.toggleAttribute("data-preview-active", hasFocus() || resized);
   };
   updateActive();
-  window.addEventListener("focus", updateActive);
+  const comeBack = (event: Event) => {
+    if (!event.isTrusted) return;
+    movedOn = false;
+    updateActive();
+  };
+  window.addEventListener("focus", comeBack);
+  window.addEventListener("focusin", comeBack, true);
+  // A tap on a focused element clicks without moving focus. A key in the page
+  // comes before the focus calls of components that move focus with the arrow
+  // keys, which an inactive page would ignore.
+  window.addEventListener("click", comeBack, true);
+  window.addEventListener("keydown", comeBack, true);
   // Once the page had focus, the person moved on from the resize, so focus
   // decides again.
   window.addEventListener("blur", () => {
@@ -588,6 +604,7 @@ export function setupPreviewEmbed() {
         break;
       case "deactivate":
         resized = false;
+        movedOn = true;
         updateActive();
         break;
       case "theme":

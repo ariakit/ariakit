@@ -163,6 +163,7 @@ function getScrollTop(locator: Locator) {
 
 test("preview card frames pass touch scrolling to the page until activated", async ({
   page,
+  q,
 }) => {
   const { frame, listbox } = await getComboboxFrame(page);
   const pageScroll = await getPageScroll(page);
@@ -187,6 +188,81 @@ test("preview card frames pass touch scrolling to the page until activated", asy
   );
   await swipe({ page, from: await getCenter(listbox), distance: 100 });
   await expect.poll(() => getScrollTop(listbox)).toBeGreaterThan(0);
+
+  // A swipe on the docs page makes the frame inactive again, even though focus
+  // stays in it, so only a tap activates it again. The popup scrolled down, so
+  // the next swipes move the finger down.
+  const cardTitle = query(q.region("Combobox Group", { exact: true })).heading(
+    "Combobox Group",
+  );
+  await cardTitle.scrollIntoViewIfNeeded();
+  const cardScroll = await getPageScroll(page);
+  await swipe({ page, from: await getCenter(cardTitle), distance: 100 });
+  await expect.poll(() => getPageScroll(page)).toBeGreaterThan(cardScroll);
+  await expect(combobox).toBeFocused();
+  await expect(frame.locator("html")).not.toHaveAttribute(
+    "data-preview-active",
+    "",
+  );
+  // The frame still ignores focus calls, so an example that moves focus on its
+  // own does not make it active again.
+  const option = query(frame).option(/Emma Johnson/);
+  await option.evaluate((element) => element.focus());
+  await expect(frame.locator("html")).not.toHaveAttribute(
+    "data-preview-active",
+    "",
+  );
+  const inactiveScroll = await getPageScroll(page);
+  const listboxScroll = await getScrollTop(listbox);
+  await swipe({ page, from: await getCenter(listbox), distance: -100 });
+  await expect.poll(() => getPageScroll(page)).toBeLessThan(inactiveScroll);
+  expect(await getScrollTop(listbox)).toBe(listboxScroll);
+
+  await combobox.tap();
+  await expect(frame.locator("html")).toHaveAttribute(
+    "data-preview-active",
+    "",
+  );
+  await expect(listbox).toBeVisible();
+  const activeScroll = await getScrollTop(listbox);
+  await swipe({ page, from: await getCenter(listbox), distance: -100 });
+  await expect.poll(() => getScrollTop(listbox)).toBeLessThan(activeScroll);
+});
+
+test("preview card frames take arrow keys after a touch on the docs page", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/app-shell/");
+  const iframe = page.locator('iframe[title="Dashboard"]');
+  await iframe.scrollIntoViewIfNeeded();
+  // The card shows the frame once it has hydrated and the frame has loaded.
+  await expect(iframe.locator("xpath=..")).toHaveAttribute(
+    "aria-busy",
+    "false",
+  );
+  const frame = iframe.contentFrame();
+  const root = frame.locator("html");
+  await expect(root).toHaveAttribute("data-preview-hydrated", "");
+  const today = query(frame).radio("Today");
+  await today.tap();
+  await expect(today).toBeFocused();
+  await expect(root).toHaveAttribute("data-preview-active", "");
+
+  const cardTitle = query(q.region("Dashboard", { exact: true })).heading(
+    "Dashboard",
+  );
+  await cardTitle.scrollIntoViewIfNeeded();
+  const pageScroll = await getPageScroll(page);
+  await swipe({ page, from: await getCenter(cardTitle), distance: 40 });
+  await expect.poll(() => getPageScroll(page)).toBeGreaterThan(pageScroll);
+  await expect(root).not.toHaveAttribute("data-preview-active", "");
+
+  // The radio group moves focus with the arrow keys, and the key brings the
+  // person back to the frame.
+  await page.keyboard.press("ArrowRight");
+  await expect(query(frame).radio("7D")).toBeFocused();
+  await expect(root).toHaveAttribute("data-preview-active", "");
 });
 
 test("preview card frames stop scrolling only while a touch is in them", async ({
