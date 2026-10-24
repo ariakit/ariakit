@@ -1,5 +1,23 @@
 # @ariakit/react
 
+## 0.4.43
+
+### Form pending states with overlapping callbacks
+
+The `validating` and `submitting` states of [`useFormStore`](https://ariakit.com/reference/use-form-store) now stay `true` until every overlapping validation or submission finishes. Before, the first one to finish set the state to `false`. For example, a blur autosave that runs after a manual submission no longer enables [`FormSubmit`](https://ariakit.com/reference/form-submit) and [`FormReset`](https://ariakit.com/reference/form-reset) while the autosave is still pending.
+
+Callbacks passed to [`useFormValidate`](https://ariakit.com/reference/use-form-validate) and [`useFormSubmit`](https://ariakit.com/reference/use-form-submit) must settle. If a debounced callback cancels a previous call, resolve the previous promise instead of leaving it pending. Otherwise, the form stays in a pending state.
+
+### Other updates
+
+- Fixed arrow keys moving focus out of a text field rendered as [`CompositeItem`](https://ariakit.com/reference/composite-item) before the caret reached the start or end of the text when a two-dimensional composite sets [`orientation`](https://ariakit.com/reference/composite-provider#orientation) to `vertical` or `horizontal`. This also applies to all components built on [`CompositeItem`](https://ariakit.com/reference/composite-item).
+- Fixed composite-based stores generating random IDs during render, which made Next.js reject prerendering with Cache Components. This affected providers and store hooks such as [`TabProvider`](https://ariakit.com/reference/tab-provider) and [`MenuProvider`](https://ariakit.com/reference/menu-provider) without a store ID, and all composite-based providers that receive an `undefined` `id`.
+- Fixed [`Portal`](https://ariakit.com/reference/portal) with [`preserveTabOrder`](https://ariakit.com/reference/portal#preservetaborder) removing its elements from the tab order when focus moved into a same-origin iframe inside the portal, so <kbd>Tab</kbd> and <kbd>Shift</kbd>+<kbd>Tab</kbd> from the iframe skipped the elements around it. This also applies to components that render in a portal with this behavior, such as non-modal [`Popover`](https://ariakit.com/reference/popover).
+- Fixed [`Portal`](https://ariakit.com/reference/portal) with [`preserveTabOrder`](https://ariakit.com/reference/portal#preservetaborder) leaving elements inside same-origin iframes out of the tab order after focus left the portal and returned. This also applies to components that render in a portal with this behavior, such as non-modal [`Popover`](https://ariakit.com/reference/popover).
+- Fixed [`Radio`](https://ariakit.com/reference/radio) ignoring a selection when its [`checked`](https://ariakit.com/reference/radio#checked) prop is `false` but the radio store still holds its value, such as after the app resets its controlled state.
+- Fixed keyboard navigation following the previous order after mounted [`CollectionItem`](https://ariakit.com/reference/collection-item) elements move in the DOM, such as when React reorders items with stable keys. This also applies to all components built on [`CollectionItem`](https://ariakit.com/reference/collection-item), such as [`CompositeItem`](https://ariakit.com/reference/composite-item) and [`ComboboxItem`](https://ariakit.com/reference/combobox-item).
+- Updated dependencies: `@ariakit/react-components@0.7.2`
+
 ## 0.4.42
 
 ### Supplemental focus styling
