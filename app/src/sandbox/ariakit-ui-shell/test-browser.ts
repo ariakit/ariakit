@@ -277,6 +277,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           ...getCapture(frame, colorScheme, {
             item: "ariakit-ui-shell/flush-band",
             fullPage: true,
+            // The site theme panel sets the radius on the root element, and the
+            // shell corner follows it.
+            styles: {
+              [colorScheme]: {},
+              [`${colorScheme}-round`]: { "--radius": "0.5em" },
+              [`${colorScheme}-sharp`]: { "--radius": "0.0625em" },
+            },
           }),
           viewports: {
             wide: { width: 1440, height: 900 },

@@ -67,7 +67,7 @@ astro-static-slot {
 }
 
 /* App shells round nested corners to the card viewport instead of a browser
-   window. The card sends the radius; 20px is the shell default. */
-:root[data-preview-embedded] .shell {
-  --shell-radius: var(--preview-viewport-radius, 20px);
+   window once the card sends its radius. */
+:root[data-preview-viewport-radius] .shell {
+  --shell-radius: var(--preview-viewport-radius);
 }

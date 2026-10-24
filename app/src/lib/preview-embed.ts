@@ -527,9 +527,11 @@ export function setupPreviewEmbed() {
         }
         break;
       case "viewport":
-        // The site stylesheet passes this value to app shells.
+        // The site stylesheet passes this value to app shells. Until it
+        // arrives, each shell keeps the radius of its own size.
         if ("radius" in data && typeof data.radius === "string") {
           setProperty("--preview-viewport-radius", data.radius);
+          root.toggleAttribute("data-preview-viewport-radius", !!data.radius);
         }
         break;
     }

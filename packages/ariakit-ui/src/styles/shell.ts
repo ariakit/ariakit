@@ -18,8 +18,6 @@ export const shell = cv({
     "min-h-[100cqb]",
     "grid-cols-[[shell-start]_auto_auto_[main-start]_minmax(0,1fr)_[main-end]_auto_auto_[shell-end]]",
     "grid-rows-[[shell-start_header-start]_auto_[header-end_main-start_main-header-start]_auto_[main-header-end_intro-start]_auto_[intro-end_body-start]_minmax(0,1fr)_[body-end_footer-start]_auto_[footer-end_shell-end]]",
-    // Match Chrome's macOS window corner without rounding the shell itself.
-    "[--shell-radius:20px]",
     "[--shell-start-1-width:0px] [--shell-start-2-width:0px]",
     "[--shell-end-1-width:0px] [--shell-end-2-width:0px]",
     "[--shell-header-height:0px] [--shell-main-max-width:48rem]",
@@ -54,16 +52,30 @@ export const shell = cv({
      * shell's size. Defaults to `auto`.
      */
     // Each size also sets the bar step in rem. Firefox resolves a registered em
-    // length against the parent font when the element changes its own size.
+    // length against the parent font when the element changes its own size. The
+    // shell radius divides the theme radius by the text size, so the corner
+    // matches Chrome's macOS window (20px at the default radius) at every size
+    // without rounding the shell itself.
     $size: {
       auto: [
         "text-sm [--shell-header-step:calc(0.875rem/4)]",
+        "[--shell-radius:calc(var(--radius)*5/0.875)]",
         "[.shell_&]:[font-size:inherit] [.shell_&]:[line-height:inherit]",
         "[.shell_&]:[--shell-header-step:inherit]",
+        "[.shell_&]:[--shell-radius:inherit]",
       ],
-      sm: "text-sm [--shell-header-step:calc(0.875rem/4)]",
-      md: "text-base [--shell-header-step:calc(1rem/4)]",
-      lg: "text-lg [--shell-header-step:calc(1.125rem/4)]",
+      sm: [
+        "text-sm [--shell-header-step:calc(0.875rem/4)]",
+        "[--shell-radius:calc(var(--radius)*5/0.875)]",
+      ],
+      md: [
+        "text-base [--shell-header-step:calc(1rem/4)]",
+        "[--shell-radius:calc(var(--radius)*5)]",
+      ],
+      lg: [
+        "text-lg [--shell-header-step:calc(1.125rem/4)]",
+        "[--shell-radius:calc(var(--radius)*5/1.125)]",
+      ],
     },
     /**
      * Sets the duration of sidebar folds and content compensation. Numbers are
