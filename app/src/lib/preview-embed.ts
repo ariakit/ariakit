@@ -142,6 +142,14 @@ export function setupPreviewEmbed() {
     },
     true,
   );
+  // A touch that scrolls cancels the pointer and does not click.
+  window.addEventListener(
+    "pointercancel",
+    () => {
+      pointerDown = false;
+    },
+    true,
+  );
 
   const patchFocus = (prototype: HTMLElement | SVGElement) => {
     const focus: unknown = Object.getOwnPropertyDescriptor(
@@ -216,11 +224,13 @@ export function setupPreviewEmbed() {
   // Places the trigger at the top of the viewport, so a popup that scrolls with
   // the page opens below it, and then centers both. A fixed popup, such as a
   // modal dialog, does not move with the page, so the page keeps its scroll.
+  // The page scrolls to absolute positions. With relative scrolls, frames in
+  // iOS Safari were seen scrolled twice as far, past the trigger.
   const scrollToPopup = async (trigger: Element, popup: Element) => {
     if (isFixed(popup)) return;
     const triggerElements = getTriggerElements(trigger);
-    const triggerTop = getBounds(triggerElements).top;
-    window.scrollBy({ top: triggerTop - popupMargin, behavior: "instant" });
+    const triggerTop = getBounds(triggerElements).top + window.scrollY;
+    window.scrollTo({ top: triggerTop - popupMargin, behavior: "instant" });
     // Popups reposition after the scroll event, in the next frame.
     await nextFrame();
     await nextFrame();
@@ -228,7 +238,10 @@ export function setupPreviewEmbed() {
     const offset = (window.innerHeight - (bottom - top)) / 2;
     // A popup taller than the viewport keeps the trigger in view.
     if (offset <= popupMargin) return;
-    window.scrollBy({ top: top - offset, behavior: "instant" });
+    window.scrollTo({
+      top: top + window.scrollY - offset,
+      behavior: "instant",
+    });
   };
 
   const getPopup = (trigger: Element) => {
@@ -318,13 +331,16 @@ export function setupPreviewEmbed() {
         style.overscrollBehaviorX !== "auto");
     return scrollsY || scrollsX;
   };
-  const isInScrollContainer = (target: EventTarget | null) => {
+  const getScrollContainers = (target: EventTarget | null) => {
+    const containers: Element[] = [];
     let element = target instanceof Element ? target : null;
     while (element && element !== document.body) {
-      if (isScrollContainer(element)) return true;
+      if (isScrollContainer(element)) {
+        containers.push(element);
+      }
       element = element.parentElement;
     }
-    return false;
+    return containers;
   };
   window.addEventListener(
     "wheel",
@@ -332,7 +348,7 @@ export function setupPreviewEmbed() {
       if (root.hasAttribute("data-preview-active")) return;
       // Pinch zoom on trackpads sends wheel events with ctrlKey.
       if (event.ctrlKey) return;
-      if (!isInScrollContainer(event.target)) return;
+      if (!getScrollContainers(event.target).length) return;
       event.preventDefault();
       window.parent.postMessage(
         {
@@ -347,6 +363,59 @@ export function setupPreviewEmbed() {
     },
     { capture: true, passive: false },
   );
+
+  // Stopping a container hides its scrollbar. A classic scrollbar takes room,
+  // so the content would reflow under the touch. Phones and tablets show
+  // overlay scrollbars, which take none.
+  const hasClassicScrollbar = (element: Element) => {
+    if (!(element instanceof HTMLElement)) return false;
+    const style = getComputedStyle(element);
+    const borderX =
+      Number.parseFloat(style.borderLeftWidth) +
+      Number.parseFloat(style.borderRightWidth);
+    const borderY =
+      Number.parseFloat(style.borderTopWidth) +
+      Number.parseFloat(style.borderBottomWidth);
+    // The element sizes are rounded, so a pixel of difference is no scrollbar.
+    return (
+      element.offsetWidth - element.clientWidth - borderX > 1 ||
+      element.offsetHeight - element.clientHeight - borderY > 1
+    );
+  };
+
+  // A touch cannot pass its scrolling to the docs page like the wheel. On an
+  // inactive page, the touch stops the scroll containers under it until it
+  // ends, and the site stylesheet lets their overscroll reach the docs page.
+  // The browser then scrolls the docs page, as it does over the stopped root.
+  // Containers with a classic scrollbar keep scrolling under the touch.
+  let scrollLocked: Element[] = [];
+  window.addEventListener(
+    "touchstart",
+    (event) => {
+      if (root.hasAttribute("data-preview-active")) return;
+      for (const element of getScrollContainers(event.target)) {
+        if (hasClassicScrollbar(element)) continue;
+        element.setAttribute("data-preview-scroll-lock", "");
+        scrollLocked.push(element);
+      }
+    },
+    { capture: true, passive: true },
+  );
+  const unlockScroll = (event: TouchEvent) => {
+    // Touches on the docs page can still be down. Chrome lists them with this
+    // document as their target, and a touch in the page targets an element.
+    for (const touch of event.touches) {
+      if (touch.target instanceof Element && document.contains(touch.target)) {
+        return;
+      }
+    }
+    for (const element of scrollLocked) {
+      element.removeAttribute("data-preview-scroll-lock");
+    }
+    scrollLocked = [];
+  };
+  window.addEventListener("touchend", unlockScroll, true);
+  window.addEventListener("touchcancel", unlockScroll, true);
 
   // The DOM types do not include the Navigation API yet. Unlike history, it
   // only moves through the entries of this frame, so the back button never

@@ -908,11 +908,32 @@ function isScrollContainer(element: Element) {
 }
 
 /**
- * Lets an inline preview scroll only after a click or focus moves into it, as a
- * preview frame does. Until then, wheel events over its scroll containers
- * scroll the page, so scrolling the page over the card does not get stuck in
- * it. Returns a function that activates the preview, such as when the person
- * resizes it with the handle.
+ * Returns whether the element shows a classic scrollbar, which takes room.
+ * Stopping the element on a touch would hide the scrollbar and reflow its
+ * content. Phones and tablets show overlay scrollbars, which take none.
+ */
+function hasClassicScrollbar(element: Element) {
+  if (!(element instanceof HTMLElement)) return false;
+  const style = getComputedStyle(element);
+  const borderX =
+    Number.parseFloat(style.borderLeftWidth) +
+    Number.parseFloat(style.borderRightWidth);
+  const borderY =
+    Number.parseFloat(style.borderTopWidth) +
+    Number.parseFloat(style.borderBottomWidth);
+  // The element sizes are rounded, so a pixel of difference is no scrollbar.
+  return (
+    element.offsetWidth - element.clientWidth - borderX > 1 ||
+    element.offsetHeight - element.clientHeight - borderY > 1
+  );
+}
+
+/**
+ * Lets an inline preview scroll only after a click, a tap, or focus moves into
+ * it, as a preview frame does. Until then, wheel events and touches over its
+ * scroll containers scroll the page, so scrolling the page over the card does
+ * not get stuck in it. Returns a function that activates the preview, such as
+ * when the person resizes it with the handle.
  */
 function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
   const activeRef = useRef(false);
@@ -927,10 +948,24 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
     // can also fall back to the body, such as when a focused button becomes
     // disabled, which keeps a preview frame active too.
     activeRef.current = viewport.contains(doc.activeElement);
+    const isInViewport = (target: EventTarget | null) => {
+      return target instanceof Node && viewport.contains(target);
+    };
     // Runs in the capture phase, before the handle activates the preview.
     const updateActive = (event: Event) => {
-      activeRef.current =
-        event.target instanceof Node && viewport.contains(event.target);
+      activeRef.current = isInViewport(event.target);
+    };
+    // A touch or pen in the example can start a scroll of the page, so only the
+    // click of a tap activates the preview. A tap that stops a scrolling page
+    // does not click.
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse" && isInViewport(event.target)) return;
+      updateActive(event);
+    };
+    // iOS Safari clicks on a tap only when an ancestor of the target below the
+    // body listens to clicks, so the listener is on the viewport.
+    const onClick = () => {
+      activeRef.current = true;
     };
     const isActive = () => {
       if (!activeRef.current) return false;
@@ -941,31 +976,68 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
       if (focused === doc.body) return true;
       return stage.contains(focused);
     };
-    const isInScrollContainer = (target: EventTarget | null) => {
-      // The listener is on the viewport, so the target is in its document.
+    const getScrollContainers = (target: EventTarget | null) => {
+      const containers: Element[] = [];
+      // The listeners are on the viewport, so the target is in its document.
       let element = target instanceof Element ? target : null;
       while (element) {
-        if (isScrollContainer(element)) return true;
-        if (element === viewport) return false;
+        if (isScrollContainer(element)) {
+          containers.push(element);
+        }
+        if (element === viewport) break;
         element = element.parentElement;
       }
-      return false;
+      return containers;
     };
     const onWheel = (event: WheelEvent) => {
       if (isActive()) return;
       // Pinch zoom on trackpads sends wheel events with ctrlKey.
       if (event.ctrlKey) return;
-      if (!isInScrollContainer(event.target)) return;
+      if (!getScrollContainers(event.target).length) return;
       event.preventDefault();
       scrollPage(viewport, event);
     };
-    doc.addEventListener("pointerdown", updateActive, true);
+    // A touch cannot pass its scrolling to the page like the wheel, so it stops
+    // the scroll containers under it until it ends. See global.css. Containers
+    // with a classic scrollbar keep scrolling under the touch.
+    let scrollLocked: Element[] = [];
+    const unlockScroll = () => {
+      for (const element of scrollLocked) {
+        element.removeAttribute("data-preview-scroll-lock");
+      }
+      scrollLocked = [];
+    };
+    const onTouchStart = (event: TouchEvent) => {
+      if (isActive()) return;
+      for (const element of getScrollContainers(event.target)) {
+        if (hasClassicScrollbar(element)) continue;
+        element.setAttribute("data-preview-scroll-lock", "");
+        scrollLocked.push(element);
+      }
+    };
+    const onTouchEnd = (event: TouchEvent) => {
+      // Touches outside the viewport can still be down.
+      for (const touch of event.touches) {
+        if (isInViewport(touch.target)) return;
+      }
+      unlockScroll();
+    };
+    doc.addEventListener("pointerdown", onPointerDown, true);
     doc.addEventListener("focusin", updateActive, true);
+    viewport.addEventListener("click", onClick, true);
     viewport.addEventListener("wheel", onWheel, { passive: false });
+    viewport.addEventListener("touchstart", onTouchStart, { passive: true });
+    viewport.addEventListener("touchend", onTouchEnd);
+    viewport.addEventListener("touchcancel", onTouchEnd);
     return () => {
-      doc.removeEventListener("pointerdown", updateActive, true);
+      unlockScroll();
+      doc.removeEventListener("pointerdown", onPointerDown, true);
       doc.removeEventListener("focusin", updateActive, true);
+      viewport.removeEventListener("click", onClick, true);
       viewport.removeEventListener("wheel", onWheel);
+      viewport.removeEventListener("touchstart", onTouchStart);
+      viewport.removeEventListener("touchend", onTouchEnd);
+      viewport.removeEventListener("touchcancel", onTouchEnd);
     };
   }, [ref]);
 
