@@ -76,6 +76,31 @@ function VisibilitySelect({
 }
 
 export function PartsScenario({ controls }: { controls: ReactNode }) {
+  const [sizePane, setSizePane] = useState(false);
+  return (
+    // A scrolling pane with size containment holds the shell instead of the
+    // page, like an app embedded in a fixed-height panel.
+    <div
+      className={
+        sizePane ? "@container-size h-[40rem] overflow-auto" : "contents"
+      }
+    >
+      <PartsShell
+        controls={controls}
+        sizePane={sizePane}
+        setSizePane={setSizePane}
+      />
+    </div>
+  );
+}
+
+interface PartsShellProps {
+  controls: ReactNode;
+  sizePane: boolean;
+  setSizePane: (sizePane: boolean) => void;
+}
+
+function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
   const [textSize, setTextSize] = useState("");
   const [spacingGutter, setSpacingGutter] = useState(false);
   const [from, setFrom] = useState<Start>("intro");
@@ -317,6 +342,14 @@ export function PartsScenario({ controls }: { controls: ReactNode }) {
                 }
               />{" "}
               Narrow shell
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={sizePane}
+                onChange={(event) => setSizePane(event.currentTarget.checked)}
+              />{" "}
+              Size container pane
             </label>
             <label>
               <input
