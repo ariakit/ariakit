@@ -91,8 +91,7 @@ async function touchWithTwoFingers({
   await touchscreen.send("touchStart", [first]);
   await touchscreen.send("touchStart", [first, second]);
   await whileDown();
-  // A point missing from the active points lifts.
-  await touchscreen.send("touchMove", [second]);
+  // Without points, touchEnd lifts each finger in the order it went down.
   await touchscreen.send("touchEnd", []);
 }
 
