@@ -1,8 +1,21 @@
 import { cv } from "clava";
 import { button, buttonSlot } from "./button.ts";
-import { control, controlLabel } from "./control.ts";
+import {
+  control,
+  controlField,
+  controlFieldContent,
+  controlFieldDescription,
+  controlFieldError,
+  controlFieldLabel,
+} from "./control.ts";
 import { frameBase } from "./frame.ts";
-import { input, inputPlaceholder } from "./input.ts";
+import {
+  getInputEdgeRaw,
+  input,
+  inputEdgeAlpha,
+  inputInvalidEdge,
+  inputPlaceholder,
+} from "./input.ts";
 import {
   option,
   optionContent,
@@ -20,8 +33,24 @@ export const comboboxInput = cv({
   class: "combobox-input shrink-0",
 });
 
+/**
+ * A field that lays out a combobox label, its control, and the control's texts.
+ */
+export const comboboxField = controlField;
+
+/**
+ * Holds a combobox and its texts in the second column of a horizontal field.
+ */
+export const comboboxFieldContent = controlFieldContent;
+
 /** Combobox label text with optional truncation. */
-export const comboboxLabel = controlLabel;
+export const comboboxLabel = controlFieldLabel;
+
+/** Hint text for a combobox or select. */
+export const comboboxDescription = controlFieldDescription;
+
+/** Error text for a combobox or select. */
+export const comboboxError = controlFieldError;
 
 /** A scrollable combobox popup constrained to its available space. */
 export const comboboxPopover = cv({
@@ -142,10 +171,16 @@ export const comboboxSelect = cv({
     $lightnessOffset(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
       if (defaultValue !== true) return defaultValue;
-      // Match input surfaces; disabled fields return to the surrounding
+      // Input surfaces use $lighten; disabled fields return to the surrounding
       // surface.
       if (variants.$disabled) return 0;
-      return -1;
+      return false;
+    },
+    $lighten(defaultValue, variants) {
+      if (!isSelectField(variants)) return defaultValue;
+      if (variants.$disabled) return defaultValue;
+      // Match the raised input surface.
+      return defaultValue ?? true;
     },
     $border(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
@@ -162,9 +197,16 @@ export const comboboxSelect = cv({
       if (!isSelectField(variants)) return defaultValue;
       if (!variants.$border) return defaultValue;
       if (defaultValue != null) return defaultValue;
-      // Match the input's 3:1 boundary contrast; disabled fields keep a faint
-      // edge.
-      return variants.$disabled ? 10 : 45;
+      // Disabled fields keep a faint edge.
+      if (variants.$disabled) return 10;
+      // Like the input, a chosen edge color shows as is.
+      if (variants.$edgeRaw) return defaultValue;
+      // Match the input's 3:1 boundary contrast.
+      return "var(--input-edge-alpha)";
+    },
+    $edgeRaw(defaultValue, variants) {
+      if (!isSelectField(variants)) return defaultValue;
+      return getInputEdgeRaw(defaultValue, variants);
     },
     $rounded(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
@@ -175,6 +217,7 @@ export const comboboxSelect = cv({
   refine({ variants, addClass }) {
     if (!isSelectField(variants)) return;
     if (!variants.$border) return;
+    addClass([inputEdgeAlpha, inputInvalidEdge]);
     if (variants.$borderType !== "border") return;
     // Preserve the field boundary when button disabled styles clear its border.
     addClass("[--disabled-border:var(--ak-edge)]");
@@ -188,7 +231,7 @@ export const comboboxSelectArrow = cv({
 });
 
 /** Select label text with optional truncation. */
-export const comboboxSelectLabel = controlLabel;
+export const comboboxSelectLabel = controlFieldLabel;
 
 /** Placeholder-colored text for an empty select trigger. */
 export const comboboxSelectPlaceholder = inputPlaceholder;

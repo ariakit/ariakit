@@ -205,6 +205,21 @@ body > * {
   initial-value: 0px;
 }
 
+/* Each field resolves the --field-gap and --field-column-gap that a caller
+   sets on it or on an ancestor into these lengths in its own font, so its
+   smaller label can cover the same gap. */
+@property --_field-gap {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --_field-column-gap {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Resolve icon-column lengths at the root so part fonts cannot change them. */
 @property --disclosure-px {
   syntax: "<length>";
@@ -1285,7 +1300,8 @@ body > * {
 }
 
 /* A wrapper is disabled only when all its entry controls are disabled.
-   Buttons and choice controls do not count. Keep both entry lists identical. */
+   Buttons and choice controls do not count, but a select button with the
+   combobox role does. Keep both entry lists identical. */
 @custom-variant ui-field-disabled {
   &:is(:disabled, [aria-disabled="true"]),
   &:has(
@@ -1300,7 +1316,8 @@ body > * {
               [type="radio"]
             ),
           textarea,
-          select
+          select,
+          [role="combobox"]
         )
     ):not(
       :has(
@@ -1315,7 +1332,8 @@ body > * {
                 [type="radio"]
               ),
             textarea,
-            select
+            select,
+            [role="combobox"]
           ):not(:disabled, [aria-disabled="true"])
       )
     ) {
@@ -1323,9 +1341,10 @@ body > * {
   }
 }
 
+/* Count a select button with the combobox role, as ui-field-disabled does. */
 @custom-variant ui-field-invalid {
   &[aria-invalid="true"],
-  &:has(:is(input, textarea, select)[aria-invalid="true"]) {
+  &:has(:is(input, textarea, select, [role="combobox"])[aria-invalid="true"]) {
     @slot;
   }
 }

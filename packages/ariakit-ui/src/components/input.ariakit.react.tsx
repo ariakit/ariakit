@@ -11,7 +11,16 @@ import { splitProps } from "clava";
 import type { MouseEvent } from "react";
 import { useRef } from "react";
 import { wrapsSlotChildren } from "../styles/control.ts";
-import { input, inputSlot } from "../styles/input.ts";
+import {
+  input,
+  inputDescription,
+  inputError,
+  inputField,
+  inputFieldContent,
+  inputFieldGrid,
+  inputLabel,
+  inputSlot,
+} from "../styles/input.ts";
 
 export interface InputProps
   extends
@@ -113,4 +122,125 @@ export function InputSlot(props: InputSlotProps) {
       )}
     </ak.Role.span>
   );
+}
+
+export interface InputFieldProps
+  extends ak.RoleProps<"div">, VariantProps<typeof inputField> {}
+
+/**
+ * Stacks a label above an input and the input's error and hints, or puts the
+ * label in a start column with `$orientation="horizontal"`. The parts only add
+ * styles, so connect them with `htmlFor` and `aria-describedby`.
+ * @example
+ * <InputField>
+ *   <InputLabel htmlFor="email">Email</InputLabel>
+ *   <Input id="email" type="email" aria-describedby="email-hint" />
+ *   <InputDescription id="email-hint">We never share it.</InputDescription>
+ * </InputField>
+ */
+export function InputField(props: InputFieldProps) {
+  const [variantProps, rest] = splitProps(props, inputField);
+  return <ak.Role.div {...inputField.jsx(variantProps)} {...rest} />;
+}
+
+export interface InputFieldContentProps
+  extends ak.RoleProps<"div">, VariantProps<typeof inputFieldContent> {}
+
+/**
+ * Holds the input and its texts in the second column of a horizontal
+ * `InputField`.
+ * @example
+ * <InputField $orientation="horizontal">
+ *   <InputLabel htmlFor="name">Name</InputLabel>
+ *   <InputFieldContent>
+ *     <Input id="name" aria-describedby="name-hint" />
+ *     <InputDescription id="name-hint">Shown on your profile.</InputDescription>
+ *   </InputFieldContent>
+ * </InputField>
+ */
+export function InputFieldContent(props: InputFieldContentProps) {
+  const [variantProps, rest] = splitProps(props, inputFieldContent);
+  return <ak.Role.div {...inputFieldContent.jsx(variantProps)} {...rest} />;
+}
+
+export interface InputFieldGridProps
+  extends ak.RoleProps<"div">, VariantProps<typeof inputFieldGrid> {}
+
+/**
+ * Lines up horizontal fields, so their labels share a column that fits the
+ * longest label. The fields stack when the grid gets narrow.
+ * @example
+ * <InputFieldGrid>
+ *   <InputField $orientation="horizontal">
+ *     <InputLabel htmlFor="name">Name</InputLabel>
+ *     <InputFieldContent>
+ *       <Input id="name" />
+ *     </InputFieldContent>
+ *   </InputField>
+ *   <InputField $orientation="horizontal">
+ *     <InputLabel htmlFor="email">Email address</InputLabel>
+ *     <InputFieldContent>
+ *       <Input id="email" type="email" />
+ *     </InputFieldContent>
+ *   </InputField>
+ * </InputFieldGrid>
+ */
+export function InputFieldGrid(props: InputFieldGridProps) {
+  const [variantProps, rest] = splitProps(props, inputFieldGrid);
+  return <ak.Role.div {...inputFieldGrid.jsx(variantProps)} {...rest} />;
+}
+
+export interface InputLabelProps
+  extends ak.RoleProps<"label">, VariantProps<typeof inputLabel> {}
+
+/**
+ * A visible label for an input in an `InputField`. Point `htmlFor` at the
+ * input's `id`.
+ * @example
+ * <InputField>
+ *   <InputLabel htmlFor="email">Email</InputLabel>
+ *   <Input id="email" type="email" />
+ * </InputField>
+ */
+export function InputLabel(props: InputLabelProps) {
+  const [variantProps, rest] = splitProps(props, inputLabel);
+  return <ak.Role.label {...inputLabel.jsx(variantProps)} {...rest} />;
+}
+
+export interface InputDescriptionProps
+  extends ak.RoleProps<"div">, VariantProps<typeof inputDescription> {}
+
+/**
+ * Hint text for an input in an `InputField`. List its `id` in the input's
+ * `aria-describedby`.
+ * @example
+ * <InputField>
+ *   <InputLabel htmlFor="email">Email</InputLabel>
+ *   <Input id="email" type="email" aria-describedby="email-hint" />
+ *   <InputDescription id="email-hint">We never share it.</InputDescription>
+ * </InputField>
+ */
+export function InputDescription(props: InputDescriptionProps) {
+  const [variantProps, rest] = splitProps(props, inputDescription);
+  return <ak.Role.div {...inputDescription.jsx(variantProps)} {...rest} />;
+}
+
+export interface InputErrorProps
+  extends ak.RoleProps<"div">, VariantProps<typeof inputError> {}
+
+/**
+ * Error text for an input in an `InputField`. While it shows, list its `id`
+ * first in the input's `aria-describedby` and set `aria-invalid` on the input.
+ * It has no live region role; add `role="alert"` when the error appears without
+ * a focus change.
+ * @example
+ * <InputField>
+ *   <InputLabel htmlFor="email">Email</InputLabel>
+ *   <Input id="email" aria-invalid aria-describedby="email-error" />
+ *   <InputError id="email-error">Enter an email address.</InputError>
+ * </InputField>
+ */
+export function InputError(props: InputErrorProps) {
+  const [variantProps, rest] = splitProps(props, inputError);
+  return <ak.Role.div {...inputError.jsx(variantProps)} {...rest} />;
 }

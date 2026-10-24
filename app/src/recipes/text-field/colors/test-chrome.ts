@@ -1,0 +1,15 @@
+import { withFramework } from "#app/test-utils/preview.ts";
+
+withFramework(import.meta.dirname, async ({ test }) => {
+  test("describes each colored field with its text", async ({ q }) => {
+    await test
+      .expect(q.textbox("Username"))
+      .toHaveAccessibleDescription("The name is available.");
+    await test
+      .expect(q.textbox("Recipient"))
+      .toHaveAccessibleDescription("This address is outside your team.");
+    await test
+      .expect(q.textbox("Shipping address"))
+      .toHaveAccessibleDescription("Filled from your last order.");
+  });
+});

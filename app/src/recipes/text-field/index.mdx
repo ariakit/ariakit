@@ -1,0 +1,37 @@
+---
+title: Text Field
+---
+
+## Overview
+
+These examples build text fields with the Ariakit UI `Input` components. A text field has a visible label, the field itself, and often a hint or an error message. Some fields also have content beside the text, such as an icon, a unit, or a button.
+
+The gallery starts with a field with a hint and a field with an error. Then it shows fields in each state, fields with colored edges and fills, fields on colored backgrounds, fields around other controls, shapes and sizes, and horizontal fields. It also includes a password field with a show button, fields with slots, and a message composer. The composer has no edge around its text. The Accessibility section tells why it still meets the contrast requirement.
+
+## Components
+
+`InputField` lays out a field: an `InputLabel`, the control, an `InputError`, and one or more `InputDescription` parts. These parts only add styles, so connect them yourself. Point the label's `htmlFor` at the control's `id`. List the error and hint ids in the control's `aria-describedby`, with the error first and only while it shows. Set `aria-invalid` on the control while the error shows, and its edge changes to the danger color.
+
+With `$orientation="horizontal"`, the label takes a start column, and `InputFieldContent` holds the control and its texts. Put horizontal fields in an `InputFieldGrid`. Their labels share one column that fits the longest label and align to its end, so each label stays close to its own field, and the space between rows is larger than the space between a label and its field. Set `$labelAlign="start"` on a field to align its label to the start instead. The fields stack when the grid is narrower than 20rem. The grid fills the width of its container, so in a popover or another container that fits its content, give the grid a width. Other children of the grid, such as a heading, take a full row. A click anywhere on a label, or in the space between the label and the field, focuses the field. `ComboboxField` and its parts do the same for a combobox or a select. A select with `aria-invalid` shows the danger edge too, and a disabled select dims the label and the hints of its field. Their labels, `ComboboxLabel` and `ComboboxSelectLabel`, are connected by the combobox store.
+
+`Input` renders the control. A color that you give to `$edge` shows at full strength, like the danger edge. `$layer` gives the field a colored fill. The Colors example uses these props to show a status, a warning, and a value that the app filled in.
+
+`InputGroup` puts several parts on one field surface: an `Input` or a `textarea`, and `InputSlot` parts for icons, units, avatars, buttons, and selects. A click on the surface focuses the field, and a button or a select in a slot keeps its own focus. In the Slots example, a `ComboboxSelect` in a slot picks the currency, and the symbol before the amount follows it. The amount group also has `$fitContent`, so it fits the value as you type, up to the width of its column. Browsers without CSS `field-sizing` keep the native width of the input. An `Input` in a group has no edge or padding of its own, because the group draws them.
+
+The Slots example also has a right-to-left version in Arabic. The styles use logical properties, so the slots and the select move to the other side. It sets `lang`, so screen readers read it in the right language.
+
+## Accessibility
+
+WCAG requires a contrast of 3:1 for the boundary that identifies a field ([Non-text Contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html)). The edge of a field reaches it with its fill or with the surface around it, and it changes with the surface. On light layers, including lightly colored ones as in the Backgrounds example, the edge keeps 3:1 with the fill, and on the near-white canvas also with the surface. On dark layers, it keeps 3:1 with the surface around the field, but not with the lighter fill. Strongly colored layers, such as a full danger layer, can bring the edge below 3:1 ([#8050](https://github.com/ariakit/ariakit/issues/8050)).
+
+A colored edge needs the same contrast. Light colors, such as yellow, do not have it on light layers, so the Colors example adds `$edgePush`, which moves the edge lightness away from the fill. A colored fill changes the lightness of the field, so the example gives that field an edge of the same color. Color alone does not tell the status ([Use of Color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)), so each colored field also has a hint that tells it in words.
+
+A field can have no edge when something else identifies it. In the Message Composer, the textarea has no edge, but the group around it has one. The group is the area where you type.
+
+In the Slots example, the icons, the currency symbol, and the avatar are hidden from screen readers, because the label, the hint, or the value already tells the same thing. The green icon of the Domain field has the hint "Verified." The currency select is a separate control with its own name.
+
+Placeholder text does not identify a field, because it goes away when you type. Experts do not agree that an icon or a keyboard shortcut in a field is sufficient, so these examples do not use only those.
+
+The Error example lists the error before the hint in `aria-describedby`, so screen readers read it first. The error has no live region, because it does not appear while you work in the field. When an error appears without a focus change, such as when focus leaves the field, give it `role="alert"`.
+
+The show button of the Password example keeps the same name and tells its state with `aria-pressed`.

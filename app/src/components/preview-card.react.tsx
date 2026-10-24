@@ -395,15 +395,7 @@ function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
           </ButtonSlot>
         </Button>
       </ButtonGroup>
-      <InputGroup
-        $rounded="full"
-        $border={false}
-        // Input surfaces offset away from their parent, which would double the
-        // lighten in light mode and cancel it in dark mode.
-        $lightnessOffset={false}
-        $lighten
-        className="min-w-0 flex-1"
-      >
+      <InputGroup $rounded="full" $border={false} className="min-w-0 flex-1">
         <InputSlot aria-hidden $ink={60}>
           <GlobeIcon />
         </InputSlot>
@@ -411,7 +403,6 @@ function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
           readOnly
           aria-label="Address"
           value={getAddress(frame.location)}
-          className="min-w-0 flex-1"
         />
       </InputGroup>
     </>
@@ -546,7 +537,7 @@ function PreviewCardInline({ children }: PreviewCardInlineProps) {
             tabIndex={-1}
             $border
             $layer="canvas"
-            $p={4}
+            $p={8}
             className={[
               "grid grid-cols-1 place-items-center overflow-auto",
               "min-h-(--preview-card-min-height,auto)",

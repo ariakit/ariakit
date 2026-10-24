@@ -189,9 +189,9 @@ In ordinary lighting, an exposed surface catches more light while a cutout or we
 
 Numeric `ak-layer-<number>` modifiers are not elevation values. They request appearance-aware separation from the selected source, which defaults to the parent layer. They normally move light sources darker and dark sources lighter, but the contrast-safe lightness pipeline may clamp the target or move it past an ambiguous midrange. Use them to separate a surface without declaring that it is above or below, and use `ak-layer-lighten-*` or `ak-layer-darken-*` when spatial direction matters.
 
-Form fields can use appearance-aware separation in the opposite direction. For example, `ak-layer ak-layer-offset-[-0.01]` keeps a light writing surface on light layers and a dark one on dark layers. Pair the fill with an edge to mark the field boundary, and use a hover state to move the fill toward the surrounding surface.
+Form fields can be raised material too. For example, `ak-layer ak-layer-lighten-6` keeps a white writing surface on light layers and lifts it on dark layers, where a darker well would look like a hole. The fill alone rarely reaches 3:1 contrast, so pair it with an edge that marks the field boundary, and use an appearance-aware hover state.
 
-A neutral standalone button can use this material when its affordance should remain visible at rest. Use it selectively: buttons inside a toolbar or another shared surface can stay on that plane and rely on state or ink changes for interaction.
+A neutral standalone button can use appearance-aware separation when its affordance should remain visible at rest. Use it selectively: buttons inside a toolbar or another shared surface can stay on that plane and rely on state or ink changes for interaction.
 
 Relative adjustments accumulate. Repeating them through wrappers creates competing boxes and can exhaust the useful tonal range. A practical test for every layer is: "Why is this a different material?" If the answer is only "because this element is nested," remove it.
 

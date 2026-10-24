@@ -11,7 +11,12 @@ import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Input,
+  InputDescription,
+  InputField,
+  InputFieldContent,
+  InputFieldGrid,
   InputGroup,
+  InputLabel,
   InputSlot,
 } from "@ariakit/ui/components/input.ariakit.react";
 import {
@@ -228,11 +233,7 @@ export default function InputExamples() {
       >
         <InputGroup $size="sm">
           <InputSlot className="ak-ink-60">@</InputSlot>
-          <Input
-            aria-label="Handle"
-            placeholder="ada"
-            className="min-w-0 flex-1"
-          />
+          <Input aria-label="Handle" placeholder="ada" />
         </InputGroup>
       </Example>
 
@@ -373,11 +374,7 @@ export default function InputExamples() {
       >
         <PopoverProvider>
           <InputGroup>
-            <Input
-              aria-label="Contact email"
-              placeholder="you@example.com"
-              className="min-w-0 flex-1"
-            />
+            <Input aria-label="Contact email" placeholder="you@example.com" />
             <InputSlot $size="2xl" $square={false}>
               <PopoverDisclosure $size="sm">Email help</PopoverDisclosure>
             </InputSlot>
@@ -450,13 +447,97 @@ export default function InputExamples() {
               tabIndex={0}
               className="cursor-pointer"
             />
-            <Input
-              aria-label="Draft message"
-              placeholder="Write a message"
-              className="min-w-0 flex-1"
-            />
+            <Input aria-label="Draft message" placeholder="Write a message" />
           </InputGroup>
         </form>
+      </Example>
+      <Example
+        title="Compact fields"
+        description="A container sets smaller field gaps for the fields in it. The label, the field, and the hint below it use the smaller gap, and so does the space beside the label of a horizontal field."
+        code={`
+          <div className="[--field-gap:--spacing(0.5)] [--field-column-gap:--spacing(1)]">
+            <InputField>
+              <InputLabel />
+              <InputFieldContent>
+                <Input />
+                <InputDescription />
+              </InputFieldContent>
+            </InputField>
+            <InputField $orientation="horizontal">
+              <InputLabel />
+              <InputFieldContent>
+                <Input />
+              </InputFieldContent>
+            </InputField>
+          </div>
+        `}
+      >
+        <div className="grid w-full gap-4 [--field-column-gap:--spacing(1)] [--field-gap:--spacing(0.5)]">
+          <InputField>
+            <InputLabel htmlFor="input-compact-city">City</InputLabel>
+            <InputFieldContent>
+              <Input
+                id="input-compact-city"
+                defaultValue="London"
+                aria-describedby="input-compact-city-hint"
+              />
+              <InputDescription id="input-compact-city-hint">
+                Shown on invoices.
+              </InputDescription>
+            </InputFieldContent>
+          </InputField>
+          <InputField $orientation="horizontal">
+            <InputLabel htmlFor="input-compact-postcode">Postcode</InputLabel>
+            <InputFieldContent>
+              <Input id="input-compact-postcode" defaultValue="SW1A 1AA" />
+            </InputFieldContent>
+          </InputField>
+        </div>
+      </Example>
+      <Example
+        title="Field grid in a row"
+        description="A field grid in a flex row fills the row, and its horizontal fields share a label column. A heading takes a full row, and a field in a fieldset uses its own columns."
+        code={`
+          <div className="flex">
+            <InputFieldGrid>
+              <h3>Billing details for invoices</h3>
+              <InputField $orientation="horizontal">…</InputField>
+              <fieldset>
+                <legend>Contact</legend>
+                <InputField $orientation="horizontal">…</InputField>
+              </fieldset>
+            </InputFieldGrid>
+          </div>
+        `}
+      >
+        <div className="flex w-full">
+          <InputFieldGrid className="gap-y-4">
+            <Text render={<h3 />} className="font-medium">
+              Billing details for invoices
+            </Text>
+            <InputField $orientation="horizontal">
+              <InputLabel htmlFor="input-grid-name">Name</InputLabel>
+              <InputFieldContent>
+                <Input id="input-grid-name" defaultValue="Ada Lovelace" />
+              </InputFieldContent>
+            </InputField>
+            <fieldset className="grid gap-2">
+              <Text render={<legend />} className="text-sm ak-ink-70">
+                Contact
+              </Text>
+              <InputField $orientation="horizontal">
+                <InputLabel htmlFor="input-grid-email">Email</InputLabel>
+                <InputFieldContent>
+                  <Input
+                    id="input-grid-email"
+                    type="email"
+                    defaultValue="ada@engine.org"
+                  />
+                </InputFieldContent>
+              </InputField>
+            </fieldset>
+          </InputFieldGrid>
+        </div>
       </Example>
     </ExampleGrid>
   );
