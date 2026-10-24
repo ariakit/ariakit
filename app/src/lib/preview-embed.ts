@@ -83,8 +83,9 @@ export type PreviewFrameMessage = PreviewLocationMessage | PreviewScrollMessage;
  * - The page stays inactive until the person clicks or tabs into it. An
  *   inactive page does not scroll and ignores programmatic focus, so scrolling
  *   the docs page over a preview or hovering a component that moves focus on
- *   hover does not trap the docs page. The card also lets the page scroll while
- *   the person resizes it, until they interact with the docs page.
+ *   hover does not trap the docs page. A touch on the docs page makes the page
+ *   inactive again, even when focus stays in it. The card also lets the page
+ *   scroll while the person resizes it, until they interact with the docs page.
  * - Interactions on the docs page do not close popups in the page. A page with
  *   `data-preview-open` on its root opens its popup once it hydrates, so the
  *   card presents the popup and not only its trigger.
@@ -103,18 +104,33 @@ export function setupPreviewEmbed() {
   root.dataset.previewEmbedded = "";
   let opening = root.hasAttribute("data-preview-open");
 
+  // A touch on the docs page can scroll it without taking focus from the page.
+  // The card reports it, and the page waits until the person comes back.
+  let movedOn = false;
+  const hasFocus = () => document.hasFocus() && !movedOn;
   // A click focuses the window after pointerdown handlers run, and some
   // components move focus from those handlers.
   let pointerDown = false;
-  const isActive = () => document.hasFocus() || pointerDown;
+  const isActive = () => hasFocus() || pointerDown;
   // A resize from the card lets the page scroll, but focus stays on the resize
   // handle, so programmatic focus still waits for a person in the page.
   let resized = false;
   const updateActive = () => {
-    root.toggleAttribute("data-preview-active", document.hasFocus() || resized);
+    root.toggleAttribute("data-preview-active", hasFocus() || resized);
   };
   updateActive();
-  window.addEventListener("focus", updateActive);
+  const comeBack = (event: Event) => {
+    if (!event.isTrusted) return;
+    movedOn = false;
+    updateActive();
+  };
+  window.addEventListener("focus", comeBack);
+  window.addEventListener("focusin", comeBack, true);
+  // A tap on a focused element clicks without moving focus. A key in the page
+  // comes before the focus calls of components that move focus with the arrow
+  // keys, which an inactive page would ignore.
+  window.addEventListener("click", comeBack, true);
+  window.addEventListener("keydown", comeBack, true);
   // Once the page had focus, the person moved on from the resize, so focus
   // decides again.
   window.addEventListener("blur", () => {
@@ -139,6 +155,14 @@ export function setupPreviewEmbed() {
       setTimeout(() => {
         pointerDown = false;
       });
+    },
+    true,
+  );
+  // A touch that scrolls cancels the pointer and does not click.
+  window.addEventListener(
+    "pointercancel",
+    () => {
+      pointerDown = false;
     },
     true,
   );
@@ -216,11 +240,13 @@ export function setupPreviewEmbed() {
   // Places the trigger at the top of the viewport, so a popup that scrolls with
   // the page opens below it, and then centers both. A fixed popup, such as a
   // modal dialog, does not move with the page, so the page keeps its scroll.
+  // The page scrolls to absolute positions. With relative scrolls, frames in
+  // iOS Safari were seen scrolled twice as far, past the trigger.
   const scrollToPopup = async (trigger: Element, popup: Element) => {
     if (isFixed(popup)) return;
     const triggerElements = getTriggerElements(trigger);
-    const triggerTop = getBounds(triggerElements).top;
-    window.scrollBy({ top: triggerTop - popupMargin, behavior: "instant" });
+    const triggerTop = getBounds(triggerElements).top + window.scrollY;
+    window.scrollTo({ top: triggerTop - popupMargin, behavior: "instant" });
     // Popups reposition after the scroll event, in the next frame.
     await nextFrame();
     await nextFrame();
@@ -228,7 +254,10 @@ export function setupPreviewEmbed() {
     const offset = (window.innerHeight - (bottom - top)) / 2;
     // A popup taller than the viewport keeps the trigger in view.
     if (offset <= popupMargin) return;
-    window.scrollBy({ top: top - offset, behavior: "instant" });
+    window.scrollTo({
+      top: top + window.scrollY - offset,
+      behavior: "instant",
+    });
   };
 
   const getPopup = (trigger: Element) => {
@@ -318,13 +347,16 @@ export function setupPreviewEmbed() {
         style.overscrollBehaviorX !== "auto");
     return scrollsY || scrollsX;
   };
-  const isInScrollContainer = (target: EventTarget | null) => {
+  const getScrollContainers = (target: EventTarget | null) => {
+    const containers: Element[] = [];
     let element = target instanceof Element ? target : null;
     while (element && element !== document.body) {
-      if (isScrollContainer(element)) return true;
+      if (isScrollContainer(element)) {
+        containers.push(element);
+      }
       element = element.parentElement;
     }
-    return false;
+    return containers;
   };
   window.addEventListener(
     "wheel",
@@ -332,7 +364,7 @@ export function setupPreviewEmbed() {
       if (root.hasAttribute("data-preview-active")) return;
       // Pinch zoom on trackpads sends wheel events with ctrlKey.
       if (event.ctrlKey) return;
-      if (!isInScrollContainer(event.target)) return;
+      if (!getScrollContainers(event.target).length) return;
       event.preventDefault();
       window.parent.postMessage(
         {
@@ -347,6 +379,59 @@ export function setupPreviewEmbed() {
     },
     { capture: true, passive: false },
   );
+
+  // Stopping a container hides its scrollbar. A classic scrollbar takes room,
+  // so the content would reflow under the touch. Phones and tablets show
+  // overlay scrollbars, which take none.
+  const hasClassicScrollbar = (element: Element) => {
+    if (!(element instanceof HTMLElement)) return false;
+    const style = getComputedStyle(element);
+    const borderX =
+      Number.parseFloat(style.borderLeftWidth) +
+      Number.parseFloat(style.borderRightWidth);
+    const borderY =
+      Number.parseFloat(style.borderTopWidth) +
+      Number.parseFloat(style.borderBottomWidth);
+    // The element sizes are rounded, so a pixel of difference is no scrollbar.
+    return (
+      element.offsetWidth - element.clientWidth - borderX > 1 ||
+      element.offsetHeight - element.clientHeight - borderY > 1
+    );
+  };
+
+  // A touch cannot pass its scrolling to the docs page like the wheel. On an
+  // inactive page, the touch stops the scroll containers under it until it
+  // ends, and the site stylesheet lets their overscroll reach the docs page.
+  // The browser then scrolls the docs page, as it does over the stopped root.
+  // Containers with a classic scrollbar keep scrolling under the touch.
+  let scrollLocked: Element[] = [];
+  window.addEventListener(
+    "touchstart",
+    (event) => {
+      if (root.hasAttribute("data-preview-active")) return;
+      for (const element of getScrollContainers(event.target)) {
+        if (hasClassicScrollbar(element)) continue;
+        element.setAttribute("data-preview-scroll-lock", "");
+        scrollLocked.push(element);
+      }
+    },
+    { capture: true, passive: true },
+  );
+  const unlockScroll = (event: TouchEvent) => {
+    // Touches on the docs page can still be down. Chrome lists them with this
+    // document as their target, and a touch in the page targets an element.
+    for (const touch of event.touches) {
+      if (touch.target instanceof Element && document.contains(touch.target)) {
+        return;
+      }
+    }
+    for (const element of scrollLocked) {
+      element.removeAttribute("data-preview-scroll-lock");
+    }
+    scrollLocked = [];
+  };
+  window.addEventListener("touchend", unlockScroll, true);
+  window.addEventListener("touchcancel", unlockScroll, true);
 
   // The DOM types do not include the Navigation API yet. Unlike history, it
   // only moves through the entries of this frame, so the back button never
@@ -519,6 +604,7 @@ export function setupPreviewEmbed() {
         break;
       case "deactivate":
         resized = false;
+        movedOn = true;
         updateActive();
         break;
       case "theme":

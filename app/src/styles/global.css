@@ -66,6 +66,14 @@ astro-static-slot {
   }
 }
 
+/* A touch on an inactive preview frame or inline preview stops the scroll
+   containers under it, so the browser scrolls the docs page instead. Contained
+   overscroll would still keep the touch from the docs page. */
+[data-preview-scroll-lock] {
+  overflow: hidden !important;
+  overscroll-behavior: auto !important;
+}
+
 /* App shells round nested corners to the card viewport instead of a browser
    window once the card sends its radius. */
 :root[data-preview-viewport-radius] .shell {
