@@ -15,6 +15,10 @@ const l = "l";
 const c = "c";
 const h = "h";
 const alpha = "alpha";
+// XYZ channels used by the edge contrast floor.
+const x = "x";
+const y = "y";
+const z = "z";
 
 const CHROMA_MAX_SRGB = 0.32;
 const CHROMA_MAX_P3 = 0.368;
@@ -76,6 +80,21 @@ const TEXT_CONTRAST_CYAN_BIAS = 0.2;
 const TEXT_CONTRAST_CHROMA_HUE_MIN = 150;
 const TEXT_CONTRAST_CHROMA_HUE_MAX = 220;
 const TEXT_CONTRAST_CYAN_LIGHTNESS_START = 0.45;
+
+// WCAG 1.4.11 asks for 3:1 against the adjacent color. `contrast-more` raises
+// the edge floor by up to half, to 4.5:1.
+const EDGE_CONTRAST_RATIO = 3;
+const EDGE_CONTRAST_PREFERENCE_SCALE = 0.5;
+// The floor carries the parent luminance in a color alpha, which Firefox rounds
+// to 8 bits. Measured on Tailwind colors and Ariakit UI surfaces, that lands up
+// to 1.4% under the target, so the margin keeps every engine at or over the
+// ratio.
+const EDGE_CONTRAST_MARGIN = 1.025;
+// Luminance plus the WCAG flare term spans 0.05..1.05, a factor of 21. Its log
+// fills the alpha range evenly in contrast terms.
+const EDGE_CONTRAST_LOG_RANGE = roundToDecimals(Math.log(21), 6);
+const D65_WHITE_X = 0.95046;
+const D65_WHITE_Z = 1.08906;
 
 const CONTRAST_SCALE = 0.3334;
 const DISABLED_CONTRAST_SCALE = 0.25;
@@ -672,6 +691,30 @@ const textMathVars = {
   }),
 };
 
+// Stages of the edge contrast floor. Only ak-edge-contrast sets them, so other
+// elements skip the math. The stages are registered colors, so each one is
+// computed once per element.
+const edgeContrastVars = {
+  edgeContrastRatio: _ak.prop.number("ecr", {
+    initial: EDGE_CONTRAST_RATIO,
+  }),
+  edgeContrastReference: _ak.prop.color("ecf", { initial: "transparent" }),
+  edgeContrastNeutralPack: _ak.prop.color("ecnp", { initial: "transparent" }),
+  edgeContrastNeutral: _ak.prop.color("ecn", { initial: "transparent" }),
+  edgeContrastNeutralEdge: _ak.prop.color("ecne", { initial: "transparent" }),
+  edgeContrastColoredPack: _ak.prop.color("eccp", { initial: "transparent" }),
+  edgeContrastColored: _ak.prop.color("ecc", { initial: "transparent" }),
+  edgeContrastColoredMoved: _ak.prop.color("eccm", { initial: "transparent" }),
+  edgeContrastColoredRepack: _ak.prop.color("eccr", {
+    initial: "transparent",
+  }),
+  // Unset unless ak-edge-contrast applies, so ak-layer falls back to the
+  // regular edge. They don't inherit, so nested layers keep their own edge.
+  edgeFloor: _ak.prop("edge-floor"),
+  edgeFloorNeutral: _ak.prop("edge-floor-neutral"),
+  edgeFloorColored: _ak.prop("edge-floor-colored"),
+};
+
 const frameVars = {
   frameRadius: ak.prop.len("frame-radius", {
     inherits: true,
@@ -710,6 +753,7 @@ const vars = {
   ...layerContrastMathVars,
   ...outlineMathVars,
   ...textMathVars,
+  ...edgeContrastVars,
   ...frameVars,
 };
 
@@ -1325,7 +1369,9 @@ const edgeDirectionalShift = fn.mul(
 // relative color resolution per ak-layer element.
 const edgeDirectionalL = fn.clamp01(fn.add(l, edgeDirectionalShift));
 const edgeAlpha = fn.clamp01(fn.add(inputs.edgeA, vars.edgeContrastValue));
-const edge = fn.oklch(edgeBaseColor, {
+
+// The edge channel utilities, applied to the channels of the base color.
+const edgeChannels = {
   l: fn.clamp(
     inputs.edgeLMin,
     getLayerL(inputs.edgeRelativeL, inputs.edgeL, edgeDirectionalL),
@@ -1337,8 +1383,216 @@ const edge = fn.oklch(edgeBaseColor, {
     inputs.edgeCMax,
   ),
   h: getLayerH(inputs.edgeRelativeH, inputs.edgeH),
-  a: edgeAlpha,
-});
+};
+
+/**
+ * Applies the edge channel utilities to a base color.
+ */
+function getEdgeColor(baseColor: string) {
+  return fn.oklch(baseColor, { ...edgeChannels, a: edgeAlpha });
+}
+
+const edge = getEdgeColor(edgeBaseColor);
+
+// The edge contrast floor compares the edge with the parent layer. CSS can't
+// read a channel of one color as a number in another color in every engine, so
+// the floor packs the parent luminance into the alpha of a color-mix(). Mixing
+// an opaque color 50% with black at alpha `a` divides its channels by `1 + a`
+// and sets alpha to `(1 + a) / 2`, which a relative color decodes.
+const XYZ_TO_LINEAR_SRGB = [
+  [3.2409699419, -1.5373831776, -0.4986107603],
+  [-0.9692436363, 1.8759675015, 0.0415550574],
+  [0.0556300797, -0.2039769589, 1.0569715142],
+] as const;
+
+const edgeContrastRatio = fn.mul(
+  fn.add(
+    1,
+    fn.mul(
+      fn.sub(
+        fn.mul(
+          EDGE_CONTRAST_RATIO,
+          fn.add(1, fn.mul(vars.contrastT, EDGE_CONTRAST_PREFERENCE_SCALE)),
+        ),
+        1,
+      ),
+      vars.contrastScale,
+    ),
+  ),
+  EDGE_CONTRAST_MARGIN,
+);
+
+// Black whose alpha is the log-encoded luminance of the parent layer.
+const edgeContrastReference = fn.exp`color(from ${vars.layerParent} xyz-d65 0 0 0 / ${fn.div(
+  fn.exp`log(${fn.div(fn.add(fn.max(y, 0), 0.05), 0.05)})`,
+  EDGE_CONTRAST_LOG_RANGE,
+)})`;
+
+/**
+ * Packs an opaque copy of a color with the edge contrast reference.
+ */
+function getEdgeContrastPack(color: Value) {
+  return fn.exp`color-mix(in xyz-d65, color(from ${color} xyz-d65 ${x} ${y} ${z} / 1) 50%, ${vars.edgeContrastReference} 50%)`;
+}
+
+/**
+ * Makes a colored-edge stage invalid when the edge has no color, so neutral
+ * edges skip the colored math. Mixing in 0% of the edge color keeps the stage
+ * value as is.
+ */
+function gateColoredEdge(stage: VarProperty) {
+  return fn.exp`color-mix(in xyz-d65, ${stage} 100%, ${fn.var(inputs.edgeColor)} 0%)`;
+}
+
+/**
+ * Converts relative luminance to a gamma-encoded sRGB channel value.
+ */
+function getEncodedSrgb(luminance: Value) {
+  return fn.max(
+    0,
+    fn.sub(
+      fn.mul(1.055, fn.exp`pow(${fn.max(luminance, 0)}, ${1 / 2.4})`),
+      0.055,
+    ),
+  );
+}
+
+/**
+ * Returns the luminance plus the 0.05 WCAG flare term from a log-encoded
+ * reference value.
+ */
+function getEdgeContrastFlaredReference(encodedReference: Value) {
+  return fn.mul(
+    0.05,
+    fn.exp`exp(${fn.mul(encodedReference, EDGE_CONTRAST_LOG_RANGE)})`,
+  );
+}
+
+/**
+ * Returns the luminance that reaches the floor ratio against the reference.
+ * Light parents need darker edges, and dark parents need lighter edges.
+ */
+function getEdgeContrastTarget(encodedReference: Value, lighter: boolean) {
+  const flaredReference = getEdgeContrastFlaredReference(encodedReference);
+  const flaredTarget = lighter
+    ? fn.mul(flaredReference, vars.edgeContrastRatio)
+    : fn.div(flaredReference, vars.edgeContrastRatio);
+  return fn.sub(flaredTarget, 0.05);
+}
+
+// Inside a relative color from a pack, the channels scaled by `2 * alpha` are
+// the packed color, and `2 * alpha - 1` is the encoded reference.
+const packedX = fn.mul(x, 2, alpha);
+const packedY = fn.mul(y, 2, alpha);
+const packedZ = fn.mul(z, 2, alpha);
+const packedReference = fn.sub(fn.mul(2, alpha), 1);
+
+/**
+ * Returns the declarations of the edge contrast floor for one parent scheme.
+ */
+function getEdgeContrastDeclarations(lighter: boolean) {
+  const target = getEdgeContrastTarget(packedReference, lighter);
+  // Neutral edges are black on light parents and white on dark parents. The
+  // stage keeps the fill channels and stores the lowest alpha that reaches the
+  // target once the edge is painted over a backdrop with this sRGB gray value.
+  const encodedTarget = getEncodedSrgb(fn.min(target, 1));
+  const getNeutralAlpha = (encodedBackdrop: Value) => {
+    if (!lighter) {
+      return fn.clamp01(
+        fn.sub(1, fn.div(encodedTarget, fn.max(encodedBackdrop, 1e-6))),
+      );
+    }
+    return fn.clamp01(
+      fn.div(
+        fn.sub(encodedTarget, encodedBackdrop),
+        fn.max(fn.sub(1, encodedBackdrop), 1e-6),
+      ),
+    );
+  };
+  // A border paints over the fill. Black scales every channel by about the same
+  // factor, so the gray equivalent of the fill works. White raises the darkest
+  // channel the least, so using it as the whole fill gives an alpha that is
+  // never too low.
+  const fillBackdrop = (() => {
+    if (!lighter) return getEncodedSrgb(packedY);
+    const linearChannels = XYZ_TO_LINEAR_SRGB.map(
+      ([xFactor, yFactor, zFactor]) =>
+        fn.add(
+          fn.mul(xFactor, packedX),
+          fn.mul(yFactor, packedY),
+          fn.mul(zFactor, packedZ),
+        ),
+    );
+    return getEncodedSrgb(fn.exp`min(${fn.join(linearChannels)})`);
+  })();
+  // A ring paints outside the border box, over the parent layer. Only the
+  // parent luminance is known here, so its gray equivalent stands in for it.
+  // That holds for black rings and neutral parents, but a white ring on a
+  // saturated dark parent can stay under the floor.
+  const ringBackdrop = getEncodedSrgb(
+    fn.sub(getEdgeContrastFlaredReference(packedReference), 0.05),
+  );
+  const neutralAlpha = fn.max(
+    getNeutralAlpha(fillBackdrop),
+    fn.mul(fn.exp`sign(${vars.frameRing})`, getNeutralAlpha(ringBackdrop)),
+  );
+  // Colored edges keep their LCH chroma and hue, and their lightness moves to
+  // the target. A moved color is clipped to sRGB, and a color that already
+  // passes keeps its wide-gamut value. The colored stage stores the encoded
+  // reference in alpha.
+  const coloredStage = gateColoredEdge(vars.edgeContrastColored);
+  const targetL = fn.sub(
+    fn.mul(
+      116,
+      fn.exp`pow(${fn.clamp01(getEdgeContrastTarget(alpha, lighter))}, ${1 / 3})`,
+    ),
+    16,
+  );
+  const movedL = lighter ? fn.max(l, targetL) : fn.min(l, targetL);
+  const moved = fn.binary(
+    fn.sub(lighter ? fn.sub(targetL, l) : fn.sub(l, targetL), 0.0001),
+  );
+  const clippedMoved = fn.exp`color(from ${fn.lch(coloredStage, { l: movedL, a: moved })} srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / alpha)`;
+  const unmoved = fn.lch(coloredStage, { a: fn.sub(1, moved) });
+  // The LCH step lands within a few percent, because LCH lightness uses the D50
+  // white point and clipping moves luminance. The final stage packs the moved
+  // color again and darkens it in linear light or tints it toward white to
+  // reach the target.
+  const repack = gateColoredEdge(vars.edgeContrastColoredRepack);
+  const coloredFloor = (() => {
+    if (!lighter) {
+      const scale = fn.clamp01(fn.div(target, fn.max(packedY, 1e-6)));
+      return fn.exp`color(from ${repack} xyz-d65 ${fn.mul(packedX, scale)} ${fn.mul(packedY, scale)} ${fn.mul(packedZ, scale)} / 1)`;
+    }
+    const tint = fn.clamp01(
+      fn.div(fn.sub(target, packedY), fn.max(fn.sub(1, packedY), 1e-6)),
+    );
+    const getTintedChannel = (channel: string, white: number) =>
+      fn.add(channel, fn.mul(tint, fn.sub(white, channel)));
+    return fn.exp`color(from ${repack} xyz-d65 ${getTintedChannel(packedX, D65_WHITE_X)} ${getTintedChannel(packedY, 1)} ${getTintedChannel(packedZ, D65_WHITE_Z)} / 1)`;
+  })();
+  return [
+    set(
+      vars.edgeContrastNeutral,
+      fn.exp`color(from ${vars.edgeContrastNeutralPack} xyz-d65 ${packedX} ${packedY} ${packedZ} / ${neutralAlpha})`,
+    ),
+    // The default push makes the edge black or white, but its chroma would
+    // tint that white and lower its luminance below the alpha computed above.
+    // Chroma fades only near black and white, so a raw or partly pushed edge
+    // keeps its color.
+    set(
+      vars.edgeFloorNeutral,
+      fn.oklch(vars.edgeContrastNeutralEdge, {
+        c: fn.min(c, fn.mul(4, l, fn.sub(1, l))),
+      }),
+    ),
+    set(
+      vars.edgeContrastColoredMoved,
+      fn.exp`color-mix(in xyz-d65, ${clippedMoved} 50%, ${unmoved} 50%)`,
+    ),
+    set(vars.edgeFloorColored, coloredFloor),
+  ];
+}
 
 // Collapse the continuous layer scale into five semantic buckets so variants
 // can target broad tonal ranges instead of exact lightness values.
@@ -1400,7 +1654,8 @@ utility(
   // is a typed number, so `ink-100` and an untouched amount both read as 1
   // and keep the scheme color computed above.
   at.container.not(fn.style(inputs.textA, 1), set(vars.text, inkText)),
-  set(vars.edge, edge),
+  // ak-edge-contrast sets the floor; other elements fall back to the edge.
+  set(vars.edge, fn.var(vars.edgeFloor, edge)),
   set(vars.layerBand, layerBand),
   set(vars.layerScheme, layerScheme),
   getBaseDeclarations(vars.layer),
@@ -1857,6 +2112,45 @@ utility(
   "edge-min-c-*",
   set(inputs.edgeCMin, fn.value(chroma)),
   getRawPercentDeclarations(inputs.edgeCMin, CHROMA_TOKEN_OPTIONS),
+);
+
+// Keeps the edge at 3:1 or more against the parent layer, raised by the
+// contrast preference and lowered by ak-disabled. A neutral edge raises its
+// alpha over the fill; an edge with a color becomes solid and moves only its
+// lightness.
+// https://github.com/ariakit/ariakit/issues/8050
+utility(
+  "edge-contrast",
+  set(vars.edgeContrastRatio, edgeContrastRatio),
+  set(vars.edgeContrastReference, edgeContrastReference),
+  set(vars.edgeContrastNeutralPack, getEdgeContrastPack(vars.layer)),
+  // The neutral edge from the fill channels, with the requested alpha raised to
+  // the floor alpha that the scheme branch stores in the stage below.
+  set(
+    vars.edgeContrastNeutralEdge,
+    fn.oklch(vars.edgeContrastNeutral, {
+      ...edgeChannels,
+      a: fn.max(edgeAlpha, alpha),
+    }),
+  ),
+  set(
+    vars.edgeContrastColoredPack,
+    getEdgeContrastPack(getEdgeColor(fn.var(inputs.edgeColor))),
+  ),
+  set(
+    vars.edgeContrastColored,
+    fn.exp`color(from ${gateColoredEdge(vars.edgeContrastColoredPack)} xyz-d65 ${packedX} ${packedY} ${packedZ} / ${packedReference})`,
+  ),
+  set(
+    vars.edgeContrastColoredRepack,
+    getEdgeContrastPack(gateColoredEdge(vars.edgeContrastColoredMoved)),
+  ),
+  set(vars.edgeFloor, fn.var(vars.edgeFloorColored, vars.edgeFloorNeutral)),
+  // The parent scheme decides the direction, as it does for the regular edge
+  // push. Each branch holds only its own formulas, which keeps the per-element
+  // parsing cost low. A layer without a parent scheme keeps its regular edge.
+  at.variant(light, ...getEdgeContrastDeclarations(false)),
+  at.variant(dark, ...getEdgeContrastDeclarations(true)),
 );
 
 const textBaseColor = fn.var(inputs.textColor, vars.layer);

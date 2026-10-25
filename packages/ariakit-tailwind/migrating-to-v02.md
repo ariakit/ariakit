@@ -297,6 +297,8 @@ In v0.1, `ak-edge-contrast-<color>` set the edge to a solid color with lightness
 + ak-layer ak-edge-primary ak-edge-raw
 ```
 
+To keep a contrast adjustment, add [`ak-edge-contrast`](./readme.md#contrast-floor). It moves the lightness of the color only as far as a 3:1 floor against the parent layer requires. A bare `ak-edge-contrast` from v0.1 now applies this floor too.
+
 `ak-edge-raw` is shorthand for `ak-edge-100 ak-edge-push-0` — use it when you want the color to be applied exactly as specified. For other combinations, `ak-edge-N` controls alpha (`100` = opaque) and `ak-edge-push-N` controls how far the edge lightness is pushed away from the layer (`0` = the color's natural lightness).
 
 For custom alpha values, use `ak-edge-alpha-(--alpha)` instead of `ak-edge-(number:--alpha)`. The `--alpha` custom property should contain a raw alpha value such as `0.4`.
