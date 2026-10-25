@@ -112,15 +112,16 @@ export default function InputExamples() {
 
       <Example
         title="Subtle edge"
-        description="A lighter edge. The default is the lightest edge that meets the contrast minimum for a field boundary, so use this only where something else marks the field."
+        description="A lighter edge. The default is the lightest edge that meets the contrast minimum for a field boundary, so the lighter edge needs the contrast floor turned off. Use this only where something else marks the field."
         code={`
-          <Input $edgeWeight="normal" />
+          <Input $edgeWeight="normal" $edgeContrast={false} />
         `}
       >
         <Input
           aria-label="Company"
           placeholder="Analytical Engines Ltd."
           $edgeWeight="normal"
+          $edgeContrast={false}
         />
       </Example>
 

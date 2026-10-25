@@ -1,4 +1,4 @@
-import { cv, cx } from "clava";
+import { cv } from "clava";
 import {
   control,
   controlField,
@@ -12,19 +12,6 @@ import {
 import { focusHighlight } from "./focus.ts";
 
 /**
- * The lightest edge alpha that keeps 3:1 contrast against a field fill raised
- * one step with `$lighten`, or against the surface around it. Pair it with
- * `$edgeWeight: "var(--input-edge-alpha)"`.
- */
-export const inputEdgeAlpha = cx(
-  // Fitted to the fill lightness l. On dark layers, fills near the midrange
-  // leave a white edge less room to contrast, and $lighten stops lifting them,
-  // so the alpha rises steeply.
-  "[--input-edge-alpha:calc(44+(1-l)*17)]",
-  "ak-dark:[--input-edge-alpha:clamp(31,16+3/max(0.01,0.58-l),100)]",
-);
-
-/**
  * Shows the danger color at full strength instead of the field's alpha while
  * the field or an entry control in it has `aria-invalid`.
  */
@@ -33,7 +20,8 @@ export const inputInvalidEdge =
 
 /**
  * Resolves the `$edgeRaw` default of a field, so a chosen `$edge` color shows
- * as is, like the invalid edge, instead of at the neutral edge alpha.
+ * at full strength, like the invalid edge, instead of at the neutral edge
+ * alpha. The contrast floor still moves its lightness when it is under 3:1.
  */
 export function getInputEdgeRaw(
   defaultValue: boolean | undefined,
@@ -50,7 +38,6 @@ export const input = cv({
   extend: [control, focusHighlight],
   class: [
     "max-w-full cursor-text items-center justify-start",
-    inputEdgeAlpha,
     inputInvalidEdge,
     // Animate hover entry only to avoid a delayed exit.
     "hover:transition-[background-color]",
@@ -103,6 +90,22 @@ export const input = cv({
      */
     $disabled: null,
     /**
+     * Keeps the field edge at 3:1 or more against the surface around it, as
+     * WCAG asks for the boundary of a control. With the default push, a neutral
+     * edge raises its opacity. A neutral edge with `$edgeRaw` or a smaller
+     * `$edgePush` keeps its color and can stay under the floor. An edge with a
+     * color becomes solid and moves its lightness toward the floor. High
+     * contrast mode raises the floor to 4.5:1, and disabled fields lower it. A
+     * lighter `$edgeWeight` doesn't go under the floor, so turn the floor off
+     * for a lighter edge. A field nested in another field with the floor draws
+     * no edge, so it skips the floor and its style cost.
+     */
+    $edgeContrast(value?: boolean) {
+      if (!value) return;
+      // A function replaces the inherited class instead of adding to it.
+      return "[&:not(:is(&_&))]:ak-edge-contrast";
+    },
+    /**
      * Whether to show a focus ring when the field, or the input inside it,
      * takes focus, and how thick the ring should be.
      */
@@ -143,9 +146,9 @@ export const input = cv({
     $rounded: "lg",
     $border: true,
     $borderType: "border",
-    // Match choice boxes at 3:1 boundary contrast. A variant default lets
-    // callers replace this weight.
-    $edgeWeight: "var(--input-edge-alpha)",
+    // Keep the field boundary at 3:1 against the surface around it, like choice
+    // boxes. A variant default lets callers turn it off.
+    $edgeContrast: true,
     // Raise the writing surface like other materials above their support: white
     // on light layers and lighter on dark layers, never a dark well.
     $lighten: true,

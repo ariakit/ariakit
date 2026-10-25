@@ -16,7 +16,6 @@ import {
 } from "./control.ts";
 import { focusHighlight, focusWithin } from "./focus.ts";
 import { hover } from "./hover.ts";
-import { inputEdgeAlpha } from "./input.ts";
 import { hasLayerBackground } from "./layer.ts";
 
 /**
@@ -41,8 +40,6 @@ export const choice = cv({
     // A custom child replaces the drawn mark and uses the same size and state.
     "[--slot-icon-size:calc(var(--size)*0.7)] [&>svg]:stroke-[2.5]",
     "has-[>*]:after:hidden not-ui-choice-on:*:hidden!",
-    // Keep the empty box boundary at the input's 3:1 contrast.
-    inputEdgeAlpha,
     // Separate the selected fill from brand surfaces. The plugin's zero-lighten
     // utility cancels the default lightening stored in the style attribute.
     "not-ui-choice-disabled:ui-choice-on:ak-layer-brand",
@@ -82,7 +79,7 @@ export const choice = cv({
     // boundary contrast.
     $border: true,
     $borderType: "border",
-    $edgeWeight: "var(--input-edge-alpha)",
+    $edgeContrast: true,
     $lighten: true,
     $hoverOffset: true,
     $layer(defaultValue) {
