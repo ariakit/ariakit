@@ -21,41 +21,47 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   for (const colorScheme of ["light", "dark"] as const) {
     for (const contrast of ["no-preference", "more"] as const) {
-      // https://github.com/ariakit/ariakit/issues/7466
-      test(`groups keep their geometry through hover (${colorScheme}, ${contrast})`, async ({
-        page,
-        q,
-      }) => {
-        // One test covers 42 hovers, which takes about 25s in Firefox, so the
-        // default 30s timeout leaves too little headroom on slower runners.
-        test.slow();
-        await page.emulateMedia({ colorScheme, contrast });
-        for (const title of groupTitles) {
-          await test.step(title, async () => {
-            const group = query(q.group(title));
-            // Move the pointer away so the previous group's hover cannot affect
-            // this one.
-            await page.mouse.move(0, 0);
-            for (const label of ["Day", "Week", "Month"]) {
-              const item = group.button(label);
-              await item.scrollIntoViewIfNeeded();
-              const geometry = () =>
-                item.evaluate((element) => {
-                  const box = element.getBoundingClientRect();
-                  return {
-                    x: box.x + window.scrollX,
-                    y: box.y + window.scrollY,
-                    width: box.width,
-                    height: box.height,
-                  };
-                });
-              const before = await geometry();
-              await item.hover();
-              await expect.soft(item).toHaveCSS("z-index", "1");
-              expect.soft(await geometry()).toEqual(before);
-            }
-          });
-        }
+      test.describe(() => {
+        // Firefox applies prefers-contrast stylesheet rules only on the next
+        // navigation, so the media must be set before beforeEach navigates.
+        // https://github.com/ariakit/ariakit/issues/8079
+        test.use({ colorScheme, contrast });
+
+        // https://github.com/ariakit/ariakit/issues/7466
+        test(`groups keep their geometry through hover (${colorScheme}, ${contrast})`, async ({
+          page,
+          q,
+        }) => {
+          // One test covers 42 hovers, which takes about 25s in Firefox, so the
+          // default 30s timeout leaves too little headroom on slower runners.
+          test.slow();
+          for (const title of groupTitles) {
+            await test.step(title, async () => {
+              const group = query(q.group(title));
+              // Move the pointer away so the previous group's hover cannot
+              // affect this one.
+              await page.mouse.move(0, 0);
+              for (const label of ["Day", "Week", "Month"]) {
+                const item = group.button(label);
+                await item.scrollIntoViewIfNeeded();
+                const geometry = () =>
+                  item.evaluate((element) => {
+                    const box = element.getBoundingClientRect();
+                    return {
+                      x: box.x + window.scrollX,
+                      y: box.y + window.scrollY,
+                      width: box.width,
+                      height: box.height,
+                    };
+                  });
+                const before = await geometry();
+                await item.hover();
+                await expect.soft(item).toHaveCSS("z-index", "1");
+                expect.soft(await geometry()).toEqual(before);
+              }
+            });
+          }
+        });
       });
     }
   }
@@ -72,21 +78,25 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     ["vertical-ring-light", "Vertical ring", "light", "no-preference"],
     ["rtl-light", "RTL", "light", "no-preference"],
   ] as const) {
-    // https://github.com/ariakit/ariakit/issues/7466
-    test(`${title} joins edges through hover (${colorScheme}, ${contrast}) @visual`, async ({
-      page,
-      q,
-      visual,
-    }) => {
-      await page.emulateMedia({ colorScheme, contrast });
-      const week = query(q.group(title)).button("Week");
-      await week.scrollIntoViewIfNeeded();
-      await week.hover();
-      await expect(week).toHaveCSS("z-index", "1");
-      await visual({
-        item: `ariakit-tailwind-7466/${key}-week-hover`,
-        element: q.group(title),
-        styles: {},
+    test.describe(() => {
+      // Set the media before navigation for the same Firefox reason as above.
+      // https://github.com/ariakit/ariakit/issues/8079
+      test.use({ colorScheme, contrast });
+
+      // https://github.com/ariakit/ariakit/issues/7466
+      test(`${title} joins edges through hover (${colorScheme}, ${contrast}) @visual`, async ({
+        q,
+        visual,
+      }) => {
+        const week = query(q.group(title)).button("Week");
+        await week.scrollIntoViewIfNeeded();
+        await week.hover();
+        await expect(week).toHaveCSS("z-index", "1");
+        await visual({
+          item: `ariakit-tailwind-7466/${key}-week-hover`,
+          element: q.group(title),
+          styles: {},
+        });
       });
     });
   }
