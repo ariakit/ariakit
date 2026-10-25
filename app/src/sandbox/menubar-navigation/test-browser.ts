@@ -10,9 +10,20 @@ function pressTab(page: Page, browserName: string, shift = false) {
   return page.keyboard.press(key);
 }
 
+// Waits on a page timer instead of a test runner timer. A page timer scheduled
+// earlier with the same delay always runs first, so this can't resolve before a
+// pending hideTimeout does.
+function waitForPageTimeout(page: Page, timeout: number) {
+  return page.evaluate(
+    (timeout) => new Promise((resolve) => setTimeout(resolve, timeout)),
+    timeout,
+  );
+}
+
 withFramework(import.meta.dirname, async ({ test }) => {
   test.describe.configure({ retries: 2 });
 
+  // https://github.com/ariakit/ariakit/issues/8086
   test("show menus by hovering over items without moving focus", async ({
     page,
     q,
@@ -27,6 +38,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.menu("Services")).not.toBeVisible();
     await expect(q.menu("Blog")).toBeVisible();
     await expect(body).toBeFocused();
+    // No observable state tracks the hide that moving off Services schedules,
+    // so cross the fixture's 250ms hideTimeout before asserting that the Blog
+    // menu stays open while the pointer rests on Blog.
+    await waitForPageTimeout(page, 250);
+    await expect(q.menu("Blog")).toBeVisible();
 
     // hover outside
     await page.mouse.move(10, 10);
@@ -46,6 +62,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(body).toBeFocused();
   });
 
+  // https://github.com/ariakit/ariakit/issues/8086
   test("show menus by hovering over items and subitems", async ({
     page,
     q,
@@ -55,9 +72,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.menu("Services")).not.toBeFocused();
 
     await q.menuitem("Company").hover();
-    await q.menuitem("Company").hover({ position: { x: 10, y: 10 } });
     await expect(q.menuitem("Company")).not.toBeFocused();
     await expect(q.menu("Services")).not.toBeVisible();
+    await expect(q.menu("Company")).toBeVisible();
+    // No observable state tracks the hide that moving off the Services menu
+    // schedules, so cross the fixture's 250ms hideTimeout before asserting that
+    // the Company menu stays open while the pointer rests on Company.
+    await waitForPageTimeout(page, 250);
     await expect(q.menu("Company")).toBeVisible();
 
     // hover outside
