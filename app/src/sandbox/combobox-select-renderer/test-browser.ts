@@ -523,9 +523,12 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           const select = q.combobox("Grouped country");
 
           // Typeahead on the closed select selects the first item of the second
-          // group.
+          // group. A repeated initial moves to the next match, so unlike typing
+          // "br", it does not depend on the 500ms typeahead window.
           await select.focus();
-          await page.keyboard.type("br");
+          await page.keyboard.press("b");
+          await test.expect(select).toHaveText("Belgium");
+          await page.keyboard.press("b");
           await test.expect(select).toHaveText("Brazil");
 
           await select.click();
