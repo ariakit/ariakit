@@ -83,8 +83,9 @@ export type PreviewFrameMessage = PreviewLocationMessage | PreviewScrollMessage;
  * - The page stays inactive until the person clicks or tabs into it. An
  *   inactive page does not scroll and ignores programmatic focus, so scrolling
  *   the docs page over a preview or hovering a component that moves focus on
- *   hover does not trap the docs page. The card also lets the page scroll while
- *   the person resizes it, until they interact with the docs page.
+ *   hover does not trap the docs page. A touch on the docs page makes the page
+ *   inactive again, even when focus stays in it. The card also lets the page
+ *   scroll while the person resizes it, until they interact with the docs page.
  * - Interactions on the docs page do not close popups in the page. A page with
  *   `data-preview-open` on its root opens its popup once it hydrates, so the
  *   card presents the popup and not only its trigger.
@@ -103,18 +104,33 @@ export function setupPreviewEmbed() {
   root.dataset.previewEmbedded = "";
   let opening = root.hasAttribute("data-preview-open");
 
+  // A touch on the docs page can scroll it without taking focus from the page.
+  // The card reports it, and the page waits until the person comes back.
+  let movedOn = false;
+  const hasFocus = () => document.hasFocus() && !movedOn;
   // A click focuses the window after pointerdown handlers run, and some
   // components move focus from those handlers.
   let pointerDown = false;
-  const isActive = () => document.hasFocus() || pointerDown;
+  const isActive = () => hasFocus() || pointerDown;
   // A resize from the card lets the page scroll, but focus stays on the resize
   // handle, so programmatic focus still waits for a person in the page.
   let resized = false;
   const updateActive = () => {
-    root.toggleAttribute("data-preview-active", document.hasFocus() || resized);
+    root.toggleAttribute("data-preview-active", hasFocus() || resized);
   };
   updateActive();
-  window.addEventListener("focus", updateActive);
+  const comeBack = (event: Event) => {
+    if (!event.isTrusted) return;
+    movedOn = false;
+    updateActive();
+  };
+  window.addEventListener("focus", comeBack);
+  window.addEventListener("focusin", comeBack, true);
+  // A tap on a focused element clicks without moving focus. A key in the page
+  // comes before the focus calls of components that move focus with the arrow
+  // keys, which an inactive page would ignore.
+  window.addEventListener("click", comeBack, true);
+  window.addEventListener("keydown", comeBack, true);
   // Once the page had focus, the person moved on from the resize, so focus
   // decides again.
   window.addEventListener("blur", () => {
@@ -139,6 +155,14 @@ export function setupPreviewEmbed() {
       setTimeout(() => {
         pointerDown = false;
       });
+    },
+    true,
+  );
+  // A touch that scrolls cancels the pointer and does not click.
+  window.addEventListener(
+    "pointercancel",
+    () => {
+      pointerDown = false;
     },
     true,
   );
@@ -216,11 +240,13 @@ export function setupPreviewEmbed() {
   // Places the trigger at the top of the viewport, so a popup that scrolls with
   // the page opens below it, and then centers both. A fixed popup, such as a
   // modal dialog, does not move with the page, so the page keeps its scroll.
+  // The page scrolls to absolute positions. With relative scrolls, frames in
+  // iOS Safari were seen scrolled twice as far, past the trigger.
   const scrollToPopup = async (trigger: Element, popup: Element) => {
     if (isFixed(popup)) return;
     const triggerElements = getTriggerElements(trigger);
-    const triggerTop = getBounds(triggerElements).top;
-    window.scrollBy({ top: triggerTop - popupMargin, behavior: "instant" });
+    const triggerTop = getBounds(triggerElements).top + window.scrollY;
+    window.scrollTo({ top: triggerTop - popupMargin, behavior: "instant" });
     // Popups reposition after the scroll event, in the next frame.
     await nextFrame();
     await nextFrame();
@@ -228,7 +254,10 @@ export function setupPreviewEmbed() {
     const offset = (window.innerHeight - (bottom - top)) / 2;
     // A popup taller than the viewport keeps the trigger in view.
     if (offset <= popupMargin) return;
-    window.scrollBy({ top: top - offset, behavior: "instant" });
+    window.scrollTo({
+      top: top + window.scrollY - offset,
+      behavior: "instant",
+    });
   };
 
   const getPopup = (trigger: Element) => {
@@ -347,6 +376,92 @@ export function setupPreviewEmbed() {
     },
     { capture: true, passive: false },
   );
+
+  // Stopping a container hides its scrollbar. A classic scrollbar takes room,
+  // so the content would reflow, as on a laptop with a touch screen. Phones and
+  // tablets show overlay scrollbars, which take none.
+  const hasClassicScrollbars = () => {
+    const probe = document.createElement("div");
+    probe.style.cssText =
+      "position: fixed; width: 100px; height: 100px; overflow: scroll; visibility: hidden";
+    document.body.appendChild(probe);
+    const classic = probe.offsetWidth > probe.clientWidth;
+    probe.remove();
+    return classic;
+  };
+  const hasScrollOverflow = (element: Element) => {
+    const style = getComputedStyle(element);
+    return (
+      /auto|scroll/.test(style.overflowX) || /auto|scroll/.test(style.overflowY)
+    );
+  };
+
+  // A touch cannot pass its scrolling to the docs page like the wheel. On a
+  // touch screen, an inactive page stops its scroll containers, and the site
+  // stylesheet lets their overscroll reach the docs page. The browser then
+  // scrolls the docs page, as it does over the stopped root. The browser picks
+  // the scroller when a touch starts, and iOS Safari cancels the touch if that
+  // scroller stops during it, so the containers stop before any touch. This
+  // includes containers whose content fits, since it can overflow later without
+  // a DOM change, such as when the viewport rotates.
+  const touchScreen = window.matchMedia("(any-pointer: coarse)");
+  const scrollLocked = new Set<Element>();
+  let lockable = false;
+  const updateScrollLock = () => {
+    const locked = lockable && !root.hasAttribute("data-preview-active");
+    for (const element of scrollLocked) {
+      if (locked && element.isConnected) continue;
+      element.removeAttribute("data-preview-scroll-lock");
+      scrollLocked.delete(element);
+    }
+    if (!locked) return;
+    for (const element of document.body.querySelectorAll("*")) {
+      if (scrollLocked.has(element)) continue;
+      if (!hasScrollOverflow(element)) continue;
+      element.setAttribute("data-preview-scroll-lock", "");
+      scrollLocked.add(element);
+    }
+  };
+  // A burst of changes updates the lock once.
+  let scrollLockFrame = 0;
+  const scheduleScrollLock = () => {
+    if (scrollLockFrame) return;
+    scrollLockFrame = requestAnimationFrame(() => {
+      scrollLockFrame = 0;
+      updateScrollLock();
+    });
+  };
+  // The page becomes active or inactive, and scroll containers such as popups
+  // appear, with DOM changes.
+  const scrollLockObserver = new MutationObserver((records) => {
+    const changed = records.some(
+      (record) => record.attributeName !== "data-preview-scroll-lock",
+    );
+    if (!changed) return;
+    scheduleScrollLock();
+  });
+  const observeScrollLock = () => {
+    scrollLockObserver.disconnect();
+    lockable = touchScreen.matches && !hasClassicScrollbars();
+    if (lockable) {
+      scrollLockObserver.observe(root, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+      });
+    }
+    updateScrollLock();
+  };
+  // Hydration would report the attribute on server-rendered containers as a
+  // mismatch, so the lock waits for the preview island to hydrate. Next.js
+  // pages don't mark the root, so React can still report it there, but only
+  // development builds do.
+  onHydrated(() => {
+    observeScrollLock();
+    touchScreen.addEventListener("change", observeScrollLock);
+    // A media query can make an element a scroll container.
+    window.addEventListener("resize", scheduleScrollLock);
+  });
 
   // The DOM types do not include the Navigation API yet. Unlike history, it
   // only moves through the entries of this frame, so the back button never
@@ -519,6 +634,7 @@ export function setupPreviewEmbed() {
         break;
       case "deactivate":
         resized = false;
+        movedOn = true;
         updateActive();
         break;
       case "theme":

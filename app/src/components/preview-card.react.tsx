@@ -301,15 +301,29 @@ function usePreviewFrame(href: string) {
     const isInStage = (target: EventTarget | null) => {
       return target instanceof Node && stage.contains(target);
     };
-    const deactivate = () => {
-      if (!activatedRef.current) return;
-      activatedRef.current = false;
+    const postDeactivate = () => {
       const iframe = ref.current;
       if (!iframe) return;
       postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action: "deactivate" });
     };
+    const deactivate = () => {
+      if (!activatedRef.current) return;
+      activatedRef.current = false;
+      postDeactivate();
+    };
     const onInteraction = (event: Event) => {
       if (isInStage(event.target)) return;
+      deactivate();
+    };
+    // A touch on the docs page can scroll it without taking focus from the
+    // frame, which would keep the frame active.
+    const onPointerDown = (event: PointerEvent) => {
+      if (isInStage(event.target)) return;
+      if (event.pointerType !== "mouse" && doc.activeElement === ref.current) {
+        activatedRef.current = false;
+        postDeactivate();
+        return;
+      }
       deactivate();
     };
     // A click in another preview frame moves focus to it without a pointer or
@@ -322,12 +336,12 @@ function usePreviewFrame(href: string) {
         deactivate();
       });
     };
-    doc.addEventListener("pointerdown", onInteraction, true);
+    doc.addEventListener("pointerdown", onPointerDown, true);
     doc.addEventListener("focusin", onInteraction, true);
     window.addEventListener("blur", onBlur);
     return () => {
       clearTimeout(blurTimeout);
-      doc.removeEventListener("pointerdown", onInteraction, true);
+      doc.removeEventListener("pointerdown", onPointerDown, true);
       doc.removeEventListener("focusin", onInteraction, true);
       window.removeEventListener("blur", onBlur);
     };
@@ -908,14 +922,39 @@ function isScrollContainer(element: Element) {
 }
 
 /**
- * Lets an inline preview scroll only after a click or focus moves into it, as a
- * preview frame does. Until then, wheel events over its scroll containers
- * scroll the page, so scrolling the page over the card does not get stuck in
- * it. Returns a function that activates the preview, such as when the person
- * resizes it with the handle.
+ * Returns whether the document shows classic scrollbars, which take room.
+ * Stopping a scroll container would hide its scrollbar and reflow its content,
+ * as on a laptop with a touch screen. Phones and tablets show overlay
+ * scrollbars, which take none.
+ */
+function hasClassicScrollbars(doc: Document) {
+  const probe = doc.createElement("div");
+  probe.style.cssText =
+    "position: fixed; width: 100px; height: 100px; overflow: scroll; visibility: hidden";
+  doc.body.appendChild(probe);
+  const classic = probe.offsetWidth > probe.clientWidth;
+  probe.remove();
+  return classic;
+}
+
+function hasScrollOverflow(element: Element) {
+  const style = getComputedStyle(element);
+  return (
+    /auto|scroll/.test(style.overflowX) || /auto|scroll/.test(style.overflowY)
+  );
+}
+
+/**
+ * Lets an inline preview scroll only after a click, a tap, or focus moves into
+ * it, as a preview frame does. Until then, wheel events and touches over its
+ * scroll containers scroll the page, so scrolling the page over the card does
+ * not get stuck in it. Returns a function that activates the preview, such as
+ * when the person resizes it with the handle.
  */
 function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
   const activeRef = useRef(false);
+  // Lets the returned function update the touch scroll lock.
+  const activeChangeRef = useRef<() => void>(undefined);
 
   useEffect(() => {
     const viewport = ref.current;
@@ -927,10 +966,8 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
     // can also fall back to the body, such as when a focused button becomes
     // disabled, which keeps a preview frame active too.
     activeRef.current = viewport.contains(doc.activeElement);
-    // Runs in the capture phase, before the handle activates the preview.
-    const updateActive = (event: Event) => {
-      activeRef.current =
-        event.target instanceof Node && viewport.contains(event.target);
+    const isInViewport = (target: EventTarget | null) => {
+      return target instanceof Node && viewport.contains(target);
     };
     const isActive = () => {
       if (!activeRef.current) return false;
@@ -940,6 +977,86 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
       if (!focused) return true;
       if (focused === doc.body) return true;
       return stage.contains(focused);
+    };
+
+    // A touch cannot pass its scrolling to the page like the wheel. On a touch
+    // screen, an inactive preview stops its scroll containers, so the browser
+    // scrolls the page. See global.css. The browser picks the scroller when a
+    // touch starts, and iOS Safari cancels the touch if that scroller stops
+    // during it, so the containers stop before any touch. This includes
+    // containers whose content fits, since it can overflow later without a DOM
+    // change, such as when the viewport rotates.
+    const touchScreen = window.matchMedia("(any-pointer: coarse)");
+    const scrollLocked = new Set<Element>();
+    let lockable = false;
+    const updateScrollLock = () => {
+      const locked = lockable && !isActive();
+      for (const element of scrollLocked) {
+        if (locked && viewport.contains(element)) continue;
+        element.removeAttribute("data-preview-scroll-lock");
+        scrollLocked.delete(element);
+      }
+      if (!locked) return;
+      for (const element of [viewport, ...viewport.querySelectorAll("*")]) {
+        if (scrollLocked.has(element)) continue;
+        if (!hasScrollOverflow(element)) continue;
+        // Hydration would report the attribute on server-rendered containers as
+        // a mismatch, so islands wait until they drop ssr. React can still be
+        // hydrating then, which only development builds report.
+        if (element.closest("astro-island[ssr]")) continue;
+        element.setAttribute("data-preview-scroll-lock", "");
+        scrollLocked.add(element);
+      }
+    };
+    // Waits for focus to settle, and lets a burst of changes update the lock
+    // once.
+    let scrollLockFrame = 0;
+    const scheduleScrollLock = () => {
+      if (scrollLockFrame) return;
+      scrollLockFrame = requestAnimationFrame(() => {
+        scrollLockFrame = 0;
+        updateScrollLock();
+      });
+    };
+    activeChangeRef.current = scheduleScrollLock;
+    // Scroll containers, such as popups, can appear in the example.
+    const scrollLockObserver = new MutationObserver((records) => {
+      const changed = records.some(
+        (record) => record.attributeName !== "data-preview-scroll-lock",
+      );
+      if (!changed) return;
+      scheduleScrollLock();
+    });
+    const observeScrollLock = () => {
+      scrollLockObserver.disconnect();
+      lockable = touchScreen.matches && !hasClassicScrollbars(doc);
+      if (lockable) {
+        scrollLockObserver.observe(viewport, {
+          attributes: true,
+          childList: true,
+          subtree: true,
+        });
+      }
+      updateScrollLock();
+    };
+
+    // Runs in the capture phase, before the handle activates the preview.
+    const updateActive = (event: Event) => {
+      activeRef.current = isInViewport(event.target);
+      scheduleScrollLock();
+    };
+    // A touch or pen in the example can start a scroll of the page, so only the
+    // click of a tap activates the preview. A tap that stops a scrolling page
+    // does not click.
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse" && isInViewport(event.target)) return;
+      updateActive(event);
+    };
+    // iOS Safari clicks on a tap only when an ancestor of the target below the
+    // body listens to clicks, so the listener is on the viewport.
+    const onClick = () => {
+      activeRef.current = true;
+      scheduleScrollLock();
     };
     const isInScrollContainer = (target: EventTarget | null) => {
       // The listener is on the viewport, so the target is in its document.
@@ -959,17 +1076,35 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
       event.preventDefault();
       scrollPage(viewport, event);
     };
-    doc.addEventListener("pointerdown", updateActive, true);
+    observeScrollLock();
+    touchScreen.addEventListener("change", observeScrollLock);
+    doc.addEventListener("pointerdown", onPointerDown, true);
     doc.addEventListener("focusin", updateActive, true);
+    // Focus that moves to a preview frame blurs the window.
+    window.addEventListener("blur", scheduleScrollLock);
+    // A media query can make an element a scroll container.
+    window.addEventListener("resize", scheduleScrollLock);
+    viewport.addEventListener("click", onClick, true);
     viewport.addEventListener("wheel", onWheel, { passive: false });
     return () => {
-      doc.removeEventListener("pointerdown", updateActive, true);
+      cancelAnimationFrame(scrollLockFrame);
+      scrollLockObserver.disconnect();
+      activeChangeRef.current = undefined;
+      for (const element of scrollLocked) {
+        element.removeAttribute("data-preview-scroll-lock");
+      }
+      touchScreen.removeEventListener("change", observeScrollLock);
+      doc.removeEventListener("pointerdown", onPointerDown, true);
       doc.removeEventListener("focusin", updateActive, true);
+      window.removeEventListener("blur", scheduleScrollLock);
+      window.removeEventListener("resize", scheduleScrollLock);
+      viewport.removeEventListener("click", onClick, true);
       viewport.removeEventListener("wheel", onWheel);
     };
   }, [ref]);
 
   return () => {
     activeRef.current = true;
+    activeChangeRef.current?.();
   };
 }

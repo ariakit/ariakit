@@ -132,6 +132,9 @@ test("preview card frames do not scroll or take focus until activated", async ({
     "false",
   );
   const frameScroll = await getFrameScroll();
+  // Only touch screens stop the scroll containers of an inactive frame. Here,
+  // the frame passes the wheel to the card.
+  await expect(query(frame).listbox()).toHaveCSS("overflow-y", "auto");
 
   // Some components move focus on hover. The inactive frame ignores these calls
   // so the docs page keeps focus.
