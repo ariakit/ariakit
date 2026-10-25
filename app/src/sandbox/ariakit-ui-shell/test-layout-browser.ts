@@ -192,6 +192,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   test("collapses an open sidebar at 3xl with the fold and compensation together", async ({
     page,
     q,
+    browserName,
   }) => {
     await page.setViewportSize({ width: 800, height: 900 });
     await q.button("Toggle layout navigation").click();
@@ -257,8 +258,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const { samples, transitions } = await recording.evaluate(
       ({ finished }) => finished,
     );
-    expect(transitions).toContain("transitionrun");
-    expect(transitions).not.toContain("transitioncancel");
+    // WebKit can cancel the exit fold on a breakpoint resize, as the display
+    // tests describe.
+    // https://github.com/ariakit/ariakit/issues/7972
+    if (browserName !== "webkit") {
+      expect(transitions).toContain("transitionrun");
+      expect(transitions).not.toContain("transitioncancel");
+    }
     for (const sample of samples) {
       expect(Math.abs(sample.width - sample.space)).toBeLessThan(2);
     }
