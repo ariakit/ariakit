@@ -27,6 +27,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
     );
   });
 
+  test("fits sticky sidebar panels to a size container around the shell", async ({
+    q,
+  }) => {
+    const panel = q.navigation("Part navigation");
+    await expect(panel).toHaveCSS("max-height", "836px");
+    // The 40rem pane minus the 64px sticky header, instead of the viewport.
+    await q.checkbox("Size container pane").check();
+    await expect(panel).toHaveCSS("max-height", "576px");
+    await q.checkbox("Size container pane").uncheck();
+    await expect(panel).toHaveCSS("max-height", "836px");
+  });
+
   for (const from of ["intro", "body"]) {
     test(`shows the main header above its breakpoint and releases sticky ${from} sidebars below it`, async ({
       q,

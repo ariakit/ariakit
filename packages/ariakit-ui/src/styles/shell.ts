@@ -496,7 +496,11 @@ export const shellSidebar = cv({
     $sticky: [
       "[&>.shell-sidebar-panel]:sticky",
       "[&>.shell-sidebar-panel]:inset-bs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-sidebar-head))]",
-      "[&>.shell-sidebar-panel]:max-h-[calc(100cqb-var(--shell-top)-var(--shell-head)-var(--shell-sidebar-head)-var(--shell-foot))]",
+      // Without a size container, cqb falls back to the small viewport, which
+      // stops short of the bottom once mobile browser bars collapse. The
+      // dynamic viewport follows the bars; a size container keeps cqb.
+      "[&>.shell-sidebar-panel]:max-h-[calc(100dvh-var(--shell-top)-var(--shell-head)-var(--shell-sidebar-head)-var(--shell-foot))]",
+      "[@container_(min-height:0px)]:[&>.shell-sidebar-panel]:max-h-[calc(100cqb-var(--shell-top)-var(--shell-head)-var(--shell-sidebar-head)-var(--shell-foot))]",
     ],
   },
   defaultVariants: {

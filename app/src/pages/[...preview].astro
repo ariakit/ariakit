@@ -57,12 +57,13 @@ const open = entry.data.open;
   <body class:list={["flex", !fullscreen && "min-h-[200vh]! flex-col"]}>
     {/* The framework island wraps the example and sizes to its content, so it
         needs a width limit for the example's own max-w-full to resolve. The
-        example stays centered in the first viewport. */}
+        example stays centered in the first viewport, with the same padding as
+        an inline preview card. */}
     <div
       class:list={[
         "@container size-full",
         !fullscreen &&
-          "min-h-dvh p-3 flex items-center-safe justify-center-safe *:max-w-full",
+          "min-h-dvh p-8 flex items-center-safe justify-center-safe *:max-w-full",
       ]}
     >
       <Content {framework} />

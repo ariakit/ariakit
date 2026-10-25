@@ -193,7 +193,7 @@ export function setupPreviewEmbed() {
 
   // The gap in pixels between the viewport edge and an opened popup and its
   // trigger, the same as the page padding around the example.
-  const popupMargin = 12;
+  const popupMargin = 32;
 
   const nextFrame = () => {
     return new Promise((resolve) => requestAnimationFrame(resolve));
