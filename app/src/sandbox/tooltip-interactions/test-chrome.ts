@@ -51,4 +51,19 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await flushFrames(page, 2);
     await test.expect(tooltip).toBeHidden();
   });
+
+  // https://github.com/ariakit/ariakit/issues/8086
+  test("hide the tooltip after hovering the anchor's label", async ({ q }) => {
+    const anchor = q.textbox("Username");
+    // Ariakit resets hover intent on scroll, so the anchor must be in view
+    // before the pointer moves over it.
+    await anchor.scrollIntoViewIfNeeded();
+    await anchor.hover();
+    const tooltip = q.tooltip("Your public name");
+    await test.expect(tooltip).toBeVisible();
+    // The input matches :hover while its label is hovered, but the pointer left
+    // the input, so the tooltip hides.
+    await q.text("Username").hover();
+    await test.expect(tooltip).toBeHidden();
+  });
 });

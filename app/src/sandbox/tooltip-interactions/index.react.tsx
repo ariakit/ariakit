@@ -10,6 +10,11 @@ export default function Example() {
         <Ariakit.Tooltip>Tooltip content</Ariakit.Tooltip>
       </Ariakit.TooltipProvider>
       <button>After tooltip</button>
+      <Ariakit.TooltipProvider hideTimeout={20} timeout={20}>
+        <label htmlFor="tooltip-username">Username</label>
+        <Ariakit.TooltipAnchor render={<input id="tooltip-username" />} />
+        <Ariakit.Tooltip>Your public name</Ariakit.Tooltip>
+      </Ariakit.TooltipProvider>
     </>
   );
 }
