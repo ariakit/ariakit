@@ -89,6 +89,14 @@ export const edge = cv({
      */
     $edgeRaw: "ak-edge-raw",
     /**
+     * Keeps the edge at 3:1 or more against the surface around the element, as
+     * WCAG asks for the boundary of a control. A neutral edge raises its
+     * opacity, and an edge with a color becomes solid and moves only its
+     * lightness. High contrast mode raises the floor to 4.5:1, and disabled
+     * elements lower it.
+     */
+    $edgeContrast: "ak-edge-contrast",
+    /**
      * Sets edge opacity from a named weight or a number (0–100). `adaptive`
      * shows the edge only in high-contrast mode.
      */

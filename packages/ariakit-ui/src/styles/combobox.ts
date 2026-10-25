@@ -12,7 +12,6 @@ import { frameBase } from "./frame.ts";
 import {
   getInputEdgeRaw,
   input,
-  inputEdgeAlpha,
   inputInvalidEdge,
   inputPlaceholder,
 } from "./input.ts";
@@ -199,10 +198,13 @@ export const comboboxSelect = cv({
       if (defaultValue != null) return defaultValue;
       // Disabled fields keep a faint edge.
       if (variants.$disabled) return 10;
-      // Like the input, a chosen edge color shows as is.
-      if (variants.$edgeRaw) return defaultValue;
+      return defaultValue;
+    },
+    $edgeContrast(defaultValue, variants) {
+      if (!isSelectField(variants)) return defaultValue;
+      if (!variants.$border) return defaultValue;
       // Match the input's 3:1 boundary contrast.
-      return "var(--input-edge-alpha)";
+      return defaultValue ?? true;
     },
     $edgeRaw(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
@@ -217,7 +219,7 @@ export const comboboxSelect = cv({
   refine({ variants, addClass }) {
     if (!isSelectField(variants)) return;
     if (!variants.$border) return;
-    addClass([inputEdgeAlpha, inputInvalidEdge]);
+    addClass(inputInvalidEdge);
     if (variants.$borderType !== "border") return;
     // Preserve the field boundary when button disabled styles clear its border.
     addClass("[--disabled-border:var(--ak-edge)]");
