@@ -87,6 +87,30 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.menu("Company")).not.toBeVisible();
   });
 
+  // https://github.com/ariakit/ariakit/issues/8086
+  test("keep the next menu open after crossing the gap between items", async ({
+    page,
+    q,
+  }) => {
+    await q.menuitem("Services").hover();
+    await expect(q.menu("Services")).toBeVisible();
+    const services = await q.menuitem("Services").boundingBox();
+    const blog = await q.menuitem("Blog").boundingBox();
+    if (!services) throw new Error("Services has no bounding box");
+    if (!blog) throw new Error("Blog has no bounding box");
+    // Stopping in the gap between the items schedules the hide while Services
+    // still owns the shared menu, before Blog takes it over.
+    const gapX = (services.x + services.width + blog.x) / 2;
+    await page.mouse.move(gapX, blog.y + blog.height / 2);
+    await q.menuitem("Blog").hover();
+    await expect(q.menu("Blog")).toBeVisible();
+    // No observable state tracks the hide that stopping in the gap schedules,
+    // so cross the fixture's 250ms hideTimeout before asserting that the Blog
+    // menu stays open while the pointer rests on Blog.
+    await waitForPageTimeout(page, 250);
+    await expect(q.menu("Blog")).toBeVisible();
+  });
+
   test("show menus by focusing on items", async ({ page, q, browserName }) => {
     await pressTab(page, browserName);
     await expect(q.menuitem("Services")).toBeFocused();

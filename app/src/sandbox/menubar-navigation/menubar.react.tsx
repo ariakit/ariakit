@@ -41,7 +41,7 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
               hideTimeout={250}
             >
               {props.children}
-              <SharedMenu
+              <Ariakit.Menu
                 // This menu component is shared across all menus in the
                 // menubar. This enables us to animate the menu position when
                 // the user hovers over a menu item.
@@ -58,7 +58,7 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
                 wrapperProps={{ className: "menu-wrapper" }}
               >
                 <Ariakit.MenuArrow className="menu-arrow" />
-              </SharedMenu>
+              </Ariakit.Menu>
             </Ariakit.MenuProvider>
           </SetPlacementContext.Provider>
         </SetShiftContext.Provider>
@@ -66,33 +66,6 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
     );
   },
 );
-
-// TODO: Render Ariakit.Menu directly after this is fixed:
-// https://github.com/ariakit/ariakit/issues/8086
-function SharedMenu(props: Ariakit.MenuProps) {
-  const menu = Ariakit.useMenuContext();
-  return (
-    <Ariakit.Menu
-      {...props}
-      hideOnHoverOutside={(event) => {
-        if (!menu) return true;
-        const { disclosureElement } = menu.getState();
-        // Like the default, don't hide the menu while its menu button has
-        // focus.
-        if (disclosureElement?.matches(":focus-within")) return false;
-        // Another menubar item with a menu takes over this shared menu when the
-        // pointer moves onto it, so a hide scheduled now would close that menu.
-        const path = event.composedPath();
-        const items = menu.menubar?.getState().items ?? [];
-        return !items.some(
-          (item) =>
-            item.element?.hasAttribute("aria-haspopup") &&
-            path.includes(item.element),
-        );
-      }}
-    />
-  );
-}
 
 export interface MenuProps extends Ariakit.MenuItemProps {
   label: string;

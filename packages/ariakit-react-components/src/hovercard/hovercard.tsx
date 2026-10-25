@@ -217,12 +217,14 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       if (!mayHideOnHoverOutside && !mayDisablePointerEvents) return;
       const element = ref.current;
       if (!element) return;
+      let lastPath: EventTarget[] = [];
       const onMouseMove = (event: MouseEvent) => {
         if (!store) return;
+        const path = event.composedPath();
+        lastPath = path;
         if (!isMouseMoving()) return;
         const { anchorElement, disclosureElement, hideTimeout, timeout } =
           store.getState();
-        const path = event.composedPath();
         const hoverElements = [anchorElement, disclosureElement];
         const hoveredElement = hoverElements.find(
           (element) => element && path.includes(element),
@@ -262,7 +264,17 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         // Otherwise, hide the hovercard after a short delay (hideTimeout).
         hideTimeoutRef.current = window.setTimeout(() => {
           hideTimeoutRef.current = 0;
-          store?.hide();
+          if (!store) return;
+          // Another trigger can take over the store while the hide is pending,
+          // such as the next item in a menubar sharing one menu. The pointer
+          // may rest on that trigger without firing another mousemove that
+          // would clear the hide, so skip it if the last mousemove was on the
+          // store's current anchor or disclosure element.
+          // https://github.com/ariakit/ariakit/issues/8086
+          const { anchorElement, disclosureElement } = store.getState();
+          if (anchorElement && lastPath.includes(anchorElement)) return;
+          if (disclosureElement && lastPath.includes(disclosureElement)) return;
+          store.hide();
         }, hideTimeout ?? timeout);
       };
       return chain(
