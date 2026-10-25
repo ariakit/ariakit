@@ -8,6 +8,8 @@ interface Surface {
   className: string;
   warning: string;
   danger: string;
+  vivid: string;
+  near: string;
 }
 
 interface Scheme {
@@ -17,7 +19,10 @@ interface Scheme {
 }
 
 // The canvas colors are the Ariakit UI canvas in each scheme. The status colors
-// are the Ariakit UI warning and danger colors for that scheme.
+// are the Ariakit UI warning and danger colors for that scheme. The danger
+// surface leaves sRGB, so browsers paint it clipped. The vivid edges leave sRGB
+// too, on their own or after the contrast-more push. The near edges pass the
+// floor by a small margin on the canvas.
 const SCHEMES: Scheme[] = [
   {
     label: "Light canvas",
@@ -28,12 +33,24 @@ const SCHEMES: Scheme[] = [
         className: "",
         warning: "ak-edge-yellow-500",
         danger: "ak-edge-red-600",
+        vivid: "ak-edge-[#00ff00]",
+        near: "ak-edge-[#ff5555]",
       },
       {
         label: "light tinted surface",
         className: "ak-layer ak-layer-blue-600 ak-layer-mix-15",
         warning: "ak-edge-yellow-500",
         danger: "ak-edge-red-600",
+        vivid: "ak-edge-[#00ff00]",
+        near: "ak-edge-[#ff5555]",
+      },
+      {
+        label: "light danger surface",
+        className: "ak-layer ak-layer-red-600",
+        warning: "ak-edge-yellow-500",
+        danger: "ak-edge-red-600",
+        vivid: "ak-edge-[#00ff00]",
+        near: "ak-edge-[#ff5555]",
       },
     ],
   },
@@ -46,19 +63,39 @@ const SCHEMES: Scheme[] = [
         className: "",
         warning: "ak-edge-yellow-400",
         danger: "ak-edge-red-400",
+        vivid: "ak-edge-[oklch(57%_0.355_264)]",
+        near: "ak-edge-[#5c3cff]",
       },
       {
         label: "dark tinted surface",
         className: "ak-layer ak-layer-blue-600 ak-layer-mix-15",
         warning: "ak-edge-yellow-400",
         danger: "ak-edge-red-400",
+        vivid: "ak-edge-[oklch(57%_0.355_264)]",
+        near: "ak-edge-[#5c3cff]",
+      },
+      {
+        label: "dark danger surface",
+        className: "ak-layer ak-layer-red-400",
+        warning: "ak-edge-yellow-400",
+        danger: "ak-edge-red-400",
+        vivid: "ak-edge-[oklch(57%_0.355_264)]",
+        near: "ak-edge-[#5c3cff]",
+      },
+      {
+        label: "black surface",
+        className: "ak-layer ak-layer-black",
+        warning: "ak-edge-yellow-400",
+        danger: "ak-edge-red-400",
+        vivid: "ak-edge-[oklch(57%_0.355_264)]",
+        near: "ak-edge-[#5c3cff]",
       },
     ],
   },
 ];
 
 function Fields({ surface }: { surface: Surface }) {
-  const { label, warning, danger } = surface;
+  const { label, warning, danger, vivid, near } = surface;
   return (
     <>
       <input
@@ -88,6 +125,22 @@ function Fields({ surface }: { surface: Surface }) {
       <input
         aria-label={`Danger edge on ${label}`}
         className={`${FIELD} ak-layer-lighten-6 ${danger} ak-edge-raw ak-edge-contrast`}
+      />
+      <input
+        aria-label={`Vivid edge on ${label}`}
+        className={`${FIELD} ak-layer-lighten-6 ${vivid} ak-edge-raw ak-edge-contrast`}
+      />
+      <input
+        aria-label={`Vivid edge without floor on ${label}`}
+        className={`${FIELD} ak-layer-lighten-6 ${vivid} ak-edge-raw`}
+      />
+      <input
+        aria-label={`Near edge on ${label}`}
+        className={`${FIELD} ak-layer-lighten-6 ${near} ak-edge-raw ak-edge-contrast`}
+      />
+      <input
+        aria-label={`Near edge without floor on ${label}`}
+        className={`${FIELD} ak-layer-lighten-6 ${near} ak-edge-raw`}
       />
       <input
         aria-label={`Danger edge without floor on ${label}`}

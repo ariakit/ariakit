@@ -737,7 +737,7 @@ Normal text should inherit the layer's text color without an extra utility. Use 
 
 ### Contrast floor
 
-`ak-edge-contrast` keeps the edge at 3:1 or more against the parent layer, which is the contrast that [WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html) asks for the boundary of a control such as a text field. An edge that already reaches the floor doesn't change.
+`ak-edge-contrast` keeps the edge at 3:1 or more against the parent layer, which is the contrast that [WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html) asks for the boundary of a control such as a text field. The floor aims 2.5% over the ratio, and an edge with a color that already reaches that keeps its color.
 
 ```html
 <input
@@ -748,10 +748,12 @@ Normal text should inherit the layer's text color without an extra utility. Use 
 />
 ```
 
-- A neutral edge, without `ak-edge-<color>`, is black on light parent layers and white on dark ones. The floor raises only its alpha, and a requested alpha above the floor stays. It measures a border as painted over the element's own background and a ring from `ak-frame-ring` as painted over the parent layer, so it holds for raised and recessed fields. A white ring around a field that is lighter than a saturated dark parent layer can stay well under the floor, at about 2.4:1 on `red-700`, because the floor knows only the luminance of the parent layer. Use `ak-frame-border` or `ak-frame-bordering` there. It assumes the default push to black or white, so a neutral edge with `ak-edge-raw` or a smaller `ak-edge-push-*` keeps its color and can stay under the floor.
-- An edge with a color becomes solid. It keeps its chroma and hue, and its lightness moves only as far as the floor requires. Pair the color with `ak-edge-raw` or `ak-edge-push-0`, because the default push moves the color to black or white first. A color that has to move is clipped to the sRGB gamut. `ak-edge-inherit` also counts as a color, so leave the floor off on an edge that inherits.
+- A neutral edge, without `ak-edge-<color>`, is black on light parent layers and white on dark ones with the default push. The floor makes it plain black or white, without the tint of the layer, and raises its alpha, and a requested alpha above the floor stays. Over a saturated fill on a dark parent layer, the floor measures the darkest channel of the fill, so the alpha can end up higher than the edge needs. It measures a border as painted over the element's own background and a ring from `ak-frame-ring` as painted over the parent layer, so it holds for raised and recessed fields. A white ring around a field that is lighter than a saturated dark parent layer can stay well under the floor, at about 2.5:1 on `red-700`, because the floor knows only the luminance of the parent layer. Use `ak-frame-border` or `ak-frame-bordering` there. It assumes the default push to black or white, so a neutral edge with `ak-edge-raw` or a smaller `ak-edge-push-*` keeps its color and can stay under the floor.
+- An edge with a color becomes solid. Its lightness moves toward the floor, keeping its chroma and hue where the sRGB gamut allows, so it can land a little over it. Pair the color with `ak-edge-raw` or `ak-edge-push-0`, because the default push moves the color to black or white first. The floor measures the color clipped to the sRGB gamut, as it paints. A color that passes there keeps its color, even outside sRGB, and a color that has to move is clipped. `ak-edge-inherit` also counts as a color, so leave the floor off on an edge that inherits.
 - The [`contrast-more`](#accessibility) variant raises the floor to 4.5:1. [`ak-disabled`](#ak-disabled) lowers it with `--ak-disabled-contrast-scale`, to 1.5:1 by default.
 - The floor follows the light or dark scheme of the parent layer. A layer without a parent layer, such as the `body` canvas, keeps its regular edge.
+- The floor measures colors as browsers paint them on an sRGB display. Saturated colors often leave the sRGB gamut, so the floor measures them clipped to it.
+- Firefox rounds the values that the floor carries between steps to 8 bits, so on a few parent layers, such as `ak-layer-lime-600`, its edge can land slightly under the ratio. Chrome and Safari stay at or over it.
 
 Use it for edges that identify a control. Decorative seams, such as card borders and dividers, don't need it. The floor costs more style work than a regular edge, but only on the elements that use it.
 

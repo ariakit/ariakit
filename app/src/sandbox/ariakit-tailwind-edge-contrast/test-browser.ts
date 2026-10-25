@@ -5,8 +5,11 @@ import { withFramework } from "#app/test-utils/preview.ts";
 const SURFACES = [
   "light canvas",
   "light tinted surface",
+  "light danger surface",
   "dark canvas",
   "dark tinted surface",
+  "dark danger surface",
+  "black surface",
 ];
 
 const FLOORED_FIELDS = [
@@ -17,8 +20,16 @@ const FLOORED_FIELDS = [
   "Recessed ring field",
   "Warning edge",
   "Danger edge",
+  "Vivid edge",
+  "Near edge",
   "Translucent edge",
 ];
+
+// Colored edges that have a twin without the floor.
+const COLORED_FIELDS = ["Danger edge", "Vivid edge", "Near edge"];
+
+// The floor aims 2.5% over its ratio, so an edge under that margin moves.
+const EDGE_CONTRAST_MARGIN = 1.025;
 
 function getRelativeLuminance([red, green, blue]: number[]) {
   const linearize = (value = 0) =>
@@ -31,14 +42,14 @@ function getRelativeLuminance([red, green, blue]: number[]) {
 }
 
 /**
- * Returns the WCAG contrast between the painted edge of the field and the
- * background of the surface around the field. A border paints over the field
- * background, and a ring paints over the surface.
+ * Returns the painted edge of the field and the background of the surface
+ * around the field in sRGB. A border paints over the field background, and a
+ * ring paints over the surface.
  */
-async function getEdgeContrast(field: Locator) {
+async function getPaintedColors(field: Locator) {
   // A canvas paints the computed colors the way the page does, including the
   // translucent edge over its backdrop, and reads them back in 8-bit sRGB. No
-  // DOM state exposes the contrast that people see.
+  // DOM state exposes the colors that people see.
   const [edge, surface] = await field.evaluate((element) => {
     const canvas = document.createElement("canvas");
     canvas.width = 1;
@@ -64,12 +75,24 @@ async function getEdgeContrast(field: Locator) {
       style.borderTopWidth === "0px" ? surfaceColor : style.backgroundColor;
     return [paint(backdrop, style.borderTopColor), paint(surfaceColor)];
   });
+  return { edge, surface };
+}
+
+function getContrast({ edge, surface }: { edge: number[]; surface: number[] }) {
   const edgeLuminance = getRelativeLuminance(edge);
   const surfaceLuminance = getRelativeLuminance(surface);
   return (
     (Math.max(edgeLuminance, surfaceLuminance) + 0.05) /
     (Math.min(edgeLuminance, surfaceLuminance) + 0.05)
   );
+}
+
+/**
+ * Returns the WCAG contrast between the painted edge of the field and the
+ * background of the surface around the field.
+ */
+async function getEdgeContrast(field: Locator) {
+  return getContrast(await getPaintedColors(field));
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -103,23 +126,42 @@ withFramework(import.meta.dirname, async ({ test }) => {
             .toBeGreaterThanOrEqual(disabledTarget);
         }
       });
+
+      // A colored edge that already passes paints as it does without the floor.
+      // The near edges pass by a small margin on the canvases, and the black
+      // surface leaves no luminance to encode.
+      // https://github.com/ariakit/ariakit/issues/8050
+      test(`keeps colored edges that pass (${contrast})`, async ({ q }) => {
+        const compared: string[] = [];
+        for (const surface of SURFACES) {
+          for (const name of COLORED_FIELDS) {
+            const label = `${name} on ${surface}`;
+            const regular = await getPaintedColors(
+              q.textbox(`${name} without floor on ${surface}`),
+            );
+            if (getContrast(regular) < target * EDGE_CONTRAST_MARGIN) continue;
+            compared.push(label);
+            const floored = await getPaintedColors(q.textbox(label));
+            for (const [index, channel] of floored.edge.entries()) {
+              const expected = regular.edge[index];
+              if (expected == null) continue;
+              // Firefox stores the alpha that carries the parent luminance in 8
+              // bits, which can move a passing edge by one 8-bit level.
+              expect(channel, label).toBeCloseTo(expected, 2);
+            }
+          }
+        }
+        // The contrast-more push moves the near edges away from the floor.
+        if (contrast !== "no-preference") return;
+        expect(compared).toContain("Near edge on light canvas");
+        expect(compared).toContain("Near edge on dark canvas");
+      });
     });
   }
 
-  // https://github.com/ariakit/ariakit/issues/8050
-  test("keeps an edge that passes", async ({ q }) => {
-    const floored = q.textbox("Danger edge on light canvas");
-    const regular = q.textbox("Danger edge without floor on light canvas");
-    expect(await getEdgeContrast(regular)).toBeGreaterThanOrEqual(3);
-    expect(await getEdgeContrast(floored)).toBeCloseTo(
-      await getEdgeContrast(regular),
-      2,
-    );
-  });
-
   // A raw edge without a color has the layer color at full alpha, as on a
-  // checked checkbox. The floor can only raise alpha, so the edge keeps its
-  // color.
+  // checked checkbox. The floor can't raise that alpha, and it fades chroma
+  // only near black and white, so the edge keeps its color.
   // https://github.com/ariakit/ariakit/issues/8050
   test("keeps the color of a raw edge without a color", async ({ q }) => {
     for (const surface of SURFACES) {
@@ -133,7 +175,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/8050
-  test("raises only the alpha of a neutral edge", async ({ q }) => {
+  test("keeps a neutral edge translucent black or white", async ({ q }) => {
     // Black or white with no chroma and an alpha under 1. Engines can serialize
     // float noise, such as 4.8e-7 for 0.
     for (const [surface, lightness] of [

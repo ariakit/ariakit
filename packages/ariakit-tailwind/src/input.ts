@@ -15,10 +15,10 @@ const l = "l";
 const c = "c";
 const h = "h";
 const alpha = "alpha";
-// XYZ channels used by the edge contrast floor.
-const x = "x";
-const y = "y";
-const z = "z";
+// Linear sRGB channels used by the edge contrast floor.
+const r = "r";
+const g = "g";
+const b = "b";
 
 const CHROMA_MAX_SRGB = 0.32;
 const CHROMA_MAX_P3 = 0.368;
@@ -86,15 +86,17 @@ const TEXT_CONTRAST_CYAN_LIGHTNESS_START = 0.45;
 const EDGE_CONTRAST_RATIO = 3;
 const EDGE_CONTRAST_PREFERENCE_SCALE = 0.5;
 // The floor carries the parent luminance in a color alpha, which Firefox rounds
-// to 8 bits. Measured on Tailwind colors and Ariakit UI surfaces, that lands up
-// to 1.4% under the target, so the margin keeps every engine at or over the
-// ratio.
+// to 8 bits at each stage. The margin keeps Chrome and Safari at or over the
+// ratio, and most Firefox cases too, but on a few layers the rounding adds up
+// and Firefox lands slightly under the ratio. The readme documents this.
 const EDGE_CONTRAST_MARGIN = 1.025;
 // Luminance plus the WCAG flare term spans 0.05..1.05, a factor of 21. Its log
 // fills the alpha range evenly in contrast terms.
 const EDGE_CONTRAST_LOG_RANGE = roundToDecimals(Math.log(21), 6);
-const D65_WHITE_X = 0.95046;
-const D65_WHITE_Z = 1.08906;
+// The colored stage alpha for a color that passes. A pack alpha is 0.5 or more,
+// so the LCH step tells them apart halfway.
+const EDGE_CONTRAST_PASSING_ALPHA = 0.25;
+const EDGE_CONTRAST_PASSING_THRESHOLD = (0.5 + EDGE_CONTRAST_PASSING_ALPHA) / 2;
 
 const CONTRAST_SCALE = 0.3334;
 const DISABLED_CONTRAST_SCALE = 0.25;
@@ -1399,12 +1401,6 @@ const edge = getEdgeColor(edgeBaseColor);
 // the floor packs the parent luminance into the alpha of a color-mix(). Mixing
 // an opaque color 50% with black at alpha `a` divides its channels by `1 + a`
 // and sets alpha to `(1 + a) / 2`, which a relative color decodes.
-const XYZ_TO_LINEAR_SRGB = [
-  [3.2409699419, -1.5373831776, -0.4986107603],
-  [-0.9692436363, 1.8759675015, 0.0415550574],
-  [0.0556300797, -0.2039769589, 1.0569715142],
-] as const;
-
 const edgeContrastRatio = fn.mul(
   fn.add(
     1,
@@ -1422,9 +1418,23 @@ const edgeContrastRatio = fn.mul(
   EDGE_CONTRAST_MARGIN,
 );
 
+/**
+ * Returns the luminance of linear sRGB channels clipped to the sRGB gamut.
+ * Browsers paint an out-of-gamut color clipped, and saturated layers often
+ * leave sRGB, so the unclipped luminance can be far above or below the painted
+ * one.
+ */
+function getClippedLuminance(red: Value, green: Value, blue: Value) {
+  return fn.add(
+    fn.mul(0.2126, fn.clamp01(red)),
+    fn.mul(0.7152, fn.clamp01(green)),
+    fn.mul(0.0722, fn.clamp01(blue)),
+  );
+}
+
 // Black whose alpha is the log-encoded luminance of the parent layer.
-const edgeContrastReference = fn.exp`color(from ${vars.layerParent} xyz-d65 0 0 0 / ${fn.div(
-  fn.exp`log(${fn.div(fn.add(fn.max(y, 0), 0.05), 0.05)})`,
+const edgeContrastReference = fn.exp`color(from ${vars.layerParent} srgb-linear 0 0 0 / ${fn.div(
+  fn.exp`log(${fn.div(fn.add(getClippedLuminance(r, g, b), 0.05), 0.05)})`,
   EDGE_CONTRAST_LOG_RANGE,
 )})`;
 
@@ -1432,7 +1442,7 @@ const edgeContrastReference = fn.exp`color(from ${vars.layerParent} xyz-d65 0 0 
  * Packs an opaque copy of a color with the edge contrast reference.
  */
 function getEdgeContrastPack(color: Value) {
-  return fn.exp`color-mix(in xyz-d65, color(from ${color} xyz-d65 ${x} ${y} ${z} / 1) 50%, ${vars.edgeContrastReference} 50%)`;
+  return fn.exp`color-mix(in xyz-d65, color(from ${color} srgb-linear ${r} ${g} ${b} / 1) 50%, ${vars.edgeContrastReference} 50%)`;
 }
 
 /**
@@ -1480,11 +1490,13 @@ function getEdgeContrastTarget(encodedReference: Value, lighter: boolean) {
   return fn.sub(flaredTarget, 0.05);
 }
 
-// Inside a relative color from a pack, the channels scaled by `2 * alpha` are
-// the packed color, and `2 * alpha - 1` is the encoded reference.
-const packedX = fn.mul(x, 2, alpha);
-const packedY = fn.mul(y, 2, alpha);
-const packedZ = fn.mul(z, 2, alpha);
+// Inside an srgb-linear relative color from a pack, the channels scaled by
+// `2 * alpha` are the packed color, and `2 * alpha - 1` is the encoded
+// reference. Black is 0 in every linear space, so the pack decodes in any of
+// them.
+const packedRed = fn.mul(r, 2, alpha);
+const packedGreen = fn.mul(g, 2, alpha);
+const packedBlue = fn.mul(b, 2, alpha);
 const packedReference = fn.sub(fn.mul(2, alpha), 1);
 
 /**
@@ -1510,21 +1522,15 @@ function getEdgeContrastDeclarations(lighter: boolean) {
     );
   };
   // A border paints over the fill. Black scales every channel by about the same
-  // factor, so the gray equivalent of the fill works. White raises the darkest
-  // channel the least, so using it as the whole fill gives an alpha that is
-  // never too low.
-  const fillBackdrop = (() => {
-    if (!lighter) return getEncodedSrgb(packedY);
-    const linearChannels = XYZ_TO_LINEAR_SRGB.map(
-      ([xFactor, yFactor, zFactor]) =>
-        fn.add(
-          fn.mul(xFactor, packedX),
-          fn.mul(yFactor, packedY),
-          fn.mul(zFactor, packedZ),
-        ),
-    );
-    return getEncodedSrgb(fn.exp`min(${fn.join(linearChannels)})`);
-  })();
+  // factor, so the gray equivalent of the clipped fill works. White raises the
+  // darkest channel the least, so using it as the whole fill gives an alpha
+  // that is never too low. Clipping doesn't change which channel is the
+  // darkest, and the encoding raises a negative value to 0.
+  const fillBackdrop = lighter
+    ? getEncodedSrgb(
+        fn.exp`min(${fn.join([packedRed, packedGreen, packedBlue])})`,
+      )
+    : getEncodedSrgb(getClippedLuminance(packedRed, packedGreen, packedBlue));
   // A ring paints outside the border box, over the parent layer. Only the
   // parent luminance is known here, so its gray equivalent stands in for it.
   // That holds for black rings and neutral parents, but a white ring on a
@@ -1536,45 +1542,53 @@ function getEdgeContrastDeclarations(lighter: boolean) {
     getNeutralAlpha(fillBackdrop),
     fn.mul(fn.exp`sign(${vars.frameRing})`, getNeutralAlpha(ringBackdrop)),
   );
+  // A colored edge is measured clipped to sRGB, as it paints. A color that
+  // reaches the target there keeps its color.
+  const clippedY = getClippedLuminance(packedRed, packedGreen, packedBlue);
+  const passes = fn.binary(
+    lighter ? fn.sub(clippedY, target) : fn.sub(target, clippedY),
+  );
+  // The colored stage keeps the pack alpha, which is 0.5 or more, for a color
+  // that moves, and sets it to 0.25 for a color that passes. The LCH step reads
+  // both the flag and the encoded reference from it.
+  const coloredStageValue = fn.exp`color(from ${gateColoredEdge(vars.edgeContrastColoredPack)} srgb-linear ${packedRed} ${packedGreen} ${packedBlue} / ${fn.sub(alpha, fn.mul(passes, fn.sub(alpha, EDGE_CONTRAST_PASSING_ALPHA)))})`;
   // Colored edges keep their LCH chroma and hue, and their lightness moves to
-  // the target. A moved color is clipped to sRGB, and a color that already
-  // passes keeps its wide-gamut value. The colored stage stores the encoded
-  // reference in alpha.
+  // the target. The moved color is clipped to sRGB. A color that passes skips
+  // the LCH step, which would clamp its lightness to the LCH range.
   const coloredStage = gateColoredEdge(vars.edgeContrastColored);
+  const moved = fn.binary(fn.sub(alpha, EDGE_CONTRAST_PASSING_THRESHOLD));
   const targetL = fn.sub(
-    fn.mul(
-      116,
-      fn.exp`pow(${fn.clamp01(getEdgeContrastTarget(alpha, lighter))}, ${1 / 3})`,
-    ),
+    fn.mul(116, fn.exp`pow(${fn.clamp01(target)}, ${1 / 3})`),
     16,
   );
   const movedL = lighter ? fn.max(l, targetL) : fn.min(l, targetL);
-  const moved = fn.binary(
-    fn.sub(lighter ? fn.sub(targetL, l) : fn.sub(l, targetL), 0.0001),
-  );
   const clippedMoved = fn.exp`color(from ${fn.lch(coloredStage, { l: movedL, a: moved })} srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / alpha)`;
-  const unmoved = fn.lch(coloredStage, { a: fn.sub(1, moved) });
+  const unmoved = fn.exp`color(from ${coloredStage} srgb-linear ${r} ${g} ${b} / ${fn.sub(1, moved)})`;
   // The LCH step lands within a few percent, because LCH lightness uses the D50
-  // white point and clipping moves luminance. The final stage packs the moved
-  // color again and darkens it in linear light or tints it toward white to
-  // reach the target.
+  // white point and clipping moves luminance. The final stage packs the color
+  // again, keeps a color that passes, and darkens the clipped color in linear
+  // light or tints it toward white to reach the target.
   const repack = gateColoredEdge(vars.edgeContrastColoredRepack);
   const coloredFloor = (() => {
-    if (!lighter) {
-      const scale = fn.clamp01(fn.div(target, fn.max(packedY, 1e-6)));
-      return fn.exp`color(from ${repack} xyz-d65 ${fn.mul(packedX, scale)} ${fn.mul(packedY, scale)} ${fn.mul(packedZ, scale)} / 1)`;
-    }
+    const scale = fn.clamp01(fn.div(target, fn.max(clippedY, 1e-6)));
     const tint = fn.clamp01(
-      fn.div(fn.sub(target, packedY), fn.max(fn.sub(1, packedY), 1e-6)),
+      fn.div(fn.sub(target, clippedY), fn.max(fn.sub(1, clippedY), 1e-6)),
     );
-    const getTintedChannel = (channel: string, white: number) =>
-      fn.add(channel, fn.mul(tint, fn.sub(white, channel)));
-    return fn.exp`color(from ${repack} xyz-d65 ${getTintedChannel(packedX, D65_WHITE_X)} ${getTintedChannel(packedY, 1)} ${getTintedChannel(packedZ, D65_WHITE_Z)} / 1)`;
+    const getChannel = (channel: Value) => {
+      const clipped = fn.clamp01(channel);
+      // Adds back the unclipped part of a color that passes.
+      const kept = fn.mul(passes, fn.sub(channel, clipped));
+      if (!lighter) {
+        return fn.add(fn.mul(clipped, scale), kept);
+      }
+      return fn.add(clipped, fn.mul(tint, fn.sub(1, clipped)), kept);
+    };
+    return fn.exp`color(from ${repack} srgb-linear ${getChannel(packedRed)} ${getChannel(packedGreen)} ${getChannel(packedBlue)} / 1)`;
   })();
   return [
     set(
       vars.edgeContrastNeutral,
-      fn.exp`color(from ${vars.edgeContrastNeutralPack} xyz-d65 ${packedX} ${packedY} ${packedZ} / ${neutralAlpha})`,
+      fn.exp`color(from ${vars.edgeContrastNeutralPack} srgb-linear ${packedRed} ${packedGreen} ${packedBlue} / ${neutralAlpha})`,
     ),
     // The default push makes the edge black or white, but its chroma would
     // tint that white and lower its luminance below the alpha computed above.
@@ -1586,6 +1600,7 @@ function getEdgeContrastDeclarations(lighter: boolean) {
         c: fn.min(c, fn.mul(4, l, fn.sub(1, l))),
       }),
     ),
+    set(vars.edgeContrastColored, coloredStageValue),
     set(
       vars.edgeContrastColoredMoved,
       fn.exp`color-mix(in xyz-d65, ${clippedMoved} 50%, ${unmoved} 50%)`,
@@ -2116,8 +2131,8 @@ utility(
 
 // Keeps the edge at 3:1 or more against the parent layer, raised by the
 // contrast preference and lowered by ak-disabled. A neutral edge raises its
-// alpha over the fill; an edge with a color becomes solid and moves only its
-// lightness.
+// alpha over the fill; an edge with a color becomes solid and moves its
+// lightness toward the floor.
 // https://github.com/ariakit/ariakit/issues/8050
 utility(
   "edge-contrast",
@@ -2136,10 +2151,6 @@ utility(
   set(
     vars.edgeContrastColoredPack,
     getEdgeContrastPack(getEdgeColor(fn.var(inputs.edgeColor))),
-  ),
-  set(
-    vars.edgeContrastColored,
-    fn.exp`color(from ${gateColoredEdge(vars.edgeContrastColoredPack)} xyz-d65 ${packedX} ${packedY} ${packedZ} / ${packedReference})`,
   ),
   set(
     vars.edgeContrastColoredRepack,
