@@ -79,24 +79,30 @@ withFramework(import.meta.dirname, async ({ test }) => {
     ["no-preference", 3, 1.5],
     ["more", 4.5, 1 + (3 * (1 + 0.5 * 0.25) - 1) * 0.25],
   ] as const) {
-    // https://github.com/ariakit/ariakit/issues/8050
-    test(`edges reach the floor against the surface (${contrast})`, async ({
-      page,
-      q,
-    }) => {
-      await page.emulateMedia({ contrast });
-      for (const surface of SURFACES) {
-        for (const name of FLOORED_FIELDS) {
-          const label = `${name} on ${surface}`;
+    test.describe(contrast, () => {
+      // Firefox doesn't apply an emulated contrast change after the page loads
+      // to the stylesheet's prefers-contrast rules, so the page loads with it.
+      test.use({ contrast });
+
+      // https://github.com/ariakit/ariakit/issues/8050
+      test(`edges reach the floor against the surface (${contrast})`, async ({
+        q,
+      }) => {
+        for (const surface of SURFACES) {
+          for (const name of FLOORED_FIELDS) {
+            const label = `${name} on ${surface}`;
+            await expect
+              .poll(() => getEdgeContrast(q.textbox(label)), {
+                message: label,
+              })
+              .toBeGreaterThanOrEqual(target);
+          }
+          const label = `Disabled field on ${surface}`;
           await expect
             .poll(() => getEdgeContrast(q.textbox(label)), { message: label })
-            .toBeGreaterThanOrEqual(target);
+            .toBeGreaterThanOrEqual(disabledTarget);
         }
-        const label = `Disabled field on ${surface}`;
-        await expect
-          .poll(() => getEdgeContrast(q.textbox(label)), { message: label })
-          .toBeGreaterThanOrEqual(disabledTarget);
-      }
+      });
     });
   }
 
