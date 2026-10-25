@@ -91,11 +91,14 @@ export const input = cv({
     $disabled: null,
     /**
      * Keeps the field edge at 3:1 or more against the surface around it, as
-     * WCAG asks for the boundary of a control. A neutral edge raises its
-     * opacity, and an edge with a color becomes solid and moves only its
-     * lightness. High contrast mode raises the floor to 4.5:1, and disabled
-     * fields lower it. A field nested in another field with the floor draws no
-     * edge, so it skips the floor and its style cost.
+     * WCAG asks for the boundary of a control. With the default push, a neutral
+     * edge raises its opacity. A neutral edge with `$edgeRaw` or a smaller
+     * `$edgePush` keeps its color and can stay under the floor. An edge with a
+     * color becomes solid and moves its lightness toward the floor. High
+     * contrast mode raises the floor to 4.5:1, and disabled fields lower it. A
+     * lighter `$edgeWeight` doesn't go under the floor, so turn the floor off
+     * for a lighter edge. A field nested in another field with the floor draws
+     * no edge, so it skips the floor and its style cost.
      */
     $edgeContrast(value?: boolean) {
       if (!value) return;
